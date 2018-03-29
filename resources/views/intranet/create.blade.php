@@ -12,4 +12,7 @@
 @if (file_exists("js/$modelo/create.js"))
 {{ Html::script("/js/$modelo/create.js") }}
 @endif
+@if ($elemento->isDatepicker())
+{{ Html::script("/js/datepicker.js") }}
+@endif
 @endsection

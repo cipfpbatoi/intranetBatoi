@@ -177,7 +177,8 @@ Route::get('/colaboracion/{colaboracion}/copy', ['as' => 'colaboracion.copy', 'u
 Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'ColaboracionController@store']);
 
 Route::resource('/fct', 'FctController', ['except' => ['destroy', 'update', 'show']]);
-//Route::get('/fct/instructor/{id}/create',['as'=>'fct.instructor.create','uses'=>'FctController@')
+Route::post('/fct/{id}/instructorCreate',['as'=>'fct.instructor.create','uses'=>'FctController@nouInstructor']);
+Route::get('/fct/{id}/{dni}/instructorDelete',['as'=>'fct.instructor.delete','uses'=>'FctController@deleteInstructor']);
 Route::get('/fct/{id}/delete', ['as' => 'fct.destroy', 'uses' => 'FctController@destroy']);
 Route::get('/fct/{id}/show', ['as' => 'fct.show', 'uses' => 'FctController@show']);
 Route::put('/fct/{id}/edit', ['as' => 'fct.update', 'uses' => 'FctController@update']);

@@ -274,6 +274,16 @@ class FctController extends IntranetController
         }
         else return $this->redirect();
     }
+    public function nouInstructor($idFct,Request $request){
+       $fct = Fct::find($idFct);
+       $fct->Instructores()->attach($request->idInstructor,['horas'=>$request->horas]); 
+       return back();
+    }
+    public function deleteInstructor($idFct,$idInstructor){
+       $fct = Fct::find($idFct);
+       $fct->Instructores()->detach($idInstructor); 
+       return back();
+    }
    
 
 }

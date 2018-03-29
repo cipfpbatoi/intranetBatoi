@@ -4,7 +4,7 @@
 @endsection
 @section('content')
 <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
-    <h3>{{$elemento->Colaboracion->Centro->nombre}}</h3>
+    <h3><a href='/empresa/{{$elemento->Colaboracion->Centro->idEmpresa}}/detalle'>{{$elemento->Colaboracion->Centro->nombre}}</a></h3>
     <h4>ID : {{$elemento->id}}</h4>
     <h4>CIF : {{$elemento->Colaboracion->Centro->Empresa->cif}}</h4>
     <h4>{{trans('validation.attributes.concierto')}} : {{$elemento->Colaboracion->Centro->Empresa->concierto}}</h4>

@@ -36,6 +36,7 @@ mix.combine([
 
 // de Natxo
     vendors+'bootstrap-daterangepicker/daterangepicker.css',
+    plugins+'datetimepicker/css/bootstrap-datetimepicker.min.css',
     vendors+'datatables.net-bs/css/dataTables.bootstrap.min.css',
     vendors+'datatables.net-responsive-bs/css/responsive.bootstrap.min.css',
     
@@ -55,11 +56,14 @@ mix.combine([
     vendors+'fastclick/lib/fastclick.js',
 //    vendors+'select2/dist/js/select2.js',
     vendors+'nprogress/nprogress.js',
+    vendors+'jquery.tagsinput/src/jquery.tagsinput.js',
 //    vendors+'icheck/icheck.js',
 // Cosas de Natxo
+    packages+'moment/moment.js',
     vendors+'datatables.net/js/jquery.dataTables.min.js',
     vendors+'bootstrap-daterangepicker/daterangepicker.js',
-    packages+'moment/moment.js',
+    plugins+'datetimepicker/js/bootstrap-datetimepicker.min.js',
+    
     plugins+'datetime-moment/dist/datetime-moment.js', 
     vendors+'datatables.net-responsive-bs/js/dataTables.bootstrap.min.js',
     vendors+'datatables.net-responsive/js/dataTables.responsive.min.js',

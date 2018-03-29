@@ -14,6 +14,9 @@
 @section('scripts')
     @include('intranet.partials.modal.index')
     @include('includes.tablesjs')
+    @if ($elemento->isDatepicker())
+        {{ Html::script("/js/datepicker.js") }}
+    @endif
     @if (file_exists('js/'.$panel->getModel().'/grid.js'))
         {{ HTML::script('/js/'.$panel->getModel().'/grid.js') }}
     @else

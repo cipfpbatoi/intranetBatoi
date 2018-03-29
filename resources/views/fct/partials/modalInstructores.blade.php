@@ -9,32 +9,19 @@
                 </button>
                 </h4>    
             </div>
-            <form method="POST" class="agua" action="/colaboracion/create">
+            <form method="POST" class="agua" action="/fct/{{$elemento->id}}/instructorCreate">
                 <div class="modal-body">
                     {{ csrf_field() }}
-                    <select name='idCiclo' class="form-control">
-                        @foreach ($ciclos as $ciclo)
-                            @if (\Intranet\Entities\Grupo::QTutor()->first() && \Intranet\Entities\Grupo::QTutor()->first()->idCiclo == $ciclo->id)
-                                <option value='{{ $ciclo->id }}' selected>{!! $ciclo->ciclo !!}</option>
-                            @else    
-                                <option value='{{ $ciclo->id }}'>{!! $ciclo->ciclo !!}</option>
-                            @endif    
+                    <select name='idInstructor' class="form-control">
+                        @foreach ($elemento->Colaboracion->Centro->Instructores as $instructor)
+                            <option value='{{ $instructor->dni }}'>{!! $instructor->nombre !!}</option>
                         @endforeach
                     </select>
-                    <select name='idCentro' class="form-control">
-                        @foreach ($elemento->centros as $centro)
-                        <option value='{{ $centro->id }}'>{!! $centro->nombre !!} ({!! $centro->direccion !!})</option>
-                        @endforeach
-                    </select>
-                    <input type='text'  id='contacto_id' name='contacto' placeholder="{{trans("validation.attributes.contacto")}}" value="{{ old('contacto') }}" class="form-control">
-                    <input type="text"  name="telefono" placeholder="{{trans("validation.attributes.telef1")}}" value="{{ old('telefono') }}" class="form-control" />
-                    <input type="text" name="email" placeholder="{{trans("validation.attributes.email")}}" value="{{ old('email') }}" class="form-control"/>
-                    <input type="text"  name="tutor" placeholer="{{trans("validation.attributes.tutor")}}"  class="form-control" value='{{AuthUser()->nombre}} {{AuthUser()->apellido1}}'/>
-                    <input type="text"  name="puestos" placeholder="{{trans("validation.attributes.puestos")}}*" value="{{ old('puestos') }}" class="form-control" />
-                </div>
+                    <input type="text"  name="horas" placeholder="{{trans("validation.attributes.horas")}}" value="{{ old('horas') }}" class="form-control" />
+                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <input id="submit" class="boton" type="submit" value="{{trans("messages.generic.anadir")}} {{trans("models.modelos.Colaboracion")}} ">
+                    <input id="submit" class="boton" type="submit" value="{{trans("messages.generic.anadir")}} {{trans("models.modelos.Instructor")}} ">
                 </div>
             </form>    
         </div>
