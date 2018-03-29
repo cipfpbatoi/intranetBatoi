@@ -1,0 +1,13 @@
+@extends('layouts.intranet')
+@section('css')
+    <title>{{$panel->getTitulo()}}</title>
+@endsection
+@section('grid')
+    @include('material.partials.grid')
+@endsection
+@section('titulo')
+    {{$panel->getTitulo()}}
+@endsection
+@section('scripts')
+@include('includes.tablesjs')
+@endsection

@@ -1,0 +1,145 @@
+body{
+	max-width: 1400px;
+	background-color: #B9E8FE;
+	font-size: 15px;
+	font-family: sans-serif;
+}
+header{
+        height: 152px;/*alto*/
+	margin-right: 10px;
+        margin-left: 10px;
+        margin-top:10px;
+        background-color: rgba(239,250,255,1); 
+        
+}
+#mheader{
+        height: 91px;/*alto*/
+	margin-right: 5px;
+        margin-left: 5px;
+        margin-top: 5px;
+        background-color: rgba(239,250,255,1); 
+}
+#header{
+    background-image: url("/img/cabecera.png");
+    background-repeat: no-repeat;
+    height: 149px;/*alto*/
+    padding: 0px;
+}
+#header_mini{
+	height: 89px;/*alto*/
+	background-image: url("/img/cabecera_mini.jpg");
+	background-repeat: no-repeat;
+}
+.head{
+	height: 149px;
+	padding: 10px 10px;
+}
+.head_mini
+{
+	height: 89px;
+	padding: 5px 5px;
+}
+footer{
+	background-color: #F0F2F7;
+	text-align: left;
+        margin: 10px;
+        text-align: center;
+}
+#cuerpo{
+	padding: 5px 0px;
+        margin-bottom: 5px;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 5px;
+	text-align: left;
+	background-image: url("/img/fondo.jpg");
+	background-color: #F0F2F7;
+	height: auto;
+	padding-bottom: 10px;	
+        min-height: 450px;
+}
+
+.iconopequeno{
+
+	width: 25px;
+	height: 25px;
+}
+
+.iconomediano{
+
+	width: 30px;
+	height: 30px;
+}
+.iconogrande{
+
+	width: 75px;
+	height: 75px;
+}
+.iconofit{
+    width: 145px;
+	height: 145px;
+}
+.form-control{
+    width: 60%;
+}
+
+.borderedondo{
+	border: 1px solid #373F42;
+	border-radius: 6px
+}
+.centrado{
+	text-align: center;
+}
+.salto{
+	display: inline;
+}
+.ajustaralto{
+	max-height: 2000px;
+	height: auto !important;
+}
+.form-group{
+    position: relative;
+}
+.azul{
+	color: #1E88E5;
+}
+.enlaceimagen{
+    margin:5px;
+    background-color: #B9E8FE;
+    height: 150px;
+    width: 150px;
+    margin-bottom: 20px;
+    
+}
+.imagen{
+    background-color: #B9E8FE;
+    height: 140px;
+    width: 120px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 15px;
+    margin-right: 15px;
+    opacity: 0.8;
+}
+.enlaceimagen:hover{
+
+	
+	background-color: #FFFFFF;
+	border: solid 1px black;
+
+	-webkit-transition: all 0.5s ease-out;
+	-moz-transition: all 0.5s ease;
+	-ms-transition: all 1.0s ease;
+
+	-webkit-transform: rotate(-7deg);
+	-moz-transform: rotate(-7deg);
+	-ms-transform: rotate(-7deg);
+	transform: rotate(-15deg);
+
+
+}
+h1, h2, h3, h4, h5, h6{
+	color: #1E88E5;
+	font-size: 20px;
+        font-weight: bold;
+}

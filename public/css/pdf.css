@@ -1,0 +1,19 @@
+th { text-align: center}
+td { text-align: center; font-size: xx-small}
+.titol { text-align: center; font-size: x-small}
+.center { text-align: center;}
+thead th { font-size: x-small}
+div .fondo {
+    background-image: url("/img/pdf/insti.jpg");
+    background-repeat: no-repeat;
+    background-size: 120% auto;
+}
+div .page {
+     page-break-after: always;
+     page-break-inside: avoid;
+}
+.ident { padding-left: 2.8em }
+table { page-break-inside:auto; }
+tr    { page-break-inside:avoid; page-break-after:auto; }
+thead { display:table-header-group; }
+tfoot { display:table-footer-group; }

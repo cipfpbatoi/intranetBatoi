@@ -1,0 +1,29 @@
+{
+  "name": "datetime-moment",
+  "homepage": "https://github.com/agraciakuvut/datetime-moment",
+  "authors": [
+    "Andrés Gracia <agracia@kuvut.com>"
+  ],
+  "description": "datetime-moment.js",
+  "main": "./dist/datetime-moment.js",
+  "dependencies": {
+    "moment": "~2.8.4"
+  },
+  "keywords": [
+    "jquery",
+    "jquery-ui",
+    "draggable",
+    "droppable"
+  ],
+  "license": "MIT",
+  "_release": "52dd379925",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "52dd379925e0b751d20d6010d9093905599b739c"
+  },
+  "_source": "https://github.com/agraciakuvut/datetime-moment.git",
+  "_target": "*",
+  "_originalSource": "datetime-moment",
+  "_direct": true
+}

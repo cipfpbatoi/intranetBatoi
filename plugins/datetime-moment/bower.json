@@ -1,0 +1,20 @@
+{
+  "name": "datetime-moment",
+  "version": "1",
+  "homepage": "https://github.com/agraciakuvut/datetime-moment",
+  "authors": [
+    "Andrés Gracia <agracia@kuvut.com>"
+  ],
+  "description": "datetime-moment.js",
+  "main": "./dist/datetime-moment.js",
+  "dependencies": {
+    "moment": "~2.8.4"
+  },
+  "keywords": [
+    "jquery",
+    "jquery-ui",
+    "draggable",
+    "droppable"
+  ],
+  "license": "MIT"
+}

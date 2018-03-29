@@ -1,0 +1,27 @@
+<ul class="messages fct">
+        @foreach ($elemento->Instructores as $instructor)
+        <li>
+            <div class="message_date">
+                <h4 class="text-info"><i class="fa fa-calendar-times-o user-profile-icon"></i> Certifica: {{$instructor->pivot->horas}} hores</h4>
+                @if ($instructor->pivot->descripcion) <h4 class="text-info">{{$instructor->pivot->descripcion}}</h4>@endif
+            </div>
+            <div class="message_wrapper">
+                <h4 class="text-info"><a href='/fct/{!!$elemento->id!!}/edit'><i class="fa fa-edit"></i></a> <a href='/fct/{!!$elemento->id!!}/delete'><i class="fa fa-trash"></i></a>
+                <acronym title='{{$instructor->email}} ({{$instructor->telefono}})'><i class="fa fa-user user-profile-icon"></i> {{$instructor->nombre}} ({{$instructor->dni}})</acronym></h4>
+                <h4><i class="fa fa-phone user-profile-icon"></i> {{$instructor->telefono}} <i class="fa fa-envelope user-profile-icon"></i> {{$instructor->email}}</h4>
+            </div>
+        </li>    
+        @endforeach
+</ul>
+@if(UserisAllow(config('constants.rol.tutor')))
+<div class="message_wrapper">
+    <!--<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#AddFct">-->
+    <a href='/fct/instructor/create/' class="btn btn-secondary">@lang("messages.generic.anadir") @lang("models.modelos.Instructor")</a>
+    <!--</button>-->
+</div>
+@endif
+@include('empresa.partials.modalInstructores')
+@include('layouts.partials.error')
+
+
+

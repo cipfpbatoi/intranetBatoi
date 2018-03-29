@@ -1,0 +1,10 @@
+<thead>
+    <tr>
+        <th>#</th>
+        <th>{{trans('messages.week.L')}}</th>
+        <th>{{trans('messages.week.M')}}</th>
+        <th>{{trans('messages.week.X')}}</th>
+        <th>{{trans('messages.week.J')}}</th>
+        <th>{{trans('messages.week.V')}}</th>
+    </tr>
+</thead>
