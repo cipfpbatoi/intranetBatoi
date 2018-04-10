@@ -176,7 +176,11 @@ class Fct extends Model
     }
             
     public function getXInstructorAttribute(){
-        return $this->Instructor->nombre;
+        $nombre = '';
+        foreach ($this->Instructores as $instructor){
+            $nombre .= $instructor->nombre.',';
+        }
+        return substr($nombre, 0, strlen($nombre)-1);
     }
     public function getTutorAttribute(){
         //dd($this->Alumno->Grupo->first()->Tutor->FullName);

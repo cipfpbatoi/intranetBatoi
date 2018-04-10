@@ -18,6 +18,7 @@ use Intranet\Jobs\SendEmail;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\Panel;
+use Intranet\Entities\Documento;
 
 class FctController extends IntranetController
 {
@@ -248,9 +249,10 @@ class FctController extends IntranetController
     public function show($id)
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 1;
-        $elemento = $this->class::findOrFail($id);
-        $modelo = $this->model;
-        return view($this->chooseView('show'), compact('elemento', 'modelo','activa'));
+        $fct = Fct::findOrFail($id);
+        $proyecto = Documento::where('propietario',$fct->Alumno->FullName)->first();
+        $instructores = $fct->Instructores->pluck('dni');
+        return view($this->chooseView('show'), compact('fct', 'activa','proyecto','instructores'));
     }
 //    public function store(Request $request)
 //    {
@@ -283,6 +285,13 @@ class FctController extends IntranetController
        $fct = Fct::find($idFct);
        $fct->Instructores()->detach($idInstructor); 
        return back();
+    }
+    public function modificaHoras($idFct,Request $request){
+        $fct = Fct::find($idFct);
+        foreach ($request->except('_token') as $dni => $horas){
+            $fct->Instructores()->updateExistingPivot($dni, ['horas'=>$horas]);
+        }
+        return back();
     }
    
 

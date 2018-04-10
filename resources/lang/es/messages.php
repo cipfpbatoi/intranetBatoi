@@ -29,6 +29,7 @@ return array(
         'noFile' => 'No existe el fichero',
         'validez' => 'Válido entre fechas',
         'anadir' => 'Añadir',
+        'modificar' => 'Modificar',
         'delete' => 'borrado/a con exito',
         'update' => 'modificado/a con exito',
         'create' => 'creado/a con exito',

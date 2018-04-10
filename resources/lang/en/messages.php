@@ -29,6 +29,7 @@ return array(
         'noFile' =>  'The file does not exist',
         'validez' => 'Valid between dates',
         'anadir' => 'Add',
+        'modificar' => 'Modify',
         'delete' => 'Succesfully deleted',
         'update' => 'Succesfully updated',
         'create' => 'Succesfully created',

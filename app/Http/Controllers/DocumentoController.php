@@ -197,9 +197,18 @@ class DocumentoController extends IntranetController
         return $this->grid($todos);
     }
     public function tmpInstructores(){
-        $fcts = Fct::all();
+        $fcts = Fct::All();
         foreach ($fcts as $fct){
-            $fct->Instructores()->attach($fct->idInstructor,['horas'=>$fct->horas]);
+            if ($existe = Fct::where('idColaboracion',$fct->idColaboracion)
+            ->where('idAlumno',$fct->idAlumno)
+            ->where('id','<',$fct->id)
+            ->first()){
+                if ($fct->idInstructor != $existe->idInstructor)
+                    $existe->Instructores()->attach($fct->idInstructor,['horas'=>$fct->horas]);
+                $fct->delete();
+            }
+            else
+                $fct->Instructores()->attach($fct->idInstructor,['horas'=>$fct->horas]);
         }
     }
     

@@ -35,6 +35,7 @@ class PanelFctController extends BaseController
         //$this->panel->setBotonera();
         $this->panel->setBoton('grid', new BotonImg('fct.delete'));
         $this->panel->setBoton('grid', new BotonImg('fct.edit'));
+        $this->panel->setBoton('grid', new BotonImg('fct.show'));
     }
     
 }

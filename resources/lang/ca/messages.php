@@ -29,6 +29,7 @@ return array(
         'noFile' => 'No existeix el fitxer',
         'validez' => 'Vàlid entre dates',
         'anadir' => 'Afegir',
+        'modificar' => 'Modificar',
         'delete' => 'Esborrat/ada amb èxit',
         'update' => 'Modificat/ada amb èxit',
         'create' => 'Creat/ada amb èxit',

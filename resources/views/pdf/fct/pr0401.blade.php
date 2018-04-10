@@ -1,7 +1,7 @@
 @extends('layouts.pdf')
 @section('content')
 @php
-   $agrupados = $todos->groupBy('idInstructor')
+   $agrupados = $todos->groupBy('idColaboracion')
 @endphp
 <body style="max-width:67.59cm;margin-top:1.251cm; margin-bottom:1.251cm; margin-left:0.1cm; margin-right:0.1cm; ">
     @foreach ($agrupados as $grupo)
@@ -25,7 +25,9 @@
                 <td style="text-align:left;width:30.2833cm;padding-left: 5px;font-size: 0.9em "><strong>Ciclo:</strong> <span>{{$grupo->first()->Alumno->Grupo->first()->Ciclo->ciclo}}</span></td>
             </tr>
             <tr>
-                <td style="text-align:left;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Instructor:</strong> <span>{{$grupo->first()->Instructor->nombre}}</span></td>
+                <td style="text-align:left;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Instructors:</strong> <span>
+                      @foreach ($grupo->first()->Instructores as $instructor)  {{$instructor->nombre}}, @endforeach
+                    </span></td>
                 <td style="text-align:left;width:30.2833cm;padding-left: 5px;font-size: 0.9em "><strong>Tutor:</strong> <span>{{$grupo->first()->Alumno->Grupo->first()->Tutor->FullName}}</span></td>
             </tr>
         </table>

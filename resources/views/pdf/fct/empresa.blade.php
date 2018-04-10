@@ -1,3 +1,4 @@
+@foreach ($todos->Instructores as $instructor)
 <div class="page">
     @include('pdf.partials.cabecera')
     <br/>
@@ -19,11 +20,11 @@
             </p>
     </div>
     <div class="container" style="width:95%">
-        <p style="text-indent: 30px">Que dins d'aquesta empresa, En/Na <strong>{{$todos->Instructor->nombre}}</strong> , ha sigut l'instructor/a de les pràctiques
+        <p style="text-indent: 30px">Que dins d'aquesta empresa, En/Na <strong>{{$instructor->nombre}}</strong> , ha sigut l'instructor/a de les pràctiques
             formatives de l'alumne/a citat/ada.</p>
     </div>
     <div class="container" style="width:95%">
-        <p style="text-indent: 30px">Que la seua participació com a instructor ha cobert la totalitat de les {{$todos->horas}} hores de la FCT de l'alumne/a esmentat/ada,
+        <p style="text-indent: 30px">Que la seua participació com a instructor ha cobert la quantitat de {{$instructor->pivot->horas}} hores de la FCT de l'alumne/a esmentat/ada,
             les quals s'han realitzat del  {{$todos->desde}} fins {{$todos->hasta}}</p>
     </div>
     <div class="container" style="width:90%;">
@@ -42,3 +43,4 @@
         </div>
     </div>
 </div>
+@endforeach

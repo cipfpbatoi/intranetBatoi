@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        {{ Html::style('/css/app.css')}} 
+        {{-- Html::style('/css/app.css') --}} 
         {{ Html::style('/css/pdf.css') }}
         @yield('css')
  </head>

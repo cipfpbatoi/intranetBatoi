@@ -362,7 +362,9 @@ return array(
             'OrdenTrabajo' => 'Orden de Trabajo',
             'Ciclo' => 'Ciclo',
             'Falta_itaca' => 'Justificar Birret',
-            'Instructor' => 'Instructor'
+            'Instructor' => 'Instructor',
+            'Proyecto' => 'Proyecto',
+            'Evaluacion' => 'Avaluación',
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

@@ -9,11 +9,11 @@
                 </button>
                 </h4>    
             </div>
-            <form method="POST" class="agua" action="/fct/{{$elemento->id}}/instructorCreate">
+            <form method="POST" class="agua" action="/fct/{{$fct->id}}/instructorCreate">
                 <div class="modal-body">
                     {{ csrf_field() }}
                     <select name='idInstructor' class="form-control">
-                        @foreach ($elemento->Colaboracion->Centro->Instructores as $instructor)
+                        @foreach ($fct->Colaboracion->Centro->Instructores->whereNotIn('dni',$instructores) as $instructor)
                             <option value='{{ $instructor->dni }}'>{!! $instructor->nombre !!}</option>
                         @endforeach
                     </select>
