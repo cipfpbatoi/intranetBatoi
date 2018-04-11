@@ -7,19 +7,19 @@ Lo más sencillo es con vagrant.
 
 ## Descargar el código
 Creamos la carpeta que vaya a contener nuestro código y vamos a ella:
-```bash
+```[bash]
 mkdir ~/Code/IntranetBatoi
 cd ~/Code/IntranetBatoi
 ```
 
 Inicializamos git:
-```bash
+```[bash]
 git init
 git remote add origin https://github.com/cipfpbatoi/intranetBatoi56.git
 ```
 
 Configuramos el acceso a la BBDD:
-```bash
+```[bash]
 cp .env.example .env
 ```
 Y editarmos el fichero .env modificando las variables:
