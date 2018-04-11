@@ -25,7 +25,7 @@ cp .env.example .env
 Y editarmos el fichero .env modificando las variables:
 ```[bash]
 APP_KEY: Vacía. Luego tendrá la clave generada con php artisan key:generate
-APP_URL: URL de nnuestra intranet (la misma que hayamos configurado en el Homestead.yaml), ej. http://intranet.app
+APP_URL: URL de nnuestra intranet (la indicada en Homestead.yaml), ej. http://intranet.app
 DB_DATABASE: ponemos el nombre de nuestra BBDD
 DB_USERNAME, DB_PASSWORD: el usuario y contraseña para acceder a la misma
 ```
