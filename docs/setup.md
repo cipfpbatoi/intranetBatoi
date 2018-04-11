@@ -1,7 +1,7 @@
 # Cómo instalar la intranet
 
 ## Configurar la máquina
-Lo más sencillo es con vagrant.
+Lo más sencillo es crear un entorno con Vagrant y Homestead. En la [documentación de Laravel](https://laravel.com/docs/5.6/homestead) hay información de cómo crear y configurar dicho entorno.
 
 ## Crear la BBDD
 
@@ -22,7 +22,7 @@ Configuramos el acceso a la BBDD:
 ```[bash]
 cp .env.example .env
 ```
-Y editarmos el fichero .env modificando las variables:
+Y editarmos el fichero _.env_ modificando las variables:
 ```[bash]
 APP_KEY: Vacía. Luego tendrá la clave generada con php artisan key:generate
 APP_URL: URL de nnuestra intranet (la indicada en Homestead.yaml), ej. http://intranet.app
