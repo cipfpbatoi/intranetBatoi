@@ -1,7 +1,7 @@
 # Cómo instalar la intranet
 
 ## Configurar la máquina
-Lo más sencillo escon vagrant.
+Lo más sencillo es con vagrant.
 
 ## Crear la BBDD
 
@@ -36,5 +36,8 @@ composer update
 npm install
 ```
 
-
 Relizamos las configuraciones iniciales. 
+```bash
+php artisan key:generate      # Genera la clave de la aplicación y la añade a APP_KEY en el fichero .env
+
+```
