@@ -10,5 +10,5 @@
     {{$panel->getTitulo()}}
 @endsection
 @section('scripts')
-    {{ HTML::script('/js/delete.js') }}
+    {{ Html::script('/js/delete.js') }}
 @endsection
