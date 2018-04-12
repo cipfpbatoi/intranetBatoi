@@ -18,18 +18,6 @@ git init
 git remote add origin https://github.com/cipfpbatoi/intranetBatoi56.git
 ```
 
-Configuramos el acceso a la BBDD:
-```[bash]
-cp .env.example .env
-```
-Y editarmos el fichero _.env_ modificando las variables:
-```[bash]
-APP_KEY: Vacía. Luego tendrá la clave generada con php artisan key:generate
-APP_URL: URL de nnuestra intranet (la indicada en Homestead.yaml), ej. http://intranet.app
-DB_DATABASE: ponemos el nombre de nuestra BBDD
-DB_USERNAME, DB_PASSWORD: el usuario y contraseña para acceder a la misma
-```
-
 Instalamos las librerías necesarias (esto tardará bastante pues debe bajarse muchas librerías de Internet):
 ```[bash]
 composer update
@@ -42,3 +30,23 @@ php artisan key:generate      # Genera la clave de la aplicación y la añade a 
 
 ```
 
+Configuramos el acceso a la BBDD:
+```[bash]
+cp .env.example .env
+```
+Y editarmos el fichero _.env_ modificando las variables:
+```[bash]
+APP_KEY: debe contener la clave generada con php artisan key:generate
+APP_URL: URL de nnuestra intranet (la indicada en Homestead.yaml), ej. http://intranet.app
+DB_DATABASE: ponemos el nombre de nuestra BBDD
+DB_USERNAME, DB_PASSWORD: el usuario y contraseña para acceder a la misma
+```
+y añadiendo una nueva variable:
+```[bash]
+SESSION_DOMAIN: URL de nnuestra intranet (como APP_URL pero sin http), ej. intranet.app
+```
+
+Por último sólo queda recargar el fichero de configuración en la caché:
+```[bash]
+php artisan config:cache
+```
