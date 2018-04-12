@@ -1,9 +1,8 @@
 @extends('layouts.pdf')
 @section('content')
 @php
-$agrupados = $todos->groupBy('idInstructor')
+$agrupados = $todos->groupBy('idColaboracion')
 @endphp
-<body style="max-width:27.59cm;margin-top:1.251cm; margin-bottom:1.251cm; margin-left:1cm; margin-right:1cm; ">
     @include('pdf.fct.partials.cabecera')
     <br/>
     <table border="1" cellspacing="0" cellpadding="">
@@ -30,7 +29,8 @@ $agrupados = $todos->groupBy('idInstructor')
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">FIRMA JEFE PRACTICAS</td>
         </tr>
         @foreach ($agrupados as $index => $aluempresa)
-        <tr style="height: 50px"><td style="text-align:left;font-size: 0.9em " >{{ $aluempresa->first()->Colaboracion->Centro->Empresa->nombre }} ({{count($aluempresa)}})</td>
+        <tr style="height: 50px"><td style="text-align:left;font-size: 0.9em " >{{ $aluempresa->first()->Colaboracion->Centro->nombre }} 
+                ({{count($aluempresa)}})</td>
             <td></td>
             <td></td>
             <td></td>
@@ -57,6 +57,4 @@ $agrupados = $todos->groupBy('idInstructor')
             </td>
         </tr>
     </table>
-</body>
-</html>
 @endsection

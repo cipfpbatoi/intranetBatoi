@@ -1,6 +1,5 @@
 @extends('layouts.pdf')
 @section('content')
-<body style="max-width:47.59cm;margin-top:1.251cm; margin-bottom:1.251cm; margin-left:.1cm; margin-right:.1cm; ">
     @include('pdf.fct.partials.cabecera')
     <br/>
     <table border="1" style="margin-bottom: 10px">
@@ -38,9 +37,17 @@
         <tr>
             <td>1</td><td>2</td><td>3</td><td>1</td><td>2</td><td>3</td><td>1</td><td>2</td><td>3</td><td>1</td><td>2</td><td>3</td>
         </tr>
+        @php $anterior = ''; @endphp
         @foreach ($todos as $alumno)
-        <tr><td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em " >{{ $alumno->Alumno->FullName }} {{ $alumno->Colaboracion->Centro->Empresa->nombre }} </p></td>
-            <td style="text-align:left;width:5.493cm; " ></td>
+        @php 
+            if ($anterior != $alumno->idAlumno){
+                $cuantos = $todos->where('idAlumno',$alumno->idAlumno)->count();
+                $anterior = $alumno->idAlumno;
+            }
+            else $cuantos = 0;
+        @endphp    
+        <tr><td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em " >{{ $alumno->Alumno->FullName }}-{{ $alumno->Colaboracion->Centro->nombre }}</p></td>
+            @if ($cuantos) <td style="text-align:left;width:5.493cm; " rowspan="{{$cuantos}}" ></td> @endif
             <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
         </tr>
         @endforeach
@@ -57,7 +64,4 @@
     <div style="float:right;width: 300px;height:60px"">
          <table border='1' style="width: 300px;height:60px"><tr><td valign='top' style="text-align: left;padding-left: 5px;font-size: 0.8em">Firma del tutor: <br/> </td></tr></table>
     </div>
-
-</body>
-</html>
 @endsection

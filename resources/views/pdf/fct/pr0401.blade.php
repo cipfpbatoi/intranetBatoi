@@ -20,7 +20,7 @@
         <br/>
         <table border="1" cellspacing="0" cellpadding="0">
             <tr>
-                <td style="text-align:left;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Empresa:</strong> <span>{{$grupo->first()->Colaboracion->Centro->Empresa->nombre}}</span></td>
+                <td style="text-align:left;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Empresa:</strong> <span>{{$grupo->first()->Colaboracion->Centro->nombre}}</span></td>
                 <td style="text-align:left;width:30.2833cm;padding-left: 5px;font-size: 0.9em "><strong>Ciclo:</strong> <span>{{$grupo->first()->Alumno->Grupo->first()->Ciclo->ciclo}}</span></td>
             </tr>
             <tr>

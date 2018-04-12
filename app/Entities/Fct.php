@@ -90,16 +90,30 @@ class Fct extends Model
     
     public function scopeActiva($query,$cuando)
     {
-        $fecha = new Date();
-        $fecha->subDays(30)->format('d-m-Y');
         $hoy = new Date();
-        $hoy->format('d-m-Y');
+        $hoy->addDays(15);
+        $hoy->format('Y-m-d');
+        if ($hoy <= config('constants.evaluaciones.2')[1]){
+            $desde = config('constants.evaluaciones.1')[0];
+            $hasta = config('constants.evaluaciones.1')[0];
+        }
+        else 
+            if ($hoy <= config('constants.evaluaciones.3')[1]){
+                $desde = config('constants.evaluaciones.2')[1];
+                $hasta = config('constants.evaluaciones.1')[0];
+            }    
+            else{
+                $desde = config('constants.evaluaciones.3')[1];
+                $hasta = config('constants.evaluaciones.2')[1];
+            }
         switch ($cuando){
-            case 1: return $query->where('desde','>', $fecha);break;
-            case 2: return $query->where('hasta','>',$hoy)->where('desde','<',$hoy);break;
-            case 3: return $query->where('hasta','>', $fecha);break;    
+            case 1: 
+            case 2: return $query->where('desde','>=',$desde);break;
+            case 3: return $query->where('desde','<',$desde)->where('hasta','>',$hasta);break;   
         }        
     }
+    
+    
     public function scopeNoAval($query)
     {
         return $query->where('actas','<', 2);
@@ -159,6 +173,12 @@ class Fct extends Model
     }
     public function getCentroAttribute(){
         return $this->Colaboracion->Centro->nombre;
+    }
+    public function getPeriodeAttribute(){
+        $inici = new Date($this->desde);
+        $inici->format('Y-m-d');
+        if ($inici <= config('constants.evaluaciones.2')[1]) return 1;
+        else return 2;    
     }
     public function getHoras_semanalesAttribute(){
         return $this->horas_semanales ? $this->horas_semanales : 40;

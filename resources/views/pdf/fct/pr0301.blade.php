@@ -38,7 +38,7 @@
                 <td style="text-align:left;width:9.45cm;padding-left: 5px; "><strong>FIRMA ALUMNO</strong></td>
             </tr>
             @foreach ($todos as $alumno)
-            <tr style='height:40px'><td style="text-align:left;width:11.938cm;padding-left: 5px;font-size: 0.9em;" >{{ $alumno->Alumno->ShortName }} </p></td>
+            <tr style='height:40px'><td style="text-align:left;width:11.938cm;padding-left: 5px;font-size: 0.9em;" >{{ $alumno->Alumno->ShortName }} - {{$alumno->Colaboracion->Centro->nombre}} </p></td>
                 <td style="text-align:left;width:1.938cm;padding-left: 5px;font-size: 0.9em;"></td>
                 <td style="text-align:left;width:4.493cm;font-size: 0.9em; " >{{$alumno->desde}}</td>
                 <td style="text-align:left;width:4.493cm;font-size: 0.9em; " >{{$alumno->hasta}}</td>

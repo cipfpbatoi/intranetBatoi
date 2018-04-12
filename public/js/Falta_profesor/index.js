@@ -1,4 +1,3 @@
-
 const COLUMNS=[
             {data: 'departamento'},
             {data: 'nombre'},

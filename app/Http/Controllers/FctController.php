@@ -25,7 +25,7 @@ class FctController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Fct';
-    protected $gridFields = [ 'Nombre', 'Centro', 'fin', 'qualificacio', 'projecte','horas','desde','hasta','id'];
+    protected $gridFields = [ 'Nombre', 'Centro','desde', 'fin', 'periode','qualificacio', 'projecte','horas','desde','hasta','id'];
     protected $grupo;
     protected $vista = ['show' => 'fct'];
     
@@ -119,6 +119,7 @@ class FctController extends IntranetController
 
     public function document($document)
     {
+        //dd(FCT::misFcts()->Activa(config("pr.$document.cuando")));
         if (FCT::misFcts()->Activa(config("pr.$document.cuando"))->count()){
             return $this->hazPdf("pdf.fct.$document", FCT::misFcts()->Activa(config("pr.$document.cuando"))->get(),
                     config("pr.$document"), config("pr.$document.orientacion"))->stream();
