@@ -208,6 +208,8 @@ use traitAutorizar,
     protected function imprimirHorarios()
     {
         $profesores = Profesor::Activo()->get();
+        $horarios = [];
+        $observaciones = [];
         foreach ($profesores as $profesor){
             if (Storage::disk('local')->exists('/horarios/'.$profesor->dni.'.json')){
                     if (isset(json_decode(Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json'))->obs))
