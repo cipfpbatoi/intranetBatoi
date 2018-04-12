@@ -10,5 +10,6 @@
     {{$panel->getTitulo()}}
 @endsection
 @section('scripts')
+    @include('includes.tablesjs')
     {{ Html::script('/js/delete.js') }}
 @endsection
