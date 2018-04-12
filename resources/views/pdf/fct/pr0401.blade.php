@@ -3,7 +3,6 @@
 @php
    $agrupados = $todos->groupBy('idColaboracion')
 @endphp
-<body style="max-width:67.59cm;margin-top:1.251cm; margin-bottom:1.251cm; margin-left:0.1cm; margin-right:0.1cm; ">
     @foreach ($agrupados as $grupo)
     <div class="page">
         @include('pdf.fct.partials.cabecera')
@@ -69,6 +68,4 @@
         
     </div>
     @endforeach
-</body>
-</html>
 @endsection
