@@ -1,5 +1,5 @@
 <div class="x_content">
-<table id='datatable' class="table table-striped table-bordered display nowrap dtr-inline collapsed"  width='100%' data-page-length="150">
+<table id='datafichar' class="table table-striped table-bordered display nowrap dtr-inline collapsed"  width='100%' data-page-length="150">
     <thead>
     <tr>
         @foreach ($panel->getRejilla() as $item)

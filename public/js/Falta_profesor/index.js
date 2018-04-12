@@ -9,7 +9,7 @@ const COLUMNS=[
 
 $(function () {
     var token = $("#_token").text();
-    $('#datatable').DataTable({
+    $('#datafichar').DataTable({
         rowId: 'dni',
         language: {
             url: '/json/cattable.json'
