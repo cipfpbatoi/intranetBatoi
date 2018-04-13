@@ -198,6 +198,8 @@ class Profesor extends Authenticatable
             return $fecha->format('d-m-Y');
         }
     }
+    
+    
 
 //    public function nombre()
 //    {

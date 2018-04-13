@@ -9,7 +9,7 @@ $(document).ready(function () {
         $('input[type=text].time').datetimepicker({
             sideBySide: true,
             locale: 'es',
-            format: 'hh:mm',
+            format: 'HH:mm',
             stepping: 15,
         });
         $('input[type=text].date').datetimepicker({
