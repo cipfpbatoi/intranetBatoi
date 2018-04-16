@@ -230,7 +230,7 @@ return array(
         'Authbirret' => 'Authorise cap',
         'Instructor' => 'See instructions',
         'Empresasc' => 'Book companies',
-        
+        'Avaluar' => "Eval FCTs"
     ),
     'situations' => array(
         '0' => 'Not notified',

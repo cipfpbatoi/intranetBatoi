@@ -231,6 +231,7 @@ return array(
         'Authbirret' => 'Autorizar Birret',
         'Instructor' => 'Ver Instructores',
         'Empresasc' => "Reserva de empresas",
+        'Avaluar' => "Evaluar Fcts",
 
     ),
     'situations' => array(
