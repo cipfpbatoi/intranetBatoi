@@ -20,8 +20,8 @@ $(function() {
 			cambiaHora();
 		}
     });
-    biblio=true;
-    cambiaHora();
+//    biblio=true;
+//    cambiaHora();
     $('#hora option').attr('disabled', 'disabled');
 	$('#hora').prepend('<option value="0">-- Seleciona --</option>');
 	$('#hora').val(0);				
