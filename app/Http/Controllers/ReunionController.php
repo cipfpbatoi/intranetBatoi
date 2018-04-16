@@ -238,7 +238,10 @@ class ReunionController extends IntranetController
     public function avisaFaltaActa(Request $request)
     {
         $cont = 0;
-        foreach (Grupo::all() as $grupo) {
+        if ($request->quien) $grupos = Grupo::where('curso',$request->quien)->get();
+        else $grupos = Grupo::all();
+        
+        foreach ($grupos as $grupo) {
             if (!Reunion::Convocante($grupo->tutor)->Tipo($request->tipo)->Numero($request->numero)->Archivada()->count()) {
                 $texto = 'Et falta per fer i/o arxivar la reunio ' . TipoReunion::literal($request->tipo) . ' ';
                 $texto .= $request->numero > 0 ? config('constants.numeracion')[$request->numero] : '';

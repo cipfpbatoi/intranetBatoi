@@ -15,7 +15,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>FUNCIONARI/A:</th><th>DNI</th><th>Itinerari</th><th>Exida</th><th>Tornada</th><th>Mitja de transport</th><th>Marca Vehicle</th><th>Matrícula</th><th>Concepte</th><th>Kilometraje</th><th>Total</th>
+                        <th>FUNCIONARI/A:</th><th>DNI</th><th>Itinerari</th><th>Exida</th><th>Tornada</th><th>Mitja de transport</th><th>Marca Vehicle</th><th>Matrícula</th><th>Concepte</th><th>Fct</th><th>Kilometraje</th><th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,6 +30,7 @@
                             <td>{{$elemento->marca}}</td>
                             <td>{{$elemento->matricula}}</td>
                             <td>{{$elemento->servicio}}€</td>
+                            <td>{{$elemento->fct}}</td>
                             <td>{{$elemento->kilometraje }}</td>
                             <td>{{$elemento->total }}€</td>
                         </tr>

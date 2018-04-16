@@ -31,7 +31,7 @@ class ComisionController extends IntranetController
          $this->panel->setBoton('grid', new BotonImg('comision.delete', ['where' => ['estado', '>=', '0', 'estado', '<', '2']]));
          $this->panel->setBoton('grid', new BotonImg('comision.edit', ['where' => ['estado', '>=', '0', 'estado', '<', '2']]));
          $this->panel->setBothBoton('comision.cancel', ['where' => ['estado', '>=', '2', 'estado', '<', '4']]);
-         $this->panel->setBothBoton('comision.unpaid', ['where' => ['estado', '==', '3']]);
+         $this->panel->setBothBoton('comision.unpaid', ['where' => ['estado', '==', '3','total','>',0]]);
          $this->panel->setBothBoton('comision.init', ['where' => ['estado', '==', '0']]);
          $this->panel->setBothBoton('comision.notification', ['where' => ['estado', '>', '0', 'hasta', 'posterior', Hoy()]]);
     }

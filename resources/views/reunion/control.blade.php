@@ -17,6 +17,11 @@
                     <option value='{{$index}}'>{{$valor}}</option>
                 @endforeach
             </select>
+            <select name='quien' class='form-control select' >
+                <option value='0'>Tots els tutors</option>
+                <option value='1'>Tutors 1er</option>
+                <option value='2'>Tutors 2on</option>
+            </select>
             <input type='submit' value='Avisar Falta Document' class="btn btn-primary"/>
         </form>
     </div>
