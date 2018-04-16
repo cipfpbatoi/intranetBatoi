@@ -15,6 +15,5 @@
 {{trans("models.Guardia.control")}}
 @endsection
 @section('scripts')
-{{ Html::script('/assets/moment.js') }}
 <script src="{{ elixir('js/app.js') }}"></script>
 @endsection

@@ -16,11 +16,12 @@ $(function() {
 	//Test: Print the IP addresses into the console
 	getIPs(function(ip) {
 		if (ip=="172.16.20.238") {
-			biblio=true;
+                	biblio=true;
 			cambiaHora();
 		}
     });
-
+    biblio=true;
+    cambiaHora();
     $('#hora option').attr('disabled', 'disabled');
 	$('#hora').prepend('<option value="0">-- Seleciona --</option>');
 	$('#hora').val(0);				
