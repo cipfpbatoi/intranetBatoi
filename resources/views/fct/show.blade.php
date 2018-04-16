@@ -25,6 +25,7 @@
         </li>
         
     </ul>
+    <a href="/fct/{{$fct->id}}/edit" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Editar</a>
     <a href="/fct" class="btn btn-success"><i class="fa fa-arrow-left m-right-xs"></i>Volver</a>
     <br />
 
