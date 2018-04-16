@@ -25,8 +25,6 @@
         </li>
         
     </ul>
-    <a href="/fct/{{$fct->id}}/edit" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Editar</a>
-    <a href="/fct/{{$fct->id}}/delete" id='Borrar' class="btn btn-danger"><i class="fa fa-delete m-right-xs"></i>Esborrar</a>
     <a href="/fct" class="btn btn-success"><i class="fa fa-arrow-left m-right-xs"></i>Volver</a>
     <br />
 
@@ -44,12 +42,12 @@
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
             <li role="presentation" @if ($activa == 1) class="active" @endif><a href="#tab_content2" id="instructor-tab" role="tab" data-toggle="tab" aria-expanded="true">{{trans('models.modelos.Instructor')}}</a>
             </li>
+            <li role="presentation" @if ($activa == 3) class="active" @endif><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">{{trans('models.modelos.Fct')}}</a>
+            </li>
             @if ($proyecto)
                 <li role="presentation" @if ($activa == 2 ) class="active" @endif><a href="#tab_content1" role="tab" id="proyecto-tab" data-toggle="tab" aria-expanded="false">{{trans('models.modelos.Proyecto')}}</a>
                 </li>
             @endif
-            <li role="presentation" @if ($activa == 3) class="active" @endif><a href="#tab_content3" id="evaluacion-tab" role="tab" data-toggle="tab" aria-expanded="true">{{trans('models.modelos.Evaluacion')}}</a>
-            </li>
             <li role="presentation" @if ($activa == 4 ) class="active" @endif><a href="#tab_content4" role="tab" id="alumno-tab" data-toggle="tab" aria-expanded="false">{{trans('models.modelos.Alumno')}}</a>
             </li>
             
@@ -74,10 +72,11 @@
             @endif
             
             @if ($activa == 3)
-                <div role="tabpanel" class="tab-pane fade active in" id="tab_content3" aria-labelledby="evaluacion-tab">
+                <div role="tabpanel" class="tab-pane fade active in" id="tab_content3" aria-labelledby="fct-tab">
             @else    
-                <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="evaluacion-tab">
+                <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="fct-tab">
             @endif 
+                @include('fct.partials.fcts')
                 </div>
             
             @if ($activa == 4)

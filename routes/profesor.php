@@ -195,6 +195,7 @@ Route::get('/fct/{document}/nuevoProyecto', ['as' => 'fct.nuevoProyecto', 'uses'
 Route::get('/fct/acta', ['as' => 'fct.acta', 'uses' => 'FctController@demanarActa']);
 Route::get('/fct/{fct}/proyecto', ['as' => 'proyecto.new', 'uses' => 'DocumentoController@project']);
 Route::post('/fct/{fct}/proyecto', ['as' => 'proyecto.create', 'uses' => 'DocumentoController@store']);
+Route::get('/avalFct', ['as' => 'aval.fct', 'uses' => 'PanelAvalFctController@index']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);

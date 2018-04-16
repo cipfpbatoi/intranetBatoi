@@ -144,7 +144,7 @@ class DocumentoController extends IntranetController
             $elemento->setInputType('enlace', ['type' => 'hidden']);
             $default = $elemento->fillDefautOptions();
             $modelo = $this->model;
-            Session::put('redirect', 'FctController@index');
+            Session::put('redirect', 'PanelAvalFctController@index');
             return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
         } else {
             return back();

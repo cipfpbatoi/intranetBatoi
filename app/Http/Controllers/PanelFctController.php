@@ -29,6 +29,7 @@ class PanelFctController extends BaseController
         }
                    
         return Fct::whereIn('idAlumno',$a)->get();
+        return Fct::misFcts()->distinct('idAlumno')->get();
     }
      protected function iniBotones()
     {

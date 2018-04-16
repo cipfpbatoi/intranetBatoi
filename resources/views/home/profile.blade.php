@@ -30,7 +30,7 @@
 </div>
 <div class="col-md-9 col-sm-9 col-xs-12">
 
-    <div class="profile_title">
+<!--    <div class="profile_title">
         <div class="col-md-6">
             <h2>{{trans('messages.generic.activityReport')}}</h2>
         </div>
@@ -41,10 +41,10 @@
             </div>
         </div>
     </div>
-    <!-- start of user-activity-graph -->
+     start of user-activity-graph 
     <div id='dniP' data-dni='{{$usuario->dni}}'>
     <div id="fichar_bar" style="width:100%; height:200px;"></div>
-    <!-- end of user-activity-graph -->
+     end of user-activity-graph -->
 
     <div class="" role="tabpanel" data-example-id="togglable-tabs">
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">

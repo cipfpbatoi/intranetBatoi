@@ -54,13 +54,11 @@ class FctController extends IntranetController
     protected function iniBotones()
     {
         //$this->panel->setBotonera();
-        $this->panel->setBoton('grid', new BotonImg('fct.delete'));
-       // $this->panel->setBoton('grid', new BotonImg('fct.edit'));
+        $this->panel->setBoton('grid', new BotonImg('fct.delete',['where'=>['calificacion', '<', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.edit'));
         $this->panel->setBoton('grid', new BotonImg('fct.show'));
         $this->panel->setBoton('grid', new BotonImg('fct.pdf'));
         $this->panel->setBoton('grid', new BotonImg('fct.email'));
-        $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => ['hasta', 'anterior', Hoy(), 'calificacion', '!=', '1', 'actas', '==', 0]]));
-        $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['hasta', 'anterior', Hoy(), 'calificacion', '!=', '0', 'actas', '==', 0]]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('constants.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0301.print",['roles' => config('constants.rol.tutor')]));
@@ -68,17 +66,16 @@ class FctController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['roles' => config('constants.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0601.print",['roles' => config('constants.rol.tutor')]));
         
-        $this->panel->setBoton('index', new BotonBasico("fct.acta", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
-        if (Grupo::QTutor()->first() && Grupo::QTutor()->first()->proyecto){
-            $this->panel->setBoton('grid', new BotonImg('fct.proyecto', ['img' => 'fa-file', 'roles' => config('constants.rol.tutor'),
-                'where' => ['hasta', 'anterior', Hoy(), 'calProyecto', '<', '1', 'actas', '<', 2]]));
-            $this->panel->setBoton('grid', new BotonImg('fct.noProyecto', ['img' => 'fa-toggle-off', 'roles' => config('constants.rol.tutor'),
-                'where' => ['hasta', 'anterior', Hoy(), 'calProyecto', '<', '0', 'actas', '<', 2]]));
-            $this->panel->setBoton('grid', new BotonImg('fct.nuevoProyecto', ['img' => 'fa-toggle-on', 'roles' => config('constants.rol.tutor'),
-                'where' => ['hasta', 'anterior', Hoy(), 'calProyecto', '<', '5', 'calProyecto','>=',0,'actas', '==', 2]]));
-        }
+        
     }
 
+    
+
+    public function search()
+    {
+        return Fct::misFcts()->get();
+    }
+    
     protected function apte($id)
     {
         $fct = Fct::findOrFail($id);
@@ -111,42 +108,7 @@ class FctController extends IntranetController
         $fct->save();
         return back();
     }
-
-    public function search()
-    {
-        return Fct::misFcts()->get();
-    }
-
-    public function document($document)
-    {
-        //dd(FCT::misFcts()->Activa(config("pr.$document.cuando")));
-        if (FCT::misFcts()->Activa(config("pr.$document.cuando"))->count()){
-            return $this->hazPdf("pdf.fct.$document", FCT::misFcts()->Activa(config("pr.$document.cuando"))->get(),
-                    config("pr.$document"), config("pr.$document.orientacion"))->stream();
-        }
-        else{
-            Alert::message('No tens alumnes fent la FCT','warning');
-            return back();
-        }    
-    }
-
-    public function pdf($id)
-    {
-        $fct = $this->class::findOrFail($id);
-        $secretario = Profesor::find(config('constants.contacto.secretario'));
-        $director = Profesor::find(config('constants.contacto.director'));
-        $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
-            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
-            'secretario' => $secretario->FullName,
-            'centro' => config('constants.contacto.nombre'),
-            'poblacion' => config('constants.contacto.poblacion'),
-            'provincia' => config('constants.contacto.provincia'),
-            'director' => $director->FullName
-        ];
-        $pdf = $this->hazPdf('pdf.fct.fct', $fct, $dades);
-        return $pdf->stream();
-    }
-
+    
     public function demanarActa()
     {
         $grupo = Grupo::QTutor()->first();
@@ -180,6 +142,38 @@ class FctController extends IntranetController
         }
         return back();
     }
+
+    public function document($document)
+    {
+        //dd(FCT::misFcts()->Activa(config("pr.$document.cuando")));
+        if (FCT::misFcts()->Activa(config("pr.$document.cuando"))->count()){
+            return $this->hazPdf("pdf.fct.$document", FCT::misFcts()->Activa(config("pr.$document.cuando"))->get(),
+                    config("pr.$document"), config("pr.$document.orientacion"))->stream();
+        }
+        else{
+            Alert::message('No tens alumnes fent la FCT','warning');
+            return back();
+        }    
+    }
+
+    public function pdf($id)
+    {
+        $fct = $this->class::findOrFail($id);
+        $secretario = Profesor::find(config('constants.contacto.secretario'));
+        $director = Profesor::find(config('constants.contacto.director'));
+        $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
+            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
+            'secretario' => $secretario->FullName,
+            'centro' => config('constants.contacto.nombre'),
+            'poblacion' => config('constants.contacto.poblacion'),
+            'provincia' => config('constants.contacto.provincia'),
+            'director' => $director->FullName
+        ];
+        $pdf = $this->hazPdf('pdf.fct.fct', $fct, $dades);
+        return $pdf->stream();
+    }
+
+    
     
     public function Acta($idGrupo){
         $grupo = Grupo::findOrFail($idGrupo);
@@ -220,6 +214,7 @@ class FctController extends IntranetController
 
         return back();
     }
+    
     public function update(Request $request, $id)
     {
         parent::update($request, $id);
