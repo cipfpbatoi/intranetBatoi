@@ -19,12 +19,18 @@ class PanelAvalFctController extends BaseController
     
     public function search()
     {
-        return Fct::misFcts()->distinct('idAlumno')->get();
+        $nombres = Fct::select('idAlumno')->distinct()->misFcts()->get()->toArray();
+        $todas = collect();
+        foreach ($nombres as $nombre){
+            $todas->push(Fct::misFcts()->where('idAlumno',$nombre['idAlumno'])->orderBy('idAlumno')->first());
+        }
+        return $todas;
     }
+    
      protected function iniBotones()
     {
-        $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => ['desde', 'anterior', Hoy(), 'calificacion', '!=', '1', 'actas', '==', 0]]));
-        $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['desde', 'anterior', Hoy(),'calProyecto','<','5', 'calificacion', '!=', '0', 'actas', '==', 0]]));
+        $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => [ 'calificacion', '!=', '1', 'actas', '==', 0]]));
+        $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['calProyecto','<','5', 'calificacion', '!=', '0', 'actas', '==', 0]]));
         
         if (Grupo::QTutor()->first() && Grupo::QTutor()->first()->acta_pendiente == false){
             $this->panel->setBoton('index', new BotonBasico("fct.acta", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
@@ -33,11 +39,11 @@ class PanelAvalFctController extends BaseController
             Alert::message("L'acta pendent esta en procés", 'info');
         if (Grupo::QTutor()->first() && Grupo::QTutor()->first()->proyecto){
             $this->panel->setBoton('grid', new BotonImg('fct.proyecto', ['img' => 'fa-file', 'roles' => config('constants.rol.tutor'),
-                'where' => ['desde', 'anterior', Hoy(), 'calProyecto', '<', '1', 'actas', '<', 2]]));
+                'where' => [ 'calProyecto', '<', '1', 'actas', '<', 2]]));
             $this->panel->setBoton('grid', new BotonImg('fct.noProyecto', ['img' => 'fa-toggle-off', 'roles' => config('constants.rol.tutor'),
-                'where' => ['desde', 'anterior', Hoy(), 'calProyecto', '<', '0', 'actas', '<', 2]]));
+                'where' => [ 'calProyecto', '<', '0', 'actas', '<', 2]]));
             $this->panel->setBoton('grid', new BotonImg('fct.nuevoProyecto', ['img' => 'fa-toggle-on', 'roles' => config('constants.rol.tutor'),
-                'where' => ['desde', 'anterior', Hoy(), 'calProyecto', '<', '5', 'calProyecto','>=',0,'actas', '==', 2]]));
+                'where' => [ 'calProyecto', '<', '5', 'calProyecto','>=',0,'actas', '==', 2]]));
         }
         $this->panel->setBoton('grid', new BotonImg('fct.show'));
     }
