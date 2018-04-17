@@ -334,6 +334,9 @@ return array(
            'create' => 'Crear instructor',
            'copy' => 'Copiar instructor'
         ),
+    '   Infdepartamento' => array(
+          'index' => 'Consulta informes de departamento',  
+        ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',
             'Curso' => 'Curso',

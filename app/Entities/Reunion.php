@@ -126,9 +126,16 @@ class Reunion extends Model
         return hazArray(GrupoTrabajo::MisGruposTrabajo()->get(), 'id', 'literal');
     }
 
-    public function Departamento()
-    {
-        return Departamento::find(Profesor::find($this->idProfesor)->departamento)->literal;
+//    public function Departamento()
+//    {
+//        return Departamento::find(Profesor::find($this->idProfesor)->departamento)->literal;
+//    }
+    
+    public function getDepartamentoAttribute(){
+        return $this->Creador->Departamento->literal;
+    }
+    public function getAvaluacioAttribute(){
+        return $this->numero-20;
     }
 
     public function getFechaAttribute($entrada)
