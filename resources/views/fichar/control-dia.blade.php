@@ -1,6 +1,6 @@
 @extends('layouts.intranet')
 @section('css')
-<title>{{trans("models.Fichar.control")}}</title>
+<title>BBB-{{trans("models.Fichar.control")}}</title>
 @endsection
 @section('content')
 <div id="app">
@@ -13,4 +13,7 @@
 @section('titulo')
 {{trans("models.Fichar.control")}}
 @endsection
-
+@section('scripts')
+    {{ Html::script('/js/components/app.js') }}
+    {{ Html::script('/js/Fichar/controlDia.js') }}
+@endsection

@@ -1,4 +1,6 @@
 {
+    "/js/components/app.js": "/js/components/app.js",
+    "/css/components/app.css": "/css/components/app.css",
     "/resources/assets/js/custom.js": "/resources/assets/js/custom.js",
     "/css/app.css": "/css/app.css",
     "/js/app.js": "/js/app.js"

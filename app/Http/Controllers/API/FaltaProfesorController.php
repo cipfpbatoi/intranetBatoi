@@ -13,6 +13,7 @@ class FaltaProfesorController extends ApiBaseController
     
     public function horas($cadena){
         $result = parent::show($cadena,false);
+        $dias=array();
         //dd($result);
         foreach ($result as $registro) {
             if ($registro->salida != null) {
