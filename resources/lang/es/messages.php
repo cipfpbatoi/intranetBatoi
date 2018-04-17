@@ -232,6 +232,7 @@ return array(
         'Instructor' => 'Ver Instructores',
         'Empresasc' => "Reserva de empresas",
         'Avaluar' => "Evaluar Fcts",
+        'Infdpto' => 'Informes Departamento',
 
     ),
     'situations' => array(
