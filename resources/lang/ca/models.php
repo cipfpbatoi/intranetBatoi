@@ -196,7 +196,8 @@ return array(
             '2' => 'En tramit',
             '3' => 'Resolts',
             '1' => 'Pendent de revisar',
-            '0' => 'No comunicat/Rebutjat'
+            '0' => 'No comunicat/Rebutjat',
+            '4' => 'Comunicat Orientador',
         ),
         'Reunion'=> array(
             'show' => 'Mostra reunió id.',

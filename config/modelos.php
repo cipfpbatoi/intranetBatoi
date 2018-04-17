@@ -37,8 +37,9 @@ return [
     'Expediente' => [
         'estados' => [  1 => 'pendiente', 
                         2 => 'tramitada', 
-                        3 => 'resuelta'],
-        'avisos' => [ 'idProfesor' => [0, 3],'director'=>[1]],
+                        3 => 'resuelta',
+                        4 => 'orientacion'],
+        'avisos' => [ 'idProfesor' => [0, 3],'jefeEstudios'=>[1],'orientador'=>[4]],
         //'informa' => [ 'responsable' => 1],
         'resolve' => '3',
         'refuse' => '0',

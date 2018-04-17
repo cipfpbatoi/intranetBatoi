@@ -39,6 +39,17 @@ class ExpedienteController extends IntranetController
         $this->makeAll(Expediente::where('estado', '1')->get(), 2);
         return back();
     }
+    //inicializat a init (normalment 1)
+    protected function init($id)
+    {
+        $expediente = Expediente::find($id);
+            // orientacion
+        if ($expediente->tipo == 4)
+            Expediente::putEstado($id,4);
+        else
+            Expediente::putEstado($id,1);
+        return back();
+    }
 
     public function imprimir()
     {

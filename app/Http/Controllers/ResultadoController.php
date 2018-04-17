@@ -254,6 +254,14 @@ class ResultadoController extends IntranetController
     {
         return substr($codigo, 0, 1);
     }
+    private function informesExistentes()
+    {
+        $informes = [];
+        foreach (Reunion::Select('id', 'numero')->Tipo(10)->Convocante(AuthUser()->dni)->get() as $reunion) {
+            $informes[$reunion->numero - 20] = $reunion->id;
+        }
+        return $informes;
+    }
 
 }
 

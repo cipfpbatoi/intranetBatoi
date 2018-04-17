@@ -21,6 +21,7 @@ return [
       'jefeEstudios' => '021657327K',
       //'jefeEstudios2' => '021652470V',
       'jefeEstudios2' => '029071324Z',
+      'orientador' => '021634142C',
       
     ],
     'veep' => [0 => '021652470V'],
@@ -127,7 +128,12 @@ return [
     'numeracion' => ['--','01','02','03','04','05','06','07','08','09','AvaIni','1Ava','2Ava','3Ava','AvFinal','AvExtr',21=>'1er Trimestre',22=>'2on Trimestre',23=>'Final'],
     'nombreEval' => [1=>'Primera', 2=> 'Segona', 3=>'Final', 4=>'Extraordinària'],
     'checkModels' => ['Programacion'=>'Programaciones'],
-    'tipoExpediente' => [1=>'Baixa Inasistència',2=>'Pèrdua Avaluació Continua',3=>'Anul.lació matricula'],
+    'tipoExpediente' => [   1=>'Baixa Inasistència',
+                            2=>'Pèrdua Avaluació Continua',
+                            3=>'Anul.lació matricula',
+                            4=>"Remisió al departament d'Orientació",
+                            5=>"Part d'amonestació"
+        ],
     'asociacionEmpresa' => [1=>'FCT',2=>'FP DUAL'],
     'tipoTutoria' => [0=>'Tots el grups',1=>'Grau mitjà',2=>'Grau Superior'],
     'actasEnabled' => ['Claustro'=>'Claustro','COCOPE'=>'COCOPE'],

@@ -78,6 +78,7 @@ trait TraitEstado
                     case 'director': 
                     case 'jefeEstudios':
                     case 'secretario' : 
+                    case 'orientador' :    
                     case 'vicedirector': avisa(config('constants.contacto.'.$quien),$explicacion,$enlace);break;
                     case 'jefeDepartamento' : avisa($this->Profesor->miJefe,$explicacion,$enlace);break;
                     default :

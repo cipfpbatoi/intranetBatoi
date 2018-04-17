@@ -106,13 +106,16 @@ class Expediente extends Model
         return $this->Alumno->FullName;
     }
     public function getSituacionAttribute(){
-        return isblankTrans('models.Comision.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Comision.' . $this->estado);
+        return isblankTrans('models.Expediente.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Expediente.' . $this->estado);
     }
     public function getXtipoAttribute(){
         return config('constants.tipoExpediente')[$this->tipo];
     }
     public function getXmoduloAttribute(){
         return isset($this->Modulo->cliteral)?$this->Modulo->literal:'';
+    }
+    public function getShortAttribute(){
+        return substr($this->explicacion,0,40);
     }
 
 }
