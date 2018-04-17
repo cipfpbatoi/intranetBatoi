@@ -8,7 +8,7 @@ function Fecha($fecha)
 
 function FechaString($fecha = null,$idioma=null)
 {
-    $fc1 = ($fecha==null)?new Date():$fecha;
+    $fc1 = ($fecha==null)?new Date():(is_string($fecha))?New Date($fecha):$fecha;
     if (!isset($idioma)) $idioma = Session::get('lang'); 
     
     return $fc1->format('d') . ' de ' . ucwords(config("meses.$idioma.".$fc1->format('n'))) .

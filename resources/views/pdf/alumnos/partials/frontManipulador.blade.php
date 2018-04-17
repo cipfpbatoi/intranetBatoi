@@ -29,5 +29,5 @@
 <div class="container" style="width:50%;float: center">
     <br/><br/><br/><br/>
     
-    <p>En {{config('constants.contacto.poblacion')}}, a {{FechaString()}} </p>
+    <p>En {{config('constants.contacto.poblacion')}}, a {{FechaString($datosInforme->fecha_fin)}} </p>
 </div>

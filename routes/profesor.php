@@ -72,9 +72,11 @@ Route::get('/alumnocurso/{id}/delete', ['as' => 'alumnocurso.delete', 'uses' => 
 Route::get('/alumnocurso/{id}/active', ['as' => 'alumnocurso.active', 'uses' => 'AlumnoCursoController@active']);
 Route::get('/curso/{curso}/active', ['as' => 'curso.active', 'uses' => 'CursoController@active']);
 Route::get('/curso/{curso}/pdf', ['as' => 'curso.pdf', 'uses' => 'CursoController@pdf']);
+Route::get('/curso/{curso}/saveFile', ['as' => 'curso.save', 'uses' => 'CursoController@saveFile']);
 Route::get('/alumnocurso/{alumno}/registerAlumno/{curso}', ['as' => 'Alumnocurso.registerA', 'uses' => 'AlumnoCursoController@registerA']);
 Route::get('/alumnocurso/{grupo}/registerGrupo/{curso}', ['as' => 'Alumnocurso.registerG', 'uses' => 'AlumnoCursoController@registerG']);
 Route::get('/alumnocurso/{id}/pdf', ['as' => 'Alumnocurso.pdf', 'uses' => 'AlumnoCursoController@pdf']);
+
 
 Route::resource('/comision', 'ComisionController', ['except' => ['destroy', 'update']]);
 Route::get('/comision/{comision}/delete', ['as' => 'comision.destroy', 'uses' => 'ComisionController@destroy']);
