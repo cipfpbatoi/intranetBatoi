@@ -3,8 +3,6 @@
 ## Configurar la máquina
 Lo más sencillo es crear un entorno con Vagrant y Homestead. En la [documentación de Laravel](https://laravel.com/docs/5.6/homestead) hay información de cómo crear y configurar dicho entorno.
 
-## Crear la BBDD
-
 ## Descargar el código
 Creamos la carpeta que vaya a contener nuestro código y vamos a ella:
 ```[bash]
@@ -46,7 +44,24 @@ y añadiendo una nueva variable:
 SESSION_DOMAIN: URL de nnuestra intranet (como APP_URL pero sin http), ej. intranet.app
 ```
 
-Por último sólo queda recargar el fichero de configuración en la caché:
+Por último sólo queda recargar el fichero de configuración en la caché (hay que hacerlo cada vez que cambiemos algo en algún fichero de configuración):
 ```[bash]
 php artisan config:cache
 ```
+
+## Crear la BBDD
+Creamos la BBDD y le damos permisos al usuario configurado en el fichero _.env_. A continuación para que se creen las tablas ejecutamos:
+```[bash]
+php artisan migrate
+```
+
+### Datos iniciales
+Los datos de algunas tablas no los obtendremos de Itaca sino que los pondremos a mano.
+* menú:
+* ciclos:
+* horas:
+* departamentos:
+* espacios:
+* tipoincidencias
+* municipios / provincias: se usan porque en la tabla de ALUMNOS sólo están los códigos
+
