@@ -56,7 +56,7 @@ return [
     */
 
     'from' => [
-        'address' => 'cipfpbatoi@intranet.app',
+        'address' => 'intranet@cipfpbatoi.es',
         'name' => 'Intranet',
     ],
 
@@ -110,12 +110,12 @@ return [
     |
     */
 
-    'markdown' => [
-        'theme' => 'default',
-
-        'paths' => [
-            resource_path('views/vendor/mail'),
-        ],
-    ],
+//    'markdown' => [
+//        'theme' => 'default',
+//
+//        'paths' => [
+//            resource_path('views/vendor/mail'),
+//        ],
+//    ],
 
 ];
