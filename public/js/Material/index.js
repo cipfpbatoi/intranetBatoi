@@ -43,7 +43,7 @@ const mesesCaduca=6;
     }
     var checkbox = "<div class='icheckbox_flat-green'><input type='checkbox' class='flat'></div>";
     var token = $("#_token").text();
-    $("#datatable").DataTable( {
+    $("#datamaterial").DataTable( {
         ajax : {
             method: "GET",
             url: '/api/material',
@@ -83,12 +83,12 @@ const mesesCaduca=6;
     });
 $(function () {
     // Botón INCIDENCIA
-    $('#datatable').on('click', 'a.incidencia', function (event) {
+    $('#datamaterial').on('click', 'a.incidencia', function (event) {
         $(this).attr("href","/material/"+$(this).parent().siblings().first().text()+"/incidencia");
     })  
 
     // Botón VER
-    $('#datatable').on('click', 'a.ver', function (event) {
+    $('#datamaterial').on('click', 'a.ver', function (event) {
         event.preventDefault();
         $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
         var idMaterial = $(this).parent().siblings().first().text();
@@ -122,7 +122,7 @@ $(function () {
 
     if (autorizado) {
         // Botón DELETE
-        $('#datatable').on('click', 'a.delete', function (event) {
+        $('#datamaterial').on('click', 'a.delete', function (event) {
             let info="\n";
             let titles=$(this).parents('table').find('thead').find('th');
             $(this).parent().siblings().each(function(i, item) {
@@ -137,16 +137,16 @@ $(function () {
             }
         })  
         // Botón EDIT
-        $('#datatable').on('click', 'a.edit', function (event) {
+        $('#datamaterial').on('click', 'a.edit', function (event) {
             $(this).attr("href","/material/"+$(this).parent().siblings().first().text()+"/edit");
         })  
         // Botón COPY
-        $('#datatable').on('click', 'a.copy', function (event) {
+        $('#datamaterial').on('click', 'a.copy', function (event) {
             $(this).attr("href","/material/"+$(this).parent().siblings().first().text()+"/copy");
         })  
 
         // Botón UNIDADES
-        $('#datatable').on('click', 'a.unidades', function (event) {
+        $('#datamaterial').on('click', 'a.unidades', function (event) {
             event.preventDefault();
             $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
             var idMaterial = $(this).parent().siblings().first().text();
@@ -182,7 +182,7 @@ $(function () {
         })  
 
         // Botón UBICACION
-        $('#datatable').on('click', 'a.ubicacion', function (event) {
+        $('#datamaterial').on('click', 'a.ubicacion', function (event) {
             event.preventDefault();
             $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
             var idMaterial = $(this).parent().siblings().first().text();
@@ -228,7 +228,7 @@ $(function () {
         })  
 
         // Botón ESTADO
-        $('#datatable').on('click', 'a.estado', function (event) {
+        $('#datamaterial').on('click', 'a.estado', function (event) {
             event.preventDefault();
             $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
             var idMaterial = $(this).parent().siblings().first().text();
@@ -267,7 +267,7 @@ $(function () {
                 
         })  
         // checkBox inventario
-        $('#datatable').on('change', 'input.editor-active', function (event) {
+        $('#datamaterial').on('change', 'input.editor-active', function (event) {
             var idMaterial = $(this).parent().siblings().first().text();
             var inventariado = $(this).prop("checked");
                 $.ajax({
