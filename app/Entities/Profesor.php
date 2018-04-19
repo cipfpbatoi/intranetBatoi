@@ -226,6 +226,8 @@ class Profesor extends Authenticatable
                         //canvi d'horari
                     if (Horario::profesor($profe->dni)->count()==0)
                         Horario::where('idProfesor',$sustituto->dni)->update(['idProfesor'=> $profe->dni]);
+                    else
+                        Horario::where('idProfesor',$sustituto->dni)->delete();
                                //reuniones
                     foreach (Asistencia::where('idProfesor',$sustituto->dni)->get() as $asistencia){
                         if (Asistencia::where('idProfesor', $profe->dni)->where('idReunion', $asistencia->idReunion)->count() == 0){
