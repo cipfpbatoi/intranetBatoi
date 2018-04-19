@@ -4692,7 +4692,7 @@ module.exports = function normalizeComponent (
 "use strict";
 
 
-var bind = __webpack_require__(8);
+var bind = __webpack_require__(9);
 var isBuffer = __webpack_require__(147);
 
 /*global toString:true*/
@@ -5052,10 +5052,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(9);
+    adapter = __webpack_require__(10);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(9);
+    adapter = __webpack_require__(10);
   }
   return adapter;
 }
@@ -5130,7 +5130,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
 /* 6 */
@@ -5181,6 +5181,53 @@ module.exports = Component.exports
 
 /***/ }),
 /* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(166)
+/* template */
+var __vue_template__ = __webpack_require__(177)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/utils/FechaPicker.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-660ede66", Component.options)
+  } else {
+    hotAPI.reload("data-v-660ede66", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -5370,7 +5417,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5388,7 +5435,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5399,7 +5446,7 @@ var settle = __webpack_require__(150);
 var buildURL = __webpack_require__(152);
 var parseHeaders = __webpack_require__(153);
 var isURLSameOrigin = __webpack_require__(154);
-var createError = __webpack_require__(10);
+var createError = __webpack_require__(11);
 var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(155);
 
 module.exports = function xhrAdapter(config) {
@@ -5575,7 +5622,7 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5600,7 +5647,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5612,7 +5659,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5635,53 +5682,6 @@ Cancel.prototype.toString = function toString() {
 Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
-
-
-/***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(1)
-/* script */
-var __vue_script__ = __webpack_require__(166)
-/* template */
-var __vue_template__ = __webpack_require__(177)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/utils/FechaPicker.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-660ede66", Component.options)
-  } else {
-    hotAPI.reload("data-v-660ede66", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
 
 
 /***/ }),
@@ -17362,7 +17362,7 @@ return zhTw;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(137);
-module.exports = __webpack_require__(200);
+module.exports = __webpack_require__(203);
 
 
 /***/ }),
@@ -17392,6 +17392,7 @@ Vue.component('control-dia-view', __webpack_require__(144));
 Vue.component('control-semana-view', __webpack_require__(179));
 Vue.component('control-guardia-view', __webpack_require__(182));
 Vue.component('reservas-view', __webpack_require__(188));
+Vue.component('birret-itaca-view', __webpack_require__(200));
 //Vue.component('horas-table', require('./components/HorasTable.vue'));
 
 var app = new Vue({
@@ -28622,7 +28623,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(7)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), __webpack_require__(8)))
 
 /***/ }),
 /* 141 */
@@ -28845,7 +28846,7 @@ var token = document.getElementById('_token').innerHTML;
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
     'control-nav': __webpack_require__(6),
-    'fecha-picker': __webpack_require__(13)
+    'fecha-picker': __webpack_require__(7)
   },
   props: ['profes', 'horarioInicial'],
   data: function data() {
@@ -28917,7 +28918,7 @@ var token = document.getElementById('_token').innerHTML;
 
 
 var utils = __webpack_require__(2);
-var bind = __webpack_require__(8);
+var bind = __webpack_require__(9);
 var Axios = __webpack_require__(148);
 var defaults = __webpack_require__(5);
 
@@ -28952,9 +28953,9 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(12);
+axios.Cancel = __webpack_require__(13);
 axios.CancelToken = __webpack_require__(162);
-axios.isCancel = __webpack_require__(11);
+axios.isCancel = __webpack_require__(12);
 
 // Expose all/spread
 axios.all = function all(promises) {
@@ -29107,7 +29108,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 "use strict";
 
 
-var createError = __webpack_require__(10);
+var createError = __webpack_require__(11);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -29540,7 +29541,7 @@ module.exports = InterceptorManager;
 
 var utils = __webpack_require__(2);
 var transformData = __webpack_require__(159);
-var isCancel = __webpack_require__(11);
+var isCancel = __webpack_require__(12);
 var defaults = __webpack_require__(5);
 var isAbsoluteURL = __webpack_require__(160);
 var combineURLs = __webpack_require__(161);
@@ -29700,7 +29701,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 "use strict";
 
 
-var Cancel = __webpack_require__(12);
+var Cancel = __webpack_require__(13);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -32725,7 +32726,7 @@ var maxDiasReserva = 30;
     'recursos-select': __webpack_require__(190),
     'horas-select': __webpack_require__(193),
     'horas-table': __webpack_require__(196),
-    'fecha-picker': __webpack_require__(13)
+    'fecha-picker': __webpack_require__(7)
   },
   props: ['horas', 'espacios'],
   data: function data() {
@@ -33404,6 +33405,378 @@ if (false) {
 
 /***/ }),
 /* 200 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(201)
+/* template */
+var __vue_template__ = __webpack_require__(202)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/fichar/BirretItacaView.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1470f1e4", Component.options)
+  } else {
+    hotAPI.reload("data-v-1470f1e4", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 201 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_axios___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_axios__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+var token = document.getElementById('_token').innerHTML;
+var idProfesor = document.getElementById('dni').innerHTML;
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+
+    components: {
+        'fecha-picker': __webpack_require__(7)
+    },
+    data: function data() {
+        return {
+            dia: '',
+            horario: []
+        };
+    },
+
+    methods: {
+        elige: function elige() {
+            var _this = this;
+
+            var diaF = this.dia;
+            //axios.get('http://intranet.my/api/horario/dia_semana='+diaSemana(diaF)+'&idProfesor='+idProfesor+'&ocupacion=null&modulo!TU02CF?api_token='+token).then((response) => {
+            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get('/api/itaca/' + diaF + '/' + idProfesor + '?api_token=' + token).then(function (response) {
+                _this.horario = response.data.data;
+            }, function (error) {
+                console.log(error);
+            });
+        },
+        confirmar: function confirmar() {
+            var req = {
+                url: '/api/itaca?api_token=' + token,
+                method: 'POST',
+                data: this.horario
+            };
+            __WEBPACK_IMPORTED_MODULE_0_axios___default()(req).then(function (response) {
+                console.log(response.data.content);
+                alert('Guardat amb exit');
+            }, function (error) {
+                console.log(error);
+            });
+        }
+    }
+});
+
+function diaSemana(date) {
+    var dias_semana = ["D", "L", "M", "X", "J", "V", "S"];
+    var fechaSel = new Date(date);
+    return dias_semana[fechaSel.getDay()];
+}
+function toEnglish(date) {
+    var arrFecha = date.split('-');
+    arrFecha = arrFecha.map(function (dato) {
+        return dato.length == 1 ? "0" + dato : dato;
+    });
+    return arrFecha[2] + '-' + arrFecha[1] + '-' + arrFecha[0];
+}
+
+/***/ }),
+/* 202 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { attrs: { id: "app" } },
+    [
+      _c("br"),
+      _c("label", { attrs: { for: "dia" } }, [_vm._v(" Dia: ")]),
+      _vm._v(" "),
+      _c("fecha-picker", {
+        staticClass: "noFlotar date",
+        attrs: { id: "dia", type: "text", name: "dia", autofocus: "" },
+        on: { change: _vm.elige },
+        model: {
+          value: _vm.dia,
+          callback: function($$v) {
+            _vm.dia = $$v
+          },
+          expression: "dia"
+        }
+      }),
+      _vm._v(" "),
+      _c("button", { on: { click: _vm.elige } }, [_vm._v("Tria data:")]),
+      _vm._v(" "),
+      _c(
+        "table",
+        { staticClass: "table", attrs: { id: "horarios" } },
+        [
+          _vm._m(0),
+          _vm._v(" "),
+          _vm._l(_vm.horario, function(hora, key, index) {
+            return _c(
+              "tr",
+              [
+                _c("td", [
+                  _vm._v(_vm._s(hora.desde) + " - " + _vm._s(hora.hasta))
+                ]),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(hora.idGrupo))]),
+                _vm._v(" "),
+                hora.estado < 2
+                  ? [
+                      _c("td", [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: hora.checked,
+                              expression: "hora.checked"
+                            }
+                          ],
+                          attrs: { type: "checkbox" },
+                          domProps: {
+                            checked: Array.isArray(hora.checked)
+                              ? _vm._i(hora.checked, null) > -1
+                              : hora.checked
+                          },
+                          on: {
+                            change: function($event) {
+                              var $$a = hora.checked,
+                                $$el = $event.target,
+                                $$c = $$el.checked ? true : false
+                              if (Array.isArray($$a)) {
+                                var $$v = null,
+                                  $$i = _vm._i($$a, $$v)
+                                if ($$el.checked) {
+                                  $$i < 0 &&
+                                    _vm.$set(hora, "checked", $$a.concat([$$v]))
+                                } else {
+                                  $$i > -1 &&
+                                    _vm.$set(
+                                      hora,
+                                      "checked",
+                                      $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1))
+                                    )
+                                }
+                              } else {
+                                _vm.$set(hora, "checked", $$c)
+                              }
+                            }
+                          }
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        hora.enCentro
+                          ? _c("i", { staticClass: "fa fa-check" })
+                          : _c("i", { staticClass: "fa fa-times" })
+                      ]),
+                      _vm._v(" "),
+                      index == 0
+                        ? _c(
+                            "td",
+                            {
+                              attrs: {
+                                rowspan: Object.keys(_vm.horario).length
+                              }
+                            },
+                            [
+                              _c("textarea", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: hora.justificacion,
+                                    expression: "hora.justificacion"
+                                  }
+                                ],
+                                attrs: {
+                                  rows: Object.keys(_vm.horario).length * 2
+                                },
+                                domProps: { value: hora.justificacion },
+                                on: {
+                                  input: function($event) {
+                                    if ($event.target.composing) {
+                                      return
+                                    }
+                                    _vm.$set(
+                                      hora,
+                                      "justificacion",
+                                      $event.target.value
+                                    )
+                                  }
+                                }
+                              })
+                            ]
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c("td", [
+                        hora.estado == 1
+                          ? _c("span", [_vm._v("Pendent")])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        hora.estado == 0
+                          ? _c("span", [_vm._v("No comunicada")])
+                          : _vm._e()
+                      ])
+                    ]
+                  : hora.estado == 2
+                    ? [
+                        _c("td", { attrs: { colspan: "2" } }),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(hora.justificacion))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v("Justificada")])
+                      ]
+                    : [
+                        _c("td", { attrs: { colspan: "2" } }),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(hora.justificacion))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v("Rebutjada")])
+                      ]
+              ],
+              2
+            )
+          })
+        ],
+        2
+      ),
+      _vm._v(" "),
+      _c("div", { attrs: { id: "botones" } }, [
+        _c(
+          "button",
+          { staticClass: "btn btn-success", on: { click: _vm.confirmar } },
+          [_vm._v("Enviar")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "errores" })
+    ],
+    1
+  )
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", [
+      _c("th", { staticStyle: { "text-align": "center" } }, [_vm._v("Hores")]),
+      _c("th", { staticStyle: { "text-align": "center" } }, [_vm._v("Grup")]),
+      _vm._v(" "),
+      _c("th", { staticStyle: { "text-align": "center" } }, [
+        _vm._v("No he marcat birret")
+      ]),
+      _c("th", { staticStyle: { "text-align": "center" } }, [
+        _vm._v("Estava en el centre")
+      ]),
+      _vm._v(" "),
+      _c("th", { staticStyle: { "text-align": "center" } }, [
+        _vm._v("Justificació")
+      ]),
+      _c("th", { staticStyle: { "text-align": "center" } }, [_vm._v("Estat")])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1470f1e4", module.exports)
+  }
+}
+
+/***/ }),
+/* 203 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

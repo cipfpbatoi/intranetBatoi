@@ -30,11 +30,15 @@ class DocumentoController extends IntranetController
 
     
 
-    public function index()
+//    public function index()
+//    {
+//        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
+//        $this->iniBotones();
+//        return $this->grid($this->class::whereIn('rol', RolesUser(AuthUser()->rol))->get());
+//    }
+    public function search()
     {
-        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        $this->iniBotones();
-        return $this->grid($this->class::whereIn('rol', RolesUser(AuthUser()->rol))->get());
+        return Documento::where('curso',Curso())->whereIn('rol', RolesUser(AuthUser()->rol))->get();
     }
 
     public function grupo($grupo)
@@ -44,8 +48,7 @@ class DocumentoController extends IntranetController
             if (UserisAllow($role))
                 $this->panel->setPestana($key, true, 'profile.documento', ['tipoDocumento', $key]);
         }
-        $roles = RolesUser(AuthUser()->rol);
-        $todos = $this->class::whereIn('rol', $roles)->get();
+        $todos = Documento::whereIn('rol', RolesUser(AuthUser()->rol))->get();
 
         //$this->panel->setTitulo($this->titulo);
         $this->panel->setElementos($todos);
@@ -60,8 +63,9 @@ class DocumentoController extends IntranetController
 
         $this->panel = new Panel($this->model, ['curso', 'descripcion', 'tags', 'ciclo'], 'grid.standard');
         $roles = RolesUser(AuthUser()->rol);
-        $todos = $this->class::whereIn('rol', $roles)
+        $todos = Documento::whereIn('rol', $roles)
                 ->where('tipoDocumento', 'Proyecto')
+                ->orderBy('curso')
                 ->get();
         $grupos = Ciclo::select('ciclo')
                 ->where('departamento', AuthUser()->departamento)
@@ -86,11 +90,11 @@ class DocumentoController extends IntranetController
         $this->panel = new Panel($this->model, null, null, false);
         $roles = RolesUser(AuthUser()->rol);
         $profe = Profesor::find(AuthUser()->dni);
-        $todos = $this->class::whereIn('rol', $roles)
+        $todos = Documento::whereIn('rol', $roles)
                 ->whereIn('tipoDocumento', TipoDocumento::all($grupo))
                 ->whereIn('grupo', $profe->grupos())
                 ->get();
-        $grupos = $this->class::select('grupo')
+        $grupos = Documento::select('grupo')
                 ->whereIn('rol', $roles)
                 ->whereIn('tipoDocumento', TipoDocumento::all($grupo))
                 ->whereIn('grupo', $profe->grupos())
@@ -153,7 +157,7 @@ class DocumentoController extends IntranetController
 
     public function edit($id)
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = Documento::findOrFail($id);
         $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
         $elemento->setInputType('grupo', ['type' => 'hidden']);
         $elemento->setInputType('enlace', ['type' => 'hidden']);
@@ -191,25 +195,10 @@ class DocumentoController extends IntranetController
         $this->gridFields = ['curso', 'descripcion', 'grupo', 'created_at'];
         $this->panel = new Panel($this->model, $this->gridFields, 'grid.standard');
         $roles = RolesUser(AuthUser()->rol);
-        $todos = $this->class::whereIn('rol', $roles)
+        $todos = Documento::whereIn('rol', $roles)
                 ->where('tags', 'like', 'acta claustro')
                 ->get();
         return $this->grid($todos);
-    }
-    public function tmpInstructores(){
-        $fcts = Fct::All();
-        foreach ($fcts as $fct){
-            if ($existe = Fct::where('idColaboracion',$fct->idColaboracion)
-            ->where('idAlumno',$fct->idAlumno)
-            ->where('id','<',$fct->id)
-            ->first()){
-                if ($fct->idInstructor != $existe->idInstructor)
-                    $existe->Instructores()->attach($fct->idInstructor,['horas'=>$fct->horas]);
-                $fct->delete();
-            }
-            else
-                $fct->Instructores()->attach($fct->idInstructor,['horas'=>$fct->horas]);
-        }
     }
     
 

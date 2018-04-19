@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://intranet.my'),
+    'url' => env('APP_URL', 'https://intranet.cipfpbatoi.es'),
 
     /*
     |--------------------------------------------------------------------------
@@ -170,6 +170,7 @@ return [
         Intranet\Providers\RouteServiceProvider::class,
         Intranet\Providers\HelperServiceProvider::class,
         Intranet\Providers\HtmlServiceProvider::class,
+        Intranet\Providers\ValidationServiceProvider::class,
 
     ],
 
