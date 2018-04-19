@@ -21,6 +21,7 @@ Vue.component('control-dia-view', require('./components/fichar/ControlDiaView.vu
 Vue.component('control-semana-view', require('./components/fichar/ControlSemanaView.vue'));
 Vue.component('control-guardia-view', require('./components/guardias/ControlGuardiaView.vue'));
 Vue.component('reservas-view', require('./components/reservas/ReservasView.vue'));
+Vue.component('birret-itaca-view', require('./components/fichar/BirretItacaView.vue'));
 //Vue.component('horas-table', require('./components/HorasTable.vue'));
 
 const app = new Vue({
