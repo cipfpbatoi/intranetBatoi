@@ -63,6 +63,13 @@ mix.combine([
     vendors+'datatables.net/js/jquery.dataTables.min.js',
     vendors+'bootstrap-daterangepicker/daterangepicker.js',
     plugins+'datetimepicker/js/bootstrap-datetimepicker.min.js',
+
+// Actas
+    vendors+'bootstrap-wysiwyg/js/bootstrap-wysiwyg.min.js',
+    vendors+'jquery.hotkeys/jquery.hotkeys.js',
+    vendors+'google-code-prettify/src/prettify.js',
+    vendors+'autosize/dist/autosize.min.js',
+
     
     plugins+'datetime-moment/dist/datetime-moment.js', 
     vendors+'datatables.net-responsive-bs/js/dataTables.bootstrap.min.js',

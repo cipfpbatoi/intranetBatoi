@@ -13,7 +13,7 @@ class Ciclo extends Model
     
     protected $table = "ciclos";
     public $timestamps = false;
-    protected $fillable = ['codigo', 'ciclo','departamento','tipo','normativa'];
+    protected $fillable = ['codigo', 'ciclo','departamento','tipo','normativa','titol','rd','rd2'];
     protected $rules = [
     ];
     protected $inputTypes = [
