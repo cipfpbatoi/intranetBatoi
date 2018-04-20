@@ -16,12 +16,12 @@
             <br />
             <p class="url">
                 <span class="fs1 text-info" aria-hidden="true" data-icon=""></span>
-                if (!isset(AuthUser()->nia))<a href="actividad/{{$actividad->id}}">@endif
+                @if (!isset(AuthUser()->nia))<a href="actividad/{{$actividad->id}}">@endif
                 <i class="fa fa-paperclip"></i> 
                     @foreach ($actividad->grupos as $grupo)
                         {{ $grupo->nombre }} <i class="fa fa-paperclip"></i>
                     @endforeach
-                if (!isset(AuthUser()->nia))</a>@endif
+                @if (!isset(AuthUser()->nia))</a>@endif
             </p>
         </div>
         @endforeach
