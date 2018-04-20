@@ -1,7 +1,7 @@
 <ul class="messages">
     <li>
         @foreach ($actividades as $actividad)
-        <img src="img/actividad.png" class="avatar" alt="Avatar">
+        <img src="/img/actividad.png" class="avatar" alt="Avatar">
         <div class="message_date">
             <h3 class="date text-info">{{day($actividad->desde)}}</h3>
             <p class="month">{{month($actividad->desde)}}</p>
@@ -16,11 +16,12 @@
             <br />
             <p class="url">
                 <span class="fs1 text-info" aria-hidden="true" data-icon=""></span>
-                <a href="actividad/{{$actividad->id}}"><i class="fa fa-paperclip"></i> 
+                if (!isset(AuthUser()->nia))<a href="actividad/{{$actividad->id}}">@endif
+                <i class="fa fa-paperclip"></i> 
                     @foreach ($actividad->grupos as $grupo)
                         {{ $grupo->nombre }} <i class="fa fa-paperclip"></i>
                     @endforeach
-                </a>
+                if (!isset(AuthUser()->nia))</a>@endif
             </p>
         </div>
         @endforeach
