@@ -70,8 +70,8 @@ class Menu extends Model
             return $menu;
         else
             return StydeMenu::make($menu);
-        
     }
+    
     public function getXrolAttribute()
     {
         return implode(',', NameRolesUser($this->rol));
@@ -79,6 +79,10 @@ class Menu extends Model
     public function getXactivoAttribute()
     {
         return trans('messages.states.' . $this->activo);
+    }
+    public function getCategoriaAttribute(){
+        if ($this->submenu == '') return $this->menu.' ('.str_pad($this->orden,2,'0',STR_PAD_LEFT).')'; 
+        else return $this->menu.'-'.$this->submenu.' ('.str_pad($this->orden,2,'0',STR_PAD_LEFT).')';
     }
 
 }
