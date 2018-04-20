@@ -232,6 +232,12 @@ return array(
         'Empresasc' => 'Book companies',
         'Avaluar' => "Eval FCTs",
         'Infdpto' => 'Departament Report',
+        'Consell' => 'School board',
+        'Emergencias' => "Emergency plan",
+        'Rri' => 'Internal Regulation',
+        'Pga' => 'Annual Program',
+        'Actas' => 'Minutes',
+        'Pla' => 'Functional plan'
     ),
     'situations' => array(
         '0' => 'Not notified',

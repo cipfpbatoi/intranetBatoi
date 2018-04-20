@@ -235,6 +235,12 @@ return array(
         'Empresasc' => "Reserva d'empreses",
         'Avaluar' => "Avaluar Fcts",
         'Infdpto' => 'Informes Departament',
+        'Consell' => 'Consell Escolar',
+        'Emergencias' => "Pla d'emergències",
+        'Rri' => 'Reglament Regim Intern',
+        'Pga' => 'Programaciò general Anual',
+        'Actas' => 'Actes',
+        'Pla' => 'Pla funcional'
         
     ),
     'situations' => array(

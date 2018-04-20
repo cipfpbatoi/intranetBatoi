@@ -233,7 +233,12 @@ return array(
         'Empresasc' => "Reserva de empresas",
         'Avaluar' => "Evaluar Fcts",
         'Infdpto' => 'Informes Departamento',
-
+        'Consell' => 'Consejo Escolar',
+        'Emergencias' => "Plan de emergencias",
+        'Rri' => 'Reglamento Régimen Interno',
+        'Pga' => 'Programaciòn general Anual',
+        'Actas' => 'Actas',
+        'Pla' => 'Plan funcional'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

@@ -13,5 +13,5 @@
     @endif
     {!! Intranet\Entities\Menu::make('topmenu') !!}
 @else
-    {!! Intranet\Entities\Menu::make('alumno') !!}
+    {!! Intranet\Entities\Menu::make('topalumno') !!}
 @endif

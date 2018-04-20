@@ -27,7 +27,7 @@ class Menu extends Model
         'activo' => 'required',
     ];
     protected $inputTypes = [
-        'menu' => ['type' => 'hidden'],
+        
     ];
 
     public function __construct()
@@ -83,6 +83,9 @@ class Menu extends Model
     public function getCategoriaAttribute(){
         if ($this->submenu == '') return $this->menu.' ('.str_pad($this->orden,2,'0',STR_PAD_LEFT).')'; 
         else return $this->menu.'-'.$this->submenu.' ('.str_pad($this->orden,2,'0',STR_PAD_LEFT).')';
+    }
+    public function getDescripcionAttribute(){
+        return trans("messages.menu.".ucwords($this->nombre));
     }
 
 }
