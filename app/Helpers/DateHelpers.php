@@ -76,8 +76,9 @@ function day($fecha)
 function month($fecha)
 {
     $idioma = Session::get('lang');
+    Jenssegers\Date\Date::setlocale($idioma);
     $fc1 = new Jenssegers\Date\Date($fecha);
-    return ucwords(config("meses.$idioma.".$fc1->format('n')));
+    return ucwords($fc1->format('F'));
 }
 
 /**
