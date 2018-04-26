@@ -29,7 +29,7 @@ function Salida()
 function evaluacion()
 {
     $eval = 1;
-    foreach (config('constants.evaluaciones') as $key => $evaluacion){
+    foreach (config('curso.evaluaciones') as $key => $evaluacion){
         if (haVencido($evaluacion[1])) $eval = $key+1;
     }
     return $eval;

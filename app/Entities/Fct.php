@@ -93,18 +93,18 @@ class Fct extends Model
         $hoy = new Date();
         $hoy->addDays(15);
         $hoy->format('Y-m-d');
-        if ($hoy <= config('constants.evaluaciones.2')[1]){
-            $desde = config('constants.evaluaciones.1')[0];
-            $hasta = config('constants.evaluaciones.1')[0];
+        if ($hoy <= config('curso.evaluaciones.2')[1]){
+            $desde = config('curso.evaluaciones.1')[0];
+            $hasta = config('curso.evaluaciones.1')[0];
         }
         else 
-            if ($hoy <= config('constants.evaluaciones.3')[1]){
-                $desde = config('constants.evaluaciones.2')[1];
-                $hasta = config('constants.evaluaciones.1')[0];
+            if ($hoy <= config('curso.evaluaciones.3')[1]){
+                $desde = config('curso.evaluaciones.2')[1];
+                $hasta = config('curso.evaluaciones.1')[0];
             }    
             else{
-                $desde = config('constants.evaluaciones.3')[1];
-                $hasta = config('constants.evaluaciones.2')[1];
+                $desde = config('curso.evaluaciones.3')[1];
+                $hasta = config('curso.evaluaciones.2')[1];
             }
         switch ($cuando){
             case 1: 
@@ -177,7 +177,7 @@ class Fct extends Model
     public function getPeriodeAttribute(){
         $inici = new Date($this->desde);
         $inici->format('Y-m-d');
-        if ($inici <= config('constants.evaluaciones.2')[1]) return 1;
+        if ($inici <= config('curso.evaluaciones.2')[1]) return 1;
         else return 2;    
     }
     public function getHoras_semanalesAttribute(){

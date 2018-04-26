@@ -8,10 +8,11 @@ function Fecha($fecha)
 
 function FechaString($fecha = null,$idioma=null)
 {
-    $fc1 = ($fecha==null)?new Date():(is_string($fecha))?New Date($fecha):$fecha;
+    $fc1 = ($fecha==null)?new Jenssegers\Date\Date():(is_string($fecha))?New Jenssegers\Date\Date($fecha):$fecha;
     if (!isset($idioma)) $idioma = Session::get('lang'); 
+    Jenssegers\Date\Date::setlocale($idioma);
     
-    return $fc1->format('d') . ' de ' . ucwords(config("meses.$idioma.".$fc1->format('n'))) .
+    return $fc1->format('d') . ' de ' . ucwords($fc1->format('F')) .
             ' de ' . $fc1->format('Y');
 }
 
@@ -76,8 +77,8 @@ function day($fecha)
 function month($fecha)
 {
     $idioma = Session::get('lang');
-    Jenssegers\Date\Date::setlocale($idioma);
     $fc1 = new Jenssegers\Date\Date($fecha);
+    Jenssegers\Date\Date::setlocale($idioma);
     return ucwords($fc1->format('F'));
 }
 

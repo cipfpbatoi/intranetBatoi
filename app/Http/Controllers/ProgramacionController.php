@@ -92,4 +92,13 @@ class ProgramacionController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','where' => ['estado', '==', 3]]));
     }
     
+    protected function deleteCall(){
+        $cuantas = Programacion::where('hasta','<=',Hoy())->count();
+        return view('programacion.deleteOld',compact('cuantas'));
+    }
+    protected function deleteOld(){
+        Programacion::where('hasta','<=',Hoy())->delete();
+        return back();
+    }
+    
 }

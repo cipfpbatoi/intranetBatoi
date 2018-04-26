@@ -237,7 +237,8 @@ return array(
         'Rri' => 'Internal Regulation',
         'Pga' => 'Annual Program',
         'Actas' => 'Minutes',
-        'Pla' => 'Functional plan'
+        'Pla' => 'Functional plan',
+        'Borrarprg' => 'Delete Outdated Programming'
     ),
     'situations' => array(
         '0' => 'Not notified',

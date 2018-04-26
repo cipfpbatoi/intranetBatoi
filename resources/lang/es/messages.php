@@ -238,7 +238,8 @@ return array(
         'Rri' => 'Reglamento Régimen Interno',
         'Pga' => 'Programaciòn general Anual',
         'Actas' => 'Actas',
-        'Pla' => 'Plan funcional'
+        'Pla' => 'Plan funcional',
+        'Borrarprg' => 'Borrar Programaciones Caducadas'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

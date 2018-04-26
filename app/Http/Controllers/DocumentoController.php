@@ -28,17 +28,19 @@ class DocumentoController extends IntranetController
     protected $directorio = '/Ficheros/';
     protected $panel;
 
-    
+    public function index()
+    {
+        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
+        $this->iniBotones();
+        return $this->grid($this->search());
+    }
 
-//    public function index()
-//    {
-//        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-//        $this->iniBotones();
-//        return $this->grid($this->class::whereIn('rol', RolesUser(AuthUser()->rol))->get());
-//    }
     public function search()
     {
-        return Documento::where('curso',Curso())->whereIn('rol', RolesUser(AuthUser()->rol))->get();
+        if (Session::get('completa'))
+            return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->get();
+        else
+            return Documento::where('curso',Curso())->whereIn('rol', RolesUser(AuthUser()->rol))->get();
     }
 
     public function grupo($grupo)

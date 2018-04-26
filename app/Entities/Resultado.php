@@ -97,7 +97,7 @@ class Resultado extends Model
         return $query->whereIn('idProfesor',$profesores);
     }
     public function scopeTrimestreCurso($query,$trimestre,$curso){
-        $evaluaciones = config("constants.trimestres.$trimestre");
+        $evaluaciones = config("curso.trimestres.$trimestre");
         return $query->where('evaluacion',$evaluaciones[$curso])
                 ->whereIn('idGrupo',Grupo::Curso($curso)->get()->toarray());
     }

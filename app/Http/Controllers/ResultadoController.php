@@ -103,7 +103,7 @@ class ResultadoController extends IntranetController
         $faltan = $this->FaltaEntrega([$evaluacion]);
         $cont = 0;
         foreach ($faltan as $falta) {
-            $texto = "$falta->nombre, et falta per omplir el seguiment de l'avaluacio '" . config('constants.nombreEval')[config("constants.trimestres.$evaluacion")[$this->curso($falta->grupo)]] .
+            $texto = "$falta->nombre, et falta per omplir el seguiment de l'avaluacio '" . config('constants.nombreEval')[config("curso.trimestres.$evaluacion")[$this->curso($falta->grupo)]] .
                     "' del mòdul '$falta->modulo' del Grup '$falta->grupo'";
             avisa($falta->idProfesor, $texto);
             $cont++;
@@ -198,7 +198,7 @@ class ResultadoController extends IntranetController
     private function hazPdfInforme($observaciones, $trimestre,$proyectos=null)
     {
         $dep = AuthUser()->departamento;
-        $fechas = config("constants.evaluaciones.$trimestre");
+        $fechas = config("curso.evaluaciones.$trimestre");
         $actividades = Actividad::QueDepartamento($dep)
                 ->where('desde', '>=', $fechas[0])
                 ->where('hasta', '<=', $fechas[1])
@@ -225,7 +225,7 @@ class ResultadoController extends IntranetController
         $faltan = collect();
         $modulos = Horario::ModulosActivos(esRol(AuthUser()->rol, config('constants.rol.jefe_dpto')) ? AuthUser()->departamento : null);
         foreach ($trimestres as $trimestre){
-            $evaluaciones = config("constants.trimestres.$trimestre");
+            $evaluaciones = config("curso.trimestres.$trimestre");
             $this->llenaFaltan($faltan, $modulos, $trimestre, $evaluaciones);
         }    
 

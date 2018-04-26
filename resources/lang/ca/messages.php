@@ -240,7 +240,8 @@ return array(
         'Rri' => 'Reglament Regim Intern',
         'Pga' => 'Programaciò general Anual',
         'Actas' => 'Actes',
-        'Pla' => 'Pla funcional'
+        'Pla' => 'Pla funcional',
+        'Borrarprg' => 'Esborrar Programacions Caducades'
         
     ),
     'situations' => array(

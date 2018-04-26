@@ -22,7 +22,6 @@ class Programacion extends Model
         'desde',
         'hasta',
         'fichero',
-        
     ];
     protected $rules = [
         'desde' => 'required|date',
@@ -96,7 +95,7 @@ class Programacion extends Model
                 ->where('modulo', '!=', null)
                 ->get()
                 ->toarray();
-        return $query->whereIn('idModulo', $modulos);
+        return $query->whereIn('idModulo', $modulos)->where('desde','<=',Hoy())->where('hasta','>=',Hoy());
     }
 
     public function scopeDepartamento($query)
@@ -105,7 +104,7 @@ class Programacion extends Model
                 ->Departamento()
                 ->get()
                 ->toarray();
-        return $query->whereIn('idModulo', $modulos);
+        return $query->whereIn('idModulo', $modulos)->where('desde','<=',Hoy())->where('hasta','>=',Hoy());
     }
     
     public function nomFichero()
