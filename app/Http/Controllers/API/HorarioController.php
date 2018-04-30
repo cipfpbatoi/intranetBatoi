@@ -3,7 +3,6 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Entities\Horario;
@@ -68,8 +67,7 @@ class HorarioController extends ApiBaseController
             }
         }
         if ($send) return $this->sendResponse($data, 'OK');
-        else return $data;
-        
+        else return $data;        
     }
     
     public function HorariosDia($fecha){
