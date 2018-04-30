@@ -66,3 +66,5 @@ Route::get('simplifica',['as' => 'direccion.simplifica', 'uses' => 'Administraci
 
 Route::get('/horarios/cambiar',['as' => 'horarios.cambiarIndex', 'uses' => 'HorarioController@changeIndex']);
 Route::post('/horarios/cambiar',['as' => 'horarios.cambiar', 'uses' => 'HorarioController@changeTableAll']);
+
+Route::get('/documento',['as'=> 'documentosP.index','uses' => 'PanelDocumentoController@index']);

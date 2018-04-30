@@ -118,12 +118,9 @@ class DocumentoController extends IntranetController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('documento.create', ['roles' => config('constants.rol.direccion')]));
         $this->panel->setBothBoton('documento.show', ['where' => ['rol', 'in', RolesUser(AuthUser()->rol),'link','==',1]]);
         $this->panel->setBoton('grid', new BotonImg('documento.delete', ['roles' => config('constants.rol.direccion')]));
-        $this->panel->setBoton('grid', new BotonImg('documento.edit', ['where' => ['supervisor', '==', AuthUser()->dni]]));
-        $this->panel->setBoton('grid', new BotonImg('documento.delete', ['where' => ['supervisor', '==', AuthUser()->dni]]));
-        //$this->panel->setBothBoton('documento.edit',['where' => ['supervisor', '==', AuthUser()->dni]]);
+        $this->panel->setBoton('grid', new BotonImg('documento.edit', ['roles' => config('constants.rol.direccion')]));
     }
 
     public function store(Request $request, $fct = null)
@@ -136,14 +133,9 @@ class DocumentoController extends IntranetController
         }
         if ($request->enlace) $except = ['nota','fichero'];
         else $except = ['nota'];
-        $redirect = back();
         return parent::store(subsRequest($request->duplicate(null, $request->except($except)), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
     }
-    public function update(Request $request, $id)
-    {
-        $this->redirect = "DocumentoController@show";
-        return parent::update($request,$id);
-    }
+    
 
     public function project($idFct)
     {   if ($fct = Fct::findOrFail($idFct)) {

@@ -16,6 +16,15 @@ class TipoDocumento
         }
         return $todos;
     }
+    public static function allDocuments()
+    {
+        $todos = [];
+        foreach (config('tablas.tipoDocumento') as $a) {
+            if (UserisAllow($a['rol'])&& $a['pestana'])
+                $todos[] = $a['index'];
+        }
+        return $todos;
+    }
     
     public static function allRol($grupo)
     {
