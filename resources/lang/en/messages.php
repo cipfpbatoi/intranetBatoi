@@ -238,7 +238,9 @@ return array(
         'Pga' => 'Annual Program',
         'Actas' => 'Minutes',
         'Pla' => 'Functional plan',
-        'Borrarprg' => 'Delete Outdated Programming'
+        'Borrarprg' => 'Delete Outdated Programming',
+        'Indexdocumento' => 'Document management',
+        'Authhorarios' => "Time schedules approval",
     ),
     'situations' => array(
         '0' => 'Not notified',

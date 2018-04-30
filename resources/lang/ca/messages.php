@@ -241,7 +241,9 @@ return array(
         'Pga' => 'Programaciò general Anual',
         'Actas' => 'Actes',
         'Pla' => 'Pla funcional',
-        'Borrarprg' => 'Esborrar Programacions Caducades'
+        'Borrarprg' => 'Esborrar Programacions Caducades',
+        'Indexdocumento' => 'Gestio documentació',
+        'Authhorarios' => "Autorització d'horaris",
         
     ),
     'situations' => array(
