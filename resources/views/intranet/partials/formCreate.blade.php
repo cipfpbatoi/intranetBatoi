@@ -16,7 +16,7 @@
                   </div>
             @else    
                 {!! Field::$tipo($property,$default[$property]['default'],$default[$property]['params']) !!}
-                @if (isset($default[$property]['params']['disabled']))
+                @if (isset($default[$property]['params']['disabled']) && $default[$property]['params']['disabled'] == 'disabled')
                     {!! Field::hidden($property,null,[]) !!}
                 @endif
             @endif

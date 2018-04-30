@@ -7,6 +7,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Programacion;
 
 class AdministracionController extends Controller{
     
@@ -20,6 +21,15 @@ class AdministracionController extends Controller{
     public function lang($lang)
     {
         Session::put('lang', $lang);
+        return back();
+    }
+    
+    protected function deleteProgramacionIndex(){
+        $cuantas = Programacion::where('hasta','<=',Hoy())->count();
+        return view('programacion.deleteOld',compact('cuantas'));
+    }
+    protected function deleteProgramacion(){
+        Programacion::where('hasta','<=',Hoy())->delete();
         return back();
     }
 }

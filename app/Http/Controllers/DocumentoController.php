@@ -122,7 +122,7 @@ class DocumentoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('documento.delete', ['roles' => config('constants.rol.direccion')]));
         $this->panel->setBoton('grid', new BotonImg('documento.edit', ['where' => ['supervisor', '==', AuthUser()->dni]]));
         $this->panel->setBoton('grid', new BotonImg('documento.delete', ['where' => ['supervisor', '==', AuthUser()->dni]]));
-
+        //$this->panel->setBothBoton('documento.edit',['where' => ['supervisor', '==', AuthUser()->dni]]);
     }
 
     public function store(Request $request, $fct = null)
@@ -133,7 +133,9 @@ class DocumentoController extends IntranetController
             $fct->calificacion = 1;
             $fct->save();
         }
-        return parent::store(subsRequest($request->duplicate(null, $request->except('nota')), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
+        if ($request->enlace) $except = ['nota','fichero'];
+        else $except = ['nota'];
+        return parent::store(subsRequest($request->duplicate(null, $request->except($except)), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
     }
 
     public function project($idFct)
@@ -162,13 +164,17 @@ class DocumentoController extends IntranetController
         $elemento = Documento::findOrFail($id);
         $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
         $elemento->setInputType('grupo', ['type' => 'hidden']);
-        $elemento->setInputType('enlace', ['type' => 'hidden']);
-        $elemento->setRule('fichero', 'mimes:pdf,zip');
+        if ($elemento->enlace){
+            //$elemento->setRule('fichero','mimes:pdf,zip');
+            $elemento->setInputType('fichero', ['disableAll' => 'on']);
+        }  
+        else 
+            $elemento->setInputType('enlace', ['type' => 'hidden']);
         $default = $elemento->fillDefautOptions();
         $modelo = $this->model;
         return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
     }
-
+    
     public function show($id)
     {
         $doc = Documento::find($id);

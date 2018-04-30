@@ -103,7 +103,6 @@ trait traitCRUD{
     {
         $this->realStore($request, $id);
         return $this->redirect();
-        
     }
 
    

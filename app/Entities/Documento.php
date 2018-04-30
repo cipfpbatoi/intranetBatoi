@@ -21,9 +21,8 @@ class Documento extends Model
         , 'ciclo', 'grupo', 'enlace', 'fichero', 'tags'];
     protected $rules = [
         'tipoDocumento' => 'required',
-        'curso' => 'required',
         'descripcion' => 'required',
-        'fichero' => 'required|mimes:pdf,zip',
+        'fichero' => 'sometimes|required|mimes:pdf,zip',
     ];
     protected $inputTypes = [
         'tipoDocumento' => ['type' => 'select'],

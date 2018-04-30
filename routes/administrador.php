@@ -26,5 +26,5 @@ Route::get('/fcts', ['as' => 'fct.admin.index', 'uses' => 'PanelFctController@in
 Route::get('/instructor/ini',['as' => 'instructor.ini','uses'=>'InstructorController@load']);
 //Route::get('/tmp/dia',['as' => 'tmp','uses'=>'DocumentoController@tmpInstructores']);
 
-Route::get('/programacion/deleteOld',['as' => 'programacion.deleteCall', 'uses' => 'ProgramacionController@deleteCall']);
-Route::post('/programacion/deleteOld',['as' => 'programacion.deleteOld', 'uses' => 'ProgramacionController@deleteOld']);
+Route::get('/programacion/deleteOld',['as' => 'programacion.deleteCall', 'uses' => 'AdministracionController@deleteProgramacionIndex']);
+Route::post('/programacion/deleteOld',['as' => 'programacion.deleteOld', 'uses' => 'AdministracionController@deleteProgramacion']);

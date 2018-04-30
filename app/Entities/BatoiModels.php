@@ -167,6 +167,8 @@ trait BatoiModels
             
             if (isset($inputTpe['disabled']))
                 $parametres = array_merge($parametres, ['disabled' => 'disabled']);
+             if (isset($inputTpe['disableAll']))
+                $parametres = array_merge($parametres, ['disabled' => 'on']);
             if ($this->isRequired($property))
                 $parametres = array_merge($parametres, ['required']);
             if (isset($inputTpe['inline']))
