@@ -42,6 +42,7 @@ class HorarioController extends BaseController
                         break;
                     default:
                         return $this->sendError('No està aceptat');
+                }
             else 
                 return $this->sendError('No hi han canvis');
         else
