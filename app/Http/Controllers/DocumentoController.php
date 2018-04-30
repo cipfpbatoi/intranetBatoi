@@ -27,6 +27,7 @@ class DocumentoController extends IntranetController
     protected $model = 'Documento';
     protected $directorio = '/Ficheros/';
     protected $panel;
+    
 
     public function index()
     {
@@ -135,7 +136,13 @@ class DocumentoController extends IntranetController
         }
         if ($request->enlace) $except = ['nota','fichero'];
         else $except = ['nota'];
+        $redirect = back();
         return parent::store(subsRequest($request->duplicate(null, $request->except($except)), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
+    }
+    public function update(Request $request, $id)
+    {
+        $this->redirect = "DocumentoController@show";
+        return parent::update($request,$id);
     }
 
     public function project($idFct)

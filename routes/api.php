@@ -65,7 +65,6 @@ Route::group(['middleware' => 'auth:api'], function() {
 
 
 
-    Route::resource('programacion_seguim', 'ProgramSeguimController');
     Route::get('/tiporeunion/{id}', 'TipoReunionController@show');
     Route::get('/modulo/{id}', 'ModuloController@show');
     Route::get('/ciclo/{id}', 'CicloController@show');

@@ -22,7 +22,7 @@ class Documento extends Model
     protected $rules = [
         'tipoDocumento' => 'required',
         'descripcion' => 'required',
-        'fichero' => 'sometimes|required|mimes:pdf,zip',
+        'fichero' => 'sometimes|mimes:pdf,zip',
     ];
     protected $inputTypes = [
         'tipoDocumento' => ['type' => 'select'],
