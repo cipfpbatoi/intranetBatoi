@@ -241,6 +241,7 @@ return array(
         'Borrarprg' => 'Delete Outdated Programming',
         'Indexdocumento' => 'Document management',
         'Authhorarios' => "Time schedules approval",
+        'Nuevocurso' => 'Delete previous data',
     ),
     'situations' => array(
         '0' => 'Not notified',

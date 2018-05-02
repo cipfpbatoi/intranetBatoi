@@ -242,6 +242,7 @@ return array(
         'Borrarprg' => 'Borrar Programaciones Caducadas',
         'Indexdocumento' => 'Gestio documentació',
         'Authhorarios' => "Autorització d'horaris",
+        'Nuevocurso' => 'Borrar Datos Curso Anterior'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
