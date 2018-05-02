@@ -157,6 +157,25 @@ class DocumentoController extends IntranetController
             return back();
         }
     }
+    
+    public function qualitat()
+    {   
+            $elemento = new Documento;
+            $elemento->tipoDocumento = 'Qualitat';
+            $elemento->idDocumento = '';
+            $elemento->ciclo = Grupo::where('tutor', '=', AuthUser()->dni)->first()->Ciclo->ciclo;
+            $elemento->grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first()->nombre;
+            $elemento->supervisor = AuthUser()->FullName;
+            $elemento->propietario = AuthUser()->FullName;
+            $elemento->tags = 'Fct';
+            $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
+            $elemento->setInputType('grupo', ['disabled' => 'disabled']);
+            $elemento->setInputType('enlace', ['type' => 'hidden']);
+            $default = $elemento->fillDefautOptions();
+            $modelo = $this->model;
+            Session::put('redirect', 'FctController@index');
+            return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
+    }
 
     public function edit($id)
     {

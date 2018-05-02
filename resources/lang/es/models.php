@@ -271,6 +271,7 @@ return array(
             'noApte' => 'Calificar No Apto',
             'noProyecto' => 'Renuncia al Proyecto',
             'nuevoProyecto' => 'Accede a Proyecto',
+            'upload' => 'Subir información Calidad',
             'pg0301' => 'Imprime PG03-01 (Hoja Control Servicio)',
             'pr0301' => 'Imprime PR03-01 (Informar Alumno)',
             'pr0601' => 'Imprime PR06-01 (Entrega Certificado)',

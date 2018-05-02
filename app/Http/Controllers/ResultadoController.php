@@ -224,6 +224,7 @@ class ResultadoController extends IntranetController
     {
         $faltan = collect();
         $modulos = Horario::ModulosActivos(esRol(AuthUser()->rol, config('constants.rol.jefe_dpto')) ? AuthUser()->departamento : null);
+        dd($modulos);
         foreach ($trimestres as $trimestre){
             $evaluaciones = config("curso.trimestres.$trimestre");
             $this->llenaFaltan($faltan, $modulos, $trimestre, $evaluaciones);

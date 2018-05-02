@@ -8,6 +8,7 @@ use Intranet\Http\Controllers\Controller;
 use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Programacion;
+use DB;
 
 class AdministracionController extends Controller{
     
@@ -30,6 +31,21 @@ class AdministracionController extends Controller{
     }
     protected function deleteProgramacion(){
         Programacion::where('hasta','<=',Hoy())->delete();
+        return back();
+    }
+    protected function nuevoCursoIndex(){
+        return view('nuevo.curso');
+    }
+    protected function nuevoCurso(){
+        //$this->checkForeignKeys(false);
+        $tables = ['actividades','comisiones','cursos','expedientes','faltas','faltas_itaca','faltas_profesores',
+            'fcts','grupos_trabajo','guardias','horarios','incidencias','notifications','ordenes_trabajo','reservas',
+            'resultados','reuniones','tutorias_grupos','activities'];
+        foreach ($tables as $tabla) {
+                DB::table($tabla)->delete();
+        } 
+        
+        //$this->checkForeignKeys(true);
         return back();
     }
 }

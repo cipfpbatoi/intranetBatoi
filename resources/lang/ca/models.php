@@ -272,6 +272,7 @@ return array(
             'noApte' => 'Qualificar No Apte',
             'noProyecto' => 'Renùncia al Projecte',
             'nuevoProyecto' => 'Accedeix al Projecte',
+            'upload' => 'Pujar informació Qualitat',
             'pg0301' => 'Imprimeix PG03-01 (Full Control Servei)',
             'pr0301' => 'Imprimeix PR03-01 (Informar Alumne)',
             'pr0601' => 'Imprimeix PR06-01 (Entrega Certificat)',
