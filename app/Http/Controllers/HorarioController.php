@@ -15,7 +15,8 @@ class HorarioController extends BaseController
 
     public function changeTable($dni){
         if (Storage::disk('local')->exists('/horarios/'.$dni.'.json'))
-            if ($data = Storage::disk('local')->get('/horarios/'.$dni.'.json'))
+            if ($fichero = Storage::disk('local')->get('/horarios/'.$dni.'.json')) {
+                $data=json_decode($fichero);
                 switch ($data->estado) {
                     case "Aceptado":
                         // Modifica la tabla
@@ -43,7 +44,7 @@ class HorarioController extends BaseController
                     default:
                         return $this->sendError('No està aceptat');
                 }
-            else 
+              } else 
                 return $this->sendError('No hi han canvis');
         else
            return $this->sendError('No s\'ha fet proposta de canvis'); 
@@ -54,7 +55,7 @@ class HorarioController extends BaseController
         // Cogemos todos los profesores y los vamos recorriendo
         $profes = Profesor::select('dni')->Activo()->get();
         foreach ($profes as $profe) {
-            $data[$profe->dni]=changeTable($profe->dni);
+            $data[$profe->dni]=$this->changeTable($profe->dni);
         }
         return $this->sendResponse($data, 'OK');
     }

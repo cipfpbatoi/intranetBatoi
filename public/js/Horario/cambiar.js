@@ -94,6 +94,22 @@ function cargaCambios() {
 		realizaCambios(datos.cambios, modificable);
 		$('#estado').val(datos.estado);
 		$('#obs').val(datos.obs);
+		if (datos.estado=="Aceptado") {
+		// Se puede cambiar ya el horario
+			$('#guardar').after('<button id="hazCambios">Aplica los cambios al horario</button>');
+			$('#hazCambios').on('click', function() {
+				if (confirm('Deseas aplicar ya estos cambios al horario del profesor?')) {
+					$.ajax({
+						type: "GET",
+						url: "/change/"+profe+'?api_token='+$("#_token").text(),
+						contentType: "application/json",
+						dataType: "json"
+					}).then(function(res) {
+						
+					}.function(err) {
+					})
+			})
+		}
 	}, function(err) {
 		if (err.responseJSON && err.responseJSON.message=="No hi ha fitxer") {
 			var datos={
