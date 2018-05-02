@@ -65,7 +65,7 @@ class HorarioController extends BaseController
     }
     
     public function horarioCambiar(){
-        return route("/profesor/".AuthUser()->dni."/horario-cambiar");
+        return redirect("/profesor/".AuthUser()->dni."/horario-cambiar");
     }
 
 }
