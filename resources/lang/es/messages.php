@@ -242,7 +242,8 @@ return array(
         'Borrarprg' => 'Borrar Programaciones Caducadas',
         'Indexdocumento' => 'Gestio documentació',
         'Authhorarios' => "Autorització d'horaris",
-        'Nuevocurso' => 'Borrar Datos Curso Anterior'
+        'Nuevocurso' => 'Borrar Datos Curso Anterior',
+        'Changeschedule' => ' Cambiar horario',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

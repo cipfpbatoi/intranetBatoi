@@ -63,5 +63,9 @@ class HorarioController extends BaseController
     public function changeIndex() {
         return view('horario.change');
     }
+    
+    public function horarioCambiar(){
+        return route("/profesor/".AuthUser()->dni."/horario-cambiar");
+    }
 
 }

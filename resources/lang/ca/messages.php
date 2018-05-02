@@ -244,7 +244,8 @@ return array(
         'Borrarprg' => 'Esborrar Programacions Caducades',
         'Indexdocumento' => 'Gestio documentació',
         'Authhorarios' => "Autorització d'horaris",
-        'Nuevocurso' => 'Esborrar Dades Curs Anterior'
+        'Nuevocurso' => 'Esborrar Dades Curs Anterior',
+        'Changeschedule' => ' Canviar horari',
         
     ),
     'situations' => array(

@@ -242,6 +242,7 @@ return array(
         'Indexdocumento' => 'Document management',
         'Authhorarios' => "Time schedules approval",
         'Nuevocurso' => 'Delete previous data',
+        'Changeschedule' => ' Change Schedule',
     ),
     'situations' => array(
         '0' => 'Not notified',
