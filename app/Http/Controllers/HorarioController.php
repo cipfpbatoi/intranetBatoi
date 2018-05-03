@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Intranet\Http\Controllers\BaseController;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
+use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
 
 class HorarioController extends BaseController
@@ -21,8 +22,9 @@ class HorarioController extends BaseController
                     case "Aceptado":
                         // Modifica la tabla
                         foreach ($data->cambios as $cambio) {
-                           $de=explode("-",$cambio['de']);
-                           $a=explode("-", $cambio['a']);
+                        
+                           $de=explode("-",$cambio->de);
+                           $a=explode("-", $cambio->a);
 
                            $horario = Horario::dia($de[1])->orden($de[0])->Profesor($dni)->first();
                            $horario->dia_semana = $a[1];
@@ -32,32 +34,29 @@ class HorarioController extends BaseController
 
                         // Pon el estado del fichero como "Guardado"
                         $data->estado="Guardado";
-                        $data->cambios="[]";
-                        if (Storage::disk('local')->put('/horarios/'.$dni.'.json', $data))
-                            return $this->sendResponse('Guardado Correctament','OK');
-                        else
-                            return $this->sendError('Horari modificat però no s\'ha pogut guardar el fitxer');
+                        $data->cambios=[];
+                        if (Storage::disk('local')->put('/horarios/'.$dni.'.json', json_encode($data))) return 1;
+                        else Alert::warning("Horari amb dni $dni modificat però no s\'ha pogut guardar el fitxer");
                         break;
                     case "Guardado":
-                        return $this->sendError('L\'horari ja està guardat');
+                        Alert::info("Horari amb dni $dni ja està guardat");
                         break;
                     default:
-                        return $this->sendError('No està aceptat');
+                        Alert::warning("Horari amb dni $dni no està aceptat");
                 }
-              } else 
-                return $this->sendError('No hi han canvis');
-        else
-           return $this->sendError('No s\'ha fet proposta de canvis'); 
+              } else  Alert::danger("Horari amb dni $dni no té canvis");
+        return 0;
     }
 
     public function changeTableAll(){
-        $data=[];
+        $correctos = 0;
         // Cogemos todos los profesores y los vamos recorriendo
         $profes = Profesor::select('dni')->Activo()->get();
         foreach ($profes as $profe) {
-            $data[$profe->dni]=$this->changeTable($profe->dni);
+            $correctos += $this->changeTable($profe->dni);
         }
-        return $this->sendResponse($data, 'OK');
+        Alert::success("He fet $correctos canvis d'horaris");
+        return back();
     }
 
     public function changeIndex() {

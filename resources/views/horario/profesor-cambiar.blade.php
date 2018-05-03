@@ -9,6 +9,7 @@
 @include('home.partials.horario.profesor')
 	Observaciones: <textarea class="form-control" id="obs" placeholder="Indica el nº de horas liberadas y a qué las dedicarás"></textarea><br>
 	<button id="guardar">Guardar cambios y enviar</button>
+        <button id="aplicar" hidden="on">Aplicar cambio horario</button>
 @endsection
 @section('titulo')
 Horario {{$titulo}}
