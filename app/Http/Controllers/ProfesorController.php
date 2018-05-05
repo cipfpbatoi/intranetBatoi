@@ -183,6 +183,8 @@ use traitAutorizar,
         $this->panel->setBoton('grid', new BotonImg('profesor.muestra', ['roles' => config('constants.rol.direccion')]));
         $this->panel->setBoton('grid', new BotonImg('profesor.horario-cambiar', ['img' => 'fa-th', 'roles' => config('constants.rol.direccion')
             ,'where' => ['dni','existe','/horarios/$.json']]));
+        $this->panel->setBoton('grid', new BotonImg('profesor.horario-cambiar', ['img' => 'fa-th-large', 'roles' => config('constants.rol.direccion')
+            ,'where' => ['dni','noExiste','/horarios/$.json']]));
         $this->panel->setBoton('grid', new BotonImg('profesor.change', ['img' => 'fa-user','roles' => config('constants.rol.administrador')]));
         $this->panel->setBoton('profile', new BotonIcon('profesor.horario', ['icon' => 'fa-user', 'class' => 'btn-success']));
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
@@ -194,16 +196,14 @@ use traitAutorizar,
     {
         $horario = Horario::HorarioSemanal($id);
         $profesor = Profesor::findOrFail($id);
-        $titulo = $profesor->FullName;
-        return view('horario.profesor', compact('horario', 'titulo'));
+        return view('horario.profesor', compact('horario', 'profesor'));
     }
 
     protected function horarioCambiar($id)
     {
         $horario = Horario::HorarioSemanal($id);
         $profesor = Profesor::findOrFail($id);
-        $titulo = $profesor->FullName;
-        return view('horario.profesor-cambiar', compact('horario', 'titulo'));
+        return view('horario.profesor-cambiar', compact('horario', 'profesor'));
     }
     protected function imprimirHorarios()
     {

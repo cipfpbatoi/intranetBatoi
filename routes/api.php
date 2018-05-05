@@ -71,7 +71,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     
     Route::get('horarioChange/{dni}','HorarioController@getChange');
     Route::post('horarioChange/{dni}','HorarioController@Change');
-    
+   
     Route::post('/centro/fusionar','CentroController@fusionar');
     Route::get('colaboracion/instructores/{id}','ColaboracionController@instructores');
     //Route::get('/convenio','EmpresaController@indexConvenio');

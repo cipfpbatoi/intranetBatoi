@@ -8,13 +8,18 @@ use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
+use Intranet\Botones\BotonImg;
 
-class HorarioController extends BaseController
+class HorarioController extends IntranetController
 {
 
     protected $model = 'Horario';
+    protected $perfil = 'profesor';
+//    protected $gridFields = ['Profesor', 'XModulo','XOcupacion',  'dia_semana', 'desde'];
+//    protected $modal = false;
 
-    public function changeTable($dni){
+    public function changeTable($dni,$redirect=true){
+        $correcto = false;
         if (Storage::disk('local')->exists('/horarios/'.$dni.'.json'))
             if ($fichero = Storage::disk('local')->get('/horarios/'.$dni.'.json')) {
                 $data=json_decode($fichero);
@@ -35,7 +40,8 @@ class HorarioController extends BaseController
                         // Pon el estado del fichero como "Guardado"
                         $data->estado="Guardado";
                         $data->cambios=[];
-                        if (Storage::disk('local')->put('/horarios/'.$dni.'.json', json_encode($data))) return 1;
+                        if (Storage::disk('local')->put('/horarios/'.$dni.'.json', json_encode($data)))
+                                $correcto = true;
                         else Alert::warning("Horari amb dni $dni modificat però no s\'ha pogut guardar el fitxer");
                         break;
                     case "Guardado":
@@ -45,7 +51,8 @@ class HorarioController extends BaseController
                         Alert::warning("Horari amb dni $dni no està aceptat");
                 }
               } else  Alert::danger("Horari amb dni $dni no té canvis");
-        return 0;
+        if ($redirect) return back();
+        else return $correcto;
     }
 
     public function changeTableAll(){
@@ -53,7 +60,7 @@ class HorarioController extends BaseController
         // Cogemos todos los profesores y los vamos recorriendo
         $profes = Profesor::select('dni')->Activo()->get();
         foreach ($profes as $profe) {
-            $correctos += $this->changeTable($profe->dni);
+            $correctos += $this->changeTable($profe->dni,false);
         }
         Alert::success("He fet $correctos canvis d'horaris");
         return back();
@@ -66,5 +73,15 @@ class HorarioController extends BaseController
     public function horarioCambiar(){
         return redirect("/profesor/".AuthUser()->dni."/horario-cambiar");
     }
-
+    
+//    protected function iniBotones()
+//    {
+//        $this->panel->setBotonera(['create'],['edit','delete']);
+//    }
+//    
+//    protected function modificarHorario($idProfesor){
+//        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
+//        $this->iniBotones();
+//        return $this->grid(Horario::Profesor($idProfesor)->get());
+//    }
 }

@@ -3,6 +3,6 @@
 @include('home.partials.horario.profesor')
 @endsection
 @section('titulo')
-Horario {{$titulo}}
+Horario {{ $profesor->FullName}}
 @endsection
 

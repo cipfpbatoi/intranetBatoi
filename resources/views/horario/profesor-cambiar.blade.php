@@ -12,7 +12,7 @@
         <button id="aplicar" hidden="on">Aplicar cambio horario</button>
 @endsection
 @section('titulo')
-Horario {{$titulo}}
+Horario {{$profesor->fullName}}
 @endsection
 @section('scripts')
 {{ Html::script("/js/Horario/cambiar.js") }}

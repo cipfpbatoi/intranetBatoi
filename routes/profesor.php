@@ -122,6 +122,8 @@ Route::get('/profesor/{profesor}/tarjeta', ['as' => 'profesor.tarjeta', 'uses' =
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'profesor.mensaje', 'uses' => 'ProfesorController@alerta']);
 Route::post('/profesor/colectivo', ['as' => 'profesor.colectivo', 'uses' => 'ProfesorController@avisaColectivo']);
 Route::get('/horario/change',['as' => 'horario.change', 'uses' => 'HorarioController@horarioCambiar']);
+Route::get('/profesor/{profesor}/horario-aceptar',['as' => 'horario.change', 'uses' => 'HorarioController@changeTable']);
+
 
 Route::get('/ficha', ['as' => 'fichar.ficha', 'uses' => 'FicharController@ficha']);
 

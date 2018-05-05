@@ -30,3 +30,9 @@ Route::post('/nuevoCurso',['as' => 'curso.nuevo', 'uses' => 'AdministracionContr
 
 Route::get('/programacion/deleteOld',['as' => 'programacion.deleteCall', 'uses' => 'AdministracionController@deleteProgramacionIndex']);
 Route::post('/programacion/deleteOld',['as' => 'programacion.deleteOld', 'uses' => 'AdministracionController@deleteProgramacion']);
+
+
+//Route::resource('/horario', 'HorarioController', ['except' => ['destroy', 'update']]);
+//Route::get('/horario/{horario}/delete', ['as' => 'horario.destroy', 'uses' => 'HorarioController@destroy']);
+//Route::post('/horario/create', ['as' => 'horario.store', 'uses' => 'HorarioController@store']);
+//Route::put('/horario/{horario}/edit', ['as' => 'horario.update', 'uses' => 'HorarioController@update']);

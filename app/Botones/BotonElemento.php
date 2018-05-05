@@ -57,6 +57,9 @@ abstract class BotonElemento extends Boton
         if ($op == 'existe'){
             return Storage::disk('local')->exists(str_replace('$', $elemento, $valor));
         }
+        if ($op == 'noExiste'){
+            return !Storage::disk('local')->exists(str_replace('$', $elemento, $valor));
+        }
         $condicion = "return('$elemento' $op '$valor');";
         return eval($condicion) ? true : false;
     }
