@@ -23,6 +23,7 @@ Aquest manual explica al principi com fer determinades tasques i després explic
 Quan els professors alliberen hores perquè els alumnes de 2n curs sen van a fer la FCT poden fer canvis en els seus horaris. 
 
 Pera a que puguen fer els canvis en el seu horari s'ha d'activar aquesta opció del menú (per defecte està desactivada perquè només es poden fer canvis quan s'alliberen les hores de 2n). Es fa des del _Menú **Administració** -> Manteniment del menú general_. Busquem l'opció de 'Canvi horari? (podem filtrar la taula) i l'editem:
+
 ![Menu canviar horari]()
 
 Editem el registre i canviem el camp _**Estat**_ (l'últim) per a habilitar aquesta opció en el menú:
@@ -32,8 +33,10 @@ Editem el registre i canviem el camp _**Estat**_ (l'últim) per a habilitar aque
 Quan està habilitada a tots els professors els apareix en el menú '_Professorat_' l'opció de '_Canviar horari_'.
 
 Una vegada els professors han fet els canvis en els seus horaris s'han d'aprovar des de direcció. Es fa des de la taula de professors: _menú **Equip directiu** -> Dades Professors_. En la taula amb tots els professors tenim les següents opcions referents als horaris:
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.12/css/all.css" integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9" crossorigin="anonymous">
+
 * <span class="fa-table">: sdf
+ * :
+ * \uf35a:
 
 
 
