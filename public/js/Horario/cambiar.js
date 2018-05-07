@@ -23,9 +23,10 @@ window.onload=function() {
 		}).then(function(res) {
 			if (esDireccion) {
 				alert(res.data+'. Horario aprobado');				
+				location.reload();
 			} else {
 				alert(res.data+'. Tu nuevo horario te aparecerá cuando esté aprobado');
-                                location.href='/home';
+                location.href='/home';
 			}
 		}, function(err) {
 			alert('Error al guardar los datos: '+err);
