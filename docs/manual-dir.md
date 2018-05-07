@@ -9,6 +9,8 @@
 ---
 
 ## Introducció
+&#f35a
+
 Aquest manual només explica les accions que pot fer el cap d'estudis o director i no un professor normal. Les accions habituals de qualsevol professor estan explicades en el manual del professor.
 
 L'accés a la intranet és igual per a tots els professors i és el sistema qui detecta quin és el seu rol (professor, tutor, cap de departament, …) i mostra les opcions adequades en cada cas.
