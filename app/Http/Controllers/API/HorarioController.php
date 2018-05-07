@@ -74,7 +74,7 @@ class HorarioController extends ApiBaseController
         $data = [];
         $profes = Profesor::select('dni')->Activo()->get();
         foreach ($profes as $profe) {
-            $horario = Horario::Primera($profe->dni,$fecha)->orderBy('desde')->get();
+            $horario = Horario::Primera($profe->dni,$fecha)->orderBy('sesion_orden')->get();
             if (isset($horario->first()->desde)) {
                 $data[$profe->dni] = $horario->first()->desde . " - " . $horario->last()->hasta;
             } else

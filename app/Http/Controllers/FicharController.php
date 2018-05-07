@@ -130,7 +130,7 @@ class FicharController extends IntranetController
             // Obtenemso el nomcurt del departamento
             $profesor->departamento = $profesor->Departamento->depcurt;
             // Obtenemos su horario
-            $horario = Horario::Primera($profesor->dni,$fecha)->orderBy('desde')->get();
+            $horario = Horario::Primera($profesor->dni,$fecha)->orderBy('sesion_orden')->get();
             if (isset($horario->first()->desde)) {
                 $profesor->email = $horario->first()->desde . " - " . $horario->last()->hasta;
                 $horarios[$profesor->dni] = $horario->first()->desde . " - " . $horario->last()->hasta;
