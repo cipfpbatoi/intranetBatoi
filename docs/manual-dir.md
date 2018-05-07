@@ -1,4 +1,4 @@
-# Manual de Capr d'Estudis i Direcció
+# Manual de Cap d'Estudis i Direcció
 Índex de continguts
 * [Introducció](#introducció)
 * [Tasques habituals](#)
@@ -32,6 +32,7 @@ Editem el registre i canviem el camp _**Estat**_ (l'últim) per a habilitar aque
 Quan està habilitada a tots els professors els apareix en el menú '_Professorat_' l'opció de '_Canviar horari_'.
 
 Una vegada els professors han fet els canvis en els seus horaris s'han d'aprovar des de direcció. Es fa des de la taula de professors: _menú **Equip directiu** -> Dades Professors_. En la taula amb tots els professors tenim les següents opcions referents als horaris:
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.12/css/all.css" integrity="sha384-G0fIWCsCzJIMAVNQPfjH08cyYaUtMwjJwqiRKxxE/rx96Uroj1BtIQ6MLJuheaO9" crossorigin="anonymous">
 * <span class="fa-table">: sdf
 
 
