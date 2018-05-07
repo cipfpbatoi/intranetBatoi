@@ -34,7 +34,7 @@ class ProfesorController extends ApiBaseController
                 $uno->email = '';
                 $uno->emailItaca = '';
             }
-            $horario = Horario::Primera($uno->dni)->orderBy('desde')->get();
+            $horario = Horario::Primera($uno->dni)->orderBy('sesion_orden')->get();
             if (isset($horario->first()->desde)){
                 $uno->codigo_postal = $horario->first()->desde." - ".$horario->last()->hasta;
             }
