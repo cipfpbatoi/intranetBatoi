@@ -66,7 +66,7 @@ A més de moure una hora a altra diferent  l'equip directiu també podem canviar
 
 Ens mostra una taula amb cada entrada de l'horari amb el mòdul, el grup (o l'ocupació) i quan s'imparteix i un botó d'editar:
 
-[Canvia funcio](./img/canviHorari-funcio.png)
+![Canvia funcio](./img/canviHorari-funcio.png)
 
 Des d'ací podem canviar a què dedica el professor eixa hora.
 
@@ -94,4 +94,4 @@ Les acciones que podem fer són:
 * **Canviar horari professor**: per a autoritzar el canvi d'horari com s'explica en el [manual de canviar horari](#canvis-dhorari)
 * **Canviar funcions d'horari**: per a modificar què fa un professor una hora determinada com s'explica en el [manual de canviar horari](#canvis-dhorari)
 * **Canviar usuari**: ens permet funcionar com si forem l'usuari indicat. Per a tornar al nostre usuari es fa des del menú del perfil amb l'opció de _Tornar al meu usuari_.
-[Tornar al meu usuari](./img/direc-tornaUsuari.png)
+![Tornar al meu usuari](./img/direc-tornaUsuari.png)
