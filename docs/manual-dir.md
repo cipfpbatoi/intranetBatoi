@@ -1,11 +1,11 @@
 # Manual de Cap d'Estudis i Direcció
 Índex de continguts
 * [Introducció](#introducció)
-* [Tasques habituals](#)
-  * [Canvis dels horaris](#)
-* [Menú 'Equip directiu'](#menú--de-departament)
-  * [Autorizar programacions](#autorizar-programacions)
-  * [Informe departament](#informe-departament)
+* [Tasques habituals](#tasques-habituals)
+  * [Canvis dels horaris](#canvis-dhorari)
+* [Menú 'Equip directiu'](#menú-equip-directiu)
+  * [Cursos /Ponències](#)
+  * [Dades professors](#dades-professors)
 ---
 
 ## Introducció
@@ -22,6 +22,7 @@ Aquest manual explica al principi com fer determinades tasques i després explic
 ### Canvis d'horari
 Quan els professors alliberen hores perquè els alumnes de 2n curs sen van a fer la FCT poden fer canvis en els seus horaris. 
 
+#### Activar els canvis per als professors
 Pera a que puguen fer els canvis en el seu horari s'ha d'activar aquesta opció del menú (per defecte està desactivada perquè només es poden fer canvis quan s'alliberen les hores de 2n). Es fa des del _Menú **Administració** -> Manteniment del menú general_. Busquem l'opció de 'Canvi horari? (podem filtrar la taula) i l'editem:
 
 ![Menu canviar horari](./img/canviHorari-menu.png)
@@ -32,6 +33,7 @@ Editem el registre i canviem el camp _**Estat**_ (l'últim) per a habilitar aque
 
 Quan està habilitada a tots els professors els apareix en el menú '_Professorat_' l'opció de '_Canviar horari_'.
 
+#### Aprovar horaris
 Una vegada els professors han fet els canvis en els seus horaris s'han d'aprovar des de direcció. Es fa des de la taula de professors: _menú **Equip directiu** -> Dades Professors_. En la taula amb tots els professors tenim les següents opcions referents als horaris:
 
 ![Taula professors](./img/canviHorari-tabla-profes.png)
@@ -53,12 +55,37 @@ En l'horari les hores canviades apareixen en roig. A banda dels canvis fets pel 
 
 Quan tot siga correcte s'ha de **aprovar** la proposta pulsant el botó que hi ha baix de la taula de l'horari. L'estat de la proposta canvia a '_Aprovat_' i el professor ja no pot fer més modificacions, però sí l'equip directiu (després ha de tornar a aprovar l'horari). 
 
+#### Canviar un horari
 Quan un horari està aprovat apareix un nou botó de **Aplicar els canvis**. Això el que fa es que els canvis s'apliquen a l'horari del profesor que pasa a ser el nou horari. A més l'estat canvia a '_Guardat_'. Aixó només es fa en cas de una modificació puntual. 
 
+#### Canviar tots els horaris
 Quan direcció ha aprovat tots els canvis d'horari per aplicar-los tots (sense haver d'anar un per un) es fa des del _menú **Equip directiu** -> Autorització d'horaris_. Ací tenim un botó que farà els canvis de tots els horaris i en aquesta pantalla apareixerà qualsevol error que puga sorgir. 
+
+#### Canviar funcions d'horari
+A més de moure una hora a altra diferent  l'equip directiu també podem canviar una h
+
 
 ## Menú 'Equip directiu'
 Ací tenim la majoria d'accions:
 
-### 
-Aquest apartat és exactament igual que el del tutor però el cap de departament pot convocar a més reunions de departament.
+### Cursos / Ponències
+
+### Dades professors
+Ací tenim una taula amb tots els professors actius del Centre que podem filtrar, ordenar, ... 
+
+![Taula professors](./img/canviHorari-tabla-profes.png)
+
+Les acciones que podem fer són:
+* Horari: mostra l'horari del professor
+* Editar: ens mostra el perfil del professors des d'on podem canviar:
+  * e-mail del centre
+  * fotografia
+  * departament al que pertany (ho hem de fer en tots els nous professors perquè en Itaca no apareix el departament)
+  * idioma de la intranet
+  * si es mostra o no el seu telèfon en la intranet als companys de departament
+  * rol: només direcció i els administradors poden canviar el rol d'un usuari. Tot el mon ha de tindre al menys el rol '_Tots_' i el rol de '_Professor_' o '_Alumne_'.
+* Carnet: permet imprimir el carnet d'eixe professor
+* Més dades: podem veure totes de dades del professor, però no canviar-les (s'ha de canviar a Itaca)
+* Canviar horari professor: per a autoritzar el canvi d'horari com s'explica en el [manual](#canvis-dhorari)
+* Canviar funcions d'horari: 
+
