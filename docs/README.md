@@ -9,6 +9,7 @@ Els manuals estan organitzats per rols. Tenim el manual del professor i a més m
 * [Manual del professor](manual-profe.md)
 * [Manual del tutor](manual-tutor.md)
 * [Manual del Cap de departament](manual-cap.md)
+* [Manual de l'Equip directiu](manual-dir.md)
 
 També hi ha manuals específics per a determinades accions, com:
 * [Realitzar l'inventari](inventari.md)
