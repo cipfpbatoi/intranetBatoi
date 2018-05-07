@@ -11,6 +11,7 @@
 ## Introducció
 &#f35a;
 
+<script type="text/javascript">document.write('\u2740')</script>
 
 :blush:
 
