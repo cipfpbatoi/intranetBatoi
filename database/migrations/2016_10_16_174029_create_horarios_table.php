@@ -17,8 +17,6 @@ class CreateHorariosTable extends Migration
             $table->increments('id');
             $table->enum('dia_semana',['L','M','X','J','V']);
             $table->tinyInteger('sesion_orden');
-            $table->time('desde');
-            $table->time('hasta');
             $table->string('idProfesor',10);
             $table->string('modulo',6)->nullable();
             $table->string('idGrupo',5)->nullable();

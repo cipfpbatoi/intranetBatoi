@@ -126,8 +126,6 @@ class ImportController extends Seeder
                 'dia_semana' => 'dia_semana',
                 'plantilla' => 'plantilla',
                 'sesion_orden' => 'sesion_orden',
-                'desde' => 'hora_desde',
-                'hasta' => 'hora_hasta',
                 'idProfesor' => 'docente',
                 'modulo' => 'contenido',
                 'idGrupo' => 'grupo',

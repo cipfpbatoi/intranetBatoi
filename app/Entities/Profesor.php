@@ -311,31 +311,28 @@ class Profesor extends Authenticatable
     protected function donde_esta($profesor)
     {
         $ahora = Date::now();
-        $hora = $ahora->format('H:i:s');
+        $hora = sesion(Hora($ahora));
         $dia = config("constants.diaSemana." . $ahora->format('w'));
 
         $horasDentro = Horario::Dia($dia)
                 ->Profesor($profesor)
-                ->orderBy('desde')
+                ->orderBy('sesion_orden')
                 ->get();
+        //dd($horasDentro);
         if (count($horasDentro) > 0) {
-            if ($horasDentro->last()->hasta < $hora)
+            if ($horasDentro->last()->sesion_orden < $hora)
                 return ['momento' => $horasDentro->last()->hasta, 'ahora' => trans('messages.generic.home')];
-            if ($horasDentro->first()->desde > $hora)
+            if ($horasDentro->first()->sesion_orden > $hora)
                 return ['momento' => $horasDentro->first()->desde, 'ahora' => trans('messages.generic.home')];
 
             $horaActual = Horario::Profesor($profesor)
                     ->Dia($dia)
-                    ->Hora($hora)
-                    ->orderBy('desde')
+                    ->Orden($hora)
+                    ->orderBy('sesion_orden')
                     ->first();
             if ($horaActual) {
-                if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre) {
-                    if (App::getLocale(session('lang')) == 'es')
-                        return ['momento' => $horaActual->Grupo->nombre, 'ahora' => $horaActual->Modulo->cliteral . ' (' . $horaActual->aula . ')'];
-                    else
-                        return ['momento' => $horaActual->Grupo->nombre, 'ahora' => $horaActual->Modulo->vliteral . ' (' . $horaActual->aula . ')'];
-                }
+                if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre) 
+                    return ['momento' => $horaActual->Grupo->nombre, 'ahora' => $horaActual->Modulo->literal . ' (' . $horaActual->aula . ')'];
                 if ($horaActual->ocupacion != null && isset($horaActual->Ocupacion->nombre)) {
                     if (App::getLocale(session('lang')) == 'es')
                         return ['momento' => '', 'ahora' => $horaActual->Ocupacion->nombre];

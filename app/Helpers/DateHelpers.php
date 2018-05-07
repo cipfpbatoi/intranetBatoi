@@ -106,6 +106,12 @@ function hora($fecha)
     return $fc1->format('H:i');
 }
 
+function sesion($hora)
+{
+    return  isset(\Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first()->codigo)?
+            \Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first()->codigo:0;
+}
+
 /**
  * Resta dos hora
  * 

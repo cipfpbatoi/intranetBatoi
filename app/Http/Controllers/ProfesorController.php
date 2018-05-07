@@ -185,6 +185,8 @@ use traitAutorizar,
             ,'where' => ['dni','existe','/horarios/$.json']]));
         $this->panel->setBoton('grid', new BotonImg('profesor.horario-cambiar', ['img' => 'fa-th-large', 'roles' => config('constants.rol.direccion')
             ,'where' => ['dni','noExiste','/horarios/$.json']]));
+         $this->panel->setBoton('grid', new BotonImg('horario.cambiar', ['img' => 'fa-flash', 'roles' => config('constants.rol.administrador')
+            ]));
         $this->panel->setBoton('grid', new BotonImg('profesor.change', ['img' => 'fa-user','roles' => config('constants.rol.administrador')]));
         $this->panel->setBoton('profile', new BotonIcon('profesor.horario', ['icon' => 'fa-user', 'class' => 'btn-success']));
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));

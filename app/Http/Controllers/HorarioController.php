@@ -9,14 +9,16 @@ use Intranet\Entities\Profesor;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Botones\BotonImg;
+use Illuminate\Support\Facades\Session;
 
 class HorarioController extends IntranetController
 {
 
     protected $model = 'Horario';
     protected $perfil = 'profesor';
-//    protected $gridFields = ['Profesor', 'XModulo','XOcupacion',  'dia_semana', 'desde'];
-//    protected $modal = false;
+    protected $gridFields = ['XModulo','XOcupacion' ,'dia_semana', 'desde', 'aula'];
+    protected $modal = true;
+   
 
     public function changeTable($dni,$redirect=true){
         $correcto = false;
@@ -74,14 +76,20 @@ class HorarioController extends IntranetController
         return redirect("/profesor/".AuthUser()->dni."/horario-cambiar");
     }
     
-//    protected function iniBotones()
-//    {
-//        $this->panel->setBotonera(['create'],['edit','delete']);
-//    }
-//    
-//    protected function modificarHorario($idProfesor){
-//        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-//        $this->iniBotones();
-//        return $this->grid(Horario::Profesor($idProfesor)->get());
-//    }
+    protected function iniBotones()
+    {
+        $this->panel->setBotonera([],['edit']);
+    }
+    
+    public function index(){
+        return $this->modificarHorario(Session::get('horarioProfesor'));
+    }
+    
+    protected function modificarHorario($idProfesor){
+        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
+        Session::put('horarioProfesor',$idProfesor);
+        $this->titulo = ['quien' => Profesor::find($idProfesor)->fullName]; // paràmetres per al titol de la vista
+        $this->iniBotones();
+        return $this->grid(Horario::Profesor($idProfesor)->get());
+    }
 }

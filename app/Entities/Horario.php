@@ -11,26 +11,22 @@ use Intranet\Events\ActivityReport;
 class Horario extends Model
 {
 
-//    use BatoiModels;
+    use BatoiModels;
     
     protected $primaryKey = 'id';
-//    protected $fillable = ['idProfesor', 'modulo', 'idGrupo', 'ocupacion', 'dia_semana', 'sesion_orden'];
-//    protected $rules = [
-//        'idProfesor' => 'required',
-//        'dia_semana' => 'required',
-//        'sesion_orden' => 'required',
-//    ];
-//    protected $inputTypes = [
-//        'idProfesor' => ['type' => 'select'],
-//        'modulo' => ['type' => 'select'],
-//        'idGrupo' => ['type' => 'select'],
-//        'ocupacion' => ['type' => 'select'],
-//        'sesion_orden' => ['type' => 'select'],
-//    ];
-//    protected $dispatchesEvents = [
-//        'saved' => ActivityReport::class,
-//        'deleted' => ActivityReport::class,
-//    ];
+    protected $fillable = ['idProfesor', 'modulo', 'idGrupo', 'ocupacion','aula'];
+    protected $rules = [
+        'idProfesor' => 'required',
+    ];
+    protected $inputTypes = [
+        'idProfesor' => ['disabled' => 'disabled'],
+        'modulo' => ['type' => 'select'],
+        'idGrupo' => ['type' => 'select'],
+        'ocupacion' => ['type' => 'select'],
+    ];
+    protected $dispatchesEvents = [
+        'saved' => ActivityReport::class,
+    ];
 
     public function Modulo()
     {
@@ -87,11 +83,6 @@ class Horario extends Model
     public function scopeGuardia($query)
     {
         return $query->where('ocupacion', '3249454');
-    }
-
-    public function scopeHora($query, $hora)
-    {
-        return $query->where('desde', '<=', $hora)->where('hasta', '>=', $hora);
     }
 
     public function scopePrimera($query, $profesor, $date = null)
@@ -176,11 +167,13 @@ class Horario extends Model
     protected function getXOcupacionAttribute(){
         return isset($this->Ocupacion->nom)?$this->Ocupacion->nom:$this->Grupo->nombre;
     }
-    
-    public function getIdProfesorOptions(){
-        return hazArray(Profesor::All(), 'dni', 'FullName');
+    protected function getDesdeAttribute(){
+        return isset($this->Hora->hora_ini)?$this->Hora->hora_ini:'';
     }
-
+    protected function getHastaAttribute(){
+        return isset($this->Hora->hora_fin)?$this->Hora->hora_fin:'';
+    }
+    
     public function getModuloOptions(){
         return hazArray(Modulo::All(), 'codigo', 'literal');
     }
@@ -190,9 +183,7 @@ class Horario extends Model
     public function getOcupacionOptions(){
         return hazArray(Ocupacion::All(), 'codigo', 'nom');
     }
-    public function getSesionOrdenOptions(){
-        return hazArray(Hora::All(), 'codigo', ['hora_ini','hora_fin']);
-    }
+    
     
 
 }

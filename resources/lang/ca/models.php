@@ -66,7 +66,9 @@ return array(
                 'edit' => 'Modificar Perfil Professor',
                 'show' => 'Dades Professor',
                 'index' => 'Listat Professors',
-                'list' => 'Professors Absents'
+                'list' => 'Professors Absents',
+                'horario-cambiar' => 'Canviar horari Professor',
+                
         ),
         'Menu' => array(
                 'index' => 'Elements del menú',
@@ -134,6 +136,7 @@ return array(
             'edit' => 'Editar Espai',
             'detalle' => 'Vore Materials'
         ),
+    
         'Grupo' => array(
             'index' => 'Grups',
             'detalle' => 'Vore alumnes',
@@ -329,6 +332,11 @@ return array(
             '3' => 'Rebutjada',
             '1' => 'Pendent',
             '2' => 'Justificada',
+        ),
+        'Horario' => array(
+            'index' => 'Modificar Horari :quien',
+            'edit' => 'Edita Horari',
+            'cambiar' => "Canviar funcions horari",
         ),
         'Instructor' => array(
           'index' => 'Consulta de instructors',

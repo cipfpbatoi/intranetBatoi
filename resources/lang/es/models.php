@@ -66,7 +66,9 @@ return array(
                 'edit' => 'Modificar Perfil Profesor',
                 'show' => 'Datos Profesor',
                 'index' => 'Listado Profesores',
-                'list' => 'Profesores Ausentes'
+                'list' => 'Profesores Ausentes',
+                 'horario-cambiar' => 'Cambiar horario Professr',
+            
         ),
         'Menu' => array(
                 'index' => 'Elementos del menú',
@@ -337,6 +339,11 @@ return array(
         ),
     '   Infdepartamento' => array(
           'index' => 'Consulta informes de departamento',  
+        ),
+        'Horario' => array(
+            'index' => 'Modificar Horario :quien',
+            'edit' => 'Edita Horario',
+            'cambiar' => "Canviar funciones horario",
         ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',
