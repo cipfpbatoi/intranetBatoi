@@ -60,6 +60,9 @@ function dropHora(ev) {
 	origen.css('cursor', 'default').attr('draggable', 'false').off('dragstart');
 	this.removeEventListener('drop', dropHora);
 	origen.on('drop', dropHora);
+	// Y ocultamos el botón de 'Aplicar cambios'
+	if (esDireccion)
+		$('#aplicar').attr('hidden',true);
 }
 
 function anotaCambios() {
