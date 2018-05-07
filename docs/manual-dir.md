@@ -24,7 +24,7 @@ Quan els professors alliberen hores perquè els alumnes de 2n curs sen van a fer
 
 Pera a que puguen fer els canvis en el seu horari s'ha d'activar aquesta opció del menú (per defecte està desactivada perquè només es poden fer canvis quan s'alliberen les hores de 2n). Es fa des del _Menú **Administració** -> Manteniment del menú general_. Busquem l'opció de 'Canvi horari? (podem filtrar la taula) i l'editem:
 
-![Menu canviar horari]()
+![Menu canviar horari](canviHorari-menu.png)
 
 Editem el registre i canviem el camp _**Estat**_ (l'últim) per a habilitar aquesta opció en el menú:
 * 0: no habilitada
@@ -34,14 +34,14 @@ Quan està habilitada a tots els professors els apareix en el menú '_Professora
 
 Una vegada els professors han fet els canvis en els seus horaris s'han d'aprovar des de direcció. Es fa des de la taula de professors: _menú **Equip directiu** -> Dades Professors_. En la taula amb tots els professors tenim les següents opcions referents als horaris:
 
-![Menu canviar horari]()
+![Taula professors](canviHorari-tabla-profes.png)
 
 * Horari (1a icona): permet veure l'horari actuañ del professor
 * Canviar horar (penúltima icona): obri la pantalla de modificació d'horari. Aquesta icona és diferent si el professor ha fet ja una proposta de canvi (segona filera de l'exemple, icona de taula amb 9 quadres) o si no ha fet cap proposta (primera filera, icona de taula amb 4 quadres grans).
 
 La pantalla de modificar l'horari és la mateixa que teel professor per a canviar el seu horari:
 
-![Canviar horari]()
+![Canviar horari](canviHorari-horario-cambiar.png)
 
 El primer que apareix en la pantalla es l'_Estat_ del canvi que pot ser:
 * No hi ha proposta: el profesor no ha proposat cap canvi d'horari
