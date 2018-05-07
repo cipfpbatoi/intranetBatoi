@@ -9,11 +9,14 @@
 ---
 
 ## Introducció
-&#f35a
+&#f35a;
+
 
 :blush:
 
 :table:
+
+
 
 
 Aquest manual només explica les accions que pot fer el cap d'estudis o director i no un professor normal. Les accions habituals de qualsevol professor estan explicades en el manual del professor.
