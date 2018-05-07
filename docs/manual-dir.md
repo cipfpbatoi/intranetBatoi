@@ -94,4 +94,5 @@ Les acciones que podem fer són:
 * **Canviar horari professor**: per a autoritzar el canvi d'horari com s'explica en el [manual de canviar horari](#canvis-dhorari)
 * **Canviar funcions d'horari**: per a modificar què fa un professor una hora determinada com s'explica en el [manual de canviar horari](#canvis-dhorari)
 * **Canviar usuari**: ens permet funcionar com si forem l'usuari indicat. Per a tornar al nostre usuari es fa des del menú del perfil amb l'opció de _Tornar al meu usuari_.
+
 ![Tornar al meu usuari](./img/direc-tornaUsuari.png)
