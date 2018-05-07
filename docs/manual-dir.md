@@ -39,7 +39,7 @@ Una vegada els professors han fet els canvis en els seus horaris s'han d'aprovar
 ![Taula professors](./img/canviHorari-tabla-profes.png)
 
 * Horari (1a icona): permet veure l'horari actuañ del professor
-* Canviar horar (penúltima icona): obri la pantalla de modificació d'horari. Aquesta icona és diferent si el professor ha fet ja una proposta de canvi (segona filera de l'exemple, icona de taula amb 9 quadres) o si no ha fet cap proposta (primera filera, icona de taula amb 4 quadres grans).
+* Canviar horar (antepenúltima icona): obri la pantalla de modificació d'horari. Aquesta icona és diferent si el professor ha fet ja una proposta de canvi (segona filera de l'exemple, icona de taula amb 9 quadres) o si no ha fet cap proposta (primera filera, icona de taula amb 4 quadres grans).
 
 La pantalla de modificar l'horari és la mateixa que teel professor per a canviar el seu horari:
 
@@ -62,8 +62,13 @@ Quan un horari està aprovat apareix un nou botó de **Aplicar els canvis**. Aix
 Quan direcció ha aprovat tots els canvis d'horari per aplicar-los tots (sense haver d'anar un per un) es fa des del _menú **Equip directiu** -> Autorització d'horaris_. Ací tenim un botó que farà els canvis de tots els horaris i en aquesta pantalla apareixerà qualsevol error que puga sorgir. 
 
 #### Canviar funcions d'horari
-A més de moure una hora a altra diferent  l'equip directiu també podem canviar una h
+A més de moure una hora a altra diferent  l'equip directiu també podem canviar el contingut d'una hora (per exemple per a posar una nova guàrdia on hi havia altra cosa). Això es fa també des de la taula de professors (_menú **Equip directiu** -> Dades Professors_) amb la penúltima icona (el raig).
 
+Ens mostra una taula amb cada entrada de l'horari amb el mòdul, el grup (o l'ocupació) i quan s'imparteix i un botó d'editar:
+
+[Canvia funcio](./img/canviHorari-funcio.png)
+
+Des d'ací podem canviar a què dedica el professor eixa hora.
 
 ## Menú 'Equip directiu'
 Ací tenim la majoria d'accions:
@@ -76,16 +81,17 @@ Ací tenim una taula amb tots els professors actius del Centre que podem filtrar
 ![Taula professors](./img/canviHorari-tabla-profes.png)
 
 Les acciones que podem fer són:
-* Horari: mostra l'horari del professor
-* Editar: ens mostra el perfil del professors des d'on podem canviar:
+* **Horari**: mostra l'horari del professor
+* **Editar**: ens mostra el perfil del professors des d'on podem canviar:
   * e-mail del centre
   * fotografia
   * departament al que pertany (ho hem de fer en tots els nous professors perquè en Itaca no apareix el departament)
   * idioma de la intranet
   * si es mostra o no el seu telèfon en la intranet als companys de departament
   * rol: només direcció i els administradors poden canviar el rol d'un usuari. Tot el mon ha de tindre al menys el rol '_Tots_' i el rol de '_Professor_' o '_Alumne_'.
-* Carnet: permet imprimir el carnet d'eixe professor
-* Més dades: podem veure totes de dades del professor, però no canviar-les (s'ha de canviar a Itaca)
-* Canviar horari professor: per a autoritzar el canvi d'horari com s'explica en el [manual](#canvis-dhorari)
-* Canviar funcions d'horari: 
-
+* **Carnet**: permet imprimir el carnet d'eixe professor
+* **Més dades**: podem veure totes de dades del professor, però no canviar-les (s'ha de canviar a Itaca)
+* **Canviar horari professor**: per a autoritzar el canvi d'horari com s'explica en el [manual de canviar horari](#canvis-dhorari)
+* **Canviar funcions d'horari**: per a modificar què fa un professor una hora determinada com s'explica en el [manual de canviar horari](#canvis-dhorari)
+* **Canviar usuari**: ens permet funcionar com si forem l'usuari indicat. Per a tornar al nostre usuari es fa des del menú del perfil amb l'opció de _Tornar al meu usuari_.
+[Tornar al meu usuari](./img/direc-tornaUsuari.png)
