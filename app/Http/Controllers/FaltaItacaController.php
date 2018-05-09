@@ -21,7 +21,6 @@ class FaltaItacaController extends BaseController
         $profesor = AuthUser();
         $horarios = Horario::Profesor($profesor->dni)->get();
         $horas = Hora::all();
-        //dd($espacios);
         return view('falta.itaca', compact('profesor','horarios', 'horas'));
     }
 }

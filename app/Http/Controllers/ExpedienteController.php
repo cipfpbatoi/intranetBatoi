@@ -50,6 +50,15 @@ class ExpedienteController extends IntranetController
             Expediente::putEstado($id,1);
         return back();
     }
+    protected function pasaOrientacion($id)
+    {
+        Expediente::putEstado($id,5);
+        $expediente = Expediente::find($id);
+        $expediente->fechasolucion = Hoy();
+        $expediente->save();
+        
+        return back();
+    }
 
     public function imprimir()
     {

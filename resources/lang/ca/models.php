@@ -201,6 +201,7 @@ return array(
             '1' => 'Pendent de revisar',
             '0' => 'No comunicat/Rebutjat',
             '4' => 'Comunicat Orientador',
+            '5' => 'Tractar Orientador',
         ),
         'Reunion'=> array(
             'show' => 'Mostra reunió id.',

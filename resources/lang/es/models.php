@@ -198,7 +198,9 @@ return array(
             '2' => 'En tramite',
             '3' => 'Resueltos',
             '1' => 'Peniente de revisar',
-            '0' => 'No comunicado/Rechazado'
+            '0' => 'No comunicado/Rechazado',
+            '4' => 'Comunicado Orientador',
+            '5' => 'Tratado Orientador',
         ),
         'Reunion'=> array(
             'show' => 'Muestra reunion id.',

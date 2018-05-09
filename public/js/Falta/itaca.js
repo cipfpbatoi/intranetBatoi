@@ -1,4 +1,3 @@
-//import Datepicker from 'vuejs-datepicker';
 'use strict';
 
 
@@ -16,7 +15,6 @@ var app = new Vue({
     methods: {
         elige: function () {
             var diaF = toEnglish(this.dia);
-            //axios.get('http://intranet.my/api/horario/dia_semana='+diaSemana(diaF)+'&idProfesor='+this.idProfesor+'&ocupacion=null&modulo!TU02CF?api_token='+this.token).then((response) => {
             axios.get('/api/itaca/' + diaF + '/' + this.idProfesor + '?api_token=' + this.token).then((response) => {
                 this.horario = response.data.data;
             }, (error) => {
