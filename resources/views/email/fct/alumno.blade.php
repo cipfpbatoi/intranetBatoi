@@ -15,7 +15,7 @@
 </div>
 <div class="container" >
     <p>{{$elemento->Alumno->FullName}}. Les pràctiques de FCT han arribat a la seua fi i per tal de millorar-les ens és de molt utilitat la teua opinió.</p>
-    <p>Hem preparat aquest <a href="https://docs.google.com/forms/d/1VSUdehL0EVuEmruHQmFVYMenRxMOoljHBjJ5kGOiSug/viewform?edit_requested=true">formulari</a> per recollir-la.</p>
+    <p>Hem preparat aquest <a href="https://docs.google.com/forms/d/e/1FAIpQLSfKO-v5cVFCb1e3zsrUVm06vJGpg2EQPd6xqSEJZuFsUNNBuQ/viewform?usp=send_form">formulari</a> per recollir-la.</p>
     <p>Gràcies per la teua col.laboració</p>
 </div>
 @endsection

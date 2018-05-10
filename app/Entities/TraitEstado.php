@@ -37,7 +37,10 @@ trait TraitEstado
 
     public static function _print($id)
     {
-        return static::putEstado($id, config('modelos.' . getClass(static::class) . '.print'));
+        if ( config('modelos.' . getClass(static::class) . '.print') == config('modelos.' . getClass(static::class) . '.resolve'))
+            return static::putEstado($id, config('modelos.' . getClass(static::class) . '.print'),'',Hoy());
+        else        
+            return static::putEstado($id, config('modelos.' . getClass(static::class) . '.print'));
     }
 
     public static function getEstado($id)

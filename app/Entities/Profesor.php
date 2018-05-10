@@ -301,6 +301,12 @@ class Profesor extends Authenticatable
             if (esRol($uno->rol, config('constants.rol.jefe_dpto')))
                 return $uno->dni;
     }
+    public function getQualitatFile(){
+        $find = Documento::where('idProfesor', $this->dni)->where('tipoDocumento','Qualitat')
+                ->where('curso',Curso())->first();
+        if ($find) return $find->fichero;
+        else return false;
+    }
 
     /**
      * Devuelve salida para preparar el boton de donde esta el profesor actualmente

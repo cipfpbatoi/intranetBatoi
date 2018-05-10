@@ -206,6 +206,7 @@ Route::post('/fct/{fct}/proyecto', ['as' => 'proyecto.create', 'uses' => 'Docume
 Route::get('/avalFct', ['as' => 'aval.fct', 'uses' => 'PanelAvalFctController@index']);
 Route::get('/fct/upload', ['as' => 'qualitat.new', 'uses' => 'DocumentoController@qualitat']);
 Route::post('/fct/upload', ['as' => 'qualitat.create', 'uses' => 'DocumentoController@store']);
+Route::put('/fct/upload', ['as' => 'qualitat.update', 'uses' => 'DocumentoController@update']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);

@@ -36,11 +36,16 @@ trait BatoiModels
             if ($item == $id) unset($this->fillable[$key]);
         }
     }
-    public function addFillable($field)
+    public function addFillable($field,$first=false)
     {
-        $ultimo = array_pop($this->fillable);
-        $this->fillable[] = $field;
-        $this->fillable[] = $ultimo;
+        if ($first){
+            array_unshift($this->fillable, $field);
+        }
+        else {
+            $ultimo = array_pop($this->fillable);
+            $this->fillable[] = $field;
+            $this->fillable[] = $ultimo;
+        }
     }
     public function setRule($id,$rule)
     {

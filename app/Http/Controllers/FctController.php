@@ -65,9 +65,11 @@ class FctController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['roles' => config('constants.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['roles' => config('constants.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0601.print",['roles' => config('constants.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
-        
-        
+        $find = Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento','Qualitat')
+                ->where('curso',Curso())->first();
+        if (!$find) $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
+        else $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
+        Session::put('redirect', 'FctController@index');
     }
 
     
@@ -206,12 +208,22 @@ class FctController extends IntranetController
         $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName, 'id' => AuthUser()->dni];
 
         // MANE ELS TREBALLS
-        if (($elemento->Colaboracion->email != '') && ($elemento->Alumno->email != '')) {
-            dispatch(new SendEmail($elemento->Colaboracion->email, $remitente, 'email.fct.instructor', $elemento));
-            dispatch(new SendEmail($elemento->Alumno->email, $remitente, 'email.fct.alumno', $elemento));
-            Alert::info('Correus processats');
-        } else
-            Alert::info("O L'alumne o la col.laboració no tenen correu. Revisa-ho");
+        if ($elemento->Alumno->email != ''){
+            $falta = false;
+            foreach ($elemento->Instructores as $instructor){
+                if ($instructor->email == '') {
+                    $falta = true;
+                    Alert::info("L'instructor $instructor->nombre no té correu. Revisa-ho");
+                }
+            }
+            if (!$falta){
+                dispatch(new SendEmail($elemento->Alumno->email, $remitente, 'email.fct.alumno', $elemento));
+                foreach ($elemento->Instructores as $instructor){
+                    dispatch(new SendEmail($instructor->email, $remitente, 'email.fct.instructor', ['alumno'=>$elemento->Alumno->Fullname,'instructor'=>$instructor->nombre]));
+                }
+                Alert::info('Correus processats');
+            }
+        } else Alert::info("L'alumne no té correu. Revisa-ho");
 
         return back();
     }

@@ -239,6 +239,8 @@ return array(
         'Documento' => array(
             'index' => 'Buscar Documentos',
             'create' => 'Crear Documento',
+            'edit' => 'Modifica Documento',
+            'default' => 'Modifica Documentación Calidad',
         ),
         'Proyecto' => array(
             'create' => 'Subir proyecto alumno'
@@ -282,6 +284,7 @@ return array(
             'pr0402' => 'Imprime PR04-02 (Entrevista Alumno)',
             'pr0401' => 'Imprime PR04-01 (Entrevista Instructor)',
             'list' => 'Acta Grupo :quien',
+            'acta' => 'Pedir acta de evaluación'
         ),
         'Direccion' => array(
            'acta' => 'Acta completada' 

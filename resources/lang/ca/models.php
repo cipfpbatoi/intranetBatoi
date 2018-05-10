@@ -240,6 +240,8 @@ return array(
         'Documento' => array(
             'index' => 'Cercar Documents',
             'create' => 'Crear Document',
+            'edit' => 'Modifica Document',
+            'default' => 'Modifica Documentació Qualitat',
         ),
         'Proyecto' => array(
             'create' => 'Pujar projecte alumne'
@@ -283,6 +285,7 @@ return array(
             'pr0402' => 'Imprimeix PR04-02 (Entrevista Alumne)',
             'pr0401' => 'Imprimeix PR04-01 (Entrevista Instructor)',
             'list' => 'Acta Grupo :quien',
+            'acta' => 'Demanar acta d\'avaluació'
         ),
         'Direccion' => array(
            'acta' => 'Acta completada' 
