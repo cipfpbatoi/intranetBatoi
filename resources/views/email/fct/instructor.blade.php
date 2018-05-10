@@ -12,7 +12,7 @@
     </table>
 </div>
 <div class="container" >
-    <p>Senyor {{$elemento['instructor']}}. Les pràctiques que venia efectuant {{$elemento['alumno']}} a la seua empressa han arribat a la seua fi. Per tal d'assolir una millora continua ens és de molt utilitat la seua opinió .</p>
+    <p>Estimat instructor. Les pràctiques que venia efectuant {{$elemento->Alumno->FullName}} a la seua empressa han arribat a la seua fi. Per tal d'assolir una millora continua ens és de molt utilitat la seua opinió .</p>
     <p>Hem preparat aquest <a href="https://docs.google.com/forms/d/e/1FAIpQLSfnPufeZmTWYaTsevw1qzHBnQrfkLGdFK2aj72aBbdT_Oh6Hw/viewform">formulari</a> per recollir-la.</p>
     <p>Gràcies per la seua col.laboració</p>
 </div>
