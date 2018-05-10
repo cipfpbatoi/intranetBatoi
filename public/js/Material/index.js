@@ -114,7 +114,7 @@ $(function () {
             ];
             $(".modal-title").text("Ver Material");
             $(".modal-body").html(htmlDialog(dlgControls));
-            $(".modal-footer").find("button[type=submit]").off("click").hide();
+            $(".modal-footer").find("button[type=submit]").hide();
             $(".modal-footer").find("button[type=button]").text("Cerrar");
         });
 
@@ -159,7 +159,7 @@ $(function () {
             $(".modal-title").text("Cambiar unidades");
             $(".modal-body").html(htmlDialog(dlgControls));
             $(".modal-footer").find("button[type=button]").text("Cancelar");
-            $(".modal-footer").find("button[type=submit]").show().on("click", function() {
+            $(".modal-footer").find("button[type=submit]").show().one("click", function() {
                 $.ajax({
                     method: "PUT",
                     url: "/api/material/cambiarUnidad",
@@ -195,7 +195,7 @@ $(function () {
             $(".modal-title").text("Cambiar unidades");
             $(".modal-body").html(htmlDialog(dlgControls));
             $(".modal-footer").find("button[type=button]").text("Cancelar");
-            $(".modal-footer").find("button[type=submit]").show().on("click", function() {
+            $(".modal-footer").find("button[type=submit]").show().one("click", function() {
                 $.ajax({
                     method: "PUT",
                     url: "/api/material/cambiarUbicacion",
@@ -242,7 +242,7 @@ $(function () {
             $(".modal-title").text("Cambiar unidades");
             $(".modal-body").html(htmlDialog(dlgControls));
             $(".modal-footer").find("button[type=button]").text("Cancelar");
-            $(".modal-footer").find("button[type=submit]").show().on("click", function() {
+            $(".modal-footer").find("button[type=submit]").show().one("click", function() {
                 $.ajax({
                     method: "PUT",
                     url: "/api/material/cambiarEstado",
