@@ -5,7 +5,6 @@ namespace Intranet\Listeners;
 use Intranet\Events\EmailSended;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Intranet\Events\EmailSended;
 use Intranet\Entities\Instructor;
 use Intranet\Entities\Alumno;
 
