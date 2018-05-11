@@ -32,10 +32,10 @@ class MarkSended
     {
         if ($event->modelo == 'Fct'){
             if (Instructor::where('email',$event->receptor)->first())
-                    $fct->correoInstructor = 1;
+                    $event->elemento->correoInstructor = 1;
             if (Alumno::where('email',$event->receptor)->first())
-                    $fct->correoAlumno = 1;
-            $fct->save();
+                    $event->elemento->correoAlumno = 1;
+            $event->elemento->save();
         }
     }
 
