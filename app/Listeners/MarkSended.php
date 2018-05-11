@@ -31,6 +31,7 @@ class MarkSended
     public function handle(EmailSended $event)
     {
         if ($event->modelo == 'Fct'){
+            dd($event->receptor);
             if (Instructor::where('email',$event->receptor)->first())
                     $event->elemento->correoInstructor = 1;
             if (Alumno::where('email',$event->receptor)->first())
