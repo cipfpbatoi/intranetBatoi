@@ -29,8 +29,19 @@ abstract class BotonElemento extends Boton
                 $result = $result && $condicion;
             }
             return ($result);
-        } else
-            return true;
+        } elseif ($this->orWhere != '') {
+                $condiciones = [];
+                for ($i = 0; $i < count($this->orWhere); $i = $i + 3) {
+                    $camp = $this->orWhere[$i];
+                    $condiciones[] = $this->condicion($elemento->$camp, $this->orWhere[$i + 1], $this->orWhere[$i + 2]);
+                }
+                $result = false;
+                foreach ($condiciones as $condicion) {
+                    $result = $result || $condicion;
+                }
+                return ($result);
+            
+            } else return true;
     }
 
     // condicions possibles

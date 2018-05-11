@@ -35,7 +35,6 @@ class MarkSended
                     $event->elemento->correoInstructor = 1;
             if (Alumno::where('email',$event->correo)->get())
                     $event->elemento->correoAlumno = 1;
-            $event->elemento->correoAlumno = 1;
             $event->elemento->save();
         }
     }
