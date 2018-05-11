@@ -41,6 +41,9 @@ class EventServiceProvider extends ServiceProvider
         'Intranet\Events\FichaCreated' => [
             'Intranet\Listeners\VeepCreated',
         ],
+        'Intranet\Events\EmailSended' => [
+            'Intranet\Listeners\MarkSended',
+        ],
     ];
 
     /**

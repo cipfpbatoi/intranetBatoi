@@ -10,6 +10,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Mail\Mailer;
 use Intranet\Entities\Profesor;
 use Intranet\Mail\Comunicado;
+use Intranet\Events\EmailSended;
+
 
 class SendEmail implements ShouldQueue
 {
@@ -48,6 +50,7 @@ class SendEmail implements ShouldQueue
         $mailer->to($this->correo, 'Intranet')->send(new Comunicado($this->remitente,$this->elemento, $this->vista,$this->attach));
         if (isset($this->remitente['id'])){
             avisa($this->remitente['id'], 'El correu adreçat a '.$this->correo.' ha sigut enviat amb exit','#','SERVIDOR DE CORRREU');
+            event(new EmailSended($this->elemento,$this->correo));
         }
     }
 }
