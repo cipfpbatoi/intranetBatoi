@@ -37,10 +37,10 @@ abstract class Boton
         if (!isset($this->atributos['text']))
             if (trans("models." . ucwords($this->modelo) . "." . $this->accion) != "models." . ucwords($this->modelo) . "." . $this->accion)
                 $this->text = trans("models." . ucwords($this->modelo) . "." . $this->accion);
-                elseif (trans("models." . ucwords($this->modelo) . ".default") != "models." . ucwords($this->modelo) . ".default" ) 
+            elseif (trans("models." . ucwords($this->modelo) . ".default") != "models." . ucwords($this->modelo) . ".default" ) 
                         $this->text = trans("models." . ucwords($this->modelo) . ".default");
                 else
-                    trans("messages.buttons.$this->accion");
+                    $this->text = trans("messages.buttons.$this->accion");
         else
             $this->text = trans("models." . ucwords($this->modelo) . "." . $this->atributos['text']) != "models." . ucwords($this->modelo) . "." . $this->atributos['text'] ? trans("models." . ucwords($this->modelo) . "." . $this->atributos['text']) : $this->atributos['text'];
     }
