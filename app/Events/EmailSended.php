@@ -24,7 +24,7 @@ class EmailSended
      */
     public $elemento;
     public $modelo;
-    public $receptor;
+    public $correo;
     
     private function getmodel($elemento)
     {
@@ -33,11 +33,11 @@ class EmailSended
         return substr($entero, strlen($nspace), strlen($entero));
     }
 
-    public function __construct($elemento,$receptor)
+    public function __construct($elemento,$correo)
     {
         $this->elemento = $elemento;
         $this->modelo = $this->getmodel($elemento);
-        $this->receptor = $this->receptor;
+        $this->correo = $correo;
     }
 
     /**
