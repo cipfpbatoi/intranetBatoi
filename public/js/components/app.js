@@ -33489,18 +33489,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -33519,6 +33507,11 @@ var idProfesor = document.getElementById('dni').innerHTML;
         };
     },
 
+    computed: {
+        longHorario: function longHorario() {
+            return horario.length;
+        }
+    },
     watch: {
         dia: function dia(val) {
             var _this = this;
@@ -33532,24 +33525,49 @@ var idProfesor = document.getElementById('dni').innerHTML;
         }
     },
     methods: {
-        elige: function elige() {
+        justificada: function justificada(estado) {
+            return estado >= 2;
+        },
+        claseIcono: function claseIcono(enCentro) {
+            return "fa " + (enCentro ? "fa-check" : "fa-times");
+        },
+        estado: function estado(queEstado) {
+            switch (queEstado) {
+                case 0:
+                    return 'No comunicada';
+                case 1:
+                    return 'Pendent';
+                case 2:
+                    return 'Justificada';
+                case 3:
+                    return 'Rebutjada';
+                default:
+                    return 'Desconegut';
+            }
+        },
+
+        confirmar: function confirmar() {
             var _this2 = this;
 
-            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get('/api/itaca/' + this.dia + '/' + idProfesor + '?api_token=' + token).then(function (response) {
-                _this2.horarioKk = response.data.data;
-            }, function (error) {
-                console.log(error);
-                _this2.horarioKk = [];
-            });
-        },
-        confirmar: function confirmar() {
             var req = {
                 url: '/api/itaca?api_token=' + token,
                 method: 'POST',
                 data: this.horario
             };
             __WEBPACK_IMPORTED_MODULE_0_axios___default()(req).then(function (response) {
-                console.log(response.data.content);
+                console.log(response.data.data);
+
+                var _loop = function _loop(sesion) {
+                    console.log(sesion);
+                    var fila = _this2.horario.find(function (linea) {
+                        return linea.sesion_orden == sesion;
+                    });
+                    if (fila) fila.estado = response.data.data[sesion];else console.log('Error al poner estado ' + response.data.data[sesion] + ' a la sesión ' + sesion);
+                };
+
+                for (var sesion in response.data.data) {
+                    _loop(sesion);
+                }
                 alert('Guardat amb exit');
             }, function (error) {
                 console.log(error);
@@ -33603,7 +33621,7 @@ var render = function() {
         [
           _vm._m(0),
           _vm._v(" "),
-          _vm._l(_vm.horario, function(hora, key, index) {
+          _vm._l(_vm.horario, function(hora, index) {
             return _c(
               "tr",
               [
@@ -33661,75 +33679,40 @@ var render = function() {
                       ]),
                       _vm._v(" "),
                       _c("td", [
-                        hora.enCentro
-                          ? _c("i", { staticClass: "fa fa-check" })
-                          : _c("i", { staticClass: "fa fa-times" })
-                      ]),
-                      _vm._v(" "),
-                      index == 0
-                        ? _c(
-                            "td",
-                            {
-                              attrs: {
-                                rowspan: Object.keys(_vm.horario).length
-                              }
-                            },
-                            [
-                              _c("textarea", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: hora.justificacion,
-                                    expression: "hora.justificacion"
-                                  }
-                                ],
-                                attrs: {
-                                  rows: Object.keys(_vm.horario).length * 2
-                                },
-                                domProps: { value: hora.justificacion },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      hora,
-                                      "justificacion",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              })
-                            ]
-                          )
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _c("td", [
-                        hora.estado == 1
-                          ? _c("span", [_vm._v("Pendent")])
-                          : _vm._e(),
-                        _vm._v(" "),
-                        hora.estado == 0
-                          ? _c("span", [_vm._v("No comunicada")])
-                          : _vm._e()
+                        _c("i", { class: _vm.claseIcono(hora.enCentro) })
                       ])
                     ]
-                  : hora.estado == 2
-                    ? [
-                        _c("td", { attrs: { colspan: "2" } }),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(hora.justificacion))]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v("Justificada")])
-                      ]
-                    : [
-                        _c("td", { attrs: { colspan: "2" } }),
-                        _vm._v(" "),
-                        _c("td", [_vm._v(_vm._s(hora.justificacion))]),
-                        _vm._v(" "),
-                        _c("td", [_vm._v("Rebutjada")])
-                      ]
+                  : [_c("td", { attrs: { colspan: "2" } })],
+                _vm._v(" "),
+                index == 0
+                  ? _c("td", { attrs: { rowspan: _vm.horario.length } }, [
+                      _c("textarea", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: hora.justificacion,
+                            expression: "hora.justificacion"
+                          }
+                        ],
+                        attrs: {
+                          rows: _vm.horario.length * 2,
+                          readonly: _vm.justificada(hora.estado)
+                        },
+                        domProps: { value: hora.justificacion },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(hora, "justificacion", $event.target.value)
+                          }
+                        }
+                      })
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _c("td", [_vm._v(_vm._s(_vm.estado(hora.estado)))])
               ],
               2
             )

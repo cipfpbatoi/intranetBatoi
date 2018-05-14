@@ -8,30 +8,18 @@
             <th style="text-align:center">No he marcat birret</th><th style="text-align:center">Estava en el centre</th>
             <th style="text-align:center">Justificació</th><th style="text-align:center">Estat</th>
         </tr>
-        <tr v-for="(hora,key,index) in horario">
+        <tr v-for="(hora,index) in horario">
             <td>{{hora.desde}} - {{hora.hasta}}</td>
             <td>{{hora.idGrupo}}</td>
             <template v-if="hora.estado<2">
                 <td><input type="checkbox" v-model="hora.checked"></td>
-                <td>
-                    <i v-if="hora.enCentro" class="fa fa-check"></i>
-                    <i v-else class="fa fa-times"></i>
-                </td>
-                <td v-if='index==0' v-bind:rowspan='Object.keys(horario).length'><textarea v-bind:rows='Object.keys(horario).length*2' v-model="hora.justificacion" ></textarea></td>
-                <td><span v-if="hora.estado==1">Pendent</span>
-                    <span v-if="hora.estado==0">No comunicada</span>
-                </td>
+                <td><i :class="claseIcono(hora.enCentro)"></i></td>
             </template>
-            <template v-else-if="hora.estado==2">
-                <td colspan="2"></td>
-                <td>{{hora.justificacion}}</td>
-                <td>Justificada</td>
-            </template>  
             <template v-else>
                 <td colspan="2"></td>
-                <td>{{hora.justificacion}}</td>
-                <td>Rebutjada</td>
-            </template> 
+            </template>
+            <td v-if='index==0' v-bind:rowspan="horario.length"><textarea v-bind:rows="horario.length*2" v-model="hora.justificacion" :readonly="justificada(hora.estado)"></textarea></td>
+            <td>{{ estado(hora.estado) }}</td>
         </tr>                  
     </table>
     <div id="botones">
@@ -48,35 +36,52 @@ const token=document.getElementById('_token').innerHTML;
 const idProfesor = document.getElementById('dni').innerHTML;
 
 export default {
-    
-  components: {
-    'fecha-picker': require('../utils/FechaPicker.vue'),
-  },
-  data() {
-    return {
-      dia: '',
-      horario: [],
-    }
-  },
-  watch: {
-    dia: function(val) {
-        axios.get('/api/itaca/' + val + '/' + idProfesor + '?api_token=' + token)
-        .then((response) => {
-            this.horario = response.data.data;
-        }, (error) => {
-            console.log(error);
-            this.horario = [];
-        });
-    }
-  },
-  methods: {
-    elige: function () {
-            axios.get('/api/itaca/' + this.dia + '/' + idProfesor + '?api_token=' + token).then((response) => {
-                this.horarioKk = response.data.data;
+
+    components: {
+        'fecha-picker': require('../utils/FechaPicker.vue'),
+    },
+    data() {
+        return {
+          dia: '',
+          horario: [],
+      }
+    },
+    computed: {
+        longHorario() {
+            return horario.length;
+        }
+    },
+    watch: {
+        dia: function(val) {
+            axios.get('/api/itaca/' + val + '/' + idProfesor + '?api_token=' + token)
+            .then((response) => {
+                this.horario = response.data.data;
             }, (error) => {
                 console.log(error);
-                this.horarioKk=[];
+                this.horario = [];
             });
+        }
+    },
+    methods: {
+        justificada(estado) {
+            return estado>=2;
+        },
+        claseIcono(enCentro) {
+            return "fa "+(enCentro?"fa-check":"fa-times");
+        },
+        estado(queEstado) {
+            switch (queEstado) {
+                case 0:
+                    return 'No comunicada';
+                case 1:
+                    return 'Pendent';
+                case 2: 
+                    return 'Justificada';
+                case 3:
+                    return 'Rebutjada';
+                default:
+                    return 'Desconegut';
+            }
         },
         confirmar: function () {
             let req = {
@@ -85,13 +90,21 @@ export default {
                 data: this.horario
             };
             axios(req).then(response => {
-                console.log(response.data.content);
+                console.log(response.data.data);
+                for (let sesion in response.data.data) {
+                    console.log(sesion);
+                    let fila=this.horario.find(linea=>linea.sesion_orden==sesion);
+                    if (fila)
+                        fila.estado=response.data.data[sesion];
+                    else
+                        console.log('Error al poner estado '+response.data.data[sesion]+' a la sesión '+sesion);
+                }
                 alert('Guardat amb exit');
             }, (error) => {
                 console.log(error);
             });
         }
-  },
+    },
 }
 
 function diaSemana(date) {
