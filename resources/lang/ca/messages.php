@@ -246,6 +246,8 @@ return array(
         'Authhorarios' => "Autorització d'horaris",
         'Nuevocurso' => 'Esborrar Dades Curs Anterior',
         'Changeschedule' => ' Canviar horari',
+        'Auxiliar' => 'Taules auxiliars',
+        'Modulociclo' => 'Mòdul / Cicle'
         
     ),
     'situations' => array(

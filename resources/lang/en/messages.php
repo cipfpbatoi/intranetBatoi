@@ -243,6 +243,8 @@ return array(
         'Authhorarios' => "Time schedules approval",
         'Nuevocurso' => 'Delete previous data',
         'Changeschedule' => ' Change Schedule',
+        'Auxiliar' => 'Auxiliar tables',
+        'Modulociclo' => 'Module / Cycle'
     ),
     'situations' => array(
         '0' => 'Not notified',

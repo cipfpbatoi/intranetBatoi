@@ -35,9 +35,9 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
     'google' => [
-        'client_id' => '722193940751-ae76pbqg2fr7rb95r6bh139sdc6cl8a8.apps.googleusercontent.com',
-        'client_secret' => 'QU20APPRUWBlDlp839bI3P98',
-        'redirect' => 'http://intranet.app/social/callback/google',
+        'client_id' => env('GOOGLE_ID','722193940751-ae76pbqg2fr7rb95r6bh139sdc6cl8a8.apps.googleusercontent.com'),
+        'client_secret' => env('GOOGLE_SECRET','QU20APPRUWBlDlp839bI3P98'),
+        'redirect' => env('GOOGLE_REDIRECT','http://intranet.cipfpbatoi.es/social/callback/google'),
     ],
 
 ];
