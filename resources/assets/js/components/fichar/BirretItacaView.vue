@@ -5,7 +5,7 @@
     <table class="table" id="horarios">
         <tr>
             <th style="text-align:center">Hores</th><th style="text-align:center">Grup</th>
-            <th style="text-align:center">No he marcat birret</th><th style="text-align:center">Estava en el centre</th>
+            <th style="text-align:center">No he marcat birret</th><th style="text-align:center">Estava al centre</th>
             <th style="text-align:center">Justificació</th><th style="text-align:center">Estat</th>
         </tr>
         <tr v-for="(hora,index) in horario">
@@ -25,7 +25,14 @@
     <div id="botones">
         <button  class="btn btn-success" @click="confirmar">Enviar</button>
     </div>
-    <div class="errores"></div>
+    <div class="errores">
+        <app-msg 
+            v-for="(msg,index) in msgs" 
+            :key="index" 
+            v-bind="msg"
+            @close="delMsg(index)">
+        </app-msg>
+    </div>
   </div>
 </template>
 
@@ -39,11 +46,13 @@ export default {
 
     components: {
         'fecha-picker': require('../utils/FechaPicker.vue'),
+        'app-msg': require('../utils/AppMsg.vue'),
     },
     data() {
         return {
           dia: '',
           horario: [],
+          msgs: [],
       }
     },
     computed: {
@@ -57,6 +66,7 @@ export default {
             .then((response) => {
                 this.horario = response.data.data;
             }, (error) => {
+                this.msgs.push({ estate: 'ok', msg: 'Error: '+error });
                 console.log(error);
                 this.horario = [];
             });
@@ -90,19 +100,26 @@ export default {
                 data: this.horario
             };
             axios(req).then(response => {
-                console.log(response.data.data);
                 for (let sesion in response.data.data) {
-                    console.log(sesion);
                     let fila=this.horario.find(linea=>linea.sesion_orden==sesion);
                     if (fila)
                         fila.estado=response.data.data[sesion];
-                    else
+                    else {
+                        this.msgs.push({
+                            estate: 'Error', 
+                            msg: 'Error al poner estado '+response.data.data[sesion]+' a la sesión '+sesion
+                        });
                         console.log('Error al poner estado '+response.data.data[sesion]+' a la sesión '+sesion);
+                    }
                 }
-                alert('Guardat amb exit');
+                this.msgs.push({ estate: 'ok', msg: 'Guardat amb exit' });
             }, (error) => {
+                this.msgs.push({ estate: 'ok', msg: 'Error: '+error });
                 console.log(error);
             });
+        },
+        delMsg(index) {
+            this.msgs.splice(index,1);
         }
     },
 }

@@ -17362,7 +17362,7 @@ return zhTw;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(137);
-module.exports = __webpack_require__(203);
+module.exports = __webpack_require__(206);
 
 
 /***/ }),
@@ -29956,12 +29956,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
   methods: {
     updateValue: function updateValue(value) {
-      this.canta(value);
-      console.log(value);
       this.$emit('input', value);
-    },
-    canta: function canta(msg) {
-      alert(msg);
     }
   }
 });
@@ -33412,7 +33407,7 @@ var normalizeComponent = __webpack_require__(1)
 /* script */
 var __vue_script__ = __webpack_require__(201)
 /* template */
-var __vue_template__ = __webpack_require__(202)
+var __vue_template__ = __webpack_require__(205)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -33489,6 +33484,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -33498,12 +33500,14 @@ var idProfesor = document.getElementById('dni').innerHTML;
 /* harmony default export */ __webpack_exports__["default"] = ({
 
     components: {
-        'fecha-picker': __webpack_require__(7)
+        'fecha-picker': __webpack_require__(7),
+        'app-msg': __webpack_require__(202)
     },
     data: function data() {
         return {
             dia: '',
-            horario: []
+            horario: [],
+            msgs: []
         };
     },
 
@@ -33519,6 +33523,7 @@ var idProfesor = document.getElementById('dni').innerHTML;
             __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get('/api/itaca/' + val + '/' + idProfesor + '?api_token=' + token).then(function (response) {
                 _this.horario = response.data.data;
             }, function (error) {
+                _this.msgs.push({ estate: 'ok', msg: 'Error: ' + error });
                 console.log(error);
                 _this.horario = [];
             });
@@ -33555,23 +33560,30 @@ var idProfesor = document.getElementById('dni').innerHTML;
                 data: this.horario
             };
             __WEBPACK_IMPORTED_MODULE_0_axios___default()(req).then(function (response) {
-                console.log(response.data.data);
-
                 var _loop = function _loop(sesion) {
-                    console.log(sesion);
                     var fila = _this2.horario.find(function (linea) {
                         return linea.sesion_orden == sesion;
                     });
-                    if (fila) fila.estado = response.data.data[sesion];else console.log('Error al poner estado ' + response.data.data[sesion] + ' a la sesión ' + sesion);
+                    if (fila) fila.estado = response.data.data[sesion];else {
+                        _this2.msgs.push({
+                            estate: 'Error',
+                            msg: 'Error al poner estado ' + response.data.data[sesion] + ' a la sesión ' + sesion
+                        });
+                        console.log('Error al poner estado ' + response.data.data[sesion] + ' a la sesión ' + sesion);
+                    }
                 };
 
                 for (var sesion in response.data.data) {
                     _loop(sesion);
                 }
-                alert('Guardat amb exit');
+                _this2.msgs.push({ estate: 'ok', msg: 'Guardat amb exit' });
             }, function (error) {
+                _this2.msgs.push({ estate: 'ok', msg: 'Error: ' + error });
                 console.log(error);
             });
+        },
+        delMsg: function delMsg(index) {
+            this.msgs.splice(index, 1);
         }
     }
 });
@@ -33591,6 +33603,120 @@ function toEnglish(date) {
 
 /***/ }),
 /* 202 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(1)
+/* script */
+var __vue_script__ = __webpack_require__(203)
+/* template */
+var __vue_template__ = __webpack_require__(204)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/utils/AppMsg.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-1fb76775", Component.options)
+  } else {
+    hotAPI.reload("data-v-1fb76775", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 203 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'app-msg',
+  props: ['estate', 'msg'],
+  computed: {
+    clases: function clases() {
+      return 'alert alert-block alert-' + (this.estate == 'ok' ? 'success' : 'danger') + ' fade in';
+    }
+  },
+  methods: {
+    close: function close() {
+      this.$emit('close');
+    }
+  }
+});
+
+/***/ }),
+/* 204 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "x_content" }, [
+    _c("div", { class: _vm.clases }, [
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: { type: "button", "data-dismiss": "alert" },
+          on: { click: _vm.close }
+        },
+        [_vm._v("×")]
+      ),
+      _vm._v(" "),
+      _c("p", [_c("strong", [_vm._v(_vm._s(_vm.msg))])])
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-1fb76775", module.exports)
+  }
+}
+
+/***/ }),
+/* 205 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -33729,7 +33855,21 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "errores" })
+      _c(
+        "div",
+        { staticClass: "errores" },
+        _vm._l(_vm.msgs, function(msg, index) {
+          return _c("app-msg", {
+            key: index,
+            attrs: { msg: msg.msg, estate: msg.estate },
+            on: {
+              close: function($event) {
+                _vm.delMsg(index)
+              }
+            }
+          })
+        })
+      )
     ],
     1
   )
@@ -33747,7 +33887,7 @@ var staticRenderFns = [
         _vm._v("No he marcat birret")
       ]),
       _c("th", { staticStyle: { "text-align": "center" } }, [
-        _vm._v("Estava en el centre")
+        _vm._v("Estava al centre")
       ]),
       _vm._v(" "),
       _c("th", { staticStyle: { "text-align": "center" } }, [
@@ -33767,7 +33907,7 @@ if (false) {
 }
 
 /***/ }),
-/* 203 */
+/* 206 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

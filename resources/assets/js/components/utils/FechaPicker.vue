@@ -78,13 +78,8 @@ import myDatepicker from 'vue-datepicker'
         },
         methods: {
           updateValue(value) {
-            this.canta(value)
-            console.log(value)
             this.$emit('input', value);
           },
-          canta(msg) {
-            alert(msg)
-          }
         }
       }  
 </script>
