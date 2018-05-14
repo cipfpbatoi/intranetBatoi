@@ -26,30 +26,31 @@ class FaltaItacaController extends ApiBaseController
             $horasJ = [];
             foreach ($horas as $hora) {
 
-                $horasJ[$hora->id]['idProfesor'] = $idProfesor;
-                $horasJ[$hora->id]['desde'] = $hora->desde;
-                $horasJ[$hora->id]['hasta'] = $hora->hasta;
-                $horasJ[$hora->id]['idGrupo'] = $hora->idGrupo;
-                $horasJ[$hora->id]['sesion_orden'] = $hora->sesion_orden;
-                $horasJ[$hora->id]['dia'] = $dia;
+                $horasT['idProfesor'] = $idProfesor;
+                $horasT['desde'] = $hora->desde;
+                $horasT['hasta'] = $hora->hasta;
+                $horasT['idGrupo'] = $hora->idGrupo;
+                $horasT['sesion_orden'] = $hora->sesion_orden;
+                $horasT['dia'] = $dia;
 
                 if ($falta = Falta_itaca::where('idProfesor', $idProfesor)
                         ->where('sesion_orden', $hora->sesion_orden)
                         ->where('dia', $dia)
                         ->first()) {
-                    $horasJ[$hora->id]['checked'] = TRUE;
-                    $horasJ[$hora->id]['justificacion'] = $falta->justificacion;
-                    $horasJ[$hora->id]['enCentro'] = $falta->enCentro;
-                    $horasJ[$hora->id]['estado'] = $falta->estado;
+                    $horasT['checked'] = TRUE;
+                    $horasT['justificacion'] = $falta->justificacion;
+                    $horasT['enCentro'] = $falta->enCentro;
+                    $horasT['estado'] = $falta->estado;
                 } else {
-                    $horasJ[$hora->id]['checked'] = FALSE;
-                    $horasJ[$hora->id]['estado'] = 0;
-                    $horasJ[$hora->id]['justificacion'] = '';
+                    $horasT['checked'] = FALSE;
+                    $horasT['estado'] = 0;
+                    $horasT['justificacion'] = '';
                     if (estaInstituto($idProfesor, $dia, sumarHoras($hora->desde, '00:30:00')))
-                        $horasJ[$hora->id]['enCentro'] = TRUE;
+                        $horasT['enCentro'] = TRUE;
                     else
-                        $horasJ[$hora->id]['enCentro'] = FALSE;
+                        $horasT['enCentro'] = FALSE;
                 }
+                $horasJ[] = $horasT;
             }
             return $this->sendResponse($horasJ, 'OK');
         } else
