@@ -68,7 +68,7 @@ class FaltaItacaController extends ApiBaseController
                         ->first()) {
                     if (!$hora['checked']){
                         $falta->delete();
-                        $respuesta[$hora['sesion_orden']]='No comunicada';
+                        $respuesta[$hora['sesion_orden']]=0;
                     }
                     else {
                         $falta->justificacion = $hora['justificacion'];
@@ -88,7 +88,7 @@ class FaltaItacaController extends ApiBaseController
                     $falta->justificacion = $hora['justificacion'];
                     $falta->save();
                     $alta = $falta->id;
-                    $respuesta[$hora['sesion_orden']]='Pendent';
+                    $respuesta[$hora['sesion_orden']]=1;
                 }
             }
         }
