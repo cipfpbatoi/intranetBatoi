@@ -59,14 +59,17 @@ class FaltaItacaController extends ApiBaseController
     public function guarda(Request $request)
     {
         $alta = FALSE;
+        $respuesta = [];
         foreach ($request->toArray() as $hora) {
             if (isset($hora['idProfesor'])) {
                 if ($falta = Falta_itaca::where('idProfesor', $hora['idProfesor'])
                         ->where('sesion_orden', $hora['sesion_orden'])
                         ->where('dia', $hora['dia'])
                         ->first()) {
-                    if (!$hora['checked'])
+                    if (!$hora['checked']){
                         $falta->delete();
+                        $respuesta[$hora['sesion_orden']]='No comunicada';
+                    }
                     else {
                         $falta->justificacion = $hora['justificacion'];
                         $falta->save();
@@ -85,12 +88,13 @@ class FaltaItacaController extends ApiBaseController
                     $falta->justificacion = $hora['justificacion'];
                     $falta->save();
                     $alta = $falta->id;
+                    $respuesta[$hora['sesion_orden']]='Pendent';
                 }
             }
         }
         if ($alta)  Falta_itaca::putEstado($alta,1,'Birret Pendent');
         
-        return $this->sendResponse([], 'OK');
+        return $this->sendResponse($respuesta, 'OK');
     }
 
 }
