@@ -17,8 +17,6 @@ class CreateFctsTable extends Migration
             $table->increments('id');
             $table->string('idAlumno',8);
             $table->Integer('idColaboracion');
-            $table->string('instructor',100);
-            $table->string('dni',10);
             $table->tinyInteger('asociacion');
             $table->date('desde');
             $table->date('hasta');
