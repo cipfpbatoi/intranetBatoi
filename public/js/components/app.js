@@ -33534,7 +33534,7 @@ var idProfesor = document.getElementById('dni').innerHTML;
             return estado >= 2;
         },
         claseIcono: function claseIcono(enCentro) {
-            return "fa " + (enCentro ? "fa-check" : "fa-times");
+            return "glyphicon " + (enCentro ? "glyphicon-thumbs-up" : "glyphicon-thumbs-down");
         },
         estado: function estado(queEstado) {
             switch (queEstado) {
@@ -33805,7 +33805,7 @@ var render = function() {
                       ]),
                       _vm._v(" "),
                       _c("td", [
-                        _c("i", { class: _vm.claseIcono(hora.enCentro) })
+                        _c("span", { class: _vm.claseIcono(hora.enCentro) })
                       ])
                     ]
                   : [_c("td", { attrs: { colspan: "2" } })],
@@ -33859,15 +33859,22 @@ var render = function() {
         "div",
         { staticClass: "errores" },
         _vm._l(_vm.msgs, function(msg, index) {
-          return _c("app-msg", {
-            key: index,
-            attrs: { msg: msg.msg, estate: msg.estate },
-            on: {
-              close: function($event) {
-                _vm.delMsg(index)
-              }
-            }
-          })
+          return _c(
+            "app-msg",
+            _vm._b(
+              {
+                key: index,
+                on: {
+                  close: function($event) {
+                    _vm.delMsg(index)
+                  }
+                }
+              },
+              "app-msg",
+              msg,
+              false
+            )
+          )
         })
       )
     ],

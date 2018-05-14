@@ -13,7 +13,7 @@
             <td>{{hora.idGrupo}}</td>
             <template v-if="hora.estado<2">
                 <td><input type="checkbox" v-model="hora.checked"></td>
-                <td><i :class="claseIcono(hora.enCentro)"></i></td>
+                <td><span :class="claseIcono(hora.enCentro)"></span></td>
             </template>
             <template v-else>
                 <td colspan="2"></td>
@@ -77,7 +77,7 @@ export default {
             return estado>=2;
         },
         claseIcono(enCentro) {
-            return "fa "+(enCentro?"fa-check":"fa-times");
+            return "glyphicon "+(enCentro?"glyphicon-thumbs-up":"glyphicon-thumbs-down");
         },
         estado(queEstado) {
             switch (queEstado) {
