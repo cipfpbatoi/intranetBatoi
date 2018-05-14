@@ -84,7 +84,7 @@ class GrupoTrabajoController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['delete']);
-        $this->panel->setBoton('grid', new BotonImg('#', ['img' => 'fa-pencil', 'class' => 'editGrupo', 'text' => 'participantes']));
+        $this->panel->setBoton('grid', new BotonImg('#', ['img' => 'fa-pencil', 'class' => 'editGrupo', 'text' => 'edita']));
         $this->panel->setBoton('grid', new BotonImg('grupotrabajo.detalle', ['img' => 'fa-group', 'text' => 'participantes']));
     }
 

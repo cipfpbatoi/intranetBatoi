@@ -136,26 +136,21 @@ class Horario extends Model
         return $semana;
     }
 
-    public static function ModulosActivos($dep = null)
+ 
+    public static function scopeModulosActivos($query,$dep = null)
     {
-        //dd(Modulo::select('codigo')->departamento($dep)->get()->toArray());
         return isset($dep) ?
-                Horario::select('idGrupo', 'modulo', 'idProfesor')
-                        ->distinct()
-                        ->orderBy('idGrupo')
-                        ->whereNotNull('idGrupo')
+                $query->distinct()->whereNotNull('idGrupo')
                         ->whereNotNull('modulo')
                         ->whereNotNull('idProfesor')
                         ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
                         ->whereIn('modulo', Modulo::select('codigo')->departamento($dep)->get()->toArray())
-                        ->get() : Horario::select('idGrupo', 'modulo', 'idProfesor')
-                        ->distinct()
-                        ->orderBy('idGrupo')
+                         : $query->distinct()
                         ->whereNotNull('idGrupo')
                         ->whereNotNull('modulo')
                         ->whereNotNull('idProfesor')
-                        ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
-                        ->get();
+                        ->whereNotIn('modulo', config('constants.modulosNoLectivos'));
+                        
     }
     
     protected function getProfesorAttribute(){
@@ -183,6 +178,7 @@ class Horario extends Model
     public function getOcupacionOptions(){
         return hazArray(Ocupacion::All(), 'codigo', 'nom');
     }
+    
     
     
 

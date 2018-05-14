@@ -1,7 +1,7 @@
 <div class="x_content">
     <p>
     <b>{{ $elemento->Modulo->literal }} - {{ $elemento->ciclo }}</b><br/>
-    {{ $elemento->Modulo->Ciclo->Departamento->literal }}</p>
+    {{ $elemento->Modulo->Ciclo->Departament->literal }}</p>
     Ficheros : <a href="/programacion/{{$elemento->id}}/document" target="_blank"><i class='fa fa-file-pdf-o'></i> {{trans('models.modelos.Programacion')}}</a>
     @for ($i=1;$i<=$elemento->anexos;$i++)
     <a href="/programacion/{{$elemento->id}}/veranexo/{{$i}}" target="_blank"><i class='fa fa-file-pdf-o'></i> {{ trans('messages.buttons.anexo')}}{{$i}}</a></span>

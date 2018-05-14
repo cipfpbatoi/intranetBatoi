@@ -13,8 +13,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(ImportTableSeeder::class);
-        
+        //$this->call(ImportTableSeeder::class);
+        $this->call(CreateModulosCiclos::class);
         //$this->call(ModifyEmpresas::class);
     }
 }

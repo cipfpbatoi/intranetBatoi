@@ -12,6 +12,7 @@ class CicloController extends IntranetController
     protected $model = 'Ciclo';
     protected $gridFields = ['codigo', 'ciclo','Xdepartamento','Xtipo','normativa','titol','rd','rd2'];
     protected $vista;
+    protected $modal = true;
 
     protected function iniBotones()
     {

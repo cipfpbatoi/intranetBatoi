@@ -14,10 +14,9 @@ class Ciclo extends Model
     protected $table = "ciclos";
     public $timestamps = false;
     protected $fillable = ['codigo', 'ciclo','departamento','tipo','normativa','titol','rd','rd2'];
-    protected $rules = [
-    ];
+    protected $rules = [];
     protected $inputTypes = [
-         'departamento' => ['type' => 'select'],
+        'departamento' => ['type' => 'select'],
         'tipo' => ['type' => 'select'],
     ];
     protected $dispatchesEvents = [
@@ -25,7 +24,7 @@ class Ciclo extends Model
         'deleted' => ActivityReport::class,
     ];
 
-    public function Departamento()
+    public function Departament()
     {
         return $this->belongsTo(Departamento::class, 'departamento', 'id');
     }
@@ -47,7 +46,7 @@ class Ciclo extends Model
         return config('constants.tipoEstudio')[$this->tipo];
     }
     public function getXdepartamentoAttribute(){
-        return $this->Departamento->literal;
+        return $this->Departament->literal;
     }
     
 }

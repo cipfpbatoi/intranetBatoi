@@ -16,6 +16,7 @@ class ModuloController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'Modulo';
     protected $gridFields = ['codigo', 'literal', 'Xciclo','Xdepartamento'];
+    protected $modal = true;
     
     protected function iniBotones()
     {

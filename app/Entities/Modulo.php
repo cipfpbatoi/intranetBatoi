@@ -27,6 +27,7 @@ class Modulo extends Model
     ];
     protected $inputTypes = [
         'idCiclo' => ['type' => 'select'],
+        'departamento' => ['type' => 'select']
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
@@ -36,6 +37,10 @@ class Modulo extends Model
     public function getIdCicloOptions()
     {
         return hazArray(Ciclo::all(), 'id', 'ciclo');
+    }
+    public function getDepartamentoOptions()
+    {
+        return hazArray(Departamento::all(), 'id', 'literal');
     }
 
     public function Horario()

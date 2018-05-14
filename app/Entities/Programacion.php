@@ -120,7 +120,7 @@ class Programacion extends Model
         }
     }
     public function getXdepartamentoAttribute(){
-        return isset($this->Modulo->Ciclo->Departamento->cliteral)?$this->Modulo->Departament->literal:'';
+        return isset($this->Modulo->Ciclo->Departament->cliteral)?$this->Modulo->Departament->literal:'';
     }
     public function getXModuloAttribute(){
         return $this->Modulo->literal;

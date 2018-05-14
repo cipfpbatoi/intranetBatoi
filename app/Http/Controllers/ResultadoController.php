@@ -223,7 +223,10 @@ class ResultadoController extends IntranetController
     private function FaltaEntrega($trimestres)
     {
         $faltan = collect();
-        $modulos = Horario::ModulosActivos(esRol(AuthUser()->rol, config('constants.rol.jefe_dpto')) ? AuthUser()->departamento : null);
+        $modulos = Horario::select('idGrupo', 'modulo', 'idProfesor')
+            ->ModulosActivos(esRol(AuthUser()->rol, config('constants.rol.jefe_dpto')) ? AuthUser()->departamento : null)
+                ->orderBy('idGrupo')
+                ->get();
         foreach ($trimestres as $trimestre){
             $evaluaciones = config("curso.trimestres.$trimestre");
             $this->llenaFaltan($faltan, $modulos, $trimestre, $evaluaciones);

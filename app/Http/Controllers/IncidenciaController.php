@@ -18,7 +18,7 @@ class IncidenciaController extends IntranetController
     protected $model = 'Incidencia';
     protected $gridFields = ['Xestado', 'DesCurta', 'espacio', 'XResponsable', 'Xtipo', 'fecha'];
     protected $descriptionField = 'descripcion';
-    protected $modal = false;
+    protected $modal = true;
     
     
     protected function orden($id)

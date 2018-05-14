@@ -35,3 +35,8 @@ Route::post('/programacion/deleteOld',['as' => 'programacion.deleteOld', 'uses' 
 Route::resource('/horario', 'HorarioController', ['except' => ['destroy', 'update','create']]);
 Route::get('/horario/{profesor}/cambiar',['uses'=>'HorarioController@modificarHorario']);
 Route::put('/horario/{horario}/edit', ['as' => 'horario.update', 'uses' => 'HorarioController@update']);
+
+Route::resource('/modulo_ciclo', 'Modulo_cicloController', ['except' => ['destroy', 'update', 'show']]);
+Route::post('/modulo_ciclo/create', ['as' => 'moduloCiclo.store', 'uses' => 'Modulo_cicloController@store']);
+Route::put('/modulo_ciclo/{ciclo}/edit', ['as' => 'moduloCiclo.update', 'uses' => 'Modulo_cicloController@update']);
+Route::get('/modulo_ciclo/{ciclo}/delete', ['as' => 'moduloCiclo.destroy', 'uses' => 'Modulo_cicloController@destroy']);
