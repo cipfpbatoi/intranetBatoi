@@ -33500,6 +33500,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -33518,16 +33519,27 @@ var idProfesor = document.getElementById('dni').innerHTML;
         };
     },
 
-    methods: {
-        elige: function elige() {
+    watch: {
+        dia: function dia(val) {
             var _this = this;
 
-            var diaF = this.dia;
-            //axios.get('http://intranet.my/api/horario/dia_semana='+diaSemana(diaF)+'&idProfesor='+idProfesor+'&ocupacion=null&modulo!TU02CF?api_token='+token).then((response) => {
-            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get('/api/itaca/' + diaF + '/' + idProfesor + '?api_token=' + token).then(function (response) {
+            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get('/api/itaca/' + val + '/' + idProfesor + '?api_token=' + token).then(function (response) {
                 _this.horario = response.data.data;
             }, function (error) {
                 console.log(error);
+                _this.horario = [];
+            });
+        }
+    },
+    methods: {
+        elige: function elige() {
+            var _this2 = this;
+
+            __WEBPACK_IMPORTED_MODULE_0_axios___default.a.get('/api/itaca/' + this.dia + '/' + idProfesor + '?api_token=' + token).then(function (response) {
+                _this2.horarioKk = response.data.data;
+            }, function (error) {
+                console.log(error);
+                _this2.horarioKk = [];
             });
         },
         confirmar: function confirmar() {
@@ -33569,7 +33581,6 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { attrs: { id: "app" } },
     [
       _c("br"),
       _c("label", { attrs: { for: "dia" } }, [_vm._v(" Dia: ")]),
@@ -33577,7 +33588,6 @@ var render = function() {
       _c("fecha-picker", {
         staticClass: "noFlotar date",
         attrs: { id: "dia", type: "text", name: "dia", autofocus: "" },
-        on: { change: _vm.elige },
         model: {
           value: _vm.dia,
           callback: function($$v) {
@@ -33586,8 +33596,6 @@ var render = function() {
           expression: "dia"
         }
       }),
-      _vm._v(" "),
-      _c("button", { on: { click: _vm.elige } }, [_vm._v("Tria data:")]),
       _vm._v(" "),
       _c(
         "table",
