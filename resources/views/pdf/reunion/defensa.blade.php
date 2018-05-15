@@ -24,11 +24,13 @@
 <div class="container" >
     <table class="table table-bordered">
         <tr><th>Alumne</th>
-            @if ($anterior)<th>Projecte</th><th>Data i Hora</th>@else <th>Projecte - Data i Hora</th>@endif<th>Lloc</th></tr>
+            @if ($anterior)<th>Projecte</th><th>Data i Hora</th>@else <th colspan='2'>Projecte - Data i Hora</th>@endif<th>Lloc</th></tr>
         @foreach ($todos as $index => $elemento)
         <tr><td>{{$elemento->descripcion}}</td>
-            @if ($anterior[$index]) <td>@php echo($anterior[$index]['resumen']) @endphp</td> @endif
-            <td>{{$elemento->resumen}}</td>
+            @if (isset($anterior[$index])) <td>@php echo($anterior[$index]['resumen']) @endphp</td><td>{{$elemento->resumen}}</td>
+            @else <td colspan='2'>{{$elemento->resumen}}</td>
+            @endif
+            
             <td>{{$datosInforme->Espacio->descripcion}}</td>
         @endforeach    
     </table>
