@@ -16,7 +16,7 @@ class Fct extends Model
     protected $table = 'fcts';
     public $timestamps = false;
 
-    protected $fillable = ['idAlumno', 'idColaboracion',  'idInstructor', 'desde','hasta'
+    protected $fillable = ['idAlumno', 'idColaboracion', 'desde','hasta'
         ,'horas','asociacion','horas_semanales'];
 //    protected $fillable = ['idAlumno', 'idColaboracion',  'desde','hasta'
 //        ,'horas','asociacion','horas_semanales'];
