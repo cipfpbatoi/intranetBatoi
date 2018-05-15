@@ -91,7 +91,7 @@ class Fct extends Model
     public function scopeActiva($query,$cuando)
     {
         $hoy = new Date();
-        $hoy->addDays(15);
+        $hoy->addDays(21);
         $hoy->format('Y-m-d');
         if ($hoy <= config('curso.evaluaciones.2')[1]){
             $desde = config('curso.evaluaciones.1')[0];

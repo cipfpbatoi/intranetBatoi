@@ -49,6 +49,11 @@ return [
             'numeracion' => [0=>'--'],
             'ordenes' => ['Fct->misFcts->nombre'],
             'resumen' => 'Títol i Tutor individual '],
+        ['index' => '12', 'vliteral' => 'Data Defensa del mòdul de projecte', 'cliteral' => 'Fecha Defensa del módulo de proyecto', 'colectivo' => 'Grupo', 'rol' => '17','select' => '0',
+            'convocatoria' => 'convocatoria', 'acta' => 'defensa',
+            'numeracion' => [0=>'--'],
+            'ordenes' => ['Fct->misFcts->nombre'],
+            'resumen' => '(Projecte) Data i Hora '],
     ],
     'tipoDocumento' => [
             ['index'=>'Profesor','rol'=>3,'pestana'=>1,'grupo'=>'1'],

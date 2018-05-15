@@ -77,6 +77,10 @@ class Reunion extends Model
     {
         return $this->belongsToMany(Profesor::class, 'asistencias', 'idReunion', 'idProfesor')->withPivot('asiste');
     }
+    public function ordenes()
+    {
+        return $this->hasMany(OrdenReunion::class, 'idReunion', 'id');
+    }
 
     public function scopeMisReuniones($query)
     {
@@ -179,6 +183,10 @@ class Reunion extends Model
         $profesor = Profesor::where('dni', '=', $this->idProfesor)->get()->first();
         if ($colectivo == 'Departamento') return (Departamento::where('id', '=', $profesor->departamento)->get()->first()->cliteral);
         if ($colectivo == 'Grupo') return Grupo::QTutor($profesor->dni)->count()?Grupo::QTutor($profesor->dni)->first()->nombre:'';
+    }
+    public function getCicloAttribute()
+    {
+        return Grupo::QTutor($this->idProfesor)->count()?Grupo::QTutor($this->idProfesor)->first()->Ciclo->ciclo:'';   
     }
     public function getXtipoAttribute(){
         return TipoReunion::literal($this->tipo);
