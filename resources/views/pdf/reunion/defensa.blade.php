@@ -27,8 +27,8 @@
             @if ($anterior)<th>Projecte</th><th>Data i Hora</th>@else <th colspan='2'>Projecte - Data i Hora</th>@endif<th>Lloc</th></tr>
         @foreach ($todos as $index => $elemento)
         <tr><td>{{$elemento->descripcion}}</td>
-            @if (isset($anterior[$index])) <td>@php echo($anterior[$index]['resumen']) @endphp</td><td>{{$elemento->resumen}}</td>
-            @else <td colspan='2'>{{$elemento->resumen}}</td>
+            @if (isset($anterior[$index])) <td>@php echo($anterior[$index]['resumen']) @endphp</td><td>@php echo($elemento->resumen) @endphp</td>
+            @else <td colspan='2'>@php echo($elemento->resumen) @endphp</td>
             @endif
             
             <td>{{$datosInforme->Espacio->descripcion}}</td>
