@@ -48,7 +48,7 @@ class SendEmail implements ShouldQueue
     
     public function handle(Mailer $mailer)
     {
-        $mailer->to($this->correo, $this->remitente['email'])->send(new Comunicado($this->remitente,$this->elemento, $this->vista,$this->attach));
+        $mailer->to($this->correo)->cc($this->remitente['email'])->send(new Comunicado($this->remitente,$this->elemento, $this->vista,$this->attach));
         if (isset($this->remitente['id'])){
             avisa($this->remitente['id'], 'El correu adreçat a '.$this->correo.' ha sigut enviat','#','SERVIDOR DE CORRREU');
             event(new EmailSended($this->elemento,$this->correo));
