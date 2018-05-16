@@ -252,7 +252,7 @@ class FctController extends IntranetController
             Session::put('pestana',3);
             return redirect()->action('EmpresaController@show', ['id' => Colaboracion::find($request->idColaboracion)->Centro->idEmpresa]);
         }
-        else return $this->show($idFct);
+        else return redirect()->action('FctController@show', ['id' => $idFct ]);
     }
     
     public function show($id)

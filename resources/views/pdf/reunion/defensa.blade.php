@@ -1,5 +1,5 @@
 @php
-   if ($reunion = \Intranet\Entities\Reunion::where('tipo',11)->where('idProfesor',AuthUser()->dni)->last())
+   if ($reunion = \Intranet\Entities\Reunion::where('tipo',11)->where('idProfesor',AuthUser()->dni)->orderBy('fecha')->first())
         $anterior = $reunion->ordenes->toArray();
    else $anterior = false;
 @endphp
