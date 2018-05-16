@@ -9,11 +9,13 @@ use Intranet\Entities\Horario;
 use Intranet\Entities\Alumno_grupo;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
+use Intranet\Entities\Modulo_ciclo;
 use DB;
 use Illuminate\Database\Seeder;
 use ImportTableSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Styde\Html\Facades\Alert;
+use Illuminate\Support\Facades\Storage;
 
 
 class ImportController extends Seeder
@@ -263,7 +265,25 @@ class ImportController extends Seeder
             case 'Horario' : if ($xml == 'horarios_ocupaciones') {
                     $this->eliminarHorarios();
                 }
+                $this->crea_modulosCiclos();
                 break;
+        }
+    }
+    private function crea_modulosCiclos()
+    {
+        $horarios = Horario::ModulosActivos()->get();
+        $fichero = explode("\n",Storage::get('public/programacions.txt'));
+        $indice = Modulo_ciclo::max('id');
+        foreach ($horarios as $horario){
+            if (Modulo_ciclo::where('idModulo',$horario->modulo)->where('idCiclo',$horario->Grupo->idCiclo)->count()==0)
+            {
+                $nuevo = new Modulo_ciclo();
+                $nuevo->idModulo = $horario->modulo;
+                $nuevo->idCiclo = $horario->Grupo->idCiclo;
+                $nuevo->curso = substr($horario->idGrupo,0,1);
+                $nuevo->enlace = $fichero[$indice++];
+                $nuevo->save();
+            }
         }
     }
     
