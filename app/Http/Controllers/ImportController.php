@@ -269,11 +269,15 @@ class ImportController extends Seeder
                 break;
         }
     }
+    
     private function crea_modulosCiclos()
     {
+        $enlace = (Storage::exists('public/programacions.txt'))?true:false;
+        if ($enlace) {
+            $fichero = explode("\n",Storage::get('public/programacions.txt'));
+            $indice = Modulo_ciclo::max('id')?Modulo_ciclo::max('id'):0;
+        }
         $horarios = Horario::ModulosActivos()->get();
-        $fichero = explode("\n",Storage::get('public/programacions.txt'));
-        $indice = Modulo_ciclo::max('id');
         foreach ($horarios as $horario){
             if (Modulo_ciclo::where('idModulo',$horario->modulo)->where('idCiclo',$horario->Grupo->idCiclo)->count()==0)
             {
@@ -281,7 +285,7 @@ class ImportController extends Seeder
                 $nuevo->idModulo = $horario->modulo;
                 $nuevo->idCiclo = $horario->Grupo->idCiclo;
                 $nuevo->curso = substr($horario->idGrupo,0,1);
-                $nuevo->enlace = $fichero[$indice++];
+                if ($enlace) $nuevo->enlace = $fichero[$indice++];
                 $nuevo->save();
             }
         }
