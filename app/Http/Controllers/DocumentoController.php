@@ -24,7 +24,7 @@ class DocumentoController extends IntranetController
 {
 
     protected $gridFields = ['tipoDocumento', 'descripcion', 'curso', 'idDocumento', 'propietario', 'created_at',
-        'grupo', 'tags', 'ciclo', 'modulo','fichero','situacion'];
+        'grupo', 'tags', 'ciclo', 'modulo','detalle','fichero','situacion'];
     protected $model = 'Documento';
     protected $directorio = '/Ficheros/';
     protected $panel;
