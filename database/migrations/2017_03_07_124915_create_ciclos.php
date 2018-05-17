@@ -15,7 +15,7 @@ class createCiclos extends Migration
     {
         Schema::create('ciclos', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('codigo', 5);
+            //$table->string('codigo', 5);
             $table->string('descripcion', 60);
             $table->tinyInteger('departamento')->references('departa')->on('departamentos');
             $table->string('responsable', 10)->nullable();

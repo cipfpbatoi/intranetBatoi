@@ -91,26 +91,13 @@ class Fct extends Model
     public function scopeActiva($query,$cuando)
     {
         $hoy = new Date();
-        $hoy->addDays(21);
         $hoy->format('Y-m-d');
-        if ($hoy <= config('curso.evaluaciones.2')[1]){
-            $desde = config('curso.evaluaciones.1')[0];
-            $hasta = config('curso.evaluaciones.1')[0];
-        }
-        else 
-            if ($hoy <= config('curso.evaluaciones.3')[1]){
-                $desde = config('curso.evaluaciones.2')[1];
-                $hasta = config('curso.evaluaciones.1')[0];
-            }    
-            else{
-                $desde = config('curso.evaluaciones.3')[1];
-                $hasta = config('curso.evaluaciones.2')[1];
-            }
-        switch ($cuando){
-            case 1: 
-            case 2: return $query->where('desde','>=',$desde);break;
-            case 3: return $query->where('desde','<',$desde)->where('hasta','>',$hasta);break;   
-        }        
+        if ($hoy <= config('curso.fct.1')['fi'])
+            return $query->where('desde','<=',config('curso.fct.1')['fi']);
+        if ($hoy < config('curso.fct.2')['inici'] &&($cuando == 3)) 
+            return $query->where('desde','<=',config('curso.fct.1')['fi']);  
+        return $query->where('desde','>=',config('curso.fct.2')['inici']);
+           
     }
     
     
@@ -177,7 +164,7 @@ class Fct extends Model
     public function getPeriodeAttribute(){
         $inici = new Date($this->desde);
         $inici->format('Y-m-d');
-        if ($inici <= config('curso.evaluaciones.2')[1]) return 1;
+        if ($inici <= config('curso.fct.2')['inici']) return 1;
         else return 2;    
     }
     public function getHoras_semanalesAttribute(){

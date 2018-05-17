@@ -276,7 +276,7 @@ return array(
             'mail' => 'Enviar emails feedback',
             'apte' => 'Qualificar Apto',
             'noApte' => 'Qualificar No Apte',
-            'noProyecto' => 'Renùncia al Projecte',
+            'noProyecto' => 'No presenta Projecte',
             'nuevoProyecto' => 'Accedeix al Projecte',
             'upload' => 'Pujar informació Qualitat',
             'pg0301' => 'Imprimeix PG03-01 (Full Control Servei)',

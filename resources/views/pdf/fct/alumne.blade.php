@@ -1,4 +1,4 @@
-<div class="page">
+<div class="page" style="font-size:large;line-height: 2em">
     @include('pdf.partials.cabecera')
     <br/>
     <div class="container col-lg-12" style="width:90%;">
@@ -13,16 +13,24 @@
         <br/><br />
     </div>
     <div class="container" style="width:95%">
-        <p style="text-indent: 30px">Que segons consta en el seu expedient, @if ($todos->Alumno->sexo === 'H') En @else Na @endif <strong>{{$todos->Alumno->FullName}} </strong> 
-            amb DNI núm. {{$todos->Alumno->dni}}, va realitzar la Formació en Centres de Treball (FCT) del <strong>Cicle Formatiu de grau
-                {{$todos->Colaboracion->Ciclo->ciclo}} </strong> en l'empresa, ubicada a {{$todos->Colaboracion->Centro->direccion}} de/d'
+        <p style="text-indent: 30px;text-align: justify">Que segons consta en el seu expedient, @if ($todos->Alumno->sexo === 'H') En @else Na @endif <strong>{{$todos->Alumno->FullName}} </strong> 
+            amb DNI núm. {{$todos->Alumno->dni}}, va realitzar la Formació en Centres de Treball (FCT) del <strong>{{$todos->Colaboracion->Ciclo->Xtipo}}
+                {{$todos->Colaboracion->Ciclo->vliteral}} </strong> en l'empresa {{$todos->Colaboracion->Centro->Empresa->nombre}}, ubicada a {{$todos->Colaboracion->Centro->direccion}} de/d'
             {{$todos->Colaboracion->Centro->localidad}}, amb una duració total de {{$todos->horas}} hores, les quals les va fer
             entre {{$todos->desde}} i {{$todos->hasta}} i va obtenir una qualifació d'APTE.</p>
+    </div>
+    <hr/>
+    <div class="container" style="width:95%">
+        <p style="text-indent: 30px;text-align: justify">Que según consta en su expediente, @if ($todos->Alumno->sexo === 'H') Don @else Doña @endif <strong>{{$todos->Alumno->FullName}} </strong> 
+            con DNI núm. {{$todos->Alumno->dni}}, ha realizado la Formación en Centros de Trabajo (FCT) del <strong>{{$todos->Colaboracion->Ciclo->Ctipo}}
+                {{$todos->Colaboracion->Ciclo->cliteral}} </strong> en la empresa {{$todos->Colaboracion->Centro->Empresa->nombre}}, ubicada en {{$todos->Colaboracion->Centro->direccion}} de
+            {{$todos->Colaboracion->Centro->localidad}}, con una duración total de {{$todos->horas}} horas, desempeñadas 
+            entre el {{$todos->desde}} i el {{$todos->hasta}}, opteniendo una calificación de APTO.</p>
     </div>
     <div class="container" style="width:90%;">
         <br/><br/>
         <p><strong>I per tal que així conste on convinga, signa el present escrit.</strong></p>
-        <br/><br/><br/>
+        
         <p>{{$datosInforme['poblacion']}},a {{$datosInforme['date']}} </p>
         <br/><br/><br/><br/><br/>
         <div style="width:45%; float:left; ">

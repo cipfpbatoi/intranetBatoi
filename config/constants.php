@@ -140,6 +140,7 @@ return [
     'motivoAusencia' => ['Baja médica', 'Licencia por formación', 'Enfermedad común', 'Traslado de domicilio', 'Asistencia pruebas selectivas', 'Enfermedad grave o muerte del cónyuge', 'Asistencia médica, educativa o asistencial', 'Otros (rellenar cuadro de observaciones)'],
     'modulosNoLectivos' => ['TU01CF','TU02CF'],
     'tipoEstudio' => [1=>'Cicle Formatiu de Grau Mitjà','2'=>'Cicle Formatiu de Grau Superior','3'=>'Cicle Formatiu Bàsic','4'=>'Batxiller','5'=>'ESO','6'=>'Primària'],
+    'tipoEstudioC' => [1=>'Ciclo Formativo de Grado Medio','2'=>'Ciclo Formativo de Grado Superior','3'=>'Ciclo Formativo Básico','4'=>'Bachiller','5'=>'ESO','6'=>'Primaria'],
     
     ];
 

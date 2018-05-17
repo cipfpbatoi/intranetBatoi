@@ -275,7 +275,7 @@ return array(
             'mail' => 'Enviar emails feedback',
             'apte' => 'Calificar Apto',
             'noApte' => 'Calificar No Apto',
-            'noProyecto' => 'Renuncia al Proyecto',
+            'noProyecto' => 'No presenta Proyecto',
             'nuevoProyecto' => 'Accede a Proyecto',
             'upload' => 'Subir información Calidad',
             'pg0301' => 'Imprime PG03-01 (Hoja Control Servicio)',
