@@ -54,6 +54,7 @@ return array(
                 'notification' => 'Avisat Equipo',
                 'email' => 'Comunicar a dirección',
                 'show' => 'Ver Ausencia id.',
+                'imprime' => 'Imprimir informe mensual',
                 '3' => 'Autorizada',
                 '4' => 'Resuelta',
                 '2' => 'Justificada',

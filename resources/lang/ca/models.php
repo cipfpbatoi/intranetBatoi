@@ -54,6 +54,7 @@ return array(
                 'notification' => 'Avisar Equip',
                 'email' => 'Comunicar a direcció',
                 'show' => 'Vore Ausència id.',
+                'imprime' => 'Imprimir informe mensual',
                 '3' => 'Autoritzada',
                 '4' => 'Resolta',
                 '2' => 'Justificada',
