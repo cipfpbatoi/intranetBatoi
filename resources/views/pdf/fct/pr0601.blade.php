@@ -14,7 +14,7 @@
         </tr>
     </table>
 
-    <table border="1">
+    <table border="1" style='font-size: x-large'>
         <colgroup><col width="347"/><col width="153"/><col width="238"/></colgroup>
         <tr>
             <td style="text-align:left;width:9.938cm;padding-left: 5px; "><strong>ALUMNO/OS</strong></td>
@@ -27,7 +27,7 @@
             <td style="text-align:left;width:7.45cm; " ></td>
         </tr>
         @endforeach
-        <tr><td colspan="3" style="text-align:center;width:21.938cm;height: 12.938cm;font-size: 14px;" >
+        <tr><td colspan="3" style="text-align:center;width:21.938cm;height: 12.938cm;font-size: 16px;" >
                 <p s>He recibido por parte del tutor el certificado de realización de las prácticas donde figuran los puestos de trabajo que he cubierto y las horas realizadas en el mismo</p>
                 <br/>
                 <br/>
