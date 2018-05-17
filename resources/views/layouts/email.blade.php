@@ -6,7 +6,6 @@
         <title>Correu automàtic</title>
         {{ Html::style('/css/email.css') }}
         @yield('css')
-        </head>
- </head>
+    </head>
  @yield('body')
 </html>
