@@ -2,6 +2,7 @@
    if ($reunion = \Intranet\Entities\Reunion::where('tipo',11)->where('idProfesor',AuthUser()->dni)->orderBy('fecha')->first())
         $anterior = $reunion->ordenes->toArray();
    else $anterior = false;
+   $ciclo = \Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->count()?\Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->first()->literal:$datosInforme->Ciclo;
 @endphp
 @extends('layouts.pdf')
 @section('content')
@@ -14,8 +15,8 @@
     <tr>
         <th>    
             <h4>CICLE FORMATIU DE GRAU SUPERIOR</h4>
-            <h5>{{$datosInforme->Ciclo}}</h5>
-            <h6>Curs {{Curso()}}</h6>
+            <h3>{{$ciclo}}</h3>
+            <h5>Curs {{Curso()}}</h5>
         </th>
     </tr>
 </table>
