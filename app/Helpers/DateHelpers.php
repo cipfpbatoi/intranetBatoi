@@ -79,7 +79,7 @@ function month($fecha)
     $idioma = Session::get('lang');
     $fc1 = new Jenssegers\Date\Date($fecha);
     Jenssegers\Date\Date::setlocale($idioma);
-    return ucwords($fc1->format('F'));
+    return $fc1->format('F');
 }
 
 /**

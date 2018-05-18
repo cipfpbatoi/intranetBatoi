@@ -5,8 +5,8 @@
     <div class="container col-lg-12" style="width:90%;">
         <p style="text-indent: 50px">{{$datosInforme['consideracion']}}
             <strong>{{$datosInforme['secretario']}}</strong> 
-            @if ($datosInforme['consideracion'] == 'En') secretario @else secretaria @endif del 
-            {{$datosInforme['centro']}} de/d' {{$datosInforme['poblacion']}}, província de/d' {{$datosInforme['provincia']}}.</p>
+            @if ($datosInforme['consideracion'] == 'En') secretari @else secretària @endif del 
+            {{$datosInforme['centro']}} d'{{$datosInforme['poblacion']}}, província d'{{$datosInforme['provincia']}}.</p>
     </div>
     <div class="container" >
         <strong>CERTIFICA:</strong>
