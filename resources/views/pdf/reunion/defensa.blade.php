@@ -29,7 +29,7 @@
             @else <td colspan='2'>@php echo($elemento->resumen) @endphp</td>
             @endif
             
-            <td style='font-size: normal'>{{$datosInforme->Espacio->descripcion}}</td>
+            <td style='font-size: 0.8em'>{{$datosInforme->Espacio->descripcion}}</td>
         @endforeach    
     </table>
 </div>
