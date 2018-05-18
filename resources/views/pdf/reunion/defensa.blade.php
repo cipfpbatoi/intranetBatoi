@@ -9,29 +9,27 @@
 <br/>
 <table class="table table-bordered">
     <tr>
-        <th><h2>{{strtoupper($datosInforme->Tipos()['vliteral'])}}</h2></th>
+        <th><h3>{{strtoupper($datosInforme->Tipos()['vliteral'])}}</h3></th>
     </tr>
     <tr>
-        <th><h4>CICLE FORMATIU DE GRAU SUPERIOR</h4></th>
-    </tr>
-    <tr>
-        <th><h5>{{$datosInforme->Ciclo}}</h5></th>
-    </tr>
-    <tr>
-        <th><h6>Curs {{Curso()}}</h6></th>
+        <th>    
+            <h4>CICLE FORMATIU DE GRAU SUPERIOR</h4>
+            <h5>{{$datosInforme->Ciclo}}</h5>
+            <h6>Curs {{Curso()}}</h6>
+        </th>
     </tr>
 </table>
 <div class="container" >
-    <table class="table table-bordered">
+    <table class="table table-bordered" style='font-size: large'>
         <tr><th>Alumne</th>
             @if ($anterior)<th>Projecte</th><th>Data i Hora</th>@else <th colspan='2'>Projecte - Data i Hora</th>@endif<th>Lloc</th></tr>
         @foreach ($todos as $index => $elemento)
-        <tr><td>{{$elemento->descripcion}}</td>
+        <tr><td style='font-size: large'>{{$elemento->descripcion}}</td>
             @if (isset($anterior[$index])) <td>@php echo($anterior[$index]['resumen']) @endphp</td><td>@php echo($elemento->resumen) @endphp</td>
             @else <td colspan='2'>@php echo($elemento->resumen) @endphp</td>
             @endif
             
-            <td>{{$datosInforme->Espacio->descripcion}}</td>
+            <td style='font-size: normal'>{{$datosInforme->Espacio->descripcion}}</td>
         @endforeach    
     </table>
 </div>
