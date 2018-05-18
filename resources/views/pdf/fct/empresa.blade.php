@@ -35,11 +35,11 @@
         
         <p>{{$datosInforme['poblacion']}},a {{$datosInforme['date']}} </p>
         <br/><br/><br/>
-        <div style="width:35%; float:left; ">
+        <div style="width:40%; float:left; ">
             <p><strong>{{$datosInforme['secretario']}}</strong></p>
             <p>@if ($datosInforme['consideracion'] == 'En') SECRETARI @else SECRETARIA @endif</p>
         </div>
-        <div style="width:35%; float:right; ">
+        <div style="width:40%; float:right; ">
             <p><strong>{{$datosInforme['director']}}</strong></p>
             <p>Vist-i-plau DIRECTOR</p>
         </div>
