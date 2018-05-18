@@ -21,7 +21,7 @@
     </div>
     <hr/>
     <div class="container" style="width:95%">
-        <p style="text-indent: 30px;text-align: justify">Que según consta en su expediente, @if ($todos->Alumno->sexo === 'H') Don @else Doña @endif <strong>{{$todos->Alumno->FullName}} </strong> 
+        <p style="text-indent: 30px;text-align: justify">Que según consta en su expediente, @if ($todos->Alumno->sexo === 'H') el alumno @else la alumna @endif <strong>{{$todos->Alumno->FullName}} </strong> 
             con DNI núm. {{$todos->Alumno->dni}}, ha realizado la Formación en Centros de Trabajo (FCT) del <strong>{{$todos->Colaboracion->Ciclo->Ctipo}}
                 {{$todos->Colaboracion->Ciclo->cliteral}} </strong> en la empresa {{$todos->Colaboracion->Centro->Empresa->nombre}}, ubicada en {{$todos->Colaboracion->Centro->direccion}} de
             {{$todos->Colaboracion->Centro->localidad}}, con una duración total de {{$todos->horas}} horas, desempeñadas 
