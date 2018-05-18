@@ -199,7 +199,7 @@ return array(
         'Fct' => 'FCTs',
         'Empresa' => 'Empresas',
         'Extraescolares' => 'Informe Departamento',
-        'Lfaltas' => 'Mensual de Ausencias',
+        'Lfaltas' => 'Listados mensuales',
         'Fichar' => 'Fichaje profesores',
         'Alumno' => 'Alumno',
         'Orientacion' => 'Orientación',
