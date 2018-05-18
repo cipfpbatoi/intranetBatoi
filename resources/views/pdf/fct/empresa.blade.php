@@ -16,8 +16,8 @@
         <p style="text-indent: 30px;text-align: justify">Que l'empresa <strong> {{$todos->Colaboracion->Centro->Empresa->nombre}} </strong> , ubicada a {{$todos->Colaboracion->Centro->direccion}} de/d'
             {{$todos->Colaboracion->Centro->localidad}}, ha col·laborat en les pràctiques corresponents a la Formació de Centres de Treball (FCT) de  @if ($todos->Alumno->sexo === 'H') l'alumne @else l'alumna @endif <strong>{{$todos->Alumno->FullName}} </strong> 
             , del {{$todos->Colaboracion->Ciclo->Xtipo}} <strong> {{$todos->Colaboracion->Ciclo->vliteral}} </strong>.Que dins d'aquesta empresa, En/Na/N' <strong>{{$instructor->nombre}}</strong>, ha sigut l'instructor/a de les pràctiques
-            formatives  de @if ($todos->Alumno->sexo === 'H')l'alumne esmentat @else d'alumna esmentada @endif. Que la seua participació com a instructor ha cobert la quantitat de {{$instructor->pivot->horas}} hores de la FCT de l'alumne/a esmentat/ada,
-            les quals s'han realitzat del  {{$todos->desde}} fins {{$todos->hasta}}.</p>
+            formatives  de @if ($todos->Alumno->sexo === 'H')l'alumne esmentat @else d'alumna esmentada @endif. Que la seua participació com a instructor ha cobert la quantitat de {{$instructor->pivot->horas}} hores,
+            realitzades entre el  {{$todos->desde}} i el {{$todos->hasta}}.</p>
             </p>
     </div>
     <hr/>
@@ -25,8 +25,8 @@
         <p style="text-indent: 30px;text-align: justify">Que la empresa <strong> {{$todos->Colaboracion->Centro->Empresa->nombre}} </strong> , ubicada en {{$todos->Colaboracion->Centro->direccion}} de
             {{$todos->Colaboracion->Centro->localidad}}, ha colaborado en las prácticas correspondientes a la Formación de Centros de Trabajo (FCT) del alumno/a <strong>{{$todos->Alumno->FullName}}</strong>, del {{$todos->Colaboracion->Ciclo->Ctipo}} <strong> {{$todos->Colaboracion->Ciclo->cliteral}}</strong>.
             Que dentro de esta empresa, Don/Doña <strong>{{$instructor->nombre}}</strong>, ha sido el instructor/a de las prácticas
-            formativas @if ($todos->Alumno->sexo === 'H') del alumno citado @else de la alumna citada @endif. Que su participación como instructor ha cubierto la cantidad de {{$instructor->pivot->horas}} horas de la FCT,
-            que se han realizado desde el  {{$todos->desde}} hasta el {{$todos->hasta}}.</p>
+            formativas @if ($todos->Alumno->sexo === 'H') del alumno citado @else de la alumna citada @endif. Que su participación como instructor ha cubierto la cantidad de {{$instructor->pivot->horas}} horas,
+            realizadas entre el  {{$todos->desde}} i el {{$todos->hasta}}.</p>
             </p>
     </div>
     <div class="container" style="width:90%;">
