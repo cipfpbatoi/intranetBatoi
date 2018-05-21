@@ -26,7 +26,7 @@ trait traitImprimir
 
     public function imprimir($modelo = '', $inicial = null, $final = null,$orientacion='portrait')
     {
-        $modelo = $modelo ? $modelo : $this->model . 's';
+        $modelo = $modelo ? $modelo : strtolower($this->model) . 's';
         $final = $final ? $final : '_print';
         $todos = $this->class::listos($inicial);
         if ($todos->Count()) {
