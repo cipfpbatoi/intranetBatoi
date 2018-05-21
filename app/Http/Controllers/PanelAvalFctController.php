@@ -8,6 +8,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Fct;
 use DB;
 use Styde\Html\Facades\Alert;
+use Intranet\Botones\Panel;
 
 class PanelAvalFctController extends BaseController
 {
@@ -16,6 +17,7 @@ class PanelAvalFctController extends BaseController
     protected $model = 'Fct';
     protected $gridFields = [ 'Nombre', 'qualificacio', 'projecte','periode'];
     protected $profile = false;
+    
     
     public function search()
     {
@@ -29,6 +31,9 @@ class PanelAvalFctController extends BaseController
     
      protected function iniBotones()
     {
+        
+        $this->panel->setPestana('Resum', false,'profile.resumenfct');
+        
         $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => [ 'calificacion', '!=', '1', 'actas', '==', 0]]));
         $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['calProyecto','<','5', 'calificacion', '!=', '0', 'actas', '==', 0]]));
         

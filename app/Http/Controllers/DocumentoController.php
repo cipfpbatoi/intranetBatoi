@@ -28,14 +28,16 @@ class DocumentoController extends IntranetController
     protected $model = 'Documento';
     protected $directorio = '/Ficheros/';
     protected $panel;
+    protected $modal = false;
+    protected $profile = false;
     
 
-    public function index()
-    {
-        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        $this->iniBotones();
-        return $this->grid($this->search());
-    }
+//    public function index()
+//    {
+//        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
+//        $this->iniBotones();
+//        return $this->grid($this->search());
+//    }
 
     public function search()
     {

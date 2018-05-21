@@ -40,8 +40,8 @@ class Grupo extends Model
 
     public function Alumnos()
     {
-        return $this->hasManyThrough(Alumno::class, Alumno_grupo::class, 'idGrupo', 'idAlumno', 'codigo');
-    }
+        return $this->belongsToMany(Alumno::class,'alumnos_grupos', 'idGrupo', 'idAlumno', 'codigo','nia');
+   }
 
     public function Actividades()
     {
@@ -142,6 +142,52 @@ class Grupo extends Model
     }
     public function getActaAttribute(){
         return $this->acta_pendiente?'Pendiente':'';
+    }
+    public function getCalidadAttribute(){
+        return (Documento::where('tipoDocumento','Qualitat')->where('grupo',$this->nombre)->where('curso',Curso())->count())?'O':'X';
+    }
+    public function getMatriculadosAttribute(){
+        return Alumno_grupo::where('idGrupo',$this->codigo)->count();
+    }
+    public function getAvalFctAttribute(){
+        $todos = $this->Alumnos;
+        $aval = 0; 
+        foreach ($todos as $uno){
+            if (isset($uno->Fct->calificacion))
+                $aval++;
+        }    
+        return $aval;
+    }
+    public function getAprobFctAttribute(){
+        $todos = $this->Alumnos;
+        $aprob = 0;
+        foreach ($todos as $uno){
+            if (isset($uno->Fct->calificacion) && $uno->Fct->calificacion) $aprob++; 
+        }    
+        return $aprob;
+    }
+    public function getAvalProAttribute(){
+        $todos = $this->Alumnos;
+        $aval = 0; 
+        foreach ($todos as $uno){
+            if (isset($uno->Fct->calProyecto))
+                $aval++;
+        }    
+        return $aval;
+    }
+    public function getAprobProAttribute(){
+        $todos = $this->Alumnos;
+        $aprob = 0;
+        foreach ($todos as $uno){
+            if (isset($uno->Fct->calProyecto) && $uno->Fct->calProyecto >= 5) $aprob++; 
+        }    
+        return $aprob;
+    }
+    public function getResfctAttribute(){
+        return $this->AprobFct." de $this->AvalFct";
+    }
+    public function getResproAttribute(){
+        return $this->AprobPro." de $this->AvalPro";
     }
     
 

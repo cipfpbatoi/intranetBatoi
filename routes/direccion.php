@@ -70,3 +70,5 @@ Route::post('/horarios/cambiar',['as' => 'horarios.cambiar', 'uses' => 'HorarioC
 
 Route::get('/documento',['as'=> 'documentosP.index','uses' => 'PanelDocumentoController@index']);
 
+Route::get('/controlFct',['as'=> 'controlFct.index','uses' => 'PanelPracticasController@index']);
+
