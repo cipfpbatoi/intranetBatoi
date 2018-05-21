@@ -100,7 +100,7 @@ class FaltaController extends IntranetController
         if ($request->mensual == 'on') {
             $nom = 'Falta' . new Date() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-            Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Falta listado llistat autorizacion autorizacio"]);
+            Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"]);
 
             // pendientes pasan a ser impresas
             // todas las faltas hasta la fecha no impresas y comunicadas

@@ -26,14 +26,15 @@ trait traitImprimir
 
     public function imprimir($modelo = '', $inicial = null, $final = null,$orientacion='portrait')
     {
-        $modelo = $modelo ? $modelo : strtolower($this->model) . 's';
+        $modelo = $modelo ? $modelo : $this->model . 's';
         $final = $final ? $final : '_print';
         $todos = $this->class::listos($inicial);
         if ($todos->Count()) {
             $pdf = $this->hazPdf("pdf.$modelo", $todos,null,$orientacion);
             $nom = $this->model . new Date() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-            Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "$modelo listado llistat autorizacion autorizacio"]);
+            $tags = config("modelos.$this->model.documento");
+            $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => $tags ]);
             $this->makeAll($todos, $final);
             return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
         } else {

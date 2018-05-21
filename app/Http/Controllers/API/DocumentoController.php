@@ -5,9 +5,9 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\Espacio;
 use Illuminate\Http\Request;
 
-class EspacioController extends ApiBaseController
+class DocumentoController extends ApiBaseController
 {
 
-    protected $model = 'Espacio';
+    protected $model = 'Documento';
 
 }

@@ -69,7 +69,7 @@ class ExpedienteController extends IntranetController
                     $pdf = $this->hazPdf("pdf.expediente.$index", $todos);
                     $nom = $this->model . new Date() . '.pdf';
                     $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-                    Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "listado llistat expediente expediente $valor"]);
+                    Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "listado llistat expediente expedient $valor"]);
                     $this->makeAll($todos, '_print');
                     $pdf->save(storage_path('/app/' . $nomComplet));
                     return response()->download(storage_path('/app/' . $nomComplet), $nom);

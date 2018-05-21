@@ -40,7 +40,7 @@ class ComisionController extends IntranetController
     {
         return $this->imprimir('payments',4,5,'landscape');
     }
-    
+     
     public function paid($id)
     {
         $elemento = $this->class::findOrFail($id);
