@@ -9,6 +9,8 @@ use Intranet\Entities\Fct;
 use DB;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\Panel;
+use Intranet\Entities\Documento;
+use Illuminate\Support\Facades\Session;
 
 class PanelAvalFctController extends BaseController
 {
@@ -33,6 +35,11 @@ class PanelAvalFctController extends BaseController
     {
         
         $this->panel->setPestana('Resum', false,'profile.resumenfct');
+        $find = Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento','Qualitat')
+                ->where('curso',Curso())->first();
+        if (!$find) $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
+        else $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
+        Session::put('redirect', 'PanelAvalFctController@index');
         
         $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => [ 'calificacion', '!=', '1', 'actas', '==', 0]]));
         $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['calProyecto','<','5', 'calificacion', '!=', '0', 'actas', '==', 0]]));

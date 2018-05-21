@@ -247,7 +247,8 @@ return array(
         'Nuevocurso' => 'Esborrar Dades Curs Anterior',
         'Changeschedule' => ' Canviar horari',
         'Auxiliar' => 'Taules auxiliars',
-        'Modulociclo' => 'Mòdul / Cicle'
+        'Modulociclo' => 'Mòdul / Cicle',
+        'Actasfct' => 'Control Fct/Actes'
         
     ),
     'situations' => array(

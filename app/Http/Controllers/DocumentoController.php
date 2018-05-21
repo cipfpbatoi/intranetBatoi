@@ -152,6 +152,7 @@ class DocumentoController extends IntranetController
             $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
             $elemento->setInputType('grupo', ['type' => 'hidden']);
             $elemento->setInputType('enlace', ['type' => 'hidden']);
+            $elemento->setRule('nota','required');
             $default = $elemento->fillDefautOptions();
             $modelo = $this->model;
             Session::put('redirect', 'PanelAvalFctController@index');

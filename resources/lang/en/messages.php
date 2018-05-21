@@ -244,7 +244,8 @@ return array(
         'Nuevocurso' => 'Delete previous data',
         'Changeschedule' => ' Change Schedule',
         'Auxiliar' => 'Auxiliar tables',
-        'Modulociclo' => 'Module / Cycle'
+        'Modulociclo' => 'Module / Cycle',
+        'Actasfct' => 'Control Fct/Minutes'
     ),
     'situations' => array(
         '0' => 'Not notified',
