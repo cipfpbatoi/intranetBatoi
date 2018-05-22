@@ -1,6 +1,6 @@
 @extends('layouts.intranet')
 @section('css')
-<title>{{trans("models.instructor.copy")}}</title>
+<title>@lang("models.instructor.copy")</title>
 @endsection
 @section('content')
 <h4>{{$instructor->nombre}} </h4>
@@ -21,5 +21,5 @@
 </form>
 @endsection
 @section('titulo')
-{{trans("models.instructor.copy")}}
+@lang("models.instructor.copy")
 @endsection

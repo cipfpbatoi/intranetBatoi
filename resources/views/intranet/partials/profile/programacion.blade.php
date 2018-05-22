@@ -17,7 +17,7 @@
                 @endfor
              </div>
             <div class="left col-xs-6">
-                <h5>{{trans('messages.generic.validez')}}</h5>
+                <h5>@lang("messages.generic.validez")</h5>
                 <i class="fa fa-calendar"></i> {{ $elemento->desde }}<br/>
                 <i class="fa fa-calendar"></i> {{ $elemento->hasta }}
             </div>

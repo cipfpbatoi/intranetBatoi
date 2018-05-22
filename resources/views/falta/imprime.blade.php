@@ -2,7 +2,7 @@
 @section('css')
 {{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.css') }}
 {{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.min.css') }}
-<title>{{trans("models.Falta.imprime")}}</title>
+<title>@lang("models.Falta.imprime")</title>
 @endsection
 @section('content')
 <div class='x-content'>
@@ -24,7 +24,7 @@
 </div>
 @endsection
 @section('titulo')
-{{trans("models.Falta.imprime")}}
+@lang("models.Falta.imprime")
 @endsection
 @section('scripts')
 {{ Html::script('/assets/moment.js') }}

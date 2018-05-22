@@ -25,14 +25,14 @@
         </li>
     </ul>
     <h6>{!!  implode('<br/>',NameRolesUser(AuthUser()->rol))  !!} </h6>
-    <a href="/perfil" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>{{trans('messages.menu.Perfil')}}</a>
+    <a href="/perfil" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>@lang("messages.menu.Perfil")</a>
     <br />
 </div>
 <div class="col-md-9 col-sm-9 col-xs-12">
 
 <!--    <div class="profile_title">
         <div class="col-md-6">
-            <h2>{{trans('messages.generic.activityReport')}}</h2>
+            <h2>@lang("messages.generic.activityReport")</h2>
         </div>
         <div class="col-md-6">
             <div id="" class="pull-right" style="margin-top: 5px; background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #E6E9ED">
@@ -48,13 +48,13 @@
 
     <div class="" role="tabpanel" data-example-id="togglable-tabs">
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">{{trans('messages.generic.nextActivities')}}</a>
+            <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("messages.generic.nextActivities")</a>
             </li>
-            <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">{{trans('messages.generic.lastActivity')}}</a>
+            <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">@lang("messages.generic.lastActivity")</a>
             </li>
-            <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">{{trans('messages.generic.timeTable')}}</a>
+            <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">@lang("messages.generic.timeTable")</a>
             </li>
-            <li role="presentation" class=""><a href="#tab_content4" role="tab" id="profile-tab3" data-toggle="tab" aria-expanded="false">{{trans('messages.generic.actas')}}</a>
+            <li role="presentation" class=""><a href="#tab_content4" role="tab" id="profile-tab3" data-toggle="tab" aria-expanded="false">@lang("messages.generic.actas")</a>
             </li>
         </ul>
         <div id="myTabContent" class="tab-content">
@@ -79,7 +79,7 @@
 </div>
 @endsection
 @section('titulo')
-{{trans('messages.menu.Usuario')}}
+@lang("messages.menu.Usuario")
 @endsection
 @section('scripts')
 @endsection

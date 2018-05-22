@@ -29,7 +29,7 @@
             <div class="col-xs-12 col-sm-4 emphasis">
                 <p class="ratings">
                     @if ($elemento->estraescolar == 1)
-                        <a href='#' class='btn btn-success btn-xs' >{{trans('messages.menu.Orientacion')}}</a>
+                        <a href='#' class='btn btn-success btn-xs' >@lang("messages.menu.Orientacion")</a>
                     @else
                         @if ($elemento->estado<2) <a href='#' class='btn btn-danger btn-xs' >
                         @else <a href='#' class='btn btn-success btn-xs' >   

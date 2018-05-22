@@ -52,7 +52,7 @@
                     @endforeach
                             <div class="text-center">
                                 <a href="/notification">
-                                    <strong>{{trans('messages.buttons.seeAll')}}</strong>
+                                    <strong>@lang("messages.buttons.seeAll")</strong>
                                     <i class="fa fa-angle-right"></i>
                                 </a>
                             </div>

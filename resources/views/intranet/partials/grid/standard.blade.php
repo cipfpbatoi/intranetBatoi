@@ -11,7 +11,7 @@
                     @endif
                 </th>
                 @endforeach
-                <th>{{trans("validation.attributes.operaciones")}}</th>
+                <th>@lang("validation.attributes.operaciones")</th>
             </tr>
         </thead>
         <tbody>
@@ -36,7 +36,7 @@
                     @endif
                 </th>
                 @endforeach
-                <th>{{trans("validation.attributes.operaciones")}}</th>
+                <th>@lang("validation.attributes.operaciones")</th>
             </tr>
         </tfoot>
     </table>

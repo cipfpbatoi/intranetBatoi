@@ -11,7 +11,7 @@
             <p>
                 <a href="{{$enlace}}"> 
                     {{$elemento->departamento}}<br/>
-                    {{$elemento->avaluacio}} {{trans('validation.attributes.Evaluacion')}}
+                    {{$elemento->avaluacio}} @lang("validation.attributes.Evaluacion")
                 </a>  
             </p>
         </div>
