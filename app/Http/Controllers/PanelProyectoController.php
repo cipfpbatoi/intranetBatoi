@@ -15,7 +15,7 @@ class PanelProyectoController extends BaseController
     
     protected $perfil = 'profesor';
     protected $model = 'Documento';
-    protected $gridFields = ['curso', 'descripcion', 'tags', 'ciclo','detalle'];
+    protected $gridFields = ['curso', 'descripcion', 'tags', 'ciclo'];
     
     
     protected function iniPestanas($parametres = null)
