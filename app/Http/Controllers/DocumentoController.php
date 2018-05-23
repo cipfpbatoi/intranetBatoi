@@ -64,33 +64,6 @@ class DocumentoController extends IntranetController
             return redirect()->route('home');
     }
 
-    public function proyecto()
-    {
-
-        $this->panel = new Panel($this->model, ['curso', 'descripcion', 'tags', 'ciclo'], 'grid.standard');
-        $roles = RolesUser(AuthUser()->rol);
-        $todos = Documento::whereIn('rol', $roles)
-                ->where('tipoDocumento', 'Proyecto')
-                ->orderBy('curso')
-                ->get();
-        $grupos = Ciclo::select('ciclo')
-                ->where('departamento', AuthUser()->departamento)
-                ->distinct()
-                ->get();
-        $this->panel->setBothBoton('documento.show', ['where' => ['rol', 'in', RolesUser(AuthUser()->rol)]]);
-        foreach ($grupos as $grupo) {
-            $this->panel->setPestana(str_replace([' ', '(', ')'], '', $grupo->ciclo), true, 'profile.documento', ['ciclo', $grupo->ciclo]);
-        }
-        //$this->panel->setTitulo($this->titulo);
-        $this->panel->setElementos($todos);
-        if ($grupos->count()) {
-            return view('documento.grupo', ['panel' => $this->panel]);
-        } else {
-            Alert::danger(trans("messages.generic.noproyecto"));
-            return redirect()->route('home');
-        }
-    }
-
     public function acta($grupo)
     {
         $this->panel = new Panel($this->model, null, null, false);

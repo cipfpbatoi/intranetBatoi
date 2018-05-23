@@ -20,6 +20,6 @@ Route::put('/documento/{documento}/edit', ['as' => 'documento.update', 'uses' =>
 Route::get('/documento/{documento}/show', ['as' => 'documento.show', 'uses' => 'DocumentoController@show']);
 Route::get('/documento/{grupo}/grupo', ['as' => 'documento.grupo', 'uses' => 'DocumentoController@grupo']);
 Route::get('/documento/{grupo}/acta', ['as' => 'documento.acta', 'uses' => 'DocumentoController@acta']);
-Route::get('/proyecto', ['as' => 'documento.proyecto', 'uses' => 'DocumentoController@proyecto']);
+Route::get('/proyecto', ['as' => 'documento.proyecto', 'uses' => 'PanelProyectoController@index']);
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'profesor.mensaje', 'uses' => 'ProfesorController@alerta']);
 
