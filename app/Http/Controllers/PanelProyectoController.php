@@ -15,34 +15,20 @@ class PanelProyectoController extends BaseController
     
     protected $perfil = 'profesor';
     protected $model = 'Documento';
-    protected $gridFields = ['curso', 'descripcion', 'tags', 'ciclo'];
+    protected $gridFields = ['curso', 'descripcion', 'tags', 'ciclo','detalle'];
     
-    public function proyecto()
+    
+    protected function iniPestanas($parametres = null)
     {
-        
-        //$this->panel->setTitulo($this->titulo);
-        $this->panel->setElementos($todos);
-        
-    }
-    public function index()
-    {
-        Session::forget('redirect'); 
         $dep = isset(AuthUser()->departamento)?AuthUser()->departamento:AuthUser()->Grupo->first()->departamento;
         $grupos = Ciclo::select('ciclo')
                 ->where('departamento', $dep)
                 ->where('tipo',2)
                 ->distinct()
                 ->get();
-        if ($grupos->count()){
-            foreach ($grupos as $grupo) 
-                $this->panel->setPestana(str_replace([' ', '(', ')'], '', $grupo->ciclo), true, 'profile.documento', ['ciclo', $grupo->ciclo]);
-            $this->iniBotones();
-            $this->panel->setElementos($this->search());
-            return view('documento.grupo', ['panel' => $this->panel]);
-        } else {
-            Alert::danger(trans("messages.generic.noproyecto"));
-            return redirect()->route('home');
-        }
+        foreach ($grupos as $grupo) 
+            $this->panel->setPestana(str_replace([' ', '(', ')'], '', $grupo->ciclo), true, 'profile.documento', ['ciclo', $grupo->ciclo]);
+      
     }
     
     public function search()
@@ -51,7 +37,7 @@ class PanelProyectoController extends BaseController
                 ->orderBy('curso')
                 ->get();
     }
-     protected function iniBotones()
+    protected function iniBotones()
     {
         $this->panel->setBothBoton('documento.show');
     }

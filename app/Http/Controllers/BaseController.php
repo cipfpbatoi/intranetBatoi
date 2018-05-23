@@ -23,6 +23,7 @@ abstract class BaseController extends Controller
     
     protected $modal = false; //utilitza vista modal o ono per a insercions i modificats
     
+    
     /*  
      * Constructor
      *  asigna: perfil ,classe, panel grid per defecte
@@ -75,8 +76,7 @@ abstract class BaseController extends Controller
     {
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
-        if (view()->exists('intranet.partials.profile.'.strtolower($this->model))&&$this->profile) 
-                    $this->panel->setPestana('profile', false);
+        $this->iniPestanas();
         return $this->grid($this->search(),$this->modal);
     }
     
@@ -100,6 +100,11 @@ abstract class BaseController extends Controller
      * Inicialitza el botons del grid
      */
     protected function iniBotones(){}
+    protected function iniPestanas($parametres = null){
+        if (view()->exists('intranet.partials.profile.'.strtolower($this->model))&&$this->profile) 
+                    $this->panel->setPestana('profile', false);
+        
+    }
 
     
 }

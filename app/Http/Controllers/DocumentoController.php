@@ -32,12 +32,6 @@ class DocumentoController extends IntranetController
     protected $profile = false;
     
 
-//    public function index()
-//    {
-//        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-//        $this->iniBotones();
-//        return $this->grid($this->search());
-//    }
 
     public function search()
     {
@@ -47,22 +41,6 @@ class DocumentoController extends IntranetController
             return Documento::where('curso',Curso())->whereIn('rol', RolesUser(AuthUser()->rol))->get();
     }
 
-    public function grupo($grupo)
-    {
-        $this->panel = new Panel($this->model, null, null, false);
-        foreach (TipoDocumento::allRol($grupo) as $key => $role) {
-            if (UserisAllow($role))
-                $this->panel->setPestana($key, true, 'profile.documento', ['tipoDocumento', $key]);
-        }
-        $todos = Documento::whereIn('rol', RolesUser(AuthUser()->rol))->get();
-
-        //$this->panel->setTitulo($this->titulo);
-        $this->panel->setElementos($todos);
-        if ($this->panel->countPestana())
-            return view('documento.grupo', ['panel' => $this->panel]);
-        else
-            return redirect()->route('home');
-    }
 
     public function acta($grupo)
     {
