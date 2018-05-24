@@ -41,35 +41,6 @@ class DocumentoController extends IntranetController
             return Documento::where('curso',Curso())->whereIn('rol', RolesUser(AuthUser()->rol))->get();
     }
 
-
-    public function acta($grupo)
-    {
-        $this->panel = new Panel($this->model, null, null, false);
-        $roles = RolesUser(AuthUser()->rol);
-        $profe = Profesor::find(AuthUser()->dni);
-        $todos = Documento::whereIn('rol', $roles)
-                ->whereIn('tipoDocumento', TipoDocumento::all($grupo))
-                ->whereIn('grupo', $profe->grupos())
-                ->get();
-        $grupos = Documento::select('grupo')
-                ->whereIn('rol', $roles)
-                ->whereIn('tipoDocumento', TipoDocumento::all($grupo))
-                ->whereIn('grupo', $profe->grupos())
-                ->distinct()
-                ->get();
-        foreach ($grupos as $grupo) {
-            $this->panel->setPestana($grupo->grupo, true, 'profile.documento', ['grupo', $grupo->grupo]);
-        }
-        //$this->panel->setTitulo($this->titulo);
-        $this->panel->setElementos($todos);
-        if ($grupos->count())
-            return view('documento.grupo', ['panel' => $this->panel]);
-        else {
-            Alert::danger(trans("messages.generic.noacta"));
-            return redirect()->route('home');
-        }
-    }
-
     protected function iniBotones()
     {
         $this->panel->setBothBoton('documento.show', ['where' => ['rol', 'in', RolesUser(AuthUser()->rol),'link','==',1]]);
@@ -174,16 +145,6 @@ class DocumentoController extends IntranetController
         return $this->redirect();
     }
 
-    public function actas()
-    {
-        $this->gridFields = ['curso', 'descripcion', 'grupo', 'created_at'];
-        $this->panel = new Panel($this->model, $this->gridFields, 'grid.standard');
-        $roles = RolesUser(AuthUser()->rol);
-        $todos = Documento::whereIn('rol', $roles)
-                ->where('tags', 'like', 'acta claustro')
-                ->get();
-        return $this->grid($todos);
-    }
     
 
 }

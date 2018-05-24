@@ -1,9 +1,5 @@
 <?php
 
-
-Route::get('/actas', ['as' => 'actas.profesor', 'uses' => 'DocumentoController@actas']);
-
-
 Route::get('/home', ['as' => 'home.profesor', 'uses' => 'Auth\Profesor\HomeController@index']);
 Route::get('/legal', ['as' => 'legal', 'uses' => 'Auth\Profesor\HomeController@legal']);
 Route::get('/logout', ['as' => 'logout', 'uses' => 'Auth\Profesor\LoginController@logout']);
@@ -31,6 +27,9 @@ Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => '
 Route::get('/actividad/{actividad}/notification', ['as' => 'actividad.notificar', 'uses' => 'ActividadController@notify']);
 Route::get('/actividad/{actividad}/autorizacion', ['as' => 'actividad.autorizacion', 'uses' => 'ActividadController@autorizacion']);
 Route::get('/actividad/{actividad}/ics', ['as' => 'actividad.ics', 'uses' => 'ActividadController@i_c_s']);
+Route::get('/actividadOrientacion', ['as' => 'actividad.orientacion', 'uses' => 'PanelActividadOrientacionController@index']);
+Route::get('/actividad/createO', ['as' => 'actividad.createO', 'uses' => 'ActividadController@createO']);
+Route::post('/actividad/createO', ['as' => 'actividad.storeO', 'uses' => 'ActividadController@store']);
 
 
 
@@ -97,7 +96,7 @@ Route::get('/grupo/{grupo}/edit', ['as' => 'grupo.edit', 'uses' => 'GrupoControl
 Route::put('/grupo/{grupo}/edit', ['as' => 'grupo.update', 'uses' => 'GrupoController@update']);
 Route::get('/grupo/{grupo}/carnet', ['as' => 'grupo.carnet', 'uses' => 'GrupoController@carnet']);
 Route::get('/grupo/{grupo}/fse', ['as' => 'grupo.fse', 'uses' => 'GrupoController@fse']);
-Route::get('/alumno_grupo/{grupo}/show', ['as' => 'alumnogrupo.index', 'uses' => 'Alumno_grupoController@muestra']);
+Route::get('/alumno_grupo/{grupo}/show', ['as' => 'alumnogrupo.index', 'uses' => 'Alumno_grupoController@indice']);
 Route::get('/alumno_grupo/{grupo}/profile', ['as' => 'alumnogrupo.profile', 'uses' => 'Alumno_grupoController@profile']);
 Route::get('/grupo/{grupo}/horario', ['as' => 'grupo.horario', 'uses' => 'GrupoController@horario']);
 Route::get('/grupo/asigna', ['as' => 'grupo.asigna', 'uses' => 'GrupoController@asigna']);

@@ -20,17 +20,11 @@ class AlumnoCursoController extends IntranetController
     protected $model = 'AlumnoCurso';
     protected $gridFields = ['idAlumno', 'nombre', 'finalizado', 'registrado'];
 
-    public function indice($curso)
+    public function search()
     {
-        $todos = AlumnoCurso::join('alumnos', 'idAlumno', '=', 'nia')
-                ->select('id', 'idAlumno', 'idCurso', 'finalizado', 'registrado', DB::raw('CONCAT(apellido1," ",apellido2,",",nombre) AS nombre'))
-                ->where('idCurso', '=', $curso)
-                ->get();
-        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        $this->iniBotones();
-        return $this->grid($todos);
+        return AlumnoCurso::where('idCurso', '=', $this->search)->get();
     }
-
+    
     public function active($id)
     {
         $actual = AlumnoCurso::find($id);

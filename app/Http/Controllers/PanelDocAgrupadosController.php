@@ -11,29 +11,26 @@ use Styde\Html\Facades\Alert;
 class PanelDocAgrupadosController extends BaseController
 {
     
-    protected $perfil = 'profesor';
     protected $model = 'Documento';
-    protected $gridFields = ['curso', 'descripcion', 'tags', 'ciclo','detalle'];
+    protected $profile = false;
     
     
-    public function grupo($grupo)
+    public function index($grupo=null)
     {
-        Session::forget('redirect'); 
-        $this->iniBotones();
         $this->iniPestanas($grupo);
-        return $this->grid($this->search());
+        return parent::index();
      }
     
     
     public function search()
     {
-        return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->get();
+        return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->whereIn('tipoDocumento',TipoDocumento::allDocuments())->whereNull('idDocumento')->get();
     }
     
-    protected function iniPestanas($parametres = null)
+    protected function iniPestanas($grupo= null)
     {
         $first = false;
-        foreach (TipoDocumento::allRol($parametres) as $key => $role) {
+        foreach (TipoDocumento::allRol($grupo) as $key => $role) {
             if (UserisAllow($role)){
                 if ($first)  $this->panel->setPestana($key, true, 'profile.documento', ['tipoDocumento', $key]);
                 else {

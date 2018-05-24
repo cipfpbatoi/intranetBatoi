@@ -14,15 +14,14 @@ abstract class BaseController extends Controller
     protected $model;       // model de dades utilitzat  
     protected $class;       // clase del model de dades
     protected $perfil = null; // perfil que pot accedir al controlador
-    protected $gridFields;  // campos que ixen en la rejilla
+    protected $gridFields = null;  // campos que ixen en la rejilla
     protected $vista;       // vistes per defecte
     protected $panel;       // panel per a la vista
     protected $titulo = []; // paràmetres per al titol de la vista
     protected $redirect = null;  // pàgina a la que redirigir després de inserció o modificat
     protected $profile = true;
-    
     protected $modal = false; //utilitza vista modal o ono per a insercions i modificats
-    
+    protected $search = null; //es gasta quan cal filtrar la cerca
     
     /*  
      * Constructor
@@ -74,6 +73,14 @@ abstract class BaseController extends Controller
     
     public function index()
     {
+        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
+        $this->iniBotones();
+        $this->iniPestanas();
+        return $this->grid($this->search(),$this->modal);
+    }
+    public function indice($search)
+    {
+        $this->search = $search;
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
         $this->iniPestanas();

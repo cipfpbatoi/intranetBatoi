@@ -6,7 +6,7 @@
 <h4 class="centrado">{{trans("models.Actividad.titulo",['actividad'=>$Actividad->name])}}</h4>
 @include('extraescolares.partials.profesoresTabla')
 @include('extraescolares.partials.gruposTabla')
-<a href="/actividad" class="btn btn-success">@lang("messages.buttons.atras") </a>
+<a @if ($Actividad->extraescolar) href="/actividad" @else  href="/actividadOrientacion" @endif class="btn btn-success">@lang("messages.buttons.atras") </a>
 @endsection
 @section('scripts')
 @endsection

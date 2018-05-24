@@ -22,16 +22,14 @@ class Alumno_grupoController extends IntranetController
 
   
 
-    public function muestra($grupo)
-    {
-        $todos = Alumno_grupo::join('alumnos', 'idAlumno', '=', 'nia')
+    
+    public function search(){
+        $this->titulo = ['quien' => $this->search];
+        return $todos = Alumno_grupo::join('alumnos', 'idAlumno', '=', 'nia')
                 ->select('alumnos.*', 'idGrupo', 'idAlumno', DB::raw('CONCAT(apellido1," ",apellido2,",",nombre) AS name'))
-                ->where('idGrupo', '=', $grupo)
+                ->where('idGrupo', '=', $this->search)
                 ->orderBy('name', 'asc')
                 ->get();
-        $this->titulo = ['quien' => $grupo];
-        $this->iniBotones();
-        return parent::grid($todos);
     }
 
     protected function iniBotones()

@@ -44,7 +44,7 @@ class Actividad extends Model
 
     public function __construct()
     {
-        if (AuthUser()) $this->extraescolar = esRol(AuthUser()->rol, 29)?0:1;
+        //if (AuthUser()) $this->extraescolar = esRol(AuthUser()->rol, 29)?0:1;
         $this->fueraCentro = 1;
     }
     public function grupos()
@@ -65,6 +65,7 @@ class Actividad extends Model
      */
     public function Creador()
     {
+        
         if (Actividad_profesor::select('idProfesor')
                         ->where('idActividad', $this->id)
                         ->where('coordinador', 1)
@@ -74,6 +75,11 @@ class Actividad extends Model
                         ->where('coordinador', 1)
                         ->first()
                         ->idProfesor;
+    }
+    public function scopeProfesor($query,$dni)
+    {
+        $actividades = Actividad_profesor::select('idActividad')->where('idProfesor',$dni)->get()->toArray();
+        return $query->whereIn('id',$actividades);
     }
 
     public function getDesdeAttribute($entrada)

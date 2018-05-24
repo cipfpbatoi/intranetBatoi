@@ -13,7 +13,6 @@ use Styde\Html\Facades\Alert;
 class PanelProyectoController extends BaseController
 {
     
-    protected $perfil = 'profesor';
     protected $model = 'Documento';
     protected $gridFields = ['curso', 'descripcion', 'tags', 'ciclo'];
     
