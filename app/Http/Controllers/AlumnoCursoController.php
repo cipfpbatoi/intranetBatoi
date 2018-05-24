@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Session;
 class AlumnoCursoController extends IntranetController
 {
 
-    use traitImprimir,traitCRUD;
+    use traitImprimir;
 
     
     protected $model = 'AlumnoCurso';

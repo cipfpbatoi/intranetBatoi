@@ -5,12 +5,11 @@ namespace Intranet\Http\Controllers\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Styde\Html\Facades\Alert;
-use Intranet\Http\Controllers\BaseController;
-use Intranet\Http\Controllers\traitCRUD;
+use Intranet\Http\Controllers\IntranetController;
 
-abstract class PerfilController extends BaseController
+
+abstract class PerfilController extends IntranetController
 {
-    use traitCRUD;
     
     protected $vista = ['show' => 'perfil', 'edit' => 'perfil'];
 

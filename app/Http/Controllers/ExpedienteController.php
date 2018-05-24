@@ -15,7 +15,7 @@ use Styde\Html\Facades\Alert;
 class ExpedienteController extends IntranetController
 {
 
-    use traitImprimir,traitCRUD,traitAutorizar;
+    use traitImprimir,traitAutorizar;
 
     protected $gridFields = ['id', 'nomAlum', 'fecha', 'Xtipo', 'Xmodulo', 'situacion'];
     protected $perfil = 'profesor';

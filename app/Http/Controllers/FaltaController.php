@@ -19,7 +19,6 @@ class FaltaController extends IntranetController
 
     use traitImprimir,
         traitNotificar,
-        traitCRUD,
         traitAutorizar;
 
     protected $perfil = 'profesor';

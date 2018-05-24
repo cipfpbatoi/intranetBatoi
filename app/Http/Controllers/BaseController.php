@@ -18,7 +18,7 @@ abstract class BaseController extends Controller
     protected $vista;       // vistes per defecte
     protected $panel;       // panel per a la vista
     protected $titulo = []; // paràmetres per al titol de la vista
-    protected $redirect = null;  // pàgina a la que redirigir després de inserció o modificat
+    
     protected $profile = true;
     protected $modal = false; //utilitza vista modal o ono per a insercions i modificats
     protected $search = null; //es gasta quan cal filtrar la cerca
@@ -45,20 +45,7 @@ abstract class BaseController extends Controller
         else
             return "intranet.$tipo";
     }
-    /*
-     * redirect 
-     * redirecciona per ordre a :
-     *   variable de sessio(distinguir professor i direccio
-     *   a variable redirect del modelo
-     *   al index del modelo
-     */
     
-    protected function redirect()
-    {
-        if (Session::get('redirect')) $this->redirect = Session::get('redirect'); //variable session
-        if ($this->redirect) return redirect()->action($this->redirect); // variable controlador
-        else return redirect()->action($this->model . 'Controller@index'); //defecto
-    }
     
     protected function grid($todos,$modal=false)
     {

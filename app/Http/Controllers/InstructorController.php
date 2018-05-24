@@ -33,8 +33,8 @@ class InstructorController extends IntranetController
     {
         $this->panel->setBoton('grid', new BotonImg('instructor.delete',['roles' => config('constants.rol.direccion')]));
         $this->panel->setBoton('grid', new BotonImg('instructor.show'));
-         
     }
+    
     public function show($id)
     {
         $empresa = Instructor::find($id)->Centros->first()->idEmpresa;
@@ -101,16 +101,19 @@ class InstructorController extends IntranetController
     {
         return parent::create();
     }
+    
     public function edita($id,$empresa)
     {
         return parent::edit($id);
     }
+    
     public function guarda(Request $request, $id,$centro)
     {
         parent::update($request, $id);
         Session::put('pestana',2);
         return redirect()->action('EmpresaController@show', ['id' => Centro::find($centro)->idEmpresa]);
     }
+    
     public function almacena(Request $request,$centro)
     {
         DB::transaction(function() use ($request,$centro) {
