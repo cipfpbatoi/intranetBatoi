@@ -19,7 +19,7 @@
             @foreach ($panel->getElementos($pestana) as $elemento)
             <tr class="lineaGrupo" id='{{$elemento->getkey()}}'>
                 @foreach ($pestana->getRejilla() as $item)
-                <td><span class='input' name='{{ $item }}'>@if (isset($elemento->leido)&&!($elemento->leido))<strong> substr({{ $elemento->$item }},0,60) </strong> @else  substr({{ $elemento->$item }},0,60) @endif</span></td>
+                <td><span class='input' name='{{ $item }}'>@if (isset($elemento->leido)&&!($elemento->leido))<strong> {{ substr($elemento->$item,0,60) }} </strong> @else  {{ substr($elemento->$item,0,60) }} @endif</span></td>
                 @endforeach
                 <td><span class="botones">@include('intranet.partials.buttons',['tipo' => 'grid'])</span></td>
             </tr>
