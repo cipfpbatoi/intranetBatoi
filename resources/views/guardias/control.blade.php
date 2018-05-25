@@ -1,6 +1,6 @@
 @extends('layouts.intranet')
 @section('css')
-<title>{{trans("models.Guardia.control")}}</title>
+<title>@lang("models.Guardia.control")</title>
 @endsection
 @section('content')
 <div id="app">
@@ -12,7 +12,7 @@
 </div>
 @endsection
 @section('titulo')
-{{trans("models.Guardia.control")}}
+@lang("models.Guardia.control")
 @endsection
 @section('scripts')
     {{ Html::script('/js/components/app.js') }}

@@ -33,30 +33,18 @@ class ActividadController extends IntranetController
     protected $gridFields = ['name', 'desde', 'hasta', 'situacion'];
     protected $modal = true;
 
-    public function index()
-    {
-        Session::forget('redirect');
-        $this->iniBotones();
-        if (esRol(AuthUser()->rol, config('constants.rol.orientador')))
-            return $this->grid($this->searchTutoria(), $this->modal);
-        else
-            return $this->grid($this->search(), $this->modal);
-    }
-
     protected function search()
     {
-        return Actividad::join('actividad_profesor', 'idActividad', '=', 'id')
-                        ->select('actividades.*', 'idProfesor')
-                        ->where('idProfesor', '=', AuthUser()->dni)
-                        ->where('extraescolar', '>=', 1)
-                        ->get();
+        return Actividad::Profesor(AuthUser()->dni)
+                ->where('extraescolar', 1)
+                ->get();
     }
-
-    public function searchTutoria()
+    
+    public function createO($default = null)
     {
-        $this->panel->setRejilla(['name', 'desde', 'hasta']);
-        return Actividad::where('extraescolar', 0)->get();
+        return parent::create(['extraescolar' => 0]);
     }
+    
 
     public function store(Request $request)
     {
@@ -181,23 +169,13 @@ class ActividadController extends IntranetController
         $this->panel->setBotonera(['create']);
         $this->panel->setBothBoton('actividad.detalle', ['where' => ['estado', '<', '2']]);
         $this->panel->setBothBoton('actividad.edit', ['where' => ['estado', '<', '2']]);
-        $this->panel->setBothBoton('actividad.init', ['where' => ['estado', '==', '0', 'extraescolar', '==', '1']]);
+        $this->panel->setBothBoton('actividad.init', ['where' => ['estado', '==', '0']]);
         $this->panel->setBothBoton('actividad.notification', ['where' => ['estado', '>', '0', 'estado', '<', '3', 'coord', '==', '1']]);
         $this->panel->setBothBoton('actividad.autorizacion', ['where' => ['estado', '>', '0']]);
         $this->panel->setBoton('grid', new BotonImg('actividad.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('profile', new BotonIcon('actividad.delete', ['class' => 'btn-danger', 'where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Date::yesterday()]]));
     }
-
-//    protected function iniDirBotones()
-//    {
-//        $this->panel->setBotonera([], ['delete', 'notification']);
-//        $this->panel->setBothBoton('actividad.detalle');
-//        $this->panel->setBothBoton('actividad.edit');
-//        $this->panel->setBoton('profile', new BotonIcon("$this->model.unauthorize", ['class' => 'btn-danger unauthorize', 'where' => ['estado', '==', '3']], true));
-//
-//        $this->setAuthBotonera();
-//    }
 
     public function autorizar()
     {

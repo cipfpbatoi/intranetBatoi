@@ -77,6 +77,10 @@ class Alumno extends Authenticatable
     {
         return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'idAlumno', 'idGrupo');
     }
+    public function Fct()
+    {
+        return $this->belongsTo(Fct::class,'nia','idAlumno');
+    }
     
     public function Provincia()
     {
@@ -134,11 +138,15 @@ class Alumno extends Authenticatable
     }
     public function getFullNameAttribute()
     {
-        return $this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2;
+        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2,'UTF-8'));
     }
     public function getShortNameAttribute()
     {
-        return $this->nombre . ' ' . $this->apellido1;
+        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1,'UTF-8'));
+    }
+    public function getNameFullAttribute()
+    {
+        return ucwords(mb_strtolower($this->apellido1 . ' ' . $this->apellido2.' , '.$this->nombre,'UTF-8'));
     }
 
 }

@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
+use Illuminate\Support\Facades\App;
 
 class Ciclo extends Model
 {
@@ -13,7 +14,7 @@ class Ciclo extends Model
     
     protected $table = "ciclos";
     public $timestamps = false;
-    protected $fillable = ['codigo', 'ciclo','departamento','tipo','normativa','titol','rd','rd2'];
+    protected $fillable = [ 'ciclo','vliteral','cliteral', 'departamento','tipo','normativa','titol','rd','rd2'];
     protected $rules = [];
     protected $inputTypes = [
         'departamento' => ['type' => 'select'],
@@ -38,6 +39,7 @@ class Ciclo extends Model
     {
         return config('constants.tipoEstudio');
     }
+    
     public function getDepartamentoOptions()
     {
         return hazArray(Departamento::all(),'id', 'literal');
@@ -45,8 +47,14 @@ class Ciclo extends Model
     public function getXtipoAttribute(){
         return config('constants.tipoEstudio')[$this->tipo];
     }
+    public function getCtipoAttribute(){
+        return config('constants.tipoEstudioC')[$this->tipo];
+    }
     public function getXdepartamentoAttribute(){
         return $this->Departament->literal;
     }
-    
+     public function getLiteralAttribute()
+    {
+        return App::getLocale(session('lang')) == 'es' ? $this->cliteral : $this->vliteral;
+    }
 }

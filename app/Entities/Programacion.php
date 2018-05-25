@@ -136,7 +136,7 @@ class Programacion extends Model
         $elemento = Programacion::findorFail($id);
         Documento::crea($elemento,['tipoDocumento' => 'Programacion' ,'fichero' => $elemento->fichero,
             'modulo'=>$elemento->Modulo->literal,'propietario' => $elemento->Profesor->FullName,
-            'descripcion'=>'Autorizada dia '. Hoy('d-m-Y'),'ciclo'=> $elemento->ciclo]);
+            'descripcion'=>'Autorizada dia '. Hoy('d-m-Y'),'ciclo'=> $elemento->ciclo, 'tags' => 'Programació']);
         return static::putEstado($id, config('modelos.' . getClass(static::class) . '.resolve'), $mensaje);
     }
     

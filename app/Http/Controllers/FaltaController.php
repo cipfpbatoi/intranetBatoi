@@ -10,8 +10,8 @@ use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonIcon;
 use Illuminate\Http\Request;
-use Intranet\Entities\Documento;
 use Intranet\Entities\Profesor;
+use Intranet\Entities\Documento;
 use PDF;
 
 class FaltaController extends IntranetController
@@ -19,7 +19,6 @@ class FaltaController extends IntranetController
 
     use traitImprimir,
         traitNotificar,
-        traitCRUD,
         traitAutorizar;
 
     protected $perfil = 'profesor';
@@ -68,15 +67,15 @@ class FaltaController extends IntranetController
         $request->hora_fin = $request->dia_completo ? null : $request->hora_fin;
         $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
         $elemento = Falta::find(parent::realStore($request,$id));
-        if ($elemento->estado == 1 && $elemento->fichero) $this->class::putEstado($id,2); // si estava enviat i he pujat fitxer
+        if ($elemento->estado == 1 && $elemento->fichero) Falta::putEstado($id,2); // si estava enviat i he pujat fitxer
         return $this->redirect();
     }
 
     public function init($id)
     {
         $elemento = Falta::findOrFail($id);
-        if ($elemento->fichero) $this->class::putEstado($id,2);
-        else $this->class::putEstado($id,1);
+        if ($elemento->fichero) Falta::putEstado($id,2);
+        else Falta::putEstado($id,1);
         
         return $this->redirect();
     }
@@ -94,19 +93,14 @@ class FaltaController extends IntranetController
         });
         return back()->with('pestana', $elemento->estado);
     }
-
-    public function vistaImpresion()
-    {
-        return view('falta.imprime');
-    }
-
-    public function imprimir(Request $request )
+    
+    public function imprime_falta(Request $request)
     {
         if ($request->mensual == 'on') {
             $nom = 'Falta' . new Date() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-            Documento::crea(null, ['fichero' => $nomComplet,'tags'=>"Falta listado llistat autorizacion autorizacio"]);
-            
+            Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"]);
+
             // pendientes pasan a ser impresas
             // todas las faltas hasta la fecha no impresas y comunicadas
             $pendientes = Falta::where([
@@ -130,26 +124,25 @@ class FaltaController extends IntranetController
                         ['hasta', '<=', new Date($request->hasta)]
                     ])
                     ->orwhere([['estado', '=', '5'],
-                        ['desde','<=',new Date($request->hasta)]])
+                        ['desde', '<=', new Date($request->hasta)]])
                     ->orderBy('idProfesor')
                     ->orderBy('desde')
                     ->get();
-            $this->makeAll($pendientes,'_print');
+            $this->makeAll($pendientes, '_print');
             return $this->hazPdf("pdf.faltas", $todos)
-                            ->save(storage_path('/app/'.$nomComplet))
+                            ->save(storage_path('/app/' . $nomComplet))
                             ->download($nom);
         } else {
             $todos = Falta::where('estado', '>', '0')
-                    ->where('estado','<','5')
+                    ->where('estado', '<', '5')
                     ->whereBetween('desde', [new Date($request->desde), new Date($request->hasta)])
                     ->orWhereBetween('hasta', [new Date($request->desde), new Date($request->hasta)])
                     ->orwhere([['estado', '=', '5'],
-                        ['desde','<=',new Date($request->hasta)]])
+                        ['desde', '<=', new Date($request->hasta)]])
                     ->orderBy('idProfesor')
                     ->orderBy('desde')
                     ->get();
             return $this->hazPdf("pdf.faltas", $todos)->stream();
         }
     }
-
 }

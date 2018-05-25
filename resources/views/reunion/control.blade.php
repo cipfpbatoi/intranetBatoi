@@ -1,6 +1,6 @@
 @extends('layouts.intranet')
 @section('css')
-<title>{{trans("models.Reunion.control")}}</title>
+<title>@lang("models.Reunion.control")</title>
 @endsection
 @section('content')
 <div id="app">
@@ -49,5 +49,5 @@
 </div>
 @endsection
 @section('titulo')
-{{trans("models.Reunion.control")}}
+@lang("models.Reunion.control")
 @endsection

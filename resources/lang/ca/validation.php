@@ -248,7 +248,11 @@ return array(
                 'justificacion' => 'Justificació',
                 'centros' => 'Centres de Treball',
                 'Ncentros' => 'Nombre',
-                'profesor' => 'Professor'
+                'profesor' => 'Professor',
+                'Calidad' => 'Qualitat',
+                'Matriculados' => 'Matriculats',
+                'Resfct' => 'Fct',
+                'Respro' => 'Projecte',
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

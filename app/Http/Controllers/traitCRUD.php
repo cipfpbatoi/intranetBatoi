@@ -12,7 +12,21 @@ use Response;
 
 trait traitCRUD{
     
+    protected $redirect = null;  // pàgina a la que redirigir després de inserció o modificat
+    /*
+     * redirect 
+     * redirecciona per ordre a :
+     *   variable de sessio(distinguir professor i direccio
+     *   a variable redirect del modelo
+     *   al index del modelo
+     */
     
+    protected function redirect()
+    {
+        if (Session::get('redirect')) $this->redirect = Session::get('redirect'); //variable session
+        if ($this->redirect) return redirect()->action($this->redirect); // variable controlador
+        else return redirect()->action($this->model . 'Controller@index'); //defecto
+    }
     /* 
      * destroy($id) return redirect
      * busca i esborra en un model

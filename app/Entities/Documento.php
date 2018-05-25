@@ -18,7 +18,7 @@ class Documento extends Model
 
     protected $table = 'documentos';
     protected $fillable = ['tipoDocumento', 'rol', 'curso', 'propietario', 'supervisor', 'descripcion'
-        , 'ciclo', 'grupo', 'enlace', 'fichero', 'tags'];
+        , 'ciclo', 'grupo', 'detalle','enlace', 'fichero', 'tags'];
     protected $rules = [
         'tipoDocumento' => 'required',
         'descripcion' => 'required',
@@ -33,6 +33,7 @@ class Documento extends Model
         'grupo' => ['type' => 'select'],
         'supervisor' => ['type' => 'hidden'],
         'ciclo' => ['type' => 'hidden'],
+        'detalle' => ['type' => 'textarea']
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,

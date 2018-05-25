@@ -20,6 +20,7 @@ class PanelDocumentoController extends BaseController
     protected $gridFields = ['tipoDocumento', 'descripcion', 'created_at'];
     
     
+    
     public function index()
     {
         Session::put('redirect','PanelDocumentoController@index');

@@ -35,11 +35,12 @@ Route::get('/falta/{falta}/resolve', ['as' => 'falta.resolve', 'uses' => 'FaltaC
 Route::get('/falta/{falta}/show', ['as' => 'falta.show', 'uses' => 'FaltaController@show']);
 Route::post('/falta/{falta}/refuse', ['as' => 'falta.refuse', 'uses' => 'FaltaController@refuse']);
 Route::get('/falta/{falta}/alta', ['as' => 'falta.alta', 'uses' => 'FaltaController@alta']);
-Route::get('/falta/pdf', ['as' => 'falta.pdf', 'uses' => 'FaltaController@vistaImpresion']);
-Route::post('/falta/pdf', ['as' => 'falta.pdf', 'uses' => 'FaltaController@imprimir']);
 Route::get('/falta_itaca',['as' => 'faltaItaca.direccion.index', 'uses' => 'PanelFaltaItacaController@index']);
 Route::get('/falta_itaca/{falta}/resolve', ['as' => 'faltaItaca.resolve', 'uses' => 'FaltaItacaController@resolve']);
 Route::post('/falta_itaca/{falta}/refuse', ['as' => 'faltaItaca.refuse', 'uses' => 'FaltaItacaController@refuse']);
+
+Route::get('/falta/pdf', ['as' => 'falta.pdf', 'uses' => 'MensualController@vistaImpresion']);
+Route::post('/falta/pdf', ['as' => 'falta.pdf', 'uses' => 'MensualController@imprimir']);
 
 Route::get('/fct', ['as' => 'fct.direccion.index', 'uses' => 'PanelFctController@index']);
 
@@ -68,4 +69,6 @@ Route::get('/horarios/cambiar',['as' => 'horarios.cambiarIndex', 'uses' => 'Hora
 Route::post('/horarios/cambiar',['as' => 'horarios.cambiar', 'uses' => 'HorarioController@changeTableAll']);
 
 Route::get('/documento',['as'=> 'documentosP.index','uses' => 'PanelDocumentoController@index']);
+
+Route::get('/controlFct',['as'=> 'controlFct.index','uses' => 'PanelPracticasController@index']);
 

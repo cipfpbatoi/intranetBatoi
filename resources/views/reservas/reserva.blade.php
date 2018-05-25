@@ -2,7 +2,7 @@
 @section('css')
 {{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.css') }}
 {{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.min.css') }}
-<title>{{trans("models.Reserva.edit")}}</title>
+<title>@lang("models.Reserva.edit")</title>
 @endsection
 @section('content')
 <div class="formularionormal borderedondo">
@@ -59,7 +59,7 @@
 </div>
 @endsection
 @section('titulo')
-{{trans("models.Reserva.edit")}}
+@lang("models.Reserva.edit")
 @endsection
 @section('scripts')
 {{ Html::script("/js/Reserva/edit.js") }}

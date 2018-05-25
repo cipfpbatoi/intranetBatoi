@@ -12,7 +12,7 @@ function FechaString($fecha = null,$idioma=null)
     if (!isset($idioma)) $idioma = Session::get('lang'); 
     Jenssegers\Date\Date::setlocale($idioma);
     
-    return $fc1->format('d') . ' de ' . ucwords($fc1->format('F')) .
+    return $fc1->format('d') . ' de ' . $fc1->format('F') .
             ' de ' . $fc1->format('Y');
 }
 
@@ -79,7 +79,7 @@ function month($fecha)
     $idioma = Session::get('lang');
     $fc1 = new Jenssegers\Date\Date($fecha);
     Jenssegers\Date\Date::setlocale($idioma);
-    return ucwords($fc1->format('F'));
+    return $fc1->format('F');
 }
 
 /**

@@ -12,7 +12,7 @@ class Material extends Model
 
     protected $table = 'materiales';
     public $timestamps = false;
-    protected $fillable = ['nserieprov', 'descripcion', 'marca', 'modelo', 'ISBN', 'espacio', 'procedencia', 'proveedor'];
+    protected $fillable = ['nserieprov', 'descripcion', 'marca', 'modelo', 'ISBN', 'espacio', 'procedencia', 'proveedor','estado','unidades'];
 
     use BatoiModels;
 
@@ -22,7 +22,8 @@ class Material extends Model
     ];
     protected $inputTypes = [
         'espacio' => ['type' => 'select'],
-        'procedencia' => ['type' => 'select']
+        'procedencia' => ['type' => 'select'],
+        'estado' => ['type' => 'select']
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,

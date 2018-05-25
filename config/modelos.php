@@ -12,6 +12,7 @@ return [
         'refuse' => '0',
         'print' => '4',
         'completa' => '4',
+        'documento' => 'llistat listado mensual ausència profesorat ausencia profesorado',
     ],
     'Actividad' => [
         'estados' => [  1 => 'pendiente', 
@@ -20,7 +21,8 @@ return [
         'avisos' => ['Creador' => [ 0, 3],'vicedirector'=>[1]],
         'resolve' => '3',
         'refuse' => '0',
-        'print' => '3'
+        'print' => '3',
+        'documento' => 'llistat activitats extraescolars listado autorización actividades extraescolares',
     ],
     'Comision' => [
         'estados' => [  1 => 'pendiente', 
@@ -32,7 +34,8 @@ return [
         'resolve' => '3',
         'refuse' => '0',
         'print' => '3',
-        'completa' => '5'
+        'completa' => '5',
+        'documento' => 'llistat autorització comissions servei listado autorización comisiones servicio',
     ],
     'Expediente' => [
         'estados' => [  1 => 'pendiente', 

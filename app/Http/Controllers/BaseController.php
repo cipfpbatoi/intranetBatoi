@@ -14,14 +14,14 @@ abstract class BaseController extends Controller
     protected $model;       // model de dades utilitzat  
     protected $class;       // clase del model de dades
     protected $perfil = null; // perfil que pot accedir al controlador
-    protected $gridFields;  // campos que ixen en la rejilla
+    protected $gridFields = null;  // campos que ixen en la rejilla
     protected $vista;       // vistes per defecte
     protected $panel;       // panel per a la vista
     protected $titulo = []; // paràmetres per al titol de la vista
-    protected $redirect = null;  // pàgina a la que redirigir després de inserció o modificat
-    protected $profile = true;
     
+    protected $profile = true;
     protected $modal = false; //utilitza vista modal o ono per a insercions i modificats
+    protected $search = null; //es gasta quan cal filtrar la cerca
     
     /*  
      * Constructor
@@ -45,20 +45,7 @@ abstract class BaseController extends Controller
         else
             return "intranet.$tipo";
     }
-    /*
-     * redirect 
-     * redirecciona per ordre a :
-     *   variable de sessio(distinguir professor i direccio
-     *   a variable redirect del modelo
-     *   al index del modelo
-     */
     
-    protected function redirect()
-    {
-        if (Session::get('redirect')) $this->redirect = Session::get('redirect'); //variable session
-        if ($this->redirect) return redirect()->action($this->redirect); // variable controlador
-        else return redirect()->action($this->model . 'Controller@index'); //defecto
-    }
     
     protected function grid($todos,$modal=false)
     {
@@ -75,8 +62,15 @@ abstract class BaseController extends Controller
     {
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
-        if (view()->exists('intranet.partials.profile.'.strtolower($this->model))&&$this->profile) 
-                    $this->panel->setPestana('profile', false);
+        $this->iniPestanas();
+        return $this->grid($this->search(),$this->modal);
+    }
+    public function indice($search)
+    {
+        $this->search = $search;
+        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
+        $this->iniBotones();
+        $this->iniPestanas();
         return $this->grid($this->search(),$this->modal);
     }
     
@@ -100,6 +94,11 @@ abstract class BaseController extends Controller
      * Inicialitza el botons del grid
      */
     protected function iniBotones(){}
+    protected function iniPestanas($parametres = null){
+        if (view()->exists('intranet.partials.profile.'.strtolower($this->model))&&$this->profile) 
+                    $this->panel->setPestana('profile', false);
+        
+    }
 
     
 }

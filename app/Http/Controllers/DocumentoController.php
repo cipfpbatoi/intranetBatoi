@@ -24,18 +24,14 @@ class DocumentoController extends IntranetController
 {
 
     protected $gridFields = ['tipoDocumento', 'descripcion', 'curso', 'idDocumento', 'propietario', 'created_at',
-        'grupo', 'tags', 'ciclo', 'modulo','fichero','situacion'];
+        'grupo', 'tags', 'ciclo', 'modulo','detalle','fichero','situacion'];
     protected $model = 'Documento';
     protected $directorio = '/Ficheros/';
     protected $panel;
+    protected $modal = false;
+    protected $profile = false;
     
 
-    public function index()
-    {
-        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        $this->iniBotones();
-        return $this->grid($this->search());
-    }
 
     public function search()
     {
@@ -43,78 +39,6 @@ class DocumentoController extends IntranetController
             return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->get();
         else
             return Documento::where('curso',Curso())->whereIn('rol', RolesUser(AuthUser()->rol))->get();
-    }
-
-    public function grupo($grupo)
-    {
-        $this->panel = new Panel($this->model, null, null, false);
-        foreach (TipoDocumento::allRol($grupo) as $key => $role) {
-            if (UserisAllow($role))
-                $this->panel->setPestana($key, true, 'profile.documento', ['tipoDocumento', $key]);
-        }
-        $todos = Documento::whereIn('rol', RolesUser(AuthUser()->rol))->get();
-
-        //$this->panel->setTitulo($this->titulo);
-        $this->panel->setElementos($todos);
-        if ($this->panel->countPestana())
-            return view('documento.grupo', ['panel' => $this->panel]);
-        else
-            return redirect()->route('home');
-    }
-
-    public function proyecto()
-    {
-
-        $this->panel = new Panel($this->model, ['curso', 'descripcion', 'tags', 'ciclo'], 'grid.standard');
-        $roles = RolesUser(AuthUser()->rol);
-        $todos = Documento::whereIn('rol', $roles)
-                ->where('tipoDocumento', 'Proyecto')
-                ->orderBy('curso')
-                ->get();
-        $grupos = Ciclo::select('ciclo')
-                ->where('departamento', AuthUser()->departamento)
-                ->distinct()
-                ->get();
-        $this->panel->setBothBoton('documento.show', ['where' => ['rol', 'in', RolesUser(AuthUser()->rol)]]);
-        foreach ($grupos as $grupo) {
-            $this->panel->setPestana(str_replace([' ', '(', ')'], '', $grupo->ciclo), true, 'profile.documento', ['ciclo', $grupo->ciclo]);
-        }
-        //$this->panel->setTitulo($this->titulo);
-        $this->panel->setElementos($todos);
-        if ($grupos->count()) {
-            return view('documento.grupo', ['panel' => $this->panel]);
-        } else {
-            Alert::danger(trans("messages.generic.noproyecto"));
-            return redirect()->route('home');
-        }
-    }
-
-    public function acta($grupo)
-    {
-        $this->panel = new Panel($this->model, null, null, false);
-        $roles = RolesUser(AuthUser()->rol);
-        $profe = Profesor::find(AuthUser()->dni);
-        $todos = Documento::whereIn('rol', $roles)
-                ->whereIn('tipoDocumento', TipoDocumento::all($grupo))
-                ->whereIn('grupo', $profe->grupos())
-                ->get();
-        $grupos = Documento::select('grupo')
-                ->whereIn('rol', $roles)
-                ->whereIn('tipoDocumento', TipoDocumento::all($grupo))
-                ->whereIn('grupo', $profe->grupos())
-                ->distinct()
-                ->get();
-        foreach ($grupos as $grupo) {
-            $this->panel->setPestana($grupo->grupo, true, 'profile.documento', ['grupo', $grupo->grupo]);
-        }
-        //$this->panel->setTitulo($this->titulo);
-        $this->panel->setElementos($todos);
-        if ($grupos->count())
-            return view('documento.grupo', ['panel' => $this->panel]);
-        else {
-            Alert::danger(trans("messages.generic.noacta"));
-            return redirect()->route('home');
-        }
     }
 
     protected function iniBotones()
@@ -150,6 +74,7 @@ class DocumentoController extends IntranetController
             $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
             $elemento->setInputType('grupo', ['type' => 'hidden']);
             $elemento->setInputType('enlace', ['type' => 'hidden']);
+            $elemento->setRule('nota','required');
             $default = $elemento->fillDefautOptions();
             $modelo = $this->model;
             Session::put('redirect', 'PanelAvalFctController@index');
@@ -220,16 +145,6 @@ class DocumentoController extends IntranetController
         return $this->redirect();
     }
 
-    public function actas()
-    {
-        $this->gridFields = ['curso', 'descripcion', 'grupo', 'created_at'];
-        $this->panel = new Panel($this->model, $this->gridFields, 'grid.standard');
-        $roles = RolesUser(AuthUser()->rol);
-        $todos = Documento::whereIn('rol', $roles)
-                ->where('tags', 'like', 'acta claustro')
-                ->get();
-        return $this->grid($todos);
-    }
     
 
 }

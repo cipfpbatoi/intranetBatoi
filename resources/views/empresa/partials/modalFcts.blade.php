@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="AddFctTitle">{{trans("models.modelos.Fct")}}
+                <h4 class="modal-title" id="AddFctTitle">@lang("models.modelos.Fct")
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -18,16 +18,16 @@
                         <option value='{{ $alumno->nia }}'>{!! $alumno->FullName !!}</option>
                         @endforeach
                     </select>
-                    <input type='text' id='instructor' name='instructor' placeholder="{{trans("validation.attributes.instructor")}}" value="{{ old('instructor') }}" class="form-control">
-                    <input type="text"  name="dni" placeholder="{{trans("validation.attributes.dni")}}" value="{{ old('dni') }}" class="form-control" />
-                    <input type="text" name="desde" placeholder="{{trans("validation.attributes.email")}}" value="{{ old('email') }}" class="form-control"/>
-                    <input type="text"  name="hasta"  placeholder="{{trans("validation.attributes.dni")}}" value="{{ old('dni') }}" class="form-control" />
-                    <input type="text"  name="tutor" placeholer="{{trans("validation.attributes.tutor")}}"  class="form-control" value='{{AuthUser()->nombre}} {{AuthUser()->apellido1}}'/>
-                    <input type="text"  name="puestos" placeholder="{{trans("validation.attributes.puestos")}}*" value="{{ old('puestos') }}" class="form-control" />
+                    <input type='text' id='instructor' name='instructor' placeholder="@lang("validation.attributes.instructor")" value="{{ old('instructor') }}" class="form-control">
+                    <input type="text"  name="dni" placeholder="@lang("validation.attributes.dni")" value="{{ old('dni') }}" class="form-control" />
+                    <input type="text" name="desde" placeholder="@lang("validation.attributes.email")" value="{{ old('email') }}" class="form-control"/>
+                    <input type="text"  name="hasta"  placeholder="@lang("validation.attributes.dni")" value="{{ old('dni') }}" class="form-control" />
+                    <input type="text"  name="tutor" placeholer="@lang("validation.attributes.tutor")"  class="form-control" value='{{AuthUser()->nombre}} {{AuthUser()->apellido1}}'/>
+                    <input type="text"  name="puestos" placeholder="@lang("validation.attributes.puestos")*" value="{{ old('puestos') }}" class="form-control" />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <input id="submit" class="boton" type="submit" value="{{trans("messages.generic.anadir")}} {{trans("models.modelos.Colaboracion")}} ">
+                    <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") @lang("models.modelos.Colaboracion") ">
                 </div>
             </form>    
         </div>

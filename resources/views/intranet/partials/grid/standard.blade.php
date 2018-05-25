@@ -11,7 +11,7 @@
                     @endif
                 </th>
                 @endforeach
-                <th>{{trans("validation.attributes.operaciones")}}</th>
+                <th>@lang("validation.attributes.operaciones")</th>
             </tr>
         </thead>
         <tbody>
@@ -19,7 +19,7 @@
             @foreach ($panel->getElementos($pestana) as $elemento)
             <tr class="lineaGrupo" id='{{$elemento->getkey()}}'>
                 @foreach ($pestana->getRejilla() as $item)
-                <td><span class='input' name='{{ $item }}'>@if (isset($elemento->leido)&&!($elemento->leido))<strong>  {{ $elemento->$item }} </strong> @else {{ $elemento->$item }} @endif</span></td>
+                <td><span class='input' name='{{ $item }}'>@if (isset($elemento->leido)&&!($elemento->leido))<strong> {{ substr($elemento->$item,0,60) }} </strong> @else  {{ substr($elemento->$item,0,60) }} @endif</span></td>
                 @endforeach
                 <td><span class="botones">@include('intranet.partials.buttons',['tipo' => 'grid'])</span></td>
             </tr>
@@ -36,7 +36,7 @@
                     @endif
                 </th>
                 @endforeach
-                <th>{{trans("validation.attributes.operaciones")}}</th>
+                <th>@lang("validation.attributes.operaciones")</th>
             </tr>
         </tfoot>
     </table>

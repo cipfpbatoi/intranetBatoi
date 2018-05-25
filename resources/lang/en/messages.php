@@ -198,7 +198,7 @@ return array(
         'Fct' => 'FCTs Education on the workplace',
         'Empresa' => 'Firms',
         'Extraescolares' => 'Department report',
-        'Lfaltas' => 'Monthly absence',
+        'Lfaltas' => 'Monthly Llists',
         'Fichar' => "Teacher's registering",
         'Alumno' => 'Student',
         'Orientacion' => 'Guidance',
@@ -244,7 +244,8 @@ return array(
         'Nuevocurso' => 'Delete previous data',
         'Changeschedule' => ' Change Schedule',
         'Auxiliar' => 'Auxiliar tables',
-        'Modulociclo' => 'Module / Cycle'
+        'Modulociclo' => 'Module / Cycle',
+        'Actasfct' => 'Control Fct/Minutes'
     ),
     'situations' => array(
         '0' => 'Not notified',

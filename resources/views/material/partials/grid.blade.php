@@ -12,8 +12,8 @@
             @endif
         </th>
         @endforeach
-        <th>{{trans("validation.attributes.operaciones")}}</th>
-        <th>{{trans("messages.generic.inventary")}}</th>
+        <th>@lang("validation.attributes.operaciones")</th>
+        <th>@lang("messages.generic.inventary")</th>
     </tr>
     </thead>
     <tfoot>
@@ -27,8 +27,8 @@
             @endif
         </th>
         @endforeach
-        <th>{{trans("validation.attributes.operaciones")}}</th>
-        <th>{{trans("messages.generic.inventary")}}</th>
+        <th>@lang("validation.attributes.operaciones")</th>
+        <th>@lang("messages.generic.inventary")</th>
     </tr>
     </tfoot>
 </table>

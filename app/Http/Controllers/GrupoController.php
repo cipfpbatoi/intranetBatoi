@@ -25,8 +25,8 @@ class GrupoController extends IntranetController
 
     
     protected function search(){
-        if (esRol(AuthUser()->rol,config('constants.rol.direccion')))
-            $this->panel->addGridField('Acta');
+//        if (esRol(AuthUser()->rol,config('constants.rol.direccion')))
+//            $this->panel->addGridField('Acta');
         return esRol(AuthUser()->rol,config('constants.rol.direccion')) ?
                 Grupo::all():
                 Grupo::MisGrupos()->get();
@@ -41,13 +41,13 @@ class GrupoController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera([], ['pdf', 'horario']);
-        $this->panel->setBoton('index', new BotonBasico('grupo.asigna', ['roles' => config('constants.rol.administrador')]));
+        //$this->panel->setBoton('index', new BotonBasico('grupo.asigna', ['roles' => config('constants.rol.administrador')]));
         $this->panel->setBoton('grid', new BotonImg('grupo.detalle', ['img' => 'fa-group']));
         $this->panel->setBoton('grid', new BotonImg('grupo.carnet', ['roles' => [config('constants.rol.direccion'), config('constants.rol.tutor')]]));
         $this->panel->setBoton('grid', new BotonImg('grupo.edit', ['roles' => config('constants.rol.direccion')]));
         $this->panel->setBoton('grid',new BotonImg('equipo.grupo',['img' => 'fa-graduation-cap']));
         $this->panel->setBoton('grid',new BotonImg('grupo.fse',['img' => 'fa-euro']));
-        $this->panel->setBoton('grid',new BotonImg('direccion.acta',['img' => 'fa-file-word-o','roles' => config('constants.rol.direccion'),'where' => ['acta_pendiente','==','1']]));
+        //$this->panel->setBoton('grid',new BotonImg('direccion.acta',['img' => 'fa-file-word-o','roles' => config('constants.rol.direccion'),'where' => ['acta_pendiente','==','1']]));
         $this->panel->setBoton('grid',new BotonImg('direccion.fol',['img' => 'fa-file-word-o','roles' => config('constants.rol.direccion')]));
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {

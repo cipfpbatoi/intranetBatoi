@@ -6,7 +6,7 @@
 <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
     <h3>{{$elemento->nombre}}</h3>
     <h4>CIF : {{$elemento->cif}}</h4>
-    <h4>{{trans('validation.attributes.concierto')}} : {{$elemento->concierto}}</h4>
+    <h4>@lang("validation.attributes.concierto") : {{$elemento->concierto}}</h4>
     <ul class="list-unstyled user_data">
         <li><i class="fa fa-map-marker user-profile-icon"></i> {{ $elemento->direccion }}, {{$elemento->localidad}}
         </li>
@@ -25,10 +25,10 @@
     <br />
 
     <!-- start skills -->
-    <h4>{{trans('messages.generic.options')}}</h4>
+    <h4>@lang("messages.generic.options")</h4>
     <ul class="list-unstyled user_data">
         <li>
-            <p>{{trans('validation.attributes.dual')}}</p>
+            <p>@lang("validation.attributes.dual")</p>
             <div class="progress progress_sm">
                 <div class="progress-bar bg-green" role="progressbar" 
                      @if ($elemento->dual)
@@ -40,7 +40,7 @@
             </div>
         </li>
         <li>
-            <p>{{trans('validation.attributes.menores')}}</p>
+            <p>@lang("validation.attributes.menores")</p>
             <div class="progress progress_sm">
                 <div class="progress-bar bg-green" role="progressbar" 
                      @if ($elemento->menores)
@@ -52,7 +52,7 @@
             </div>
         </li>
         <li>
-            <p>{{trans('validation.attributes.delitos')}}</p>
+            <p>@lang("validation.attributes.delitos")</p>
             <div class="progress progress_sm">
                 <div class="progress-bar bg-green" role="progressbar" 
                      @if ($elemento->delitos)
@@ -64,7 +64,7 @@
             </div>
         </li>
         <li>
-            <p>{{trans('validation.attributes.sao')}}</p>
+            <p>@lang("validation.attributes.sao")</p>
             <div class="progress progress_sm">
                 <div class="progress-bar bg-green" role="progressbar" 
                      @if ($elemento->sao)
@@ -89,13 +89,13 @@
         </li>
         @if ($elemento->actividad)
         <li>
-            <p><strong>{{trans('messages.generic.actividades')}}</strong></p>
+            <p><strong>@lang("messages.generic.actividades")</strong></p>
             <p>{{$elemento->actividad}}</p>
         </li>
         @endif
         @if ($elemento->observaciones)
         <li>
-            <p><strong>{{trans('validation.attributes.observaciones')}}</strong></p>
+            <p><strong>@lang("validation.attributes.observaciones")</strong></p>
             <p>{{$elemento->observaciones}}</p>
         </li>
         @endif
@@ -106,11 +106,11 @@
 <div class="col-md-9 col-sm-9 col-xs-12">
     <div class="" role="tabpanel" data-example-id="togglable-tabs">
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-            <li role="presentation" @if ($activa == 1) class="active" @endif><a href="#tab_content1" role="tab" id="colaboracion-tab" data-toggle="tab" aria-expanded="false">{{trans('models.modelos.Colaboracion')}}</a>
+            <li role="presentation" @if ($activa == 1) class="active" @endif><a href="#tab_content1" role="tab" id="colaboracion-tab" data-toggle="tab" aria-expanded="false">@lang("models.modelos.Colaboracion")</a>
             </li>
-            <li role="presentation" @if ($activa == 2) class="active" @endif><a href="#tab_content2" id="centro-tab" role="tab" data-toggle="tab" aria-expanded="true">{{trans('models.modelos.Centro')}}</a>
+            <li role="presentation" @if ($activa == 2) class="active" @endif><a href="#tab_content2" id="centro-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.modelos.Centro")</a>
             </li>
-            <li role="presentation" @if ($activa == 3) class="active" @endif><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">{{trans('models.modelos.Fct')}}</a>
+            <li role="presentation" @if ($activa == 3) class="active" @endif><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.modelos.Fct")</a>
             </li>
             
         </ul>
@@ -157,7 +157,7 @@
 </div>
 @endsection
 @section('titulo')
-{{trans('messages.menu.Empresa')}}: {{$elemento->nombre}}
+@lang("messages.menu.Empresa"): {{$elemento->nombre}}
 @endsection
 @section('scripts')
     {{ Html::script('/js/Empresa/detalle.js') }}

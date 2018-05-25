@@ -10,7 +10,7 @@ class CicloController extends IntranetController
     
     protected $perfil = 'profesor';
     protected $model = 'Ciclo';
-    protected $gridFields = ['codigo', 'ciclo','Xdepartamento','Xtipo','normativa','titol','rd','rd2'];
+    protected $gridFields = [ 'ciclo','literal','Xdepartamento','Xtipo','normativa','titol','rd','rd2'];
     protected $vista;
     protected $modal = true;
 

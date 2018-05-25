@@ -7,7 +7,7 @@
     <h3><a href='/empresa/{{$fct->Colaboracion->Centro->idEmpresa}}/detalle'>{{$fct->Colaboracion->Centro->nombre}}</a></h3>
     <h4>ID : {{$fct->id}}</h4>
     <h4>CIF : {{$fct->Colaboracion->Centro->Empresa->cif}}</h4>
-    <h4>{{trans('validation.attributes.concierto')}} : {{$fct->Colaboracion->Centro->Empresa->concierto}}</h4>
+    <h4>@lang("validation.attributes.concierto") : {{$fct->Colaboracion->Centro->Empresa->concierto}}</h4>
     <ul class="list-unstyled user_data">
         <li><i class="fa fa-map-marker user-profile-icon"></i> {{ $fct->Colaboracion->Centro->direccion }}, {{$fct->Colaboracion->Centro->localidad}}
         </li>
@@ -30,7 +30,7 @@
     <br />
 
     <!-- start skills -->
-    <h4>{{trans('validation.attributes.estado')}}</h4>
+    <h4>@lang("validation.attributes.estado")</h4>
     <ul class="list-unstyled user_data">
         <li class="m-top-xs"><i class='fa fa-columns user-profile-icon'></i> {{$fct->Qualificacio}}</li>
         
@@ -41,15 +41,15 @@
 <div class="col-md-9 col-sm-9 col-xs-12">
     <div class="" role="tabpanel" data-example-id="togglable-tabs">
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-            <li role="presentation" @if ($activa == 1) class="active" @endif><a href="#tab_content2" id="instructor-tab" role="tab" data-toggle="tab" aria-expanded="true">{{trans('models.modelos.Instructor')}}</a>
+            <li role="presentation" @if ($activa == 1) class="active" @endif><a href="#tab_content2" id="instructor-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.modelos.Instructor")</a>
             </li>
-            <li role="presentation" @if ($activa == 3) class="active" @endif><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">{{trans('models.modelos.Fct')}}</a>
+            <li role="presentation" @if ($activa == 3) class="active" @endif><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.modelos.Fct")</a>
             </li>
             @if ($proyecto)
-                <li role="presentation" @if ($activa == 2 ) class="active" @endif><a href="#tab_content1" role="tab" id="proyecto-tab" data-toggle="tab" aria-expanded="false">{{trans('models.modelos.Proyecto')}}</a>
+                <li role="presentation" @if ($activa == 2 ) class="active" @endif><a href="#tab_content1" role="tab" id="proyecto-tab" data-toggle="tab" aria-expanded="false">@lang("models.modelos.Proyecto")</a>
                 </li>
             @endif
-            <li role="presentation" @if ($activa == 4 ) class="active" @endif><a href="#tab_content4" role="tab" id="alumno-tab" data-toggle="tab" aria-expanded="false">{{trans('models.modelos.Alumno')}}</a>
+            <li role="presentation" @if ($activa == 4 ) class="active" @endif><a href="#tab_content4" role="tab" id="alumno-tab" data-toggle="tab" aria-expanded="false">@lang("models.modelos.Alumno")</a>
             </li>
             
         </ul>

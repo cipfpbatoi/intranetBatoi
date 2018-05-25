@@ -1,6 +1,6 @@
 'use strict';
 
-const PROCEDENCIAS=['Desconocida', 'Dotación', 'Donación', 'Compra'];
+const PROCEDENCIAS=['Desconocida', 'Dotación', 'Compra', 'Donación'];
 const ESTADOS=['Desconocido', 'Ok', 'Reparándose', 'Baja'];
 const MANTENIMIENTO=7;
 const mesesCaduca=6;

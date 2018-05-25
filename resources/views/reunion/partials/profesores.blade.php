@@ -1,11 +1,11 @@
 <div class="panel">
     <a class="panel-heading collapsed" role="tab" id="headingThree" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-        <h4 class="panel-title"><i class="fa fa-bars"></i> {{trans("models.Actividad.profesores")}}</h4>
+        <h4 class="panel-title"><i class="fa fa-bars"></i> @lang("models.Actividad.profesores")</h4>
     </a>
     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
         <div id="{{$elemento->id}}" class="panel-body">
             <table class="table table-striped table-condensed">
-                <tr><th>DNI</th> <th>{{trans("validation.attributes.name")}}</th><th>{{trans("validation.attributes.asiste")}}</th><th>{{trans("validation.attributes.operaciones")}}</th></tr>
+                <tr><th>DNI</th> <th>@lang("validation.attributes.name")</th><th>@lang("validation.attributes.asiste")</th><th>@lang("validation.attributes.operaciones")</th></tr>
                 @foreach ($sProfesores as $profesor)
                 <tr class="lineaProfesor">
                     <td>{!! $profesor->dni !!}</td> 
@@ -25,7 +25,7 @@
                 {{ csrf_field() }}
                 <input type='hidden' name='idReunion' value="{!!$elemento->id!!}">
                 {{ Form::select('idProfesor',$tProfesores,0,['id'=>'idProfesor']) }}
-                <input id="submit" class="boton" type="submit" value="{{trans("messages.generic.anadir")}} {{trans("models.modelos.Profesor")}} ">
+                <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") @lang("models.modelos.Profesor") ">
             </form>
         </div>
     </div>

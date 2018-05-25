@@ -201,7 +201,7 @@ return array(
         'Fct' => 'FCTs',
         'Empresa' => 'Empreses',
         'Extraescolares' => 'Informe Departament',
-        'Lfaltas' => 'Mensual de Ausèncias',
+        'Lfaltas' => 'Llistats mensuals',
         'Fichar' => 'Fitxaje profesors',
         'Alumno' => 'Alumne',
         'Orientacion' => 'Orientación',
@@ -247,7 +247,8 @@ return array(
         'Nuevocurso' => 'Esborrar Dades Curs Anterior',
         'Changeschedule' => ' Canviar horari',
         'Auxiliar' => 'Taules auxiliars',
-        'Modulociclo' => 'Mòdul / Cicle'
+        'Modulociclo' => 'Mòdul / Cicle',
+        'Actasfct' => 'Control Fct/Actes'
         
     ),
     'situations' => array(

@@ -72,6 +72,7 @@ class CursoController extends IntranetController
             Documento::crea($elemento, ['propietario' => $elemento->profesorado,
                 'tipoDocumento' => 'Curso',
                 'descripcion' => $elemento->titulo,
+                'tags' => 'Curs',
                 'fichero' => $elemento->fichero,
                 'supervisor' => AuthUser()->shortName,
                 'created_at' => new Date($elemento->fecha_fin),

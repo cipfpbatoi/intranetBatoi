@@ -54,7 +54,7 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if ($exception->getMessage()!='The given data was invalid.')
-            //avisa(config('constants.avisos.errores'),$exception->getMessage());
+            avisa(config('constants.avisos.errores'),$exception->getMessage());
         if ($exception instanceof ModelNotFoundException) {
             $e = new NotFoundHttpException($exception->getMessage(), $exception);
             return response()->view('errors.404',[],404);

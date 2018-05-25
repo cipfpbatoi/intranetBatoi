@@ -126,7 +126,7 @@
     <div class="container col-lg-12" >
         <table class="table table-bordered">
             <tr>
-                <th>{{trans('validation.attributes.proyectos')}}</th>
+                <th>@lang("validation.attributes.proyectos")</th>
             </tr>
         </table>
         <table class="table table-bordered">
@@ -138,7 +138,7 @@
     <div class="container col-lg-12" >
         <table class="table table-bordered">
             <tr>
-                <th>{{trans('validation.attributes.propuestas')}}</th>
+                <th>@lang("validation.attributes.propuestas")</th>
             </tr>
         </table>
         <table class="table table-bordered">
@@ -152,7 +152,7 @@
 <div class="container col-lg-12" >
     <table class="table table-bordered">
         <tr>
-            <th>{{trans('validation.attributes.observaciones')}}</th>
+            <th>@lang("validation.attributes.observaciones")</th>
         </tr>
     </table>
     <table class="table table-bordered">

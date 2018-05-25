@@ -14,7 +14,10 @@ trait TraitEstado
         $elemento = static::findOrFail($id);
         if ($fecha != null) {
             if ($elemento->fichero != '')
-                Documento::crea($elemento, ['tipoDocumento' => getClase($elemento),'rol'=> '2']);
+                Documento::crea($elemento, [
+                    'tipoDocumento' => getClase($elemento),
+                    'rol'=> '2',
+                    ]);
             if (isset($elemento->fechasolucion)) {
                 $elemento->fechasolucion = $fecha;
             }

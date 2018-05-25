@@ -218,6 +218,7 @@ class FctController extends IntranetController
             }
             if (!$falta){
                 dispatch(new SendEmail($elemento->Alumno->email, $remitente, 'email.fct.alumno', $elemento));
+                dispatch(new SendEmail(AuthUser()->email, $remitente, 'email.fct.tutor', $elemento));
                 foreach ($elemento->Instructores as $instructor){
                     dispatch(new SendEmail($instructor->email, $remitente, 'email.fct.instructor', $elemento));
                 }
@@ -252,7 +253,7 @@ class FctController extends IntranetController
             Session::put('pestana',3);
             return redirect()->action('EmpresaController@show', ['id' => Colaboracion::find($request->idColaboracion)->Centro->idEmpresa]);
         }
-        else return $this->show($idFct);
+        else return redirect()->action('FctController@show', ['id' => $idFct ]);
     }
     
     public function show($id)
