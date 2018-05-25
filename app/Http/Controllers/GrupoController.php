@@ -41,7 +41,7 @@ class GrupoController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera([], ['pdf', 'horario']);
-        $this->panel->setBoton('index', new BotonBasico('grupo.asigna', ['roles' => config('constants.rol.administrador')]));
+        //$this->panel->setBoton('index', new BotonBasico('grupo.asigna', ['roles' => config('constants.rol.administrador')]));
         $this->panel->setBoton('grid', new BotonImg('grupo.detalle', ['img' => 'fa-group']));
         $this->panel->setBoton('grid', new BotonImg('grupo.carnet', ['roles' => [config('constants.rol.direccion'), config('constants.rol.tutor')]]));
         $this->panel->setBoton('grid', new BotonImg('grupo.edit', ['roles' => config('constants.rol.direccion')]));
