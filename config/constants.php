@@ -113,6 +113,7 @@ return [
     'incidencias' => [
         '021637655Z', '021652470V', '021650958T', '021654541H'
     ],
+    'programaciones' => [ 'fichero' => '0' ],
     'completa' => 45,
     'precioKilometro' => 0.19,
     'reservaAforo' => 1.2,

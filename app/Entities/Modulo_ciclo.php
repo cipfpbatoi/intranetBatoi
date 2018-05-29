@@ -57,4 +57,6 @@ class Modulo_ciclo extends Model
     {
         return hazArray(Modulo::all(), 'codigo', 'literal');
     }
+    
+    
 }

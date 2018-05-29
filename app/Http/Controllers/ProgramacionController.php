@@ -19,7 +19,7 @@ class ProgramacionController extends IntranetController
     protected $model = 'Programacion';
     protected $gridFields = ['idModulo','XModulo', 'ciclo', 'hasta', 'anexos', 'situacion'];
     protected $vista = ['seguimiento' => 'programacion.seguimiento'];
-    protected $modal = true;
+    protected $modal = false;
     
     
     protected function search()
@@ -27,6 +27,23 @@ class ProgramacionController extends IntranetController
         return Programacion::misProgramaciones()
                 ->get();
     }
+    
+//    public function create($default=null)
+//    {
+//        $elemento = new Programacion; //crea un nou element del model
+//         if (config('constants.programaciones.fichero'))
+//            $elemento->setInputType('idModuloCiclo',['type'=>'hidden']);
+//        else
+//        {
+//            $elemento->setInputType('idModulo', ['type' => 'hidden']);
+//            $elemento->setInputType('ciclo', ['type' => 'hidden']);
+//            $elemento->setInputType('fichero', ['disabled' => 'disabled']);
+//            $elemento->setRule('idModuloCiclo','required');
+//        }
+//        $default = $elemento->fillDefautOptions(); 
+//        $modelo = $this->model;
+//         return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
+//    }
     
     protected function seguimiento($id)
     {
@@ -84,7 +101,7 @@ class ProgramacionController extends IntranetController
         $this->panel->setBotonera();
         $this->panel->setBoton('grid', new BotonImg('programacion.document', ['img' => 'fa-eye','where' => ['fichero','isNNull','']]));
         $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['estado','>','2','anexos', '>', 0]]));
-        $this->panel->setBoton('index', new BotonBasico('programacion.create', ['roles' => [config('constants.rol.profesor')]]));
+        $this->panel->setBoton('index',new BotonBasico('programacion.create', ['roles' => [config('constants.rol.profesor')]]));
         $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['estado', '<', 3]]));
         $this->panel->setBoton('grid', new BotonImg('programacion.edit', ['where' => ['estado', '<', 2]]));
         $this->panel->setBoton('grid', new BotonImg('programacion.delete', ['where' => ['estado', '<', 2]]));

@@ -1,6 +1,8 @@
 <?php
 
 Route::get('/allProgramacion/', ['as' => 'programacion.all', 'uses' => 'PanelProgramacionAllController@index']);
+Route::get('/programaciones/', ['as' => 'programacion.all', 'uses' => 'PanelProgramacionesController@index']);
+
 Route::get('/programacion/{programacion}/show', ['as' => 'programacion.show', 'uses' => 'ProgramacionController@show']);
 Route::get('/programacion/{programacion}/anexo', ['as' => 'programacion.anexo', 'uses' => 'ProgramacionController@anexo']);
 Route::get('/programacion/{programacion}/document', ['as' => 'programacion.document', 'uses' => 'ProgramacionController@document']);

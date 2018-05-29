@@ -288,6 +288,15 @@ class ImportController extends Seeder
                 if ($enlace) $nuevo->enlace = $fichero[$indice++];
                 $nuevo->save();
             }
+            $mc = Modulo_ciclo::where('idModulo',$horario->modulo)->where('idCiclo',$horario->Grupo->idCiclo)->first()->id;
+            if (!Programacion::where('idModuloCiclo',$mc->id)->first()){
+                $prg = New Programacion();
+                $prg->idModuloCiclo = $mc->id;
+                $prg->fichero = $mc->enlace;
+                $prg->curso = Curso();
+                $prg->save();
+            }
+            
         }
     }
     

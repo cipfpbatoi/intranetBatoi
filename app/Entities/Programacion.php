@@ -7,6 +7,7 @@ use Jenssegers\Date\Date;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
+use Intranet\Entities\Grupo;
 
 class Programacion extends Model
 {
@@ -17,6 +18,7 @@ class Programacion extends Model
     protected $table = "programaciones";
     protected $fillable = [
         'idModulo',
+        'idModuloCiclo',
         'ciclo',
         'idProfesor',
         'desde',
@@ -26,7 +28,6 @@ class Programacion extends Model
     protected $rules = [
         'desde' => 'required|date',
         'hasta' => 'required|date|after:desde',
-        'idModulo' => 'required',
         'fichero' => 'mimes:pdf'
     ];
     protected $inputTypes = [
@@ -35,8 +36,9 @@ class Programacion extends Model
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
         'fichero' => ['type' => 'file'],
-        
+        'idModuloCiclo' => ['type' => 'select']
     ];
+    
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
         'created' => ActivityReport::class,
@@ -47,6 +49,11 @@ class Programacion extends Model
     public function Modulo()
     {
         return $this->belongsTo(Modulo::class, 'idModulo', 'codigo');
+    }
+    
+    public function ModuloCiclo()
+    {
+        return $this->belongsTo(Modulo_ciclo::class, 'idModuloCiclo', 'id');
     }
 
     public function Profesor()
@@ -77,13 +84,27 @@ class Programacion extends Model
 
     public function getidModuloOptions()
     {
-        $misModulos = [];
-        $modulos = Modulo::Mismodulos()->Lectivos()->get();
-        foreach ($modulos as $modulo){
-            $dciclo = isset($modulo->Ciclo->ciclo)?$modulo->Ciclo->ciclo:'';
-            $misModulos[$modulo->codigo] = $modulo->literal." - $dciclo - ";
+        return hazArray( Modulo::Lectivos()->get(),'codigo', ['literal','Xciclo']);
+        return hazArray( Modulo::Mismodulos()->Lectivos()->get(), 'codigo', ['literal','Xciclo']);
+    }
+    
+    public function getidModuloCicloOptions()
+    {
+        return hazArray(Modulo_ciclo::orderBy('idCiclo')->get(), 'id', ['Xciclo','Xmodulo']);
+        $horas = Horario::select()
+                ->Profesor(AuthUser()->dni)
+                ->whereNotNull('idGrupo')
+                ->whereNotIn('modulo',config('constants.modulosNoLectivos'))
+                ->distinct()
+                ->get();
+        $todos = [];
+        foreach ($horas as $hora){
+            $mc = Modulo_ciclo::where('idModulo',$hora->modulo)
+                    ->where('idCiclo',$hora->Grupo->idCiclo)
+                    ->first();
+            $todos[$mc->id] = $mc->Xmodulo.' - '.$mc->Xciclo;
         }
-        return $misModulos;
+        return $todos;
     }
 
     public function scopeMisProgramaciones($query,$profesor = null)
@@ -124,6 +145,9 @@ class Programacion extends Model
     }
     public function getXModuloAttribute(){
         return $this->Modulo->literal;
+    }
+    public function getDescripcionAttribute(){
+        return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Xciclo.' - '.$this->Xmodulo:'';
     }
     public function getXNombreAttribute(){
         return $this->Profesor->fullName;
