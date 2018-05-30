@@ -19,12 +19,9 @@ class PanelInfDptoController extends BaseController
     {
         return Reunion::Tipo(10)->get();    
     }
-    
-    public function index()
-    {
-        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        $this->panel->setPestana('profile', false,'fct.partials.resumenprofile');
-        return $this->grid(Reunion::Tipo(10)->get());
+    protected function iniPestanas($parametres = null){
+        $this->panel->setPestana('profile', true,null,null,null,true);
+        
     }
 
 }

@@ -59,7 +59,6 @@ class CreateRestricciones extends Migration
         });
         Schema::table('programaciones', function (Blueprint $table) {
             $table->foreign('idProfesor')->references('dni')->on('profesores')->onUpdate('cascade');
-            $table->foreign('idModulo')->references('codigo')->on('modulos')->onUpdate('cascade');
         });
         Schema::table('expedientes', function (Blueprint $table) {
             $table->foreign('idProfesor')->references('dni')->on('profesores')->onUpdate('cascade');
@@ -136,6 +135,9 @@ class CreateRestricciones extends Migration
             $table->dropForeign('alumnos_cursos_idAlumno_foreign');
             $table->dropForeign('alumnos_cursos_idCurso_foreign');
         });
+        Schema::table('programaciones',function (Blueprint $table){
+            $table->dropForeign('programaciones_idProfesor_foreign');
+        });
         Schema::table('faltas',function (Blueprint $table){
             $table->dropForeign('faltas_idProfesor_foreign');
         });
@@ -156,10 +158,6 @@ class CreateRestricciones extends Migration
         });
         Schema::table('ciclos',function (Blueprint $table){
             $table->dropForeign('ciclos_departamento_foreign');
-        });
-         Schema::table('programaciones',function (Blueprint $table){
-            $table->dropForeign('programaciones_idProfesor_foreign');
-            $table->dropForeign('programaciones_idModulo_foreign');
         });
         Schema::table('expedientes',function (Blueprint $table){
             $table->dropForeign('expedientes_idProfesor_foreign');

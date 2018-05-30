@@ -46,7 +46,7 @@ Route::get('/fct', ['as' => 'fct.direccion.index', 'uses' => 'PanelFctController
 
 
 Route::get('/alumno/{alumno}/edit', ['as' => 'alumno.edit', 'uses' => 'AlumnoController@edit']);
-Route::get('/programacion/list', ['as' => 'programacion.list', 'uses' => 'ModuloController@listado']);
+Route::get('/programacion/list', ['as' => 'programacion.list', 'uses' => 'PanelControlProgramacionController@index']);
 Route::get('/fichar/list', ['as' => 'fichar.list', 'uses' => 'FicharController@listado']);
 Route::get('/fichar/list/{dia}', ['as' => 'fichar.list', 'uses' => 'FicharController@listado']);
 Route::get('/guardia/control',['as' => 'guardia.control', 'uses' => 'GuardiaController@control']);

@@ -14,18 +14,29 @@ use Illuminate\Support\Facades\Session;
 class ProgramacionController extends IntranetController
 {
 
-    use traitAutorizar;
+    use traitAutorizar,traitCheckList;
 
     protected $model = 'Programacion';
-    protected $gridFields = ['idModulo','XModulo', 'ciclo', 'hasta', 'anexos', 'situacion'];
+    protected $gridFields = ['Xciclo','XModulo', 'curso','anexos', 'situacion'];
     protected $vista = ['seguimiento' => 'programacion.seguimiento'];
     protected $modal = false;
+    protected $items = 6;
     
     
     protected function search()
     {
         return Programacion::misProgramaciones()
                 ->get();
+    }
+    
+    //inicializat a init (normalment 1)
+    protected function init($id)
+    {
+        Programacion::putEstado($id,$this->init);
+        $prg = Programacion::find($id);
+        $prg->idProfesor = AuthUser()->dni;
+        $prg->save();
+        return back();
     }
     
 //    public function create($default=null)
@@ -99,14 +110,22 @@ class ProgramacionController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera();
-        $this->panel->setBoton('grid', new BotonImg('programacion.document', ['img' => 'fa-eye','where' => ['fichero','isNNull','']]));
-        $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['estado','>','2','anexos', '>', 0]]));
-        $this->panel->setBoton('index',new BotonBasico('programacion.create', ['roles' => [config('constants.rol.profesor')]]));
-        $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['estado', '<', 3]]));
-        $this->panel->setBoton('grid', new BotonImg('programacion.edit', ['where' => ['estado', '<', 2]]));
-        $this->panel->setBoton('grid', new BotonImg('programacion.delete', ['where' => ['estado', '<', 2]]));
-        $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0,'fichero','isNNull','']]));
-        $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','where' => ['estado', '==', 3]]));
+        if (config('constants.programaciones.fichero')){
+            $this->panel->setBoton('grid', new BotonImg('programacion.document', ['img' => 'fa-eye','where' => ['fichero','isNNull','']]));
+            $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['estado','>','2','anexos', '>', 0]]));
+            $this->panel->setBoton('index',new BotonBasico('programacion.create', ['roles' => [config('constants.rol.profesor')]]));
+            $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['estado', '<', 3]]));
+            $this->panel->setBoton('grid', new BotonImg('programacion.edit', ['where' => ['estado', '<', 2]]));
+            $this->panel->setBoton('grid', new BotonImg('programacion.delete', ['where' => ['estado', '<', 2]]));
+            $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0,'fichero','isNNull','']]));
+            $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','where' => ['estado', '==', 3]]));
+        }
+        else {
+            $this->panel->setBoton('grid', new BotonImg('programacion.document', ['img' => 'fa-eye']));
+            $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0,'fichero','isNNull','']]));
+            $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','where' => ['estado', '==', 3]]));
+    
+        }
     }
     
     

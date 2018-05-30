@@ -15,10 +15,10 @@ class CreateProgramaciones extends Migration
     {
         Schema::create('programaciones', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('idModulo',6);
-            $table->string('idProfesor',10);
-            $table->date('desde');
-            $table->date('hasta');
+            //$table->string('idModulo',6);
+            //$table->string('idProfesor',10);
+            //$table->date('desde');
+            //$table->date('hasta');
             $table->string('fichero');
             $table->tinyInteger('anexos')->default(0);
             $table->tinyInteger('estado')->default(0);

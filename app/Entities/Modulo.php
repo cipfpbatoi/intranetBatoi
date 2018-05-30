@@ -48,10 +48,7 @@ class Modulo extends Model
         return $this->hasMany(Horario::class, 'codigo', 'modulo');
     }
 
-    public function Programacion()
-    {
-        return $this->hasOne(Programacion::class, 'idModulo');
-    }
+
 
     public function Ciclo()
     {
@@ -105,13 +102,6 @@ class Modulo extends Model
     {
         return $this->Departament->literal;
     }
-    public function getEstadoAttribute()
-    {
-        return isset($this->Programacion->estado) ? $this->Programacion->estado : 0;
-    }
-    public function getSituacionAttribute()
-    {
-        return isblankTrans('models.Modulo.'.$this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Modelo.'.$this->estado);
-    }
+
 
 }

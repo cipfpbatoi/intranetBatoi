@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\Modulo_ciclo;
 
 class Programacion extends Model
 {
@@ -17,25 +18,17 @@ class Programacion extends Model
     public $fileField = 'idModulo';
     protected $table = "programaciones";
     protected $fillable = [
-        'idModulo',
         'idModuloCiclo',
-        'ciclo',
         'idProfesor',
-        'desde',
-        'hasta',
+        'curso',
         'fichero',
     ];
     protected $rules = [
-        'desde' => 'required|date',
-        'hasta' => 'required|date|after:desde',
         'fichero' => 'mimes:pdf'
     ];
     protected $inputTypes = [
-        'idModulo' => ['type' => 'select'],
-        'idProfesor' => ['type' => 'hidden'],
-        'desde' => ['type' => 'date'],
-        'hasta' => ['type' => 'date'],
         'fichero' => ['type' => 'file'],
+        'idProfesor' => ['type' => 'hidden'],
         'idModuloCiclo' => ['type' => 'select']
     ];
     
@@ -46,51 +39,31 @@ class Programacion extends Model
     ];
     protected $hidden = ['created_at', 'updated_at'];
 
-    public function Modulo()
-    {
-        return $this->belongsTo(Modulo::class, 'idModulo', 'codigo');
-    }
+    
     
     public function ModuloCiclo()
     {
         return $this->belongsTo(Modulo_ciclo::class, 'idModuloCiclo', 'id');
     }
-
     public function Profesor()
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
+    
 
     public function __construct()
     {
         if (AuthUser()) $this->idProfesor = AuthUser()->dni;
-        $this->desde = '01-09-'.substr(Curso(),0,4);
-        $this->hasta = '31-07-'.substr(Curso(),5,4);
         $this->criterios = 0;
         $this->metodologia = 0;
+        $this->curso = Curso();
     }
 
-    public function getDesdeAttribute($entrada)
-    {
-        $fecha = new Date($entrada);
-        return $fecha->format('d-m-Y');
-    }
-
-    public function getHastaAttribute($salida)
-    {
-        $fecha = new Date($salida);
-        return $fecha->format('d-m-Y');
-    }
-
-    public function getidModuloOptions()
-    {
-        return hazArray( Modulo::Lectivos()->get(),'codigo', ['literal','Xciclo']);
-        return hazArray( Modulo::Mismodulos()->Lectivos()->get(), 'codigo', ['literal','Xciclo']);
-    }
+    
     
     public function getidModuloCicloOptions()
     {
-        return hazArray(Modulo_ciclo::orderBy('idCiclo')->get(), 'id', ['Xciclo','Xmodulo']);
+        //return hazArray(Modulo_ciclo::orderBy('idCiclo')->get(), 'id', ['Xciclo','Xmodulo']);
         $horas = Horario::select()
                 ->Profesor(AuthUser()->dni)
                 ->whereNotNull('idGrupo')
@@ -110,22 +83,29 @@ class Programacion extends Model
     public function scopeMisProgramaciones($query,$profesor = null)
     {
         if (!$profesor) $profesor = AuthUser()->dni;
-        $modulos = Horario::select('modulo')
+        $horas = Horario::select('modulo','idGrupo')
                 ->distinct()
+                ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
                 ->Profesor($profesor)
                 ->where('modulo', '!=', null)
-                ->get()
-                ->toarray();
-        return $query->whereIn('idModulo', $modulos)->where('desde','<=',Hoy())->where('hasta','>=',Hoy());
+                ->get();
+        $modulos = [];
+        foreach ($horas as $hora){
+            $mc = Modulo_ciclo::where('idModulo',$hora->modulo)
+                    ->where('idCiclo',$hora->Grupo->idCiclo)
+                    ->first();
+            $modulos[] = $mc->id;
+        }
+        return $query->whereIn('idModuloCiclo', $modulos)->where('curso',Curso());
     }
 
     public function scopeDepartamento($query)
     {
-        $modulos = Modulo::select('codigo')
+        $modulos = Modulo_ciclo::select('id')
                 ->Departamento()
                 ->get()
                 ->toarray();
-        return $query->whereIn('idModulo', $modulos)->where('desde','<=',Hoy())->where('hasta','>=',Hoy());
+        return $query->whereIn('idModuloCiclo', $modulos)->where('curso',Curso());
     }
     
     public function nomFichero()
@@ -141,17 +121,19 @@ class Programacion extends Model
         }
     }
     public function getXdepartamentoAttribute(){
-        return isset($this->Modulo->Ciclo->Departament->cliteral)?$this->Modulo->Departament->literal:'';
+        return isset($this->ModuloCiclo->Ciclo->Departament->cliteral)?$this->ModuloCiclo->Ciclo->Departament->literal:'';
     }
     public function getXModuloAttribute(){
-        return $this->Modulo->literal;
+        return $this->ModuloCiclo->Xmodulo;
+    }
+    public function getXCicloAttribute(){
+        return $this->ModuloCiclo->Aciclo;
     }
     public function getDescripcionAttribute(){
-        return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Xciclo.' - '.$this->Xmodulo:'';
+        return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Aciclo." - ".$this->ModuloCiclo->Xmodulo:'';
     }
-    public function getXNombreAttribute(){
-        return $this->Profesor->fullName;
-    }
+    
+    
     public function getSituacionAttribute(){
         return isblankTrans('models.Comision.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Comision.' . $this->estado);
     }
@@ -159,7 +141,7 @@ class Programacion extends Model
     {
         $elemento = Programacion::findorFail($id);
         Documento::crea($elemento,['tipoDocumento' => 'Programacion' ,'fichero' => $elemento->fichero,
-            'modulo'=>$elemento->Modulo->literal,'propietario' => $elemento->Profesor->FullName,
+            'modulo'=>$elemento->ModuloCiclo->Modulo->literal,'propietario' => $elemento->Profesor->FullName,
             'descripcion'=>'Autorizada dia '. Hoy('d-m-Y'),'ciclo'=> $elemento->ciclo, 'tags' => 'Programació']);
         return static::putEstado($id, config('modelos.' . getClass(static::class) . '.resolve'), $mensaje);
     }

@@ -70,20 +70,4 @@ class ModuloController extends IntranetController
         return back();
     }
 
-    public function listado()
-    {
-        if (UserisAllow(config('constants.rol.direccion')))
-            $todos = Modulo::whereNotNull('idCiclo')
-                    ->orderBy('idCiclo')
-                    ->get();
-        else 
-            $todos = Modulo::whereNotNull('idCiclo')
-                    ->where('departamento', AuthUser()->departamento)
-                    ->orderBy('idCiclo')
-                    ->get();
-       return $this->llist($todos, new Panel('Modulo', ['Xciclo', 'literal', 'estado', 'situacion'], 'grid.standard'));
-    }
-    
-    
-
 }

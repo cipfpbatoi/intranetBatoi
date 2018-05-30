@@ -4,7 +4,7 @@
         <div class="col-sm-12">
             <h4 class="brief">
                  {{ $elemento->departamento }}<br/>
-                 {{ trans('messages.buttons.ciclo')}}: {{ $elemento->ciclo }}<br/>
+                 {{ trans('messages.buttons.ciclo')}}: {{ $elemento->Xciclo }}<br/>
                  {{ trans('messages.buttons.modulo')}}: {{ $elemento->Xmodulo }}<br/>
                  {{ trans('validation.attributes.Profesor')}}: {{ $elemento->Profesor->ShortName }}<br/>
             </h4>
@@ -18,8 +18,7 @@
              </div>
             <div class="left col-xs-6">
                 <h5>@lang("messages.generic.validez")</h5>
-                <i class="fa fa-calendar"></i> {{ $elemento->desde }}<br/>
-                <i class="fa fa-calendar"></i> {{ $elemento->hasta }}
+                <i class="fa fa-calendar"></i> {{ $elemento->curso }}<br/>
             </div>
             <div class="left col-xs-12">
                 <h6>{{ trans('messages.buttons.checkList') }}</h6>

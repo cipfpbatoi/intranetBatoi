@@ -11,14 +11,14 @@ class PanelProgramacionAllController extends BaseController
 
    
     protected $model = 'Programacion';
-    protected $gridFields = ['idModulo','descripcion','XModulo', 'ciclo','Xdepartamento', 'Xnombre'];
+    protected $gridFields = ['Xciclo','XModulo', 'Xdepartamento','ciclo'];
     
     public function index()
     {
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         Session::put('redirect','PanelProgramacionAllController@index');
         $this->iniBotones();
-        return $this->grid(Programacion::Where('estado', '=', '3')->get());
+        return $this->grid(Programacion::Where('curso', '=', '2017-2018')->get());
     }
     protected function iniBotones()
     {
