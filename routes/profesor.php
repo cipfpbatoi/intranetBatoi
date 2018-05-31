@@ -255,6 +255,7 @@ Route::post('/programacion/create', ['as' => 'programacion.create', 'uses' => 'P
 Route::get('/programacion/{programacion}/init', ['as' => 'programacion.init', 'uses' => 'ProgramacionController@init']);
 Route::post('/programacion/{programacion}/anexo', ['as' => 'programacion.storeanexo', 'uses' => 'ProgramacionController@storeanexo']);
 Route::get('/programacion/{programacion}/deleteanexo', ['as' => 'programacion.deleteanexo', 'uses' => 'ProgramacionController@deleteanexo']);
+Route::get('/programacion/{programacion}/email', ['as' => 'programacion.email', 'uses' => 'ProgramacionController@email']);
 
 //RUTAS TUTORIAS
 Route::resource('/tutoria', 'TutoriaController', ['except' => ['destroy', 'update']]);

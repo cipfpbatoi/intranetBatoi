@@ -16,6 +16,7 @@ use ImportTableSeeder;
 use Illuminate\Support\Facades\Artisan;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
+use Intranet\Entities\Programacion;
 
 
 class ImportController extends Seeder
@@ -268,6 +269,7 @@ class ImportController extends Seeder
                 $this->crea_modulosCiclos();
                 break;
         }
+        $this->crea_modulosCiclos();
     }
     
     private function crea_modulosCiclos()
@@ -288,12 +290,17 @@ class ImportController extends Seeder
                 if ($enlace) $nuevo->enlace = $fichero[$indice++];
                 $nuevo->save();
             }
-            $mc = Modulo_ciclo::where('idModulo',$horario->modulo)->where('idCiclo',$horario->Grupo->idCiclo)->first()->id;
-            if (!Programacion::where('idModuloCiclo',$mc->id)->first()){
+            $mc = Modulo_ciclo::where('idModulo',$horario->modulo)->where('idCiclo',$horario->Grupo->idCiclo)->first();
+            if (!Programacion::where('idModuloCiclo',$mc->id)->where('curso',Curso())->first()){
                 $prg = New Programacion();
                 $prg->idModuloCiclo = $mc->id;
                 $prg->fichero = $mc->enlace;
                 $prg->curso = Curso();
+                if ($antigua = Programacion::where('idModuloCiclo',$mc->id)->first()){
+                    $prg->criterios = $antigua->criterios;
+                    $prg->metodologia = $antigua->metodologia;
+                    $prg->propuestas = $antigua->propuestas;
+                }
                 $prg->save();
             }
             

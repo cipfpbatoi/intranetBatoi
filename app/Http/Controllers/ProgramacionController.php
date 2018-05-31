@@ -10,6 +10,7 @@ use Intranet\Botones\BotonBasico;
 use Illuminate\Http\Request;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Session;
+use Intranet\Jobs\SendEmail;
 
 class ProgramacionController extends IntranetController
 {
@@ -17,7 +18,7 @@ class ProgramacionController extends IntranetController
     use traitAutorizar,traitCheckList;
 
     protected $model = 'Programacion';
-    protected $gridFields = ['Xciclo','XModulo', 'curso','anexos', 'situacion'];
+    protected $gridFields = ['Xciclo','XModulo', 'curso', 'situacion'];
     protected $vista = ['seguimiento' => 'programacion.seguimiento'];
     protected $modal = false;
     protected $items = 6;
@@ -39,31 +40,15 @@ class ProgramacionController extends IntranetController
         return back();
     }
     
-//    public function create($default=null)
-//    {
-//        $elemento = new Programacion; //crea un nou element del model
-//         if (config('constants.programaciones.fichero'))
-//            $elemento->setInputType('idModuloCiclo',['type'=>'hidden']);
-//        else
-//        {
-//            $elemento->setInputType('idModulo', ['type' => 'hidden']);
-//            $elemento->setInputType('ciclo', ['type' => 'hidden']);
-//            $elemento->setInputType('fichero', ['disabled' => 'disabled']);
-//            $elemento->setRule('idModuloCiclo','required');
-//        }
-//        $default = $elemento->fillDefautOptions(); 
-//        $modelo = $this->model;
-//         return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
-//    }
     
     protected function seguimiento($id)
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = Programacion::findOrFail($id);
         return view($this->chooseView('seguimiento'), compact('elemento'));
     }
     
     protected function updateSeguimiento(Request $request,$id){
-        $elemento = $this->class::findOrFail($id); 
+        $elemento = Programacion::findOrFail($id); 
         $elemento->criterios = $request->criterios;
         $elemento->metodologia = $request->metodologia;
         $elemento->propuestas = $request->propuestas;
@@ -101,16 +86,39 @@ class ProgramacionController extends IntranetController
         return back();
     }
     protected function veranexo($id,$an){
-        $elemento = $this->class::findOrFail($id);
+        $elemento = Programacion::findOrFail($id);
         $fichero = 'gestor/' . Curso() . '/' . $this->model.'/'.$elemento->nomFichero()."_an".$an.".pdf";
         return response()->file(storage_path('/app/'.$fichero));
     }
+    protected function link($id)
+    {
+        $elemento = Programacion::findOrFail($id);
+        return redirect()->away($elemento->fichero);
+    }
+    protected function email($id)
+    {
+        $elemento = Programacion::findOrFail($id);
+        //esborra fitxer si ja estaven
+        
+        $asistente = AuthUser();
+        $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName];
+        dispatch(new SendEmail(AuthUser()->email, $remitente, 'email.programacion', $elemento));
+        Alert::info('Correu enviat');
+        return back();
+    }
+    
     
     
     protected function iniBotones()
     {
         $this->panel->setBotonera();
-        if (config('constants.programaciones.fichero')){
+        if (config('constants.programaciones.enlace')){
+            $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
+            $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0]]));
+            $this->panel->setBoton('grid', new BotonImg('programacion.email', ['img' => 'fa-send','where' => ['estado', '==', 0]]));
+            $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','orWhere' => ['estado', '==', 0,'estado', '==', 3]]));
+        }
+        else {
             $this->panel->setBoton('grid', new BotonImg('programacion.document', ['img' => 'fa-eye','where' => ['fichero','isNNull','']]));
             $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['estado','>','2','anexos', '>', 0]]));
             $this->panel->setBoton('index',new BotonBasico('programacion.create', ['roles' => [config('constants.rol.profesor')]]));
@@ -119,12 +127,6 @@ class ProgramacionController extends IntranetController
             $this->panel->setBoton('grid', new BotonImg('programacion.delete', ['where' => ['estado', '<', 2]]));
             $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0,'fichero','isNNull','']]));
             $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','where' => ['estado', '==', 3]]));
-        }
-        else {
-            $this->panel->setBoton('grid', new BotonImg('programacion.document', ['img' => 'fa-eye']));
-            $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0,'fichero','isNNull','']]));
-            $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','where' => ['estado', '==', 3]]));
-    
         }
     }
     

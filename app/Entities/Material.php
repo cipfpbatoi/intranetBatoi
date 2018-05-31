@@ -30,6 +30,10 @@ class Material extends Model
         'deleted' => ActivityReport::class,
     ];
 
+    public function __construct()
+    {
+        $this->estado = 1;
+    }
     public function Estados()
     {
         return $this->belongsTo(EstadoMaterial::class, 'estado');

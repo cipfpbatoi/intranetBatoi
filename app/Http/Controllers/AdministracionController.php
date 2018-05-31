@@ -31,11 +31,12 @@ class AdministracionController extends Controller{
     }
     
     protected function deleteProgramacionIndex(){
-        $cuantas = Programacion::where('hasta','<=',Hoy())->count();
+        $cuantas = Programacion::where('estado',3)->where('curso','!=',Curso())->count();
         return view('programacion.deleteOld',compact('cuantas'));
     }
     protected function deleteProgramacion(){
-        Programacion::where('hasta','<=',Hoy())->delete();
+        Programacion::where('estado',4)->delete();
+        Programacion::where('curso','!=',Curso())->update(['estado' => 4]);
         return back();
     }
 //    protected function deleteProgramacion(){

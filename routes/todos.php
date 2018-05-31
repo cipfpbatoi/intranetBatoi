@@ -6,6 +6,7 @@ Route::get('/programaciones/', ['as' => 'programacion.all', 'uses' => 'PanelProg
 Route::get('/programacion/{programacion}/show', ['as' => 'programacion.show', 'uses' => 'ProgramacionController@show']);
 Route::get('/programacion/{programacion}/anexo', ['as' => 'programacion.anexo', 'uses' => 'ProgramacionController@anexo']);
 Route::get('/programacion/{programacion}/document', ['as' => 'programacion.document', 'uses' => 'ProgramacionController@document']);
+Route::get('/programacion/{programacion}/link', ['as' => 'programacion.link', 'uses' => 'ProgramacionController@link']);
 Route::get('/programacion/{programacion}/veranexo/{anexo}', ['as' => 'programacion.veranexo', 'uses' => 'ProgramacionController@veranexo']);
 
 Route::get('/notification', ['as' => 'notificacion.index', 'uses' => 'NotificationController@index']);

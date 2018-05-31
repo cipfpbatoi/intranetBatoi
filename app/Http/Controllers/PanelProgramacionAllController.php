@@ -12,19 +12,21 @@ class PanelProgramacionAllController extends BaseController
    
     protected $model = 'Programacion';
     protected $gridFields = ['Xciclo','XModulo', 'Xdepartamento','ciclo'];
+    protected $redirect = 'PanelProgramacionAllController@index';
     
-    public function index()
-    {
-        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        Session::put('redirect','PanelProgramacionAllController@index');
-        $this->iniBotones();
-        return $this->grid(Programacion::Where('curso', '=', '2017-2018')->get());
+    
+    public function search(){
+        return Programacion::where('estado',config('constants.programaciones.mostrar'))->get();
     }
+    
     protected function iniBotones()
     {
         $this->panel->setBotonera();
-        $this->panel->setBoton('grid', new BotonImg('programacion.document', ['img' => 'fa-eye','orWhere' => ['fichero','isNNull','',config('constants.programaciones.fichero'),'==','0']]));
-        $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['anexos', '>', 0]]));
+        if (config('constants.programaciones.fichero')){
+            $this->panel->setBoton('grid', new BotonImg('programacion.document', ['img' => 'fa-eye','where' => ['fichero','isNNull','']]));
+            $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['anexos', '>', 0]]));
+        }
+        else $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
         $this->panel->setBoton('grid', new BotonImg('programacion.edit',['roles' => config('constants.rol.administracion')]));
     }
 }

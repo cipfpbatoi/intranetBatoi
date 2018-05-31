@@ -65,6 +65,7 @@ abstract class BaseController extends Controller
         $this->iniPestanas();
         return $this->grid($this->search(),$this->modal);
     }
+    
     public function indice($search)
     {
         $this->search = $search;
@@ -98,6 +99,14 @@ abstract class BaseController extends Controller
         if (view()->exists('intranet.partials.profile.'.strtolower($this->model))&&$this->profile) 
                     $this->panel->setPestana('profile', false);
         
+    }
+    protected function crea_pestanas($estados,$vista,$activa=null){
+        $activa = isset($activa)?$activa:Session::get('pestana')?Session::get('pestana'):1;
+        
+        foreach ($estados as $key => $estado) {
+            $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,
+                ['estado',$key]);
+        }
     }
 
     

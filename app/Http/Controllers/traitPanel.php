@@ -11,22 +11,35 @@ use Jenssegers\Date\Date;
 
 trait traitPanel{
     
-    
-    public function index($condicion=null)
+    public function index()
     {
-        
-        $activa = Session::get('pestana') ? Session::get('pestana') : 1;
         $todos = isset($this->orden)?$this->search($this->orden):$this->search('desde');
         
-        foreach (config('modelos.'.$this->model.'.estados') as $key => $estado) {
-            $this->panel->setPestana($estado, $key == $activa ? true : false, "profile." .
-                strtolower($this->model),
-                isset($condicion)?array_merge(['estado',$key],$condicion):['estado',$key]);
-        }
+        $this->crea_pestanas(config('modelos.'.$this->model.'.estados'),"profile.".strtolower($this->model));
         $this->iniBotones();
         Session::put('redirect','Panel'.$this->model.'Controller@index');
         return $this->grid($todos);
     }
+    
+//    public function index($condicion=null)
+//    {
+//        
+//        $activa = Session::get('pestana') ? Session::get('pestana') : 1;
+//        $todos = isset($this->orden)?$this->search($this->orden):$this->search('desde');
+//        
+//        foreach (config('modelos.'.$this->model.'.estados') as $key => $estado) {
+//            $this->panel->setPestana($estado, $key == $activa ? true : false, "profile." .
+//                strtolower($this->model),
+//                isset($condicion)?dd(array_merge(['estado',$key],$condicion)):
+//                ['estado',$key]);
+//        }
+//        $this->iniBotones();
+//        Session::put('redirect','Panel'.$this->model.'Controller@index');
+//        return $this->grid($todos);
+//    }
+    
+    
+    
     // carrega els elements
     protected function search()
     {
