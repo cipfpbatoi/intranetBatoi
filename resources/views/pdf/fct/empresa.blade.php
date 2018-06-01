@@ -13,7 +13,7 @@
         <br/><br />
     </div>
     <div class="container" style="width:95%">
-        <p style="text-indent: 30px;text-align: justify">Que l'empresa <strong> {{$todos->Colaboracion->Centro->Empresa->nombre}} </strong> , ubicada a {{$todos->Colaboracion->Centro->direccion}} de/d'
+        <p style="text-indent: 30px;text-align: justify">Que l'empresa <strong> {{$todos->Colaboracion->Centro->nombre}} </strong> , ubicada a {{$todos->Colaboracion->Centro->direccion}} de/d'
             {{$todos->Colaboracion->Centro->localidad}}, ha col·laborat en les pràctiques corresponents a la Formació de Centres de Treball (FCT) de  @if ($todos->Alumno->sexo === 'H') l'alumne @else l'alumna @endif <strong>{{$todos->Alumno->FullName}} </strong> 
             , del {{$todos->Colaboracion->Ciclo->Xtipo}} <strong> {{$todos->Colaboracion->Ciclo->vliteral}} </strong>.Que dins d'aquesta empresa, En/Na/N' <strong>{{$instructor->nombre}}</strong>, ha sigut l'instructor/a de les pràctiques
             formatives  de @if ($todos->Alumno->sexo === 'H')l'alumne esmentat @else d'alumna esmentada @endif. Que la seua participació com a instructor ha cobert la quantitat de {{$instructor->pivot->horas}} hores,

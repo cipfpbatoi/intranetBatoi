@@ -15,7 +15,7 @@
     <div class="container" style="width:95%">
         <p style="text-indent: 30px;text-align: justify">Que segons consta en el seu expedient, @if ($todos->Alumno->sexo === 'H') l'alumne @else l'alumna @endif <strong>{{$todos->Alumno->FullName}} </strong> 
             amb DNI núm. {{$todos->Alumno->dni}}, ha realitzat la Formació en Centres de Treball (FCT) del <strong>{{$todos->Colaboracion->Ciclo->Xtipo}}
-                {{$todos->Colaboracion->Ciclo->vliteral}} </strong> en l'empresa {{$todos->Colaboracion->Centro->Empresa->nombre}}, ubicada a {{$todos->Colaboracion->Centro->direccion}} de/d'
+                {{$todos->Colaboracion->Ciclo->vliteral}} </strong> en l'empresa {{$todos->Colaboracion->Centro->nombre}}, ubicada a {{$todos->Colaboracion->Centro->direccion}} de/d'
             {{$todos->Colaboracion->Centro->localidad}}, amb una duració total de {{$todos->horas}} hores, fetes
             entre {{$todos->desde}} i {{$todos->hasta}} i ha obtingut una qualifació d'APTE.</p>
     </div>
