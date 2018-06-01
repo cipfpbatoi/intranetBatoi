@@ -181,7 +181,7 @@ class Fct extends Model
     public function getProjecteAttribute(){
         return isset($this->calProyecto) ? $this->calProyecto == 0 ? 'Renuncia Avaluació' : $this->calProyecto : 'No Avaluat';
     }
-            
+           
     public function getXInstructorAttribute(){
         $nombre = '';
         foreach ($this->Instructores as $instructor){

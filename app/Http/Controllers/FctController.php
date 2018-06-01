@@ -304,6 +304,13 @@ class FctController extends IntranetController
         return back();
     }
     
+    public function empresa($id){
+       $fct = Fct::find($id);
+       $fct->insercion = $fct->insercion?0:1;
+       $fct->save();
+       return $this->redirect();
+    }
+    
    
 
 }

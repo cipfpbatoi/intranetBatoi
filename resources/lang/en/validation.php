@@ -245,7 +245,7 @@ return [
                ,'justificacion' =>'Justification'
                ,'centros' =>'Work places'
                ,'Ncentros' =>'Name'
-               
+               ,'Resempresa' => 'Inserció'
              ),
        'empty_option' => array(
            'default' =>'Select'

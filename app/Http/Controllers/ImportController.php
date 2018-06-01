@@ -269,7 +269,6 @@ class ImportController extends Seeder
                 $this->crea_modulosCiclos();
                 break;
         }
-        $this->crea_modulosCiclos();
     }
     
     private function crea_modulosCiclos()

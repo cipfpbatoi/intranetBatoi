@@ -183,8 +183,19 @@ class Grupo extends Model
         }    
         return $aprob;
     }
+    public function getColocadosAttribute(){
+        $todos = $this->Alumnos;
+        $aprob = 0;
+        foreach ($todos as $uno){
+            if (isset($uno->Fct->insercion) && ($uno->Fct->insercion))  $aprob++; 
+        }    
+        return $aprob;
+    }
     public function getResfctAttribute(){
         return $this->AprobFct." de $this->AvalFct";
+    }
+    public function getResempresaAttribute(){
+        return $this->Colocados." de $this->AprobFct";
     }
     public function getResproAttribute(){
         return $this->AprobPro." de $this->AvalPro";

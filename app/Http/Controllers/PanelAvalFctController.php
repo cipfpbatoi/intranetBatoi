@@ -57,6 +57,11 @@ class PanelAvalFctController extends BaseController
             $this->panel->setBoton('grid', new BotonImg('fct.nuevoProyecto', ['img' => 'fa-toggle-on', 'roles' => config('constants.rol.tutor'),
                 'where' => [ 'calProyecto', '<', '5', 'calProyecto','>=',0,'actas', '==', 2]]));
         }
+        $this->panel->setBoton('grid', new BotonImg('fct.empresa', ['img' => 'fa-square-o', 'roles' => config('constants.rol.tutor'),
+                'where' => [ 'insercion', '==', '0']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.empresa', ['img' => 'fa-check-square-o', 'roles' => config('constants.rol.tutor'),
+                'where' => [ 'insercion', '==', '1']]));
+        
         $this->panel->setBoton('grid', new BotonImg('fct.show'));
     }
     

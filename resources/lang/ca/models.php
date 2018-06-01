@@ -287,7 +287,8 @@ return array(
             'pr0402' => 'Imprimeix PR04-02 (Entrevista Alumne)',
             'pr0401' => 'Imprimeix PR04-01 (Entrevista Instructor)',
             'list' => 'Acta Grupo :quien',
-            'acta' => 'Demanar acta d\'avaluació'
+            'acta' => 'Demanar acta d\'avaluació',
+            'empresa' => "Inserció laboral",
         ),
         'Direccion' => array(
            'acta' => 'Acta completada' 

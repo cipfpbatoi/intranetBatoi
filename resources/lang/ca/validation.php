@@ -253,6 +253,7 @@ return array(
                 'Matriculados' => 'Matriculats',
                 'Resfct' => 'Fct',
                 'Respro' => 'Projecte',
+                'Resempresa' => 'Inserció',
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

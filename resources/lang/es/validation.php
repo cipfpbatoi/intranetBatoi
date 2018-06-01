@@ -248,7 +248,8 @@ return array(
                 'justificacion' => 'Justificación',
                 'centros' => 'Centros de Trabajo',
                 'Ncentros' => 'Número',
-                'profesor' => 'Profesor'
+                'profesor' => 'Profesor',
+                'Resempresa' => 'Inserción',
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

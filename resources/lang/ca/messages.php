@@ -61,7 +61,8 @@ return array(
         'empty' => 'No hi han registres',
         'change' => 'Tornar al meu Usuari',
         'completa' => 'Vore les dades completes',
-        'simplifica' => 'Vore les últimes dades'
+        'simplifica' => 'Vore les últimes dades',
+        'resempresa' => 'Inserció laboral',
         
      ),
     'buttons' => array(
