@@ -14,7 +14,6 @@ class AlterEmpresasTable2 extends Migration
     public function up()
     {
         Schema::table('empresas',function (Blueprint $table){
-            $table->dropUnique('concierto');
             $table->integer('concierto')->nullable()->change();
         });
     }
