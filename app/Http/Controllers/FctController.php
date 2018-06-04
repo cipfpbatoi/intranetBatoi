@@ -161,7 +161,7 @@ class FctController extends IntranetController
 
     public function pdf($id)
     {
-        $fct = $this->class::findOrFail($id);
+        $fct = Fct::findOrFail($id);
         $secretario = Profesor::find(config('constants.contacto.secretario'));
         $director = Profesor::find(config('constants.contacto.director'));
         $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
@@ -173,6 +173,12 @@ class FctController extends IntranetController
             'director' => $director->FullName
         ];
         $pdf = $this->hazPdf('pdf.fct.fct', $fct, $dades);
+        $fct->impresa = 
+        foreach ($fct->Instructores as $instructor){
+            $instructor->certificado = $fct->periode;
+            $instructor->save();
+        }
+        //$fct->Instructores->update(['certificado' => $fct->periode]);
         return $pdf->stream();
     }
 

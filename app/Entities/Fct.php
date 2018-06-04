@@ -62,7 +62,7 @@ class Fct extends Model
 //    }
     public function Instructores()
     {
-        return $this->belongsToMany(Instructor::class,'instructor_fcts', 'idFct', 'idInstructor','id','dni')->withPivot('horas');
+        return $this->belongsToMany(Instructor::class,'instructor_fcts', 'idFct', 'idInstructor','id','dni')->withPivot('horas','certificado');
     }
     
     public function scopeCentro($query, $centro)
