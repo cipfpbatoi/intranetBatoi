@@ -15,7 +15,7 @@ class AlterRestricciones extends Migration
     {
         
          Schema::table('fcts', function (Blueprint $table) {
-            //$table->dropForeign('fcts_idcolaboracion_foreign');
+            $table->dropForeign('fcts_idcolaboracion_foreign');
             $table->foreign('idColaboracion')->references('id')->on('colaboraciones')->onUpdate('cascade')->onDelete('cascade');
          });
     }
