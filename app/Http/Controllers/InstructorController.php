@@ -26,7 +26,7 @@ class InstructorController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'Instructor';
     protected $titulo = [];
-    protected $gridFields = ['dni', 'nombre','email','XNcentros', 'Xcentros','telefono'];
+    protected $gridFields = ['dni', 'nombre','email','Nfcts','XNcentros', 'Xcentros','telefono'];
     protected $modal = true;
     
     public function iniBotones()
