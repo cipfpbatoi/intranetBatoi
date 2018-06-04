@@ -14,8 +14,8 @@ class CreateModulociclosTable extends Migration
     public function up()
     {
         Schema::create('modulo_ciclos', function (Blueprint $table) {
-            $table->charset = 'utf8';
-            $table->collation = 'utf8_unicode_ci';
+//            $table->charset = 'utf8';
+//            $table->collation = 'utf8_unicode_ci';
             $table->increments('id');
             $table->string('idModulo',6);
             $table->integer('idCiclo')->unsigned();
