@@ -173,7 +173,6 @@ class FctController extends IntranetController
             'director' => $director->FullName
         ];
         $pdf = $this->hazPdf('pdf.fct.fct', $fct, $dades);
-        $fct->impresa = 
         foreach ($fct->Instructores as $instructor){
             $instructor->certificado = $fct->periode;
             $instructor->save();
