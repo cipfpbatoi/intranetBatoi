@@ -18,7 +18,7 @@ class CreateModulociclosTable extends Migration
             $table->collation = 'utf8_unicode_ci';
             $table->increments('id');
             $table->string('idModulo',6);
-            $table->integer('idCiclo');
+            $table->integer('idCiclo')->unsigned();
             $table->string('curso',1);
             $table->string('enlace',200)->nullable();
             $table->foreign('idCiclo')->references('id')->on('ciclos')
