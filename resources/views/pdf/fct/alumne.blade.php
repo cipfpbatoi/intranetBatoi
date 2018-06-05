@@ -1,3 +1,5 @@
+@extends('layouts.pdf')
+@section('content')
 <div class="page" style="font-size:large;line-height: 2em">
     @include('pdf.partials.cabecera')
     <br/>
@@ -43,4 +45,4 @@
         </div>
     </div>
 </div>
-
+@endsection

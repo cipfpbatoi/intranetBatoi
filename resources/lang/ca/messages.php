@@ -232,7 +232,7 @@ return array(
         'Horarios' => 'Llistat Horaris',
         'Birret' => 'Oblit Birret',
         'Authbirret' => 'Autoritzar Birret',
-        'Instructor' => 'Vore Instructors',
+        'Instructor' => 'Certificat Instructors',
         'Empresasc' => "Reserva d'empreses",
         'Avaluar' => "Avaluar Fcts",
         'Infdpto' => 'Informes Departament',

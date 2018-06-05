@@ -9,6 +9,8 @@ use Intranet\Entities\Centro;
 use Intranet\Entities\Centro_instructor;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Empresa;
+use Intranet\Entities\Fct;
+use Intranet\Entities\Profesor;
 use Response;
 use Exception;
 use DB;
@@ -18,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonImg;
+use Jenssegers\Date\Date;
 
 
 class InstructorController extends IntranetController
@@ -26,13 +29,28 @@ class InstructorController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'Instructor';
     protected $titulo = [];
-    protected $gridFields = ['dni', 'nombre','email','Nfcts','XNcentros', 'Xcentros','telefono'];
+    protected $gridFields = ['dni', 'nombre','email','Nfcts', 'Xcentros','telefono'];
     protected $modal = true;
+    
+    use traitImprimir;
     
     public function iniBotones()
     {
-        $this->panel->setBoton('grid', new BotonImg('instructor.delete',['roles' => config('constants.rol.direccion')]));
+        $this->panel->setBoton('grid', new BotonImg('instructor.edit'));
         $this->panel->setBoton('grid', new BotonImg('instructor.show'));
+        $this->panel->setBoton('grid', new BotonImg('instructor.pdf'));
+    }
+    
+    public function search()
+    {
+        $fcts = Fct::misFcts()->get();
+        $instructores = [];
+        foreach ($fcts as $fct){
+            foreach ($fct->Instructores as $instructor){
+                $instructores[] = $instructor->dni;
+            }
+        }    
+        return Instructor::whereIn('dni',$instructores)->get();
     }
     
     public function show($id)
@@ -163,6 +181,46 @@ class InstructorController extends IntranetController
         }
         Session::put('pestana',2);
         return redirect()->action('EmpresaController@show', ['id' => Centro::find($idCentro)->idEmpresa]);
+    }
+    
+    public function pdf($id)
+    {
+        $instructor = Instructor::findOrFail($id);
+        $fcts = $instructor->Fcts;
+        $fecha = $this->ultima_fecha($fcts);
+        $secretario = Profesor::find(config('constants.contacto.secretario'));
+        $director = Profesor::find(config('constants.contacto.director'));
+        $dades = ['date' => FechaString($fecha,'ca'),
+            'fecha' => FechaString($fecha,'es'),
+            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
+            'secretario' => $secretario->FullName,
+            'centro' => config('constants.contacto.nombre'),
+            'poblacion' => config('constants.contacto.poblacion'),
+            'provincia' => config('constants.contacto.provincia'),
+            'director' => $director->FullName,
+            'instructor' => $instructor
+        ];
+        
+        if ($fcts->count()==1)
+            $pdf = $this->hazPdf('pdf.fct.instructor', $fcts->first(), $dades);
+        else
+        {
+            $centros = [];
+            foreach ($fcts as $fct){
+                if (!in_array($fct->Colaboracion->idCentro, $centros))
+                    $centros[] = $fct->Colaboracion->idCentro;
+            }
+            $pdf = $this->hazPdf('pdf.fct.instructors', $centros, $dades);
+        }
+        return $pdf->stream();
+    }
+    private function ultima_fecha($fcts)
+    {
+        $posterior = new Date();
+        foreach ($fcts as $fct){
+            $posterior = FechaPosterior($fct->hasta, $posterior);
+        }
+        return $posterior;
     }
 
 

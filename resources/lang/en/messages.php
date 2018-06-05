@@ -228,7 +228,7 @@ return array(
         'Horarios' => 'List of timetables',
         'Birret' => 'Forgotten cap',
         'Authbirret' => 'Authorise cap',
-        'Instructor' => 'See instructions',
+        'Instructor' => 'Instructor Certificates',
         'Empresasc' => 'Book companies',
         'Avaluar' => "Eval FCTs",
         'Infdpto' => 'Departament Report',

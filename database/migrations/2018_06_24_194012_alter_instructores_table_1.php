@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AlterInstructoresfctTable extends Migration
+class AlterInstructoresTable1 extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AlterInstructoresfctTable extends Migration
      */
     public function up()
     {
-        Schema::table('instructor_fcts',function (Blueprint $table){
-            $table->tinyInteger('certificado')->default(0);
+        Schema::table('instructores',function (Blueprint $table){
+            $table->string('surfname',60)->default('');
+            $table->renameColumn('nombre','name');
        });
     }
 
@@ -25,8 +26,9 @@ class AlterInstructoresfctTable extends Migration
      */
     public function down()
     {
-        Schema::table('instructor_fcts',function (Blueprint $table){
-            $table->dropColumn('certificado');
+        Schema::table('instructores',function (Blueprint $table){
+            $table->dropColumn('surnames');
+            $table->renameColumn('name','nombre');
         });
     }
 }

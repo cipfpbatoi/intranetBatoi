@@ -172,12 +172,8 @@ class FctController extends IntranetController
             'provincia' => config('constants.contacto.provincia'),
             'director' => $director->FullName
         ];
-        $pdf = $this->hazPdf('pdf.fct.fct', $fct, $dades);
-        foreach ($fct->Instructores as $instructor){
-            $instructor->certificado = $fct->periode;
-            $instructor->save();
-        }
-        //$fct->Instructores->update(['certificado' => $fct->periode]);
+        
+        $pdf = $this->hazPdf('pdf.fct.alumne', $fct, $dades);
         return $pdf->stream();
     }
 

@@ -219,7 +219,7 @@ Route::post('/instructor/{centro}/create', ['as' => 'instructor.store', 'uses' =
 Route::get('/instructor/{id}/delete/{centro}', ['as' => 'instructor.destroy', 'uses' => 'InstructorController@delete']);
 Route::get('/instructor/{id}/copy/{centro}', ['as' => 'instructor.editcopy', 'uses' => 'InstructorController@copy']);
 Route::post('/instructor/{id}/copy/{centro}', ['as' => 'instructor.copy', 'uses' => 'InstructorController@toCopy']);
-Route::get('/granInstructor/', ['as' => 'instructor.gran', 'uses' => 'PanelGranInstructorController@index']);
+Route::get('/instructor/{instructor}/pdf', ['as' => 'instructor.pdf', 'uses' => 'InstructorController@pdf']);
 
 //    Route::get('/fct/{alumno}/asigna', ['as' => 'fct.asigna', 'uses' => 'FctController@asigna']);
 //    Route::post('/fct/{alumno}/asigna', ['as' => 'fct.store', 'uses' => 'FctController@store']);

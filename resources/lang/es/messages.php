@@ -229,7 +229,7 @@ return array(
         'Horarios' => 'Listado Horarios',
         'Birret' => 'Olvido Birret',
         'Authbirret' => 'Autorizar Birret',
-        'Instructor' => 'Ver Instructores',
+        'Instructor' => 'Certificado Instructores',
         'Empresasc' => "Reserva de empresas",
         'Avaluar' => "Evaluar Fcts",
         'Infdpto' => 'Informes Departamento',

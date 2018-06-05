@@ -14,16 +14,18 @@ class Instructor extends Model
     protected $table = 'instructores';
     protected $primaryKey = 'dni';
     protected $keyType = 'string';
-    protected $fillable = ['dni', 'email', 'nombre','telefono','departamento'];
+    protected $fillable = ['dni', 'email', 'name','surnames','telefono','departamento'];
     protected $rules = [
-        'dni' => 'max:10',
-        'nombre' => 'required|max:60',
-        'email' => 'email|max:60',
+        'dni' => 'required|max:10',
+        'name' => 'required|max:60',
+        'surnames' => 'required|max:60',
+        'email' => 'required|email|max:60',
         'telefono' => 'max:20'
     ];
     protected $inputTypes = [
         'dni' => ['type' => 'card'],
-        'nombre' => ['type' => 'name'],
+        'name' => ['type' => 'name'],
+        'surnames' => ['type' => 'name'],
         'email' => ['type' => 'email'],
         'telefono' => ['type' => 'number']
     ];
@@ -41,7 +43,7 @@ class Instructor extends Model
     }
     public function Fcts()
     {
-        return $this->belongsToMany(Fct::class,'instructor_fcts', 'idInstructor', 'idFct', 'dni','id');
+        return $this->belongsToMany(Fct::class,'instructor_fcts', 'idInstructor', 'idFct', 'dni','id')->withPivot('horas');
     }
     public function getXcentrosAttribute()
     {
@@ -58,5 +60,9 @@ class Instructor extends Model
     public function getNfctsAttribute()
     {
         return $this->Fcts->count();
+    }
+    public function getNombreAttribute()
+    {
+        return ucwords(mb_strtolower($this->name . ' ' . $this->surnames,'UTF-8'));
     }
 }
