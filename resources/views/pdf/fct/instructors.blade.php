@@ -21,7 +21,6 @@
         </p>
         <ul style="font-size: normal;line-height: 1.5em">
             @foreach ($datosInforme['instructor']->Fcts->groupBy('idColaboracion') as $ciclos)
-                
                 @php $som = 0; @endphp
                 @foreach ($ciclos as $fct)
                     @if ($fct->Colaboracion->idCentro == $centro)

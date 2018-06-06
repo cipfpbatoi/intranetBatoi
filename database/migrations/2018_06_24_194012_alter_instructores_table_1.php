@@ -14,7 +14,7 @@ class AlterInstructoresTable1 extends Migration
     public function up()
     {
         Schema::table('instructores',function (Blueprint $table){
-            $table->string('surfname',60)->default('');
+            $table->string('surnames',60)->default('');
             $table->renameColumn('nombre','name');
        });
     }

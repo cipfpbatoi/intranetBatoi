@@ -24,7 +24,7 @@ Route::get('/profesor/{idProfesor}/change',['as' =>'profesor.change','uses' => '
 
 Route::get('/fcts', ['as' => 'fct.admin.index', 'uses' => 'PanelFctController@index']);
 Route::get('/instructor/ini',['as' => 'instructor.ini','uses'=>'InstructorController@load']);
-//Route::get('/tmp/dia',['as' => 'tmp','uses'=>'DocumentoController@tmpInstructores']);
+Route::get('/tmp/dia',['as' => 'tmp','uses'=>'AdministracionController@tmpInstructores']);
 Route::get('/nuevoCurso',['as' => 'curso.nuevo.index', 'uses' => 'AdministracionController@nuevoCursoIndex']);
 Route::post('/nuevoCurso',['as' => 'curso.nuevo', 'uses' => 'AdministracionController@nuevoCurso']);
 
