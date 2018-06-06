@@ -53,7 +53,7 @@ class Comision extends Model
     protected $rules = [
         'servicio' => 'required',
         'kilometraje' => 'required|integer',
-        'desde' => 'required|date',
+        'desde' => 'required|date|after:tomorrow',
         'hasta' => 'required|date|after:desde',
         'alojamiento' => 'required|numeric',
         'comida' => 'required|numeric',
