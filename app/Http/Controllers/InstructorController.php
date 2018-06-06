@@ -186,33 +186,40 @@ class InstructorController extends IntranetController
     public function pdf($id)
     {
         $instructor = Instructor::findOrFail($id);
-        $fcts = $instructor->Fcts;
-        $fecha = $this->ultima_fecha($fcts);
-        $secretario = Profesor::find(config('constants.contacto.secretario'));
-        $director = Profesor::find(config('constants.contacto.director'));
-        $dades = ['date' => FechaString($fecha,'ca'),
-            'fecha' => FechaString($fecha,'es'),
-            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
-            'secretario' => $secretario->FullName,
-            'centro' => config('constants.contacto.nombre'),
-            'poblacion' => config('constants.contacto.poblacion'),
-            'provincia' => config('constants.contacto.provincia'),
-            'director' => $director->FullName,
-            'instructor' => $instructor
-        ];
-        
-        if ($fcts->count()==1)
-            $pdf = $this->hazPdf('pdf.fct.instructor', $fcts->first(), $dades);
+        if ($instructor->surnames != ''){
+            $fcts = $instructor->Fcts;
+            $fecha = $this->ultima_fecha($fcts);
+            $secretario = Profesor::find(config('constants.contacto.secretario'));
+            $director = Profesor::find(config('constants.contacto.director'));
+            $dades = ['date' => FechaString($fecha,'ca'),
+                'fecha' => FechaString($fecha,'es'),
+                'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
+                'secretario' => $secretario->FullName,
+                'centro' => config('constants.contacto.nombre'),
+                'poblacion' => config('constants.contacto.poblacion'),
+                'provincia' => config('constants.contacto.provincia'),
+                'director' => $director->FullName,
+                'instructor' => $instructor
+            ];
+            if ($fcts->count()==1)
+                $pdf = $this->hazPdf('pdf.fct.instructor', $fcts->first(), $dades);
+            else
+            {
+                $centros = [];
+                foreach ($fcts as $fct){
+                    if (!in_array($fct->Colaboracion->idCentro, $centros))
+                        $centros[] = $fct->Colaboracion->idCentro;
+                }
+                $pdf = $this->hazPdf('pdf.fct.instructors', $centros, $dades);
+            }
+            return $pdf->stream();
+        }
         else
         {
-            $centros = [];
-            foreach ($fcts as $fct){
-                if (!in_array($fct->Colaboracion->idCentro, $centros))
-                    $centros[] = $fct->Colaboracion->idCentro;
-            }
-            $pdf = $this->hazPdf('pdf.fct.instructors', $centros, $dades);
+            Alert::danger("Completa les dades de l'instructor");
+            return redirect("/instructor");   
         }
-        return $pdf->stream();
+        
     }
     private function ultima_fecha($fcts)
     {
