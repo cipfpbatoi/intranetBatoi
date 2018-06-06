@@ -40,23 +40,12 @@ class AdministracionController extends Controller{
         return back();
     }
     protected function tmpInstructores(){
-        $instructores = \Intranet\Entities\Instructor::all();
-        foreach ($instructores as $instructor){
-            $todos = explode(' ',$instructor->name);
-            switch (count($todos)){
-                case 1: break;
-                case 2: $instructor->name = $todos[0];
-                    $instructor->surnames = $todos[1];
-                    break;
-                case 3: $instructor->name = $todos[0];
-                     $instructor->surnames = $todos[1].' '.$todos[2];
-                    break; 
-                default:$instructor->name = $todos[0].' '.$todos[1];
-                    for($i=2;$i<count($todos);$i++)
-                     $instructor->surnames .= $todos[$i].' ';
-                     break;
+        $instructores = \Intranet\Entities\Centro_instructor::all();
+        foreach ($cis as $ci){
+            if (!\Intranet\Entities\Instructor::find($ci->idInstructor))
+            {
+                echo ($ci->Idnstructor);
             }
-            $instructor->save();
         }
     }
 //    protected function deleteProgramacion(){
