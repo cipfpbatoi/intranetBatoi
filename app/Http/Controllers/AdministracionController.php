@@ -40,7 +40,7 @@ class AdministracionController extends Controller{
         return back();
     }
     protected function tmpInstructores(){
-        $instructores = \Intranet\Entities\Centro_instructor::all();
+        $cis= \Intranet\Entities\Centro_instructor::all();
         foreach ($cis as $ci){
             if (!\Intranet\Entities\Instructor::find($ci->idInstructor))
             {
