@@ -44,7 +44,7 @@ class AdministracionController extends Controller{
         foreach ($cis as $ci){
             if (!\Intranet\Entities\Instructor::find($ci->idInstructor))
             {
-                echo ($ci->Idnstructor);
+                echo ($ci->idInstructor);
             }
         }
     }
