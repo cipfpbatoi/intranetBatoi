@@ -65,9 +65,10 @@ class Instructor extends Model
     {
         $tutors = [];
         foreach ($this->Fcts as $fct){
-            if (!in_array($fct->Alumno->Grupo->first()->Tutor->dni, $tutors)
-                &&(AuthUser()->dni != $fct->Alumno->Grupo->first()->Tutor->dni))    
-                    $tutors[] = $fct->Alumno->Grupo->first()->Tutor->dni;
+            $dni = isset($fct->Alumno->Grupo->first()->Tutor->dni)?$fct->Alumno->Grupo->first()->Tutor->dni: AuthUser()->dni;
+            if (!in_array($dni, $tutors)
+                &&(AuthUser()->dni != $dni))    
+                    $tutors[] = $dni;
         }
         $todos = '';
         foreach ($tutors as $tutor){
