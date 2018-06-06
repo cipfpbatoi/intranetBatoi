@@ -126,6 +126,7 @@ return array(
 		'password' => 'contrasenya',
                 'name' => 'Nom',
                 'nombre' => 'Nom',
+                'surnames' => 'Cognoms',
                 'fecha' => 'Data',
                 'created_at' => "Data d'Alta",
                 'hini' => "Hora d'inici",
@@ -254,6 +255,9 @@ return array(
                 'Resfct' => 'Fct',
                 'Respro' => 'Projecte',
                 'Resempresa' => 'Inserció',
+                'Nfcts' => 'Fcts',
+                'TutoresFct' => 'Altres tutors'
+                
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

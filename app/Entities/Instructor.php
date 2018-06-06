@@ -61,6 +61,21 @@ class Instructor extends Model
     {
         return $this->Fcts->count();
     }
+    public function getTutoresFctAttribute()
+    {
+        $tutors = [];
+        foreach ($this->Fcts as $fct){
+            if (!in_array($fct->Alumno->Grupo->first()->Tutor->dni, $tutors)
+                &&(AuthUser()->dni != $fct->Alumno->Grupo->first()->Tutor->dni))    
+                    $tutors[] = $fct->Alumno->Grupo->first()->Tutor->dni;
+        }
+        $todos = '';
+        foreach ($tutors as $tutor){
+            $todos .= '- '.Profesor::find($tutor)->ShortName.' -';
+        }
+        return $todos;
+    }
+    
     public function getNombreAttribute()
     {
         return ucwords(mb_strtolower($this->name . ' ' . $this->surnames,'UTF-8'));

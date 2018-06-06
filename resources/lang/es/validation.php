@@ -126,6 +126,7 @@ return array(
 		'password' => 'contraseña',
                 'name' => 'Nombre',
                 'nombre' => 'Nombre',
+                'surnames' => 'Apellidos',
                 'fecha' => 'Fecha',
                 'created_at' => 'Fecha de Alta',
                 'hini' => 'Hora de inicio',
@@ -250,6 +251,8 @@ return array(
                 'Ncentros' => 'Número',
                 'profesor' => 'Profesor',
                 'Resempresa' => 'Inserción',
+                'NFcts' => 'Fcts',
+                'TutoresFct' => 'Otros tutores'
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

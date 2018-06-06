@@ -123,6 +123,7 @@ return [
 		'password' =>'password'
                ,'name' =>'name'
                ,'nombre' =>'Name'
+               ,'surnames' => 'Surnames'
                ,'fecha' =>'Date'
                ,'created_at' =>'Entry Date'
                ,'hini' =>'Starting time'
@@ -246,6 +247,8 @@ return [
                ,'centros' =>'Work places'
                ,'Ncentros' =>'Name'
                ,'Resempresa' => 'Inserció'
+               ,'Nfcts' => 'Fcts',
+               'TutoresFct' => 'Others tutors'
              ),
        'empty_option' => array(
            'default' =>'Select'

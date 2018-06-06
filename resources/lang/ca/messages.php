@@ -63,7 +63,6 @@ return array(
         'completa' => 'Vore les dades completes',
         'simplifica' => 'Vore les últimes dades',
         'resempresa' => 'Inserció laboral',
-        
      ),
     'buttons' => array(
         'edit' => 'Editar',

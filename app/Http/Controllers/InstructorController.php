@@ -29,7 +29,7 @@ class InstructorController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'Instructor';
     protected $titulo = [];
-    protected $gridFields = ['dni', 'nombre','email','Nfcts', 'Xcentros','telefono'];
+    protected $gridFields = ['dni', 'nombre','email','Nfcts', 'TutoresFct','Xcentros','telefono'];
     protected $modal = true;
     
     use traitImprimir;
