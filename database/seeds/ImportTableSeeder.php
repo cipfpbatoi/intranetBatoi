@@ -76,6 +76,18 @@ class ImportTableSeeder extends Seeder
                 'departamento' => '99',
                 'api_token' => 'aleatorio,60'
             )),
+        array('nombrexml'=> 'contenidos',
+            'nombreclase'=> 'Modulo',
+            'id' => 'codigo',
+            'update' => array(
+                'cliteral' => 'nombre_cas',
+                'vliteral' => 'nombre_val',
+            ),
+            'create' => array(
+                'codigo' => 'codigo',
+                'ciclo' => '99',
+                'departamento' => '99',
+            )),
         array('nombrexml' => 'grupos',
             'nombreclase' => 'Grupo',
             'id' => 'codigo',
