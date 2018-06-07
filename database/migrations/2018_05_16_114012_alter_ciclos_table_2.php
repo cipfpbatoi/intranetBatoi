@@ -27,7 +27,7 @@ class AlterCiclosTable2 extends Migration
     public function down()
     {
         Schema::table('ciclos',function (Blueprint $table){
-            $table->dropColumn('viliteral');
+            $table->dropColumn('vliteral');
             $table->dropColumn('cliteral');
         });
     }
