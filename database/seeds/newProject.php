@@ -9,7 +9,7 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\TipoIncidencia;
 use Intranet\Entities\Profesor;
 
-class CreateModulosCiclos extends Seeder
+class newProject extends Seeder
 {
 
 public function run()
