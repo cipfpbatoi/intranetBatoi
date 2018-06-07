@@ -19,9 +19,9 @@ class CreateTableMenu extends Migration
             $table->string('url',100)->nullable();
             $table->string('class',30)->nullable();
             $table->tinyInteger('rol');
-            $table->string('menu',15);
+            $table->string('menu',15)->default('general');
             $table->string('submenu',15)->nullable();
-            $table->boolean('activo')->default(true);
+            $table->boolean('activo')->default(1);
         });
     }
 
