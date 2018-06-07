@@ -38,7 +38,7 @@ class newProject extends Seeder
             'created_at' => NULL,
             'updated_at' => NULL,
             'last_logged' => NULL,
-            'activo' => NULL,
+            'activo' => 1,
             'idioma' => 'ca',
             'api_token' => '',
             'mostrar' => 0,
