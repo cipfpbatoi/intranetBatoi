@@ -30,12 +30,12 @@ class Menu extends Model
         
     ];
 
-    public function __construct()
-    {
-        //$this->menu = 'general';
-        //$this->activo = 1;
-        //$this->orden = Menu::select('orden')->orderby('orden','DESC')->first()->orden + 1;
-    }
+//    public function __construct()
+//    {
+//        //$this->menu = 'general';
+//        //$this->activo = 1;
+//        //$this->orden = Menu::select('orden')->orderby('orden','DESC')->first()->orden + 1;
+//    }
 
     private static function tipoUrl($url)
     {
