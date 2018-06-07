@@ -11,9 +11,160 @@ use Intranet\Entities\Profesor;
 
 class newProject extends Seeder
 {
+
     public function run()
     {
-               Menu::create([
+        Departamento::create([
+            'id' => 1,
+            'cliteral' => 'INGLES',
+            'vliteral' => 'ANGLES',
+            'depcurt' => 'Ang'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 2,
+            'cliteral' => 'SERVICIOS A LA COMUNIDAD',
+            'vliteral' => 'SEVEIS A LA COMUNITAT',
+            'depcurt' => 'SCo'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 3,
+            'cliteral' => 'IMAGEN PERSONAL',
+            'vliteral' => 'IMATGE PERSONAL',
+            'depcurt' => 'Img'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 4,
+            'cliteral' => 'PROGRAMAS DE GARANTIA SOCIAL',
+            'vliteral' => 'PROGRAMES DE GARANTIA SOCIAL',
+            'depcurt' => 'Pgs'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 5,
+            'cliteral' => 'DEPARTAMENTO ADMINISTRATIVO',
+            'vliteral' => 'DEPARTAMENT ADMINISTRACIÓ',
+            'depcurt' => 'Adm'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 6,
+            'cliteral' => 'DEPARTAMENTO SANITARIO',
+            'vliteral' => 'DEPARTAMENT SANITARI',
+            'depcurt' => 'San'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 9,
+            'cliteral' => 'EXTENSION CULTURAL',
+            'vliteral' => 'EXTENSIO CULTURAL',
+            'depcurt' => 'Cul'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 10,
+            'cliteral' => 'HOSTELERIA Y TURISMO',
+            'vliteral' => 'HOSTELERIA I TURISME',
+            'depcurt' => 'Hos'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 12,
+            'cliteral' => 'FORMACION Y ORIENTACION LABORA',
+            'vliteral' => 'FORMACIO I ORIENTACIO LABORAL',
+            'depcurt' => 'Fol'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 14,
+            'cliteral' => 'FRANCES',
+            'vliteral' => 'FRANCES',
+            'depcurt' => 'Fra'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 18,
+            'cliteral' => 'ORIENTACION',
+            'vliteral' => 'ORIENTACIO',
+            'depcurt' => 'Ori'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 22,
+            'cliteral' => 'CICLOS FORMATIVOS',
+            'vliteral' => 'CICLES FORMATIUS',
+            'depcurt' => 'Cf'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 23,
+            'cliteral' => 'FCT',
+            'vliteral' => 'FCT',
+            'depcurt' => 'Fct'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 24,
+            'cliteral' => 'DEPARTAMENTO INFORMATICA',
+            'vliteral' => 'DEPARTAMENT INFORMÀTICA',
+            'depcurt' => 'Inf'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 90,
+            'cliteral' => 'Personal No Docente',
+            'vliteral' => 'Personal No Docent',
+            'depcurt' => 'PND'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 91,
+            'cliteral' => 'Personal Limpieza',
+            'vliteral' => 'Personal Neteja',
+            'depcurt' => 'NET'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 99,
+            'cliteral' => 'Desconegut',
+            'vliteral' => 'Desconegut',
+            'depcurt' => '???'
+        ]);
+        Menu::create([
             'id' => 1,
             'nombre' => 'perfil',
             'url' => '/perfil',
@@ -1619,7 +1770,7 @@ class newProject extends Seeder
             'nombre' => 'otras',
             'nom' => 'altres'
         ]);
-        
+
         Profesor::create([
             'dni' => '099999999Z',
             'codigo' => '9999',
@@ -1628,7 +1779,7 @@ class newProject extends Seeder
             'apellido2' => '',
             'password' => 'MU8kVSFXbWf12',
             'emailItaca' => 'admin@intranet.my',
-            'email' =>  'admin@intranet.my',
+            'email' => 'admin@intranet.my',
             'domicilio' => '',
             'movil1' => '',
             'movil2' => '',
@@ -1810,159 +1961,6 @@ class newProject extends Seeder
             'hora_ini' => '21:40',
             'hora_fin' => '22:35'
         ]);
-        
-        Departamento::create([
-            'id' => 1,
-            'cliteral' => 'INGLES',
-            'vliteral' => 'ANGLES',
-            'depcurt' => 'Ang'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 2,
-            'cliteral' => 'SERVICIOS A LA COMUNIDAD',
-            'vliteral' => 'SEVEIS A LA COMUNITAT',
-            'depcurt' => 'SCo'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 3,
-            'cliteral' => 'IMAGEN PERSONAL',
-            'vliteral' => 'IMATGE PERSONAL',
-            'depcurt' => 'Img'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 4,
-            'cliteral' => 'PROGRAMAS DE GARANTIA SOCIAL',
-            'vliteral' => 'PROGRAMES DE GARANTIA SOCIAL',
-            'depcurt' => 'Pgs'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 5,
-            'cliteral' => 'DEPARTAMENTO ADMINISTRATIVO',
-            'vliteral' => 'DEPARTAMENT ADMINISTRACIÓ',
-            'depcurt' => 'Adm'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 6,
-            'cliteral' => 'DEPARTAMENTO SANITARIO',
-            'vliteral' => 'DEPARTAMENT SANITARI',
-            'depcurt' => 'San'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 9,
-            'cliteral' => 'EXTENSION CULTURAL',
-            'vliteral' => 'EXTENSIO CULTURAL',
-            'depcurt' => 'Cul'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 10,
-            'cliteral' => 'HOSTELERIA Y TURISMO',
-            'vliteral' => 'HOSTELERIA I TURISME',
-            'depcurt' => 'Hos'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 12,
-            'cliteral' => 'FORMACION Y ORIENTACION LABORA',
-            'vliteral' => 'FORMACIO I ORIENTACIO LABORAL',
-            'depcurt' => 'Fol'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 14,
-            'cliteral' => 'FRANCES',
-            'vliteral' => 'FRANCES',
-            'depcurt' => 'Fra'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 18,
-            'cliteral' => 'ORIENTACION',
-            'vliteral' => 'ORIENTACIO',
-            'depcurt' => 'Ori'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 22,
-            'cliteral' => 'CICLOS FORMATIVOS',
-            'vliteral' => 'CICLES FORMATIUS',
-            'depcurt' => 'Cf'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 23,
-            'cliteral' => 'FCT',
-            'vliteral' => 'FCT',
-            'depcurt' => 'Fct'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 24,
-            'cliteral' => 'DEPARTAMENTO INFORMATICA',
-            'vliteral' => 'DEPARTAMENT INFORMÀTICA',
-            'depcurt' => 'Inf'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 90,
-            'cliteral' => 'Personal No Docente',
-            'vliteral' => 'Personal No Docent',
-            'depcurt' => 'PND'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 91,
-            'cliteral' => 'Personal Limpieza',
-            'vliteral' => 'Personal Neteja',
-            'depcurt' => 'NET'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 99,
-            'cliteral' => 'Desconegut',
-            'vliteral' => 'Desconegut',
-            'depcurt' => '???'
-        ]);
-        
- 
     }
 
 }
