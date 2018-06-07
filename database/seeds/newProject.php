@@ -13,347 +13,7 @@ class newProject extends Seeder
 {
     public function run()
     {
-        Profesor::create([
-            'dni' => '099999999Z',
-            'codigo' => '9999',
-            'nombre' => 'Admin',
-            'apellido1' => 'Administrador',
-            'apellido2' => '',
-            'password' => 'MU8kVSFXbWf12',
-            'emailItaca' => 'admin@intranet.my',
-            'email' =>  'admin@intranet.my',
-            'domicilio' => '',
-            'movil1' => '',
-            'movil2' => '',
-            'sexo' => '',
-            'codigo_postal' => '',
-            'departamento' => 1,
-            'fecha_ingreso' => NULL,
-            'fecha_nac' => NULL,
-            'fecha_baja' => NULL,
-            'fecha_ant' => NULL,
-            'sustituye_a' => NULL,
-            'foto' => NULL,
-            'rol' => '6',
-            'remember_token' => NULL,
-            'created_at' => NULL,
-            'updated_at' => NULL,
-            'last_logged' => NULL,
-            'activo' => 1,
-            'idioma' => 'ca',
-            'api_token' => '',
-            'mostrar' => 0,
-        ]);
-        Hora::create([
-            'codigo' => 1,
-            'turno' => 'mati',
-            'hora_ini' => '07:55',
-            'hora_fin' => '08:50'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 2,
-            'turno' => 'mati',
-            'hora_ini' => '08:50',
-            'hora_fin' => '09:45'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 3,
-            'turno' => 'mati',
-            'hora_ini' => '09:45',
-            'hora_fin' => '10:40'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 4,
-            'turno' => 'pati',
-            'hora_ini' => '10:40',
-            'hora_fin' => '11:00'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 5,
-            'turno' => 'mati',
-            'hora_ini' => '11:00',
-            'hora_fin' => '11:55'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 6,
-            'turno' => 'mati',
-            'hora_ini' => '11:55',
-            'hora_fin' => '12:50'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 7,
-            'turno' => 'mati',
-            'hora_ini' => '12:50',
-            'hora_fin' => '13:45'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 8,
-            'turno' => 'mati',
-            'hora_ini' => '13:45',
-            'hora_fin' => '14:40'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 9,
-            'turno' => 'migdia',
-            'hora_ini' => '14:40',
-            'hora_fin' => '14:55'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 10,
-            'turno' => 'vesprada',
-            'hora_ini' => '14:55',
-            'hora_fin' => '15:50'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 11,
-            'turno' => 'vesprada',
-            'hora_ini' => '15:50',
-            'hora_fin' => '16:45'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 12,
-            'turno' => 'vesprada',
-            'hora_ini' => '16:45',
-            'hora_fin' => '17:40'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 13,
-            'turno' => 'pati',
-            'hora_ini' => '17:40',
-            'hora_fin' => '18:00'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 14,
-            'turno' => 'vesprada',
-            'hora_ini' => '18:00',
-            'hora_fin' => '18:55'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 15,
-            'turno' => 'vesprada',
-            'hora_ini' => '18:55',
-            'hora_fin' => '19:50'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 16,
-            'turno' => 'vesprada',
-            'hora_ini' => '19:50',
-            'hora_fin' => '20:45'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 17,
-            'turno' => 'vesprada',
-            'hora_ini' => '20:45',
-            'hora_fin' => '21:40'
-        ]);
-
-
-
-        Hora::create([
-            'codigo' => 18,
-            'turno' => 'vesprada',
-            'hora_ini' => '21:40',
-            'hora_fin' => '22:35'
-        ]);
-        Departamento::create([
-            'id' => 1,
-            'cliteral' => 'INGLES',
-            'vliteral' => 'ANGLES',
-            'depcurt' => 'Ang'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 2,
-            'cliteral' => 'SERVICIOS A LA COMUNIDAD',
-            'vliteral' => 'SEVEIS A LA COMUNITAT',
-            'depcurt' => 'SCo'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 3,
-            'cliteral' => 'IMAGEN PERSONAL',
-            'vliteral' => 'IMATGE PERSONAL',
-            'depcurt' => 'Img'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 4,
-            'cliteral' => 'PROGRAMAS DE GARANTIA SOCIAL',
-            'vliteral' => 'PROGRAMES DE GARANTIA SOCIAL',
-            'depcurt' => 'Pgs'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 5,
-            'cliteral' => 'DEPARTAMENTO ADMINISTRATIVO',
-            'vliteral' => 'DEPARTAMENT ADMINISTRACIÓ',
-            'depcurt' => 'Adm'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 6,
-            'cliteral' => 'DEPARTAMENTO SANITARIO',
-            'vliteral' => 'DEPARTAMENT SANITARI',
-            'depcurt' => 'San'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 9,
-            'cliteral' => 'EXTENSION CULTURAL',
-            'vliteral' => 'EXTENSIO CULTURAL',
-            'depcurt' => 'Cul'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 10,
-            'cliteral' => 'HOSTELERIA Y TURISMO',
-            'vliteral' => 'HOSTELERIA I TURISME',
-            'depcurt' => 'Hos'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 12,
-            'cliteral' => 'FORMACION Y ORIENTACION LABORA',
-            'vliteral' => 'FORMACIO I ORIENTACIO LABORAL',
-            'depcurt' => 'Fol'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 14,
-            'cliteral' => 'FRANCES',
-            'vliteral' => 'FRANCES',
-            'depcurt' => 'Fra'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 18,
-            'cliteral' => 'ORIENTACION',
-            'vliteral' => 'ORIENTACIO',
-            'depcurt' => 'Ori'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 22,
-            'cliteral' => 'CICLOS FORMATIVOS',
-            'vliteral' => 'CICLES FORMATIUS',
-            'depcurt' => 'Cf'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 23,
-            'cliteral' => 'FCT',
-            'vliteral' => 'FCT',
-            'depcurt' => 'Fct'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 24,
-            'cliteral' => 'DEPARTAMENTO INFORMATICA',
-            'vliteral' => 'DEPARTAMENT INFORMÀTICA',
-            'depcurt' => 'Inf'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 90,
-            'cliteral' => 'Personal No Docente',
-            'vliteral' => 'Personal No Docent',
-            'depcurt' => 'PND'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 91,
-            'cliteral' => 'Personal Limpieza',
-            'vliteral' => 'Personal Neteja',
-            'depcurt' => 'NET'
-        ]);
-
-
-
-        Departamento::create([
-            'id' => 99,
-            'cliteral' => 'Desconegut',
-            'vliteral' => 'Desconegut',
-            'depcurt' => '???'
-        ]);
-        Menu::create([
+               Menu::create([
             'id' => 1,
             'nombre' => 'perfil',
             'url' => '/perfil',
@@ -1959,6 +1619,350 @@ class newProject extends Seeder
             'nombre' => 'otras',
             'nom' => 'altres'
         ]);
+        
+        Profesor::create([
+            'dni' => '099999999Z',
+            'codigo' => '9999',
+            'nombre' => 'Admin',
+            'apellido1' => 'Administrador',
+            'apellido2' => '',
+            'password' => 'MU8kVSFXbWf12',
+            'emailItaca' => 'admin@intranet.my',
+            'email' =>  'admin@intranet.my',
+            'domicilio' => '',
+            'movil1' => '',
+            'movil2' => '',
+            'sexo' => '',
+            'codigo_postal' => '',
+            'departamento' => 1,
+            'fecha_ingreso' => NULL,
+            'fecha_nac' => NULL,
+            'fecha_baja' => NULL,
+            'fecha_ant' => NULL,
+            'sustituye_a' => NULL,
+            'foto' => NULL,
+            'rol' => '6',
+            'remember_token' => NULL,
+            'created_at' => NULL,
+            'updated_at' => NULL,
+            'last_logged' => NULL,
+            'activo' => 1,
+            'idioma' => 'ca',
+            'api_token' => '',
+            'mostrar' => 0,
+        ]);
+        Hora::create([
+            'codigo' => 1,
+            'turno' => 'mati',
+            'hora_ini' => '07:55',
+            'hora_fin' => '08:50'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 2,
+            'turno' => 'mati',
+            'hora_ini' => '08:50',
+            'hora_fin' => '09:45'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 3,
+            'turno' => 'mati',
+            'hora_ini' => '09:45',
+            'hora_fin' => '10:40'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 4,
+            'turno' => 'pati',
+            'hora_ini' => '10:40',
+            'hora_fin' => '11:00'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 5,
+            'turno' => 'mati',
+            'hora_ini' => '11:00',
+            'hora_fin' => '11:55'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 6,
+            'turno' => 'mati',
+            'hora_ini' => '11:55',
+            'hora_fin' => '12:50'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 7,
+            'turno' => 'mati',
+            'hora_ini' => '12:50',
+            'hora_fin' => '13:45'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 8,
+            'turno' => 'mati',
+            'hora_ini' => '13:45',
+            'hora_fin' => '14:40'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 9,
+            'turno' => 'migdia',
+            'hora_ini' => '14:40',
+            'hora_fin' => '14:55'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 10,
+            'turno' => 'vesprada',
+            'hora_ini' => '14:55',
+            'hora_fin' => '15:50'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 11,
+            'turno' => 'vesprada',
+            'hora_ini' => '15:50',
+            'hora_fin' => '16:45'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 12,
+            'turno' => 'vesprada',
+            'hora_ini' => '16:45',
+            'hora_fin' => '17:40'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 13,
+            'turno' => 'pati',
+            'hora_ini' => '17:40',
+            'hora_fin' => '18:00'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 14,
+            'turno' => 'vesprada',
+            'hora_ini' => '18:00',
+            'hora_fin' => '18:55'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 15,
+            'turno' => 'vesprada',
+            'hora_ini' => '18:55',
+            'hora_fin' => '19:50'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 16,
+            'turno' => 'vesprada',
+            'hora_ini' => '19:50',
+            'hora_fin' => '20:45'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 17,
+            'turno' => 'vesprada',
+            'hora_ini' => '20:45',
+            'hora_fin' => '21:40'
+        ]);
+
+
+
+        Hora::create([
+            'codigo' => 18,
+            'turno' => 'vesprada',
+            'hora_ini' => '21:40',
+            'hora_fin' => '22:35'
+        ]);
+        
+        Departamento::create([
+            'id' => 1,
+            'cliteral' => 'INGLES',
+            'vliteral' => 'ANGLES',
+            'depcurt' => 'Ang'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 2,
+            'cliteral' => 'SERVICIOS A LA COMUNIDAD',
+            'vliteral' => 'SEVEIS A LA COMUNITAT',
+            'depcurt' => 'SCo'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 3,
+            'cliteral' => 'IMAGEN PERSONAL',
+            'vliteral' => 'IMATGE PERSONAL',
+            'depcurt' => 'Img'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 4,
+            'cliteral' => 'PROGRAMAS DE GARANTIA SOCIAL',
+            'vliteral' => 'PROGRAMES DE GARANTIA SOCIAL',
+            'depcurt' => 'Pgs'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 5,
+            'cliteral' => 'DEPARTAMENTO ADMINISTRATIVO',
+            'vliteral' => 'DEPARTAMENT ADMINISTRACIÓ',
+            'depcurt' => 'Adm'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 6,
+            'cliteral' => 'DEPARTAMENTO SANITARIO',
+            'vliteral' => 'DEPARTAMENT SANITARI',
+            'depcurt' => 'San'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 9,
+            'cliteral' => 'EXTENSION CULTURAL',
+            'vliteral' => 'EXTENSIO CULTURAL',
+            'depcurt' => 'Cul'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 10,
+            'cliteral' => 'HOSTELERIA Y TURISMO',
+            'vliteral' => 'HOSTELERIA I TURISME',
+            'depcurt' => 'Hos'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 12,
+            'cliteral' => 'FORMACION Y ORIENTACION LABORA',
+            'vliteral' => 'FORMACIO I ORIENTACIO LABORAL',
+            'depcurt' => 'Fol'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 14,
+            'cliteral' => 'FRANCES',
+            'vliteral' => 'FRANCES',
+            'depcurt' => 'Fra'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 18,
+            'cliteral' => 'ORIENTACION',
+            'vliteral' => 'ORIENTACIO',
+            'depcurt' => 'Ori'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 22,
+            'cliteral' => 'CICLOS FORMATIVOS',
+            'vliteral' => 'CICLES FORMATIUS',
+            'depcurt' => 'Cf'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 23,
+            'cliteral' => 'FCT',
+            'vliteral' => 'FCT',
+            'depcurt' => 'Fct'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 24,
+            'cliteral' => 'DEPARTAMENTO INFORMATICA',
+            'vliteral' => 'DEPARTAMENT INFORMÀTICA',
+            'depcurt' => 'Inf'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 90,
+            'cliteral' => 'Personal No Docente',
+            'vliteral' => 'Personal No Docent',
+            'depcurt' => 'PND'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 91,
+            'cliteral' => 'Personal Limpieza',
+            'vliteral' => 'Personal Neteja',
+            'depcurt' => 'NET'
+        ]);
+
+
+
+        Departamento::create([
+            'id' => 99,
+            'cliteral' => 'Desconegut',
+            'vliteral' => 'Desconegut',
+            'depcurt' => '???'
+        ]);
+        
+ 
     }
 
 }
