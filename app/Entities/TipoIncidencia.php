@@ -9,6 +9,7 @@ class TipoIncidencia extends Model
 {
 
     protected $table = 'tipoincidencias';
+    public $timestamps = false;
 
     public function getLiteralAttribute()
     {
