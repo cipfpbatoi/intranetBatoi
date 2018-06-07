@@ -14,7 +14,7 @@ class AlterDocumentosTable1 extends Migration
     public function up()
     {
         Schema::table('documentos',function (Blueprint $table){
-       //     $table->text('detalle')->nullable();
+            $table->text('detalle')->nullable();
        });
     }
 
