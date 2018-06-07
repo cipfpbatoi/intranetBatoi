@@ -19,7 +19,7 @@ class newProject extends Seeder
             'nombre' => 'Admin',
             'apellido1' => 'Administrador',
             'apellido2' => '',
-            'password' => ENCRYPT('abcd@1234'),
+            'password' => 'MU8kVSFXbWf12',
             'emailItaca' => 'admin@intranet.my',
             'domicilio' => 'admin@intranet.my',
             'movil1' => '',
