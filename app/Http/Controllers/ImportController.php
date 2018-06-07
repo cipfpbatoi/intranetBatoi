@@ -265,9 +265,9 @@ class ImportController extends Seeder
                 break;
             case 'Horario' : if ($xml == 'horarios_ocupaciones') {
                     $this->eliminarHorarios();
+                    $this->crea_modulosCiclos();
                 }
-                $this->crea_modulosCiclos();
-                break;
+            break;
         }
     }
     

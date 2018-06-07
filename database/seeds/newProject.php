@@ -1792,7 +1792,7 @@ class newProject extends Seeder
             'fecha_ant' => NULL,
             'sustituye_a' => NULL,
             'foto' => NULL,
-            'rol' => '6',
+            'rol' => '66',
             'remember_token' => NULL,
             'created_at' => NULL,
             'updated_at' => NULL,
