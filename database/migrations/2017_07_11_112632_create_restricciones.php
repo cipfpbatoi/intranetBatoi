@@ -55,7 +55,7 @@ class CreateRestricciones extends Migration
        });
        Schema::table('ciclos', function (Blueprint $table) {
            //$table->tinyInteger('departamento')->change();
-           $table->foreign('departamento')->references('id')->on('departamentos')->onUpdate('cascade');
+           //$table->foreign('departamento')->references('id')->on('departamentos')->onUpdate('cascade');
         });
         Schema::table('programaciones', function (Blueprint $table) {
             $table->foreign('idProfesor')->references('dni')->on('profesores')->onUpdate('cascade');

@@ -267,6 +267,7 @@ class ImportController extends Seeder
                     $this->crea_modulosCiclos();
                 }
                 break;
+                
         }
     }
 
@@ -285,9 +286,18 @@ class ImportController extends Seeder
                     $nuevo->idModulo = $horario->modulo;
                     $nuevo->idCiclo = $horario->Grupo->idCiclo;
                     $nuevo->curso = substr($horario->idGrupo, 0, 1);
+                    $nuevo->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento)?Profesor::find($horario->idProfesor)->departamento:'';
                     if ($enlace)
                         $nuevo->enlace = $fichero[$indice++];
                     $nuevo->save();
+                }
+                else{
+                    $nuevo =  Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
+                    if ((isset(Profesor::find($horario->idProfesor)->departamento))&&($nuevo->idDepartamento != Profesor::find($horario->idProfesor)->departamento))
+                    {
+                       $nuevo->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
+                       $nuevo->save();
+                    }
                 }
                 $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
                 if (!Programacion::where('idModuloCiclo', $mc->id)->where('curso', Curso())->first()) {

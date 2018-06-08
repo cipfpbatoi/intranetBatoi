@@ -20,7 +20,7 @@ class PanelControlProgramacionController extends BaseController
         if (UserisAllow(config('constants.rol.direccion')))
             return Modulo_ciclo::all();
         else 
-            return Modulo_ciclo::Departamento(AuthUser()->departamento)
+            return Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)
                     ->get();
     }
 

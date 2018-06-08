@@ -19,7 +19,8 @@ class Modulo_ciclo extends Model
         'idModulo',
         'idCiclo',
         'curso',
-        'enlace'
+        'enlace',
+        'idDepartamento'
     ];
     protected $rules = [
         'idModulo' => 'required',
@@ -28,7 +29,8 @@ class Modulo_ciclo extends Model
     ];
     protected $inputTypes = [
         'idCiclo' => ['type' => 'select'],
-        'idModulo' => ['type' => 'select']
+        'idModulo' => ['type' => 'select'],
+        'idDepartamento' => ['type' => 'select']
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
@@ -43,24 +45,16 @@ class Modulo_ciclo extends Model
     {
         return $this->belongsto(Modulo::class, 'idModulo', 'codigo');
     }
+    public function Departamento()
+    {
+        return $this->belongsto(Departamento::class, 'idDepartamento', 'id');
+    }
     
     public function Programacion()
     {
         return $this->hasOne(Programacion::class, 'idModuloCiclo');
     }
-    
-//    public function scopeDepartamento($query, $dep = null)
-//    {
-//        $dep = $dep ? $dep : AuthUser()->departamento;
-//        $ciclos = Ciclo::select('id')->where('departamento',$dep)->get()->toArray();
-//        return $query->whereIn('idCiclo', $ciclos);
-//    }
-    public function scopeDepartamento($query, $dep = null)
-    {
-        $dep = $dep ? $dep : AuthUser()->departamento;
-        $modulos = Modulo::select('codigo')->Departamento($dep)->get()->toArray();
-        return $query->whereIn('idModulo', $modulos);
-    }
+
     public function getXmoduloAttribute(){
         return $this->Modulo->literal;
     }
@@ -77,6 +71,10 @@ class Modulo_ciclo extends Model
     public function getIdModuloOptions()
     {
         return hazArray(Modulo::all(), 'codigo', 'literal');
+    }
+    public function getIdDepartamentoOptions()
+    {
+        return hazArray(Departamento::all(), 'id', 'literal');
     }
     
     public function getEstadoAttribute()
