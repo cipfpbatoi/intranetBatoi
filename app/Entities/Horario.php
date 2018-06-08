@@ -53,10 +53,6 @@ class Horario extends Model
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
 
-//    
-//    
-//  scopes
-//    
     public function scopeProfesor($query, $profesor)
     {
         if (Horario::where('idProfesor',$profesor)->count())
@@ -178,8 +174,4 @@ class Horario extends Model
     public function getOcupacionOptions(){
         return hazArray(Ocupacion::All(), 'codigo', 'nom');
     }
-    
-    
-    
-
 }

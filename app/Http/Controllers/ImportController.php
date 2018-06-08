@@ -181,7 +181,7 @@ class ImportController extends Seeder
             Alert::danger(trans('messages.generic.noFile'));
 
         foreach (Profesor::all() as $profesor) {
-            if ($grupo = Grupo::select('dni')->QTutor($profesor->dni)->first()) {
+            if ($grupo = Grupo::QTutor($profesor->dni)->first()) {
                 if (!esRol($profesor->rol, config('constants.rol.tutor'))) {
                     $profesor->rol *= config('constants.rol.tutor');
                     $profesor->save();
@@ -192,7 +192,7 @@ class ImportController extends Seeder
                     $profesor->save();
                     Alert::success('tutor practicas assignat: ' . $profesor->FullName);
                 }
-                if ($grupo->curso == 1 && esRol($profesor->rol, config('constants.rol.practicas'))) {
+                if ($request->primera && $grupo->curso == 1 && esRol($profesor->rol, config('constants.rol.practicas'))) {
                     $profesor->rol /= config('constants.rol.practicas');
                     $profesor->save();
                     Alert::success('tutor practicas degradat: ' . $profesor->FullName);
@@ -203,7 +203,7 @@ class ImportController extends Seeder
                     $profesor->save();
                     Alert('tutor degradat' . $profesor->FullName);
                 }
-                if (($request->primera) && (esRol($profesor->rol, config('constants.rol.practicas')))) {
+                if ($request->primera && esRol($profesor->rol, config('constants.rol.practicas'))) {
                     $profesor->rol /= config('constants.rol.praticas');
                     $profesor->save();
                     Alert('tutor practicas degradat' . $profesor->FullName);

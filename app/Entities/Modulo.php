@@ -30,13 +30,10 @@ class Modulo extends Model
         'deleted' => ActivityReport::class,
     ];
 
-    
     public function Horario()
     {
         return $this->hasMany(Horario::class, 'codigo', 'modulo');
     }
-
-
     public function scopeMisModulos($query, $profesor = null)
     {
         $profesor = $profesor ? $profesor : AuthUser();
@@ -66,7 +63,4 @@ class Modulo extends Model
     {
         return App::getLocale(session('lang')) == 'es' ? $this->cliteral : $this->vliteral;
     }
-    
-
-
 }
