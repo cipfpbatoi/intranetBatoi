@@ -179,35 +179,34 @@ class ImportController extends Seeder
                 Alert::danger(trans('messages.generic.invalidFormat'));
         } else
             Alert::danger(trans('messages.generic.noFile'));
-        if ($request->tutores) {
-            foreach (Profesor::all() as $profesor) {
-                if ($grupo = Grupo::select('dni')->QTutor($profesor->dni)->first()) {
-                    if (!esRol($profesor->rol, config('constants.rol.tutor'))) {
-                        $profesor->rol *= config('constants.rol.tutor');
-                        $profesor->save();
-                        Alert::success('tutors assignat: ' . $profesor->FullName);
-                    }
-                    if ($grupo->curso == 2 && !esRol($profesor->rol, config('constants.rol.practicas'))) {
-                        $profesor->rol *= config('constants.rol.practicas');
-                        $profesor->save();
-                        Alert::success('tutor practicas assignat: ' . $profesor->FullName);
-                    }
-                    if ($grupo->curso == 1 && esRol($profesor->rol, config('constants.rol.practicas'))) {
-                        $profesor->rol /= config('constants.rol.practicas');
-                        $profesor->save();
-                        Alert::success('tutor practicas degradat: ' . $profesor->FullName);
-                    }
-                } else {
-                    if (esRol($profesor->rol, config('constants.rol.tutor'))) {
-                        $profesor->rol /= config('constants.rol.tutor');
-                        $profesor->save();
-                        Alert('tutor degradat' . $profesor->FullName);
-                    }
-                    if (esRol($profesor->rol, config('constants.rol.practicas'))) {
-                        $profesor->rol /= config('constants.rol.praticas');
-                        $profesor->save();
-                        Alert('tutor practicas degradat' . $profesor->FullName);
-                    }
+
+        foreach (Profesor::all() as $profesor) {
+            if ($grupo = Grupo::select('dni')->QTutor($profesor->dni)->first()) {
+                if (!esRol($profesor->rol, config('constants.rol.tutor'))) {
+                    $profesor->rol *= config('constants.rol.tutor');
+                    $profesor->save();
+                    Alert::success('tutors assignat: ' . $profesor->FullName);
+                }
+                if ($grupo->curso == 2 && !esRol($profesor->rol, config('constants.rol.practicas'))) {
+                    $profesor->rol *= config('constants.rol.practicas');
+                    $profesor->save();
+                    Alert::success('tutor practicas assignat: ' . $profesor->FullName);
+                }
+                if ($grupo->curso == 1 && esRol($profesor->rol, config('constants.rol.practicas'))) {
+                    $profesor->rol /= config('constants.rol.practicas');
+                    $profesor->save();
+                    Alert::success('tutor practicas degradat: ' . $profesor->FullName);
+                }
+            } else {
+                if (esRol($profesor->rol, config('constants.rol.tutor'))) {
+                    $profesor->rol /= config('constants.rol.tutor');
+                    $profesor->save();
+                    Alert('tutor degradat' . $profesor->FullName);
+                }
+                if (($request->primera) && (esRol($profesor->rol, config('constants.rol.practicas')))) {
+                    $profesor->rol /= config('constants.rol.praticas');
+                    $profesor->save();
+                    Alert('tutor practicas degradat' . $profesor->FullName);
                 }
             }
         }
@@ -258,15 +257,14 @@ class ImportController extends Seeder
                 break;
             case 'Alumno': $this->bajaAlumnos();
                 break;
-            case 'Grupo' : if ($request->bajaGrupo)
+            case 'Grupo' : if ($request->primera)
                     $this->bajaGrupos();
                 break;
             case 'Alumno_grupo' : $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
                 break;
             case 'Horario' : if ($xml == 'horarios_ocupaciones') {
                     $this->eliminarHorarios();
-                    if ($request->moduloCiclo)
-                        $this->crea_modulosCiclos();
+                    $this->crea_modulosCiclos();
                 }
                 break;
         }

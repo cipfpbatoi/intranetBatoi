@@ -28,7 +28,6 @@ class ModuloController extends IntranetController
     {
         $todos = Modulo::all();
         foreach ($todos as $uno) {
-            
             if ($uno->idCiclo == NULL){
                 $grupo = Horario::select('idGrupo')
                         ->where('modulo', '=', $uno->codigo)
