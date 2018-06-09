@@ -7,6 +7,7 @@ use Intranet\Entities\Curso;
 use Intranet\Entities\Curso_alumno;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Modulo;
+use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Resultado;
 use Jenssegers\Date\Date;
@@ -54,11 +55,23 @@ class ResultadoController extends IntranetController
      */
     public function store(Request $request)
     {
-        $this->realStore($request);
-        if (($request->evaluacion == 3) &&
-             ($programacion = Programacion::where('idModulo',$request->idModulo)->first()->id))
-             return redirect ("/programacion/$programacion/seguimiento");         
-        else return $this->redirect();
+        $grupo = Grupo::find($request->idGrupo);
+        $modulociclo = Modulo_ciclo::where('idModulo',$request->idModulo)
+                    ->where('idCiclo',$grupo->idCiclo)
+                    ->first();
+        if ($modulociclo){
+            $this->realStore($request);
+            if ($request->evaluacion == 3){ 
+                $programacion = Programacion::where('idModuloCiclo',$modulociclo->id)->where('curso',Curso())->first()->id;
+                return redirect ("/programacion/$programacion/seguimiento");  
+             }
+            else return $this->redirect();
+        }
+        else{
+            Alert::danger("Eixe mòdul no es dona en eixe grup");
+            return $this->redirect();
+        }    
+        
     }
 
     public function listado()
