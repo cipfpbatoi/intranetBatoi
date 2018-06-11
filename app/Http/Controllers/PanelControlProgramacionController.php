@@ -12,7 +12,7 @@ class PanelControlProgramacionController extends BaseController
 
     
     protected $model = 'Modulo_ciclo';
-    protected $gridFields = ['Xciclo', 'Xmodulo', 'estado','Nombre', 'situacion'];
+    protected $gridFields = ['id','Xciclo', 'Xmodulo', 'estado','Nombre', 'situacion'];
     
    
     protected function search()
