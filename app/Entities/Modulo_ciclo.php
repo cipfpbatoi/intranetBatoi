@@ -64,6 +64,9 @@ class Modulo_ciclo extends Model
     public function getAcicloAttribute(){
         return $this->Ciclo->ciclo;
     }
+    public function getNombreAttribute(){
+        return $this->Programacion->Profesor->ShortName;
+    }
     public function getIdCicloOptions()
     {
         return hazArray(Ciclo::all(), 'id', 'ciclo');

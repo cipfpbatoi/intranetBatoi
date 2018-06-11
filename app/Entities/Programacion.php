@@ -101,11 +101,9 @@ class Programacion extends Model
 
     public function scopeDepartamento($query)
     {
-        $modulos = Modulo_ciclo::select('id')
-                ->Departamento()
-                ->get()
-                ->toarray();
-        return $query->whereIn('idModuloCiclo', $modulos)->where('curso',Curso());
+        return $query->whereIn('idModuloCiclo', 
+                hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))
+                ->where('curso',Curso());
     }
     
     public function nomFichero()
@@ -131,6 +129,9 @@ class Programacion extends Model
     }
     public function getDescripcionAttribute(){
         return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Aciclo." - ".$this->ModuloCiclo->Xmodulo:'';
+    }
+    public function getXnombreAttribute(){
+        return $this->Profesor->ShortName;
     }
     
     
