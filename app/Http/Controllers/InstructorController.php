@@ -59,51 +59,6 @@ class InstructorController extends IntranetController
         return redirect("empresa/$empresa/detalle");
     }
 
-    public function load()
-    {
-        foreach (Colaboracion::all()->groupBy('idCentro') as $grupos) {
-            foreach ($grupos->groupBy('idCiclo') as $grupo)
-                DB::transaction(function() use ($grupo) {
-                    $idColaboracion = $grupo->first()->id;
-                    foreach ($grupo as $colaboracion) {
-                        foreach ($colaboracion->fcts as $fct) {
-                            Alert::message($fct->idAlumno, 'danger');
-                            $fct->idColaboracion = $idColaboracion;
-                            $this->nouInstructor($fct->idInstructor, $fct->instructor, $fct->Colaboracion->email, $fct->Colaboracion->telefono, $fct->Colaboracion->idCentro);
-                            $fct->save();
-                        }
-                        $this->nouInstructor($colaboracion->dni, $colaboracion->instructor, $colaboracion->email, $colaboracion->telefono, $colaboracion->idCentro);
-                        if ($colaboracion->id != $idColaboracion) {
-                            Alert::message($colaboracion->id . ' canvia a ' . $idColaboracion, 'info');
-                            $colaboracion->delete();
-                        }
-                    }
-                });
-        }
-        Alert::message('FIN','success');
-        return back();
-    }
-
-    private function nouInstructor($dni, $nom, $email, $telefono, $centro)
-    {
-        $dni = substr($dni,0,10);
-        $instructor = Instructor::find($dni);
-        if (!$instructor) {
-            if ($dni) {
-                $instructor = new Instructor();
-                $instructor->dni = $dni;
-                $instructor->nombre = substr($nom,0,60);
-                $instructor->email = substr($email,0,60);
-                $instructor->telefono = substr($telefono,0,20);
-                $instructor->save();
-                Alert::message('Nou instructor '.$instructor->dni,'info');
-                $this->nouCentreInstructor($centro, $dni);
-            }
-        } else {
-            $this->nouCentreInstructor($centro, $dni);
-        }
-    }
-
     private function nouCentreInstructor($centro, $dni)
     {
         $ci = Centro_instructor::where('idInstructor', $dni)->where('idCentro', $centro)->first();

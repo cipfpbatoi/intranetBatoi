@@ -14,6 +14,7 @@ use DB;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Grupo;
 use Styde\Html\Facades\Alert;
+use Intranet\Entities\Profesor;
 
 class AdministracionController extends Controller{
     
@@ -39,73 +40,16 @@ class AdministracionController extends Controller{
         Programacion::where('curso','!=',Curso())->update(['estado' => 4]);
         return back();
     }
-    protected function tmpInstructores(){
-        $cis= \Intranet\Entities\Centro_instructor::all();
-        foreach ($cis as $ci){
-            if (!\Intranet\Entities\Instructor::find($ci->idInstructor))
-            {
-                echo ($ci->idInstructor);
-            }
+    
+    public function allApiToken()
+    {
+        $remitente = ['nombre' => 'Intranet', 'email' => 'intranet@cipfpbatoi.es'];
+        foreach (Profesor::Activo()->get() as $profesor) {
+            dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
         }
+        Alert::info('Correus enviats');
+        return back();
     }
-//    protected function deleteProgramacion(){
-//        $todas = Programacion::all();
-//        foreach ($todas as $prg){
-//            $horarios = Horario::select('modulo','idGrupo')
-//                ->Profesor($prg->idProfesor)
-//                ->where('modulo', $prg->idModulo)
-//                ->distinct() 
-//                ->get();
-//            if ($horarios->count() == 1){
-//                $horario = $horarios->first();
-//                $grupo = Grupo::find($horario->idGrupo);
-//                $mc = Modulo_ciclo::where('idModulo',$horario->modulo)
-//                        ->where('idCiclo',$grupo->idCiclo)
-//                        ->first();
-//                $prg->idModuloCiclo = $mc->id;
-//                $prg->curso = Curso();
-//                $prg->save();
-//                }    
-//            else{
-//                $find = false;
-//                if ($horarios->count() == 2){
-//                   $ciclo1 = Grupo::find($horarios[0]->idGrupo)->idCiclo; 
-//                   $ciclo2 = Grupo::find($horarios[1]->idGrupo)->idCiclo; 
-//                   if ($ciclo1 == $ciclo2 && $horarios[0]->modulo == $horarios[1]->modulo){
-//                      $mc = Modulo_ciclo::where('idModulo',$horarios[0]->modulo)
-//                        ->where('idCiclo',$ciclo1)
-//                        ->first();
-//                        $prg->idModuloCiclo = $mc->id;
-//                        $prg->curso = Curso();
-//                        $prg->save(); 
-//                        $find = true;
-//                   }
-//                   
-//                }
-//                if (!$find){
-//                    foreach ($horarios as $horario){
-//                        $find = Ciclo::where('ciclo',$prg->ciclo)->first();
-//                        if ($find){
-//                           $mc = Modulo_ciclo::where('idModulo',$horario->modulo)
-//                            ->where('idCiclo',$find->id)
-//                            ->first(); 
-//                           $prg->idModuloCiclo = $mc->id;
-//                           $prg->curso = Curso();
-//                           $prg->save();
-//                        }
-//                        else {
-//                            $prg->idModuloCiclo = null;
-//                            $prg->curso = Curso();
-//                            $prg->save();
-//                            Alert::danger("Programació $prg->id no troba horari $prg->Modulo->literal $prg->ciclo");
-//                        }
-//                    }       
-//                }
-//            }
-//        }
-//                
-//        return back();
-//    }
     
     protected function nuevoCursoIndex(){
         return view('nuevo.curso');

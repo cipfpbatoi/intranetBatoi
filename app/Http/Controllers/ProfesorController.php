@@ -107,16 +107,6 @@ use traitAutorizar,
         return $this->grid($todos);
     }
 
-    public function allApiToken()
-    {
-        $remitente = ['nombre' => 'Intranet', 'email' => 'intranet@cipfpbatoi.es'];
-        foreach (Profesor::Activo()->get() as $profesor) {
-            dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
-        }
-        Alert::info('Correus enviats');
-        return back();
-    }
-
     public function miApiToken()
     {
         $remitente = ['nombre' => 'Intranet', 'email' => 'intranet@cipfpbatoi.es'];
@@ -207,6 +197,9 @@ use traitAutorizar,
         $profesor = Profesor::findOrFail($id);
         return view('horario.profesor-cambiar', compact('horario', 'profesor'));
     }
+    //-----------------------------
+    //impressió de tots els horaris
+    //-----------------------------
     protected function imprimirHorarios()
     {
         $profesores = Profesor::Activo()->get();
@@ -224,6 +217,9 @@ use traitAutorizar,
         return $this->hazPdf('pdf.horarios', $horarios,$observaciones)->stream();
     }
     
+    //-------------------------------
+    // canvi de professor en calent -
+    //-------------------------------
     protected function change($idProfesor)
     {
         Session::put('userChange', AuthUser()->dni);
