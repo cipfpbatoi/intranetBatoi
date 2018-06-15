@@ -58,13 +58,12 @@ class Handler extends ExceptionHandler
             avisa(config('constants.avisos.errores'),$exception->getMessage());
         if ($exception instanceof ModelNotFoundException) {
             $e = new NotFoundHttpException($exception->getMessage(), $exception);
-            return response()->view('errors.404',[],404);
+            //return response()->view('errors.404',[],404);
         }
         if ($exception instanceof \PDOException){
             
             Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :".$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
             //return response()->view('errors.200',['mensaje'=>$exception->getMessage()],200);
-            //dd($exception);
         }
         return parent::render($request, $exception);
     }

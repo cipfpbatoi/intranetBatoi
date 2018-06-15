@@ -219,8 +219,8 @@ class ImportController extends Seeder
     public function run($fxml, Request $request)
     {
         if (file_exists($fxml)) {
-            $xml = simplexml_load_file($fxml);
-            foreach ($this->campos_bd_xml as $tabla) {
+           $xml = simplexml_load_file($fxml);
+           foreach ($this->campos_bd_xml as $tabla) {
                 $xmltable = $xml->{$tabla['nombrexml']}; //miro en el xml que tengo de la tabla
                 if (count($xmltable)) {
                     $this->pre($tabla['nombreclase'], $tabla['nombrexml']);
@@ -268,7 +268,6 @@ class ImportController extends Seeder
                     $this->crea_modulosCiclos();
                 }
                 break;
-               
         }
          
     }
@@ -356,12 +355,12 @@ class ImportController extends Seeder
 
     private function gruposBaja()
     {
-        DB::table('grupos')->update(['tutor' => '']);
+        DB::table('grupos')->update(['tutor' => 'BAJA']);
     }
 
     private function bajaGrupos()
     {
-        DB::table('grupos')->where('tutor', '=', '')->delete();
+        DB::table('grupos')->where('tutor', '=', 'BAJA')->delete();
     }
 
     private function getFechaFormatoIngles($fecha)

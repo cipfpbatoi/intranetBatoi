@@ -18,7 +18,7 @@ class AlterCiclosTable extends Migration
             $table->string('normativa',10)->default('LOE');
         });
         Schema::table('grupos',function (Blueprint $table){
-            $table->tinyInteger('curso')->unsigned();
+            $table->tinyInteger('curso')->unsigned()->nullable();
         });
     }
 
