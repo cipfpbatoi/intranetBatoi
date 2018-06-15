@@ -15,8 +15,6 @@ class CreateResultadosTable extends Migration
     {
         Schema::create('resultados', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('idGrupo',5);
-            $table->string('idModulo',6);
             $table->tinyInteger('evaluacion');
             $table->tinyInteger('matriculados');
             $table->tinyInteger('evaluados');

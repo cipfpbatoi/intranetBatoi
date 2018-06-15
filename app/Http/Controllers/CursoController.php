@@ -25,8 +25,6 @@ class CursoController extends IntranetController
         return redirect()->route('alumnocurso.show', ['grupo' => $id]);
     }
 
-    
-
     public function indexAlumno()
     {
         $todos = Curso::where('activo', 1)

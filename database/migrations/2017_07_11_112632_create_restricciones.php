@@ -83,8 +83,6 @@ class CreateRestricciones extends Migration
         });
         Schema::table('resultados', function (Blueprint $table) {
             $table->foreign('idProfesor')->references('dni')->on('profesores')->onUpdate('cascade');
-            $table->foreign('idGrupo')->references('codigo')->on('grupos')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreign('idModulo')->references('codigo')->on('modulos')->onUpdate('cascade')->onDelete('cascade');
         });
         Schema::table('centros', function (Blueprint $table) {
             $table->unsignedInteger('idEmpresa')->change();
