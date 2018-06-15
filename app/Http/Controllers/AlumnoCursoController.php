@@ -76,10 +76,10 @@ class AlumnoCursoController extends IntranetController
                 if ($curso->aforo == 0)
                     $new->registrado = 'S';
                 else {
-                    if ($curso->Cuantos() < $curso->aforo)
+                    if ($curso->NAlumnos < $curso->aforo)
                         $new->registrado = 'S';
                     else {
-                        if ($curso->Cuantos() < $curso->aforo * config('constants.reservaAforo'))
+                        if ($curso->NAlumnos < $curso->aforo * config('constants.reservaAforo'))
                             $new->registrado = 'R';
                         else
                             $new->registrado = 'N';

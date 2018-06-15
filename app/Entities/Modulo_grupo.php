@@ -45,5 +45,9 @@ class Modulo_grupo extends Model
         }
        return $todos;
     }
+    public function scopeCurso($query,$curso)
+    {
+        return $query->whereIn('idGrupo',hazArray(Grupo::Curso($curso)->get(),'codigo','codigo'));
+    }
     
 }

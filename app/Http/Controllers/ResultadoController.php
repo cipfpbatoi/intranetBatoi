@@ -94,14 +94,15 @@ class ResultadoController extends IntranetController
 
     public function listadoEntregas()
     {
-        $trimestre = evaluacion();
-        $trimestres = [];
+        $trimestre = evaluacion()-1;
         $panel = new Panel('Resultado', null, null, false);
-        for ($i=1; $i < $trimestre;$i++){
-            $panel->setPestana($i."_trimestre", ($i == $trimestre-1), '.resultado.partials.trimestre', ['trimestre', $i]);
-            $trimestres[] = $i;
-        }
-        $faltan = $this->FaltaEntrega($trimestres);
+        $panel->setPestana($trimestre."_trimestre", 1, '.resultado.partials.trimestre', ['trimestre', $trimestre]);
+            
+//        for ($i=$trimestre-1; $i < $trimestre;$i++){
+//            $panel->setPestana($i."_trimestre", ($i == $trimestre-1), '.resultado.partials.trimestre', ['trimestre', $i]);
+//            $trimestres[] = $i;
+//        }
+        $faltan = $this->FaltaEntrega($trimestre);
         $informes = $this->informesExistentes();
         $panel->setElementos($faltan);
         $panel->setTitulo([]);
@@ -216,12 +217,14 @@ class ResultadoController extends IntranetController
                 ->orderBy('desde')
                 ->get();
         $primero = Resultado::Departamento($dep)
-                        ->TrimestreCurso($trimestre, 1)->get();
+                        ->TrimestreCurso($trimestre, 1)
+                        ->get();
         $segundo = Resultado::Departamento($dep)
-                        ->TrimestreCurso($trimestre, 2)->get();
+                        ->TrimestreCurso($trimestre, 2)
+                        ->get();
         $resultados = $primero
                 ->concat($segundo)
-                ->sortBy('idGrupo');
+                ->sortBy('Modulo');
         if ($trimestre == 3){
             $programaciones = Programacion::Departamento(AuthUser()->departamento)
                     ->whereNotNull('propuestas')
@@ -230,24 +233,15 @@ class ResultadoController extends IntranetController
         return $this->hazPdf('pdf.infDep', $actividades, compact('resultados', 'observaciones', 'trimestre','proyectos','programaciones'));
     }
 
-    private function FaltaEntrega($trimestres)
+    private function FaltaEntrega($trimestre)
     {
-        $mg = hazArray(Modulo_ciclo::where('idDepartamento',AuthUser()->departamento)->get(),'id','id');
-        $modulos = Modulo_grupo::whereIn('idModuloCiclo',$mg)->get();
+        $modulos = Modulo_grupo::whereIn('idModuloCiclo',hazArray(Modulo_ciclo::where('idDepartamento',AuthUser()->departamento)->get(),'id','id'))->get();
         $faltan = collect();
-        foreach ($trimestres as $trimestre){
-            $evaluaciones = config("curso.trimestres.$trimestre");
-            $this->llenaFaltan($faltan, $modulos, $trimestre, $evaluaciones);
-        }    
-        return $faltan;
-    }
-
-    private function llenaFaltan(&$faltan, $modulos, $trimestre, $evaluaciones)
-    {
+        $evaluaciones = config("curso.trimestres.$trimestre");
         foreach ($evaluaciones as $curso => $evaluacion)
             if ($evaluacion)
                 foreach ($modulos as $moduloG)
-                    if (Resultado::where('idModulo', $moduloG->ModuloCiclo->idModulo)->where('idGrupo', $moduloG->idGrupo)->where('evaluacion', $evaluacion)->first() == null)
+                    if (Resultado::where('idModuloGrupo', $moduloG->id)->where('evaluacion', $evaluacion)->first() == null)
                         if ($this->curso($moduloG->idGrupo) == $curso) {
                             $elemento = new Faltan();
                             $elemento->trimestre = $trimestre;
@@ -257,6 +251,7 @@ class ResultadoController extends IntranetController
                             $elemento->idResultado = null;
                             $faltan->push($elemento);
                         }
+        return $faltan;
     }
 
     private function curso($codigo)

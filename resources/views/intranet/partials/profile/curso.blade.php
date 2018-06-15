@@ -8,7 +8,7 @@
                 @if ($elemento->horas > 0)
                 <i class="fa fa-hourglass"></i> {{$elemento->horas}} {{ trans('messages.generic.horas')}}
                 @endif
-                <i class="fa fa-building"></i> {{$elemento->Cuantos()}}
+                <i class="fa fa-building"></i> {{$elemento->NAlumnos}}
                 @if ($elemento->aforo > 0)
                     / {{$elemento->aforo}}
                 @endif
@@ -30,7 +30,7 @@
                 <p class="ratings">
                     @if ($elemento->aforo == 0) <a href='#' class='btn btn-success btn-xs' > {{ trans('messages.buttons.disponible') }}  </a>
                     @else  
-                        @if ($elemento->aforo > $elemento->Cuantos()) <a href='#' class='btn btn-success btn-xs' > {{ trans('messages.buttons.disponible') }}  </a>
+                        @if ($elemento->aforo > $elemento->NAlumnos) <a href='#' class='btn btn-success btn-xs' > {{ trans('messages.buttons.disponible') }}  </a>
                         @else <a href='#' class='btn btn-danger btn-xs' > {{ trans('messages.buttons.nodisponible') }} </a>
                         @endif
                     @endif   

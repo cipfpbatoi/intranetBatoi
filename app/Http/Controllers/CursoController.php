@@ -18,7 +18,7 @@ class CursoController extends IntranetController
 
     
     protected $model = 'Curso';
-    protected $gridFields = ['id', 'titulo', 'estado', 'fecha_inicio','Alumno'];
+    protected $gridFields = ['id', 'titulo', 'estado', 'fecha_inicio','NAlumnos'];
 
     public function detalle($id)
     {
@@ -43,11 +43,11 @@ class CursoController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['detalle', 'edit']);
-        $this->panel->setBoton('grid',new BotonImg('curso.pdf',['where' => ['alumnos','>',0]]));
+        $this->panel->setBoton('grid',new BotonImg('curso.pdf',['where' => ['NAlumnos','>',0]]));
         $this->panel->setBoton('grid', new BotonImg('curso.delete', ['where' => ['activo', '==', 0]]));
         $this->panel->setBoton('grid', new BotonImg('curso.active'));
         $this->panel->setBoton('grid',new BotonImg('curso.saveFile'),
-                ['where' => ['fecha_fin','anterior',Hoy(),'activo', '==', 0]]);
+              ['where' => ['fecha_fin','anterior',Hoy(),'activo', '==', 0]]);
     }
     
     public function saveFile($id)

@@ -42,7 +42,7 @@ class Alumno_grupoController extends IntranetController
         //$this->panel->setBoton('grid',new BotonImg('fct.asigna',['img'=>'fa-birthday-cake', 'roles'=>config('constants.rol.tutor'),'where' => ['idGrupo', '==', $miGrupo]]));
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {
-            if (($curso->aforo == 0) || ($curso->Cuantos() < $curso->aforo * config('constants.reservaAforo')))
+            if (($curso->aforo == 0) || ($curso->NAlumnos < $curso->aforo * config('constants.reservaAforo')))
                 $this->panel->setBoton('grid', new BotonImg('alumnocurso.registerAlumno/' . $curso->id, ['text' => trans('messages.generic.register') . $curso->titulo, 'img' => 'fa-institution']));
         }
         

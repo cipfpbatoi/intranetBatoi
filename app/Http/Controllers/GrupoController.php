@@ -51,7 +51,7 @@ class GrupoController extends IntranetController
         $this->panel->setBoton('grid',new BotonImg('direccion.fol',['img' => 'fa-file-word-o','roles' => config('constants.rol.direccion')]));
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {
-            if (($curso->aforo == 0) || ($curso->Cuantos() < $curso->aforo * config('constants.reservaAforo')))
+            if (($curso->aforo == 0) || ($curso->NAlumnos < $curso->aforo * config('constants.reservaAforo')))
                 $this->panel->setBoton('grid', new BotonImg("alumnocurso.registerGrupo/" . $curso->id, ['text' => trans('messages.generic.register') . $curso->titulo, 'img' => 'fa-institution']));
         }
     }

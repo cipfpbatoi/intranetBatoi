@@ -61,11 +61,6 @@ class Curso extends Model
         return $this->belongstoMany(Alumno::class, 'alumnos_cursos', 'idCurso', 'idAlumno')->withPivot('id', 'registrado');
     }
 
-    public function Cuantos()
-    {
-        return AlumnoCurso::where('idCurso', $this->id)->count();
-    }
-
     public function Registrado()
     {
         return AlumnoCurso::where('idCurso', $this->id)
@@ -96,9 +91,9 @@ class Curso extends Model
         $fecha = new Date($salida);
         return $fecha->format('H:i');
     }
-    public function getAlumnoAttribute()
+    public function getNAlumnosAttribute()
     {
-        return $this->Cuantos();
+        return AlumnoCurso::where('idCurso', $this->id)->count();
     }
     public function getEstadoAttribute()
     {

@@ -14,7 +14,7 @@ class Horario extends Model
     use BatoiModels;
     
     protected $primaryKey = 'id';
-    protected $fillable = ['idProfesor', 'modulo', 'idGrupo', 'ocupacion','aula'];
+    //protected $fillable = ['idProfesor', 'modulo', 'idGrupo', 'ocupacion','aula'];
     protected $rules = [
         'idProfesor' => 'required',
     ];

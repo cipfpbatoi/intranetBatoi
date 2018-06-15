@@ -220,8 +220,8 @@ class ImportController extends Seeder
     public function run($fxml, Request $request)
     {
         if (file_exists($fxml)) {
-           $xml = simplexml_load_file($fxml);
-           foreach ($this->campos_bd_xml as $tabla) {
+            $xml = simplexml_load_file($fxml);
+            foreach ($this->campos_bd_xml as $tabla) {
                 $xmltable = $xml->{$tabla['nombrexml']}; //miro en el xml que tengo de la tabla
                 if (count($xmltable)) {
                     $this->pre($tabla['nombreclase'], $tabla['nombrexml']);
@@ -270,7 +270,6 @@ class ImportController extends Seeder
                 }
                 break;
         }
-         
     }
 
     private function crea_modulosCiclos()
@@ -290,21 +289,20 @@ class ImportController extends Seeder
                     $nuevo->idModulo = $horario->modulo;
                     $nuevo->idCiclo = $horario->Grupo->idCiclo;
                     $nuevo->curso = substr($horario->idGrupo, 0, 1);
-                    $nuevo->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento)?Profesor::find($horario->idProfesor)->departamento:'';
+                    $nuevo->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento) ? Profesor::find($horario->idProfesor)->departamento : '';
                     if ($enlace)
                         $nuevo->enlace = $fichero[$indice++];
                     $nuevo->save();
                 }
-                else{
-                    $nuevo =  Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
-                    if ((isset(Profesor::find($horario->idProfesor)->departamento))&&($nuevo->idDepartamento != Profesor::find($horario->idProfesor)->departamento))
-                    {
-                       $nuevo->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
-                       $nuevo->save();
+                else {
+                    $nuevo = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
+                    if ((isset(Profesor::find($horario->idProfesor)->departamento)) && ($nuevo->idDepartamento != Profesor::find($horario->idProfesor)->departamento)) {
+                        $nuevo->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
+                        $nuevo->save();
                     }
                 }
                 $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
-                if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo',$horario->idGrupo)->count()==0){
+                if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo', $horario->idGrupo)->count() == 0) {
                     $nuevo = new Modulo_grupo();
                     $nuevo->idModuloCiclo = $mc->id;
                     $nuevo->idGrupo = $horario->idGrupo;
@@ -457,31 +455,32 @@ class ImportController extends Seeder
         $pt = call_user_func($guard);
         $pasa = true;
         foreach ($xmltable->children() as $registroxml) {  //recorro registro del xml
-            $atributosxml = $registroxml->attributes(); // saco los valores de los atributos xml
+            
+                $atributosxml = $registroxml->attributes(); // saco los valores de los atributos xml
 
-            if (isset($tabla['filtro']))
-                $pasa = $this->filtro($tabla['filtro'], $atributosxml);
-            if ($pasa) {
+                if (isset($tabla['filtro']))
+                    $pasa = $this->filtro($tabla['filtro'], $atributosxml);
+                if ($pasa) {
 
-                $find = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::find'; //busco si ya existe en la bd
-                $pt = call_user_func($find, $this->saca_campos($atributosxml, $tabla['id'], 0));
-                if ($pt) {   //Update
-                    foreach ($tabla['update'] as $keybd => $keyxml) {
-                        $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
+                    $find = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::find'; //busco si ya existe en la bd
+                    $pt = call_user_func($find, $this->saca_campos($atributosxml, $tabla['id'], 0));
+                    if ($pt) {   //Update
+                        foreach ($tabla['update'] as $keybd => $keyxml) {
+                            $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
+                        }
+
+                        $pt->save();
+                    } else {  //create
+                        if (isset($arrayDatos))
+                            unset($arrayDatos); //borra el array de carga cada vez que entro bucle
+                        foreach ($tabla['update'] + $tabla['create'] as $keybd => $keyxml) {
+                            $this->saca_campos($atributosxml, $keyxml);
+                            $arrayDatos[$keybd] = $this->saca_campos($atributosxml, $keyxml);
+                        }
+                        $create = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::create';
+                        $pt = call_user_func($create, $arrayDatos);
                     }
-
-                    $pt->save();
-                } else {  //create
-                    if (isset($arrayDatos))
-                        unset($arrayDatos); //borra el array de carga cada vez que entro bucle
-                    foreach ($tabla['update'] + $tabla['create'] as $keybd => $keyxml) {
-                        $this->saca_campos($atributosxml, $keyxml);
-                        $arrayDatos[$keybd] = $this->saca_campos($atributosxml, $keyxml);
-                    }
-                    $create = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::create';
-                    $pt = call_user_func($create, $arrayDatos);
                 }
-            }
         }
         Alert::success($tabla['nombrexml'] . ' con ' . count($xmltable->children()) . ' Registres');
     }

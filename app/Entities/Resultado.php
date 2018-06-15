@@ -89,8 +89,9 @@ class Resultado extends Model
     }
     public function scopeTrimestreCurso($query,$trimestre,$curso){
         $evaluaciones = config("curso.trimestres.$trimestre");
+        //dd(Modulo_grupo::Curso($curso)->get()->toarray());
         return $query->where('evaluacion',$evaluaciones[$curso])
-                    ->whereIn('idGrupo',Grupo::Curso($curso)->get()->toarray());
+                    ->whereIn('idModuloGrupo', hazArray(Modulo_grupo::Curso($curso)->get(),'id','id'));
     }
     
     public function Grupo()
