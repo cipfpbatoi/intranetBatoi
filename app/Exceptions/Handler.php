@@ -53,6 +53,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        
         if ($exception->getMessage()!='The given data was invalid.')
             avisa(config('constants.avisos.errores'),$exception->getMessage());
         if ($exception instanceof ModelNotFoundException) {
@@ -60,6 +61,7 @@ class Handler extends ExceptionHandler
             return response()->view('errors.404',[],404);
         }
         if ($exception instanceof \PDOException){
+            dd($exception);
             return response()->view('errors.200',['mensaje'=>$exception->getMessage()],200);
             Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :".$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
         }
