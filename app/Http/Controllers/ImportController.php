@@ -109,6 +109,7 @@ class ImportController extends Seeder
                 'nom' => 'nombre_val'
             ),
             'create' => array(
+                'codigo' => 'codigo'
             )),
         array('nombrexml' => 'contenidos',
             'nombreclase' => 'Modulo',
