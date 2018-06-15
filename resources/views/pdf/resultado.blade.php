@@ -22,7 +22,7 @@
             @foreach ($agrupados as $grupo)
             @foreach ($grupo as $elemento)
             <tr>
-                <td>{!! $elemento->Modulo->literal !!}</td>
+                <td>{!! $elemento->Modulo !!}</td>
                 <td>{!! config('constants.nombreEval')[$elemento->evaluacion] !!}</td>
                 <td>{{$elemento->matriculados}}</td>
                 <td>{{$elemento->evaluados }}</td>

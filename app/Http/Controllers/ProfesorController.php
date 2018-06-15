@@ -96,15 +96,12 @@ use traitAutorizar,
 
     public function equipo($grupo)
     {
-        $todos = Profesor::orderBy('apellido1', 'asc')
-                ->orderBy('apellido2', 'asc')
-                ->Grupo($grupo)
-                ->get();
         $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1);
         $this->panel->setBoton('index', new BotonBasico("profesor.colectivo", ['class' => 'colectivo btn btn-primary'], true));
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
         Session::put('colectivo', $grupo);
-        return $this->grid($todos);
+        return $this->grid(Profesor::orderBy('apellido1', 'asc')->orderBy('apellido2', 'asc')
+                ->Grupo($grupo)->get());
     }
 
     public function miApiToken()

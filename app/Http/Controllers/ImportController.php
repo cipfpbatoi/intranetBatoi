@@ -10,6 +10,7 @@ use Intranet\Entities\Alumno_grupo;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
 use Intranet\Entities\Modulo_ciclo;
+use Intranet\Entities\Modulo_grupo;
 use DB;
 use Illuminate\Database\Seeder;
 use ImportTableSeeder;
@@ -267,8 +268,9 @@ class ImportController extends Seeder
                     $this->crea_modulosCiclos();
                 }
                 break;
-                
+               
         }
+         
     }
 
     private function crea_modulosCiclos()
@@ -278,7 +280,9 @@ class ImportController extends Seeder
             $fichero = explode("\n", Storage::get('public/programacions.txt'));
             $indice = Modulo_ciclo::max('id') ? Modulo_ciclo::max('id') : 0;
         }
-        $horarios = Horario::ModulosActivos()->get();
+        $horarios = Horario::distinct()->whereNotNull('idGrupo')
+                        ->whereNotNull('modulo')->whereNotNull('idProfesor')
+                        ->whereNotIn('modulo', config('constants.modulosNoLectivos'))->get();
         foreach ($horarios as $horario) {
             if (isset($horario->Grupo->idCiclo)) {
                 if (Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->count() == 0) {
@@ -300,6 +304,12 @@ class ImportController extends Seeder
                     }
                 }
                 $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
+                if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo',$horario->idGrupo)->count()==0){
+                    $nuevo = new Modulo_grupo();
+                    $nuevo->idModuloCiclo = $mc->id;
+                    $nuevo->idGrupo = $horario->idGrupo;
+                    $nuevo->save();
+                }
                 if (!Programacion::where('idModuloCiclo', $mc->id)->where('curso', Curso())->first()) {
                     $prg = New Programacion();
                     $prg->idModuloCiclo = $mc->id;

@@ -114,9 +114,9 @@ class Actividad extends Model
                         ->where('hasta', '>=', $despues);
     }
 
-    public function scopeQueDepartamento($query, $dep)
+    public function scopeDepartamento($query, $dep)
     {
-        $actividades = Actividad_grupo::select('idActividad')->QueDepartamento($dep)->get()->toarray();
+        $actividades = Actividad_grupo::select('idActividad')->Departamento($dep)->get()->toarray();
         return $query->whereIn('id', $actividades);
     }
 

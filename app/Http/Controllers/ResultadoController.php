@@ -8,6 +8,7 @@ use Intranet\Entities\Curso_alumno;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Modulo;
 use Intranet\Entities\Modulo_ciclo;
+use Intranet\Entities\Departamento;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Resultado;
 use Jenssegers\Date\Date;
@@ -24,6 +25,7 @@ use Intranet\Botones\Panel;
 use Styde\Html;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Programacion;
+use Intranet\Entities\Modulo_grupo;
 
 class ResultadoController extends IntranetController
 {
@@ -32,7 +34,7 @@ class ResultadoController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Resultado';
-    protected $gridFields = ['XGrupo', 'XModulo','XEvaluacion', 'Xprofesor' ];
+    protected $gridFields = ['Modulo','XEvaluacion', 'XProfesor' ];
     protected $modal = true;
 
     protected function iniBotones()
@@ -43,10 +45,8 @@ class ResultadoController extends IntranetController
     
     public function search()
     {
-        $misGrupos = Grupo::select('codigo')->MisGrupos()->get()->toarray();
-        $misModulos = Modulo::select('codigo')->MisModulos()->get()->toarray();
-        return Resultado::whereIn('idGrupo', $misGrupos)
-                        ->whereIn('idModulo', $misModulos)
+        $misModulos = hazArray(Modulo_Grupo::MisModulos(),'id','id');
+        return Resultado::whereIn('idModuloGrupo', $misModulos)
                         ->get();
     }
     /* 
@@ -55,14 +55,11 @@ class ResultadoController extends IntranetController
      */
     public function store(Request $request)
     {
-        $grupo = Grupo::find($request->idGrupo);
-        $modulociclo = Modulo_ciclo::where('idModulo',$request->idModulo)
-                    ->where('idCiclo',$grupo->idCiclo)
-                    ->first();
-        if ($modulociclo){
+        $modulogrupo = Modulo_grupo::find($request->idModuloGrupo);
+        if ($modulogrupo){
             $this->realStore($request);
             if ($request->evaluacion == 3){ 
-                $programacion = Programacion::where('idModuloCiclo',$modulociclo->id)->where('curso',Curso())->first()->id;
+                $programacion = Programacion::where('idModuloCiclo',$modulogrupo->idModuloCiclo)->where('curso',Curso())->first()->id;
                 return redirect ("/programacion/$programacion/seguimiento");  
              }
             else return $this->redirect();
@@ -78,7 +75,7 @@ class ResultadoController extends IntranetController
     {
         $grupo = Grupo::select('codigo', 'nombre')->QTutor()->first();
         if ($grupo) {
-            $resultados = Resultado::QGrupo($grupo->codigo)->orderBy('idModulo')
+            $resultados = Resultado::QGrupo($grupo->codigo)->orderBy('idModuloGrupo')
                             ->orderBy('evaluacion')->get();
             $datosInforme = $grupo->nombre;
             return $this->hazPdf('pdf.resultado', $resultados, $datosInforme)->stream();
@@ -100,7 +97,7 @@ class ResultadoController extends IntranetController
         $trimestre = evaluacion();
         $trimestres = [];
         $panel = new Panel('Resultado', null, null, false);
-        for ($i=1; $i< $trimestre;$i++){
+        for ($i=1; $i < $trimestre;$i++){
             $panel->setPestana($i."_trimestre", ($i == $trimestre-1), '.resultado.partials.trimestre', ['trimestre', $i]);
             $trimestres[] = $i;
         }
@@ -212,15 +209,15 @@ class ResultadoController extends IntranetController
     {
         $dep = AuthUser()->departamento;
         $fechas = config("curso.evaluaciones.$trimestre");
-        $actividades = Actividad::QueDepartamento($dep)
+        $actividades = Actividad::Departamento($dep)
                 ->where('desde', '>=', $fechas[0])
                 ->where('hasta', '<=', $fechas[1])
                 ->where('estado', 3)
                 ->orderBy('desde')
                 ->get();
-        $primero = Resultado::QueDepartamento($dep)
+        $primero = Resultado::Departamento($dep)
                         ->TrimestreCurso($trimestre, 1)->get();
-        $segundo = Resultado::QueDepartamento($dep)
+        $segundo = Resultado::Departamento($dep)
                         ->TrimestreCurso($trimestre, 2)->get();
         $resultados = $primero
                 ->concat($segundo)
@@ -235,16 +232,13 @@ class ResultadoController extends IntranetController
 
     private function FaltaEntrega($trimestres)
     {
+        $mg = hazArray(Modulo_ciclo::where('idDepartamento',AuthUser()->departamento)->get(),'id','id');
+        $modulos = Modulo_grupo::whereIn('idModuloCiclo',$mg)->get();
         $faltan = collect();
-        $modulos = Horario::select('idGrupo', 'modulo', 'idProfesor')
-            ->ModulosActivos(esRol(AuthUser()->rol, config('constants.rol.jefe_dpto')) ? AuthUser()->departamento : null)
-                ->orderBy('idGrupo')
-                ->get();
         foreach ($trimestres as $trimestre){
             $evaluaciones = config("curso.trimestres.$trimestre");
             $this->llenaFaltan($faltan, $modulos, $trimestre, $evaluaciones);
         }    
-
         return $faltan;
     }
 
@@ -252,15 +246,14 @@ class ResultadoController extends IntranetController
     {
         foreach ($evaluaciones as $curso => $evaluacion)
             if ($evaluacion)
-                foreach ($modulos as $modulo)
-                    if (Resultado::where('idModulo', $modulo->modulo)->where('idGrupo', $modulo->idGrupo)->where('evaluacion', $evaluacion)->first() == null)
-                        if ($this->curso($modulo->idGrupo) == $curso) {
+                foreach ($modulos as $moduloG)
+                    if (Resultado::where('idModulo', $moduloG->ModuloCiclo->idModulo)->where('idGrupo', $moduloG->idGrupo)->where('evaluacion', $evaluacion)->first() == null)
+                        if ($this->curso($moduloG->idGrupo) == $curso) {
                             $elemento = new Faltan();
                             $elemento->trimestre = $trimestre;
-                            $elemento->modulo = Modulo::find($modulo->modulo)->literal;
-                            $elemento->idProfesor = $modulo->idProfesor;
-                            $elemento->nombre = Profesor::find($modulo->idProfesor)->shortName;
-                            $elemento->grupo = Grupo::find($modulo->idGrupo)->nombre;
+                            $elemento->modulo = $moduloG->ModuloCiclo->Modulo->literal;
+                            $elemento->profesores = $moduloG->Profesores();
+                            $elemento->grupo = $moduloG->Grupo->nombre;
                             $elemento->idResultado = null;
                             $faltan->push($elemento);
                         }
@@ -284,6 +277,6 @@ class ResultadoController extends IntranetController
 class Faltan
 {
 
-    public $trimestre, $modulo, $idProfesor, $nombre, $grupo;
+    public $trimestre, $modulo, $profesores,  $grupo;
 
 }

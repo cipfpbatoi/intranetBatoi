@@ -30,11 +30,6 @@ class Ciclo extends Model
         return $this->belongsTo(Departamento::class, 'departamento', 'id');
     }
 
-    public function scopeQueDepartamento($query, $dep = null)
-    {
-        $dep = $dep ? $dep : AuthUser()->departamento;
-        return $query->where('departamento', '=', $dep);
-    }
     public function getTipoOptions()
     {
         return config('constants.tipoEstudio');

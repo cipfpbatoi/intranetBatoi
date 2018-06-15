@@ -104,9 +104,6 @@ class Profesor extends Authenticatable
         return $this->hasMany(Comision::getClass(), 'idProfesor', 'dni');
     }
 
-//    public function Grupo(){
-//        return $this->hasMany(Comision::getClass(),'profesor_id','dni');
-//    }
     public function Faltas()
     {
         return $this->hasMany(Faltas::getClass(), 'idProfesor', 'dni');
@@ -165,9 +162,12 @@ class Profesor extends Authenticatable
     public function scopeGrupo($query, $grupo)
     {
         $profesores = Horario::distinct()->select('idProfesor')->Grup($grupo)->get()->toArray();
-        return $query->whereIn('dni', $profesores)
-                        ->orWhereIn('sustituye_a', $profesores)
-                        ->Activo();
+        return $query->whereIn('dni', $profesores)->orWhereIn('sustituye_a', $profesores)->Activo();
+    }
+    public function scopeGrupoT($query, $grupoT)
+    {
+        $profesores = Miembro::distinct()->select('idProfesor')->where('idGrupoTrabajo', '=', $grupoT)->get()->toArray();
+        return $query->whereIn('dni', $profesores)->Activo();
     }
 
     public function scopeApiToken($query, $api)

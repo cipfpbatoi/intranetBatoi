@@ -53,11 +53,6 @@ class Grupo extends Model
         return $this->hasOne(Profesor::class, 'dni', 'tutor');
     }
 
-    public function Departamento()
-    {
-        return $this->hasOne(Departamento::class, 'departamento', 'id');
-    }
-
     public function Ciclo()
     {
         return $this->belongsto(Ciclo::class, 'idCiclo', 'id');
@@ -67,6 +62,7 @@ class Grupo extends Model
     {
         return $this->hasMany(Horario::class, 'codigo', 'idGrupo');
     }
+    
 
     public function getTodosOptions()
     {
@@ -111,23 +107,15 @@ class Grupo extends Model
         return $query->whereIn('codigo', $grupos);
     }
 
-    public function scopeQueDepartamento($query, $dep)
+    public function scopeDepartamento($query, $dep)
     {
-        $ciclos = Ciclo::select('id')->QueDepartamento($dep)->get()->toarray();
+        $ciclos = Ciclo::select('id')->where('departamento',$dep)->get()->toarray();
         return $query->whereIn('idCiclo', $ciclos);
     }
+    
     public function scopeCurso($query,$curso)
     {
         return $query->where('curso',$curso);
-    }
-
-    public function getProfesores()
-    {
-        $profesores = Horario::select('idProfesor')
-                ->distinct()
-                ->Grup($this->codigo)
-                ->get();
-        return $profesores;
     }
 
     public function getProyectoAttribute()

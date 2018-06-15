@@ -210,7 +210,7 @@ Route::get('/fct/{document}/empresa',['as' => 'fct.empresa', 'uses' => 'FctContr
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
-Route::put('instructor/{id}/edit',['as' => 'instructor.edita', 'uses' => 'InstructorController@edit']);
+Route::put('instructor/{id}/edit',['as' => 'instructor.edita', 'uses' => 'InstructorController@update']);
 Route::get('/instructor/{id}/delete', ['as' => 'instructor.destroy', 'uses' => 'InstructorController@destroy']);
 Route::get('/instructor/{id}/edit/{centro}', ['as' => 'instructor.edita', 'uses' => 'InstructorController@edita']);
 Route::put('/instructor/{id}/edit/{centro}', ['as' => 'instructor.update', 'uses' => 'InstructorController@guarda']);

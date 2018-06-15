@@ -13,9 +13,9 @@ class Actividad_grupo extends Model
         'idGrupo'];
     public $timestamps = false;
 
-    public function scopeQueDepartamento($query, $dep)
+    public function scopeDepartamento($query, $dep)
     {
-        $grupos = Grupo::select('codigo')->QueDepartamento($dep)->get()->toArray();
+        $grupos = Grupo::select('codigo')->Departamento($dep)->get()->toArray();
         return $query->distinct()->whereIn('idGrupo', $grupos);
     }
 

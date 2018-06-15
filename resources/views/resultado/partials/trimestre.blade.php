@@ -20,7 +20,11 @@
                         <li><strong>{{$grupo->first()->grupo}}</strong>
                             <ul>
                                 @foreach ($grupo as $elemento)
-                                    <li>{{$elemento->modulo}} ( {{$elemento->nombre}} )</li>
+                                    <li>{{$elemento->modulo}} (
+                                        @foreach ($elemento->profesores as $profesor)
+                                            {{\Intranet\Entities\Profesor::find($profesor['idProfesor'])->ShortName}} 
+                                        @endforeach
+                                    )</li>
                                 @endforeach 
                             </ul>
                         </li>

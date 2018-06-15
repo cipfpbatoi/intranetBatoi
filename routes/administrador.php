@@ -48,3 +48,6 @@ Route::resource('/modulo_ciclo', 'Modulo_cicloController', ['except' => ['destro
 Route::post('/modulo_ciclo/create', ['as' => 'moduloCiclo.store', 'uses' => 'Modulo_cicloController@store']);
 Route::put('/modulo_ciclo/{ciclo}/edit', ['as' => 'moduloCiclo.update', 'uses' => 'Modulo_cicloController@update']);
 Route::get('/modulo_ciclo/{ciclo}/delete', ['as' => 'moduloCiclo.destroy', 'uses' => 'Modulo_cicloController@destroy']);
+
+// manteniment
+Route::get('/actualizacion','AdministracionController@actualizacion');

@@ -34,6 +34,11 @@ class Modulo extends Model
     {
         return $this->hasMany(Horario::class, 'codigo', 'modulo');
     }
+    
+    public function Grupos(){
+        return $this->belongsToMany(Grupo::class,'modulo_grupos','idGrupo','idModulo','codigo');
+    }
+    
     public function scopeMisModulos($query, $profesor = null)
     {
         $profesor = $profesor ? $profesor : AuthUser();

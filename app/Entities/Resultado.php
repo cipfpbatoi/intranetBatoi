@@ -9,6 +9,7 @@ use Intranet\Events\ActivityReport;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno_grupo;
 use Intranet\Entities\Horario;
+use Intranet\Entities\Modulo_ciclo;
 
 class Resultado extends Model
 {
@@ -18,8 +19,7 @@ class Resultado extends Model
     protected $table = 'resultados';
     public $timestamps = false;
     protected $fillable = [
-        'idGrupo',
-        'idModulo',
+        'idModuloGrupo',
         'evaluacion',
         'matriculados',
         'evaluados',
@@ -31,8 +31,6 @@ class Resultado extends Model
         
     ];
     protected $rules = [
-        'idGrupo' => 'required',
-        'idModulo' => 'required',
         'evaluacion' => 'required',
         'matriculados' => 'required|numeric|max:60',
         'evaluados' => 'required|numeric|max:60',
@@ -41,8 +39,7 @@ class Resultado extends Model
         'udImp' => 'required|numeric|max:30',
     ];
     protected $inputTypes = [
-        'idGrupo' => ['type' => 'select'],
-        'idModulo' => ['type' => 'select'],
+        'idModuloGrupo' => ['type' => 'select'],
         'evaluacion' => ['type' => 'select'],
         'observaciones' => ['type' => 'textarea'],
         'idProfesor' => ['type' => 'hidden'],
@@ -69,30 +66,24 @@ class Resultado extends Model
         return config('constants.nombreEval');
     }
 
-    public function getIdGrupoOptions()
+//    public function getIdGrupoOptions()
+//    {
+//        return hazArray(Grupo::MisGrupos()->get(), 'codigo', 'nombre');
+//    }
+
+    public function getIdModuloGrupoOptions()
     {
-        return hazArray(Grupo::MisGrupos()->get(), 'codigo', 'nombre');
+  //      $todos = [];
+        foreach (Modulo_grupo::MisModulos() as $uno)
+            $todos[$uno->id] = $uno->Grupo->nombre.' - '.$uno->ModuloCiclo->Modulo->literal;
+        return $todos;
     }
 
-    public function getIdModuloOptions()
+    public function scopeQGrupo($query,$grupo)
     {
-        $misModulos = [];
-        $modulos = Modulo::Mismodulos()->Lectivos()->get();
-        foreach ($modulos as $modulo){
-            if (isset($modulo->Ciclo->ciclo))
-                $misModulos[$modulo->codigo] = $modulo->literal.' - '.$modulo->Ciclo->ciclo.' - ';
-            else
-                $misModulos[$modulo->codigo] = $modulo->literal.' - ';
-        }
-        return $misModulos;
-        return hazArray(Modulo::Mismodulos()->get(), 'codigo', 'literal');
+        return $query->whereIn('idModuloGrupo',hazArray(Modulo_grupo::where('idGrupo',$grupo)->get(),'id','id'));
     }
-
-    public function scopeQGrupo($query, $grupo)
-    {
-        return $query->where('idGrupo', $grupo);
-    }
-    public function scopeQueDepartamento($query,$dep){
+    public function scopeDepartamento($query,$dep){
         $profesores = Profesor::select('dni')->where('departamento',$dep)->get()->toarray();
         return $query->whereIn('idProfesor',$profesores);
     }
@@ -102,7 +93,6 @@ class Resultado extends Model
                     ->whereIn('idGrupo',Grupo::Curso($curso)->get()->toarray());
     }
     
-
     public function Grupo()
     {
         return $this->belongsTo(Grupo::class, 'idGrupo', 'codigo');
@@ -112,18 +102,13 @@ class Resultado extends Model
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
 
-    public function Modulo()
+    public function ModuloGrupo()
     {
-        return $this->belongsTo(Modulo::class, 'idModulo', 'codigo');
+        return $this->belongsTo(Modulo_grupo::class, 'idModuloGrupo', 'id');
     }
     
-    public function getXGrupoAttribute(){
-        return $this->Grupo->nombre;
-    }
-    public function getXModuloAttribute(){
-        if (isset($this->Modulo->Ciclo->ciclo))
-            return $this->Modulo->literal . ' - ' . $this->Modulo->Ciclo->ciclo . ' -';
-        else return $this->Modulo->literal ;
+    public function getModuloAttribute(){
+        return $this->ModuloGrupo->Grupo->nombre.'-'.$this->ModuloGrupo->ModuloCiclo->Modulo->literal;
     }
     public function getXEvaluacionAttribute(){
         return config("constants.nombreEval.$this->evaluacion");

@@ -40,11 +40,11 @@ class AsistentesCreate
                 $profesores = Profesor::Activo()->get();
             }
             if ($event->reunion->Tipos()['colectivo'] == 'GrupoTrabajo') {
-                $profesores = Miembro::where('idGrupoTrabajo', '=', $event->reunion->grupo)->get();
+                $profesores = Profesor::GrupoT($event->reunion->grupo)->get();
             }
             if ($event->reunion->Tipos()['colectivo'] == 'Grupo') {
                 $grupo = Grupo::QTutor(AuthUser()->dni)->get()->first();
-                $profesores = $grupo->getProfesores();
+                $profesores = Profesor::Grupo($grupo->codigo)->get();
             }
             if ($event->reunion->Tipos()['colectivo'] == '') {
                 $grupo = Grupo::QTutor(AuthUser()->dni)->get()->first();
@@ -54,25 +54,17 @@ class AsistentesCreate
                 $todos = Profesor::Activo()->get();
                 $profesores = [];
                 foreach ($todos as $uno){
-                    if ($uno->rol % config('constants.rol.jefe_dpto') == 0 || $uno->rol % config('constants.rol.direccion')== 0) $profesores[] = $uno;
+                    if ($uno->rol % config('constants.rol.jefe_dpto') == 0 || $uno->rol % config('constants.rol.direccion')== 0) 
+                        $profesores[] = $uno;
                 }
             }
 
             $reunion = Reunion::findOrFail($event->reunion->id);
-            foreach ($profesores as $profesor) {
-                $id = isset($profesor->dni) ? $profesor->dni : $profesor->idProfesor;
-                $profe = Profesor::find($id);
+            foreach ($profesores as $profe) {
                 if ($profe->Sustituye) $reunion->profesores()->attach($profe->Sustituye->dni,['asiste'=>true]);
-                else $reunion->profesores()->attach($id,['asiste'=>true]);
+                else $reunion->profesores()->attach($profe->dni,['asiste'=>true]);
             }
-//            $creador = Asistencia::where('idProfesor', AuthUser()->dni)->where('idReunion',$event->reunion->id)->first();
-//            if (!isset($creador->asiste)){
-//                $a = new Asistencia;
-//                $a->idProfesor = AuthUser()->dni;
-//                $a->idReunion = $event->reunion->id;
-//                $a->asiste = true;
-//                $a->save(); 
-//            }
+
         }
     }
 

@@ -27,7 +27,7 @@
             @foreach ($agrupados as $grupo)
             @foreach ($grupo as $elemento)
             <tr>
-                <td>{!! $elemento->Modulo->literal !!} - @if (isset($elemento->Modulo->Ciclo->ciclo)){{ $elemento->Modulo->Ciclo->ciclo }} - @endif {{$elemento->Profesor->ShortName}} </td>
+                <td>{!! $elemento->Modulo !!} -  {{$elemento->Profesor->ShortName}} </td>
                 <td>{!! config('constants.nombreEval')[$elemento->evaluacion] !!}</td>
                 <td>{{$elemento->evaluados}}</td>
                 <td>{{$elemento->aprobados }}</td>
@@ -68,7 +68,7 @@
             @foreach ($agrupados as $grupo)
             @foreach ($grupo as $elemento)
             <tr>
-                <td>{!! $elemento->Modulo->literal !!} - @if (isset($elemento->Modulo->Ciclo->ciclo)) {{ $elemento->Modulo->Ciclo->ciclo }} @endif </td>
+                <td>{!! $elemento->Modulo !!}</td>
                 <td>{!! config('constants.nombreEval')[$elemento->evaluacion] !!}</td>
                 <td>{{$elemento->Profesor->ShortName}}</td>
                 <td>{{$elemento->udProg}}</td>

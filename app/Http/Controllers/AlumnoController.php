@@ -51,22 +51,10 @@ class AlumnoController extends PerfilController
     }
     public function equipo()
     {
-        $alumno = AuthUser()->nia;
-        $grupo = Alumno_grupo::select('idGrupo')->where('idAlumno',$alumno)->get()->first()->idGrupo;
-        $todos = Profesor::join('horarios','profesores.dni','=','horarios.idProfesor')
-                ->join('modulos','horarios.modulo','=','modulos.codigo')
-                ->select('profesores.*','horarios.idGrupo','modulos.*')
-                ->orderBy('apellido1', 'asc')
-                ->orderBy('apellido2', 'asc')
-                ->where('horarios.idGrupo','=',$grupo)
-                ->distinct('dni','horarios.modulo','horarios.dia_semana','horarios.orden')
-                ->get();
-//        $todos = Profesor::orderBy('apellido1', 'asc')
-//                ->orderBy('apellido2', 'asc')
-//                ->grupo($grupo)
-//                ->get();
+        $grupo = AuthUser()->Grupo->first()->codigo;
         $this->panel->setPestana('profile', true, 'profile.equipo',null,null,1);
-        return $this->grid($todos);
+        return $this->grid(Profesor::orderBy('apellido1', 'asc')->orderBy('apellido2', 'asc')
+                ->Grupo($grupo)->get());
     }    
     public function iniBotones()
     {

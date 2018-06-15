@@ -89,5 +89,18 @@ class Modulo_ciclo extends Model
         return isblankTrans('models.Modulo.'.$this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Modelo.'.$this->estado);
     }
     
-    
+    public function scopeMisModulos($query, $profesor = null)
+    {
+        $profesor = $profesor ? $profesor : AuthUser();
+        $modulos = Modulo_ciclo::select('id')
+                ->distinct()
+                ->misModulos($profesor)
+                ->get()->toArray();
+        $ciclos = Grupo::select('idCiclo')
+                ->distinct()
+                ->misGrupos($profesor)
+                ->get()->toArray();
+        
+        return $query->whereIn('idModulo', $modulos)->whereIn('idCiclo',$ciclos);
+    }
 }

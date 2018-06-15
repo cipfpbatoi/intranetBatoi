@@ -131,23 +131,6 @@ class Horario extends Model
         }
         return $semana;
     }
-
- 
-    public static function scopeModulosActivos($query,$dep = null)
-    {
-        return isset($dep) ?
-                $query->distinct()->whereNotNull('idGrupo')
-                        ->whereNotNull('modulo')
-                        ->whereNotNull('idProfesor')
-                        ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
-                        ->whereIn('modulo',hazArray(Modulo_ciclo::where('idDepartamento',$dep)->get(),'idModulo','idModulo'))
-                            : $query->distinct()
-                        ->whereNotNull('idGrupo')
-                        ->whereNotNull('modulo')
-                        ->whereNotNull('idProfesor')
-                        ->whereNotIn('modulo', config('constants.modulosNoLectivos'));
-                        
-    }
     
     protected function getProfesorAttribute(){
         return $this->Mestre->ShortName;

@@ -30,7 +30,9 @@ function evaluacion()
 {
     $eval = 1;
     foreach (config('curso.evaluaciones') as $key => $evaluacion){
-        if (haVencido($evaluacion[1])) $eval = $key+1;
+        if (haVencido($evaluacion[1])) {
+            $eval = $key+1;
+        }
     }
     return $eval;
 }
