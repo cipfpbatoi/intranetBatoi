@@ -133,7 +133,7 @@ class ImportController extends Seeder
                 'idProfesor' => 'docente',
                 'modulo' => 'contenido',
                 'idGrupo' => 'grupo',
-                'aula' => 'aula',
+                //'aula' => 'aula',
             )),
         array('nombrexml' => 'horarios_ocupaciones',
             'nombreclase' => 'Horario',
@@ -144,8 +144,6 @@ class ImportController extends Seeder
                 'dia_semana' => 'dia_semana',
                 'sesion_orden' => 'sesion_orden',
                 'plantilla' => 'plantilla',
-                'desde' => 'hora_desde',
-                'hasta' => 'hora_hasta',
                 'idProfesor' => 'docente',
                 'ocupacion' => 'ocupacion'
             )),

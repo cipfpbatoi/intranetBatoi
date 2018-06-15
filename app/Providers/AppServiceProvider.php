@@ -8,6 +8,7 @@ use Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
+
     /**
      * Bootstrap any application services.
      *
@@ -30,5 +31,10 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local', 'testing')) {
             $this->app->register(DuskServiceProvider::class);
         }
+        if ($this->app->environment() !== 'production') {
+            $this->app->register(\Way\Generators\GeneratorsServiceProvider::class);
+            $this->app->register(\Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class);
+        }
     }
+
 }

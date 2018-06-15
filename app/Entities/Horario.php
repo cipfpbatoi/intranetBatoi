@@ -15,6 +15,7 @@ class Horario extends Model
     
     protected $primaryKey = 'id';
     //protected $fillable = ['idProfesor', 'modulo', 'idGrupo', 'ocupacion','aula'];
+    protected $fillable = ['idProfesor', 'modulo', 'idGrupo', 'ocupacion','aula','dia_semana','sesion_orden','plantilla'];
     protected $rules = [
         'idProfesor' => 'required',
     ];
