@@ -33,7 +33,8 @@ class Curso extends Model
         'fecha_inicio' => 'required|date',
         'fecha_fin' => 'required|date',
         'horas' => 'required|integer',
-        'aforo' => 'numeric'
+        'aforo' => 'numeric',
+        'comentarios' => 'required'
     ];
     protected $inputTypes = [
         'tipo' => ['type' => 'hidden'],

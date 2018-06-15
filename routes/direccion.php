@@ -42,9 +42,6 @@ Route::post('/falta_itaca/{falta}/refuse', ['as' => 'faltaItaca.refuse', 'uses' 
 Route::get('/falta/pdf', ['as' => 'falta.pdf', 'uses' => 'MensualController@vistaImpresion']);
 Route::post('/falta/pdf', ['as' => 'falta.pdf', 'uses' => 'MensualController@imprimir']);
 
-Route::get('/fct', ['as' => 'fct.direccion.index', 'uses' => 'PanelFctController@index']);
-
-
 Route::get('/alumno/{alumno}/edit', ['as' => 'alumno.edit', 'uses' => 'AlumnoController@edit']);
 Route::get('/programacion/list', ['as' => 'programacion.list', 'uses' => 'PanelControlProgramacionController@index']);
 Route::get('/fichar/list', ['as' => 'fichar.list', 'uses' => 'FicharController@listado']);
