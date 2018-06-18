@@ -235,7 +235,7 @@ class ImportController extends Seeder
             case 'Alumno_grupo' : $this->truncateTables('alumnos_grupos');
                 break;
             case 'Horario' : if ($xml == 'horarios_grupo') {
-                    $this->plantilla = Horario::first()->plantilla;
+                    $this->plantilla = Horario::last()->plantilla;
                     $this->truncateTables('horarios');
                 }
                 break;
