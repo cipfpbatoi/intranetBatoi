@@ -122,7 +122,7 @@ class FctController extends IntranetController
             $testigo = false;
             foreach ($fcts as $fct) {
                 if ($grupo->proyecto) {
-                    if ($fct->calProyecto) {
+                    if (isset($fct->calProyecto)) {
                         $fct->actas = 3;
                         $testigo = true;
                         $fct->save();
