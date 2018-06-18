@@ -158,6 +158,7 @@ class ImportController extends Seeder
     {
         return str_random(60);
     }
+    
     public function store(Request $request)
     {
         if ($request->hasFile('fichero')) {
@@ -235,7 +236,10 @@ class ImportController extends Seeder
             case 'Alumno_grupo' : $this->truncateTables('alumnos_grupos');
                 break;
             case 'Horario' : if ($xml == 'horarios_grupo') {
-                    $this->plantilla = Horario::last()->plantilla;
+                    if (isset(DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla)) 
+                       $this->plantilla = DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla;
+                    else
+                        $this->plantilla = 0;     
                     $this->truncateTables('horarios');
                 }
                 break;
@@ -255,7 +259,7 @@ class ImportController extends Seeder
                 break;
             case 'Horario' : if ($xml == 'horarios_ocupaciones') {
                     $this->eliminarHorarios();
-                    $this->crea_modulosCiclos();
+                    if (!$request->primera) $this->crea_modulosCiclos();
                 }
                 break;
         }
