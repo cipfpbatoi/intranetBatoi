@@ -133,7 +133,7 @@ class ImportController extends Seeder
                 'idProfesor' => 'docente',
                 'modulo' => 'contenido',
                 'idGrupo' => 'grupo',
-                //'aula' => 'aula',
+            //'aula' => 'aula',
             )),
         array('nombrexml' => 'horarios_ocupaciones',
             'nombreclase' => 'Horario',
@@ -453,34 +453,63 @@ class ImportController extends Seeder
         $pt = call_user_func($guard);
         $pasa = true;
         foreach ($xmltable->children() as $registroxml) {  //recorro registro del xml
-            
-                $atributosxml = $registroxml->attributes(); // saco los valores de los atributos xml
+            $atributosxml = $registroxml->attributes(); // saco los valores de los atributos xml
+            if (isset($tabla['filtro'])) $pasa = $this->filtro($tabla['filtro'], $atributosxml);
+            if ($pasa)
+                    {
+                $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
+                $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
+           
+                if ($this->encuentra($clase, $clave)) {   //Update
+                    foreach ($tabla['update'] as $keybd => $keyxml) {
+                        $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
+                    }
+                    $pt->save();
+                } else {  //create
+                    if (isset($arrayDatos)) unset($arrayDatos); //borra el array de carga cada vez que entro bucle
+                    foreach ($tabla['update'] + $tabla['create'] as $keybd => $keyxml) {
+                        $arrayDatos[$keybd] = $this->saca_campos($atributosxml, $keyxml);
+                    }
+                    $create = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::create';
+                    print_r($arrayDatos);
+                    switch ($tabla['nombreclase']) {
+                        case 'Horario':
+                            Horario::create($arrayDatos);
+                            break;
+                        case 'Alumno':
+                            Alumno::create($arrayDatos);
+                            break;
+                        case 'Profesor':
+                            Profesor::create($arrayDatos);
+                            break;
+                        case 'Modulo':
+                            dd('hola');
+                            Modulo::create($arrayDatos);
+                            break;
+                        case 'Ocupacion':
+                            Ocupacion::create($arrayDatos);
+                            break;
+                        case 'Alumno_grupo':
+                            Alumno_grupo::create($arrayDatos);
+                            break;
+                        case 'Grupo':
+                            Grupo::create($arrayDatos);
+                            break;
 
-                if (isset($tabla['filtro']))
-                    $pasa = $this->filtro($tabla['filtro'], $atributosxml);
-                if ($pasa) {
-
-                    $find = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::find'; //busco si ya existe en la bd
-                    $pt = call_user_func($find, $this->saca_campos($atributosxml, $tabla['id'], 0));
-                    if ($pt) {   //Update
-                        foreach ($tabla['update'] as $keybd => $keyxml) {
-                            $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
-                        }
-
-                        $pt->save();
-                    } else {  //create
-                        if (isset($arrayDatos))
-                            unset($arrayDatos); //borra el array de carga cada vez que entro bucle
-                        foreach ($tabla['update'] + $tabla['create'] as $keybd => $keyxml) {
-                            $this->saca_campos($atributosxml, $keyxml);
-                            $arrayDatos[$keybd] = $this->saca_campos($atributosxml, $keyxml);
-                        }
-                        $create = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::create';
-                        $pt = call_user_func($create, $arrayDatos);
+//                        default:
+//                            $pt = call_user_func($create, $arrayDatos);
+//                            break;
                     }
                 }
+            }
         }
+
         Alert::success($tabla['nombrexml'] . ' con ' . count($xmltable->children()) . ' Registres');
+    }
+
+    private function encuentra($clase, $clave)
+    {
+        return $clase::find($clave);
     }
 
     private function truncateTables($tables)
