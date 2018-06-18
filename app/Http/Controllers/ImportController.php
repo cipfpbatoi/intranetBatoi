@@ -1,7 +1,5 @@
 <?php
-
 namespace Intranet\Http\Controllers;
-
 use Illuminate\Http\Request;
 Use Intranet\Entities\Alumno;
 Use Intranet\Entities\Profesor;
@@ -18,10 +16,10 @@ use Illuminate\Support\Facades\Artisan;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Programacion;
-
 class ImportController extends Seeder
 {
-
+    private $plantilla;
+    
     private $campos_bd_xml = array(
         array('nombrexml' => 'alumnos',
             'nombreclase' => 'Alumno',
@@ -148,22 +146,18 @@ class ImportController extends Seeder
                 'ocupacion' => 'ocupacion'
             )),
     );
-
     public function create()
     {
         return view('seeder.create');
     }
-
     public function email($nombre, $apellido)
     {
         return strtolower(substr($nombre, 0, 1) . $apellido . '@cipfpbatoi.es');
     }
-
     public function aleatorio()
     {
         return str_random(60);
     }
-
     public function store(Request $request)
     {
         if ($request->hasFile('fichero')) {
@@ -179,7 +173,6 @@ class ImportController extends Seeder
                 Alert::danger(trans('messages.generic.invalidFormat'));
         } else
             Alert::danger(trans('messages.generic.noFile'));
-
         foreach (Profesor::all() as $profesor) {
             if ($grupo = Grupo::QTutor($profesor->dni)->first()) {
                 if (!esRol($profesor->rol, config('constants.rol.tutor'))) {
@@ -213,7 +206,6 @@ class ImportController extends Seeder
 //        $this->empresas();
         return view('seeder.store', compact('result'));
     }
-
     // Ejecuta la obra de arte
     public function run($fxml, Request $request)
     {
@@ -231,7 +223,6 @@ class ImportController extends Seeder
         } else
             Alert::danger(trans('messages.generic.noFile'));
     }
-
     private function pre($clase, $xml)
     {
         switch ($clase) {
@@ -244,12 +235,12 @@ class ImportController extends Seeder
             case 'Alumno_grupo' : $this->truncateTables('alumnos_grupos');
                 break;
             case 'Horario' : if ($xml == 'horarios_grupo') {
+                    $this->plantilla = Horario::first()->plantilla;
                     $this->truncateTables('horarios');
                 }
                 break;
         }
     }
-
     private function post($clase, $xml, Request $request)
     {
         switch ($clase) {
@@ -269,7 +260,6 @@ class ImportController extends Seeder
                 break;
         }
     }
-
     private function crea_modulosCiclos()
     {
         $enlace = (Storage::exists('public/programacions.txt')) ? true : false;
@@ -321,13 +311,11 @@ class ImportController extends Seeder
             }
         }
     }
-
     private function alumnosBaja()
     {
         $hoy = Hoy();
         DB::table('alumnos')->whereNull('baja')->update(['baja' => $hoy]);
     }
-
     private function noSustituye()
     {
         $sustitutos = Profesor::where('sustituye_a', '>', ' ')->get();
@@ -339,27 +327,22 @@ class ImportController extends Seeder
             }
         }
     }
-
     private function profesoresBaja()
     {
         DB::table('profesores')->update(['activo' => false, 'sustituye_a' => '']);
     }
-
     private function bajaAlumnos()
     {
         DB::table('alumnos_grupos')->join('alumnos', 'idAlumno', '=', 'nia')->whereNotNull('alumnos.baja')->delete();
     }
-
     private function gruposBaja()
     {
         DB::table('grupos')->update(['tutor' => 'BAJA']);
     }
-
     private function bajaGrupos()
     {
         DB::table('grupos')->where('tutor', '=', 'BAJA')->delete();
     }
-
     private function getFechaFormatoIngles($fecha)
     {
         $fecha = str_replace('/', '-', $fecha);
@@ -371,14 +354,12 @@ class ImportController extends Seeder
             return $fecha2->format('Y-m-d');
         }
     }
-
     // Cifrar cadena
     private function cifrar($cadena)
     {
         return bcrypt(trim($cadena));
         //return crypt($cadena, $this->hash);
     }
-
     // Crea codigo que no esté
     private function crea_codigo_profesor()
     {
@@ -389,12 +370,10 @@ class ImportController extends Seeder
         } while ($tots > 0);
         return($azar);
     }
-
     private function digitos($telefono)
     {
         return substr($telefono, 0, 9);
     }
-
     // Construye domicilio
     private function hazDomicilio($tipo_via, $domicilio, $numero, $puerta, $escalera, $letra, $piso)
     {
@@ -414,22 +393,21 @@ class ImportController extends Seeder
             $domic .= " " . $piso . "º";
         if ($letra != "")
             $domic .= "-" . $letra;
-
         return ($domic);
     }
-
+    
     private function saca_campos($atrxml, $llave, $func = 1)
     {
         $lista = explode(",", $llave, 99);
         if (count($lista) == 1) {
             if (isset($atrxml[$llave]))
-                return($atrxml[$llave]);
+                return(mb_convert_encoding($atrxml[$llave],'utf8'));
             else
                 return($llave);
         }
         else {
             for ($i = $func; $i < count($lista); $i++) {
-                $params[$i - $func] = $atrxml[$lista[$i]];
+                $params[$i - $func] = mb_convert_encoding($atrxml[$lista[$i]],'utf8');
             }
             if ($func)
                 return (call_user_func_array(array($this, $lista[0]), $params));
@@ -437,7 +415,7 @@ class ImportController extends Seeder
                 return ($params);
         }
     }
-
+    
     private function filtro($filtro, $campos)
     {
         $elemento = $campos[$filtro[0]];
@@ -446,7 +424,6 @@ class ImportController extends Seeder
         $condicion = "return('$elemento' $op '$valor');";
         return eval($condicion) ? true : false;
     }
-
     private function in($xmltable, $tabla)
     {
         $guard = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::unguard';
@@ -460,7 +437,7 @@ class ImportController extends Seeder
                 $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
                 $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
            
-                if ($this->encuentra($clase, $clave)) {   //Update
+                if ($pt = $this->encuentra($clase, $clave)) {   //Update
                     foreach ($tabla['update'] as $keybd => $keyxml) {
                         $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
                     }
@@ -471,10 +448,10 @@ class ImportController extends Seeder
                         $arrayDatos[$keybd] = $this->saca_campos($atributosxml, $keyxml);
                     }
                     $create = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::create';
-                    print_r($arrayDatos);
                     switch ($tabla['nombreclase']) {
                         case 'Horario':
-                            Horario::create($arrayDatos);
+                            if ($arrayDatos['plantilla']>= $this->plantilla)
+                                Horario::create($arrayDatos);
                             break;
                         case 'Alumno':
                             Alumno::create($arrayDatos);
@@ -495,7 +472,6 @@ class ImportController extends Seeder
                         case 'Grupo':
                             Grupo::create($arrayDatos);
                             break;
-
 //                        default:
 //                            $pt = call_user_func($create, $arrayDatos);
 //                            break;
@@ -503,15 +479,12 @@ class ImportController extends Seeder
                 }
             }
         }
-
         Alert::success($tabla['nombrexml'] . ' con ' . count($xmltable->children()) . ' Registres');
     }
-
     private function encuentra($clase, $clave)
     {
         return $clase::find($clave);
     }
-
     private function truncateTables($tables)
     {
         $this->checkForeignKeys(false);
@@ -520,15 +493,12 @@ class ImportController extends Seeder
                 DB::table($tabla)->truncate();
             } else
             DB::table($tables)->truncate();
-
         $this->checkForeignKeys(true);
     }
-
     private function eliminarRegistrosBlanco($table, $columna)
     {
         DB::table($table)->where($columna, '=', '')->delete();
     }
-
     private function eliminarHorarios()
     {
         $maxHorarios = DB::table('horarios')->whereNull('ocupacion')->orderBy('plantilla', 'desc')->first()->plantilla;
@@ -536,11 +506,9 @@ class ImportController extends Seeder
         $maxHorarios = DB::table('horarios')->whereNotNull('ocupacion')->orderBy('plantilla', 'desc')->first()->plantilla;
         DB::table('horarios')->whereNotNull('ocupacion')->where('plantilla', '<>', $maxHorarios)->delete();
     }
-
     private function checkForeignKeys($check)
     {
         $check = $check ? '1' : '0';
         DB::statement("SET FOREIGN_KEY_CHECKS= $check;");
     }
-
 }
