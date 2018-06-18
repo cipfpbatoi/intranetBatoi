@@ -128,7 +128,7 @@ class FctController extends IntranetController
                         $fct->save();
                     }
                 } else {
-                    if ($fct->calificacion) {
+                    if (isset($fct->calificacion)) {
                         $fct->actas = 3;
                         $testigo = true;
                         $fct->save();

@@ -235,13 +235,12 @@ class ImportController extends Seeder
                 break;
             case 'Alumno_grupo' : $this->truncateTables('alumnos_grupos');
                 break;
-            case 'Horario' : if ($xml == 'horarios_grupo') {
+            case 'Horario' : 
                     if (isset(DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla)) 
                        $this->plantilla = DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla;
                     else
-                        $this->plantilla = 0;     
-                    $this->truncateTables('horarios');
-                }
+                        $this->plantilla = 0;  
+                    if ($xml == 'horarios_grupo')  $this->truncateTables('horarios');
                 break;
         }
     }
@@ -505,10 +504,10 @@ class ImportController extends Seeder
     }
     private function eliminarHorarios()
     {
-        $maxHorarios = DB::table('horarios')->whereNull('ocupacion')->orderBy('plantilla', 'desc')->first()->plantilla;
-        DB::table('horarios')->whereNull('ocupacion')->where('plantilla', '<>', $maxHorarios)->delete();
-        $maxHorarios = DB::table('horarios')->whereNotNull('ocupacion')->orderBy('plantilla', 'desc')->first()->plantilla;
-        DB::table('horarios')->whereNotNull('ocupacion')->where('plantilla', '<>', $maxHorarios)->delete();
+        $maxHorarios = DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla;
+        DB::table('horarios')->where('plantilla', '<>', $maxHorarios)->delete();
+//        $maxHorarios = DB::table('horarios')->whereNotNull('ocupacion')->orderBy('plantilla', 'desc')->first()->plantilla;
+//        DB::table('horarios')->whereNotNull('ocupacion')->where('plantilla', '<>', $maxHorarios)->delete();
     }
     private function checkForeignKeys($check)
     {
