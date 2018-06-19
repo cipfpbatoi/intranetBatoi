@@ -162,14 +162,14 @@ class FctController extends IntranetController
     public function pdf($id)
     {
         $fct = Fct::findOrFail($id);
-        $secretario = Profesor::find(config('contacto..secretario'));
-        $director = Profesor::find(config('contacto..director'));
+        $secretario = Profesor::find(config('contacto.secretario'));
+        $director = Profesor::find(config('contacto.director'));
         $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
-            'centro' => config('contacto..nombre'),
-            'poblacion' => config('contacto..poblacion'),
-            'provincia' => config('contacto..provincia'),
+            'centro' => config('contacto.nombre'),
+            'poblacion' => config('contacto.poblacion'),
+            'provincia' => config('contacto.provincia'),
             'director' => $director->FullName
         ];
         
