@@ -70,23 +70,10 @@ class AdministracionController extends Controller{
         return back();
     }
     
-    protected function actualizacion(){
-        system('git pull');
-        system('php ./../artisan config:cache');
-        system('php ./../artisan migrate');
-        $version_nueva = config('constants.version');
-        if (Storage::exists('version.txt')) $version_actual = Storage::get('version.txt');
-        else $version_actual = 0;
-        if ($version_nueva > $version_actual){
-            $this->exe_actualizacion();
-            Storage::put('version.txt',$version_nueva);
-            Alert::info('Actualització realitzada correctament');
-        }
-        else Alert::info('Ja tens la darrera versió');
-        return redirect('/');
-    }
     
-    public function exe_actualizacion(){
+    
+    public static function exe_actualizacion($version_antigua){
+        
         $this->crea_modulosCiclos();
         $resultados = Resultado::whereNull('idModuloGrupo')->get();
         foreach ($resultados as $resultado){

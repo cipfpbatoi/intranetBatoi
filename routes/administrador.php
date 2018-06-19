@@ -50,4 +50,4 @@ Route::put('/modulo_ciclo/{ciclo}/edit', ['as' => 'moduloCiclo.update', 'uses' =
 Route::get('/modulo_ciclo/{ciclo}/delete', ['as' => 'moduloCiclo.destroy', 'uses' => 'Modulo_cicloController@destroy']);
 
 // manteniment
-Route::get('/actualizacion','AdministracionController@actualizacion');
+Route::get('/actualizacion','ActualizacionController@actualizacion');

@@ -29,12 +29,11 @@ class ActualizacionController extends Controller{
         if (Storage::exists('version.txt')) $version_actual = Storage::get('version.txt');
         else $version_actual = 0;
         if ($version_nueva > $version_actual){
-            $this->exe_actualizacion();
+            AdministracionController::exe_actualizacion($version_actual);
             Storage::put('version.txt',$version_nueva);
             Alert::info('Actualització realitzada correctament');
         }
         else Alert::info('Ja tens la darrera versió');
         return redirect('/');
     }
-    
 }
