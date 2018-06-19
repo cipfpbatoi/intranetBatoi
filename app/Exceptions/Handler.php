@@ -55,7 +55,7 @@ class Handler extends ExceptionHandler
     {
         
         if ($exception->getMessage()!='The given data was invalid.')
-            avisa(config('constants.avisos.errores'),$exception->getMessage());
+            avisa(config('contacto.avisos.errores'),$exception->getMessage());
         if ($exception instanceof ModelNotFoundException) {
             $e = new NotFoundHttpException($exception->getMessage(), $exception);
             //return response()->view('errors.404',[],404);

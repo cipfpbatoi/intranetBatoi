@@ -95,15 +95,15 @@ trait traitImprimir
         }
         $vEvent->setDtStart($ini)
                 ->setDtEnd($fin)
-                ->setLocation(config('constants.contacto.nombre'), config('constants.contacto.direccion'))
+                ->setLocation(config('contacto.nombre'), config('contacto.direccion'))
                 ->setSummary(ucfirst($this->model)." : ". $elemento->$descripcion.'')
                 ->setDescription($elemento->$objetivos);
         $vCalendar->addComponent($vEvent);
         return $vCalendar;
     }
     protected function cargaDatosCertificado($datos){
-        $secretario = Profesor::find(config('constants.contacto.secretario'));
-        $director = Profesor::find(config('constants.contacto.director'));
+        $secretario = Profesor::find(config('contacto.secretario'));
+        $director = Profesor::find(config('contacto.director'));
         $datos['fecha'] = FechaString(null,'ca');
         $datos['secretario']['titulo'] = $secretario->sexo == 'H'?'En':'Na';
         $datos['secretario']['articulo'] = $secretario->sexo == 'H'?'El':'La';

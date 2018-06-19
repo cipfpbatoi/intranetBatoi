@@ -56,7 +56,7 @@ return [
     */
 
     'from' => [
-        'address' => 'intranet@cipfpbatoi.es',
+        'address' => config('contacto.host.email'),
         'name' => 'Intranet',
     ],
 

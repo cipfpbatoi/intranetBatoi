@@ -23,11 +23,6 @@ return [
       'orientador' => '021634142C',
     ],
     'veep' => [],
-    'evaluaciones' => [
-        1 => ['2017-09-01','2017-12-01'],
-        2 => ['2017-12-02','2018-03-11'],
-        3 => ['2017-09-01','2018-06-22']
-    ],
     'rol' => [
         'direccion' => 2,
         'jefe_dpto' => 13,
@@ -99,13 +94,7 @@ return [
         'orden' => 'fa-calendar',
         'open' => 'fa-toggle-on',
     ],
-    'avisos' => [
-        'errores' => '021652470V',
-        'material' => '021654541H',
-    ],
-    'incidencias' => [
-        '021637655Z', '021652470V', '021650958T', '021654541H'
-    ],
+    
     'programaciones' => [ 'fichero' => '1' , 'mostrar' => '3' , 'enlace' => '0'],
     'completa' => 45,
     'precioKilometro' => 0.19,

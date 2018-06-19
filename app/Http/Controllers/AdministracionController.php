@@ -46,7 +46,7 @@ class AdministracionController extends Controller{
     
     public function allApiToken()
     {
-        $remitente = ['nombre' => 'Intranet', 'email' => 'intranet@cipfpbatoi.es'];
+        $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
         foreach (Profesor::Activo()->get() as $profesor) {
             dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
         }

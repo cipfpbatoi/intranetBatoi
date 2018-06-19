@@ -6,10 +6,10 @@
             <div style="float:left;width:30%">
                 <img src="{{url('img/pdf/Conselleria-B_CON.jpg')}}" width="140px" height="70px"/><br/>
                 <span style='font-size: xx-small'>
-                {!! config('constants.contacto.direccion') !!}<br/>    
-                Tel - {!! config('constants.contacto.telefono') !!} - Fax: {!! config('constants.contacto.fax') !!}<br/>
-                e-mail: {!! config('constants.contacto.email') !!} <br/>
-                {!! config('constants.contacto.web') !!} <br/></span>
+                {!! config('contacto.direccion') !!}<br/>    
+                Tel - {!! config('contacto.telefono') !!} - Fax: {!! config('contacto.fax') !!}<br/>
+                e-mail: {!! config('contacto.email') !!} <br/>
+                {!! config('contacto.web') !!} <br/></span>
             </div>
             <div style="float:left;width:30%">
                 <img src="{{url('img/pdf/cipfpbatoi.jpg')}} " width="180px" height="60px"/><br/>
@@ -30,7 +30,7 @@
         </div>
         <br/><br/><br/><br/>
         <div class="container col-lg-6" style='padding-right: 200px;float:right' >
-            <p>{!! config('constants.contacto.poblacion') !!} a {{ FechaString() }}</p><br/><br/>
+            <p>{!! config('contacto.poblacion') !!} a {{ FechaString() }}</p><br/><br/>
             <p>Firma / Signatura :</p>
         </div>
     </div>

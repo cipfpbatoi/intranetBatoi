@@ -106,7 +106,7 @@ use traitAutorizar,
 
     public function miApiToken()
     {
-        $remitente = ['nombre' => 'Intranet', 'email' => 'intranet@cipfpbatoi.es'];
+        $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
         dispatch(new SendEmail(AuthUser()->email, $remitente, 'email.apitoken', Profesor::find(AuthUser()->dni)));
         Alert::info('Correu enviat');
         return back();
@@ -144,15 +144,15 @@ use traitAutorizar,
         $cargo = 'Professor';
         if (esRol($profesor->rol, config('constants.rol.direccion')))
             switch ($profesor->dni) {
-                case config('constants.contacto.director'): $cargo = 'Director';
+                case config('contacto.director'): $cargo = 'Director';
                     break;
-                case config('constants.contacto.secretario'): $cargo = 'Secretària';
+                case config('contacto.secretario'): $cargo = 'Secretària';
                     break;
-                case config('constants.contacto.vicedirector'): $cargo = 'ViceDirector';
+                case config('contacto.vicedirector'): $cargo = 'ViceDirector';
                     break;
-                case config('constants.contacto.jefeEstudios'): $cargo = "Cap d'Estudis";
+                case config('contacto.jefeEstudios'): $cargo = "Cap d'Estudis";
                     break;
-                case config('constants.contacto.jefeEstudios2'): $cargo = "Cap d'Estudis";
+                case config('contacto.jefeEstudios2'): $cargo = "Cap d'Estudis";
                     break;
             }
         if ($cargo == 'Professor' && esRol($profesor->rol, config('constants.rol.tutor'))) 

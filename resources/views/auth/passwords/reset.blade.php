@@ -16,7 +16,7 @@
                 <section class="login_content">
                     <div class="login-box">
                         <div class="login-logo">
-                             <a href="{{ url('/home') }}">{{ config('constants.contacto.nombre') }}</a>
+                             <a href="{{ url('/home') }}">{{ config('contacto.nombre') }}</a>
                         </div>
 
                         <!-- /.login-logo -->

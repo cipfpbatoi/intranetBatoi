@@ -1,9 +1,9 @@
 @include('pdf.partials.cabecera')
 <div class="container col-lg-12" style="width:95%;clear:right;text-align: justify;">
     <br/><br/><br/>
-    <strong>{{\Intranet\Entities\Profesor::find(config('constants.contacto.director'))->FullName}}</strong>
+    <strong>{{\Intranet\Entities\Profesor::find(config('contacto.director'))->FullName}}</strong>
     <br/><br/><br/>
-    Con DNI número {{\Intranet\Entities\Profesor::find(config('constants.contacto.director'))->dni}}, como Director del C.I.P de F.P. Batoi, y según el programa
+    Con DNI número {{\Intranet\Entities\Profesor::find(config('contacto.director'))->dni}}, como Director del C.I.P de F.P. Batoi, y según el programa
     de formación de manipuladores de alimentos que se imparte a los alumnos de este centro,
 </div>
 <br/><br/>
@@ -29,5 +29,5 @@
 <div class="container" style="width:50%;float: center">
     <br/><br/><br/><br/>
     
-    <p>En {{config('constants.contacto.poblacion')}}, a {{FechaString($datosInforme->fecha_fin)}} </p>
+    <p>En {{config('contacto.poblacion')}}, a {{FechaString($datosInforme->fecha_fin)}} </p>
 </div>

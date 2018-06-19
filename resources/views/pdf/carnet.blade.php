@@ -9,7 +9,7 @@
         </div>
         <div class="container col-lg-12 fondo" >
             <div style="width: 100%; margin-bottom: 0px ">
-                <p style="font-size: 8pt;text-align: center; margin-bottom: 1px;margin-top: 3px;"><strong >{!! config('constants.contacto.nombre') !!}</strong></p>
+                <p style="font-size: 8pt;text-align: center; margin-bottom: 1px;margin-top: 3px;"><strong >{!! config('contacto.nombre') !!}</strong></p>
                 <strong style="font-size: 7pt;">Nom : {!! $elemento->apellido1 !!} {!! $elemento->apellido2 !!}, {!! $elemento->nombre !!}</strong>
             </div>
             <div style="float:left;width:69%">
@@ -19,7 +19,7 @@
                 <strong style="font-size: 7pt;">DNI : {!! $elemento->dni !!}</strong>
                 @endif
 
-                <p style="font-size: 5pt;  margin-top:50px;margin-bottom: 6px">{!! fullDireccion() !!}<br/>Telef: {!! config('constants.contacto.telefono') !!}<br/>{!! config('constants.contacto.web') !!}</p>
+                <p style="font-size: 5pt;  margin-top:50px;margin-bottom: 6px">{!! fullDireccion() !!}<br/>Telef: {!! config('contacto.telefono') !!}<br/>{!! config('contacto.web') !!}</p>
                 <div style="float:left;width:65%; text-align: center;margin-top: 2px;">
                     <strong style="font-size: 8pt">{!!$datosInforme[1]!!}</strong>
                 </div>

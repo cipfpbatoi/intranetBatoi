@@ -287,7 +287,7 @@ class newProject extends Seeder
         Menu::create([
             'id' => 11,
             'nombre' => 'moodle',
-            'url' => 'https://moodle.cipfpbatoi.es',
+            'url' => 'https://moodle.'.config('contacto.host.dominio'),
             'class' => '',
             'rol' => 1,
             'menu' => 'general',

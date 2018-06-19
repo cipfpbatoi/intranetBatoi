@@ -83,7 +83,7 @@ class EstadoComisionTest extends IntegrationTestCase
         ]);
         $this->notSeeInDatabase('notifications', [
             'type' => 'Intranet\Notifications\mensajePanel',
-            'notifiable_id' => config('constants.contacto.director'),
+            'notifiable_id' => config('contacto.director'),
             'read_at' => NULL
         ]);
         Comision::putEstado($comision->id,1);
@@ -94,7 +94,7 @@ class EstadoComisionTest extends IntegrationTestCase
         ]);
         $this->seeInDatabase('notifications', [
             'type' => 'Intranet\Notifications\mensajePanel',
-            'notifiable_id' => config('constants.contacto.director'),
+            'notifiable_id' => config('contacto.director'),
             'read_at' => NULL
         ]);
     }
@@ -141,7 +141,7 @@ class EstadoComisionTest extends IntegrationTestCase
         $comision->save();
         $this->notSeeInDatabase('notifications', [
             'type' => 'Intranet\Notifications\mensajePanel',
-            'notifiable_id' => config('constants.contacto.secretario'),
+            'notifiable_id' => config('contacto.secretario'),
             'read_at' => NULL
         ]);
         Comision::putEstado($comision->id,4);
@@ -152,7 +152,7 @@ class EstadoComisionTest extends IntegrationTestCase
         ]);
         $this->seeInDatabase('notifications', [
             'type' => 'Intranet\Notifications\mensajePanel',
-            'notifiable_id' => config('constants.contacto.secretario'),
+            'notifiable_id' => config('contacto.secretario'),
             'read_at' => NULL
         ]);
     }

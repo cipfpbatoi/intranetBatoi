@@ -59,7 +59,7 @@ function Curso()
  */
 function fullDireccion()
 {
-    return config('constants.contacto.direccion') . ' - ' . config('constants.contacto.postal') . ' ' . config('constants.contacto.poblacion');
+    return config('contacto.direccion') . ' - ' . config('contacto.postal') . ' ' . config('contacto.poblacion');
 }
 
 /**

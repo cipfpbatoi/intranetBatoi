@@ -138,7 +138,7 @@ class FctController extends IntranetController
             if ($testigo) {
                 $grupo->acta_pendiente = 1;
                 $grupo->save();
-                avisa(config('constants.contacto.jefeEstudios2'), "Acta pendent grup $grupo->nombre", "http://intranet.cipfpbatoi.es/direccion/$grupo->codigo/acta");
+                avisa(config('contacto.jefeEstudios2'), "Acta pendent grup $grupo->nombre", config('contacto.host.web')."/direccion/$grupo->codigo/acta");
                 Alert::message('Acta demanada', 'info');
             } else
                 Alert::message('No tens nous alumnes per ser avaluats', 'warning');
@@ -162,14 +162,14 @@ class FctController extends IntranetController
     public function pdf($id)
     {
         $fct = Fct::findOrFail($id);
-        $secretario = Profesor::find(config('constants.contacto.secretario'));
-        $director = Profesor::find(config('constants.contacto.director'));
+        $secretario = Profesor::find(config('contacto..secretario'));
+        $director = Profesor::find(config('contacto..director'));
         $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
-            'centro' => config('constants.contacto.nombre'),
-            'poblacion' => config('constants.contacto.poblacion'),
-            'provincia' => config('constants.contacto.provincia'),
+            'centro' => config('contacto..nombre'),
+            'poblacion' => config('contacto..poblacion'),
+            'provincia' => config('contacto..provincia'),
             'director' => $director->FullName
         ];
         

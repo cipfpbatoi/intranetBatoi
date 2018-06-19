@@ -32,7 +32,7 @@
         <div class="container" style="width:90%;">
             <br/><br/>
             <br/><br/><br/>
-            <p>{{config('constants.contacto.poblacion')}},a {{$datosInforme}} </p>
+            <p>{{config('contacto.poblacion')}},a {{$datosInforme}} </p>
             <br/><br/><br/><br/><br/>
             <div style="width:33%; float:left; ">
                 <p><strong>EL/LA PROFESSOR/A:</strong></p>

@@ -99,7 +99,7 @@ class Incidencia extends Model
     public function getResponsableOptions()
     {
         $todos = Profesor::select('dni', 'apellido1',  'nombre')
-                ->whereIn('dni', config('constants.incidencias'))
+                ->whereIn('dni', config('contacto.incidencias'))
                 ->get();
         $esp = array();
         foreach ($todos as $uno) {

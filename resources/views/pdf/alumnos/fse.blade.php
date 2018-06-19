@@ -8,7 +8,7 @@
     <table class="table table-bordered">
         <tr><th colspan="3">Centre Educatiu</th></tr>
         <tr><th>Codi</th><th>Denominació</th><th>Municipi</th></tr>
-        <tr><td><span style="font-size: 12px">{{ config('constants.contacto.codi') }}</span></td><td><span style="font-size: 12px">{{ config('constants.contacto.nombre') }}</span></td><td><span style="font-size: 12px">{{ config('constants.contacto.poblacion') }}</span></td></tr>
+        <tr><td><span style="font-size: 12px">{{ config('contacto.codi') }}</span></td><td><span style="font-size: 12px">{{ config('contacto.nombre') }}</span></td><td><span style="font-size: 12px">{{ config('contacto.poblacion') }}</span></td></tr>
     </table>   
     <table class="table table-bordered" >
         <tr><td style="text-align: left"><strong>Nom del cicle: </strong><span style="font-size: 12px">{{$datosInforme->Ciclo->ciclo}}</span></td><td style="text-align: left; font-weight: bold">Grau:</td></tr>

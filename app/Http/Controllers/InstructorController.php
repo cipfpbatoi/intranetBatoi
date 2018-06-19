@@ -144,15 +144,15 @@ class InstructorController extends IntranetController
         if ($instructor->surnames != ''){
             $fcts = $instructor->Fcts;
             $fecha = $this->ultima_fecha($fcts);
-            $secretario = Profesor::find(config('constants.contacto.secretario'));
-            $director = Profesor::find(config('constants.contacto.director'));
+            $secretario = Profesor::find(config('contacto.secretario'));
+            $director = Profesor::find(config('contacto.director'));
             $dades = ['date' => FechaString($fecha,'ca'),
                 'fecha' => FechaString($fecha,'es'),
                 'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
                 'secretario' => $secretario->FullName,
-                'centro' => config('constants.contacto.nombre'),
-                'poblacion' => config('constants.contacto.poblacion'),
-                'provincia' => config('constants.contacto.provincia'),
+                'centro' => config('contacto.nombre'),
+                'poblacion' => config('contacto.poblacion'),
+                'provincia' => config('contacto.provincia'),
                 'director' => $director->FullName,
                 'instructor' => $instructor
             ];
