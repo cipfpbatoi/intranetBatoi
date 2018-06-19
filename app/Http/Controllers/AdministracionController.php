@@ -91,6 +91,7 @@ class AdministracionController extends Controller{
     {
         Alert::info('Version 1.2');
     }
+    
 //    public function exe()
 //    {
 //        $this->crea_modulosCiclos();
