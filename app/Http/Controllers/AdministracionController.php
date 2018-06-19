@@ -71,8 +71,9 @@ class AdministracionController extends Controller{
     }
     
     protected function actualizacion(){
-        system('php ./../artisan migrate');
+        system('git pull');
         system('php ./../artisan config:cache');
+        system('php ./../artisan migrate');
         $version_nueva = config('constants.version');
         if (Storage::exists('version.txt')) $version_actual = Storage::get('version.txt');
         else $version_actual = 0;
@@ -85,7 +86,7 @@ class AdministracionController extends Controller{
         return redirect('/');
     }
     
-    private function exe_actualizacion(){
+    public function exe_actualizacion(){
         $this->crea_modulosCiclos();
         $resultados = Resultado::whereNull('idModuloGrupo')->get();
         foreach ($resultados as $resultado){

@@ -1279,6 +1279,17 @@ class newProject extends Seeder
             'activo' => 1,
             'orden' => 10
         ]);
+        Menu::create([
+            'id' => 108,
+            'nombre' => 'Actualizacion',
+            'url' => '/actualizacion',
+            'class' => '',
+            'rol' => 11,
+            'menu' => 'general',
+            'submenu' => 'administracion',
+            'activo' => 1,
+            'orden' => 6
+        ]);
 
         Ciclo::create([
             'id' => 2,
