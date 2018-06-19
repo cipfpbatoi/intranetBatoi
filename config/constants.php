@@ -1,28 +1,7 @@
 <?php
 
 return [
-    'contacto' => [
-      'direccion' => 'Carrer Societat Unió Musical, 8',
-      'latitude' => 38.691455,
-      'longitude' => -0.496455,
-      'telefono' => '966 52 76 60',
-      'web' => 'http://www.cipfpbatoi.es',
-      'nombre' => 'Centre Integrat Formació Professional Batoi',
-      'fax' => '966 52 76 61',
-      'codi' => '03012165',
-      'email' => '03012165.secret@gva.es',
-      'poblacion' => 'Alcoi',
-      'provincia' => 'Alacant',
-      'postal' => '03802',
-      'mapa' => 'https://www.google.es/maps/place/CIP+de+FP+Batoi/@38.691455,-0.4986437,17z/data=!3m1!4b1!4m5!3m4!1s0xd618702fd4eb5b1:0xab5dffe40dc99b43!8m2!3d38.691455!4d-0.496455',
-      'secretario' => '020784763P',
-      'director' => '020823669K' ,
-      'vicedirector' => '021666224V',
-      'jefeEstudios' => '021657327K',
-      'jefeEstudios2' => '029071324Z',
-      'orientador' => '021634142C',
-    ],
-    'veep' => [],
+    
     'rol' => [
         'direccion' => 2,
         'jefe_dpto' => 13,
@@ -94,13 +73,12 @@ return [
         'orden' => 'fa-calendar',
         'open' => 'fa-toggle-on',
     ],
-    
-    'programaciones' => [ 'fichero' => '1' , 'mostrar' => '3' , 'enlace' => '0'],
     'completa' => 45,
     'precioKilometro' => 0.19,
     'reservaAforo' => 1.2,
     'codigoGuardia' => '3249454',
     'estadoMaterial' => ['??','OK','Reparandose','Baja'],
+    'programaciones' => [ 'fichero' => '1' , 'mostrar' => '3' , 'enlace' => '0'],
     'procedenciaMaterial' => ['','Dotación','Compra','Donación'],
     'idiomas' => ['es' => 'Español', 'ca' => 'Valencià' , 'en' => 'English'],
     'estadoIncidencia' => ['Rechazada','Pendiente','En proceso','Resuelta'],
@@ -125,5 +103,6 @@ return [
     'tipoEstudio' => [1=>'Cicle Formatiu de Grau Mitjà','2'=>'Cicle Formatiu de Grau Superior','3'=>'Cicle Formatiu Bàsic','4'=>'Batxiller','5'=>'ESO','6'=>'Primària'],
     'tipoEstudioC' => [1=>'Ciclo Formativo de Grado Medio','2'=>'Ciclo Formativo de Grado Superior','3'=>'Ciclo Formativo Básico','4'=>'Bachiller','5'=>'ESO','6'=>'Primaria'],
     'version' => '1.0',
+    'veep' => [],
     ];
 

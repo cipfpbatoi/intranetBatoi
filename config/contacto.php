@@ -7,6 +7,7 @@ return [
       'telefono' => '966 52 76 60',
       'web' => 'http://www.cipfpbatoi.es',
       'nombre' => 'Centre Integrat Formació Professional Batoi',
+      'titulo' => 'CIP FP Batoi',
       'fax' => '966 52 76 61',
       'codi' => '03012165',
       'email' => '03012165.secret@gva.es',

@@ -152,7 +152,7 @@ class ImportController extends Seeder
     }
     public function email($nombre, $apellido)
     {
-        return strtolower(substr($nombre, 0, 1) . $apellido.'@'.config('contacto.dominio'));
+        return strtolower(substr($nombre, 0, 1) . $apellido.'@'.config('contacto.host.dominio'));
     }
     public function aleatorio()
     {
