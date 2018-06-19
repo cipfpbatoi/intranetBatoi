@@ -19,7 +19,8 @@ class ActualizacionController extends Controller{
         $versiones = config('constants.version');
         $version_nueva = end($versiones);
         if (Storage::exists('version.txt')) $version_actual = Storage::get('version.txt');
-        else $version_actual = 'v_0';
+        else $version_actual = 'v0';
+        dd($version_nueva);
         if ($version_nueva > $version_actual){
             AdministracionController::exe_actualizacion($version_actual);
             Storage::put('version.txt',$version_nueva);
