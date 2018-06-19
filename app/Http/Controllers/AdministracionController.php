@@ -75,7 +75,7 @@ class AdministracionController extends Controller{
     public static function exe_actualizacion($version_antigua){
         foreach (config('constants.version') as $version){
             if ($version > $version_antigua){
-                AdminstracionController::$version();
+                AdministracionController::$version();
             }
         }
     }
