@@ -84,6 +84,10 @@ Les dades d'algunes taules no els obtindrem de Itaca sinó que els posarem a ma.
 * municipios / provincias: opcional (s'utilitzen en alguns llistats)
 
 ## Importar dades de Itaca
+Abans de fer la primera importació de dades de Itaca hem d'obrir el fitxer **contacto.php** en _/config_ on configurem totes les dades del nostre centre. A més indicarem el NIF (en format Itaca, és a dir, amb un 0 davant) dels càrrecs així com:
+* avisos->material: la persona que indiquen rebrà un misstage cada vegada que es canvia un material inventariable d'ubicacio
+* incidències: ací posem a totes les persones que s'encarreguen de solventar incidències e el Centre. Són els usuaris a qui es pot asignar una incidència quan es crea.
+
 NO --> Abans hem de posar correctament les dades de:
 * Departaments
 * Cicles
