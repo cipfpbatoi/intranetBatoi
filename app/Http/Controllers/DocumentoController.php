@@ -51,6 +51,7 @@ class DocumentoController extends IntranetController
     public function store(Request $request, $fct = null)
     {
         if ($request->has('nota')) {
+            $this->validate($request,['nota' => 'numeric|min:1|max:10']);
             $fct = Fct::findOrFail($fct);
             $fct->calProyecto = $request->nota;
             if ($fct->calificacion < 1) $fct->calificacion = 1;
