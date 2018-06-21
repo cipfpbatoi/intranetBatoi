@@ -95,7 +95,7 @@ return [
                             4=>"Remisió al departament d'Orientació",
                             5=>"Part d'amonestació"
         ],
-    'asociacionEmpresa' => [1=>'FCT',2=>'FP DUAL'],
+    'asociacionEmpresa' => [1=>'FCT',2=>'FP DUAL',3=>'FCT Convalidada/Exempció'],
     'tipoTutoria' => [0=>'Tots el grups',1=>'Grau mitjà',2=>'Grau Superior'],
     'actasEnabled' => ['Claustro'=>'Claustro','COCOPE'=>'COCOPE'],
     'motivoAusencia' => ['Baja médica', 'Licencia por formación', 'Enfermedad común', 'Traslado de domicilio', 'Asistencia pruebas selectivas', 'Enfermedad grave o muerte del cónyuge', 'Asistencia médica, educativa o asistencial', 'Otros (rellenar cuadro de observaciones)'],

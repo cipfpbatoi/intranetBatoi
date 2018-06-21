@@ -22,7 +22,7 @@
             </div>
             <div class="left col-xs-12">
                 <ul class="list-unstyled">
-                   <li><i class="fa fa-birthday-cake"></i> {{$elemento->Colaboracion->Centro->nombre}}</li>
+                   <li><i class="fa fa-birthday-cake"></i> {{$elemento->Centro}}</li>
                    <li><i class="fa fa-calendar"></i>{{$elemento->desde}} - {{$elemento->hasta}} </li>
                    <li><i class="fa fa-clock-o"></i>{{ $elemento->horas }}</li>
                    <li><i class="fa-user"></i>{{$elemento->instructor}}</li> 

@@ -280,6 +280,7 @@ return array(
             'noProyecto' => 'No presenta Proyecto',
             'nuevoProyecto' => 'Accede a Proyecto',
             'upload' => 'Subir información Calidad',
+            'pass' => 'FCT Convalidada/Exento',
             'pg0301' => 'Imprime PG03-01 (Hoja Control Servicio)',
             'pr0301' => 'Imprime PR03-01 (Informar Alumno)',
             'pr0601' => 'Imprime PR06-01 (Entrega Certificado)',

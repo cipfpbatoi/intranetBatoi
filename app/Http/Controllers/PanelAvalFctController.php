@@ -41,8 +41,8 @@ class PanelAvalFctController extends BaseController
         else $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
         Session::put('redirect', 'PanelAvalFctController@index');
         
-        $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => [ 'calificacion', '!=', '1', 'actas', '==', 0]]));
-        $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['calProyecto','<','5', 'calificacion', '!=', '0', 'actas', '==', 0]]));
+        $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => [ 'calificacion', '!=', '1', 'actas', '==', 0,'asociacion','==',1]]));
+        $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['calProyecto','<','5', 'calificacion', '!=', '0', 'actas', '==', 0,'asociacion','==',1]]));
         
         if (Grupo::QTutor()->first() && Grupo::QTutor()->first()->acta_pendiente == false){
             $this->panel->setBoton('index', new BotonBasico("fct.acta", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
@@ -62,7 +62,7 @@ class PanelAvalFctController extends BaseController
         $this->panel->setBoton('grid', new BotonImg('fct.empresa', ['img' => 'fa-check-square-o', 'roles' => config('constants.rol.tutor'),
                 'where' => [ 'insercion', '==', '1']]));
         
-        $this->panel->setBoton('grid', new BotonImg('fct.show'));
+        $this->panel->setBoton('grid', new BotonImg('fct.show',['where' => ['asocicion','==',1]]));
     }
     
     

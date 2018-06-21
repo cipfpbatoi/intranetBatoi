@@ -17,13 +17,12 @@ class Fct extends Model
     public $timestamps = false;
 
     protected $fillable = ['idAlumno', 'idColaboracion', 'desde','hasta'
-        ,'horas','asociacion','horas_semanales'];
+        ,'horas','asociacion','horas_semanales','calificacion','correoAlumno','correoInstructor'];
 //    protected $fillable = ['idAlumno', 'idColaboracion',  'desde','hasta'
 //        ,'horas','asociacion','horas_semanales'];
     protected $rules = [
         'idAlumno' => 'required',
-        'idColaboracion' => 'required',
-      //  'idInstructor' => 'required|max:10',
+        'idColaboracion' => 'sometimes|required',
         'asociacion' => 'required',
         'desde' => 'required|date',
         'horas' => 'required|numeric',
@@ -31,10 +30,12 @@ class Fct extends Model
     protected $inputTypes = [
         'idAlumno' => ['type' => 'select'],
         'idColaboracion' => ['type' => 'select'],
-        'idInstructor' => ['type' => 'select'],
         'asociacion' => ['type' => 'select'],
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
+        'calificacion' => ['type' => 'hidden'],
+        'correoAlumno' => ['type' => 'hidden'],
+        'correoInstructor' => ['type' => 'hidden'],
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
@@ -93,10 +94,10 @@ class Fct extends Model
         $hoy = new Date();
         $hoy->format('Y-m-d');
         if ($hoy <= config('curso.fct.1')['fi'])
-            return $query->where('desde','<=',config('curso.fct.1')['fi']);
+            return $query->where('desde','<=',config('curso.fct.1')['fi'])->where('asociacion',1);
         if ($hoy < config('curso.fct.2')['inici'] &&($cuando == 3)) 
-            return $query->where('desde','<=',config('curso.fct.1')['fi']);  
-        return $query->where('desde','>=',config('curso.fct.2')['inici']);
+            return $query->where('desde','<=',config('curso.fct.1')['fi'])->where('asociacion',1);  
+        return $query->where('desde','>=',config('curso.fct.2')['inici'])->where('asociacion',1);
            
     }
     
@@ -160,7 +161,7 @@ class Fct extends Model
         return $this->Alumno->FullName;
     }
     public function getCentroAttribute(){
-        return $this->Colaboracion->Centro->nombre;
+        return isset($this->Colaboracion->Centro->nombre)?$this->Colaboracion->Centro->nombre:'Convalidada/Exent';
     }
     public function getPeriodeAttribute(){
         $inici = new Date($this->desde);
@@ -180,7 +181,7 @@ class Fct extends Model
         return isset($this->calificacion) ? $this->calificacion ? 'Apte' : 'No Apte' : 'No Avaluat';
     }
     public function getProjecteAttribute(){
-        return isset($this->calProyecto) ? $this->calProyecto == 0 ? 'Renuncia Avaluació' : $this->calProyecto : 'No Avaluat';
+        return isset($this->calProyecto) ? $this->calProyecto == 0 ? 'No presenta' : $this->calProyecto : 'No Avaluat';
     }
            
     public function getXInstructorAttribute(){

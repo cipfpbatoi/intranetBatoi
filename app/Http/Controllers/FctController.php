@@ -50,16 +50,37 @@ class FctController extends IntranetController
         
         return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
     }
+    public function pass()
+    {
+        $elemento = new Fct();
+        $elemento->asociacion = 3;
+        $elemento->horas = 0;
+        $elemento->desde = Hoy();
+        $elemento->hasta = Hoy();
+        $elemento->horas_semanales = 1;
+        $elemento->calificacion = 1;
+        $elemento->correoAlumno = 1;
+        $elemento->correoInstructor = 1;
+        //crea un nou element del model
+        $elemento->setInputType('idColaboracion',['disableAll' => 'on']);
+        $elemento->setInputType('hasta',['type' => 'hidden']);
+        $elemento->setInputType('horas',['type' => 'hidden']);
+        $elemento->setInputType('horas_semanales',['type' => 'hidden']);
+        $default = $elemento->fillDefautOptions(); // ompli caracteristiques dels camps
+        $modelo = $this->model;
+        return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
+    }
  
     protected function iniBotones()
     {
         //$this->panel->setBotonera();
-        $this->panel->setBoton('grid', new BotonImg('fct.delete',['where'=>['calificacion', '<', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.edit'));
-        $this->panel->setBoton('grid', new BotonImg('fct.show'));
-        $this->panel->setBoton('grid', new BotonImg('fct.pdf'));
+        $this->panel->setBoton('grid', new BotonImg('fct.delete',['orWhere'=>['calificacion', '<', '1','asociacion','>',2]]));
+        $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.pdf',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.email',['orWhere'=>['correoAlumno','==','0','correoInstructor','==','0']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pass", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('constants.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0301.print",['roles' => config('constants.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['roles' => config('constants.rol.tutor')]));
@@ -244,17 +265,24 @@ class FctController extends IntranetController
     public function store(Request $request)
     {
         $idFct = DB::transaction(function() use ($request){
-            $idInstructor = $request->idInstructor;
-            $idFct = parent::realStore(subsRequest($request->duplicate(null, $request->except('idInstructor')),[]));
-            $fct = Fct::find($idFct);
-            $fct->Instructores()->attach($idInstructor,['horas'=>$fct->horas]);
+            //dd(Colaboracion::find($request->idColaboracion)->Centro->Instructores->count());
+            $idFct = parent::realStore($request);
+            
+            if (isset($request->idColaboracion) && Colaboracion::find($request->idColaboracion)->Centro->Instructores->count() == 1){
+                $idInstructor = Colaboracion::find($request->idColaboracion)->Centro->Instructores->first()->dni;
+                $fct = Fct::find($idFct);
+                $fct->Instructores()->attach($idInstructor,['horas'=>$fct->horas]);
+            }
             return $idFct;
         });
-        if (Session::get('pestana')){
-            Session::put('pestana',3);
-            return redirect()->action('EmpresaController@show', ['id' => Colaboracion::find($request->idColaboracion)->Centro->idEmpresa]);
-        }
-        else return redirect()->action('FctController@show', ['id' => $idFct ]);
+        if (isset($request->idColaboracion))
+            if (Session::get('pestana')){
+                Session::put('pestana',3);
+                return redirect()->action('EmpresaController@show', ['id' => Colaboracion::find($request->idColaboracion)->Centro->idEmpresa]);
+            }
+            else return redirect()->action('FctController@show', ['id' => $idFct ]);
+        else
+            return $this->redirect();
     }
     
     public function show($id)
@@ -279,13 +307,13 @@ class FctController extends IntranetController
 
     public function destroy($id)
     {
-        $empresa = Fct::find($id)->Colaboracion->Centro->idEmpresa;
-        parent::destroy($id);
         if (Session::get('pestana')){
+            $empresa = Fct::find($id)->Colaboracion->Centro->idEmpresa;
+            parent::destroy($id);
             Session::put('pestana',3);
             return redirect()->action('EmpresaController@show', ['id' => $empresa]);
         }
-        else return $this->redirect();
+        else return parent::destroy($id);
     }
     public function nouInstructor($idFct,Request $request){
        $fct = Fct::find($idFct);

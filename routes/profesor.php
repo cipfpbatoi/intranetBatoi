@@ -192,6 +192,8 @@ Route::get('/fct/{id}/show', ['as' => 'fct.show', 'uses' => 'FctController@show'
 Route::put('/fct/{id}/edit', ['as' => 'fct.update', 'uses' => 'FctController@update']);
 Route::get('/fct/create/{colaboracio}', ['as' => 'fct.create2', 'uses' => 'FctController@create']);
 Route::post('/fct/create', ['as' => 'fct.store', 'uses' => 'FctController@store']);
+Route::get('/fct/pass',['as' => 'fct.pass', 'uses' => 'FctController@pass']);
+Route::post('/fct/pass',['as' => 'fct.pass', 'uses' => 'FctController@store']);
 Route::get('/fct/{id}/pdf', ['as' => 'fct.pdf', 'uses' => 'FctController@pdf']);
 Route::get('/fct/{id}/email', ['as' => 'fct.email', 'uses' => 'FctController@email']);
 Route::get('/fct/{document}/print', ['as' => 'fct.print', 'uses' => 'FctController@document']);
