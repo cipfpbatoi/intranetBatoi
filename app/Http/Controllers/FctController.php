@@ -58,7 +58,7 @@ class FctController extends IntranetController
         $elemento->desde = Hoy();
         $elemento->hasta = Hoy();
         $elemento->horas_semanales = 1;
-        $elemento->calificacion = 1;
+        $elemento->calificacion = 2;
         $elemento->correoAlumno = 1;
         $elemento->correoInstructor = 1;
         //crea un nou element del model

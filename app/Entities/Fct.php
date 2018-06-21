@@ -178,7 +178,7 @@ class Fct extends Model
         return $inicio->addWeeks($semanas)->format('d-m-Y');
     }
     public function getQualificacioAttribute(){
-        return isset($this->calificacion) ? $this->calificacion ? 'Apte' : 'No Apte' : 'No Avaluat';
+        return isset($this->calificacion) ? $this->calificacion ?$this->calificacion==2?'Convalidat/Exempt': 'Apte' : 'No Apte' : 'No Avaluat';
     }
     public function getProjecteAttribute(){
         return isset($this->calProyecto) ? $this->calProyecto == 0 ? 'No presenta' : $this->calProyecto : 'No Avaluat';

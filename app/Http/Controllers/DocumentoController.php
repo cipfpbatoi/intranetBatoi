@@ -53,7 +53,7 @@ class DocumentoController extends IntranetController
         if ($request->has('nota')) {
             $fct = Fct::findOrFail($fct);
             $fct->calProyecto = $request->nota;
-            $fct->calificacion = 1;
+            if ($fct->calificacion < 1) $fct->calificacion = 1;
             $fct->save();
         }
         if ($request->enlace) $except = ['nota','fichero'];
