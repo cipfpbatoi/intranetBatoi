@@ -99,6 +99,16 @@ class ImportController extends Seeder
             ),
             'create' => array(
             )),
+        array('nombrexml' => 'aulas',
+            'nombreclase' => 'Espacio',
+            'id' => 'aula',
+            'update' => array(
+                'descripcion' => 'nombre',
+            ),
+            'create' => array(
+                'aula' => 'codigo',
+                'idDepartamento' => '99',
+            )),
         array('nombrexml' => 'ocupaciones',
             'nombreclase' => 'Ocupacion',
             'id' => 'codigo',
@@ -131,7 +141,7 @@ class ImportController extends Seeder
                 'idProfesor' => 'docente',
                 'modulo' => 'contenido',
                 'idGrupo' => 'grupo',
-            //'aula' => 'aula',
+                'aula' => 'aula',
             )),
         array('nombrexml' => 'horarios_ocupaciones',
             'nombreclase' => 'Horario',
