@@ -248,7 +248,8 @@ return array(
         'Changeschedule' => ' Canviar horari',
         'Auxiliar' => 'Taules auxiliars',
         'Modulociclo' => 'Mòdul / Cicle',
-        'Actasfct' => 'Control Fct/Actes'
+        'Actasfct' => 'Control Fct/Actes',
+        'Actualizacion' => 'Actualització aplicació'
         
     ),
     'situations' => array(

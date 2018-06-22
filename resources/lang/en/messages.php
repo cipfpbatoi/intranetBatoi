@@ -245,7 +245,8 @@ return array(
         'Changeschedule' => ' Change Schedule',
         'Auxiliar' => 'Auxiliar tables',
         'Modulociclo' => 'Module / Cycle',
-        'Actasfct' => 'Control Fct/Minutes'
+        'Actasfct' => 'Control Fct/Minutes',
+        'Actualizacion' => 'Update'
     ),
     'situations' => array(
         '0' => 'Not notified',

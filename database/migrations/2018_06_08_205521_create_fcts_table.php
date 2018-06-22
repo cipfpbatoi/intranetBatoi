@@ -16,7 +16,7 @@ class CreateFctsTable extends Migration {
 		{
 			$table->increments('id');
 			$table->string('idAlumno', 8)->index('fcts_idalumno_foreign');
-			$table->integer('idColaboracion')->unsigned()->index('fcts_idcolaboracion_foreign');
+			$table->integer('idColaboracion')->nullable()->unsigned()->index('fcts_idcolaboracion_foreign');
 			$table->boolean('asociacion');
 			$table->date('desde');
 			$table->date('hasta')->nullable();

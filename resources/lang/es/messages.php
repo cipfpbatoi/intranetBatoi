@@ -246,7 +246,8 @@ return array(
         'Changeschedule' => ' Cambiar horario',
         'Auxiliar' => 'Taules auxiliars',
         'Modulociclo' => 'Mòdul / Cicle',
-        'Actasfct' => 'Control Fct/Actas'
+        'Actasfct' => 'Control Fct/Actas',
+        'Actualizacion' => 'Actualización aplicación'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

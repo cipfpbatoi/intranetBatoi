@@ -29,7 +29,7 @@ class CreateActividadTest extends FeatureTestCase
     function test_a_user_create_a_actividad()
     {
         
-        $siguiente = $this->siguiente('actividades');
+        
         $this->actingAs($user = $this->defaultTutor());
         
         $this->visit(route('actividad.create'))
@@ -43,6 +43,7 @@ class CreateActividadTest extends FeatureTestCase
             'desde' => '2017-08-04 12:00',
             'estado' => '0',
         ]);
+        $siguiente = $this->siguiente('actividades');
         $this->seeInDatabase('actividad_profesor',[
             'idProfesor' => $user->dni,
             'coordinador' => 1,
