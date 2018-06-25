@@ -109,7 +109,7 @@ class Resultado extends Model
     }
     
     public function getModuloAttribute(){
-        return $this->ModuloGrupo->Grupo->nombre.'-'.$this->ModuloGrupo->ModuloCiclo->Modulo->literal;
+        return $this->ModuloGrupo->literal;
     }
     public function getXEvaluacionAttribute(){
         return config("constants.nombreEval.$this->evaluacion");

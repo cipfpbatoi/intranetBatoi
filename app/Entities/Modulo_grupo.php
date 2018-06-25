@@ -49,5 +49,14 @@ class Modulo_grupo extends Model
     {
         return $query->whereIn('idGrupo',hazArray(Grupo::Curso($curso)->get(),'codigo','codigo'));
     }
+    public function getXGrupoAttribute(){
+        return $this->Grupo->nombre;
+    }
+    public function getXModuloAttribute(){
+        return $this->ModuloCiclo->Xmodulo;
+    }
+    public function getliteralAttribute(){
+        return $this->XGrupo.'-'.$this->XModulo;
+    }
     
 }
