@@ -55,7 +55,7 @@ Route::post('/reunion/aviso',['as' => 'reunion.avisaFalta','uses'=>'ReunionContr
 Route::get('/horarios/pdf',['as'=>'horarios.pdf','uses'=>'ProfesorController@imprimirHorarios']);
 Route::get('/infDpto',['as'=>'infdpto.control','uses'=>'PanelInfDptoController@index']);
 
-Route::get('{grupo}/acta', ['as' => 'fct.acta', 'uses' => 'FctController@Acta']);
+Route::get('{grupo}/acta', ['as' => 'fct.acta', 'uses' => 'PanelActasController@indice']);
 Route::get('{grupo}/finActa', ['as' => 'fct.finActa', 'uses' => 'FctController@finActa']);
 Route::get('{grupo}/fol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificados']);
 Route::get('{alumno}/aFol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificado']);
