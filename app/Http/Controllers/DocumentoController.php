@@ -90,8 +90,8 @@ class DocumentoController extends IntranetController
         $elemento = new Documento;
         $elemento->tipoDocumento = 'Qualitat';
         $elemento->idDocumento = '';
-        $elemento->ciclo = Grupo::where('tutor', '=', AuthUser()->dni)->first()->Ciclo->ciclo;
-        $elemento->grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first()->nombre;
+        $elemento->ciclo = Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo;
+        $elemento->grupo = Grupo::QTutor(AuthUser()->dni)->first()->nombre;
         $elemento->supervisor = AuthUser()->FullName;
         $elemento->propietario = AuthUser()->FullName;
         $elemento->tags = 'Fct,PR03-01,PR04-01,PR04-02,PR06-01';
