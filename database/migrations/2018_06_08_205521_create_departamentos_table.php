@@ -15,8 +15,8 @@ class CreateDepartamentosTable extends Migration {
 		Schema::create('departamentos', function(Blueprint $table)
 		{
 			$table->boolean('id')->primary();
-			$table->string('cliteral', 30);
-			$table->string('vliteral', 30);
+			$table->string('cliteral', 50);
+			$table->string('vliteral', 50);
 			$table->string('depcurt', 3);
 		});
 	}

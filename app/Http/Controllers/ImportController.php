@@ -261,14 +261,13 @@ class ImportController extends Seeder
                 break;
             case 'Alumno': $this->bajaAlumnos();
                 break;
-            case 'Grupo' : if ($request->primera)
-                    $this->bajaGrupos();
+            case 'Grupo' : if ($request->primera) $this->bajaGrupos();
                 break;
             case 'Alumno_grupo' : $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
                 break;
             case 'Horario' : if ($xml == 'horarios_ocupaciones') {
                     $this->eliminarHorarios();
-                    if (!$request->primera) $this->crea_modulosCiclos();
+                    if ($request->primera) $this->crea_modulosCiclos();
                 }
                 break;
         }
