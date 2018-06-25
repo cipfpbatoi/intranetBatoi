@@ -144,7 +144,7 @@
         <table class="table table-bordered">
             <tr><th>Mòdul</th><th>Proposta</th></tr>
             @foreach ($datosInforme['programaciones'] as $programacion)
-                <tr><td>{{$programacion->Modulo->literal}}</td><td style="text-align: justify">{!!$programacion->propuestas!!}</td></tr>
+                <tr><td>{{$programacion->XModulo}}</td><td style="text-align: justify">{!!$programacion->propuestas!!}</td></tr>
             @endforeach
         </table>    
     </div>
