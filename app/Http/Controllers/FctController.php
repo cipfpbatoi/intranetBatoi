@@ -203,7 +203,7 @@ class FctController extends IntranetController
     public function Acta($idGrupo){
         $grupo = Grupo::findOrFail($idGrupo);
         $fcts = Fct::Grupo($grupo)->Pendiente()->get();
-        $panel = new Panel($this->model, ['Nombre', 'Centro', 'hasta', 'horas', 'qualificacio', 'projecte'], 'grid.standard');
+        $panel = new Panel($this->model, ['Nombre', 'hasta', 'horas', 'qualificacio', 'projecte'], 'grid.standard');
         $panel->setTitulo(['quien' => $grupo->nombre ]);
         $panel->setElementos($fcts);
         $panel->setBoton('index', new BotonBasico("direccion.$idGrupo.finActa",['text'=>'acta']));

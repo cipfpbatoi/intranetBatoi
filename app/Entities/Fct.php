@@ -158,7 +158,7 @@ class Fct extends Model
         return $fecha->format('d-m-Y');
     }
     public function getNombreAttribute(){
-        return $this->Alumno->FullName;
+        return $this->Alumno->NameFull;
     }
     public function getCentroAttribute(){
         return isset($this->Colaboracion->Centro->nombre)?$this->Colaboracion->Centro->nombre:'Convalidada/Exent';
