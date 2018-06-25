@@ -116,7 +116,7 @@ Els professors estan asignats per defecte al departament 99 ('Desconegut'). Cada
 
 Els grups por defecte no estan asignats a cap cicle. Per a fer-ho anem a **Professorat -> Gestió grups -> Editar grup** i li posem a cada grup el seu cicle.
 
-Per a finalitzar hem de tornar a fer la importació per a que s'asignen correctament els mòduls als cicles al importar els horaris però **sense marcar la casella de 'Primera importació'.
+Per a finalitzar hem de tornar a fer la importació per a que s'asignen correctament els mòduls als cicles al importar els horaris **amb la casella de 'Primera importació' MARCADA.
 
 ### Resta d'importacions
 En el xml de Itaca per a la resta d'importacions només estaran les taules en que hi haja canvis, normalment:
