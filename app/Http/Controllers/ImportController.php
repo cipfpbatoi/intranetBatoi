@@ -274,34 +274,32 @@ class ImportController extends Seeder
     }
     private function crea_modulosCiclos()
     {
-        $enlace = (Storage::exists('public/programacions.txt')) ? true : false;
-        if ($enlace) {
+        if ($enlace = Storage::exists('public/programacions.txt')) {
             $fichero = explode("\n", Storage::get('public/programacions.txt'));
             $indice = Modulo_ciclo::max('id') ? Modulo_ciclo::max('id') : 0;
         }
         $horarios = Horario::distinct()->whereNotNull('idGrupo')
                         ->whereNotNull('modulo')->whereNotNull('idProfesor')
                         ->whereNotIn('modulo', config('constants.modulosNoLectivos'))->get();
+        
         foreach ($horarios as $horario) {
             if (isset($horario->Grupo->idCiclo)) {
                 if (Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->count() == 0) {
-                    $nuevo = new Modulo_ciclo();
-                    $nuevo->idModulo = $horario->modulo;
-                    $nuevo->idCiclo = $horario->Grupo->idCiclo;
-                    $nuevo->curso = substr($horario->idGrupo, 0, 1);
-                    $nuevo->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento) ? Profesor::find($horario->idProfesor)->departamento : '';
-                    if ($enlace)
-                        $nuevo->enlace = $fichero[$indice++];
-                    $nuevo->save();
+                    $mc = new Modulo_ciclo();
+                    $mc->idModulo = $horario->modulo;
+                    $mc->idCiclo = $horario->Grupo->idCiclo;
+                    $mc->curso = substr($horario->idGrupo, 0, 1);
+                    $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento) ? Profesor::find($horario->idProfesor)->departamento : '99';
+                    if ($enlace) $mc->enlace = $fichero[$indice++];
+                    $mc->save();
                 }
                 else {
-                    $nuevo = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
+                    $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
                     if ((isset(Profesor::find($horario->idProfesor)->departamento)) && ($nuevo->idDepartamento != Profesor::find($horario->idProfesor)->departamento)) {
-                        $nuevo->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
-                        $nuevo->save();
+                        $mc->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
+                        $mc->save();
                     }
                 }
-                $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
                 if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo', $horario->idGrupo)->count() == 0) {
                     $nuevo = new Modulo_grupo();
                     $nuevo->idModuloCiclo = $mc->id;
