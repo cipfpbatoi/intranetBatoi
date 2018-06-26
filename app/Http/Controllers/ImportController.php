@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Artisan;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Programacion;
+
 class ImportController extends Seeder
 {
     private $plantilla;
@@ -141,7 +142,7 @@ class ImportController extends Seeder
                 'idProfesor' => 'docente',
                 'modulo' => 'contenido',
                 'idGrupo' => 'grupo',
-                //'aula' => 'aula',
+                'aula' => 'aula',
             )),
         array('nombrexml' => 'horarios_ocupaciones',
             'nombreclase' => 'Horario',
@@ -482,9 +483,9 @@ class ImportController extends Seeder
                         case 'Grupo':
                             Grupo::create($arrayDatos);
                             break;
-//                        default:
-//                            $pt = call_user_func($create, $arrayDatos);
-//                            break;
+                        default:
+                            $pt = call_user_func($create, $arrayDatos);
+                            break;
                     }
                 }
             }
