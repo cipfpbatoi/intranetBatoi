@@ -17,7 +17,6 @@ class CreateCiclosTable extends Migration {
 			$table->integer('id')->primary();
 			$table->string('ciclo', 50);
 			$table->boolean('departamento')->index('ciclos_departamento_foreign');
-			$table->string('responsable', 80);
 			$table->boolean('tipo');
 			$table->string('normativa', 10)->default('LOE');
 			$table->string('titol', 100)->nullable();
