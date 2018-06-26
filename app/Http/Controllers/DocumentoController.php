@@ -69,7 +69,7 @@ class DocumentoController extends IntranetController
             $elemento->addFillable('nota');
             $elemento->tipoDocumento = 'Proyecto';
             $elemento->idDocumento = '';
-            $elemento->ciclo = Grupo::where('tutor', '=', AuthUser()->dni)->first()->Ciclo->ciclo;
+            $elemento->ciclo = Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo;
             $elemento->supervisor = AuthUser()->FullName;
             $elemento->propietario = $fct->Alumno->FullName;
             $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
