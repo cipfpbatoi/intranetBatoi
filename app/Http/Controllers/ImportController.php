@@ -9,6 +9,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
+use Intranet\Entities\Espacio;
 use DB;
 use Illuminate\Database\Seeder;
 use ImportTableSeeder;
@@ -483,9 +484,12 @@ class ImportController extends Seeder
                         case 'Grupo':
                             Grupo::create($arrayDatos);
                             break;
-                        default:
-                            $pt = call_user_func($create, $arrayDatos);
+                        case 'Espacio':
+                            Espacio::create($arrayDatos);
                             break;
+//                        default:
+//                            $pt = call_user_func($create, $arrayDatos);
+//                            break;
                     }
                 }
             }
