@@ -12,7 +12,7 @@ class Modulo_cicloController extends IntranetController
     protected $model = 'Modulo_ciclo';
     protected $gridFields = ['id', 'Xmodulo','Xciclo','curso','enlace'];
     protected $vista;
-    protected $modal = true;
+    protected $modal = false;
 
     
     protected function iniBotones()

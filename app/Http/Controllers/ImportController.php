@@ -143,7 +143,7 @@ class ImportController extends Seeder
                 'idProfesor' => 'docente',
                 'modulo' => 'contenido',
                 'idGrupo' => 'grupo',
-                'aula' => 'aula',
+                //'aula' => 'aula',
             )),
         array('nombrexml' => 'horarios_ocupaciones',
             'nombreclase' => 'Horario',
@@ -273,6 +273,7 @@ class ImportController extends Seeder
                 }
                 break;
         }
+        $this->crea_modulosCiclos();   
     }
     private function crea_modulosCiclos()
     {
@@ -286,6 +287,7 @@ class ImportController extends Seeder
         
         foreach ($horarios as $horario) {
             if (isset($horario->Grupo->idCiclo)) {
+                
                 if (Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->count() == 0) {
                     $mc = new Modulo_ciclo();
                     $mc->idModulo = $horario->modulo;
@@ -296,28 +298,34 @@ class ImportController extends Seeder
                     $mc->save();
                 }
                 else {
+                    
                     $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
-                    if ((isset(Profesor::find($horario->idProfesor)->departamento)) && ($nuevo->idDepartamento != Profesor::find($horario->idProfesor)->departamento)) {
+                    if ((isset(Profesor::find($horario->idProfesor)->departamento)) && ($mc->idDepartamento != Profesor::find($horario->idProfesor)->departamento)) {
                         $mc->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
                         $mc->save();
                     }
                 }
+                
+                 
                 if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo', $horario->idGrupo)->count() == 0) {
                     $nuevo = new Modulo_grupo();
                     $nuevo->idModuloCiclo = $mc->id;
                     $nuevo->idGrupo = $horario->idGrupo;
                     $nuevo->save();
                 }
+            
                 if (!Programacion::where('idModuloCiclo', $mc->id)->where('curso', Curso())->first()) {
                     $prg = New Programacion();
                     $prg->idModuloCiclo = $mc->id;
                     $prg->fichero = $mc->enlace;
                     $prg->curso = Curso();
+                    
                     if ($antigua = Programacion::where('idModuloCiclo', $mc->id)->first()) {
                         $prg->criterios = $antigua->criterios;
                         $prg->metodologia = $antigua->metodologia;
                         $prg->propuestas = $antigua->propuestas;
                     }
+                    
                     $prg->save();
                 }
             }
@@ -484,9 +492,9 @@ class ImportController extends Seeder
                         case 'Grupo':
                             Grupo::create($arrayDatos);
                             break;
-                        case 'Espacio':
-                            Espacio::create($arrayDatos);
-                            break;
+//                        case 'Espacio':
+//                            Espacio::create($arrayDatos);
+//                            break;
 //                        default:
 //                            $pt = call_user_func($create, $arrayDatos);
 //                            break;
