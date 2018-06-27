@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Artisan;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Programacion;
+use Intranet\Entities\Ocupacion;
 
 class ImportController extends Seeder
 {
