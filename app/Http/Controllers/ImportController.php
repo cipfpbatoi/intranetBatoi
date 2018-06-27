@@ -481,7 +481,6 @@ class ImportController extends Seeder
                             Profesor::create($arrayDatos);
                             break;
                         case 'Modulo':
-                            dd('hola');
                             Modulo::create($arrayDatos);
                             break;
                         case 'Ocupacion':
