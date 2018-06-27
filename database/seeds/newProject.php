@@ -1295,7 +1295,7 @@ class newProject extends Seeder
             'id' => 2,
             'ciclo' => 'CFM  FCT ESTÈTICA (LOGSE)',
             'departamento' => 3,
-            'responsable' => '',
+            
             'tipo' => 1,
             'normativa' => 'LOGSE',
             'titol' => NULL,
@@ -1311,7 +1311,7 @@ class newProject extends Seeder
             'id' => 3,
             'ciclo' => 'CFM APD (LOE)',
             'departamento' => 2,
-            'responsable' => '',
+            
             'tipo' => 1,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC EN ATENCIÓ A PERSONES EN SITUACIÓ DE DEPENDÈNCIA',
@@ -1327,7 +1327,7 @@ class newProject extends Seeder
             'id' => 4,
             'ciclo' => 'CFM FARMACIA (LOE)',
             'departamento' => 6,
-            'responsable' => '',
+            
             'tipo' => 1,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC EN FARMÀCIA I PARAFARMÀCIA',
@@ -1343,7 +1343,7 @@ class newProject extends Seeder
             'id' => 8,
             'ciclo' => 'CFM CAE (LOGSE)',
             'departamento' => 6,
-            'responsable' => '',
+            
             'tipo' => 1,
             'normativa' => 'LOGSE',
             'titol' => 'TÈCNIC EN CURES AUXILIARS D\'INFERMERIA',
@@ -1359,7 +1359,7 @@ class newProject extends Seeder
             'id' => 12,
             'ciclo' => 'CFM CUINA (LOE)',
             'departamento' => 10,
-            'responsable' => '',
+            
             'tipo' => 1,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC EN CUINA I GASTRONOMIA',
@@ -1375,7 +1375,7 @@ class newProject extends Seeder
             'id' => 16,
             'ciclo' => 'CFM ESTÈTICA I BELL. (LOE)',
             'departamento' => 3,
-            'responsable' => '',
+            
             'tipo' => 1,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC EN ESTÈTICA I BELLESA',
@@ -1391,7 +1391,7 @@ class newProject extends Seeder
             'id' => 18,
             'ciclo' => 'CFM GESTIÓ ADMVA. (LOE)',
             'departamento' => 5,
-            'responsable' => '',
+            
             'tipo' => 1,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC EN GESTIÓ ADMINISTRATIVA',
@@ -1407,7 +1407,7 @@ class newProject extends Seeder
             'id' => 20,
             'ciclo' => 'CFM PERRUQUERIA (LOE)',
             'departamento' => 3,
-            'responsable' => '',
+            
             'tipo' => 1,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC EN PERRUQUERIA I COSMÈTICA CAPILAR',
@@ -1423,7 +1423,7 @@ class newProject extends Seeder
             'id' => 22,
             'ciclo' => 'CFM SERV. RESTAURACIÓ (LOE)',
             'departamento' => 10,
-            'responsable' => '',
+            
             'tipo' => 1,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC EN SERVICIS EN RESTAURACIÓ',
@@ -1439,7 +1439,7 @@ class newProject extends Seeder
             'id' => 24,
             'ciclo' => 'CFM SMX  (LOE)',
             'departamento' => 24,
-            'responsable' => '',
+            
             'tipo' => 1,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC EN SISTEMES MICROINFORMÀTICS I XARXES',
@@ -1455,7 +1455,7 @@ class newProject extends Seeder
             'id' => 28,
             'ciclo' => 'CFS ADM. I FINANC. (LOE)',
             'departamento' => 5,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN ADMINISTRACIÓ I FINANCES.',
@@ -1471,7 +1471,7 @@ class newProject extends Seeder
             'id' => 30,
             'ciclo' => 'CFS ASIX (LOE)',
             'departamento' => 24,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN ADMINISTRACIÓ DE SISTEMES INFORMÀTICS EN XARXA',
@@ -1487,7 +1487,7 @@ class newProject extends Seeder
             'id' => 32,
             'ciclo' => 'CFS DAM (LOE)',
             'departamento' => 24,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN DESENROTLLAMENT D\'APLICACIONS MULTIPLATAFORMA',
@@ -1503,7 +1503,7 @@ class newProject extends Seeder
             'id' => 35,
             'ciclo' => 'CFS DAW (LOE)',
             'departamento' => 24,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN DESENROTLLAMENT D\'APLICACIONS WEB',
@@ -1519,7 +1519,7 @@ class newProject extends Seeder
             'id' => 36,
             'ciclo' => 'CFS DIREC. CUINA (LOE)',
             'departamento' => 10,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN DIRECCIÓ DE CUINA',
@@ -1535,7 +1535,7 @@ class newProject extends Seeder
             'id' => 38,
             'ciclo' => 'CFS DIREC.RESTAURACIÓ (LOE)',
             'departamento' => 10,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN DIRECCIÓ DE SERVICIS DE RESTAURACIÓ',
@@ -1551,7 +1551,7 @@ class newProject extends Seeder
             'id' => 39,
             'ciclo' => 'CFS EDUC.INFANTIL (LOE)',
             'departamento' => 2,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN EDUCACIÓ INFANTIL.',
@@ -1567,7 +1567,7 @@ class newProject extends Seeder
             'id' => 42,
             'ciclo' => 'CFS ESTET.INTEG. (LOE)',
             'departamento' => 3,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN ESTÈTICA INTEGRAL I BENESTAR',
@@ -1583,7 +1583,7 @@ class newProject extends Seeder
             'id' => 44,
             'ciclo' => 'CFS INTEGR.SOCIAL (LOE)',
             'departamento' => 2,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN INTEGRACIÓ SOCIAL',
@@ -1599,7 +1599,7 @@ class newProject extends Seeder
             'id' => 45,
             'ciclo' => 'CFS LABORATORI (LOE)',
             'departamento' => 6,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN LABORATORI CLÍNIC I BIOMÈDIC',
@@ -1615,7 +1615,7 @@ class newProject extends Seeder
             'id' => 46,
             'ciclo' => 'CFS LABORATORI (LOGSE)',
             'departamento' => 6,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOGSE',
             'titol' => 'TÈCNIC SUPERIOR EN LABORATORI DE DIAGNÒSTIC CLÍNIC.',
@@ -1631,7 +1631,7 @@ class newProject extends Seeder
             'id' => 47,
             'ciclo' => 'CFS RX  (LOGSE)',
             'departamento' => 6,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOGSE',
             'titol' => 'TÈCNIC SUPERIOR EN IMATGE PER AL DIAGNÒSTIC',
@@ -1647,7 +1647,7 @@ class newProject extends Seeder
             'id' => 51,
             'ciclo' => 'CFS RXMN (LOE)',
             'departamento' => 6,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN IMATGE PER AL DIAGNÒSTIC I MEDICINA NUCLEAR',
@@ -1663,7 +1663,7 @@ class newProject extends Seeder
             'id' => 54,
             'ciclo' => 'CFS SALUT AMBIENTAL (LOGSE)',
             'departamento' => 6,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOGSE',
             'titol' => 'TÈCNIC SUPERIOR EN SALUT AMBIENTAL',
@@ -1679,7 +1679,7 @@ class newProject extends Seeder
             'id' => 55,
             'ciclo' => 'CFS TASOC (LOGSE)',
             'departamento' => 2,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOGSE',
             'titol' => NULL,
@@ -1695,7 +1695,7 @@ class newProject extends Seeder
             'id' => 56,
             'ciclo' => 'CFS TASOCIT (LOE)',
             'departamento' => 2,
-            'responsable' => '',
+            
             'tipo' => 2,
             'normativa' => 'LOE',
             'titol' => 'TÈCNIC SUPERIOR EN ANIMACIÓ SOCIOCULTURAL I TURÍSTICA',
