@@ -17,7 +17,8 @@ class Fct extends Model
     public $timestamps = false;
 
     protected $fillable = ['idAlumno', 'idColaboracion', 'desde','hasta'
-        ,'horas','asociacion','horas_semanales','calificacion','correoAlumno','correoInstructor'];
+        ,'horas','asociacion','horas_semanales','calificacion','calProyecto',
+        'correoAlumno','correoInstructor'];
 //    protected $fillable = ['idAlumno', 'idColaboracion',  'desde','hasta'
 //        ,'horas','asociacion','horas_semanales'];
     protected $rules = [
@@ -34,6 +35,7 @@ class Fct extends Model
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
         'calificacion' => ['type' => 'hidden'],
+        'calProyecto' => ['type' => 'hidden'],
         'correoAlumno' => ['type' => 'hidden'],
         'correoInstructor' => ['type' => 'hidden'],
     ];

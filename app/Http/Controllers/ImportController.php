@@ -252,7 +252,7 @@ class ImportController extends Seeder
                     if (isset(DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla)) 
                        $this->plantilla = DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla;
                     else
-                        $this->plantilla = 0;  
+                       $this->plantilla = 0;  
                     if ($xml == 'horarios_grupo')  $this->truncateTables('horarios');
                 break;
         }
@@ -332,6 +332,7 @@ class ImportController extends Seeder
             }
         }
     }
+    
     private function alumnosBaja()
     {
         $hoy = Hoy();
@@ -471,8 +472,10 @@ class ImportController extends Seeder
                     $create = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::create';
                     switch ($tabla['nombreclase']) {
                         case 'Horario':
-                            if ($arrayDatos['plantilla']>= $this->plantilla)
+                            if ($arrayDatos['plantilla'] >= $this->plantilla){
+                                $this->plantilla = $arrayDatos['plantilla'];
                                 Horario::create($arrayDatos);
+                            }
                             break;
                         case 'Alumno':
                             Alumno::create($arrayDatos);

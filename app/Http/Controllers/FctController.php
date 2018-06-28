@@ -44,7 +44,6 @@ class FctController extends IntranetController
         $elemento = Fct::findOrFail($id);
         $elemento->setInputType('idAlumno', ['disabled' => 'disabled']);
         $elemento->setInputType('idColaboracion', ['disabled' => 'disabled']);
-        $elemento->deleteInputType('idInstructor');
         $default = $elemento->fillDefautOptions();
         $modelo = $this->model;
         
@@ -131,6 +130,15 @@ class FctController extends IntranetController
         $fct->actas = 1;
         $fct->save();
         return back();
+    }
+    protected function modificaNota($id){
+        $elemento = Fct::findOrFail($id);
+        $elemento->setInputType('idAlumno', ['disabled' => 'disabled']);
+        $elemento->setInputType('idColaboracion', ['disabled' => 'disabled']);
+        $default = $elemento->fillDefautOptions();
+        $modelo = $this->model;
+        
+        return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
     }
     
     public function demanarActa()
