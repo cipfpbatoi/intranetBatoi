@@ -32,7 +32,7 @@ return [
             'ordenes' => ["Opinió dels alumnes", "Revisió d'acords adoptats a la sessió anterior", "Revisió de l'acta de qualificacions",
                 "Valoració general dels resultats obtinguts", "Problemes detectats al grup i mesures a pendre", "Alumnes amb dificultats acadèmiques i mesures a adoptar", 
                 "Acords adoptats", "Observacions"],
-            'numeracion' => [10=>'AvaIni',11=>'1Ava',12=>'2Ava',13=>'3Ava',14=>'AvFinal',15=>'AvExtr']],
+            'numeracion' => [30=>'AvaIni',31=>'1Ava',32=>'2Ava',33=>'3Ava',34=>'AvFinal',35=>'AvExtr']],
         ['index' => '8', 'vliteral' => 'COCOPE', 'cliteral' => 'COCOPE', 'colectivo' => 'Jefe', 'rol' => '2', 'select' => '0',
             'convocatoria' => 'convocatoria', 'acta' => 'acta',
             'ordenes' => ['Lectura acta anterior', "Informe direcció", "Informe Caporalia", "Torn obert de paraula"],

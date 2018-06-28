@@ -34,7 +34,7 @@ class ReunionController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'Reunion';
     protected $gridFields = ['XGrupo', 'XTipo', 'Xnumero', 'descripcion', 'fecha', 'curso', 'id'];
-    protected $modal = false;
+    protected $modal = true;
 
     protected function search()
     {
