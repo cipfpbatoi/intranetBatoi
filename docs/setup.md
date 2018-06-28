@@ -89,6 +89,7 @@ Abans de fer la primera importació de dades de Itaca hem d'obrir el fitxer **co
 També és convenient posar correctament les dades de les taules (això només cal fer-ho la primera vegada que es crea la intranet, la resta d'anys es conserven les dades):
 * Departamentos
 * Ciclos
+
 La taula _Departamentos_ ha de tindre OBLIGATORIAMENT un departament (podem dir-li 'Desconegut' o com vulgam) amb **codi 99** que és al que s'asignaran els nous professors fins que es posen en el departament adequat.
 
 ### Primera importació
@@ -109,13 +110,13 @@ A continuació seleccionen el fitxer amb les dades en format .XML i polsem 'Envi
 
 **ATENCIÖ: Aquest procés tardarà uns quants minuts en funció de la mida del fitxer XML. És molt important _NO TANCAR_ el navegador ni tornar a polsar '_Enviar_' fins que acabe**.
 
-Tras importar les dades la primera vegada hurem d'assignar a ma els professores als departaments i els grups als cicles (posteriorment només haurem de tornar-ho a fer amb elo nous professors i els nous grups si hi haguera tras cada importació).
+Tras importar les dades la primera vegada hurem d'assignar a ma **els professores als departaments** i **els grups als cicles** (posteriorment només haurem de tornar-ho a fer amb elo nous professors i els nous grups si hi haguera tras cada importació).
 
 Els professors estan asignats per defecte al departament 99 ('Desconegut'). Cada professor pot posar el departament al que pertany editant el seu perfil. També des de direcció es pot posar cadascun al seu departament des de **Equip directiu -> Dades professors -> Editar perfil professor**.
 
 Els grups por defecte no estan asignats a cap cicle. Per a fer-ho anem a **Professorat -> Gestió grups -> Editar grup** i li posem a cada grup el seu cicle.
 
-Per a finalitzar hem de tornar a fer la importació per a que s'asignen correctament els mòduls als cicles al importar els horaris **amb la casella de 'Primera importació' MARCADA.
+Per a finalitzar hem de tornar a fer la importació per a que s'asignen correctament els mòduls als cicles al importar els horaris **sense la casella de 'Primera importació' MARCADA.
 
 ### Resta d'importacions
 En el xml de Itaca per a la resta d'importacions només estaran les taules en que hi haja canvis, normalment:
