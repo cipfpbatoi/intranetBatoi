@@ -133,13 +133,20 @@ class FctController extends IntranetController
     }
     protected function modificaNota($id){
         $elemento = Fct::findOrFail($id);
-        $elemento->setInputType('idAlumno', ['disabled' => 'disabled']);
-        $elemento->setInputType('idColaboracion', ['disabled' => 'disabled']);
+        $elemento->setInputType('idAlumno', ['type' => 'hidden']);
+        $elemento->setInputType('idColaboracion',['type' => 'hidden']);
+        $elemento->setInputType('desde',['type' => 'hidden']);
+        $elemento->setInputType('hasta',['type' => 'hidden']);
+        $elemento->setInputType('horas',['type' => 'hidden']);
+        $elemento->setInputType('asociacion',['type' => 'hidden']);
+        $elemento->setInputType('horas_semanales',['type' => 'hidden']);
+        $elemento->setInputType('calProyecto', ['type' => 'text']);
         $default = $elemento->fillDefautOptions();
         $modelo = $this->model;
         
         return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
     }
+    
     
     public function demanarActa()
     {
