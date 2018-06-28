@@ -79,18 +79,16 @@ El `db:seed` fica les dades inicials de:
 Així com un usuari amb el codi 9999 i la contrasenya 'abcd@1234' que és Administrador de la intranet.
 
 ### Altres dades inicials necessarios
-Les dades d'algunes taules no els obtindrem de Itaca sinó que els posarem a ma.
-* espacios:
-* municipios / provincias: opcional (s'utilitzen en alguns llistats)
+Les dades de les taules de _muninipios_ i _provincias_ no els obtenim de Itaca sinó que els hem de importar a ma si els volem (és opcional,s'utilitzen només en alguns llistats).
 
 ## Importar dades de Itaca
 Abans de fer la primera importació de dades de Itaca hem d'obrir el fitxer **contacto.php** en _/config_ on configurem totes les dades del nostre centre. A més indicarem el NIF (en format Itaca, és a dir, amb un 0 davant) dels càrrecs així com:
 * avisos->material: la persona que indiquen rebrà un misstage cada vegada que es canvia un material inventariable d'ubicacio
 * incidències: ací posem a totes les persones que s'encarreguen de solventar incidències e el Centre. Són els usuaris a qui es pot asignar una incidència quan es crea.
 
-NO --> Abans hem de posar correctament les dades de:
-* Departaments
-* Cicles
+També és convenient posar correctament les dades de les taules (això només cal fer-ho la primera vegada que es crea la intranet, la resta d'anys es conserven les dades):
+* Departamentos
+* Ciclos
 
 ### Primera importació
 En el xml de Itaca per a la primera importació han d'estar les següents taules:
@@ -108,7 +106,7 @@ Les importacions es fan des del menú **Administració -> Importació des de Ita
 
 A continuació seleccionen el fitxer amb les dades en format .XML i polsem 'Enviar'.
 
-**ATENCIÖ: Aquest procés tardarà uns quants minuts. No has de tancar el navegador ni tornar a polsar fins que acabe**.
+**ATENCIÖ: Aquest procés tardarà uns quants minuts en funció de la mida del fitxer XML. És molt important _NO TANCAR_ el navegador ni tornar a polsar '_Enviar_' fins que acabe**.
 
 Tras importar les dades la primera vegada hurem d'assignar a ma els professores als departaments i els grups als cicles (posteriorment només haurem de tornar-ho a fer amb elo nous professors i els nous grups si hi haguera tras cada importació).
 
