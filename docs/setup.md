@@ -89,6 +89,7 @@ Abans de fer la primera importació de dades de Itaca hem d'obrir el fitxer **co
 També és convenient posar correctament les dades de les taules (això només cal fer-ho la primera vegada que es crea la intranet, la resta d'anys es conserven les dades):
 * Departamentos
 * Ciclos
+La taula _Departamentos_ ha de tindre OBLIGATORIAMENT un departament (podem dir-li 'Desconegut' o com vulgam) amb **codi 99** que és al que s'asignaran els nous professors fins que es posen en el departament adequat.
 
 ### Primera importació
 En el xml de Itaca per a la primera importació han d'estar les següents taules:
