@@ -33,6 +33,9 @@ composer update
 ```
 Ens hem d'assegurar que l'usuari _www-data_ tinga permís d'escriptura en la carpeta **/storage** (per exemple posa-li el grup propietari _www-data- i dona permissos d'escriptura al grup).
 
+## Configurar l'impressió
+Per a poder generar PDF  hem d'instal·lar els paquets **libxrender1**, **libxtst6** i **libssl1.0-dev**.
+
 ## Configurar la intranet
 Configurem l'accès a la BBDD:
 ```bash
