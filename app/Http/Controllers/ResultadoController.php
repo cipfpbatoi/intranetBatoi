@@ -34,7 +34,7 @@ class ResultadoController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Resultado';
-    protected $gridFields = ['Modulo','XEvaluacion', 'XProfesor' ];
+    protected $gridFields = ['Modulo', 'XEvaluacion', 'XProfesor'];
     protected $modal = true;
 
     protected function iniBotones()
@@ -42,33 +42,33 @@ class ResultadoController extends IntranetController
         $this->panel->setBotonera(['create'], ['delete', 'edit']);
     }
 
-    
     public function search()
     {
-        $misModulos = hazArray(Modulo_Grupo::MisModulos(),'id','id');
+        $misModulos = hazArray(Modulo_Grupo::MisModulos(), 'id', 'id');
         return Resultado::whereIn('idModuloGrupo', $misModulos)
                         ->get();
     }
-    /* 
+
+    /*
      * store (Request) return redirect
      * guarda els valors del formulari
      */
+
     public function store(Request $request)
     {
         $modulogrupo = Modulo_grupo::find($request->idModuloGrupo);
-        if ($modulogrupo){
+        if ($modulogrupo) {
             $this->realStore($request);
-            if ($request->evaluacion == 3){ 
-                $programacion = Programacion::where('idModuloCiclo',$modulogrupo->idModuloCiclo)->where('curso',Curso())->first()->id;
-                return redirect ("/programacion/$programacion/seguimiento");  
-             }
-            else return $this->redirect();
+            if ($request->evaluacion == 3) {
+                $programacion = Programacion::where('idModuloCiclo', $modulogrupo->idModuloCiclo)->where('curso', Curso())->first()->id;
+                return redirect("/programacion/$programacion/seguimiento");
+            } else
+                return $this->redirect();
         }
-        else{
+        else {
             Alert::danger("Eixe mòdul no es dona en eixe grup");
             return $this->redirect();
-        }    
-        
+        }
     }
 
     public function listado()
@@ -94,10 +94,10 @@ class ResultadoController extends IntranetController
 
     public function listadoEntregas()
     {
-        $trimestre = evaluacion()-1;
+        $trimestre = evaluacion() - 1;
         $panel = new Panel('Resultado', null, null, false);
-        $panel->setPestana($trimestre."_trimestre", 1, '.resultado.partials.trimestre', ['trimestre', $trimestre]);
-            
+        $panel->setPestana($trimestre . "_trimestre", 1, '.resultado.partials.trimestre', ['trimestre', $trimestre]);
+
 //        for ($i=$trimestre-1; $i < $trimestre;$i++){
 //            $panel->setPestana($i."_trimestre", ($i == $trimestre-1), '.resultado.partials.trimestre', ['trimestre', $i]);
 //            $trimestres[] = $i;
@@ -125,7 +125,7 @@ class ResultadoController extends IntranetController
 
     public function hazInformeTrimestral(Request $request)
     {
-        $pdf = $this->hazPdfInforme($request->observaciones, $request->trimestre,$request->proyectos);
+        $pdf = $this->hazPdfInforme($request->observaciones, $request->trimestre, $request->proyectos);
         // cree reunio
         DB::transaction(function () use ($pdf, $request) {
             $reunion = new Reunion();
@@ -145,15 +145,15 @@ class ResultadoController extends IntranetController
             $orden->descripcion = 'Observacions';
             $orden->resumen = $request->observaciones;
             $orden->save();
-            
-            if (isset($request->proyectos)){
+
+            if (isset($request->proyectos)) {
                 $orden = new OrdenReunion();
                 $orden->idReunion = $reunion->id;
                 $orden->orden = 2;
                 $orden->descripcion = 'Projectes';
                 $orden->resumen = $request->proyectos;
                 $orden->save();
-            }  
+            }
 
             $nom = 'Informe_' . $reunion->id . '.pdf';
             $directorio = 'gestor/' . Curso() . '/Reunion';
@@ -183,10 +183,10 @@ class ResultadoController extends IntranetController
                 ->first();
         $oR->resumen = $request->observaciones;
         $oR->save();
-        if (isset($request->proyectos)){
+        if (isset($request->proyectos)) {
             $oR = OrdenReunion::where('idReunion', $request->reunion)
-                ->where('orden', 2)
-                ->first();
+                    ->where('orden', 2)
+                    ->first();
             $oR->resumen = $request->proyectos;
             $oR->save();
         }
@@ -206,7 +206,7 @@ class ResultadoController extends IntranetController
         return response()->file(storage_path('app/' . Reunion::findOrFail($id)->fichero));
     }
 
-    private function hazPdfInforme($observaciones, $trimestre,$proyectos=null)
+    private function hazPdfInforme($observaciones, $trimestre, $proyectos = null)
     {
         $dep = AuthUser()->departamento;
         $fechas = config("curso.evaluaciones.$trimestre");
@@ -217,25 +217,26 @@ class ResultadoController extends IntranetController
                 ->orderBy('desde')
                 ->get();
         $primero = Resultado::Departamento($dep)
-                        ->TrimestreCurso($trimestre, 1)
-                        ->get();
+                ->TrimestreCurso($trimestre, 1)
+                ->get();
         $segundo = Resultado::Departamento($dep)
-                        ->TrimestreCurso($trimestre, 2)
-                        ->get();
+                ->TrimestreCurso($trimestre, 2)
+                ->get();
         $resultados = $primero
                 ->concat($segundo)
                 ->sortBy('Modulo');
-        if ($trimestre == 3){
+        if ($trimestre == 3) {
             $programaciones = Programacion::Departamento(AuthUser()->departamento)
                     ->whereNotNull('propuestas')
                     ->get();
-        } else $programaciones = null;
-        return $this->hazPdf('pdf.infDep', $actividades, compact('resultados', 'observaciones', 'trimestre','proyectos','programaciones'));
+        } else
+            $programaciones = null;
+        return $this->hazPdf('pdf.infDep', $actividades, compact('resultados', 'observaciones', 'trimestre', 'proyectos', 'programaciones'));
     }
 
     private function FaltaEntrega($trimestre)
     {
-        $modulos = Modulo_grupo::whereIn('idModuloCiclo',hazArray(Modulo_ciclo::where('idDepartamento',AuthUser()->departamento)->get(),'id','id'))->get();
+        $modulos = Modulo_grupo::whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get();
         $faltan = collect();
         $evaluaciones = config("curso.trimestres.$trimestre");
         foreach ($evaluaciones as $curso => $evaluacion)
@@ -258,6 +259,7 @@ class ResultadoController extends IntranetController
     {
         return substr($codigo, 0, 1);
     }
+
     private function informesExistentes()
     {
         $informes = [];
@@ -272,6 +274,6 @@ class ResultadoController extends IntranetController
 class Faltan
 {
 
-    public $trimestre, $modulo, $profesores,  $grupo;
+    public $trimestre, $modulo, $profesores, $grupo;
 
 }

@@ -31,7 +31,7 @@ class Resultado extends Model
         
     ];
     protected $rules = [
-        'evaluacion' => 'required',
+        'evaluacion' => 'required|composite_unique:resultados,idModuloGrupo,evaluacion',
         'matriculados' => 'required|numeric|max:60',
         'evaluados' => 'required|numeric|max:60',
         'aprobados' => 'required|numeric|max:60',
