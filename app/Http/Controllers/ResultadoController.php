@@ -111,12 +111,14 @@ class ResultadoController extends IntranetController
 
     public function avisaFaltaEntrega($evaluacion)
     {
-        $faltan = $this->FaltaEntrega([$evaluacion]);
+        $faltan = $this->FaltaEntrega($evaluacion);
         $cont = 0;
         foreach ($faltan as $falta) {
-            $texto = "$falta->nombre, et falta per omplir el seguiment de l'avaluacio '" . config('constants.nombreEval')[config("curso.trimestres.$evaluacion")[$this->curso($falta->grupo)]] .
-                    "' del mòdul '$falta->modulo' del Grup '$falta->grupo'";
-            avisa($falta->idProfesor, $texto);
+            foreach ($falta->profesores as $profesor){
+                $texto = "Et falta per omplir el seguiment de l'avaluacio '" . config('constants.nombreEval')[config("curso.trimestres.$evaluacion")[$this->curso($falta->grupo)]] .
+                        "' del mòdul '$falta->modulo' del Grup '$falta->grupo'";
+                avisa($profesor['idProfesor'], $texto);
+            }
             $cont++;
         }
         Alert::info($cont . ' Avisos enviats');
