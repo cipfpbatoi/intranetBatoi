@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e11f08155c34eedeb6ee575090c0bc36",
+    "content-hash": "ad0e94b0d3731f306929ffc4650fd8f5",
     "packages": [
         {
             "name": "barryvdh/laravel-snappy",
@@ -1201,7 +1201,7 @@
         },
         {
             "name": "h4cc/wkhtmltopdf-amd64",
-            "version": "dev-master",
+            "version": "0.12.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/h4cc/wkhtmltopdf-amd64.git",
@@ -6140,7 +6140,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "h4cc/wkhtmltopdf-amd64": 20,
         "infyomlabs/adminlte-templates": 20,
         "infyomlabs/laravel-generator": 20,
         "infyomlabs/swagger-generator": 20,
