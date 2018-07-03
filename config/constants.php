@@ -104,5 +104,6 @@ return [
     'tipoEstudioC' => [1=>'Ciclo Formativo de Grado Medio','2'=>'Ciclo Formativo de Grado Superior','3'=>'Ciclo Formativo Básico','4'=>'Bachiller','5'=>'ESO','6'=>'Primaria'],
     'version' => ['v1_0','v1_1','v1_2'],
     'veep' => [],
+    'controlDiario' => 0,
     ];
 

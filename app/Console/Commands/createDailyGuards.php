@@ -45,21 +45,23 @@ class createDailyGuards extends Command
      */
     public function handle()
     {
-        $comisiones = Comision::Dia(Hoy())->get();
-        foreach ($comisiones as $elemento) {
-            $this->creaGuardia($elemento, 'El professor està en comissió de servei autoritzada');
-        }
-        $actividades = Actividad::Dia(Hoy())
-                ->where('fueraCentro','=',1)
-                ->get();
-        foreach ($actividades as $actividad) {
-            foreach ($actividad->profesores as $profesor) {
-                $this->creaGuardia($actividad, 'El professor està en Activitat extraescolar', $profesor->dni);
+        if (config('constants.controlDiario')) {
+            $comisiones = Comision::Dia(Hoy())->get();
+            foreach ($comisiones as $elemento) {
+                $this->creaGuardia($elemento, 'El professor està en comissió de servei autoritzada');
             }
-        }
-        $faltas = Falta::Dia(Hoy())->get();
-        foreach ($faltas as $falta) {
-            $this->creaGuardia($falta, 'El professor ha notificado ausencia');
+            $actividades = Actividad::Dia(Hoy())
+                    ->where('fueraCentro', '=', 1)
+                    ->get();
+            foreach ($actividades as $actividad) {
+                foreach ($actividad->profesores as $profesor) {
+                    $this->creaGuardia($actividad, 'El professor està en Activitat extraescolar', $profesor->dni);
+                }
+            }
+            $faltas = Falta::Dia(Hoy())->get();
+            foreach ($faltas as $falta) {
+                $this->creaGuardia($falta, 'El professor ha notificado ausencia');
+            }
         }
     }
 
@@ -69,7 +71,7 @@ class createDailyGuards extends Command
         $dia_semana = nameDay(Hoy());
         if (esMismoDia($elemento->desde, $elemento->hasta)) {
             if (isset($elemento->hora_ini))
-                $horas = Hora::horasAfectadas($elemento->hora_ini,$elemento->hora_fin); 
+                $horas = Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin);
             else
                 $horas = Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta));
             if (count($horas)) {

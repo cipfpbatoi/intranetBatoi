@@ -41,12 +41,14 @@ class notifyDailyFaults extends Command
      */
     public function handle()
     {
-        $profesores = FicharController::noHanFichado(Hoy());
-        $guardias = GuardiaController::noGuardia(Hoy());
-        foreach ($profesores as $profesor) 
-            avisa($profesor,'No has fixat hui dia ' . Hoy('d-m-Y'), '#', 'Sistema');
-        foreach ($guardias as $guardia)
-            avisa($guardia,'No has fixat la guardia  hui dia ' . Hoy('d-m-Y'), '#', 'Sistema');
+        if (config('constants.controlDiario')){
+            $profesores = FicharController::noHanFichado(Hoy());
+            $guardias = GuardiaController::noGuardia(Hoy());
+            foreach ($profesores as $profesor) 
+                avisa($profesor,'No has fixat hui dia ' . Hoy('d-m-Y'), '#', 'Sistema');
+            foreach ($guardias as $guardia)
+                avisa($guardia,'No has fixat la guardia  hui dia ' . Hoy('d-m-Y'), '#', 'Sistema');
+        }
     }
 
 }
