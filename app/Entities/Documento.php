@@ -53,10 +53,7 @@ class Documento extends Model
         $this->propietario = 'CIP FP BATOI';
     }
 
-//    public function getRolOptions()
-//    {
-//        return config('constants.lor');
-//    }
+
     public function getGrupoOptions()
     {
         return config('auxiliares.actasEnabled');
