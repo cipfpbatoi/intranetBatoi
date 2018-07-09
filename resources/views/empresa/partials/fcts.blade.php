@@ -1,5 +1,5 @@
 <ul class="messages fct">
-    @if  (UserisAllow(config('constants.rol.administrador')))
+    @if  (UserisAllow(config('roles.rol.administrador')))
         @foreach (\Intranet\Entities\Fct::Empresa($elemento->id)->get() as $fct)
         <li>
             <div class="message_date">
@@ -32,7 +32,7 @@
     @endif    
 
 </ul>
-@if(UserisAllow(config('constants.rol.tutor')))
+@if(UserisAllow(config('roles.rol.tutor')))
 <div class="message_wrapper">
     <!--<button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#AddFct">-->
     <a href='/fct/create/' class="btn btn-secondary">@lang("messages.generic.anadir") @lang("models.modelos.Fct")</a>

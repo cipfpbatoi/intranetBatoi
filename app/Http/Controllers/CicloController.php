@@ -16,9 +16,9 @@ class CicloController extends IntranetController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('ciclo.create', ['roles' => config('constants.rol.administrador')]));
-        $this->panel->setBoton('grid', new BotonImg('ciclo.edit', ['roles' => config('constants.rol.administrador')]));
-        $this->panel->setBoton('grid', new BotonImg('ciclo.delete', ['roles' => config('constants.rol.administrador')]));
+        $this->panel->setBoton('index', new BotonBasico('ciclo.create', ['roles' => config('roles.rol.administrador')]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.edit', ['roles' => config('roles.rol.administrador')]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.delete', ['roles' => config('roles.rol.administrador')]));
     }
 
 }

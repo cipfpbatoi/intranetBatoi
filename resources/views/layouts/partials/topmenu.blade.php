@@ -4,7 +4,7 @@
     @if (Illuminate\Support\Facades\Session::get('userChange'))
         <li><a href='/profesor/change'><i class="fa fa-user pull-right"></i>{!!trans("messages.generic.change")!!}</a></li>
     @endif
-    @if (esRol(AuthUser()->rol,config('constants.rol.direccion')))
+    @if (esRol(AuthUser()->rol,config('roles.rol.direccion')))
         @if (Illuminate\Support\Facades\Session::get('completa'))
             <li><a href='/direccion/simplifica'><i class="fa fa-user pull-right"></i>{!!trans("messages.generic.simplifica")!!}</a></li>
         @else

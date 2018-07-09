@@ -69,7 +69,7 @@ class Expediente extends Model
 
     public function getTipoOptions()
     {
-        return config('constants.tipoExpediente');
+        return config('auxiliares.tipoExpediente');
     }
     public function getIdModuloOptions(){
         return hazArray(Modulo::ModulosGrupo(Grupo::Qtutor()->first()->codigo)->Lectivos()->get(),'codigo', 'vliteral');
@@ -109,7 +109,7 @@ class Expediente extends Model
         return isblankTrans('models.Expediente.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Expediente.' . $this->estado);
     }
     public function getXtipoAttribute(){
-        return config('constants.tipoExpediente')[$this->tipo];
+        return config('auxiliares.tipoExpediente')[$this->tipo];
     }
     public function getXmoduloAttribute(){
         return isset($this->Modulo->cliteral)?$this->Modulo->literal:'';

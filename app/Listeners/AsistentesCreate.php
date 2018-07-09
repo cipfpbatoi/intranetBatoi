@@ -54,7 +54,7 @@ class AsistentesCreate
                 $todos = Profesor::Activo()->get();
                 $profesores = [];
                 foreach ($todos as $uno){
-                    if ($uno->rol % config('constants.rol.jefe_dpto') == 0 || $uno->rol % config('constants.rol.direccion')== 0) 
+                    if ($uno->rol % config('roles.rol.jefe_dpto') == 0 || $uno->rol % config('roles.rol.direccion')== 0) 
                         $profesores[] = $uno;
                 }
             }

@@ -122,7 +122,7 @@ class Reunion extends Model
     public function getNumeroOptions()
     {
         if (isset($this->tipo)) return TipoReunion::numeracion($this->tipo);
-        else return config('constants.numeracion');
+        else return config('auxiliares.numeracion');
     }
 
     public function getGrupoOptions()
@@ -192,7 +192,7 @@ class Reunion extends Model
         return TipoReunion::literal($this->tipo);
     }
     public function getXnumeroAttribute(){
-        return config("constants.numeracion.$this->numero");
+        return config("auxiliares.numeracion.$this->numero");
     }
 
 }

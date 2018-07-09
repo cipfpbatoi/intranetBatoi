@@ -53,14 +53,14 @@ class Tutoria extends Model
     }
     public function getGruposOptions()
     {
-        return config('constants.tipoTutoria');
+        return config('auxiliares.tipoTutoria');
     }
     
     protected function getXobligatoriaAttribute(){
         return $this->obligatoria ? 'X' : '-';
     }
     protected function getGrupoAttribute(){
-        return config('constants.tipoTutoria')[$this->grupos];
+        return config('auxiliares.tipoTutoria')[$this->grupos];
     }
     
 }

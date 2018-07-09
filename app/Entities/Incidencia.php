@@ -110,12 +110,12 @@ class Incidencia extends Model
 
     public function getEstadoOptions()
     {
-        return config('constants.estadoIncidencia');
+        return config('auxiliares.estadoIncidencia');
     }
 
     public function getPrioridadOptions()
     {
-        return config('constants.prioridadIncidencia');
+        return config('auxiliares.prioridadIncidencia');
     }
 
     public function getFechaAttribute($entrada)

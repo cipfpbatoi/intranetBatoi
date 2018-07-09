@@ -13,7 +13,7 @@
                 @endforeach
             </select>
             <select name='numero' class='form-control select' >
-                @foreach (config('constants.numeracion') as $index => $valor)
+                @foreach (config('auxiliares.numeracion') as $index => $valor)
                     <option value='{{$index}}'>{{$valor}}</option>
                 @endforeach
             </select>

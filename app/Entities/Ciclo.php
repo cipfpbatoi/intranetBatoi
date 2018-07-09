@@ -32,7 +32,7 @@ class Ciclo extends Model
 
     public function getTipoOptions()
     {
-        return config('constants.tipoEstudio');
+        return config('auxiliares.tipoEstudio');
     }
     
     public function getDepartamentoOptions()
@@ -40,10 +40,10 @@ class Ciclo extends Model
         return hazArray(Departamento::all(),'id', 'literal');
     }
     public function getXtipoAttribute(){
-        return config('constants.tipoEstudio')[$this->tipo];
+        return config('auxiliares.tipoEstudio')[$this->tipo];
     }
     public function getCtipoAttribute(){
-        return config('constants.tipoEstudioC')[$this->tipo];
+        return config('auxiliares.tipoEstudioC')[$this->tipo];
     }
     public function getXdepartamentoAttribute(){
         return $this->Departament->literal;

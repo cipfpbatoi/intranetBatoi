@@ -50,7 +50,7 @@ class OrdenTrabajo extends Model
     }
     public function getEstadoOptions()
     {
-        return config('constants.estadoOrden');
+        return config('auxiliares.estadoOrden');
     }
     public function getCreatedAtAttribute($entrada)
     {

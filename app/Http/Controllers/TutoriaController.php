@@ -26,7 +26,7 @@ class TutoriaController extends IntranetController
 
     public function index(){
         Session::forget('redirect');
-        if (esRol(AuthUser()->rol, config('constants.rol.orientador'))) return $this->indexTutoria();
+        if (esRol(AuthUser()->rol, config('roles.rol.orientador'))) return $this->indexTutoria();
         else {
             if ($grupo = Grupo::select('nombre')->QTutor()->get()->first()){
                 $this->titulo = ['que' => $grupo->nombre];

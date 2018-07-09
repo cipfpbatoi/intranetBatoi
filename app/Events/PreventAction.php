@@ -37,9 +37,9 @@ class PreventAction
                 if ($model->Creador()!=null)
                     $this->clau = $model->Creador();
         switch (substr(get_class($model), 18)) {
-            case 'Incidencia' : $this->autorizados = [config('constants.rol.direccion'), config('constants.rol.mantenimiento')];break;
-            case 'Programacion' :  $this->autorizados = [ config('constants.rol.jefe_dpto')];break;
-            default : $this->autorizados = [config('constants.rol.direccion')]; break;
+            case 'Incidencia' : $this->autorizados = [config('roles.rol.direccion'), config('roles.rol.mantenimiento')];break;
+            case 'Programacion' :  $this->autorizados = [ config('roles.rol.jefe_dpto')];break;
+            default : $this->autorizados = [config('roles.rol.direccion')]; break;
        
         }       
     }

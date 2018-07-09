@@ -83,7 +83,7 @@ use traitAutorizar,
                 ->orderBy('apellido2', 'asc')
                 ->get();
         $equipo = $todos->filter(function($item) {
-            if (esRol($item->rol, config('constants.rol.direccion')))
+            if (esRol($item->rol, config('roles.rol.direccion')))
                 return $item;
         });
         $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1);
@@ -142,7 +142,7 @@ use traitAutorizar,
     {
         $profesor = Profesor::findOrFail($profesor);
         $cargo = 'Professor';
-        if (esRol($profesor->rol, config('constants.rol.direccion')))
+        if (esRol($profesor->rol, config('roles.rol.direccion')))
             switch ($profesor->dni) {
                 case config('contacto.director'): $cargo = 'Director';
                     break;
@@ -155,7 +155,7 @@ use traitAutorizar,
                 case config('contacto.jefeEstudios2'): $cargo = "Cap d'Estudis";
                     break;
             }
-        if ($cargo == 'Professor' && esRol($profesor->rol, config('constants.rol.tutor'))) 
+        if ($cargo == 'Professor' && esRol($profesor->rol, config('roles.rol.tutor'))) 
                 $cargo .= ' - Tutor';
         return $this->hazPdf('pdf.tarjeta', $profesor,  $cargo, 'portrait','a4',2)->stream();
     }
@@ -165,16 +165,16 @@ use traitAutorizar,
     protected function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('profesor.horario'));
-        $this->panel->setBoton('grid', new BotonImg('profesor.edit', ['roles' => config('constants.rol.direccion')]));
-        $this->panel->setBoton('grid', new BotonImg('profesor.carnet', ['roles' => config('constants.rol.direccion')]));
-        $this->panel->setBoton('grid', new BotonImg('profesor.muestra', ['roles' => config('constants.rol.direccion')]));
-        $this->panel->setBoton('grid', new BotonImg('profesor.horario-cambiar', ['img' => 'fa-th', 'roles' => config('constants.rol.direccion')
+        $this->panel->setBoton('grid', new BotonImg('profesor.edit', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('grid', new BotonImg('profesor.carnet', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('grid', new BotonImg('profesor.muestra', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('grid', new BotonImg('profesor.horario-cambiar', ['img' => 'fa-th', 'roles' => config('roles.rol.direccion')
             ,'where' => ['dni','existe','/horarios/$.json']]));
-        $this->panel->setBoton('grid', new BotonImg('profesor.horario-cambiar', ['img' => 'fa-th-large', 'roles' => config('constants.rol.direccion')
+        $this->panel->setBoton('grid', new BotonImg('profesor.horario-cambiar', ['img' => 'fa-th-large', 'roles' => config('roles.rol.direccion')
             ,'where' => ['dni','noExiste','/horarios/$.json']]));
-         $this->panel->setBoton('grid', new BotonImg('horario.cambiar', ['img' => 'fa-flash', 'roles' => config('constants.rol.administrador')
+         $this->panel->setBoton('grid', new BotonImg('horario.cambiar', ['img' => 'fa-flash', 'roles' => config('roles.rol.administrador')
             ]));
-        $this->panel->setBoton('grid', new BotonImg('profesor.change', ['img' => 'fa-user','roles' => config('constants.rol.administrador')]));
+        $this->panel->setBoton('grid', new BotonImg('profesor.change', ['img' => 'fa-user','roles' => config('roles.rol.administrador')]));
         $this->panel->setBoton('profile', new BotonIcon('profesor.horario', ['icon' => 'fa-user', 'class' => 'btn-success']));
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
         $this->panel->setBoton('profile', new BotonIcon('profesor.carnet', ['icon' => 'fa-credit-card', 'where' => ['dni', '==', AuthUser()->dni]]));

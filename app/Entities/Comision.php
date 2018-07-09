@@ -126,12 +126,12 @@ class Comision extends Model
 
     public function getOtrosOptions()
     {
-        return config('constants.tipoVehiculo');
+        return config('auxiliares.tipoVehiculo');
     }
 
     public function getEstadoOptions()
     {
-        return config('constants.estadoDocumento');
+        return config('auxiliares.estadoDocumento');
     }
 
     public function scopeDia($query, $dia)
@@ -149,7 +149,7 @@ class Comision extends Model
         return isblankTrans('models.Comision.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Comision.' . $this->estado);
     }
     public function getTotalAttribute(){
-        return $this->comida + $this->gastos + $this->alojamiento + ($this->kilometraje * config('constants.precioKilometro'));
+        return $this->comida + $this->gastos + $this->alojamiento + ($this->kilometraje * config('variables.precioKilometro'));
     }
 //    public function setServicioAttribute($value){
 //        $this->attributes['servicio'] = $value;

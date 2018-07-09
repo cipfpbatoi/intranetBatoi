@@ -26,7 +26,7 @@ class ExpedienteController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera([]);
-        $this->panel->setBoton('index', new BotonBasico('expediente.create', ['roles' => config('constants.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico('expediente.create', ['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('grid', new BotonImg('expediente.pdf', ['where' => ['estado', '==', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.edit', ['where' => ['estado', '<', '2']]));
@@ -63,7 +63,7 @@ class ExpedienteController extends IntranetController
     public function imprimir()
     {
         if ($this->class::listos()->Count())
-            foreach (config('constants.tipoExpediente') as $index => $valor) {
+            foreach (config('auxiliares.tipoExpediente') as $index => $valor) {
                 $todos = $this->class::listos()->where('tipo', $index);
                 if ($todos->Count()) {
                     $pdf = $this->hazPdf("pdf.expediente.$index", $todos);

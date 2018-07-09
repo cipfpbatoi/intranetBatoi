@@ -78,17 +78,17 @@ class FctController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.pdf',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.email',['orWhere'=>['correoAlumno','==','0','correoInstructor','==','0']]));
-        $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pass", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('constants.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0301.print",['roles' => config('constants.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['roles' => config('constants.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['roles' => config('constants.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0601.print",['roles' => config('constants.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pass", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pr0301.print",['roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pr0601.print",['roles' => config('roles.rol.tutor')]));
         $find = Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento','Qualitat')
                 ->where('curso',Curso())->first();
-        if (!$find) $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
-        else $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-info','roles' => config('constants.rol.tutor')]));
+        if (!$find) $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
+        else $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         Session::put('redirect', 'FctController@index');
     }
 

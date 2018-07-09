@@ -74,7 +74,7 @@ class CursoController extends IntranetController
                 'fichero' => $elemento->fichero,
                 'supervisor' => AuthUser()->shortName,
                 'created_at' => new Date($elemento->fecha_fin),
-                'rol' => config('constants.rol.direccion')]);
+                'rol' => config('roles.rol.direccion')]);
             $elemento->save();
         });
         return back();

@@ -50,7 +50,7 @@ trait traitPanel{
             return $this->class::where('estado', '>', '0')
                     ->where(function($q){
                         $orden = isset($this->orden)?$this->orden:'desde';
-                        $fecha = Date::now()->subDays(config('constants.completa'));
+                        $fecha = Date::now()->subDays(config('variables.diasNoCompleta'));
                         return $q->where('estado','!=',config('modelos.'.$this->model.'.resolve'))
                                 ->where('estado','!=',config('modelos.'.$this->model.'.completa'))
                             ->orWhere($orden,'>',$fecha->toDateString());

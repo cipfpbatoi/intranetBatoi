@@ -18,7 +18,7 @@
         </li>
     </ul>
     <a href="/empresa/{{$elemento->id}}/edit" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Editar</a>
-    @if (esRol(AuthUser()->rol,config('constants.rol.direccion')))  
+    @if (esRol(AuthUser()->rol,config('roles.rol.direccion')))  
     <a href="/empresa/{{$elemento->id}}/delete" id='Borrar' class="btn btn-danger"><i class="fa fa-delete m-right-xs"></i>Esborrar</a>
     @endif
     <a href="/empresa" class="btn btn-success"><i class="fa fa-arrow-left m-right-xs"></i>Volver</a>

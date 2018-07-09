@@ -45,7 +45,7 @@ class createDailyGuards extends Command
      */
     public function handle()
     {
-        if (config('constants.controlDiario')) {
+        if (config('variables.controlDiario')) {
             $comisiones = Comision::Dia(Hoy())->get();
             foreach ($comisiones as $elemento) {
                 $this->creaGuardia($elemento, 'El professor està en comissió de servei autoritzada');

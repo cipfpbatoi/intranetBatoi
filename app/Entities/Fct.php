@@ -120,7 +120,7 @@ class Fct extends Model
     
     public function getAsociacionOptions()
     {
-        return config('constants.asociacionEmpresa');
+        return config('auxiliares.asociacionEmpresa');
     }
     public function getIdColaboracionOptions(){
         $cicloC = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->get();

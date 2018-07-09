@@ -59,7 +59,7 @@ class Documento extends Model
 //    }
     public function getGrupoOptions()
     {
-        return config('constants.actasEnabled');
+        return config('auxiliares.actasEnabled');
     }
 
     public function getTipoDocumentoOptions()

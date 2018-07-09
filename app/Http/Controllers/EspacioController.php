@@ -30,12 +30,12 @@ class EspacioController extends IntranetController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('espacio.create', ['roles' => [config('constants.rol.direccion'), config('constants.rol.mantenimiento')]]));
+        $this->panel->setBoton('index', new BotonBasico('espacio.create', ['roles' => [config('roles.rol.direccion'), config('roles.rol.mantenimiento')]]));
         $this->panel->setBoton('grid', new BotonImg('material.detalle'));
-        $this->panel->setBoton('grid', new BotonImg('espacio.edit', ['roles' => config('constants.rol.direccion')]));
-        $this->panel->setBoton('grid', new BotonImg('espacio.delete', ['roles' => config('constants.rol.direccion')]));
+        $this->panel->setBoton('grid', new BotonImg('espacio.edit', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('grid', new BotonImg('espacio.delete', ['roles' => config('roles.rol.direccion')]));
         $this->panel->setBoton('profile', new BotonIcon('material.detalle', ['icon' => 'fa-folder']));
-        $this->panel->setBoton('profile', new BotonIcon('espacio.edit', ['roles' => config('constants.rol.direccion')]));
-        $this->panel->setBoton('profile', new BotonIcon('espacio.delete', ['roles' => config('constants.rol.direccion'), 'class' => 'btn-danger']));
+        $this->panel->setBoton('profile', new BotonIcon('espacio.edit', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('profile', new BotonIcon('espacio.delete', ['roles' => config('roles.rol.direccion'), 'class' => 'btn-danger']));
     }
 }

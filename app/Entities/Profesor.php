@@ -251,7 +251,7 @@ class Profesor extends Authenticatable
 
     public function getIdiomaOptions()
     {
-        return config('constants.idiomas');
+        return config('auxiliares.idiomas');
     }
 
     public function getDepartamentoOptions()
@@ -298,7 +298,7 @@ class Profesor extends Authenticatable
     {
         $todos = Profesor::where('departamento', $this->departamento)->get();
         foreach ($todos as $uno)
-            if (esRol($uno->rol, config('constants.rol.jefe_dpto')))
+            if (esRol($uno->rol, config('roles.rol.jefe_dpto')))
                 return $uno->dni;
     }
     public function getQualitatFile(){
@@ -318,7 +318,7 @@ class Profesor extends Authenticatable
     {
         $ahora = Date::now();
         $hora = sesion(Hora($ahora));
-        $dia = config("constants.diaSemana." . $ahora->format('w'));
+        $dia = config("auxiliares.diaSemana." . $ahora->format('w'));
 
         $horasDentro = Horario::Dia($dia)
                 ->Profesor($profesor)

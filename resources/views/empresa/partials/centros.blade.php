@@ -23,7 +23,7 @@
                 @if ($centro->horarios) <h4><i class="fa fa-clock-o user-profile-icon"></i> {{$centro->horarios}}</h4> @endif       
                 @if ($centro->observaciones) <blockquote class="message">{{$centro->observaciones}}</blockquote> @endif
             <h4>
-                @if  (UserisAllow(config('constants.rol.administrador'))&& ($centro->Empresa->centros->count()>1)) <small style="color: purple "> Fussionar:</small> <input type="checkbox" value='{!!$centro->id!!}'> @endif
+                @if  (UserisAllow(config('roles.rol.administrador'))&& ($centro->Empresa->centros->count()>1)) <small style="color: purple "> Fussionar:</small> <input type="checkbox" value='{!!$centro->id!!}'> @endif
             </h4>
         </div>
     </li>
@@ -34,7 +34,7 @@
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddCenter">
         @lang("messages.generic.anadir") @lang("models.modelos.Centro")
     </button>
-    @if  (UserisAllow(config('constants.rol.administrador')))
+    @if  (UserisAllow(config('roles.rol.administrador')))
     <button type="button" class="btn btn-primary" id='fusionar'>
         Fussionar
     </button>

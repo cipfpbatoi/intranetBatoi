@@ -17,7 +17,7 @@ class BotonImg extends BotonElemento
     {
         $a = "<a " . $this->href($key) . $this->clase() . $this->id($key) . ">";
         $a .= "<i class='fa ";
-        $a .= $this->img ? $this->img : config("constants.icon.$this->accion");
+        $a .= $this->img ? $this->img : config("iconos.$this->accion");
         $a .= "' alt='" . $this->text . "' title='" . $this->text . "' />";
         $a .= "</i>";
         return $a;

@@ -115,7 +115,7 @@ class ResultadoController extends IntranetController
         $cont = 0;
         foreach ($faltan as $falta) {
             foreach ($falta->profesores as $profesor){
-                $texto = "Et falta per omplir el seguiment de l'avaluacio '" . config('constants.nombreEval')[config("curso.trimestres.$evaluacion")[$this->curso($falta->grupo)]] .
+                $texto = "Et falta per omplir el seguiment de l'avaluacio '" . config('auxiliares.nombreEval')[config("curso.trimestres.$evaluacion")[$this->curso($falta->grupo)]] .
                         "' del mòdul '$falta->modulo' del Grup '$falta->grupo'";
                 avisa($profesor['idProfesor'], $texto);
             }
@@ -170,9 +170,9 @@ class ResultadoController extends IntranetController
                         'fichero' => $reunion->fichero,
                         'supervisor' => $reunion->idProfesor,
                         'grupo' => str_replace(' ', '_', $reunion->Xgrupo),
-                        'tags' => TipoReunion::literal($reunion->tipo) . ',' . config('constants.numeracion')[$reunion->numero],
+                        'tags' => TipoReunion::literal($reunion->tipo) . ',' . config('auxiliares.numeracion')[$reunion->numero],
                         'created_at' => new Date($reunion->fecha),
-                        'rol' => config('constants.rol.profesor')]);
+                        'rol' => config('roles.rol.profesor')]);
         });
         return back();
     }

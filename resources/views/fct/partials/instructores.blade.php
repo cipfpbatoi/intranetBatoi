@@ -26,7 +26,7 @@
         </li>    
         @endforeach
     </ul>
-    @if(UserisAllow(config('constants.rol.tutor')))
+    @if(UserisAllow(config('roles.rol.tutor')))
         <div class="message_wrapper">
             @if ($fct->Colaboracion->Centro->Instructores->count() - $instructores->count()  > 0)
                 <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#AddInstructor">

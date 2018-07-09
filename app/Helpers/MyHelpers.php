@@ -70,7 +70,7 @@ function fullDireccion()
  */
 function UserisNameAllow($role)
 {
-    $jerarquia = config('constants.rol');
+    $jerarquia = config('roles.rol');
     return UserisAllow($jerarquia[$role]);
 }
 
@@ -131,7 +131,7 @@ function UserisAllow($role)
  */
 function NameRolesUser($rolUsuario)
 {
-    $jerarquia = config('constants.rol');
+    $jerarquia = config('roles.rol');
 
     if ($rolUsuario == 1)
         return array(trans('messages.rol.todos'));
@@ -152,7 +152,7 @@ function NameRolesUser($rolUsuario)
  */
 function RolesUser($rolUsuario)
 {
-    $jerarquia = config('constants.rol');
+    $jerarquia = config('roles.rol');
 
     foreach ($jerarquia as $key => $rol) {
         if ($rolUsuario % $rol == 0) {

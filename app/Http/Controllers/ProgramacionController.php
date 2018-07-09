@@ -112,7 +112,7 @@ class ProgramacionController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera();
-        if (config('constants.programaciones.enlace')){
+        if (config('variables.programaciones.enlace')){
             $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
             $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0]]));
             $this->panel->setBoton('grid', new BotonImg('programacion.email', ['img' => 'fa-send','where' => ['estado', '==', 0]]));
@@ -121,7 +121,7 @@ class ProgramacionController extends IntranetController
         else {
             $this->panel->setBoton('grid', new BotonImg('programacion.document', ['img' => 'fa-eye','where' => ['fichero','isNNull','']]));
             $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['estado','>','2','anexos', '>', 0]]));
-            $this->panel->setBoton('index',new BotonBasico('programacion.create', ['roles' => [config('constants.rol.profesor')]]));
+            $this->panel->setBoton('index',new BotonBasico('programacion.create', ['roles' => [config('roles.rol.profesor')]]));
             $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['estado', '<', 3]]));
             $this->panel->setBoton('grid', new BotonImg('programacion.edit', ['where' => ['estado', '<', 2]]));
             $this->panel->setBoton('grid', new BotonImg('programacion.delete', ['where' => ['estado', '<', 2]]));

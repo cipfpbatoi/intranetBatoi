@@ -44,8 +44,8 @@ class DocumentoController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBothBoton('documento.show', ['where' => ['rol', 'in', RolesUser(AuthUser()->rol),'link','==',1]]);
-        $this->panel->setBoton('grid', new BotonImg('documento.delete', ['roles' => config('constants.rol.direccion')]));
-        $this->panel->setBoton('grid', new BotonImg('documento.edit', ['roles' => config('constants.rol.direccion')]));
+        $this->panel->setBoton('grid', new BotonImg('documento.delete', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('grid', new BotonImg('documento.edit', ['roles' => config('roles.rol.direccion')]));
     }
 
     public function store(Request $request, $fct = null)

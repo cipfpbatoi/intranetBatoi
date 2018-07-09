@@ -63,7 +63,7 @@ class Resultado extends Model
     
     public function getEvaluacionOptions()
     {
-        return config('constants.nombreEval');
+        return config('auxiliares.nombreEval');
     }
 
 //    public function getIdGrupoOptions()
@@ -112,7 +112,7 @@ class Resultado extends Model
         return $this->ModuloGrupo->literal;
     }
     public function getXEvaluacionAttribute(){
-        return config("constants.nombreEval.$this->evaluacion");
+        return config("auxiliares.nombreEval.$this->evaluacion");
     }
     public function getXProfesorAttribute(){
         return Profesor::find($this->idProfesor)->shortName;

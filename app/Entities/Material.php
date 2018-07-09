@@ -46,7 +46,7 @@ class Material extends Model
 
     public function getEstadoOptions()
     {
-        return config('constants.estadoMaterial');
+        return config('auxiliares.estadoMaterial');
     }
 
     public function getEspacioOptions()
@@ -56,7 +56,7 @@ class Material extends Model
 
     public function getProcedenciaOptions()
     {
-        return config('constants.procedenciaMaterial');
+        return config('auxiliares.procedenciaMaterial');
     }
 
 }

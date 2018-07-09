@@ -134,7 +134,7 @@ class Alumno extends Authenticatable
     }
     public function getIdiomaOptions()
     {
-        return config('constants.idiomas');
+        return config('auxiliares.idiomas');
     }
     public function getFullNameAttribute()
     {

@@ -220,7 +220,7 @@ class ReunionController extends IntranetController
                 'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
                 'tags' => TipoReunion::literal($elemento->tipo),
                 'created_at' => new Date($elemento->fecha),
-                'rol' => config('constants.rol.profesor')]);
+                'rol' => config('roles.rol.profesor')]);
             $elemento->save();
         });
         return back();
@@ -244,7 +244,7 @@ class ReunionController extends IntranetController
         foreach ($grupos as $grupo) {
             if (!Reunion::Convocante($grupo->tutor)->Tipo($request->tipo)->Numero($request->numero)->Archivada()->count()) {
                 $texto = 'Et falta per fer i/o arxivar la reunio ' . TipoReunion::literal($request->tipo) . ' ';
-                $texto .= $request->numero > 0 ? config('constants.numeracion')[$request->numero] : '';
+                $texto .= $request->numero > 0 ? config('auxiliares.numeracion')[$request->numero] : '';
                 avisa($grupo->tutor, $texto);
                 $cont++;
             }

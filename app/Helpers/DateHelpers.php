@@ -91,7 +91,7 @@ function month($fecha)
 function nameDay($fecha)
 {
     $fc1 = new Jenssegers\Date\Date($fecha);
-    return config('constants.diaSemana.' . $fc1->format('N'));
+    return config('auxiliares.diaSemana.' . $fc1->format('N'));
 }
 
 /**

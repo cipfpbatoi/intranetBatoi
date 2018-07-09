@@ -41,7 +41,7 @@ class notifyDailyFaults extends Command
      */
     public function handle()
     {
-        if (config('constants.controlDiario')){
+        if (config('variables.controlDiario')){
             $profesores = FicharController::noHanFichado(Hoy());
             $guardias = GuardiaController::noGuardia(Hoy());
             foreach ($profesores as $profesor) 

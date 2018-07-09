@@ -23,7 +23,7 @@
             @foreach ($grupo as $elemento)
             <tr>
                 <td>{!! $elemento->Modulo !!}</td>
-                <td>{!! config('constants.nombreEval')[$elemento->evaluacion] !!}</td>
+                <td>{!! config('auxiliares.nombreEval')[$elemento->evaluacion] !!}</td>
                 <td>{{$elemento->matriculados}}</td>
                 <td>{{$elemento->evaluados }}</td>
                 @if ($elemento->evaluados)
@@ -36,7 +36,7 @@
             </tr>
             @endforeach
             <tr>
-                <td colspan="3"><strong>Totals avaluació {!! config('constants.nombreEval')[$elemento->evaluacion] !!}</strong></td>
+                <td colspan="3"><strong>Totals avaluació {!! config('auxiliares.nombreEval')[$elemento->evaluacion] !!}</strong></td>
                 <td><strong>{{$grupo->sum('evaluados') }}</strong></td>
                 @if ($grupo->sum('evaluados'))
                     <td><strong>{{$grupo->sum('aprobados') }} ({{round(100 * ($grupo->sum('aprobados') / $grupo->sum('evaluados')),2)}} %)</strong></td>

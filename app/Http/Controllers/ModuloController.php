@@ -20,7 +20,7 @@ class ModuloController extends IntranetController
     
     protected function iniBotones()
     {
-        $this->panel->setBoton('grid', new BotonImg('modulo.edit', ['roles' => config('constants.rol.administrador')]));
+        $this->panel->setBoton('grid', new BotonImg('modulo.edit', ['roles' => config('roles.rol.administrador')]));
     }
 
 //    protected function asigna()

@@ -5,7 +5,7 @@
         $edit = "/documento/".$elemento->id."/edit";
     @endphp
     <li class="media event col-md-3 col-lg-3" style="border-bottom: 2px">
-        @if (esRol(AuthUser()->rol,config('constants.rol.direccion'))) 
+        @if (esRol(AuthUser()->rol,config('roles.rol.direccion'))) 
          <a href="{{$edit}}" class="pull-left border-aero profile_thumb">
         @else     
          <a href="{{$enlace}}" class="pull-left border-aero profile_thumb"> 

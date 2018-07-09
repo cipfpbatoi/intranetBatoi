@@ -55,7 +55,7 @@ class FaltaController extends IntranetController
             $request->hora_fin = $dia_completo ? null : $request->hora_fin;
             $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
             $id = parent::realStore($request);
-            if (UserisAllow(config('constants.rol.direccion'))) $this->init($id); // si es direcció autoritza
+            if (UserisAllow(config('roles.rol.direccion'))) $this->init($id); // si es direcció autoritza
         }
         return $this->redirect();
     }

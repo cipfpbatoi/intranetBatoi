@@ -107,7 +107,7 @@ class Falta extends Model
 
     public static function getMotivosOptions()
     {
-        return config('constants.motivoAusencia');
+        return config('auxiliares.motivoAusencia');
     }
     public function getIdProfesorOptions()
     {
@@ -127,7 +127,7 @@ class Falta extends Model
         return isblankTrans('models.Falta.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Falta.' . $this->estado);
     }
     public function getMotivoAttribute(){
-        return config('constants.motivoAusencia')[$this->motivos];
+        return config('auxiliares.motivoAusencia')[$this->motivos];
     }
     
 }
