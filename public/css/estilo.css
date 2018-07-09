@@ -12,32 +12,9 @@ header{
         background-color: rgba(239,250,255,1); 
         
 }
-#mheader{
-        height: 91px;/*alto*/
-	margin-right: 5px;
-        margin-left: 5px;
-        margin-top: 5px;
-        background-color: rgba(239,250,255,1); 
-}
-#header{
-    background-image: url("/img/cabecera.png");
-    background-repeat: no-repeat;
-    height: 149px;/*alto*/
-    padding: 0px;
-}
-#header_mini{
-	height: 89px;/*alto*/
-	background-image: url("/img/cabecera_mini.jpg");
-	background-repeat: no-repeat;
-}
 .head{
 	height: 149px;
 	padding: 10px 10px;
-}
-.head_mini
-{
-	height: 89px;
-	padding: 5px 5px;
 }
 footer{
 	background-color: #F0F2F7;
@@ -45,20 +22,6 @@ footer{
         margin: 10px;
         text-align: center;
 }
-#cuerpo{
-	padding: 5px 0px;
-        margin-bottom: 5px;
-        margin-left: 10px;
-        margin-right: 10px;
-        margin-top: 5px;
-	text-align: left;
-	background-image: url("/img/fondo.jpg");
-	background-color: #F0F2F7;
-	height: auto;
-	padding-bottom: 10px;	
-        min-height: 450px;
-}
-
 .iconopequeno{
 
 	width: 25px;
