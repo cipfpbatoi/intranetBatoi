@@ -8,11 +8,11 @@
             <h4 class="modal-title">{{ trans('models.Resultado.llenar')}}</h4>
             </div>
             <div class="modal-body">
-                <form id='formAviso' action="/resultado/infTrimestral" method="POST">
+                <form id='formAviso' action="/infdepartamento/create" method="POST">
                     {{ csrf_field() }}
-                    @if (isset($informes[evaluacion()-1])) 
+                    @if ($reunion = \Intranet\Http\Controllers\PanelListadoEntregasController::existeInforme()) 
                     {{ method_field('PUT') }} 
-                    <input type='hidden' name='reunion' value="{{$informes[evaluacion()-1]}}" />
+                    <input type='hidden' name='reunion' value="{{$reunion->id}}" />
                     @endif
                     <input type='hidden' name='trimestre' value='{{evaluacion()-1}}' />
                     <label class='control-label' for='observaciones'>   {!! trans('validation.attributes.observaciones') !!}: </label>   

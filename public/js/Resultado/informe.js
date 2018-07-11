@@ -7,6 +7,6 @@ $(function() {
 		//id=$(this).parents(".profile_view").attr("id");
 	});
 	$("#formAviso").on("submit", function(){
-		$(this).attr("action","/resultado/infTrimestral");
+		$(this).attr("action","/infdepartamento/create");
 	});
 })

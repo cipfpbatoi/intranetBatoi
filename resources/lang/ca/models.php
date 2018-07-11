@@ -238,6 +238,7 @@ return array(
             'avisa' => 'Avisa Professors',
             'estan' => 'Tens tots els resultats del departament disponibles',
             'generado' => "L'informe del departament està disponible",
+            
         ),
         'Documento' => array(
             'index' => 'Cercar Documents',
@@ -353,7 +354,16 @@ return array(
            'copy' => 'Copiar instructor'
         ),
         'Infdepartamento' => array(
-          'index' => 'Consulta informes de departament',  
+          'index' => 'Consulta informes de departament',
+          'create' => 'Crear Informe departament',
+          'edit' => 'Modificar informe departament',
+          'avisa' => 'Avisa Professors falta informe',  
+          'pdf' => 'Vore Informe departament'
+            
+        ),
+        'Modulo_grupo' => array(
+          'index' => 'Seguiments Modul departament', 
+          
         ),
         'modelos' => array(
             'Comision' => 'Comisió de Servei',

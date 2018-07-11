@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Modulo;
 use Intranet\Events\ActivityReport;
+use Intranet\Entities\Profesor;
 
 class Modulo_grupo extends Model
 {
@@ -20,6 +21,10 @@ class Modulo_grupo extends Model
     public function ModuloCiclo()
     {
         return $this->belongsto(Modulo_ciclo::class, 'idModuloCiclo','id');
+    }
+    public function resultados()
+    {
+        return $this->hasMany(Resultado::class,'idModuloGrupo', 'id');
     }
     
     public function Profesores()
@@ -57,6 +62,19 @@ class Modulo_grupo extends Model
     }
     public function getliteralAttribute(){
         return $this->XGrupo.'-'.$this->XModulo;
+    }
+    
+    public function getseguimientoAttribute(){
+        $tr = evaluacion() - 1;
+        $trimestre = config("curso.trimestres.$tr")[$this->ModuloCiclo->curso];
+        return $this->resultados->where('evaluacion',$trimestre)->count();
+    }
+    public function getprofesorAttribute(){
+        $a = '';
+        foreach ($this->profesores() as $profesor){
+            $a .= Profesor::find($profesor['idProfesor'])->FullName.' ';
+        }
+        return $a;
     }
     
 }

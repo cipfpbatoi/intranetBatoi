@@ -285,13 +285,14 @@ Route::get('/reserva', ['as' => 'reserva.index', 'uses' => 'ReservaController@in
 //API_TOKEN
 Route::get('/myApiToken', ['as' => 'profesor.miapiToken', 'uses' => 'ProfesorController@miApiToken']);
 
-Route::get('/resultado/list', ['as' => 'resultado.list', 'uses' => 'ResultadoController@listadoEntregas']);
-Route::get('/resultado/aviso/{trimestre}', ['as' => 'resultado.avisaFalta', 'uses' => 'ResultadoController@avisaFaltaEntrega']);
-Route::get('/resultado/infTrimestral/{informe}', ['as' => 'resultado.verInforme', 'uses' => 'ResultadoController@verInformeTrimestral']);
-Route::post('/resultado/infTrimestral', 
-        ['as' => 'resultado.hazInforme', 'uses' => 'ResultadoController@hazInformeTrimestral']);
-Route::put('/resultado/infTrimestral', 
-        ['as' => 'resultado.modificaInforme', 'uses' => 'ResultadoController@modificaInformeTrimestral']);
+Route::get('/resultado/list', ['as' => 'resultado.list', 'uses' => 'PanelListadoEntregasController@index']);
+Route::get('/infdepartamento/pdf/{reunion}', ['as' => 'reunion.pdf', 'uses' => 'PanelListadoEntregasController@pdf']);
+Route::get('/infdepartamento/{resultado}/aviso', ['as' => 'resultado.avisaFalta', 'uses' => 'PanelListadoEntregasController@avisaFaltaEntrega']);
+Route::get('/infdepartamento/avisa', ['as' => 'resultado.avisa', 'uses' => 'PanelListadoEntregasController@avisaTodos']);
+Route::post('/infdepartamento/create', 
+        ['as' => 'resultado.hazInforme', 'uses' => 'PanelListadoEntregasController@hazInformeTrimestral']);
+Route::put('/infdepartamento/create', 
+        ['as' => 'resultado.modificaInforme', 'uses' => 'PanelListadoEntregasController@modificaInformeTrimestral']);
 //Programacion
 Route::resource('/programacion', 'ProgramacionController', ['except' => ['destroy', 'update', 'show']]);
 Route::put('/programacion/{programacion}/seguimiento', 
