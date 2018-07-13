@@ -66,7 +66,8 @@ class Alumno extends Authenticatable
 
     public function Curso()
     {
-        return $this->belongsToMany(Curso::class, 'curso_alumno', 'curso_id', 'alumno_id');
+        return $this->belongsToMany(Curso::class, 'alumnos_cursos', 'idAlumno','idCurso','nia','id')
+                ->withPivot(['registrado','finalizado']);
     }
     public function Colaboracion()
     {

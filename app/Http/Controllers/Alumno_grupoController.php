@@ -37,9 +37,6 @@ class Alumno_grupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumno.baja', ['where' => ['idGrupo', '==', $miGrupo]]));
         $this->panel->setBoton('profile', new BotonIcon('alumno.baja', ['where' => ['idGrupo', '==', $miGrupo]]));
         $this->panel->setBoton('grid', new BotonImg('direccion.aFol', ['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion')]));
-        
-        
-        //$this->panel->setBoton('grid',new BotonImg('fct.asigna',['img'=>'fa-birthday-cake', 'roles'=>config('roles.rol.tutor'),'where' => ['idGrupo', '==', $miGrupo]]));
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {
             if (($curso->aforo == 0) || ($curso->NAlumnos < $curso->aforo * config('variables.reservaAforo')))

@@ -348,6 +348,10 @@ return array(
         ),
     '   Infdepartamento' => array(
           'index' => 'Consulta informes de departamento',  
+          'create' => 'Crear Informe departamento',
+          'edit' => 'Modificar informe departamento',
+          'avisa' => 'Avisa Profesores falta informe',  
+          'pdf' => 'Ver Informe departamento'
         ),
         'Horario' => array(
             'index' => 'Modificar Horario :quien',

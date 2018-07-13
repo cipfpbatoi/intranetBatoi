@@ -278,6 +278,10 @@ class Profesor extends Authenticatable
     {
         return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2,'UTF-8'));
     }
+    public function getNameFullAttribute()
+    {
+        return ucwords(mb_strtolower($this->apellido1 . ' ' . $this->apellido2.', '.$this->nombre ,'UTF-8'));
+    }
 
     public function getShortNameAttribute()
     {

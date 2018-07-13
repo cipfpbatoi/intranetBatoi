@@ -3,26 +3,19 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Curso;
-use Intranet\Entities\Curso_alumno;
-use Intranet\Botones\BotonImg;
-use Intranet\Entities\Modulo;
-use Intranet\Entities\Modulo_ciclo;
-use Intranet\Entities\Modulo_grupo;
-use Intranet\Entities\Departamento;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\Modulo_grupo;
+use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Reunion;
-use Intranet\Entities\Programacion;
+
 
 
 class ResultadoController extends IntranetController
 {
 
+    use traitImprimir;
+    
     protected $perfil = 'profesor';
     protected $model = 'Resultado';
     protected $gridFields = ['Modulo', 'XEvaluacion', 'XProfesor'];
@@ -47,8 +40,7 @@ class ResultadoController extends IntranetController
 
     public function store(Request $request)
     {
-        $modulogrupo = Modulo_grupo::find($request->idModuloGrupo);
-        if ($modulogrupo) {
+        if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
             $this->realStore($request);
             if ($request->evaluacion == 3) {
                 $programacion = Programacion::where('idModuloCiclo', $modulogrupo->idModuloCiclo)->where('curso', Curso())->first()->id;
@@ -64,8 +56,7 @@ class ResultadoController extends IntranetController
 
     public function listado()
     {
-        $grupo = Grupo::select('codigo', 'nombre')->QTutor()->first();
-        if ($grupo) {
+        if ($grupo = Grupo::select('codigo', 'nombre')->QTutor()->first()) {
             $resultados = Resultado::QGrupo($grupo->codigo)->orderBy('idModuloGrupo')
                             ->orderBy('evaluacion')->get();
             $datosInforme = $grupo->nombre;

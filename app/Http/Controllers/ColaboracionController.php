@@ -48,7 +48,7 @@ class ColaboracionController extends IntranetController
     
     protected function realStore(Request $request, $id = null)
     {
-        $elemento = $id ? $this->class::findOrFail($id) : new $this->class; //busca si hi ha
+        $elemento = $id ? Colaboracion::findOrFail($id) : new Colaboracion(); //busca si hi ha
         if ($id) $elemento->setRule('idCentro',$elemento->getRule('idCentro').','.$id);
         $this->validateAll($request, $elemento);    // valida les dades
         return $elemento->fillAll($request);        // ompli i guarda

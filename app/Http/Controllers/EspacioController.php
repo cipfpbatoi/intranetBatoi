@@ -15,14 +15,8 @@ class EspacioController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'Espacio';
     protected $gridFields = ['Xdepartamento', 'aula', 'descripcion', 'gMati', 'gVesprada'];
-    //protected $modal = true;
-    
-    public function __construct()
-    {
-        $this->middleware($this->perfil);
-        parent::__construct();
-    }
-
+    protected $modal = true;
+   
     public function detalle($id)
     {
         return redirect()->route('material.espacio', ['espacio' => $id]);

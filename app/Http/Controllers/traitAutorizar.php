@@ -4,10 +4,8 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use DB;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonBasico;
+
 
 
 trait traitAutorizar

@@ -18,7 +18,8 @@ class Material extends Model
 
     protected $rules = [
         'descripcion' => 'required',
-        'espacio' => 'required'
+        'espacio' => 'required',
+        'unidades' => 'numeric',
     ];
     protected $inputTypes = [
         'espacio' => ['type' => 'select'],

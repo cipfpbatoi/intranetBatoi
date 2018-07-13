@@ -43,13 +43,13 @@ class ComisionController extends IntranetController
      
     public function paid($id)
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = Comision::findOrFail($id);
         $elemento->estado = 5;
         $elemento->save();
     }
     public function unpaid($id)
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = Comision::findOrFail($id);
         $elemento->estado = 4;
         $elemento->save();
         return back();

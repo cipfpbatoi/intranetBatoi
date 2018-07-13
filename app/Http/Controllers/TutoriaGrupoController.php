@@ -13,7 +13,7 @@ class TutoriaGrupoController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'TutoriaGrupo';
-    protected $gridFields = ['idGrupo', 'observaciones', 'fecha'];
+    protected $gridFields = ['Nombre', 'observaciones', 'fecha'];
     protected $redirect = 'TutoriaController@index';
     
     public function createfrom($tutoria,$grupo)
@@ -21,15 +21,9 @@ class TutoriaGrupoController extends IntranetController
         return parent::create(['idTutoria' => $tutoria,'idGrupo'=>$grupo]);
     }
     
-    public function indice($id)
-    {
-        $desc = Tutoria::find($id)->descripcion;
-        $todos = TutoriaGrupo::where('idTutoria','=',$id)->get();
-        foreach ($todos as $uno){
-            $uno->idGrupo = $uno->Grupo->nombre;
-        }
-        $this->titulo = ['que' => $desc];
-        return $this->llist($todos, new Panel('TutoriaGrupo', ['idGrupo', 'observaciones', 'fecha'], 'grid.standard'));
+    public function search(){
+        $this->titulo = ['que' => Tutoria::find($id)->descripcion];
+        return TutoriaGrupo::where('idTutoria','=',$this->search)->get();
     }
     
 }

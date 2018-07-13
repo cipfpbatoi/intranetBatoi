@@ -7,7 +7,7 @@ Route::get('/legal', ['as' => 'legal', 'uses' => 'Auth\Alumno\HomeController@leg
 Route::get('/perfil', ['as' => 'perfilalumno.edit', 'uses' => 'Auth\Alumno\PerfilController@editar']);
 Route::put('/perfil', ['as' => 'perfilalumno.update', 'uses' => 'Auth\Alumno\PerfilController@update']);
 
-Route::get('/curso', ['as' => 'curso.direccion.index', 'uses' => 'CursoController@indexAlumno']);
+Route::get('/curso', ['as' => 'curso.direccion.index', 'uses' => 'PanelAlumnoCursoController@index']);
 Route::get('/alumnocurso/{curso}/register', ['as' => 'alumnocurso.register', 'uses' => 'AlumnoCursoController@register']);
 Route::get('/alumnocurso/{curso}/unregister', ['as' => 'alumnocurso.unregister', 'uses' => 'AlumnoCursoController@unregister']);
 Route::get('/equipo', ['as' => 'alumno.equipo', 'uses' => 'AlumnoController@equipo']);

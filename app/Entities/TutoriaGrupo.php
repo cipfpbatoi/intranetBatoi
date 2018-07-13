@@ -40,6 +40,9 @@ class TutoriaGrupo extends Model
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
+    public function getNombreAttribute(){
+        return $this->Grupo->nombre;
+    }
     public function Grupo()
     {
         return $this->belongsTo(Grupo::class, 'idGrupo', 'codigo');

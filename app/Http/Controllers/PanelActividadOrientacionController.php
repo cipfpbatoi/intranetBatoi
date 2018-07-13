@@ -1,13 +1,15 @@
 <?php
 
 namespace Intranet\Http\Controllers;
+use Intranet\Http\Controllers\ActividadController;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
+use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Actividad;
 use Jenssegers\Date\Date;
 
 
-class PanelActividadOrientacionController extends BaseController
+class PanelActividadOrientacionController extends IntranetController
 {
     
     protected $perfil = 'profesor';
@@ -20,7 +22,7 @@ class PanelActividadOrientacionController extends BaseController
     protected function iniBotones()
     {
 
-        $this->panel->setBotonera(['createO']);
+        $this->panel->setBoton('index',new BotonBasico('actividadOrientacion.create',['roles'=>config('roles.rol.orientador')]));
         $this->panel->setBothBoton('actividad.detalle');
         $this->panel->setBothBoton('actividad.edit');
         $this->panel->setBoton('grid', new BotonImg('actividad.delete'));
@@ -34,6 +36,10 @@ class PanelActividadOrientacionController extends BaseController
         return Actividad::where('extraescolar', 0)->get();
     }
     
+    public function create($default = null)
+    {
+        return parent::create(['extraescolar' => 0]);
+    }
     
     
     

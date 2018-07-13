@@ -29,20 +29,6 @@ class EmpresaController extends IntranetController
     protected $vista = ['show' => 'empresa','grid'=>'vacia'];
 
     
-    public function indexSC()
-    {
-        $ciclos = Ciclo::select('id')->where('departamento', AuthUser()->departamento)->get()->toArray();
-        $colaboraciones =  Colaboracion::select('idCentro')->whereIn('idCiclo',$ciclos)->get()->toArray();
-        $centros = Centro::select('idEmpresa')->whereIn('id',$colaboraciones)->get()->toArray();
-        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        $this->panel->setPestana($this->model, true, 'grid.standard', null, ['nombre', 'direccion', 'localidad', 'telefono', 'email', 'actividad'], true);
-        $this->panel->setBotonera(['create'], ['detalle','delete']);
-        $this->panel->setTitulo([]);
-       // $this->panel->setElementos(Empresa::whereNull('concierto')->whereIn('id',$centros)->get());
-        $this->panel->setElementos(Empresa::whereNull('concierto')->get());
-        return view('empresa.indexSC', ['panel' => $this->panel]);
-    }
-    
     public function create($default=null)
     {
         return parent::create(['creador'=> AuthUser()->dni]);
@@ -51,7 +37,7 @@ class EmpresaController extends IntranetController
     public function show($id)
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 2;
-        $elemento = $this->class::findOrFail($id);
+        $elemento = Empresa::findOrFail($id);
         $modelo = $this->model;
         return view($this->chooseView('show'), compact('elemento', 'modelo','activa'));
     }
@@ -97,7 +83,7 @@ class EmpresaController extends IntranetController
     
     protected function realStore(Request $request, $id = null)
     {
-        $elemento = $id ? $this->class::findOrFail($id) : new $this->class; //busca si hi ha
+        $elemento = $id ? Empresa::findOrFail($id) : new Empresa(); //busca si hi ha
         if ($id) $elemento->setRule('concierto',$elemento->getRule('concierto').','.$id);
         $this->validateAll($request, $elemento);    // valida les dades
         return $elemento->fillAll($request);        // ompli i guarda

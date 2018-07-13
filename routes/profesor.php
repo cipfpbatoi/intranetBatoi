@@ -28,8 +28,8 @@ Route::get('/actividad/{actividad}/notification', ['as' => 'actividad.notificar'
 Route::get('/actividad/{actividad}/autorizacion', ['as' => 'actividad.autorizacion', 'uses' => 'ActividadController@autorizacion']);
 Route::get('/actividad/{actividad}/ics', ['as' => 'actividad.ics', 'uses' => 'ActividadController@i_c_s']);
 Route::get('/actividadOrientacion', ['as' => 'actividad.orientacion', 'uses' => 'PanelActividadOrientacionController@index']);
-Route::get('/actividad/createO', ['as' => 'actividad.createO', 'uses' => 'ActividadController@createO']);
-Route::post('/actividad/createO', ['as' => 'actividad.storeO', 'uses' => 'ActividadController@store']);
+Route::get('/actividadorientacion/create', ['as' => 'actividad.createOrientacion', 'uses' => 'PanelActividadOrientacionController@create']);
+Route::post('/actividadorientacion/create', ['as' => 'actividad.storeOrientacion', 'uses' => 'ActividadController@store']);
 
 
 
@@ -167,7 +167,7 @@ Route::get('/empresa/pdf', ['as' => 'empresa.pdf', 'uses' => 'EmpresaController@
 Route::get('/empresa/{empresa}/detalle', ['as' => 'empresa.detalle', 'uses' => 'EmpresaController@show']);
 Route::get('/empresa/{empresa}/document', ['as' => 'empresa.document', 'uses' => 'EmpresaController@document']);
 Route::get('/colaboracion',['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
-Route::get('/empresaSC',['as'=>'empresaSC.index','uses'=>'EmpresaController@indexSC']);
+Route::get('/empresaSC',['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCController@index']);
 
 Route::resource('/centro', 'CentroController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/centro/{centro}/delete', ['as' => 'centro.destroy', 'uses' => 'CentroController@destroy']);

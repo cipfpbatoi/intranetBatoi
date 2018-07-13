@@ -40,10 +40,6 @@ class ActividadController extends IntranetController
                 ->get();
     }
     
-    public function createO($default = null)
-    {
-        return parent::create(['extraescolar' => 0]);
-    }
     
 
     public function store(Request $request)
@@ -126,7 +122,7 @@ class ActividadController extends IntranetController
 
     public function notify($id)
     {
-        $elemento = $this->class::findOrFail($id);
+        $elemento = Actividad::findOrFail($id);
         $profesores = Actividad_profesor::where('idActividad', '=', $id)->get();
         $grupos = Actividad_grupo::where('idActividad', '=', $id)->get();
         $mensaje = "Els grups: -";

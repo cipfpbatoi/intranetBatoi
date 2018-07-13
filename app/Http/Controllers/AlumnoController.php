@@ -24,7 +24,7 @@ class AlumnoController extends PerfilController
 
     public function update(Request $request, $id)
     {
-        $new = $this->class::find($id);
+        $new = Alumno::find($id);
         parent::update($request, $new);
         return redirect("/alumno_grupo/" . $new->Grupo()->first()->codigo . "/show");
     }
@@ -49,6 +49,7 @@ class AlumnoController extends PerfilController
         avisa($expediente->idProfesor,$expediente->explicacion,'/expediente/' . $expediente->id . '/edit');
         return back();
     }
+    
     public function equipo()
     {
         $grupo = AuthUser()->Grupo->first()->codigo;
@@ -56,6 +57,7 @@ class AlumnoController extends PerfilController
         return $this->grid(Profesor::orderBy('apellido1', 'asc')->orderBy('apellido2', 'asc')
                 ->Grupo($grupo)->get());
     }    
+    
     public function iniBotones()
     {
         $this->panel->setBoton('profile', new BotonIcon('alumno.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
