@@ -62,9 +62,9 @@ class ExpedienteController extends IntranetController
 
     public function imprimir()
     {
-        if ($this->class::listos()->Count())
+        if (Expendiente::listos()->Count())
             foreach (config('auxiliares.tipoExpediente') as $index => $valor) {
-                $todos = $this->class::listos()->where('tipo', $index);
+                $todos = Expendiente::listos()->where('tipo', $index);
                 if ($todos->Count()) {
                     $pdf = $this->hazPdf("pdf.expediente.$index", $todos);
                     $nom = $this->model . new Date() . '.pdf';

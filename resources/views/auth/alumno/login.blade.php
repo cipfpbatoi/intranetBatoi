@@ -51,7 +51,7 @@
                             <div class="clearfix"></div>
                             <br />
                             <div>
-                                <h1><i class="fa fa-paw"></i> CIP FP Batoi</h1>
+                                <h1><i class="fa fa-paw"></i> {{config('contacto.titulo')}}</h1>
                                 <p>©2017 All Rights Reserved. Generalitat Valenciana</p>
                             </div>
                         </div>

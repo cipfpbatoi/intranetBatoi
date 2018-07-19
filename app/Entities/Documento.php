@@ -50,7 +50,7 @@ class Documento extends Model
     {
         $this->tipoDocumento = 'Fichero';
         $this->curso = Curso();
-        $this->propietario = 'CIP FP BATOI';
+        $this->propietario = config('contacto.titulo');
     }
 
 

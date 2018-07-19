@@ -297,17 +297,7 @@ class FctController extends IntranetController
         $instructores = $fct->Instructores->pluck('dni');
         return view($this->chooseView('show'), compact('fct', 'activa','proyecto','instructores'));
     }
-//    public function store(Request $request)
-//    {
-//        $idFct = parent::realtore($request);
-//        $fct = Fct::find($idFct);
-//        $fct->Instructores()->attach($fct->idInstructor,['horas'=>$fct->horas]);
-//        if (Session::get('pestana')){
-//            Session::put('pestana',3);
-//            return redirect()->action('EmpresaController@show', ['id' => Colaboracion::find($request->idColaboracion)->Centro->idEmpresa]);
-//        }
-//        else return $this->redirect();
-//    }
+
 
     public function destroy($id)
     {

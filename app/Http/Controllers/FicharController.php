@@ -37,24 +37,6 @@ class FicharController extends IntranetController
             return back();
     }
 
-//    public function listado($dia = null)
-//    {
-//        $dia = $dia ? $dia : Hoy();
-//        $fdia = new Date($dia);
-//        $todos = Profesor::whereIn('dni', self::noHanFichado($dia))->get();
-//        foreach ($todos as $profesor) {
-//            $profesor->departamento = $profesor->Departamento->literal;
-//        }
-//        $panel = new Panel('Profesor', ['departamento', 'apellido1', 'apellido2', 'nombre', 'email'], 'grid.standard');
-//        $panel->dia = $fdia->toDateString();
-//        $panel->anterior = $fdia->subDay()->toDateString();
-//        $panel->posterior = $fdia->addDays(2)->toDateString();
-//        $panel->setBoton('grid', new BotonImg('fichar.delete', [], 'direccion', $panel->dia));
-//        
-//        return $this->llist($todos, $panel);
-//    }
-
-    
 
     public function store(Request $request)
     {
