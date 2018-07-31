@@ -13,6 +13,7 @@ use Intranet\Http\Controllers\AdministracionController;
 class ActualizacionController extends Controller{
     
   protected function actualizacion(){
+        Alert::info(system('rm ./../composer.lock'));
         Alert::info(system('git pull'));
         Alert::info(system('php ./../artisan config:cache'));
         Alert::info(system('php ./../artisan migrate'));
