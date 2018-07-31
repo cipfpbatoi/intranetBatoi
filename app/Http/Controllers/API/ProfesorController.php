@@ -21,24 +21,13 @@ class ProfesorController extends ApiBaseController
     }
     
     public function ficha(){
-        $todos = Profesor::select('dni','nombre','apellido1','apellido2','departamento','email','emailItaca','codigo_postal')->activo()->orderBy('departamento')->get();
+        $todos = Profesor::activo()->orderBy('departamento')->get();
         foreach ($todos as $uno){
             $uno->nombre = $uno->FullName;
-            $uno->departamento = $uno->Departamento->literal;
-            $ficha = Falta_profesor::Hoy($uno->dni)->last();
-            if ($ficha){
-                $uno->email = $ficha->entrada;
-                $uno->emailItaca = $ficha->salida;
-            }
-            else{
-                $uno->email = '';
-                $uno->emailItaca = '';
-            }
-            $horario = Horario::Primera($uno->dni)->orderBy('sesion_orden')->get();
-            if (isset($horario->first()->desde)){
-                $uno->codigo_postal = $horario->first()->desde." - ".$horario->last()->hasta;
-            }
-            else $uno->codigo_postal = '';
+            $uno->departamento = $uno->Ldepartamento;
+            $uno->email = $uno->Entrada;
+            $uno->emailItaca = $uno->Salida;
+            $uno->codigo_postal = $uno->Horario;
         }
         return $this->sendResponse($todos, 'OK');
     }
