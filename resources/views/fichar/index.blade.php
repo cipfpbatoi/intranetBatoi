@@ -4,7 +4,9 @@
 @endsection
 @section('grid')
     @include('fichar.partials.formulario')
-    @include('fichar.partials.grid')
+    @foreach ($panel->getPestanas() as $pestana)
+       @include('intranet.partials.grid.stnoOp')
+    @endforeach
 @endsection
 @section('titulo')
     {{$panel->getTitulo()}}

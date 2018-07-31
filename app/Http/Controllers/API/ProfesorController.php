@@ -20,16 +20,4 @@ class ProfesorController extends ApiBaseController
         return $this->sendResponse($data, 'OK');
     }
     
-    public function ficha(){
-        $todos = Profesor::activo()->orderBy('departamento')->get();
-        foreach ($todos as $uno){
-            $uno->nombre = $uno->FullName;
-            $uno->departamento = $uno->Ldepartamento;
-            $uno->email = $uno->Entrada;
-            $uno->emailItaca = $uno->Salida;
-            $uno->codigo_postal = $uno->Horario;
-        }
-        return $this->sendResponse($todos, 'OK');
-    }
-
 }
