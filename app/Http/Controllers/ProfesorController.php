@@ -37,6 +37,7 @@ use traitAutorizar,
     protected $vista = ['show' => 'perfil', 'edit' => 'perfil'];
     protected $gridFields = ['Xdepartamento', 'FullName', 'Xrol'];
     protected $perfil = 'profesor';
+    protected $parametresVista = ['modal' => ['detalle','aviso']];
 
     public function index()
     {
@@ -49,7 +50,7 @@ use traitAutorizar,
                 ->distinct()
                 ->get();
         foreach ($departamentos as $departamento) {
-            $this->panel->setPestana($departamento->depcurt, false, 'profile.profesor', ['Xdepartamento', $departamento->depcurt]);
+            $this->panel->setPestana($departamento->depcurt, false, 'profile.profesor', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
         }
         $this->iniBotones();
         return $this->grid($todos);
@@ -70,7 +71,7 @@ use traitAutorizar,
                 ->orderBy('apellido2', 'asc')
                 ->get();
         $this->iniBotones();
-        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1);
+        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1,$this->parametresVista);
         $this->panel->setBoton('index', new BotonBasico("profesor.colectivo", ['class' => 'colectivo btn btn-primary'], true));
         Session::put('colectivo', AuthUser()->departamento);
         return $this->grid($todos);
@@ -86,7 +87,7 @@ use traitAutorizar,
             if (esRol($item->rol, config('roles.rol.direccion')))
                 return $item;
         });
-        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1);
+        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1,$this->parametresVista);
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
         $this->panel->setBoton('profile', new BotonIcon('profesor.horario', ['icon' => 'fa-user', 'class' => 'btn-success']));
 
@@ -96,7 +97,7 @@ use traitAutorizar,
 
     public function equipo($grupo)
     {
-        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1);
+        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1,$this->parametresVista);
         $this->panel->setBoton('index', new BotonBasico("profesor.colectivo", ['class' => 'colectivo btn btn-primary'], true));
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
         Session::put('colectivo', $grupo);

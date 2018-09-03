@@ -11,7 +11,9 @@
                     @endif
                 </th>
                 @endforeach
-                <th>@lang("validation.attributes.operaciones")</th>
+                @if ($panel->countBotones('grid'))
+                    <th>@lang("validation.attributes.operaciones")</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -21,7 +23,9 @@
                 @foreach ($pestana->getRejilla() as $item)
                 <td><span class='input' name='{{ $item }}'>@if (isset($elemento->leido)&&!($elemento->leido))<strong> {{ substr($elemento->$item,0,60) }} </strong> @else  {{ mb_substr($elemento->$item,0,80) }} @endif</span></td>
                 @endforeach
+                @if ($panel->countBotones('grid'))
                 <td><span class="botones">@include('intranet.partials.buttons',['tipo' => 'grid'])</span></td>
+                @endif
             </tr>
             @endforeach
         </tbody>
@@ -36,7 +40,9 @@
                     @endif
                 </th>
                 @endforeach
-                <th>@lang("validation.attributes.operaciones")</th>
+                 @if ($panel->countBotones('grid'))
+                    <th>@lang("validation.attributes.operaciones")</th>
+                 @endif
             </tr>
         </tfoot>
     </table>

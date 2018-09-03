@@ -18,6 +18,7 @@ abstract class BaseController extends Controller
     protected $vista;       // vistes per defecte
     protected $panel;       // panel per a la vista
     protected $titulo = []; // paràmetres per al titol de la vista
+    protected $parametresVista = null;
     
     protected $profile = true;
     protected $modal = false; //utilitza vista modal o ono per a insercions i modificats
@@ -31,7 +32,8 @@ abstract class BaseController extends Controller
     {
         if (isset($this->perfil)) $this->middleware($this->perfil);  
         $this->class = $this->namespace . $this->model;
-        $this->panel = new Panel($this->model, $this->gridFields, isset($this->vista['grid'])?'grid.'.$this->vista['grid']:'grid.standard');
+        $this->panel = new Panel($this->model, $this->gridFields,
+                isset($this->vista['grid'])?'grid.'.$this->vista['grid']:'grid.standard',true,$this->parametresVista);
         
     }
     //seleciona vista para metodo, por defecto intranet
@@ -97,7 +99,7 @@ abstract class BaseController extends Controller
     protected function iniBotones(){}
     protected function iniPestanas($parametres = null){
         if (view()->exists('intranet.partials.profile.'.strtolower($this->model))&&$this->profile) 
-                    $this->panel->setPestana('profile', false);
+                    $this->panel->setPestana('profile', false,null,null,null,null,$this->parametresVista);
         
     }
     protected function crea_pestanas($estados,$vista,$activa=null){
@@ -105,7 +107,7 @@ abstract class BaseController extends Controller
         
         foreach ($estados as $key => $estado) {
             $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,
-                ['estado',$key]);
+                ['estado',$key],null,null,$this->parametresVista);
         }
     }
 

@@ -10,14 +10,17 @@ class Pestana
     private $activa;
     private $filtro;
     private $rejilla;
+    private $include;
+    
 
-    public function __construct($nombre, $activa = false, $vista = null, $filtro = [], $rejilla = null)
+    public function __construct($nombre, $activa = false, $vista = null, $filtro = [], $rejilla = null ,$include=null)
     {
         $this->nombre = $nombre;
         $this->activa = $activa;
         $this->filtro = $filtro;
         $this->vista = $vista;
         $this->rejilla = $rejilla;
+        $this->include = isset($include)?$include:[];
     }
 
     function setVista($vista){
@@ -37,7 +40,16 @@ class Pestana
     {
         return $this->activa ? 'active' : '';
     }
+    
+    function getInclude($index)
+    {
+        return isset($this->include[$index])?$this->include[$index]:[];
+    }
 
+    function setInclude($include)
+    {
+        $this->include = $include;
+    }
     function setActiva($activa)
     {
         $this->activa = $activa;

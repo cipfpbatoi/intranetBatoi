@@ -1,4 +1,4 @@
-@foreach ($panel->getElementos($pestana) as $elemento)
+@php dd($panel->getElementos($pestana)) @endphp
 <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
     <div id="{{$elemento->Alumno->nia}}" class="well profile_view">
         <div class="col-sm-12">

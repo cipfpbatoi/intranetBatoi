@@ -24,9 +24,10 @@ class FicharController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Falta_profesor';
-    protected $vista = ['index' => 'fichar.index'];
     protected $gridFields = ['Xdepartamento', 'FullName', 'Horario', 'Entrada', 'Salida'];
-
+    protected $include = ['before' => ['formulario']];
+    protected $amount= 200;
+    
     public function ficha()
     {
         Falta_profesor::fichar();
@@ -36,6 +37,7 @@ class FicharController extends IntranetController
         } else
             return back();
     }
+    
     public function search()
     {
         return Profesor::activo()->get();

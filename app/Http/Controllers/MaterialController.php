@@ -15,6 +15,7 @@ class MaterialController extends IntranetController
     protected $model = 'Material';
     protected $vista = ['index' => 'Material'];
     protected $gridFields = ['id', 'descripcion', 'Estado', 'espacio', 'unidades'];
+    protected $parametresVista = ['modal' => ['explicacion']];
 
     public function __construct()
     {

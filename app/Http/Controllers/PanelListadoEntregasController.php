@@ -30,7 +30,7 @@ class PanelListadoEntregasController extends BaseController
     
     protected $model = 'Modulo_grupo';
     protected $gridFields = ['literal','profesor','seguimiento'];
-    protected $vista = ['index' => 'resultado.control'];
+    protected $parametresVista = ['modal' => ['infDpto']];
     
     public function search()
     {

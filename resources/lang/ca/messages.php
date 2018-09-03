@@ -18,7 +18,7 @@ return array(
         'notAllowed' => 'Operació no permesa',
         'login' => 'Darrer Accés',
         'coordinador' => 'És coordinador',
-        'motivo' => 'Motivu',
+        'motivo' => 'Motiu',
         'resolve' => 'Resolta',
         'accept' => 'Autoritzada',
         'resign' => 'Desautoritzada',

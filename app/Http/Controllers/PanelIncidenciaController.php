@@ -18,10 +18,11 @@ class PanelIncidenciaController extends BaseController
     protected $model = 'Incidencia';
     protected $gridFields = ['Xestado', 'DesCurta', 'espacio', 'XCreador', 'XResponsable', 'Xtipo', 'fecha'];
     protected $orden = 'fecha';
+    protected $parametresVista = ['modal' => ['explicacion','aviso']];
     
     public function index()
     {
-        $this->panel->setPestana('NoAsig',0,'profile.incidencia',['estado',1,'responsable','']);
+        $this->panel->setPestana('NoAsig',0,'profile.incidencia',['estado',1,'responsable',''],null,null,$this->parametresVista);
         $condicion = ['responsable', AuthUser()->dni];
         $activa = Session::get('pestana') ? Session::get('pestana') : 1;
         $todos = isset($this->orden)?$this->search($this->orden):$this->search('desde');
@@ -29,7 +30,7 @@ class PanelIncidenciaController extends BaseController
         foreach (config('modelos.'.$this->model.'.estados') as $key => $estado) {
             $this->panel->setPestana($estado, $key == $activa ? true : false, "profile." .
                 strtolower($this->model),
-                isset($condicion)?array_merge(['estado',$key],$condicion):['estado',$key]);
+                isset($condicion)?array_merge(['estado',$key],$condicion):['estado',$key],null,null,$this->parametresVista);
         }
         $this->iniBotones();
         Session::put('redirect','Panel'.$this->model.'Controller@index');

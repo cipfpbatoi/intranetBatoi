@@ -17,13 +17,14 @@ class Panel
     private $data = [];      // array de més dades 
     public $items = [];
     
-    public function __construct($modelo, $rejilla = null, $vista = null,$crea=true)
+    public function __construct($modelo, $rejilla = null, $vista = null,$crea=true,$include=null)
     {
         $this->model = $modelo;
         $this->botones['index'] = [];
         $this->botones['grid'] = [];
         $this->botones['profile'] = [];
-        if ($crea) $this->setPestana('grid', true, $vista, null, $rejilla); // pestana per defecte
+        if ($crea) $this->setPestana('grid', true, $vista, null, $rejilla,null,$include);
+        
     }
 
     public function view($todos,$titulo,$vista,$elemento =null){
@@ -74,12 +75,12 @@ class Panel
 
     // afeguix pestana
     // sustituye canvia la primera pestana per l'actual
-    public function setPestana($nombre, $activo = false, $vista = null, $filtro = null, $rejilla = null, $sustituye = null)
+    public function setPestana($nombre, $activo = false, $vista = null, $filtro = null, $rejilla = null, $sustituye = null,$include=null)
     {
         if ($activo)
             $this->desactiva();
-        if ($sustituye) $this->pestanas[0] = new Pestana($nombre, $activo, $this->queVista($nombre, $vista), $filtro, $rejilla);
-        else $this->pestanas[] = new Pestana($nombre, $activo, $this->queVista($nombre, $vista), $filtro, $rejilla);
+        if ($sustituye) $this->pestanas[0] = new Pestana($nombre, $activo, $this->queVista($nombre, $vista), $filtro, $rejilla,$include);
+        else $this->pestanas[] = new Pestana($nombre, $activo, $this->queVista($nombre, $vista), $filtro, $rejilla,$include);
     }
     // conta el nombre de pestanes
     public function countPestana(){
@@ -124,6 +125,10 @@ class Panel
     public function getBotones($tipo = null)
     {
         return $tipo == null ? $this->botones : $this->botones[$tipo];
+    }
+    public function countBotones($tipo)
+    {
+        return count($this->botones[$tipo]);
     }
 
     public function getTitulo($que = 'index')

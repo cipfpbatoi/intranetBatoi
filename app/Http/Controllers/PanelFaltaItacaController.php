@@ -13,7 +13,7 @@ class PanelFaltaItacaController extends BaseController
     protected $orden = 'dia';
     protected $notFollow = true;    
     protected $gridFields = ['nombre','dia','horas','justificacion','fichaje','Xestado'];
-    
+    protected $parametresVista = ['modal' => ['explicacion']];
     
     protected function iniBotones()
     {

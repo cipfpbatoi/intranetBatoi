@@ -21,6 +21,7 @@ class AlumnoController extends PerfilController
     protected $vista = ['show' => 'perfil', 'edit' => 'perfil'];
     
     
+    
 
     public function update(Request $request, $id)
     {

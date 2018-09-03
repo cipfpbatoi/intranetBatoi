@@ -149,5 +149,9 @@ class Alumno extends Authenticatable
     {
         return ucwords(mb_strtolower($this->apellido1 . ' ' . $this->apellido2.' , '.$this->nombre,'UTF-8'));
     }
+    public function getIdGrupoAttribute()
+    {
+        return $this->Grupo->first()->codigo;
+    }
 
 }

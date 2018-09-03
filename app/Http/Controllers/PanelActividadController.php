@@ -13,6 +13,8 @@ class PanelActividadController extends BaseController
     protected $perfil = 'profesor';
     protected $model = 'Actividad';
     protected $gridFields = ['name', 'desde', 'hasta', 'situacion'];
+    protected $parametresVista = ['before' => [] , 'modal' => ['explicacion']];
+    
     
     protected function iniBotones()
     {

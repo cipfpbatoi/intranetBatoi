@@ -73,7 +73,7 @@ class Resultado extends Model
 
     public function getIdModuloGrupoOptions()
     {
-  //      $todos = [];
+        $todos = [];
         foreach (Modulo_grupo::MisModulos() as $uno)
             $todos[$uno->id] = $uno->Grupo->nombre.' - '.$uno->ModuloCiclo->Modulo->literal;
         return $todos;

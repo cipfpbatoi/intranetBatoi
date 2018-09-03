@@ -13,7 +13,7 @@ class PanelProgramacionAllController extends BaseController
     protected $model = 'Programacion';
     protected $gridFields = ['Xciclo','XModulo', 'Xdepartamento','ciclo'];
     protected $redirect = 'PanelProgramacionAllController@index';
-    
+    protected $parametresVista = [];
     
     public function search(){
         return Programacion::where('estado',config('variables.mostrarProgramacionesEstado'))->get();

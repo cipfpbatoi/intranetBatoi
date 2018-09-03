@@ -13,6 +13,8 @@ class PanelFaltaController extends BaseController
     protected $model = 'Falta';
     protected $gridFields = ['id', 'nombre', 'desde', 'hasta', 'motivo', 'situacion'];
     protected $notFollow = true;
+    protected $parametresVista = ['modal' => ['explicacion']];
+    
     
     protected function create()
     {

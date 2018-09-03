@@ -11,6 +11,8 @@ use Jenssegers\Date\Date;
 
 trait traitPanel{
     
+    
+    
     public function index()
     {
         $todos = isset($this->orden)?$this->search($this->orden):$this->search('desde');

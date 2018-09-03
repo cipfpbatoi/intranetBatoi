@@ -1,3 +1,4 @@
+@if ($panel->getElementos($pestana)->first())
 @php $grupo = $panel->getElementos($pestana)->first()->Alumno->Grupo->first();  @endphp
 <div class="col-md-6 col-sm-6 col-xs-12 profile_details" style='font-size: x-large'>
     <div id="{{$grupo->codigo}}" class="well profile_view">
@@ -27,5 +28,6 @@
         </div>
     </div>
 </div>
+@endif
 
 

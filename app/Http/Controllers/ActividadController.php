@@ -32,7 +32,7 @@ class ActividadController extends IntranetController
     protected $model = 'Actividad';
     protected $gridFields = ['name', 'desde', 'hasta', 'situacion'];
     protected $modal = true;
-
+    
     protected function search()
     {
         return Actividad::Profesor(AuthUser()->dni)

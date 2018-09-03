@@ -11,6 +11,8 @@ class PanelExpedienteController extends BaseController
     protected $perfil = 'profesor';
     protected $model = 'Expediente';
     protected $orden = 'fecha';
+    protected $parametresVista = ['before' => [] , 'modal' => ['explicacion']];
+    
 
     
     protected function iniBotones()
