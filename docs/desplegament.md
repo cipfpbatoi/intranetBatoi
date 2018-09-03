@@ -4,23 +4,24 @@ Instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versi�
 ## Instal·lar el software
 Els paquets a instal·lar són:
 * **apache2**
-* **mysql-server** o **mariadb-server** (recorda que després hem d'executar el comando `mysql_secure_installation` que configura l'usuari root). NOTA: ara la validació dels usuaris la fa el sistema (el _plugin_ 'auth_socket' o 'unix_socket'). Per a configurar un usuari amb privilegis consulta [StackOverflow](https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-user-rootlocalhost) o qualsevol altra pàgina en internet. En resum, executem:
+* **mysql-server** o **mariadb-server** (recorda que després hem d'executar el comando **`mysql_secure_installation`** que configura l'usuari root). NOTA: ara la validació dels usuaris la fa el sistema (el _plugin_ 'auth_socket' o 'unix_socket'). Per a configurar un usuari amb privilegis consulta [StackOverflow](https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-user-rootlocalhost) o qualsevol altra pàgina en internet. En resum, executem:
 ```bash
 sudo mysql -u root
 
 mysql> USE mysql;
-mysql> SELECT User, Host, plugin, password FROM mysql.user;
-mysql> CREATE USER 'YOUR_SYSTEM_USER'@'localhost' IDENTIFIED BY '';
-mysql> GRANT ALL PRIVILEGES ON *.* TO 'YOUR_SYSTEM_USER'@'localhost';
+mysql> SELECT User, Host, plugin, authentication_string FROM mysql.user;
+### Si uso Mysql le cambio el plugin y le pongo una contraseña
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'P@ssw0rd';
 ### Si uso MariaDB le cambio el password al usuario
-mysql> UPDATE user SET password=PASSWORD('your_p@ssw0rd') WHERE User='YOUR_SYSTEM_USER';
-### Si uso Mysql le cambio el plugin para que entre con su password del sistema
-mysql> UPDATE user SET plugin='auth_socket' WHERE User='YOUR_SYSTEM_USER';
+mysql> UPDATE user SET password=PASSWORD('your_p@ssw0rd') WHERE User='root';
+mysql> UPDATE user SET plugin='auth_socket' WHERE User='root';
+### en ambos casos
 mysql> FLUSH PRIVILEGES;
 mysql> exit;
 
-sudo systemctl restart mariadb.service
+sudo systemctl restart mysql.service    # o mariadb.service
 ```
+Fuente correcta para mysql:[How To Install MySQL on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04#step-2-%E2%80%94-configuring-mysql)
 
 > Altra alternativa és instal·lar una versió més recent desde els repositoris, consulta [MariaDB Downloads](https://downloads.mariadb.org/mariadb/repositories/#mirror=tedeco&distro=Ubuntu&distro_release=bionic--ubuntu_bionic&version=10.3), o més senzill encara, tras instal·lar _phpmyadmin_ donem permisos a l'usuari phpmyadmin i utilitzem eixe usuari:
 ```bash
