@@ -92,9 +92,25 @@ Per a veure totes les programacions del Centre. Podem filtrar i ordenar pel crit
 ![Programacions](/img/ajuda/09-programacions.png)
 
 Per a veure la programació desitjada polsem el botó **+** que trobem al final de la línia.
-També podem pujar la nostra programació amb el botó de 'Nova Programació'.
-En les nostres programacions podem pujar annexos premem el botó **+** .
-Una programació queda en estat 'No autoritzada'. Per a que el cap de departament la tinga disponible per a revisar cal polsar el botó del sobre.
+
+#### Fer la nostra programació
+Des del menú **'Profesorat' → 'Programacions'** ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament). Les operacions que podem fer amb cadascuna són:
+* **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la
+* **Enviar** (icona del sobre): per a enviar la programació al nostre Cap de departament quan estiga acabada
+* **Omplir seguiment** (icona dels prismàtics): per a introduir el seguiment de la programació al final de cada avaluació. Al pricipi apareix el seguiment de l'any anterior per a consultar-lo
+
+Totes les programacions esta al Google Drive i és allí on s'han de modificar. Podem accedir a la nostra programació per a editar-la des de la intranet (botó d'Enllaç) o des de casa (utilitzant un enllaç que ens han enviat al nostre email del Centre). Recordeu que NO HEM DE BAIXAR-NOS la programació sinó que la modificarem directament en Google Drive.
+
+El primer que farem en la nostra programació es canviar el nom del document. La primera vegada té un codi intern que canviarem per **Codi del mòdul - Nom del mòdul**, per exemple:
+```
+0222 - Sistemes Operatius Monolloc
+```
+
+Si un mateix mòdul es dona en més d'un grup la programació ha de ser la mateixa i per tant l'enllaç és el mateix per a tots els professors que la donen. Les posibles diferències entre els grups es posaran en annexos al final de la programació.
+
+Una vegada acabada la programació la enviem al nostre Cap de Departament polsem el botó de **Enviar** (el del sobre).
+
+La programació queda en estat 'No autoritzada'. Per a que el cap de departament la tinga disponible per a revisar cal polsar el botó del sobre.
 
 ### Seguiments
 Des d'ací pujarem el seguiment de la nostra programació al final de cada avaluació:
