@@ -127,11 +127,11 @@ class Alumno extends Authenticatable
 //        return $this->nombre . ' ' . $this->apellido1;
 //    }
     public function getDepartamentoAttribute(){
-        return $this->Grupo->first()->Ciclo->departamento;
+        return isset($this->Grupo)?$this->Grupo->first()->Ciclo->departamento:'99';
     }
     
     public function getTutorAttribute(){
-        return $this->Grupo->first()->Tutor;
+        return isset($this->Grupo)?$this->Grupo->first()->Tutor:'';
     }
     public function getIdiomaOptions()
     {

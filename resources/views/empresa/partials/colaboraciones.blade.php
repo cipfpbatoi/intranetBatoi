@@ -2,7 +2,7 @@
 <ul class="messages colaboracion">
     @foreach ($elemento->centros as $centro)
         @foreach ($centro->colaboraciones as $colaboracion)
-            @php $editar = $ciclos->contains($colaboracion->idCiclo) @endphp
+            @php $editar = $ciclos->contains($colaboracion->idCiclo); @endphp
         <li>
             <div class="message_date" style="width:50%">
                 <h4>

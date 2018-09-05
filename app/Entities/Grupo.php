@@ -83,6 +83,7 @@ class Grupo extends Model
     public function scopeQTutor($query,$profesor=null)
     {
         $profesor = isset($profesor)?$profesor:AuthUser()->dni;
+       
         if  (($sustituido = Profesor::findOrFail($profesor)->sustituye_a)!=' ')
             return $query->where('tutor', $sustituido)->orWhere('tutor',$profesor);
         else 
