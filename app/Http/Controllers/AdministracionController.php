@@ -95,11 +95,7 @@ class AdministracionController extends Controller{
     {
         Alert::info('Version 1.2');
     }
-    public static function v1_3()
-    {
-        Alert::info(system('composer update'));
-        Alert::info('Version 1.2');
-    }
+    
  
 }
 
