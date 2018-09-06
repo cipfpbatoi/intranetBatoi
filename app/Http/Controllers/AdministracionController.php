@@ -18,6 +18,7 @@ use Intranet\Entities\Grupo;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
+use Intranet\Entities\Menu;
 
 class AdministracionController extends Controller{
     
@@ -70,6 +71,9 @@ class AdministracionController extends Controller{
         return back();
     }
     
+    public function help($fichero,$enlace){
+        return view('intranet.readme',['elemento' => mdFind($fichero,$enlace)]);        
+    }
     
     
     public static function exe_actualizacion($version_antigua){

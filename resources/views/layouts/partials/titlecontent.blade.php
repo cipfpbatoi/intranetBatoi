@@ -11,8 +11,12 @@
             </li>
             <li><a href="{{ url('lang', ['en']) }}">English</a>
             </li>
+            
         </ul>
     </li>
+    @if ($ajuda = exists_help(substr(url()->current(), strlen(url('/')))))
+        <li><a href="/help/{{$ajuda}}"><i class="fa fa-question"></i></a>
+    @endif
     <li><a class="close-link"><i class="fa fa-close"></i></a>
     </li>
 </ul>

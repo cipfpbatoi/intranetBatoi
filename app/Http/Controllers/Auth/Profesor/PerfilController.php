@@ -24,10 +24,7 @@ class PerfilController extends Perfil
             $new->mostrar = $request->mostrar;
         else 
             $new->mostrar = 0;
-        if (isset($request->ajuda))
-            $new->ajuda = $request->ajuda;
-        else 
-            $new->ajuda = 0;
+        
         parent::update($request, $new);
         return redirect("/home");
     }
