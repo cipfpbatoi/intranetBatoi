@@ -337,3 +337,15 @@ function subsRequest(Illuminate\Http\Request $request,$fields){
     }
     return $request;
 }
+
+function mdFind($enlace){
+    $f = explode('#',$enlace);
+    $fichero = Storage::disk('documentacio')->get($f[0]); 
+    $indice = substr($fichero,0,strpos($fichero,$f[1]));
+    $cadena = substr($indice,strrpos($indice,'[')+1,strrpos($indice,']')-strrpos($indice,'[')-1);
+    
+    $resto = strstr($fichero,$f[1]);
+    $desde = strstr($resto,$cadena);
+    
+    return substr($desde,0,strpos($desde,'###'));
+}

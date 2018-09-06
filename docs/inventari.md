@@ -12,9 +12,9 @@ Nosaltres no hem d'entrar mai a les 2 darreres opcions del menú. Farem l'invent
 ## Veure materials
 El primer que farem és filtrar la taula per a no veure tots els materials del Centre sinò només els de l'espai que anem a inventariar. Per a això tenim sobre la taula a la dreta el quadre 'Filtrar' (zona 1 de la figura, color roig) on escriurem el nom curt de l'espai
 
-![Materiales](img/50-materiales-up.png)
+![Materiales](img/ajuda/50-materiales-up.png)
 
-![Materiales](img/51-materiales-down.png)
+![Materiales](img/ajuda/51-materiales-down.png)
 
 Si hi ha més materials dels que es mostren en la taula (zona 2 groc, baix) podem indicar que es mostren 50 o 100 registres per pàgina (zona 2 groc, dalt).
 
@@ -27,7 +27,7 @@ Ara ja podem inventariar l'espai. Comprovem que cada material correspon al que p
 
 En la columna _Operacions_ (zona 4, verd) tenim iconas per a cada cosa que podem fer amb un material 
 
-![operacions](img/52-material-operacions.png):
+![operacions](img/ajuda/52-material-operacions.png):
 
 1. **Esborrar** (icona de la paperera): elimina totalment el material. NO HO HEM DE FER MAI perquè la majoria de materials estan comptabilitzats i abans d'esborar-los s'han de donar de baixa des de Secretaria.
 2. **Editar** (llapicera): ens permet canviar la descripció del material i altres dades
@@ -42,7 +42,7 @@ En la columna _Operacions_ (zona 4, verd) tenim iconas per a cada cosa que podem
 El que hem de fer per a cada material és:
 * Veure el material i comprovar totes les seues dades
 
-![Veure material](img/53-material-veure.png)
+![Veure material](img/ajuda/53-material-veure.png)
 
 * Si hi ha alguna cosa mal canviar-la:
     * si és el número d'unitats des del botó de '_Canviar unitats_'

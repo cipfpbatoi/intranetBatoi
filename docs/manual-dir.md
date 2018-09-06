@@ -25,7 +25,7 @@ Quan els professors alliberen hores perquè els alumnes de 2n curs sen van a fer
 #### Activar els canvis per als professors
 Pera a que puguen fer els canvis en el seu horari s'ha d'activar aquesta opció del menú (per defecte està desactivada perquè només es poden fer canvis quan s'alliberen les hores de 2n). Es fa des del _Menú **Administració** -> Manteniment del menú general_. Busquem l'opció de 'Canvi horari? (podem filtrar la taula) i l'editem:
 
-![Menu canviar horari](./img/canviHorari-menu.png)
+![Menu canviar horari](./img/ajuda/canviHorari-menu.png)
 
 Editem el registre i canviem el camp _**Estat**_ (l'últim) per a habilitar aquesta opció en el menú:
 * 0: no habilitada
@@ -36,14 +36,14 @@ Quan està habilitada a tots els professors els apareix en el menú '_Professora
 #### Aprovar horaris
 Una vegada els professors han fet els canvis en els seus horaris s'han d'aprovar des de direcció. Es fa des de la taula de professors: _menú **Equip directiu** -> Dades Professors_. En la taula amb tots els professors tenim les següents opcions referents als horaris:
 
-![Taula professors](./img/canviHorari-tabla-profes.png)
+![Taula professors](./img/ajuda/canviHorari-tabla-profes.png)
 
 * Horari (1a icona): permet veure l'horari actuañ del professor
 * Canviar horar (antepenúltima icona): obri la pantalla de modificació d'horari. Aquesta icona és diferent si el professor ha fet ja una proposta de canvi (segona filera de l'exemple, icona de taula amb 9 quadres) o si no ha fet cap proposta (primera filera, icona de taula amb 4 quadres grans).
 
 La pantalla de modificar l'horari és la mateixa que teel professor per a canviar el seu horari:
 
-![Canviar horari](./img/canviHorari-horario-cambiar.png)
+![Canviar horari](./img/ajuda/canviHorari-horario-cambiar.png)
 
 El primer que apareix en la pantalla es l'_Estat_ del canvi que pot ser:
 * No hi ha proposta: el profesor no ha proposat cap canvi d'horari
@@ -66,7 +66,7 @@ A més de moure una hora a altra diferent  l'equip directiu també podem canviar
 
 Ens mostra una taula amb cada entrada de l'horari amb el mòdul, el grup (o l'ocupació) i quan s'imparteix i un botó d'editar:
 
-![Canvia funcio](./img/canviHorari-funcio.png)
+![Canvia funcio](./img/ajuda/canviHorari-funcio.png)
 
 Des d'ací podem canviar a què dedica el professor eixa hora.
 
@@ -78,7 +78,7 @@ Ací tenim la majoria d'accions:
 ### Dades professors
 Ací tenim una taula amb tots els professors actius del Centre que podem filtrar, ordenar, ... 
 
-![Taula professors](./img/canviHorari-tabla-profes.png)
+![Taula professors](./img/ajuda/canviHorari-tabla-profes.png)
 
 Les acciones que podem fer són:
 * **Horari**: mostra l'horari del professor
@@ -95,4 +95,4 @@ Les acciones que podem fer són:
 * **Canviar funcions d'horari**: per a modificar què fa un professor una hora determinada com s'explica en el [manual de canviar horari](#canvis-dhorari)
 * **Canviar usuari**: ens permet funcionar com si forem l'usuari indicat. Per a tornar al nostre usuari es fa des del menú del perfil amb l'opció de _Tornar al meu usuari_.
 
-![Tornar al meu usuari](./img/direc-tornaUsuari.png)
+![Tornar al meu usuari](./img/ajuda/direc-tornaUsuari.png)

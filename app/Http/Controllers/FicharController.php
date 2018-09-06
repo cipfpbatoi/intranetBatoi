@@ -25,7 +25,7 @@ class FicharController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'Falta_profesor';
     protected $gridFields = ['Xdepartamento', 'FullName', 'Horario', 'Entrada', 'Salida'];
-    protected $include = ['before' => ['formulario']];
+    protected $parametresVista = ['before' => ['formulario']];
     protected $amount= 200;
     
     public function ficha()

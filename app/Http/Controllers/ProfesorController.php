@@ -112,6 +112,11 @@ use traitAutorizar,
         Alert::info('Correu enviat');
         return back();
     }
+    
+    public function readme()
+    {
+        return view('readme',['elemento' => Storage::disk('documentacio')->get('manual-profe.md')]);
+    } 
 
     public function avisaColectivo(Request $request)
     {

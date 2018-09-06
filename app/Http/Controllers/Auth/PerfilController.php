@@ -39,6 +39,8 @@ abstract class PerfilController extends IntranetController
         }
         if ($request->rol)
             $new->rol = Rol($request->rol);
+        if ($request->ajuda)
+            $new->ajuda = $request->ajuda;
         $new->save();
     }
 

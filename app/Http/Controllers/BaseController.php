@@ -7,6 +7,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Menu;
 
 abstract class BaseController extends Controller
 { 
@@ -100,7 +101,8 @@ abstract class BaseController extends Controller
     protected function iniPestanas($parametres = null){
         if (view()->exists('intranet.partials.profile.'.strtolower($this->model))&&$this->profile) 
                     $this->panel->setPestana('profile', false,null,null,null,null,$this->parametresVista);
-        
+        if (AuthUser()->ajuda && $ajuda = $this->exists_help(substr(url()->current(), strlen(url('/')))))
+                    $this->panel->setPestana('Ajuda', false,'ajuda',null,$ajuda,null,$this->parametresVista);
     }
     protected function crea_pestanas($estados,$vista,$activa=null){
         $activa = isset($activa)?$activa:Session::get('pestana')?Session::get('pestana'):1;
@@ -109,6 +111,10 @@ abstract class BaseController extends Controller
             $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,
                 ['estado',$key],null,null,$this->parametresVista);
         }
+    }
+    private function exists_help($url){
+        if ($menu = Menu::where('url',$url)->first())
+                return $menu->ajuda;
     }
 
     

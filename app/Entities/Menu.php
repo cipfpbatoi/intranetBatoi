@@ -20,6 +20,7 @@ class Menu extends Model
         'menu',
         'submenu',
         'activo',
+        'ajuda'
     ];
     protected $rules = [
         'nombre' => 'required',

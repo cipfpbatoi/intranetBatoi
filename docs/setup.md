@@ -107,7 +107,7 @@ En el xml de Itaca per a la primera importació han d'estar les següents taules
 
 Les importacions es fan des del menú **Administració -> Importació des de Itaca**. Al ser la primera cal marcar la casella '_Primera Importació anual_'.
 
-![Importar dades itaca](./img/setupImportItaca1a-1.png)
+![Importar dades itaca](./img/ajuda/setupImportItaca1a-1.png)
 
 A continuació seleccionen el fitxer amb les dades en format .XML i polsem 'Enviar'.
 

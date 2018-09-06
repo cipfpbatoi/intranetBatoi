@@ -284,6 +284,8 @@ Route::get('/reserva', ['as' => 'reserva.index', 'uses' => 'ReservaController@in
 
 //API_TOKEN
 Route::get('/myApiToken', ['as' => 'profesor.miapiToken', 'uses' => 'ProfesorController@miApiToken']);
+//Documentaci
+Route::get('/readme', ['as' => 'documentacio.miapiToken', 'uses' => 'ProfesorController@readme']);
 
 Route::get('/resultado/list', ['as' => 'resultado.list', 'uses' => 'PanelListadoEntregasController@index']);
 Route::get('/infdepartamento/pdf/{reunion}', ['as' => 'reunion.pdf', 'uses' => 'PanelListadoEntregasController@pdf']);

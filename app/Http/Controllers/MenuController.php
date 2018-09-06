@@ -11,7 +11,7 @@ class MenuController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Menu';
-    protected $gridFields = ['categoria', 'nombre','descripcion', 'url', 'Xrol', 'Xactivo'];
+    protected $gridFields = ['categoria', 'nombre','descripcion', 'url', 'Xrol', 'Xactivo','ajuda'];
     //protected $modal = true;
     
 //    protected function search(){
