@@ -19,6 +19,7 @@ use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Menu;
+use Intranet\Jobs\SendEmail;
 
 class AdministracionController extends Controller{
     
