@@ -22,6 +22,7 @@
   * [Grups de treball](#grups-de-treball)
 * [Menú Enllaços externs](#menú-enllaços-externs)
 * [Menú Documentació](#menu-documentació)
+  * [Programacions](#veure-les-programacions)
   * [Gestió de Centre](#gestió-de-centre)
   * [Informació de Centre](#informacií-de-centre)
   * [Actes](#actes)
@@ -88,13 +89,7 @@ Les opcions que tenim per a qualsevol grup són:
 * Imprimir els carnets de tots els alumnes.
 
 ### Programacions
-Per a veure totes les programacions del Centre. Podem filtrar i ordenar pel criteri que vulguem (mòdul, cicle, departament, ...).
-![Programacions](/img/ajuda/09-programacions.png)
-
-Per a veure la programació desitjada polsem el botó **+** que trobem al final de la línia.
-
-#### Fer la nostra programació
-Des del menú **'Profesorat' → 'Programacions'** ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament). Les operacions que podem fer amb cadascuna són:
+Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament). Les operacions que podem fer amb cadascuna són:
 * **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la
 * **Enviar** (icona del sobre): per a enviar la programació al nostre Cap de departament quan estiga acabada
 * **Omplir seguiment** (icona dels prismàtics): per a introduir el seguiment de la programació al final de cada avaluació. Al pricipi apareix el seguiment de l'any anterior per a consultar-lo
@@ -266,6 +261,12 @@ Des d'ací podem accedir ràpidament a:
 
 ## Menú Documentació
 Des d'ací tenim accés a informació i documentació que anteriorment es trobaba al Moodle del Centre.
+
+### Veure les programacions
+Per a veure totes les programacions del Centre. Podem filtrar i ordenar pel criteri que vulguem (mòdul, cicle, departament, ...).
+![Programacions](/img/ajuda/09-programacions.png)
+
+Per a veure la programació desitjada polsem el botó **+** que trobem al final de la línia.
 
 ### Gestió de Centre
 Ací és on podem trobar totes les plantilles de centre. Els diferents documents estan organitzats en pestanyes segons qui els ha d'utilitzar (Professor, Tutor, Cap de departament, …). A cada usuario només l'apareixeran les pestanyes referents al seu rol.
