@@ -6,7 +6,7 @@
 * [Menú 'Profesorat'](#menú-profesorat)
   * [Informació dels membres del nostre departament](#informació-dels-membres-del-nostre-departament)
   * [Informació dels grups](#informació-dels-grups)
-  * [Programacions](#programacions)
+  * [Editar Programacions](#editar-programacions)
   * [Seguiments](#seguiments)
   * [Activitats extraescolars](#activitats-extraescolars)
     * [Alta de nova activitat](#alta-de-nova-activitat)
@@ -88,7 +88,7 @@ Les opcions que tenim per a qualsevol grup són:
 * Si hi ha curs o jornada podem inscriure a tots els alumnes.
 * Imprimir els carnets de tots els alumnes.
 
-### Programacions
+### Editar Programacions
 Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament). Les operacions que podem fer amb cadascuna són:
 * **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la
 * **Enviar** (icona del sobre): per a enviar la programació al nostre Cap de departament quan estiga acabada
