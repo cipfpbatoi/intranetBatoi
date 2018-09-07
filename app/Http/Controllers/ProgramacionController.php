@@ -95,17 +95,17 @@ class ProgramacionController extends IntranetController
         $elemento = Programacion::findOrFail($id);
         return redirect()->away($elemento->fichero);
     }
-    protected function email($id)
-    {
-        $elemento = Programacion::findOrFail($id);
-        //esborra fitxer si ja estaven
-        
-        $asistente = AuthUser();
-        $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName];
-        dispatch(new SendEmail(AuthUser()->email, $remitente, 'email.programacion', $elemento));
-        Alert::info('Correu enviat');
-        return back();
-    }
+//    protected function email($id)
+//    {
+//        $elemento = Programacion::findOrFail($id);
+//        //esborra fitxer si ja estaven
+//        
+//        $asistente = AuthUser();
+//        $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName];
+//        dispatch(new SendEmail(AuthUser()->email, $remitente, 'email.programacion', $elemento));
+//        Alert::info('Correu enviat');
+//        return back();
+//    }
     
     
     
@@ -115,7 +115,7 @@ class ProgramacionController extends IntranetController
         if (config('variables.programaciones.enlace')){
             $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
             $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0]]));
-            $this->panel->setBoton('grid', new BotonImg('programacion.email', ['img' => 'fa-send','where' => ['estado', '==', 0]]));
+            //$this->panel->setBoton('grid', new BotonImg('programacion.email', ['img' => 'fa-send','where' => ['estado', '==', 0]]));
             $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','orWhere' => ['estado', '==', 0,'estado', '==', 3]]));
         }
         else {
