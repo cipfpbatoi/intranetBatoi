@@ -1,4 +1,4 @@
-<?php
+do<?php
 
 Route::get('/home', ['as' => 'home.profesor', 'uses' => 'Auth\Profesor\HomeController@index']);
 Route::get('/legal', ['as' => 'legal', 'uses' => 'Auth\Profesor\HomeController@legal']);

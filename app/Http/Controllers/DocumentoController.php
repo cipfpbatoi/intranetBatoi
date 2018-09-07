@@ -38,7 +38,7 @@ class DocumentoController extends IntranetController
         if (Session::get('completa'))
             return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->get();
         else
-            return Documento::where('curso',Curso())->whereIn('rol', RolesUser(AuthUser()->rol))->get();
+            return Documento::where('curso',Curso())->whereIn('rol', RolesUser(AuthUser()->rol))->orWhere('propietario',AuthUser()->fullName)->get();
     }
 
     protected function iniBotones()
