@@ -211,7 +211,7 @@ class ImportController extends Seeder
                     Alert('tutor degradat' . $profesor->FullName);
                 }
                 if ($request->primera && esRol($profesor->rol, config('roles.rol.practicas'))) {
-                    $profesor->rol /= config('roles.rol.praticas');
+                    $profesor->rol /= config('roles.rol.practicas');
                     $profesor->save();
                     Alert('tutor practicas degradat' . $profesor->FullName);
                 }
