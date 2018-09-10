@@ -78,21 +78,20 @@ Com qualsevol llistat de la intranet el podem ordenar per la columna desitjada p
 ![Grups](/img/ajuda/09-grupos.png)
 
 Les opcions que tenim per a qualsevol grup són:
-* Imprimir fulla de fotos: mostra el llistat d'alumnes del grup amb foto.
+* Imprimir full de fotos: mostra el llistat d'alumnes del grup amb foto.
 * Horari del grup
 * Veure alumnes: llistat dels alumnes del grup des d'on podem
   * Veure les seues dades.
   * Modificar el seu perfil (la foto o el e-mail).
   * Si hi ha curs o jornada disponible podem inscriure a l'alumne.
   * Imprimir el seu carnet
-* Si hi ha curs o jornada podem inscriure a tots els alumnes.
-* Imprimir els carnets de tots els alumnes.
+* Mostrar equip educatiu: podem veure tots els membres de l'equip educatiu (igual que els membres del departament) i tenim l'opció d'avisar a algú o a tots.
 
 ### Editar Programacions
 Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament). Les operacions que podem fer amb cadascuna són:
-* **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la
+* **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la en Google Drive
 * **Enviar** (icona del sobre): per a enviar la programació al nostre Cap de departament quan estiga acabada
-* **Omplir seguiment** (icona dels prismàtics): per a introduir el seguiment de la programació al final de cada avaluació. Al pricipi apareix el seguiment de l'any anterior per a consultar-lo
+* **Omplir seguiment** (icona dels prismàtics): per a introduir el seguiment de la programació al final del curs. Al pricipi apareix el seguiment de l'any anterior
 
 Totes les programacions esta al Google Drive i és allí on s'han de modificar. Podem accedir a la nostra programació per a editar-la des de la intranet (botó d'Enllaç) o des de casa (utilitzant un enllaç que ens han enviat al nostre email del Centre). Recordeu que NO HEM DE BAIXAR-NOS la programació sinó que la modificarem directament en Google Drive.
 
@@ -241,6 +240,24 @@ Per a reservar un espai seleccionen a la part inferior desde quina hora fins qua
 Si hi ha alguna hora ja reservada dins de l'interval que hem indicat la reserva fallarà.
 
 Per a alliberar una reserva d'un espai fem el mateix procés però polsem el botó 'Lliberar'. Si hi ha alguna hora reservada per altre professor no la podrem alliberar (només pot fer-ho direcció).
+
+No es pot reservar un espai amb més de 30 dies d'antelació.
+
+### Oblit birret
+Aquesta opció es per justificar si em oblidar marcar el birret a Ítaca. Indiquem quin dia s'hem oblidat de marcar i ens apareixeran totes les hores que hem impartit eixe dia. Si eixe dia tampoc em fitxat a la Intranet no apareixeran les nostres hores i no podem justificar el birret d'aquesta manera.
+
+![Birret](/img/ajuda/20-birret.png)
+
+A continuació seleccionen totes les hores que hem oblidat marcar el birret, indiquem la causa en el quadre de "_Justificació_" i premem el botó _Enviar_.
+
+### Canviar horari
+Aixó ens permet canviar el nostre horari en Març quan alliberem les hores de 2n.
+
+Ens apareix el nostre horari actual i podem arrastar hores a altre horari fins que quede com vullguem.
+
+NOTA: no es pot posar cap hora en les hores del pati o migdia
+
+Quan l'horari està com volem omplim el quadre de "_Observacions_" que tenim baix de l'horari indicant a quina activitat dedicarem cadascuna de les hores alliberades i premem el botó de _Guardar canvis i enviar_. Mentres direcció no aprove el nostre nou horari podem fer canvis en el mateix. QUan ens l'aprobe direcció ens apareixerà el seu estat com '_Aprovat_' i ja no podem fer més canvis.
 
 ## Menú Actes/Convocatories
 Ací trobem informació sobre les reunions de tot tipus i els Grups de treball als que pertanyem.
