@@ -24,11 +24,15 @@ L'accés a la intranet és igual per a tots els professors i és el sistema qui 
 Els tutor tenen en el menú general un apartat anomenat 'Tutor' però també té noves opcions en alguns altres menús.
 
 ## Menú 'Profesorat' → 'Gestió dels grups'
-En el nostre grup apareix una nova icona, 'Carnet', que permet imprimir el carnet de tots els alumnes del grup. Això ha de fer-se des de caporalia que és on es troba la impresora de carnets.
+En el nostre grup apareixen 2 noves icones:
+* Carnet: permet imprimir el carnet de tots els alumnes del grup. Això ha de fer-se des de caporalia que és on es troba la impresora de carnets
+* Acta Fons Social Europeu (icona del €): apareix el full amb tots els alumnes que hem d'omplir i signar després d'haver explicat als alumnes la informació del FSE. Després farem una nova '_Reunió_' de tipus FSE i adjuntarem aquest full signat. L'original s'ha de lliurar a Caporalia.
+* Si hi ha curs o jornada activa podem inscriure a tots els alumnes
 
 A més, quan entrem a verure els alumnes del nostre grup apareixen 2 nous icones:
 * Modificació Perfil Alumne: podem obrir el perfil d'eixe alumne per a modificar el seu e-mail la seua foto o l'idioma de la intranet per a l'alumne
 * Carnet: permet imprimir el carnet de l'alumne. Ha de fer-se des de caporalia que és on es troba la impresora de carnets
+* Si hi ha curs o jornada podem inscriure a l'alumne
 
 ## Menú 'Actes/Convocatòries' → 'Gestió de reunions'
 El tutor tindrà que convocar diferents reunions al llarg del curs. 
@@ -97,11 +101,18 @@ Aquest menú només els apareix als tutor i inclou la majoria d'accions específ
 Apareixen els seguiments que hagen omplit tots els professors de l'equip educatiu per a que el tutor puga fer el seu informe.
 
 ### Expedients iniciats
-Es vol utilitzar la intranet del Centre per a gestionar diferents expedients dels alumnes (convalidacions, baixes, ...). De moment es gestionaran els expedients per a donar de baixa un alumne per faltes d'asistència a principi de curs.
+Es vol utilitzar la intranet del Centre per a gestionar diferents expedients dels alumnes (convalidacions, baixes, ...). 
 
 Creem un nou expedient i indiquem l'alumne, el tipus d'expedient i una explicació:
 
 ![Nou expedient reunió](img/tutor/07-nou-expedient.png)
+
+Els tipus que tenim actualment són:
+* Baixa inassitència: permet donar de baixa a un alumne per faltes d'assistència segons la normativa
+* Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Tant ací com en el cas anterior només es poden tindre en compte les faltes marcades en Ítaca.
+* Anul·lació matrícula: si un alumne vol anul·lar la matrícula
+* Remisió al departament d'Orientació: envia un avís als orientadors de que han de atendre a aquest alumne. Més avant l'orientador es posarà en contacte amb el tutor per a concretar quan es farà
+* Part d'amonestació: per a incoar un part d'amonestació a l'alumne
 
 Una vegada omplit caldrà avisar a direcció de la tramitació de l'expedient amb el botó  i ja s'encarregan de resoldre'l.
 
@@ -112,7 +123,7 @@ Ací apareixen totes les tutories que ompli el departament d'orientació.
 
 De cada una podem:
 * Veure el fitxer: podem veure la tutoria que han fet des del departament d'orientació
-* Crear comentari: ací indiquem quan hem fet la tutoria i els comentaris
+* Crear comentari: ací indiquem quan hem fet la tutoria i els comentaris. És important omplir això en sugeriments o millores per a que des del departament d'Orientació puguen saber cóm ha funcionat la tutoria
 
 ![Nova tutoria](img/tutor/09-tutoria-crear.png)
 
