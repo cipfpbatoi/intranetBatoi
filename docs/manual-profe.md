@@ -95,9 +95,9 @@ Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu
 
 Totes les programacions esta al Google Drive i és allí on s'han de modificar. Podem accedir a la nostra programació per a editar-la des de la intranet (botó d'Enllaç) o des de casa (utilitzant un enllaç que ens han enviat al nostre email del Centre). Recordeu que NO HEM DE BAIXAR-NOS la programació sinó que la modificarem directament en Google Drive.
 
-El primer que farem en la nostra programació es canviar el nom del document. La primera vegada té un codi intern que canviarem per **Codi del mòdul - Nom del mòdul**, per exemple:
+El primer que farem en la nostra programació es canviar el nom del document. La primera vegada té un codi intern que canviarem per **Cicle - Codi del mòdul - Nom del mòdul**, per exemple:
 ```
-0222 - Sistemes Operatius Monolloc
+SMX - 0222 - Sistemes Operatius Monolloc
 ```
 
 Si un mateix mòdul es dona en més d'un grup la programació ha de ser la mateixa i per tant l'enllaç és el mateix per a tots els professors que la donen. Les posibles diferències entre els grups es posaran en annexos al final de la programació.
