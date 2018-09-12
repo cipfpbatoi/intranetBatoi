@@ -5,7 +5,7 @@ return [
         ['index' => '0', 'vliteral' => 'Reunió Departament', 'cliteral' => 'Reunión Departamento', 'colectivo' => 'Departamento', 'rol' => '13', 'select' => '0',
             'convocatoria' => 'convocatoria', 'acta' => 'acta',
             'ordenes' => ['Lectura acta anterior', "Torn obert de paraula"],
-            'numeracion' => [0=>'--',1=>'01',2=>'02',3=>'03',4=>'04',5=>'05',6=>'06',7=>'07',8=>'08',9=>'09']],
+            'numeracion' => [0=>'--',1=>'01',2=>'02',3=>'03',4=>'04',5=>'05',6=>'06',7=>'07',8=>'08',9=>'09',10=>'10',11=>'11',12=>'12',13=>'13',14=>'14',15=>'15']],
         ['index' => '1', 'vliteral' => 'Claustre', 'cliteral' => 'Claustro', 'colectivo' => 'Profesor', 'rol' => '2', 'select' => '0',
             'convocatoria' => 'convocatoria', 'acta' => 'acta',
             'ordenes' => ['Lectura acta anterior', "Informe direcció", "Informe Caporalia", "Torn obert de paraula"],

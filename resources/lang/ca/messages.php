@@ -113,7 +113,7 @@ return array(
         'justificada' => 'Justificades',
         'cobrada' => 'Cobrades',
         'deleteAll' => 'Esborra tot',
-        'readAll' => 'Marca com lleguit',
+        'readAll' => 'Marca com llegit',
         'seeAll' => 'Vore totes les Alertes',
         'avisar' => 'Avisar',
         'anexo' => 'Fitxers',
