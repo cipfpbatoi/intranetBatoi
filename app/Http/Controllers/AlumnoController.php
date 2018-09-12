@@ -53,7 +53,7 @@ class AlumnoController extends PerfilController
     
     public function equipo()
     {
-        $grupo = AuthUser()->Grupo->first()->codigo;
+        $grupo = AuthUser()->Grupo->count()?AuthUser()->Grupo->first()->codigo:'';
         $this->panel->setPestana('profile', true, 'profile.equipo',null,null,1);
         return $this->grid(Profesor::orderBy('apellido1', 'asc')->orderBy('apellido2', 'asc')
                 ->Grupo($grupo)->get());
