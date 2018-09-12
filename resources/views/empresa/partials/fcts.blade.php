@@ -4,7 +4,9 @@
         <li>
             <div class="message_date">
                 <h4 class="text-info"><i class="fa fa-calendar user-profile-icon"></i>{{$fct->desde}} - {{$fct->hasta}} <i class="fa fa-group user-profile-icon"></i> {{$fct->horas}}</h4>
-                <h4 class="text-info"><acronym title='{{$fct->Instructores->first()->email}} ({{$fct->Instructores->first()->telefono}})'><i class="fa fa-user user-profile-icon"></i> {{$fct->Instructores->first()->nombre}} ({{$fct->Instructores->first()->dni}})</acronym></h4>
+                @if ($fct->Instructores->count())
+                    <h4 class="text-info"><acronym title='{{$fct->Instructores->first()->email}} ({{$fct->Instructores->first()->telefono}})'><i class="fa fa-user user-profile-icon"></i> {{$fct->Instructores->first()->nombre}} ({{$fct->Instructores->first()->dni}})</acronym></h4>
+               @endif     
             </div>
             <div class="message_wrapper">
                 <h4><a href='/fct/{!!$fct->id!!}/show'><i class="fa fa-eye"></i></a> <a href='/fct/{!!$fct->id!!}/delete'><a href='/fct/{!!$fct->id!!}/edit'><i class="fa fa-edit"></i></a> <a href='/fct/{!!$fct->id!!}/delete'><i class="fa fa-trash"></i></a><span class='info'>{!! $fct->Alumno->FullName !!}</span></h4>
@@ -19,7 +21,9 @@
         <li>
             <div class="message_date">
                 <h4 class="text-info"><i class="fa fa-calendar user-profile-icon"></i>{{$fct->desde}} - {{$fct->hasta}} <i class="fa fa-group user-profile-icon"></i> {{$fct->horas}}</h4>
-                <h4 class="text-info"><i class="fa fa-user user-profile-icon"></i> {{$fct->Instructores->first()->nombre}} ({{$fct->Instructores->first()->dni}})</h4>
+                @if ($fct->Instructores->count())
+                    <h4 class="text-info"><i class="fa fa-user user-profile-icon"></i> {{$fct->Instructores->first()->nombre}} ({{$fct->Instructores->first()->dni}})</h4>
+                @endif    
                 <a href="/fct/{!!$fct->id!!}/delete" class="delGrupo"><sub ><small style="color: purple "> @lang('messages.buttons.delete')</small></sub><i class="fa fa-trash-o user-profile-icon"></i></a>
             </div>
             <div class="message_wrapper">
