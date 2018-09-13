@@ -159,11 +159,15 @@ class ReunionController extends IntranetController
             file_put_contents(storage_path("tmp/invita_$id.ics"), $this->do_ics($elemento->id));
             $attach = ["tmp/Reunion_$id.pdf" => 'application/pdf', "tmp/invita_$id.ics" => 'text/calendar'];
         } else
-            $attach = null;
+            $attach = ["tmp/Reunion_$id.pdf" => 'application/pdf'];
+        
         $asistentes = Asistencia::where('idReunion', '=', $id)->get();
         $remitente = ['email' => $elemento->Responsable->email, 'nombre' => $elemento->Responsable->FullName];
         foreach ($asistentes as $asistente) {
-            dispatch(new SendEmail($asistente->Profesor->email, $remitente, 'email.reunion', $elemento, $attach));
+            if (!haVencido($elemento->fecha)) 
+                dispatch(new SendEmail($asistente->Profesor->email, $remitente, 'email.convocatoria', $elemento, $attach));
+            else
+                dispatch(new SendEmail($asistente->Profesor->email, $remitente, 'email.reunion', $elemento, $attach));
         }
         Alert::info('Correus enviats');
         return back();

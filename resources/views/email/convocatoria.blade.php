@@ -2,7 +2,7 @@
 @section('body')
 <table style='text-align: center'>
     <tr>
-        <th>Acta Reunió</th>
+        <th>Convocatoria Reunión</th>
     </tr>
 </table>
 <div>
