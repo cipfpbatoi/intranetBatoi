@@ -157,7 +157,7 @@ return array(
     ),
     'menu' => array(
         'Link' => 'Enllaços externs',
-        'Edit' => 'Profesorat',
+        'Edit' => 'Professorat',
         'Institution' => 'Tutor',
         'Gmail' => 'Obrir compte correu',
         'Moodle' => 'Anar a Moodle centre',
@@ -181,7 +181,7 @@ return array(
         'Espacios' => 'Vore espais',
         'Materiales' => 'Vore materials',
         'Incidencias' => "Gestió d'incidències",
-        'Authfalta' => 'Autoritzar Absències Profesorat',
+        'Authfalta' => 'Autoritzar Absències Professorat',
         'Incidenciasmant' => "Mantenimient d'Incidèncias",
         'Programacion' => 'Programacions',
         'Authprogram' => 'Autoritzar Programacions',

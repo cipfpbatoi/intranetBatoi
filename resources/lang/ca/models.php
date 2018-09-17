@@ -45,7 +45,7 @@ return array(
                 'paid' => 'Imprimir pagaments'
 	     ),
         'Falta' => array(
-		'create'=>'Comunicació de Ausència Profesorat',
+		'create'=>'Comunicació de Ausència Professorat',
                 'index'=>'Gestionar Baixes',
                 'edit'=> 'Modificació Ausència',
                 'alta' => 'Alta Ausència',
