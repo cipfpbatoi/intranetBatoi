@@ -96,6 +96,7 @@ class ImportController extends Seeder
             'nombreclase' => 'Alumno_grupo',
             'filtro' => ['estado_matricula', '<>', 'B'],
             'id' => 'NIA,grupo',
+            'required' => ['NIA','grupo'],
             'update' => array(
                 'idAlumno' => 'NIA',
                 'idGrupo' => 'grupo'
@@ -446,6 +447,18 @@ class ImportController extends Seeder
         $condicion = "return('$elemento' $op '$valor');";
         return eval($condicion) ? true : false;
     }
+    
+    private function required($required,$campos)
+    {
+        $pasa = true;
+        foreach ($required as $key){
+            if ($campos[$key]==' ') $pasa = false;
+            
+        }
+        if (!$pasa) Alert::danger('Camp buid: '.print_r($campos,true));
+        return $pasa;
+    }
+    
     private function in($xmltable, $tabla)
     {
         $guard = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::unguard';
@@ -454,6 +467,7 @@ class ImportController extends Seeder
         foreach ($xmltable->children() as $registroxml) {  //recorro registro del xml
             $atributosxml = $registroxml->attributes(); // saco los valores de los atributos xml
             if (isset($tabla['filtro'])) $pasa = $this->filtro($tabla['filtro'], $atributosxml);
+            if (isset($tabla['required'])) $pasa = $pasa && $this->required($tabla['required'],$atributosxml);
             if ($pasa)
                     {
                 $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
