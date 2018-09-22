@@ -42,13 +42,15 @@ class FaltaController extends IntranetController
     {
         $request->baja = isset($request->baja)?$request->baja:0;
         if ($request->baja) {
-            $request->hora_ini = null;
-            $request->hora_fin = null;
-            $request->hasta = '';
-            $request->dia_completo = 1;
-            $request->estado = 5;
-            Profesor::Baja($request->idProfesor, $request->desde);
-            parent::realStore($request);
+            DB::transaction(function() use ($request){
+                $request->hora_ini = null;
+                $request->hora_fin = null;
+                $request->hasta = '';
+                $request->dia_completo = 1;
+                $request->estado = 5;
+                Profesor::Baja($request->idProfesor, $request->desde);
+                parent::realStore($request);
+            });
         } else {
             $dia_completo = $request->dia_completo == '' ? '0' : '1';
             $request->hora_ini = $dia_completo ? null : $request->hora_ini;
