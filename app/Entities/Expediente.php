@@ -36,6 +36,7 @@ class Expediente extends Model
     ];
     protected $rules = [
         'fecha' => 'required',
+        'explicacion' => 'required'
     ];
     protected $inputTypes = [
         'idAlumno' => ['type' => 'select'],
