@@ -14,7 +14,6 @@ return [
     'nombreEval' => [1=>'Primera', 2=> 'Segona', 3=>'Final', 4=>'Extraordinària'],
     'tipoExpediente' => [   1=>'Baixa Inasistència',
                             2=>'Pèrdua Avaluació Continua',
-                            3=>'Anul.lació matricula',
                             4=>"Remisió al departament d'Orientació",
                             5=>"Part d'amonestació"
      ],
