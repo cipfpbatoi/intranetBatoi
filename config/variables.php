@@ -6,5 +6,5 @@ return [
     'precioKilometro' => 0.19,
     'reservaAforo' => 1.2,
     'programaciones' => [ 'fichero' => '0' , 'enlace' => '1'],
-    'mostrarProgramacionesEstado' => '4',
+    'mostrarProgramacionesEstado' => '3',
 ];
