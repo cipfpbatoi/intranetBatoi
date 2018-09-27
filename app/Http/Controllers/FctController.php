@@ -25,7 +25,7 @@ class FctController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Fct';
-    protected $gridFields = [ 'Nombre', 'Centro','desde', 'fin', 'periode','qualificacio', 'projecte','horas','desde','hasta','id'];
+    protected $gridFields = [ 'Nombre','Tipus', 'Centro','desde', 'fin', 'periode','qualificacio', 'projecte','horas','desde','hasta','id'];
     protected $grupo;
     protected $vista = ['show' => 'fct'];
     
@@ -49,6 +49,8 @@ class FctController extends IntranetController
         
         return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
     }
+    
+   
     public function pass()
     {
         $elemento = new Fct();
@@ -77,6 +79,7 @@ class FctController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.pdf',['where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.anexevii',['img' => 'fa-file-word-o','where'=>['asociacion', '==', '2']]));
         $this->panel->setBoton('grid', new BotonImg('fct.email',['orWhere'=>['correoAlumno','==','0','correoInstructor','==','0']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pass", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
@@ -210,6 +213,24 @@ class FctController extends IntranetController
         ];
         
         $pdf = $this->hazPdf('pdf.fct.alumne', $fct, $dades);
+        return $pdf->stream();
+    }
+    public function anexevii($id)
+    {
+        $fct = Fct::findOrFail($id);
+        $secretario = Profesor::find(config('contacto.secretario'));
+        $director = Profesor::find(config('contacto.director'));
+        $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
+            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
+            'secretario' => $secretario->FullName,
+            'centro' => config('contacto.nombre'),
+            'codigo' => config('contacto.codi'),
+            'poblacion' => config('contacto.poblacion'),
+            'provincia' => config('contacto.provincia'),
+            'director' => $director->FullName
+        ];
+        
+        $pdf = $this->hazPdf('dual.anexe_vii', $fct,$dades);
         return $pdf->stream();
     }
 

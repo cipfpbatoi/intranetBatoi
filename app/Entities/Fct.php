@@ -91,6 +91,8 @@ class Fct extends Model
         return $query->whereIn('idAlumno',$alumnos);
     }
     
+
+
     public function scopeActiva($query,$cuando)
     {
         $hoy = new Date();
@@ -147,6 +149,9 @@ class Fct extends Model
            return hazArray($colaboracion->Centro->instructores,'dni',['nombre']);
         }
         else return [];
+    }
+    public function getTipusAttribute(){
+        return config('auxiliares.asociacionEmpresa')[$this->asociacion];
     }
     public function getDesdeAttribute($entrada)
     {

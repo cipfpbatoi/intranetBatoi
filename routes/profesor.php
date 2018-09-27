@@ -212,6 +212,7 @@ Route::put('/fct/upload', ['as' => 'qualitat.update', 'uses' => 'DocumentoContro
 Route::get('/fct/{document}/empresa',['as' => 'fct.empresa', 'uses' => 'FctController@empresa']);
 Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'FctController@modificaNota']);
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'FctController@update']);
+Route::get('/fct/{id}/anexevii',['as' => 'dual.vii', 'uses' => 'FctController@anexevii']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
