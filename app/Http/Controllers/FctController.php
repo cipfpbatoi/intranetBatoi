@@ -230,7 +230,7 @@ class FctController extends IntranetController
             'director' => $director->FullName
         ];
         
-        $pdf = $this->hazPdf('dual.anexe_vii', $fct,$dades,'landscape');
+        $pdf = $this->hazPdf('dual.anexe_vii', $fct,$dades,'landscape','a4',10);
         return $pdf->stream();
     }
 
