@@ -58,6 +58,9 @@ class Modulo_ciclo extends Model
     public function getXmoduloAttribute(){
         return $this->Modulo->literal;
     }
+    public function getXdepartamentoAttribute(){
+        return $this->Departamento->literal;
+    }
     public function getXcicloAttribute(){
         return $this->Ciclo->literal;
     }
