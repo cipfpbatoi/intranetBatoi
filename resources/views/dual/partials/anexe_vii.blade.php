@@ -138,12 +138,19 @@
     <div style="position:absolute;left:870.78px;top:665.60px;width: 300px" class="cls_013">
         <span class="cls_013">Vº Bº del tutor o tutora de FP Dual</span>
     </div>
-    <div style="position:absolute;left:130.70px;top:784.20px" class="cls_013">
+    <div style="position:absolute;left:180.70px;top:774.20px" class="cls_013">
         <span class="cls_004"> {{$todos->Instructores->first()->Nombre }}</span><br/>
+        
+    </div>
+    <div style="position:absolute;left:130.70px;top:784.20px" class="cls_013">
+        
         <span class="cls_013">Firma:__________________________________________</span>
     </div>
+    <div style="position:absolute;left:850.70px;top:774.20px" class="cls_013">
+        <span class="cls_004"> {{AuthUser()->FullName}}</span><br/>
+        
+    </div>
     <div style="position:absolute;left:800.10px;top:784.20px" class="cls_013">
-         <span class="cls_004"> {{AuthUser()->FullName}}</span><br/>
         <span class="cls_013">Firma:_________________________________________</span>
     </div>
     <div style="position:absolute;left:1163.80px;top:842.90px" class="cls_009">
