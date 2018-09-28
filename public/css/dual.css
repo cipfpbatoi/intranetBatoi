@@ -1,16 +1,8 @@
-/*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 27/09/2018, 12:35:53
-    Author     : igomis
-*/
+
 div .page {
+     overflow: hidden;
      page-break-after: always;
-     page-break-inside: avoid;
-     
+     page-break-inside: avoid;    
 }
 span.cls_002{font-family:Arial,serif;font-size:15.1px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
 div.cls_002{font-family:Arial,serif;font-size:15.1px;color:rgb(0,0,0);font-weight:bold;font-style:normal;text-decoration: none}
