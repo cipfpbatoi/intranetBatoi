@@ -81,6 +81,7 @@ class FctController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.pdf',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.anexevii',['img' => 'fa-file-word-o','where'=>['asociacion', '==', '3']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '3']]));
         $this->panel->setBoton('grid', new BotonImg('fct.email',['orWhere'=>['correoAlumno','==','0','correoInstructor','==','0']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pass", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
