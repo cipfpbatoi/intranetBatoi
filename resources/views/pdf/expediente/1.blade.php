@@ -16,7 +16,7 @@
                 a su matrícula de {{Curso()}} del {{\Intranet\Entities\Alumno_grupo::where('idAlumno',$elemento->idAlumno)->first()->Grupo->Ciclo->ciclo}}, 
                 siguiendo las instrucciones de la Resolución del 29 de junio de 2018, de la Secretaria Autonómica de Educación e Investigación, 
                 por la que se dictan instrucciones sobre ordenación académica y de organización de la actividad docente de los centros de la Comunitat Valenciana 
-                que durante el curso {{Curso()} impartan ciclos formativos de Formación Profesional.</p>
+                que durante el curso {{Curso()}} impartan ciclos formativos de Formación Profesional.</p>
             <p tyle="text-indent: 30px">El interesado/a dispone de dos días hábiles, desde la recepción de este documento, 
                 para presentar la documentación que justifique debidamente la causa de las ausencias.</p>
             <p tyle="text-indent: 30px">Contra esta resolución, el interesado puede presentar recurso de alzada en el plazo de un mes desde su notificación
