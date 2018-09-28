@@ -13,7 +13,7 @@
     <div style="position:absolute;left:55.50px;top:127.10px" class="cls_006">
         <span class="cls_006">A</span>
     </div>
-    <div style="position:absolute;left:88.18px;top:129.30px;width: 500px" class="cls_007">
+    <div style="position:absolute;left:88.18px;top:129.30px;width: 600px" class="cls_007">
         <span class="cls_007">DADES DE L’ALUMNE O ALUMNA / </span>
         <span class="cls_008">DATOS DEL ALUMNO O ALUMNA</span>
     </div>
@@ -91,7 +91,7 @@
     <div style="position:absolute;left:91.60px;top:375.40px" class="cls_011">
         <span class="cls_011">LLOC FORMATIU OCUPAT</span>
     </div>
-    <div style="position:absolute;left:333.30px;top:375.40px" class="cls_011">
+    <div style="position:absolute;left:323.30px;top:375.40px" class="cls_011">
         <span class="cls_011">DATA DE DD/MM/AA A DD/MM/AA</span>
     </div>
     <div style="position:absolute;left:544.20px;top:375.40px;width: 150px" class="cls_011">
@@ -106,7 +106,7 @@
     <div style="position:absolute;left:81.60px;top:389.60px" class="cls_012">
         <span class="cls_012">PUESTO FORMATIVO OCUPADO (1)</span>
     </div>
-    <div style="position:absolute;left:323.30px;top:389.60px" class="cls_012">
+    <div style="position:absolute;left:315.30px;top:389.60px" class="cls_012">
         <span class="cls_012">FECHA DE DD/MM/AA A DD/MM/AA</span>
     </div>
     <div style="position:absolute;left:544.00px;top:389.60px" class="cls_012">
