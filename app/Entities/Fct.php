@@ -31,7 +31,7 @@ class Fct extends Model
     protected $inputTypes = [
         'idAlumno' => ['type' => 'select'],
         'idColaboracion' => ['type' => 'select'],
-        'asociacion' => ['type' => 'select'],
+        'asociacion' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
         'calificacion' => ['type' => 'hidden'],
@@ -90,9 +90,6 @@ class Fct extends Model
         $alumnos = Alumno::select('nia')->misAlumnos($grupo->tutor)->get()->toArray();
         return $query->whereIn('idAlumno',$alumnos);
     }
-    
-
-
     public function scopeActiva($query,$cuando)
     {
         $hoy = new Date();
@@ -104,8 +101,6 @@ class Fct extends Model
         return $query->where('desde','>=',config('curso.fct.2')['inici'])->where('asociacion',1);
            
     }
-    
-    
     public function scopeNoAval($query)
     {
         return $query->where('actas','<', 2);
@@ -118,7 +113,6 @@ class Fct extends Model
     {
         return $query->where('actas','=', 2);
     }
-    
     
     public function getAsociacionOptions()
     {

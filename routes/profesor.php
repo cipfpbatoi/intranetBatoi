@@ -214,6 +214,37 @@ Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'FctCont
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'FctController@update']);
 Route::get('/fct/{id}/anexevii',['as' => 'dual.vii', 'uses' => 'FctController@anexevii']);
 
+Route::resource('/dual', 'DualController', ['except' => ['destroy', 'update', 'show']]);
+Route::post('/dual/{id}/instructorCreate',['as'=>'dual.instructor.create','uses'=>'DualController@nouInstructor']);
+Route::get('/dual/{id}/{dni}/instructorDelete',['as'=>'dual.instructor.delete','uses'=>'DualController@deleteInstructor']);
+Route::post('/dual/{id}/modificaHoras',['as'=>'dual.modificarHoras','uses'=>'DualController@modificaHoras']);
+Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualController@destroy']);
+Route::get('/dual/{id}/show', ['as' => 'dual.show', 'uses' => 'DualController@show']);
+Route::put('/dual/{id}/edit', ['as' => 'dual.update', 'uses' => 'DualController@update']);
+Route::get('/dual/create/{colaboracio}', ['as' => 'dual.create2', 'uses' => 'DualController@create']);
+Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@store']);
+Route::get('/dual/pass',['as' => 'dual.pass', 'uses' => 'DualController@pass']);
+Route::post('/dual/pass',['as' => 'dual.pass', 'uses' => 'DualController@store']);
+Route::get('/dual/{id}/pdf', ['as' => 'dual.pdf', 'uses' => 'DualController@pdf']);
+Route::get('/dual/{id}/email', ['as' => 'dual.email', 'uses' => 'DualController@email']);
+Route::get('/dual/{document}/print', ['as' => 'dual.print', 'uses' => 'DualController@document']);
+Route::get('/dual/{document}/apte', ['as' => 'dual.apte', 'uses' => 'DualController@apte']);
+Route::get('/dual/{document}/noApte', ['as' => 'dual.noApte', 'uses' => 'DualController@noApte']);
+Route::get('/dual/{document}/noProyecto', ['as' => 'dual.noProyecto', 'uses' => 'DualController@noProyecto']);
+Route::get('/dual/{document}/nuevoProyecto', ['as' => 'dual.nuevoProyecto', 'uses' => 'DualController@nuevoProyecto']);
+Route::get('/dual/acta', ['as' => 'dual.acta', 'uses' => 'DualController@demanarActa']);
+Route::get('/dual/{dual}/proyecto', ['as' => 'proyecto.new', 'uses' => 'DocumentoController@project']);
+Route::post('/dual/{dual}/proyecto', ['as' => 'proyecto.create', 'uses' => 'DocumentoController@store']);
+Route::get('/avalFct', ['as' => 'aval.dual', 'uses' => 'PanelAvalDualController@index']);
+Route::get('/dual/upload', ['as' => 'qualitat.new', 'uses' => 'DocumentoController@qualitat']);
+Route::post('/dual/upload', ['as' => 'qualitat.create', 'uses' => 'DocumentoController@store']);
+Route::put('/dual/upload', ['as' => 'qualitat.update', 'uses' => 'DocumentoController@update']);
+Route::get('/dual/{document}/empresa',['as' => 'dual.empresa', 'uses' => 'DualController@empresa']);
+Route::get('/dual/{id}/modificaNota', ['as' => 'dual.editNota', 'uses' => 'DualController@modificaNota']);
+Route::put('/dual/{id}/modificaNota', ['as' => 'dual.updateNota', 'uses' => 'DualController@update']);
+Route::get('/dual/{id}/anexevii',['as' => 'dual.vii', 'uses' => 'DualController@anexevii']);
+
+
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
 Route::put('instructor/{id}/edit',['as' => 'instructor.edita', 'uses' => 'InstructorController@update']);

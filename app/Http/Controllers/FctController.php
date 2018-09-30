@@ -25,7 +25,7 @@ class FctController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Fct';
-    protected $gridFields = [ 'Nombre','Tipus', 'Centro','desde', 'fin', 'periode','qualificacio', 'projecte','horas','desde','hasta','id'];
+    protected $gridFields = [ 'Nombre','Tipus','Centro','desde', 'fin', 'periode','qualificacio', 'projecte','horas','desde','hasta','id'];
     protected $grupo;
     protected $vista = ['show' => 'fct'];
     
@@ -76,12 +76,10 @@ class FctController extends IntranetController
     protected function iniBotones()
     {
         //$this->panel->setBotonera();
-        $this->panel->setBoton('grid', new BotonImg('fct.delete',['orWhere'=>['calificacion', '<', '1','asociacion','>',1]]));
+        $this->panel->setBoton('grid', new BotonImg('fct.delete',['orWhere'=>['calificacion', '<', '1','asociacion','==',2]]));
         $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.pdf',['where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.anexevii',['img' => 'fa-file-word-o','where'=>['asociacion', '==', '3']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '3']]));
         $this->panel->setBoton('grid', new BotonImg('fct.email',['orWhere'=>['correoAlumno','==','0','correoInstructor','==','0']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pass", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
@@ -101,7 +99,7 @@ class FctController extends IntranetController
 
     public function search()
     {
-        return Fct::misFcts()->get();
+        return Fct::misFcts()->where('asociacion','<',3)->get();
     }
     
     protected function apte($id)

@@ -25,15 +25,21 @@
         </li>
         
     </ul>
-    <a href="/fct/{{$fct->id}}/edit" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Editar</a>
-    <a href="/fct" class="btn btn-success"><i class="fa fa-arrow-left m-right-xs"></i>Volver</a>
+    @if ($fct->asociacion == 3)
+        <a href="/dual/{{$fct->id}}/edit" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Editar</a>
+        <a href="/dual" class="btn btn-success"><i class="fa fa-arrow-left m-right-xs"></i>Volver</a>
+    @else
+        <a href="/fct/{{$fct->id}}/edit" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Editar</a>
+        <a href="/fct" class="btn btn-success"><i class="fa fa-arrow-left m-right-xs"></i>Volver</a>
+    @endif
     <br />
 
     <!-- start skills -->
     <h4>@lang("validation.attributes.estado")</h4>
     <ul class="list-unstyled user_data">
-        <li class="m-top-xs"><i class='fa fa-columns user-profile-icon'></i> {{$fct->Qualificacio}}</li>
-        
+        @if ($fct->asociacion == 1)
+            <li class="m-top-xs"><i class='fa fa-columns user-profile-icon'></i> {{$fct->Qualificacio}}</li>
+        @endif
     </ul>
     <!-- end of skills -->
 
