@@ -247,8 +247,8 @@ return array(
         'Modulociclo' => 'Module / Cycle',
         'Actasfct' => 'Control Fct/Minutes',
         'Actualizacion' => 'Update',
-        'Fpdual' => 'FP Dual',
-        'Dual' => 'List'
+        'Dual' => 'FP Dual',
+        
     ),
     'situations' => array(
         '0' => 'Not notified',

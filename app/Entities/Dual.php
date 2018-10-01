@@ -27,10 +27,12 @@ class Dual extends Fct
         $this->horas = 600;
     }
     
-    
+    public function getIdAlumnoOptions(){
+        return hazArray(Alumno::misAlumnos(AuthUser()->dni,true)->get(),'nia',['apellido1','apellido2','nombre']);
+    }
     
     public function getIdColaboracionOptions(){
-        $cicloC = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->get();
+        $cicloC = Grupo::select('idCiclo')->QTutor(AuthUser()->dni,true)->get();
         $ciclo = $cicloC->count()>0?$cicloC->first()->idCiclo:'';
         $colaboraciones = Colaboracion::where('idCiclo',$ciclo)->get();
         $todos = [];
