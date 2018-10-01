@@ -56,7 +56,7 @@ class ColaboracionController extends IntranetController
 
     public function iniBotones()
     {
-        $this->panel->setBoton('grid', new BotonImg('colaboracion.show'));
+        $this->panel->setBoton('grid', new BotonImg('colaboracion.show',['roles' => config('roles.rol.practicas')]));
         
     }
     public function search(){
