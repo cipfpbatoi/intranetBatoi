@@ -1,4 +1,8 @@
 @php $ciclos = \Intranet\Entities\Ciclo::where('departamento',AuthUser()->departamento)->get() @endphp
+@php
+     $tutor = \Intranet\Entities\Grupo::QTutor()->first();
+     if (!$tutor) $tutor = \Intranet\Entities\Grupo::QTutor(null,true)->first();
+@endphp
 <ul class="messages colaboracion">
     @foreach ($elemento->centros as $centro)
         @foreach ($centro->colaboraciones as $colaboracion)
@@ -9,7 +13,7 @@
                     <span class='info' style="font-weight: bold">{!! $colaboracion->Ciclo->ciclo !!} - {!! $colaboracion->Centro->nombre !!} ({!! $colaboracion->Centro->direccion !!})</span><sup>{{$colaboracion->fcts()->count()}}<small style="color: purple "> Fct</small></sup>
                     @if ($editar || UserisAllow(config('roles.rol.administrador'))) <a href='/colaboracion/{!!$colaboracion->id!!}/edit'><i class="fa fa-edit"></i></a> @endif
                     @if ($editar || UserisAllow(config('roles.rol.administrador'))) <a href="/colaboracion/{!!$colaboracion->id!!}/delete" class="delGrupo"><i class="fa fa-trash"></i></a>@endif
-                    @if (\Intranet\Entities\Colaboracion::where('idCentro',$colaboracion->idCentro)->where('idCiclo',\Intranet\Entities\Grupo::QTutor()->first()->idCiclo)->count() == 0) <a href="/colaboracion/{!!$colaboracion->id!!}/copy" class="copGrupo"><i class="fa fa-copy"></i></a><small style="color: purple "> @lang('messages.buttons.copy')  {{\Intranet\Entities\Grupo::QTutor()->first()->Ciclo->ciclo}} </small>@endif
+                    @if (\Intranet\Entities\Colaboracion::where('idCentro',$colaboracion->idCentro)->where('idCiclo',$tutor->idCiclo)->count() == 0) <a href="/colaboracion/{!!$colaboracion->id!!}/copy" class="copGrupo"><i class="fa fa-copy"></i></a><small style="color: purple "> @lang('messages.buttons.copy')  {{$tutor->Ciclo->ciclo}} </small>@endif
                 </h4>
             </div>
             <div class="message_wrapper" style="width:50%">
