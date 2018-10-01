@@ -11,7 +11,8 @@ return [
         'todos' => 1,
         'conserge' => 23,
         'orientador' => 29,
-        'practicas' => 31
+        'practicas' => 31,
+        'dual' => 37,
     ],
     'lor' => [
         2 => 'direccion',
@@ -24,5 +25,6 @@ return [
         29 => 'orientador',
         5 => 'alumno',
         1 => 'todos',
-        31 => 'practicas'
+        31 => 'practicas',
+        37 => 'dual'
     ]];

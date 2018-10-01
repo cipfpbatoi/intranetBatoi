@@ -25,7 +25,7 @@ class FctController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Fct';
-    protected $gridFields = [ 'Nombre','Tipus','Centro','desde', 'fin', 'periode','qualificacio', 'projecte','horas','desde','hasta','id'];
+    protected $gridFields = [ 'Nombre','Tipus','periode','Centro','desde', 'hasta', 'qualificacio', 'projecte','horas','fin'];
     protected $grupo;
     protected $vista = ['show' => 'fct'];
     

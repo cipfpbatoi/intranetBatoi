@@ -22,6 +22,7 @@ class Grupo extends Model
         'nombre',
         'turno',
         'tutor',
+        'tutorDual',
         'idCiclo',
         'codigo',
         'curso'
@@ -31,7 +32,8 @@ class Grupo extends Model
     protected $inputTypes = [
         'turno' => ['disabled' => 'disabled'],
         'tutor' => ['type' => 'select'],
-        'idCiclo' => ['type' => 'select']
+        'tutorDual' => ['type' => 'select'],
+        'idCiclo' => ['type' => 'select'],
     ];
     protected $dispatchesEvents = [
         'deleted' => ActivityReport::class,
@@ -51,6 +53,10 @@ class Grupo extends Model
     public function Tutor()
     {
         return $this->hasOne(Profesor::class, 'dni', 'tutor');
+    }
+    public function TutorDual()
+    {
+        return $this->hasOne(Profesor::class, 'dni', 'tutorDual');
     }
 
     public function Ciclo()
@@ -77,7 +83,16 @@ class Grupo extends Model
     public function getTutorOptions()
     {
         return hazArray(Profesor::orderBy('apellido1')
-                        ->orderBy('apellido2')->get(), 'dni', ['apellido1', 'apellido2', 'nombre']);
+                        ->orderBy('apellido2')
+                        ->where('departamento',$this->Ciclo->departamento)
+                        ->get(), 'dni', ['apellido1', 'apellido2', 'nombre']);
+    }
+    public function getTutorDualOptions()
+    {
+        return hazArray(Profesor::orderBy('apellido1')
+                        ->orderBy('apellido2')
+                        ->where('departamento',$this->Ciclo->departamento)
+                        ->get(), 'dni', ['apellido1', 'apellido2', 'nombre']);
     }
 
     public function scopeQTutor($query,$profesor=null)

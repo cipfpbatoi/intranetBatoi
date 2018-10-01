@@ -18,7 +18,7 @@ class DualController extends FctController
 
     protected $perfil = 'profesor';
     protected $model = 'Dual';
-    protected $gridFields = [ 'Nombre', 'Centro','desde', 'fin', 'periode','qualificacio', 'projecte','horas','desde','hasta','id'];
+    protected $gridFields = [ 'Nombre', 'Centro','desde', 'hasta', 'horas'];
     protected $grupo;
     protected $vista = ['show' => 'fct'];
     
