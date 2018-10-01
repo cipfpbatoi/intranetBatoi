@@ -51,7 +51,7 @@ class DualController extends FctController
 
     public function search()
     {
-        return Dual::misFcts()->where('asociacion',3)->get();
+        return Dual::misFcts(AuthUser()->dni,true)->where('asociacion',3)->get();
     }
     
     

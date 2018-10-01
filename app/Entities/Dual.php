@@ -26,6 +26,9 @@ class Dual extends Fct
         $this->horas_semanales = 20;
         $this->horas = 600;
     }
+    
+    
+    
     public function getIdColaboracionOptions(){
         $cicloC = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->get();
         $ciclo = $cicloC->count()>0?$cicloC->first()->idCiclo:'';

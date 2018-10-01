@@ -250,7 +250,8 @@ return array(
         'Modulociclo' => 'Mòdul / Cicle',
         'Actasfct' => 'Control Fct/Actes',
         'Actualizacion' => 'Actualització aplicació',
-        'Dual' => 'FP Dual'
+        'Fpdual' => 'FP Dual',
+        'Dual' => 'Llista'
         
     ),
     'situations' => array(

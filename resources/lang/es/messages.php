@@ -248,7 +248,8 @@ return array(
         'Modulociclo' => 'Mòdul / Cicle',
         'Actasfct' => 'Control Fct/Actas',
         'Actualizacion' => 'Actualización aplicación',
-        'Dual' => 'FP Dual'
+        'Fpdual' => 'FP Dual',
+        'Dual' => 'Listado'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

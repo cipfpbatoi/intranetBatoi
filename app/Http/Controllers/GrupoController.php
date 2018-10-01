@@ -20,7 +20,7 @@ class GrupoController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Grupo';
-    protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo'];
+    protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo','XDual'];
     //protected $modal = true;
 
     

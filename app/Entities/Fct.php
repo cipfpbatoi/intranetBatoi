@@ -79,10 +79,10 @@ class Fct extends Model
         $colaboracion = Colaboracion::select('id')->whereIn('idCentro',$centros)->get()->toarray();
         return $query->whereIn('idColaboracion', $colaboracion);
     }
-    public function scopeMisFcts($query,$profesor=null)
+    public function scopeMisFcts($query,$profesor=null,$dual=false)
     {
         $profesor = $profesor?$profesor:AuthUser()->dni;
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
+        $alumnos = Alumno::select('nia')->misAlumnos($profesor,$dual)->get()->toArray();
         return $query->whereIn('idAlumno',$alumnos);
     }
     public function scopeGrupo($query,$grupo)

@@ -107,10 +107,10 @@ class Alumno extends Authenticatable
         $hace18 = $hoy->subYears(18)->toDateString();
         return $query->where('fecha_nac', '>', $hace18);
     }
-    public function scopeMisAlumnos($query,$profesor=null)
+    public function scopeMisAlumnos($query,$profesor=null,$dual=false)
     {
         $profesor = $profesor?$profesor:AuthUser()->dni;
-        $gruposC = Grupo::select('codigo')->QTutor($profesor)->get();
+        $gruposC = Grupo::select('codigo')->QTutor($profesor,$dual)->get();
         $grupos = $gruposC->count()>0?$gruposC->toarray():[];   
         $alumnos = Alumno_grupo::select('idAlumno')->whereIn('idGrupo',$grupos)->get();
         return $query->whereIn('nia',$alumnos);
