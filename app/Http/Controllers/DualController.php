@@ -39,7 +39,7 @@ class DualController extends FctController
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
         $this->panel->setBoton('grid', new BotonImg('dual.show'));
         $this->panel->setBoton('grid', new BotonImg('dual.anexevii',['img' => 'fa-file-word-o']));
-        $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info','roles' => config('roles.rol.dual')]));
 //        $find = Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento','Qualitat')
 //                ->where('curso',Curso())->first();
 //        if (!$find) $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
