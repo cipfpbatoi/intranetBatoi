@@ -70,6 +70,7 @@ trait TraitEstado
                     $explicacion .= mb_substr(str_replace(array("\r\n", "\n", "\r"),' ',$this->$descripcion),0,50) . ". ";
                 }
                 //mensaje que pasa el usuario
+               
                 $explicacion .= isset($mensaje) ? $mensaje : '';
                 
                 // mensaje específico del fichero de modelos
@@ -85,7 +86,14 @@ trait TraitEstado
                     case 'jefeEstudios':
                     case 'secretario' : 
                     case 'orientador' :    
-                    case 'vicedirector': avisa(config('contacto.'.$quien),$explicacion,$enlace);break;
+                    case 'vicedirector': 
+                        if (is_array(config('contacto.'.$quien)))
+                           foreach (config('contacto.'.$quien) as $id){
+                            avisa($id,$explicacion,$enlace);
+                           }     
+                        else        
+                           avisa(config('contacto.'.$quien),$explicacion,$enlace);
+                        break;
                     case 'jefeDepartamento' : isset($this->Profesor->dni)?avisa($this->Profesor->miJefe,$explicacion,$enlace):avisa(AuthUser()->miJefe,$explicacion,$enlace);break;
                     default :
                         if (isset($this->$quien) && $this->$quien != ''){

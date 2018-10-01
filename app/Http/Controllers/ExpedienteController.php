@@ -44,16 +44,18 @@ class ExpedienteController extends IntranetController
     {
         $expediente = Expediente::find($id);
             // orientacion
-        if ($expediente->tipo == 4)
-            Expediente::putEstado($id,4);
+        if ($expediente->tipo == 4){
+            $mensaje = $expediente->explicacion.' .Grup '.$expediente->Alumno->Grupo->first()->nombre;
+            Expediente::putEstado($id,4,$mensaje);
+        }
         else
             Expediente::putEstado($id,1);
         return back();
     }
     protected function pasaOrientacion($id)
     {
-        Expediente::putEstado($id,5);
         $expediente = Expediente::find($id);
+        Expediente::putEstado($id,5);
         $expediente->fechasolucion = Hoy();
         $expediente->save();
         
