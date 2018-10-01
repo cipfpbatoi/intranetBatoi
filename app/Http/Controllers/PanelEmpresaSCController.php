@@ -21,6 +21,8 @@ class PanelEmpresaSCController extends BaseController
     }
     protected function iniBotones()
     {
-       $this->panel->setBotonera(['create'], ['detalle','delete']); 
+       $this->panel->setBoton('index', new BotonBasico("empresa.create",['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
+       $this->panel->setBoton('grid', new BotonImg('empresa.detalle',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
+       $this->panel->setBoton('grid', new BotonImg('empresa.delete',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
     }
 }
