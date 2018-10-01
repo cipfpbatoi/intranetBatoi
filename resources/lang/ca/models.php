@@ -292,6 +292,14 @@ return array(
             'acta' => 'Demanar acta d\'avaluació',
             'empresa' => "Inserció laboral",
         ),
+        'Dual' => array(
+            'index' => 'FP Dual',
+            'create' => 'Nova Dual',
+            'edit' => 'Editar Dual',
+            'delete' => 'Esborrar Dual',
+            'fin' => 'Finalitzar Dual',
+            'anexevii' => 'Imprimir Annexe vii',
+        ),
         'Direccion' => array(
            'acta' => 'Acta completada' 
         ),

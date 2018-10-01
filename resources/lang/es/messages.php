@@ -247,7 +247,8 @@ return array(
         'Auxiliar' => 'Taules auxiliars',
         'Modulociclo' => 'Mòdul / Cicle',
         'Actasfct' => 'Control Fct/Actas',
-        'Actualizacion' => 'Actualización aplicación'
+        'Actualizacion' => 'Actualización aplicación',
+        'Dual' => 'FP Dual'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

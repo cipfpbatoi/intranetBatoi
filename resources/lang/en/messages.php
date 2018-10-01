@@ -246,7 +246,8 @@ return array(
         'Auxiliar' => 'Auxiliar tables',
         'Modulociclo' => 'Module / Cycle',
         'Actasfct' => 'Control Fct/Minutes',
-        'Actualizacion' => 'Update'
+        'Actualizacion' => 'Update',
+        'Dual' => 'FP Dual'
     ),
     'situations' => array(
         '0' => 'Not notified',
