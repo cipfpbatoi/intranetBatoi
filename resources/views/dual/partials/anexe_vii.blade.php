@@ -75,11 +75,11 @@
     </div>
     <div style="position:absolute;left:549.90px;top:296.10px" class="cls_009">
         <span class="cls_009">INSTRUCTOR O INSTRUCTORA</span><br/>
-        <span class="cls_004"> {{$todos->Instructores->first()->Nombre }}</span>
+        <span class="cls_004">@if ($todos->Instructores->count()) {{$todos->Instructores->first()->Nombre }} @endif</span>
     </div>
     <div style="position:absolute;left:1030.60px;top:296.10px" class="cls_009">
         <span class="cls_009">NIF</span><br/>
-        <span class="cls_004"> {{$todos->Instructores->first()->dni }}</span>
+        <span class="cls_004">@if ($todos->Instructores->count()) {{$todos->Instructores->first()->dni }} @endif</span>
     </div>
     <div style="position:absolute;left:54.70px;top:338.20px" class="cls_006">
         <span class="cls_006">B</span>
@@ -139,7 +139,7 @@
         <span class="cls_013">Vº Bº del tutor o tutora de FP Dual</span>
     </div>
     <div style="position:absolute;left:180.70px;top:774.20px" class="cls_013">
-        <span class="cls_004"> {{$todos->Instructores->first()->Nombre }}</span><br/>
+        <span class="cls_004">@if ($todos->Instructores->count()) {{$todos->Instructores->first()->Nombre }} @endif</span><br/>
         
     </div>
     <div style="position:absolute;left:130.70px;top:784.20px" class="cls_013">

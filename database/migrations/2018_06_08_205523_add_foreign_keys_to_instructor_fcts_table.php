@@ -15,7 +15,7 @@ class AddForeignKeysToInstructorFctsTable extends Migration {
 		Schema::table('instructor_fcts', function(Blueprint $table)
 		{
 			$table->foreign('idFct')->references('id')->on('fcts')->onUpdate('CASCADE')->onDelete('CASCADE');
-			$table->foreign('idInstructor')->references('dni')->on('instructores')->onUpdate('RESTRICT')->onDelete('RESTRICT');
+			$table->foreign('idInstructor')->references('dni')->on('instructores')->onUpdate('CASCADE')->onDelete('RESTRICT');
 		});
 	}
 
