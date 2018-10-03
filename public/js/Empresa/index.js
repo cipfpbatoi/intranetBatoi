@@ -1,10 +1,21 @@
 'use strict';
 
-const CONTENIDO= `
+const PRACTICAS=31;
+const DUAL=37;
+
+ 
+var autorizado=(!($('#rol').text()%PRACTICAS)||!($('#rol').text()%DUAL));
+
+if (autorizado){
+ var contenido = `
                 <a href="#" class="shown">
                     <i class="fa fa-plus" title="Mostrar"></i>
                 </a>
                 `;
+    }
+else
+  var contenido = ` `;
+
 const COLUMNS=[
             {data: 'concierto'},
             {data: 'nombre'},
@@ -14,11 +25,11 @@ const COLUMNS=[
             {data: 'email'},
             {data: 'cif'},
             {data: 'actividad'},
-            {data: null, defaultContent: CONTENIDO},
+            {data: null, defaultContent: contenido},
         ];
 const ID = 'id';
 const TABLA ='Empresa';
-
+    
 //$(function () {
     var token = $("#_token").text();
     $('#datatable').DataTable({
@@ -33,7 +44,7 @@ const TABLA ='Empresa';
         deferRender: true,
         dataSrc: 'data',
         columns: COLUMNS,
-        rowId : ID, 
+        rowId : ID,
         responsive: true,
         columnDefs: [
             {responsivePriority: 1, targets: COLUMNS.length-1},

@@ -23,6 +23,7 @@ class TutoriaGrupo extends Model
         'idTutoria' => 'required',
         'idGrupo' => 'required',
         'fecha' => 'required|date',
+        'observaciones' => 'required',
         ];
     protected $inputTypes = [
         'idTutoria' => ['disabled' => 'disabled'],
