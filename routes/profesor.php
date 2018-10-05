@@ -312,4 +312,7 @@ Route::put('/programacion/{programacion}/seguimiento',
         ['as' => 'programacion.updateseguimiento', 'uses' => 'ProgramacionController@updateSeguimiento']);
 Route::get('/programacion/{programacion}/seguimiento', ['as' => 'programacion.seguimiento', 'uses' => 'ProgramacionController@seguimiento']);
 Route::get('/itaca',['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
+Route::get('/fct/all',['as' => 'fct.all', 'uses' => 'FctController@all']);
+Route::get('/fct/only',['as' => 'fct.only', 'uses' => 'FctController@only']);
+
 Route::get('/profesor/change',['as' =>'profesor.backChange','uses' => 'ProfesorController@backChange']);

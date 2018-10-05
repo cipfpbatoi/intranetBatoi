@@ -25,9 +25,7 @@ class Horario extends Model
         'idGrupo' => ['type' => 'select'],
         'ocupacion' => ['type' => 'select'],
     ];
-    protected $dispatchesEvents = [
-        'saved' => ActivityReport::class,
-    ];
+    
 
     public function Modulo()
     {

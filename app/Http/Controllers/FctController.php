@@ -39,6 +39,14 @@ class FctController extends IntranetController
         return parent::index();
     }
     
+    public function all(){
+        Session::forget('vencidos');
+        return back();
+    }
+    public function only(){
+        Session::put('vencidos',1);
+        return back();
+    }
     
     public function edit($id)
     {
@@ -85,6 +93,11 @@ class FctController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("fct.pass", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0301.print",['roles' => config('roles.rol.tutor')]));
+        if (Session::get('vencidos')) 
+            $this->panel->setBoton('index', new BotonBasico("fct.all", ['class' => 'btn-danger','roles' => config('roles.rol.tutor')]));
+        else
+            $this->panel->setBoton('index', new BotonBasico("fct.only", ['class' => 'btn-danger','roles' => config('roles.rol.tutor')]));
+        
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0601.print",['roles' => config('roles.rol.tutor')]));
@@ -99,7 +112,10 @@ class FctController extends IntranetController
 
     public function search()
     {
-        return Fct::misFcts()->where('asociacion','<',3)->get();
+        if (Session::get('vencidos')) 
+            return Fct::misFcts()->where('asociacion','<',3)->where('hasta','>=',Hoy())->get();
+        else
+            return Fct::misFcts()->where('asociacion','<',3)->get();
     }
     
     protected function apte($id)

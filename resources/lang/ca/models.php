@@ -288,6 +288,8 @@ return array(
             'pr0601' => 'Imprimeix PR06-01 (Entrega Certificat)',
             'pr0402' => 'Imprimeix PR04-02 (Entrevista Alumne)',
             'pr0401' => 'Imprimeix PR04-01 (Entrevista Instructor)',
+            'all' => 'Vore tots',
+            'only' => 'Vore actius',
             'list' => 'Acta Grupo :quien',
             'acta' => 'Demanar acta d\'avaluació',
             'empresa' => "Inserció laboral",
