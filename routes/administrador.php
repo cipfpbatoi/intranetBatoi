@@ -51,3 +51,4 @@ Route::get('/modulo_ciclo/{ciclo}/delete', ['as' => 'moduloCiclo.destroy', 'uses
 
 // manteniment
 Route::get('/actualizacion','ActualizacionController@actualizacion');
+//Route::get('/tutores','ImportController@asignarTutores');

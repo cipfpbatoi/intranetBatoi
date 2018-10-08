@@ -147,7 +147,7 @@ class ImportController extends Seeder
                 'idProfesor' => 'docente',
                 'modulo' => 'contenido',
                 'idGrupo' => 'grupo',
-            //'aula' => 'aula',
+                'aula' => 'aula',
             )),
         array('nombrexml' => 'horarios_ocupaciones',
             'nombreclase' => 'Horario',
@@ -193,6 +193,12 @@ class ImportController extends Seeder
                 Alert::danger(trans('messages.generic.invalidFormat'));
         } else
             Alert::danger(trans('messages.generic.noFile'));
+        $this->asignarTutores(false);
+        return view('seeder.store', compact('result'));
+    }
+
+    public function asignarTutores($back =  true)
+    {
         foreach (Profesor::all() as $profesor) {
             if ($grupo = Grupo::QTutor($profesor->dni)->first()) {
                 if (!esRol($profesor->rol, config('roles.rol.tutor'))) {
@@ -205,7 +211,7 @@ class ImportController extends Seeder
                     $profesor->save();
                     Alert::success('tutor practicas assignat: ' . $profesor->FullName);
                 }
-                if ($request->primera && $grupo->curso == 1 && esRol($profesor->rol, config('roles.rol.practicas'))) {
+                if ($grupo->curso == 1 && esRol($profesor->rol, config('roles.rol.practicas'))) {
                     $profesor->rol /= config('roles.rol.practicas');
                     $profesor->save();
                     Alert::success('tutor practicas degradat: ' . $profesor->FullName);
@@ -216,15 +222,14 @@ class ImportController extends Seeder
                     $profesor->save();
                     Alert('tutor degradat' . $profesor->FullName);
                 }
-                if ($request->primera && esRol($profesor->rol, config('roles.rol.practicas'))) {
+                if (esRol($profesor->rol, config('roles.rol.practicas'))) {
                     $profesor->rol /= config('roles.rol.practicas');
                     $profesor->save();
                     Alert('tutor practicas degradat' . $profesor->FullName);
                 }
             }
         }
-//        $this->empresas();
-        return view('seeder.store', compact('result'));
+        if ($back) return back();
     }
 
     // Ejecuta la obra de arte
@@ -274,8 +279,8 @@ class ImportController extends Seeder
                 break;
             case 'Alumno': $this->bajaAlumnos();
                 break;
-            case 'Grupo' : if ($request->primera)
-                    $this->bajaGrupos();
+            case 'Grupo' : if ($request->primera) $this->bajaGrupos();
+                $this->sinTutor();
                 break;
             case 'Alumno_grupo' : $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
                 break;
@@ -382,6 +387,10 @@ class ImportController extends Seeder
     private function bajaGrupos()
     {
         DB::table('grupos')->where('tutor', '=', 'BAJA')->delete();
+    }
+    private function sinTutor()
+    {
+         DB::table('grupos')->where('tutor','=',' ')->update(['tutor' => 'SIN TUTOR']);
     }
 
     private function getFechaFormatoIngles($fecha)
@@ -514,14 +523,18 @@ class ImportController extends Seeder
                             case 'Horario':
                                 if ($arrayDatos['plantilla'] >= $this->plantilla) {
                                     $this->plantilla = $arrayDatos['plantilla'];
-                                    Horario::create($arrayDatos);
+                                    try {
+                                        Horario::create($arrayDatos);
+                                    }
+                                    catch (\Illuminate\Database\QueryException $e) {
+                                        unset($arrayDatos['aula']);
+                                        Horario::create($arrayDatos);
+                                    }
                                 }
                                 break;
                             case 'Alumno':
-
                                 Alumno::create($arrayDatos);
                                 break;
-
                             case 'Profesor':
                                 Profesor::create($arrayDatos);
                                 break;
@@ -532,19 +545,14 @@ class ImportController extends Seeder
                                 Ocupacion::create($arrayDatos);
                                 break;
                             case 'Alumno_grupo':
-                                try {
-                                    Alumno_grupo::create($arrayDatos);
-                                    break;
-                                } catch (\Illuminate\Database\QueryException $e) {
-                                    Alert::error($e->getMessage() . print_r($arrayDatos));
-                                    continue;
-                                }
+                                Alumno_grupo::create($arrayDatos);
+                                break;
                             case 'Grupo':
                                 Grupo::create($arrayDatos);
                                 break;
-                            //                        case 'Espacio':
-                            //                            Espacio::create($arrayDatos);
-                            //                            break;
+                            case 'Espacio':
+                                Espacio::create($arrayDatos);
+                                break;
                             //                        default:
                             //                            $pt = call_user_func($create, $arrayDatos);
                             //                            break;
