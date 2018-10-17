@@ -264,7 +264,7 @@ class ReunionController extends IntranetController
         $elemento->dia = FechaString($hoy);
         $elemento->hora = $hoy->format('H:i');
         $hoy = new Date($elemento->updated_at);
-        $elemento->hoy = FechaString($hoy);
+        $elemento->hoy = haVencido($elemento->fecha) ? $elemento->dia : FechaString($hoy);
 
         $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
         $informe = haVencido($elemento->fecha) ? 'pdf.reunion.' . TipoReunion::acta($elemento->tipo) : 'pdf.reunion.' . TipoReunion::convocatoria($elemento->tipo);
