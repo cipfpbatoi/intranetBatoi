@@ -6,16 +6,16 @@
     </div> 
     <div class="container col-lg-12" style="width:65%;clear:right;text-align: justify">
         <br/><br/><br/><br/>
-        <strong>Contenidos</strong>
+        <strong>Continguts</strong>
         <ol>
-            <li>Normativa en higiene de alimentos y el manipulador de alimentos.</li>
-            <li>Conceptos básicos.</li>
-            <li>Contaminación alimentaria.</li>
-            <li>Higiene de alimentos.</li>
-            <li>Higiene del instrumental y de las superficies. Intalaciones.</li>
-            <li>El sistemas APPCC y los prerrequisitos (RPHT). </li>
-            <li>La manipuación de alimentos en el sector de comidas preparadas.</li>
-            <li>Alérgenos en la restauración colectiva.</li>
+            <li>Normativa en higiene i manipulació d'aliments.</li> 
+			<li>Conceptes bàsics.</li>
+            <li>Contaminació alimentària.</li>
+            <li>Higiene d'aliments.</li>
+            <li>Higiene de l'instrumental i de les superfícies. Instal·lacions.</li>
+            <li>El sistema APPCC i els prerequisits (RPHT). </li>
+            <li>La manipuació d'aliments en el sector dels menjars preparats.</li>
+            <li>Al·lèrgens en la restauració col·lectiva.</li>
         </ol>
         <br/><br/><br/><br/><br/>
     </div>

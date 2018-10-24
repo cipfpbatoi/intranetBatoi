@@ -256,7 +256,8 @@ return array(
                 'Respro' => 'Projecte',
                 'Resempresa' => 'Inserció',
                 'Nfcts' => 'Fcts',
-                'TutoresFct' => 'Altres tutors'
+                'TutoresFct' => 'Altres tutors',
+                'Lalumnes' => 'Alumnes'
                 
              ),
         'empty_option' => array(

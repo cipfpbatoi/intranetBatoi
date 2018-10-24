@@ -15,7 +15,7 @@ class CreateInstructorFctsTable extends Migration {
 		Schema::create('instructor_fcts', function(Blueprint $table)
 		{
 			$table->integer('idFct')->unsigned();
-			$table->string('idInstructor', 100)->index('instructor_fcts_idinstructor_foreign');
+			$table->string('idInstructor', 10)->index('instructor_fcts_idinstructor_foreign');
 			$table->smallInteger('horas')->nullable();
 			$table->primary(['idFct','idInstructor']);
 		});

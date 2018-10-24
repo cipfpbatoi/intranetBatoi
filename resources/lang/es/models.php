@@ -397,6 +397,7 @@ return array(
             'Instructor' => 'Instructor',
             'Proyecto' => 'Proyecto',
             'Evaluacion' => 'Avaluación',
+            'Colaborador' => 'Col.laborador'
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

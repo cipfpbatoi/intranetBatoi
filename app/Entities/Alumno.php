@@ -78,9 +78,17 @@ class Alumno extends Authenticatable
     {
         return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'idAlumno', 'idGrupo');
     }
-    public function Fct()
+//    public function Fct()
+//    {
+//        return $this->belongsTo(Fct::class,'nia','idAlumno');
+//    }
+    public function Fcts()
     {
-        return $this->belongsTo(Fct::class,'nia','idAlumno');
+        return $this->belongsToMany(Fct::class,'alumno_fcts', 'idAlumno', 'idFct','nia','id')->withPivot(['calificacion','calProyecto','actas','insercion']);
+    }
+    public function AlumnoFct()
+    {
+        return $this->belongsToMany(AlumnoFct::class, 'alumno_fcts', 'nia', 'idAlumno');
     }
     
     public function Provincia()
@@ -117,21 +125,20 @@ class Alumno extends Authenticatable
         
     }
 
-//    public function nombre()
-//    {
-//        return $this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2;
-//    }
-//
-//    public function nombreCorto()
-//    {
-//        return $this->nombre . ' ' . $this->apellido1;
-//    }
     public function getDepartamentoAttribute(){
         return $this->Grupo->count()?$this->Grupo->first()->Ciclo->departamento:'99';
     }
     
     public function getTutorAttribute(){
-        return $this->Grupo->count()?$this->Grupo->first()->Tutor:'';
+        switch ($this->Grupo->count()){
+            case 0: return [];
+            default:
+                foreach ($this->Grupo as $grupo){
+                    $tutor[] = $grupo->Tutor;
+                }
+                return $tutor;
+        }
+        //return $this->Grupo->count()?$this->Grupo->first()->Tutor:[];
     }
     public function getIdiomaOptions()
     {
@@ -152,6 +159,14 @@ class Alumno extends Authenticatable
     public function getIdGrupoAttribute()
     {
         return $this->Grupo->first()->codigo;
+    }
+    public function getHorasFctAttribute()
+    {
+        $horas = 0;
+        foreach ($this->Fcts as $fct){
+            $horas += $fct->horas;
+        }
+        return $horas;
     }
 
 }

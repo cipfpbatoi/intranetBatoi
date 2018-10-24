@@ -5,11 +5,13 @@
                 <h4 class="text-info">
                     <a href='/fct/{{$fct->id}}/show'>{{$fct->Colaboracion->Centro->nombre}}</a>
                 </h4>
+                <h4 class="text-info">
+                    {{$fct->Instructor->nombre}}({{$fct->Instructor->email}})
+                </h4>
                 
             </div>
             <div class="message_wrapper">
-                    <h4 class="text-info"><i class="fa fa-calendar-times-o user-profile-icon"></i>{{$fct->desde}} - {{$fct->hasta}}</h4>
-                    <h4 class="text-info">{{$fct->horas}} @lang("messages.generic.horas")</h4>
+                    <h4 class="text-info"><i class="fa fa-calendar-times-o user-profile-icon"></i>{{$fct->desde}} - {{$fct->horas}} @lang("messages.generic.horas")</h4>
             </div>
         </li>    
 @endforeach

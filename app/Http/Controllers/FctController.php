@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Intranet\Entities\Fct;
+use Intranet\Entities\FctConvalidacion;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
@@ -25,7 +27,7 @@ class FctController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Fct';
-    protected $gridFields = [ 'Nombre','Tipus','periode','Centro','desde', 'hasta', 'qualificacio', 'projecte','horas','fin'];
+    protected $gridFields = ['Centro','periode','desde', 'horas','nalumnes','Lalumnes','XInstructor'];
     protected $grupo;
     protected $vista = ['show' => 'fct'];
     
@@ -34,24 +36,12 @@ class FctController extends IntranetController
 
     use traitImprimir;
 
-    public function index(){
-        Session::forget('pestana');
-        return parent::index();
-    }
-    
-    public function all(){
-        Session::forget('vencidos');
-        return back();
-    }
-    public function only(){
-        Session::put('vencidos',1);
-        return back();
-    }
+   
     
     public function edit($id)
     {
         $elemento = Fct::findOrFail($id);
-        $elemento->setInputType('idAlumno', ['disabled' => 'disabled']);
+        $elemento->setInputType('idAlumno', ['type' => 'hidden','disableAll' => 'disableAll']);
         $elemento->setInputType('idColaboracion', ['disabled' => 'disabled']);
         $default = $elemento->fillDefautOptions();
         $modelo = $this->model;
@@ -59,45 +49,29 @@ class FctController extends IntranetController
         return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
     }
     
-   
-    public function pass()
+    public function convalidacion()
     {
-        $elemento = new Fct();
-        $elemento->asociacion = 2;
-        $elemento->horas = 0;
-        $elemento->desde = Hoy();
-        $elemento->hasta = Hoy();
-        $elemento->horas_semanales = 1;
-        $elemento->calificacion = 2;
-        $elemento->correoAlumno = 1;
-        $elemento->correoInstructor = 1;
-        //crea un nou element del model
-        $elemento->setInputType('idColaboracion',['disableAll' => 'on']);
-        $elemento->setInputType('hasta',['type' => 'hidden']);
-        $elemento->setInputType('horas',['type' => 'hidden']);
-        $elemento->setInputType('horas_semanales',['type' => 'hidden']);
+        $elemento = new FctConvalidacion();
         $default = $elemento->fillDefautOptions(); // ompli caracteristiques dels camps
         $modelo = $this->model;
         return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
     }
+    
  
     protected function iniBotones()
     {
         //$this->panel->setBotonera();
-        $this->panel->setBoton('grid', new BotonImg('fct.delete',['orWhere'=>['calificacion', '<', '1','asociacion','==',2]]));
+        $this->panel->setBoton('grid', new BotonImg('fct.delete',['where'=>['Nalumnes','==','1']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.convalidacion',['img' => 'fa-edit','where'=>['asociacion','==','2']]));
         $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.pdf',['where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.pdfInstructor',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.email',['orWhere'=>['correoAlumno','==','0','correoInstructor','==','0']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pass", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0301.print",['roles' => config('roles.rol.tutor')]));
-        if (Session::get('vencidos')) 
-            $this->panel->setBoton('index', new BotonBasico("fct.all", ['class' => 'btn-danger','roles' => config('roles.rol.tutor')]));
-        else
-            $this->panel->setBoton('index', new BotonBasico("fct.only", ['class' => 'btn-danger','roles' => config('roles.rol.tutor')]));
-        
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0601.print",['roles' => config('roles.rol.tutor')]));
@@ -112,58 +86,7 @@ class FctController extends IntranetController
 
     public function search()
     {
-        if (Session::get('vencidos')) 
-            return Fct::misFcts()->where('asociacion','<',3)->where('hasta','>=',Hoy())->get();
-        else
-            return Fct::misFcts()->where('asociacion','<',3)->get();
-    }
-    
-    protected function apte($id)
-    {
-        $fct = Fct::findOrFail($id);
-        $fct->calificacion = 1;
-        $fct->save();
-        return back();
-    }
-
-    protected function noApte($id)
-    {
-        $fct = Fct::findOrFail($id);
-        $fct->calificacion = 0;
-        $fct->calProyecto = null;
-        $fct->save();
-        return back();
-    }
-    
-    protected function noProyecto($id)
-    {
-        $fct = Fct::findOrFail($id);
-        $fct->calProyecto = 0;
-        $fct->save();
-        return back();
-    }
-    protected function nuevoProyecto($id)
-    {
-        $fct = Fct::findOrFail($id);
-        $fct->calProyecto = null;
-        $fct->actas = 1;
-        $fct->save();
-        return back();
-    }
-    protected function modificaNota($id){
-        $elemento = Fct::findOrFail($id);
-        $elemento->setInputType('idAlumno', ['type' => 'hidden']);
-        $elemento->setInputType('idColaboracion',['type' => 'hidden']);
-        $elemento->setInputType('desde',['type' => 'hidden']);
-        $elemento->setInputType('hasta',['type' => 'hidden']);
-        $elemento->setInputType('horas',['type' => 'hidden']);
-        $elemento->setInputType('asociacion',['type' => 'hidden']);
-        $elemento->setInputType('horas_semanales',['type' => 'hidden']);
-        $elemento->setInputType('calProyecto', ['type' => 'text']);
-        $default = $elemento->fillDefautOptions();
-        $modelo = $this->model;
-        
-        return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
+        return Fct::misFcts()->esFct()->get();
     }
     
     
@@ -203,9 +126,8 @@ class FctController extends IntranetController
 
     public function document($document)
     {
-        //dd(FCT::misFcts()->Activa(config("pr.$document.cuando")));
         if (FCT::misFcts()->Activa(config("pr.$document.cuando"))->count()){
-            return $this->hazPdf("pdf.fct.$document", FCT::misFcts()->Activa(config("pr.$document.cuando"))->get(),
+            return $this->hazPdf("pdf.fct.$document", AlumnoFct::misFcts(null,"pr.$document.cuando")->get(),
                     config("pr.$document"), config("pr.$document.orientacion"))->stream();
         }
         else{
@@ -219,7 +141,7 @@ class FctController extends IntranetController
         $fct = Fct::findOrFail($id);
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));
-        $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
+        $dades = ['date' => FechaString(Hoy()),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
             'centro' => config('contacto.nombre'),
@@ -230,6 +152,35 @@ class FctController extends IntranetController
         
         $pdf = $this->hazPdf('pdf.fct.alumne', $fct, $dades);
         return $pdf->stream();
+    }
+    
+    public function pdfInstructor($id)
+    {
+        $fct = Fct::findOrFail($id);
+        $instructor = $fct->Instructor;
+        if ($instructor->surnames != ''){
+            $fecha = Hoy();
+            $secretario = Profesor::find(config('contacto.secretario'));
+            $director = Profesor::find(config('contacto.director'));
+            $dades = ['date' => FechaString($fecha,'ca'),
+                'fecha' => FechaString($fecha,'es'),
+                'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
+                'secretario' => $secretario->FullName,
+                'centro' => config('contacto.nombre'),
+                'poblacion' => config('contacto.poblacion'),
+                'provincia' => config('contacto.provincia'),
+                'director' => $director->FullName,
+                'instructor' => $instructor
+            ];
+            $pdf = $this->hazPdf('pdf.fct.instructors', $fct, $dades);
+            return $pdf->stream();
+        }
+        else
+        {
+            Alert::danger("Completa les dades de l'instructor");
+            return back();   
+        }
+        
     }
     public function anexevii($id)
     {
@@ -296,43 +247,43 @@ class FctController extends IntranetController
     {
         parent::update($request, $id);
         
-        if (Session::get('pestana')){
-            Session::put('pestana',3);
-            return redirect()->action('EmpresaController@show', ['id' => Colaboracion::find($request->idColaboracion)->Centro->idEmpresa]);
-        }
-        else return $this->redirect();
+        return $this->redirect();
     }
 
+   
+    
     public function store(Request $request)
     {
         $idFct = DB::transaction(function() use ($request){
+            $idAlumno = $request['idAlumno'];
+            $elemento = Fct::where('idColaboracion',$request->idColaboracion)
+                    ->where('asociacion',$request->asociacion)
+                    ->where('idInstructor',$request->idInstructor)
+                    ->where('desde', FechaInglesa($request->desde))->get()->first();
+            if (!$elemento){
+                $elemento = new Fct();
+                $this->validateAll($request, $elemento);
+                unset($request['idAlumno']);
+                $id = $elemento->fillAll($request);
+            } else $id = $elemento->id;
             //dd(Colaboracion::find($request->idColaboracion)->Centro->Instructores->count());
-            $idFct = parent::realStore($request);
+            if ($elemento->asociacion == 2)
+                $elemento->Alumnos()->attach($idAlumno,['calificacion' => 2]);
+            else
+                $elemento->Alumnos()->attach($idAlumno);
             
-            if (isset($request->idColaboracion) && Colaboracion::find($request->idColaboracion)->Centro->Instructores->count() == 1){
-                $idInstructor = Colaboracion::find($request->idColaboracion)->Centro->Instructores->first()->dni;
-                $fct = Fct::find($idFct);
-                $fct->Instructores()->attach($idInstructor,['horas'=>$fct->horas]);
-            }
-            return $idFct;
+            return $id;
         });
-        if (isset($request->idColaboracion))
-            if (Session::get('pestana')){
-                Session::put('pestana',3);
-                return redirect()->action('EmpresaController@show', ['id' => Colaboracion::find($request->idColaboracion)->Centro->idEmpresa]);
-            }
-            else return redirect()->action('FctController@show', ['id' => $idFct ]);
-        else
-            return $this->redirect();
+        
+        return $this->redirect();
     }
     
     public function show($id)
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 1;
         $fct = Fct::findOrFail($id);
-        $proyecto = Documento::where('propietario',$fct->Alumno->FullName)->first();
-        $instructores = $fct->Instructores->pluck('dni');
-        return view($this->chooseView('show'), compact('fct', 'activa','proyecto','instructores'));
+        $instructores = $fct->Colaboradores->pluck('dni');
+        return view($this->chooseView('show'), compact('fct', 'activa','instructores'));
     }
 
 
@@ -346,20 +297,29 @@ class FctController extends IntranetController
         }
         else return parent::destroy($id);
     }
+    
+    public function nouAlumno($idFct,Request $request){
+        
+        $fct = Fct::find($idFct);
+        $fct->Alumnos()->attach($request->idAlumno,['calificacion'=>0,'calProyecto'=>0,'actas'=>0,'insercion'=>0]);
+        
+        return back();
+    }
+    
     public function nouInstructor($idFct,Request $request){
        $fct = Fct::find($idFct);
-       $fct->Instructores()->attach($request->idInstructor,['horas'=>$request->horas]); 
+       $fct->Colaboradores()->attach($request->idInstructor,['horas'=>$request->horas]); 
        return back();
     }
     public function deleteInstructor($idFct,$idInstructor){
        $fct = Fct::find($idFct);
-       $fct->Instructores()->detach($idInstructor); 
+       $fct->Colaboradores()->detach($idInstructor); 
        return back();
     }
     public function modificaHoras($idFct,Request $request){
         $fct = Fct::find($idFct);
         foreach ($request->except('_token') as $dni => $horas){
-            $fct->Instructores()->updateExistingPivot($dni, ['horas'=>$horas]);
+            $fct->Colaboradores()->updateExistingPivot($dni, ['horas'=>$horas]);
         }
         return back();
     }

@@ -3,47 +3,46 @@
     <br/><br/><br/><br/>
     <div class="container col-lg-12" style="width:90%;clear:right;text-align: justify;font-size: 1.2em">
         <br/><br/><br/><br/><br/><br/>
-        <strong>CONTENIDOS</strong>
+        <strong>CONTINGUTS</strong>
         <ol>
-            <li>LA PREVENCIÓN DE RIESGOS: CONCEPTOS BÁSICOS
+            <li>LA PREVENCIÓ DE RISCOS: CONCEPTES BÀSICS.
                 <ol>
-                    <li>CONCEPTO DE SALUD.</li>
-                    <li>FACTORES DE RIESGO LABORAL.</li>
-                    <li>DAÑOS A LA SALUD DEL TRABAJADOR.</li>
-                    <li>MEDIDAS DE PREVENCIÓN Y PROTECCION DE RIESGOS LABORALES.</li>
+                    <li>CONCEPTE DE SALUT.</li>
+                    <li>FACTORS DE RISC LABORAL.</li>
+                    <li>DANYS A LA SALUT DEL TREBALLADOR.</li>
+                    <li>MESURES DE PREVENCIÓ I PROTECCIÓ DE RISCOS LABORALS.</li>
                 </ol>
             </li>
             <li>
-                LA PREVENCIÓN DE RIESGOS: LEGISLACIÓN Y ORGANIZACIÓN
+                LA PREVENCIÓ DE RISCOS: LEGISLACIÓ I ORGANITZACIÓ.
                 <ol>
-                    <li>LA LEGISLACIÓN SOBRE PREVENCIÓN DE RIESGOS LABORALES.</li>
-                    <li>LA ORGANIZACIÓN DE LA PREVENCIÓN EN LA EMPRESA</li>
-                    <li>PARTICIPACIÓN DE LOS TRABAJADORES EN LA PREVENCIÓN DE RIESGOS.</li>
-                    <li>LA GESTIÓN DE LA PREVENCIÓN EN LA EMPRESA</li>
+                    <li>LA LEGISLACIÓ SOBRE PREVENCIÓ DE RISCOS LABORALS.</li>
+                    <li>L'ORGANITZACIÓ DE LA PREVENCIÓ A L'EMPRESA.</li>
+                    <li>PARTICIPACIÓ DELS TREBALLADORS EN LA PREVENCIÓ DE RISCOS.</li>
+                    <li>LA GESTIÓ DE LA PREVENCIÓ A L'EMPRESA.</li>
                 </ol>
             </li>
             <li>
-                FACTORES DE RIESGO Y SU PREVENCIÓN. LOS FACTORES DE RIESGO LABORAL.
+                FACTORS DE RISC I LA SEUA PREVENCIÓ. ELS FACTORS DE RISC LABORAL.
                 <ol>
-                    <li>FACTORES DE RIESGO DERIVADOS DE LAS CONDICIONES DE SEGURIDAD.</li>
-                    <li>FACTORES DE RIESGO DERIVADOS DE LAS CONDICIONES MEDIOAMBIENTALES</li>
-                    <li>FACTORES DE RIESGO DERIVADOS DE LA CARGA DE TRABAJO</li>
-                    <li>FACTORES DE RIESGO DERIVADOS DE LA ORGANIZACIÓN DE TRABAJO</li>
+                    <li>FACTORS DE RISC DERIVATS DE LES CONDICIONS DE SEGURETAT.</li>
+                    <li>FACTORS DE RISC DERIVATS DE LES CONDICIONS MEDIAMBIENTALS.</li>
+                    <li>FACTORS DE RISC DERIVATS DE LA CÀRREGA DE TREBALL.</li>
+                    <li>FACTORS DE RISC DERIVATS DE L'ORGANITZACIÓ DE TREBALL.</li>
                 </ol>
             </li>
             <li>
-                EMERGENCIAS Y PRIMEROS AUXILIOS.
+                EMERGÈNCIES I PRIMERS AUXILIS.
                 <ol>
-                    <li>EL PLAN DE AUTOPRTECCIÓN</li>
-                    <li>PRIMEROS AUXILIOS</li>
-                    <li>SOPORTE VITAL BÁSICO</li>
-                    <li>ACTUACIÓN FRENTE A OTRAS EMERGENCIAS</li>
-                    <li>TRASLADO DE ACCIDENTADOS</li>
-                    <li>BOTIQUÍN DE PRIMEROS AUXILIOS</li>
+                    <li>EL PLA D'AUTOPROTECCIÓ.</li>
+                    <li>PRIMERS AUXILIS.</li>
+                    <li>SUPORT VITAL BÀSIC.</li>
+                    <li>ACTUACIÓ FRONT A ALTRES EMERGÈNCIES.</li>
+                    <li>TRASLLAT D'ACCIDENTATS.</li>
+                    <li>FARMACIOLA DE PRIMERS AUXILIS.</li>
                 </ol>
             </li>
         </ol>
         <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
     </div>
 </div>
-

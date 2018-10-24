@@ -44,6 +44,7 @@ class EventServiceProvider extends ServiceProvider
         'Intranet\Events\EmailSended' => [
             'Intranet\Listeners\MarkSended',
         ],
+        
     ];
 
     /**

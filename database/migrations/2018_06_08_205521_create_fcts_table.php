@@ -22,11 +22,11 @@ class CreateFctsTable extends Migration {
 			$table->date('hasta')->nullable();
 			$table->smallInteger('horas');
 			$table->smallInteger('horas_semanales')->default(40);
-			$table->boolean('calificacion')->nullable();
+			$table->boolean('correoInstructor')->default(0);
+	                $table->boolean('calificacion')->nullable();
 			$table->boolean('calProyecto')->nullable();
 			$table->boolean('actas')->default(0);
 			$table->boolean('correoAlumno')->default(0);
-			$table->boolean('correoInstructor')->default(0);
 			$table->boolean('insercion')->default(0);
 		});
 	}

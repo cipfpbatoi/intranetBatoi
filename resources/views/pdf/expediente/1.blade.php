@@ -12,23 +12,23 @@
         </div>
         <div class="container" style="width:95%;clear:right;text-align: justify">
             <br/><br/><br/>
-            <p style="text-indent: 30px">Por la presente le comunico que dado el número de faltas de asistencia acumuladas desde el inicio de curso se procederá
-                a su matrícula de {{Curso()}} del {{\Intranet\Entities\Alumno_grupo::where('idAlumno',$elemento->idAlumno)->first()->Grupo->Ciclo->ciclo}}, 
-                siguiendo las instrucciones de la Resolución del 29 de junio de 2018, de la Secretaria Autonómica de Educación e Investigación, 
-                por la que se dictan instrucciones sobre ordenación académica y de organización de la actividad docente de los centros de la Comunitat Valenciana 
-                que durante el curso {{Curso()}} impartan ciclos formativos de Formación Profesional.</p>
-            <p tyle="text-indent: 30px">El interesado/a dispone de dos días hábiles, desde la recepción de este documento, 
-                para presentar la documentación que justifique debidamente la causa de las ausencias.</p>
-            <p tyle="text-indent: 30px">Contra esta resolución, el interesado puede presentar recurso de alzada en el plazo de un mes desde su notificación
-                ante la Dirección Territorial de Educación de Alicante.</p>
+            <p style="text-indent: 30px">Per la present li comunique que donat el nombre de faltes d'assistència acumulades des de l'inici del curs es procedirà
+                a la seua matrícula de {{Curso()}} del {{\Intranet\Entities\Alumno_grupo::where('idAlumno',$elemento->idAlumno)->first()->Grupo->Ciclo->ciclo}}, 
+                seguint les instruccions de la Resolució del 19 de Juliol de 2017, de la Secretaria Autonòmica d'Educació i Investigació,
+				per la que es dicten les instruccions sobre ordenació acadèmica i d'organització de l'activitat docent dels centres de la Comunitat Valenciana
+				que durant el curs 2017-2018 impartisquen cicles formatius de Formació Profesional.</p>
+            <p tyle="text-indent: 30px">L'interessat/da disposa de dos dies hàbils, des de la recepció d'aquest document,
+                per a presentar la documentació que justifique degudament la causa de les absències.</p>
+            <p tyle="text-indent: 30px">Davant aquesta resolució, l'interessat pot presentar recurs d'alçada en el termini d'un mes des de la seua notificació
+                davant la Direcció Territorial d'Educació d'Alacant.</p>
         </div>
         <div class="container" style="width:90%;">
             <br/><br/>
             <br/><br/><br/>
-            <p>{{config('contacto.poblacion')}},a {{$datosInforme}} </p>
+            <p>{{config('constants.contacto.poblacion')}},a {{$datosInforme}} </p>
             <br/><br/><br/><br/><br/>
             <div style="width:45%; float:left; ">
-                <p><strong>{{\Intranet\Entities\Profesor::find(config('contacto.director'))->FullName}}</strong></p>
+                <p><strong>{{\Intranet\Entities\Profesor::find(config('constants.contacto.director'))->FullName}}</strong></p>
                 <br/><br/><br/>
                 <p>DIRECTOR</p>
             </div>

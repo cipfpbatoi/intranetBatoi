@@ -10,20 +10,18 @@ class Dual extends Fct
     
     protected $table = 'fcts';
     
-    protected $fillable = ['idAlumno', 'idColaboracion', 'desde','hasta'
-        ,'horas','asociacion','horas_semanales'];
+    protected $fillable = ['idAlumno', 'idColaboracion', 'desde'
+        ,'horas','asociacion'];
     protected $inputTypes = [
         'idAlumno' => ['type' => 'select'],
         'idColaboracion' => ['type' => 'select'],
         'asociacion' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
-        'hasta' => ['type' => 'date'],
     ];
     
     public function __construct()
     {
         $this->asociacion = 3;
-        $this->horas_semanales = 20;
         $this->horas = 600;
     }
     

@@ -6,6 +6,12 @@ function Fecha($fecha)
     return $hoy->toDateString();
 }
 
+function FechaInglesa($fecha)
+{
+    $hoy = new Date($fecha);
+    return $hoy->format('Y-m-d');    
+}
+
 function FechaString($fecha = null,$idioma=null)
 {
     $fc1 = ($fecha==null)?new Jenssegers\Date\Date():(is_string($fecha))?New Jenssegers\Date\Date($fecha):$fecha;

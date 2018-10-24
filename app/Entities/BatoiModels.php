@@ -161,6 +161,11 @@ trait BatoiModels
                     $parametres['template'] = 'themes/bootstrap/fields/'.$InputType[$property]['type'];
                     $InputType[$property]['type']='text';
                     break;
+                case 'multiple' :
+                    $InputType[$property]['type']='select';
+                    $parametres[] = 'multiple';
+                    break;
+                    
             }
             $ph = !strpos(trans('validation.attributes.' . $property), 'alidation.') ? trans('validation.attributes.' . $property) : ucwords($property);
             

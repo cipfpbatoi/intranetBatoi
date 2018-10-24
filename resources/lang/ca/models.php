@@ -406,6 +406,7 @@ return array(
             'Instructor' => 'Instructor',
             'Proyecto' => 'Projecte',
             'Evaluacion' => 'Avaluació',
+            'Colaborador' => 'Col.laborador'
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

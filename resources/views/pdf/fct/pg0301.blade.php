@@ -1,36 +1,36 @@
 @extends('layouts.pdf')
 @section('content')
 @php
-$agrupados = $todos->groupBy('idColaboracion')
+   $agrupados = $todos->groupBy('idFct')
 @endphp
+<body style="max-width:27.59cm;margin-top:1.251cm; margin-bottom:1.251cm; margin-left:1cm; margin-right:1cm; ">
     @include('pdf.fct.partials.cabecera')
     <br/>
     <table border="1" cellspacing="0" cellpadding="">
         <colgroup><col width="449"/><col width="329"/></colgroup>
         <tr>
-            <td style="text-align:left;width:13.283cm; "><strong>Revisión actual:</strong><span> 8</span></td>
-            <td style="text-align:left;width:10.523cm; "><strong>Fecha revisión actual:</strong><span> 4-10-2017</span></td>
+            <td style="text-align:left;width:13.283cm; "><strong>Revisió actual:</strong><span> 8</span></td>
+            <td style="text-align:left;width:10.523cm; "><strong>Data revisió actual:</strong><span> 4-10-2017</span></td>
         </tr>
     </table>
     <br/>
     <table border="1" >
         <colgroup><col width="400"/><col width="40"/><col width="40"/><col width="40"/><col width="40"/><col width="100"/><col width="150"/><col width="150"/></colgroup>
         <tr>
-            <td colspan='8' style="text-align:left;font-weight: bold;font-size: 1.1em">Tutor y ciclo: {{$todos->first()->Alumno->Grupo->first()->Tutor->FullName}} - {{$todos->first()->Alumno->Grupo->first()->Ciclo->ciclo}}</td>
+            <td colspan='8' style="text-align:left;font-weight: bold;font-size: 1.1em">Tutor i cicle: {{AuthUser()->FullName}} - {{$todos->first()->Fct->Colaboracion->Ciclo->ciclo}}</td>
         </tr>
         <tr >
-            <td style="text-align:left;font-weight: bold;font-size: 0.8em ">EMPRESA Y NUMERO DE ALUMNOS</td>
+            <td style="text-align:left;font-weight: bold;font-size: 0.8em ">EMPRESA I NOMBRE D'ALUMNES</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em">I</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">II</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em">III</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">IV</td>
-            <td style="text-align:center;font-weight: bold;font-size: 0.8em ">FECHA</td>
-            <td style="text-align:center;font-weight: bold;font-size: 0.8em">FIRMA TUTOR</td>
-            <td style="text-align:center;font-weight: bold;font-size: 0.8em ">FIRMA JEFE PRACTICAS</td>
+            <td style="text-align:center;font-weight: bold;font-size: 0.8em ">DATA</td>
+            <td style="text-align:center;font-weight: bold;font-size: 0.8em">SIGNATURA TUTOR</td>
+            <td style="text-align:center;font-weight: bold;font-size: 0.8em ">SIGNATURA CAP PRÀCTIQUES</td>
         </tr>
-        @foreach ($agrupados as $index => $aluempresa)
-        <tr style="height: 50px"><td style="text-align:left;font-size: 0.9em " >{{ $aluempresa->first()->Colaboracion->Centro->nombre }} 
-                ({{count($aluempresa)}})</td>
+        @foreach ($agrupados as $Alfct)
+        <tr style="height: 50px"><td style="text-align:left;font-size: 0.9em " >{{ $Alfct->first()->Fct->Colaboracion->Centro->nombre }} ({{ $Alfct->first()->Fct->quants }})</td>
             <td></td>
             <td></td>
             <td></td>
@@ -42,19 +42,21 @@ $agrupados = $todos->groupBy('idColaboracion')
         @endforeach
         <tr><td colspan="8" style="text-align:left;font-size: 12px;" >
                 <br/><br/>
-                <p>1.- Se entregará al jefe/a de departamento de prácticas la siguiente documentación:<br/>
-                <ul><li>1 original del C. Educativo, Anexo I ( si es colaboradora por primera vez). </li>
-                    <li>3 original del Anexo II. </li>
-                    <li>2 original del Anexo III </li>
-                    <li>1 original del Anexo VII </li>
-                    <li>1 original permiso realización FCT en periodo de  Vacaciones de Navidad (si procede) </li>
-                    <li>1 original permiso realización FCT en periodo de Vacaciones de Pascua (si procede) </li>
-                    <li>Anexo Declaración responsable  de la empresa de que el personal cuenta con acreditación negativa del  registro central de delincuentes sexuales (si van alumnos menores)</li>
+                <p>1.- Es lliurarà al/a la cap de departament de pràctiques la següent documentació:<br/>
+                <ul><li>1 original del C. Educatiu, Annex I (si és col·laboradora per primera vegada). </li>
+                    <li>1 original de l'Annex II (Centre Educatiu). </li>
+                    <li>1 original de l'Annex III (Centre Educatiu). </li>
+                    <li>1 original de l'Annex VII (Si escau). </li>
+                    <li>1 original permís de realització d'FCT en període de vacances de Nadal (si escau) </li>
+                    <li>1 original permís de realització d'FCT en període de vacances de Pasqües (si escau) </li>
+                    <li>Annex Declaració responsable de l'empresa de que el personal compta amb acreditació negativa del registre central de delinqüents sexuals (si van alumnes menors d'edat)</li>
                 </ul>
                 </p>
-                <p style="text-align:left;font-weight: bold">IMPORTANTE: El plazo máximo de entrega de la documentación al Departamento de FCT,  será MÁXIMO 10 DIAS HÁBILES antes de que el alumno inicie las prácticas de FCT.</p>
+                <p style="text-align:left;font-weight: bold">IMPORTANT: El termini màxim de lliurament de la documentació(també s'haurà d'ajuntar al SAO) al Departament d'FCT serà d'un MÀXIM DE 10 DIES HÀBILS abans que l'alumne inicie les pràctiques d'FCT.</p>
 
             </td>
         </tr>
     </table>
+</body>
+</html>
 @endsection

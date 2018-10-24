@@ -1,7 +1,9 @@
 <?php
+
 /* clase : IntranetController
  * És la classe pare de tots els controladors amb el mètodes comuns a ells
  */
+
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Controller;
@@ -20,32 +22,41 @@ use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Menu;
 use Intranet\Jobs\SendEmail;
+use Intranet\Entities\Fct;
+use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\FctColaborador;
 
-class AdministracionController extends Controller{
-    
-    
-    public function simplifica(){
-        if (Session::get('completa')) Session::forget('completa');
-        else Session::put('completa',1);    
+class AdministracionController extends Controller
+{
+
+    public function simplifica()
+    {
+        if (Session::get('completa'))
+            Session::forget('completa');
+        else
+            Session::put('completa', 1);
         return back();
     }
-    
+
     public function lang($lang)
     {
         Session::put('lang', $lang);
         return back();
     }
-    
-    protected function deleteProgramacionIndex(){
-        $cuantas = Programacion::where('estado',3)->where('curso','!=',Curso())->count();
-        return view('programacion.deleteOld',compact('cuantas'));
+
+    protected function deleteProgramacionIndex()
+    {
+        $cuantas = Programacion::where('estado', 3)->where('curso', '!=', Curso())->count();
+        return view('programacion.deleteOld', compact('cuantas'));
     }
-    protected function deleteProgramacion(){
-        Programacion::where('estado',4)->delete();
-        Programacion::where('curso','!=',Curso())->update(['estado' => 4]);
+
+    protected function deleteProgramacion()
+    {
+        Programacion::where('estado', 4)->delete();
+        Programacion::where('curso', '!=', Curso())->update(['estado' => 4]);
         return back();
     }
-    
+
     public function allApiToken()
     {
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
@@ -55,48 +66,86 @@ class AdministracionController extends Controller{
         Alert::info('Correus enviats');
         return back();
     }
-    
-    protected function nuevoCursoIndex(){
+
+    protected function nuevoCursoIndex()
+    {
         return view('nuevo.curso');
     }
-    protected function nuevoCurso(){
+
+    protected function nuevoCurso()
+    {
         //$this->checkForeignKeys(false);
-        $tables = ['actividades','comisiones','cursos','expedientes','faltas','faltas_itaca','faltas_profesores',
-            'fcts','grupos_trabajo','guardias','horarios','incidencias','notifications','ordenes_trabajo','reservas',
-            'resultados','reuniones','tutorias_grupos','modulo_grupos','activities'];
+        $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
+            'fcts', 'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
+            'resultados', 'reuniones', 'tutorias_grupos', 'modulo_grupos', 'activities'];
         foreach ($tables as $tabla) {
-                DB::table($tabla)->delete();
-        } 
-        
+            DB::table($tabla)->delete();
+        }
+
         //$this->checkForeignKeys(true);
         return back();
     }
-    
-    public function help($fichero,$enlace){
-        return view('intranet.readme',['elemento' => mdFind($fichero,$enlace)]);        
+
+    public function help($fichero, $enlace)
+    {
+        return view('intranet.readme', ['elemento' => mdFind($fichero, $enlace)]);
     }
-    
-    
-    public static function exe_actualizacion($version_antigua){
-        foreach (config('constants.version') as $version){
-            if ($version > $version_antigua){
+
+    public static function exe_actualizacion($version_antigua)
+    {
+        foreach (config('constants.version') as $version) {
+            if ($version > $version_antigua) {
                 AdministracionController::$version();
             }
         }
     }
+
     public static function v1_0()
     {
         Alert::info('Version 1.0');
     }
+
     public static function v1_1()
     {
         Alert::info('Version 1.1');
     }
+
     public static function v1_2()
     {
         Alert::info('Version 1.2');
     }
-    
- 
-}
 
+    public static function v1_3()
+    {
+        foreach (Fct::all() as $fct) {
+            $existe = FCT::find($fct->id);
+            if ($existe) {
+                if ($existe->Colaboradores->first()){
+                    $existe->idInstructor = $existe->Colaboradores->first()->dni;
+                    $existe->save();
+                }
+                $alFct = new AlumnoFct();
+                $alFct->idFct = $fct->id;
+                $alFct->idAlumno = $fct->idAlumno;
+                $alFct->save();
+                
+                $mateixaFct = FCT::where('idColaboracion', $fct->idColaboracion)
+                        ->where('idAlumno', '<>', $fct->idAlumno)
+                        ->where('asociacion', $fct->asociacion)
+                        ->where('desde', FechaInglesa($fct->desde))
+                        ->where('horas', $fct->horas)
+                        ->get();
+                foreach ($mateixaFct as $mateixa) {
+                        $alFct = new AlumnoFct();
+                        $alFct->idFct = $fct->id;
+                        $alFct->idAlumno = $mateixa->idAlumno;
+                        $alFct->save();
+                        $mateixa->delete();
+                }
+            }
+        }
+        FctColaborador::truncate();
+        
+    }
+
+}

@@ -21,7 +21,9 @@
             @foreach ($panel->getElementos($pestana) as $elemento)
             <tr class="lineaGrupo" id='{{$elemento->getkey()}}'>
                 @foreach ($pestana->getRejilla() as $item)
-                <td><span class='input' name='{{ $item }}'>@if (isset($elemento->leido)&&!($elemento->leido))<strong> {{ substr($elemento->$item,0,60) }} </strong> @else  {{ mb_substr($elemento->$item,0,80) }} @endif</span></td>
+                    @if (substr($item,0,1) == 'L') @php $long = 200; @endphp
+                    @else @php $long = 80; @endphp @endif    
+                <td><span class='input' name='{{ $item }}'>@if (isset($elemento->leido)&&!($elemento->leido))<strong> {{ substr($elemento->$item,0,$long) }} </strong> @else  {{ mb_substr($elemento->$item,0,$long) }} @endif</span></td>
                 @endforeach
                 @if ($panel->countBotones('grid'))
                 <td><span class="botones">@include('intranet.partials.buttons',['tipo' => 'grid'])</span></td>

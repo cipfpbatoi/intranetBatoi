@@ -263,7 +263,7 @@ function valorReal($elemento, $string)
         return $elemento->$string;
 }
 
-function hazArray($elementos, $campo1, $campo2)
+function hazArray($elementos, $campo1, $campo2,$separador=' ')
 {
     $todos = [];
     foreach ($elementos as $elemento) {
@@ -272,7 +272,7 @@ function hazArray($elementos, $campo1, $campo2)
         } else {
             $val = '';
             foreach ($campo1 as $sub) {
-                $val .= valorReal($elemento, $sub) . " ";
+                $val .= valorReal($elemento, $sub) . $separador;
             }
         }
         if (is_string($campo2)) {
@@ -280,7 +280,7 @@ function hazArray($elementos, $campo1, $campo2)
         } else {
             $res = '';
             foreach ($campo2 as $sub) {
-                $res .= valorReal($elemento, $sub) . " ";
+                $res .= valorReal($elemento, $sub) . $separador;
             }
         }
         $todos[$val] = $res;

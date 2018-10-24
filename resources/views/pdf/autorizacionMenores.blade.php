@@ -4,7 +4,7 @@
     <div class='page'>
         @include('pdf.partials.cabecera')
         <div class="container col-lg-12" >
-            <p><strong>Asistencia a actividad extraescolar. Asistència a activitat extraescolar.</strong></p>
+            <p><strong>Asistencia a actividad extraescolar. Asistència a activitat extraescolar. Grup {!! $elemento->Grupo->first()->nombre !!} </strong></p>
             <p>D/Dña __________________________________________________________ padre/madre o tutor/a de             
             {!! $elemento->nombre !!} {!! $elemento->apellido1 !!} {!! $elemento->apellido2 !!} con dni 
             {!! $elemento->dni !!} autorizo a que asista a la siguiente actividad extraescolar: </p>

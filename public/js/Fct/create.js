@@ -15,7 +15,7 @@ $(function () {
                 $el.empty(); // remove old options
                 $.each(newOptions, function (key, value) {
                     $el.append($("<option></option>")
-                        .attr("value", value.dni).text(value.nombre));
+                        .attr("value", value.dni).text(value.name+' '+value.surnames));
                 });
             }, function (result) {
                 console.log("La solicitud no se ha podido completar.");
