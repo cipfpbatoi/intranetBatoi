@@ -20,7 +20,7 @@
                 <p style="text-indent: 30px;text-align: justify">Que segons consta en el seu expedient, @if ($alumnoFct->Alumno->sexo === 'H') l'alumne @else l'alumna @endif <strong>{{$alumnoFct->Alumno->FullName}} </strong> 
                     amb DNI núm. {{$alumnoFct->Alumno->dni}}, ha realitzat la Formació en Centres de Treball (FCT) del <strong>{{$todos->Colaboracion->Ciclo->Xtipo}}
                         {{$todos->Colaboracion->Ciclo->vliteral}} </strong> en l'empresa {{$todos->Colaboracion->Centro->nombre}}, ubicada a {{$todos->Colaboracion->Centro->direccion}} de/d'
-                    {{$todos->Colaboracion->Centro->localidad}}, amb una duració total de {{$todos->horas}} hores, fetes
+                    {{$todos->Colaboracion->Centro->localidad}}, amb una duració total de {{$alumnoFct->horas}} hores, fetes
                     en el curs lectiu {{Curso()}}  i ha obtingut una qualifació d'APTE.</p>
             </div>
             <hr/>
@@ -28,7 +28,7 @@
                 <p style="text-indent: 30px;text-align: justify">Que según consta en su expediente, @if ($alumnoFct->Alumno->sexo === 'H') el alumno @else la alumna @endif <strong>{{$alumnoFct->Alumno->FullName}} </strong> 
                     con DNI núm. {{$alumnoFct->Alumno->dni}}, ha realizado la Formación en Centros de Trabajo (FCT) del <strong>{{$todos->Colaboracion->Ciclo->Ctipo}}
                         {{$todos->Colaboracion->Ciclo->cliteral}} </strong> en la empresa {{$todos->Colaboracion->Centro->Empresa->nombre}}, ubicada en {{$todos->Colaboracion->Centro->direccion}} de
-                    {{$todos->Colaboracion->Centro->localidad}}, con una duración total de {{$todos->horas}} horas, desempeñadas 
+                    {{$todos->Colaboracion->Centro->localidad}}, con una duración total de {{$alumnoFct->horas}} horas, desempeñadas 
                     en el curso lectivo {{Curso()}}, obteniendo una calificación de APTO.</p>
             </div>
             <div class="container" style="width:90%;">

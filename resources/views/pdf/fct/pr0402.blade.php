@@ -38,7 +38,8 @@
             <td>1</td><td>2</td><td>3</td><td>1</td><td>2</td><td>3</td><td>1</td><td>2</td><td>3</td><td>1</td><td>2</td><td>3</td>
         </tr>
         @foreach ($todos as $alumno)
-        <tr><td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em " >{{ $alumno->Alumno->FullName }} {{ $alumno->Fct->Colaboracion->Centro->nombre }} </p></td>
+        
+        <tr><td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em " ><strong>{{ $alumno->Alumno->FullName }}</strong> ({{ $alumno->Fct->Colaboracion->Centro->nombre }}) </p></td>
             <td style="text-align:left;width:5.493cm; " ></td>
             <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
         </tr>

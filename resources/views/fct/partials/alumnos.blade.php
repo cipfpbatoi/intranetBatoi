@@ -5,7 +5,7 @@
         <li>
             <div class="message_date">
                 <h4 class="text-info">Tutor: - @foreach ($alumno->Tutor as $tutor) {{$tutor->FullName}} - @endforeach</h4>
-                <h4 class="text-info"><i class="fa fa-calendar-times-o user-profile-icon"></i>{{$alumno->pivot->desde}} - {{$alumno->pivot->desde}} ({{$alumno->pivot->horas}})</h4>
+                <h4 class="text-info"><i class="fa fa-calendar-times-o user-profile-icon"></i>{{$alumno->pivot->desde}} - {{$alumno->pivot->hasta}} ({{$alumno->pivot->horas}})</h4>
            </div>
             <div class="message_wrapper">
                 <h4 class="text-info">
