@@ -252,7 +252,9 @@ return array(
                 'profesor' => 'Profesor',
                 'Resempresa' => 'Inserción',
                 'NFcts' => 'Fcts',
-                'TutoresFct' => 'Otros tutores'
+                'TutoresFct' => 'Otros tutores',
+                'nalumnes' => 'Número',
+                'Instructor' => 'Instructor'
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

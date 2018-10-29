@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Jenssegers\Date\Date;
 
 class AlumnoFct extends Model
 {
@@ -21,6 +21,7 @@ class AlumnoFct extends Model
         'idFct' => 'required',
         'calificacion' => 'numeric',
         'calProyecto' => 'numeric',
+        
     ];
     protected $inputTypes = [
         'id' => ['type' => 'hidden'],
@@ -78,5 +79,15 @@ class AlumnoFct extends Model
     }
     public function getAsociacionAttribute(){
         return $this->Fct->asociacion;
+    }
+    public function getDesdeAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
+    }
+    public function getHastaAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
     }
 }

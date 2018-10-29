@@ -293,6 +293,7 @@ return array(
             'list' => 'Acta Grupo :quien',
             'acta' => 'Demanar acta d\'avaluació',
             'empresa' => "Inserció laboral",
+            
         ),
         'Dual' => array(
             'index' => 'FP Dual',

@@ -1,24 +1,36 @@
 <ul class="messages fct">
     @foreach($fct->Alumnos as $alumno)
+    @php $mio = in_array(AuthUser(),$alumno->Tutor) @endphp
+    @if ($mio) 
         <li>
             <div class="message_date">
                 <h4 class="text-info">Tutor: - @foreach ($alumno->Tutor as $tutor) {{$tutor->FullName}} - @endforeach</h4>
-            </div>
+                <h4 class="text-info"><i class="fa fa-calendar-times-o user-profile-icon"></i>{{$alumno->pivot->desde}} - {{$alumno->pivot->desde}} ({{$alumno->pivot->horas}})</h4>
+           </div>
             <div class="message_wrapper">
-                 <h4 class="text-info">{{$alumno->FullName}}</h4>
-                 <h4 class="text-info"><i class="fa fa-phone user-profile-icon"></i> {{$alumno->telef1}} <i class="fa fa-envelope user-profile-icon"></i> {{$alumno->email}}</h4>
+                <h4 class="text-info">
+                    <a href="/fct/{!!$fct->id!!}/{!!$alumno->nia!!}/alumnoDelete"><i class="fa fa-trash-o user-profile-icon"></i></a>
+                    {{$alumno->FullName}}</h4>
+                <h4 class="text-info"><i class="fa fa-phone user-profile-icon"></i> {{$alumno->telef1}} <i class="fa fa-envelope user-profile-icon"></i> {{$alumno->email}}</h4>
             </div>
         </li>    
+    @else
+        <li>
+            <div class="message_date">
+                <p class="text-info">Tutor: - @foreach ($alumno->Tutor as $tutor) {{$tutor->FullName}} - @endforeach</p>
+           </div>
+            <div class="message_wrapper">
+                <p class="text-info">{{$alumno->FullName}}</p>
+            </div>
+        </li> 
+    @endif    
     @endforeach
-    <form action='/fct/{!!$fct->id!!}/alumnoCreate' method='post'>
-        @csrf
-        <select name='idAlumno'>
-           @foreach (hazArray(\Intranet\Entities\Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',['NameFull','horasFct'],'-') as $key => $alumno)
-           <option value="{{ $key }}"> {{ $alumno }}</option>
-           @endforeach 
-        </select>
-        <input type="submit" class="btn btn-secondary" value="@lang('messages.generic.anadir') @lang('models.modelos.Alumno')"></input>
-    </form>    
+    @include('fct.partials.modalAlumnos')
 </ul>
+<div class="message_wrapper">
+    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#AddAlumno">
+        @lang("messages.generic.anadir") @lang("models.modelos.Alumno")
+    </button>
+</div>
 
 

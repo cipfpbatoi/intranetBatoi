@@ -17,7 +17,7 @@ class Fct extends Model
     protected $table = 'fcts';
     public $timestamps = false;
 
-    protected $fillable = ['desde'
+    protected $fillable = ['desde','hasta'
         ,'idAlumno', 'idColaboracion','idInstructor' ,
         'horas','asociacion',
         'correoAlumno','correoInstructor'];
@@ -29,6 +29,7 @@ class Fct extends Model
         'idInstructor' => 'sometimes|required',
         'asociacion' => 'required',
         'desde' => 'sometimes|required|date',
+        'hasta' => 'sometimes|required|date',
         'horas' => 'required|numeric',
     ];
     protected $inputTypes = [
@@ -37,6 +38,7 @@ class Fct extends Model
         'idInstructor' => ['type' => 'select'],
         'asociacion' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
+        'hasta' => ['type' => 'date'],
         'correoAlumno' => ['type' => 'hidden'],
         'correoInstructor' => ['type' => 'hidden'],
     ];
@@ -70,7 +72,7 @@ class Fct extends Model
     }
     public function Alumnos()
     {
-        return $this->belongsToMany(Alumno::class,'alumno_fcts', 'idFct', 'idAlumno','id','nia')->withPivot(['calificacion','calProyecto','actas','insercion']);
+        return $this->belongsToMany(Alumno::class,'alumno_fcts', 'idFct', 'idAlumno','id','nia')->withPivot(['calificacion','calProyecto','actas','insercion','horas','desde','hasta']);
     }
     
     public function scopeCentro($query, $centro)
@@ -149,6 +151,11 @@ class Fct extends Model
         return config('auxiliares.asociacionEmpresa')[$this->asociacion];
     }
     public function getDesdeAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
+    }
+    public function getHastaAttribute($entrada)
     {
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');

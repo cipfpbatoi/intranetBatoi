@@ -147,5 +147,42 @@ class AdministracionController extends Controller
         FctColaborador::truncate();
         
     }
+    public static function v1_3_1(){
+        foreach (Fct::all() as $fct) {
+            $existe = FCT::find($fct->id);
+            if ($existe) {
+                $mateixaFct = FCT::where('idColaboracion', $fct->idColaboracion)
+                        ->where('asociacion', $fct->asociacion)
+                        ->where('id','!=',$fct->id)
+                        ->get();
+                $hores = $fct->horas;
+                foreach ($mateixaFct as $mateixa) {
+                    $hores = $mateixa->horas>$hores?$mateixa->horas:$hores;
+                    foreach ($mateixa->Alumnos as $alFct){
+                        $fct->Alumnos()->attach($alFct->nia);
+                    }
+                    $mateixa->delete();
+                }
+                $fct->horas = $hores;
+                $fct->save();
+            }
+        }
+        foreach (\Intranet\Entities\Fct1::all() as $fct1){
+            $mateixaFct = FCT::where('idColaboracion', $fct1->idColaboracion)
+                 ->where('asociacion', $fct1->asociacion)
+                 ->get();
+            foreach($mateixaFct as $fct){
+                if (!$fct->hasta) {
+                    $fct->hasta = $fct1->hasta;
+                    $fct->save();
+                }
+                foreach ($fct->Alumnos as $alumno){
+                        $fct->Alumnos()->updateExistingPivot($alumno->nia,['desde'=>$fct1->desde]);
+                        $fct->Alumnos()->updateExistingPivot($alumno->nia,['hasta'=>$fct1->hasta]);
+                        $fct->Alumnos()->updateExistingPivot($alumno->nia,['horas'=>$fct1->horas]);
+                }
+            }
+        }
+    }
 
 }

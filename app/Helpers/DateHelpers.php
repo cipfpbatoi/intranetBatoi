@@ -1,5 +1,13 @@
 <?php
 
+function PeriodePractiques($fecha=null)
+{
+    $inici = $fecha?new Date($fecha):new Date(Hoy());
+    $inici->format('Y-m-d');
+    if ($inici <= config('curso.fct.2')['inici']) return 1;
+    else return 2;   
+}
+
 function Fecha($fecha)
 {
     $hoy = new Date($fecha);

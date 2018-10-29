@@ -54,3 +54,5 @@ class AlterFctsTable extends Migration {
 	}
 
 }
+
+

@@ -185,6 +185,7 @@ Route::get('/colaboracion/{colaboracion}/copy', ['as' => 'colaboracion.copy', 'u
 Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'ColaboracionController@store']);
 
 Route::resource('/fct', 'FctController', ['except' => ['destroy', 'update', 'show']]);
+Route::get('/fct/{id}/{alumno}/alumnoDelete',['as' => 'fct.alumno.delete', 'uses' => 'FctController@alumnoDelete']);
 Route::post('/fct/{id}/alumnoCreate', ['as' => 'fct.alumno.create', 'uses' => 'FctController@nouAlumno']);
 Route::post('/fct/{id}/instructorCreate',['as'=>'fct.instructor.create','uses'=>'FctController@nouInstructor']);
 Route::get('/fct/{id}/{dni}/instructorDelete',['as'=>'fct.instructor.delete','uses'=>'FctController@deleteInstructor']);
@@ -202,6 +203,7 @@ Route::get('/fct/{id}/pdf', ['as' => 'fct.pdf', 'uses' => 'FctController@pdf']);
 Route::get('/fct/{id}/email', ['as' => 'fct.email', 'uses' => 'FctController@email']);
 Route::get('/fct/{document}/print', ['as' => 'fct.print', 'uses' => 'FctController@document']);
 Route::get('/fct/{id}/pdfInstructor', ['as' => 'fct.pdf.instructor', 'uses' => 'FctController@pdfInstructor']);
+
 
 Route::get('/fct/{document}/apte', ['as' => 'fct.apte', 'uses' => 'PanelFctAvalController@apte']);
 Route::get('/fct/{document}/noApte', ['as' => 'fct.noApte', 'uses' => 'PanelFctAvalController@noApte']);

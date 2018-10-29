@@ -257,7 +257,9 @@ return array(
                 'Resempresa' => 'Inserció',
                 'Nfcts' => 'Fcts',
                 'TutoresFct' => 'Altres tutors',
-                'Lalumnes' => 'Alumnes'
+                'Lalumnes' => 'Alumnes',
+                'nalumnes' => 'Nombre',
+                'Instructor' => 'Instructor'
                 
              ),
         'empty_option' => array(

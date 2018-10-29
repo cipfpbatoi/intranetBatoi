@@ -88,7 +88,7 @@ class Alumno extends Authenticatable
     }
     public function AlumnoFct()
     {
-        return $this->belongsToMany(AlumnoFct::class, 'alumno_fcts', 'nia', 'idAlumno');
+        return $this->HasMany(AlumnoFct::class,  'idAlumno' ,'nia');
     }
     
     public function Provincia()
@@ -163,7 +163,7 @@ class Alumno extends Authenticatable
     public function getHorasFctAttribute()
     {
         $horas = 0;
-        foreach ($this->Fcts as $fct){
+        foreach ($this->AlumnoFct as $fct){
             $horas += $fct->horas;
         }
         return $horas;

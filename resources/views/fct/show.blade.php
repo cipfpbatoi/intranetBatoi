@@ -6,7 +6,7 @@
 <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
     <h3><a href='/empresa/{{$fct->Colaboracion->Centro->idEmpresa}}/detalle'>{{$fct->Colaboracion->Centro->nombre}}</a></h3>
     <h5>ID : {{$fct->id}} Periode : {{$fct->periode}}</h5>
-    <h5><i class="fa fa-calendar-o user-profile-icon"></i> {{$fct->desde}} ({{$fct->horas}} h.)</h5>
+    <h5><i class="fa fa-calendar-o user-profile-icon"></i> {{$fct->desde}} - {{$fct->hasta}} ({{$fct->horas}})</h5>
     @if ($fct->asociacion == 3)
         <h5>DUAL</h5>
     @endif
@@ -73,5 +73,8 @@
 @endsection
 @section('titulo')
 FCT : {{$fct->Colaboracion->Centro->nombre}} - {{$fct->Colaboracion->Ciclo->ciclo }} ({{$fct->Alumnos->count()}})
+@endsection
+@section('scripts')
+{{ Html::script("/js/datepicker.js") }}
 @endsection
 

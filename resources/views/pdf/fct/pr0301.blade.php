@@ -30,20 +30,22 @@
         
         <table border="1" style="margin-top:20px;">
             <tr>
-                <td style="text-align:left;width:9.938cm;padding-left: 5px; "><strong>ALUMNE</strong></td>
-                <td style="text-align:left;width:9.938cm;padding-left: 5px; "><strong>Empresa</strong></td>
+                <td style="text-align:left;width:8.938cm;padding-left: 5px; "><strong>ALUMNE</strong></td>
+                <td style="text-align:left;width:8.938cm;padding-left: 5px; "><strong>Empresa</strong></td>
                 <td style="text-align:left;width:0.838cm;padding-left: 5px; "><strong>Pref.</strong></td>
                 <td style="text-align:left;width:4.493cm;padding-left: 5px; "><strong>DATA Inici</strong></td>
+                <td style="text-align:left;width:4.493cm;padding-left: 5px; "><strong>DATA Fi</strong></td>
                 <td style="text-align:left;width:1.493cm;padding-left: 5px; "><strong>Hores</strong></td>
-                <td style="text-align:left;width:13.45cm;padding-left: 5px; "><strong>SIGNATURA ALUMNE/A</strong></td>
+                <td style="text-align:left;width:12.45cm;padding-left: 5px; "><strong>SIGNATURA ALUMNE/A</strong></td>
             </tr>
             @foreach ($todos as $alumno)
-            <tr style='height:40px'><td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.9em;" > {{ $alumno->Alumno->ShortName }} </p></td>
-                <td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.9em;">{{$alumno->Fct->Colaboracion->Centro->nombre}}</td>
+            <tr style='height:40px'><td style="text-align:left;width:8.938cm;padding-left: 5px;font-size: 0.9em;" > {{ $alumno->Alumno->ShortName }} </p></td>
+                <td style="text-align:left;width:8.938cm;padding-left: 5px;font-size: 0.9em;">{{$alumno->Fct->Colaboracion->Centro->nombre}}</td>
                 <td style="text-align:left;width:0.838cm;padding-left: 5px;font-size: 0.9em;"></td>
-                <td style="text-align:left;width:4.49cm;font-size: 0.9em;text-align: center ">{{$alumno->Fct->desde}}</td>
-                <td style="text-align:left;width:1.493cm;font-size: 0.9em;text-align: center ">{{$alumno->Fct->horas}}</td>
-                <td style="text-align:left;width:13.45cm;font-size: 0.9em; "></td>
+                <td style="text-align:left;width:4.49cm;font-size: 0.9em;text-align: center ">{{$alumno->desde}}</td>
+                <td style="text-align:left;width:4.49cm;font-size: 0.9em;text-align: center ">{{$alumno->hasta}}</td>
+                <td style="text-align:left;width:1.493cm;font-size: 0.9em;text-align: center ">{{$alumno->horas}}</td>
+                <td style="text-align:left;width:12.45cm;font-size: 0.9em; "></td>
             </tr>
             @endforeach
         </table>

@@ -27,7 +27,7 @@ class FctController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Fct';
-    protected $gridFields = ['Centro','periode','desde', 'horas','nalumnes','Lalumnes','XInstructor'];
+    protected $gridFields = ['Centro','periode','desde','horas','nalumnes','hasta','Lalumnes','XInstructor'];
     protected $grupo;
     protected $vista = ['show' => 'fct'];
     
@@ -127,7 +127,7 @@ class FctController extends IntranetController
     public function document($document)
     {
         if (FCT::misFcts()->Activa(config("pr.$document.cuando"))->count()){
-            return $this->hazPdf("pdf.fct.$document", AlumnoFct::misFcts(null,"pr.$document.cuando")->get(),
+            return $this->hazPdf("pdf.fct.$document", AlumnoFct::misFcts(null,"pr.$document.cuando")->orderBy('idAlumno')->orderBy('desde')->get(),
                     config("pr.$document"), config("pr.$document.orientacion"))->stream();
         }
         else{
@@ -246,7 +246,6 @@ class FctController extends IntranetController
     public function update(Request $request, $id)
     {
         parent::update($request, $id);
-        
         return $this->redirect();
     }
 
@@ -256,21 +255,27 @@ class FctController extends IntranetController
     {
         $idFct = DB::transaction(function() use ($request){
             $idAlumno = $request['idAlumno'];
-            $elemento = Fct::where('idColaboracion',$request->idColaboracion)
+            $elementos = Fct::where('idColaboracion',$request->idColaboracion)
                     ->where('asociacion',$request->asociacion)
                     ->where('idInstructor',$request->idInstructor)
-                    ->where('desde', FechaInglesa($request->desde))->get()->first();
-            if (!$elemento){
+                    ->get();
+            $id = null;
+            foreach ($elementos as $elemento){
+                    if ($elemento->Periode == PeriodePractiques($request->desde)){
+                        $id = $elemento->id;
+                        break;
+                    }
+                }
+            if (!$id){ 
                 $elemento = new Fct();
                 $this->validateAll($request, $elemento);
                 unset($request['idAlumno']);
                 $id = $elemento->fillAll($request);
-            } else $id = $elemento->id;
-            //dd(Colaboracion::find($request->idColaboracion)->Centro->Instructores->count());
+            } 
             if ($elemento->asociacion == 2)
                 $elemento->Alumnos()->attach($idAlumno,['calificacion' => 2]);
             else
-                $elemento->Alumnos()->attach($idAlumno);
+                $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($request->hasta),'horas'=>$request->horas]);
             
             return $id;
         });
@@ -301,7 +306,8 @@ class FctController extends IntranetController
     public function nouAlumno($idFct,Request $request){
         
         $fct = Fct::find($idFct);
-        $fct->Alumnos()->attach($request->idAlumno,['calificacion'=>0,'calProyecto'=>0,'actas'=>0,'insercion'=>0]);
+        $fct->Alumnos()->attach($request->idAlumno,['calificacion'=>0,'calProyecto'=>0,'actas'=>0,'insercion'=>0,
+            'desde'=> FechaInglesa($request->desde),'hasta'=> FechaInglesa($request->hasta),'horas'=>$request->horas]);
         
         return back();
     }
@@ -314,6 +320,11 @@ class FctController extends IntranetController
     public function deleteInstructor($idFct,$idInstructor){
        $fct = Fct::find($idFct);
        $fct->Colaboradores()->detach($idInstructor); 
+       return back();
+    }
+    public function alumnoDelete($idFct,$idAlumno){
+       $fct = Fct::find($idFct);
+       $fct->Alumnos()->detach($idAlumno); 
        return back();
     }
     public function modificaHoras($idFct,Request $request){

@@ -1,4 +1,4 @@
-@extends('layouts.pdf')
+    @extends('layouts.pdf')
 @section('content')
     @include('pdf.fct.partials.cabecera')
     <br/>

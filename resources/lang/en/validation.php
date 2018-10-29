@@ -248,7 +248,9 @@ return [
                ,'Ncentros' =>'Name'
                ,'Resempresa' => 'Inserció'
                ,'Nfcts' => 'Fcts',
-               'TutoresFct' => 'Others tutors'
+               'TutoresFct' => 'Others tutors',
+               'nalumnes' => 'Collect',
+               'Instructor' => 'Instructor'
              ),
        'empty_option' => array(
            'default' =>'Select'
