@@ -17,12 +17,12 @@ class Fct extends Model
     protected $table = 'fcts';
     public $timestamps = false;
 
-    protected $fillable = ['desde','hasta'
-        ,'idAlumno', 'idColaboracion','idInstructor' ,
+    protected $fillable = ['desde', 'hasta','idAlumno',
+        'idColaboracion','idInstructor' ,
         'horas','asociacion',
         'correoAlumno','correoInstructor'];
-//    protected $fillable = ['idAlumno', 'idColaboracion',  'desde','hasta'
-//        ,'horas','asociacion','horas_semanales'];
+    protected $notFillable = ['hasta','idAlumno','horas'];
+
     protected $rules = [
         'idAlumno' => 'sometimes|required',
         'idColaboracion' => 'sometimes|required',
@@ -52,11 +52,6 @@ class Fct extends Model
         $this->asociacion = 1;
         $this->horas = 400;
     }
-    
-//    public function Alumno()
-//    {
-//        return $this->belongsTo(Alumno::class, 'idAlumno', 'nia');
-//    }
     
     public function Colaboracion()
     {
@@ -102,6 +97,10 @@ class Fct extends Model
         return $query->whereIn('idAlumno',$alumnos);
     }
     public function scopeEsFct($query)
+    {
+        return $query->where('asociacion','<',2);
+    }
+    public function scopeEsAval($query)
     {
         return $query->where('asociacion','<',3);
     }
@@ -160,6 +159,7 @@ class Fct extends Model
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
+    
     public function getCentroAttribute(){
         return isset($this->Colaboracion->Centro->nombre)?$this->Colaboracion->Centro->nombre:'Convalidada/Exent';
     }
@@ -169,8 +169,6 @@ class Fct extends Model
         if ($inici <= config('curso.fct.2')['inici']) return 1;
         else return 2;    
     }
-
-    
     public function getCicloAttribute(){
         return $this->Colaboracion->Ciclo->ciclo;
     }
@@ -198,4 +196,5 @@ class Fct extends Model
     public function getXInstructorAttribute(){
         return isset($this->idInstructor)?$this->Instructor->nombre:'Falta Instructor';
     }
+    
 }

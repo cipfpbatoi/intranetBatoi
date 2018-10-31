@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Intranet\Entities\Fct;
-use Intranet\Entities\FctConvalidacion;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Grupo;
@@ -27,7 +26,7 @@ class FctController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Fct';
-    protected $gridFields = ['Centro','periode','desde','horas','nalumnes','hasta','Lalumnes','XInstructor'];
+    protected $gridFields = ['Centro','periode','XInstructor','Lalumnes','Nalumnes'];
     protected $grupo;
     protected $vista = ['show' => 'fct'];
     
@@ -49,27 +48,18 @@ class FctController extends IntranetController
         return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
     }
     
-    public function convalidacion()
-    {
-        $elemento = new FctConvalidacion();
-        $default = $elemento->fillDefautOptions(); // ompli caracteristiques dels camps
-        $modelo = $this->model;
-        return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
-    }
     
- 
     protected function iniBotones()
     {
         //$this->panel->setBotonera();
         $this->panel->setBoton('grid', new BotonImg('fct.delete',['where'=>['Nalumnes','==','1']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.convalidacion',['img' => 'fa-edit','where'=>['asociacion','==','2']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion', '==', '1']]));
+        //$this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.pdf',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.pdfInstructor',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.email',['orWhere'=>['correoAlumno','==','0','correoInstructor','==','0']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pass", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
+        //$this->panel->setBoton('index', new BotonBasico("fct.pass", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['roles' => config('roles.rol.tutor')]));
@@ -187,7 +177,7 @@ class FctController extends IntranetController
         $fct = Fct::findOrFail($id);
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));
-        $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
+        $dades = ['date' => FechaString(Hoy()),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
             'centro' => config('contacto.nombre'),
@@ -255,6 +245,7 @@ class FctController extends IntranetController
     {
         $idFct = DB::transaction(function() use ($request){
             $idAlumno = $request['idAlumno'];
+            $hasta = $request['hasta'];
             $elementos = Fct::where('idColaboracion',$request->idColaboracion)
                     ->where('asociacion',$request->asociacion)
                     ->where('idInstructor',$request->idInstructor)
@@ -269,13 +260,12 @@ class FctController extends IntranetController
             if (!$id){ 
                 $elemento = new Fct();
                 $this->validateAll($request, $elemento);
-                unset($request['idAlumno']);
                 $id = $elemento->fillAll($request);
             } 
             if ($elemento->asociacion == 2)
-                $elemento->Alumnos()->attach($idAlumno,['calificacion' => 2]);
+                $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($hasta),'horas'=>$request->horas,'calificacion' => 2]);
             else
-                $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($request->hasta),'horas'=>$request->horas]);
+                $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($hasta),'horas'=>$request->horas]);
             
             return $id;
         });

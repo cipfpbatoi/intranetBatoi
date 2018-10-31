@@ -22,7 +22,13 @@ class PanelFctAvalController extends IntranetController
 
     public function search()
     {
-        return AlumnoFct::misFcts()->esFct()->get();
+        $nombres = AlumnoFct::select('idAlumno')->distinct()->misFcts()->esAval()->get()->toArray();
+        $todas = collect();
+        foreach ($nombres as $nombre){
+            $todas->push(AlumnoFct::misFcts()->esAval()->where('idAlumno',$nombre['idAlumno'])->orderBy('idAlumno')->first());
+        }
+        return $todas;
+        
     }
 
     protected function iniBotones()

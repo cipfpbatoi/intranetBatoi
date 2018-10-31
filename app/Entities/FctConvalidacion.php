@@ -25,7 +25,6 @@ class FctConvalidacion extends Fct
     protected $inputTypes = [
         'idAlumno' => ['type' => 'select'],
         'asociacion' => ['type' => 'hidden'],
-        'horas' => ['type' => 'hidden'],
         'correoAlumno' => ['type' => 'hidden'],
         'correoInstructor' => ['type' => 'hidden'],
         

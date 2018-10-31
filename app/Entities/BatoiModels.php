@@ -106,7 +106,8 @@ trait BatoiModels
     public function fillAll(Request $request)
     {
         $dates = $this->EspecialFields();
-        foreach ($this->fillable as $key) {
+        $fillable = $this->notFillable?array_diff($this->fillable,$this->notFillable):$this->fillable; 
+        foreach ($fillable as $key) {
             if (isset($dates[$key])) {
                 if ($dates[$key] == 'date')
                     $this->$key = (new Date($request->$key))->format('Y-m-d');

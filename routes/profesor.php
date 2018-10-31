@@ -195,16 +195,13 @@ Route::get('/fct/{id}/show', ['as' => 'fct.show', 'uses' => 'FctController@show'
 Route::put('/fct/{id}/edit', ['as' => 'fct.update', 'uses' => 'FctController@update']);
 Route::get('/fct/create/{colaboracio}', ['as' => 'fct.create2', 'uses' => 'FctController@create']);
 Route::post('/fct/create', ['as' => 'fct.store', 'uses' => 'FctController@store']);
-Route::get('/fct/pass',['as' => 'fct.convalidacion', 'uses' => 'FctController@convalidacion']);
 Route::post('/fct/pass',['as' => 'fct.pass', 'uses' => 'FctController@store']);
-Route::get('/fct/{id}/convalidacion',['as' => 'fct.editConvalidacion', 'uses' => 'PanelFctConvalController@index']);
-Route::get('/fct_convalidacion/{id}/delete', ['as' => 'fctConvalidacion.destroy', 'uses' => 'PanelFctConvalController@destroy']);
 Route::get('/fct/{id}/pdf', ['as' => 'fct.pdf', 'uses' => 'FctController@pdf']);
 Route::get('/fct/{id}/email', ['as' => 'fct.email', 'uses' => 'FctController@email']);
 Route::get('/fct/{document}/print', ['as' => 'fct.print', 'uses' => 'FctController@document']);
 Route::get('/fct/{id}/pdfInstructor', ['as' => 'fct.pdf.instructor', 'uses' => 'FctController@pdfInstructor']);
 
-
+Route::get('/avalFct', ['as' => 'aval.fct', 'uses' => 'PanelFctAvalController@index']);
 Route::get('/fct/{document}/apte', ['as' => 'fct.apte', 'uses' => 'PanelFctAvalController@apte']);
 Route::get('/fct/{document}/noApte', ['as' => 'fct.noApte', 'uses' => 'PanelFctAvalController@noApte']);
 Route::get('/fct/{document}/noProyecto', ['as' => 'fct.noProyecto', 'uses' => 'PanelFctAvalController@noProyecto']);
@@ -212,7 +209,6 @@ Route::get('/fct/{document}/nuevoProyecto', ['as' => 'fct.nuevoProyecto', 'uses'
 Route::get('/fct/acta', ['as' => 'fct.acta', 'uses' => 'FctController@demanarActa']);
 Route::get('/fct/{fct}/proyecto', ['as' => 'proyecto.new', 'uses' => 'DocumentoController@project']);
 Route::post('/fct/{fct}/proyecto', ['as' => 'proyecto.create', 'uses' => 'DocumentoController@store']);
-Route::get('/avalFct', ['as' => 'aval.fct', 'uses' => 'PanelFctAvalController@index']);
 Route::get('/fct/upload', ['as' => 'qualitat.new', 'uses' => 'DocumentoController@qualitat']);
 Route::post('/fct/upload', ['as' => 'qualitat.create', 'uses' => 'DocumentoController@store']);
 Route::put('/fct/upload', ['as' => 'qualitat.update', 'uses' => 'DocumentoController@update']);
@@ -230,6 +226,9 @@ Route::get('/dual/create/{colaboracio}', ['as' => 'dual.create2', 'uses' => 'Dua
 Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@store']);
 Route::get('/dual/{id}/anexevii',['as' => 'dual.vii', 'uses' => 'DualController@anexevii']);
 
+Route::resource('/fctal', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
+Route::get('/fctal/{id}/delete', ['as' => 'fctl.destroy', 'uses' => 'FctAlumnoController@destroy']);
+Route::get('/fctal/convalidacion',['as' => 'fctal.convalidacion', 'uses' => 'FctAlumnoController@convalidacion']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);

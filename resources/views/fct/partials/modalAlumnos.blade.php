@@ -20,7 +20,6 @@
                     @lang("validation.attributes.desde") : <input type='text' class="date" name='desde' value='{{$fct->desde}}'></input><br/>
                     @lang("validation.attributes.hasta") :<input type='text' class="date" name='hasta' value='{{$fct->hasta}}'></input><br/>
                     @lang("messages.generic.horas") :<input type='text' name='horas' value='{{$fct->horas}}'></input><br/><br/>
-                    <input type="submit" class="btn btn-secondary" value="@lang('messages.generic.anadir') @lang('models.modelos.Alumno')"></input>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

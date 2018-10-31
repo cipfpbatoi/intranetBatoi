@@ -293,6 +293,8 @@ return array(
             'list' => 'Acta Grupo :quien',
             'acta' => 'Demanar acta d\'avaluació',
             'empresa' => "Inserció laboral",
+            'alumno' => 'x Alumnes',
+            'empresa' => 'x Empresa'  
             
         ),
         'Dual' => array(
@@ -374,6 +376,11 @@ return array(
         ),
         'Modulo_grupo' => array(
           'index' => 'Seguiments Modul departament', 
+          
+        ),
+        'Alumno_fct' => array(
+          'index' => 'Fct_Alumno',
+          
           
         ),
         'modelos' => array(

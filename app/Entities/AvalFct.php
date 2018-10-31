@@ -64,10 +64,6 @@ class AlumnoFct extends Model
         $fcts = Fct::select('id')->esFct()->get()->toArray();
         return $query->whereIn('idFct',$fcts);
     }
-    public function scopeEsAval($query){
-        $fcts = Fct::select('id')->esAval()->get()->toArray();
-        return $query->whereIn('idFct',$fcts);
-    }
     
     public function getNombreAttribute(){
         return $this->Alumno->NameFull;
