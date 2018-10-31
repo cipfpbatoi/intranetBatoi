@@ -226,9 +226,9 @@ Route::get('/dual/create/{colaboracio}', ['as' => 'dual.create2', 'uses' => 'Dua
 Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@store']);
 Route::get('/dual/{id}/anexevii',['as' => 'dual.vii', 'uses' => 'DualController@anexevii']);
 
-Route::resource('/fctal', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
-Route::get('/fctal/{id}/delete', ['as' => 'fctl.destroy', 'uses' => 'FctAlumnoController@destroy']);
-Route::get('/fctal/convalidacion',['as' => 'fctal.convalidacion', 'uses' => 'FctAlumnoController@convalidacion']);
+Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
+Route::get('/alumnofct/{id}/delete', ['as' => 'fctl.destroy', 'uses' => 'FctAlumnoController@destroy']);
+Route::get('/alumnofct/convalidacion',['as' => 'fctal.convalidacion', 'uses' => 'FctAlumnoController@convalidacion']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);

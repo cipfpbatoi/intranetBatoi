@@ -282,7 +282,7 @@ return array(
             'noProyecto' => 'No presenta Projecte',
             'nuevoProyecto' => 'Accedeix al Projecte',
             'upload' => 'Pujar informació Qualitat',
-            'pass' => 'FCT Convalidada/Exempt',
+            'convalidacion' => 'FCT Convalidada/Exempt',
             'pg0301' => 'Imprimeix PG03-01 (Full Control Servei)',
             'pr0301' => 'Imprimeix PR03-01 (Informar Alumne)',
             'pr0601' => 'Imprimeix PR06-01 (Entrega Certificat)',
@@ -378,9 +378,9 @@ return array(
           'index' => 'Seguiments Modul departament', 
           
         ),
-        'Alumno_fct' => array(
-          'index' => 'Fct_Alumno',
-          
+        'Alumnofct' => array(
+          'index' => 'Fct x Alumno',
+          'convalidacion' => 'FCT Convalidada/Exempt',
           
         ),
         'modelos' => array(

@@ -28,13 +28,13 @@ class FctAlumnoController extends IntranetController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('grid', new BotonImg('fctAl.delete'));
-        $this->panel->setBoton('grid', new BotonImg('fctAl.edit',['where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('fctAl.pdf',['where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('fctAl.pdfInstructor',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('fctAl.email',['orWhere'=>['correoAlumno','==','0','correoInstructor','==','0']]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.delete'));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.edit',['where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.pdfInstructor',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.email',['orWhere'=>['correoAlumno','==','0','correoInstructor','==','0']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fctal.convalidacion", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['roles' => config('roles.rol.tutor')]));
