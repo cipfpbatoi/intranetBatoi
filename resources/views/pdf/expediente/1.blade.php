@@ -25,10 +25,10 @@
         <div class="container" style="width:90%;">
             <br/><br/>
             <br/><br/><br/>
-            <p>{{config('constants.contacto.poblacion')}},a {{$datosInforme}} </p>
+            <p>{{config('contacto.poblacion')}},a {{$datosInforme}} </p>
             <br/><br/><br/><br/><br/>
             <div style="width:45%; float:left; ">
-                <p><strong>{{\Intranet\Entities\Profesor::find(config('constants.contacto.director'))->FullName}}</strong></p>
+                <p><strong>{{\Intranet\Entities\Profesor::find(config('contacto.director'))->FullName}}</strong></p>
                 <br/><br/><br/>
                 <p>DIRECTOR</p>
             </div>

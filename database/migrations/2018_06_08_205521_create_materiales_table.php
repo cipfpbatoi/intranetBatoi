@@ -27,7 +27,7 @@ class CreateMaterialesTable extends Migration {
 			$table->date('fechaultimoinventario')->nullable();
 			$table->date('fechabaja')->nullable();
 			$table->smallInteger('tipo')->nullable();
-			$table->string('proveedor', 30)->nullable();
+			$table->string('proveedor', 90)->nullable();
 		});
 	}
 
