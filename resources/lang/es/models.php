@@ -366,10 +366,13 @@ return array(
             'edit' => 'Edita Horario',
             'cambiar' => "Canviar funciones horario",
         ),
-        'Alumnofct' => array(
+        'AlumnoFct' => array(
           'index' => 'Fct x Alumno',
-          'convalidacion' => 'FCT Convalidada/Exempt',
-          
+          'convalidacion' => 'FCT Convalidada/Exento',
+          'edit' => 'Modificar Fct'  
+        ),
+        'Alumnofctaval' => array(
+          'index' => 'Avaluació FCT i projecte',
         ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',

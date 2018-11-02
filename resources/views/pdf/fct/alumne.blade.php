@@ -1,7 +1,6 @@
 @extends('layouts.pdf')
 @section('content')
-    @foreach (\Intranet\Entities\AlumnoFct::MisFcts()->where('idFct',$todos->id)->get() as $alumnoFct)
-        
+    @foreach ($todos as $alumnoFct)
         <div class="page" style="font-size:large;line-height: 2em">
             @include('pdf.partials.cabecera')
             <br/>
@@ -18,17 +17,17 @@
             </div>
             <div class="container" style="width:95%">
                 <p style="text-indent: 30px;text-align: justify">Que segons consta en el seu expedient, @if ($alumnoFct->Alumno->sexo === 'H') l'alumne @else l'alumna @endif <strong>{{$alumnoFct->Alumno->FullName}} </strong> 
-                    amb DNI núm. {{$alumnoFct->Alumno->dni}}, ha realitzat la Formació en Centres de Treball (FCT) del <strong>{{$todos->Colaboracion->Ciclo->Xtipo}}
-                        {{$todos->Colaboracion->Ciclo->vliteral}} </strong> en l'empresa {{$todos->Colaboracion->Centro->nombre}}, ubicada a {{$todos->Colaboracion->Centro->direccion}} de/d'
-                    {{$todos->Colaboracion->Centro->localidad}}, amb una duració total de {{$alumnoFct->horas}} hores, fetes
+                    amb DNI núm. {{$alumnoFct->Alumno->dni}}, ha realitzat la Formació en Centres de Treball (FCT) del <strong>{{$alumnoFct->Fct->Colaboracion->Ciclo->Xtipo}}
+                        {{$alumnoFct->Fct->Colaboracion->Ciclo->vliteral}} </strong> en l'empresa {{$alumnoFct->Fct->Colaboracion->Centro->nombre}}, ubicada a {{$alumnoFct->Fct->Colaboracion->Centro->direccion}} de/d'
+                    {{$alumnoFct->Fct->Colaboracion->Centro->localidad}}, amb una duració total de {{$alumnoFct->horas}} hores, fetes
                     en el curs lectiu {{Curso()}}  i ha obtingut una qualifació d'APTE.</p>
             </div>
             <hr/>
             <div class="container" style="width:95%">
                 <p style="text-indent: 30px;text-align: justify">Que según consta en su expediente, @if ($alumnoFct->Alumno->sexo === 'H') el alumno @else la alumna @endif <strong>{{$alumnoFct->Alumno->FullName}} </strong> 
-                    con DNI núm. {{$alumnoFct->Alumno->dni}}, ha realizado la Formación en Centros de Trabajo (FCT) del <strong>{{$todos->Colaboracion->Ciclo->Ctipo}}
-                        {{$todos->Colaboracion->Ciclo->cliteral}} </strong> en la empresa {{$todos->Colaboracion->Centro->Empresa->nombre}}, ubicada en {{$todos->Colaboracion->Centro->direccion}} de
-                    {{$todos->Colaboracion->Centro->localidad}}, con una duración total de {{$alumnoFct->horas}} horas, desempeñadas 
+                    con DNI núm. {{$alumnoFct->Alumno->dni}}, ha realizado la Formación en Centros de Trabajo (FCT) del <strong>{{$alumnoFct->Fct->Colaboracion->Ciclo->Ctipo}}
+                        {{$alumnoFct->Fct->Colaboracion->Ciclo->cliteral}} </strong> en la empresa {{$alumnoFct->Fct->Colaboracion->Centro->Empresa->nombre}}, ubicada en {{$alumnoFct->Fct->Colaboracion->Centro->direccion}} de
+                    {{$alumnoFct->Fct->Colaboracion->Centro->localidad}}, con una duración total de {{$alumnoFct->horas}} horas, desempeñadas 
                     en el curso lectivo {{Curso()}}, obteniendo una calificación de APTO.</p>
             </div>
             <div class="container" style="width:90%;">

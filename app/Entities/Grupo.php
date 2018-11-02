@@ -179,7 +179,7 @@ class Grupo extends Model
         $todos = $this->Alumnos;
         $aval = 0;
         foreach ($todos as $uno) {
-            if (isset($uno->Fct->calificacion))
+            if (isset($uno->AlumnoFct->calificacion))
                 $aval++;
         }
         return $aval;
@@ -190,7 +190,7 @@ class Grupo extends Model
         $todos = $this->Alumnos;
         $aprob = 0;
         foreach ($todos as $uno) {
-            if (isset($uno->Fct->calificacion) && $uno->Fct->calificacion)
+            if (isset($uno->AlumnoFct->calificacion) && $uno->AlumnoFct->calificacion)
                 $aprob++;
         }
         return $aprob;
@@ -201,7 +201,7 @@ class Grupo extends Model
         $todos = $this->Alumnos;
         $aval = 0;
         foreach ($todos as $uno) {
-            if (isset($uno->Fct->calProyecto))
+            if (isset($uno->AlumnoFct->calProyecto))
                 $aval++;
         }
         return $aval;
@@ -212,7 +212,7 @@ class Grupo extends Model
         $todos = $this->Alumnos;
         $aprob = 0;
         foreach ($todos as $uno) {
-            if (isset($uno->Fct->calProyecto) && $uno->Fct->calProyecto >= 5)
+            if (isset($uno->AlumnoFct->calProyecto) && $uno->AlumnoFct->calProyecto >= 5)
                 $aprob++;
         }
         return $aprob;
@@ -223,7 +223,7 @@ class Grupo extends Model
         $todos = $this->Alumnos;
         $aprob = 0;
         foreach ($todos as $uno) {
-            if (isset($uno->Fct->insercion) && ($uno->Fct->insercion))
+            if (isset($uno->AlumnoFct->insercion) && ($uno->AlumnoFct->insercion))
                 $aprob++;
         }
         return $aprob;

@@ -4,33 +4,24 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
+use Intranet\Entities\AlumnoFct;
 
 class AlumnoFct extends Model
 {
 
     use BatoiModels;
+    protected $fillable = ['id', 'desde','hasta','horas'];
     
-    protected $table = 'alumno_fcts';
-    protected $fillable = ['id','idFct','idAlumno', 'calificacion','calProyecto'];
-    
-    public $timestamps = false;
-
     protected $rules = [
         'id' => 'required',
-        'idAlumno' => 'required',
-        'idFct' => 'required',
-        'calificacion' => 'numeric',
-        'calProyecto' => 'numeric',
-        
+        'desde' => 'date',
+        'hasta' => 'date',
+        'horas' => 'required|numeric'
     ];
     protected $inputTypes = [
         'id' => ['type' => 'hidden'],
-        'idAlumno' => ['type' => 'hidden'],
-        'idFct' => ['type' => 'hidden'],
-        'calificacion' => ['type' => 'hidden'],
     ];
-    
-    
+       
     
     public function Alumno()
     {
@@ -53,6 +44,7 @@ class AlumnoFct extends Model
                 ->orWhere('asociacion',2)->get()->toArray();
         return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
     }
+    
     public function scopeMisConvalidados($query,$profesor=null)
     {
         $profesor = $profesor?$profesor:AuthUser()->dni;
@@ -68,6 +60,7 @@ class AlumnoFct extends Model
         $fcts = Fct::select('id')->esAval()->get()->toArray();
         return $query->whereIn('idFct',$fcts);
     }
+    
     
     public function getNombreAttribute(){
         return $this->Alumno->NameFull;

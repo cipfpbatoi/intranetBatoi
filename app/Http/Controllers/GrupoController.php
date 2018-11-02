@@ -47,7 +47,6 @@ class GrupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('grupo.edit', ['roles' => config('roles.rol.direccion')]));
         $this->panel->setBoton('grid',new BotonImg('equipo.grupo',['img' => 'fa-graduation-cap']));
         $this->panel->setBoton('grid',new BotonImg('grupo.fse',['img' => 'fa-euro','roles' => config('roles.rol.tutor')]));
-        //$this->panel->setBoton('grid',new BotonImg('direccion.acta',['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion'),'where' => ['acta_pendiente','==','1']]));
         $this->panel->setBoton('grid',new BotonImg('direccion.fol',['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion')]));
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {

@@ -275,14 +275,13 @@ return array(
             'edit' => 'Editar Fct',
             'delete' => 'Esborrar Fct',
             'fin' => 'Finalitzar Fct',
-            'pdf' => 'Imprimir certificats',
-            'mail' => 'Enviar emails feedback',
+            'pdf' => 'Imprimir certificats Instructors',
+            'mail' => 'Enviar email valoracio',
             'apte' => 'Qualificar Apto',
             'noApte' => 'Qualificar No Apte',
             'noProyecto' => 'No presenta Projecte',
             'nuevoProyecto' => 'Accedeix al Projecte',
             'upload' => 'Pujar informació Qualitat',
-            'convalidacion' => 'FCT Convalidada/Exempt',
             'pg0301' => 'Imprimeix PG03-01 (Full Control Servei)',
             'pr0301' => 'Imprimeix PR03-01 (Informar Alumne)',
             'pr0601' => 'Imprimeix PR06-01 (Entrega Certificat)',
@@ -379,9 +378,17 @@ return array(
           
         ),
         'Alumnofct' => array(
-          'index' => 'Fct x Alumno',
+          'index' => 'Fct x Alumne',
           'convalidacion' => 'FCT Convalidada/Exempt',
+          'create' => 'Nova Exempció',  
+          'edit' => 'Modificar Dates Fct',
+          'pdf' => 'Imprimir certificat Alumne',
+          'email' => 'Enviar Correu Valoració Alumne'  
           
+        ),
+        'Alumnofctaval' => array(
+          'index' => 'Avaluació FCT i projecte',
+          'list' => "Llistat pendents d'avaluació grup :quien"
         ),
         'modelos' => array(
             'Comision' => 'Comisió de Servei',

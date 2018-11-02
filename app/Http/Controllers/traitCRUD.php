@@ -21,6 +21,7 @@ trait traitCRUD{
      *   al index del modelo
      */
     
+    
     protected function redirect()
     {
         if (Session::get('redirect')) $this->redirect = Session::get('redirect'); //variable session

@@ -23,6 +23,7 @@ class Dual extends Fct
     {
         $this->asociacion = 3;
         $this->horas = 600;
+        $this->correoInstructor = 1;
     }
     
     public function getIdAlumnoOptions(){

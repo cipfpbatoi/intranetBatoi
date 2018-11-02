@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterFctsTable2 extends Migration {
+class AlterFctsTable3 extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -14,11 +14,7 @@ class AlterFctsTable2 extends Migration {
 	{
 		Schema::table('fcts', function(Blueprint $table)
 		{
-                    $table->dropColumn('hasta');
-                    $table->dropColumn('horas');
-                    $table->dropColumn('idAlumno');
-                   
-			
+                    $table->dropColumn('correoAlumno');
                 });
 	}
 
@@ -32,10 +28,8 @@ class AlterFctsTable2 extends Migration {
 	{
 		Schema::table('fcts', function(Blueprint $table)
 		{
-			$table->date('hasta')->nullable();
-                        $table->smallInteger('horas');
-                        $table->string('idAlumno', 8);
-		});
+			$table->boolean('correoAlumno')->default(0);
+                });
 	}
 
 }

@@ -17,17 +17,16 @@ class Fct extends Model
     protected $table = 'fcts';
     public $timestamps = false;
 
-    protected $fillable = ['desde', 'hasta','idAlumno',
-        'idColaboracion','idInstructor' ,
+    protected $fillable = ['idAlumno',
+        'idColaboracion','idInstructor' ,'desde', 'hasta',
         'horas','asociacion',
-        'correoAlumno','correoInstructor'];
+        ];
     protected $notFillable = ['hasta','idAlumno','horas'];
 
     protected $rules = [
         'idAlumno' => 'sometimes|required',
         'idColaboracion' => 'sometimes|required',
         'idInstructor' => 'sometimes|required',
-        'asociacion' => 'required',
         'desde' => 'sometimes|required|date',
         'hasta' => 'sometimes|required|date',
         'horas' => 'required|numeric',
@@ -39,8 +38,7 @@ class Fct extends Model
         'asociacion' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
-        'correoAlumno' => ['type' => 'hidden'],
-        'correoInstructor' => ['type' => 'hidden'],
+        
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
@@ -50,7 +48,6 @@ class Fct extends Model
     public function __construct()
     {
         $this->asociacion = 1;
-        $this->horas = 400;
     }
     
     public function Colaboracion()
@@ -67,7 +64,7 @@ class Fct extends Model
     }
     public function Alumnos()
     {
-        return $this->belongsToMany(Alumno::class,'alumno_fcts', 'idFct', 'idAlumno','id','nia')->withPivot(['calificacion','calProyecto','actas','insercion','horas','desde','hasta']);
+        return $this->belongsToMany(Alumno::class,'alumno_fcts', 'idFct', 'idAlumno','id','nia')->withPivot(['calificacion','calProyecto','actas','insercion','horas','desde','hasta','correoAlumno']);
     }
     
     public function scopeCentro($query, $centro)
@@ -91,11 +88,7 @@ class Fct extends Model
         return $query->whereIn('id',$alumnos_fct);
     }
     
-    public function scopeGrupo($query,$grupo)
-    {
-        $alumnos = Alumno::select('nia')->misAlumnos($grupo->tutor)->get()->toArray();
-        return $query->whereIn('idAlumno',$alumnos);
-    }
+    
     public function scopeEsFct($query)
     {
         return $query->where('asociacion','<',2);
@@ -196,5 +189,6 @@ class Fct extends Model
     public function getXInstructorAttribute(){
         return isset($this->idInstructor)?$this->Instructor->nombre:'Falta Instructor';
     }
+    
     
 }

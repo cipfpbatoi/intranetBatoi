@@ -4,15 +4,16 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Fct;
+use Intranet\Entities\AlumnoFctAval;
 
 class PanelActasController extends BaseController
 {
 
     protected $perfil = 'profesor';
-    protected $model = 'Fct';
+    protected $model = 'AlumnoFctAval';
     protected $gridFields = ['Nombre', 'hasta', 'horas', 'qualificacio', 'projecte'];
-    protected $vista = ['index' => 'intranet.list'] ;   
+    protected $vista = ['index' => 'intranet.list'] ;  
+    
     
     protected function iniBotones()
     {
@@ -25,9 +26,21 @@ class PanelActasController extends BaseController
         $grupo = Grupo::findOrFail($this->search);
         $this->titulo = ['quien' => $grupo->nombre ];
         if ($grupo->acta_pendiente)
-            return Fct::Grupo($grupo)->Pendiente()->get();
-        else 
-            return Fct::Grupo($grupo)->get();
+            return AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
     }
+    
+    public function finActa($idGrupo){
+        $grupo = Grupo::findOrFail($idGrupo);
+        $fcts = AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
+        foreach ($fcts as $fct){
+            $fct->actas = 2;
+            $fct->save();
+        }
+        $grupo->acta_pendiente = 0;
+        $grupo->save();
+        avisa($grupo->tutor, "Ja pots passar a arreplegar l'acta del grup $grupo->nombre", "#");
+        return back();
+    }
+
 
 }

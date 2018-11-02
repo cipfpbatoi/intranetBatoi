@@ -107,6 +107,7 @@ trait BatoiModels
     {
         $dates = $this->EspecialFields();
         $fillable = $this->notFillable?array_diff($this->fillable,$this->notFillable):$this->fillable; 
+        
         foreach ($fillable as $key) {
             if (isset($dates[$key])) {
                 if ($dates[$key] == 'date')
@@ -120,7 +121,6 @@ trait BatoiModels
                     $this->$key = $request->$key;
             }
         }
-        
         $this->save();
         
         if ($request->hasFile('fichero')) {
@@ -206,5 +206,4 @@ trait BatoiModels
         else
             return false;
     }
-
 }
