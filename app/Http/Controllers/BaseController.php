@@ -104,7 +104,7 @@ abstract class BaseController extends Controller
     }
     
     protected function crea_pestanas($estados,$vista,$activa=null){
-        $activa = isset($activa)?$activa:Session::get('pestana')?Session::get('pestana'):1;
+        $activa = isset($activa)?$activa:Session::get('pestana')?Session::get('pestana'):0;
         
         foreach ($estados as $key => $estado) {
             $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,

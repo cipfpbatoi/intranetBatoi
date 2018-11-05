@@ -10,7 +10,7 @@ class PanelPracticasController extends BaseController
 
     protected $perfil = 'profesor';
     protected $model = 'Grupo';
-    protected $gridFields = ['nombre','Matriculados','Resfct','Respro', 'Resempresa','Acta', 'Calidad','Xtutor'];
+    protected $gridFields = ['nombre','Matriculados','Resfct','Exentos','Respro', 'Resempresa','Acta', 'Calidad','Xtutor'];
     
     protected function iniBotones()
     {

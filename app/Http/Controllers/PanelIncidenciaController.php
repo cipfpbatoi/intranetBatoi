@@ -16,7 +16,8 @@ class PanelIncidenciaController extends BaseController
     
     protected $perfil = 'profesor';
     protected $model = 'Incidencia';
-    protected $gridFields = ['Xestado', 'DesCurta', 'espacio', 'XCreador', 'XResponsable', 'Xtipo', 'fecha'];
+    protected $gridFields = ['Xestado', 'DesCurta', 'espacio', 'XCreador', 
+        'XResponsable', 'Xtipo', 'fecha','Observaciones'];
     protected $orden = 'fecha';
     protected $parametresVista = ['modal' => ['explicacion','aviso']];
     
@@ -24,8 +25,8 @@ class PanelIncidenciaController extends BaseController
     {
         $this->panel->setPestana('NoAsig',0,'profile.incidencia',['estado',1,'responsable',''],null,null,$this->parametresVista);
         $condicion = ['responsable', AuthUser()->dni];
-        $activa = Session::get('pestana') ? Session::get('pestana') : 1;
-        $todos = isset($this->orden)?$this->search($this->orden):$this->search('desde');
+        $activa = Session::get('pestana') ? Session::get('pestana') : 0;
+        $todos = $this->search();
         
         foreach (config('modelos.'.$this->model.'.estados') as $key => $estado) {
             $this->panel->setPestana($estado, $key == $activa ? true : false, "profile." .
@@ -33,7 +34,7 @@ class PanelIncidenciaController extends BaseController
                 isset($condicion)?array_merge(['estado',$key],$condicion):['estado',$key],null,null,$this->parametresVista);
         }
         $this->iniBotones();
-        Session::put('redirect','Panel'.$this->model.'Controller@index');
+        Session::put('redirect','PanelIncidenciaController@index');
         return $this->grid($todos);
     }
    

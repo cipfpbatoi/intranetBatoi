@@ -68,9 +68,9 @@ class PanelFctAvalController extends IntranetController
                 'where' => ['calProyecto', '>=', 0, 'actas', '<', 2]]));
         }
         $this->panel->setBoton('grid', new BotonImg('fct.empresa', ['img' => 'fa-square-o', 'roles' => config('roles.rol.tutor'),
-            'where' => ['insercion', '==', '0']]));
+            'where' => ['insercion', '==', '0','asociacion','==',1]]));
         $this->panel->setBoton('grid', new BotonImg('fct.empresa', ['img' => 'fa-check-square-o', 'roles' => config('roles.rol.tutor'),
-            'where' => ['insercion', '==', '1']]));
+            'where' => ['insercion', '==', '1','asociacion','==',1]]));
 
     }
     

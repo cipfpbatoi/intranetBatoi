@@ -23,24 +23,6 @@ trait traitPanel{
         return $this->grid($todos);
     }
     
-//    public function index($condicion=null)
-//    {
-//        
-//        $activa = Session::get('pestana') ? Session::get('pestana') : 1;
-//        $todos = isset($this->orden)?$this->search($this->orden):$this->search('desde');
-//        
-//        foreach (config('modelos.'.$this->model.'.estados') as $key => $estado) {
-//            $this->panel->setPestana($estado, $key == $activa ? true : false, "profile." .
-//                strtolower($this->model),
-//                isset($condicion)?dd(array_merge(['estado',$key],$condicion)):
-//                ['estado',$key]);
-//        }
-//        $this->iniBotones();
-//        Session::put('redirect','Panel'.$this->model.'Controller@index');
-//        return $this->grid($todos);
-//    }
-    
-    
     
     // carrega els elements
     protected function search()
@@ -50,8 +32,7 @@ trait traitPanel{
             return $this->class::where('estado', '>', '0')->orderBy($orden,'desc')->get();
         else{
             return $this->class::where('estado', '>', '0')
-                    ->where(function($q){
-                        $orden = isset($this->orden)?$this->orden:'desde';
+                    ->where(function($q) use ($orden) {
                         $fecha = Date::now()->subDays(config('variables.diasNoCompleta'));
                         return $q->where('estado','!=',config('modelos.'.$this->model.'.resolve'))
                                 ->where('estado','!=',config('modelos.'.$this->model.'.completa'))

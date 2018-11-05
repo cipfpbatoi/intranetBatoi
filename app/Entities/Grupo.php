@@ -177,55 +177,75 @@ class Grupo extends Model
     public function getAvalFctAttribute()
     {
         $todos = $this->Alumnos;
-        $aval = 0;
-        foreach ($todos as $uno) {
-            if (isset($uno->AlumnoFct->calificacion))
-                $aval++;
-        }
-        return $aval;
+        $aprob = 0;
+        foreach ($todos as $alumno) 
+            foreach ($alumno->Fcts as $fct)
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo )
+                    if (isset($fct->pivot->calificacion))    
+                        $aprob++;
+        
+        return $aprob;
     }
 
     public function getAprobFctAttribute()
     {
         $todos = $this->Alumnos;
         $aprob = 0;
-        foreach ($todos as $uno) {
-            if (isset($uno->AlumnoFct->calificacion) && $uno->AlumnoFct->calificacion)
-                $aprob++;
-        }
+        foreach ($todos as $alumno) 
+            foreach ($alumno->Fcts as $fct)
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo )
+                    if (isset($fct->pivot->calificacion) && $fct->pivot->calificacion == 1 )    
+                        $aprob++;
+        
         return $aprob;
     }
 
     public function getAvalProAttribute()
     {
         $todos = $this->Alumnos;
-        $aval = 0;
-        foreach ($todos as $uno) {
-            if (isset($uno->AlumnoFct->calProyecto))
-                $aval++;
-        }
-        return $aval;
+        $aprob = 0;
+        foreach ($todos as $alumno) 
+            foreach ($alumno->Fcts as $fct)
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo)
+                    if (isset($fct->pivot->calProyecto))    
+                        $aprob++;
+        
+        return $aprob;
     }
 
     public function getAprobProAttribute()
     {
         $todos = $this->Alumnos;
         $aprob = 0;
-        foreach ($todos as $uno) {
-            if (isset($uno->AlumnoFct->calProyecto) && $uno->AlumnoFct->calProyecto >= 5)
-                $aprob++;
-        }
+        foreach ($todos as $alumno) 
+            foreach ($alumno->Fcts as $fct)
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo )
+                    if (isset($fct->pivot->calProyecto) && $fct->pivot->calificacion >= 5)    
+                        $aprob++;
+        
         return $aprob;
     }
 
     public function getColocadosAttribute()
     {
+        
         $todos = $this->Alumnos;
         $aprob = 0;
-        foreach ($todos as $uno) {
-            if (isset($uno->AlumnoFct->insercion) && ($uno->AlumnoFct->insercion))
-                $aprob++;
-        }
+        foreach ($todos as $alumno) 
+            foreach ($alumno->Fcts as $fct)
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo  )
+                    if (isset($fct->pivot->insercion)&&$fct->pivot->insercion)    
+                        $aprob++;
+        
+        return $aprob;
+    }
+    public function getExentosAttribute()
+    {
+        $todos = $this->Alumnos;
+        $aprob = 0;
+        foreach ($todos as $alumno) 
+            foreach ($alumno->Fcts as $fct)
+                if ($fct->exento) $aprob++;
         return $aprob;
     }
 

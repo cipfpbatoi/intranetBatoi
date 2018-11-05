@@ -14,6 +14,7 @@ $grupo = $panel->getElementos($pestana)->first()->Alumno->Grupo->first();  @endp
             <div class="left col-xs-12">
                 <ul class="list-unstyled">
                     <li>Resultats Fct: <b>{{$grupo->resfct}}</b></li>
+                    <li>Exempts:<b>{{$grupo->exentos}}</b></li>
                     <li>Resultats Projecte: <b>{{$grupo->respro}} </b></li>
                     <li>Inserció Laboral: <b>{{$grupo->resempresa}}</b></li>
                     @if ($grupo->acta) Acta <b>{{ $grupo->acta }}</b> </li> @endif

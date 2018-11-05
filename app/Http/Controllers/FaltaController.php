@@ -23,7 +23,7 @@ class FaltaController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Falta';
-    protected $gridFields = ['id', 'desde', 'hasta', 'motivo', 'situacion'];
+    protected $gridFields = ['id', 'desde', 'hasta', 'motivo', 'situacion','observaciones'];
     protected $modal = true;
 
     

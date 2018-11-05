@@ -16,14 +16,19 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Descripció</th><th>Espai</th><th>Realitzada</th>
+                <th>Descripció</th><th>Espai</th><th>Professor</th><th>Realitzada</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($todos as $elemento)
             <tr>
-                <td>{{$elemento->descripcion}}</td>
+                <td>{{$elemento->descripcion}}.
+                    @if (!empty($elemento->Observaciones)) 
+                        Observacions: {{$elemento->Observaciones}}
+                    @endif    
+                </td>
                 <td>{{$elemento->espacio }}</td>
+                <td>{{$elemento->Creador->ShortName}}</td>
                 <td>       </td>
             </tr>
             @endforeach

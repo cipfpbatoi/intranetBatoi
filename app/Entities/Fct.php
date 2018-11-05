@@ -152,6 +152,14 @@ class Fct extends Model
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
+    public function getDualAttribute()
+    {
+        return $this->asociacion == 3;
+    }
+    public function getExentoAttribute()
+    {
+        return $this->asociacion == 2;
+    }
     
     public function getCentroAttribute(){
         return isset($this->Colaboracion->Centro->nombre)?$this->Colaboracion->Centro->nombre:'Convalidada/Exent';
