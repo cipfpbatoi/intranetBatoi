@@ -2,7 +2,7 @@
 <div style="border: 2px #000 solid">
     <br/><br/><br/><br/>
     <div class="container" style="width:50%;float:center">
-        <img src="{{url('img/pdf/cabecera2.jpg')}}" alt="logo" style="width:300px;height:300px" /><br/>
+        <img src="{{url('img/pdf/logo.png')}}" alt="logo" style="width:300px;height:300px" /><br/>
     </div> 
     <div class="container col-lg-12" style="width:65%;clear:right;text-align: justify">
         <br/><br/><br/><br/>

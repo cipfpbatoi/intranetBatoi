@@ -24,7 +24,7 @@
         </div>
         <div style="float:right;width:20%;margin-top:5pt;margin-right:8pt;text-align: center">
             <div style="margin-bottom: 8pt"><img src="{{url('img/pdf/conselleria.png')}} " width="80px" height="33px"/></div>
-            <div style="margin-bottom: 8pt"><img src="{{url('img/pdf/cabecera2.jpg')}}" width="80px" height="60px"/></div>
+            <div style="margin-bottom: 8pt"><img src="{{url('img/pdf/logo.png')}}" width="80px" height="60px"/></div>
         </div>
     </div>
 </div>

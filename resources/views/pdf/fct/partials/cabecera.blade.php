@@ -5,7 +5,7 @@
             <colgroup><col witdh='90'><col width="899"/><col width="629"/></colgroup>
         @endif    
         <tr>
-            <td rowspan='2' style="text-align:left;width:3.283cm;"><img src="{{url('img/pdf/cabecera2.jpg')}}" alt="logo" style="width:60px;height:60px" /></td>
+            <td rowspan='2' style="text-align:left;width:3.283cm;"><img src="{{url('img/pdf/logo.png')}}" alt="logo" style="width:60px;height:60px" /></td>
             <td style="font-size: 0.9em">{{ $datosInforme['nombre'] }}</td>
             <td style="font-size: 1.2em"><strong>{{ $datosInforme['documento'] }}</strong></td>
         </tr>
