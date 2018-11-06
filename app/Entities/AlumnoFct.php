@@ -60,6 +60,10 @@ class AlumnoFct extends Model
         $fcts = Fct::select('id')->esAval()->get()->toArray();
         return $query->whereIn('idFct',$fcts);
     }
+    public function scopeEsDual($query){
+        $fcts = Fct::select('id')->esDual()->get()->toArray();
+        return $query->whereIn('idFct',$fcts);
+    }
     
     
     public function getNombreAttribute(){

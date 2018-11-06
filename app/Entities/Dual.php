@@ -10,24 +10,26 @@ class Dual extends Fct
     
     protected $table = 'fcts';
     
-    protected $fillable = ['idAlumno', 'idColaboracion', 'desde'
+    protected $fillable = ['idAlumno', 'idColaboracion', 'desde','hasta'
         ,'horas','asociacion'];
+    protected $notFillable = ['desde','hasta','idAlumno','horas'];
     protected $inputTypes = [
         'idAlumno' => ['type' => 'select'],
         'idColaboracion' => ['type' => 'select'],
         'asociacion' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
+        'hasta' => ['type' => 'date'],
     ];
     
     public function __construct()
     {
         $this->asociacion = 3;
-        $this->horas = 600;
         $this->correoInstructor = 1;
     }
     
     public function getIdAlumnoOptions(){
-        return hazArray(Alumno::misAlumnos(AuthUser()->dni,true)->get(),'nia',['apellido1','apellido2','nombre']);
+        return hazArray(Alumno::misAlumnos(AuthUser()->dni,true)->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',
+                ['nameFull']);
     }
     
     public function getIdColaboracionOptions(){

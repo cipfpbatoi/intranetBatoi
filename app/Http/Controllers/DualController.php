@@ -13,46 +13,42 @@ use Intranet\Botones\BotonImg;
 use Intranet\Botones\Panel;
 use Intranet\Entities\Documento;
 
-class DualController extends FctController
+class DualController extends Controller
 {
+    use traitCRUD;
 
     protected $perfil = 'profesor';
     protected $model = 'Dual';
-    protected $gridFields = [ 'LAlumnes', 'Centro','desde', 'horas'];
-    protected $grupo;
-    protected $vista = ['show' => 'fct'];
+    
     
 
     protected $modal = false;
 
     
-    public function index(){
-        Session::forget('pestana');
-        return parent::index();
-    }
     
     
-    protected function iniBotones()
+    public function store(Request $request)
     {
-        //$this->panel->setBotonera();
-        $this->panel->setBoton('grid', new BotonImg('dual.delete'));
-        $this->panel->setBoton('grid', new BotonImg('dual.edit'));
-        $this->panel->setBoton('grid', new BotonImg('dual.show'));
-        $this->panel->setBoton('grid', new BotonImg('dual.anexevii',['img' => 'fa-file-word-o']));
-        $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info','roles' => config('roles.rol.dual')]));
-//        $find = Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento','Qualitat')
-//                ->where('curso',Curso())->first();
-//        if (!$find) $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
-//        else $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
-        Session::put('redirect', 'DualController@index');
+        $idFct = DB::transaction(function() use ($request){
+            $idAlumno = $request['idAlumno'];
+            $hasta = $request['hasta'];
+            $elemento = Dual::where('idColaboracion',$request->idColaboracion)
+                    ->where('asociacion',3)
+                    ->first();
+            
+            if (!$elemento){ 
+                $elemento = new Dual();
+                $this->validateAll($request, $elemento);
+                $id = $elemento->fillAll($request);
+            } 
+            $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($hasta),'horas'=>$request->horas]);
+            
+            return $elemento->id;
+        });
+        
+        return $this->redirect();
     }
 
-    
-
-    public function search()
-    {
-        return Dual::misFcts(AuthUser()->dni,true)->where('asociacion',3)->get();
-    }
     
     
     public function anexevii($id)

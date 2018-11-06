@@ -215,14 +215,10 @@ Route::get('/fct/{document}/empresa',['as' => 'fct.empresa', 'uses' => 'PanelFct
 Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFctAvalController@edit']);
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
 
-
-Route::resource('/dual', 'DualController', ['except' => ['destroy', 'update', 'show']]);
-Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualController@destroy']);
-Route::get('/dual/{id}/show', ['as' => 'dual.show', 'uses' => 'DualController@show']);
-Route::put('/dual/{id}/edit', ['as' => 'dual.update', 'uses' => 'DualController@update']);
-Route::get('/dual/create/{colaboracio}', ['as' => 'dual.create2', 'uses' => 'DualController@create']);
+Route::resource('dual','DualAlumnoController',['except' => ['destroy', 'update', 'show','edit']]);
+Route::get('/dual/edit',['as' => 'dual.edit', 'uses' => 'DualController@edit']);
 Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@store']);
-Route::get('/dual/{id}/anexevii',['as' => 'dual.vii', 'uses' => 'DualController@anexevii']);
+Route::get('/dual/{id}/anexevii',['as' => 'dual.vii', 'uses' => 'DualAlumnoController@anexevii']);
 
 Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/alumnofct/{id}/delete', ['as' => 'alumnofct.destroy', 'uses' => 'FctAlumnoController@destroy']);
