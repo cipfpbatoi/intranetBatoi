@@ -21,7 +21,7 @@ class FctAlumnoController extends IntranetController
     use traitImprimir;
     
     protected $perfil = 'profesor';
-    protected $model = 'AlumnoFct';
+    protected $model = 'Alumnofct';
     protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas','periode'];
     protected $profile = false;
     protected $titulo = [];

@@ -20,6 +20,8 @@ class AlumnoFct extends Model
     ];
     protected $inputTypes = [
         'id' => ['type' => 'hidden'],
+        'desde' => ['type' => 'date'],
+        'hasta' => ['type' => 'date']
     ];
     public $timestamps = false;   
     

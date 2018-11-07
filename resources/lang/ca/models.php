@@ -381,7 +381,7 @@ return array(
           'index' => 'Fct x Alumne',
           'convalidacion' => 'FCT Convalidada/Exempt',
           'create' => 'Nova Exempció',  
-          'edit' => 'Modificar Dates Fct',
+          'edit' => 'Modificar Dades Fct',
           'pdf' => 'Imprimir certificat Alumne',
           'email' => 'Enviar Correu Valoració Alumne'  
           
