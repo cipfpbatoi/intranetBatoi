@@ -12,10 +12,11 @@ use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\Panel;
 use Intranet\Entities\Documento;
+use Intranet\Entities\AlumnoFct;
 
-class DualController extends Controller
+class DualController extends IntranetController
 {
-    use traitCRUD;
+   
 
     protected $perfil = 'profesor';
     protected $model = 'Dual';
@@ -24,8 +25,39 @@ class DualController extends Controller
 
     protected $modal = false;
 
+    public function edit($id)
+    {
+        $alumno = AlumnoFct::findOrFail($id);
+        $elemento = $alumno->Dual;
+        $elemento->setInputType('idAlumno', ['type' => 'hidden','disableAll' => 'disableAll']);
+        $elemento->setInputType('idColaboracion', ['disabled' => 'disabled']);
+        $elemento->desde = $alumno->desde;
+        $elemento->hasta = $alumno->hasta;
+        $elemento->horas = $alumno->horas;
+        $default = $elemento->fillDefautOptions();
+        $modelo = $this->model;
+        
+        return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
+    }
     
-    
+    public function update(Request $request,$id)
+    {
+        $idFct = DB::transaction(function() use ($request,$id){
+            $alumno = AlumnoFct::findOrFail($id);
+            $elemento = $alumno->Dual;
+            
+            $alumno->desde = FechaInglesa($request['desde']);
+            $alumno->hasta = FechaInglesa($request['hasta']);
+            $alumno->horas = $request['horas'];
+            $alumno->save();
+            $elemento->idInstructor = $request['idInstructor'];
+            $elemento->save();
+            
+            return $elemento->id;
+        });
+        
+        return $this->redirect();
+    }
     
     public function store(Request $request)
     {
@@ -51,24 +83,7 @@ class DualController extends Controller
 
     
     
-    public function anexevii($id)
-    {
-        $fct = Dual::findOrFail($id);
-        $secretario = Profesor::find(config('contacto.secretario'));
-        $director = Profesor::find(config('contacto.director'));
-        $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
-            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
-            'secretario' => $secretario->FullName,
-            'centro' => config('contacto.nombre'),
-            'codigo' => config('contacto.codi'),
-            'poblacion' => config('contacto.poblacion'),
-            'provincia' => config('contacto.provincia'),
-            'director' => $director->FullName
-        ];
-        
-        $pdf = $this->hazPdf('dual.anexe_vii', $fct,$dades,'landscape','a4',10);
-        return $pdf->stream();
-    }
+    
         
     
     

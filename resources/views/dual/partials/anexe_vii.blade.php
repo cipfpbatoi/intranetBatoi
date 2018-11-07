@@ -48,12 +48,12 @@
     <div style="position:absolute;left:54.70px;top:227.70px" class="cls_009">
         <span class="cls_009">FAMÍLIA PROFESSIONAL / </span>
         <span class="cls_010">FAMILIA PROFESIONAL</span><br/>
-        <span class="cls_004"> {{$todos->Colaboracion->Ciclo->Departament->literal}}</span>
+        <span class="cls_004"> {{$todos->Dual->Colaboracion->Ciclo->Departament->literal}}</span>
     </div>
     <div style="position:absolute;left:687.80px;top:227.70px;width: 300px" class="cls_009">
         <span class="cls_009">CICLE FORMATIU / </span>
         <span class="cls_010">CICLO FORMATIVO</span><br/>
-        <span class="cls_004">{{$todos->Colaboracion->Ciclo->ciclo}}</span>
+        <span class="cls_004">{{$todos->Dual->Colaboracion->Ciclo->ciclo}}</span>
     </div>
     <div style="position:absolute;left:54.70px;top:260.40px" class="cls_009">
         <span class="cls_009">DENOMINACIÓ DEL CENTRE EDUCATIU</span>
@@ -71,15 +71,15 @@
     </div>
     <div style="position:absolute;left:54.70px;top:296.10px" class="cls_009">
         <span class="cls_009">EMPRESA</span><br/>
-        <span class="cls_004"> {{$todos->Colaboracion->Centro->nombre}}</span>
+        <span class="cls_004"> {{$todos->Dual->Colaboracion->Centro->nombre}}</span>
     </div>
     <div style="position:absolute;left:549.90px;top:296.10px" class="cls_009">
         <span class="cls_009">INSTRUCTOR O INSTRUCTORA</span><br/>
-        <span class="cls_004">@if ($todos->Instructores->count()) {{$todos->Instructores->first()->Nombre }} @endif</span>
+        <span class="cls_004">@if ($todos->Dual->Instructor) {{$todos->Dual->Instructor->Nombre }} @endif</span>
     </div>
     <div style="position:absolute;left:1030.60px;top:296.10px" class="cls_009">
         <span class="cls_009">NIF</span><br/>
-        <span class="cls_004">@if ($todos->Instructores->count()) {{$todos->Instructores->first()->dni }} @endif</span>
+        <span class="cls_004">@if ($todos->Dual->Instructor) {{$todos->Dual->Instructor->dni }} @endif</span>
     </div>
     <div style="position:absolute;left:54.70px;top:338.20px" class="cls_006">
         <span class="cls_006">B</span>
@@ -139,7 +139,7 @@
         <span class="cls_013">Vº Bº del tutor o tutora de FP Dual</span>
     </div>
     <div style="position:absolute;left:180.70px;top:774.20px" class="cls_013">
-        <span class="cls_004">@if ($todos->Instructores->count()) {{$todos->Instructores->first()->Nombre }} @endif</span><br/>
+        <span class="cls_004">@if ($todos->Dual->Instructor) {{$todos->Dual->Instructor->Nombre }} @endif</span><br/>
         
     </div>
     <div style="position:absolute;left:130.70px;top:784.20px" class="cls_013">

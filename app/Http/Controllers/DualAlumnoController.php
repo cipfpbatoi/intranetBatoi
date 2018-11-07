@@ -21,7 +21,7 @@ class DualAlumnoController extends FctAlumnoController
     use traitImprimir;
     
     protected $perfil = 'profesor';
-    protected $model = 'Alumnofct';
+    protected $model = 'AlumnoFct';
     protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas','periode'];
     protected $profile = false;
     protected $titulo = [];
@@ -34,10 +34,10 @@ class DualAlumnoController extends FctAlumnoController
     protected function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
-        $this->panel->setBoton('grid', new BotonImg('dual.edit',['where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('dual.edit'));
+        $this->panel->setBoton('grid', new BotonImg('dual.pdf'));
         $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
-        ession::put('redirect', 'DualAlumnoController@index');
+        Session::put('redirect', 'DualAlumnoController@index');
     }
         //
 
@@ -50,35 +50,22 @@ class DualAlumnoController extends FctAlumnoController
     
     public function pdf($id)
     {
-        $fct = [AlumnoFct::findOrFail($id)];
+        $fct = AlumnoFct::findOrFail($id);
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));
-        $dades = ['date' => FechaString(Hoy()),
+        $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
             'centro' => config('contacto.nombre'),
+            'codigo' => config('contacto.codi'),
             'poblacion' => config('contacto.poblacion'),
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName
         ];
         
-        $pdf = $this->hazPdf('pdf.fct.alumne', $fct, $dades);
+        $pdf = $this->hazPdf('dual.anexe_vii', $fct,$dades,'landscape','a4',10);
         return $pdf->stream();
     }
     
-    public function email($id)
-    {
-        // CARREGANT DADES
-        $elemento = AlumnoFct::findOrFail($id);
-        $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName, 'id' => AuthUser()->dni];
-
-        // MANE ELS TREBALLS
-        if ($elemento->Alumno->email != ''){
-            dispatch(new SendEmail($elemento->Alumno->email, $remitente, 'email.fct.alumno', $elemento));
-            Alert::info('Correu enviat');
-            }
-        else Alert::info("L'alumne no té correu. Revisa-ho");
-
-        return back();
-    }
+    
 } 

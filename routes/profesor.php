@@ -216,9 +216,12 @@ Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFc
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
 
 Route::resource('dual','DualAlumnoController',['except' => ['destroy', 'update', 'show','edit']]);
-Route::get('/dual/edit',['as' => 'dual.edit', 'uses' => 'DualController@edit']);
+Route::get('/dual/{id}/edit', ['as' => 'dual.edit', 'uses' => 'DualController@edit']);
+Route::put('/dual/{id}/edit', ['as' => 'dual.update', 'uses' => 'DualController@update']);
+Route::get('/dual/create', ['as' => 'dual.create', 'uses' => 'DualController@create']);
 Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@store']);
-Route::get('/dual/{id}/anexevii',['as' => 'dual.vii', 'uses' => 'DualAlumnoController@anexevii']);
+Route::get('/dual/{id}/pdf',['as' => 'dual.pdf', 'uses' => 'DualAlumnoController@pdf']);
+Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualAlumnoController@destroy']);
 
 Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/alumnofct/{id}/delete', ['as' => 'alumnofct.destroy', 'uses' => 'FctAlumnoController@destroy']);

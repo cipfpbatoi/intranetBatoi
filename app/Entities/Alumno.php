@@ -168,5 +168,10 @@ class Alumno extends Authenticatable
         }
         return $horas;
     }
+    public function getFechaNacAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
+    }
 
 }

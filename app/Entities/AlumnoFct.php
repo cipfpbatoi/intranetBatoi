@@ -21,13 +21,17 @@ class AlumnoFct extends Model
     protected $inputTypes = [
         'id' => ['type' => 'hidden'],
     ];
-       
+    public $timestamps = false;   
     
     public function Alumno()
     {
         return $this->belongsTo(Alumno::class, 'idAlumno', 'nia');
     }
     public function Fct()
+    {
+        return $this->belongsTo(Fct::class, 'idFct', 'id');
+    }
+    public function Dual()
     {
         return $this->belongsTo(Fct::class, 'idFct', 'id');
     }

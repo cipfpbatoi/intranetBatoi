@@ -10,12 +10,13 @@ class Dual extends Fct
     
     protected $table = 'fcts';
     
-    protected $fillable = ['idAlumno', 'idColaboracion', 'desde','hasta'
+    protected $fillable = ['idAlumno', 'idColaboracion','idInstructor','desde','hasta'
         ,'horas','asociacion'];
     protected $notFillable = ['desde','hasta','idAlumno','horas'];
     protected $inputTypes = [
         'idAlumno' => ['type' => 'select'],
         'idColaboracion' => ['type' => 'select'],
+        'idInstructor' => ['type' => 'select'],
         'asociacion' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],

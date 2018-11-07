@@ -29,7 +29,7 @@ class Fct extends Model
         'idInstructor' => 'sometimes|required',
         'desde' => 'sometimes|required|date',
         'hasta' => 'sometimes|required|date',
-        'horas' => 'required|numeric',
+        //'horas' => 'numeric',
     ];
     protected $inputTypes = [
         'idAlumno' => ['type' => 'select'],

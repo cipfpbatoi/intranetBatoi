@@ -42,6 +42,9 @@ class FctController extends IntranetController
         $elemento = Fct::findOrFail($id);
         $elemento->setInputType('idAlumno', ['type' => 'hidden','disableAll' => 'disableAll']);
         $elemento->setInputType('idColaboracion', ['disabled' => 'disabled']);
+        $elemento->setInputType('desde',['type'=>'hidden']);
+        $elemento->setInputType('hasta',['type'=>'hidden']);
+        $elemento->setInputType('horas',['type'=>'hidden']);
         $default = $elemento->fillDefautOptions();
         $modelo = $this->model;
         
@@ -51,6 +54,7 @@ class FctController extends IntranetController
     
     protected function iniBotones()
     {
+        $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion','==','1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.delete',['where'=>['Nalumnes','==','1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.pdf',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
