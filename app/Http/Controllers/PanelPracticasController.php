@@ -15,7 +15,7 @@ class PanelPracticasController extends BaseController
     protected function iniBotones()
     {
         $this->panel->setBoton('grid',new BotonImg('direccion.acta',['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion'),'where' => ['acta_pendiente','==','1']]));
-        $this->panel->setBoton('grid',new BotonImg('direccion.acta',['img' => 'fa-file','roles' => config('roles.rol.direccion'),'where' => ['acta_pendiente','!=','1']]));
+        $this->panel->setBoton('grid',new BotonImg('fctcap.check',['img' => 'fa-check','roles' => config('roles.rol.jefe_practicas')]));
         
     }
     protected function search(){

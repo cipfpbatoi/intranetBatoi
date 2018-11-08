@@ -383,12 +383,18 @@ return array(
           'create' => 'Nova Exempció',  
           'edit' => 'Modificar Dades Fct',
           'pdf' => 'Imprimir certificat Alumne',
-          'email' => 'Enviar Correu Valoració Alumne'  
+          'email' => 'Enviar Correu Valoració Alumne',
+          'pg0301' => "Entregada documentació"
           
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
           'list' => "Llistat pendents d'avaluació grup :quien"
+        ),
+        'Fctcap' => array(
+          'index' => 'Control Fct :quien',
+           'check' => 'Control documentació'
+          
         ),
         'modelos' => array(
             'Comision' => 'Comisió de Servei',

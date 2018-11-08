@@ -58,6 +58,8 @@ Route::get('/infDpto',['as'=>'infdpto.control','uses'=>'PanelInfDptoController@i
 Route::get('/{grupo}/acta', ['as' => 'fct.acta', 'uses' => 'PanelActasController@indice']);
 Route::get('/{grupo}/finActa', ['as' => 'fct.finActa', 'uses' => 'PanelActasController@finActa']);
 
+
+
 Route::get('/{grupo}/fol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificados']);
 Route::get('/{alumno}/aFol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificado']);
 
@@ -68,5 +70,4 @@ Route::post('/horarios/cambiar',['as' => 'horarios.cambiar', 'uses' => 'HorarioC
 
 Route::get('/documento',['as'=> 'documentosP.index','uses' => 'PanelDocumentoController@index']);
 
-Route::get('/controlFct',['as'=> 'controlFct.index','uses' => 'PanelPracticasController@index']);
 

@@ -43,10 +43,6 @@ class AlumnoFctAval extends AlumnoFct
      {
          return $query->where('actas','=', 2);
      }
-     public function scopeGrupo($query,$grupo)
-    {
-        $alumnos = Alumno::select('nia')->misAlumnos($grupo->tutor)->get()->toArray();
-        return $query->whereIn('idAlumno',$alumnos);
-    }
+     
  
 }

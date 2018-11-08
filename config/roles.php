@@ -13,6 +13,7 @@ return [
         'orientador' => 29,
         'practicas' => 31,
         'dual' => 37,
+        'jefe_practicas' => 41
     ],
     'lor' => [
         2 => 'direccion',
@@ -26,5 +27,6 @@ return [
         5 => 'alumno',
         1 => 'todos',
         31 => 'practicas',
-        37 => 'dual'
+        37 => 'dual',
+        41 => 'jefe_practicas'
     ]];

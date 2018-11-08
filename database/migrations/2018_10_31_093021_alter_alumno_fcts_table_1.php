@@ -17,6 +17,7 @@ class AlterAlumnoFctsTable1 extends Migration {
                 Schema::table('alumno_fcts', function(Blueprint $table)
 		{
                     $table->boolean('correoAlumno')->default(0);
+                    $table->boolean('pg0301')->default(0);
                 });
                 
 
@@ -33,6 +34,7 @@ class AlterAlumnoFctsTable1 extends Migration {
                 Schema::table('alumno_fcts', function(Blueprint $table)
 		{
                     $table->dropColumn('correoAlumno');
+                    $table->dropColumn('prg0301');
                     
                 });
 	}

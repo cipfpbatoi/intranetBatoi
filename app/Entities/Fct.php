@@ -64,7 +64,7 @@ class Fct extends Model
     }
     public function Alumnos()
     {
-        return $this->belongsToMany(Alumno::class,'alumno_fcts', 'idFct', 'idAlumno','id','nia')->withPivot(['calificacion','calProyecto','actas','insercion','horas','desde','hasta','correoAlumno']);
+        return $this->belongsToMany(Alumno::class,'alumno_fcts', 'idFct', 'idAlumno','id','nia')->withPivot(['calificacion','calProyecto','actas','insercion','horas','desde','hasta','correoAlumno','pg0301']);
     }
     
     public function scopeCentro($query, $centro)

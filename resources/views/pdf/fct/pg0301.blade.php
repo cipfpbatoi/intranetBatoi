@@ -30,7 +30,7 @@
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">SIGNATURA CAP PRÀCTIQUES</td>
         </tr>
         @foreach ($agrupados as $Alfct)
-        <tr style="height: 50px"><td style="text-align:left;font-size: 0.9em " >{{ $Alfct->first()->Fct->Colaboracion->Centro->nombre }} ({{ $Alfct->first()->Fct->quants }})</td>
+        <tr style="height: 50px"><td style="text-align:left;font-size: 0.9em " >{{ $Alfct->first()->Fct->Colaboracion->Centro->nombre }} ({{ $Alfct->count() }})</td>
             <td></td>
             <td></td>
             <td></td>

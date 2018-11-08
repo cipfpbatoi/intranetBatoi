@@ -231,6 +231,7 @@ Route::post('/alumnofct/convalidacion',['as' => 'alumnofct.convalidacion', 'uses
 Route::get('/alumnofct/{id}/pdf', ['as' => 'alumnofct.pdf', 'uses' => 'FctAlumnoController@pdf']);
 Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
 Route::get('/alumnofct/{id}/show', ['as' => 'alumnofct.show', 'uses' => 'FctAlumnoController@show']);
+Route::get('/alumnofct/{id}/pg0301', ['as' => 'alumnofct.pg0301', 'uses' => 'FctAlumnoController@pg0301']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
@@ -324,3 +325,7 @@ Route::get('/itaca',['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@ind
 
 
 Route::get('/profesor/change',['as' =>'profesor.backChange','uses' => 'ProfesorController@backChange']);
+
+//Jefa de practicas
+Route::get('/fctcap/{grupo}/check', ['as' => 'fct.acta', 'uses' => 'PanelPG0301Controller@indice']);
+Route::get('/controlFct',['as'=> 'controlFct.index','uses' => 'PanelPracticasController@index']);

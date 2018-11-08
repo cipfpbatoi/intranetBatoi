@@ -124,4 +124,12 @@ class FctAlumnoController extends IntranetController
 
         return back();
     }
+    
+    public function pg0301($id){
+       $fct = AlumnoFct::find($id);
+       $fct->pg0301 = $fct->pg0301?0:1;
+       $fct->save();
+       return redirect()->action('PanelPG0301Controller@indice',['id' => $fct->Grup]);
+    }
+
 } 

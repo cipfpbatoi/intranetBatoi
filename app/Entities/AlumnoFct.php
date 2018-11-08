@@ -39,7 +39,7 @@ class AlumnoFct extends Model
     }
 
     
-    public function scopeMisFcts($query,$profesor=null,$activa=null)
+    public function scopeMisFcts($query,$profesor=null,$activa=null,$checked=0)
     {
         $profesor = $profesor?$profesor:AuthUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
@@ -48,7 +48,7 @@ class AlumnoFct extends Model
         $fcts = $activa?Fct::select('id')->Activa($activa)->whereIn('idColaboracion',$colaboraciones)
                 ->get()->toArray():Fct::select('id')->whereIn('idColaboracion',$colaboraciones)
                 ->orWhere('asociacion',2)->get()->toArray();
-        return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
+        return $checked?$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('pg0301','=',0):$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
     }
     
     public function scopeMisConvalidados($query,$profesor=null)
@@ -102,5 +102,16 @@ class AlumnoFct extends Model
     {
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
+    }
+    public function getGrupAttribute()
+    {
+        foreach ($this->Alumno->Grupo as $grupo)
+            if ($grupo->Ciclo == $this->Fct->Colaboracion->Ciclo)
+                return $grupo->codigo;
+    }
+    public function scopeGrupo($query,$grupo)
+    {
+        $alumnos = Alumno::select('nia')->misAlumnos($grupo->tutor)->get()->toArray();
+        return $query->whereIn('idAlumno',$alumnos);
     }
 }

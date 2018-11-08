@@ -19,7 +19,6 @@ class PanelActasController extends BaseController
     {
         if (Grupo::findOrFail($this->search)->acta_pendiente)
             $this->panel->setBoton('index', new BotonBasico("direccion.$this->search.finActa",['text'=>'acta']));
-        
     }
     
     protected function search(){
@@ -27,6 +26,8 @@ class PanelActasController extends BaseController
         $this->titulo = ['quien' => $grupo->nombre ];
         if ($grupo->acta_pendiente)
             return AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
+        else 
+            return [];
     }
     
     public function finActa($idGrupo){
