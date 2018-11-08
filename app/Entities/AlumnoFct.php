@@ -41,7 +41,7 @@ class AlumnoFct extends Model
     
     public function scopeMisFcts($query,$profesor=null,$activa=null)
     {
-        $queFaig = config($activa);
+        $queFaig = $activa?config($activa):0;
         $profesor = $profesor?$profesor:AuthUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
