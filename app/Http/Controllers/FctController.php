@@ -78,8 +78,7 @@ class FctController extends IntranetController
     public function document($document)
     {
         if (FCT::misFcts()->Activa(config("pr.$document.cuando"))->count()){
-            $checked = ($document=='pg0301')?1:0;
-            return $this->hazPdf("pdf.fct.$document", AlumnoFct::misFcts(null,"pr.$document.cuando",$checked)->orderBy('idAlumno')->orderBy('desde')->get(),
+            return $this->hazPdf("pdf.fct.$document", AlumnoFct::misFcts(null,"pr.$document.cuando")->orderBy('idAlumno')->orderBy('desde')->get(),
                     config("pr.$document"), config("pr.$document.orientacion"))->stream();
         }
         else{

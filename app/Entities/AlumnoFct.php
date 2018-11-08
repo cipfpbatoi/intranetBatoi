@@ -39,8 +39,9 @@ class AlumnoFct extends Model
     }
 
     
-    public function scopeMisFcts($query,$profesor=null,$activa=null,$checked=0)
+    public function scopeMisFcts($query,$profesor=null,$activa=null)
     {
+        $queFaig = config($activa);
         $profesor = $profesor?$profesor:AuthUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
@@ -48,7 +49,9 @@ class AlumnoFct extends Model
         $fcts = $activa?Fct::select('id')->Activa($activa)->whereIn('idColaboracion',$colaboraciones)
                 ->get()->toArray():Fct::select('id')->whereIn('idColaboracion',$colaboraciones)
                 ->orWhere('asociacion',2)->get()->toArray();
-        return $checked?$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('pg0301','=',0):$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
+        return $queFaig==1?$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('pg0301','=',0)
+            :$queFaig==2?$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('desde','<=',Hoy())->where('hasta','>=',Hoy())
+            :$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
     }
     
     public function scopeMisConvalidados($query,$profesor=null)
