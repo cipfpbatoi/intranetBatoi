@@ -29,12 +29,17 @@ class ColaboracionController extends IntranetController
   
     public function copy($id)
     {
+        $profesor = AuthUser()->dni;
         $elemento = Colaboracion::find($id);
         Session::put('pestana',1);
-        $copia = New Colaboracion;
+        $copia = New Colaboracion();
         $copia->fill($elemento->toArray());
-        $copia->idCiclo = Grupo::QTutor()->first()->idCiclo;
+        $copia->idCiclo = Grupo::QTutor($profesor)->get()->count() > 0 ? Grupo::QTutor($profesor)->first()->idCiclo : Grupo::QTutor($profesor,true)->first()->idCiclo;
+       
+          
+        
         $copia->tutor = AuthUser()->FullName;
+        
             // para no generar más de uno por ciclo
         $validator = Validator::make($copia->toArray(),$copia->getRules());
         if ($validator->fails()){

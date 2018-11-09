@@ -28,7 +28,7 @@ class DualAlumnoController extends FctAlumnoController
     
     public function search()
     {
-        return AlumnoFct::misFcts()->esDual()->orderBy('idAlumno')->orderBy('desde')->get();
+        return AlumnoFct::misDual()->orderBy('idAlumno')->orderBy('desde')->get();
     }
 
     protected function iniBotones()
@@ -36,7 +36,7 @@ class DualAlumnoController extends FctAlumnoController
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf'));
-        $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info']));
         Session::put('redirect', 'DualAlumnoController@index');
     }
         //

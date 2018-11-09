@@ -53,6 +53,16 @@ class AlumnoFct extends Model
             :$queFaig==2?$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('desde','<=',Hoy())->where('hasta','>=',Hoy())
             :$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
     }
+    public function scopeMisDual($query,$profesor=null)
+    {
+        $profesor = $profesor?$profesor:AuthUser()->dni;
+        $alumnos = Alumno::select('nia')->misAlumnos($profesor,true)->get()->toArray();
+        $cicloC = Grupo::select('idCiclo')->QTutor($profesor,true)->first()->idCiclo;
+        $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
+        $fcts = Fct::select('id')->whereIn('idColaboracion',$colaboraciones)
+                ->where('asociacion',3)->get()->toArray();
+        return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
+    }
     
     public function scopeMisConvalidados($query,$profesor=null)
     {
