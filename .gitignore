@@ -12,6 +12,7 @@ npm-debug.log
 yarn-error.log
 .env
 /public/fotos
+/config/contacto.php
 /config/variables.php
 /config/curso.php
 /public/img/pdf
