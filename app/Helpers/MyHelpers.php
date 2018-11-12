@@ -323,11 +323,18 @@ function avisa($id, $mensaje, $enlace = '#', $emisor = null)
         else
             $quien = \Intranet\Entities\Profesor::find($id);
         
-        $quien->notify(new \Intranet\Notifications\mensajePanel(
-                ['motiu' => $mensaje,
-            'emissor' => $emisor,
-            'data' => $fecha,
-            'enlace' => $enlace]));
+        if ($quien)
+            $quien->notify(new \Intranet\Notifications\mensajePanel(
+                    ['motiu' => $mensaje,
+                'emissor' => $emisor,
+                'data' => $fecha,
+                'enlace' => $enlace]));
+        else 
+            AuthUser()->notify(new \Intranet\Notifications\mensajePanel(
+                    ['motiu' => "No trobe usuari $id",
+                'emissor' => $emisor,
+                'data' => $fecha,
+                'enlace' => $enlace]));
     }
 }
 
