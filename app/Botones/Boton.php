@@ -18,7 +18,6 @@ abstract class Boton
     protected $permanetClase; //clase que s'aplica sempre
     protected $relative; // false ruta absoluta || true ruta relativa || prefijo
    
-    
     /*
      * __construct(
      * $href = modelo.accion
