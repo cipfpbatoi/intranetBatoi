@@ -1,10 +1,11 @@
 @extends('layouts.pdf')
 @section('content')
     @foreach ($todos as $index => $horario)
+        @php $profesor = Intranet\Entities\Profesor::find($index); @endphp
         <div class='page'>
             @include('pdf.partials.cabecera')
             <br/><br/>
-            <h5 style="text-align: center">Professor: {{ Intranet\Entities\Profesor::find($index)->FullName}}</h5>
+            <h5 style="text-align: center">Professor: {{ $profesor->FullName}}</h5>
             <table class='table table-bordered'>
                 <colgroup><col width="100"/><col width="100"/><col width="100"/><col width="100"/><col width="100"/><col width="100"/></colgroup>
                 @include('home.partials.horario.cabeceraTabla')
@@ -36,9 +37,15 @@
             </div>
             <div class="container">
                 <br /><br /><br /><br /><br /><br/><br/>
-                <div style="width:32%;float:left">Vist i plau<br/>El director</div>
+                <div style="width:32%;float:left">Vist i plau<br/>{{config('signatures.horarios')}}</div>
                 <div style="width:32%;float:left;text-align: center">Segell</div>
-                <div style="width:32%;float:right;text-align: right">ALCOI a {{FechaString()}}<br/><br/>Assabentat(ada)<br/>el professor/ la professora</div>
+                <div style="width:32%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} a {{FechaString()}}<br/><br/>
+                    @if ($profesor->sexo == 'H') 
+                        Assabentat<br/>el professor
+                    @else 
+                        Assabentada<br/>la professora
+                    @endif
+                </div>    
             </div>
         </div>
     @endforeach

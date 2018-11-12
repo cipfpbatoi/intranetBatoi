@@ -43,8 +43,8 @@
 <br/><br/><br/><br/><br/>
 <p>La direcció AUTORITZA les activitats extraescolars durant el/s die/s i hor/es indicats</p>
 <div class="container col-lg-12">
-    <div style="width:50%;float:left">SIGNAT EL SOTA-DIRECTOR:</div>
-    <div style="width:50%;float:right;text-align: right">ALCOI A {{ $datosInforme }}</div>
+    <div style="width:50%;float:left">SIGNAT {{signatura('actividad')}}:</div>
+    <div style="width:50%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{ $datosInforme }}</div>
 </div>
 @endsection
 

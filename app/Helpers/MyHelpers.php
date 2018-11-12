@@ -62,6 +62,14 @@ function fullDireccion()
     return config('contacto.direccion') . ' - ' . config('contacto.postal') . ' ' . config('contacto.poblacion');
 }
 
+function signatura($document)
+{
+    foreach (config('signatures.llistats') as $key => $carrec){
+        if (array_search($document, $carrec)!==false){
+            return config("signatures.genere.$key")
+            [Intranet\Entities\Profesor::find(config("contacto.$key"))->sexo];
+        }
+}   }
 /**
  * Mira si al usuario actual le esta permitido el nombre de rol 
  *

@@ -31,6 +31,6 @@
         TUTOR/A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         VOCAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         SECRETARI/A</div>
-    <div style="width:45%;float:right;text-align: right">ALCOI A {{$datosInforme->hoy}}</div>
+    <div style="width:45%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme->hoy}}</div>
 </div>
 @endsection

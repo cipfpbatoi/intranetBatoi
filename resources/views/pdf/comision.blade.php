@@ -55,7 +55,7 @@
 </div>
 <div class="container">
     <div style="width:50%;float:left">SIGNAT EL/LA FUNCIONARIA:</div>
-    <div style="width:50%;float:right;text-align: right">ALCOI A {{ $datosInforme }}</div>
+    <div style="width:50%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{ $datosInforme }}</div>
 </div>
 
 <br/><br/><br/><br/><br/>

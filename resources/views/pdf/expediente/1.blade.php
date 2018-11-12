@@ -7,7 +7,7 @@
         <div class="container col-lg-12" style="width:40%;float: right">
             {{$elemento->Alumno->FullName}}<br/>
             {{$elemento->Alumno->domicilio}}<br/>
-            {{$elemento->Alumno->Municipio()}}<br/>
+            {{$elemeno->Alumno->codigo_postal}} {{$elemento->Alumno->Municipio()}}<br/>
             {{$elemento->Alumno->Provincia->nombre}}<br/>
         </div>
         <div class="container" style="width:95%;clear:right;text-align: justify">
@@ -30,7 +30,7 @@
             <div style="width:45%; float:left; ">
                 <p><strong>{{\Intranet\Entities\Profesor::find(config('contacto.director'))->FullName}}</strong></p>
                 <br/><br/><br/>
-                <p>DIRECTOR</p>
+                <p>{{signatura('expediente')}}</p>
             </div>
         </div>
     </div>

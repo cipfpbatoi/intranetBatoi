@@ -1,9 +1,12 @@
 @include('pdf.partials.cabecera')
+@php $director = \Intranet\Entities\Profesor::find(config('contacto.director')); @endphp
 <div class="container col-lg-12" style="width:95%;clear:right;text-align: justify;">
     <br/><br/><br/>
-    <strong>{{\Intranet\Entities\Profesor::find(config('constants.contacto.director'))->FullName}}</strong>
+    <strong>{{ $director->FullName }}</strong>
     <br/><br/><br/>
-    Amb DNI número {{\Intranet\Entities\Profesor::find(config('constants.contacto.director'))->dni}}, com a Director del C.I.P.F.P. Batoi, i segons el programa
+    Amb DNI número {{$director->dni}}, com a
+    @if ($director->sexo == 'H') Director @else Directora @endif 
+    del {{config('contacto.titulo')}}, i segons el programa
     de formació de manipuladors d'aliments que s'imparteix als alumnes d'aquest centre,
 </div>
 <br/><br/>
