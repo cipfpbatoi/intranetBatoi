@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 abstract class Boton
 {
-
     protected $modelo;
     protected $accion;
     protected $href;
