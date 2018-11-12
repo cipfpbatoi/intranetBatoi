@@ -20,15 +20,15 @@ return [
       'vicedirector' => '021666224V',
       'jefeEstudios' => '021657327K',
       'jefeEstudios2' => '029071324Z',
-      'orientador' => '021634142C',
+      'orientador' => ['021634142C','021669338A'],
       'avisos' => [
             'errores' => '021652470V',
             'material' => '021654541H',
         ],
-        'incidencias' => [
+      'incidencias' => [
             '021637655Z', '021652470V', '021650958T', '021654541H'
-        ], 
-        'host' => [
+       ], 
+       'host' => [
             'web' => 'http://intranet.cipfpbatoi.es',
             'email' => 'intranet@cipfpbatoi.es',
             'dominio'=> 'cipfpbatoi.es',
