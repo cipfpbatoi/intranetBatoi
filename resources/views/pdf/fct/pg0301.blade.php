@@ -1,7 +1,7 @@
 @extends('layouts.pdf')
 @section('content')
 @php
-   $agrupados = $todos->groupBy('idFct')
+   $agrupados = $todos->groupBy('idFct');
 @endphp
 <body style="max-width:27.59cm;margin-top:1.251cm; margin-bottom:1.251cm; margin-left:1cm; margin-right:1cm; ">
     @include('pdf.fct.partials.cabecera')
@@ -17,7 +17,7 @@
     <table border="1" >
         <colgroup><col width="400"/><col width="40"/><col width="40"/><col width="40"/><col width="40"/><col width="100"/><col width="150"/><col width="150"/></colgroup>
         <tr>
-            <td colspan='8' style="text-align:left;font-weight: bold;font-size: 1.1em">Tutor i cicle: {{AuthUser()->FullName}} - {{$todos->first()->Fct->Colaboracion->Ciclo->ciclo}}</td>
+            <td colspan='8' style="text-align:left;font-weight: bold;font-size: 1.1em">Tutor i cicle: {{AuthUser()->FullName}} - {{ $todos->first()->Fct->Colaboracion->Ciclo->ciclo}}</td>
         </tr>
         <tr >
             <td style="text-align:left;font-weight: bold;font-size: 0.8em ">EMPRESA I NOMBRE D'ALUMNES</td>

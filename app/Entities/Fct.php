@@ -109,7 +109,7 @@ class Fct extends Model
         $hoy->format('Y-m-d');
         if ($hoy <= config('curso.fct.1')['fi'])
             return $query->where('desde','<=',config('curso.fct.1')['fi'])->where('asociacion',1);
-        if ($hoy < config('curso.fct.2')['inici'] &&($cuando == 3)) 
+        if ($hoy < config('curso.fct.2')['inici'] && ($cuando == 3)) 
             return $query->where('desde','<=',config('curso.fct.1')['fi'])->where('asociacion',1);  
         return $query->where('desde','>=',config('curso.fct.2')['inici'])->where('asociacion',1);
            
