@@ -39,7 +39,7 @@
         </div>
         <div style="width:40%; float:right; ">
             <p><strong>{{$datosInforme['director']}}</strong></p>
-            <p>Vist-i-plau DIRECTOR</p>
+            <p>Vist-i-plau {{signatura('certificado')}}</p>
         </div>
     </div>
 </div>
@@ -82,7 +82,7 @@
         </div>
         <div style="width:40%; float:right; ">
             <p><strong>{{$datosInforme['director']}}</strong></p>
-            <p>Conforme DIRECTOR</p>
+            <p>Conforme {{signatura('certificado')}}</p>
         </div>
     </div>
 </div>
@@ -126,7 +126,7 @@
         </div>
         <div style="width:40%; float:right; ">
             <p><strong>{{$datosInforme['director']}}</strong></p>
-            <p>Vist-i-plau DIRECTOR</p>
+            <p>Vist-i-plau {{signatura('certificado')}}</p>
         </div>
     </div>
 </div>
@@ -168,7 +168,7 @@
         </div>
         <div style="width:40%; float:right; ">
             <p><strong>{{$datosInforme['director']}}</strong></p>
-            <p>Conforme DIRECTOR</p>
+            <p>Conforme {{signatura('certificado')}}</p>
         </div>
     </div>
 </div>

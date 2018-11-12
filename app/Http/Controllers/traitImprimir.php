@@ -54,6 +54,8 @@ trait traitImprimir
                     ->setOrientation($orientacion)
                     ->setOption('margin-top', $margin_top);
         } else {
+            
+            //carnet
             $pdf = PDF::loadView($informe, compact('todos', 'datosInforme'))
                     ->setOrientation($orientacion)
                     ->setOption('margin-top', 2)
@@ -101,6 +103,7 @@ trait traitImprimir
         $vCalendar->addComponent($vEvent);
         return $vCalendar;
     }
+    
     protected function cargaDatosCertificado($datos){
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));

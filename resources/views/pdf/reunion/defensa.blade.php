@@ -39,7 +39,7 @@
     <div style="width:60%;float:right">
         <p>SIGNATURA TUTOR: {{$datosInforme->Responsable->nombre}}  {{$datosInforme->Responsable->apellido1}}  {{$datosInforme->Responsable->apellido2}}</p>
         <br/><br/>
-        <p>ALCOI A {{$datosInforme->hoy}}</p>
+        <p>{{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme->hoy}}</p>
     </div>       
 </div>
 @endsection
