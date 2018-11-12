@@ -15,4 +15,5 @@ yarn-error.log
 /config/contacto.php
 /config/variables.php
 /config/curso.php
+/public/img/pdf
 composer.lock
