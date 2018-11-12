@@ -46,9 +46,9 @@ class AlumnoFct extends Model
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
-        $fcts = $activa?Fct::select('id')->Activa($activa)->whereIn('idColaboracion',$colaboraciones)
-                ->get()->toArray():Fct::select('id')->whereIn('idColaboracion',$colaboraciones)
-                ->orWhere('asociacion',2)->get()->toArray();
+        $fcts = $activa?
+                Fct::select('id')->Activa($activa)->whereIn('idColaboracion',$colaboraciones)->get()->toArray():
+                Fct::select('id')->whereIn('idColaboracion',$colaboraciones)->orWhere('asociacion',2)->get()->toArray();
         return $queFaig==1?$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('pg0301','=',0)
             :$queFaig==2?$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('desde','<=',Hoy())->where('hasta','>=',Hoy())
             :$query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
