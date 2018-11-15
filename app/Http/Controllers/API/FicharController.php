@@ -33,6 +33,11 @@ class FicharController extends ApiBaseController
         } else
             return $this->sendResponse(['updated' => false], 'Profesor no identificado');
     }
+    public function ip()
+    {
+        return $this->sendResponse( config('variables.ipGuardias'),'OK');
+        
+    }
 
 //    public function miraFicha(Request $datosProfesor)
 //    {

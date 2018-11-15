@@ -6,6 +6,7 @@ const ocupacionGuardia=3249454;
 var sesion=0;		// value del tramo horario en que estamos
 var guardiasSemana=[];	// datos de las guardias del profesor
 var idGuardia=0;	// indica si ya se ha registrado esta guardia
+var ipGuardia = ''
 var biblio=false;
 var diaHoy="";
 var diaSelec="";
@@ -13,9 +14,20 @@ var horaActual="";
 var dias_semana=["D", "L", "M", "X", "J", "V", "S"];
 
 $(function() {
+    $.ajax ({
+    	url: "/api/ipGuardia",
+    	type: "GET",
+    	dataType: "json",
+        data: {
+    		api_token: $("#_token").text()
+    	}
+        }).then(function(res){
+            ipGuardia = res.data;
+        });    
+        
 	//Test: Print the IP addresses into the console
 	getIPs(function(ip) {
-		if (ip=="172.16.20.238") {
+		if (ip==ipGuardia) {
                 	biblio=true;
 			cambiaHora();
 		}

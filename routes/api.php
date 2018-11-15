@@ -32,6 +32,7 @@ Route::group(['middleware' => 'auth:api'], function() {
 //    Route::resource('fichar','FicharController',['except' => ['edit', 'create']]);
     Route::get('ficha', 'ProfesorController@ficha');
     Route::get('doficha', 'FicharController@fichar');
+    Route::get('ipGuardia','FicharController@ip');
     //Route::get('fichar', 'FicharController@miraficha');
     Route::get('verficha', 'FicharController@entrefechas');
     Route::get('itaca/{dia}/{idProfesor}','FaltaItacaController@potencial');
