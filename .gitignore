@@ -15,6 +15,7 @@ yarn-error.log
 /config/contacto.php
 /config/variables.php
 /config/curso.php
+/config/signatures.php
 /public/img/pdf
 composer.lock
 /nbproject/private/
