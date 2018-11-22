@@ -27,7 +27,7 @@ $(function() {
         
 	//Test: Print the IP addresses into the console
 	getIPs(function(ip) {
-		if (ip==ipGuardia) {
+		if (ipGuardia.includes(ip)) {
                 	biblio=true;
 			cambiaHora();
 		}

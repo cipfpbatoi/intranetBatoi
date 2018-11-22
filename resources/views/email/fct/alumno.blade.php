@@ -8,13 +8,13 @@
 <div>
     <table style=" border:#000 solid 1;">
 
-        <tr><td><strong>De: </strong>{!! $remitente['nombre']  !!}  </td></tr>
+        <tr><td><strong>Del departament de </strong>Qualitat</td></tr>
         <tr><td>{{ config('contacto.nombre')}}</td></tr>
 
     </table>
 </div>
 <div class="container" >
-    <p>{{$elemento->Alumno->FullName}}. Les pràctiques de FCT han arribat a la seua fi i per tal de millorar-les ens és de molt utilitat la teua opinió.</p>
+    <p>{{$fct->Alumno->FullName}}. Les pràctiques de FCT han arribat a la seua fi i per tal de millorar-les ens és de molt utilitat la teua opinió.</p>
     <p>Hem preparat aquest <a href="https://docs.google.com/forms/d/e/1FAIpQLSfKO-v5cVFCb1e3zsrUVm06vJGpg2EQPd6xqSEJZuFsUNNBuQ/viewform?usp=send_form">formulari</a> per recollir-la.</p>
     <p>Gràcies per la teua col.laboració</p>
 </div>

@@ -35,7 +35,7 @@ class FicharController extends ApiBaseController
     }
     public function ip()
     {
-        return $this->sendResponse( config('variables.ipGuardias'),'OK');
+        return $this->sendResponse(config('variables.ipGuardias'),'OK');
         
     }
 

@@ -7,6 +7,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Intranet\Console\Commands\SendDailyEmails;
 use Intranet\Console\Commands\createDailyGuards;
 use Intranet\Console\Commands\notifyDailyFaults;
+use Intranet\Console\Commands\SendFctEmails;
 
 class Kernel extends ConsoleKernel
 {
@@ -19,6 +20,8 @@ class Kernel extends ConsoleKernel
         SendDailyEmails::class,
         createDailyGuards::class,
         notifyDailyFaults::class,
+        SendFctEmails::class,
+        
     ];
 
     /**
@@ -35,6 +38,8 @@ class Kernel extends ConsoleKernel
                 ->dailyAt('23:30');
         $schedule->command('guard:Daily')
                 ->dailyAt('07:30');
+        $schedule->command('fct:Weekly')
+                ->weeklyOn(1,'07:45');
     }
 
     /**
