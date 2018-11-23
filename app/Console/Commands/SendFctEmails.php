@@ -50,8 +50,10 @@ class SendFctEmails extends Command
             $fct = $alumno->Fct;
             if ($fct->correoInstructor == 0){
                 Mail::to($fct->Instructor->email, 'Intranet Batoi')->send(new AvalFct($fct,'instructor'));
-                foreach ($fct->Tutores() as $tutor)
-                    Mail::to($tutor->email, 'Intranet Batoi')->send(new AvalFct($fct,'tutor'));
+                foreach ($alumno->Alumno->Tutor() as $tutor){
+                    $profesorTutor = Profesor::find($tutor);
+                    Mail::to($profesorTutor->email, 'Intranet Batoi')->send(new AvalFct($fct,'tutor'));
+                }
                 $fct->correoInstructor = 1 ;
                 $fct->save();
             }
