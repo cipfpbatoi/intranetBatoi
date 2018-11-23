@@ -7,5 +7,5 @@ return [
     'reservaAforo' => 1.2,
     'programaciones' => [ 'fichero' => '0' , 'enlace' => '1'],
     'mostrarProgramacionesEstado' => '3',
-    'ipGuardias' => ['172.16.20.238','172.16.20.227'],
+    'ipGuardias' => ['172.16.20.238'],
 ];
