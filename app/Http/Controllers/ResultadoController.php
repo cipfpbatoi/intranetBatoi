@@ -26,6 +26,14 @@ class ResultadoController extends IntranetController
         $this->panel->setBotonera(['create'], ['delete', 'edit']);
     }
 
+    
+    public function update(Request $request, $id)
+    {
+        $elemento = $this->class::findOrFail($id); //busca si hi ha
+        $elemento->fillAll($request);        // ompli i guarda
+        return $this->redirect();
+    }
+    
     public function search()
     {
         $misModulos = hazArray(Modulo_Grupo::MisModulos(), 'id', 'id');
