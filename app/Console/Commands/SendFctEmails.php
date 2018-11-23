@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\AlumnoFctAval;
 use Mail;
-use Intranet\Mail\ResumenDiario;
+use Intranet\Mail\AvalFct;
 
 class SendFctEmails extends Command
 {
