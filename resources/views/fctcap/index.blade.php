@@ -4,7 +4,7 @@
 @endsection
 @section('grid')
 <div id="_grupo">{{$panel->getElemento()}}</div>
-    @include('fctCap.partials.grid')
+    @include('fctcap.partials.grid')
 @endsection
 @section('titulo')
     {{$panel->getTitulo()}}
