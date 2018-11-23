@@ -52,7 +52,7 @@ class SendFctEmails extends Command
                 Mail::to($fct->Instructor->email, 'Intranet Batoi')->send(new AvalFct($fct,'instructor'));
                 foreach ($alumno->Alumno->Tutor as $tutor){
                     $profesorTutor = Profesor::find($tutor);
-                    dd($profesorTutor);
+                    dd($tutor);
                     Mail::to($profesorTutor->email, 'Intranet Batoi')->send(new AvalFct($fct,'tutor'));
                 }
                 $fct->correoInstructor = 1 ;
