@@ -140,6 +140,10 @@ class Panel
     {
         $this->elementos = $elementos;
     }
+    function getElemento()
+    {
+        return $this->elementos;
+    }
 
    
     // filtra els elements d'una pestana amb condicions

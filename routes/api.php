@@ -12,10 +12,15 @@ use Illuminate\Http\Request;
   | is assigned the "api" middleware group. Enjoy building your API!
   |
  */
+
+ Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'create']]);  
+ Route::get('alumnoFct/{grupo}/grupo','AlumnoFctController@indice'); 
 //Route::resource('profesor', 'ProfesorController', ['except' => ['edit', 'create']]);
 Route::get('/convenio','EmpresaController@indexConvenio'); 
+
 Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('actividad', 'ActividadController', ['except' => ['edit', 'create']]);
+//    Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'create']]);
     Route::resource('programacion', 'ProgramacionController', ['except' => ['edit', 'create']]);
     Route::resource('reunion', 'ReunionController', ['except' => ['edit', 'create']]);
     Route::resource('falta', 'FaltaController', ['except' => ['edit', 'create']]);

@@ -18,9 +18,10 @@ return [
                             5=>"Part d'amonestació"
      ],
     'asociacionEmpresa' => [1=>'FCT',2=>'FCT Convalidada/Exempció'],
-    'tipoTutoria' => [0=>'Tots el grups',1=>'Grau mitjà',2=>'Grau Superior'],
+    'grupoTutoria' => [0=>'Tots el grups',1=>'Grau mitjà',2=>'Grau Superior'],
     'motivoAusencia' => ['Baja médica', 'Licencia por formación', 'Enfermedad común', 'Traslado de domicilio', 'Asistencia pruebas selectivas', 'Enfermedad grave o muerte del cónyuge', 'Asistencia médica, educativa o asistencial', 'Otros (rellenar cuadro de observaciones)'],
     'tipoEstudio' => [1=>'Cicle Formatiu de Grau Mitjà','2'=>'Cicle Formatiu de Grau Superior','3'=>'Cicle Formatiu Bàsic','4'=>'Batxiller','5'=>'ESO','6'=>'Primària'],
     'tipoEstudioC' => [1=>'Ciclo Formativo de Grado Medio','2'=>'Ciclo Formativo de Grado Superior','3'=>'Ciclo Formativo Básico','4'=>'Bachiller','5'=>'ESO','6'=>'Primaria'],
+    'tipoTutoria' => [0=>'General',1=>'Avaluacions',2=>'Resolució Conflictes'],
     'veep' => [],
 ];

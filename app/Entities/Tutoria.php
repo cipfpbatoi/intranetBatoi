@@ -16,6 +16,7 @@ class Tutoria extends Model
     protected $fillable = [
         'descripcion',
         'obligatoria',
+        'tipo',
         'grupos',
         'desde',
         'hasta',
@@ -34,6 +35,7 @@ class Tutoria extends Model
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
         'grupos' => ['type' => 'select'],
+        'tipo' => ['type' => 'select']
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
@@ -53,14 +55,20 @@ class Tutoria extends Model
     }
     public function getGruposOptions()
     {
+        return config('auxiliares.grupoTutoria');
+    }
+    public function getTipoOptions()
+    {
         return config('auxiliares.tipoTutoria');
     }
-    
     protected function getXobligatoriaAttribute(){
         return $this->obligatoria ? 'X' : '-';
     }
     protected function getGrupoAttribute(){
-        return config('auxiliares.tipoTutoria')[$this->grupos];
+        return config('auxiliares.grupoTutoria')[$this->grupos];
+    }
+    protected function getTiposAttribute(){
+        return config('auxiliares.tipoTutoria')[$this->tipo];
     }
     
 }
