@@ -4,7 +4,7 @@ namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
 use Intranet\Entities\Profesor;
-use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\AlumnoFctAval;
 use Mail;
 use Intranet\Mail\ResumenDiario;
 
