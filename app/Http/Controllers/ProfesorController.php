@@ -55,6 +55,22 @@ use traitAutorizar,
         $this->iniBotones();
         return $this->grid($todos);
     }
+    
+    public function centro()
+    {
+        Session::forget('redirect');
+        $todos = Profesor::orderBy('apellido1')
+                ->Activo()
+                ->get();
+        $departamentos = Profesor::join('departamentos', 'profesores.departamento', '=', 'departamentos.id')
+                ->select('departamentos.*')
+                ->distinct()
+                ->get();
+        foreach ($departamentos as $departamento) {
+            $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
+        }
+        return $this->grid($todos);
+    }
 
     public function update(Request $request, $id)
     {
