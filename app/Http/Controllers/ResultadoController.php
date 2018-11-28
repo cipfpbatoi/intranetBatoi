@@ -36,6 +36,7 @@ class ResultadoController extends IntranetController
     
     public function search()
     {
+        //dd(Modulo_Grupo::MisModulos());
         $misModulos = hazArray(Modulo_Grupo::MisModulos(), 'id', 'id');
         return Resultado::whereIn('idModuloGrupo', $misModulos)
                         ->get();

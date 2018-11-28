@@ -43,13 +43,15 @@ class Modulo_grupo extends Model
                 ->get();
         $todos = [];
         foreach ($modulos as $modulo){
-            $mc = Modulo_ciclo::where('idModulo',$modulo->modulo)
-                    ->where('idCiclo',$modulo->Grupo->idCiclo)->first();
-            $todos[] = Modulo_grupo::where('idGrupo',$modulo->idGrupo)
-                    ->where('idModuloCiclo',$mc->id)->first();
+            if ($mc = Modulo_ciclo::where('idModulo',$modulo->modulo)
+                    ->where('idCiclo',$modulo->Grupo->idCiclo)->first())
+            if ($mg = Modulo_grupo::where('idGrupo',$modulo->idGrupo)
+                    ->where('idModuloCiclo',$mc->id)->first() )
+            $todos[] = $mg ;
         }
        return $todos;
     }
+    
     public function scopeCurso($query,$curso)
     {
         return $query->whereIn('idGrupo',hazArray(Grupo::Curso($curso)->get(),'codigo','codigo'));

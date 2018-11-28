@@ -21,6 +21,10 @@ trait TraitEstado
             if (isset($elemento->fechasolucion)) {
                 $elemento->fechasolucion = $fecha;
             }
+            
+        }
+        if (isset($elemento->solucion) && isset($mensaje)){
+            $elemento->solucion .= $mensaje;
         }
         $elemento->estado = $estado;
         $elemento->save();

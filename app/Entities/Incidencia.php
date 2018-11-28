@@ -17,7 +17,7 @@ class Incidencia extends Model
 
     protected $table = 'incidencias';
     public $timestamps = false;
-    protected $fillable = ['espacio', 'material', 'descripcion', 'responsable', 'idProfesor', 'tipo', 'prioridad', 'Observaciones', 'solucion', 'fechasolucion'];
+    protected $fillable = ['espacio', 'material', 'descripcion', 'responsable', 'idProfesor', 'tipo', 'prioridad', 'Observaciones'];
     protected $descriptionField = 'descripcion';
 
     use BatoiModels,
@@ -30,7 +30,6 @@ class Incidencia extends Model
         'idProfesor' => 'required',
         'prioridad' => 'required',
         'fecha' => 'date',
-        'fechasolucion' => 'date'
     ];
     protected $inputTypes = [
         'espacio' => ['type' => 'select'],
@@ -40,7 +39,6 @@ class Incidencia extends Model
         'tipo' => ['type' => 'select'],
         'responsable' => ['type' => 'select'],
         'prioridad' => ['type' => 'select'],
-        'fechasolucion' => ['type' => 'date'],
     ];
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,

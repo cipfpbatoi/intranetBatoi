@@ -25,19 +25,16 @@ function Salida()
         return (substr(Intranet\Entities\Falta_profesor::Hoy(AuthUser()->dni)->last()->salida, 0, 5));
 }
 
-
 function evaluacion()
 {
     $eval = 1;
-    foreach (config('curso.evaluaciones') as $key => $evaluacion){
+    foreach (config('curso.evaluaciones') as $key => $evaluacion) {
         if (haVencido($evaluacion[1])) {
-            $eval = $key+1;
+            $eval = $key + 1;
         }
     }
     return $eval;
 }
-
-
 
 function Curso()
 {
@@ -48,8 +45,6 @@ function Curso()
     $lcurso = $curso . '-' . ($curso + 1);
     return $lcurso;
 }
-
-
 
 /**
  * Devuelve la direccion completa
@@ -64,12 +59,14 @@ function fullDireccion()
 
 function signatura($document)
 {
-    foreach (config('signatures.llistats') as $key => $carrec){
-        if (array_search($document, $carrec)!==false){
+    foreach (config('signatures.llistats') as $key => $carrec) {
+        if (array_search($document, $carrec) !== false) {
             return config("signatures.genere.$key")
-            [Intranet\Entities\Profesor::find(config("contacto.$key"))->sexo];
+                    [Intranet\Entities\Profesor::find(config("contacto.$key"))->sexo];
         }
-}   }
+    }
+}
+
 /**
  * Mira si al usuario actual le esta permitido el nombre de rol 
  *
@@ -232,24 +229,24 @@ function estaDentro($profesor = null)
  * @param dni profesor
  * @return boolean
  */
-function estaInstituto($profesor,$dia,$hora)
+function estaInstituto($profesor, $dia, $hora)
 {
-    $fichadas = Intranet\Entities\Falta_profesor::haFichado($dia,$profesor)->get();
-    foreach ($fichadas as $ficha){
-        if ($ficha->salida){
-            if ($hora >= $ficha->entrada && $hora < $ficha->salida) return TRUE;
+    $fichadas = Intranet\Entities\Falta_profesor::haFichado($dia, $profesor)->get();
+    foreach ($fichadas as $ficha) {
+        if ($ficha->salida) {
+            if ($hora >= $ficha->entrada && $hora < $ficha->salida)
+                return TRUE;
         }
     }
     return FALSE;
 }
+
 /**
  * Mira si dos fechas son el mismo dia
  * 
  * @param fechaIn fechaFin
  * @return boolean
  */
-
-
 function blankTrans($mensaje)
 {
     return trans($mensaje) == $mensaje ? '' : trans($mensaje);
@@ -271,28 +268,29 @@ function valorReal($elemento, $string)
         return $elemento->$string;
 }
 
-function hazArray($elementos, $campo1, $campo2,$separador=' ')
+function hazArray($elementos, $campo1, $campo2, $separador = ' ')
 {
     $todos = [];
-    foreach ($elementos as $elemento) {
-        if (is_string($campo1)) {
-            $val = valorReal($elemento, $campo1);
-        } else {
-            $val = '';
-            foreach ($campo1 as $sub) {
-                $val .= valorReal($elemento, $sub) . $separador;
+    foreach ($elementos as $elemento)
+        if ($elemento) {
+            if (is_string($campo1)) {
+                $val = valorReal($elemento, $campo1);
+            } else {
+                $val = '';
+                foreach ($campo1 as $sub) {
+                    $val .= valorReal($elemento, $sub) . $separador;
+                }
             }
-        }
-        if (is_string($campo2)) {
-            $res = valorReal($elemento, $campo2);
-        } else {
-            $res = '';
-            foreach ($campo2 as $sub) {
-                $res .= valorReal($elemento, $sub) . $separador;
+            if (is_string($campo2)) {
+                $res = valorReal($elemento, $campo2);
+            } else {
+                $res = '';
+                foreach ($campo2 as $sub) {
+                    $res .= valorReal($elemento, $sub) . $separador;
+                }
             }
+            $todos[$val] = $res;
         }
-        $todos[$val] = $res;
-    }
     return $todos;
 }
 
@@ -315,21 +313,21 @@ function literal()
 function avisa($id, $mensaje, $enlace = '#', $emisor = null)
 {
     if ($emisor || isset(AuthUser()->dni)) {
-        $emisor = ($emisor == null)?AuthUser()->shortName : $emisor;
+        $emisor = ($emisor == null) ? AuthUser()->shortName : $emisor;
         $fecha = FechaString();
 
         if (strlen($id) == 8)
             $quien = \Intranet\Entities\Alumno::find($id);
         else
             $quien = \Intranet\Entities\Profesor::find($id);
-        
+
         if ($quien)
             $quien->notify(new \Intranet\Notifications\mensajePanel(
                     ['motiu' => $mensaje,
                 'emissor' => $emisor,
                 'data' => $fecha,
                 'enlace' => $enlace]));
-        else 
+        else
             AuthUser()->notify(new \Intranet\Notifications\mensajePanel(
                     ['motiu' => "No trobe usuari $id",
                 'emissor' => $emisor,
@@ -344,27 +342,30 @@ function primryKey($elemento)
     return $elemento->$primaryKey;
 }
 
-function subsRequest(Illuminate\Http\Request $request,$fields){
-    foreach ($fields as $key => $value){
-        $dades =  $request->except($key);
+function subsRequest(Illuminate\Http\Request $request, $fields)
+{
+    foreach ($fields as $key => $value) {
+        $dades = $request->except($key);
         $dades[$key] = $value;
-        $request = $request->duplicate(null,$dades);
+        $request = $request->duplicate(null, $dades);
     }
     return $request;
 }
 
-function mdFind($file,$link){
-    $fichero = Storage::disk('documentacio')->get($file); 
-    $indice = substr($fichero,0,strpos($fichero,$link));
-    $cadena = substr($indice,strrpos($indice,'[')+1,strrpos($indice,']')-strrpos($indice,'[')-1);
-    
-    $resto = strstr($fichero,$link);
-    $desde = strstr($resto,$cadena);
-    
-    return substr($desde,0,strpos($desde,'###'));
+function mdFind($file, $link)
+{
+    $fichero = Storage::disk('documentacio')->get($file);
+    $indice = substr($fichero, 0, strpos($fichero, $link));
+    $cadena = substr($indice, strrpos($indice, '[') + 1, strrpos($indice, ']') - strrpos($indice, '[') - 1);
+
+    $resto = strstr($fichero, $link);
+    $desde = strstr($resto, $cadena);
+
+    return substr($desde, 0, strpos($desde, '###'));
 }
 
-function exists_help($url){
-    if ($menu = Intranet\Entities\Menu::where('url',$url)->first())
-                return $menu->ajuda;
+function exists_help($url)
+{
+    if ($menu = Intranet\Entities\Menu::where('url', $url)->first())
+        return $menu->ajuda;
 }
