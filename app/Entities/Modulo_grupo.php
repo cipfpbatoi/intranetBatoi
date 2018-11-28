@@ -68,6 +68,7 @@ class Modulo_grupo extends Model
     
     public function getseguimientoAttribute(){
         $tr = evaluacion() - 1;
+        if (!$tr) $tr = 1;
         $trimestre = config("curso.trimestres.$tr")[$this->ModuloCiclo->curso];
         return $this->resultados->where('evaluacion',$trimestre)->count();
     }
