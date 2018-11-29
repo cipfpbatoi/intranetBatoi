@@ -110,7 +110,6 @@ Route::get('/alumno/{alumno}/carnet', ['as' => 'alumno.carnet', 'uses' => 'Alumn
 Route::get('/alumno/{alumno}/baja', ['as' => 'alumno.baja', 'uses' => 'AlumnoController@baja']);
 
 Route::get('/departamento', ['as' => 'departamento.index', 'uses' => 'ProfesorController@departamento']);
-Route::get('/miCentro', ['as' => 'departamento.centro', 'uses' => 'ProfesorController@centro']);
 Route::get('/equipo/{grupo}/grupo', ['as' => 'equipo.grupo', 'uses' => 'ProfesorController@equipo']);
 Route::get('/equipoDirectivo', ['as' => 'equipodirectivo.index', 'uses' => 'ProfesorController@equipoDirectivo']);
 Route::get('/profesor/{profesor}/horario', ['as' => 'profesor.horario', 'uses' => 'ProfesorController@horario']);

@@ -56,7 +56,7 @@ use traitAutorizar,
         return $this->grid($todos);
     }
     
-    public function centro()
+    public function departamento()
     {
         Session::forget('redirect');
         $todos = Profesor::orderBy('apellido1')
@@ -67,31 +67,31 @@ use traitAutorizar,
                 ->distinct()
                 ->get();
         foreach ($departamentos as $departamento) {
-            $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
+            if ($departamento->id != 99 )
+                if($departamento->id == AuthUser()->departamento)
+                   $this->panel->setPestana($departamento->depcurt, true, 'profile.profesor', ['Xdepartamento', $departamento->depcurt],null,1,$this->parametresVista);
+                else
+                   $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
         }
+        $this->iniProfileBotones();
         return $this->grid($todos);
     }
 
-    public function update(Request $request, $id)
-    {
-        $new = Profesor::find($id);
-        parent::update($request, $new);
-        return back();
-    }
+    
 
-    public function departamento()
-    {
-        $todos = Profesor::where('departamento', '=', AuthUser()->departamento)
-                ->Activo()
-                ->orderBy('apellido1', 'asc')
-                ->orderBy('apellido2', 'asc')
-                ->get();
-        $this->iniBotones();
-        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1,$this->parametresVista);
-        $this->panel->setBoton('index', new BotonBasico("profesor.colectivo", ['class' => 'colectivo btn btn-primary'], true));
-        Session::put('colectivo', AuthUser()->departamento);
-        return $this->grid($todos);
-    }
+//    public function departamento()
+//    {
+//        $todos = Profesor::where('departamento', '=', AuthUser()->departamento)
+//                ->Activo()
+//                ->orderBy('apellido1', 'asc')
+//                ->orderBy('apellido2', 'asc')
+//                ->get();
+//        $this->iniBotones();
+//        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1,$this->parametresVista);
+//        $this->panel->setBoton('index', new BotonBasico("profesor.colectivo", ['class' => 'colectivo btn btn-primary'], true));
+//        Session::put('colectivo', AuthUser()->departamento);
+//        return $this->grid($todos);
+//    }
 
     public function equipoDirectivo()
     {
@@ -119,6 +119,13 @@ use traitAutorizar,
         Session::put('colectivo', $grupo);
         return $this->grid(Profesor::orderBy('apellido1', 'asc')->orderBy('apellido2', 'asc')
                 ->Grupo($grupo)->get());
+    }
+    
+    public function update(Request $request, $id)
+    {
+        $new = Profesor::find($id);
+        parent::update($request, $new);
+        return back();
     }
 
     public function miApiToken()
@@ -193,6 +200,9 @@ use traitAutorizar,
          $this->panel->setBoton('grid', new BotonImg('horario.cambiar', ['img' => 'fa-flash', 'roles' => config('roles.rol.administrador')
             ]));
         $this->panel->setBoton('grid', new BotonImg('profesor.change', ['img' => 'fa-user','roles' => config('roles.rol.administrador')]));
+     }
+    protected function iniProfileBotones()
+    {
         $this->panel->setBoton('profile', new BotonIcon('profesor.horario', ['icon' => 'fa-user', 'class' => 'btn-success']));
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
         $this->panel->setBoton('profile', new BotonIcon('profesor.carnet', ['icon' => 'fa-credit-card', 'where' => ['dni', '==', AuthUser()->dni]]));
