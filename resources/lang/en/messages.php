@@ -137,6 +137,7 @@ return array(
         'PGA' => 'AGP',
         'RRI' => 'RRI',
         'Emer' => 'Emergency Plan',
+        'Sanit' => 'Health Plan',
         'Consell' => 'Counsil',
         'Acta' => 'Proceedings',
         'muestra' => 'Show more data',

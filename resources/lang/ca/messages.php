@@ -140,6 +140,7 @@ return array(
         'PGA' => 'PGA',
         'RRI' => 'RRI',
         'Emer' => 'Pla emergèncias',
+        'Sanit' => 'Pla Atenciò Sanitària',
         'Consell' => 'Consell',
         'Acta' => 'Actes',
         'muestra' => 'Mostra mes dades',
