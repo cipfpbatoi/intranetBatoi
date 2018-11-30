@@ -39,6 +39,7 @@ class ExpedienteController extends IntranetController
         $this->makeAll(Expediente::where('estado', '1')->get(), 2);
         return back();
     }
+    
     //inicializat a init (normalment 1)
     protected function init($id)
     {
@@ -52,6 +53,7 @@ class ExpedienteController extends IntranetController
             Expediente::putEstado($id,1);
         return back();
     }
+    
     protected function pasaOrientacion($id)
     {
         $expediente = Expediente::find($id);

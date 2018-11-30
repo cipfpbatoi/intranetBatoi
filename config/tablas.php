@@ -70,4 +70,10 @@ return [
             ['index'=>'Fichero','rol'=>2 ,'pestana'=>'0','grupo'=>'0' ],
             ['index'=>'Proyecto','rol'=>1,'pestana'=>0,'grupo'=>'0'],
         ],
+    'tipoExpediente' => [  
+            [ 'index'=> 1, 'title' =>'Baixa Inasistència','rol'=> 17, 'estado' =>1],
+            [ 'index'=> 2, 'title' =>'Pèrdua Avaluació Continua','rol'=> 3, 'estado' =>1],
+            [ 'index'=> 4, 'title' =>"Remisió al departament d'Orientació",'rol'=> 17, 'estado' =>4],
+            [ 'index'=> 5, 'title' =>"Part d'amonestació",'rol'=> 3, 'estado' =>2],
+     ],
 ];
