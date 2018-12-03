@@ -118,8 +118,8 @@ class AdministracionController extends Controller
 
     public static function v1_3_4()
     {
-        Expediente::where('tipo',4)->update(['tipo'=>3]);
-        Expediente::where('tipo',5)->update(['tipo' => 4]);
+        //Expediente::where('tipo',4)->update(['tipo'=>3]);
+        //Expediente::where('tipo',5)->update(['tipo' => 4]);
         $a = new \Intranet\Entities\TipoExpediente();
         $a->titulo = 'Baixa Inasistència';
         $a->rol = 17;
