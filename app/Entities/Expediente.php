@@ -17,20 +17,20 @@ class Expediente extends Model
     public $timestamps = false;
     protected $visible = [
         'id',
-        'idAlumno',
-        'idModulo',
-        'idProfesor',
         'tipo',
+        'idModulo',
+        'idAlumno',
+        'idProfesor',
         'estado',
         'fecha',
         'fechasolucion',
         'explicacion',
     ];
     protected $fillable = [
-        'idAlumno',
-        'idProfesor',
         'tipo',
         'idModulo',
+        'idAlumno',
+        'idProfesor',
         'explicacion',
         'fecha',
     ];
@@ -39,10 +39,10 @@ class Expediente extends Model
         'explicacion' => 'required'
     ];
     protected $inputTypes = [
-        'idAlumno' => ['type' => 'select'],
-        'idModulo' => ['type'=>'select'],
-        'idProfesor' => ['type' => 'hidden'],
         'tipo' => ['type' => 'select'],
+        'idModulo' => ['type'=>'select'],
+        'idAlumno' => ['type' => 'select'],
+        'idProfesor' => ['type' => 'hidden'],
         'explicacion' => ['type' => 'textarea'],
         'fecha' => ['type' => 'date'],
     ];
@@ -56,6 +56,11 @@ class Expediente extends Model
         if (AuthUser())
             $this->idProfesor = AuthUser()->dni;
     }
+    
+    public function tipoExpediente(){
+        return $this->belongsTo(TipoExpediente::class,'tipo','id');
+    }
+    
     public function getfechaAttribute($entrada)
     {
         $fecha = new Date($entrada);
@@ -70,10 +75,12 @@ class Expediente extends Model
 
     public function getTipoOptions()
     {
-        return config('auxiliares.tipoExpediente');
+        return hazArrayRole(TipoExpediente::all(),'id','titulo');
     }
+    
     public function getIdModuloOptions(){
-        return hazArray(Modulo::ModulosGrupo(Grupo::Qtutor()->first()->codigo)->Lectivos()->get(),'codigo', 'vliteral');
+        return hazArray(Modulo::MisModulos()->Lectivos()->get(),'codigo', 'vliteral');
+       // return hazArray(Modulo::ModulosGrupo(Grupo::Qtutor()->first()->codigo)->Lectivos()->get(),'codigo', 'vliteral');
     }
 
     public function getIdAlumnoOptions()
@@ -107,10 +114,10 @@ class Expediente extends Model
         return $this->Alumno->FullName;
     }
     public function getSituacionAttribute(){
-        return isblankTrans('models.Expediente.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Expediente.' . $this->estado);
+        return isblankTrans('models.Expediente.'.$this->estado) ? trans('messages.situations.'.$this->estado) : trans('models.Expediente.' . $this->estado);
     }
     public function getXtipoAttribute(){
-        return config('auxiliares.tipoExpediente')[$this->tipo];
+        return $this->tipoExpediente->titulo;
     }
     public function getXmoduloAttribute(){
         return isset($this->Modulo->cliteral)?$this->Modulo->literal:'';

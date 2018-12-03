@@ -25,6 +25,7 @@ use Intranet\Jobs\SendEmail;
 use Intranet\Entities\Fct;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\FctColaborador;
+use Intranet\Entities\Expediente;
 
 class AdministracionController extends Controller
 {
@@ -115,13 +116,28 @@ class AdministracionController extends Controller
         Alert::info('Version 1.2');
     }
 
-    public static function v1_3_3()
+    public static function v1_3_4()
     {
-        foreach (AlumnoFct::all() as $fct) {
-            $fct->pg0301 = (FechaInglesa($fct->desde) < FechaInglesa('31-10-2018'))?1:0;
-                $fct->save();
-        }    
-        
+        Expediente::where('tipo',4)->update(['tipo'=>3]);
+        Expediente::where('tipo',5)->update(['tipo' => 4]);
+        $a = new \Intranet\Entities\TipoExpediente();
+        $a->titulo = 'Baixa Inasistència';
+        $a->rol = 17;
+        $a->save();
+        $a = new \Intranet\Entities\TipoExpediente();
+        $a->titulo = 'Pèrdua Avaluació Continua';
+        $a->rol = 3;
+        $a->save();
+        $a = new \Intranet\Entities\TipoExpediente();
+        $a->titulo = "Remisió al departament d'Orientació";
+        $a->rol = 17;
+        $a->orientacion = 1;
+        $a->save();
+        $a = new \Intranet\Entities\TipoExpediente();
+        $a->titulo = "Part d'amonestació";
+        $a->rol = 3;
+        $a->orientacion = 0;
+        $a->save();
     }
     
 }

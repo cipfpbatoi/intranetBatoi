@@ -189,7 +189,7 @@ return array(
         'Jefedep' => 'Jefe Departamento',
         'List' => 'Informes',
         'Progstate' => 'Estado Programaciones',
-        'Expediente' => 'Expedientes iniciados',
+        'Expediente' => 'Expedientes',
         'Reunion' => 'Gestion de Reuniones',
         'Gtrabajo' => 'Actas/Convocatorias',
         'Grtrabajo' => 'Grupos de Trabajo',

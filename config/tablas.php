@@ -47,12 +47,12 @@ return [
         ['index' => '11', 'vliteral' => 'Acta de la reunió de valoració de les propostes de projectes', 'cliteral' => 'Acta aceptación proyectos', 'colectivo' => 'Grupo', 'rol' => '17','select' => '0',
             'convocatoria' => 'convocatoria', 'acta' => 'proyecto',
             'numeracion' => [0=>'--'],
-            'ordenes' => ['Fct->misFcts->nombre'],
+            'ordenes' => ['AlumnoFct->misProyectos->nombre'],
             'resumen' => 'Títol i Tutor individual '],
         ['index' => '12', 'vliteral' => 'Data Defensa del mòdul de projecte', 'cliteral' => 'Fecha Defensa del módulo de proyecto', 'colectivo' => 'Grupo', 'rol' => '17','select' => '0',
             'convocatoria' => 'convocatoria', 'acta' => 'defensa',
             'numeracion' => [0=>'--'],
-            'ordenes' => ['Fct->misFcts->nombre'],
+            'ordenes' => ['AlumnoFct->misProyectos->nombre'],
             'resumen' => '(Projecte) Data i Hora '],
     ],
     'tipoDocumento' => [
@@ -70,10 +70,4 @@ return [
             ['index'=>'Fichero','rol'=>2 ,'pestana'=>'0','grupo'=>'0' ],
             ['index'=>'Proyecto','rol'=>1,'pestana'=>0,'grupo'=>'0'],
         ],
-    'tipoExpediente' => [  
-            [ 'index'=> 1, 'title' =>'Baixa Inasistència','rol'=> 17, 'estado' =>1],
-            [ 'index'=> 2, 'title' =>'Pèrdua Avaluació Continua','rol'=> 3, 'estado' =>1],
-            [ 'index'=> 4, 'title' =>"Remisió al departament d'Orientació",'rol'=> 17, 'estado' =>4],
-            [ 'index'=> 5, 'title' =>"Part d'amonestació",'rol'=> 3, 'estado' =>2],
-     ],
 ];

@@ -64,7 +64,10 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('ordentrabajo', 'OrdenTrabajoController', ['except' => ['edit', 'create']]);
     Route::resource('incidencia', 'IncidenciaController', ['except' => ['edit', 'create']]);
     Route::resource('expediente', 'ExpedienteController', ['except' => ['edit', 'create']]);
-
+    Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => ['edit', 'create']]);    
+    Route::resource('alumnoGrupo', 'AlumnoGrupoController', ['except' => ['edit', 'create']]);    
+    Route::get('alumnoGrupoModulo/{dni}/{modulo}','AlumnoGrupoController@getModulo');
+    
     Route::resource('horario', 'HorarioController', ['except' => ['edit', 'create']]);
     Route::get('horariosDia/{fecha}','HorarioController@HorariosDia');
     Route::resource('hora', 'HoraController', ['except' => ['edit', 'create']]);

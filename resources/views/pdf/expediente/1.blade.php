@@ -7,7 +7,7 @@
         <div class="container col-lg-12" style="width:40%;float: right">
             {{$elemento->Alumno->FullName}}<br/>
             {{$elemento->Alumno->domicilio}}<br/>
-            {{$elemeno->Alumno->codigo_postal}} {{$elemento->Alumno->Municipio()}}<br/>
+            {{$elemento->Alumno->codigo_postal}} {{$elemento->Alumno->Municipio()}}<br/>
             {{$elemento->Alumno->Provincia->nombre}}<br/>
         </div>
         <div class="container" style="width:95%;clear:right;text-align: justify">

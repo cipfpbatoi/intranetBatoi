@@ -191,7 +191,7 @@ return array(
         'Jefedep' => 'Cap de Departament',
         'List' => 'Informes',
         'Progstate' => 'Estat Programacions',
-        'Expediente' => 'Expedients iniciats',
+        'Expediente' => 'Expedients',
         'Reunion' => 'Gestió de Reunions',
         'Gtrabajo' => 'Actes/Convocatòries',
         'Grtrabajo' => 'Grups de Treball',

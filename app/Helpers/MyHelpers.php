@@ -268,11 +268,39 @@ function valorReal($elemento, $string)
         return $elemento->$string;
 }
 
-function hazArray($elementos, $campo1, $campo2, $separador = ' ')
+function hazArray($elementos, $campo1, $campo2=null, $separador = ' ')
 {
     $todos = [];
+    $campo2 = $campo2?$campo2:$campo1;
     foreach ($elementos as $elemento)
         if ($elemento) {
+            if (is_string($campo1)) {
+                $val = valorReal($elemento, $campo1);
+            } else {
+                $val = '';
+                foreach ($campo1 as $sub) {
+                    $val .= valorReal($elemento, $sub) . $separador;
+                }
+            }
+            if (is_string($campo2)) {
+                $res = valorReal($elemento, $campo2);
+            } else {
+                $res = '';
+                foreach ($campo2 as $sub) {
+                    $res .= valorReal($elemento, $sub) . $separador;
+                }
+            }
+            $todos[$val] = $res;
+        }
+    return $todos;
+}
+
+function hazArrayRole($elementos, $campo1, $campo2=null, $separador = ' ')
+{
+    $todos = [];
+    $campo2 = $campo2?$campo2:$campo1;
+    foreach ($elementos as $elemento)
+        if ($elemento && UserisAllow ($elemento->rol)) {
             if (is_string($campo1)) {
                 $val = valorReal($elemento, $campo1);
             } else {

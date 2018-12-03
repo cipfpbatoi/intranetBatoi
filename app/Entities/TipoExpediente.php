@@ -2,63 +2,15 @@
 
 namespace Intranet\Entities;
 
+use Illuminate\Database\Eloquent\Model;
 use App;
 
-class TipoDocumento
+class TipoExpediente extends Model
 {
-    
-    public static function allPestana()
-    {
-        $todos = [];
-        foreach (config('tablas.tipoDocumento') as $a) {
-            if (UserisAllow($a['rol'])&& $a['pestana'])
-                $todos[$a['index']] = trans('messages.buttons.'.$a['index']);
-        }
-        return $todos;
-    }
-    public static function allDocuments()
-    {
-        $todos = [];
-        foreach (config('tablas.tipoDocumento') as $a) {
-            if (UserisAllow($a['rol'])&& $a['pestana'])
-                $todos[] = $a['index'];
-        }
-        return $todos;
-    }
-    
-    public static function allRol($grupo)
-    {
-        $todos = [];
-        foreach (config('tablas.tipoDocumento') as $a) {
-            if (UserisAllow($a['rol'])&& $a['grupo']==$grupo)
-                $todos[$a['index']] = $a['rol'];
-        }
-        return $todos;
-    }
-    public static function rol($index)
-    {
-       foreach (config('tablas.tipoDocumento') as $a) {
-            if  ($a['index']==$index) return $a['rol'];
-        } 
-    }
+    protected $table = 'tipo_expedientes';
+    public $timestamps = false;
 
-    public static function all($grupo)
-    {
-        $todos = [];
-        foreach (config('tablas.tipoDocumento') as $a) {
-            if (UserisAllow($a['rol'])&& $a['grupo']==$grupo)
-                $todos[$a['index']] = $a['index'];
-        }
-        return $todos;
+    public function expedientes(){
+        return $this->hasMany(Expediente::class,'id','tipo');
     }
-
-    public static function get($index)
-    {
-        return config('tablas.tipoDocumento')[$index];
-    }
-
-    
-
 }
-  
-    

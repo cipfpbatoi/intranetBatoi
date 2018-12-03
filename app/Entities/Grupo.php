@@ -122,6 +122,18 @@ class Grupo extends Model
                 ->toarray();
         return $query->whereIn('codigo', $grupos);
     }
+    
+    public function scopeMiGrupoModulo($query,$dni,$modulo)
+    {
+        $grupo = Horario::select('idGrupo')
+                ->Profesor($dni)
+                ->whereNotNull('idGrupo')
+                ->where('modulo',$modulo)
+                ->distinct()
+                ->get()
+                ->toarray();
+        return $query->whereIn('codigo', $grupo);
+    }
 
     public function scopeMatriculado($query, $alumno)
     {

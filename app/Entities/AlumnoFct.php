@@ -57,6 +57,16 @@ class AlumnoFct extends Model
             default: return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
         }
     }
+    
+    public function scopeMisProyectos($query,$profesor=null)
+    {
+        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
+        $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
+        $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
+        $fcts = Fct::select('id')->whereIn('idColaboracion',$colaboraciones)->orWhere('asociacion',2)->get()->toArray();
+        return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->esAval()->whereNull('calProyecto');
+    }
+    
     public function scopeMisDual($query,$profesor=null)
     {
         $profesor = $profesor?$profesor:AuthUser()->dni;

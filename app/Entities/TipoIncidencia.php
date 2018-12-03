@@ -1,5 +1,6 @@
 <?php
 
+
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;

@@ -1,7 +1,8 @@
 <?php
 
 namespace Intranet\Http\Controllers;
-
+use Intranet\Entities\Expediente;
+use Intranet\Entities\TipoExpediente;
 
 class PanelExpedienteController extends BaseController
 {
@@ -21,6 +22,10 @@ class PanelExpedienteController extends BaseController
         $this->setAuthBotonera();
     }
 
+    protected function search()
+    {
+        return Expediente::whereIn('tipo', hazArray(TipoExpediente::where('orientacion',0)->get(), 'id'))->get();
+    }
     
 
 }

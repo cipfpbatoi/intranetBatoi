@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Expediente;
+use Intranet\Entities\TipoExpediente;
 use Intranet\Botones\BotonImg;
 
 class PanelExpedienteOrientacionController extends BaseController
@@ -24,7 +25,7 @@ class PanelExpedienteOrientacionController extends BaseController
     }
     protected function search()
     {
-        return Expediente::where('tipo',4)->get();
+        return Expediente::whereIn('tipo', hazArray(TipoExpediente::where('orientacion',1)->get(), 'id'))->get();
     }
 
     
