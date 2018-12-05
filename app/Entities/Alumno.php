@@ -138,8 +138,8 @@ class Alumno extends Authenticatable
                 }
                 return $tutor;
         }
-        //return $this->Grupo->count()?$this->Grupo->first()->Tutor:[];
     }
+    
     public function getIdiomaOptions()
     {
         return config('auxiliares.idiomas');

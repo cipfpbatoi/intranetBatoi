@@ -14,7 +14,7 @@
     </table>
 </div>
 <div class="container" >
-    <p>Les pràctiques de FCT a l'empresa {{$fct->Colaboracion->Centro->nombre}} han arribat a la seua fi i per tal de millorar-les ens és de molt utilitat la teua opinió.</p>
+    <p>Les pràctiques de FCT a l'empresa {{$fct->Fct->Colaboracion->Centro->nombre}} han arribat a la seua fi i per tal de millorar-les ens és de molt utilitat la teua opinió.</p>
     <p>Hem preparat aquest <a href="https://docs.google.com/forms/d/e/1FAIpQLScevNvZLdQvDaqKj3kvOs2gy_6n2wTTUvckHT70rgC7Juxuqg/viewform">formulari</a> per recollir-la.</p>
     <p>Gràcies per la teua col.laboració</p>
 </div>

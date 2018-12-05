@@ -5,6 +5,8 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
+use Mail;
+use Intranet\Mail\AvalFct;
 
 class PanelActasController extends BaseController
 {
@@ -35,6 +37,9 @@ class PanelActasController extends BaseController
         $fcts = AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
         foreach ($fcts as $fct){
             $fct->actas = 2;
+            foreach ($fct->Alumno->Tutor as $tutor){
+                Mail::to($tutor->email, 'Intranet Batoi')->send(new AvalFct($fct,'tutor'));
+            }
             $fct->save();
         }
         $grupo->acta_pendiente = 0;
@@ -42,6 +47,5 @@ class PanelActasController extends BaseController
         avisa($grupo->tutor, "Ja pots passar a arreplegar l'acta del grup $grupo->nombre", "#");
         return back();
     }
-
-
+    
 }

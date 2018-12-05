@@ -45,7 +45,6 @@ class PanelFctAvalController extends IntranetController
             $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-info', 'roles' => config('roles.rol.tutor')]));
         Session::put('redirect', 'PanelFctAvalController@index');
 
-        
         //Botó d'acta
         if (Grupo::QTutor()->first() && Grupo::QTutor()->first()->acta_pendiente == false) {
             $this->panel->setBoton('index', new BotonBasico("fct.acta", ['class' => 'btn-info', 'roles' => config('roles.rol.tutor')]));

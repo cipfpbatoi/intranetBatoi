@@ -13,6 +13,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Alumno;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\Panel;
@@ -52,7 +53,7 @@ class DocumentoController extends IntranetController
     {
         if ($request->has('nota')) {
             $this->validate($request,['nota' => 'numeric|min:1|max:10']);
-            $fct = Fct::findOrFail($fct);
+            $fct = AlumnoFct::findOrFail($fct);
             $fct->calProyecto = $request->nota;
             if ($fct->calificacion < 1) $fct->calificacion = 1;
             $fct->save();
@@ -64,7 +65,9 @@ class DocumentoController extends IntranetController
     
 
     public function project($idFct)
-    {   if ($fct = Fct::findOrFail($idFct)) {
+    {   
+        if ($fct = AlumnoFct::findOrFail($idFct)) {
+            
             $elemento = new Documento;
             $elemento->addFillable('nota');
             $elemento->tipoDocumento = 'Proyecto';
@@ -78,7 +81,7 @@ class DocumentoController extends IntranetController
             $elemento->setRule('nota','required');
             $default = $elemento->fillDefautOptions();
             $modelo = $this->model;
-            Session::put('redirect', 'PanelAvalFctController@index');
+            Session::put('redirect', 'PanelFctAvalController@index');
             return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
         } else {
             return back();
