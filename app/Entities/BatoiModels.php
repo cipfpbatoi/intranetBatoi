@@ -206,4 +206,10 @@ trait BatoiModels
         else
             return false;
     }
+    
+    public function has($field)
+    {
+        if (isset($this->$field) || is_null($this->$field)) return true;
+        else return false;
+    }
 }

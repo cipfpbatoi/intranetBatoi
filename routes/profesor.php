@@ -17,6 +17,7 @@ Route::get('/actividad/listado', ['as' => 'actividad.listado', 'uses' => 'Activi
 Route::post('/actividad/create', ['as' => 'actividad.store', 'uses' => 'ActividadController@store']);
 Route::put('/actividad/{actividad}/edit', ['as' => 'actividad.update', 'uses' => 'ActividadController@update']);
 Route::get('/actividad/{actividad}/detalle', ['as' => 'actividad.detalle', 'uses' => 'ActividadController@detalle']);
+Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.gestor', 'uses' => 'ActividadController@gestor']);
 Route::post('/actividad/{actividad}/nuevoGrupo', 'ActividadController@altaGrupo');
 Route::get('/actividad/{actividad}/borrarGrupo/{grupo}', 'ActividadController@borrarGrupo');
 Route::post('/actividad/{actividad}/nuevoProfesor', 'ActividadController@altaProfesor');
@@ -329,3 +330,10 @@ Route::get('/profesor/change',['as' =>'profesor.backChange','uses' => 'ProfesorC
 //Jefa de practicas
 Route::get('/fctcap/{grupo}/check', ['as' => 'fct.acta', 'uses' => 'PanelPG0301Controller@indice']);
 Route::get('/controlFct',['as'=> 'controlFct.index','uses' => 'PanelPracticasController@index']);
+
+//gestor documental
+Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.gestor', 'uses' => 'ActividadController@gestor']);
+Route::get('/expediente/{actividad}/gestor', ['as' => 'expediente.gestor', 'uses' => 'ExpedienteController@gestor']);
+Route::get('/falta/{actividad}/gestor', ['as' => 'falta.gestor', 'uses' => 'FaltaController@gestor']);
+Route::get('/comision/{actividad}/gestor', ['as' => 'comision.gestor', 'uses' => 'ComisionController@gestor']);
+Route::get('/itaca/{actividad}/gestor', ['as' => 'itaca.gestor', 'uses' => 'FaltaItacaController@gestor']);

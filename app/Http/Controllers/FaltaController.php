@@ -101,7 +101,7 @@ class FaltaController extends IntranetController
         if ($request->mensual == 'on') {
             $nom = 'Falta' . new Date() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-            Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"]);
+            $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"]);
 
             // pendientes pasan a ser impresas
             // todas las faltas hasta la fecha no impresas y comunicadas
@@ -131,6 +131,7 @@ class FaltaController extends IntranetController
                     ->orderBy('desde')
                     ->get();
             $this->makeAll($pendientes, '_print');
+            $this->makeLink($todos, $doc);
             return $this->hazPdf("pdf.faltas", $todos)
                             ->save(storage_path('/app/' . $nomComplet))
                             ->download($nom);

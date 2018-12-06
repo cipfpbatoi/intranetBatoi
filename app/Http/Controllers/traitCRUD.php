@@ -150,6 +150,16 @@ trait traitCRUD{
            Alert::danger(trans("messages.generic.nodocument"));
         return back();
     }
+    
+    public function gestor($id)
+    {
+        $elemento = $this->class::findOrFail($id);
+        if ($elemento->idDocumento) 
+            return redirect("/documento/$elemento->idDocumento/show");
+        else 
+           Alert::danger(trans("messages.generic.nodocument"));
+        return back();
+    }
 
     //valida extes per controlar els checkbox que pasen blancs
     protected function validateAll($request, $elemento)

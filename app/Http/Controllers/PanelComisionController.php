@@ -20,5 +20,7 @@ class PanelComisionController extends BaseController
         $this->setAuthBotonera(['2' => 'pdf', '1' => 'autorizar', '4' => 'paid']);
         $this->panel->setBoton('profile', new BotonIcon("$this->model.unauthorize", ['text' => 'NO pagar' , 'class' => 'btn-danger unauthorize', 'where' => ['estado', '==', '4']], true));
         $this->panel->setBoton('profile', new BotonIcon("$this->model.unauthorize", ['text' => 'TORNAR pagar' ,'class' => 'btn-danger unauthorize', 'where' => ['estado', '==', '5']], true));
+        $this->panel->setBothBoton('comision.gestor',['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
+        
     }
 }

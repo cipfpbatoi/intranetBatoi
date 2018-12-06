@@ -86,5 +86,15 @@ trait traitAutorizar
                 $this->class::putEstado($uno->id,$accion);
             }
     }
+    
+    //crea link a gestor documental
+    protected function makeLink($todos,$doc)
+    {
+        foreach ($todos as $uno) {
+            $uno->idDocumento = $doc;
+            $uno->save();
+         }
+    }
+    
 
 }

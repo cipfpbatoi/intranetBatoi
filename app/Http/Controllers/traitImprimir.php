@@ -24,7 +24,7 @@ trait traitImprimir
         return $pdf->stream();
     }
 
-    public function imprimir($modelo = '', $inicial = null, $final = null,$orientacion='portrait')
+    public function imprimir($modelo = '', $inicial = null, $final = null,$orientacion='portrait',$link=true)
     {
         $modelo = $modelo ? $modelo : strtolower($this->model) . 's';
         $final = $final ? $final : '_print';
@@ -36,6 +36,7 @@ trait traitImprimir
             $tags = config("modelos.$this->model.documento");
             $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => $tags ]);
             $this->makeAll($todos, $final);
+            if ($link) $this->makeLink($todos,$doc);
             return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
         } else {
             Alert::info(trans('messages.generic.empty'));

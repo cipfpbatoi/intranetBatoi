@@ -35,7 +35,7 @@
                         @else <a href='#' class='btn btn-success btn-xs' >   
                         @endif    
                         {{ $elemento->situacion }}</a>
-                    @endif    
+                    @endif  
                 </p>
             </div>
             <div class="col-xs-12 col-sm-8 emphasis">

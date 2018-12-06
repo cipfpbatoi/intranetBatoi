@@ -38,7 +38,7 @@ class ComisionController extends IntranetController
 
     public function payment()
     {
-        return $this->imprimir('payments',4,5,'landscape');
+        return $this->imprimir('payments',4,5,'landscape',false);
     }
      
     public function paid($id)

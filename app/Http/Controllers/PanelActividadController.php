@@ -22,7 +22,7 @@ class PanelActividadController extends BaseController
         $this->panel->setBothBoton('actividad.detalle');
         $this->panel->setBothBoton('actividad.edit');
         $this->panel->setBoton('profile', new BotonIcon("$this->model.unauthorize", ['class' => 'btn-danger unauthorize', 'where' => ['estado', '==', '3']], true));
-
+        $this->panel->setBothBoton('actividad.gestor',['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
         $this->setAuthBotonera();
     }
 

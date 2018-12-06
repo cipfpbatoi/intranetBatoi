@@ -152,7 +152,8 @@ return array(
         'chooseDate' => 'Escoge Fecha',
         'change' => 'Volver a mi Usuario',
         'fse' => 'Acta fons social Europeu',
-        'fol' => 'Certificat fol'
+        'fol' => 'Certificat fol',
+        'gestor' => 'Gestor Documental'
     ),
     'menu' => array(
         'Link' => 'Enlaces externos',

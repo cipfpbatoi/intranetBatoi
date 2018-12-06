@@ -19,6 +19,8 @@ class PanelFaltaItacaController extends BaseController
     {
         $this->panel->setBoton('profile', new BotonIcon("$this->model.resolve", ['class' => 'btn-success authorize', 'where' => ['estado', '!=', '2']], true));
         $this->panel->setBoton('profile', new BotonIcon("$this->model.refuse", ['class' => 'btn-danger refuse', 'where' => ['estado', '>', '0','estado','<','3']], true));
+        $this->panel->setBothBoton('itaca.gestor',['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
+        
     }
     
     

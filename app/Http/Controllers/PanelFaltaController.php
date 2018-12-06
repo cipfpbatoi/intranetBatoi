@@ -37,5 +37,7 @@ class PanelFaltaController extends BaseController
         $this->panel->setBoton('grid', new BotonImg('falta.edit', ['where' => ['estado', '<', '4']]));
         $this->panel->setBoton('grid', new BotonImg('falta.notification', ['where' => ['estado', '>', '0', 'hasta', 'posterior', Ayer()]]));
         $this->panel->setBothBoton('falta.document', ['where' => ['fichero', '!=', '']]);
+        $this->panel->setBothBoton('falta.gestor',['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
+        
     }
 }

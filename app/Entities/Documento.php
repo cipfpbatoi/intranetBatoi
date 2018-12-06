@@ -107,6 +107,7 @@ class Documento extends Model
             }
         }
         $doc->save();
+        return $doc->id;
     }
 
 }

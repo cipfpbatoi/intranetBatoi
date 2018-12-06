@@ -152,6 +152,7 @@ return array(
         'change' => 'Go back to my user',
         'fse' => 'European Social fund proceeding',
         'fol' => 'Certificate Training and labour guidance',
+        'gestor' => 'Gestor Documental'
     ),
     'menu' => array(
         'Link' => 'External links',

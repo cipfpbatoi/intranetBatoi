@@ -154,7 +154,8 @@ return array(
         'chooseDate' => 'Tria Fecha',
         'change' => 'Tornar  al meu Usuari',
         'fse' => 'Acta fons social Europeu',
-        'fol' => 'Certificat fol'
+        'fol' => 'Certificat fol',
+        'gestor' => 'Gestor Documental'
     ),
     'menu' => array(
         'Link' => 'Enllaços externs',

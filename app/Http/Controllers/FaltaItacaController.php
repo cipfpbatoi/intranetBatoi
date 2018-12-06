@@ -11,7 +11,7 @@ use Jenssegers\Date\Date;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Documento;
 
-class FaltaItacaController extends BaseController
+class FaltaItacaController extends IntranetController
 {
     use traitAutorizar,traitImprimir;
     
@@ -31,7 +31,7 @@ class FaltaItacaController extends BaseController
     {
         $desde = new Date($request->desde);
         $hasta = new Date($request->hasta);
-        $todos = Falta_itaca::all();
+        //$todos = Falta_itaca::all();
         $todos = Falta_itaca::where([
                         ['estado', '2'],
                         ['dia', '>=', $desde->format('Y-m-d')],
@@ -44,7 +44,8 @@ class FaltaItacaController extends BaseController
                 unlink(storage_path('app/' . $doc->fichero));
                 $doc->delete();
             }
-            Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Birret listado llistat autorizacion autorizacio"]);
+            $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Birret listado llistat autorizacion autorizacio"]);
+            $this->makeLink($todos, $doc);
             return $this->hazPdf("pdf.birret", $todos)
                             ->save(storage_path('/app/' . $nomComplet))
                             ->download($nom);

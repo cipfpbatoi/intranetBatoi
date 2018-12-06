@@ -12,20 +12,19 @@ trait TraitEstado
     public static function putEstado($id, $estado, $mensaje = null, $fecha = null)
     {
         $elemento = static::findOrFail($id);
+        
         if ($fecha != null) {
-            if ($elemento->fichero != '')
-                Documento::crea($elemento, [
+            if ($elemento->fichero != ''){
+                $idDocumento = Documento::crea($elemento, [
                     'tipoDocumento' => getClase($elemento),
                     'rol'=> '2',
                     ]);
+            }
             if (isset($elemento->fechasolucion)) {
                 $elemento->fechasolucion = $fecha;
             }
-            
         }
-        if (isset($elemento->solucion) && isset($mensaje)){
-            $elemento->solucion .= $mensaje;
-        }
+      
         $elemento->estado = $estado;
         $elemento->save();
         $elemento->informa($mensaje);

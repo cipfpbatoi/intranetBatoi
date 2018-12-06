@@ -166,6 +166,9 @@ class Incidencia extends Model
         } else
             $elemento->responsable = $estado > 1 ? AuthUser()->dni : '';
 
+        if ($elemento->has('solucion') && isset($mensaje))
+            $elemento->solucion .= $mensaje;
+        
         $elemento->estado = $estado;
         $elemento->save();
         $elemento->informa($mensaje);
