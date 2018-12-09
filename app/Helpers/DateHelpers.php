@@ -114,9 +114,9 @@ function nameDay($fecha)
  * @param fecha
  * @return string
  */
-function hora($fecha)
+function hora($fecha=null)
 {
-    $fc1 = new Date($fecha);
+    $fc1 = $fecha?new Date($fecha):new Date();
     return $fc1->format('H:i');
 }
 

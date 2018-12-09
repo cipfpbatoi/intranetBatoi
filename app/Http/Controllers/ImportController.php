@@ -35,7 +35,6 @@ class ImportController extends Seeder
                 'nombre' => 'nombre',
                 'apellido1' => 'apellido1',
                 'apellido2' => 'apellido2',
-                'email' => 'email1',
                 'fecha_nac' => 'getFechaFormatoIngles,fecha_nac',
                 'sexo' => 'sexo',
                 'expediente' => 'expediente',
@@ -55,6 +54,7 @@ class ImportController extends Seeder
             ),
             'create' => array(
                 'nia' => 'NIA',
+                'email' => 'email1'
             )),
         array('nombrexml' => 'docentes',
             'nombreclase' => 'Profesor',

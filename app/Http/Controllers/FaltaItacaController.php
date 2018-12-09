@@ -31,7 +31,6 @@ class FaltaItacaController extends IntranetController
     {
         $desde = new Date($request->desde);
         $hasta = new Date($request->hasta);
-        //$todos = Falta_itaca::all();
         $todos = Falta_itaca::where([
                         ['estado', '2'],
                         ['dia', '>=', $desde->format('Y-m-d')],

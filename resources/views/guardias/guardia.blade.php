@@ -5,7 +5,9 @@
 {{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.min.css') }}
 @endsection
 @section('content')
-
+<div class="form_box">
+    
+</div>
 <div class="form_box">
     <form class="form-horizontal form-label-left">
         <div class='form-group item'>
@@ -45,7 +47,8 @@
                 </div>
             </div>
              <div class='form-group item'>
-            <input id="submit" class="btn btn-success" type="submit" value="Guardar">
+                <a href="/guardia/control" class="btn btn-dark">Control Personal</a>
+                <input id="submit" class="btn btn-success" type="submit" value="Guardar">
              </div>
         </fieldset>
         <div class="errores"></div>

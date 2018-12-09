@@ -79,6 +79,10 @@ class Horario extends Model
     {
         return $query->where('ocupacion', '3249454');
     }
+    public function scopeLectivos($query)
+    {
+        return $query->whereNotIn('modulo',config('constants.modulosNoLectivos'));
+    }
 
     public function scopePrimera($query, $profesor, $date = null)
     {
@@ -134,6 +138,10 @@ class Horario extends Model
     protected function getProfesorAttribute(){
         return $this->Mestre->ShortName;
     }
+    protected function getXGrupoAttribute(){
+        return isset($this->Grupo->nombre)?$this->Grupo->nombre:'';
+    }
+    
     protected function getXModuloAttribute(){
         return isset($this->Modulo->literal)?$this->Modulo->literal:'';
     }

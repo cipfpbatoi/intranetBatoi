@@ -78,10 +78,7 @@ class Alumno extends Authenticatable
     {
         return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'idAlumno', 'idGrupo');
     }
-//    public function Fct()
-//    {
-//        return $this->belongsTo(Fct::class,'nia','idAlumno');
-//    }
+
     public function Fcts()
     {
         return $this->belongsToMany(Fct::class,'alumno_fcts', 'idAlumno', 'idFct','nia','id')->withPivot(['calificacion','calProyecto','actas','insercion']);

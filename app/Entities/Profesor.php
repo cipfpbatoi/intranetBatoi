@@ -308,12 +308,12 @@ class Profesor extends Authenticatable
 
     public function getAhoraAttribute()
     {
-        return $this->donde_esta($this->dni)['ahora'];
+        return $this->donde_esta()['ahora'];
     }
 
     public function getMomentoAttribute()
     {
-        return $this->donde_esta($this->dni)['momento'];
+        return $this->donde_esta()['momento'];
     }
 
     public function getMiJefeAttribute()
@@ -336,14 +336,14 @@ class Profesor extends Authenticatable
      * @param  string dni profesor
      * @return array
      */
-    protected function donde_esta($profesor)
+    protected function donde_esta()
     {
         $ahora = Date::now();
         $hora = sesion(Hora($ahora));
         $dia = config("auxiliares.diaSemana." . $ahora->format('w'));
 
         $horasDentro = Horario::Dia($dia)
-                ->Profesor($profesor)
+                ->Profesor($this->dni)
                 ->orderBy('sesion_orden')
                 ->get();
         //dd($horasDentro);
@@ -353,7 +353,7 @@ class Profesor extends Authenticatable
             if ($horasDentro->first()->sesion_orden > $hora)
                 return ['momento' => $horasDentro->first()->desde, 'ahora' => trans('messages.generic.home')];
 
-            $horaActual = Horario::Profesor($profesor)
+            $horaActual = Horario::Profesor($this->dni)
                     ->Dia($dia)
                     ->Orden($hora)
                     ->orderBy('sesion_orden')

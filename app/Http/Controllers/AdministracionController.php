@@ -26,6 +26,7 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\FctColaborador;
 use Intranet\Entities\Expediente;
+use Intranet\Entities\Alumno;
 
 class AdministracionController extends Controller
 {
@@ -137,5 +138,6 @@ class AdministracionController extends Controller
         $a->orientacion = 0;
         $a->save();
     }
+    
     
 }
