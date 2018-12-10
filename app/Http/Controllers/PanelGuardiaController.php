@@ -77,7 +77,7 @@ class PanelGuardiaController extends BaseController
                 if (!isset($horario->donde)) {
                     $profesor = Profesor::find($horario->idProfesor);
                     if (estaDentro($profesor->dni))
-                        $horario->donde = $profesor->ahora;
+                        $horario->donde = 'Al centre';
                     else {
                         $comision = Comision::Dia(Hoy())->where('idProfesor', $profesor->dni)->first();
                         if ($comision && coincideHorario($comision, $sesion))
@@ -87,7 +87,7 @@ class PanelGuardiaController extends BaseController
                             if ($falta && coincideHorario($falta, $sesion))
                                 $horario->donde = 'Comunica Ausencia';
                             else
-                                $horario->donde = 'No està al centre.';
+                                $horario->donde = 'No ha fitxat';
                         }
                     }
                 }
