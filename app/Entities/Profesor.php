@@ -198,19 +198,7 @@ class Profesor extends Authenticatable
             return $fecha->format('d-m-Y');
         }
     }
-    
-    
-
-//    public function nombre()
-//    {
-//        return $this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2;
-//    }
-//
-//    public function nombreCorto()
-//    {
-//        return $this->nombre . ' ' . $this->apellido1;
-//    }
-
+   
     public static function Baja($id, $fecha = null)
     {
         $profe = Profesor::find($id);
@@ -308,12 +296,12 @@ class Profesor extends Authenticatable
 
     public function getAhoraAttribute()
     {
-        return $this->donde_esta()['ahora'];
+        return donde_esta($this->dni)['ahora'];
     }
 
     public function getMomentoAttribute()
     {
-        return $this->donde_esta()['momento'];
+        return donde_esta($this->dni)['momento'];
     }
 
     public function getMiJefeAttribute()
@@ -330,47 +318,5 @@ class Profesor extends Authenticatable
         else return false;
     }
 
-    /**
-     * Devuelve salida para preparar el boton de donde esta el profesor actualmente
-     *
-     * @param  string dni profesor
-     * @return array
-     */
-    protected function donde_esta()
-    {
-        $ahora = Date::now();
-        $hora = sesion(Hora($ahora));
-        $dia = config("auxiliares.diaSemana." . $ahora->format('w'));
-
-        $horasDentro = Horario::Dia($dia)
-                ->Profesor($this->dni)
-                ->orderBy('sesion_orden')
-                ->get();
-        //dd($horasDentro);
-        if (count($horasDentro) > 0) {
-            if ($horasDentro->last()->sesion_orden < $hora)
-                return ['momento' => $horasDentro->last()->hasta, 'ahora' => trans('messages.generic.home')];
-            if ($horasDentro->first()->sesion_orden > $hora)
-                return ['momento' => $horasDentro->first()->desde, 'ahora' => trans('messages.generic.home')];
-
-            $horaActual = Horario::Profesor($this->dni)
-                    ->Dia($dia)
-                    ->Orden($hora)
-                    ->orderBy('sesion_orden')
-                    ->first();
-            if ($horaActual) {
-                if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre) 
-                    return ['momento' => $horaActual->Grupo->nombre, 'ahora' => $horaActual->Modulo->literal . ' (' . $horaActual->aula . ')'];
-                if ($horaActual->ocupacion != null && isset($horaActual->Ocupacion->nombre)) {
-                    if (App::getLocale(session('lang')) == 'es')
-                        return ['momento' => '', 'ahora' => $horaActual->Ocupacion->nombre];
-                    else
-                        return ['momento' => '', 'ahora' => $horaActual->Ocupacion->nom];
-                }
-            } else
-                return ['momento' => trans('messages.generic.patio'), 'ahora' => trans('messages.generic.patio')];
-        } else
-            return ['momento' => trans('messages.generic.notoday'), 'ahora' => trans('messages.generic.home')];
-    }
-
+  
 }

@@ -1,11 +1,13 @@
 <?php
 
-function PeriodePractiques($fecha=null)
+function PeriodePractiques($fecha = null)
 {
-    $inici = $fecha?new Date($fecha):new Date(Hoy());
+    $inici = $fecha ? new Date($fecha) : new Date(Hoy());
     $inici->format('Y-m-d');
-    if ($inici <= config('curso.fct.2')['inici']) return 1;
-    else return 2;   
+    if ($inici <= config('curso.fct.2')['inici'])
+        return 1;
+    else
+        return 2;
 }
 
 function Fecha($fecha)
@@ -17,23 +19,24 @@ function Fecha($fecha)
 function FechaInglesa($fecha)
 {
     $hoy = new Date($fecha);
-    return $hoy->format('Y-m-d');    
+    return $hoy->format('Y-m-d');
 }
 
-function FechaString($fecha = null,$idioma=null)
+function FechaString($fecha = null, $idioma = null)
 {
-    $fc1 = ($fecha==null)?new Jenssegers\Date\Date():(is_string($fecha))?New Jenssegers\Date\Date($fecha):$fecha;
-    if (!isset($idioma)) $idioma = Session::get('lang'); 
+    $fc1 = ($fecha == null) ? new Jenssegers\Date\Date() : (is_string($fecha)) ? New Jenssegers\Date\Date($fecha) : $fecha;
+    if (!isset($idioma))
+        $idioma = Session::get('lang');
     Jenssegers\Date\Date::setlocale($idioma);
-    
+
     return $fc1->format('d') . ' de ' . $fc1->format('F') .
             ' de ' . $fc1->format('Y');
 }
 
-function Hoy($format=null)
+function Hoy($format = null)
 {
     $fecha = new Date();
-    return $format?$fecha->format($format):$fecha->toDateString();
+    return $format ? $fecha->format($format) : $fecha->toDateString();
 }
 
 function Ayer()
@@ -43,23 +46,24 @@ function Ayer()
     return $fecha->toDateString();
 }
 
-function FechaPosterior($fecha1,$fecha2 = null){
-    $fecha2 = is_null($fecha2)?new Date():is_string($fecha2)?new Date($fecha2):$fecha2;  
-    $fecha1 = is_string($fecha1)?new Date($fecha1):$fecha1;
-    return $fecha1 > $fecha2?$fecha1:$fecha2;
+function FechaPosterior($fecha1, $fecha2 = null)
+{
+    $fecha2 = is_null($fecha2) ? new Date() : is_string($fecha2) ? new Date($fecha2) : $fecha2;
+    $fecha1 = is_string($fecha1) ? new Date($fecha1) : $fecha1;
+    return $fecha1 > $fecha2 ? $fecha1 : $fecha2;
 }
 
 function haVencido($fecha)
 {
-    return Hoy() >= Fecha($fecha)?true:false;
+    return Hoy() >= Fecha($fecha) ? true : false;
 }
 
 function esMismoDia($ini, $fin)
 {
     $fec1 = new Date($ini);
     $fec2 = new Date($fin);
-    
-    return $fec1->isSameDay($fec2)?true:false;   
+
+    return $fec1->isSameDay($fec2) ? true : false;
 }
 
 function esMayor($ini, $fin)
@@ -67,7 +71,7 @@ function esMayor($ini, $fin)
     $fec1 = new Date($ini);
     $fec2 = new Date($fin);
     //dd($ini);
-    return $fec1 > $fec2?true:false;
+    return $fec1 > $fec2 ? true : false;
 }
 
 /**
@@ -114,16 +118,16 @@ function nameDay($fecha)
  * @param fecha
  * @return string
  */
-function hora($fecha=null)
+function hora($fecha = null)
 {
-    $fc1 = $fecha?new Date($fecha):new Date();
+    $fc1 = $fecha ? new Date($fecha) : new Date();
     return $fc1->format('H:i');
 }
 
 function sesion($hora)
 {
-    return  isset(\Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first()->codigo)?
-            \Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first()->codigo:0;
+    return isset(\Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first()->codigo) ?
+            \Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first()->codigo : 0;
 }
 
 /**

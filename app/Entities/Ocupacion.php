@@ -20,5 +20,9 @@ class Ocupacion extends Model
     {
         return $this->hasMany(Horario::class, 'codigo', 'ocupacion');
     }
+    public function getliteralAttribute()
+    {
+        return App::getLocale(session('lang')) == 'es' ? $this->nombre : $this->nom;
+    }
 
 }

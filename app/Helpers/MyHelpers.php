@@ -210,36 +210,7 @@ function Rol($roles)
     return $rol;
 }
 
-/**
- * Mira si el profesor esta en el instituto
- * 
- * @param dni profesor
- * @return boolean
- */
-function estaDentro($profesor = null)
-{
-    $profesor = ($profesor == null ? AuthUser()->dni : $profesor);
-    $ultimo = Intranet\Entities\Falta_profesor::Hoy($profesor)->last();
-    return ($ultimo == null ? false : ($ultimo->salida == null ? true : false));
-}
 
-/**
- * Mira si el profesor estaba en una hora concreta en el instituto
- * 
- * @param dni profesor
- * @return boolean
- */
-function estaInstituto($profesor, $dia, $hora)
-{
-    $fichadas = Intranet\Entities\Falta_profesor::haFichado($dia, $profesor)->get();
-    foreach ($fichadas as $ficha) {
-        if ($ficha->salida) {
-            if ($hora >= $ficha->entrada && $hora < $ficha->salida)
-                return TRUE;
-        }
-    }
-    return FALSE;
-}
 
 /**
  * Mira si dos fechas son el mismo dia
