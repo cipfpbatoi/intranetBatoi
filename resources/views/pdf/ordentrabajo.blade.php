@@ -29,7 +29,7 @@
                 </td>
                 <td>{{$elemento->espacio }}</td>
                 <td>{{$elemento->Creador->ShortName}}</td>
-                <td>       </td>
+                <td>@if ($elemento->estado>2) X @endif </td>
             </tr>
             @endforeach
         </tbody>

@@ -198,45 +198,7 @@ class Profesor extends Authenticatable
             return $fecha->format('d-m-Y');
         }
     }
-   
-    public static function Baja($id, $fecha = null)
-    {
-        $profe = Profesor::find($id);
-        if ($fecha){
-            $profe->fecha_baja = new Date($fecha);
-            $profe->save();
-        }
-        else {
-            DB::transaction(function() use ($profe) {
-                $profe->fecha_baja = null;
-                $profe->save();
-                if ($sustituto = $profe->Sustituye) {
-                        //canvi d'horari
-                    if (Horario::profesor($profe->dni)->count()==0)
-                        Horario::where('idProfesor',$sustituto->dni)->update(['idProfesor'=> $profe->dni]);
-                    else
-                        Horario::where('idProfesor',$sustituto->dni)->delete();
-                               //reuniones
-                    foreach (Asistencia::where('idProfesor',$sustituto->dni)->get() as $asistencia){
-                        if (Asistencia::where('idProfesor', $profe->dni)->where('idReunion', $asistencia->idReunion)->count() == 0){
-                            Reunion::find($asistencia->idReunion)->profesores()->syncWithoutDetaching([$profe->dni=>['asiste'=>0]]);
-                        }
-                    }
-                    
-                    Reunion::where('idProfesor',$sustituto->dni)->update(['idProfesor'=>$profe->dni]);
-                    Grupo::where('tutor',$sustituto->dni)->update(['tutor'=>$profe->dni]);
-                    Programacion::where('idProfesor',$sustituto->dni)->update(['idProfesor' => $profe->dni]);
-                    Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profe->dni]);
-                    Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profe->dni]);
-                    
-                    $sustituto->sustituye_a = ' ';
-                    $sustituto->activo = 0;
-                    $sustituto->save();
-                }
-            });
-        }
-    }
-
+    
     public function getIdiomaOptions()
     {
         return config('auxiliares.idiomas');
@@ -296,12 +258,12 @@ class Profesor extends Authenticatable
 
     public function getAhoraAttribute()
     {
-        return donde_esta($this->dni)['ahora'];
+        return horarioAhora($this->dni)['ahora'];
     }
 
     public function getMomentoAttribute()
     {
-        return donde_esta($this->dni)['momento'];
+        return horarioAhora($this->dni)['momento'];
     }
 
     public function getMiJefeAttribute()

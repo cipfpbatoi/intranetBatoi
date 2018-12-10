@@ -5,7 +5,7 @@
             <h4 class="brief">
                 <i class="fa fa-wrench"></i> id.{{$elemento->material}} {{ $elemento->descripcion }}.
             </h4>    
-            @if (!empty($elemento->Observaciones)) <h5>Observacions: {{$elemento->Observaciones}}</h5>@endif
+            @if (!empty($elemento->Observaciones)) <h5><i class="fa fa-comment-o"></i> {{$elemento->Observaciones}}</h5>@endif
             <div class="left col-xs-12">
                 <h5> <i class="fa fa-tag"></i> {{$elemento->Espacios->descripcion}}</h5>
                 <h5><i class="fa fa-tag"></i> {{$elemento->Tipos->literal}}</h5>
@@ -13,6 +13,9 @@
                         <li><i class="fa fa-user"></i> {{$elemento->Creador->nombre}} {{$elemento->Creador->apellido1}}  </li>
                         <li><i class="fa fa-group"></i> @if (isset($elemento->Responsables->nombre)) {{$elemento->Responsables->nombre}} {{$elemento->Responsables->apellido1}} @else No assignat @endif </li>
                 </ul>
+                @if (isset($elemento->solucion)) 
+                    <h5><i class="fa fa-lightbulb-o"></i> {{$elemento->solucion}}</h5>
+                @endif
             </div>
         </div>
         <div class="col-xs-12 bottom text-center">

@@ -58,6 +58,7 @@ class OrdenTrabajoController extends IntranetController
         $elemento->save();
         return back();
     }
+    
     public function open($id){
         $elemento = $this->class::findOrFail($id);
         $elemento->estado = 0;

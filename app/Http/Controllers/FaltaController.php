@@ -3,6 +3,16 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Falta;
+use Intranet\Entities\Profesor;
+use Intranet\Entities\Documento;
+use Intranet\Entities\Horario;
+use Intranet\Entities\Asistencia;
+use Intranet\Entities\Reunion;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Programacion;
+use Intranet\Entities\Expediente;
+use Intranet\Entities\Resultado;
+
 use Illuminate\Support\Facades\Auth;
 use Jenssegers\Date\Date;
 use \DB;
@@ -10,8 +20,6 @@ use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonIcon;
 use Illuminate\Http\Request;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Documento;
 use PDF;
 
 class FaltaController extends IntranetController
@@ -48,7 +56,7 @@ class FaltaController extends IntranetController
                 $request->hasta = '';
                 $request->dia_completo = 1;
                 $request->estado = 5;
-                Profesor::Baja($request->idProfesor, $request->desde);
+                $this->tramitaBajaProfesor($request->idProfesor, $request->desde);
                 parent::realStore($request);
             });
         } else {
@@ -62,6 +70,8 @@ class FaltaController extends IntranetController
         return $this->redirect();
     }
 
+    
+    
     public function update(Request $request, $id)
     {
         $request->dia_completo = isset($request->dia_completo)?1:0;
@@ -72,6 +82,8 @@ class FaltaController extends IntranetController
         if ($elemento->estado == 1 && $elemento->fichero) Falta::putEstado($id,2); // si estava enviat i he pujat fitxer
         return $this->redirect();
     }
+    
+    
 
     public function init($id)
     {
@@ -91,7 +103,7 @@ class FaltaController extends IntranetController
             $elemento->baja = 0;
             $elemento->save();
             // quita la  baja del profesor
-            Profesor::Baja($elemento->idProfesor);
+            $this->tramitaBajaProfesor($elemento->idProfesor);
         });
         return back()->with('pestana', $elemento->estado);
     }
@@ -146,6 +158,46 @@ class FaltaController extends IntranetController
                     ->orderBy('desde')
                     ->get();
             return $this->hazPdf("pdf.faltas", $todos)->stream();
+        }
+    }
+    
+    private function tramitaBajaProfesor($id, $fecha = null)
+    {
+        $profe = Profesor::find($id);
+        // Baixa
+        if ($fecha){
+            $profe->fecha_baja = new Date($fecha);
+            $profe->save();
+        }
+        // Alta
+        else {
+            DB::transaction(function() use ($profe) {
+                $profe->fecha_baja = null;
+                $profe->save();
+                if ($sustituto = $profe->Sustituye) {
+                        //canvi d'horari
+                    if (Horario::profesor($profe->dni)->count()==0)
+                        Horario::where('idProfesor',$sustituto->dni)->update(['idProfesor'=> $profe->dni]);
+                    else
+                        Horario::where('idProfesor',$sustituto->dni)->delete();
+                               // asistència a reunions
+                    foreach (Asistencia::where('idProfesor',$sustituto->dni)->get() as $asistencia){
+                        if (Asistencia::where('idProfesor', $profe->dni)->where('idReunion', $asistencia->idReunion)->count() == 0){
+                            Reunion::find($asistencia->idReunion)->profesores()->syncWithoutDetaching([$profe->dni=>['asiste'=>0]]);
+                        }
+                    }
+                            // tota la feina del substitut pasa al subtituit
+                    Reunion::where('idProfesor',$sustituto->dni)->update(['idProfesor'=>$profe->dni]);
+                    Grupo::where('tutor',$sustituto->dni)->update(['tutor'=>$profe->dni]);
+                    Programacion::where('idProfesor',$sustituto->dni)->update(['idProfesor' => $profe->dni]);
+                    Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profe->dni]);
+                    Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profe->dni]);
+                    
+                    $sustituto->sustituye_a = ' ';
+                    $sustituto->activo = 0;
+                    $sustituto->save();
+                }
+            });
         }
     }
 }

@@ -19,10 +19,8 @@ class IncidenciaController extends IntranetController
     protected $gridFields = ['Xestado', 'DesCurta', 'espacio', 'XResponsable', 'Xtipo', 'fecha'];
     protected $descriptionField = 'descripcion';
     protected $modal = true;
-   
     
-    
-    protected function orden($id)
+    protected function generarOrden($id)
     {
         $elemento = Incidencia::findOrFail($id);
         $orden = OrdenTrabajo::where('tipo',$elemento->tipo)
@@ -44,26 +42,16 @@ class IncidenciaController extends IntranetController
         Session::put('pestana',$elemento->estado);
         return back();
     }
-
-    public function anexo($id)
-    {
-        $todos = Incidencia::where('orden',$id)->get(); 
-        $this->panel->setPestana(trans('validation.attributes.orden').' '.$id, true, 'profile.incidencia',null,null,1);
-        $this->panel->setBoton('index', new BotonBasico("$id.pdf", ['where'=>['estado','==',0]],"mantenimiento/ordentrabajo" ));
-        $this->panel->setBoton('index', new BotonBasico("ordentrabajo.", ['text'=>trans('messages.buttons.verorden')],"mantenimiento" ));
-        $this->panel->setBoton('profile', new BotonIcon("incidencia.remove", ['class' => 'btn-danger unauthorize','where'=>['estado','<',3]],'mantenimiento'));
-        
-        return $this->grid($todos, false);
-    }
-    
-    public function remove($id)
+  
+    public function removeOrden($id)
     {
         $incidencia = Incidencia::findOrFail($id);
         $incidencia->orden = null;
         $incidencia->save();
         return back();
     }
-
+    
+    
     public function edit($id)
     {
         $elemento = Incidencia::findOrFail($id);

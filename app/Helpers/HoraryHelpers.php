@@ -1,6 +1,9 @@
 <?php
 
-function donde_esta($dni)
+
+// segun horari on està el professor
+
+function horarioAhora($dni)
 {
     $ahora = Jenssegers\Date\Date::now();
     $hora = sesion(Hora($ahora));
@@ -34,6 +37,7 @@ function donde_esta($dni)
         return ['momento' => trans('messages.generic.notoday'), 'ahora' => trans('messages.generic.home')];
 }
 
+// coincidix element amb sesió actual
 function coincideHorario($elemento, $sesion)
 {
     if (esMismoDia($elemento->desde, $elemento->hasta)) {

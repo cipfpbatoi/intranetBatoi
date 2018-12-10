@@ -19,7 +19,7 @@ $(function () {
         id = $(this).parents(".profile_view").attr("id");
     });
     $("#formAviso").on("submit", function () {
-        $(this).attr("action", MODEL + "/" + id + "/resolve");
+        $(this).attr("action","/mantenimiento/" + MODEL + "/" + id + "/resolve");
     });
     $("#explicacion").focus();    
 });
