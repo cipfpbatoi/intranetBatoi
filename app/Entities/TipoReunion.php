@@ -13,11 +13,11 @@ use App;
 class TipoReunion
 {
     
-    public static function allSelect($colectivo = null)
+    public static function allSelect($colectivo = null,$superUsuari=false)
     {
         $todos = [];
         foreach (config('tablas.tipoReunion') as $a) {
-            if (UserisAllow($a['rol']))
+            if ($superUsuari || UserisAllow($a['rol']))
                 if (!isset($a['ocultar']))
                     if (isset($colectivo)){
                         if ($a['colectivo']==$colectivo) $todos[$a['index']] = self::literal($a['index']);}

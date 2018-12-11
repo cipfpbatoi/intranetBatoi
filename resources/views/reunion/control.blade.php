@@ -8,7 +8,7 @@
         <form action='/direccion/reunion/aviso' method="POST">
             {{ csrf_field() }}
             <select name='tipo' class='form-control select' required >
-                @foreach (\Intranet\Entities\TipoReunion::allSelect('Grupo') as $index => $valor)
+                @foreach (\Intranet\Entities\TipoReunion::allSelect('Grupo',true) as $index => $valor)
                     <option value='{{$index}}'>{{$valor}}</option>
                 @endforeach
             </select>

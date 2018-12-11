@@ -125,5 +125,8 @@ class Expediente extends Model
     public function getShortAttribute(){
         return substr($this->explicacion,0,40);
     }
+    public function getEsInformeAttribute(){
+        return $this->tipoExpediente->informe;
+    }
 
 }

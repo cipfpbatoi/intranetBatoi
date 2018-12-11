@@ -31,7 +31,8 @@ class ExpedienteController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('expediente.pdf', ['where' => ['estado', '==', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.edit', ['where' => ['estado', '<', '2']]));
-        $this->panel->setBoton('grid', new BotonImg('expediente.init', ['where' => ['estado', '==', '0']]));
+        $this->panel->setBoton('grid', new BotonImg('expediente.init', ['where' => ['estado', '==', '0','informe','==',0]]));
+        $this->panel->setBoton('grid', new BotonImg('expediente.pdf', ['where' => ['esInforme', '==', 1]]));
     }
 
     public function autorizar()
@@ -62,6 +63,12 @@ class ExpedienteController extends IntranetController
         $expediente->save();
 
         return back();
+    }
+    
+    public function pdf($id)
+    {
+        $expediente = Expediente::find($id);
+        return self::hazPdf("pdf.expediente.$expediente->tipo",$expediente)->stream();
     }
 
     public function imprimir()
