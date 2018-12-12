@@ -35,16 +35,19 @@ class PanelActasController extends BaseController
     public function finActa($idGrupo){
         $grupo = Grupo::findOrFail($idGrupo);
         $fcts = AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
+        $empresas = [];
         foreach ($fcts as $fct){
             $fct->actas = 2;
-            foreach ($fct->Alumno->Tutor as $tutor){
-                Mail::to($tutor->email, 'Intranet Batoi')->send(new AvalFct($fct,'tutor'));
-            }
+            $empresas[$fct->Fct->Colaboracion->Centro->nombre] = 
+                    isset($empresas[$fct->Fct->Colaboracion->Centro->nombre])
+                    ?$empresas[$fct->Fct->Colaboracion->Centro->nombre]." , ".$fct->Alumno->FullName
+                    :$fct->Alumno->FullName;
             $fct->save();
         }
         $grupo->acta_pendiente = 0;
         $grupo->save();
         avisa($grupo->tutor, "Ja pots passar a arreplegar l'acta del grup $grupo->nombre", "#");
+        Mail::to($grupo->Tutor->email, 'Intranet Batoi')->send(new AvalFct($empresas,'tutor'));
         return back();
     }
     
