@@ -136,6 +136,11 @@ class AdministracionController extends Controller
         $a->titulo = "Part d'amonestació";
         $a->rol = 3;
         $a->orientacion = 0;
+        $a = new \Intranet\Entities\TipoExpediente();
+        $a->titulo = "Informe d'exempció FCT";
+        $a->rol = 3;
+        $a->orientacion = 0;
+        $a->informe = 1;
         $a->save();
     }
     

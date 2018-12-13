@@ -138,7 +138,7 @@ class AlumnoFct extends Model
     }
     public function scopeGrupo($query,$grupo)
     {
-        $alumnos = Alumno::select('nia')->misAlumnos($grupo->tutor)->get()->toArray();
+        $alumnos = Alumno::select('nia')->QGrupo($grupo->codigo)->get()->toArray();
         return $query->whereIn('idAlumno',$alumnos);
     }
 }

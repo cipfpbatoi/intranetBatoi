@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
 class AvalFct extends Mailable
 {
@@ -34,6 +35,7 @@ class AvalFct extends Mailable
      */
     public function build()
     {
+        Log::notice("Enviat correu avalFct $this->quien");
         return $this->view("email.fct.$this->quien");
     }
 

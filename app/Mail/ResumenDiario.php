@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
 class ResumenDiario extends Mailable
 {
@@ -32,6 +33,7 @@ class ResumenDiario extends Mailable
      */
     public function build()
     {
+        Log::notice('Enviat resum diari');
         return $this->view('email.resumenDiario')->subject("Resumen dels missatges del dia " . Hoy() . " : ");
     }
 
