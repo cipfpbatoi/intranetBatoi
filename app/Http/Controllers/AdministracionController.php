@@ -27,6 +27,7 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\FctColaborador;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\Alumno;
+use Intranet\Entities\TipoExpediente;
 
 class AdministracionController extends Controller
 {
@@ -119,24 +120,24 @@ class AdministracionController extends Controller
 
     public static function v1_3_4()
     {
-        $a = new \Intranet\Entities\TipoExpediente();
+        $a = new TipoExpediente();
         $a->titulo = 'Baixa Inasistència';
         $a->rol = 17;
         $a->save();
-        $a = new \Intranet\Entities\TipoExpediente();
+        $a = new TipoExpediente();
         $a->titulo = 'Pèrdua Avaluació Continua';
         $a->rol = 3;
         $a->save();
-        $a = new \Intranet\Entities\TipoExpediente();
+        $a = new TipoExpediente();
         $a->titulo = "Remisió al departament d'Orientació";
         $a->rol = 17;
         $a->orientacion = 1;
         $a->save();
-        $a = new \Intranet\Entities\TipoExpediente();
+        $a = new TipoExpediente();
         $a->titulo = "Part d'amonestació";
         $a->rol = 3;
         $a->orientacion = 0;
-        $a = new \Intranet\Entities\TipoExpediente();
+        $a = new TipoExpediente();
         $a->titulo = "Informe d'exempció FCT";
         $a->rol = 3;
         $a->orientacion = 0;
