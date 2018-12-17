@@ -3,7 +3,7 @@
     <div class="menu_section">
         <h3>General</h3>
         <ul class="nav side-menu">
-        {!! \Intranet\Entities\Menu::make('general') !!}
+        {!! Intranet\Entities\Menu::make('general') !!}
         </ul>
     </div>
 </div>

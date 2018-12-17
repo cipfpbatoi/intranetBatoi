@@ -31,12 +31,7 @@ class Menu extends Model
         
     ];
 
-//    public function __construct()
-//    {
-//        //$this->menu = 'general';
-//        //$this->activo = 1;
-//        //$this->orden = Menu::select('orden')->orderby('orden','DESC')->first()->orden + 1;
-//    }
+
 
     private static function tipoUrl($url)
     {
@@ -62,6 +57,7 @@ class Menu extends Model
                 foreach ($items as $item) {
                     $menu[$sitem->nombre]['submenu'][$item->nombre] = array(self::tipoUrl($item->url) => $item->url, 
                         'img' => $item->img, 'roles' => $item->rol);
+                    
                 }
             } else {
                 $menu[$sitem->nombre] = array(self::tipoUrl($sitem->url) => $sitem->url, 'class' => $sitem->class);
