@@ -7,13 +7,13 @@
     <div class="clearfix col-md-6 col-lg-6">
         <form action='/direccion/reunion/aviso' method="POST">
             {{ csrf_field() }}
-            <select name='tipo' class='form-control select' required >
-                @foreach (\Intranet\Entities\TipoReunion::allSelect('Grupo',true) as $index => $valor)
-                    <option value='{{$index}}'>{{$valor}}</option>
+            <select id='tipo_id' name='tipo' class='form-control select' required >
+                @foreach ($reunionesControlables as $index )
+                    <option value='{{$index}}'>{{\Intranet\Entities\TipoReunion::literal($index)}}</option>
                 @endforeach
             </select>
-            <select name='numero' class='form-control select' >
-                @foreach (config('auxiliares.numeracion') as $index => $valor)
+            <select id='numero_id' name='numero' class='form-control select' >
+                @foreach (\Intranet\Entities\TipoReunion::numeracion($reunionesControlables[0]) as $index => $valor))
                     <option value='{{$index}}'>{{$valor}}</option>
                 @endforeach
             </select>
@@ -50,4 +50,7 @@
 @endsection
 @section('titulo')
 @lang("models.Reunion.control")
+@endsection
+@section('scripts')
+    {{ Html::script("/js/reunion/control.js") }}
 @endsection
