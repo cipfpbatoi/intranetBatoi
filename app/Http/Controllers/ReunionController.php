@@ -232,12 +232,11 @@ class ReunionController extends IntranetController
 
     public function listado($dia = null)
     {
-        $reunionesControlables = [2, 5, 6, 7, 9];
         foreach (Grupo::all() as $grupo)
-            foreach ( $reunionesControlables as $tipo) {
+            foreach ( config('auxiliares.reunionesControlables') as $tipo) {
                 $reuniones[$grupo->nombre][$tipo] = Reunion::Convocante($grupo->tutor)->Tipo($tipo)->Archivada()->get();
             }
-        return view('reunion.control', compact('reuniones','reunionesControlables'));
+        return view('reunion.control', compact('reuniones'));
     }
 
     public function avisaFaltaActa(Request $request)

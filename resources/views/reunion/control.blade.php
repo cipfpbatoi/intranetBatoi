@@ -8,12 +8,12 @@
         <form action='/direccion/reunion/aviso' method="POST">
             {{ csrf_field() }}
             <select id='tipo_id' name='tipo' class='form-control select' required >
-                @foreach ($reunionesControlables as $index )
+                @foreach (config('auxiliares.reunionesControlables') as $index )
                     <option value='{{$index}}'>{{\Intranet\Entities\TipoReunion::literal($index)}}</option>
                 @endforeach
             </select>
             <select id='numero_id' name='numero' class='form-control select' >
-                @foreach (\Intranet\Entities\TipoReunion::numeracion($reunionesControlables[0]) as $index => $valor))
+                @foreach (\Intranet\Entities\TipoReunion::numeracion(config('auxiliares.reunionesControlables')[0]) as $index => $valor))
                     <option value='{{$index}}'>{{$valor}}</option>
                 @endforeach
             </select>
