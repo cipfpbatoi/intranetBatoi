@@ -77,13 +77,18 @@ class FctController extends IntranetController
     
     public function document($document)
     {
-        //dd(FCT::misFcts()->Activa(config("pr.$document.cuando"))->count());
-        if (FCT::misFcts()->Activa(config("pr.$document.cuando"))->count()&&AlumnoFct::misFcts(null,"pr.$document.cuando")->count()){
-            return $this->hazPdf("pdf.fct.$document", AlumnoFct::misFcts(null,"pr.$document.cuando")->orderBy('idAlumno')->orderBy('desde')->get(),
+        switch (config("pr.$document.cuando")){
+            case '1' : $quienes = AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idAlumno')->orderBy('desde')->get();break;   
+            case '2' : $quienes = AlumnoFct::misFcts()->where('desde','<=',Hoy())->where('hasta','>=',Hoy())->orderBy('idAlumno')->orderBy('desde')->get();break;   
+            case '3' : $quienes = Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get();break;
+        }
+        
+        if ($quienes->count()){
+            return $this->hazPdf("pdf.fct.$document", $quienes,
                     config("pr.$document"), config("pr.$document.orientacion"))->stream();
         }
         else{
-            Alert::message('No tens alumnes fent la FCT','warning');
+            Alert::message('No tens alumnes per a eixa documentació','warning');
             return back();
         }    
     }

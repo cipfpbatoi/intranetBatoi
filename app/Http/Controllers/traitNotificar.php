@@ -57,7 +57,8 @@ trait traitNotificar
                     ->whereIn('idGrupo', $grupos_afectados)
                     ->get();
             foreach ($profesores as $profesor) {
-                avisa($profesor->idProfesor, $mensaje, '#', $emisor);
+                if ($idProfesor != $profesor->idProfesor)
+                    avisa($profesor->idProfesor, $mensaje, '#', $emisor);
             }
         }
     }

@@ -39,25 +39,37 @@ class AlumnoFct extends Model
     }
 
     
-    public function scopeMisFcts($query,$profesor=null,$activa=null)
+//    public function scopeMisFcts($query,$profesor=null,$activa=null)
+//    {
+//        $queFaig = $activa?config($activa):0;
+//        $profesor = $profesor?$profesor:AuthUser()->dni;
+//        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
+//        $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
+//        $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
+//        $fcts = $activa?
+//                Fct::select('id')->Activa($queFaig)->whereIn('idColaboracion',$colaboraciones)->get()->toArray():
+//                Fct::select('id')->whereIn('idColaboracion',$colaboraciones)->orWhere('asociacion',2)->get()->toArray();
+//        switch ($queFaig) {
+//            case 1: return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('pg0301',0);
+//                        break;
+//            case 2: return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('desde','<=',Hoy())->where('hasta','>=',Hoy());
+//                    break;
+//            default: return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
+//        }
+//    }
+    
+    
+    public function scopeMisFcts($query)
     {
-        $queFaig = $activa?config($activa):0;
-        $profesor = $profesor?$profesor:AuthUser()->dni;
+        $profesor = AuthUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
-        $fcts = $activa?
-                Fct::select('id')->Activa($queFaig)->whereIn('idColaboracion',$colaboraciones)->get()->toArray():
-                Fct::select('id')->whereIn('idColaboracion',$colaboraciones)->orWhere('asociacion',2)->get()->toArray();
-        switch ($queFaig) {
-            case 1: return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('pg0301',0);
-                        break;
-            case 2: return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('desde','<=',Hoy())->where('hasta','>=',Hoy());
-                    break;
-            default: return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
-        }
+        $fcts = Fct::select('id')->whereIn('idColaboracion',$colaboraciones)->where('asociacion',1)->get()->toArray();
+        
+        return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
     }
-    
+
     public function scopeMisProyectos($query,$profesor=null)
     {
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();

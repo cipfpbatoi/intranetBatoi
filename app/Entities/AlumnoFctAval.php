@@ -48,5 +48,15 @@ class AlumnoFctAval extends AlumnoFct
          return $query->whereNotNull('calificacion')->where('correoAlumno',false);
      }
      
+     public function scopeMisFcts($query)
+     {
+        $profesor = AuthUser()->dni;
+        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
+        $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
+        $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
+        $fcts = Fct::select('id')->whereIn('idColaboracion',$colaboraciones)->orWhere('asociacion',2)->get()->toArray();
+        
+        return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
+    }
  
 }

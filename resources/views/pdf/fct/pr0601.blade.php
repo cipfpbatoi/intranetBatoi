@@ -1,7 +1,4 @@
 @extends('layouts.pdf')
-@php
-   $agrupados = $todos->groupBy('idAlumno');
-@endphp
 @section('content')
 <body style="max-width:27.59cm;margin-top:1.251cm; margin-bottom:1.251cm; margin-left:1.5cm; margin-right:1.5cm; ">
     @include('pdf.fct.partials.cabecera')
@@ -24,8 +21,8 @@
             <td style="text-align:left;width:5.493cm;padding-left: 5px; "><strong>DATA</strong></td>
             <td style="text-align:left;width:7.45cm;padding-left: 5px; "><strong>SIGNATURA ALUMNE</strong></td>
         </tr>
-        @foreach ($agrupados as $alumno)
-        <tr><td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em;" >{{ $alumno->first()->Alumno->FullName }} </p></td>
+        @foreach ($todos as $alumno)
+        <tr><td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em;" >{{ $alumno->FullName }} </p></td>
             <td style="text-align:left;width:5.493cm; " ></td>
             <td style="text-align:left;width:7.45cm; " ></td>
         </tr>
