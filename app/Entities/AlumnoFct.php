@@ -47,7 +47,7 @@ class AlumnoFct extends Model
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
         $fcts = $activa?
-                Fct::select('id')->Activa($activa)->whereIn('idColaboracion',$colaboraciones)->get()->toArray():
+                Fct::select('id')->Activa($queFaig)->whereIn('idColaboracion',$colaboraciones)->get()->toArray():
                 Fct::select('id')->whereIn('idColaboracion',$colaboraciones)->orWhere('asociacion',2)->get()->toArray();
         switch ($queFaig) {
             case 1: return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->where('pg0301',0);
@@ -120,6 +120,7 @@ class AlumnoFct extends Model
     public function getInstructorAttribute(){
         return $this->Fct->XInstructor;
     }
+    
     public function getDesdeAttribute($entrada)
     {
         $fecha = new Date($entrada);

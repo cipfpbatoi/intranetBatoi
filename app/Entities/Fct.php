@@ -105,6 +105,7 @@ class Fct extends Model
     }
     public function scopeActiva($query,$cuando)
     {
+        //if ($cuando == 3) return $query->where('asociacion',1); 
         $hoy = new Date();
         $hoy->format('Y-m-d');
         if ($hoy <= config('curso.fct.1')['fi'])
