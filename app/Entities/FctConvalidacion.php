@@ -17,11 +17,10 @@ class FctConvalidacion extends Fct
         'idAlumno',
         'horas','asociacion',
         'correoInstructor'];
-    protected $notfillable = ['horas'];
+    protected $notFillable = ['idAlumno','horas'];
     protected $rules = [
         'idAlumno' => 'required',
         'asociacion' => 'required',
-        'horas' => 'required|numeric'
     ];
     
     protected $inputTypes = [
@@ -34,7 +33,6 @@ class FctConvalidacion extends Fct
     public function __construct()
     {
         $this->asociacion = 2;
-        $this->horas = 400;
         $this->correoInstructor = 1;
         
     }

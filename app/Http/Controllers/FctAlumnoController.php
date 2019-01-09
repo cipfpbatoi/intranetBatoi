@@ -6,6 +6,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\FctConvalidacion;
 use DB;
@@ -31,7 +32,7 @@ class FctAlumnoController extends IntranetController
  
     public function search()
     {
-        return AlumnoFct::misFcts()->esAval()->orderBy('idAlumno')->orderBy('desde')->get();
+        return AlumnoFctAval::misFcts()->esAval()->orderBy('idAlumno')->orderBy('desde')->get();
     }
 
     protected function iniBotones()

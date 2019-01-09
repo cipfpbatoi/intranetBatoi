@@ -121,6 +121,7 @@ trait BatoiModels
                     $this->$key = $request->$key;
             }
         }
+        
         $this->save();
         
         if ($request->hasFile('fichero')) {
