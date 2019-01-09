@@ -38,11 +38,12 @@ class PanelActasController extends BaseController
         $empresas = [];
         foreach ($fcts as $fct){
             $fct->actas = 2;
-            $empresas[$fct->Fct->Colaboracion->Centro->nombre] = 
-                    isset($empresas[$fct->Fct->Colaboracion->Centro->nombre])
-                    ?$empresas[$fct->Fct->Colaboracion->Centro->nombre]." , ".$fct->Alumno->FullName
-                    :$fct->Alumno->FullName;
             $fct->save();
+            if (isset($fct->Fct->Colaboracion->Centro->nombre))
+                $empresas[$fct->Fct->Colaboracion->Centro->nombre] = 
+                        isset($empresas[$fct->Fct->Colaboracion->Centro->nombre])
+                        ?$empresas[$fct->Fct->Colaboracion->Centro->nombre]." , ".$fct->Alumno->FullName
+                        :$fct->Alumno->FullName;
         }
         $grupo->acta_pendiente = 0;
         $grupo->save();
