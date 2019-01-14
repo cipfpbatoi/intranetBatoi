@@ -11,9 +11,19 @@
             <div class="message_date" style="width:50%">
                 <h4>
                     <span class='info' style="font-weight: bold">{!! $colaboracion->Centro->nombre !!}</span><span class='info' style="font-weight:normal "> ({!! $colaboracion->Centro->direccion  !!})</span> - <span class='info' style="font-weight: bold">{!! $colaboracion->Ciclo->ciclo !!}</span><sup>{{$colaboracion->fcts()->count()}}<small style="color: purple "> Fct</small></sup>
-                    @if ($editar || UserisAllow(config('roles.rol.administrador'))) <a href='/colaboracion/{!!$colaboracion->id!!}/edit'><i class="fa fa-edit"></i></a> @endif
-                    @if ($editar || UserisAllow(config('roles.rol.administrador'))) <a href="/colaboracion/{!!$colaboracion->id!!}/delete" class="delGrupo"><i class="fa fa-trash"></i></a>@endif
+                    @if ($editar || UserisAllow(config('roles.rol.administrador'))) 
+                        <a href='/colaboracion/{!!$colaboracion->id!!}/edit'><i class="fa fa-edit" title='Modificar col.laboració'></i></a> 
+                        <a href="/colaboracion/{!!$colaboracion->id!!}/delete" class="delGrupo"><i class="fa fa-trash" title='Esborrar col.laboració'></i></a>
+                        @if ($colaboracion->colabora != 1 )
+                            <a href='/colaboracion/{!!$colaboracion->id!!}/colabora/1'><i class="fa fa-hand-o-up" title="Col.labora"></i></a>
+                        @endif
+                        @if ($colaboracion->colabora != 2 )
+                            <a href='/colaboracion/{!!$colaboracion->id!!}/colabora/2'><i class="fa fa-hand-o-down" title="No col.labora"></i></a>
+                        @endif
+                    @endif
                     @if (\Intranet\Entities\Colaboracion::where('idCentro',$colaboracion->idCentro)->where('idCiclo',$tutor->idCiclo)->count() == 0) <a href="/colaboracion/{!!$colaboracion->id!!}/copy" class="copGrupo"><i class="fa fa-copy"></i></a><small style="color: purple "> @lang('messages.buttons.copy')  {{$tutor->Ciclo->ciclo}} </small>@endif
+                     
+                    
                 </h4>
             </div>
             <div class="message_wrapper" style="width:50%">

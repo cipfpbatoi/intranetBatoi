@@ -12,7 +12,7 @@ use Intranet\Entities\Actividad;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Falta_profesor;
-use Intranet\Entities\Alumno_grupo;
+use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
 
@@ -55,8 +55,8 @@ abstract class HomeController extends Controller
             }
         } else {
             $usuario = Alumno::findOrFail(AuthUser()->nia);
-            if (isset(Alumno_grupo::where('idAlumno', AuthUser()->nia)->first()->idGrupo)) {
-                $grupo = Alumno_grupo::where('idAlumno', AuthUser()->nia)->first()->idGrupo;
+            if (isset(AlumnoGrupo::where('idAlumno', AuthUser()->nia)->first()->idGrupo)) {
+                $grupo = AlumnoGrupo::where('idAlumno', AuthUser()->nia)->first()->idGrupo;
                 $horario = Horario::HorarioGrupo($grupo);
             }
             $actividades = Actividad::next()->auth()->take(10)->get();

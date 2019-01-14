@@ -76,7 +76,7 @@ return array(
                 'create' => 'Crear entrada',
                 'edit' => 'Editar element del menú'
         ),
-        'Alumno_grupo' => array(
+        'Alumnogrupo' => array(
             'index' => 'Gestionar Grup :quien',
             'carnet' => 'Imprimeix Carnets de Grup',
             'profile' => 'Plantilla Alumnes',
@@ -267,7 +267,8 @@ return array(
             'index' => 'Colaboracions de treball de :quien',
             'edit' => 'Editar colaboració',
             'delete' => 'Esborrar colaboració',
-            'copy' => 'Crear colaboració'
+            'copy' => 'Crear colaboració',
+            
         ),
         'Fct' => array(
             'index' => 'FCT',
@@ -403,7 +404,7 @@ return array(
             'Falta' => 'Falta',
             'Actividad' => 'Activitat Extraescolar',
             'Profesor' => 'Professor',
-            'Alumno_grupo' => 'Alumnes del grup',
+            'AlumnoGrupo' => 'Alumnes del grup',
             'Alumno' => 'Alumne',
             'Menu' => 'Menú general',
             'Programacion' => 'Programació',

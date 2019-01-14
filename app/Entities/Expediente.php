@@ -88,7 +88,7 @@ class Expediente extends Model
         $misAlumnos = [];
         $migrupo = Grupo::Qtutor()->get();
         if (isset($migrupo->first()->codigo)) {
-            $alumnos = Alumno_grupo::where('idGrupo', '=', $migrupo->first()->codigo)->get();
+            $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->first()->codigo)->get();
 
             foreach ($alumnos as $alumno) {
                 $misAlumnos[$alumno->idAlumno] = $alumno->Alumno->apellido1 . ' ' . $alumno->Alumno->apellido2 . ', ' . $alumno->Alumno->nombre;

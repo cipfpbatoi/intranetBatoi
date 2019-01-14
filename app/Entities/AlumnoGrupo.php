@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use \Illuminate\Database\Eloquent\Model;
 
-class Alumno_grupo extends Model
+class AlumnoGrupo extends Model
 {
 
     public $primaryKey = 'idAlumno';

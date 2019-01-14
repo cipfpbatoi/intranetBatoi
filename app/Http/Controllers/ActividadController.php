@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Actividad_grupo;
+use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\Actividad_profesor;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
@@ -124,7 +124,7 @@ class ActividadController extends IntranetController
     {
         $elemento = Actividad::findOrFail($id);
         $profesores = Actividad_profesor::where('idActividad', '=', $id)->get();
-        $grupos = Actividad_grupo::where('idActividad', '=', $id)->get();
+        $grupos = ActividadGrupo::where('idActividad', '=', $id)->get();
         $mensaje = "Els grups: -";
         foreach ($grupos as $grup) {
             $grupo = Grupo::where('codigo', '=', $grup->idGrupo)
@@ -144,7 +144,7 @@ class ActividadController extends IntranetController
     {
         $grups = [];
         $elemento = Actividad::findOrFail($id);
-        $grupos = Actividad_grupo::select('idGrupo')->where('idActividad', '=', $id)->get();
+        $grupos = ActividadGrupo::select('idGrupo')->where('idActividad', '=', $id)->get();
         foreach ($grupos as $grupo) {
             $grups[] = $grupo->idGrupo;
         }

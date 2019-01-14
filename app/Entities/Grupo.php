@@ -137,7 +137,7 @@ class Grupo extends Model
 
     public function scopeMatriculado($query, $alumno)
     {
-        $grupos = Alumno_grupo::select('idGrupo')->where('idAlumno', $alumno)->get()->toarray();
+        $grupos = AlumnoGrupo::select('idGrupo')->where('idAlumno', $alumno)->get()->toarray();
         return $query->whereIn('codigo', $grupos);
     }
 
@@ -183,7 +183,7 @@ class Grupo extends Model
 
     public function getMatriculadosAttribute()
     {
-        return Alumno_grupo::where('idGrupo', $this->codigo)->count();
+        return AlumnoGrupo::where('idGrupo', $this->codigo)->count();
     }
 
     public function getAvalFctAttribute()

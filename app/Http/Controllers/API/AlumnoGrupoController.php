@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Entities\Alumno_grupo;
+use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Grupo;
 use Illuminate\Http\Request;
 
@@ -10,12 +10,12 @@ use Illuminate\Http\Request;
 class AlumnoGrupoController extends ApiBaseController
 {
 
-    protected $model = 'Alumno_grupo';
+    protected $model = 'AlumnoGrupo';
 
     private function alumnos($migrupo)
     {
        if (isset($migrupo->first()->codigo)) {
-            $alumnos = Alumno_grupo::where('idGrupo', '=', $migrupo->first()->codigo)->get();
+            $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->first()->codigo)->get();
             foreach ($alumnos as $alumno) {
                 $misAlumnos[$alumno->idAlumno] = $alumno->Alumno->apellido1 . ' ' . $alumno->Alumno->apellido2 . ', ' . $alumno->Alumno->nombre;
             }

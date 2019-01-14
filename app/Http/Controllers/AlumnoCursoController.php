@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Intranet\Entities\AlumnoCurso;
-use Intranet\Entities\Alumno_grupo;
+use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Curso;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
@@ -60,7 +60,7 @@ class AlumnoCursoController extends IntranetController
 
     public function registerG($grupo, $id)
     {
-        $alumnos = Alumno_grupo::where('idGrupo', $grupo)->get();
+        $alumnos = AlumnoGrupo::where('idGrupo', $grupo)->get();
         foreach ($alumnos as $alumno) {
             $this->register($id, $alumno->idAlumno, false);
         }

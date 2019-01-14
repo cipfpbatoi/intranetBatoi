@@ -10,7 +10,7 @@ use Jenssegers\Date\Date;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Expediente;
-use Intranet\Entities\Alumno_grupo;
+use Intranet\Entities\AlumnoGrupo;
 
 class AlumnoController extends PerfilController
 {

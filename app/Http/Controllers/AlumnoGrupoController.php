@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Alumno_grupo;
+use Intranet\Entities\AlumnoGrupo;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonIcon;
@@ -12,10 +12,10 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Curso;
 use Intranet\Entities\Alumno;
 
-class Alumno_grupoController extends IntranetController
+class AlumnoGrupoController extends IntranetController
 {
     protected $perfil = 'profesor';
-    protected $model = 'Alumno_grupo';
+    protected $model = 'AlumnoGrupo';
     protected $gridFields = ['nameFull', 'telef1', 'telef2', 'email'];
     
     public function search(){

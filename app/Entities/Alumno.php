@@ -100,9 +100,9 @@ class Alumno extends Authenticatable
     public function scopeQGrupo($query, $grupo)
     {
         if (is_string($grupo))
-            $alumnos = Alumno_grupo::select('idAlumno')->where('idGrupo', '=', $grupo)->get()->toarray();
+            $alumnos = AlumnoGrupo::select('idAlumno')->where('idGrupo', '=', $grupo)->get()->toarray();
         else
-            $alumnos = Alumno_grupo::select('idAlumno')->whereIn('idGrupo', $grupo)->get()->toarray();
+            $alumnos = AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupo)->get()->toarray();
         return $query->whereIn('nia', $alumnos);
     }
 
@@ -117,7 +117,7 @@ class Alumno extends Authenticatable
         $profesor = $profesor?$profesor:AuthUser()->dni;
         $gruposC = Grupo::select('codigo')->QTutor($profesor,$dual)->get();
         $grupos = $gruposC->count()>0?$gruposC->toarray():[];   
-        $alumnos = Alumno_grupo::select('idAlumno')->whereIn('idGrupo',$grupos)->get();
+        $alumnos = AlumnoGrupo::select('idAlumno')->whereIn('idGrupo',$grupos)->get();
         return $query->whereIn('nia',$alumnos);
         
     }

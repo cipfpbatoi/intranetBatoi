@@ -76,7 +76,7 @@ return array(
                 'create' => 'Crear entrada',
                 'edit' => 'Editar elemento del menú'
         ),
-        'Alumno_grupo' => array(
+        'Alumnogrupo' => array(
             'index' => 'Gestionar Grupo :quien',
             'carnet' => 'Imprime Carnets de Grupo',
             'profile' => 'Plantilla Alumnos',
@@ -381,7 +381,7 @@ return array(
             'Falta' => 'Falta',
             'Actividad' => 'Actividad Extraescolar',
             'Profesor' => 'Profesor',
-            'Alumno_grupo' => 'Alumnos del grupo',
+            'AlumnoGrupo' => 'Alumnos del grupo',
             'Alumno' => 'Alumno',
             'Menu' => 'Menu general',
             'Programacion' => 'Programación',

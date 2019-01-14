@@ -100,5 +100,12 @@ class ColaboracionController extends IntranetController
         Session::put('pestana',1);
         return redirect()->action('EmpresaController@show', ['id' => $empresa]);
     }
+    public function colabora($id,$tipo){
+        $colaboracion = Colaboracion::find($id);
+        $colaboracion->colabora = $tipo;
+        $colaboracion->save();
+        $empresa = $colaboracion->Centro->Empresa;
+        return redirect()->action('EmpresaController@show', ['id' => $empresa]);
+    }
 
 }

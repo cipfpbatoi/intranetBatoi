@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Actividad_grupo extends Model
+class ActividadGrupo extends Model
 {
 
     protected $table = 'actividad_grupo';

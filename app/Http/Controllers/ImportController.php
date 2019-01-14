@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 Use Intranet\Entities\Alumno;
 Use Intranet\Entities\Profesor;
 use Intranet\Entities\Horario;
-use Intranet\Entities\Alumno_grupo;
+use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
 use Intranet\Entities\Modulo_ciclo;
@@ -95,7 +95,7 @@ class ImportController extends Seeder
                 'codigo' => 'codigo',
             )),
         array('nombrexml' => 'alumnos',
-            'nombreclase' => 'Alumno_grupo',
+            'nombreclase' => 'AlumnoGrupo',
             'filtro' => ['estado_matricula', '<>', 'B'],
             'id' => 'NIA,grupo',
             'required' => ['NIA', 'grupo'],
@@ -259,7 +259,7 @@ class ImportController extends Seeder
                 break;
             case 'Grupo' : $this->gruposBaja();
                 break;
-            case 'Alumno_grupo' : $this->truncateTables('alumnos_grupos');
+            case 'AlumnoGrupo' : $this->truncateTables('alumnos_grupos');
                 break;
             case 'Horario' :
                 if (isset(DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla))
@@ -282,7 +282,7 @@ class ImportController extends Seeder
             case 'Grupo' : if ($request->primera) $this->bajaGrupos();
                 $this->sinTutor();
                 break;
-            case 'Alumno_grupo' : $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
+            case 'AlumnoGrupo' : $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
                 break;
             case 'Horario' : if ($xml == 'horarios_ocupaciones') {
                     $this->eliminarHorarios();
@@ -544,8 +544,8 @@ class ImportController extends Seeder
                             case 'Ocupacion':
                                 Ocupacion::create($arrayDatos);
                                 break;
-                            case 'Alumno_grupo':
-                                Alumno_grupo::create($arrayDatos);
+                            case 'AlumnoGrupo':
+                                AlumnoGrupo::create($arrayDatos);
                                 break;
                             case 'Grupo':
                                 Grupo::create($arrayDatos);

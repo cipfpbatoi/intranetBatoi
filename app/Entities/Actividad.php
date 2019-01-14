@@ -7,7 +7,7 @@ use Jenssegers\Date\Date;
 use Intranet\Events\ActividadCreated;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
-use Intranet\Entities\Actividad_grupo;
+use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\Profesor;
 
 class Actividad extends Model
@@ -116,7 +116,7 @@ class Actividad extends Model
 
     public function scopeDepartamento($query, $dep)
     {
-        $actividades = Actividad_grupo::select('idActividad')->Departamento($dep)->get()->toarray();
+        $actividades = ActividadGrupo::select('idActividad')->Departamento($dep)->get()->toarray();
         return $query->whereIn('id', $actividades);
     }
 

@@ -4,7 +4,7 @@ Use Intranet\Entities\Alumno;
 Use Intranet\Entities\Profesor;
 Use Intranet\Entities\Horario;
 use Illuminate\Database\Seeder;
-use Intranet\Entities\Alumno_grupo;
+use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Grupo;
 
 class ImportTableSeeder extends Seeder
@@ -100,7 +100,7 @@ class ImportTableSeeder extends Seeder
                 'codigo' => 'codigo',
             )),
 //        array('nombrexml' => 'alumnos',
-//            'nombreclase' => 'Alumno_grupo',
+//            'nombreclase' => 'AlumnoGrupo',
 //            'filtro' => ['estado_matricula', '<>', 'B'],
 //            'id' => 'NIA,grupo',
 //            'update' => array(
@@ -297,7 +297,7 @@ class ImportTableSeeder extends Seeder
             case 'Grupo' : $this->gruposBaja();
                 echo 'Marca Grupos';
                 break;
-            case 'Alumno_grupo' : $this->truncateTables('alumnos_grupos');
+            case 'AlumnoGrupo' : $this->truncateTables('alumnos_grupos');
                 echo 'Buida AlumnosGrupo';
                 break;
             case 'Horario' : if ($xml == 'horarios_grupo')
@@ -318,7 +318,7 @@ class ImportTableSeeder extends Seeder
             case 'Grupo' : $this->bajaGrupos();
                 echo 'Baixa grups';
                 break;
-            case 'Alumno_grupo' : $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
+            case 'AlumnoGrupo' : $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
                 break;
             case 'Horario' : if ($xml == 'horarios_ocupaciones')
                 {

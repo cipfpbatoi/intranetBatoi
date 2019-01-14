@@ -98,8 +98,8 @@ Route::get('/grupo/{grupo}/edit', ['as' => 'grupo.edit', 'uses' => 'GrupoControl
 Route::put('/grupo/{grupo}/edit', ['as' => 'grupo.update', 'uses' => 'GrupoController@update']);
 Route::get('/grupo/{grupo}/carnet', ['as' => 'grupo.carnet', 'uses' => 'GrupoController@carnet']);
 Route::get('/grupo/{grupo}/fse', ['as' => 'grupo.fse', 'uses' => 'GrupoController@fse']);
-Route::get('/alumno_grupo/{grupo}/show', ['as' => 'alumnogrupo.index', 'uses' => 'Alumno_grupoController@indice']);
-Route::get('/alumno_grupo/{grupo}/profile', ['as' => 'alumnogrupo.profile', 'uses' => 'Alumno_grupoController@profile']);
+Route::get('/alumno_grupo/{grupo}/show', ['as' => 'alumnogrupo.index', 'uses' => 'AlumnoGrupoController@indice']);
+Route::get('/alumno_grupo/{grupo}/profile', ['as' => 'alumnogrupo.profile', 'uses' => 'AlumnoGrupoController@profile']);
 Route::get('/grupo/{grupo}/horario', ['as' => 'grupo.horario', 'uses' => 'GrupoController@horario']);
 Route::get('/grupo/asigna', ['as' => 'grupo.asigna', 'uses' => 'GrupoController@asigna']);
 
@@ -184,6 +184,7 @@ Route::get('/colaboracion/{colaboracion}/show', ['as' => 'colaboracion.show', 'u
 Route::put('/colaboracion/{colaboracion}/edit', ['as' => 'colaboracion.update', 'uses' => 'ColaboracionController@update']);
 Route::get('/colaboracion/{colaboracion}/copy', ['as' => 'colaboracion.copy', 'uses' => 'ColaboracionController@copy']);
 Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'ColaboracionController@store']);
+Route::get('/colaboracion/{colaboracion}/colabora/{si}', ['as' => 'colaboracion.colabora', 'uses' => 'ColaboracionController@colabora']);
 
 Route::resource('/fct', 'FctController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/fct/{id}/{alumno}/alumnoDelete',['as' => 'fct.alumno.delete', 'uses' => 'FctController@alumnoDelete']);

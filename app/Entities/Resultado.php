@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
 use Intranet\Entities\Profesor;
-use Intranet\Entities\Alumno_grupo;
+use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 
