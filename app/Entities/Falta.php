@@ -120,6 +120,7 @@ class Falta extends Model
                         ->where('hasta', '>=', $dia)
                         ->where('estado', '>=', 0);
     }
+    
     public function getNombreAttribute(){
         return $this->Profesor->FullName;
     }

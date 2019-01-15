@@ -10,6 +10,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Activity;
+use Intranet\Entities\Falta;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\AlumnoGrupo;
@@ -46,12 +47,12 @@ abstract class HomeController extends Controller
                                 ->take(15)->get();
                 $documents = Documento::where('curso', '=', Curso())->where('tipoDocumento', '=', 'Acta')
                                 ->where('grupo', '=', 'Claustro')->orWhere('grupo', '=', 'COCOPE')->get();
-
+                $faltas = Falta::Dia(Hoy())->get();
 
                 if (!estaDentro() && !Session::get('userChange')) {
                     Falta_profesor::fichar($usuario->dni);
                 }
-                return view('home.profile', compact('usuario', 'horario', 'actividades', 'activities', 'documents'));
+                return view('home.profile', compact('usuario', 'horario', 'actividades', 'activities', 'documents','faltas'));
             }
         } else {
             $usuario = Alumno::findOrFail(AuthUser()->nia);

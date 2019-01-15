@@ -97,7 +97,7 @@ class Actividad extends Model
     public function scopeNext($query)
     {
         $fec_hoy = time();
-        $ahora = date("Y-m-d H:i:s", $fec_hoy);
+        $ahora = date("Y-m-d", $fec_hoy);
         return $query->where('desde', '>', $ahora);
     }
 

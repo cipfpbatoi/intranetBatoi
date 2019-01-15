@@ -59,6 +59,7 @@ return array(
         'horario' => 'Mornings: from Monday to Friday from 9:00 to 14:00',
         'empty' => 'No records',
         'change' => 'Return to my user name',
+        'falta' => 'Absences',
         
      ),
     'buttons' => array(

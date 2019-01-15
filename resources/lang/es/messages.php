@@ -61,7 +61,8 @@ return array(
         'empty' => 'No hay registros',
         'change' => 'Volver a mi Usuario',
         'completa' => 'Ver todos los datos',
-        'simplifica' => 'Ver los últimos datos'
+        'simplifica' => 'Ver los últimos datos',
+        'falta' => 'Ausencias'
     ),
     'buttons' => array(
         'edit' => 'Editar',

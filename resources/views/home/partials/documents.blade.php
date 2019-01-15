@@ -2,7 +2,7 @@
     <li>
         @foreach ($documents as $document)
             
-            <img src="/img/actividad.png" class="avatar" alt="Avatar">
+            <img src="/img/actas.png" class="avatar" alt="Avatar">
             <div class="message_date">
                <h3 class="date text-info">{{day($document->created_at)}}</h3>
                 <p class="month">{{month($document->created_at)}}</p> 
