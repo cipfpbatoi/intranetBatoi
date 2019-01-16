@@ -65,7 +65,7 @@
                 @include('home.partials.activities')
                 <!-- end recent activity -->
             </div>
-            <div role="tabpanel" class="tab-pane fade active in" id="tab_content2" aria-labelledby="home-tab">
+            <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="home-tab">
                 <!-- start recent activity -->
                 @include('home.partials.faltas')
                 <!-- end recent activity -->

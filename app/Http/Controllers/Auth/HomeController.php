@@ -16,6 +16,7 @@ use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Comision;
 
 /**
  * Description of HomeIdentifyController
@@ -48,11 +49,16 @@ abstract class HomeController extends Controller
                 $documents = Documento::where('curso', '=', Curso())->where('tipoDocumento', '=', 'Acta')
                                 ->where('grupo', '=', 'Claustro')->orWhere('grupo', '=', 'COCOPE')->get();
                 $faltas = Falta::Dia(Hoy())->get();
+                
+                $hoyActividades = Actividad::Dia(Hoy())
+                    ->where('fueraCentro', '=', 1)
+                    ->get();
+                $comisiones = Comision::Dia(Hoy())->get();
 
                 if (!estaDentro() && !Session::get('userChange')) {
                     Falta_profesor::fichar($usuario->dni);
                 }
-                return view('home.profile', compact('usuario', 'horario', 'actividades', 'activities', 'documents','faltas'));
+                return view('home.profile', compact('usuario', 'horario', 'actividades', 'activities', 'documents','faltas','hoyActividades','comisiones'));
             }
         } else {
             $usuario = Alumno::findOrFail(AuthUser()->nia);
