@@ -12,6 +12,7 @@ use Jenssegers\Date\Date;
 use \PDF;
 use Intranet\Entities\Comision;
 use Intranet\Http\Controllers\BaseController;
+use Intranet\Botones\Panel;
 
 class ComisionController extends IntranetController
 {
@@ -24,6 +25,7 @@ class ComisionController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'Comision';
     protected $modal = true;
+    
     
      protected function iniBotones()
      {

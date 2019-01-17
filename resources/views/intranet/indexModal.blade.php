@@ -31,5 +31,6 @@
          @endif
       @endif   
      {{ HTML::script('/js/indexModal.js') }}
+     
 @endsection
 

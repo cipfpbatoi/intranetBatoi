@@ -19,10 +19,10 @@ class Comision extends Model
     protected $table = 'comisiones';
     protected $fillable = [
         'idProfesor',
-        'servicio',
-        'fct',
         'desde',
         'hasta',
+        'fct',
+        'servicio',
         'alojamiento',
         'comida',
         'gastos',
