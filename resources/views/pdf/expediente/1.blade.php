@@ -14,9 +14,9 @@
             <br/><br/><br/>
             <p style="text-indent: 30px">Per la present li comunique que donat el nombre de faltes d'assistència acumulades des de l'inici del curs es procedirà
                 a la seua matrícula de {{Curso()}} del {{\Intranet\Entities\AlumnoGrupo::where('idAlumno',$elemento->idAlumno)->first()->Grupo->Ciclo->ciclo}}, 
-                seguint les instruccions de la Resolució del 19 de Juliol de 2017, de la Secretaria Autonòmica d'Educació i Investigació,
+                seguint les instruccions de la Resolució d'inici de Curs, de la Secretaria Autonòmica d'Educació i Investigació,
 				per la que es dicten les instruccions sobre ordenació acadèmica i d'organització de l'activitat docent dels centres de la Comunitat Valenciana
-				que durant el curs 2017-2018 impartisquen cicles formatius de Formació Profesional.</p>
+				que durant el curs {{Curso()}} impartisquen cicles formatius de Formació Profesional.</p>
             <p tyle="text-indent: 30px">L'interessat/da disposa de dos dies hàbils, des de la recepció d'aquest document,
                 per a presentar la documentació que justifique degudament la causa de les absències.</p>
             <p tyle="text-indent: 30px">Davant aquesta resolució, l'interessat pot presentar recurs d'alçada en el termini d'un mes des de la seua notificació

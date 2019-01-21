@@ -12,7 +12,7 @@
             <p tyle="text-indent: 30px"><strong>{{$elemento->explicacion}}</strong></p>
             <p tyle="text-indent: 30px">L’aplicació del procés d’avaluació contínua de l’alumnat requerix la seua assistència regular a les classes
                 i activitats programades.  Per a això, en règim presencial, serà necessària almenys el 85% de les clases i activitats previstes 
-                en cada mòdul (Normativa : Orden  79/2010, de 27 de agosto, de la Conselleria de  Educación i Normes d’inici de curs, RESOLUCIÓN de 19 de julio de 2017).</p>
+                en cada mòdul (Normativa : Orden  79/2010, de 27 de agosto, de la Conselleria de  Educación i Normes d’inici de curs).</p>
             <p tyle="text-indent: 30px">La dita circumstància és acreditada i certificada pel cap d’estudis a partir dels parts de faltes d’assistència comunicades pel professorat
                 que impartix docència i que l’alumne/a o tutor/a legal pot comprovar des de l’aplicació “web familia” de la Conselleria d’Educació. Aquesta situació es comunicarà de forma fidedigna a:</p>
             <p>
