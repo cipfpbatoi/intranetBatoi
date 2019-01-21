@@ -274,6 +274,8 @@ return array(
            'index' => 'Les meues col.laboracions',
            'inicia' => 'Comença contactes',
            'colabora' => 'Vol col.laborar enguany',
+            'contacto' => 'Contacte inicial',
+            'documentacion' => 'Reclamar documentació falta'
         ),
         'Fct' => array(
             'index' => 'FCT',

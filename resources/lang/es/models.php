@@ -271,6 +271,8 @@ return array(
            'index' => 'Mis colaboraciones',
            'inicia' => 'Comienza ciclo de contactos',
            'colabora' => 'Quiere colaborar',
+           'contacto' => 'Contacto inicial',
+           'documentacion' => 'Reclamar documentación falta'
         ),
         'Fct' => array(
             'index' => 'FCT',
