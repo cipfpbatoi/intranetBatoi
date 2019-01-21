@@ -267,6 +267,11 @@ return array(
             'delete' => 'Borrar colaboración',
             'copy' => 'Crear colaboración'
         ),
+        'Miscolaboraciones' => array(
+           'index' => 'Mis colaboraciones',
+           'inicia' => 'Comienza ciclo de contactos',
+           'colabora' => 'Quiere colaborar',
+        ),
         'Fct' => array(
             'index' => 'FCT',
             'create' => 'Nueva Fct',

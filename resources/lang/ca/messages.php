@@ -255,6 +255,7 @@ return array(
         'Actasfct' => 'Control Fct/Actes',
         'Actualizacion' => 'Actualització aplicació',
         'Dual' => 'FP Dual',
+        'MiColaboracion' => 'Preparar Col.laboracions enguany',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

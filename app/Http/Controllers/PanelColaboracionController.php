@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Session;
 class PanelColaboracionController extends IntranetController
 {
     
-    protected $gridFields = ['Empresa','contacto', 'telefono','puestos', 'Xcolabora'];
+    protected $gridFields = ['Empresa','contacto', 'telefono','puestos','convenio','Xcolabora'];
     protected $perfil = 'profesor';
     protected $model = 'miscolaboraciones';
     
@@ -21,6 +21,7 @@ class PanelColaboracionController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.2', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-down','where' => ['colabora', '!=', '2']]));
         $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.1', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-up','where' => ['colabora', '!=', '1']]));
         $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.0', ['roles' => config('roles.rol.practicas'),'img'=>'fa-question','where' => ['colabora', '!=', '0']]));
+        $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.3', ['roles' => config('roles.rol.practicas'),'img'=>'fa-cloud','where' => ['colabora', '==', '0']]));
         $this->panel->setBoton('grid', new BotonImg('colaboracion.show',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
   
         Session::put('redirect', 'PanelColaboracionController@index');
