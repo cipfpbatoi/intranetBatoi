@@ -12,15 +12,15 @@ class PanelColaboracionController extends IntranetController
     
     protected $gridFields = ['Empresa','contacto', 'telefono','puestos', 'Xcolabora'];
     protected $perfil = 'profesor';
-    protected $model = 'misColaboraciones';
+    protected $model = 'miscolaboraciones';
     
     
     protected function iniBotones()
     {
         $this->panel->setBotonera(['inicia']);
-        $this->panel->setBoton('grid', new BotonImg('misColaboraciones.colabora.2', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-down','where' => ['colabora', '!=', '2']]));
-        $this->panel->setBoton('grid', new BotonImg('misColaboraciones.colabora.1', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-up','where' => ['colabora', '!=', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('misColaboraciones.colabora.0', ['roles' => config('roles.rol.practicas'),'img'=>'fa-question','where' => ['colabora', '!=', '0']]));
+        $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.2', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-down','where' => ['colabora', '!=', '2']]));
+        $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.1', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-up','where' => ['colabora', '!=', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.0', ['roles' => config('roles.rol.practicas'),'img'=>'fa-question','where' => ['colabora', '!=', '0']]));
         $this->panel->setBoton('grid', new BotonImg('colaboracion.show',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
   
         Session::put('redirect', 'PanelColaboracionController@index');

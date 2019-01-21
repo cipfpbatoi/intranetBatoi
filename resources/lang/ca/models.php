@@ -270,6 +270,11 @@ return array(
             'copy' => 'Crear colaboració',
             
         ),
+        'Miscolaboraciones' => array(
+           'index' => 'Les meues col.laboracions',
+           'inicia' => 'Comença contactes',
+           'colabora' => 'Vol col.laborar enguany',
+        ),
         'Fct' => array(
             'index' => 'FCT',
             'create' => 'Nova Fct',
