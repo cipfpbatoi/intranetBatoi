@@ -68,11 +68,12 @@ class Colaboracion extends Model
         $centros = Centro::select('id')->Empresa($empresa)->get()->toarray();
         return $query->whereIn('idCentro',$centros);
     }
-    public function scopeMiColaboracion($query, $empresa)
+    public function scopeMiColaboracion($query, $empresa=null)
     {
         $cicloC = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->get();
         $ciclo = $cicloC->count()>0?$cicloC->toarray():[];
-        return $query->whereIn('idCiclo',$ciclo)->Empresa($empresa);
+        if ($empresa) return $query->whereIn('idCiclo',$ciclo)->Empresa($empresa);
+        else return $query->whereIn('idCiclo',$ciclo);
     }
     public function getEmpresaAttribute()
     {
@@ -85,5 +86,9 @@ class Colaboracion extends Model
     public function getLocalidadAttribute()
     {
         return $this->Centro->localidad;
+    }
+    public function getXColaboraAttribute()
+    {
+        return $this->colabora?$this->colabora==1?'SI':'NO':'?';
     }
 }
