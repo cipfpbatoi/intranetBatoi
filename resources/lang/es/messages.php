@@ -252,7 +252,7 @@ return array(
         'Actasfct' => 'Control Fct/Actas',
         'Actualizacion' => 'Actualización aplicación',
         'Dual' => 'FP Dual',
-        'MiColaboracion' => 'Preparar Colaboraciones',
+        'Micolaboracion' => 'Preparar Colaboraciones',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

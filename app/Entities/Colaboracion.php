@@ -89,7 +89,12 @@ class Colaboracion extends Model
     }
     public function getXColaboraAttribute()
     {
-        return $this->colabora?$this->colabora==1?'SI':$this->colabora==2?'NO':'DESCARTAT':'?';
+        switch ($this->colabora){
+            case 0 : return '??';
+            case 1 : return 'SI!!';
+            case 2 : return 'NO VOL';
+            case 3 : return 'DESCARTADA';    
+        }
     }
     public function getConciertoAttribute(){
         return $this->Centro->Empresa->concierto;
