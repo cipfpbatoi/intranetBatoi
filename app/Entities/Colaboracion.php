@@ -91,4 +91,7 @@ class Colaboracion extends Model
     {
         return $this->colabora?$this->colabora==1?'SI':$this->colabora==2?'NO':'DESCARTAT':'?';
     }
+    public function getConciertoAttribute(){
+        return $this->Centro->Empresa->concierto;
+    }
 }

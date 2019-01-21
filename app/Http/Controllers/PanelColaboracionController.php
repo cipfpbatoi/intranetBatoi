@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Session;
 class PanelColaboracionController extends IntranetController
 {
     
-    protected $gridFields = ['Empresa','contacto', 'telefono','puestos','convenio','Xcolabora'];
+    protected $gridFields = ['Empresa','concierto','puestos','Xcolabora','contacto', 'telefono',];
     protected $perfil = 'profesor';
     protected $model = 'miscolaboraciones';
     
