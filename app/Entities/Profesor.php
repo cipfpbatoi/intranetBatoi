@@ -16,6 +16,7 @@ use Intranet\Entities\Departamento;
 use Intranet\Notifications\MyResetPassword;
 use Illuminate\Support\Facades\App;
 
+
 class Profesor extends Authenticatable
 {
     /*     * ************************************************************************
@@ -97,6 +98,7 @@ class Profesor extends Authenticatable
 
     use Notifiable;
     use BatoiModels;
+    //use Voter;
     use \Illuminate\Auth\Passwords\CanResetPassword;
 
     public function Comision()

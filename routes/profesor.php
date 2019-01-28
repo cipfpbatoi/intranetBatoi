@@ -346,3 +346,9 @@ Route::get('/itaca/{actividad}/gestor', ['as' => 'itaca.gestor', 'uses' => 'Falt
 
 //control guadira
 Route::get('/guardia/control', ['as' => 'guardia.control', 'uses' => 'PanelGuardiaController@index']);
+
+//polls
+Route::resource('/poll', 'PollController', ['except' => ['destroy', 'update','show']]);
+Route::post('/poll/create', ['as' => 'poll.store', 'uses' => 'PollController@store']);
+Route::get('/poll/{actividad}/show', ['as' => 'poll.show', 'uses' => 'PollController@show']);
+

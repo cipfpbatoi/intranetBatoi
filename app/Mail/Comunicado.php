@@ -47,6 +47,7 @@ class Comunicado extends Mailable
             foreach ($this->attach as $index => $value){
                 $vista = $vista->attach(storage_path($index),['mime' => $value]);
             }
+        
         Log::notice("Enviat comunicat $this->modelo de $nombre");    
         return $vista;
     }
