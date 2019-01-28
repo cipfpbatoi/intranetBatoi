@@ -14,8 +14,7 @@ class Alumno extends Authenticatable
 {
 
     use Notifiable,
-        BatoiModels,
-        Voter;
+        BatoiModels;
 
     public $primaryKey = 'nia';
     public $keyType = 'string';
