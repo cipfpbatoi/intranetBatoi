@@ -2,10 +2,23 @@
 
 namespace Intranet\Entities\Poll;
 
-
+use Intranet\Entities\BatoiModels;
+use Illuminate\Database\Eloquent\Model;
 
 class Option extends Model
 {
+    use BatoiModels;
+    
+    protected $fillable = ['question','scala','poll_id' ];
+    protected $rules = [
+        'poll_id' => 'required',
+        'question' => 'required',
+        'scala' => 'number|max:10',
+    ];
+    protected $inputTypes = [
+        'poll_id' => ['disabled' => 'disabled'],
+    ];
+    public $timestamps = false;
     /**
      * An option belongs to one poll
      *

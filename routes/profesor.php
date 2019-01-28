@@ -350,5 +350,8 @@ Route::get('/guardia/control', ['as' => 'guardia.control', 'uses' => 'PanelGuard
 //polls
 Route::resource('/poll', 'PollController', ['except' => ['destroy', 'update','show']]);
 Route::post('/poll/create', ['as' => 'poll.store', 'uses' => 'PollController@store']);
-Route::get('/poll/{actividad}/show', ['as' => 'poll.show', 'uses' => 'PollController@show']);
+Route::put('/poll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PollController@update']);
+Route::get('/poll/{id}/show', ['as' => 'poll.show', 'uses' => 'PollController@show']);
+Route::get('/poll/{id}/active', ['as' => 'poll.show', 'uses' => 'PollController@active']);
 
+Route::get('/option/{id}/indice',['as' => 'option.index','uses'=>'OptionController@index']);

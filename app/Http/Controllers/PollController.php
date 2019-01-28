@@ -14,7 +14,7 @@ class PollController extends IntranetController
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
     protected $perfil = 'profesor';
     protected $model = 'Poll';
-    protected $gridFields = [ 'id','question','isClosed'];
+    protected $gridFields = [ 'id','title','actiu'];
     
     protected function iniBotones()
     {
@@ -22,11 +22,14 @@ class PollController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('poll.edit'));
         $this->panel->setBoton('grid', new BotonImg('poll.delete'));
         $this->panel->setBoton('grid', new BotonImg('poll.show'));
+        $this->panel->setBoton('grid', new BotonImg('poll.active'));
     }
     
     public function show($id)
     {
-        $polls = Poll::all();
+        $poll = Poll::find($id);
+        $options = $poll->option
         return view('poll.show',compact('polls'));
     }
+    
 }

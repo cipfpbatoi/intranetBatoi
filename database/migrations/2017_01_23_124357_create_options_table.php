@@ -14,11 +14,10 @@ class CreateOptionsTable extends Migration
     {
         Schema::create('options', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('question');
             $table->unsignedInteger('poll_id');
-            $table->integer('votes')->default(0);
-            $table->timestamps();
-
+            $table->integer('scala')->default(10);
+            
             $table->foreign('poll_id')->references('id')->on('polls');
         });
     }

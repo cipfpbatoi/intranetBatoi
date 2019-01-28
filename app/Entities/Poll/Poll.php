@@ -4,18 +4,20 @@ namespace Intranet\Entities\Poll;
 
 
 use Intranet\Entities\BatoiModels;
+use Illuminate\Database\Eloquent\Model;
 
 class Poll extends Model
 {
     use BatoiModels;
     
-    protected $fillable = ['question','isClosed' ];
+    protected $fillable = ['title','activo' ];
     protected $rules = [
-        'question' => 'required',
+        'title' => 'required',
     ];
     protected $inputTypes = [
-        'isClosed' => ['type' => 'checkbox']
+        'activo' => ['type' => 'checkbox']
     ];
+    public $timestamps = false;
     
     /**
      * A poll has many options related to
@@ -34,5 +36,8 @@ class Poll extends Model
     public function votes()
     {
         return $this->hasManyThrough(Vote::class, Option::class);
+    }
+    public function getActiuAttribute(){
+        return $this->activo?'Activa':'No activa';
     }
 }

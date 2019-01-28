@@ -3,7 +3,7 @@
 	<p>Propuesta de modificación del horario que deberá ser aprobada por jefatura de estudios.</p>
 	<p>Sobre tu horario original cambia las horas arrástrandolas a donde desees y cuando lo tengas pulsa el botón de 'Guardar cambios'.</p>
 	<p>Cuando lo haya aprobado jefatura te aparecerá tu horario cambiado.</p>
-	<p>El plazo para proponer el cambio de horario es desde el 31 de enero al 9 de febrero.</p>
+	<p>El plazo para proponer el cambio de horario es hasta 31 de enero.</p>
 	<p>En el campo observaciones debes poner el nº de horas que liberas y a qué tareas dedicarás cada una de dichas horas.</p>
 	<strong>Estado: </strong><input type="text" id="estado" readonly><br>
 @include('home.partials.horario.profesor')

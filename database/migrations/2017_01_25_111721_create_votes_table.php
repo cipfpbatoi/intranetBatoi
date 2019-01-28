@@ -17,7 +17,7 @@ class CreateVotesTable extends Migration
             $table->string('user_id',8)->collation('utf8_unicode_ci')->index();
             $table->integer('option_id')->unsigned();
             $table->integer('moduloCiclo_id')->unsigned();
-            $table->tinyInteger('periodo');
+            $table->tinyInteger('value');
             $table->timestamps();
 
             $table->foreign('option_id')->references('id')->on('options');
