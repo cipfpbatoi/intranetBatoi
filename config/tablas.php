@@ -47,7 +47,7 @@ return [
         ['index' => '11', 'vliteral' => 'Acta de la reunió de valoració de les propostes de projectes', 'cliteral' => 'Acta aceptación proyectos', 'colectivo' => 'Grupo', 'rol' => '17','select' => '0',
             'convocatoria' => 'convocatoria', 'acta' => 'proyecto',
             'numeracion' => [0=>'--'],
-            'ordenes' => ['Alumno->misAlumnos->nombre'],
+            'ordenes' => ['Alumno->misAlumnos->FullName'],
             'resumen' => 'Títol i Tutor individual '],
         ['index' => '12', 'vliteral' => 'Data Defensa del mòdul de projecte', 'cliteral' => 'Fecha Defensa del módulo de proyecto', 'colectivo' => 'Grupo', 'rol' => '17','select' => '0',
             'convocatoria' => 'convocatoria', 'acta' => 'defensa',
