@@ -354,4 +354,7 @@ Route::put('/poll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PollController@
 Route::get('/poll/{id}/show', ['as' => 'poll.show', 'uses' => 'PollController@show']);
 Route::get('/poll/{id}/active', ['as' => 'poll.show', 'uses' => 'PollController@active']);
 
-Route::get('/option/{id}/indice',['as' => 'option.index','uses'=>'OptionController@index']);
+Route::resource('/option', 'OptionController', ['except' => ['destroy', 'update','show']]);
+Route::post('/option/create', ['as' => 'option.store', 'uses' => 'OptionController@store']);
+Route::get('/option/{id}/delete', ['as' => 'option.destroy', 'uses' => 'OptionController@destroy']);
+

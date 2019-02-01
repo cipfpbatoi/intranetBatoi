@@ -4,17 +4,20 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Poll\Poll;
+use Intranet\Entities\Poll\Vote;
 use Response;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonImg;
+use Styde\Html\Facades\Alert;
 
 class PollController extends IntranetController
 {
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
-    protected $perfil = 'profesor';
+    //protected $perfil = 'alumno';
     protected $model = 'Poll';
     protected $gridFields = [ 'id','title','actiu'];
+    protected $vista = [ 'show' => 'poll.masterSlave'];
     
     protected function iniBotones()
     {
@@ -25,11 +28,44 @@ class PollController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('poll.active'));
     }
     
-    public function show($id)
-    {
+    protected function preparaEnquesta($id){
         $poll = Poll::find($id);
-        $options = $poll->option
-        return view('poll.show',compact('polls'));
+        $modulos = $this->ordenModulos();
+        return view('poll.enquesta',compact('modulos','poll'));
+    }
+    
+    protected function guardaEnquesta(Request $request,$id){
+        $poll = Poll::find($id);
+        $modulos = $this->ordenModulos();
+        foreach ($poll->options as $question => $option){
+            $profe=0;
+            foreach ($modulos as $modulo)
+                foreach ($modulo['profesores'] as $profesores)
+                    foreach ($profesores as $dni){
+                        $profe++;
+                        $value = 'option'.($question+1).'_'.$profe;
+                        $vote = new Vote();
+                        $vote->user_id = AuthUser()->nia;
+                        $vote->option_id = $option->id;
+                        $vote->idModuloGrupo = $modulo['modulo']->id;
+                        $vote->idProfesor = $dni;
+                        if ($option->scala == 0) $vote->text = $request->$value;
+                        else $vote->value = $request->$value;
+                        $vote->save();
+                    }
+        }
+        Alert::info('Enquesta emplenada amb exit');
+        return back();
+    }
+    
+    private function ordenModulos(){
+        $modulos = collect();
+        foreach (AuthUser()->Grupo as $grupo){
+            foreach ($grupo->Modulos as $modulo){
+                $modulos->push(['modulo'=>$modulo,'profesores'=>$modulo->Profesores()]);
+            }
+        }
+        return $modulos;
     }
     
 }

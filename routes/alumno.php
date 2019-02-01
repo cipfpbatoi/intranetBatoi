@@ -13,3 +13,6 @@ Route::get('/alumnocurso/{curso}/unregister', ['as' => 'alumnocurso.unregister',
 Route::get('/equipo', ['as' => 'alumno.equipo', 'uses' => 'AlumnoController@equipo']);
 
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'alumno.mensaje', 'uses' => 'AlumnoController@alerta']);
+
+Route::get('/poll/{id}', ['as' => 'enquesta.alumno', 'uses' => 'PollController@preparaEnquesta']);
+Route::post('/poll/{id}', ['as' => 'enquesta.post', 'uses' => 'PollController@guardaEnquesta']);

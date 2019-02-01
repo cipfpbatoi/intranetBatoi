@@ -39,6 +39,12 @@ mix.combine([
     vendors+'datatables.net-bs/css/dataTables.bootstrap.min.css',
     vendors+'datatables.net-responsive-bs/css/responsive.bootstrap.min.css',
     
+    //rangeSlider
+    vendors+'ion.rangeSlider/css/normalize.css' ,
+    vendors+'ion.rangeSlider/css/ion.rangeSlider.css',
+    vendors+'ion.rangeSlider/css/ion.rangeSlider.skinFlat.css',
+    
+    
     //Now lets add the custom css
     vendors+'nprogress/nprogress.css',
     gentelella+'build/css/custom.min.css',//this is the default from gentelella
@@ -55,6 +61,7 @@ mix.combine([
     vendors+'fastclick/lib/fastclick.js',
 //    vendors+'select2/dist/js/select2.js',
     vendors+'nprogress/nprogress.js',
+    vendors+'jQuery-Smart-Wizard/js/jquery.smartWizard.js',
     vendors+'jquery.tagsinput/src/jquery.tagsinput.js',
 //    vendors+'icheck/icheck.js',
 // Cosas de Natxo
@@ -80,6 +87,7 @@ mix.combine([
     vendors+'datatables.net-buttons/js/buttons.print.min.js',
     vendors+'morris.js/morris.min.js',
     vendors+'raphael/raphael.min.js',
+    vendors+'ion.rangeSlider/js/ion.rangeSlider.min.js',
 
     //lets add custom scripts
     'resources/assets/js/custom.js',//this default from gentelella

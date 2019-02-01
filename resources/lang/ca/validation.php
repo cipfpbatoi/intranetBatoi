@@ -259,7 +259,9 @@ return array(
                 'TutoresFct' => 'Altres tutors',
                 'Lalumnes' => 'Alumnes',
                 'nalumnes' => 'Nombre',
-                'Instructor' => 'Instructor'
+                'Instructor' => 'Instructor',
+                'question' => 'Enunciat pregunta',
+                'scala' => 'Escala valoració'
                 
              ),
         'empty_option' => array(

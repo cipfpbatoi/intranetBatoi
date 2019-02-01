@@ -8,7 +8,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Curso;
 use Intranet\Entities\Municipio;
 use Jenssegers\Date\Date;
-use Inani\Larapoll\Traits\Voter;
+
 
 class Alumno extends Authenticatable
 {

@@ -404,6 +404,10 @@ return array(
            'check' => 'Control documentació'
           
         ),
+        'Poll' => array(
+          'show' => 'Enquesta',
+          'index' => 'Manteniment enquestes',
+        ),
         'modelos' => array(
             'Comision' => 'Comisió de Servei',
             'Curso' => 'Curs',
@@ -435,7 +439,8 @@ return array(
             'Instructor' => 'Instructor',
             'Proyecto' => 'Projecte',
             'Evaluacion' => 'Avaluació',
-            'Colaborador' => 'Col.laborador'
+            'Colaborador' => 'Col.laborador',
+            'Poll' => 'Enquesta',
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

@@ -13,7 +13,7 @@ class Option extends Model
     protected $rules = [
         'poll_id' => 'required',
         'question' => 'required',
-        'scala' => 'number|max:10',
+        'scala' => 'numeric|between:0,10',
     ];
     protected $inputTypes = [
         'poll_id' => ['disabled' => 'disabled'],
@@ -36,6 +36,6 @@ class Option extends Model
      */
     public function isPollClosed()
     {
-        return $this->poll->isLocked();
+        return $this->poll->activo;
     }
 }

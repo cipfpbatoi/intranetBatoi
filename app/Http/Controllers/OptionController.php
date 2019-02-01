@@ -16,13 +16,17 @@ class OptionController extends IntranetController
     protected $model = 'Option';
     protected $gridFields = [ 'question','scala'];
     
-    protected function iniBotones()
+    public function store(Request $request)
     {
-        $this->panel->setBotonera(['create']);
-        $this->panel->setBoton('grid', new BotonImg('option.edit'));
-        $this->panel->setBoton('grid', new BotonImg('option.delete'));
+        parent::store($request);
+        return redirect()->action('PollController@show', ['id' => $request->poll_id]);
     }
-    
+    public function destroy($id)
+    {
+        $poll = Option::find($id)->poll_id;
+        parent::destroy($id);
+        return redirect()->action('PollController@show', ['id' => $poll]);
+    }
     
     
 }

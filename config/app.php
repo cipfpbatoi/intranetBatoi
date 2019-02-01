@@ -161,7 +161,7 @@ return [
         Fedeisas\LaravelMailCssInliner\LaravelMailCssInlinerServiceProvider::class,
         Cornford\Googlmapper\MapperServiceProvider::class,
         GrahamCampbell\Markdown\MarkdownServiceProvider::class,
-        Inani\Larapoll\LarapollServiceProvider::class,
+        
         
         /*
          * Application Service Providers...
@@ -235,7 +235,6 @@ return [
         
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
         'Mapper' => Cornford\Googlmapper\Facades\MapperFacade::class,
-        'PollWriter' => Inani\Larapoll\PollWriterFacade::class,
     ],
 
 ];

@@ -16,13 +16,17 @@ class CreateVotesTable extends Migration
             $table->increments('id');
             $table->string('user_id',8)->collation('utf8_unicode_ci')->index();
             $table->integer('option_id')->unsigned();
-            $table->integer('moduloCiclo_id')->unsigned();
-            $table->tinyInteger('value');
+            $table->integer('idModuloGrupo')->unsigned();
+            $table->string('idProfesor',10)->collation('utf8_unicode_ci')->index();
+            $table->tinyInteger('value')->nullable();
+            $table->text('text')->nullable();
             $table->timestamps();
 
             $table->foreign('option_id')->references('id')->on('options');
             $table->foreign('user_id')->references('nia')->on('alumnos');
-            $table->foreign('moduloCiclo_id')->references('id')->on('modulo_ciclos');
+            $table->foreign('idModuloGrupo')->references('id')->on('modulo_grupos');
+            $table->foreign('idProfesor')->references('dni')->on('profesores');
+            
         });
     }
 
