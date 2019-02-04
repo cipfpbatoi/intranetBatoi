@@ -24,8 +24,7 @@
            <li>NIF, nombre y correo del instructor de prácticas del alumno en la empresa</li>
            <li>Horario de trabajo</li>
        </ul>
-       <p>Ruego remitan esa información al correo {{$email}}. <br/>
-           <b>No contesten a este correu ya que es automático.</b></p>
+       <p>No contesten a este correo ya que es automático. Por el contrario, <strong>ruego remitan esa información al correo {{$email}}.</strong></p>
     Gracias de antemano por su atención y disculpas por si ya le hemos solicitado esa información por otro canal de comunicación.<br/>           
     {{AuthUser()->shortName}}   
        
