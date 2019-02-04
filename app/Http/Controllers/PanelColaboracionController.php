@@ -6,6 +6,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Entities\Colaboracion;
 use Illuminate\Support\Facades\Session;
 use Mail;
+use Intranet\Mail\DocumentRequest;
 
 
 class PanelColaboracionController extends IntranetController
@@ -42,7 +43,7 @@ class PanelColaboracionController extends IntranetController
         return $this->redirect();
     }
     public function documentacion(){
-        $colaboraciones = $Colaboracion::MiColaboracion()->where('colabora',1)->get();
+        $colaboraciones = Colaboracion::MiColaboracion()->where('colabora',1)->get();
         foreach ($colaboraciones as $colaboracion){
             if (!$colaboracion->concierto){
                 Mail::to('ignasi.gomis.mullor@gmail.com', AuthUser()->ShortName)->send(new DocumentRequest($colaboracion, AuthUser()->email));
