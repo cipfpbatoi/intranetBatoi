@@ -7,6 +7,7 @@ use Intranet\Entities\Colaboracion;
 use Illuminate\Support\Facades\Session;
 use Mail;
 use Intranet\Mail\DocumentRequest;
+use Styde\Html\Alert;
 
 
 class PanelColaboracionController extends IntranetController
@@ -47,7 +48,9 @@ class PanelColaboracionController extends IntranetController
         foreach ($colaboraciones as $colaboracion){
             if (!$colaboracion->concierto){
                 Mail::to($colaboracion->email, AuthUser()->ShortName)->send(new DocumentRequest($colaboracion, AuthUser()->email));
+                Alert::info('Correu a '.$colaboracion->empresa.' enviat');
           }
         }
+        return back();
     }
 }
