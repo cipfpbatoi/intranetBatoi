@@ -10,15 +10,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class DocumentRequest extends Mailable
 {
     use Queueable, SerializesModels;
+    
+    public $colaboracion;
+    public $email;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($colaboracion,$email)
     {
-        
+        $this->colaboracion = $colaboracion;
+        $this->email = $email;
     }
 
     /**
@@ -28,7 +32,6 @@ class DocumentRequest extends Mailable
      */
     public function build()
     {
-        return $this->from('igomis@cipfpbatoi.es')
-                ->view('email.documentRequest');
+        return $this->view('email.documentRequest');
     }
 }
