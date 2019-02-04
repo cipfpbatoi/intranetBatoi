@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Colaboracion;
 use Illuminate\Support\Facades\Session;
+use Mail;
 
 
 class PanelColaboracionController extends IntranetController
@@ -39,5 +40,14 @@ class PanelColaboracionController extends IntranetController
     public function inicia(){
         Colaboracion::MiColaboracion()->update(['colabora' => 0]);
         return $this->redirect();
+    }
+    public function documentacion(){
+         Mail::to('ignasi.gomis.mullo@gmail.com', 'Intranet Batoi')->send(new AvalFct($empresas,'tutor'));
+        $colaboraciones = $Colaboracion::MiColaboracion()->where('colabora',1)->get();
+        foreach ($colaboraciones as $colaboracion){
+            if (!$colaboracion->concierto){
+                Mail::to('ignasi.gomis.mullo@gmail.com', 'Intranet Batoi')->send(new AvalFct($empresas,'tutor'));
+            }
+        }
     }
 }
