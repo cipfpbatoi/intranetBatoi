@@ -29,6 +29,6 @@ class DocumentRequest extends Mailable
     public function build()
     {
         return $this->from('igomis@cipfpbatoi.es')
-                ->view('emails.documentRequest');
+                ->view('email.documentRequest');
     }
 }
