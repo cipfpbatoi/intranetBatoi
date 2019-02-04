@@ -42,12 +42,12 @@ class PanelColaboracionController extends IntranetController
         return $this->redirect();
     }
     public function documentacion(){
-         Mail::to('ignasi.gomis.mullo@gmail.com', 'Intranet Batoi')->send(new AvalFct($empresas,'tutor'));
-        $colaboraciones = $Colaboracion::MiColaboracion()->where('colabora',1)->get();
-        foreach ($colaboraciones as $colaboracion){
-            if (!$colaboracion->concierto){
-                Mail::to('ignasi.gomis.mullo@gmail.com', 'Intranet Batoi')->send(new AvalFct($empresas,'tutor'));
-            }
-        }
+         Mail::to('ignasi.gomis.mullo@gmail.com', 'Intranet Batoi')->send(new \Intranet\Mail\DocumentRequest());
+//        $colaboraciones = $Colaboracion::MiColaboracion()->where('colabora',1)->get();
+//        foreach ($colaboraciones as $colaboracion){
+//            if (!$colaboracion->concierto){
+//                Mail::to('ignasi.gomis.mullo@gmail.com', 'Intranet Batoi')->send(new AvalFct($empresas,'tutor'));
+//            }
+//        }
     }
 }
