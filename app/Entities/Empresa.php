@@ -66,5 +66,6 @@ class Empresa extends Model
         $hoy = $fecha ? new Date($fecha) : new Date();
         $hace18 = $hoy->subYears(18)->toDateString();
         return $query->where('fecha_nac', '>', $hace18);
-    }   
+    }
+    
 }

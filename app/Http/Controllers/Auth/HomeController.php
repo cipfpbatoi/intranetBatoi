@@ -51,6 +51,7 @@ abstract class HomeController extends Controller
                 $faltas = Falta::Dia(Hoy())->get();
                 
                 $hoyActividades = Actividad::Dia(Hoy())
+                    ->where('estado','>',1)    
                     ->where('fueraCentro', '=', 1)
                     ->get();
                 $comisiones = Comision::Dia(Hoy())->get();

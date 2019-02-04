@@ -12,7 +12,7 @@ class Centro extends Model
     use BatoiModels;
 
     protected $table = 'centros';
-    protected $fillable = ['idEmpresa', 'nombre','direccion', 'localidad','horarios', 'observaciones'];
+    protected $fillable = ['idEmpresa', 'nombre','direccion', 'localidad','horarios', 'observaciones','idioma'];
     protected $rules = [
         'idEmpresa' => 'required',
         'nombre' => 'required',
@@ -22,6 +22,7 @@ class Centro extends Model
     protected $inputTypes = [
         'idEmpresa' => ['disabled' => 'disabled'],
         'observaciones' => ['type' => 'textarea'],
+        'idioma' => ['type' => 'select'],
     ];
     protected $hidden = ['created_at', 'updated_at'];
     protected $dispatchesEvents = [
@@ -44,6 +45,9 @@ class Centro extends Model
     public function instructores()
     {
         return $this->belongsToMany(Instructor::class, 'centros_instructores', 'idCentro', 'idInstructor','id','dni');
+    }
+    public function getIdiomaOptions(){
+        return config('auxiliares.idiomas');
     }
     
 
