@@ -7,7 +7,7 @@ use Intranet\Entities\Colaboracion;
 use Illuminate\Support\Facades\Session;
 use Mail;
 use Intranet\Mail\DocumentRequest;
-use Styde\Html\Alert;
+use Styde\Html\Facades\Alert;
 
 
 class PanelColaboracionController extends IntranetController
