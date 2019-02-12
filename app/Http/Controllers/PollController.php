@@ -18,7 +18,7 @@ class PollController extends IntranetController
     //protected $perfil = 'alumno';
     protected $model = 'Poll';
     protected $gridFields = [ 'id','title','actiu'];
-    protected $vista = [ 'show' => 'poll.masterSlave'];
+    protected $vista = [ 'show' => 'poll.masterslave'];
     
     protected function iniBotones()
     {
