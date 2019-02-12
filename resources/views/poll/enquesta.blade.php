@@ -15,5 +15,5 @@
 {{$poll->title}}
 @endsection
 @section('scripts')
-{{ Html::script('/js/poll/create.js') }}
+{{ Html::script('/js/Poll/create.js') }}
 @endsection
