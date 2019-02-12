@@ -230,6 +230,7 @@ Route::get('/dual/create', ['as' => 'dual.create', 'uses' => 'DualController@cre
 Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@store']);
 Route::get('/dual/{id}/pdf',['as' => 'dual.pdf', 'uses' => 'DualAlumnoController@pdf']);
 Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualAlumnoController@destroy']);
+Route::get('/dual/anexeVI',['as'=>'dual.anexevi','uses'=>'DualController@anexeVI']);
 
 Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
 Route::put('/alumnofct/{id}/edit', ['as' => 'alumnofct.update', 'uses' => 'FctAlumnoController@update']);

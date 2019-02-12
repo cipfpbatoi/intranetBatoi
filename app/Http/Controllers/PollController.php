@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
+use Intranet\Entities\Poll\Option;
 use Response;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -29,9 +30,17 @@ class PollController extends IntranetController
     }
     
     protected function preparaEnquesta($id){
-        $poll = Poll::find($id);
-        $modulos = $this->ordenModulos();
-        return view('poll.enquesta',compact('modulos','poll'));
+        $votes = Vote::where('user_id', AuthUser()->nia)
+                ->whereIn('option_id', hazArray(Option::where('poll_id',$id)->get(),'id'))
+                ->count();
+        if ($votes == 0){ 
+            $poll = Poll::find($id);
+            $modulos = $this->ordenModulos();
+            return view('poll.enquesta',compact('modulos','poll'));
+        } else {
+            Alert::info("Ja has omplit l'enquesta");
+            return redirect('home');
+        }
     }
     
     protected function guardaEnquesta(Request $request,$id){
@@ -55,7 +64,7 @@ class PollController extends IntranetController
                     }
         }
         Alert::info('Enquesta emplenada amb exit');
-        return back();
+        return redirect('home');
     }
     
     private function ordenModulos(){

@@ -37,6 +37,7 @@ class DualAlumnoController extends FctAlumnoController
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf'));
         $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info']));
+        $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info']));
         Session::put('redirect', 'DualAlumnoController@index');
     }
         //
@@ -47,6 +48,25 @@ class DualAlumnoController extends FctAlumnoController
         $fct = AlumnoFct::findOrFail($id);
         return redirect("/fct/$fct->idFct/show");
     }
+    
+//    public function pdf($id)
+//    {
+//        $fct = AlumnoFct::findOrFail($id);
+//        $secretario = Profesor::find(config('contacto.secretario'));
+//        $director = Profesor::find(config('contacto.director'));
+//        $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
+//            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
+//            'secretario' => $secretario->FullName,
+//            'centro' => config('contacto.nombre'),
+//            'codigo' => config('contacto.codi'),
+//            'poblacion' => config('contacto.poblacion'),
+//            'provincia' => config('contacto.provincia'),
+//            'director' => $director->FullName
+//        ];
+//        
+//        $pdf = $this->hazPdf('dual.anexe_vii', $fct,$dades,'landscape','a4',10);
+//        return $pdf->stream();
+//    }
     
     public function pdf($id)
     {
@@ -63,7 +83,7 @@ class DualAlumnoController extends FctAlumnoController
             'director' => $director->FullName
         ];
         
-        $pdf = $this->hazPdf('dual.anexe_vii', $fct,$dades,'landscape','a4',10);
+        $pdf = $this->hazPdf('dual.anexe_va', $fct,$dades,'landscape','a4',10);
         return $pdf->stream();
     }
     
