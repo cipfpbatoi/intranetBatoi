@@ -49,6 +49,7 @@ mix.combine([
     vendors+'nprogress/nprogress.css',
     gentelella+'build/css/custom.min.css',//this is the default from gentelella
     'resources/assets/css/mycustom.css' //All your custom css can go here
+    
 
 ],'public/css/app.css');
 

@@ -8,7 +8,7 @@
                 @php $profe++; $profesor = Intranet\Entities\Profesor::find($dni) @endphp
                 <div class="row grid_slider">
                     <div class="col-md-3 col-sm-3 col-xs-12" >
-                        <img src="{{ $profesor->foto }}" alt="{{$profesor->fullName}}"  height="80" width="80"><br/>
+                        <img src="/{{ $profesor->foto }}" alt="{{$profesor->fullName}}"  height="80" width="80"><br/>
                         {{$profesor->fullName}}
                     </div>
                     <div class="col-md-7 col-sm-7 col-xs-12">
