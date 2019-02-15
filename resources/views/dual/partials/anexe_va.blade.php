@@ -52,8 +52,14 @@
     <div style="position:absolute;left:463.20px;top:609.70px;width: 400px" >
         <span>{{$datosInforme['poblacion']}}</span>
     </div>
-    <div style="position:absolute;left:653.20px;top:609.70px;width: 400px" >
-        <span>{{$datosInforme['date']}}</span>
+    <div style="position:absolute;left:650.20px;top:609.70px;width: 400px" >
+        <span>{{day($datosInforme['date'])}}</span>
+    </div>
+    <div style="position:absolute;left:710.20px;top:609.70px;width: 400px" >
+        <span>{{month($datosInforme['date'])}}</span>
+    </div>
+    <div style="position:absolute;left:860.20px;top:609.70px;width: 400px" >
+        <span>{{year($datosInforme['date'])}}</span>
     </div>
     <div style="position:absolute;left:293.20px;top:769.70px;width: 400px" >
         <span>{{$datosInforme['director']}}</span>

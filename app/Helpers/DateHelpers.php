@@ -100,6 +100,13 @@ function month($fecha)
     return $fc1->format('F');
 }
 
+
+function year($fecha)
+{
+    $fc1 = new Jenssegers\Date\Date($fecha);
+    return $fc1->year;
+}
+
 /**
  * Devuelve el dia de la semana de una fecha
  * 

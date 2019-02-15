@@ -35,7 +35,9 @@ class DualAlumnoController extends FctAlumnoController
     {
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
-        $this->panel->setBoton('grid', new BotonImg('dual.pdf'));
+        $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vii'));
+        $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_va'));
+        $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vb'));
         $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info']));
         Session::put('redirect', 'DualAlumnoController@index');
@@ -68,12 +70,13 @@ class DualAlumnoController extends FctAlumnoController
 //        return $pdf->stream();
 //    }
     
-    public function pdf($id)
+    public function informe($id,$informe='anexe_vii')
     {
+        $informe = 'dual.'.$informe;
         $fct = AlumnoFct::findOrFail($id);
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));
-        $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
+        $dades = ['date' => FechaPosterior($fct->hasta),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
             'centro' => config('contacto.nombre'),
@@ -83,7 +86,7 @@ class DualAlumnoController extends FctAlumnoController
             'director' => $director->FullName
         ];
         
-        $pdf = $this->hazPdf('dual.anexe_va', $fct,$dades,'landscape','a4',10);
+        $pdf = $this->hazPdf($informe, $fct,$dades,'landscape','a4',10);
         return $pdf->stream();
     }
     
