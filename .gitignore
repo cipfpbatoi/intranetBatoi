@@ -19,3 +19,4 @@ yarn-error.log
 /public/img/pdf
 composer.lock
 /nbproject/private/
+!/public/img/pdf/
