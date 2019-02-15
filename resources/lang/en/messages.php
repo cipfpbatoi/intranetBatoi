@@ -251,7 +251,7 @@ return array(
         'Actasfct' => 'Control Fct/Minutes',
         'Actualizacion' => 'Update',
         'Dual' => 'FP Dual',
-        
+        'Poll' => 'Polls',
     ),
     'situations' => array(
         '0' => 'Not notified',

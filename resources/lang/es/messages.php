@@ -253,6 +253,7 @@ return array(
         'Actualizacion' => 'Actualización aplicación',
         'Dual' => 'FP Dual',
         'Micolaboracion' => 'Preparar Colaboraciones',
+        'Poll' => 'Encuestas',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

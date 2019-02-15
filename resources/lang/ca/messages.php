@@ -256,6 +256,7 @@ return array(
         'Actualizacion' => 'Actualització aplicació',
         'Dual' => 'FP Dual',
         'Micolaboracion' => 'Preparar Col.laboracions enguany',
+        'Poll' => 'Enquestes',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
