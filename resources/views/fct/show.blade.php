@@ -10,7 +10,7 @@
     @if ($fct->asociacion == 3)
         <h5>DUAL</h5>
     @endif
-    <h5>Instructor: {{$fct->Instructor->nombre}}</h5>
+    <h5>Instructor: {{$fct->Instructor->nombre}} ({{$fct->Instructor->dni}})</h5>
     <h5><i class="fa fa-envelope user-profile-icon"></i> {{ $fct->Instructor->email }}</h5>
     @if ($fct->Instructor->telefono != '')
         <h5><i class="fa fa-phone user-profile-icon"></i> {{ $fct->Instructor->telefono}}</h5>
