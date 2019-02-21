@@ -86,12 +86,15 @@ class Expediente extends Model
     public function getIdAlumnoOptions()
     {
         $misAlumnos = [];
-        $migrupo = Grupo::Qtutor()->get();
-        if (isset($migrupo->first()->codigo)) {
-            $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->first()->codigo)->get();
+        $migrupos = Grupo::MisGrupos()->get();
+        foreach ($migrupos as $migrupo)
+        {
+            if (isset($migrupo->codigo)) {
+                $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->codigo)->get();
 
-            foreach ($alumnos as $alumno) {
-                $misAlumnos[$alumno->idAlumno] = $alumno->Alumno->apellido1 . ' ' . $alumno->Alumno->apellido2 . ', ' . $alumno->Alumno->nombre;
+                foreach ($alumnos as $alumno) {
+                    $misAlumnos[$alumno->idAlumno] = $alumno->Alumno->apellido1 . ' ' . $alumno->Alumno->apellido2 . ', ' . $alumno->Alumno->nombre;
+                }
             }
         }
         return $misAlumnos;
