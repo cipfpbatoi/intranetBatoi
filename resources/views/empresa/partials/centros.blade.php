@@ -1,6 +1,6 @@
-<ul class="messages centro">
+<ul class="messages centro" >
     @foreach ($elemento->centros as $centro)
-    <li>
+    <li style="clear: both">
         <div class="message_date" style="width:55%">
             <a href='/instructor/{!!$centro->id!!}/create'>Nou Instructor</a>
             @foreach ($centro->instructores as $instructor)
@@ -19,16 +19,16 @@
             </h4>
             <h4>
                 <a href='#' onclick="window.open('/centro/{{$centro->id}}/mapa','targetWindow','toolbar=no,location=no,status=no, menubar=no, scrollbars=yes,resizable=yes,width=550,height=550');return false;" >
-                {{$centro->direccion}}, {{$centro->localidad}} <i class="fa fa-map-marker user-profile-icon"></i></a></h4>
-                @if ($centro->horarios) <h4><i class="fa fa-clock-o user-profile-icon"></i> {{$centro->horarios}}</h4> @endif       
-                @if ($centro->observaciones) <blockquote class="message">{{$centro->observaciones}}</blockquote> @endif
+                    {{$centro->direccion}}, {{$centro->localidad}} <i class="fa fa-map-marker user-profile-icon"></i></a></h4>
+            @if ($centro->horarios) <h4><i class="fa fa-clock-o user-profile-icon"></i> {{$centro->horarios}}</h4> @endif       
+            @if ($centro->observaciones) <blockquote class="message">{{$centro->observaciones}}</blockquote> @endif
             <h4>
                 @if  (UserisAllow(config('roles.rol.administrador'))&& ($centro->Empresa->centros->count()>1)) <small style="color: purple "> Fussionar:</small> <input type="checkbox" value='{!!$centro->id!!}'> @endif
             </h4>
         </div>
     </li>
     @endforeach
-</ul> 
+</ul>
 <div class="message_wrapper">
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddCenter">
