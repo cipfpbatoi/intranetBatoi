@@ -128,7 +128,7 @@ class Alumno extends Authenticatable
     }
     
     public function getTutorAttribute(){
-        if ($this->Grupo()->count == 0) return [];
+        if ($this->Grupo->count() == 0) return [];
         foreach ($this->Grupo as $grupo){
             $tutor[] = $grupo->Tutor;
         }

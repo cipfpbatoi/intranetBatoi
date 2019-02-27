@@ -6,7 +6,11 @@
     <!-- page content -->
     <div class="x_content">
         @foreach ($myVotes as $modulo => $moduloVotes)
-            <h2>{{$modulo}}</h2>
+            @php
+                $codigo =$moduloVotes->first()->ModuloGrupo->Grupo->codigo;
+                $allByOptions = $myGroupsVotes[$codigo]->groupBy('option_id');
+            @endphp
+            <h2>{{$modulo}} del grup {{$codigo}}</h2>
             <table style="border: #00aeef 1px solid">
                 <thead>
                 <tr>
@@ -23,10 +27,6 @@
                     @endforeach
                 </tr>
                 <tr>
-                    @php
-                        $codigo =$option->first()->ModuloGrupo->Grupo->codigo;
-                        $allByOptions = $myGroupsVotes[$codigo]->groupBy('option_id');
-                    @endphp
                     <td>Grup</td>
                     @foreach ($allByOptions as $option)
                         @if ($option->sum('value')>0)
