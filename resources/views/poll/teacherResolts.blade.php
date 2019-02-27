@@ -1,8 +1,3 @@
-@php
-    $byOptions = $myVotes->groupBy('option_id');
-    $byAll = $byOptions->groupBy('idModuloGrupo');
-@endphp
-@endphp
 @extends('layouts.intranet')
 @section('css')
     <title>Resultat Enquesta {{$poll->title}}</title>
@@ -10,25 +5,42 @@
 @section('content')
     <!-- page content -->
     <div class="x_content">
-        <table style="border: #00aeef 1px solid">
-            <thead>
-            <tr>
-                <th>Mòdul</th>
-                @foreach ($options_numeric as $item) <th>{{$item->question}} </th> @endforeach
-            </tr>
-            </thead>
-                @foreach ($byAll as $moduloGrupo)
-                    <tr>
+        @foreach ($myVotes as $modulo => $moduloVotes)
+            <h2>{{$modulo}}</h2>
+            <table style="border: #00aeef 1px solid">
+                <thead>
+                <tr>
+                    <td>Enquesta</td>
+                    @foreach ($options_numeric as $item) <th>{{$item->question}} </th> @endforeach
+                </tr>
+                </thead>
+                <tr>
+                    <td>Jo</td>
+                    @foreach ($moduloVotes->groupBy('option_id') as $option)
+                        @if ($option->sum('value')>0)
+                            <td> {{round($option->avg('value'),1)}}</td>
+                        @endif
+                    @endforeach
+                </tr>
+                <tr>
+                    @php
+                        $codigo =$option->first()->ModuloGrupo->Grupo->codigo;
+                        $allByOptions = $myGroupsVotes[$codigo]->groupBy('option_id');
+                    @endphp
+                    <td>Grup</td>
+                    @foreach ($allByOptions as $option)
+                        @if ($option->sum('value')>0)
+                            <td>{{round($option->avg('value'),1)}} </td>
+                        @endif
+                    @endforeach
+                </tr>
+            </table>
+            <h2>Comentaris:</h2>
+            @foreach ($moduloVotes->whereIn('option_id',hazArray($options_text,'id')) as $votes)
+                <p>{{$votes->text}}</p>
+            @endforeach
+        @endforeach
 
-                        <td>{{$moduloGrupo->first()->first()->ModuloGrupo->ModuloCiclo->Modulo->literal}}</td>
-                        @foreach ($moduloGrupo as $option)
-                            <td>
-                                <span></span>{{$option->avg('value',2)}}
-                            </td>
-                        @endforeach
-                    </tr>
-                @endforeach
-        </table>
     </div>
     <!-- /page content -->
 @endsection

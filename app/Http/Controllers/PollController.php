@@ -3,6 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Poll\Option;
@@ -47,13 +49,17 @@ class PollController extends IntranetController
     public function lookAtMyVotes($id){
         $poll = Poll::find($id);
         $options_numeric = $poll->options->where('scala','>',0);
-        $option_text = $poll->options->where('scala','=',0);
-        $myVotes = Vote::myVotes($id)->get();
-        //dd($myVotes);
+        $options_text = $poll->options->where('scala','=',0);
+        foreach (Modulo_grupo::misModulos() as $modulo){
+            $myVotes[$modulo->ModuloCiclo->Modulo->literal] = Vote::myVotes($id,$modulo->id)->get();
+        }
+        foreach (Grupo::misGrupos()->get() as $grup){
+            $myGroupsVotes[$grup->codigo] = Vote::myGroupVotes($id,$grup->codigo)->get();
+        }
 
-        return view('poll.teacherResolts',compact('myVotes','poll','options_numeric','options_text'));
-        $teamVotes = Vote::teamVotes($id)->get();
+        return view('poll.teacherResolts',compact('myVotes','poll','options_numeric','options_text','myGroupsVotes'));
     }
+
     
     protected function guardaEnquesta(Request $request,$id){
         $poll = Poll::find($id);
