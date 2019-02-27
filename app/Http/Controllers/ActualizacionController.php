@@ -23,7 +23,7 @@ class ActualizacionController extends Controller{
         Alert::info(system('php ./../artisan config:cache'));
         Alert::info(system('php ./../artisan migrate'));
         $version_nueva = end( config('constants.version'));
-        $version_actual = Storage::exists('version.txt'))?Storage::get('version.txt'):'v0';
+        $version_actual = Storage::exists('version.txt')?Storage::get('version.txt'):'v0';
         if ($version_nueva > $version_actual){
             AdministracionController::exe_actualizacion($version_actual);
             Storage::put('version.txt',$version_nueva);
