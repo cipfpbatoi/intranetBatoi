@@ -13,9 +13,18 @@ use DateTime;
 use Illuminate\Support\Facades\Response;
 use Intranet\Entities\Profesor;
 
+/**
+ * Trait traitImprimir
+ * @package Intranet\Http\Controllers
+ */
 trait traitImprimir
 {
 
+    /**
+     * @param $id
+     * @param string $orientacion
+     * @return mixed
+     */
     public function imprime($id, $orientacion = 'portrait')
     {
         $elemento = $this->class::findOrFail($id);
@@ -24,7 +33,15 @@ trait traitImprimir
         return $pdf->stream();
     }
 
-    public function imprimir($modelo = '', $inicial = null, $final = null,$orientacion='portrait',$link=true)
+    /**
+     * @param string $modelo
+     * @param null $inicial
+     * @param null $final
+     * @param string $orientacion
+     * @param bool $link
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function imprimir($modelo = '', $inicial = null, $final = null, $orientacion='portrait', $link=true)
     {
         $modelo = $modelo ? $modelo : strtolower($this->model) . 's';
         $final = $final ? $final : '_print';
@@ -44,8 +61,17 @@ trait traitImprimir
         
     }
 
-    protected function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
-            $margin_top= 15)
+    /**
+     * @param $informe
+     * @param $todos
+     * @param null $datosInforme
+     * @param string $orientacion
+     * @param string $dimensiones
+     * @param int $margin_top
+     * @return mixed
+     */
+    protected static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
+                                     $margin_top= 15)
     {
         $datosInforme = $datosInforme==null?FechaString(null,'ca'):$datosInforme;
         
@@ -65,24 +91,41 @@ trait traitImprimir
                 ->setOption('margin-bottom', 0)
                 ->setOption('page-width', $dimensiones[0])
                 ->setOption('page-height', $dimensiones[1]));
-       
-       
     }
     
     //torna arxiu ics per a guardar
+
+    /**
+     * @param $id
+     * @return string
+     */
     protected function do_ics($id){
         return $this->make_ics($id)->render();
     }
     
     
     // carrega vista ics
-    public function ics($id,$descripcion='descripcion',$objetivos='objetivos')
+
+    /**
+     * @param $id
+     * @param string $descripcion
+     * @param string $objetivos
+     * @return \Illuminate\Http\Response
+     */
+    public function ics($id, $descripcion='descripcion', $objetivos='objetivos')
     {
         $vCalendar = $this->make_ics($id,$descripcion,$objetivos);
         return Response::view('ics', compact('vCalendar'))->header('Content-Type', 'text/calendar');
     }
-    
-    protected function make_ics($id,$descripcion='descripcion',$objetivos='objetivos')
+
+    /**
+     * @param $id
+     * @param string $descripcion
+     * @param string $objetivos
+     * @return Calendar
+     * @throws \Exception
+     */
+    protected function make_ics($id, $descripcion='descripcion', $objetivos='objetivos')
     {
         $elemento = $this->class::findOrFail($id);
         $vCalendar = new Calendar('intranet.cipfpbatoi.app');
@@ -103,7 +146,11 @@ trait traitImprimir
         $vCalendar->addComponent($vEvent);
         return $vCalendar;
     }
-    
+
+    /**
+     * @param $datos
+     * @return mixed
+     */
     protected function cargaDatosCertificado($datos){
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));

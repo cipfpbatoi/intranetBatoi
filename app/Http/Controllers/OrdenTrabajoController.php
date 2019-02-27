@@ -8,18 +8,40 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\OrdenTrabajo;
 
+/**
+ * Class OrdenTrabajoController
+ * @package Intranet\Http\Controllers
+ */
 class OrdenTrabajoController extends IntranetController
 {
 
     use traitImprimir;
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'OrdenTrabajo';
+    /**
+     * @var array
+     */
     protected $gridFields = ['id','Xestado', 'descripcion', 'Xtipo', 'created_at'];
+    /**
+     * @var string
+     */
     protected $descriptionField = 'descripcion';
+    /**
+     * @var bool
+     */
     protected $modal = true;
-    
-    
+
+
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('ordentrabajo.pdf', ['where' => ['estado', '<=', '1']],'mantenimiento'));
@@ -29,12 +51,21 @@ class OrdenTrabajoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('ordentrabajo.edit', ['where' => ['estado', '<', '2']],'mantenimiento'));
         $this->panel->setBoton('grid', new BotonImg('ordentrabajo.delete', ['where' => ['estado', '<', '2']],'mantenimiento'));
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy($id){
         $todos = Incidencia::where('orden',$id)->get();
         return parent::destroy($id);
     }
-    
+
+    /**
+     * @param $id
+     * @param string $orientacion
+     * @return mixed
+     */
     public function imprime($id, $orientacion = 'portrait')
     {
         $elemento = $this->class::findOrFail($id);
@@ -47,7 +78,11 @@ class OrdenTrabajoController extends IntranetController
         }
         return $pdf->stream();
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function resolve($id){
         $elemento = $this->class::findOrFail($id);
         $elemento->estado = 2;
@@ -58,7 +93,11 @@ class OrdenTrabajoController extends IntranetController
         $elemento->save();
         return back();
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function open($id){
         $elemento = $this->class::findOrFail($id);
         $elemento->estado = 0;

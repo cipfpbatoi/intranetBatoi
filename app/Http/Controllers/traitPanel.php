@@ -7,12 +7,15 @@ use Intranet\Botones\BotonIcon;
 use Illuminate\Support\Facades\Session;
 use Jenssegers\Date\Date;
 
-
-
+/**
+ * Trait traitPanel
+ * @package Intranet\Http\Controllers
+ */
 trait traitPanel{
-    
-    
-    
+
+    /**
+     * @return mixed
+     */
     public function index()
     {
         $todos = isset($this->orden)?$this->search($this->orden):$this->search('desde');
@@ -22,33 +25,34 @@ trait traitPanel{
         Session::put('redirect','Panel'.$this->model.'Controller@index');
         return $this->grid($todos);
     }
-    
-    
-    // carrega els elements
+
+
+    /**
+     * @return mixed
+     */
     protected function search()
     {
         $orden = isset($this->orden)?$this->orden:'desde';
         if (Session::get('completa'))
             return $this->class::where('estado', '>', '0')->orderBy($orden,'desc')->get();
-        else{
-            return $this->class::where('estado', '>', '0')
-                    ->where(function($q) use ($orden) {
-                        $fecha = Date::now()->subDays(config('variables.diasNoCompleta'));
-                        return $q->where('estado','!=',config('modelos.'.$this->model.'.resolve'))
-                                ->where('estado','!=',config('modelos.'.$this->model.'.completa'))
-                            ->orWhere($orden,'>',$fecha->toDateString());
-                            
-                    })
-                    ->orderBy($orden,'desc')
-                    ->get();
-                   
-        }    
+        return $this->class::where('estado', '>', '0')
+            ->where(function($q) use ($orden) {
+                $fecha = Date::now()->subDays(config('variables.diasNoCompleta'));
+                return $q->where('estado','!=',config('modelos.'.$this->model.'.resolve'))
+                    ->where('estado','!=',config('modelos.'.$this->model.'.completa'))
+                    ->orWhere($orden,'>',$fecha->toDateString());
+
+            })
+            ->orderBy($orden,'desc')
+            ->get();
     }
-    /*
-     * en $default vienen los botones colectivos
-     * ademas añade el de autorizar para estado =1 , desatorizar para estado 2 y refuse para estado=1
+
+
+    /**
+     * @param array $default
+     * @param bool $enlace
      */
-    protected function setAuthBotonera($default = ['2' => 'pdf', '1' => 'autorizar'],$enlace = true)
+    protected function setAuthBotonera($default = ['2' => 'pdf', '1' => 'autorizar'], $enlace = true)
     {
         // Botons colectius
         foreach ($default as $item => $valor) {

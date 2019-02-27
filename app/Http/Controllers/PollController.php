@@ -33,14 +33,26 @@ class PollController extends IntranetController
         $votes = Vote::where('user_id', AuthUser()->nia)
                 ->whereIn('option_id', hazArray(Option::where('poll_id',$id)->get(),'id'))
                 ->count();
-        if ($votes == 0){ 
+
+        if ($votes == 0){
             $poll = Poll::find($id);
             $modulos = $this->ordenModulos();
             return view('poll.enquesta',compact('modulos','poll'));
-        } else {
-            Alert::info("Ja has omplit l'enquesta");
-            return redirect('home');
         }
+
+        Alert::info("Ja has omplit l'enquesta");
+        return redirect('home');
+    }
+
+    public function lookAtMyVotes($id){
+        $poll = Poll::find($id);
+        $options_numeric = $poll->options->where('scala','>',0);
+        $option_text = $poll->options->where('scala','=',0);
+        $myVotes = Vote::myVotes($id)->get();
+        //dd($myVotes);
+
+        return view('poll.teacherResolts',compact('myVotes','poll','options_numeric','options_text'));
+        $teamVotes = Vote::teamVotes($id)->get();
     }
     
     protected function guardaEnquesta(Request $request,$id){

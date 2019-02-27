@@ -9,19 +9,42 @@ use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonBasico;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * Class EspacioController
+ * @package Intranet\Http\Controllers
+ */
 class EspacioController extends IntranetController
 {
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Espacio';
+    /**
+     * @var array
+     */
     protected $gridFields = ['Xdepartamento', 'aula', 'descripcion', 'gMati', 'gVesprada'];
+    /**
+     * @var bool
+     */
     protected $modal = true;
-   
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function detalle($id)
     {
         return redirect()->route('material.espacio', ['espacio' => $id]);
     }
 
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico('espacio.create', ['roles' => [config('roles.rol.direccion'), config('roles.rol.mantenimiento')]]));

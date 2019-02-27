@@ -23,46 +23,77 @@ use Intranet\Botones\BotonImg;
 use Jenssegers\Date\Date;
 
 
+/**
+ * Class InstructorController
+ * @package Intranet\Http\Controllers
+ */
 class InstructorController extends IntranetController
 {
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Instructor';
+    /**
+     * @var array
+     */
     protected $titulo = [];
+    /**
+     * @var array
+     */
     protected $gridFields = ['dni', 'nombre','email','Nfcts', 'TutoresFct','Xcentros','telefono'];
+    /**
+     * @var bool
+     */
     protected $modal = false;
     
     use traitImprimir;
-    
+
+    /**
+     *
+     */
     public function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('instructor.edit'));
         $this->panel->setBoton('grid', new BotonImg('instructor.show'));
         $this->panel->setBoton('grid', new BotonImg('instructor.pdf'));
     }
-    
+
+    /**
+     * @return mixed
+     */
     public function search()
     {
-        $fcts = Fct::misFcts()->get();
         $instructores = [];
-        foreach ($fcts as $fct){
+        foreach (Fct::misFcts()->get() as $fct){
             foreach ($fct->Colaboradores as $instructor){
                 $instructores[] = $instructor->dni;
             }
         }    
         return Instructor::whereIn('dni',$instructores)->get();
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+     */
     public function show($id)
     {
         $empresa = Instructor::find($id)->Centros->first()->idEmpresa;
         return redirect("empresa/$empresa/detalle");
     }
 
+    /**
+     * @param $centro
+     * @param $dni
+     */
     private function nouCentreInstructor($centro, $dni)
     {
-        $ci = Centro_instructor::where('idInstructor', $dni)->where('idCentro', $centro)->first();
-        if (!$ci) {
+        if (!Centro_instructor::where('idInstructor', $dni)->where('idCentro', $centro)->first()) {
             $ci = new Centro_instructor();
             $ci->idCentro = $centro;
             $ci->idInstructor = $dni;
@@ -70,24 +101,44 @@ class InstructorController extends IntranetController
         }
     }
 
+    /**
+     * @param $centro
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function crea($centro)
     {
         return parent::create();
     }
-    
-    public function edita($id,$empresa)
+
+    /**
+     * @param $id
+     * @param $empresa
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function edita($id, $empresa)
     {
         return parent::edit($id);
     }
-    
-    public function guarda(Request $request, $id,$centro)
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @param $centro
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function guarda(Request $request, $id, $centro)
     {
         parent::update($request, $id);
         Session::put('pestana',2);
         return redirect()->action('EmpresaController@show', ['id' => Centro::find($centro)->idEmpresa]);
     }
-    
-    public function almacena(Request $request,$centro)
+
+    /**
+     * @param Request $request
+     * @param $centro
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function almacena(Request $request, $centro)
     {
         DB::transaction(function() use ($request,$centro) {
             $instructor = Instructor::find($request->dni);
@@ -106,7 +157,12 @@ class InstructorController extends IntranetController
         return redirect()->action('EmpresaController@show', ['id' => Centro::find($centro)->idEmpresa]);
     }
 
-    public function delete($id,$centro)
+    /**
+     * @param $id
+     * @param $centro
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function delete($id, $centro)
     {
         $instructor = Instructor::find($id);
         $instructor->Centros()->detach($centro);
@@ -115,7 +171,13 @@ class InstructorController extends IntranetController
         Session::put('pestana',2);
         return redirect()->action('EmpresaController@show', ['id' => Centro::find($centro)->idEmpresa]);
     }
-    public function copy($id,$idCentro)
+
+    /**
+     * @param $id
+     * @param $idCentro
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function copy($id, $idCentro)
     {
         $instructor = Instructor::findOrFail($id);
         $centro = Centro::findOrFail($idCentro);
@@ -126,18 +188,28 @@ class InstructorController extends IntranetController
         }
         return view('instructor.copy',compact('instructor','posibles','centro'));
     }
-    public function toCopy(Request $request,$id,$idCentro)
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @param $idCentro
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function toCopy(Request $request, $id, $idCentro)
     {
         $instructor = Instructor::findOrFail($id);
         $centro = Centro::findOrFail($idCentro);
         $instructor->Centros()->attach($request->centro);
-        if ($request->accion == 'mou'){
-            $instructor->Centros()->detach($idCentro);
-        }
+        if ($request->accion == 'mou') $instructor->Centros()->detach($idCentro);
+
         Session::put('pestana',2);
         return redirect()->action('EmpresaController@show', ['id' => Centro::find($idCentro)->idEmpresa]);
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function pdf($id)
     {
         $instructor = Instructor::findOrFail($id);
@@ -169,13 +241,16 @@ class InstructorController extends IntranetController
             }
             return $pdf->stream();
         }
-        else
-        {
-            Alert::danger("Completa les dades de l'instructor");
-            return redirect("/instructor");   
-        }
-        
+
+        Alert::danger("Completa les dades de l'instructor");
+        return redirect("/instructor");
+
     }
+
+    /**
+     * @param $fcts
+     * @return \Date|Date|null
+     */
     private function ultima_fecha($fcts)
     {
         $posterior = new Date();

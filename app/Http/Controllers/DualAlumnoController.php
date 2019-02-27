@@ -16,21 +16,46 @@ use Illuminate\Support\Facades\Session;
 use Intranet\Jobs\SendEmail;
 use Illuminate\Http\Request;
 
+/**
+ * Class DualAlumnoController
+ * @package Intranet\Http\Controllers
+ */
 class DualAlumnoController extends FctAlumnoController
 {
     use traitImprimir;
-    
+
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'AlumnoFct';
+    /**
+     * @var array
+     */
     protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas','periode'];
+    /**
+     * @var bool
+     */
     protected $profile = false;
+    /**
+     * @var array
+     */
     protected $titulo = [];
-    
+
+    /**
+     * @return mixed
+     */
     public function search()
     {
         return AlumnoFct::misDual()->orderBy('idAlumno')->orderBy('desde')->get();
     }
 
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
@@ -44,7 +69,11 @@ class DualAlumnoController extends FctAlumnoController
     }
         //
 
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+     */
     public function show($id)
     {
         $fct = AlumnoFct::findOrFail($id);
@@ -69,8 +98,13 @@ class DualAlumnoController extends FctAlumnoController
 //        $pdf = $this->hazPdf('dual.anexe_vii', $fct,$dades,'landscape','a4',10);
 //        return $pdf->stream();
 //    }
-    
-    public function informe($id,$informe='anexe_vii')
+
+    /**
+     * @param $id
+     * @param string $informe
+     * @return mixed
+     */
+    public function informe($id, $informe='anexe_vii')
     {
         $informe = 'dual.'.$informe;
         $fct = AlumnoFct::findOrFail($id);

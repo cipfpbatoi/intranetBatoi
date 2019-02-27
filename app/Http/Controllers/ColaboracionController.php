@@ -19,14 +19,34 @@ use Intranet\Botones\BotonImg;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * Class ColaboracionController
+ * @package Intranet\Http\Controllers
+ */
 class ColaboracionController extends IntranetController
 {
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Colaboracion';
+    /**
+     * @var array
+     */
     protected $gridFields = ['empresa','localidad','contacto','email','telefono','Xciclo','puestos','dni'];
+    /**
+     * @var array
+     */
     protected $titulo = [];
 
-  
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function copy($id)
     {
         $profesor = AuthUser()->dni;
@@ -35,22 +55,23 @@ class ColaboracionController extends IntranetController
         $copia = New Colaboracion();
         $copia->fill($elemento->toArray());
         $copia->idCiclo = Grupo::QTutor($profesor)->get()->count() > 0 ? Grupo::QTutor($profesor)->first()->idCiclo : Grupo::QTutor($profesor,true)->first()->idCiclo;
-       
-          
-        
         $copia->tutor = AuthUser()->FullName;
         
             // para no generar más de uno por ciclo
         $validator = Validator::make($copia->toArray(),$copia->getRules());
-        if ($validator->fails()){
+        if ($validator->fails())
             return Redirect::back()->withInput()->withErrors($validator);
-        }
-        else{
-            $copia->save();
-            return back();
-        }
+
+        $copia->save();
+        return back();
+
     }
-    
+
+    /**
+     * @param Request $request
+     * @param null $id
+     * @return mixed
+     */
     protected function realStore(Request $request, $id = null)
     {
         $elemento = $id ? Colaboracion::findOrFail($id) : new Colaboracion(); //busca si hi ha
@@ -59,11 +80,18 @@ class ColaboracionController extends IntranetController
         return $elemento->fillAll($request);        // ompli i guarda
     }
 
+    /**
+     *
+     */
     public function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('colaboracion.show',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
         
     }
+
+    /**
+     * @return mixed
+     */
     public function search(){
         $this->titulo = ['quien' => AuthUser()->Departamento->literal ];
         $ciclos = Ciclo::select('id')->where('departamento', AuthUser()->departamento)->get()->toArray();
@@ -72,6 +100,12 @@ class ColaboracionController extends IntranetController
             return $colaboracion->Centro->Empresa->concierto;
         });
     }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         parent::update($request, $id);
@@ -80,6 +114,10 @@ class ColaboracionController extends IntranetController
         return redirect()->action('EmpresaController@show', ['id' => $empresa]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         parent::store($request);
@@ -88,6 +126,10 @@ class ColaboracionController extends IntranetController
         return redirect()->action('EmpresaController@show', ['id' => $empresa]);
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy($id)
     {
         $empresa = Colaboracion::find($id)->Centro->Empresa;
@@ -95,12 +137,23 @@ class ColaboracionController extends IntranetController
         Session::put('pestana',1);
         return redirect()->action('EmpresaController@show', ['id' => $empresa]);
     }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function show($id){
         $empresa = Colaboracion::find($id)->Centro->idEmpresa;
         Session::put('pestana',1);
         return redirect()->action('EmpresaController@show', ['id' => $empresa]);
     }
-    public function colabora($id,$tipo){
+
+    /**
+     * @param $id
+     * @param $tipo
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function colabora($id, $tipo){
         $colaboracion = Colaboracion::find($id);
         $colaboracion->colabora = $tipo;
         $colaboracion->save();

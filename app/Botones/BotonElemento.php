@@ -5,47 +5,51 @@ use Illuminate\Support\Facades\Storage;
 
 abstract class BotonElemento extends Boton
 {
-    // d'ella heren tots els botons meyns el basic
-    
-    // mostra el boto
-    // afegix condicio per mostrar-lo
+
     public function show($elemento = null, $key = null)
     {
-        if ($this->esVisible($elemento))
+        if ($this->isVisible($elemento))
             return parent::show($elemento, $key);
     }
 
-    // mira si compleix l'element compleix les condicions del where
-    private function esVisible($elemento)
+    private function isVisible($elemento)
     {
-        if ($this->where != '') {
-            $condiciones = [];
-            for ($i = 0; $i < count($this->where); $i = $i + 3) {
-                $camp = $this->where[$i];
-                $condiciones[] = $this->condicion($elemento->$camp, $this->where[$i + 1], $this->where[$i + 2]);
-            }
-            $result = true;
-            foreach ($condiciones as $condicion) {
-                $result = $result && $condicion;
-            }
-            return ($result);
-        } elseif ($this->orWhere != '') {
-                $condiciones = [];
-                for ($i = 0; $i < count($this->orWhere); $i = $i + 3) {
-                    $camp = $this->orWhere[$i];
-                    $condiciones[] = $this->condicion($elemento->$camp, $this->orWhere[$i + 1], $this->orWhere[$i + 2]);
-                }
-                $result = false;
-                foreach ($condiciones as $condicion) {
-                    $result = $result || $condicion;
-                }
-                return ($result);
-            
-            } else return true;
+        if ($this->where != '')
+            return $this->avalAndConditions($this->extractConditions($elemento));
+
+        if ($this->orWhere != '')
+            return $this->avalOrConditions($this->extractConditions($elemento));
+
+        return true;
     }
 
-    // condicions possibles
-    private function condicion($elemento, $op, $valor)
+    private function extractConditions($elemento){
+        $condiciones = [];
+        for ($i = 0; $i < count($this->where); $i = $i + 3) {
+            $camp = $this->where[$i];
+            $condiciones[] = $this->avalCondition($elemento->$camp, $this->where[$i + 1], $this->where[$i + 2]);
+        }
+        return $condiciones;
+    }
+
+    private function avalAndConditions($conditions){
+        $result = true;
+        foreach ($conditions as $condition) {
+            $result = $result && $condition;
+        }
+        return $result;
+    }
+
+    private function avalOrConditions($conditions){
+        $result = true;
+        foreach ($conditions as $condition) {
+            $result = $result || $condition;
+        }
+        return $result;
+    }
+
+
+    private function avalCondition($elemento, $op, $valor)
     {
         if ($op == 'anterior') {
             $elemento = Fecha($elemento);

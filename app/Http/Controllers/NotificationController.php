@@ -11,14 +11,33 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * Class NotificationController
+ * @package Intranet\Http\Controllers
+ */
 class NotificationController extends IntranetController
 {
 
+    /**
+     * @var string
+     */
     protected $model = 'Notification';
+    /**
+     * @var array
+     */
     protected $gridFields = ['emisor', 'motivo', 'fecha'];
+    /**
+     * @var
+     */
     protected $key;
+    /**
+     * @var array
+     */
     protected $vista = ['show'=>'notification.show'];
 
+    /**
+     * @return mixed
+     */
     protected function search()
     {
         $key = AuthUser()->primaryKey;
@@ -26,7 +45,11 @@ class NotificationController extends IntranetController
                 ->orderBy('created_at','desc')
                 ->get();  
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function read($id)
     {
         $notification = Notification::find($id);
@@ -35,6 +58,9 @@ class NotificationController extends IntranetController
         return back();
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function readAll()
     {
         $key = AuthUser()->primaryKey;
@@ -47,6 +73,9 @@ class NotificationController extends IntranetController
         return back();
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function deleteAll()
     {
         $key = AuthUser()->primaryKey;
@@ -58,7 +87,11 @@ class NotificationController extends IntranetController
 
         return back();
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy($id)
     {
         $borrar = $this->class::findOrFail($id);
@@ -66,25 +99,40 @@ class NotificationController extends IntranetController
         return back();
     }
 
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['deleteAll', 'readAll'], ['delete','show']);
         $this->panel->setBoton('grid', new BotonImg('notification.read', [ 'where' => ['read_at', 'isNull','']]));
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show($id)
     {
-        $elemento = $this->class::findOrFail($id);
-        $modelo = 'Notification';
-        $elemento_data = trim($elemento->data,'{}');
-        $trozos = explode(',',$elemento_data);
-        foreach ($trozos as $trozo){
+        $modelo = $this->model;
+        $elemento = $this->extractData(Notification::findOrFail($id));
+
+
+        return view($this->chooseView('show'), compact('elemento', 'modelo'));
+    }
+
+    /**
+     * @param $notification
+     * @return mixed
+     */
+    private function extractData($notification){
+        foreach (explode(',',trim($notification->data,'{}')) as $trozo){
             if (strpos($trozo,'":"')){
                 $ele = explode('":"',$trozo);
                 $ind = trim($ele[0],'"');
-                $elemento->$ind=trim($ele[1],'"');
+                $notification->$ind=trim($ele[1],'"');
             }
         }
-        return view($this->chooseView('show'), compact('elemento', 'modelo'));
+        return $notification;
     }
 }

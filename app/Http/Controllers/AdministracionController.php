@@ -29,9 +29,16 @@ use Intranet\Entities\Expediente;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\TipoExpediente;
 
+/**
+ * Class AdministracionController
+ * @package Intranet\Http\Controllers
+ */
 class AdministracionController extends Controller
 {
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function simplifica()
     {
         if (Session::get('completa'))
@@ -41,18 +48,28 @@ class AdministracionController extends Controller
         return back();
     }
 
+    /**
+     * @param $lang
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function lang($lang)
     {
         Session::put('lang', $lang);
         return back();
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     protected function deleteProgramacionIndex()
     {
         $cuantas = Programacion::where('estado', 3)->where('curso', '!=', Curso())->count();
         return view('programacion.deleteOld', compact('cuantas'));
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function deleteProgramacion()
     {
         Programacion::where('estado', 4)->delete();
@@ -60,6 +77,9 @@ class AdministracionController extends Controller
         return back();
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function allApiToken()
     {
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
@@ -70,11 +90,17 @@ class AdministracionController extends Controller
         return back();
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     protected function nuevoCursoIndex()
     {
         return view('nuevo.curso');
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function nuevoCurso()
     {
         //$this->checkForeignKeys(false);
@@ -85,15 +111,22 @@ class AdministracionController extends Controller
             DB::table($tabla)->delete();
         }
 
-        //$this->checkForeignKeys(true);
         return back();
     }
 
+    /**
+     * @param $fichero
+     * @param $enlace
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function help($fichero, $enlace)
     {
         return view('intranet.readme', ['elemento' => mdFind($fichero, $enlace)]);
     }
 
+    /**
+     * @param $version_antigua
+     */
     public static function exe_actualizacion($version_antigua)
     {
         foreach (config('constants.version') as $version) {
@@ -103,21 +136,33 @@ class AdministracionController extends Controller
         }
     }
 
+    /**
+     *
+     */
     public static function v1_0()
     {
         Alert::info('Version 1.0');
     }
 
+    /**
+     *
+     */
     public static function v1_1()
     {
         Alert::info('Version 1.1');
     }
 
+    /**
+     *
+     */
     public static function v1_2()
     {
         Alert::info('Version 1.2');
     }
 
+    /**
+     *
+     */
     public static function v1_3_4()
     {
         $a = new TipoExpediente();

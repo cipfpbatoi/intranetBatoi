@@ -6,36 +6,58 @@ use Illuminate\Http\Request;
 use Intranet\Entities\Menu;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * Class MenuController
+ * @package Intranet\Http\Controllers
+ */
 class MenuController extends IntranetController
 {
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Menu';
+    /**
+     * @var array
+     */
     protected $gridFields = ['categoria', 'nombre','descripcion', 'url', 'Xrol', 'Xactivo','ajuda'];
-    //protected $modal = true;
-    
-//    protected function search(){
-//        return Menu::where('menu', '=', 'general')
-//                ->get();
-//    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection|Menu[]|mixed
+     */
     protected function search(){
+        self::sort();
+        return Menu::all();
+    }
+
+    /**
+     *
+     */
+    private static function sort(){
         $anterior = '';
         foreach (Menu::where('submenu','')->orderBy('menu')->orderBy('orden')->get() as $menu){
             if ($anterior != $menu->menu) {$orden = 1;$anterior=$menu->menu; }
             $menu->orden = $orden ++;
             $menu->save();
         };
-        
+
         foreach (Menu::where('submenu','')->orderBy('menu')->orderBy('orden')->get() as $menu){
             $orden = 1;
             foreach (Menu::where('submenu',$menu->nombre)->orderBy('orden')->get() as $submenu){
                 $submenu->orden = $orden ++;
-                $submenu->save(); 
+                $submenu->save();
             }
         }
-        return Menu::all();
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function copy($id)
     {
         $elemento = Menu::find($id);
@@ -46,6 +68,11 @@ class MenuController extends IntranetController
         $copia->save();
         return redirect("/menu/$copia->id/edit");
     }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function up($id){
         $elemento = Menu::find($id);
         $inicial = $elemento->orden;
@@ -62,6 +89,11 @@ class MenuController extends IntranetController
         }   
         return redirect('/menu');
     }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function down($id){
         $elemento = Menu::find($id);
         $inicial = $elemento->orden;
@@ -79,6 +111,9 @@ class MenuController extends IntranetController
         return redirect('/menu');
     }
 
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['delete', 'edit', 'active', 'copy','up','down']);

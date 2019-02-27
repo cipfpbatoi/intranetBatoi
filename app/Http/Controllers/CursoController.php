@@ -11,28 +11,46 @@ use DB;
 use Intranet\Entities\Documento;
 use Jenssegers\Date\Date;
 
+/**
+ * Class CursoController
+ * @package Intranet\Http\Controllers
+ */
 class CursoController extends IntranetController
 {
 
     use traitImprimir;
 
-    
+
+    /**
+     * @var string
+     */
     protected $model = 'Curso';
+    /**
+     * @var array
+     */
     protected $gridFields = ['id', 'titulo', 'estado', 'fecha_inicio','NAlumnos'];
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function detalle($id)
     {
         return redirect()->route('alumnocurso.show', ['grupo' => $id]);
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function indexAlumno()
     {
-        $todos = Curso::where('activo', 1)
-                ->get();
         $this->iniAluBotones();
-        return $this->grid($todos);
+        return $this->grid(Curso::where('activo', 1) ->get());
     }
 
+    /**
+     *
+     */
     protected function iniAluBotones()
     {
         $this->panel->setPestana('profile', true);
@@ -40,6 +58,9 @@ class CursoController extends IntranetController
         $this->panel->setBothBoton('alumnocurso.unregister', ['class' => 'btn-danger unauthorize'], true);
     }
 
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['detalle', 'edit']);
@@ -49,23 +70,14 @@ class CursoController extends IntranetController
         $this->panel->setBoton('grid',new BotonImg('curso.saveFile'),
               ['where' => ['fecha_fin','anterior',Hoy(),'activo', '==', 0]]);
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function saveFile($id)
     {
-        $elemento = Curso::find($id);
-        if ($elemento->fichero != '')
-            $nomComplet = $elemento->fichero;
-        else {
-            $nom = 'Curso_' . $elemento->id . '.pdf';
-            $directorio = 'gestor/' . Curso() . '/' . $this->model;
-            $nomComplet = $directorio . '/' . $nom;
-            if (!file_exists(storage_path('/app/' . $nomComplet))){
-                $todos = AlumnoCurso::Curso($id)->Finalizado()->get();
-                self::hazPdf('pdf.alumnos.manipulador',$todos,$elemento)->save(storage_path('/app/' . $nomComplet));
-            }
-        }
-        $elemento->archivada = 1;
-        $elemento->fichero = $nomComplet;
+        $elemento = $this->makeReport($id);
         DB::transaction(function () use ($elemento) {
             Documento::crea($elemento, ['propietario' => $elemento->profesorado,
                 'tipoDocumento' => 'Curso',
@@ -75,19 +87,39 @@ class CursoController extends IntranetController
                 'supervisor' => AuthUser()->shortName,
                 'created_at' => new Date($elemento->fecha_fin),
                 'rol' => config('roles.rol.direccion')]);
+            $elemento->archivada = 1;
             $elemento->save();
         });
         return back();
     }
-    
-    public function pdf($id)
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    private function makeReport($id)
     {
         $curso = Curso::find($id);
-        if (haVencido($curso->fecha_fin)){
-            $todos = AlumnoCurso::Curso($id)->Finalizado()->get();
-            return self::hazPdf('pdf.alumnos.manipulador',$todos,$curso)->stream();
+        if ($curso->fichero == ''){
+            $nomComplet = 'gestor/' . Curso() . '/' . $this->model. '/' .'Curso_' . $curso->id . '.pdf';
+            $curso->fichero = $nomComplet;
+            if (!file_exists(storage_path('/app/' . $nomComplet)))
+                self::hazPdf('pdf.alumnos.manipulador', AlumnoCurso::Curso($id)->Finalizado()->get(), $curso)->save(storage_path('/app/' . $nomComplet));
+
         }
-        else return self::imprime($id);
+        return $curso;
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public function pdf($id)
+    {
+        if (haVencido($curso->fecha_fin))
+            return self::hazPdf('pdf.alumnos.manipulador',AlumnoCurso::Curso($id)->Finalizado()->get(),Curso::find($id))->stream();
+
+        return self::imprime($id);
     }
     
 }

@@ -88,7 +88,7 @@ trait traitAutorizar
     }
     
     //crea link a gestor documental
-    protected function makeLink($todos,$doc)
+    protected static function makeLink($todos,$doc)
     {
         foreach ($todos as $uno) {
             $uno->idDocumento = $doc;

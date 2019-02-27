@@ -11,16 +11,38 @@ use Illuminate\Support\Facades\Storage;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * Class HorarioController
+ * @package Intranet\Http\Controllers
+ */
 class HorarioController extends IntranetController
 {
 
+    /**
+     * @var string
+     */
     protected $model = 'Horario';
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var array
+     */
     protected $gridFields = ['XModulo','XOcupacion' ,'dia_semana', 'desde', 'aula'];
+    /**
+     * @var bool
+     */
     protected $modal = true;
-   
 
-    public function changeTable($dni,$redirect=true){
+
+    /**
+     * @param $dni
+     * @param bool $redirect
+     * @return bool|\Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    public function changeTable($dni, $redirect=true){
         $correcto = false;
         if (Storage::disk('local')->exists('/horarios/'.$dni.'.json'))
             if ($fichero = Storage::disk('local')->get('/horarios/'.$dni.'.json')) {
@@ -57,34 +79,53 @@ class HorarioController extends IntranetController
         else return $correcto;
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function changeTableAll(){
         $correctos = 0;
-        // Cogemos todos los profesores y los vamos recorriendo
-        $profes = Profesor::select('dni')->Activo()->get();
-        foreach ($profes as $profe) {
+
+        foreach (Profesor::select('dni')->Activo()->get() as $profe) {
             $correctos += $this->changeTable($profe->dni,false);
         }
         Alert::success("He fet $correctos canvis d'horaris");
         return back();
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function changeIndex() {
         return view('horario.change');
     }
-    
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function horarioCambiar(){
         return redirect("/profesor/".AuthUser()->dni."/horario-cambiar");
     }
-    
+
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera([],['edit']);
     }
-    
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function index(){
         return $this->modificarHorario(Session::get('horarioProfesor'));
     }
-    
+
+    /**
+     * @param $idProfesor
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     protected function modificarHorario($idProfesor){
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         Session::put('horarioProfesor',$idProfesor);

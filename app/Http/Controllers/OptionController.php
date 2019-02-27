@@ -9,18 +9,43 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonImg;
 
+/**
+ * Class OptionController
+ * @package Intranet\Http\Controllers
+ */
 class OptionController extends IntranetController
 {
+    /**
+     * @var string
+     */
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Option';
+    /**
+     * @var array
+     */
     protected $gridFields = [ 'question','scala'];
-    
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         parent::store($request);
         return redirect()->action('PollController@show', ['id' => $request->poll_id]);
     }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy($id)
     {
         $poll = Option::find($id)->poll_id;

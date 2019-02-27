@@ -21,22 +21,47 @@ use Intranet\Botones\BotonBasico;
 use Intranet\Botones\Panel;
 use Intranet\Entities\Documento;
 
+/**
+ * Class FctController
+ * @package Intranet\Http\Controllers
+ */
 class FctController extends IntranetController
 {
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Fct';
+    /**
+     * @var array
+     */
     protected $gridFields = ['Centro','periode','XInstructor','Lalumnes','Nalumnes'];
+    /**
+     * @var
+     */
     protected $grupo;
+    /**
+     * @var array
+     */
     protected $vista = ['show' => 'fct'];
-    
 
+
+    /**
+     * @var bool
+     */
     protected $modal = false;
 
     use traitImprimir;
 
-   
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function edit($id)
     {
         $elemento = Fct::findOrFail($id);
@@ -50,8 +75,11 @@ class FctController extends IntranetController
         
         return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
     }
-    
-    
+
+
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion','==','1']]));
@@ -68,19 +96,30 @@ class FctController extends IntranetController
         Session::put('redirect', 'FctController@index');
     }
 
-    
 
+    /**
+     * @return mixed
+     */
     public function search()
     {
         return Fct::misFcts()->esFct()->get();
     }
-    
+
+    /**
+     * @param $document
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function document($document)
     {
         return $this->printDocument($document,$this->quienSaleDocumento(config("pr.$document.cuando")));
     }
 
-    private function printDocument($document,$quienes){
+    /**
+     * @param $document
+     * @param $quienes
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    private function printDocument($document, $quienes){
         if ($quienes->count())
             return $this->hazPdf("pdf.fct.$document", $quienes,
                 config("pr.$document"), config("pr.$document.orientacion"))->stream();
@@ -90,13 +129,23 @@ class FctController extends IntranetController
 
     }
 
+    /**
+     * @param $tipoDocumento
+     * @return mixed
+     */
     private function quienSaleDocumento($tipoDocumento){
         if ($tipoDocumento == 1) return AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idAlumno')->orderBy('desde')->get();
         if ($tipoDocumento == 2) return AlumnoFct::misFcts()->where('desde','<=',Hoy())->where('hasta','>=',Hoy())->orderBy('idAlumno')->orderBy('desde')->get();
         return Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
 
     }
-    public function documentPost(Request $request,$document)
+
+    /**
+     * @param Request $request
+     * @param $document
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function documentPost(Request $request, $document)
     {
         //dd($request);
         return $this->printDocument($document,
@@ -104,7 +153,11 @@ class FctController extends IntranetController
                 ->where('hasta','>=',FechaInglesa($request->hasta))->orderBy('idAlumno')->orderBy('desde')->get());
 
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function pdf($id)
     {
         $fct = Fct::findOrFail($id);
@@ -133,41 +186,24 @@ class FctController extends IntranetController
         }
         
     }
-    
-    public function email($id)
-    {
-        // CARREGANT DADES
-        $elemento = Fct::findOrFail($id);
-        $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName, 'id' => AuthUser()->dni];
 
-        // MANE ELS TREBALLS
-        if ($elemento->Instructor->email != ''){
-            $falta = false;
-//            foreach ($elemento->Colaboradores as $instructor){
-//                if ($instructor->email == '') {
-//                    $falta = true;
-//                    Alert::info("El col.laborador $instructor->nombre no té correu. Revisa-ho");
-//                }
-//            }
-            if (!$falta){
-                dispatch(new SendEmail($elemento->Instructor->email, $remitente, 'email.fct.instructor', $elemento));
-                dispatch(new SendEmail(AuthUser()->email, $remitente, 'email.fct.tutor', $elemento));
-                foreach ($elemento->Instructores as $instructor){
-                    dispatch(new SendEmail($instructor->email, $remitente, 'email.fct.instructor', $elemento));
-                }
-                Alert::info('Correus processats');
-            }
-        } else Alert::info("El instructor $elemento->Instructor->Nombre no té correu. Revisa-ho");
 
-        return back();
-    }
-    
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         parent::update($request, $id);
         return $this->redirect();
     }
-    
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $idFct = DB::transaction(function() use ($request){
@@ -196,7 +232,11 @@ class FctController extends IntranetController
         
         return $this->redirect();
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show($id)
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 1;
@@ -206,6 +246,10 @@ class FctController extends IntranetController
     }
 
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroy($id)
     {
         if (Session::get('pestana')){
@@ -216,8 +260,13 @@ class FctController extends IntranetController
         }
         else return parent::destroy($id);
     }
-    
-    public function nouAlumno($idFct,Request $request){
+
+    /**
+     * @param $idFct
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function nouAlumno($idFct, Request $request){
         
         $fct = Fct::find($idFct);
         $fct->Alumnos()->attach($request->idAlumno,['calificacion'=>0,'calProyecto'=>0,'actas'=>0,'insercion'=>0,
@@ -225,23 +274,46 @@ class FctController extends IntranetController
         
         return back();
     }
-    
-    public function nouInstructor($idFct,Request $request){
+
+    /**
+     * @param $idFct
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function nouInstructor($idFct, Request $request){
        $fct = Fct::find($idFct);
        $fct->Colaboradores()->attach($request->idInstructor,['horas'=>$request->horas]); 
        return back();
     }
-    public function deleteInstructor($idFct,$idInstructor){
+
+    /**
+     * @param $idFct
+     * @param $idInstructor
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteInstructor($idFct, $idInstructor){
        $fct = Fct::find($idFct);
        $fct->Colaboradores()->detach($idInstructor); 
        return back();
     }
-    public function alumnoDelete($idFct,$idAlumno){
+
+    /**
+     * @param $idFct
+     * @param $idAlumno
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function alumnoDelete($idFct, $idAlumno){
        $fct = Fct::find($idFct);
        $fct->Alumnos()->detach($idAlumno); 
        return back();
     }
-    public function modificaHoras($idFct,Request $request){
+
+    /**
+     * @param $idFct
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function modificaHoras($idFct, Request $request){
         $fct = Fct::find($idFct);
         foreach ($request->except('_token') as $dni => $horas){
             $fct->Colaboradores()->updateExistingPivot($dni, ['horas'=>$horas]);

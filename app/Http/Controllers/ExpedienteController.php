@@ -13,17 +13,36 @@ use Intranet\Entities\Documento;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\TipoExpediente;
 
+/**
+ * Class ExpedienteController
+ * @package Intranet\Http\Controllers
+ */
 class ExpedienteController extends IntranetController
 {
 
     use traitImprimir,
         traitAutorizar;
 
+    /**
+     * @var array
+     */
     protected $gridFields = ['id', 'nomAlum', 'fecha', 'Xtipo', 'Xmodulo', 'situacion'];
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Expediente';
+    /**
+     * @var bool
+     */
     protected $modal = true;
 
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera([]);
@@ -35,6 +54,9 @@ class ExpedienteController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('expediente.pdf', ['where' => ['esInforme', '==', 1]]));
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function autorizar()
     {
         $this->makeAll(Expediente::where('estado', '1')->get(), 2);
@@ -42,6 +64,11 @@ class ExpedienteController extends IntranetController
     }
 
     //inicializat a init (normalment 1)
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function init($id)
     {
         $expediente = Expediente::find($id);
@@ -55,6 +82,10 @@ class ExpedienteController extends IntranetController
         return back();
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function pasaOrientacion($id)
     {
         $expediente = Expediente::find($id);
@@ -64,18 +95,25 @@ class ExpedienteController extends IntranetController
 
         return back();
     }
-    
+
+    /**
+     * @param $id
+     * @return mixed
+     */
     public function pdf($id)
     {
         $expediente = Expediente::find($id);
         return self::hazPdf("pdf.expediente.$expediente->tipo",$expediente)->stream();
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function imprimir()
     {
         if (Expediente::listos()->Count()){
             foreach (TipoExpediente::all() as $tipo) {
-                $todos = Expediente::listos()->where('tipo', $tipo->id);
+                $todos = Expediente::listos()->where('tipo', $tipo->id)->get();
                 if ($todos->Count()) {
                     $pdf = $this->hazPdf("pdf.expediente.$tipo->id", $todos);
                     $nom = $this->model . new Date() . '.pdf';

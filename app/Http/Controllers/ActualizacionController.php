@@ -1,7 +1,5 @@
 <?php
-/* clase : IntranetController
- * És la classe pare de tots els controladors amb el mètodes comuns a ells
- */
+
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Controller;
@@ -10,17 +8,22 @@ use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Http\Controllers\AdministracionController;
 
+/**
+ * Class ActualizacionController
+ * @package Intranet\Http\Controllers
+ */
 class ActualizacionController extends Controller{
-    
-  protected function actualizacion(){
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    protected function actualizacion(){
         Alert::info(system('rm ./../composer.lock'));
         Alert::info(system('git pull'));
         Alert::info(system('php ./../artisan config:cache'));
         Alert::info(system('php ./../artisan migrate'));
-        $versiones = config('constants.version');
-        $version_nueva = end($versiones);
-        if (Storage::exists('version.txt')) $version_actual = Storage::get('version.txt');
-        else $version_actual = 'v0';
+        $version_nueva = end( config('constants.version'));
+        $version_actual = Storage::exists('version.txt'))?Storage::get('version.txt'):'v0';
         if ($version_nueva > $version_actual){
             AdministracionController::exe_actualizacion($version_actual);
             Storage::put('version.txt',$version_nueva);

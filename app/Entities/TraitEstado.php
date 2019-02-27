@@ -8,21 +8,29 @@ use Intranet\Entities\Documento;
 
 trait TraitEstado
 {
+    private static function makeDocument($elemento){
+        if ($elemento->fichero != ''){
+            $idDocumento = Documento::crea($elemento, [
+                'tipoDocumento' => getClase($elemento),
+                'rol'=> '2',
+            ]);
+        }
+
+    }
+    private static function dateResolve($elemento,$fecha){
+        if (isset($elemento->fechasolucion)) {
+            $elemento->fechasolucion = $fecha;
+        }
+    }
+
 
     public static function putEstado($id, $estado, $mensaje = null, $fecha = null)
     {
         $elemento = static::findOrFail($id);
         
         if ($fecha != null) {
-            if ($elemento->fichero != ''){
-                $idDocumento = Documento::crea($elemento, [
-                    'tipoDocumento' => getClase($elemento),
-                    'rol'=> '2',
-                    ]);
-            }
-            if (isset($elemento->fechasolucion)) {
-                $elemento->fechasolucion = $fecha;
-            }
+            self::makeDocument($elemento);
+            self::dateResolve($elemento,$fecha);
         }
       
         $elemento->estado = $estado;

@@ -21,10 +21,20 @@ use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Ocupacion;
 
+/**
+ * Class ImportController
+ * @package Intranet\Http\Controllers
+ */
 class ImportController extends Seeder
 {
 
+    /**
+     * @var
+     */
     private $plantilla;
+    /**
+     * @var array
+     */
     private $campos_bd_xml = array(
         array('nombrexml' => 'alumnos',
             'nombreclase' => 'Alumno',
@@ -163,93 +173,117 @@ class ImportController extends Seeder
             )),
     );
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function create()
     {
         return view('seeder.create');
     }
 
+    /**
+     * @param $nombre
+     * @param $apellido
+     * @return string
+     */
     public function email($nombre, $apellido)
     {
         return strtolower(substr($nombre, 0, 1) . $apellido . '@' . config('contacto.host.dominio'));
     }
 
+    /**
+     * @return string
+     */
     public function aleatorio()
     {
         return str_random(60);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function store(Request $request)
     {
-        if ($request->hasFile('fichero')) {
-            if ($request->file('fichero')->isValid()) {
-                $extension = $request->file('fichero')->getClientOriginalExtension();
-                if ($extension == 'xml') {
-                    ini_set('max_execution_time', 360);
-                    $this->run($request->file('fichero'), $request);
-                    ini_set('max_execution_time', 30);
-                } else
-                    Alert::danger(trans('messages.generic.invalidFormat'));
-            } else
-                Alert::danger(trans('messages.generic.invalidFormat'));
-        } else
+        if (!$request->hasFile('fichero') || !file_exists($request->file('fichero'))) {
             Alert::danger(trans('messages.generic.noFile'));
+            return back();
+        }
+        $extension = $request->file('fichero')->getClientOriginalExtension();
+        if (!$request->file('fichero')->isValid() || $extension <> 'xml') {
+            Alert::danger(trans('messages.generic.invalidFormat'));
+            return back();
+        }
+
+        ini_set('max_execution_time', 360);
+        $this->run($request->file('fichero'), $request);
+        ini_set('max_execution_time', 30);
         $this->asignarTutores(false);
-        return view('seeder.store', compact('result'));
+
+        return view('seeder.store');
     }
 
+    /**
+     * @param bool $back
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function asignarTutores($back =  true)
     {
         foreach (Profesor::all() as $profesor) {
-            if ($grupo = Grupo::QTutor($profesor->dni)->first()) {
-                if (!esRol($profesor->rol, config('roles.rol.tutor'))) {
-                    $profesor->rol *= config('roles.rol.tutor');
-                    $profesor->save();
-                    Alert::success('tutors assignat: ' . $profesor->FullName);
-                }
-                if ($grupo->curso == 2 && !esRol($profesor->rol, config('roles.rol.practicas'))) {
-                    $profesor->rol *= config('roles.rol.practicas');
-                    $profesor->save();
-                    Alert::success('tutor practicas assignat: ' . $profesor->FullName);
-                }
-                if ($grupo->curso == 1 && esRol($profesor->rol, config('roles.rol.practicas'))) {
-                    $profesor->rol /= config('roles.rol.practicas');
-                    $profesor->save();
-                    Alert::success('tutor practicas degradat: ' . $profesor->FullName);
-                }
-            } else {
-                if (esRol($profesor->rol, config('roles.rol.tutor'))) {
-                    $profesor->rol /= config('roles.rol.tutor');
-                    $profesor->save();
-                    Alert('tutor degradat' . $profesor->FullName);
-                }
-                if (esRol($profesor->rol, config('roles.rol.practicas'))) {
-                    $profesor->rol /= config('roles.rol.practicas');
-                    $profesor->save();
-                    Alert('tutor practicas degradat' . $profesor->FullName);
-                }
-            }
+            $profesor->rol = $this->assignRole(Grupo::QTutor($profesor->dni)->first(),$profesor->rol);
+            $profesor->save();
         }
+        Alert:info('Tutors assignats');
         if ($back) return back();
     }
 
-    // Ejecuta la obra de arte
-    public function run($fxml, Request $request)
-    {
-        if (file_exists($fxml)) {
-            $xml = simplexml_load_file($fxml);
-            foreach ($this->campos_bd_xml as $tabla) {
-                $xmltable = $xml->{$tabla['nombrexml']}; //miro en el xml que tengo de la tabla
-                if (count($xmltable)) {
-                    $this->pre($tabla['nombreclase'], $tabla['nombrexml']);
-                    $this->in($xmltable, $tabla);
-                    $this->post($tabla['nombreclase'], $tabla['nombrexml'], $request);
-                } else
-                    Alert::danger('No hay registros de ' . $tabla['nombrexml'] . ' en el xml');
-            }
-        } else
-            Alert::danger(trans('messages.generic.noFile'));
+    /**
+     * @param $grupo
+     * @param $role
+     * @return bool|\Illuminate\Config\Repository|mixed
+     */
+    private function assignRole($grupo, $role){
+        if ($grupo) {
+            if (!esRol($role, config('roles.rol.tutor'))) $role *= config('roles.rol.tutor');
+            if ($grupo->curso == 2 && !esRol($role, config('roles.rol.practicas'))) $role *= config('roles.rol.practicas');
+            if ($grupo->curso == 1 && esRol($role, config('roles.rol.practicas'))) $role /= config('roles.rol.practicas');
+            return $role;
+        }
+        if (esRol($role, config('roles.rol.tutor'))) $role /= config('roles.rol.tutor');
+        if (esRol($role, config('roles.rol.practicas'))) $role /= config('roles.rol.practicas');
+        return $role;
     }
 
+    /**
+     * @param $fxml
+     * @param Request $request
+     */
+    public function run($fxml, Request $request)
+    {
+        $xml = simplexml_load_file($fxml);
+        foreach ($this->campos_bd_xml as $table)
+            $this->manageTable($xml->{$table['nombrexml']},$table,$request->primera);
+
+    }
+
+    /**
+     * @param $xmltable
+     * @param $table
+     * @param $firstImport
+     */
+    private function manageTable($xmltable, $table, $firstImport){
+        if (count($xmltable)) {
+            $this->pre($table['nombreclase'], $table['nombrexml']);
+            $this->in($xmltable, $table);
+            $this->post($table['nombreclase'], $table['nombrexml'], $firstImport);
+        } else
+            Alert::danger('No hay registros de ' . $table['nombrexml'] . ' en el xml');
+    }
+
+    /**
+     * @param $clase
+     * @param $xml
+     */
     private function pre($clase, $xml)
     {
         switch ($clase) {
@@ -272,95 +306,137 @@ class ImportController extends Seeder
         }
     }
 
-    private function post($clase, $xml, Request $request)
+    /**
+     * @param $clase
+     * @param $xml
+     * @param Request $request
+     */
+    private function post($clase, $xml, $firstImport)
     {
         switch ($clase) {
             case 'Profesor' : $this->noSustituye();
                 break;
             case 'Alumno': $this->bajaAlumnos();
                 break;
-            case 'Grupo' : if ($request->primera) $this->bajaGrupos();
-                $this->sinTutor();
+            case 'Grupo' : if ($firstImport) $this->bajaGrupos();
+                $this->removeTutor();
                 break;
             case 'AlumnoGrupo' : $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
                 break;
             case 'Horario' : if ($xml == 'horarios_ocupaciones') {
                     $this->eliminarHorarios();
-                    if ($request->primera)
-                        $this->crea_modulosCiclos();
+                    if ($firstImport) $this->crea_modulosCiclos();
                 }
                 break;
         }
     }
 
-    private function crea_modulosCiclos()
-    {
+    /**
+     * @return string
+     */
+    private static function getLinkSchedule(){
         if ($enlace = Storage::exists('public/programacions.txt')) {
             $fichero = explode("\n", Storage::get('public/programacions.txt'));
             $indice = Modulo_ciclo::max('id') ? Modulo_ciclo::max('id') : 0;
+            return $fichero[$indice];
         }
-        $horarios = Horario::distinct()->whereNotNull('idGrupo')
-                        ->whereNotNull('modulo')->whereNotNull('idProfesor')
-                        ->whereNotIn('modulo', config('constants.modulosNoLectivos'))->get();
+        return '';
+    }
 
-        foreach ($horarios as $horario) {
+    /**
+     * @return mixed
+     */
+    private static function getHoraris(){
+        return Horario::distinct()->whereNotNull('idGrupo')
+            ->whereNotNull('modulo')->whereNotNull('idProfesor')
+            ->whereNotIn('modulo', config('constants.modulosNoLectivos'))->get();
+    }
+
+    /**
+     *
+     */
+    private static function newModuloCiclo($horario){
+        $mc = new Modulo_ciclo();
+        $mc->idModulo = $horario->modulo;
+        $mc->idCiclo = $horario->Grupo->idCiclo;
+        $mc->curso = substr($horario->idGrupo, 0, 1);
+        $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento) ? Profesor::find($horario->idProfesor)->departamento : '99';
+        $mc->enlace = self::getLinkSchedule();
+        $mc->save();
+    }
+    /**
+     * @param $mc
+     * @param $horario
+     */
+    private static function newModuloGrupo($mc, $grupo): void
+    {
+        $nuevo = new Modulo_grupo();
+        $nuevo->idModuloCiclo = $mc;
+        $nuevo->idGrupo = $grupo;
+        $nuevo->save();
+
+    }
+
+    /**
+     * @param $mc
+     */
+    function newProgramacion($mc): void
+    {
+        $prg = New Programacion();
+        $prg->idModuloCiclo = $mc->id;
+        $prg->fichero = $mc->enlace;
+        $prg->curso = Curso();
+
+        if ($antigua = Programacion::where('idModuloCiclo', $mc->id)->first()) {
+            $prg->criterios = $antigua->criterios;
+            $prg->metodologia = $antigua->metodologia;
+            $prg->propuestas = $antigua->propuestas;
+        }
+
+        $prg->save();
+
+    }
+
+    /**
+     *
+     */
+    private function crea_modulosCiclos()
+    {
+        foreach (self::getHoraris() as $horario)
             if (isset($horario->Grupo->idCiclo)) {
-
-                if (Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->count() == 0) {
-                    $mc = new Modulo_ciclo();
-                    $mc->idModulo = $horario->modulo;
-                    $mc->idCiclo = $horario->Grupo->idCiclo;
-                    $mc->curso = substr($horario->idGrupo, 0, 1);
-                    $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento) ? Profesor::find($horario->idProfesor)->departamento : '99';
-                    if ($enlace)
-                        $mc->enlace = $fichero[$indice++];
-                    $mc->save();
-                }
-                else {
-
-                    $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first();
+                if (! $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first() )
+                    self::newModuloCiclo($horario);
+                else
                     if ((isset(Profesor::find($horario->idProfesor)->departamento)) && ($mc->idDepartamento != Profesor::find($horario->idProfesor)->departamento)) {
                         $mc->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
                         $mc->save();
                     }
-                }
+                if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo', $horario->idGrupo)->count() == 0)
+                    newModuloGrupo($mc->id, $horario->idGrupo);
 
+                if (!Programacion::where('idModuloCiclo', $mc->id)->where('curso', Curso())->first())
+                    newProgramacion($mc);
 
-                if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo', $horario->idGrupo)->count() == 0) {
-                    $nuevo = new Modulo_grupo();
-                    $nuevo->idModuloCiclo = $mc->id;
-                    $nuevo->idGrupo = $horario->idGrupo;
-                    $nuevo->save();
-                }
-
-                if (!Programacion::where('idModuloCiclo', $mc->id)->where('curso', Curso())->first()) {
-                    $prg = New Programacion();
-                    $prg->idModuloCiclo = $mc->id;
-                    $prg->fichero = $mc->enlace;
-                    $prg->curso = Curso();
-
-                    if ($antigua = Programacion::where('idModuloCiclo', $mc->id)->first()) {
-                        $prg->criterios = $antigua->criterios;
-                        $prg->metodologia = $antigua->metodologia;
-                        $prg->propuestas = $antigua->propuestas;
-                    }
-
-                    $prg->save();
-                }
             }
-        }
+
     }
 
+
+/**
+ *
+ */
     private function alumnosBaja()
     {
         $hoy = Hoy();
         DB::table('alumnos')->whereNull('baja')->update(['baja' => $hoy]);
     }
 
+    /**
+     *
+     */
     private function noSustituye()
     {
-        $sustitutos = Profesor::where('sustituye_a', '>', ' ')->get();
-        foreach ($sustitutos as $sustituto) {
+        foreach (Profesor::where('sustituye_a', '>', ' ')->get() as $sustituto) {
             $sustituido = Profesor::find($sustituto->sustituye_a);
             if ($sustituido && $sustituido->fecha_baja == NULL) {
                 $sustituto->sustituye_a = '';
@@ -369,30 +445,50 @@ class ImportController extends Seeder
         }
     }
 
+    /**
+     *
+     */
     private function profesoresBaja()
     {
         DB::table('profesores')->update(['activo' => false, 'sustituye_a' => '']);
     }
 
+    /**
+     *
+     */
     private function bajaAlumnos()
     {
         DB::table('alumnos_grupos')->join('alumnos', 'idAlumno', '=', 'nia')->whereNotNull('alumnos.baja')->delete();
     }
 
+    /**
+     *
+     */
     private function gruposBaja()
     {
         DB::table('grupos')->update(['tutor' => 'BAJA']);
     }
 
+    /**
+     *
+     */
     private function bajaGrupos()
     {
         DB::table('grupos')->where('tutor', '=', 'BAJA')->delete();
     }
-    private function sinTutor()
+
+    /**
+     *
+     */
+    private function removeTutor()
     {
          DB::table('grupos')->where('tutor','=',' ')->update(['tutor' => 'SIN TUTOR']);
     }
 
+    /**
+     * @param $fecha
+     * @return string|null
+     */
     private function getFechaFormatoIngles($fecha)
     {
         $fecha = str_replace('/', '-', $fecha);
@@ -405,14 +501,19 @@ class ImportController extends Seeder
         }
     }
 
-    // Cifrar cadena
+    /**
+     * @param $cadena
+     * @return string
+     */
     private function cifrar($cadena)
     {
         return bcrypt(trim($cadena));
         //return crypt($cadena, $this->hash);
     }
 
-    // Crea codigo que no esté
+    /**
+     * @return int
+     */
     private function crea_codigo_profesor()
     {
         $tots = 1;
@@ -423,12 +524,25 @@ class ImportController extends Seeder
         return($azar);
     }
 
+    /**
+     * @param $telefono
+     * @return bool|string
+     */
     private function digitos($telefono)
     {
         return substr($telefono, 0, 9);
     }
 
-    // Construye domicilio
+    /**
+     * @param $tipo_via
+     * @param $domicilio
+     * @param $numero
+     * @param $puerta
+     * @param $escalera
+     * @param $letra
+     * @param $piso
+     * @return string
+     */
     private function hazDomicilio($tipo_via, $domicilio, $numero, $puerta, $escalera, $letra, $piso)
     {
         $tipo_via = ($tipo_via == null) ? "" : trim($tipo_via);
@@ -450,6 +564,12 @@ class ImportController extends Seeder
         return ($domic);
     }
 
+    /**
+     * @param $atrxml
+     * @param $llave
+     * @param int $func
+     * @return false|mixed|string|string[]|null
+     */
     private function saca_campos($atrxml, $llave, $func = 1)
     {
         $lista = explode(",", $llave, 99);
@@ -470,6 +590,11 @@ class ImportController extends Seeder
         }
     }
 
+    /**
+     * @param $filtro
+     * @param $campos
+     * @return bool
+     */
     private function filtro($filtro, $campos)
     {
         $elemento = $campos[$filtro[0]];
@@ -478,7 +603,11 @@ class ImportController extends Seeder
         $condicion = "return('$elemento' $op '$valor');";
         return eval($condicion) ? true : false;
     }
-
+    /**
+     * @param $required
+     * @param $campos
+     * @return bool
+     */
     private function required($required, $campos)
     {
         $pasa = true;
@@ -491,6 +620,10 @@ class ImportController extends Seeder
         return $pasa;
     }
 
+    /**
+     * @param $xmltable
+     * @param $tabla
+     */
     private function in($xmltable, $tabla)
     {
         $guard = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::unguard';
@@ -525,8 +658,7 @@ class ImportController extends Seeder
                                     $this->plantilla = $arrayDatos['plantilla'];
                                     try {
                                         Horario::create($arrayDatos);
-                                    }
-                                    catch (\Illuminate\Database\QueryException $e) {
+                                    } catch (\Illuminate\Database\QueryException $e) {
                                         unset($arrayDatos['aula']);
                                         Horario::create($arrayDatos);
                                     }
@@ -567,11 +699,19 @@ class ImportController extends Seeder
         Alert::success($tabla['nombrexml'] . ' con ' . count($xmltable->children()) . ' Registres');
     }
 
+    /**
+     * @param $clase
+     * @param $clave
+     * @return mixed
+     */
     private function encuentra($clase, $clave)
     {
         return $clase::find($clave);
     }
 
+    /**
+     * @param $tables
+     */
     private function truncateTables($tables)
     {
         $this->checkForeignKeys(false);
@@ -583,19 +723,27 @@ class ImportController extends Seeder
         $this->checkForeignKeys(true);
     }
 
+    /**
+     * @param $table
+     * @param $columna
+     */
     private function eliminarRegistrosBlanco($table, $columna)
     {
         DB::table($table)->where($columna, '=', '')->delete();
     }
 
+    /**
+     *
+     */
     private function eliminarHorarios()
     {
         $maxHorarios = DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla;
         DB::table('horarios')->where('plantilla', '<>', $maxHorarios)->delete();
-//        $maxHorarios = DB::table('horarios')->whereNotNull('ocupacion')->orderBy('plantilla', 'desc')->first()->plantilla;
-//        DB::table('horarios')->whereNotNull('ocupacion')->where('plantilla', '<>', $maxHorarios)->delete();
     }
 
+    /**
+     * @param $check
+     */
     private function checkForeignKeys($check)
     {
         $check = $check ? '1' : '0';

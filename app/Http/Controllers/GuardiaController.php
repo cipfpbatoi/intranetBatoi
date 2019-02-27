@@ -9,37 +9,53 @@ use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * Class GuardiaController
+ * @package Intranet\Http\Controllers
+ */
 class GuardiaController extends IntranetController
 {
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Guardia';
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function index()
     {
         Session::forget('redirect');
         return view('guardias.guardia', ['horas'=> Hora::all()]);
     }
-    
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function control()
     {
         $horas = Hora::all();
         $dias  = array('L','M','X','J','V');
-        $guardias = Horario::Guardia()
-                ->orderBy('sesion_orden')
-                ->get();
-        foreach ($guardias as $guardia){
+        foreach (Horario::Guardia()
+                     ->orderBy('sesion_orden')
+                     ->get() as $guardia){
             $profesor = Profesor::findOrFail($guardia->idProfesor);
-            if (isset($profesor->fecha_baja)){
-                $profesor = $profesor->Sustituye;
-            }
-            if ($profesor)    
-                $arrayG[$guardia->sesion_orden][$guardia->dia_semana][] =  array('dni'=>$profesor->dni , 'nombre' =>$profesor->ShortName);
+            if (isset($profesor->fecha_baja)) $profesor = $profesor->Sustituye;
+            if ($profesor) $arrayG[$guardia->sesion_orden][$guardia->dia_semana][] =  array('dni'=>$profesor->dni , 'nombre' =>$profesor->ShortName);
         }
-        //dd($arrayGuardias);
+
         return view('guardias.control',compact('horas','arrayG','dias'));
-    }  
-    
+    }
+
+    /**
+     * @param $fecha
+     * @return array
+     */
     public static function noGuardia($fecha)
     {
         $noGuardia = [];

@@ -30,8 +30,6 @@ class FctAlumnoController extends IntranetController
 
 
 
-
-
     public function search()
     {
         return AlumnoFctAval::misFcts()->esAval()->orderBy('idAlumno')->orderBy('desde')->get();
@@ -43,7 +41,6 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumnofct.edit',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '1']]));
-        //$this->panel->setBoton('grid', new BotonImg('alumnofct.email',['where'=>['correoAlumno','==','0']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
@@ -62,7 +59,8 @@ class FctAlumnoController extends IntranetController
         $modelo = $this->model;
         return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
     }
-     public function storeConvalidacion(Request $request)
+
+    public function storeConvalidacion(Request $request)
     {
         $idFct = DB::transaction(function() use ($request){
             $idAlumno = $request['idAlumno'];
@@ -116,15 +114,17 @@ class FctAlumnoController extends IntranetController
     {
         // CARREGANT DADES
         $elemento = AlumnoFct::findOrFail($id);
-        $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName, 'id' => AuthUser()->dni];
+
 
         // MANE ELS TREBALLS
         if ($elemento->Alumno->email != ''){
+            $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName, 'id' => AuthUser()->dni];
             dispatch(new SendEmail($elemento->Alumno->email, $remitente, 'email.fct.alumno', $elemento));
             Alert::info('Correu enviat');
-            }
-        else Alert::info("L'alumne no té correu. Revisa-ho");
+            return back();
+        }
 
+        Alert::info("L'alumne no té correu. Revisa-ho");
         return back();
     }
     

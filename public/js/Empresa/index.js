@@ -11,6 +11,9 @@ if (autorizado){
                 <a href="#" class="shown">
                     <i class="fa fa-plus" title="Mostrar"></i>
                 </a>
+                 <a href="#" class="document">
+                    <i class="fa fa-eye" title="Anexe I"></i>
+                </a>
                 `;
     }
 else

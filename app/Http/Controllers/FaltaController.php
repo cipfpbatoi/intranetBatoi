@@ -22,6 +22,10 @@ use Intranet\Botones\BotonIcon;
 use Illuminate\Http\Request;
 use PDF;
 
+/**
+ * Class FaltaController
+ * @package Intranet\Http\Controllers
+ */
 class FaltaController extends IntranetController
 {
 
@@ -29,12 +33,60 @@ class FaltaController extends IntranetController
         traitNotificar,
         traitAutorizar;
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Falta';
+    /**
+     * @var array
+     */
     protected $gridFields = ['id', 'desde', 'hasta', 'motivo', 'situacion','observaciones'];
+    /**
+     * @var bool
+     */
     protected $modal = true;
 
-    
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    private static function findElements($desde,$hasta)
+    {
+        return Falta::where([
+            ['estado', '>', '0'],
+            ['estado', '<', '4'],
+            ['desde', '>=', $desde],
+            ['desde', '<=', $hasta]
+        ])
+            ->orwhere([
+                ['estado', '>', '0'],
+                ['estado', '<', '4'],
+                ['hasta', '>=', $desde],
+                ['hasta', '<=', $hasta]
+            ])
+            ->orwhere([['estado', '=', '5'],
+                ['desde', '<=', $hasta]])
+            ->orderBy('idProfesor')
+            ->orderBy('desde')
+            ->get();
+    }
+
+    /**
+     * @return array
+     */
+    private static function nameFile():string
+    {
+        return 'gestor/' . Curso() . '/informes/' . 'Falta' . new Date() . '.pdf';
+    }
+
+
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create']);
@@ -45,7 +97,11 @@ class FaltaController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('falta.document', ['where' => ['fichero', '!=', '']]));
     }
 
-    
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $request->baja = isset($request->baja)?$request->baja:0;
@@ -56,7 +112,7 @@ class FaltaController extends IntranetController
                 $request->hasta = '';
                 $request->dia_completo = 1;
                 $request->estado = 5;
-                $this->tramitaBajaProfesor($request->idProfesor, $request->desde);
+                self::tramitaBajaProfesor($request->idProfesor, $request->desde);
                 parent::realStore($request);
             });
         } else {
@@ -70,8 +126,12 @@ class FaltaController extends IntranetController
         return $this->redirect();
     }
 
-    
-    
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         $request->dia_completo = isset($request->dia_completo)?1:0;
@@ -82,9 +142,12 @@ class FaltaController extends IntranetController
         if ($elemento->estado == 1 && $elemento->fichero) Falta::putEstado($id,2); // si estava enviat i he pujat fitxer
         return $this->redirect();
     }
-    
-    
 
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function init($id)
     {
         $elemento = Falta::findOrFail($id);
@@ -94,6 +157,10 @@ class FaltaController extends IntranetController
         return $this->redirect();
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function alta($id)
     {
         $elemento = Falta::findOrFail($id);
@@ -103,101 +170,116 @@ class FaltaController extends IntranetController
             $elemento->baja = 0;
             $elemento->save();
             // quita la  baja del profesor
-            $this->tramitaBajaProfesor($elemento->idProfesor);
+            self::tramitaAltaProfesor($elemento->idProfesor);
         });
         return back()->with('pestana', $elemento->estado);
     }
-    
-    public function imprime_falta(Request $request)
-    {
-        if ($request->mensual == 'on') {
-            $nom = 'Falta' . new Date() . '.pdf';
-            $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-            $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"]);
 
-            // pendientes pasan a ser impresas
-            // todas las faltas hasta la fecha no impresas y comunicadas
-            $pendientes = Falta::where([
-                        ['estado', '>', '0'],
-                        ['estado', '<', '4'],
-                        ['hasta', '<=', new Date($request->hasta)]
-                    ])->get();
-            // faltas que empiezan entre las fechas
-            // faltas que acaban entre las fechas
-            // faltas de larga duracion
-            $todos = Falta::where([
-                        ['estado', '>', '0'],
-                        ['estado', '<', '4'],
-                        ['desde', '>=', new Date($request->desde)],
-                        ['desde', '<=', new Date($request->hasta)]
-                    ])
-                    ->orwhere([
-                        ['estado', '>', '0'],
-                        ['estado', '<', '4'],
-                        ['hasta', '>=', new Date($request->desde)],
-                        ['hasta', '<=', new Date($request->hasta)]
-                    ])
-                    ->orwhere([['estado', '=', '5'],
-                        ['desde', '<=', new Date($request->hasta)]])
-                    ->orderBy('idProfesor')
-                    ->orderBy('desde')
-                    ->get();
-            $this->makeAll($pendientes, '_print');
-            $this->makeLink($todos, $doc);
-            return $this->hazPdf("pdf.faltas", $todos)
-                            ->save(storage_path('/app/' . $nomComplet))
-                            ->download($nom);
-        } else {
-            $todos = Falta::where('estado', '>', '0')
-                    ->where('estado', '<', '5')
-                    ->whereBetween('desde', [new Date($request->desde), new Date($request->hasta)])
-                    ->orWhereBetween('hasta', [new Date($request->desde), new Date($request->hasta)])
-                    ->orwhere([['estado', '=', '5'],
-                        ['desde', '<=', new Date($request->hasta)]])
-                    ->orderBy('idProfesor')
-                    ->orderBy('desde')
-                    ->get();
-            return $this->hazPdf("pdf.faltas", $todos)->stream();
-        }
+    /**
+     * @param $hasta
+     */
+    private static function markPrinted($hasta){
+        foreach (Falta::where([
+            ['estado', '>', '0'],
+            ['estado', '<', '4'],
+            ['hasta', '<=', $hasta]
+        ])->get() as $elemento)
+                $elemento::_print($elemento->id);
     }
-    
-    private function tramitaBajaProfesor($id, $fecha = null)
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public static function printReport(Request $request)
     {
-        $profe = Profesor::find($id);
-        // Baixa
-        if ($fecha){
-            $profe->fecha_baja = new Date($fecha);
-            $profe->save();
+        $desde = new Date($request->desde);
+        $hasta = new Date($request->hasta);
+        if ($request->mensual != 'on') {
+            return self::hazPdf("pdf.faltas", Falta::where('estado', '>', '0')
+                ->where('estado', '<', '5')
+                ->whereBetween('desde', [$desde, $hasta])
+                ->orWhereBetween('hasta', [$desde, $hasta])
+                ->orwhere([['estado', '=', '5'],
+                    ['desde', '<=', $hasta]])
+                ->orderBy('idProfesor')
+                ->orderBy('desde')
+                ->get())->stream();
         }
-        // Alta
-        else {
-            DB::transaction(function() use ($profe) {
-                $profe->fecha_baja = null;
-                $profe->save();
-                if ($sustituto = $profe->Sustituye) {
-                        //canvi d'horari
-                    if (Horario::profesor($profe->dni)->count()==0)
-                        Horario::where('idProfesor',$sustituto->dni)->update(['idProfesor'=> $profe->dni]);
-                    else
-                        Horario::where('idProfesor',$sustituto->dni)->delete();
-                               // asistència a reunions
-                    foreach (Asistencia::where('idProfesor',$sustituto->dni)->get() as $asistencia){
-                        if (Asistencia::where('idProfesor', $profe->dni)->where('idReunion', $asistencia->idReunion)->count() == 0){
-                            Reunion::find($asistencia->idReunion)->profesores()->syncWithoutDetaching([$profe->dni=>['asiste'=>0]]);
-                        }
-                    }
-                            // tota la feina del substitut pasa al subtituit
-                    Reunion::where('idProfesor',$sustituto->dni)->update(['idProfesor'=>$profe->dni]);
-                    Grupo::where('tutor',$sustituto->dni)->update(['tutor'=>$profe->dni]);
-                    Programacion::where('idProfesor',$sustituto->dni)->update(['idProfesor' => $profe->dni]);
-                    Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profe->dni]);
-                    Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profe->dni]);
-                    
-                    $sustituto->sustituye_a = ' ';
-                    $sustituto->activo = 0;
-                    $sustituto->save();
-                }
-            });
+
+        $nomComplet = self::nameFile();
+        $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"]);
+
+        $elementos = self::findElements($desde,$hasta);
+        self::markPrinted($hasta);
+        self::makeLink($elementos, $doc);
+
+        return self::hazPdf("pdf.faltas", $elementos)
+            ->save(storage_path('/app/' . $nomComplet))
+            ->download($nomComplet);
+
+    }
+
+
+    /**
+     * @param $idProfesor
+     * @param $fecha
+     */
+    private static function tramitaBajaProfesor($idProfesor, $fecha)
+    {
+        $profe = Profesor::find($idProfesor);
+        $profe->fecha_baja = new Date($fecha);
+        $profe->save();
+    }
+
+    /**
+     * @param $idProfesor
+     */
+    private static function tramitaAltaProfesor($idProfesor){
+        DB::transaction(function() use ($idProfesor) {
+            $profesor = Profesor::find($idProfesor);
+            $profesor->fecha_baja = null;
+            $profesor->save();
+            if ($profesor->Sustituye) self::changeWithSubstitute($profesor,$profesor->Sustituye);
+        });
+    }
+
+    /**
+     * @param $profesorAlta
+     * @param $sustituto
+     */
+    private static function changeWithSubstitute($profesorAlta, $sustituto){
+
+            //canvi d'horari
+            if (Horario::profesor($profesorAlta->dni)->count()==0)
+                Horario::where('idProfesor',$sustituto->dni)->update(['idProfesor'=> $profesorAlta->dni]);
+            else
+                Horario::where('idProfesor',$sustituto->dni)->delete();
+
+            // asistència a reunions
+            foreach (Asistencia::where('idProfesor',$sustituto->dni)->get() as $asistencia){
+                self::markAssistenceMeetings($profesorAlta->dni,$asistencia);
+            }
+            // tota la feina del substitut pasa al subtituit
+            Reunion::where('idProfesor',$sustituto->dni)->update(['idProfesor'=>$profesorAlta->dni]);
+            Grupo::where('tutor',$sustituto->dni)->update(['tutor'=>$profesorAlta->dni]);
+            Programacion::where('idProfesor',$sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
+            Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
+            Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
+
+            $sustituto->sustituye_a = ' ';
+            $sustituto->activo = 0;
+            $sustituto->save();
+
+    }
+
+    /**
+     * @param $dniProfesor
+     * @param $meeting
+     */
+    private static function markAssistenceMeetings($dniProfesor, $meeting){
+        if (Asistencia::where('idProfesor', $dniProfesor)->where('idReunion', $meeting->idReunion)->count() == 0){
+            Reunion::find($meeting->idReunion)->profesores()->syncWithoutDetaching([$dniProfesor=>['asiste'=>0]]);
         }
     }
 }

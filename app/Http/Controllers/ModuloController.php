@@ -10,14 +10,33 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
 use Intranet\Botones\Panel;
 
+/**
+ * Class ModuloController
+ * @package Intranet\Http\Controllers
+ */
 class ModuloController extends IntranetController
 {
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Modulo';
+    /**
+     * @var array
+     */
     protected $gridFields = ['codigo', 'vliteral','cliteral'];
+    /**
+     * @var bool
+     */
     protected $modal = true;
-    
+
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('modulo.edit', ['roles' => config('roles.rol.administrador')]));

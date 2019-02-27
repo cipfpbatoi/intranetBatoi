@@ -16,16 +16,10 @@ class MensualController extends Controller
 
     public function imprimir(Request $request)
     {
-        switch ($request->llistat) {
-            case 'faltas' : {
-                $falta = new FaltaController();
-                return $falta->imprime_falta($request);
-            }
-            case 'birret' : {
-                $falta = new FaltaItacaController();
-                return $falta->imprime_birret($request);
-            }
-        }
+        if ($request->llistat == 'faltas')
+                return FaltaController::printReport($request);
+
+        return FaltaItacaController::printReport($request);
     }
 
     

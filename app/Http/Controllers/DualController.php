@@ -16,15 +16,32 @@ use Intranet\Entities\AlumnoFct;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Fct;
 
+/**
+ * Class DualController
+ * @package Intranet\Http\Controllers
+ */
 class DualController extends IntranetController
 {
 
     use traitImprimir;
-    
+
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Dual';
+    /**
+     * @var bool
+     */
     protected $modal = false;
 
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function edit($id)
     {
         $alumno = AlumnoFct::findOrFail($id);
@@ -40,6 +57,11 @@ class DualController extends IntranetController
         return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, $id)
     {
         $idFct = DB::transaction(function() use ($request, $id) {
@@ -59,6 +81,10 @@ class DualController extends IntranetController
         return $this->redirect();
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $idFct = DB::transaction(function() use ($request) {
@@ -81,6 +107,9 @@ class DualController extends IntranetController
         return $this->redirect();
     }
 
+    /**
+     * @return mixed
+     */
     public function anexeVI()
     {
         $fct = AlumnoFct::misDual()->get();

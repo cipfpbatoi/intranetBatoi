@@ -43,9 +43,13 @@ class AlumnoFctAval extends AlumnoFct
      {
          return $query->where('actas','=', 2);
      }
-     public function scopePendienteNotificar($query)
+     public function scopePendienteNotificar($query,Array $alumnos)
      {
-         return $query->whereNotNull('calificacion')->where('correoAlumno',false);
+         return $query->whereIn('idAlumno',$alumnos)->where('correoAlumno',false);
+     }
+     public function scopeCalificados($query)
+     {
+         return $query->whereNotNull('calificacion');
      }
      
      public function scopeMisFcts($query)

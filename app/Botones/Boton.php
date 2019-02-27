@@ -28,22 +28,34 @@ abstract class Boton
      * $relative => false ruta absoluta || true ruta relativa || prefijo
      * $postUrl => final de la ruta
      */
+
+    private function translateText(){
+
+        if (isset($this->atributos['text']))
+            return trans("models." . ucwords($this->modelo) . "." .$this->atributos['text']) != "models." . ucwords($this->modelo) . "." . $this->atributos['text']
+                ?  trans("models." . ucwords($this->modelo) . "." . $this->atributos['text'])
+                : $this->atributos['text'];
+
+        if (trans("models." . ucwords($this->modelo) . "." . $this->accion) != "models." . ucwords($this->modelo) . "." . $this->accion)
+                return trans("models." . ucwords($this->modelo) . "." . $this->accion);
+
+        if (trans("models." . ucwords($this->modelo) . ".default") != "models." . ucwords($this->modelo) . ".default" )
+               return trans("models." . ucwords($this->modelo) . ".default");
+
+        return trans("messages.buttons.$this->accion");
+
+
+
+    }
     public function __construct($href, $atributos = [], $relative = false, $postUrl = null)
     {
         $this->postUrl = $postUrl;
         $this->split($this->href = $href);
         $this->atributos = $atributos;
         $this->relative = $relative;
-        if (!isset($this->atributos['text']))
-            if (trans("models." . ucwords($this->modelo) . "." . $this->accion) != "models." . ucwords($this->modelo) . "." . $this->accion)
-                $this->text = trans("models." . ucwords($this->modelo) . "." . $this->accion);
-            elseif (trans("models." . ucwords($this->modelo) . ".default") != "models." . ucwords($this->modelo) . ".default" ) 
-                        $this->text = trans("models." . ucwords($this->modelo) . ".default");
-                else
-                    $this->text = trans("messages.buttons.$this->accion");
-        else
-            $this->text = trans("models." . ucwords($this->modelo) . "." . $this->atributos['text']) != "models." . ucwords($this->modelo) . "." . $this->atributos['text'] ? trans("models." . ucwords($this->modelo) . "." . $this->atributos['text']) : $this->atributos['text'];
-    }
+        $this->text = $this->translateText();
+
+      }
 
     public function __set($name, $value)
     {
@@ -52,10 +64,9 @@ abstract class Boton
 
     public function __get($name)
     {
-        if (array_key_exists($name, $this->atributos)) {
-            return ($this->atributos[$name]);
-        } else
-            return null;
+        if (array_key_exists($name, $this->atributos)) return ($this->atributos[$name]);
+
+        return null;
     }
 
     // mostra el boto
@@ -92,24 +103,23 @@ abstract class Boton
     // torna id del boto en format html
     protected function id($key = null)
     {
-        if ($key == null){
-            $id = $this->id != '' ? " id='" . $this->id . "'" : '';
-        }
-        else{
-            $id = $this->id != '' ? " id='" . $this->id . $key . "'" : '';
-        }
-        return $id;
+        if ($key == null)
+            return $this->id != '' ? " id='" . $this->id . "'" : '';
+        return $this->id != '' ? " id='" . $this->id . $key . "'" : '';
+
     }
 
     // forma el text de l'enllaç amb la clau ($key)
     protected function href($key = null)
     {
-        if ($this->href == '#')
-            return '#';
-        if ($this->relative===true) $prefix = '';
-        else $prefix =  is_bool($this->relative) ? config('app.url') . '/' : config('app.url') . '/'.$this->relative.'/';
+        if ($this->href == '#') return '#';
+        if ($this->relative===true)
+            $prefix = '';
+        else
+            $prefix =  is_bool($this->relative) ? config('app.url') . '/' : config('app.url') . '/'.$this->relative.'/';
         if (!isset($this->postUrl)) return $key == null ? "href='" . $prefix . strtolower($this->modelo) . "/" . $this->accion . "'" : "href='" . $prefix . strtolower($this->modelo) . "/" . $key . "/" . $this->accion . "'";
-        else return $key == null ? "href='" . $prefix . strtolower($this->modelo) . "/" . $this->accion . "/" . $this->postUrl. "'"  : "href='" . $prefix . strtolower($this->modelo) . "/" . $key . "/" . $this->accion . "/" . $this->postUrl. "'";
+
+        return $key == null ? "href='" . $prefix . strtolower($this->modelo) . "/" . $this->accion . "/" . $this->postUrl. "'"  : "href='" . $prefix . strtolower($this->modelo) . "/" . $key . "/" . $this->accion . "/" . $this->postUrl. "'";
     }
 
 }

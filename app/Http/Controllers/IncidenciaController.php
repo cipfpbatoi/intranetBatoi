@@ -9,40 +9,74 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\OrdenTrabajo;
 
+/**
+ * Class IncidenciaController
+ * @package Intranet\Http\Controllers
+ */
 class IncidenciaController extends IntranetController
 {
 
     use traitImprimir,traitAutorizar;
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Incidencia';
+    /**
+     * @var array
+     */
     protected $gridFields = ['Xestado', 'DesCurta', 'espacio', 'XResponsable', 'Xtipo', 'fecha'];
+    /**
+     * @var string
+     */
     protected $descriptionField = 'descripcion';
+    /**
+     * @var bool
+     */
     protected $modal = true;
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function generarOrden($id)
     {
-        $elemento = Incidencia::findOrFail($id);
-        $orden = OrdenTrabajo::where('tipo',$elemento->tipo)
+        $incidencia = Incidencia::findOrFail($id);
+        $orden = OrdenTrabajo::where('tipo',$incidencia->tipo)
                 ->where('estado',0)
                 ->where('idProfesor', AuthUser()->dni)
                 ->get()
                 ->first();
-        if (!$orden){
-            $orden = new OrdenTrabajo();
-            $orden->idProfesor = AuthUser()->dni;
-            $orden->estado = 0;
-            $orden->tipo = $elemento->tipo;
-            $orden->descripcion = 'Ordre oberta el dia '.Hoy().' pel profesor '.AuthUser()->FullName.' relativa a '.$elemento->Tipos->literal;
-            $orden->save();
-        }
-        $elemento->orden = $orden->id;
-        $elemento->save();
-        if ($elemento->estado == 1) return $this->accept ($id);
-        Session::put('pestana',$elemento->estado);
+
+        if (!$orden) $this->generateOrder($incidencia);
+
+        $incidencia->orden = $orden->id;
+        $incidencia->save();
+        if ($incidencia->estado == 1) return $this->accept($id);
+        Session::put('pestana',$incidencia->estado);
         return back();
     }
-  
+
+    /**
+     * @param $incidencia
+     */
+    protected function generateOrder(Incidencia $incidencia){
+        $orden = new OrdenTrabajo();
+        $orden->idProfesor = AuthUser()->dni;
+        $orden->estado = 0;
+        $orden->tipo = $incidencia->tipo;
+        $orden->descripcion = 'Ordre oberta el dia '.Hoy().' pel profesor '.AuthUser()->FullName.' relativa a '.$incidencia->Tipos->literal;
+        $orden->save();
+    }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function removeOrden($id)
     {
         $incidencia = Incidencia::findOrFail($id);
@@ -50,8 +84,12 @@ class IncidenciaController extends IntranetController
         $incidencia->save();
         return back();
     }
-    
-    
+
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function edit($id)
     {
         $elemento = Incidencia::findOrFail($id);
@@ -61,7 +99,11 @@ class IncidenciaController extends IntranetController
         $modelo = $this->model;
         return view('intranet.edit', compact('elemento', 'default', 'modelo'));
     }
-    
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $id = $this->realStore($request);
@@ -69,6 +111,10 @@ class IncidenciaController extends IntranetController
         return $this->redirect();
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function notify($id)
     {
         $elemento = Incidencia::findOrFail($id);
@@ -82,6 +128,9 @@ class IncidenciaController extends IntranetController
         return back();
     }
 
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create']);

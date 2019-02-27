@@ -14,6 +14,10 @@ use Intranet\Entities\Comision;
 use Intranet\Http\Controllers\BaseController;
 use Intranet\Botones\Panel;
 
+/**
+ * Class ComisionController
+ * @package Intranet\Http\Controllers
+ */
 class ComisionController extends IntranetController
 {
 
@@ -21,13 +25,28 @@ class ComisionController extends IntranetController
         traitNotificar,
         traitAutorizar;
 
+    /**
+     * @var array
+     */
     protected $gridFields = ['id', 'servicio', 'desde','total', 'situacion'];
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Comision';
+    /**
+     * @var bool
+     */
     protected $modal = true;
-    
-    
-     protected function iniBotones()
+
+
+    /**
+     *
+     */
+    protected function iniBotones()
      {
          $this->panel->setBotonera(['create'],['show']);
          $this->panel->setBoton('grid', new BotonImg('comision.delete', ['where' => ['estado', '>=', '0', 'estado', '<', '2']]));
@@ -38,17 +57,28 @@ class ComisionController extends IntranetController
          $this->panel->setBothBoton('comision.notification', ['where' => ['estado', '>', '0', 'hasta', 'posterior', Hoy()]]);
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function payment()
     {
         return $this->imprimir('payments',4,5,'landscape',false);
     }
-     
+
+    /**
+     * @param $id
+     */
     public function paid($id)
     {
         $elemento = Comision::findOrFail($id);
         $elemento->estado = 5;
         $elemento->save();
     }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function unpaid($id)
     {
         $elemento = Comision::findOrFail($id);
@@ -56,7 +86,10 @@ class ComisionController extends IntranetController
         $elemento->save();
         return back();
     }
-    
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function autorizar(){
         $this->makeAll(Comision::where('estado','1')->get(),2 );
         return back();

@@ -36,6 +36,19 @@ class ReunionController extends IntranetController
     protected $gridFields = ['XGrupo', 'XTipo', 'Xnumero', 'descripcion', 'fecha', 'curso', 'id'];
     protected $modal = true;
 
+    /**
+     * @param $elemento
+     * @return string
+     */
+    public function makeMissage($elemento): string
+    {
+        if (haVencido($elemento->fecha))
+            return "Ja està disponible l'acta de la reunió " . $elemento->descripcion . " del dia " . $elemento->fecha;
+
+        return "Estas convocat a la reunió:  " . $elemento->descripcion . ' el dia ' . $elemento->fecha . ' a ' .
+                $elemento->Espacio->descripcion;
+    }
+
     protected function search()
     {
         return Reunion::MisReuniones()->get();
@@ -47,34 +60,34 @@ class ReunionController extends IntranetController
         $contador = 1;
         //dd(TipoReunion::ordenes($elemento->tipo));
         foreach (TipoReunion::ordenes($elemento->tipo) as $key => $texto) {
-            if (strpos($texto, '->')) {
-                $consulta = explode('->', $texto,3);
-                $clase = $this->namespace . $consulta[0];
-                $funcion = $consulta[1];
-                $campo = $consulta[2];
-                //dd("$clase::$funcion()");
-                foreach ($clase::$funcion()->get() as $element){
-                    $orden = new OrdenReunion;
-                    $orden->idReunion = $elemento->id;
-                    $orden->orden = $contador++;
-                    $orden->descripcion = $element->$campo;
-                    $orden->resumen = TipoReunion::resumen($elemento->tipo) != null ? TipoReunion::resumen($elemento->tipo).$orden->orden : '';
-                    $orden->save();  
-                }
-            } else {
-                $orden = new OrdenReunion;
-                $orden->idReunion = $elemento->id;
-                $orden->orden = $contador++;
-                $orden->descripcion = $texto;
-                $orden->resumen = TipoReunion::resumen($elemento->tipo) != null ? TipoReunion::resumen($elemento->tipo)[$key] : '';
-                $orden->save();
-            }
+            if (strpos($texto, '->'))
+                $contador = $this->storeItems($contador,$texto,$elemento);
+            else
+                $contador = $this->storeItem($elemento->id,$contador,$texto,TipoReunion::resumen($elemento->tipo) != null ? TipoReunion::resumen($elemento->tipo)[$key] : '');
         }
-        if ($elemento->fichero != '')
-            return back();
+        if ($elemento->fichero != '') return back();
         return redirect()->route('reunion.update', ['reunion' => $elemento->id]);
     }
+    private function storeItems($contador,$texto,$elemento){
+        $consulta = explode('->', $texto,3);
+        $clase = $this->namespace . $consulta[0];
+        $funcion = $consulta[1];
+        $campo = $consulta[2];
+        //dd("$clase::$funcion()");
+        foreach ($clase::$funcion()->get() as $element)
+            $contador = $this->storeItem($elemento->id,$contador,$element->$campo,TipoReunion::resumen($elemento->tipo) != null ? TipoReunion::resumen($elemento->tipo).$contador : '');
+        return $contador;
+    }
 
+    private function storeItem($id,$contador,$text,$resumen){
+        $orden = new OrdenReunion();
+        $orden->idReunion = $id;
+        $orden->orden = $contador++;
+        $orden->descripcion = $text;
+        $orden->resumen = $resumen;
+        $orden->save();
+        return $contador;
+    }
     public function edit($id)
     {
         $elemento = Reunion::find($id);
@@ -133,15 +146,8 @@ class ReunionController extends IntranetController
     public function notify($id)
     {
         $elemento = Reunion::findOrFail($id);
-        $profesores = Asistencia::where('idReunion', '=', $id)->get();
-        if (haVencido($elemento->fecha))
-            $mensaje = "Ja està disponible l'acta de la reunió " . $elemento->descripcion . " del dia " . $elemento->fecha;
-        else
-            $mensaje = "Estas convocat a la reunió:  " . $elemento->descripcion . ' el dia ' . $elemento->fecha . ' a ' .
-                    $elemento->Espacio->descripcion;
-        $enlace = "/reunion/" . $id . "/pdf";
-        foreach ($profesores as $profe)
-            avisa($profe->idProfesor, $mensaje, $enlace);
+        foreach (Asistencia::where('idReunion', '=', $id)->get() as $profesor)
+            avisa($profesor->idProfesor, $this->makeMissage($elemento), "/reunion/" . $id . "/pdf");
         return back();
     }
 
@@ -194,9 +200,9 @@ class ReunionController extends IntranetController
             else {
                 Alert::message('No trobe fitxer', 'danger');
                 return back();
-            } else {
-            if ($elemento->archivada)
-                $this->saveFile($id);
+            }
+        else {
+            if ($elemento->archivada)  $this->saveFile($id);
             return $this->construye_pdf($id)->stream();
         }
     }

@@ -27,29 +27,38 @@ class FaltaItacaController extends IntranetController
         return view('falta.itaca', compact('profesor','horarios', 'horas'));
     }
     
-    public function imprime_birret(Request $request)
+    public static function printReport(Request $request)
     {
-        $desde = new Date($request->desde);
-        $hasta = new Date($request->hasta);
-        $todos = Falta_itaca::where([
-                        ['estado', '2'],
-                        ['dia', '>=', $desde->format('Y-m-d')],
-                        ['dia', '<=', $hasta->format('Y-m-d')]
-                    ])->orderBy('idProfesor')->orderBy('dia')->get();
-        if ($request->mensual == 'on') {
-            $nom = 'Birret' . $desde->format('F') . '.pdf';
-            $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-            if ($doc = Documento::where('fichero',$nomComplet)->first()){
-                unlink(storage_path('app/' . $doc->fichero));
-                $doc->delete();
-            }
-            $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Birret listado llistat autorizacion autorizacio"]);
-            $this->makeLink($todos, $doc);
-            return $this->hazPdf("pdf.birret", $todos)
-                            ->save(storage_path('/app/' . $nomComplet))
-                            ->download($nom);
-        } else {
-            return $this->hazPdf("pdf.birret", $todos)->stream();
+        $elementos = self::findElements($request->desde,$request->hasta);
+
+        if ($request->mensual != 'on')
+            return self::hazPdf("pdf.birret", $elementos)->stream();
+
+        self::deleteFile($nomComplet = self::nameFile($request->desde));
+
+        $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Birret listado llistat autorizacion autorizacio"]);
+        self::makeLink($elementos, $doc);
+        return self::hazPdf("pdf.birret", $elementos)
+                        ->save(storage_path('/app/' . $nomComplet))
+                        ->download($nomComplet);
+
+    }
+    private static function deleteFile(String $nomComplet){
+        if ($doc = Documento::where('fichero',$nomComplet)->first()){
+            unlink(storage_path('app/' . $doc->fichero));
+            $doc->delete();
         }
+    }
+    private static function findElements(String $desde,String $hasta){
+        return Falta_itaca::where([
+            ['estado', '2'],
+            ['dia', '>=', FechaInglesa($desde)],
+            ['dia', '<=',FechaInglesa($hasta)]
+        ])->orderBy('idProfesor')->orderBy('dia')->get();
+    }
+
+    private static function nameFile(String $desde){
+        $fecha = new Date($desde);
+        return 'gestor/' . Curso() . '/informes/' . 'Birret' . $fecha->format('F') . '.pdf';
     }
 }

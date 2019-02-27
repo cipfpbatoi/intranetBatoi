@@ -13,31 +13,52 @@ use Jenssegers\Date\Date;
 use Intranet\Entities\Curso;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * Class GrupoController
+ * @package Intranet\Http\Controllers
+ */
 class GrupoController extends IntranetController
 {
 
     use traitImprimir;
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Grupo';
+    /**
+     * @var array
+     */
     protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo','XDual'];
-    //protected $modal = true;
 
-    
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection|Grupo[]|mixed
+     */
     protected function search(){
-//        if (esRol(AuthUser()->rol,config('roles.rol.direccion')))
-//            $this->panel->addGridField('Acta');
+
         return esRol(AuthUser()->rol,config('roles.rol.direccion')) ?
                 Grupo::all():
                 Grupo::MisGrupos()->get();
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function detalle($id)
     {
         return redirect()->route('alumnogrupo.index', ['grupo' => $id]);
     }
 
 
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera([], ['pdf', 'horario']);
@@ -55,6 +76,10 @@ class GrupoController extends IntranetController
         }
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     protected function horario($id)
     {
         $horario = Horario::HorarioGrupo($id);
@@ -62,6 +87,9 @@ class GrupoController extends IntranetController
         return view('horario.grupo', compact('horario', 'titulo'));
     }
 
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function asigna()
     {
         $todos = Grupo::all();
@@ -79,30 +107,58 @@ class GrupoController extends IntranetController
         return back();
     }
 
+    /**
+     * @param $grupo
+     * @return mixed
+     */
     public function pdf($grupo)
     {
         return $this->hazPdf('pdf.alumnos.fotoAlumnos',$this->alumnos($grupo), Grupo::find($grupo))->stream();
     }
+
+    /**
+     * @param $grupo
+     * @return mixed
+     */
     public function fse($grupo)
     {
         return $this->hazPdf('pdf.alumnos.fse',$this->alumnos($grupo), Grupo::find($grupo) )->stream();
     }
+
+    /**
+     * @param $grupo
+     * @return mixed
+     */
     public function carnet($grupo)
     {
         return $this->hazPdf('pdf.carnet', $this->alumnos($grupo), [Date::now()->format('Y'), 'Alumnes - Student'], 'portrait', [85.6, 53.98])->stream();
     }
+
+    /**
+     * @param $grupo
+     * @return mixed
+     */
     public function certificados($grupo)
     {
         $datos['ciclo'] = Grupo::find($grupo)->Ciclo;    
         return $this->hazPdf('pdf.alumnos.'.Grupo::find($grupo)->Ciclo->normativa, $this->alumnos($grupo),$this->cargaDatosCertificado($datos),'portrait')->stream();
     }
+
+    /**
+     * @param $alumno
+     * @return mixed
+     */
     public function certificado($alumno)
     {
         $grupo = Alumno::findOrFail($alumno)->Grupo->first();
         $datos['ciclo'] = $grupo->Ciclo;  
         return $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,Alumno::where('nia',$alumno)->get(),$this->cargaDatosCertificado($datos),'portrait')->stream();
     }
-    
+
+    /**
+     * @param $grupo
+     * @return mixed
+     */
     private function alumnos($grupo){
         return Alumno::QGrupo($grupo)
                 ->OrderBy('apellido1')

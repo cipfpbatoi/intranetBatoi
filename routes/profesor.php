@@ -74,8 +74,8 @@ Route::get('/alumnocurso/{id}/active', ['as' => 'alumnocurso.active', 'uses' => 
 Route::get('/curso/{curso}/active', ['as' => 'curso.active', 'uses' => 'CursoController@active']);
 Route::get('/curso/{curso}/pdf', ['as' => 'curso.pdf', 'uses' => 'CursoController@pdf']);
 Route::get('/curso/{curso}/saveFile', ['as' => 'curso.save', 'uses' => 'CursoController@saveFile']);
-Route::get('/alumnocurso/{alumno}/registerAlumno/{curso}', ['as' => 'Alumnocurso.registerA', 'uses' => 'AlumnoCursoController@registerA']);
-Route::get('/alumnocurso/{grupo}/registerGrupo/{curso}', ['as' => 'Alumnocurso.registerG', 'uses' => 'AlumnoCursoController@registerG']);
+Route::get('/alumnocurso/{alumno}/registerAlumno/{curso}', ['as' => 'Alumnocurso.registerA', 'uses' => 'AlumnoCursoController@registerAlumn']);
+Route::get('/alumnocurso/{grupo}/registerGrupo/{curso}', ['as' => 'Alumnocurso.registerG', 'uses' => 'AlumnoCursoController@registerGrup'gestor]);
 Route::get('/alumnocurso/{id}/pdf', ['as' => 'Alumnocurso.pdf', 'uses' => 'AlumnoCursoController@pdf']);
 
 
@@ -205,7 +205,6 @@ Route::get('/fct/create/{colaboracio}', ['as' => 'fct.create2', 'uses' => 'FctCo
 Route::post('/fct/create', ['as' => 'fct.store', 'uses' => 'FctController@store']);
 Route::post('/fct/pass',['as' => 'fct.pass', 'uses' => 'FctController@store']);
 Route::get('/fct/{id}/pdf', ['as' => 'fct.pdf', 'uses' => 'FctController@pdf']);
-Route::get('/fct/{id}/email', ['as' => 'fct.email', 'uses' => 'FctController@email']);
 Route::get('/fct/{document}/print', ['as' => 'fct.print', 'uses' => 'FctController@document']);
 Route::post('/fct/{document}/print',['as'=>'fct.print.post','uses'=> 'FctController@documentPost']);
 
@@ -363,3 +362,4 @@ Route::resource('/option', 'OptionController', ['except' => ['destroy', 'update'
 Route::post('/option/create', ['as' => 'option.store', 'uses' => 'OptionController@store']);
 Route::get('/option/{id}/delete', ['as' => 'option.destroy', 'uses' => 'OptionController@destroy']);
 
+Route::get('/poll/{id}', ['as' => 'poll.result', 'uses' => 'PollController@lookAtMyVotes']);

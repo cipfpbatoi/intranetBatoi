@@ -11,6 +11,7 @@ use Intranet\Entities\Curso;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Alumno;
+use Styde\Html\Facades\Alert;
 
 class AlumnoCursoController extends IntranetController
 {
@@ -58,41 +59,44 @@ class AlumnoCursoController extends IntranetController
             return self::imprime($id);
     }
 
-    public function registerG($grupo, $id)
+    public function registerGrup($grupo, $id)
     {
         $alumnos = AlumnoGrupo::where('idGrupo', $grupo)->get();
         foreach ($alumnos as $alumno) {
-            $this->register($id, $alumno->idAlumno, false);
+            $this->register($id, $alumno->idAlumno);
         }
         return back();
     }
 
-    public function registerA($alumno, $id)
+    public function registerAlumn($alumno, $id)
     {
-        return $this->register($id, $alumno);
+        $this->register($id, $alumno);
+        return back();
     }
 
-    public function register($id, $alumno = null, $redirect = 1)
+    public function register($id, $alumno = null)
     {
-        $curso = Curso::find($id);
         $alumno = $alumno ? Alumno::find($alumno) : AuthUser();
-        $existe = AlumnoCurso::where('idCurso', $id)
-                ->where('idAlumno', $alumno->nia)
-                ->count();
-        if ($curso && !$existe) {
-            if ($curso->aforo == 0 || $curso->NAlumnos < $curso->aforo) {
-                $alumno->Curso()->attach($id, ['registrado' => 'S', 'finalizado' => 0]);
-                $mensaje = 'Has sigut registrat/ada al curs ';
-            } else
-            if ($curso->NAlumnos < $curso->aforo * config('variables.reservaAforo')) {
-                $alumno->Curso()->attach($id, ['registrado' => 'R', 'finalizado' => 0]);
-                $mensaje = "Estas en llista d'espera al curs ";
-            } else
-                $mensaje = 'No queden places al curs ';
-            avisa($alumno->nia, $mensaje);
+        $curso = Curso::find($id);
+
+        if ($curso && AlumnoCurso::where('idCurso', $id)->where('idAlumno', $alumno->nia)->count()==0){
+            $mensaje = $this->getRegister($alumno,$curso);
+            Alert::info($alumno->FullName.': '.$mensaje);
+            avisa($alumno->nia,$mensaje);
         }
-        if ($redirect)
-            return back();
+        else Alert::danger($alumno->FullName.': Ja estas registrat');
+    }
+
+    private function getRegister($alumno,$curso){
+        if ($curso->aforo == 0 || $curso->NAlumnos < $curso->aforo) {
+            $alumno->Curso()->attach($curso->id, ['registrado' => 'S', 'finalizado' => 0]);
+            return 'Has sigut registrat/ada al curs ';
+        }
+        if ($curso->NAlumnos < $curso->aforo * config('variables.reservaAforo')) {
+            $alumno->Curso()->attach($curso->id, ['registrado' => 'R', 'finalizado' => 0]);
+            return "Estas en llista d'espera al curs ";
+        }
+        return 'No queden places al curs ';
     }
 
     public function unregister($id, $alumno = null, $redirect = 1)

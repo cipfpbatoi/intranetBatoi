@@ -12,14 +12,29 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\AlumnoGrupo;
 
+/**
+ * Class AlumnoController
+ * @package Intranet\Http\Controllers
+ */
 class AlumnoController extends PerfilController
 {
 
     use traitImprimir;
 
+    /**
+     * @var string
+     */
     protected $model = 'Alumno';
+    /**
+     * @var array
+     */
     protected $vista = ['show' => 'perfil', 'edit' => 'perfil'];
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|void
+     */
     public function update(Request $request, $id)
     {
         $new = Alumno::find($id);
@@ -27,6 +42,10 @@ class AlumnoController extends PerfilController
         return redirect("/alumno_grupo/" . $new->Grupo()->first()->codigo . "/show");
     }
 
+    /**
+     * @param $alumno
+     * @return mixed
+     */
     public function carnet($alumno)
     {
         return $this->hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Date::now()->format('Y'), 'Alumne - Student'], 'portrait', [85.6, 53.98])->stream();
@@ -48,6 +67,9 @@ class AlumnoController extends PerfilController
 //        return back();
 //    }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function equipo()
     {
         if (AuthUser()->Grupo) {
@@ -59,11 +81,19 @@ class AlumnoController extends PerfilController
         return back();
     }
 
+    /**
+     *
+     */
     public function iniBotones()
     {
         $this->panel->setBoton('profile', new BotonIcon('alumno.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function alerta(Request $request, $id)
     {
         avisa($id, $request->explicacion != '' ? $request->explicacion : 'Te ha dado un toque.');

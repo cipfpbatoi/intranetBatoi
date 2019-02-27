@@ -14,7 +14,7 @@ class Empresa extends Model
 
     protected $table = 'empresas';
     protected $fillable = [ 'europa','sao','concierto','cif', 'nombre', 'email', 'direccion', 'localidad', 'telefono',
-        'dual', 'actividad', 'delitos', 'menores','copia_anexe1','observaciones','creador'];
+        'dual', 'actividad', 'delitos', 'menores','copia_anexe1','observaciones', 'fichero','creador'];
     protected $rules = [
         'cif' => 'required|alpha_num',
         'nombre' => 'required|between:0,100',
@@ -34,6 +34,7 @@ class Empresa extends Model
         'sao' => ['type' => 'checkbox'],
         'copia_anexe1' => ['type'=>'checkbox'],
         'observaciones' => ['type' => 'textarea'],
+        'fichero' => ['type' => 'file'],
         'creador' => ['type' => 'hidden'],
     ];
     protected $hidden = ['created_at', 'updated_at','creador'];

@@ -31,11 +31,8 @@ class FicharController extends IntranetController
     public function ficha()
     {
         Falta_profesor::fichar();
-        if (!estaDentro()) {
-            //Alert::info(trans('messages.generic.sale').' '. AuthUser()->nombre);
-            return redirect('/logout');
-        } else
-            return back();
+        if (!estaDentro())  return redirect('/logout');
+        return back();
     }
     
     public function search()
@@ -53,10 +50,10 @@ class FicharController extends IntranetController
                 Alert::info(trans('messages.generic.sale') . ' ' . $profesor->FullName . ' a ' . $fichaje->salida);
             else
                 Alert::success(trans('messages.generic.entra') . ' ' . $profesor->FullName . ' a ' . $fichaje->entrada);
+            return back();
         }
-        else {
-            Alert::danger(trans('messages.generic.nocodigo'));
-        }
+
+        Alert::danger(trans('messages.generic.nocodigo'));
         return back();
     }
 
@@ -68,23 +65,27 @@ class FicharController extends IntranetController
 
     public function controlDia()
     {
-        $profes = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2', 'departamento', 'email')->orderBy('departamento')->orderBy('apellido1')->orderBy('apellido2')->Plantilla()->get();
-        $fecha=date("Y-m-d");
-        $horarios=Array();
-        foreach ($profes as $profesor) {
-            // Obtenemso el nomcurt del departamento
-            $profesor->departamento = $profesor->Departamento->depcurt;
-            // Obtenemos su horario
-            $horario = Horario::Primera($profesor->dni,$fecha)->orderBy('sesion_orden')->get();
-            if (isset($horario->first()->desde)) {
-                $profesor->email = $horario->first()->desde . " - " . $horario->last()->hasta;
-                $horarios[$profesor->dni] = $horario->first()->desde . " - " . $horario->last()->hasta;
-            } else {
-                $profesor->email = '';
-                $horarios[$profesor->dni] = '';
-            }
-        }
+        $horarios = $this->loadHoraries($profes=Profesor::Plantilla()->orderBy('departamento')->orderBy('apellido1')->orderBy('apellido2')->get());
         return view('fichar.control-dia', compact('profes', 'horarios'));
     }
+    private function loadHoraries($profesores){
+        $horarios = Array();
+        foreach ($profesores as $profesor) {
+            $profesor->departamento = $profesor->Departamento->depcurt;
+            $horarios[$profesor->dni] = $this->loadHorary($profesor);
+
+        }
+        return $horarios;
+    }
+    private function loadHorary($profesor){
+        $horario = Horario::Primera($profesor->dni,FechaInglesa(Hoy()))->orderBy('sesion_orden')->get();
+
+        if (isset($horario->first()->desde))
+             return $horario->first()->desde . " - " . $horario->last()->hasta;
+
+        return '';
+
+    }
+
 
 }

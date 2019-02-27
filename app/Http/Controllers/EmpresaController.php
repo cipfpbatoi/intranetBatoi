@@ -45,40 +45,52 @@ class EmpresaController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico("empresa.create",['roles' => config('roles.rol.practicas')]));
-    }
+     }
 
     public function store(Request $request)
     {
         $dades = $request->except('cif');
         $dades['cif'] = strtoupper($request->cif);
-        if (Empresa::where('cif',strtoupper($request->cif))->count()) return back()->withInput(Input::all())->withErrors('CIF duplicado');
+        if (Empresa::where('cif',strtoupper($request->cif))->count())
+            return back()->withInput(Input::all())->withErrors('CIF duplicado');
         
         $id = $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]));
-        if ($request->europa){
-            $max = Empresa::where('concierto','<', 11111)->max('concierto');
-            $empresa = Empresa::find($id);
-            $empresa->concierto = $max+1;
-            $empresa->save();
-        }
 
+        if ($request->europa)  $this->getConcert($id);
+
+        $idCentro = $this->createCenter($id,$request);
+        if (isset(Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo))
+            $idColaboracion = $this->createColaboration($idCentro,$request);
+
+        return redirect()->action('EmpresaController@show', ['id' => $id]);
+    }
+
+    private function getConcert($id){
+        $max = Empresa::where('concierto','<', 11111)->max('concierto');
+        $empresa = Empresa::find($id);
+        $empresa->concierto = $max+1;
+        $empresa->save();
+    }
+
+    private function createCenter($id,$request){
         $centro = new Centro();
         $centro->idEmpresa = $id;
         $centro->direccion = $request->direccion;
         $centro->nombre = $request->nombre;
         $centro->localidad = $request->localidad;
         $centro->save();
-        
-        if (isset(Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo)){
-            $colaboracion = new Colaboracion();
-            $colaboracion->idCentro = $centro->id;
-            $colaboracion->telefono = $request->telefono;
-            $colaboracion->email = $request->email;
-            $colaboracion->puestos = 1;
-            $colaboracion->tutor = AuthUser()->FullName;
-            $colaboracion->idCiclo = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo;
-            $colaboracion->save();
-        }
-        return redirect()->action('EmpresaController@show', ['id' => $id]);
+        return $centro->id;
+    }
+    private function createColaboration($id,$request){
+        $colaboracion = new Colaboracion();
+        $colaboracion->idCentro = $id;
+        $colaboracion->telefono = $request->telefono;
+        $colaboracion->email = $request->email;
+        $colaboracion->puestos = 1;
+        $colaboracion->tutor = AuthUser()->FullName;
+        $colaboracion->idCiclo = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo;
+        $colaboracion->save();
+        return $colaboracion->id;
     }
     
     protected function realStore(Request $request, $id = null)
@@ -109,6 +121,18 @@ class EmpresaController extends IntranetController
         }
         if ($touched) $centro->save();
         return redirect()->action('EmpresaController@show', ['id' => $elemento->id]);
+    }
+    /*
+     * document ($id)
+     * torna el fitxer de un model
+     */
+
+    public function document($id)
+    {
+        $elemento = Empresa::findOrFail($id);
+        if ($elemento->fichero) return response()->file(storage_path('app/' . $elemento->fichero));
+        Alert::danger(trans("messages.generic.nodocument"));
+        return back();
     }
 
 
