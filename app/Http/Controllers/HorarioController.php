@@ -27,9 +27,10 @@ class HorarioController extends IntranetController
                 $data=json_decode($fichero);
                 switch ($data->estado) {
                     case "Aceptado":
-			// Guardfa el fichero original
-                        Storage::disk('local')->put('/horarios/horariosCambiados/'.$dni.'.json', json_encode($data));
-                        // Modifica la tabla
+			            // Guardfa el fichero original
+                        if (! Storage::disk('local')->exists('/horarios/horariosCambiados/'.$dni.'.json'))
+                            Storage::disk('local')->put('/horarios/horariosCambiados/'.$dni.'.json', json_encode($data));
+
                         foreach ($data->cambios as $cambio) {
                         
                            $de=explode("-",$cambio->de);
