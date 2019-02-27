@@ -15,20 +15,23 @@ abstract class BotonElemento extends Boton
     private function isVisible($elemento)
     {
         if ($this->where != '')
-            return $this->avalAndConditions($this->extractConditions($elemento));
+            return $this->avalAndConditions($this->extractConditions($elemento,'where'));
 
         if ($this->orWhere != '')
-            return $this->avalOrConditions($this->extractConditions($elemento));
+            return $this->avalOrConditions($this->extractConditions($elemento,'orWhere'));
 
         return true;
     }
 
-    private function extractConditions($elemento){
+    private function extractConditions($elemento,$condicio){
         $condiciones = [];
-        for ($i = 0; $i < count($this->where); $i = $i + 3) {
-            $camp = $this->where[$i];
-            $condiciones[] = $this->avalCondition($elemento->$camp, $this->where[$i + 1], $this->where[$i + 2]);
+
+        for ($i = 0; $i < count($this->$condicio); $i = $i + 3) {
+
+            $campo = $this->$condicio[$i];
+            $condiciones[] = $this->avalCondition($elemento->$campo, $this->$condicio[$i + 1], $this->$condicio[$i + 2]);
         }
+
         return $condiciones;
     }
 
