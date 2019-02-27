@@ -11,38 +11,16 @@ use Illuminate\Support\Facades\Storage;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
 
-/**
- * Class HorarioController
- * @package Intranet\Http\Controllers
- */
 class HorarioController extends IntranetController
 {
 
-    /**
-     * @var string
-     */
     protected $model = 'Horario';
-    /**
-     * @var string
-     */
     protected $perfil = 'profesor';
-    /**
-     * @var array
-     */
     protected $gridFields = ['XModulo','XOcupacion' ,'dia_semana', 'desde', 'aula'];
-    /**
-     * @var bool
-     */
     protected $modal = true;
 
 
-    /**
-     * @param $dni
-     * @param bool $redirect
-     * @return bool|\Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    public function changeTable($dni, $redirect=true){
+    public function changeTable($dni,$redirect=true){
         $correcto = false;
         if (Storage::disk('local')->exists('/horarios/'.$dni.'.json'))
             if ($fichero = Storage::disk('local')->get('/horarios/'.$dni.'.json')) {
