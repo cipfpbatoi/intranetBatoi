@@ -40,20 +40,21 @@ abstract class BaseController extends Controller
     //seleciona vista para metodo, por defecto intranet
     protected function chooseView($tipo)
     {
-        if (isset($this->vista[$tipo]))
-            if (strpos($this->vista[$tipo], '.'))
-                return strtolower($this->vista[$tipo]);
-            else
-                return strtolower($this->vista[$tipo]) . ".$tipo";
-        else
-            return "intranet.$tipo";
+        if (!isset($this->vista[$tipo])) return "intranet.$tipo";
+        
+        if (strpos($this->vista[$tipo], '.')) return strtolower($this->vista[$tipo]);
+        
+        return strtolower($this->vista[$tipo]) . ".$tipo";
+        
+        
     }
     
     
     protected function grid($todos,$modal=false)
     {
-        if ($modal)return $this->panel->view($todos,$this->titulo,$this->chooseView('indexModal'),new $this->class); 
-        else  return $this->panel->view($todos,$this->titulo,$this->chooseView('index'));
+        if ($modal) return $this->panel->view($todos,$this->titulo,$this->chooseView('indexModal'),new $this->class); 
+        
+        return $this->panel->view($todos,$this->titulo,$this->chooseView('index'));
     }
     /*  
      * index return vista

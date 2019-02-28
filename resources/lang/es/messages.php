@@ -62,9 +62,12 @@ return array(
         'change' => 'Volver a mi Usuario',
         'completa' => 'Ver todos los datos',
         'simplifica' => 'Ver los últimos datos',
-        'falta' => 'Ausencias'
+        'falta' => 'Ausencias',
+        'desde' => 'Desde',
+        'hasta' => 'Hasta'
     ),
     'buttons' => array(
+        'confirmar' => 'Confirmar',
         'edit' => 'Editar',
         'create' => 'Crear',
         'delete' => 'Borrar',

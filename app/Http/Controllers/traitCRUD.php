@@ -25,8 +25,10 @@ trait traitCRUD{
     protected function redirect()
     {
         if (Session::get('redirect')) $this->redirect = Session::get('redirect'); //variable session
+        
         if ($this->redirect) return redirect()->action($this->redirect); // variable controlador
-        else return redirect()->action($this->model . 'Controller@index'); //defecto
+        
+        return redirect()->action($this->model . 'Controller@index'); //defecto
     }
     /* 
      * destroy($id) return redirect
@@ -35,17 +37,17 @@ trait traitCRUD{
      */
     public function destroy($id)
     {
-        $borrar = $this->class::findOrFail($id);
-        if ($borrar) {
-            if (isset($borrar->fichero)) {
-                if (file_exists($borrar->fichero))
-                    unlink($borrar->fichero);
-                if (file_exists(storage_path('/app/' . $borrar->fichero)))
-                    unlink(storage_path('/app/' . $borrar->fichero));
-            }
-            $borrar->delete();
+        if ($elemento = $this->class::findOrFail($id)) {
+            $this->borrarFichero($elemento->fichero);
+            $elemento->delete();
         }
         return $this->redirect();
+    }
+    
+    protected function borrarFichero($fichero){
+        if (!isset($fichero)) return null;
+        if (file_exists($fichero)) unlink($fichero);
+        if (file_exists(storage_path('/app/' . $fichero))) unlink(storage_path('/app/' . $fichero));
     }
     
     /* 
@@ -64,17 +66,20 @@ trait traitCRUD{
      * accepta un array de valors per defecte
      */
 
-    public function create($default = null)
+    public function create($default = [])
     {
-        $elemento = new $this->class; //crea un nou element del model
-        if ($default) { // l'ompli si hi han valors per defecte
-            foreach ($default as $key => $value) {
-                $elemento->$key = $value;
-            }
-        }
+        $elemento = $this->fillDefaultValues($default);
         $default = $elemento->fillDefautOptions(); // ompli caracteristiques dels camps
         $modelo = $this->model;
         return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
+    }
+    
+    protected function fillDefaultValues($defaultValues){
+        $elemento = new $this->class; //crea un nou element del model
+        foreach ($defaultValues as $key => $value) {
+                $elemento->$key = $value;
+            }
+        return $elemento;
     }
 
     /* 
@@ -144,34 +149,32 @@ trait traitCRUD{
     public function document($id)
     {
         $elemento = $this->class::findOrFail($id);
-        if ($elemento->link) 
-            return response()->file(storage_path('app/' . $elemento->fichero));
-        else 
-           Alert::danger(trans("messages.generic.nodocument"));
+        if ($elemento->link) return response()->file(storage_path('app/' . $elemento->fichero));
+        Alert::danger(trans("messages.generic.nodocument"));
         return back();
     }
     
     public function gestor($id)
     {
-        $elemento = $this->class::findOrFail($id);
-        if ($elemento->idDocumento) 
-            return redirect("/documento/$elemento->idDocumento/show");
-        else 
-           Alert::danger(trans("messages.generic.nodocument"));
+        $documento = $this->class::findOrFail($id)->idDocumento;
+        if ($documento) return redirect("/documento/$documento/show");
+        
+        Alert::danger(trans("messages.generic.nodocument"));
         return back();
     }
 
     //valida extes per controlar els checkbox que pasen blancs
     protected function validateAll($request, $elemento)
     {
-        foreach ($elemento->getFillable() as $property) {
-            if (isset($elemento->getInputType($property)['type'])){
-                if ($elemento->getInputType($property)['type'] == 'checkbox')
-                    $request->$property = $request->$property == '' ? '0' : '1';
-                if ($elemento->getInputType($property)['type'] == 'file')
-                    if (isset($elemento->$property)) $elemento->removeRequired($property);
-            }
-        }
-        return $this->validate($request, $elemento->getRules());
+        return $this->validate($this->manageCheckBox($request, $elemento), $elemento->getRules());
     }
+    protected function manageCheckBox($request,$elemento){
+        foreach ($elemento->getFillable() as $property) {
+            if (isset($elemento->getInputType($property)['type']) && 
+               ($elemento->getInputType($property)['type'] == 'checkbox'))
+                $request->$property = $request->has($property);
+        }
+        return $request;
+    }
+    
 }

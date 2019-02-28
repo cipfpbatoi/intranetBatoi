@@ -29,7 +29,7 @@ class EmpresaController extends IntranetController
     protected $vista = ['show' => 'empresa','grid'=>'vacia'];
 
     
-    public function create($default=null)
+    public function create($default=[])
     {
         return parent::create(['creador'=> AuthUser()->dni]);
     }

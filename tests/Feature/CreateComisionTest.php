@@ -20,8 +20,8 @@ class CreateComisionTest extends FeatureTestCase
         
         $this->visit(route('comision.create'))
                 ->type('Prueba','servicio')
-                ->type('04-08-2017 08:00','desde')
-                ->type('04-08-2017 14:00','hasta')
+                ->type('04-08-2019 08:00','desde')
+                ->type('04-08-2019 14:00','hasta')
                 ->type('COCHE','medio')
                 ->type('SEAT ALTEA XL','marca')
                 ->type('1023-HDX','matricula')
@@ -30,7 +30,7 @@ class CreateComisionTest extends FeatureTestCase
         
         $this->seeInDatabase('comisiones',[
            'servicio' => 'Prueba',
-            'desde' => '2017-08-04 08:00:00',
+            'desde' => '2019-08-04 08:00:00',
             'estado' => '0',
             'idProfesor' => $this->defaultUser()->dni
         ]);

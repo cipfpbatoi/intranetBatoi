@@ -20,5 +20,6 @@ class Actividad_profesor extends Model
     {
         return $query->where('coordinador', '=', 1);
     }
+    
 
 }

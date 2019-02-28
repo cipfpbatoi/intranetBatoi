@@ -60,9 +60,12 @@ return array(
         'empty' => 'No records',
         'change' => 'Return to my user name',
         'falta' => 'Absences',
+        'desde' => 'From',
+        'hasta' => 'To'
         
      ),
     'buttons' => array(
+        'confirmar' => 'OK',
         'edit' => 'Edit',
         'delete' => 'Delete',
         'pdf' => 'Print',

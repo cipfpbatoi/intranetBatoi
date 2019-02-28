@@ -64,8 +64,6 @@ class Documento extends Model
         return TipoDocumento::allPestana();
     }
 
-    
-
     public function getExistAttribute()
     {
         if (!$this->idDocumento) return false;
@@ -76,12 +74,19 @@ class Documento extends Model
 
     public function getSituacionAttribute()
     {
-        if ($this->link)
+        if ($this->link){
             if ($this->exist) return 'All';
-            else return 'Linked';
-        else
-            if ($this->exist) return 'NoLink';
-            else return 'Nothing';
+            return 'Linked';
+        }     
+        if ($this->exist) return 'NoLink';
+        return 'Nothing';
+    }
+    
+    public function getLinkAttribute()
+    {
+        if (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero)))
+            return true;
+        return false;
     }
     
     public static function crea($elemento, $parametres = null)
@@ -108,6 +113,15 @@ class Documento extends Model
         }
         $doc->save();
         return $doc->id;
+    }
+    
+    protected function llena($parametres)
+    {
+        if (isset($parametres)) {
+            foreach ($parametres as $key => $valor) {
+                $this->$key = $valor;
+            }
+        }
     }
 
 }

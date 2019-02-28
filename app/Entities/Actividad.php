@@ -57,6 +57,7 @@ class Actividad extends Model
         return $this->belongsToMany(Profesor::class,'actividad_profesor', 'idActividad', 'idProfesor', 'id', 'dni')->withPivot('coordinador');
         //return $this->hasManyThrough(Profesor::class, Actividad_profesor::class, 'idActividad', 'dni','id','idProfesor');
     }
+    
 
     /**
      * Devueld el id del Coordinador  

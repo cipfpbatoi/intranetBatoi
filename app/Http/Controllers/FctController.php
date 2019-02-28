@@ -77,20 +77,32 @@ class FctController extends IntranetController
     
     public function document($document)
     {
-        switch (config("pr.$document.cuando")){
-            case '1' : $quienes = AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idAlumno')->orderBy('desde')->get();break;   
-            case '2' : $quienes = AlumnoFct::misFcts()->where('desde','<=',Hoy())->where('hasta','>=',Hoy())->orderBy('idAlumno')->orderBy('desde')->get();break;   
-            case '3' : $quienes = Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get();break;
-        }
-        
-        if ($quienes->count()){
+        return $this->printDocument($document,$this->quienSaleDocumento(config("pr.$document.cuando")));
+    }
+
+    private function printDocument($document,$quienes){
+        if ($quienes->count())
             return $this->hazPdf("pdf.fct.$document", $quienes,
-                    config("pr.$document"), config("pr.$document.orientacion"))->stream();
-        }
-        else{
-            Alert::message('No tens alumnes per a eixa documentació','warning');
-            return back();
-        }    
+                config("pr.$document"), config("pr.$document.orientacion"))->stream();
+
+        Alert::message('No tens alumnes per a eixa documentació','warning');
+        return back();
+
+    }
+
+    private function quienSaleDocumento($tipoDocumento){
+        if ($tipoDocumento == 1) return AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idAlumno')->orderBy('desde')->get();
+        if ($tipoDocumento == 2) return AlumnoFct::misFcts()->where('desde','<=',Hoy())->where('hasta','>=',Hoy())->orderBy('idAlumno')->orderBy('desde')->get();
+        return Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
+
+    }
+    public function documentPost(Request $request,$document)
+    {
+        //dd($request);
+        return $this->printDocument($document,
+            AlumnoFct::misFcts()->where('desde','<=',FechaInglesa($request->desde))
+                ->where('hasta','>=',FechaInglesa($request->hasta))->orderBy('idAlumno')->orderBy('desde')->get());
+
     }
     
     public function pdf($id)

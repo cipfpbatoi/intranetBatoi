@@ -38,10 +38,10 @@ trait traitImprimir
             $this->makeAll($todos, $final);
             if ($link) $this->makeLink($todos,$doc);
             return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
-        } else {
-            Alert::info(trans('messages.generic.empty'));
-            return back();
-        }
+        } 
+        Alert::info(trans('messages.generic.empty'));
+        return back();
+        
     }
 
     protected function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
@@ -50,24 +50,23 @@ trait traitImprimir
         $datosInforme = $datosInforme==null?FechaString(null,'ca'):$datosInforme;
         
         if (is_string($dimensiones)) {
-            $pdf = PDF::loadView($informe, compact('todos', 'datosInforme'))
+            return(PDF::loadView($informe, compact('todos', 'datosInforme'))
                     ->setPaper($dimensiones)
                     ->setOrientation($orientacion)
-                    ->setOption('margin-top', $margin_top);
-        } else {
+                    ->setOption('margin-top', $margin_top));
+        } 
             
-            //carnet
-            $pdf = PDF::loadView($informe, compact('todos', 'datosInforme'))
-                    ->setOrientation($orientacion)
-                    ->setOption('margin-top', 2)
-                    ->setOption('margin-left', 0)
-                    ->setOption('margin-right', 0)
-                    ->setOption('margin-bottom', 0)
-                    ->setOption('page-width', $dimensiones[0])
-                    ->setOption('page-height', $dimensiones[1]);
-        }
-
-        return($pdf);
+        //carnet
+        return(PDF::loadView($informe, compact('todos', 'datosInforme'))
+                ->setOrientation($orientacion)
+                ->setOption('margin-top', 2)
+                ->setOption('margin-left', 0)
+                ->setOption('margin-right', 0)
+                ->setOption('margin-bottom', 0)
+                ->setOption('page-width', $dimensiones[0])
+                ->setOption('page-height', $dimensiones[1]));
+       
+       
     }
     
     //torna arxiu ics per a guardar

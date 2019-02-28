@@ -39,9 +39,7 @@ class ActividadController extends IntranetController
                 ->where('extraescolar', 1)
                 ->get();
     }
-    
-    
-
+   
     public function store(Request $request)
     {
         $id = $this->realStore($request);
@@ -122,32 +120,30 @@ class ActividadController extends IntranetController
 
     public function notify($id)
     {
-        $elemento = Actividad::findOrFail($id);
-        $profesores = Actividad_profesor::where('idActividad', '=', $id)->get();
-        $grupos = ActividadGrupo::where('idActividad', '=', $id)->get();
-        $mensaje = "Els grups: -";
-        foreach ($grupos as $grup) {
-            $grupo = Grupo::where('codigo', '=', $grup->idGrupo)
-                    ->first();
-            $mensaje .= $grupo->nombre . "- ";
-        }
-        $mensaje .= "se'n van a l'activitat extraescolar: " . $elemento->name . " i jo me'n vaig amb ells. ";
-        $mensaje .= 'Estarem fora des de ' . $elemento->desde . " fins " . $elemento->hasta;
-        foreach ($profesores as $profe) {
-            $profesor = Profesor::where('dni', $profe->idProfesor)->first();
-            $this->avisaProfe($elemento, $profesor->dni, $mensaje, $profesor->nombre . " " . $profesor->apellido1);
+        $mensaje = $this->hazMensaje($elemento = Actividad::findOrFail($id));
+        
+        foreach ($elemento->profesores as $profesor) {
+            $this->avisaProfesorat($elemento,  $mensaje, $profesor->dni,$profesor->shortName);
         }
         return back();
     }
 
+    protected function hazMensaje($elemento){
+        
+        $mensaje = "Els grups: -";
+        foreach ($elemento->grupos as $grupo) {
+            $mensaje .= $grupo->nombre . "- ";
+        }
+        $mensaje .= "se'n van a l'activitat extraescolar: " . $elemento->name . " i jo me'n vaig amb ells. ";
+        $mensaje .= 'Estarem fora des de ' . $elemento->desde . " fins " . $elemento->hasta;
+        return $mensaje;
+    }
+    
     public function autorizacion($id)
     {
         $grups = [];
         $elemento = Actividad::findOrFail($id);
-        $grupos = ActividadGrupo::select('idGrupo')->where('idActividad', '=', $id)->get();
-        foreach ($grupos as $grupo) {
-            $grups[] = $grupo->idGrupo;
-        }
+        $grups = hazArray(ActividadGrupo::select('idGrupo')->where('idActividad', '=', $id)->get(),'idGrupo');
         $todos = Alumno::join('alumnos_grupos', 'idAlumno', '=', 'nia')
                 ->select('alumnos.*', 'idGrupo')
                 ->QGrupo($grups)

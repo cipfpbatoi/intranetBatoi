@@ -63,9 +63,12 @@ return array(
         'completa' => 'Vore les dades completes',
         'simplifica' => 'Vore les últimes dades',
         'resempresa' => 'Inserció laboral',
-        'faltas' => 'Absències'
+        'faltas' => 'Absències',
+        'desde' => 'Des de',
+        'hasta' => 'Fins',
      ),
     'buttons' => array(
+        'confirmar' => 'Confirmar',
         'edit' => 'Editar',
         'delete' => 'Esborrar',
         'pdf' => 'Imprimir',

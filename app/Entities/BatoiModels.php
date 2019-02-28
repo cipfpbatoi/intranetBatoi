@@ -20,9 +20,7 @@ trait BatoiModels
 
     public function isRequired($campo)
     {
-        if (isset($this->rules[$campo]))
-            if (strpos($this->rules[$campo], 'equired'))
-                return true;
+        if (isset($this->rules[$campo])&&strpos($this->rules[$campo], 'equired')) return true;
         return false;
     }
 
@@ -30,12 +28,14 @@ trait BatoiModels
     {
         $this->inputTypes[$id] = $tipo;
     }
+    
     public function deleteInputType($id){
         unset($this->inputTypes[$id]);
         foreach ($this->fillable as $key => $item){
             if ($item == $id) unset($this->fillable[$key]);
         }
     }
+    
     public function addFillable($field,$first=false)
     {
         if ($first){
@@ -47,6 +47,7 @@ trait BatoiModels
             $this->fillable[] = $ultimo;
         }
     }
+    
     public function setRule($id,$rule)
     {
         $this->rules[$id] = $rule;
@@ -55,93 +56,99 @@ trait BatoiModels
     {
         return $this->rules[$id];
     }
-    public function removeRequired($id)
-    {
-        if ($this->isRequired($id))
-            $this->setRule($id,substr($this->getRule($id),9));
-    }
-
-//    public function getInputTypes()
+//    public function removeRequired($id)
 //    {
-//        return $this->$inputTypes;
+//        if ($this->isRequired($id))
+//            $this->setRule($id,substr($this->getRule($id),9));
 //    }
+
     public function getInputType($campo)
     {
         return isset($this->inputTypes[$campo]) ? $this->inputTypes[$campo] : ['type' => 'text'];
     }
 
-    public function isDatepicker()
+    public function existsDatepicker()
     {
-        $thereis = false;
         foreach ($this->inputTypes as $type)
-            if (isset($type['type'])) {
-                if (strpos($type['type'], 'ate') or strpos($type['type'], 'ime') or strpos($type['type'], 'ag'))
-                    $thereis = true;
-            }
-        return $thereis;
+            if ($this->isTypeDate($type)) return true;
+        return false;
+    }
+    public function isTypeDate($type)
+    {
+        if (isset($type['type']) && (strpos($type['type'], 'ate') or strpos($type['type'], 'ime') or strpos($type['type'], 'ag'))) return true;
+        return false;
     }
 
-    private function EspecialFields()
-    {
-        $campos = [];
-        foreach ($this->inputTypes as $key => $type) {
-            if (isset($type['type'])) {
-                if (strpos($type['type'], 'ate')) {
-                    if (strpos($type['type'], 'ime'))
-                        $campos[$key] = 'datetime';
-                    else
-                        $campos[$key] = 'date';
-                }
-                if (strpos($type['type'], 'ile')) {
-                    $campos[$key] = 'file';
-                }
-                if (strpos($type['type'], 'elect')) {
-                    $campos[$key] = 'select';
-                }
-            }
+//    private function lookForEspecialFields()
+//    {
+//        $campos = [];
+//        foreach ($this->inputTypes as $key => $type) {
+//            if (isset($type['type'])) {
+//                if (strpos($type['type'], 'ate')) {
+//                    if (strpos($type['type'], 'ime'))
+//                        $campos[$key] = 'datetime';
+//                    else
+//                        $campos[$key] = 'date';
+//                }
+//                if (strpos($type['type'], 'ile')) {
+//                    $campos[$key] = 'file';
+//                }
+//                if (strpos($type['type'], 'elect')) {
+//                    $campos[$key] = 'select';
+//                }
+//            }
+//        }
+//        return $campos;
+//    }
+    
+    private function fillFile(Request $request){
+        if (!$request->file('fichero')->isValid()){
+            Alert::danger(trans('messages.generic.invalidFormat'));
+            return ;
         }
-        return $campos;
-    }
-
-    public function fillAll(Request $request)
-    {
-        $dates = $this->EspecialFields();
-        $fillable = $this->notFillable?array_diff($this->fillable,$this->notFillable):$this->fillable; 
-        
-        foreach ($fillable as $key) {
-            if (isset($dates[$key])) {
-                if ($dates[$key] == 'date')
-                    $this->$key = (new Date($request->$key))->format('Y-m-d');
-                if ($dates[$key] == 'datetime')
-                    $this->$key = (new Date($request->$key))->format('Y-m-d H:i');
-                if ($dates[$key] == 'select')
-                    $this->$key = $request->$key == ''?null:$request->$key;
-            } else {
-                if (isset($request->$key)) 
-                    $this->$key = $request->$key;
-            }
+        $clase = getClase($this) == 'Documento'?$this->tipoDocumento:getClase($this);
+        $extension = $request->file('fichero')->getClientOriginalExtension();
+        $nombre = isset($this->id)?$this->id.'_':'';
+        if (isset($this->fileField)){
+            $field = $this->fileField;
+            $nombre .= $this->$field.'_';
         }
-        
+        $nombre .= $clase . '.' . $extension;
+        $directorio = '/gestor/' . Curso() . '/' . $clase;
+        $this->fichero = $request->file('fichero')->storeAs($directorio,$nombre);
         $this->save();
         
-        if ($request->hasFile('fichero')) {
-            if ($request->file('fichero')->isValid()) {
-                $clase = getClase($this) == 'Documento'?$this->tipoDocumento:getClase($this);
-                $extension = $request->file('fichero')->getClientOriginalExtension();
-                $nombre = isset($this->id)?$this->id.'_':'';
-                if (isset($this->fileField)){
-                    $field = $this->fileField;
-                    $nombre .= $this->$field.'_';
-                }
-                
-                $nombre .= $clase . '.' . $extension;
-                $directorio = '/gestor/' . Curso() . '/' . $clase;
-                $this->fichero = $request->file('fichero')->storeAs($directorio,$nombre);
-                $this->save();
-            } else {
-                Alert::danger(trans('messages.generic.invalidFormat'));
-            }
+    } 
+//    private function fillField($type,$value){
+//        if (isset($type)) {
+//            if ($type == 'date') return (new Date($value))->format('Y-m-d');
+//            if ($type == 'datetime') return (new Date($value))->format('Y-m-d H:i');
+//            if ($type == 'select') return $value == ''?null:$value;
+//        } 
+//        return $value;
+//    }
+    
+    private function fillField($key,$value){
+        $type = isset($this->inputTypes[$key]['type'])?$this->inputTypes[$key]['type']:null;
+        if ($type == 'date') return (new Date($value))->format('Y-m-d');
+        if ($type == 'datetime') return (new Date($value))->format('Y-m-d H:i');
+        if ($type == 'select') return $value == ''?null:$value;
+        return $value;
+    }
+    
+    public function fillAll(Request $request)
+    {
+        $fillable = $this->notFillable?array_diff($this->fillable,$this->notFillable):$this->fillable;
+        //$dates = $this->lookForEspecialFields();
+        foreach ($fillable as $key) {
+            if (isset($request->$key))
+                //$this->$key = $this->fillField(isset($dates[$key])?$dates[$key]:null, $request->$key);
+                $this->$key = $this->fillField($key, $request->$key);
         }
+        $this->save();
+        
+        if ($request->hasFile('fichero')) $this->fillFile($request);
+        
         $primaryKey = isset($this->primaryKey) ? $this->primaryKey : 'id';
         return $this->$primaryKey;
     }
@@ -191,26 +198,11 @@ trait BatoiModels
         return($InputType);
     }
     
-    protected function llena($parametres)
-    {
-        if (isset($parametres)) {
-            foreach ($parametres as $key => $valor) {
-                $this->$key = $valor;
-            }
-        }
-    }
     
-    public function getLinkAttribute()
-    {
-        if (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero)))
-            return true;
-        else
-            return false;
-    }
     
     public function has($field)
     {
         if (isset($this->$field) || is_null($this->$field)) return true;
-        else return false;
+        return false;
     }
 }
