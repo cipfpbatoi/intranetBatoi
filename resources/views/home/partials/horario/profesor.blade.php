@@ -6,17 +6,20 @@
         <td>{{$hora->hora_ini}} - {{$hora->hora_fin}}</td>
         @foreach (array('L','M','X','J','V') as $dia_semana)
             @if (isset($horario[$dia_semana][$hora->codigo]))
-                @if (isset($horario[$dia_semana][$hora->codigo]->modulo))
+                <!-- @if (isset($horario[$dia_semana][$hora->codigo]->modulo))
+Juan, 2019-03-03: antes miraba si tiene módulo y lo ponía. Para que Parra pueda asignar GUARDIAS a módulos miraremos si tiene ocupación y la pondrá 
+(cambiamos al if por el else)				-->
+                @if (isset($horario[$dia_semana][$hora->codigo]->ocupacion))
+                    <td id="{{$hora->codigo}}-{{$dia_semana}}" class='warning'><div data-orig="{{$hora->codigo}}-{{$dia_semana}}">
+                        <span>{{ $horario[$dia_semana][$hora->codigo]->Ocupacion->nombre }}</span>
+                    </div></td>
+                @else
                     <td id="{{$hora->codigo}}-{{$dia_semana}}" class='active'><div data-orig="{{$hora->codigo}}-{{$dia_semana}}">
                         <strong>{{ $horario[$dia_semana][$hora->codigo]->Modulo->cliteral }}</strong><br/>
                         {{ $horario[$dia_semana][$hora->codigo]->Grupo->nombre }}(
                         {{ $horario[$dia_semana][$hora->codigo]->aula }})
                     </div></td>
                     
-                @else
-                    <td id="{{$hora->codigo}}-{{$dia_semana}}" class='warning'><div data-orig="{{$hora->codigo}}-{{$dia_semana}}">
-                        <span>{{ $horario[$dia_semana][$hora->codigo]->Ocupacion->nombre }}</span>
-                    </div></td>
                 @endif
             @else
                 <td id="{{$hora->codigo}}-{{$dia_semana}}"></td>
