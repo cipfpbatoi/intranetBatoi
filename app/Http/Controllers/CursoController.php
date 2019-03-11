@@ -116,8 +116,9 @@ class CursoController extends IntranetController
      */
     public function pdf($id)
     {
+        $curso = Curso::find($id);
         if (haVencido($curso->fecha_fin))
-            return self::hazPdf('pdf.alumnos.manipulador',AlumnoCurso::Curso($id)->Finalizado()->get(),Curso::find($id))->stream();
+            return self::hazPdf('pdf.alumnos.manipulador',AlumnoCurso::Curso($id)->Finalizado()->get(),$curso)->stream();
 
         return self::imprime($id);
     }
