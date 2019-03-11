@@ -23,7 +23,7 @@
                             <td>Jo</td>
                             @foreach ($moduloVotes->groupBy('option_id') as $option)
                                 @if ($option->sum('value')>0)
-                                    <td> {{round($option->avg('value'),1)}} de {{$option->sum('value')}} Alumnes</td>
+                                    <td> {{round($option->avg('value'),1)}} de {{$option->count('value')}} Alumnes</td>
                                 @endif
                             @endforeach
                         </tr>
