@@ -11,7 +11,7 @@
             <div class="left col-xs-6">
                 @if ($elemento->fichero)
                     <h5><i class="fa fa-file-pdf-o"></i>
-                        @if (config('constants.programaciones.fichero'))
+                        @if (config('variables.programaciones.fichero'))
                             <a href="/programacion/{{$elemento->id}}/document" target="_blank"> 
                         @else
                             <a href="/programacion/{{$elemento->id}}/link" target="_blank">

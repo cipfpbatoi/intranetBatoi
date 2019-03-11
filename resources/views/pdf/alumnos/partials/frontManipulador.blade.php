@@ -33,5 +33,5 @@
 <div class="container" style="width:50%;float: center">
     <br/><br/><br/><br/>
     
-    <p>A {{config('constants.contacto.poblacion')}}, a {{FechaString()}} </p>
+    <p>A {{config('contacto.poblacion')}}, a {{FechaString()}} </p>
 </div>

@@ -147,10 +147,9 @@ class FctController extends IntranetController
      */
     public function documentPost(Request $request, $document)
     {
-        //dd($request);
         return $this->printDocument($document,
-            AlumnoFct::misFcts()->where('desde','<=',FechaInglesa($request->desde))
-                ->where('hasta','>=',FechaInglesa($request->hasta))->orderBy('idAlumno')->orderBy('desde')->get());
+            AlumnoFct::misFcts()->where('desde','<=',FechaInglesa($request->hasta))
+                ->where('hasta','>=',FechaInglesa($request->desde))->orderBy('idAlumno')->orderBy('desde')->get());
 
     }
 
