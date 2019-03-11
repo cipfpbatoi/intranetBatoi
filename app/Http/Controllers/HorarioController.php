@@ -20,34 +20,43 @@ class HorarioController extends IntranetController
     protected $modal = true;
 
 
+    private function getJsonFromFile($dni){
+        if (Storage::disk('local')->exists('/horarios/'.$dni.'.json') && $fichero = Storage::disk('local')->get('/horarios/'.$dni.'.json'))
+            return json_decode($fichero);
+        return null;
+    }
+    private function changeHorary($dni,$cambios){
+        foreach ($cambios as $cambio) {
+
+            $de=explode("-",$cambio->de);
+            $a=explode("-", $cambio->a);
+
+            $horario = Horario::dia($de[1])->orden($de[0])->Profesor($dni)->first();
+            $horario->dia_semana = $a[1];
+            $horario->sesion_orden = $a[0];
+            $horario->save();
+        }
+    }
+    private function saveCopy($dni,$data){
+        if (! Storage::disk('local')->exists('/horarios/horariosCambiados/'.$dni.'.json'))
+            Storage::disk('local')->put('/horarios/horariosCambiados/'.$dni.'.json', json_encode($data));
+
+    }
+
     public function changeTable($dni,$redirect=true){
         $correcto = false;
-        if (Storage::disk('local')->exists('/horarios/'.$dni.'.json'))
-            if ($fichero = Storage::disk('local')->get('/horarios/'.$dni.'.json')) {
-                $data=json_decode($fichero);
+        if ($data = $this->getJsonFromFile($dni)){
                 switch ($data->estado) {
                     case "Aceptado":
-			            // Guardfa el fichero original
-                        if (! Storage::disk('local')->exists('/horarios/horariosCambiados/'.$dni.'.json'))
-                            Storage::disk('local')->put('/horarios/horariosCambiados/'.$dni.'.json', json_encode($data));
+			            $this->saveCopy($dni,$data);
+                        $this->changeHorary($dni,$data->cambios);
 
-                        foreach ($data->cambios as $cambio) {
-                        
-                           $de=explode("-",$cambio->de);
-                           $a=explode("-", $cambio->a);
-
-                           $horario = Horario::dia($de[1])->orden($de[0])->Profesor($dni)->first();
-                           $horario->dia_semana = $a[1];
-                           $horario->sesion_orden = $a[0];
-                           $horario->save();
-                        }
-
-                        // Pon el estado del fichero como "Guardado"
                         $data->estado="Guardado";
                         $data->cambios=[];
                         if (Storage::disk('local')->put('/horarios/'.$dni.'.json', json_encode($data)))
-                                $correcto = true;
-                        else Alert::warning("Horari amb dni $dni modificat però no s\'ha pogut guardar el fitxer");
+                            $correcto = true;
+                        else
+                            Alert::warning("Horari amb dni $dni modificat però no s\'ha pogut guardar el fitxer");
                         break;
                     case "Guardado":
                         Alert::info("Horari amb dni $dni ja està guardat");
@@ -55,7 +64,8 @@ class HorarioController extends IntranetController
                     default:
                         Alert::warning("Horari amb dni $dni no està aceptat");
                 }
-              } else  Alert::danger("Horari amb dni $dni no té canvis");
+        } else  Alert::danger("Horari amb dni $dni no té canvis");
+
         if ($redirect) return back();
         else return $correcto;
     }

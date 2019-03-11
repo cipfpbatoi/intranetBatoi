@@ -8,21 +8,43 @@ use Intranet\Entities\AlumnoFctAval;
 use Mail;
 use Intranet\Mail\AvalFct;
 
+/**
+ * Class PanelActasController
+ * @package Intranet\Http\Controllers
+ */
 class PanelActasController extends BaseController
 {
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'AlumnoFctAval';
+    /**
+     * @var array
+     */
     protected $gridFields = ['Nombre', 'hasta', 'horas', 'qualificacio', 'projecte'];
-    protected $vista = ['index' => 'intranet.list'] ;  
-    
-    
+    /**
+     * @var array
+     */
+    protected $vista = ['index' => 'intranet.list'] ;
+
+
+    /**
+     *
+     */
     protected function iniBotones()
     {
         if (Grupo::findOrFail($this->search)->acta_pendiente)
             $this->panel->setBoton('index', new BotonBasico("direccion.$this->search.finActa",['text'=>'acta']));
     }
-    
+
+    /**
+     * @return array|mixed
+     */
     protected function search(){
         $grupo = Grupo::findOrFail($this->search);
         $this->titulo = ['quien' => $grupo->nombre ];
@@ -31,11 +53,14 @@ class PanelActasController extends BaseController
         else 
             return [];
     }
-    
+
+    /**
+     * @param $idGrupo
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function finActa($idGrupo){
         $grupo = Grupo::findOrFail($idGrupo);
         $fcts = AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
-        $empresas = [];
         foreach ($fcts as $fct){
             $fct->actas = 2;
             $fct->save();
@@ -51,5 +76,6 @@ class PanelActasController extends BaseController
         Mail::to($grupo->Tutor->email, 'Intranet Batoi')->send(new AvalFct($empresas,'tutor'));
         return back();
     }
+
     
 }

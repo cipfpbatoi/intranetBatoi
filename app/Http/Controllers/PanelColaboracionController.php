@@ -10,14 +10,30 @@ use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
 
 
+/**
+ * Class PanelColaboracionController
+ * @package Intranet\Http\Controllers
+ */
 class PanelColaboracionController extends IntranetController
 {
-    
+
+    /**
+     * @var array
+     */
     protected $gridFields = ['Empresa','concierto','Localidad','puestos','Xcolabora','contacto', 'telefono','email'];
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'miscolaboraciones';
-    
-    
+
+
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['inicia','contacto','documentacion']);
@@ -29,20 +45,37 @@ class PanelColaboracionController extends IntranetController
   
         Session::put('redirect', 'PanelColaboracionController@index');
     }
+
+    /**
+     * @return mixed
+     */
     public function search(){
         return Colaboracion::MiColaboracion()->get();
     }
-    
-    public function colabora($id,$tipo){
+
+    /**
+     * @param $id
+     * @param $tipo
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function colabora($id, $tipo){
         $colaboracion = Colaboracion::find($id);
         $colaboracion->colabora = $tipo;
         $colaboracion->save();
         return $this->redirect();
     }
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function inicia(){
         Colaboracion::MiColaboracion()->update(['colabora' => 0]);
         return $this->redirect();
     }
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function documentacion(){
         $colaboraciones = Colaboracion::MiColaboracion()->where('colabora',1)->get();
         foreach ($colaboraciones as $colaboracion){

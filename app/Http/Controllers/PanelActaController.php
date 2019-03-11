@@ -8,26 +8,42 @@ use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 
 
+/**
+ * Class PanelActaController
+ * @package Intranet\Http\Controllers
+ */
 class PanelActaController extends BaseController
 {
-    
+
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Documento';
-   
+
+    /**
+     * @param null $grupo
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function index($grupo=null)
     {
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
         if ($this->iniPestanas($grupo))
             return $this->grid($this->search($grupo),$this->modal);
-        else{
-            Alert::danger('No hi ha actes disponibles');
-            return redirect()->route('home');
-        } 
-            
+
+        Alert::danger('No hi ha actes disponibles');
+        return redirect()->route('home');
      }
-    
-    
+
+
+    /**
+     * @param null $grupo
+     * @return mixed
+     */
     public function search($grupo = null)
     {
         $roles = RolesUser(AuthUser()->rol);
@@ -37,10 +53,28 @@ class PanelActaController extends BaseController
                 ->whereIn('grupo', $profe->grupos())
                 ->get();
     }
-    
+
+    /**
+     * @param $grupos
+     */
+    private function createGrupsPestana($grupos){
+        $first = false;
+        foreach ($grupos as $grupo) {
+            if ($first)
+                $this->panel->setPestana($grupo->grupo, true, 'profile.documento', ['grupo', $grupo->grupo]);
+            else {
+                $this->panel->setPestana($grupo->grupo, true, 'profile.documento', ['grupo', $grupo->grupo],null,1);
+                $first = true;
+            }
+        }
+    }
+
+    /**
+     * @param null $grupo
+     * @return bool|void
+     */
     protected function iniPestanas($grupo = null)
     {
-        $first = false;
         $roles = RolesUser(AuthUser()->rol);
         $profe = Profesor::find(AuthUser()->dni);
         $grupos = Documento::select('grupo')
@@ -50,14 +84,7 @@ class PanelActaController extends BaseController
                 ->distinct()
                 ->get();
         if ($grupos){
-            foreach ($grupos as $grupo) {
-                if ($first) $this->panel->setPestana($grupo->grupo, true, 'profile.documento', ['grupo', $grupo->grupo]);
-                    else {
-                        $this->panel->setPestana($grupo->grupo, true, 'profile.documento', ['grupo', $grupo->grupo],null,1);
-                        $first = true;
-                    }
-
-            }
+            $this->createGrupsPestana($grupos);
             return true;
         }
         return false;

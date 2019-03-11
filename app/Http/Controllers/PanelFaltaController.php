@@ -5,17 +5,39 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonIcon;
 
+/**
+ * Class PanelFaltaController
+ * @package Intranet\Http\Controllers
+ */
 class PanelFaltaController extends BaseController
 {
     use traitPanel;
 
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Falta';
+    /**
+     * @var array
+     */
     protected $gridFields = ['id', 'nombre', 'desde', 'hasta', 'motivo', 'situacion'];
+    /**
+     * @var bool
+     */
     protected $notFollow = true;
+    /**
+     * @var array
+     */
     protected $parametresVista = ['modal' => ['explicacion']];
-    
-    
+
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     protected function create()
     {
         $elemento = new $this->class;
@@ -25,8 +47,11 @@ class PanelFaltaController extends BaseController
         $modelo = $this->model;
         return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
     }
-    
-    
+
+
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create.direccion']);

@@ -5,17 +5,36 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonIcon;
 
 
+/**
+ * Class PanelActividadController
+ * @package Intranet\Http\Controllers
+ */
 class PanelActividadController extends BaseController
 {
 
     use traitPanel;
-    
+
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Actividad';
+    /**
+     * @var array
+     */
     protected $gridFields = ['name', 'desde', 'hasta', 'situacion'];
+    /**
+     * @var array
+     */
     protected $parametresVista = ['before' => [] , 'modal' => ['explicacion']];
-    
-    
+
+
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera([], ['delete', 'notification']);

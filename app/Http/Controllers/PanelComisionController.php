@@ -5,15 +5,31 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonIcon;
 
 
+/**
+ * Class PanelComisionController
+ * @package Intranet\Http\Controllers
+ */
 class PanelComisionController extends BaseController
 {
     use traitPanel;
 
+    /**
+     * @var array
+     */
     protected $gridFields = ['id', 'nombre','servicio', 'desde','total', 'situacion'];
+    /**
+     * @var string
+     */
     protected $perfil = 'profesor';
+    /**
+     * @var string
+     */
     protected $model = 'Comision';
-    
-    
+
+
+    /**
+     *
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera([], ['delete', 'edit', 'notification']);

@@ -51,7 +51,7 @@ class PollController extends IntranetController
         $options_numeric = $poll->options->where('scala','>',0);
         $options_text = $poll->options->where('scala','=',0);
         foreach (Modulo_grupo::misModulos() as $modulo){
-            $myVotes[$modulo->ModuloCiclo->Modulo->literal] = Vote::myVotes($id,$modulo->id)->get();
+            $myVotes[$modulo->ModuloCiclo->Modulo->literal][$modulo->Grupo->codigo] = Vote::myVotes($id,$modulo->id)->get();
         }
         foreach (Grupo::misGrupos()->get() as $grup){
             $myGroupsVotes[$grup->codigo] = Vote::myGroupVotes($id,$grup->codigo)->get();

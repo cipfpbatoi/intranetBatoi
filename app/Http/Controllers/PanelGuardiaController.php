@@ -31,8 +31,6 @@ class PanelGuardiaController extends BaseController
         $idProfesor = AuthUser()->dni;
         $sesion = sesion(hora());
         $dia_semana = nameDay(Hoy());
-
-        
         $guardia = Horario::distinct()
                 ->Profesor($idProfesor)
                 ->Dia($dia_semana)
