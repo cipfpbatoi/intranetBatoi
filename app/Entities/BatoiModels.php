@@ -150,9 +150,7 @@ trait BatoiModels
     /**
      * @param Request $request
      */
-    private function fillFile(Request $request){
-        $file = $request->file('fichero');
-
+    public function fillFile($file){
         if (!$file->isValid()){
             Alert::danger(trans('messages.generic.invalidFormat'));
             return ;
@@ -216,7 +214,7 @@ trait BatoiModels
         }
         $this->save();
         
-        if ($request->hasFile('fichero')) $this->fillFile($request);
+        if ($request->hasFile('fichero')) $this->fillFile($request->file('fichero'));
         
         $primaryKey = isset($this->primaryKey) ? $this->primaryKey : 'id';
         return $this->$primaryKey;

@@ -6,6 +6,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Entities\Empresa;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\Session;
@@ -193,6 +194,34 @@ class AdministracionController extends Controller
         $a->orientacion = 0;
         $a->informe = 1;
         $a->save();
+    }
+
+    public function importaAnexoI(){
+        $canvis = 0;
+        $nous = 0;
+        $malament = 0;
+        foreach (Empresa::all() as $elemento){
+            if (isset($elemento->fichero)&&strpos($elemento->fichero,'2018-2019')&&(file_exists(storage_path('/app/'.$elemento->fichero)))){
+                Storage::put('gestor/Empresa/'.$elemento->cif.'.pdf',Storage::get($elemento->fichero));
+                $elemento->fichero = 'gestor/Empresa/'.$elemento->cif.'.pdf';
+                $elemento->save();
+                $canvis++;
+            }
+            else {
+                if (file_exists(storage_path('app/gestor/Empresa/' . $elemento->cif.'.pdf'))) {
+                    $elemento->fichero = 'gestor/Empresa/' . $elemento->cif.'.pdf';
+                    $elemento->save();
+                    $nous++;
+                } else {
+                    $elemento->fichero = '';
+                    $elemento->save();
+                    $malament++;
+                }
+            }
+
+        }
+        Alert::info($canvis.' canviats,'.$nous.' nous,'.$malament.' esborrats');
+        return back();
     }
     
     
