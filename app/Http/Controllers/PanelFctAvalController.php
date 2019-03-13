@@ -153,7 +153,7 @@ class PanelFctAvalController extends IntranetController
             $grupo->save();
             avisa(config('contacto.jefeEstudios2'), "Acta pendent grup $grupo->nombre", config('contacto.host.web')."/direccion/$grupo->codigo/acta");
             Alert::message('Acta demanada', 'info');
-            return back()
+            return back();
         }
 
         Alert::message('No tens nous alumnes per ser avaluats', 'warning');

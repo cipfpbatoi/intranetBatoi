@@ -13,6 +13,8 @@ Route::get('/menu/{menu}/down', ['as' => 'menu.down', 'uses' => 'MenuController@
 //importació
 Route::get('/import', ['as' => 'import.create', 'uses' => 'ImportController@create']);
 Route::post('/import', ['as' => 'import.store', 'uses' => 'ImportController@store']);
+Route::get('/teacherImport', ['as' => 'teacherImport.create', 'uses' => 'TeacherImportController@create']);
+Route::post('/teacherImport', ['as' => 'teacherImport.store', 'uses' => 'TeacherImportController@store']);
 
 //manteniment taula mòduls
 Route::resource('/modulo', 'ModuloController', ['except' => ['destroy', 'update', 'show']]);
