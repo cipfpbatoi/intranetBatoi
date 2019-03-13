@@ -42,7 +42,7 @@ class Empresa extends Model
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
-    protected $fileField = 'concierto';
+    protected $fileField = 'cif';
 
     public function __construct()
     {
@@ -62,11 +62,21 @@ class Empresa extends Model
         $empreses = Centro::select('idEmpresa')->distinct()->whereIn('id',$centros)->get()->toArray();
         return $query->whereIn('id',$empreses);
     }
- public function scopeMenor($query, $fecha = null)
+
+    public function scopeMenor($query, $fecha = null)
     {
         $hoy = $fecha ? new Date($fecha) : new Date();
         $hace18 = $hoy->subYears(18)->toDateString();
         return $query->where('fecha_nac', '>', $hace18);
     }
-    
+
+    private function getDirectory($clase){
+        return '/gestor/' . $clase;
+    }
+
+    private function getFileName($extension,$clase)
+    {
+        return $this->cif.'.'.$extension;
+    }
+
 }

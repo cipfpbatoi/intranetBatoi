@@ -151,23 +151,34 @@ trait BatoiModels
      * @param Request $request
      */
     private function fillFile(Request $request){
-        if (!$request->file('fichero')->isValid()){
+        $file = $request->file('fichero');
+
+        if (!$file->isValid()){
             Alert::danger(trans('messages.generic.invalidFormat'));
             return ;
         }
         $clase = getClase($this) == 'Documento'?$this->tipoDocumento:getClase($this);
-        $extension = $request->file('fichero')->getClientOriginalExtension();
+        $this->fichero = $file->storeAs($this->getDirectory($clase)
+            ,$this->getFileName($file->getClientOriginalExtension(),$clase));
+        $this->save();
+        
+    }
+
+    private function getDirectory($clase){
+        return '/gestor/' . Curso() . '/' . $clase;
+    }
+
+    private function getFileName($extension,$clase)
+    {
         $nombre = isset($this->id)?$this->id.'_':'';
         if (isset($this->fileField)){
             $field = $this->fileField;
             $nombre .= $this->$field.'_';
         }
         $nombre .= $clase . '.' . $extension;
-        $directorio = '/gestor/' . Curso() . '/' . $clase;
-        $this->fichero = $request->file('fichero')->storeAs($directorio,$nombre);
-        $this->save();
-        
-    } 
+        return $nombre;
+    }
+
 //    private function fillField($type,$value){
 //        if (isset($type)) {
 //            if ($type == 'date') return (new Date($value))->format('Y-m-d');
