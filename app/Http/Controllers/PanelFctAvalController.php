@@ -167,12 +167,13 @@ class PanelFctAvalController extends IntranetController
     private function lookForStudents($projectNeeded){
         $found = false;
         foreach (AlumnoFctAval::MisFcts()->NoAval()->get() as $fct) {
-            if ($projectNeeded)
+            if ($projectNeeded){
                 if (isset($fct->calProyecto)) {
                     $fct->actas = 3;
                     $fct->save();
                     $found = true;
                 }
+            }
             else
                 if (isset($fct->calificacion)) {
                     $fct->actas = 3;
@@ -180,6 +181,7 @@ class PanelFctAvalController extends IntranetController
                     $found = true;
                 }
         }
+
         return $found;
     }
 
