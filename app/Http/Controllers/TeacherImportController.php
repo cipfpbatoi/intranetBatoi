@@ -150,7 +150,7 @@ class TeacherImportController extends Seeder
         $xml = simplexml_load_file($fxml);
         if ($request->horari) $this->esborraHoraris($request->idProfesor);
         foreach ($this->campos_bd_xml as $table)
-            $this->manageTable($xml->{$table['nombrexml']},$table,$request->profesor);
+            $this->manageTable($xml->{$table['nombrexml']},$table,$request->idProfesor);
 
     }
 

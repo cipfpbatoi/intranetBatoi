@@ -202,7 +202,8 @@ return array(
         'Register' => 'Registrar Curso/Ponencia',
         'Documento' => 'Gestor Documental',
         'Nohanfichado' => 'Presencia',
-        'Fct' => 'FCTs',
+        'Fct' => 'FCTsxEmpresa',
+        'Fctxal' => 'FCTsxAlumno',
         'Empresa' => 'Empresas',
         'Extraescolares' => 'Informe Departamento',
         'Lfaltas' => 'Listados mensuales',
@@ -257,6 +258,7 @@ return array(
         'Dual' => 'FP Dual',
         'Micolaboracion' => 'Preparar Colaboraciones',
         'Poll' => 'Encuestas',
+
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
