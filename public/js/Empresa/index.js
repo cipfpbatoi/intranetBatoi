@@ -3,21 +3,10 @@
 const PRACTICAS=31;
 const DUAL=37;
 
- 
+
 var autorizado=(!($('#rol').text()%PRACTICAS)||!($('#rol').text()%DUAL));
 
-if (autorizado){
- var contenido = `
-                <a href="#" class="shown">
-                    <i class="fa fa-plus" title="Mostrar"></i>
-                </a>`;
- var opcional = `<a href="#" class="document">
-                    <i class="fa fa-eye" title="Anexe I"></i>
-                </a>
-                `;
-    }
-else
-  var contenido = ` `;
+
 
 const COLUMNS=[
             {data: 'concierto'},
@@ -50,21 +39,16 @@ const TABLA ='Empresa';
         rowId : ID,
         responsive: true,
         columnDefs: [
-            {   responsivePriority: 1,
+            {
+                responsivePriority: 1,
                 targets: COLUMNS.length-1,
-                "render": function ( data ) {
-                        if (data.fichero)
-                            return  `
-                <a href="#" class="shown">
-                    <i class="fa fa-plus" title="Mostrar"></i>
-                </a><a href="#" class="document">
-                    <i class="fa fa-eye" title="Anexe I"></i>
-                </a>`;
-                        else
-                            return  `
-                <a href="#" class="shown">
-                    <i class="fa fa-plus" title="Mostrar"></i>
-                </a>`;
+                "render": function ( data,autorizado ) {
+                        if (autorizado){
+                            if (data.fichero)
+                                return  `<a href="#" class="shown"><i class="fa fa-plus" title="Mostrar"></i></a> <a href="#" class="document"><i class="fa fa-eye" title="Anexe I"></i></a>`;
+                            else
+                                return  `<a href="#" class="shown"><i class="fa fa-plus" title="Mostrar"></i></a>`;
+                        }
                 }
             },
         ],
