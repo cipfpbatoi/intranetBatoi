@@ -258,6 +258,7 @@ return array(
         'Dual' => 'FP Dual',
         'Micolaboracion' => 'Preparar Colaboraciones',
         'Poll' => 'Encuestas',
+        'Importaprofesor' => 'Importa Profesor',
 
     ),
     'situations' => array(
