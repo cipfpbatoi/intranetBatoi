@@ -113,7 +113,7 @@ class DualController extends IntranetController
     public function anexeVI()
     {
         $fct = AlumnoFct::misDual()->get();
-        $empresas = Fct::misFcts()->esDual()->count();
+        $empresas = Fct::misFcts(null,true)->esDual()->count();
         $grupo = $fct->first()->Alumno->Grupo->first();
         $alumnos = $grupo->Alumnos->where('sexo','H')->count();
         $alumnas = $grupo->Alumnos->where('sexo','M')->count();
