@@ -26,6 +26,8 @@ class PanelComisionController extends BaseController
      */
     protected $model = 'Comision';
 
+    protected $parametresVista = ['before' => [] , 'modal' => ['explicacion']];
+
 
     /**
      *

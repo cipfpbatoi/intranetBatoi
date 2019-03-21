@@ -62,6 +62,7 @@ trait traitAutorizar
     // refusa
     protected function refuse(Request $request, $id, $redirect = true)
     {
+        dd($id);
         $inicial = $this->class::getEstado($id);
         $final = $this->class::refuse($id,$request->explicacion);
         if ($redirect) return $this->follow($inicial,$final);
