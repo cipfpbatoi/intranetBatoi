@@ -177,14 +177,6 @@ trait BatoiModels
         return $nombre;
     }
 
-//    private function fillField($type,$value){
-//        if (isset($type)) {
-//            if ($type == 'date') return (new Date($value))->format('Y-m-d');
-//            if ($type == 'datetime') return (new Date($value))->format('Y-m-d H:i');
-//            if ($type == 'select') return $value == ''?null:$value;
-//        } 
-//        return $value;
-//    }
 
     /**
      * @param $key
@@ -207,11 +199,8 @@ trait BatoiModels
     {
         $fillable = $this->notFillable?array_diff($this->fillable,$this->notFillable):$this->fillable;
         //$dates = $this->lookForEspecialFields();
-        foreach ($fillable as $key) {
-            if (isset($request->$key))
-                //$this->$key = $this->fillField(isset($dates[$key])?$dates[$key]:null, $request->$key);
-                $this->$key = $this->fillField($key, $request->$key);
-        }
+        foreach ($fillable as $key)  $this->$key = $this->fillField($key,$request->$key);
+
         $this->save();
         
         if ($request->hasFile('fichero')) $this->fillFile($request->file('fichero'));
