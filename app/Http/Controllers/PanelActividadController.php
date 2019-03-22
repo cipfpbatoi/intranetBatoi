@@ -45,4 +45,6 @@ class PanelActividadController extends BaseController
         $this->setAuthBotonera();
     }
 
+
+
 }

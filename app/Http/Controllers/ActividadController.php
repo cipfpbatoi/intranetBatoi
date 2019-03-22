@@ -39,6 +39,15 @@ class ActividadController extends IntranetController
                 ->where('extraescolar', 1)
                 ->get();
     }
+
+    /**
+     * @param null $default
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function create($default = null)
+    {
+        return parent::create(['extraescolar' => 1]);
+    }
    
     public function store(Request $request)
     {
