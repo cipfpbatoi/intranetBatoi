@@ -93,8 +93,8 @@ class Reunion extends Model
     }
     public function scopeConvocante($query,$dni)
     {
-        $sustituye_a = isset(Profesor::find($dni)->Sustituye->dni)?Profesor::find($dni)->Sustituye->dni:null;
-        return $query->where('idProfesor',$dni)->orWhere('idProfesor',$sustituye_a);
+        $sustituye = (isset(Profesor::find($dni)->sustituye_a))?Profesor::find($dni)->sustituye_a:null;
+        return $query->where('idProfesor',$dni)->orWhere('idProfesor',$sustituye);
     }
     public function scopeTipo($query,$tipo)
     {
