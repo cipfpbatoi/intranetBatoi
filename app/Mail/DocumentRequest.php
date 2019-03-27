@@ -13,16 +13,20 @@ class DocumentRequest extends Mailable
     
     public $colaboracion;
     public $email;
+    public $document;
+    public $subject;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($colaboracion,$email)
+    public function __construct($elemento,$from,$subject,$view)
     {
-        $this->colaboracion = $colaboracion;
-        $this->email = $email;
+        $this->elemento = $elemento;
+        $this->from = $from;
+        $this->view =$view;
+        $this->subject = $subject;
     }
 
     /**
@@ -33,8 +37,8 @@ class DocumentRequest extends Mailable
     public function build()
     {
         return $this
-            ->from($this->email)
-            ->subject('Detalls Documentació Pràctiques a confirmar')
-            ->view('email.documentRequest');
+            ->from($this->from)
+            ->subject($this->subject)
+            ->view($this->view);
     }
 }

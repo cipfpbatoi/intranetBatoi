@@ -74,17 +74,25 @@ class PanelColaboracionController extends IntranetController
     }
 
     /**
+     * @param $document
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function documentacion(){
-        $colaboraciones = Colaboracion::MiColaboracion()->where('colabora',1)->get();
-        foreach ($colaboraciones as $colaboracion){
-            if (!$colaboracion->concierto){
-                // TODO : canviar AuthUser()->email per correu instructor
-                Mail::to(AuthUser()->email, AuthUser()->ShortName)->send(new DocumentRequest($colaboracion, AuthUser()->email));
-                 Alert::info('Correu a '.$colaboracion->empresa.' enviat');
-          }
-        }
+    public function emailDocuments($document){
+        foreach (Colaboracion::MiColaboracion()->where('colabora',1)->get() as $colaboracion)
+            $this->emailDocument($document,$colaboracion);
         return back();
+    }
+
+    /**
+     * @param $document
+     * @param $colaboracion
+     */
+    public function emailDocument($document, $colaboracion){
+        // TODO : canviar AuthUser()->email per correu instructor
+        Mail::to(AuthUser()->email, AuthUser()->ShortName)
+            ->send(new DocumentRequest($colaboracion, AuthUser()->email
+                ,config('fctEmails.'.$document.'subject')
+                ,config('fctEmails.'.$document.'view')));
+        Alert::info('Enviat correu a '.$colaboracion->Centro->nombre);
     }
 }
