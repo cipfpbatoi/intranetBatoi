@@ -7,13 +7,29 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
+/**
+ * Class DocumentRequest
+ * @package Intranet\Mail
+ */
 class DocumentRequest extends Mailable
 {
     use Queueable, SerializesModels;
-    
+
+    /**
+     * @var
+     */
     public $elemento;
-    public $email;
-    public $document;
+    /**
+     * @var
+     */
+    public $de;
+    /**
+     * @var
+     */
+    public $view;
+    /**
+     * @var
+     */
     public $subject;
 
     /**
@@ -24,7 +40,7 @@ class DocumentRequest extends Mailable
     public function __construct($elemento,$from,$subject,$view)
     {
         $this->elemento = $elemento;
-        $this->from = $from;
+        $this->de = $from;
         $this->view =$view;
         $this->subject = $subject;
     }
@@ -36,9 +52,6 @@ class DocumentRequest extends Mailable
      */
     public function build()
     {
-        return $this
-            ->from($this->from)
-            ->subject($this->subject)
-            ->view($this->view);
+        return $this->from($this->de)->subject($this->subject)->view($this->view);
     }
 }

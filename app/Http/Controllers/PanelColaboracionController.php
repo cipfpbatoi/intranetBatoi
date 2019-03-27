@@ -91,8 +91,8 @@ class PanelColaboracionController extends IntranetController
         // TODO : canviar AuthUser()->email per correu instructor
         Mail::to(AuthUser()->email, AuthUser()->ShortName)
             ->send(new DocumentRequest($colaboracion, AuthUser()->email
-                ,config('fctEmails.'.$document.'subject')
-                ,config('fctEmails.'.$document.'view')));
+                ,config('fctEmails.'.$document.'.subject')
+                ,config('fctEmails.'.$document.'.view')));
         Alert::info('Enviat correu a '.$colaboracion->Centro->nombre);
     }
 }
