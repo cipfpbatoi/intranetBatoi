@@ -36,7 +36,7 @@ class PanelColaboracionController extends IntranetController
      */
     protected function iniBotones()
     {
-        $this->panel->setBotonera(['inicia','contacto','documentacion']);
+        $this->panel->setBotonera(['inicia','contacto','documentacion.request']);
         $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.2', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-down','where' => ['colabora', '!=', '2']]));
         $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.1', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-up','where' => ['colabora', '!=', '1']]));
         $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.0', ['roles' => config('roles.rol.practicas'),'img'=>'fa-question','where' => ['colabora', '!=', '0']]));

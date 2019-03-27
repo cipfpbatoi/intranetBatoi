@@ -11,7 +11,7 @@ class DocumentRequest extends Mailable
 {
     use Queueable, SerializesModels;
     
-    public $colaboracion;
+    public $elemento;
     public $email;
     public $document;
     public $subject;

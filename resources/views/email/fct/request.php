@@ -13,24 +13,24 @@
         </table>
     </div>
     <div class="container" >
-            <p>Hola {{$colaboracion->contacto}},</p>
-            <p>Estic preparant la documentació corresponent a les pràctiques de FCT del cicle de {{$colaboracion->Ciclo->cliteral}} , i necessitaria que em confirmàreu els següents detalls de la documentació oficial:<br/>
+            <p>Hola {[$elemento->contacto}},</p>
+            <p>Estic preparant la documentació corresponent a les pràctiques de FCT del cicle de {[$elemento->Ciclo->cliteral}} , i necessitaria que em confirmàreu els següents detalls de la documentació oficial:<br/>
             <ul>
-                <li>Empresa: {{$colaboracion->Centro->nombre }}</li>
-                <li>CIF: {{$colaboracion->Centro->Empresa->nif}}</li>
-                <li>Telèfon: {{$colaboracion->telefono}}</li>
-                <li>Adreça: {{$colaboracion->Centro->direccion}}</li>
-                <li>Poble: {{$colaboracion->Centro->localidad}}</li>
-                <li>Email-Empresa : {{$colaboracion->centro->email}}</li>
-                <li>Horari Pràctiques: {{$colaboracion->Centro->Horario}}</li>
+                <li>Empresa: {[$elemento->Centro->nombre }}</li>
+                <li>CIF: {[$elemento->Centro->Empresa->nif}}</li>
+                <li>Telèfon: {[$elemento->telefono}}</li>
+                <li>Adreça: {[$elemento->Centro->direccion}}</li>
+                <li>Poble: {[$elemento->Centro->localidad}}</li>
+                <li>Email-Empresa : {[$elemento->centro->email}}</li>
+                <li>Horari Pràctiques: {[$elemento->Centro->Horario}}</li>
             </ul>
-            @if (!$colaboracion->concierto)
+            @if ([$elemento->concierto)
                 <ul>
                     <li>Representant legal:  ____________________________________________________</li>
                     <li>DNI Representant legal: _________________________________________________</li>
                 </ul>
             @endif
-            @if ($instructor = $colaboracion->instructorPrincipal)
+            @if ($instructor =[$elemento->instructorPrincipal)
                 <ul>
                     <li>Instructor: {{$instructor->fullName}}</li>
                     <li>E-mail instructor: {{$instructor->email}}</li>
