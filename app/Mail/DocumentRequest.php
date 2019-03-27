@@ -32,6 +32,9 @@ class DocumentRequest extends Mailable
      */
     public function build()
     {
-        return $this->from('jsegura@cipfpbatoi.es')->view('email.documentRequest');
+        return $this
+            ->from($this->email)
+            ->subject('Detalls Documentació Pràctiques a confirmar')
+            ->view('email.documentRequest');
     }
 }

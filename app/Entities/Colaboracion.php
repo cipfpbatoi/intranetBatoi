@@ -99,4 +99,7 @@ class Colaboracion extends Model
     public function getConciertoAttribute(){
         return $this->Centro->Empresa->concierto;
     }
+    public function getInstructorPrincipal(){
+        return $this->Centro->Instructores->first();
+    }
 }

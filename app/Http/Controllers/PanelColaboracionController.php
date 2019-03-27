@@ -80,10 +80,9 @@ class PanelColaboracionController extends IntranetController
         $colaboraciones = Colaboracion::MiColaboracion()->where('colabora',1)->get();
         foreach ($colaboraciones as $colaboracion){
             if (!$colaboracion->concierto){
+                // TODO : canviar AuthUser()->email per correu instructor
                 Mail::to(AuthUser()->email, AuthUser()->ShortName)->send(new DocumentRequest($colaboracion, AuthUser()->email));
-
-                //Mail::to($colaboracion->email, AuthUser()->ShortName)->from(AuthUser()->email)->send(new DocumentRequest($colaboracion, AuthUser()->email));
-                Alert::info('Correu a '.$colaboracion->empresa.' enviat');
+                 Alert::info('Correu a '.$colaboracion->empresa.' enviat');
           }
         }
         return back();
