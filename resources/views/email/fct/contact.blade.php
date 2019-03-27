@@ -2,7 +2,7 @@
 @section('body')
     <table style='text-align: center'>
         <tr>
-            <th>Detalls Documentació Pràctiques FCT a confirmar</th>
+            <th>A/A Departaments d'Informàtica i de Recursos Humans</th>
         </tr>
     </table>
     <div>
@@ -13,40 +13,14 @@
         </table>
     </div>
     <div class="container" >
-            <p>Hola {{$colaboracion->contacto}},</p>
-            <p>Estic preparant la documentació corresponent a les pràctiques de FCT del cicle de {{$colaboracion->Ciclo->cliteral}} , i necessitaria que em confirmàreu els següents detalls de la documentació oficial:<br/>
-            <ul>
-                <li>Empresa: {{$colaboracion->Centro->nombre }}</li>
-                <li>CIF: {{$colaboracion->Centro->Empresa->nif}}</li>
-                <li>Telèfon: {{$colaboracion->telefono}}</li>
-                <li>Adreça: {{$colaboracion->Centro->direccion}}</li>
-                <li>Poble: {{$colaboracion->Centro->localidad}}</li>
-                <li>Email-Empresa : {{$colaboracion->centro->email}}</li>
-                <li>Horari Pràctiques: {{$colaboracion->Centro->Horario}}</li>
-            </ul>
-            @if (!$colaboracion->concierto)
-                <ul>
-                    <li>Representant legal:  ____________________________________________________</li>
-                    <li>DNI Representant legal: _________________________________________________</li>
-                </ul>
-            @endif
-            @if ($instructor = $colaboracion->instructorPrincipal)
-                <ul>
-                    <li>Instructor: {{$instructor->fullName}}</li>
-                    <li>E-mail instructor: {{$instructor->email}}</li>
-                    <li>DNI   instructor: {{$instructor->dni}}</li>
-                    <li>Telefono instructor: {{$instructor->telefono}}</li>
-                </ul>
-            @else
-                <ul>
-                    <li>Instructor: ___________________________________________</li>
-                    <li>E-mail instructor: ____________________________________</li>
-                    <li>DNI   instructor: _____________________________________</li>
-                    <li>Telefono instructor: __________________________________</li>
-                </ul>
-            @endif
-
-        <p>Salutacions cordials de {{AuthUser()->shortName}}</p>
-
+            <p>Hola,</p>
+            <p>El meu nom és {{AuthUser()->shortName}} i sóc el professor-tutor del Cicle Formatiu de {{$elemento->ciclo}} del {{config('contacto.nombre')}}.<br/>
+            <p>Les classes de segon curs acaben a principis de març, i després, els alumnes han de fer 400 hores de pràctiques en empreses/organitzacions/entitats/etc, amb l'horari normal de l'empresa (que sol ser 40 hores setmanals).</p>
+            <p>Com tots els anys, estem buscant llocs de pràctiques per als nostres alumnes i hem pensat que potser la vostra empresa podria acollir les pràctiques d'un dels alumnes.</p>
+            <p>Actualment, tenim alumnes que estarien molt interessats en fer les seues pràctiques en una empresa com la vostra, que tinga almenys un tècnic</p>
+            <p>Per tot això, ens agradaria que consideràreu la possibilitat d'acollir les pràctiques d'un dels nostres alumnes entre el 11 de març i el 30 de maig, aproximadament.</p>
+            <p>Òbviament, abans de prendre la vostra decisió, parlaríem tot allò que fera falta i també podríeu entrevistar als alumnes candidats.</p>
+            <p>En qualsevol cas, moltes gràcies per considerar la nostra sol·licitud.</p>
+            <p>Salutacions cordials de {{AuthUser()->shortName}}</p>
     </div>
 @endsection

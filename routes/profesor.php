@@ -174,7 +174,9 @@ Route::get('/empresaSC',['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCControll
 Route::get('/misColaboraciones',['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
 Route::get('/miscolaboraciones/{colaboracion}/colabora/{si}', ['as' => 'PanelColaboracion.colabora', 'uses' => 'PanelColaboracionController@colabora']);
 Route::get('/miscolaboraciones/inicia', ['as' => 'PanelColaboracion.inicia', 'uses' => 'PanelColaboracionController@inicia']);
-Route::get('/miscolaboraciones/documentacion/{document}', ['as' => 'PanelColaboracion.documentacion', 'uses' => 'PanelColaboracionController@emailDocuments']);
+Route::get('/miscolaboraciones/documentacion', ['as' => 'PanelColaboracion.documentacion', 'uses' => 'PanelColaboracionController@sendRequestInfo']);
+Route::get('/miscolaboraciones/contacto', ['as' => 'PanelColaboracion.contacto', 'uses' => 'PanelColaboracionController@sendFirstContact']);
+
 
 
 Route::resource('/centro', 'CentroController', ['except' => ['destroy', 'update', 'show']]);

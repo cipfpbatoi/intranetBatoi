@@ -36,7 +36,7 @@ class PanelColaboracionController extends IntranetController
      */
     protected function iniBotones()
     {
-        $this->panel->setBotonera(['inicia','contacto','documentacion.request']);
+        $this->panel->setBotonera(['inicia','contacto','documentacion']);
         $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.2', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-down','where' => ['colabora', '!=', '2']]));
         $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.1', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-up','where' => ['colabora', '!=', '1']]));
         $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.0', ['roles' => config('roles.rol.practicas'),'img'=>'fa-question','where' => ['colabora', '!=', '0']]));
@@ -73,15 +73,18 @@ class PanelColaboracionController extends IntranetController
         return $this->redirect();
     }
 
-    /**
-     * @param $document
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function emailDocuments($document){
+
+    public function sendRequestInfo(){
         foreach (Colaboracion::MiColaboracion()->where('colabora',1)->get() as $colaboracion)
-            $this->emailDocument($document,$colaboracion);
+            $this->emailDocument('request',$colaboracion);
         return back();
     }
+
+    public function sendFirstContact(){
+        foreach (Colaboracion::MiColaboracion()->where('colabora',0)->get() as $colaboracion)
+            $this->emailDocument('contact',$colaboracion);
+    }
+
 
     /**
      * @param $document

@@ -13,24 +13,24 @@
         </table>
     </div>
     <div class="container" >
-            <p>Hola {[$elemento->contacto}},</p>
-            <p>Estic preparant la documentació corresponent a les pràctiques de FCT del cicle de {[$elemento->Ciclo->cliteral}} , i necessitaria que em confirmàreu els següents detalls de la documentació oficial:<br/>
+            <p>Hola {{$elemento->contacto}},</p>
+            <p>Estic preparant la documentació corresponent a les pràctiques de FCT del cicle de {{$e}}lemento->Ciclo->cliteral}} , i necessitaria que em confirmàreu els següents detalls de la documentació oficial:<br/>
             <ul>
-                <li>Empresa: {[$elemento->Centro->nombre }}</li>
-                <li>CIF: {[$elemento->Centro->Empresa->nif}}</li>
-                <li>Telèfon: {[$elemento->telefono}}</li>
-                <li>Adreça: {[$elemento->Centro->direccion}}</li>
-                <li>Poble: {[$elemento->Centro->localidad}}</li>
-                <li>Email-Empresa : {[$elemento->centro->email}}</li>
-                <li>Horari Pràctiques: {[$elemento->Centro->Horario}}</li>
+                <li>Empresa: {{$elemento->Centro->nombre }}</li>
+                <li>CIF: {{$elemento->Centro->Empresa->nif}}</li>
+                <li>Telèfon: {{$elemento->telefono}}</li>
+                <li>Adreça: {{$elemento->Centro->direccion}}</li>
+                <li>Poble: {{$elemento->Centro->localidad}}</li>
+                <li>Email-Empresa : {{$elemento->centro->email}}</li>
+                <li>Horari Pràctiques: {{$elemento->Centro->Horario}}</li>
             </ul>
-            @if ([$elemento->concierto)
+            @if ({$elemento->concierto)
                 <ul>
                     <li>Representant legal:  ____________________________________________________</li>
                     <li>DNI Representant legal: _________________________________________________</li>
                 </ul>
             @endif
-            @if ($instructor =[$elemento->instructorPrincipal)
+            @if ($instructor = $elemento->instructorPrincipal)
                 <ul>
                     <li>Instructor: {{$instructor->fullName}}</li>
                     <li>E-mail instructor: {{$instructor->email}}</li>
