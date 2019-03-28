@@ -2,7 +2,7 @@
 @section('body')
     <table style='text-align: center'>
         <tr>
-            <th>A/A Departaments d'Informàtica i de Recursos Humans</th>
+            <th>A/A Departaments d'Informàtica i de Recursos Humans de {{config($elemento->Centro->nombre)}}</th>
         </tr>
     </table>
     <div>
@@ -13,7 +13,7 @@
         </table>
     </div>
     <div class="container" >
-            <p>Hola,</p>
+            <p>Hola, {{$elemento->contacto}}</p>
             <p>El meu nom és {{AuthUser()->shortName}} i sóc el professor-tutor del  {{config('auxiliares.tipoEstudio.'.$elemento->ciclo->tipo)}} '{{$elemento->ciclo->literal}}'</b> del {{config('contacto.nombre')}}.<br/>
             <p>Les classes de segon curs acaben a principis de març, i després, els alumnes han de fer 400 hores de pràctiques en empreses/organitzacions/entitats/etc, amb l'horari normal de l'empresa (que sol ser 40 hores setmanals).</p>
             <p>Com tots els anys, estem buscant llocs de pràctiques per als nostres alumnes i hem pensat que potser la vostra empresa podria acollir les pràctiques d'un dels alumnes.</p>
