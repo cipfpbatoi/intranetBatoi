@@ -83,6 +83,7 @@ class PanelColaboracionController extends IntranetController
     public function sendFirstContact(){
         foreach (Colaboracion::MiColaboracion()->where('colabora',0)->get() as $colaboracion)
             $this->emailDocument('contact',$colaboracion);
+        return back();
     }
 
 
@@ -96,6 +97,6 @@ class PanelColaboracionController extends IntranetController
             ->send(new DocumentRequest($colaboracion, AuthUser()->email
                 ,config('fctEmails.'.$document.'.subject')
                 ,config('fctEmails.'.$document.'.view')));
-        Alert::info('Enviat correu a '.$colaboracion->Centro->nombre);
+        Alert::info('Enviat correu '.config('fctEmails.'.$document.'.subject').' a '.$colaboracion->Centro->nombre);
     }
 }

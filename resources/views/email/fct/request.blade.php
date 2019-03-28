@@ -14,7 +14,9 @@
     </div>
     <div class="container" >
             <p>Hola {{$elemento->contacto}},</p>
-            <p>Estic preparant la documentació corresponent a les pràctiques de FCT del cicle de {{$e}}lemento->Ciclo->cliteral}} , i necessitaria que em confirmàreu els següents detalls de la documentació oficial:<br/>
+            <p>Estic preparant la documentació corresponent a les pràctiques de FCT del
+                {{config('auxiliares.tipoEstudio.'.$elemento->ciclo->tipo)}} '{{$elemento->ciclo->literal}}' ,
+                i necessitaria que em confirmàreu els següents detalls de la documentació oficial:<br/>
             <ul>
                 <li>Empresa: {{$elemento->Centro->nombre }}</li>
                 <li>CIF: {{$elemento->Centro->Empresa->nif}}</li>
