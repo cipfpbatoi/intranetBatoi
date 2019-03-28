@@ -26,7 +26,7 @@
                 <li>Email-Empresa : {{$elemento->centro->email}}</li>
                 <li>Horari Pràctiques: {{$elemento->Centro->Horario}}</li>
             </ul>
-            @if ({$elemento->concierto)
+            @if ($elemento->concierto)
                 <ul>
                     <li>Representant legal:  ____________________________________________________</li>
                     <li>DNI Representant legal: _________________________________________________</li>
