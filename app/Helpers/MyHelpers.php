@@ -368,3 +368,18 @@ function exists_help($url)
     if ($menu = Intranet\Entities\Menu::where('url', $url)->first())
         return $menu->ajuda;
 }
+
+function inRol($roles){
+    $array['roles'][] = config('roles.rol.administrador');
+    if (is_array($roles)){
+        foreach ($roles as $rol){
+            $array['roles'][] = config('roles.rol.'.$rol);
+        }
+        return $array;
+    }
+    $array['roles'][] = config('roles.rol.'.$roles);
+    return $array;
+
+}
+
+

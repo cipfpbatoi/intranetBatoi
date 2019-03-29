@@ -13,7 +13,7 @@ class Departamento extends Model
 
     public function Profesor()
     {
-        return $this->hasMany(Profesor::class, 'id', 'departamento');
+        return $this->hasMany(Profesor::class, 'departamento', 'id');
     }
     public function Modulo()
     {

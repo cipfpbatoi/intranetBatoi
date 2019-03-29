@@ -18,6 +18,10 @@ class Vote extends Model
     public function ModuloGrupo(){
         return $this->belongsTo(Modulo_grupo::class,'idModuloGrupo','id');
     }
+    public function Profesor()
+    {
+        return $this->belongsTo(Profesor::class, 'idProfesor','dni');
+    }
     
     public function getIsValueAttribute()
     {
@@ -26,13 +30,27 @@ class Vote extends Model
     private function optionsPoll($id){
         return hazArray(Poll::find($id)->options,'id');
     }
+    private function optionsNumericPoll($id){
+        return hazArray(Poll::find($id)->options->where('scala','>',0),'id');
+    }
     public function scopeMyVotes($query,$id,$modulo){
         return $query->where('idProfesor', AuthUser()->dni)->whereIn('option_id',$this->optionsPoll($id))
             ->where('idModuloGrupo',$modulo);
     }
     public function scopeMyGroupVotes($query,$id,$grup){
-        $grupo = Grupo::find($grup);
         return $query->whereIn('idModuloGrupo',hazArray(Grupo::find($grup)->Modulos,'id'))
             ->whereIn('option_id',$this->optionsPoll($id));
+    }
+    public function scopeAllNumericVotes($query,$id){
+        return $query->whereIn('option_id',$this->optionsNumericPoll($id));
+    }
+    public function getGrupoAttribute(){
+        return $this->ModuloGrupo->Grupo->literal;
+    }
+    public function getDepartmentoAttribute(){
+        return $this->Profesor->departamento->literal;
+    }
+    public function getCicloAttribute(){
+        return $this->ModuloGrupo->ModuloCiclo->Ciclo->literal;
     }
 }
