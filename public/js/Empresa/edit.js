@@ -34,6 +34,10 @@ $(function () {
                 $('#concierto_id').prop('disabled', true);
             }
         });
-    } else
+    } else {
         $('#concierto_id').prop('disabled', true);
+        $('#europa_id').prop('disabled', true);
+        $('#sao_id'.prop('disabled', true);
+    }
+
 });
