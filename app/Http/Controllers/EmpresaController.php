@@ -120,7 +120,7 @@ class EmpresaController extends IntranetController
                 $touched = TRUE;
             }
         }
-        if ($elemento->europa && $elemento->concierto == '') $this->getConcert($elemento->id);
+
         if ($touched) $centro->save();
         return redirect()->action('EmpresaController@show', ['id' => $elemento->id]);
     }
