@@ -129,7 +129,7 @@ class EmpresaController extends IntranetController
 
     private function remainsConcert($elemento,$concierto){
 
-        if ($concierto && $elemento->concierto = '') {
+        if ($concierto) {
             $elemento->concierto = $concierto;
             $elemento->save();
         }
