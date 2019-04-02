@@ -104,7 +104,10 @@ class EmpresaController extends IntranetController
     
     public function update(Request $request, $id)
     {
-        $elemento = Empresa::find($this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]),$id));
+        $elemento = Empresa::find($id);
+        $concierto = $elemento->concierto;
+        $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]),$id);
+        if ($elemento->europa) $this->remainsConcert($elemento,$concierto);
         $touched = FALSE;
         foreach ($elemento->centros as $centro){
             if ($centro->direccion == '') {
@@ -120,9 +123,18 @@ class EmpresaController extends IntranetController
                 $touched = TRUE;
             }
         }
-
         if ($touched) $centro->save();
         return redirect()->action('EmpresaController@show', ['id' => $elemento->id]);
+    }
+
+    private function remainsConcert($elemento,$concierto){
+
+        if ($concierto && $elemento->concierto = '') {
+            $elemento->concierto = $concierto;
+            $elemento->save();
+        }
+        else
+            $this->getConcert($elemento->id);
     }
     /*
      * document ($id)
