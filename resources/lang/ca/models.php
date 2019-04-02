@@ -310,10 +310,13 @@ return array(
             'edit' => 'Editar Dual',
             'delete' => 'Esborrar Dual',
             'fin' => 'Finalitzar Dual',
-            'anexevii' => 'Imprimir Annexe vii',
+            'anexe_vii' => 'Imprimir Annexe vii',
+            'anexe_va' => 'Imprimier Annexe V(a)',
+            'anexe_vb' => 'Imprimier Annexe V(b)',
+            'anexeVI' => 'Imprimir Annexe VI',
         ),
         'Direccion' => array(
-           'acta' => 'Acta completada' 
+           'acta' => 'Acta completada'
         ),
         'Falta_profesor' => array(
             'index' => 'Panel Fitxaje'

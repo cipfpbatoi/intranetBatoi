@@ -13,14 +13,14 @@ class Pestana
     private $include;
     
 
-    public function __construct($nombre, $activa = false, $vista = null, $filtro = [], $rejilla = null ,$include=null)
+    public function __construct($nombre, $activa = false, $vista = null, $filtro = [], $rejilla = null ,$include=[])
     {
         $this->nombre = $nombre;
         $this->activa = $activa;
         $this->filtro = $filtro;
         $this->vista = $vista;
         $this->rejilla = $rejilla;
-        $this->include = isset($include)?$include:[];
+        $this->include = $include;
     }
 
     function setVista($vista){
@@ -67,10 +67,6 @@ class Pestana
     function setRejilla($grid)
     {
         $this->rejilla = $grid;
-    }
-    function addField($field)
-    {
-        $this->rejilla[] = $field;
     }
 
 }

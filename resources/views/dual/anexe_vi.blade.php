@@ -1,4 +1,7 @@
-@extends('layouts.dual')
+@extends('layouts.pdf')
+@section('css')
+    {{ Html::style('/css/dual.css') }}
+@endsection
 @section('content')
         @include('dual.partials.anexe_vi',['imagen'=>'img/pdf/dual/anexe_vi_001.jpg','top'=>-50])
         @include('dual.partials.anexe_vi',['imagen'=>'img/pdf/dual/anexe_vi_002.jpg','top'=>1650])

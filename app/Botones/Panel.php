@@ -17,46 +17,50 @@ class Panel
     private $data = [];      // array de més dades 
     public $items = [];
     
-    public function __construct($modelo, $rejilla = null, $vista = null,$crea=true,$include=null)
+    public function __construct($modelo, $rejilla = null, $vista = null,$creaPestana=true,$include=[])
     {
         $this->model = $modelo;
         $this->botones['index'] = [];
         $this->botones['grid'] = [];
         $this->botones['profile'] = [];
-        if ($crea) $this->setPestana('grid', true, $vista, null, $rejilla,null,$include);
+        if ($creaPestana) $this->setPestana('grid', true, $vista, null, $rejilla,null,$include);
         
     }
 
-    public function view($todos,$titulo,$vista,$elemento =null){
+
+    public function render($todos,$titulo,$vista){
         if (!$this->countPestana()) return redirect()->route('home');
-        $this->setElementos($todos);
-        $this->setTitulo($titulo);
-        $panel = $this;
-        if (!$elemento) return view($vista,compact('panel'));
+
+        $panel = $this->feedPanel($todos, $titulo);
+
+        return view($vista,compact('panel'));
+
+    }
+
+    public function renderModal($todos,$titulo,$vista,$elemento){
+        if (!$this->countPestana()) return redirect()->route('home');
+
+        $panel = $this->feedPanel($todos, $titulo);
         $default = $elemento->fillDefautOptions();
+
         return view($vista,compact('panel','elemento','default'));
     }
-    // afegix botonera ( tres tipus de botons : 
-    //          index -> comuns a tots
-    //          grid --> per a cada element
-    //          profile --> per a vistes de tipus profile
+
+
     
     public function setBotonera($index = [], $grid = [], $profile = [])
     {
         if ($index != []) {
-            foreach ($index as $btn) {
+            foreach ($index as $btn)
                 $this->botones['index'][] = new BotonBasico("$this->model.$btn");
-            }
         }
         if ($grid != []) {
-            foreach ($grid as $btn) {
+            foreach ($grid as $btn)
                 $this->botones['grid'][] = new BotonImg($this->model . "." . $btn);
-            }
         }
         if ($profile != []) {
-            foreach ($profile as $btn) {
+            foreach ($profile as $btn)
                 $this->botones['profile'][] = new BotonIcon("$this->model.$btn");
-            }
         }
     }
 
@@ -75,14 +79,13 @@ class Panel
 
     // afeguix pestana
     // sustituye canvia la primera pestana per l'actual
-    public function setPestana($nombre, $activo = false, $vista = null, $filtro = null, $rejilla = null, $sustituye = null,$include=null)
+    public function setPestana($nombre, $activo = false, $vista = null, $filtro = null, $rejilla = null, $sustituye = null,$include=[])
     {
-        if ($activo)
-            $this->desactiva();
-        if ($sustituye) $this->pestanas[0] = new Pestana($nombre, $activo, $this->queVista($nombre, $vista), $filtro, $rejilla,$include);
-        else $this->pestanas[] = new Pestana($nombre, $activo, $this->queVista($nombre, $vista), $filtro, $rejilla,$include);
+        if ($activo) $this->desactivaAll();
+        if ($sustituye) $this->pestanas[0] = new Pestana($nombre, $activo, $this->getView($nombre, $vista), $filtro, $rejilla,$include);
+        else $this->pestanas[] = new Pestana($nombre, $activo, $this->getView($nombre, $vista), $filtro, $rejilla,$include);
     }
-    // conta el nombre de pestanes
+
     public function countPestana(){
         return count($this->pestanas);
     }
@@ -93,12 +96,11 @@ class Panel
     }
 
     //Para que solo haya una pestaña activa, desactiva las demas
-    private function desactiva()
+    private function desactivaAll()
     {
         if ($this->pestanas) {
-            foreach ($this->pestanas as $pestana) {
+            foreach ($this->pestanas as $pestana)
                 $pestana->setActiva(false);
-            }
         }
     }
     
@@ -154,34 +156,25 @@ class Panel
             for ($i = 0; $i < count($filtro); $i = $i + 2) {
                 $elementos = $elementos->where($filtro[$i], '=', $filtro[$i+1]);
             }
-            return $elementos;
-            return $this->elementos->where($filtro[0], '=', $filtro[1]);
         }
-        else
-            return $this->elementos;
+        return $elementos;
     }
 
-    // activa pestana per nom
+
     public function activaPestana($nombre)
     {
         foreach ($this->pestanas as $pestana) {
-            if ($pestana->getNombre() == $nombre) {
-                $pestana->setActiva(true);
-            } else
-                $pestana->setActiva(false);
+            if ($pestana->getNombre() == $nombre) $pestana->setActiva(true);
+            else $pestana->setActiva(false);
         }
     }
 
-    // torna la vista
-    private function queVista($nombre, $vista)
+    private function getView($nombre, $vista)
     {
-        if ($vista == null)
-            return 'intranet.partials.' . $nombre . "." . strtolower($this->model);
-        else
-            if (substr($vista,0,1)=='.')
-                return substr($vista,1);
-            else
-                return 'intranet.partials.' . $vista;
+        if ($vista == null) return 'intranet.partials.' . $nombre . "." . strtolower($this->model);
+
+        if (substr($vista,0,1)=='.') return substr($vista,1);
+        return 'intranet.partials.' . $vista;
     }
 
     public function __set($name, $value)
@@ -195,9 +188,18 @@ class Panel
             return $this->data[$name];
         }
     }
-    public function addGridField($field){
-        foreach ($this->pestanas as $pestana)
-            $pestana->addField($field);
+
+
+    /**
+     * @param $todos
+     * @param $titulo
+     * @return Panel
+     */
+    private function feedPanel($todos, $titulo): Panel
+    {
+        $this->setElementos($todos);
+        $this->setTitulo($titulo);
+        return $this;
     }
 
 }

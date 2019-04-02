@@ -30,23 +30,21 @@ abstract class Boton
      */
 
     private function translateText(){
-
-        if (isset($this->atributos['text']))
-            return trans("models." . ucwords($this->modelo) . "." .$this->atributos['text']) != "models." . ucwords($this->modelo) . "." . $this->atributos['text']
-                ?  trans("models." . ucwords($this->modelo) . "." . $this->atributos['text'])
-                : $this->atributos['text'];
-
-        if (trans("models." . ucwords($this->modelo) . "." . $this->accion) != "models." . ucwords($this->modelo) . "." . $this->accion)
-                return trans("models." . ucwords($this->modelo) . "." . $this->accion);
-
-        if (trans("models." . ucwords($this->modelo) . ".default") != "models." . ucwords($this->modelo) . ".default" )
-               return trans("models." . ucwords($this->modelo) . ".default");
+        if (isset($this->atributos['text'])) return $this->translateExistingText();
+        if ($text = existsTranslate("models." . ucwords($this->modelo) . "." . $this->postUrl)) return $text;
+        if ($text = existsTranslate("models." . ucwords($this->modelo) . "." . $this->accion)) return $text;
+        if ($text = existsTranslate("models." . ucwords($this->modelo) . ".default")) return $text;
 
         return trans("messages.buttons.$this->accion");
-
-
-
     }
+
+    private function translateExistingText(){
+        if ($text = existsTranslate("models." . ucwords($this->modelo) . "." .$this->atributos['text'])) return($text);
+
+        return $this->atributos['text'];
+    }
+
+
     public function __construct($href, $atributos = [], $relative = false, $postUrl = null)
     {
         $this->postUrl = $postUrl;
@@ -103,8 +101,7 @@ abstract class Boton
     // torna id del boto en format html
     protected function id($key = null)
     {
-        if ($key == null)
-            return $this->id != '' ? " id='" . $this->id . "'" : '';
+        if ($key == null) return $this->id != '' ? " id='" . $this->id . "'" : '';
         return $this->id != '' ? " id='" . $this->id . $key . "'" : '';
 
     }
@@ -113,13 +110,31 @@ abstract class Boton
     protected function href($key = null)
     {
         if ($this->href == '#') return '#';
-        if ($this->relative===true)
-            $prefix = '';
-        else
-            $prefix =  is_bool($this->relative) ? config('app.url') . '/' : config('app.url') . '/'.$this->relative.'/';
-        if (!isset($this->postUrl)) return $key == null ? "href='" . $prefix . strtolower($this->modelo) . "/" . $this->accion . "'" : "href='" . $prefix . strtolower($this->modelo) . "/" . $key . "/" . $this->accion . "'";
+        return $this->getAdress($key,$this->getPrefix(),$this->getPostfix());
+    }
 
-        return $key == null ? "href='" . $prefix . strtolower($this->modelo) . "/" . $this->accion . "/" . $this->postUrl. "'"  : "href='" . $prefix . strtolower($this->modelo) . "/" . $key . "/" . $this->accion . "/" . $this->postUrl. "'";
+    /**
+     * @return string
+     */
+    private function getPrefix(): string
+    {
+        if ($this->relative === true) return '';
+
+        return is_bool($this->relative)?config('app.url').'/':config('app.url').'/'.$this->relative.'/';
+
+    }
+
+    private function getPostfix():string
+    {
+        if (isset($this->postUrl)) return "/".$this->postUrl."'";
+        return "'";
+    }
+
+    private function getAdress($key,$prefix,$close):string
+    {
+        return $key == null
+            ? "href='" . $prefix . strtolower($this->modelo) . "/" . $this->accion . $close
+            : "href='" . $prefix . strtolower($this->modelo) . "/" . $key . "/" . $this->accion . $close;
     }
 
 }

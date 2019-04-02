@@ -52,13 +52,14 @@ abstract class BaseController extends Controller
     
     protected function grid($todos,$modal=false)
     {
-        if ($modal) return $this->panel->view($todos,$this->titulo,$this->chooseView('indexModal'),new $this->class); 
+
+        if ($modal) return $this->panel->renderModal($todos,$this->titulo,$this->chooseView('indexModal'),new $this->class);
         
-        return $this->panel->view($todos,$this->titulo,$this->chooseView('index'));
+        return $this->panel->render($todos,$this->titulo,$this->chooseView('index'));
     }
     /*  
      * index return vista
-     *  carrega les dades que faran falta a la vista (per defecte) 
+     *  carrega les dades que faran falta a la vista (per defecte)
      *  se utilitza quan no cal més filtrats
      */
     
@@ -92,7 +93,7 @@ abstract class BaseController extends Controller
      */
     protected function llist($todos, $panel)
     {
-        return $panel->view($todos,$this->titulo,$this->chooseView('list'));
+        return $panel->render($todos,$this->titulo,$this->chooseView('list'));
     }
 
     /*

@@ -303,7 +303,10 @@ return array(
             'edit' => 'Editar Dual',
             'delete' => 'Borrar Dual',
             'fin' => 'Finalizar Dual',
-            'anexevii' => 'Imprimir Anexo vii',
+            'anexe_vii' => 'Imprimir Anexo vii',
+            'anexe_va' => 'Imprimier Anexo V(a)',
+            'anexe_vb' => 'Imprimier Anexo V(b)',
+            'anexeVI' => 'Imprimir Anexo VI',
         ),
         'Direccion' => array(
            'acta' => 'Acta completada' 

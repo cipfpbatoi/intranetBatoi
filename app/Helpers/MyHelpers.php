@@ -382,4 +382,9 @@ function inRol($roles){
 
 }
 
+function existsTranslate($text){
+    if (trans($text) != $text) return trans($text);
+    return null;
+}
+
 

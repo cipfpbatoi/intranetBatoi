@@ -98,6 +98,7 @@ class EmpresaController extends IntranetController
         $elemento = $id ? Empresa::findOrFail($id) : new Empresa(); //busca si hi ha
         if ($id) $elemento->setRule('concierto',$elemento->getRule('concierto').','.$id);
         $this->validateAll($request, $elemento);    // valida les dades
+
         return $elemento->fillAll($request);        // ompli i guarda
     }
     
@@ -119,6 +120,7 @@ class EmpresaController extends IntranetController
                 $touched = TRUE;
             }
         }
+        if ($elemento->europa && $elemento->concierto == '') $this->getConcert($elemento->id);
         if ($touched) $centro->save();
         return redirect()->action('EmpresaController@show', ['id' => $elemento->id]);
     }

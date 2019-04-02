@@ -10,9 +10,11 @@
     <div style="position:absolute;left:821.70px;top:232.40px">
         <span style="font-weight: bold">X</span>
     </div>
-    <div style="position:absolute;left:975.70px;top:232.40px">
-        <span style="font-weight: bold">X</span>
-    </div>
+
+        <div style="position:absolute;left:975.70px;top:232.40px">
+            <span style="font-weight: bold">X</span>
+        </div>
+
     
     <div style="position:absolute;left:65.70px;top:300.40px">
         <span style="font-weight: bold"> {{AuthUser()->Departamento->literal}}</span>
@@ -20,9 +22,15 @@
     <div style="position:absolute;left:425.70px;top:300.40px;width:400px ">
         <span style="font-weight: bold">{{ $todos->first()->Fct->Colaboracion->Ciclo->literal }}</span>
     </div>
-    <div style="position:absolute;left:856.70px;top:288.40px">
-        <span style="font-weight: bold">X</span>
-    </div>
+    @if ($todos->first()->Fct->Colaboracion->Ciclo->tipo == 1)
+        <div style="position:absolute;left:856.70px;top:288.40px">
+            <span style="font-weight: bold">X</span>
+        </div>
+    @else
+        <div style="position:absolute;left:856.70px;top:314.40px">
+            <span style="font-weight: bold">X</span>
+        </div>
+    @endif
     <div style="position:absolute;left:1020.70px;top:310.40px;width: 400px">
         <span style="font-weight: bold">X</span>
     </div>

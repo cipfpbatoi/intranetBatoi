@@ -42,9 +42,8 @@ class ActividadController extends IntranetController
 
     protected function grid($todos,$modal=false)
     {
-        if ($modal) return $this->panel->view($todos,$this->titulo,$this->chooseView('indexModal'),$this->fillDefaultValues(['extraescolar' => 1]));
+        return $this->panel->renderModal($todos,$this->titulo,$this->chooseView('indexModal'),$this->fillDefaultValues(['extraescolar' => 1]));
 
-        return $this->panel->view($todos,$this->titulo,$this->chooseView('index'));
     }
     /**
      * @param null $default

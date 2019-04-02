@@ -190,9 +190,9 @@ use traitAutorizar,
     protected function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('profesor.horario'));
-        $this->panel->setBoton('grid', new BotonImg('profesor.edit', ['roles' => config('roles.rol.direccion')]));
-        $this->panel->setBoton('grid', new BotonImg('profesor.carnet', ['roles' => config('roles.rol.direccion')]));
-        $this->panel->setBoton('grid', new BotonImg('profesor.muestra', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('grid', new BotonImg('profesor.edit', inRol('direccion')));
+        $this->panel->setBoton('grid', new BotonImg('profesor.carnet',inRol('direccion')));
+        $this->panel->setBoton('grid', new BotonImg('profesor.muestra', inRol('direccion')));
         $this->panel->setBoton('grid', new BotonImg('profesor.horario-cambiar', ['img' => 'fa-th', 'roles' => config('roles.rol.direccion')
             ,'where' => ['dni','existe','/horarios/$.json']]));
         $this->panel->setBoton('grid', new BotonImg('profesor.horario-cambiar', ['img' => 'fa-th-large', 'roles' => config('roles.rol.direccion')
