@@ -106,7 +106,7 @@ class EmpresaController extends IntranetController
     {
         $elemento = Empresa::find($id);
         $concierto = $elemento->concierto;
-        $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]),$id);
+        $elemento = Empresa::find($this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]),$id));
         if ($elemento->europa) $this->remainsConcert($elemento,$concierto);
         $touched = FALSE;
         foreach ($elemento->centros as $centro){
