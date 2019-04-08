@@ -3,7 +3,7 @@
 @include('pdf.partials.cabecera')
 <table class="table table-bordered">
     <tr>
-        <th>Sol.licitud Autorització Comissió de Serveis</th>
+        <th>Sol·licitud Autorització Comissió de Serveis</th>
     </tr>
 </table>
 
