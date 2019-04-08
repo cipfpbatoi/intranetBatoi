@@ -4,7 +4,7 @@
 <div class="container col-lg-12" >
     <table class="table table-bordered">
         <tr>
-            <th>Sol.licitud Autorització Comissions de Serveis</th>
+            <th>Sol·licitud Autorització Comissions de Serveis</th>
         </tr>
     </table>
 </div>

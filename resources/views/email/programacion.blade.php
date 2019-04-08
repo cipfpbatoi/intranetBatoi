@@ -13,7 +13,7 @@
     </table>
 </div>
 <div class="container" >
-    Este és l'enllaç de la programació que has sol.licitat:
+    Este és l'enllaç de la programació que has sol·licitat:
     <ul>
         <li>Mòdul: {{$elemento->Xmodulo}} - {{$elemento->Xciclo}}</li>
         <li>Curs: {{$elemento->curso}}</li>
