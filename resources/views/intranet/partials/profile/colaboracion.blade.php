@@ -2,13 +2,18 @@
     <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
         <div id="{{$elemento->id}}" class="well profile_view">
             <div class="col-sm-12">
-                <div class="left col-xs-12">
+                <div class="left col-md-8 col-xs-12">
                     <h5>{{$elemento->puestos}} {{$elemento->Centro->nombre}}</h5>
                     <ul class="list-unstyled">
                         <li>{{$elemento->contacto}}</li>
                         <li>{{$elemento->telefono}}</li>
                         <li>{{$elemento->email}}</li>
                     </ul>
+                </div>
+                <div class="col-md-4">
+                    @if ($elemento->fcts->first() && $elemento->fcts->first()->Alumnos->count())
+                        <img src="{{$elemento->fcts->first()->Alumnos->first()->foto}}" height="90" width="60" />
+                    @endif
                 </div>
             </div>
             <div class="col-xs-12 bottom text-center">

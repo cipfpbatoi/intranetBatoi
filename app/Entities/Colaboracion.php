@@ -53,6 +53,10 @@ class Colaboracion extends Model
     {
         return $this->hasMany(Fct::class, 'idColaboracion', 'id');
     }
+    public function incidencias()
+    {
+        return $this->hasMany(IncidenciaColaboracion::class, 'idColaboracion', 'id');
+    }
     
 
 //    public function getIdCicloOptions()

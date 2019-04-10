@@ -268,12 +268,12 @@ return array(
             'edit' => 'Editar colaboració',
             'delete' => 'Esborrar colaboració',
             'copy' => 'Crear colaboració',
-            'inicia' => 'Comença contactes',
+            'inicia' => 'Reinicia cicle de contactes',
             'resolve' => 'SI',
             'unauthorize' => '??',
             'refuse' => 'NO',
-            'contacto' => 'Contacte inicial',
-            'documentacion' => 'Reclamar documentació falta'
+            'contacto' => 'Petició pràctiques',
+            'documentacion' => 'Revissió documentació'
         ),
         'Fct' => array(
             'index' => 'FCT',

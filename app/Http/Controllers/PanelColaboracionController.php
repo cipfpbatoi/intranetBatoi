@@ -19,7 +19,6 @@ use Styde\Html\Facades\Alert;
 class PanelColaboracionController extends IntranetController
 {
 
-    use traitPanel;
     /**
      * @var array
      */
@@ -34,22 +33,38 @@ class PanelColaboracionController extends IntranetController
     protected $model = 'Colaboracion';
 
 
+    /**
+     * @return mixed
+     */
+    public function index()
+    {
+        $todos = $this->search();
+
+        $this->crea_pestanas(config('modelos.'.$this->model.'.estados'),"profile.".strtolower($this->model),1,1);
+        $this->iniBotones();
+        Session::put('redirect','PanelColaboracionController@index');
+        return $this->grid($todos);
+    }
+
 
     /**
      *
      */
     protected function iniBotones()
     {
-        $this->panel->setBothBoton('colaboracion.unauthorize', ['roles' => config('roles.rol.practicas'),'img'=>'fa-question','where' => ['estado', '>', '0','estado','==','3']]);
-        $this->panel->setBothBoton('colaboracion.resolve', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary resolve','img'=>'fa-hand-o-up','where' => ['estado', '>', '0','estado','<>','3']]);
-        $this->panel->setBothBoton('colaboracion.refuse', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary refuse','img'=>'fa-hand-o-down','where' => ['estado', '>', '0','estado','<>','4']]);
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.unauthorize', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary unauthorize','img'=>'fa-question','where' => ['estado', '==', '2']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.resolve', ['roles' => config('roles.rol.practicas'),'class'=>'btn-success resolve','img'=>'fa-hand-o-up','where' => ['estado', '<>', '2']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.refuse', ['roles' => config('roles.rol.practicas'),'class'=>'btn-danger refuse','img'=>'fa-hand-o-down','where' => ['estado', '<', '3']]));
         $this->panel->setBothBoton('colaboracion.show',['img' => 'fa-eye','text' => '','roles' => [config('roles.rol.practicas')]]);
-        if (Colaboracion::where('estado', '=', 4)->count())
-            $this->panel->setBoton('index', new BotonBasico("colaboracion.inicia"));
-        if (Colaboracion::where('estado', '=', 1)->count())
-            $this->panel->setBoton('index', new BotonBasico("colaboracion.contacto"));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.contacto', ['roles' => config('roles.rol.practicas'),'img'=>'fa-envelope','where' => ['estado', '==', '1']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.documentacion', ['roles' => config('roles.rol.practicas'),'img'=>'fa-envelope','where' => ['estado', '==', '2']]));
+
         if (Colaboracion::where('estado', '=', 3)->count())
-        $this->panel->setBoton('index', new BotonBasico("colaboracion.documentacion"));
+            $this->panel->setBoton('index', new BotonBasico("colaboracion.inicia",['icon' => 'fa fa-recycle']));
+        if (Colaboracion::where('estado', '=', 1)->count())
+            $this->panel->setBoton('index', new BotonBasico("colaboracion.contacto",['icon' => 'fa fa-envelope']));
+        if (Colaboracion::where('estado', '=', 2)->count())
+            $this->panel->setBoton('index', new BotonBasico("colaboracion.documentacion",['icon' => 'fa fa-envelope-o']));
     }
 
     /**

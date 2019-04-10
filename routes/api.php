@@ -16,7 +16,8 @@ use Illuminate\Http\Request;
  Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'create']]);  
  Route::get('alumnoFct/{grupo}/grupo','AlumnoFctController@indice'); 
 //Route::resource('profesor', 'ProfesorController', ['except' => ['edit', 'create']]);
-Route::get('/convenio','EmpresaController@indexConvenio'); 
+Route::get('/convenio','EmpresaController@indexConvenio');
+
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('actividad', 'ActividadController', ['except' => ['edit', 'create']]);
@@ -85,5 +86,8 @@ Route::group(['middleware' => 'auth:api'], function() {
    
     Route::post('/centro/fusionar','CentroController@fusionar');
     Route::get('colaboracion/instructores/{id}','ColaboracionController@instructores');
+    Route::get('/colaboracion/{colaboracion}/resolve','ColaboracionController@resolve');
+    Route::get('/colaboracion/{colaboracion}/refuse','ColaboracionController@refuse');
+    Route::get('/colaboracion/{colaboracion}/unauthorize','ColaboracionController@refuse');
     //Route::get('/convenio','EmpresaController@indexConvenio');
 });

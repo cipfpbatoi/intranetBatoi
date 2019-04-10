@@ -88,13 +88,12 @@ return [
     'Colaboracion' => [
         'estados' => [
             1 => 'pendiente',
-            2 => 'contacte',
-            3 => 'colabora',
-            4 => 'descartada',
+            2 => 'colabora',
+            3 => 'descartada',
         ],
         'avisos' => [],
-        'resolve' => 3,
-        'refuse' => 4
+        'resolve' => 2,
+        'refuse' => 3
     ]
     
 ];

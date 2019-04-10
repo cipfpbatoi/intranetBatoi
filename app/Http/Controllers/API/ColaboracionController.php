@@ -18,4 +18,23 @@ class ColaboracionController extends ApiBaseController
         $data = $colaboracion->Centro->instructores;
         return $this->sendResponse($data, 'OK');
     }
+
+    public function resolve($id){
+        $colaboracion = Colaboracion::find($id);
+        $colaboracion::resolve($id);
+        return $this->sendResponse($colaboracion,'OK');
+    }
+
+    public function refuse($id){
+        $colaboracion = Colaboracion::find($id);
+        $colaboracion::refuse($id);
+        return $this->sendResponse($colaboracion,'OK');
+    }
+    public function unauthorize($id){
+        $colaboracion = Colaboracion::find($id);
+        $colaboracion::unauthorize($id);
+        return $this->sendResponse($colaboracion,'OK');
+    }
+
+
 }

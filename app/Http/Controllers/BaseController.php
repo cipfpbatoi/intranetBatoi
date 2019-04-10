@@ -105,12 +105,14 @@ abstract class BaseController extends Controller
                     $this->panel->setPestana('profile', false,null,null,null,null,$this->parametresVista);
     }
     
-    protected function crea_pestanas($estados,$vista,$activa=null){
-        $activa = isset($activa)?$activa:Session::get('pestana')?Session::get('pestana'):0;
-        
+    protected function crea_pestanas($estados,$vista,$activa=null,$sustituye = null){
+        if (!$activa){
+            $activa = Session::get('pestana')?Session::get('pestana'):0;
+        }
         foreach ($estados as $key => $estado) {
+            $sustituto = ($key == $sustituye)?1:null;
             $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,
-                ['estado',$key],null,null,$this->parametresVista);
+                ['estado',$key],null,$sustituto,$this->parametresVista);
         }
     }
     
