@@ -172,12 +172,14 @@ Route::get('/colaboracion',['as' => 'colaboracion.index', 'uses' => 'Colaboracio
 Route::get('/empresaSC',['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCController@index']);
 
 Route::get('/misColaboraciones',['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
-Route::get('/miscolaboraciones/{colaboracion}/colabora/{si}', ['as' => 'PanelColaboracion.colabora', 'uses' => 'PanelColaboracionController@colabora']);
-Route::get('/miscolaboraciones/inicia', ['as' => 'PanelColaboracion.inicia', 'uses' => 'PanelColaboracionController@inicia']);
-Route::get('/miscolaboraciones/documentacion', ['as' => 'PanelColaboracion.documentacion', 'uses' => 'PanelColaboracionController@sendRequestInfo']);
-Route::get('/miscolaboraciones/contacto', ['as' => 'PanelColaboracion.contacto', 'uses' => 'PanelColaboracionController@sendFirstContact']);
+Route::get('/colaboracion/inicia', ['as' => 'PanelColaboracion.inicia', 'uses' => 'PanelColaboracionController@inicia']);
+Route::get('/colaboracion/documentacion', ['as' => 'PanelColaboracion.documentacion', 'uses' => 'PanelColaboracionController@sendRequestInfo']);
+Route::get('/colaboracion/contacto', ['as' => 'PanelColaboracion.contacto', 'uses' => 'PanelColaboracionController@sendFirstContact']);
 
-
+Route::get('/colaboracion/{colaboracion}/authorize', ['as' => 'colaboracion.authorize', 'uses' => 'ColaboracionController@accept']);
+Route::get('/colaboracion/{colaboracion}/unauthorize', ['as' => 'colaboracion.unauthorize', 'uses' => 'ColaboracionController@resign']);
+Route::get('/colaboracion/{colaboracion}/refuse', ['as' => 'colaboracion.refuse', 'uses' => 'ColaboracionController@refuse']);
+Route::get('/colaboracion/{colaboracion}/resolve',['as' => 'colaboracion.resolve','uses' => 'ColaboracionController@resolve']);
 
 Route::resource('/centro', 'CentroController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/centro/{centro}/delete', ['as' => 'centro.destroy', 'uses' => 'CentroController@destroy']);
@@ -232,7 +234,7 @@ Route::get('/dual/create', ['as' => 'dual.create', 'uses' => 'DualController@cre
 Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@store']);
 Route::get('/dual/{id}/pdf/{informe}',['as' => 'dual.pdf', 'uses' => 'DualAlumnoController@informe']);
 Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualAlumnoController@destroy']);
-Route::get('/dual/anexeVI',['as'=>'dual.anexevi','uses'=>'DualController@anexeVI']);
+Route::get('/dual/anexeVI',['as'=>'dual.anexevi','uses'=>'DualController@printAnexeVI']);
 
 
 Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);

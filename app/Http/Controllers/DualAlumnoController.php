@@ -44,6 +44,10 @@ class DualAlumnoController extends FctAlumnoController
      * @var array
      */
     protected $titulo = [];
+    /**
+     * @var array
+     */
+    //protected $parametresVista = ['before' => [] , 'modal' => ['anexeVI']];
 
     /**
      * @return mixed
@@ -64,7 +68,7 @@ class DualAlumnoController extends FctAlumnoController
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_va'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vb'));
         $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info']));
-        $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info']));
+        $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info','id' => 'anexoVI']));
         Session::put('redirect', 'DualAlumnoController@index');
     }
         //

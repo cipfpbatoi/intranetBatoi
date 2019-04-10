@@ -2,7 +2,6 @@
 
 var id;
 
-
 $(function() {
     $("#401").on("click", function(event){
         event.preventDefault();

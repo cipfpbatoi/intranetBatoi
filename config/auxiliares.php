@@ -24,5 +24,6 @@ return [
     'tipoEstudioC' => [1=>'Ciclo Formativo de Grado Medio','2'=>'Ciclo Formativo de Grado Superior','3'=>'Ciclo Formativo Básico','4'=>'Bachiller','5'=>'ESO','6'=>'Primaria'],
     'tipoTutoria' => [0=>'No assignada',1=>'Xarrades Programades',2=>'Convivència',3=>'Acadèmiques-Professionals',4=>'Temes transversals'],
     'veep' => [],
+    'estadoColaboracion' => [0=>'',1=>'NoContactada',2=>'Contactada',3=>'Col.labora',4=>'No col.labora'],
     'reunionesControlables' => [2, 5, 6, 7, 9],
 ];

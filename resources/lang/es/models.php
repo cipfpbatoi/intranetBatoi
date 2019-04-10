@@ -265,14 +265,13 @@ return array(
             'index' => 'Colaboraciones de trabajo de :quien',
             'edit' => 'Editar colaboración',
             'delete' => 'Borrar colaboración',
-            'copy' => 'Crear colaboración'
-        ),
-        'Miscolaboraciones' => array(
-           'index' => 'Mis colaboraciones',
-           'inicia' => 'Comienza ciclo de contactos',
-           'colabora' => 'Quiere colaborar',
-           'contacto' => 'Contacto inicial',
-           'documentacion' => 'Reclamar documentación falta'
+            'copy' => 'Crear colaboración',
+            'inicia' => 'Comienza ciclo de contactos',
+            'resolve' => 'SI',
+            'unauthorize' => '??',
+            'refuse' => 'No',
+            'contacto' => 'Contacto inicial',
+            'documentacion' => 'Reclamar documentación falta'
         ),
         'Fct' => array(
             'index' => 'FCT',

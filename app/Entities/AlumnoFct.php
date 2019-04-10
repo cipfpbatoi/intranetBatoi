@@ -59,9 +59,9 @@ class AlumnoFct extends Model
 //    }
     
     
-    public function scopeMisFcts($query)
+    public function scopeMisFcts($query,$profesor=null)
     {
-        $profesor = AuthUser()->dni;
+        $profesor = $profesor?$profesor:AuthUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();

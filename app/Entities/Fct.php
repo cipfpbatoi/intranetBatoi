@@ -93,7 +93,10 @@ class Fct extends Model
         $alumnos_fct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno',$alumnos)->get()->toArray();
         return $query->whereIn('id',$alumnos_fct)->whereIn('idColaboracion',$colaboraciones);
     }
-    
+    public function scopeEsExempt($query)
+    {
+        return $query->where('asociacion','=',2);
+    }
     
     public function scopeEsFct($query)
     {

@@ -59,5 +59,41 @@
     <div style="position:absolute;left:950.70px;top:468.40px;">
         <span style="font-weight: bold">{{$datosInforme['dualM']}}</span>
     </div>
+    <div style="position:absolute;left:336.70px;top:908.40px;">
+        <span style="font-weight: bold">{{$datosInforme['dualH']}}</span>
+    </div>
+    <div style="position:absolute;left:436.70px;top:908.40px;">
+        <span style="font-weight: bold">{{$datosInforme['dualM']}}</span>
+    </div>
+    <div style="position:absolute;left:536.70px;top:908.40px;">
+        <span style="font-weight: bold">{{$datosInforme['dualH']}}</span>
+    </div>
+    <div style="position:absolute;left:646.70px;top:908.40px;">
+        <span style="font-weight: bold">{{$datosInforme['dualM']}}</span>
+    </div>
+    <div style="position:absolute;left:766.70px;top:908.40px;">
+        <span style="font-weight: bold">{{$datosInforme['dualH']}}</span>
+    </div>
+    <div style="position:absolute;left:886.70px;top:908.40px;">
+        <span style="font-weight: bold">{{$datosInforme['dualM']}}</span>
+    </div>
+    <div style="position:absolute;left:996.70px;top:908.40px;">
+        <span style="font-weight: bold">0</span>
+    </div>
+    <div style="position:absolute;left:1086.70px;top:908.40px;">
+        <span style="font-weight: bold">0</span>
+    </div>
+    <div style="position:absolute;left:380.70px;top:930.40px;">
+        <span style="font-weight: bold">{{$datosInforme['dualH']+$datosInforme['dualM']}}</span>
+    </div>
+    <div style="position:absolute;left:590.70px;top:930.40px;">
+        <span style="font-weight: bold">{{$datosInforme['dualH']+$datosInforme['dualM']}}</span>
+    </div>
+    <div style="position:absolute;left:820.70px;top:930.40px;">
+        <span style="font-weight: bold">{{$datosInforme['dualH']+$datosInforme['dualM']}}</span>
+    </div>
+    <div style="position:absolute;left:1040.70px;top:930.40px;">
+        <span style="font-weight: bold">0</span>
+    </div>
     
 </div>

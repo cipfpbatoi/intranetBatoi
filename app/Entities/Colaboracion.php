@@ -10,7 +10,7 @@ use Intranet\Events\ActivityReport;
 class Colaboracion extends Model
 {
 
-    use BatoiModels;
+    use BatoiModels,TraitEstado;
 
     protected $table = 'colaboraciones';
     protected $fillable = ['idCentro', 'idCiclo', 'contacto', 'telefono','email', 'puestos','tutor'];
@@ -87,14 +87,9 @@ class Colaboracion extends Model
     {
         return $this->Centro->localidad;
     }
-    public function getXColaboraAttribute()
+    public function getXEstadoAttribute()
     {
-        switch ($this->colabora){
-            case 0 : return '??';
-            case 1 : return 'SI!!';
-            case 2 : return 'NO VOL';
-            case 3 : return 'DESCARTADA';    
-        }
+        return config('auxiliares.estadoColaboracion')[$this->estado];
     }
     public function getConciertoAttribute(){
         return $this->Centro->Empresa->concierto;

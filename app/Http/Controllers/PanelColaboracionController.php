@@ -2,7 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
+use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Colaboracion;
 use Illuminate\Support\Facades\Session;
 use Mail;
@@ -17,10 +19,11 @@ use Styde\Html\Facades\Alert;
 class PanelColaboracionController extends IntranetController
 {
 
+    use traitPanel;
     /**
      * @var array
      */
-    protected $gridFields = ['Empresa','concierto','Localidad','puestos','Xcolabora','contacto', 'telefono','email'];
+    protected $gridFields = ['Empresa','concierto','Localidad','puestos','Xestado','contacto', 'telefono','email'];
     /**
      * @var string
      */
@@ -28,7 +31,8 @@ class PanelColaboracionController extends IntranetController
     /**
      * @var string
      */
-    protected $model = 'miscolaboraciones';
+    protected $model = 'Colaboracion';
+
 
 
     /**
@@ -36,52 +40,43 @@ class PanelColaboracionController extends IntranetController
      */
     protected function iniBotones()
     {
-        $this->panel->setBotonera(['inicia','contacto','documentacion']);
-        $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.2', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-down','where' => ['colabora', '!=', '2']]));
-        $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.1', ['roles' => config('roles.rol.practicas'),'img'=>'fa-hand-o-up','where' => ['colabora', '!=', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.0', ['roles' => config('roles.rol.practicas'),'img'=>'fa-question','where' => ['colabora', '!=', '0']]));
-        $this->panel->setBoton('grid', new BotonImg('miscolaboraciones.colabora.3', ['roles' => config('roles.rol.practicas'),'img'=>'fa-cloud','where' => ['colabora', '==', '0']]));
-        $this->panel->setBoton('grid', new BotonImg('colaboracion.show',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
-  
-        Session::put('redirect', 'PanelColaboracionController@index');
+        $this->panel->setBothBoton('colaboracion.unauthorize', ['roles' => config('roles.rol.practicas'),'img'=>'fa-question','where' => ['estado', '>', '0','estado','==','3']]);
+        $this->panel->setBothBoton('colaboracion.resolve', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary resolve','img'=>'fa-hand-o-up','where' => ['estado', '>', '0','estado','<>','3']]);
+        $this->panel->setBothBoton('colaboracion.refuse', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary refuse','img'=>'fa-hand-o-down','where' => ['estado', '>', '0','estado','<>','4']]);
+        $this->panel->setBothBoton('colaboracion.show',['img' => 'fa-eye','text' => '','roles' => [config('roles.rol.practicas')]]);
+        if (Colaboracion::where('estado', '=', 4)->count())
+            $this->panel->setBoton('index', new BotonBasico("colaboracion.inicia"));
+        if (Colaboracion::where('estado', '=', 1)->count())
+            $this->panel->setBoton('index', new BotonBasico("colaboracion.contacto"));
+        if (Colaboracion::where('estado', '=', 3)->count())
+        $this->panel->setBoton('index', new BotonBasico("colaboracion.documentacion"));
     }
 
     /**
      * @return mixed
      */
     public function search(){
+        $this->titulo = ['quien' => Colaboracion::MiColaboracion()->first()->Ciclo->literal];
         return Colaboracion::MiColaboracion()->get();
-    }
-
-    /**
-     * @param $id
-     * @param $tipo
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function colabora($id, $tipo){
-        $colaboracion = Colaboracion::find($id);
-        $colaboracion->colabora = $tipo;
-        $colaboracion->save();
-        return $this->redirect();
     }
 
     /**
      * @return \Illuminate\Http\RedirectResponse
      */
     public function inicia(){
-        Colaboracion::MiColaboracion()->update(['colabora' => 0]);
+        Colaboracion::MiColaboracion()->update(['estado' => 1]);
         return $this->redirect();
     }
 
 
     public function sendRequestInfo(){
-        foreach (Colaboracion::MiColaboracion()->where('colabora',1)->get() as $colaboracion)
+        foreach (Colaboracion::MiColaboracion()->where('estado',2)->get() as $colaboracion)
             $this->emailDocument('request',$colaboracion);
         return back();
     }
 
     public function sendFirstContact(){
-        foreach (Colaboracion::MiColaboracion()->where('colabora',0)->get() as $colaboracion)
+        foreach (Colaboracion::MiColaboracion()->where('estado',1)->get() as $colaboracion)
             $this->emailDocument('contact',$colaboracion);
         return back();
     }
@@ -99,4 +94,6 @@ class PanelColaboracionController extends IntranetController
                 ,config('fctEmails.'.$document.'.view')));
         Alert::info('Enviat correu '.config('fctEmails.'.$document.'.subject').' a '.$colaboracion->Centro->nombre);
     }
+
+
 }

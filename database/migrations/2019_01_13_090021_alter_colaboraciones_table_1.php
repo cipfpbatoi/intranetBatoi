@@ -14,7 +14,7 @@ class AlterColaboracionesTable1 extends Migration {
 	{
 		Schema::table('colaboraciones', function(Blueprint $table)
 		{
-			$table->tinyInteger('colabora')->default(0);
+			$table->tinyInteger('estado')->default(0);
                 });
 	}
 
@@ -28,7 +28,7 @@ class AlterColaboracionesTable1 extends Migration {
 	{
 		Schema::table('colaboraciones', function(Blueprint $table)
 		{
-			$table->dropColumn('colabora');
+			$table->dropColumn('estado');
 		});
 	}
 

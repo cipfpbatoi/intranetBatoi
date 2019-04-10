@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Session;
  */
 class ColaboracionController extends IntranetController
 {
+    use traitAutorizar;
     /**
      * @var string
      */
@@ -155,7 +156,7 @@ class ColaboracionController extends IntranetController
      */
     public function colabora($id, $tipo){
         $colaboracion = Colaboracion::find($id);
-        $colaboracion->colabora = $tipo;
+        $colaboracion->estado = $tipo;
         $colaboracion->save();
         $empresa = $colaboracion->Centro->Empresa;
         return redirect()->action('EmpresaController@show', ['id' => $empresa]);

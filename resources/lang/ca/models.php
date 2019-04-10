@@ -268,12 +268,10 @@ return array(
             'edit' => 'Editar colaboració',
             'delete' => 'Esborrar colaboració',
             'copy' => 'Crear colaboració',
-            
-        ),
-        'Miscolaboraciones' => array(
-           'index' => 'Les meues col.laboracions',
-           'inicia' => 'Comença contactes',
-           'colabora' => 'Vol col.laborar enguany',
+            'inicia' => 'Comença contactes',
+            'resolve' => 'SI',
+            'unauthorize' => '??',
+            'refuse' => 'NO',
             'contacto' => 'Contacte inicial',
             'documentacion' => 'Reclamar documentació falta'
         ),

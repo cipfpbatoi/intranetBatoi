@@ -84,6 +84,17 @@ return [
         'avisos' => [ 'idProfesor' => [2,3],'director' =>[1]],
         'resolve' => 2,
         'refuse' => 3
+    ],
+    'Colaboracion' => [
+        'estados' => [
+            1 => 'pendiente',
+            2 => 'contacte',
+            3 => 'colabora',
+            4 => 'descartada',
+        ],
+        'avisos' => [],
+        'resolve' => 3,
+        'refuse' => 4
     ]
     
 ];
