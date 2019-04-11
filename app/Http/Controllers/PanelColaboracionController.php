@@ -46,15 +46,15 @@ class PanelColaboracionController extends IntranetController
         return $this->grid($todos);
     }
 
-
     /**
      *
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.unauthorize', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary unauthorize','img'=>'fa-question','where' => ['estado', '==', '2']]));
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.resolve', ['roles' => config('roles.rol.practicas'),'class'=>'btn-success resolve','img'=>'fa-hand-o-up','where' => ['estado', '<>', '2']]));
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.refuse', ['roles' => config('roles.rol.practicas'),'class'=>'btn-danger refuse','img'=>'fa-hand-o-down','where' => ['estado', '<', '3']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.unauthorize', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary unauthorize','img'=>'fa-question']));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.resolve', ['roles' => config('roles.rol.practicas'),'class'=>'btn-success resolve','img'=>'fa-hand-o-up']));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.refuse', ['roles' => config('roles.rol.practicas'),'class'=>'btn-danger refuse','img'=>'fa-hand-o-down']));
+
         $this->panel->setBothBoton('colaboracion.show',['img' => 'fa-eye','text' => '','roles' => [config('roles.rol.practicas')]]);
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.contacto', ['roles' => config('roles.rol.practicas'),'img'=>'fa-envelope','where' => ['estado', '==', '1']]));
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.documentacion', ['roles' => config('roles.rol.practicas'),'img'=>'fa-envelope','where' => ['estado', '==', '2']]));
