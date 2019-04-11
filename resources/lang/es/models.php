@@ -271,7 +271,8 @@ return array(
             'unauthorize' => '??',
             'refuse' => 'No',
             'contacto' => 'Petición de prácticas',
-            'documentacion' => 'Revisión documentación'
+            'info' => 'Revisión documentación',
+            'documentacion' => "Documentación inicio"
         ),
         'Fct' => array(
             'index' => 'FCT',

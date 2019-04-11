@@ -52,9 +52,9 @@ class AlumnoFctAval extends AlumnoFct
          return $query->whereNotNull('calificacion');
      }
      
-     public function scopeMisFcts($query)
+     public function scopeMisFcts($query,$profesor=NULL)
      {
-        $profesor = AuthUser()->dni;
+        $profesor = $profesor?$profesor:AuthUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();

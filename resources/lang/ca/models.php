@@ -273,7 +273,8 @@ return array(
             'unauthorize' => '??',
             'refuse' => 'NO',
             'contacto' => 'Petició pràctiques',
-            'documentacion' => 'Revissió documentació'
+            'info' => 'Revissió documentació',
+            'documentacion' => "Documentació Inici"
         ),
         'Fct' => array(
             'index' => 'FCT',

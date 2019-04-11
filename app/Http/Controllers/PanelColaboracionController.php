@@ -64,7 +64,10 @@ class PanelColaboracionController extends IntranetController
         if (Colaboracion::where('estado', '=', 1)->count())
             $this->panel->setBoton('index', new BotonBasico("colaboracion.contacto",['icon' => 'fa fa-envelope']));
         if (Colaboracion::where('estado', '=', 2)->count())
+            $this->panel->setBoton('index', new BotonBasico("colaboracion.info",['icon' => 'fa fa-envelope-o']));
+        if (Colaboracion::where('estado', '=', 2)->count())
             $this->panel->setBoton('index', new BotonBasico("colaboracion.documentacion",['icon' => 'fa fa-envelope-o']));
+
     }
 
     /**
@@ -84,15 +87,23 @@ class PanelColaboracionController extends IntranetController
     }
 
 
-    public function sendRequestInfo(){
-        foreach (Colaboracion::MiColaboracion()->where('estado',2)->get() as $colaboracion)
+    public function sendRequestInfo($id=null){
+        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('estado',2)->get();
+        foreach ($colaboraciones as $colaboracion)
             $this->emailDocument('request',$colaboracion);
         return back();
     }
 
-    public function sendFirstContact(){
-        foreach (Colaboracion::MiColaboracion()->where('estado',1)->get() as $colaboracion)
+    public function sendFirstContact($id=null){
+        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('estado',1)->get();
+        foreach ($colaboraciones as $colaboracion)
             $this->emailDocument('contact',$colaboracion);
+        return back();
+    }
+    public function sendDocumentation($id=null){
+        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('estado',2)->get();
+        foreach ($colaboraciones as $colaboracion)
+            $this->emailDocument('documentation',$colaboracion);
         return back();
     }
 

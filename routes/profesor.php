@@ -173,13 +173,13 @@ Route::get('/empresaSC',['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCControll
 
 Route::get('/misColaboraciones',['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
 Route::get('/colaboracion/inicia', ['as' => 'PanelColaboracion.inicia', 'uses' => 'PanelColaboracionController@inicia']);
-Route::get('/colaboracion/documentacion', ['as' => 'PanelColaboracion.documentacion', 'uses' => 'PanelColaboracionController@sendRequestInfo']);
+Route::get('/colaboracion/info', ['as' => 'PanelColaboracion.info', 'uses' => 'PanelColaboracionController@sendRequestInfo']);
 Route::get('/colaboracion/contacto', ['as' => 'PanelColaboracion.contacto', 'uses' => 'PanelColaboracionController@sendFirstContact']);
+Route::get('/colaboracion/documentacion', ['as' => 'PanelColaboracion.documentacion', 'uses' => 'PanelColaboracionController@sendDocumentation']);
 
-Route::get('/colaboracion/{colaboracion}/authorize', ['as' => 'colaboracion.authorize', 'uses' => 'ColaboracionController@accept']);
-Route::get('/colaboracion/{colaboracion}/unauthorize', ['as' => 'colaboracion.unauthorize', 'uses' => 'ColaboracionController@resign']);
-Route::get('/colaboracion/{colaboracion}/refuse', ['as' => 'colaboracion.refuse', 'uses' => 'ColaboracionController@refuse']);
-Route::get('/colaboracion/{colaboracion}/resolve',['as' => 'colaboracion.resolve','uses' => 'ColaboracionController@resolve']);
+Route::get('/colaboracion/{colaboracion}/documentacion', 'PanelColaboracionController@sendDocumentation');
+Route::get('/colaboracion/{colaboracion}/contacto', 'PanelColaboracionController@sendFirstContact');
+Route::get('/colaboracion/{colaboracion}/info', 'PanelColaboracionController@sendRequestInfo');
 
 Route::resource('/centro', 'CentroController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/centro/{centro}/delete', ['as' => 'centro.destroy', 'uses' => 'CentroController@destroy']);
