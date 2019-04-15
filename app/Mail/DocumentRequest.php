@@ -18,31 +18,21 @@ class DocumentRequest extends Mailable
     /**
      * @var
      */
-    public $elemento;
-    /**
-     * @var
-     */
-    public $de;
+    public $mail;
     /**
      * @var
      */
     public $view;
-    /**
-     * @var
-     */
-    public $subject;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($elemento,$from,$subject,$view)
+    public function __construct($mail,$view)
     {
-        $this->elemento = $elemento;
-        $this->de = $from;
+        $this->mail = $mail;
         $this->view =$view;
-        $this->subject = $subject;
     }
 
     /**
@@ -52,6 +42,6 @@ class DocumentRequest extends Mailable
      */
     public function build()
     {
-        return $this->from($this->de)->subject($this->subject)->view($this->view);
+        return $this->from($this->mail->getFrom())->subject($this->mail->getSubject())->view($this->view);
     }
 }

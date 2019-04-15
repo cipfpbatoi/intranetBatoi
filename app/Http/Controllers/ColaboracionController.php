@@ -149,17 +149,6 @@ class ColaboracionController extends IntranetController
         return redirect()->action('EmpresaController@show', ['id' => $empresa]);
     }
 
-    /**
-     * @param $id
-     * @param $tipo
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function colabora($id, $tipo){
-        $colaboracion = Colaboracion::find($id);
-        $colaboracion->estado = $tipo;
-        $colaboracion->save();
-        $empresa = $colaboracion->Centro->Empresa;
-        return redirect()->action('EmpresaController@show', ['id' => $empresa]);
-    }
+
 
 }

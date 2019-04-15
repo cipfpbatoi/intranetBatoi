@@ -8,6 +8,8 @@
                         <li>{{$elemento->contacto}}</li>
                         <li>{{$elemento->telefono}}</li>
                         <li>{{$elemento->email}}</li>
+                        <li class="nombre">{{isset($elemento->propietario->fullName)?$elemento->propietario->fullName:$elemento->tutor}}
+                        </li>
                     </ul>
                 </div>
                 <div class="col-md-4">
@@ -19,11 +21,12 @@
             <div class="col-xs-12 bottom text-center">
                 <div class="col-xs-12 col-sm-4 emphasis">
                     <p class="ratings">
-                        {{$elemento->Centro->localidad}}
+                        {{$elemento->Centro->localidad}}<br/>
                     </p>
                 </div>
                 <div class="col-xs-12 col-sm-8 emphasis">
                     @include ('intranet.partials.buttons',['tipo' => 'profile'])
+
                 </div>
             </div>
         </div>

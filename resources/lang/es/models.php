@@ -272,7 +272,8 @@ return array(
             'refuse' => 'No',
             'contacto' => 'Petición de prácticas',
             'info' => 'Revisión documentación',
-            'documentacion' => "Documentación inicio"
+            'documentacion' => "Documentación inicio",
+            'switch' => 'Mi'
         ),
         'Fct' => array(
             'index' => 'FCT',

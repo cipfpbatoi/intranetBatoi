@@ -8,7 +8,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Mail\Mailer;
-use Intranet\Entities\Profesor;
 use Intranet\Mail\Comunicado;
 use Intranet\Events\EmailSended;
 

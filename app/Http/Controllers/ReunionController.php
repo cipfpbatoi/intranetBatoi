@@ -4,16 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Reunion;
-use Intranet\Entities\Departamento;
 use Intranet\Entities\Profesor;
-use Intranet\Entities\Alumno;
 use Intranet\Entities\Asistencia;
 use Response;
-use Exception;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\TipoReunion;
 use Intranet\Entities\OrdenReunion;
@@ -21,9 +14,7 @@ use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Documento;
 use Intranet\Jobs\SendEmail;
-use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Grupo;
-use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\DB;
 
 class ReunionController extends IntranetController

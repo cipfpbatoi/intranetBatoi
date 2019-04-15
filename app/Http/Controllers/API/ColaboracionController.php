@@ -7,6 +7,7 @@ use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Entities\Colaboracion;
+use Intranet\Entities\Profesor;
 
 class ColaboracionController extends ApiBaseController
 {
@@ -34,6 +35,13 @@ class ColaboracionController extends ApiBaseController
         $colaboracion = Colaboracion::find($id);
         $colaboracion::unauthorize($id);
         return $this->sendResponse($colaboracion,'OK');
+    }
+    public function switch($id){
+        $colaboracion = Colaboracion::find($id);
+        $profesor = Profesor::where('api_token',$_GET['api_token'])->first();
+        $colaboracion->tutor = $profesor->dni;
+        $colaboracion->save();
+        return $this->sendResponse($profesor,'OK');
     }
 
 

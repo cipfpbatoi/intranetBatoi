@@ -47,4 +47,17 @@ $(function() {
             boton.siblings().show();
         });
     });
+    $(".switch").on("click", function(){
+        event.preventDefault();
+        var colaboracion = $(this).parents(".well");
+        var boton = $(this);
+        $.ajax({
+            method: "GET",
+            url: "/api/colaboracion/" + colaboracion.attr('id') + "/switch",
+            data: { api_token: token}
+        }).then(function (result) {
+            boton.hide();
+            colaboracion.find(".nombre").text(result.data.nombre+' '+result.data.apellido1+' '+result.data.apellido2);
+        });
+    });
 })

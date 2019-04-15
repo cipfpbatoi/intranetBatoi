@@ -3,13 +3,13 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Colaboracion;
 use Illuminate\Support\Facades\Session;
-use Mail;
 use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
+use Intranet\Botones\Mail as myMail;
+
 
 
 /**
@@ -51,13 +51,15 @@ class PanelColaboracionController extends IntranetController
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.unauthorize', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary unauthorize','img'=>'fa-question']));
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.resolve', ['roles' => config('roles.rol.practicas'),'class'=>'btn-success resolve','img'=>'fa-hand-o-up']));
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.refuse', ['roles' => config('roles.rol.practicas'),'class'=>'btn-danger refuse','img'=>'fa-hand-o-down']));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.unauthorize', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary unauthorize']));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.resolve', ['roles' => config('roles.rol.practicas'),'class'=>'btn-success resolve']));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.refuse', ['roles' => config('roles.rol.practicas'),'class'=>'btn-danger refuse']));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.switch', ['roles' => config('roles.rol.practicas'),'class'=>'btn-warning switch','icon'=>'fa-user','where' => ['tutor', '<>', AuthUser()->dni]]));
 
         $this->panel->setBothBoton('colaboracion.show',['img' => 'fa-eye','text' => '','roles' => [config('roles.rol.practicas')]]);
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.contacto', ['roles' => config('roles.rol.practicas'),'img'=>'fa-envelope','where' => ['estado', '==', '1']]));
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.documentacion', ['roles' => config('roles.rol.practicas'),'img'=>'fa-envelope','where' => ['estado', '==', '2']]));
+
 
         if (Colaboracion::where('estado', '=', 3)->count())
             $this->panel->setBoton('index', new BotonBasico("colaboracion.inicia",['icon' => 'fa fa-recycle']));
@@ -82,7 +84,7 @@ class PanelColaboracionController extends IntranetController
      * @return \Illuminate\Http\RedirectResponse
      */
     public function inicia(){
-        Colaboracion::MiColaboracion()->update(['estado' => 1]);
+        Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->update(['estado' => 1]);
         return $this->redirect();
     }
 
@@ -96,10 +98,26 @@ class PanelColaboracionController extends IntranetController
 
     public function sendFirstContact($id=null){
         $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('estado',1)->get();
-        foreach ($colaboraciones as $colaboracion)
-            $this->emailDocument('contact',$colaboracion);
-        return back();
+        $to = '';
+        foreach ($colaboraciones as $colaboracion){
+            $to .= $colaboracion->email.',';
+        }
+        $elemento = $colaboraciones->first();
+        $content = "<p>El meu nom és ".AuthUser()->fullName." i sóc el professor-tutor del ".config('auxiliares.tipoEstudio.'.$elemento->ciclo->tipo) ." '".$elemento->ciclo->literal."'".
+            " del ".config('contacto.nombre').
+            ".Les classes de segon curs acaben a principis de març, i després, els alumnes han de fer 400 hores de pràctiques en empreses/organitzacions/entitats/etc, amb l'horari normal de l'empresa (que sol ser 40 hores setmanals).<br/>
+            Com tots els anys, estem buscant llocs de pràctiques per als nostres alumnes i hem pensat que potser la vostra empresa podria acollir les pràctiques d'un dels alumnes.<br/>
+            Actualment, tenim alumnes que estarien molt interessats en fer les seues pràctiques en una empresa com la vostra, que tinga almenys un tècnic
+            Per tot això, ens agradaria que consideràreu la possibilitat d'acollir les pràctiques d'un dels nostres alumnes entre el 11 de març i el 30 de maig, aproximadament.<br/>
+            Òbviament, abans de prendre la vostra decisió, parlaríem tot allò que fera falta i també podríeu entrevistar als alumnes candidats.
+            En qualsevol cas, moltes gràcies per considerar la nostra sol·licitud.</p>
+            <p>Salutacions cordials de ".AuthUser()->shortName."</p>";
+        $mail = new myMail( $to,'A/A de Recursos Humans', 'Sol·licitud de Pràctiques de FCT', $content );
+        return $mail->render('colaboracion/contacto');
+
     }
+
+
     public function sendDocumentation($id=null){
         $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('estado',2)->get();
         foreach ($colaboraciones as $colaboracion)

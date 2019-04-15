@@ -57,6 +57,10 @@ class Colaboracion extends Model
     {
         return $this->hasMany(IncidenciaColaboracion::class, 'idColaboracion', 'id');
     }
+    public function Propietario()
+    {
+        return $this->belongsTo(Profesor::class, 'tutor', 'dni');
+    }
     
 
 //    public function getIdCicloOptions()

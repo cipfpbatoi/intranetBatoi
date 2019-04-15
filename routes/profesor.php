@@ -175,7 +175,9 @@ Route::get('/misColaboraciones',['as' => 'colaboracion.mias', 'uses' => 'PanelCo
 Route::get('/colaboracion/inicia', ['as' => 'PanelColaboracion.inicia', 'uses' => 'PanelColaboracionController@inicia']);
 Route::get('/colaboracion/info', ['as' => 'PanelColaboracion.info', 'uses' => 'PanelColaboracionController@sendRequestInfo']);
 Route::get('/colaboracion/contacto', ['as' => 'PanelColaboracion.contacto', 'uses' => 'PanelColaboracionController@sendFirstContact']);
+Route::post('/colaboracion/contacto', ['as' => 'PanelColaboracion.post.contacto', 'uses' => 'PanelColaboracionController@postSendFirstContact']);
 Route::get('/colaboracion/documentacion', ['as' => 'PanelColaboracion.documentacion', 'uses' => 'PanelColaboracionController@sendDocumentation']);
+
 
 Route::get('/colaboracion/{colaboracion}/documentacion', 'PanelColaboracionController@sendDocumentation');
 Route::get('/colaboracion/{colaboracion}/contacto', 'PanelColaboracionController@sendFirstContact');
@@ -194,7 +196,6 @@ Route::get('/colaboracion/{colaboracion}/show', ['as' => 'colaboracion.show', 'u
 Route::put('/colaboracion/{colaboracion}/edit', ['as' => 'colaboracion.update', 'uses' => 'ColaboracionController@update']);
 Route::get('/colaboracion/{colaboracion}/copy', ['as' => 'colaboracion.copy', 'uses' => 'ColaboracionController@copy']);
 Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'ColaboracionController@store']);
-Route::get('/colaboracion/{colaboracion}/colabora/{si}', ['as' => 'colaboracion.colabora', 'uses' => 'ColaboracionController@colabora']);
 
 Route::resource('/fct', 'FctController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/fct/{id}/{alumno}/alumnoDelete',['as' => 'fct.alumno.delete', 'uses' => 'FctController@alumnoDelete']);
@@ -368,3 +369,5 @@ Route::get('/option/{id}/delete', ['as' => 'option.destroy', 'uses' => 'OptionCo
 
 Route::get('/poll/{id}/show', ['as' => 'poll.resultShow', 'uses' => 'PollController@lookAtMyVotes']);
 Route::get('/poll/{id}/chart', ['as' => 'poll.result', 'uses' => 'PollController@lookAtAllVotes']);
+
+Route::post('/myMail','MyMailController@send');

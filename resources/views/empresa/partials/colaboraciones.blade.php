@@ -14,12 +14,6 @@
                     @if ($editar || UserisAllow(config('roles.rol.administrador'))) 
                         <a href='/colaboracion/{!!$colaboracion->id!!}/edit'><i class="fa fa-edit" title='Modificar col.laboració'></i></a> 
                         <a href="/colaboracion/{!!$colaboracion->id!!}/delete" class="delGrupo"><i class="fa fa-trash" title='Esborrar col.laboració'></i></a>
-                        @if ($colaboracion->colabora != 1 )
-                            <a href='/colaboracion/{!!$colaboracion->id!!}/colabora/1'><i class="fa fa-hand-o-up" title="Col.labora"></i></a>
-                        @endif
-                        @if ($colaboracion->colabora != 2 )
-                            <a href='/colaboracion/{!!$colaboracion->id!!}/colabora/2'><i class="fa fa-hand-o-down" title="No col.labora"></i></a>
-                        @endif
                     @endif
                     @if (\Intranet\Entities\Colaboracion::where('idCentro',$colaboracion->idCentro)->where('idCiclo',$tutor->idCiclo)->count() == 0) <a href="/colaboracion/{!!$colaboracion->id!!}/copy" class="copGrupo"><i class="fa fa-copy"></i></a><small style="color: purple "> @lang('messages.buttons.copy')  {{$tutor->Ciclo->ciclo}} </small>@endif
                      
@@ -29,7 +23,7 @@
             <div class="message_wrapper" style="width:50%">
                 <h4><i class="fa fa-user user-profile-icon"> </i> {!! $colaboracion->contacto !!} <i class="fa fa-phone user-profile-icon"></i> {{$colaboracion->telefono}}</h4>
                 <h4><i class="fa fa-envelope user-profile-icon"></i>{{$colaboracion->email}}</h4>
-                <h4 class="text-info">{{$colaboracion->tutor}} <i class="fa fa-group user-profile-icon"></i> {{$colaboracion->puestos}}</h4>
+                <h4 class="text-info">{{isset($coraboracion->propietario->fullName)?$colaboracion->propietario->fullName:$colaboracion->tutor}} <i class="fa fa-group user-profile-icon"></i> {{$colaboracion->puestos}}</h4>
             </div>
         </li>    
         @endforeach
