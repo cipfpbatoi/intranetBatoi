@@ -2,7 +2,7 @@
 @section('body')
     <table style='text-align: center'>
         <tr>
-            <th>A/A {{$mail->getToPeople()}}</th>
+            <th>{{$mail->getToPeople()}}</th>
         </tr>
     </table>
     <div>

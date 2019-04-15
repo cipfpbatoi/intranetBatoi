@@ -36,7 +36,7 @@ class Mail
         $this->from = $from?$from:AuthUser()->email;
         $this->subject = $subject;
         $this->fromPerson = $fromPerson?$fromPerson:AuthUser()->FullName;
-        $this->content = $content;
+        $this->content = htmlentities($content);
         $this->toPeople = $toPeople;
     }
 
