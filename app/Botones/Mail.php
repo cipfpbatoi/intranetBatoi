@@ -57,8 +57,8 @@ class Mail
                 $toCompost = explode('(',$destinatari);
                 $to = $toCompost[0];
                 $contact = substr($toCompost[1],0,strlen($toCompost[1])-1);
-                LaravelMail::to($to,$contact)
-                    ->send( new DocumentRequest($this,'email.standard'));
+                LaravelMail::to($to)
+                    ->send( new DocumentRequest($this,'email.standard',$contact));
              }
 
 

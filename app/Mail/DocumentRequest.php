@@ -23,16 +23,18 @@ class DocumentRequest extends Mailable
      * @var
      */
     public $view;
+    public $to;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($mail,$view)
+    public function __construct($mail,$view,$to)
     {
         $this->mail = $mail;
         $this->view =$view;
+        $this->to = $to;
     }
 
     /**
