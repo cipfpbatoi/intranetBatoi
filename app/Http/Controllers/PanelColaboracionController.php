@@ -98,6 +98,7 @@ class PanelColaboracionController extends IntranetController
 
     public function sendFirstContact($id=null){
         $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',1)->get();
+        if (!$colaboraciones) return back();
         $to = '';
         foreach ($colaboraciones as $colaboracion){
             $to .= $colaboracion->email.'('.$colaboracion->contacto.'),';
