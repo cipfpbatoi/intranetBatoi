@@ -176,7 +176,7 @@ return array(
         'Profesor' => 'Datos Profesores',
         'Menu' => 'Mantenimiento menu general',
         'Administracion' => 'Administración',
-        'Departamento' => 'Mi departamento',
+        'Departamento' => 'Claustro',
         'Direccion' => 'Equipo directivo',
         'Authcomision' => 'Autorizar Comisiones',
         'Usuario' => 'Actividad Usuario',

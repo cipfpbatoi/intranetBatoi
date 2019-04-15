@@ -178,7 +178,7 @@ return array(
         'Profesor' => 'Dades Profesors',
         'Menu' => 'Manteniment menú general',
         'Administracion' => 'Administració',
-        'Departamento' => 'El meu departament',
+        'Departamento' => 'Claustre',
         'Direccion' => 'Equip directiu',
         'Authcomision' => 'Autoritzar Comisions',
         'Usuario' => 'Activitat Usuari',
