@@ -42,6 +42,6 @@ class DocumentRequest extends Mailable
      */
     public function build()
     {
-        return $this->from($this->mail->getFrom(),$this->mail->getFromPerson)->subject($this->mail->getSubject())->view($this->view);
+        return $this->from($this->mail->getFrom(),$this->mail->getFromPerson())->subject($this->mail->getSubject())->view($this->view);
     }
 }
