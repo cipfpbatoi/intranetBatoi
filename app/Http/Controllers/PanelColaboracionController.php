@@ -90,22 +90,22 @@ class PanelColaboracionController extends IntranetController
 
 
     public function sendRequestInfo($id=null){
-        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('estado',2)->get();
+        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',2)->get();
         foreach ($colaboraciones as $colaboracion)
             $this->emailDocument('request',$colaboracion);
         return back();
     }
 
     public function sendFirstContact($id=null){
-        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('estado',1)->get();
+        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',1)->get();
         $to = '';
         foreach ($colaboraciones as $colaboracion){
-            $to .= $colaboracion->email.',';
+            $to .= $colaboracion->email.'('.$colaboracion->contacto.'),';
         }
         $elemento = $colaboraciones->first();
-        $content = "<p>El meu nom és ".AuthUser()->fullName." i sóc el professor-tutor del ".config('auxiliares.tipoEstudio.'.$elemento->ciclo->tipo) ." '".$elemento->ciclo->literal."'".
+        $content = "<p>El meu nom és ".AuthUser()->fullName." i sóc el professor-tutor del ".config('auxiliares.tipoEstudio.'.$elemento->ciclo->tipo) ." '<strong>".$elemento->ciclo->literal."</strong>'".
             " del ".config('contacto.nombre').
-            ".</p><p>Les classes de segon curs acaben a principis de març, i després, els alumnes han de fer 400 hores de pràctiques en empreses/organitzacions/entitats/etc, amb l'horari normal de l'empresa (que sol ser 40 hores setmanals)
+            ".</p><p>Les classes de segon curs acaben a principis de març, i després, els alumnes han de fer <strong>400 hores</strong> de pràctiques en empreses/organitzacions/entitats/etc, amb l'horari normal de l'empresa (que sol ser 40 hores setmanals)
             Com tots els anys, estem buscant llocs de pràctiques per als nostres alumnes i hem pensat que potser la vostra empresa podria acollir les pràctiques d'un dels alumnes.
             Actualment, tenim alumnes que estarien molt interessats en fer les seues pràctiques en una empresa com la vostra, que tinga almenys un tècnic
             Per tot això, ens agradaria que consideràreu la possibilitat d'acollir les pràctiques d'un dels nostres alumnes entre el 11 de març i el 30 de maig, aproximadament.</p>

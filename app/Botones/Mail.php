@@ -52,10 +52,15 @@ class Mail
 
     public function send(){
         $destinataris = explode(',',$this->to);
-        foreach ($destinataris as $to)
-            if ($to != '')
-                LaravelMail::to($to,$this->toPeople)
-                ->send( new DocumentRequest($this,'email.standard'));
+        foreach ($destinataris as $destinatari)
+            if ($to != ''){
+                $toCompost = explode('(',$destinari);
+                $to = $toCompost[0];
+                $contact = substr($toCompost[1],0,strlen($toCompost[1])-1);
+                LaravelMail::to($to,$contact)
+                    ->send( new DocumentRequest($this,'email.standard'));
+             }
+
 
         Alert::info('Enviats correus '.$this->subject.' a '.$this->to);
     }
