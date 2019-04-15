@@ -53,8 +53,8 @@ class Mail
     public function send(){
         $destinataris = explode(',',$this->to);
         foreach ($destinataris as $destinatari)
-            if ($to != ''){
-                $toCompost = explode('(',$destinari);
+            if ($destinatari != ''){
+                $toCompost = explode('(',$destinatari);
                 $to = $toCompost[0];
                 $contact = substr($toCompost[1],0,strlen($toCompost[1])-1);
                 LaravelMail::to($to,$contact)
