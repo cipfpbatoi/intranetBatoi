@@ -25,7 +25,7 @@
         </div>
         <div class="form-group">
             {!! Form::label('content', 'Contingut') !!}
-            {!! Form::textarea('content','<div contenteditable="plaintext-only">'.$content.'</div>', ['id'=>'content','class' => 'form-control','style'=>'display:none']) !!}
+            {!! Form::textarea('content',$content, ['id'=>'content','class' => 'form-control','style'=>'display:none']) !!}
         </div>
         <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#area">
         <div class="btn-group">

@@ -10,6 +10,7 @@ namespace Intranet\Botones;
 
 use Mail as LaravelMail;
 use Intranet\Mail\DocumentRequest;
+use Styde\Html\Facades\Alert;
 
 class Mail
 {
