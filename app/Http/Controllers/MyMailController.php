@@ -19,7 +19,7 @@ class MyMailController extends Controller
     {
         $mail = new myMail($request->to,$request->toPeople,$request->subject,$request->content);
         $mail->send();
-        return $this->redirect($request->route);
+        return redirect($request->route);
     }
 
 

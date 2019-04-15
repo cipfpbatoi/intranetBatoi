@@ -36,7 +36,7 @@ class Mail
         $this->from = $from?$from:AuthUser()->email;
         $this->subject = $subject;
         $this->fromPerson = $fromPerson?$fromPerson:AuthUser()->FullName;
-        $this->content = htmlentities($content);
+        $this->content = $content;
         $this->toPeople = $toPeople;
     }
 
@@ -53,7 +53,8 @@ class Mail
     public function send(){
         $destinataris = explode(',',$this->to);
         foreach ($destinataris as $to)
-            LaravelMail::to($to,$this->toPeople)
+            if ($to != '')
+                LaravelMail::to($to,$this->toPeople)
                 ->send( new DocumentRequest($this,'email.standard'));
 
         Alert::info('Enviats correus '.$this->subject.' a '.$this->to);

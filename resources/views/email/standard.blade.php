@@ -14,6 +14,6 @@
     </div>
     <div class="container" >
             <p>Hola, </p>
-            {{$mail->getContent()}}
+            {!! $mail->getContent() !!}
     </div>
 @endsection
