@@ -62,6 +62,7 @@ class PanelFctAvalController extends IntranetController
         $this->setActaB();
         $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => ['calificacion', '!=', '1', 'actas', '==', 0, 'asociacion', '==', 1]]));
         $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['calProyecto', '<', '5', 'calificacion', '!=', '0', 'actas', '==', 0, 'asociacion', '==', 1]]));
+        $this->panel->setBoton('grid', new BotonImg('fct.noAval', ['img' => 'fa-recycle', 'where' => ['calProyecto', '<', '5', 'calificacion', '!=', null, 'actas', '==', 0, 'asociacion', '==', 1]]));
         $this->setProjectB();
         $this->panel->setBoton('grid', new BotonImg('fct.empresa', ['img' => 'fa-square-o', 'roles' => config('roles.rol.tutor'),
             'where' => ['insercion', '==', '0','asociacion','==',1]]));
@@ -92,6 +93,20 @@ class PanelFctAvalController extends IntranetController
     {
         $fct = AlumnoFctAval::find($id);
         $fct->calificacion = 0;
+        $fct->calProyecto = null;
+        $fct->save();
+
+        return back();
+    }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    protected function noAval($id)
+    {
+        $fct = AlumnoFctAval::find($id);
+        $fct->calificacion = null;
         $fct->calProyecto = null;
         $fct->save();
 

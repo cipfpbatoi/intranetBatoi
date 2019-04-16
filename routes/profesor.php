@@ -216,6 +216,7 @@ Route::post('/fct/{document}/print',['as'=>'fct.print.post','uses'=> 'FctControl
 Route::get('/avalFct', ['as' => 'aval.fct', 'uses' => 'PanelFctAvalController@index']);
 Route::get('/fct/{document}/apte', ['as' => 'fct.apte', 'uses' => 'PanelFctAvalController@apte']);
 Route::get('/fct/{document}/noApte', ['as' => 'fct.noApte', 'uses' => 'PanelFctAvalController@noApte']);
+Route::get('/fct/{document}/noAval', ['as' => 'fct.noAval', 'uses' => 'PanelFctAvalController@noAval']);
 Route::get('/fct/{document}/noProyecto', ['as' => 'fct.noProyecto', 'uses' => 'PanelFctAvalController@noProyecto']);
 Route::get('/fct/{document}/nuevoProyecto', ['as' => 'fct.nuevoProyecto', 'uses' => 'PanelFctAvalController@nuevoProyecto']);
 Route::get('/fct/acta', ['as' => 'fct.acta', 'uses' => 'PanelFctAvalController@demanarActa']);

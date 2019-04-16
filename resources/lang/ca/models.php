@@ -287,6 +287,7 @@ return array(
             'mail' => 'Enviar email valoracio',
             'apte' => 'Qualificar Apto',
             'noApte' => 'Qualificar No Apte',
+            'noAval' => 'No Avaluat',
             'noProyecto' => 'No presenta Projecte',
             'nuevoProyecto' => 'Accedeix al Projecte',
             'upload' => 'Pujar informació Qualitat',

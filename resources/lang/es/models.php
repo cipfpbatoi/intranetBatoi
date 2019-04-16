@@ -285,6 +285,7 @@ return array(
             'mail' => 'Enviar emails feedback',
             'apte' => 'Calificar Apto',
             'noApte' => 'Calificar No Apto',
+            'noAval' => 'No Evaluado',
             'noProyecto' => 'No presenta Proyecto',
             'nuevoProyecto' => 'Accede a Proyecto',
             'upload' => 'Subir información Calidad',
