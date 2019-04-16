@@ -330,8 +330,8 @@ return array(
             'index' => 'Grupos trabajo',
             'create' => 'Crear grupo trabajo',
         ),
-        'TutoriaGrupo' => array(
-            'index' => 'Índice de Tutorías',
+        'Tutoriagrupo' => array(
+            'index' => 'Listado feedbacks :que',
             'edit' => 'Editar FeedBack tutoría',
             'create' => 'Crear FeedBack tutoría',
             'list' => 'Listado feedbacks :que'

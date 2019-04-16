@@ -336,8 +336,8 @@ return array(
             'index' => 'Grups treball',
             'create' => 'Crear grup treball',
         ),
-        'TutoriaGrupo' => array(
-            'index' => 'Índex de Tutories',
+        'Tutoriagrupo' => array(
+            'index' => 'Llistat feedbacks :que',
             'edit' => 'Editar FeedBack tutoria',
             'create' => 'Crear FeedBack tutoria',
             'list' => 'Llistat feedbacks :que'

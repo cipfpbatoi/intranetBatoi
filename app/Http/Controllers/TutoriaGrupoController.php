@@ -22,7 +22,7 @@ class TutoriaGrupoController extends IntranetController
     }
     
     public function search(){
-        $this->titulo = ['que' => Tutoria::find($id)->descripcion];
+        $this->titulo = ['que' => Tutoria::find($this->search)->descripcion];
         return TutoriaGrupo::where('idTutoria','=',$this->search)->get();
     }
     
