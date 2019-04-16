@@ -123,10 +123,10 @@ class Programacion extends Model
         return isset($this->ModuloCiclo->Ciclo->Departament->cliteral)?$this->ModuloCiclo->Ciclo->Departament->literal:'';
     }
     public function getXModuloAttribute(){
-        return $this->ModuloCiclo->Xmodulo;
+        return isset($this->ModuloCiclo->Xmodulo)?$this->ModuloCiclo->Xmodulo:'';
     }
     public function getXCicloAttribute(){
-        return $this->ModuloCiclo->Aciclo;
+        return isset($this->ModuloCiclo->Aciclo)?$this->ModuloCiclo->Aciclo:'';
     }
     public function getDescripcionAttribute(){
         return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Aciclo." - ".$this->ModuloCiclo->Xmodulo:'';
