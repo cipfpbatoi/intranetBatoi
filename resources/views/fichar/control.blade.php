@@ -14,5 +14,5 @@
 @endsection
 @section('scripts')
     {{ Html::script('/js/components/app.js') }}
-    {{ Html::script('/js/Fichar/control.js') }}
+<!--      {{ Html::script('/js/Fichar/control.js') }} -->
 @endsection
