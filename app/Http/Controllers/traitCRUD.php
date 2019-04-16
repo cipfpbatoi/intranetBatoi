@@ -45,7 +45,7 @@ trait traitCRUD{
     }
     
     protected function borrarFichero($fichero){
-        if ($fichero = '') return null;
+        if (!isset($fichero) && strlen($fichero)<3) return null;
         if (file_exists($fichero)) unlink($fichero);
         if (file_exists(storage_path('/app/' . $fichero))) unlink(storage_path('/app/' . $fichero));
     }
