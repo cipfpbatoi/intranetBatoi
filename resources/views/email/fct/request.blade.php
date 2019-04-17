@@ -32,21 +32,21 @@
                     <li>DNI Representant legal: _________________________________________________</li>
                 </ul>
             @endif
-            <p>Tria Instructor/es:</p>
+            <p>Tria Instructor:</p>
             @foreach ($elemento->Centro->Instructores as $instructor)
                 <ul>
-                    <li>Instructor: {{$instructor->nombre}}</li>
-                    <li>E-mail instructor: {{$instructor->email}}</li>
-                    <li>DNI   instructor: {{$instructor->dni}}</li>
-                    <li>Telefono instructor: {{$instructor->telefono}}</li>
+                    <li>Nom: {{$instructor->nombre}}</li>
+                    <li>E-mail: {{$instructor->email}}</li>
+                    <li>DNI : {{$instructor->dni}}</li>
+                    <li>Telèfon: {{$instructor->telefono}}</li>
                 </ul>
             @endforeach
             <p>O afegueix un altre:</p>
             <ul>
-                <li>Instructor: ___________________________________________</li>
-                <li>E-mail instructor: ____________________________________</li>
-                <li>DNI   instructor: _____________________________________</li>
-                <li>Telefono instructor: __________________________________</li>
+                <li>Nom: ___________________________________________</li>
+                <li>E-mail : ____________________________________</li>
+                <li>DNI : _____________________________________</li>
+                <li>Telèfon: __________________________________</li>
             </ul>
 
 
