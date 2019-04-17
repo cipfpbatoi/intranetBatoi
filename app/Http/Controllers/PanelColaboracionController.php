@@ -90,28 +90,26 @@ class PanelColaboracionController extends IntranetController
         return $this->redirect();
     }
 
+    public function sendFirstContact($id=null){
+        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',1)->get();
+        if (!$colaboraciones) return back();
+        return $this->sendEmails(config('fctEmails.contact'),$colaboraciones);
+    }
 
     public function sendRequestInfo($id=null){
         $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',2)->get();
         if (!$colaboraciones) return back();
-        return $this->emailDocument(config('fctEmails.request'),$colaboraciones);
+        return $this->sendEmails(config('fctEmails.request'),$colaboraciones);
     }
-
-    public function sendFirstContact($id=null){
-        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',1)->get();
-        if (!$colaboraciones) return back();
-        return $this->emailDocument(config('fctEmails.contact'),$colaboraciones);
-    }
-
-
 
     public function sendDocumentation($id=null){
         $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',2)->get();
         if (!$colaboraciones) return back();
-        return $this->emailDocument(config('fctEmails.request'),$colaboraciones);
+        return $this->sendEmails(config('fctEmails.info'),$colaboraciones);
     }
 
-    private function emailDocument($document,$colaboraciones){
+
+    private function sendEmails($document,$colaboraciones){
 
         $elemento = $colaboraciones->first();
 
