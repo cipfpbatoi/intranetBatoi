@@ -33,7 +33,7 @@ class DocumentRequest extends Mailable
     public function __construct($mail,$view,$elemento)
     {
         $this->mail = $mail;
-        $this->view =$view;
+        $this->view = $view;
         $this->elemento = $elemento;
     }
 

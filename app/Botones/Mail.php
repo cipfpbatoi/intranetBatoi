@@ -59,7 +59,7 @@ class Mail
         if ($destinatari != ''){
             $toCompost = explode('(',$destinatari);
             $to = $toCompost[0];
-            $contact = substr($toCompost[1],0,strlen($toCompost[1])-1);
+            $contact = isset($toCompost[1])?substr($toCompost[1],0,strlen($toCompost[1])-1):'';
             LaravelMail::to($to,$this->toPeople)
                 ->send( new DocumentRequest($this,'email.standard',$contact));
         }
