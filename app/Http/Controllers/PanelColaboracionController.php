@@ -93,15 +93,14 @@ class PanelColaboracionController extends IntranetController
 
     public function sendRequestInfo($id=null){
         $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',2)->get();
-        foreach ($colaboraciones as $colaboracion)
-            $this->emailDocument('request',$colaboracion);
-        return back();
+        if (!$colaboraciones) return back();
+        return $this->emailDocument(config('fctEmails.request'),$colaboraciones);
     }
 
     public function sendFirstContact($id=null){
         $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',1)->get();
         if (!$colaboraciones) return back();
-        return $this->emailDocument(config('fctEmail.contact'),$colaboraciones);
+        return $this->emailDocument(config('fctEmails.contact'),$colaboraciones);
     }
 
 
@@ -109,7 +108,7 @@ class PanelColaboracionController extends IntranetController
     public function sendDocumentation($id=null){
         $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',2)->get();
         if (!$colaboraciones) return back();
-        return $this->emailDocument(config('fctEmail.request'),$colaboraciones);
+        return $this->emailDocument(config('fctEmails.request'),$colaboraciones);
     }
 
     private function emailDocument($document,$colaboraciones){
@@ -129,6 +128,7 @@ class PanelColaboracionController extends IntranetController
         foreach ($colaboraciones as $colaboracion){
             $to .= $colaboracion->email.'('.$colaboracion->contacto.'),';
         }
+        return $to = 'igomis@cipfpbatoi.es(Ignasi Gomis Mullor),';
         return $to;
     }
 
