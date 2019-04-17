@@ -26,27 +26,28 @@
                 <li>Email-Empresa : {{$elemento->centro->email}}</li>
                 <li>Horari Pràctiques: {{$elemento->Centro->horarios}}</li>
             </ul>
-            @if ($elemento->concierto > '0')
+            @if (!isset($elemento->Centro->Empresa->concierto))
                 <ul>
                     <li>Representant legal:  ____________________________________________________</li>
                     <li>DNI Representant legal: _________________________________________________</li>
                 </ul>
             @endif
-            @if ($instructor = $elemento->instructorPrincipal)
+            <p>Tria Instructor/es:</p>
+            @foreach ($elemento->Centro->Instructores as $instructor)
                 <ul>
                     <li>Instructor: {{$instructor->fullName}}</li>
                     <li>E-mail instructor: {{$instructor->email}}</li>
                     <li>DNI   instructor: {{$instructor->dni}}</li>
                     <li>Telefono instructor: {{$instructor->telefono}}</li>
                 </ul>
-            @else
-                <ul>
-                    <li>Instructor: ___________________________________________</li>
-                    <li>E-mail instructor: ____________________________________</li>
-                    <li>DNI   instructor: _____________________________________</li>
-                    <li>Telefono instructor: __________________________________</li>
-                </ul>
-            @endif
+            @endforeach
+            <ul>
+                <li>Instructor: ___________________________________________</li>
+                <li>E-mail instructor: ____________________________________</li>
+                <li>DNI   instructor: _____________________________________</li>
+                <li>Telefono instructor: __________________________________</li>
+            </ul>
+
 
         <p>Salutacions cordials de {{AuthUser()->shortName}}</p>
 
