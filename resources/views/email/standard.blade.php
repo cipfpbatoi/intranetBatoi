@@ -12,7 +12,7 @@
         </table>
     </div>
     <div>
-            <p>Hola, {{$contact}}</p>
+            <p>Hola, {{$elemento}}</p>
             {!! $mail->getContent() !!}
     </div>
 @endsection

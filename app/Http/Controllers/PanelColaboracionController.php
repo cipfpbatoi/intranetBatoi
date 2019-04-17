@@ -114,11 +114,14 @@ class PanelColaboracionController extends IntranetController
     private function emailDocument($document,$colaboraciones){
 
         $elemento = $colaboraciones->first();
-        $content = view($document['view'],compact('elemento'));
-        $mail = new myMail( $this->getReceiver($colaboraciones),$document['receiver'], $document['subject'], $content );
-        if (isset($document['redirect'])) return $mail->render($document['redirect']);
 
-        $mail->send();
+        if (isset($document['redirect'])){
+            $content = view($document['view'],compact('elemento'));
+            $mail = new myMail( $this->getReceiver($colaboraciones),$document['receiver'], $document['subject'], $content );
+            return $mail->render($document['redirect']);
+        }
+        $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], $document['view']);
+        $mail->renderAndSend();
         return back();
 
     }
@@ -128,7 +131,6 @@ class PanelColaboracionController extends IntranetController
         foreach ($colaboraciones as $colaboracion){
             $to .= $colaboracion->email.'('.$colaboracion->contacto.'),';
         }
-        return $to = 'igomis@cipfpbatoi.es(Ignasi Gomis Mullor),';
         return $to;
     }
 

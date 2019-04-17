@@ -15,10 +15,10 @@ use Styde\Html\Facades\Alert;
 class Mail
 {
 
-    private $to;
+    private $elements;
     private $from;
     private $subject;
-    private $content;
+    private $view;
     private $fromPerson;
     private $toPeople;
 
@@ -30,47 +30,54 @@ class Mail
      * @param $content
      * @param $route
      */
-    public function __construct($to=null,$toPeople=null,$subject=null,$content=null,$from=null,$fromPerson=null)
+    public function __construct($elements=null,$toPeople=null,$subject=null,$view=null,$from=null,$fromPerson=null)
     {
-        $this->to = $to;
+        $this->elements = $elements;
         $this->from = $from?$from:AuthUser()->email;
         $this->subject = $subject;
         $this->fromPerson = $fromPerson?$fromPerson:AuthUser()->FullName;
-        $this->content = $content;
+        $this->view = $view;
         $this->toPeople = $toPeople;
     }
 
     public function render($route){
-        $to  = $this->to;
+        $to  = $this->elements;
         $from = $this->from;
         $subject = $this->subject;
-        $content = $this->content;
+        $content = $this->view;
         $fromPerson = $this->fromPerson;
         $toPeople = $this->toPeople;
         return view('email.view',compact('to','from','subject','content','route','fromPerson','toPeople'));
     }
 
-    public function send(){
-        $destinataris = explode(',',$this->to);
-        foreach ($destinataris as $destinatari)
-            if ($destinatari != ''){
-                $toCompost = explode('(',$destinatari);
-                $to = $toCompost[0];
-                $contact = substr($toCompost[1],0,strlen($toCompost[1])-1);
-                LaravelMail::to($to,$this->toPeople)
-                    ->send( new DocumentRequest($this,'email.standard',$contact));
-             }
-
-
-        Alert::info('Enviats correus '.$this->subject.' a '.$this->to);
+    public function sendMultiple(){
+        foreach ( explode(',',$this->elements) as $destinatari) $this->send($destinatari);
+        Alert::info('Enviats correus '.$this->subject.' a '.$this->elements);
     }
+
+    public function send($destinatari){
+        if ($destinatari != ''){
+            $toCompost = explode('(',$destinatari);
+            $to = $toCompost[0];
+            $contact = substr($toCompost[1],0,strlen($toCompost[1])-1);
+            LaravelMail::to($to,$this->toPeople)
+                ->send( new DocumentRequest($this,'email.standard',$contact));
+        }
+    }
+     public function renderAndSend(){
+        foreach ($this->elements as $elemento){
+            LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
+                ->send( new DocumentRequest($this,$this->view,$elemento));
+
+        }
+     }
 
     /**
      * @return null
      */
     public function getTo()
     {
-        return $this->to;
+        return $this->elements;
     }
 
     /**
@@ -94,7 +101,7 @@ class Mail
      */
     public function getContent()
     {
-        return $this->content;
+        return $this->view;
     }
 
     /**
