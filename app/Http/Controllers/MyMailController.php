@@ -18,12 +18,9 @@ class MyMailController extends Controller
     public function send(Request $request)
     {
         $mail = new myMail($request->to,$request->toPeople,$request->subject,$request->content);
-        $mail->sendMultiple();
+        $mail->send();
         return redirect($request->route);
     }
 
 
-
-    
-    
 }

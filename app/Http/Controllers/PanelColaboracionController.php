@@ -116,8 +116,7 @@ class PanelColaboracionController extends IntranetController
         $elemento = $colaboraciones->first();
 
         if (isset($document['redirect'])){
-            $content = view($document['view'],compact('elemento'));
-            $mail = new myMail( $this->getReceiver($colaboraciones),$document['receiver'], $document['subject'], $content );
+            $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], view($document['view'],compact('elemento')) );
             return $mail->render($document['redirect']);
         }
         $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], $document['view']);
@@ -126,13 +125,7 @@ class PanelColaboracionController extends IntranetController
 
     }
 
-    private function getReceiver($colaboraciones){
-        $to = '';
-        foreach ($colaboraciones as $colaboracion){
-            $to .= $colaboracion->email.'('.$colaboracion->contacto.'),';
-        }
-        return $to;
-    }
+
 
 
     /**

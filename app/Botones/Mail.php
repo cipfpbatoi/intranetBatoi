@@ -41,7 +41,7 @@ class Mail
     }
 
     public function render($route){
-        $to  = $this->elements;
+        $to  = $this->getReceivers($this->elements);
         $from = $this->from;
         $subject = $this->subject;
         $content = $this->view;
@@ -50,12 +50,12 @@ class Mail
         return view('email.view',compact('to','from','subject','content','route','fromPerson','toPeople'));
     }
 
-    public function sendMultiple(){
-        foreach ( explode(',',$this->elements) as $destinatari) $this->send($destinatari);
+    public function send(){
+        foreach ( explode(',',$this->elements) as $destinatari) $this->sendMail($destinatari);
         Alert::info('Enviats correus '.$this->subject.' a '.$this->elements);
     }
 
-    public function send($destinatari){
+    public function sendMail($destinatari){
         if ($destinatari != ''){
             $toCompost = explode('(',$destinatari);
             $to = $toCompost[0];
@@ -64,13 +64,26 @@ class Mail
                 ->send( new DocumentRequest($this,'email.standard',$contact));
         }
     }
-     public function renderAndSend(){
+
+    public function renderAndSend(){
         foreach ($this->elements as $elemento){
             LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
                 ->send( new DocumentRequest($this,$this->view,$elemento));
 
         }
-     }
+    }
+
+    private function getReceivers($elementos){
+        $to = '';
+        foreach ($elementos as $elemento){
+            $to .= $this->getReceiver($elemento).',';
+        }
+        return $to;
+    }
+
+    private function getReceiver($elemento){
+        return $elemento->email.'('.$elemento->contacto.')';
+    }
 
     /**
      * @return null
