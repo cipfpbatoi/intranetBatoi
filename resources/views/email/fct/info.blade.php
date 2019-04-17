@@ -20,7 +20,7 @@
         <p>Data de començament: {{$fct->desde}} </p>
         <p>Alumnes assignats: </p>
         <ul>
-        @foreach ($fct->alumnos as $alumno)
+        @foreach ($fct->Alumnos as $alumno)
             <li><{{$alumno->fullName}}, {{$alumno->email}} </li>
         @endforeach
         </ul>

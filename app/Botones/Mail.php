@@ -68,8 +68,7 @@ class Mail
     public function renderAndSend(){
         foreach ($this->elements as $elemento){
             LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
-                ->send( new DocumentRequest($this,$this->view,$elemento));
-
+              ->send( new DocumentRequest($this,$this->view,$elemento));
         }
     }
 
