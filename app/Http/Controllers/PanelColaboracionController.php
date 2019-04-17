@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\View\View;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Colaboracion;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Session;
 use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\Mail as myMail;
+
 
 
 
@@ -99,38 +101,42 @@ class PanelColaboracionController extends IntranetController
     public function sendFirstContact($id=null){
         $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',1)->get();
         if (!$colaboraciones) return back();
+        return $this->emailDocument(config('fctEmail.contact'),$colaboraciones);
+    }
+
+
+
+    public function sendDocumentation($id=null){
+        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',2)->get();
+        if (!$colaboraciones) return back();
+        return $this->emailDocument(config('fctEmail.request'),$colaboraciones);
+    }
+
+    private function emailDocument($document,$colaboraciones){
+
+        $elemento = $colaboraciones->first();
+        $content = view($document['view'],compact('elemento'));
+        $mail = new myMail( $this->getReceiver($colaboraciones),$document['receiver'], $document['subject'], $content );
+        if (isset($document['redirect'])) return $mail->render($document['redirect']);
+
+        $mail->send();
+        return back();
+
+    }
+
+    private function getReceiver($colaboraciones){
         $to = '';
         foreach ($colaboraciones as $colaboracion){
             $to .= $colaboracion->email.'('.$colaboracion->contacto.'),';
         }
-        $elemento = $colaboraciones->first();
-        $content = "<p>El meu nom és ".AuthUser()->fullName." i sóc el professor-tutor del ".config('auxiliares.tipoEstudio.'.$elemento->ciclo->tipo) ." '<strong>".$elemento->ciclo->literal."</strong>'".
-            " del ".config('contacto.nombre').
-            ".</p><p>Les classes de segon curs acaben a principis de març, i després, els alumnes han de fer <strong>400 hores</strong> de pràctiques en empreses/organitzacions/entitats/etc, amb l'horari normal de l'empresa (que sol ser 40 hores setmanals)
-            Com tots els anys, estem buscant llocs de pràctiques per als nostres alumnes i hem pensat que potser la vostra empresa podria acollir les pràctiques d'un dels alumnes.
-            Actualment, tenim alumnes que estarien molt interessats en fer les seues pràctiques en una empresa com la vostra, que tinga almenys un tècnic
-            Per tot això, ens agradaria que consideràreu la possibilitat d'acollir les pràctiques d'un dels nostres alumnes entre el 11 de març i el 30 de maig, aproximadament.</p>
-            <p>Òbviament, abans de prendre la vostra decisió, parlaríem tot allò que fera falta i també podríeu entrevistar als alumnes candidats.
-            En qualsevol cas, moltes gràcies per considerar la nostra sol·licitud.</p>
-            <p>Salutacions cordials de ".AuthUser()->shortName."</p>";
-        $mail = new myMail( $to,'A/A de Recursos Humans', 'Sol·licitud de Pràctiques de FCT', $content );
-        return $mail->render('misColaboraciones');
-
-    }
-
-
-    public function sendDocumentation($id=null){
-        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('estado',2)->get();
-        foreach ($colaboraciones as $colaboracion)
-            $this->emailDocument('documentation',$colaboracion);
-        return back();
+        return $to;
     }
 
 
     /**
      * @param $document
      * @param $colaboracion
-     */
+
     public function emailDocument($document, $colaboracion){
         // TODO : canviar AuthUser()->email per correu instructor
         Mail::to(AuthUser()->email, AuthUser()->ShortName)
@@ -139,6 +145,6 @@ class PanelColaboracionController extends IntranetController
                 ,config('fctEmails.'.$document.'.view')));
         Alert::info('Enviat correu '.config('fctEmails.'.$document.'.subject').' a '.$colaboracion->Centro->nombre);
     }
-
+     */
 
 }
