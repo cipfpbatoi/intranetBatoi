@@ -99,10 +99,6 @@ class Colaboracion extends Model
     {
         return config('auxiliares.estadoColaboracion')[$this->estado];
     }
-    public function getConciertoAttribute(){
-        return $this->Centro->Empresa->concierto;
-    }
-    public function getInstructorPrincipal(){
-        return $this->Centro->Instructores->first();
-    }
+
+
 }

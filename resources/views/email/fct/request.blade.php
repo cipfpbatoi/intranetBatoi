@@ -35,12 +35,13 @@
             <p>Tria Instructor/es:</p>
             @foreach ($elemento->Centro->Instructores as $instructor)
                 <ul>
-                    <li>Instructor: {{$instructor->fullName}}</li>
+                    <li>Instructor: {{$instructor->nombre}}</li>
                     <li>E-mail instructor: {{$instructor->email}}</li>
                     <li>DNI   instructor: {{$instructor->dni}}</li>
                     <li>Telefono instructor: {{$instructor->telefono}}</li>
                 </ul>
             @endforeach
+            <p>O afegueix un altre:</p>
             <ul>
                 <li>Instructor: ___________________________________________</li>
                 <li>E-mail instructor: ____________________________________</li>
