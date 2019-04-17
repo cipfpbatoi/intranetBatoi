@@ -21,7 +21,7 @@
         <p>Alumnes assignats: </p>
         <ul>
         @foreach ($fct->Alumnos as $alumno)
-            <li><{{$alumno->fullName}}, {{$alumno->email}} </li>
+            <li> {{$alumno->fullName}} - {{$alumno->email}} </li>
         @endforeach
         </ul>
     @endforeach
