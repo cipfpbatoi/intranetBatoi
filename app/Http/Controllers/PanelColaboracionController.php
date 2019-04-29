@@ -111,15 +111,13 @@ class PanelColaboracionController extends IntranetController
     }
 
     private function sendEmails($document,$colaboraciones){
-
-        if (isset($document['redirect'])) return $this->revisaEmails($document,$colaboraciones);
-
+        if (isset($document['redirect'])) return $this->renderEmail($document,$colaboraciones);
         $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], $document['view']);
-        $mail->renderAndSend();
+        $mail->send();
         return back();
     }
 
-    private function revisaEmails($document,$colaboraciones){
+    private function renderEmail($document,$colaboraciones){
         $elemento = $colaboraciones->first();
         $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], view($document['view'],compact('elemento')) );
         return $mail->render($document['redirect']);

@@ -8,6 +8,7 @@
 
 namespace Intranet\Botones;
 
+use function GuzzleHttp\Psr7\str;
 use Mail as LaravelMail;
 use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
@@ -77,9 +78,11 @@ class Mail
     }
 
     public function send(){
+        if (strlen($this->view)> 50) $view ='email.standard';
+        else $view = $this->view;
         foreach ($this->elements as $elemento){
             LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
-                ->send( new DocumentRequest($this,'email.standard',$elemento));
+                ->send( new DocumentRequest($this,$view,$elemento));
 
         }
         Alert::info('Enviats correus '.$this->subject.' a '.$this->elements);
@@ -96,13 +99,7 @@ class Mail
     }
 */
 
-    public function renderAndSend(){
-        foreach ($this->elements as $elemento){
-            LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
-              ->send( new DocumentRequest($this,$this->view,$elemento));
 
-        }
-    }
 
     private function getReceivers($elementos){
         $to = '';
