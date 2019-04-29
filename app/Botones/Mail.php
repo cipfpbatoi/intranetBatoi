@@ -12,6 +12,7 @@ use function GuzzleHttp\Psr7\str;
 use Mail as LaravelMail;
 use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
+use Intranet\Entities\Activity;
 
 class Mail
 {
@@ -83,9 +84,10 @@ class Mail
         foreach ($this->elements as $elemento){
             LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
                 ->send( new DocumentRequest($this,$view,$elemento));
-
+            Alert::info('Enviat correus '.$this->subject.' a '.$elemento->contacto);
+            Activity::record('correo', $this->class,$this->subject);
         }
-        Alert::info('Enviats correus '.$this->subject.' a '.$this->elements);
+
     }
 /*
     public function sendMail($destinatari){
