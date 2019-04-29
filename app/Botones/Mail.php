@@ -85,7 +85,7 @@ class Mail
             LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
                 ->send( new DocumentRequest($this,$view,$elemento));
             Alert::info('Enviat correus '.$this->subject.' a '.$elemento->contacto);
-            Activity::record('correo', $this->class,$this->subject);
+            Activity::record('correo', $elemento,$this->subject);
         }
 
     }
