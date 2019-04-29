@@ -21,6 +21,7 @@ class Mail
     private $view;
     private $fromPerson;
     private $toPeople;
+    private $class;
 
     /**
      * Mail constructor.
@@ -30,14 +31,38 @@ class Mail
      * @param $content
      * @param $route
      */
-    public function __construct($elements=null,$toPeople=null,$subject=null,$view=null,$from=null,$fromPerson=null)
+    public function __construct($elements=null,$toPeople=null,$subject=null,$view=null,$from=null,$fromPerson=null,$class=null)
     {
-        $this->elements = $elements;
         $this->from = $from?$from:AuthUser()->email;
         $this->subject = $subject;
         $this->fromPerson = $fromPerson?$fromPerson:AuthUser()->FullName;
         $this->view = $view;
         $this->toPeople = $toPeople;
+        if (is_object($elements)){
+            $this->elements = $elements;
+            $this->class = get_class($this->elements->first());
+        }
+        else{
+            $this->class = $class;
+            $this->elements = $this->recoveryObjects($elements);
+        }
+    }
+
+    private function recoveryObjects($elements){
+        $objects = collect();
+        foreach ( explode(',',$elements) as $element){
+            $objects->push($this->recoveryObject($element));
+        }
+        return $objects;
+    }
+    private function recoveryObject($element){
+        if ($element != '') {
+            $toCompost = explode('(', $element);
+            $id = $toCompost[0];
+            $class = $this->class;
+            return $class::find($id);
+        }
+        return null;
     }
 
     public function render($route){
@@ -47,14 +72,19 @@ class Mail
         $content = $this->view;
         $fromPerson = $this->fromPerson;
         $toPeople = $this->toPeople;
-        return view('email.view',compact('to','from','subject','content','route','fromPerson','toPeople'));
+        $class = $this->class;
+        return view('email.view',compact('to','from','subject','content','route','fromPerson','toPeople','class'));
     }
 
     public function send(){
-        foreach ( explode(',',$this->elements) as $destinatari) $this->sendMail($destinatari);
+        foreach ($this->elements as $elemento){
+            LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
+                ->send( new DocumentRequest($this,'email.standard',$elemento));
+
+        }
         Alert::info('Enviats correus '.$this->subject.' a '.$this->elements);
     }
-
+/*
     public function sendMail($destinatari){
         if ($destinatari != ''){
             $toCompost = explode('(',$destinatari);
@@ -64,11 +94,13 @@ class Mail
                 ->send( new DocumentRequest($this,'email.standard',$contact));
         }
     }
+*/
 
     public function renderAndSend(){
         foreach ($this->elements as $elemento){
             LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
               ->send( new DocumentRequest($this,$this->view,$elemento));
+
         }
     }
 
@@ -81,7 +113,7 @@ class Mail
     }
 
     private function getReceiver($elemento){
-        return $elemento->email.'('.$elemento->contacto.')';
+        return $elemento->id.'('.$elemento->email.'-'.$elemento->contacto.')';
     }
 
     /**

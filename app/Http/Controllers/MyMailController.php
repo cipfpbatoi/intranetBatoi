@@ -17,7 +17,7 @@ class MyMailController extends Controller
 {
     public function send(Request $request)
     {
-        $mail = new myMail($request->to,$request->toPeople,$request->subject,$request->content);
+        $mail = new myMail($request->to,$request->toPeople,$request->subject,$request->content,null,null,$request->class);
         $mail->send();
         return redirect($request->route);
     }

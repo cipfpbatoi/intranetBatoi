@@ -91,53 +91,39 @@ class PanelColaboracionController extends IntranetController
     }
 
     public function sendFirstContact($id=null){
-        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',1)->get();
-        if (!$colaboraciones) return back();
+        if (!$colaboraciones = $this->selectColaboraciones($id,1)) return back();
         return $this->sendEmails(config('fctEmails.contact'),$colaboraciones);
     }
 
     public function sendRequestInfo($id=null){
-        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',2)->get();
-        if (!$colaboraciones) return back();
+        if (!$colaboraciones = $this->selectColaboraciones($id,2)) return back();
         return $this->sendEmails(config('fctEmails.request'),$colaboraciones);
     }
 
     public function sendDocumentation($id=null){
-        $colaboraciones = $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',2)->get();
-        if (!$colaboraciones) return back();
+        if (!$colaboraciones = $this->selectColaboraciones($id,2)) return back();
         return $this->sendEmails(config('fctEmails.info'),$colaboraciones);
     }
 
+    private function selectColaboraciones($id,$estado){
+        return  $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',$estado)->get();
+
+    }
 
     private function sendEmails($document,$colaboraciones){
 
-        $elemento = $colaboraciones->first();
+        if (isset($document['redirect'])) return $this->revisaEmails($document,$colaboraciones);
 
-        if (isset($document['redirect'])){
-            $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], view($document['view'],compact('elemento')) );
-            return $mail->render($document['redirect']);
-        }
         $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], $document['view']);
         $mail->renderAndSend();
         return back();
-
     }
 
+    private function revisaEmails($document,$colaboraciones){
+        $elemento = $colaboraciones->first();
+        $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], view($document['view'],compact('elemento')) );
+        return $mail->render($document['redirect']);
 
-
-
-    /**
-     * @param $document
-     * @param $colaboracion
-
-    public function emailDocument($document, $colaboracion){
-        // TODO : canviar AuthUser()->email per correu instructor
-        Mail::to(AuthUser()->email, AuthUser()->ShortName)
-            ->send(new DocumentRequest($colaboracion, AuthUser()->email
-                ,config('fctEmails.'.$document.'.subject')
-                ,config('fctEmails.'.$document.'.view')));
-        Alert::info('Enviat correu '.config('fctEmails.'.$document.'.subject').' a '.$colaboracion->Centro->nombre);
     }
-     */
 
 }

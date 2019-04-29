@@ -3,6 +3,7 @@
     {!! Form::open(['url' =>  'myMail' ]) !!}
 
         {!! Form::hidden('route',$route) !!}
+        {!! Form::hidden('class',$class) !!}
         <div class="form-group">
             {!! Form::label('from', 'De') !!}
             {!! Form::text('from', $from, ['class' => 'form-control']) !!}
