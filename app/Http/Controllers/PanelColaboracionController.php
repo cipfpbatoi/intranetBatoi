@@ -58,19 +58,22 @@ class PanelColaboracionController extends IntranetController
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.refuse', ['roles' => config('roles.rol.practicas'),'class'=>'btn-danger refuse']));
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.switch', ['roles' => config('roles.rol.practicas'),'class'=>'btn-warning switch','icon'=>'fa-user','where' => ['tutor', '<>', AuthUser()->dni]]));
 
-        $this->panel->setBothBoton('colaboracion.show',['img' => 'fa-eye','text' => '','roles' => [config('roles.rol.practicas')]]);
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.contacto', ['roles' => config('roles.rol.practicas'),'img'=>'fa-envelope','where' => ['estado', '==', '1']]));
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.documentacion', ['roles' => config('roles.rol.practicas'),'img'=>'fa-envelope','where' => ['estado', '==', '2']]));
+        $this->panel->setBothBoton('colaboracion.show',['text' => '','roles' => [config('roles.rol.practicas')]]);
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.contacto', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-envelope','where' => ['estado', '==', '1']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.info', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-envelope-o','where' => ['estado', '==', '2']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.documentacion', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-bell-o','where' => ['estado', '==', '2']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.seguimiento', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-phone','where' => ['estado', '==', '2']]));
 
 
         if (Colaboracion::where('estado', '=', 3)->count())
             $this->panel->setBoton('index', new BotonBasico("colaboracion.inicia",['icon' => 'fa fa-recycle']));
         if (Colaboracion::where('estado', '=', 1)->count())
             $this->panel->setBoton('index', new BotonBasico("colaboracion.contacto",['icon' => 'fa fa-envelope']));
-        if (Colaboracion::where('estado', '=', 2)->count())
+        if (Colaboracion::where('estado', '=', 2)->count()){
             $this->panel->setBoton('index', new BotonBasico("colaboracion.info",['icon' => 'fa fa-envelope-o']));
-        if (Colaboracion::where('estado', '=', 2)->count())
-            $this->panel->setBoton('index', new BotonBasico("colaboracion.documentacion",['icon' => 'fa fa-envelope-o']));
+            $this->panel->setBoton('index', new BotonBasico("colaboracion.documentacion",['icon' => 'fa fa-bell-o']));
+            $this->panel->setBoton('index', new BotonBasico("colaboracion.seguimiento",['icon' => 'fa fa-phone']));
+        }
 
     }
 
@@ -103,6 +106,26 @@ class PanelColaboracionController extends IntranetController
     public function sendDocumentation($id=null){
         if (!$colaboraciones = $this->selectColaboraciones($id,2)) return back();
         return $this->sendEmails(config('fctEmails.info'),$colaboraciones);
+    }
+
+    public function follow($id=null){
+        if (!$colaboraciones = $this->selectColaboraciones($id,2)) return back();
+        $fcts = collect();
+        foreach ($colaboraciones as $colaboracion){
+            foreach ($colaboracion->fcts as $fct)
+            $fcts->push($fct);
+        }
+        return $this->sendEmails(config('fctEmails.follow'),$fcts);
+    }
+
+    public function visit($id=null){
+        if (!$colaboraciones = $this->selectColaboraciones($id,2)) return back();
+        $fcts = collect();
+        foreach ($colaboraciones as $colaboracion){
+            foreach ($colaboracion->fcts as $fct)
+                $fcts->push($fct);
+        }
+        return $this->sendEmails(config('fctEmails.follow'),$fcts);
     }
 
     private function selectColaboraciones($id,$estado){

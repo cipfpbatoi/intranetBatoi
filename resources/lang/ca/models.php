@@ -275,6 +275,8 @@ return array(
             'contacto' => 'Petició pràctiques',
             'info' => 'Revissió documentació',
             'documentacion' => "Documentació Inici",
+            'seguimiento' => "Seguiment",
+            'visita' => "Concertar Visita",
             'switch' => 'Meu'
         ),
         'Fct' => array(

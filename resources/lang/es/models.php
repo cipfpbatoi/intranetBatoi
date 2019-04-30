@@ -273,6 +273,8 @@ return array(
             'contacto' => 'Petición de prácticas',
             'info' => 'Revisión documentación',
             'documentacion' => "Documentación inicio",
+            'seguimiento' => "Seguimeinto",
+            'visita' => "Concertar Visita",
             'switch' => 'Mi'
         ),
         'Fct' => array(

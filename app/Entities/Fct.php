@@ -201,7 +201,10 @@ class Fct extends Model
         } 
         return substr($alumnes,0, strlen($alumnes)-2);
     }
-    public function getXInstructorAttribute(){
+    public function getEmailAttribute(){
+        return isset($this->idInstructor)?$this->Instructor->email:'Falta Instructor';
+    }
+    public function getContactoAttribute(){
         return isset($this->idInstructor)?$this->Instructor->nombre:'Falta Instructor';
     }
     

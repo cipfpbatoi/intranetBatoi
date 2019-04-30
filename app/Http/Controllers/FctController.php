@@ -39,7 +39,7 @@ class FctController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['Centro','periode','XInstructor','Lalumnes','Nalumnes'];
+    protected $gridFields = ['Centro','periode','Contacto','Lalumnes','Nalumnes'];
     /**
      * @var
      */

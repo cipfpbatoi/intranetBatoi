@@ -16,5 +16,16 @@ return [
         'subject' => "Recordatori inici de pràctiques",
         'receiver' => 'A/A de Recursos Humans',
         'view' => 'email.fct.info',
-    ]
+    ],
+    'follow' => [
+        'subject' => "Seguiment Pràctiques de FCT",
+        'receiver' => 'Instructor',
+        'view' => 'email.fct.follow',
+    ],
+    'visit' => [
+        'subject' => "Concertar visita de FCT",
+        'receiver' => 'Instructor',
+        'view' => 'email.fct.visit',
+        'redirect' => 'misColaboraciones'
+    ],
 ];

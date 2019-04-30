@@ -61,10 +61,22 @@ class Mail
         if ($element != '') {
             $toCompost = explode('(', $element);
             $id = $toCompost[0];
-            $class = $this->class;
-            return $class::find($id);
+            return $this->updateModel(explode('-',$toCompost[1]),$id);
         }
         return null;
+    }
+    private function updateModel($contact,$id){
+
+        $email = $contact[0];
+        $contacto = substr($contact[1],0,strlen($contact[1])-1);
+        $class = $this->class;
+        $modelo = $class::find($id);
+        if ($modelo->contacto != $contacto || $modelo->email != $email){
+            $modelo->contacto = $contacto;
+            $modelo->email = $email;
+            $modelo->save();
+        }
+        return $modelo;
     }
 
     public function render($route){
@@ -79,29 +91,19 @@ class Mail
     }
 
     public function send(){
-        if (strlen($this->view)> 50) $view ='email.standard';
-        else $view = $this->view;
         foreach ($this->elements as $elemento){
+            dd($elemento);
             LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
-                ->send( new DocumentRequest($this,$view,$elemento));
+                ->send( new DocumentRequest($this,$this->chooseView(),$elemento));
             Alert::info('Enviat correus '.$this->subject.' a '.$elemento->contacto);
-            Activity::record('correo', $elemento,$this->subject);
-        }
-
-    }
-/*
-    public function sendMail($destinatari){
-        if ($destinatari != ''){
-            $toCompost = explode('(',$destinatari);
-            $to = $toCompost[0];
-            $contact = isset($toCompost[1])?substr($toCompost[1],0,strlen($toCompost[1])-1):'';
-            LaravelMail::to($to,$this->toPeople)
-                ->send( new DocumentRequest($this,'email.standard',$contact));
+            Activity::record('email', $elemento,$this->subject);
         }
     }
-*/
 
-
+    private function chooseView(){
+        if (strlen($this->view)> 50) return'email.standard';
+        return $this->view;
+    }
 
     private function getReceivers($elementos){
         $to = '';
