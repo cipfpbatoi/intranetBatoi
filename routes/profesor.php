@@ -174,13 +174,10 @@ Route::get('/empresaSC',['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCControll
 Route::get('/misColaboraciones',['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
 Route::get('/colaboracion/inicia', ['as' => 'PanelColaboracion.inicia', 'uses' => 'PanelColaboracionController@inicia']);
 Route::get('/colaboracion/contacto', ['as' => 'PanelColaboracion.contacto', 'uses' => 'PanelColaboracionController@sendFirstContact']);
-Route::post('/colaboracion/contacto', ['as' => 'PanelColaboracion.post.contacto', 'uses' => 'PanelColaboracionController@postSendFirstContact']);
 Route::get('/colaboracion/info', ['as' => 'PanelColaboracion.info', 'uses' => 'PanelColaboracionController@sendRequestInfo']);
 Route::get('/colaboracion/documentacion', ['as' => 'PanelColaboracion.documentacion', 'uses' => 'PanelColaboracionController@sendDocumentation']);
 Route::get('/colaboracion/seguimiento', ['as' => 'PanelColaboracion.seguimiento', 'uses' => 'PanelColaboracionController@follow']);
-Route::post('/colaboracion/seguimiento', ['as' => 'PanelColaboracion.post.seguimiento', 'uses' => 'PanelColaboracionController@postFollow']);
 Route::get('/colaboracion/visita', ['as' => 'PanelColaboracion.visita', 'uses' => 'PanelColaboracionController@visit']);
-Route::post('/colaboracion/visita', ['as' => 'PanelColaboracion.post.visita', 'uses' => 'PanelColaboracionController@postVisit']);
 
 
 Route::get('/colaboracion/{colaboracion}/documentacion', 'PanelColaboracionController@sendDocumentation');

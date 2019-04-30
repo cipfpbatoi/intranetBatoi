@@ -17,10 +17,10 @@
         <p>T'escric per conèixer de primera ma com van les pràctiques FCT dels alumnes:
             <ul>
                 @foreach ($elemento->Alumnos as $alumno)
-                    <li> {{$alumno->fullName}} - {{$alumno->email}} </li>
+                    <li> {{$alumno->fullName}} </li>
                 @endforeach
             </ul>
-        <p>Si tot està correcte em possaria us tornaria a contactar en aproximadament 15 dies per a fer una visita al centre de treball.</p>
+        <p>Si tot està correcte us tornaria a contactar en aproximadament 15 dies per a fer una visita al centre de treball.</p>
         <p>Aprofite per recordar-te les meues dades per si necessiteu possar-se amb contacte amb mi:<br/>
             Tutor: {{AuthUser()->fullName}} {{AuthUser()->email}} <br/>
             Telèfon centre: {{ config('contacto.telefono') }} <br/>

@@ -110,15 +110,7 @@ class Fct extends Model
     {
         return $query->where('asociacion',3);
     }
-//    public function scopeActiva($query,$cuando)
-//    {
-//        //if ($cuando == 3) return $query->where('asociacion',1); 
-//        $hoy = new Date(); $hoy->format('Y-m-d');
-//        if ($hoy <= config('curso.fct.1')['fi'])
-//            return $query->where('desde','<=',config('curso.fct.1')['fi'])->where('asociacion',1);
-//        return $query->where('desde','>=',config('curso.fct.2')['inici'])->where('asociacion',1);
-//           
-//    }
+
    
     public function getIdColaboracionOptions(){
         $cicloC = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->get();

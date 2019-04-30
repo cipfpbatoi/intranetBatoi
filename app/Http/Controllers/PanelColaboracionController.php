@@ -63,6 +63,7 @@ class PanelColaboracionController extends IntranetController
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.info', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-envelope-o','where' => ['estado', '==', '2']]));
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.documentacion', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-bell-o','where' => ['estado', '==', '2']]));
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.seguimiento', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-phone','where' => ['estado', '==', '2']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.visita', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-car','where' => ['estado', '==', '2']]));
 
 
         if (Colaboracion::where('estado', '=', 3)->count())
@@ -73,6 +74,7 @@ class PanelColaboracionController extends IntranetController
             $this->panel->setBoton('index', new BotonBasico("colaboracion.info",['icon' => 'fa fa-envelope-o']));
             $this->panel->setBoton('index', new BotonBasico("colaboracion.documentacion",['icon' => 'fa fa-bell-o']));
             $this->panel->setBoton('index', new BotonBasico("colaboracion.seguimiento",['icon' => 'fa fa-phone']));
+            $this->panel->setBoton('index', new BotonBasico("colaboracion.visita",['icon' => 'fa fa-car']));
         }
 
     }
@@ -113,7 +115,7 @@ class PanelColaboracionController extends IntranetController
         $fcts = collect();
         foreach ($colaboraciones as $colaboracion){
             foreach ($colaboracion->fcts as $fct)
-            $fcts->push($fct);
+                if ($fct->asociacion == 1 ) $fcts->push($fct);
         }
         return $this->sendEmails(config('fctEmails.follow'),$fcts);
     }
@@ -123,9 +125,9 @@ class PanelColaboracionController extends IntranetController
         $fcts = collect();
         foreach ($colaboraciones as $colaboracion){
             foreach ($colaboracion->fcts as $fct)
-                $fcts->push($fct);
+                if ($fct->asociacion == 1 ) $fcts->push($fct);
         }
-        return $this->sendEmails(config('fctEmails.follow'),$fcts);
+        return $this->sendEmails(config('fctEmails.visit'),$fcts);
     }
 
     private function selectColaboraciones($id,$estado){
