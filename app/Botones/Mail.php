@@ -92,7 +92,6 @@ class Mail
 
     public function send(){
         foreach ($this->elements as $elemento){
-            dd($elemento);
             LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
                 ->send( new DocumentRequest($this,$this->chooseView(),$elemento));
             Alert::info('Enviat correus '.$this->subject.' a '.$elemento->contacto);
