@@ -176,6 +176,7 @@ Route::get('/colaboracion/inicia', ['as' => 'PanelColaboracion.inicia', 'uses' =
 Route::get('/colaboracion/contacto', ['as' => 'PanelColaboracion.contacto', 'uses' => 'PanelColaboracionController@sendFirstContact']);
 Route::get('/colaboracion/info', ['as' => 'PanelColaboracion.info', 'uses' => 'PanelColaboracionController@sendRequestInfo']);
 Route::get('/colaboracion/documentacion', ['as' => 'PanelColaboracion.documentacion', 'uses' => 'PanelColaboracionController@sendDocumentation']);
+Route::get('/colaboracion/student', ['as' => 'PanelColaboracion.student', 'uses' => 'PanelColaboracionController@sendStudent']);
 Route::get('/colaboracion/seguimiento', ['as' => 'PanelColaboracion.seguimiento', 'uses' => 'PanelColaboracionController@follow']);
 Route::get('/colaboracion/visita', ['as' => 'PanelColaboracion.visita', 'uses' => 'PanelColaboracionController@visit']);
 

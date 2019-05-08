@@ -28,4 +28,10 @@ return [
         'view' => 'email.fct.visit',
         'redirect' => 'misColaboraciones'
     ],
+    'student' => [
+        'subject' => "Visita Institut per seguiment de FCT",
+        'receiver' => 'Alumno',
+        'view' => 'email.fct.student',
+        'redirect' => 'misColaboraciones'
+    ],
 ];

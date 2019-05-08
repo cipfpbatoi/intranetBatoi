@@ -168,5 +168,11 @@ class Alumno extends Authenticatable
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
+    public function getContactoAttribute(){
+        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2,'UTF-8'));
+    }
+    public function getIdAttribute(){
+        return $this->nia;
+    }
 
 }

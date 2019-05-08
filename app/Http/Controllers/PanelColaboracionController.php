@@ -75,6 +75,7 @@ class PanelColaboracionController extends IntranetController
             $this->panel->setBoton('index', new BotonBasico("colaboracion.documentacion",['icon' => 'fa fa-bell-o']));
             $this->panel->setBoton('index', new BotonBasico("colaboracion.seguimiento",['icon' => 'fa fa-phone']));
             $this->panel->setBoton('index', new BotonBasico("colaboracion.visita",['icon' => 'fa fa-car']));
+            $this->panel->setBoton('index', new BotonBasico("colaboracion.student",['icon' => 'fa fa-bullhorn']));
         }
 
     }
@@ -96,43 +97,65 @@ class PanelColaboracionController extends IntranetController
     }
 
     public function sendFirstContact($id=null){
-        if (!$colaboraciones = $this->selectColaboraciones($id,1)) return back();
+        $colaboraciones = $this->selectColaboraciones($id,1);
+        if ($colaboraciones->count() == 0) return back();
         return $this->sendEmails(config('fctEmails.contact'),$colaboraciones);
     }
 
+
     public function sendRequestInfo($id=null){
-        if (!$colaboraciones = $this->selectColaboraciones($id,2)) return back();
+        $colaboraciones = $this->selectColaboraciones($id,2);
+        if ($colaboraciones->count() == 0) return back();
         return $this->sendEmails(config('fctEmails.request'),$colaboraciones);
     }
 
     public function sendDocumentation($id=null){
-        if (!$colaboraciones = $this->selectColaboraciones($id,2)) return back();
+        $colaboraciones = $this->selectColaboraciones($id,2);
+        if ($colaboraciones->count() == 0) return back();
         return $this->sendEmails(config('fctEmails.info'),$colaboraciones);
     }
 
+    public function sendStudent($id=null){
+        $colaboraciones = $this->selectColaboraciones($id,2);
+        if ($colaboraciones->count() == 0) return back();
+        return $this->sendEmails(config('fctEmails.student'),$this->selectFctAlumnes($colaboraciones));
+    }
+
     public function follow($id=null){
-        if (!$colaboraciones = $this->selectColaboraciones($id,2)) return back();
-        $fcts = collect();
-        foreach ($colaboraciones as $colaboracion){
-            foreach ($colaboracion->fcts as $fct)
-                if ($fct->asociacion == 1 ) $fcts->push($fct);
-        }
-        return $this->sendEmails(config('fctEmails.follow'),$fcts);
+        $colaboraciones = $this->selectColaboraciones($id,2);
+        if ($colaboraciones->count() == 0) return back();
+
+        return $this->sendEmails(config('fctEmails.follow'),$this->selectFcts($colaboraciones));
     }
 
     public function visit($id=null){
-        if (!$colaboraciones = $this->selectColaboraciones($id,2)) return back();
-        $fcts = collect();
-        foreach ($colaboraciones as $colaboracion){
-            foreach ($colaboracion->fcts as $fct)
-                if ($fct->asociacion == 1 ) $fcts->push($fct);
-        }
-        return $this->sendEmails(config('fctEmails.visit'),$fcts);
+        $colaboraciones = $this->selectColaboraciones($id,2);
+        if ($colaboraciones->count() == 0) return back();
+
+        return $this->sendEmails(config('fctEmails.visit'),$this->selectFcts($colaboraciones));
     }
 
     private function selectColaboraciones($id,$estado){
         return  $id?Colaboracion::where('id',$id)->get():Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',$estado)->get();
 
+    }
+
+    private function selectFcts($colaboraciones){
+        $fcts = collect();
+        foreach ($colaboraciones as $colaboracion){
+            foreach ($colaboracion->fcts as $fct)
+                if ($fct->asociacion == 1 ) $fcts->push($fct);
+        }
+        return $fcts;
+    }
+
+    private function selectFctAlumnes($colaboraciones){
+        $fctAl = collect();
+        foreach ($this->selectFcts($colaboraciones) as $fct)
+            foreach ($fct->Alumnos as $alumno){
+                $fctAl->push($alumno);
+            }
+        return $fctAl;
     }
 
     private function sendEmails($document,$colaboraciones){
