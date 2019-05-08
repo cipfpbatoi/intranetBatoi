@@ -91,11 +91,13 @@ class Mail
     }
 
     public function send(){
-        foreach ($this->elements as $elemento){
-            LaravelMail::to('igomis@cipfpbatoi.es','Ignasi Gomis Mullor')
-                ->send( new DocumentRequest($this,$this->chooseView(),$elemento));
-            Alert::info('Enviat correus '.$this->subject.' a '.$elemento->contacto);
-            Activity::record('email', $elemento,$this->subject);
+        foreach ($this->elements as $elemento) {
+            if (isset($elemento->contacto)) {
+                LaravelMail::to($elemento->email, $elemento->contacto)
+                    ->send(new DocumentRequest($this, $this->chooseView(), $elemento));
+                Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
+                Activity::record('email', $elemento, $this->subject);
+            }
         }
     }
 

@@ -1,4 +1,4 @@
 
-<p>Us convoque el dia                 a les                   a l'Institut, per a fer el seguiment de les pràctiques de FCT. Recordar-vos de dur-me emplenats i signats
-    per l'instructor els annexes IV. Si no podeu assistir, comuniqueu-me-ho per a tindreu en compte i concertar una cita un altre dia.</p>
+<p>Et convoque el dia ___________________________ a les _______________  a l'Institut, per a fer el seguiment de les pràctiques de FCT. Recorda't d'emplenar i dur els annexos 4 signats per l'instructor.
+    Si no pots assistir, comunica-me-ho per a tenir-ho en compte i concertar una cita un altre dia.</p>
 <p>Salutacions cordials de {{AuthUser()->shortName}}"</p>
