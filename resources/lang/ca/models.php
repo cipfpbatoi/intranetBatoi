@@ -278,7 +278,9 @@ return array(
             'seguimiento' => "Seguiment",
             'visita' => "Concertar Visita",
             'student' => 'Citar Alumnes',
-            'switch' => 'Meu'
+            'switch' => 'Meva',
+            'contactos' => "Contactes amb l'empresa",
+
         ),
         'Fct' => array(
             'index' => 'FCT',

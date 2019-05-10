@@ -3,7 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Empresa;
+use Intranet\Entities\Activity;
+use Intranet\Entities\Fct;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Grupo;
@@ -42,6 +43,7 @@ class ColaboracionController extends IntranetController
      * @var array
      */
     protected $titulo = [];
+    protected $vista = ['show'=>'colaboracion'];
 
 
     /**
@@ -142,13 +144,32 @@ class ColaboracionController extends IntranetController
     /**
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     */
+
     public function show($id){
         $empresa = Colaboracion::find($id)->Centro->idEmpresa;
         Session::put('pestana',1);
         return redirect()->action('EmpresaController@show', ['id' => $empresa]);
     }
+     */
 
+    /*
+     * show($id) return vista
+     * busca en model de dades i el mostra amb vista show
+     */
 
+    public function show($id)
+    {
+        $elemento = Colaboracion::findOrFail($id);
+        $contactCol = Activity::where('model_class','Intranet\Entities\Colaboracion')->where('action','email')->
+            where('model_id',$id)->get();
+        $fcts = Fct::where('idColaboracion',$id)->where('asociacion',1)->get();
+        $alumnos = [];
+        foreach ($fcts as $fct)
+            $alumnos = array_merge($alumnos,hazArray($fcts->Alumnos,'nia','nia'));
+        $contactAl = Activity::where('model_class','Intranet\Entities\Alumno')->where('action','email')->
+                    whereIn('model_id',$alumnos)->get();
+        //dd($contactosAl);
+        return view($this->chooseView('show'), compact('elemento', 'contactCol','contactAl'));
+    }
 
 }

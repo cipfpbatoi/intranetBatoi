@@ -34,4 +34,9 @@ class Activity extends Model
         return $fecha->format('d-m-Y H:i');
     }
 
+    public function Profesor()
+    {
+        return $this->belongsTo(Profesor::class, 'author_id', 'dni');
+    }
+
 }
