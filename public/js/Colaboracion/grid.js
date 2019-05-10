@@ -3,10 +3,14 @@ $(function() {
     var token = $("#_token").text();
     $("#tab_colabora").find(".resolve").hide();
     $("#tab_descartada").find(".unauthorize").hide();
+    $("#tab_descartada").find(".refuse").hide();
     $('#tab_pendiente').find(".unauthorize").hide();
     $("#tab_colabora").find(".switch").siblings(".informe").hide();
-    $("#tab_descartada").find(".switch").siblings(".informe").hide();
-    $('#tab_pendiente').find(".switch").siblings(".informe").hide();
+    $("#tab_colabora").find(".contacto").hide();
+    $("#tab_descartada").find(".informe").hide();
+    $("#tab_descartada").find(".contacto").hide();
+    $('#tab_pendiente').find(".switch").siblings(".contacto").hide();
+    $("#tab_pendiente").find(".informe").hide();
     $(".resolve").on("click", function(event){
         event.preventDefault();
         var colaboracion = $(this).parents(".well");
@@ -18,7 +22,9 @@ $(function() {
         }).then(function (result) {
             $("#tab_colabora").append(colaboracion.parent());
             boton.hide();
-            boton.siblings().show();
+            boton.siblings(".unauthorize").show();
+            boton.siblings(".contacto").hide();
+            if (! boton.find(".switch")) boton.siblings(".informe").show();
         });
     });
     $(".refuse").on("click", function(){
@@ -34,6 +40,8 @@ $(function() {
             boton.hide();
             boton.siblings(".resolve").show();
             boton.siblings(".unauthorize").hide();
+            boton.siblings(".informe").hide();
+            boton.siblings(".contacto").hide();
         });
     });
     $(".unauthorize").on("click", function(){
@@ -47,7 +55,8 @@ $(function() {
         }).then(function (result) {
             $("#tab_pendiente").append(colaboracion.parent());
             boton.hide();
-            boton.siblings().show();
+            if (! boton.find(".switch")) boton.siblings(".contacto").show();
+            boton.siblings(".informe").hide();
         });
     });
     $(".switch").on("click", function(){
@@ -60,7 +69,10 @@ $(function() {
             data: { api_token: token}
         }).then(function (result) {
             boton.hide();
-            boton.siblings(".informe").show();
+            if (boton.parents(".profile_details").parent().attr("id") == 'tab_pendiente' )
+                boton.siblings(".contacto").show();
+            if (boton.parents(".profile_details").parent().attr("id") == 'tab_colabora' )
+                boton.siblings(".informe").show();
             colaboracion.find(".nombre").text(result.data.nombre+' '+result.data.apellido1+' '+result.data.apellido2);
         });
     });
