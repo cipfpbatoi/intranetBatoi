@@ -53,17 +53,20 @@ class PanelColaboracionController extends IntranetController
      */
     protected function iniBotones()
     {
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.switch', ['roles' => config('roles.rol.practicas'),'class'=>'btn-warning switch','icon'=>'fa-user','where' => ['tutor', '<>', AuthUser()->dni]]));
+
+
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.unauthorize', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary unauthorize']));
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.resolve', ['roles' => config('roles.rol.practicas'),'class'=>'btn-success resolve']));
         $this->panel->setBoton('profile',new BotonIcon('colaboracion.refuse', ['roles' => config('roles.rol.practicas'),'class'=>'btn-danger refuse']));
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.switch', ['roles' => config('roles.rol.practicas'),'class'=>'btn-warning switch','icon'=>'fa-user','where' => ['tutor', '<>', AuthUser()->dni]]));
 
         $this->panel->setBothBoton('colaboracion.show',['text' => '','roles' => [config('roles.rol.practicas')]]);
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.contacto', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-envelope','where' => ['estado', '==', '1']]));
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.info', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-envelope-o','where' => ['estado', '==', '2']]));
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.documentacion', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-bell-o','where' => ['estado', '==', '2']]));
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.seguimiento', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-phone','where' => ['estado', '==', '2']]));
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.visita', ['roles' => config('roles.rol.practicas'),'text'=>'','icon'=>'fa-car','where' => ['estado', '==', '2']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.contacto', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Petició pràctiques','icon'=>'fa-envelope','where' => ['estado', '==', '1']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.info', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Revissió documentació','icon'=>'fa-envelope-o','where' => ['estado', '==', '2']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.documentacion', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Enviar documentació inici','icon'=>'fa-bell-o','where' => ['estado', '==', '2']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.seguimiento', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Correu seguiment','icon'=>'fa-phone','where' => ['estado', '==', '2']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.visita', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Concertar visita','icon'=>'fa-car','where' => ['estado', '==', '2']]));
+        $this->panel->setBoton('profile',new BotonIcon('colaboracion.student', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Citar alumne','icon'=>'fa-bullhorn','where' => ['estado', '==', '2']]));
 
 
         if (Colaboracion::where('estado', '=', 3)->count())

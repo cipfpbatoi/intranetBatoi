@@ -11,7 +11,7 @@ class BotonIcon extends BotonElemento
     protected function html($key = null)
     {
 
-        $a = "<a " . $this->href($key) . $this->clase() . $this->id() . "><i class='fa ";
+        $a = "<a " . $this->href($key) . $this->clase() . $this->id() ." title='".$this->title."'><i class='fa ";
         $a .= $this->icon?$this->icon:config("iconos.$this->accion");
         $a .= "'></i> " . $this->text;
         $a .= "</a>";

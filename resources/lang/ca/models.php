@@ -277,6 +277,7 @@ return array(
             'documentacion' => "Documentació Inici",
             'seguimiento' => "Seguiment",
             'visita' => "Concertar Visita",
+            'student' => 'Citar Alumnes',
             'switch' => 'Meu'
         ),
         'Fct' => array(

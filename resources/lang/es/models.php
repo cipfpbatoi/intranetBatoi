@@ -274,6 +274,7 @@ return array(
             'info' => 'Revisión documentación',
             'documentacion' => "Documentación inicio",
             'seguimiento' => "Seguimeinto",
+            'student' => 'Citar Alumnos',
             'visita' => "Concertar Visita",
             'switch' => 'Mi'
         ),
