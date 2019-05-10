@@ -165,7 +165,7 @@ class ColaboracionController extends IntranetController
         $fcts = Fct::where('idColaboracion',$id)->where('asociacion',1)->get();
         $alumnos = [];
         foreach ($fcts as $fct)
-            $alumnos = array_merge($alumnos,hazArray($fcts->Alumnos,'nia','nia'));
+            $alumnos = array_merge($alumnos,hazArray($fct->Alumnos,'nia','nia'));
         $contactAl = Activity::where('model_class','Intranet\Entities\Alumno')->where('action','email')->
                     whereIn('model_id',$alumnos)->get();
         //dd($contactosAl);
