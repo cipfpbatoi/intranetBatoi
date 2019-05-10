@@ -115,7 +115,7 @@
 
 
                 <!-- start recent activity -->
-                @include('colaboracion.partials.contactos')
+                @include('colaboracion.partials.fcts')
                 
                 <!-- end recent activity -->
                 
@@ -125,7 +125,7 @@
 
             
                 <!-- start user projects -->
-                @include('colaboracion.partials.fcts')
+                @include('colaboracion.partials.contactos')
                
                 <!-- end user projects -->
 
