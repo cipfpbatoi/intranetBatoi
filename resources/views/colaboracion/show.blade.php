@@ -106,7 +106,9 @@
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
             <li role="presentation" class="active" ><a href="#tab_content1" role="tab" id="colaboracion-tab" data-toggle="tab" aria-expanded="false">@lang("models.Colaboracion.contactos")</a>
             </li>
-            <li role="presentation"><a href="#tab_content2" id="centro-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.modelos.Fct")</a>
+            <li role="presentation"><a href="#tab_content2" id="centro-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.fctAl")</a>
+            </li>
+            <li role="presentation"><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.fct")</a>
             </li>
         </ul>
         <div id="myTabContent" class="tab-content">
@@ -115,7 +117,7 @@
 
 
                 <!-- start recent activity -->
-                @include('colaboracion.partials.fcts')
+                @include('colaboracion.partials.alumnado')
                 
                 <!-- end recent activity -->
                 
@@ -128,6 +130,15 @@
                 @include('colaboracion.partials.contactos')
                
                 <!-- end user projects -->
+
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="fct-tab">
+
+
+                <!-- start user projects -->
+            @include('colaboracion.partials.fcts')
+
+            <!-- end user projects -->
 
             </div>
 

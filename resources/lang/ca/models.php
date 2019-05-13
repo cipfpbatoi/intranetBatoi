@@ -280,6 +280,8 @@ return array(
             'student' => 'Citar Alumnes',
             'switch' => 'Meva',
             'contactos' => "Contactes amb l'empresa",
+            'fctAl' => "Contactes amb l'alumnat",
+            'fct' => 'FCTs',
 
         ),
         'Fct' => array(

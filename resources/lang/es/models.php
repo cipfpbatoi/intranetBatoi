@@ -277,7 +277,9 @@ return array(
             'student' => 'Citar Alumnos',
             'visita' => "Concertar Visita",
             'switch' => 'Mi',
-            'contactos' => "Contactes amb l'empresa",
+            'contactos' => "Contactes con la empresa",
+            'fctAl' => "Contactos con el alumnando",
+            'fct' => 'FCTs',
         ),
         'Fct' => array(
             'index' => 'FCT',

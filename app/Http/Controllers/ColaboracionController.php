@@ -169,7 +169,7 @@ class ColaboracionController extends IntranetController
         $contactAl = Activity::where('model_class','Intranet\Entities\Alumno')->where('action','email')->
                     whereIn('model_id',$alumnos)->get();
         //dd($contactosAl);
-        return view($this->chooseView('show'), compact('elemento', 'contactCol','contactAl'));
+        return view($this->chooseView('show'), compact('elemento', 'contactCol','contactAl','fcts'));
     }
 
 }
