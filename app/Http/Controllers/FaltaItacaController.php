@@ -59,6 +59,6 @@ class FaltaItacaController extends IntranetController
 
     private static function nameFile(String $desde){
         $fecha = new Date($desde);
-        return 'gestor/' . Curso() . '/informes/' . 'Birret' . $fecha->format('F') . '.pdf';
+        return 'gestor/' . Curso() . '/informes/' . 'Birret' . $fecha->format('M') . '.pdf';
     }
 }
