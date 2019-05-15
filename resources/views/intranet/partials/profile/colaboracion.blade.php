@@ -13,20 +13,29 @@
                     </ul>
                 </div>
                 <div class="col-md-4">
-                    @if ($elemento->fcts->first() && $elemento->fcts->first()->Alumnos->count())
-                        <img src="{{$elemento->fcts->first()->Alumnos->first()->foto}}" height="90" width="60" />
-                    @endif
+
+                    @php
+                        $contactCol = \Intranet\Entities\Activity::mail('Colaboracion')->id($elemento->id)->get();
+                        $fcts = \Intranet\Entities\Fct::where('idColaboracion',$elemento->id)->where('asociacion',1)->get();
+                        $contactFct = \Intranet\Entities\Activity::mail('Fct')->ids(hazArray($fcts,'id','id'))->get();
+                    @endphp
+                    @foreach ($contactCol as $contacto)
+                        {{$contacto->comentari}}
+                    @endforeach
+                    @foreach ($contactFct as $contacto)
+                        {{$contacto->comentari}}
+                    @endforeach
                 </div>
             </div>
             <div class="col-xs-12 bottom text-center">
-                <div class="col-xs-12 col-sm-4 emphasis">
+                <div class="col-xs-12 col-sm-3 emphasis">
                     <p class="ratings">
                         {{$elemento->Centro->localidad}}<br/>
                     </p>
                 </div>
-                <div class="col-xs-12 col-sm-8 emphasis">
+                <div class="col-xs-12 col-sm-9 emphasis">
                     @include ('intranet.partials.buttons',['tipo' => 'profile'])
-
+                    @include ('intranet.partials.buttons',['tipo' => 'infile'])
                 </div>
             </div>
         </div>

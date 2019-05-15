@@ -20,11 +20,13 @@ $(function() {
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/resolve",
             data: { api_token: token}
         }).then(function (result) {
-            $("#tab_colabora").append(colaboracion.parent());
             boton.hide();
             boton.siblings(".unauthorize").show();
+            boton.siblings(".refuse").show();
             boton.siblings(".contacto").hide();
-            if (! boton.find(".switch")) boton.siblings(".informe").show();
+            if (!boton.siblings(".switch")) boton.siblings(".informe").show();
+            //boton.siblings(".informe").show();
+            $("#tab_colabora").append(colaboracion.parent());
         });
     });
     $(".refuse").on("click", function(){
@@ -36,12 +38,12 @@ $(function() {
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/refuse",
             data: { api_token: token}
         }).then(function (result) {
-            $("#tab_descartada").append(colaboracion.parent());
             boton.hide();
             boton.siblings(".resolve").show();
             boton.siblings(".unauthorize").hide();
             boton.siblings(".informe").hide();
             boton.siblings(".contacto").hide();
+            $("#tab_descartada").append(colaboracion.parent());
         });
     });
     $(".unauthorize").on("click", function(){
@@ -53,10 +55,11 @@ $(function() {
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/unauthorize",
             data: { api_token: token}
         }).then(function (result) {
-            $("#tab_pendiente").append(colaboracion.parent());
+
             boton.hide();
             if (! boton.find(".switch")) boton.siblings(".contacto").show();
             boton.siblings(".informe").hide();
+            $("#tab_pendiente").append(colaboracion.parent());
         });
     });
     $(".switch").on("click", function(){
@@ -75,5 +78,10 @@ $(function() {
                 boton.siblings(".informe").show();
             colaboracion.find(".nombre").text(result.data.nombre+' '+result.data.apellido1+' '+result.data.apellido2);
         });
+    });
+    $(".btn-info").on("click",function(event){
+            if (!confirm('Vas a enviar els correus de manera automàtica:')) {
+                event.preventDefault();
+            }
     });
 })

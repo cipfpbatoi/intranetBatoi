@@ -160,16 +160,13 @@ class ColaboracionController extends IntranetController
     public function show($id)
     {
         $elemento = Colaboracion::findOrFail($id);
-        $contactCol = Activity::where('model_class','Intranet\Entities\Colaboracion')->where('action','email')->
-            where('model_id',$id)->get();
+        $contactCol = Activity::mail('Colaboracion')->id($id)->get();
         $fcts = Fct::where('idColaboracion',$id)->where('asociacion',1)->get();
-        $contactFct = Activity::where('model_class','Intranet\Entities\Fct')->where('action','email')->
-            whereIn('model_id',hazArray($fcts,'id','id'))->get();
+        $contactFct = Activity::mail('Fct')->ids(hazArray($fcts,'id','id'))->get();
         $alumnos = [];
         foreach ($fcts as $fct)
             $alumnos = array_merge($alumnos,hazArray($fct->Alumnos,'nia','nia'));
-        $contactAl = Activity::where('model_class','Intranet\Entities\Alumno')->where('action','email')->
-                    whereIn('model_id',$alumnos)->get();
+        $contactAl = Activity::mail('Alumno')->ids($alumnos)->get();
         return view($this->chooseView('show'), compact('elemento','contactCol','contactFct','contactAl','fcts'));
     }
 

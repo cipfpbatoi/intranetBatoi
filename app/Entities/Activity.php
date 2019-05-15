@@ -39,4 +39,15 @@ class Activity extends Model
         return $this->belongsTo(Profesor::class, 'author_id', 'dni');
     }
 
+    public function scopeMail($query,$modelo)
+    {
+        return $query->where('model_class','Intranet\Entities\\'.$modelo)->where('action','email');
+    }
+    public function scopeId($query,$id){
+        return $query->where('model_id',$id);
+    }
+    public function scopeIds($query,$ids){
+        return $query->whereIn('model_id',$ids);
+    }
+
 }
