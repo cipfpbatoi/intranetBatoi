@@ -13,17 +13,23 @@
                     </ul>
                 </div>
                 <div class="col-md-4">
-
                     @php
                         $contactCol = \Intranet\Entities\Activity::mail('Colaboracion')->id($elemento->id)->get();
                         $fcts = \Intranet\Entities\Fct::where('idColaboracion',$elemento->id)->where('asociacion',1)->get();
                         $contactFct = \Intranet\Entities\Activity::mail('Fct')->ids(hazArray($fcts,'id','id'))->get();
+                        $alumnos = [];
+                        foreach ($fcts as $fct)
+                            $alumnos = array_merge($alumnos,hazArray($fct->Alumnos,'nia','nia'));
+                        $contactAl = \Intranet\Entities\Activity::mail('Alumno')->ids($alumnos)->get();
                     @endphp
                     @foreach ($contactCol as $contacto)
-                        {{$contacto->comentari}}
+                        <small>{{firstWord($contacto->comentari)}}-{{fechaCurta($contacto->created_at)}}</small><br/>
                     @endforeach
                     @foreach ($contactFct as $contacto)
-                        {{$contacto->comentari}}
+                        <small>{{firstWord($contacto->comentari)}}-{{fechaCurta($contacto->created_at)}}</small><br/>
+                    @endforeach
+                    @foreach ($contactAl as $contacto)
+                        <small>{{firstWord($contacto->comentari)}}-{{fechaCurta($contacto->created_at)}}</small><br/>
                     @endforeach
                 </div>
             </div>
@@ -34,7 +40,7 @@
                     </p>
                 </div>
                 <div class="col-xs-12 col-sm-9 emphasis">
-                    @include ('intranet.partials.buttons',['tipo' => 'profile'])
+                    @include ('intranet.partials.buttons',['tipo' => 'profile'])<br/>
                     @include ('intranet.partials.buttons',['tipo' => 'infile'])
                 </div>
             </div>

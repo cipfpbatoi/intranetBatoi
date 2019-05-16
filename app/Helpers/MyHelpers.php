@@ -387,4 +387,10 @@ function existsTranslate($text){
     return null;
 }
 
+function firstWord($cadena){
+    $parte = explode(" ",$cadena);
+    return $parte[0];
+}
+
+
 

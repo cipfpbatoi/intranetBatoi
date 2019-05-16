@@ -144,17 +144,6 @@ class ColaboracionController extends IntranetController
     /**
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-
-    public function show($id){
-        $empresa = Colaboracion::find($id)->Centro->idEmpresa;
-        Session::put('pestana',1);
-        return redirect()->action('EmpresaController@show', ['id' => $empresa]);
-    }
-     */
-
-    /*
-     * show($id) return vista
-     * busca en model de dades i el mostra amb vista show
      */
 
     public function show($id)

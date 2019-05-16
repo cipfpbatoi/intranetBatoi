@@ -24,8 +24,7 @@ $(function() {
             boton.siblings(".unauthorize").show();
             boton.siblings(".refuse").show();
             boton.siblings(".contacto").hide();
-            if (!boton.siblings(".switch")) boton.siblings(".informe").show();
-            //boton.siblings(".informe").show();
+            if (boton.siblings(".switch").length == 0) boton.siblings(".informe").show();
             $("#tab_colabora").append(colaboracion.parent());
         });
     });

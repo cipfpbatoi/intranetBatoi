@@ -8,7 +8,7 @@ return [
         'redirect' => 'misColaboraciones'
     ],
     'request' => [
-        'subject' => 'Detalls Documentació Pràctiques a confirmar',
+        'subject' => 'Revisió Documentació Pràctiques',
         'view' => 'email.fct.request',
         'receiver' => 'A/A de Recursos Humans',
     ],
@@ -29,7 +29,7 @@ return [
         'redirect' => 'misColaboraciones'
     ],
     'student' => [
-        'subject' => "Visita Institut per seguiment de FCT",
+        'subject' => "Citar alumnes per seguiment de FCT",
         'receiver' => 'Alumno',
         'view' => 'email.fct.student',
         'redirect' => 'misColaboraciones'

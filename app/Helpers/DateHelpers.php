@@ -10,6 +10,11 @@ function PeriodePractiques($fecha = null)
         return 2;
 }
 
+function fechaCurta($fecha){
+    $hoy = new Date($fecha);
+    return $hoy->format("d/m");
+}
+
 function Fecha($fecha)
 {
     $hoy = new Date($fecha);
