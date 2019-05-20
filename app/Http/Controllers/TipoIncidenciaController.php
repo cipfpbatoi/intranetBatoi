@@ -47,4 +47,8 @@ class TipoIncidenciaController extends IntranetController
          $this->panel->setBotonera(['create'],['delete','edit']);
      }
 
+    protected function search(){
+        return $this->class::all();
+    }
+
 }
