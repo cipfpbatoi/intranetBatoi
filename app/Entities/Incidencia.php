@@ -17,14 +17,13 @@ class Incidencia extends Model
 
     protected $table = 'incidencias';
     public $timestamps = false;
-    protected $fillable = ['espacio', 'material', 'descripcion', 'responsable', 'idProfesor', 'tipo', 'prioridad', 'Observaciones'];
+    protected $fillable = ['tipo','espacio', 'material', 'descripcion', 'idProfesor',  'prioridad', 'Observaciones'];
     protected $descriptionField = 'descripcion';
 
     use BatoiModels,
         TraitEstado;
 
     protected $rules = [
-        'espacio' => 'required',
         'descripcion' => 'required',
         'tipo' => 'required',
         'idProfesor' => 'required',
@@ -37,7 +36,6 @@ class Incidencia extends Model
         'descripcion' => ['type' => 'textarea'],
         'idProfesor' => ['type' => 'hidden'],
         'tipo' => ['type' => 'select'],
-        'responsable' => ['type' => 'select'],
         'prioridad' => ['type' => 'select'],
     ];
     protected $dispatchesEvents = [
@@ -52,6 +50,7 @@ class Incidencia extends Model
     {
         if (AuthUser()) {
             $this->idProfesor = AuthUser()->dni;
+            $this->espacio = null;
             $this->estado = 0;
             $this->fecha = new Date('now');
             $this->prioridad = 0;
@@ -94,6 +93,7 @@ class Incidencia extends Model
         return hazArray(TipoIncidencia::all(), 'id', 'nombre');
     }
 
+    /**
     public function getResponsableOptions()
     {
         $todos = Profesor::select('dni', 'apellido1',  'nombre')
@@ -105,6 +105,7 @@ class Incidencia extends Model
         }
         return $esp;
     }
+    **/
 
     public function getEstadoOptions()
     {
@@ -138,6 +139,10 @@ class Incidencia extends Model
         return $this->Creador->ShortName;
     }
 
+    public function getXespacioAttribute(){
+        return $this->espacio?$this->Espacios->descripcion:'';
+    }
+
     public function getXresponsableAttribute()
     {
         return ($this->responsable == '') ? $this->responsable : $this->Responsables->ShortName;
@@ -162,7 +167,7 @@ class Incidencia extends Model
             }
         }
         if ($elemento->estado < $estado) {
-            $elemento->responsable = $estado > 1 ? AuthUser()->dni : $elemento->responsable;
+            $elemento->responsable = $estado > 1 ? AuthUser()->dni : $elemento->Tipos->idProfesor;
         } else
             $elemento->responsable = $estado > 1 ? AuthUser()->dni : '';
 

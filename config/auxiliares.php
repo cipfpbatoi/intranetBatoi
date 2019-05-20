@@ -8,6 +8,7 @@ return [
     'estadoIncidencia' => ['Rechazada','Pendiente','En proceso','Resuelta'],
     'estadoOrden' => ['Abierta','Cerrada','Resuelta'],
     'prioridadIncidencia' => ['Baja','Media','Alta'],
+    'tipoIncidencia' => [ 1=> 'Qualitat',2=>'Material Inventariable',3=>'Edifici',4=>'Informàtica'],
     'tipoVehiculo' => ['Avion','Tren','Taxi','Autobus','Otros'],
     'estadoDocumento' => ['Creado','Pendiente','Autorizado','Impreso'],
     'numeracion' => ['--','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15',30=>'AvaIni',31=>'1Ava',32=>'2Ava',33=>'3Ava',34=>'AvFinal',35=>'AvExtr',21=>'1er Trimestre',22=>'2on Trimestre',23=>'Final'],
@@ -26,5 +27,6 @@ return [
     'veep' => [],
     'estadoColaboracion' => [0=>'',1=>'??',2=>'Col·labora',3=>'No col·labora'],
     'incidenciasColaboracion' => [1=>'Envia correu contacte',2=>'Envia confirmació de dades',3=>"Envia documentació d'inici",4=>"Denegació pràctiques",5=>'Comentari Professor',6=>'Comentari Instructor',7=>'Telefònic'],
-    'reunionesControlables' => [2, 5, 6, 7, 9]
+    'reunionesControlables' => [2, 5, 6, 7, 9],
+
 ];

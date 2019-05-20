@@ -7,7 +7,7 @@
             </h4>    
             @if (!empty($elemento->Observaciones)) <h5><i class="fa fa-comment-o"></i> {{$elemento->Observaciones}}</h5>@endif
             <div class="left col-xs-12">
-                <h5> <i class="fa fa-tag"></i> {{$elemento->Espacios->descripcion}}</h5>
+                <h5> <i class="fa fa-tag"></i> {{$elemento->Xespacio}}</h5>
                 <h5><i class="fa fa-tag"></i> {{$elemento->Tipos->literal}}</h5>
                 <ul class="list-unstyled">
                         <li><i class="fa fa-user"></i> {{$elemento->Creador->nombre}} {{$elemento->Creador->apellido1}}  </li>

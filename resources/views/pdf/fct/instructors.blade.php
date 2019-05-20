@@ -18,7 +18,7 @@
         <div class="container" style="width:100%">
             <p style="text-indent: 30px;text-align: justify">Que l'empresa <strong> {{$empresa->nombre}} </strong> , ubicada a {{$empresa->direccion}} de/d'
                 {{$empresa->localidad}}, ha col·laborat en les pràctiques corresponents a la Formació de Centres de Treball (FCT) del {{$todos->Colaboracion->Ciclo->Xtipo}} 
-                <strong>{{$todos->Colaboracion->Ciclo->vliteral}}</strong> durant {{$todos->horas}} hores, en les que han participat els següents alumnes/as:
+                <strong>{{$todos->Colaboracion->Ciclo->vliteral}}</strong> durant {{$todos->Colaboracion->Ciclo->horasFct}} hores, en les que han participat els següents alumnes/as:
             </p>
             @include('pdf.fct.partials.llistaAlumnes')  
            <p>Que dins d'aquesta empresa, En/Na/N' <strong>{{$datosInforme['instructor']->nombre}}</strong> amb DNI {{$datosInforme['instructor']->dni}},  ha sigut l'instructor/a de les pràctiques

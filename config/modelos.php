@@ -43,7 +43,6 @@ return [
                         3 => 'resuelta',
                         ],
         'avisos' => [ 'idProfesor' => [0, 3, 5],'jefeEstudios'=>[1],'orientador'=>[4]],
-        //'informa' => [ 'responsable' => 1],
         'resolve' => '3',
         'refuse' => '0',
         'print' => '3'
@@ -61,7 +60,6 @@ return [
                         2 => 'proceso', 
                         3 => 'resuelta'],
         'avisos' => [ 'idProfesor' => [0, 3], 'responsable' => [1] ],
-        //'avisos' => [ 0,3],
         'resolve' => '3',
         'refuse' => '0',
     ],

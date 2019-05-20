@@ -64,6 +64,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('Empresa', 'EmpresaController', ['except' => ['edit', 'create']]);
     Route::resource('ordentrabajo', 'OrdenTrabajoController', ['except' => ['edit', 'create']]);
     Route::resource('incidencia', 'IncidenciaController', ['except' => ['edit', 'create']]);
+    Route::resource('tipoincidencia', 'TipoIncidenciaController', ['except' => ['edit', 'create']]);
     Route::resource('expediente', 'ExpedienteController', ['except' => ['edit', 'create']]);
     Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => ['edit', 'create']]);    
     Route::resource('alumnoGrupo', 'AlumnoGrupoController', ['except' => ['edit', 'create']]);    

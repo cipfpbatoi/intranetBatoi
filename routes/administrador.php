@@ -29,6 +29,10 @@ Route::resource('/ciclo', 'CicloController', ['except' => ['destroy', 'update', 
 Route::put('/ciclo/{ciclo}/edit', ['as' => 'ciclo.update', 'uses' => 'CicloController@update']);
 Route::get('/ciclo/{ciclo}/delete', ['as' => 'ciclo.destroy', 'uses' => 'CicloController@destroy']);
 
+//manteniment taula tipo incidencias
+Route::resource('/tipoincidencia', 'TipoIncidenciaController', ['except' => ['destroy', 'update', 'show']]);
+Route::put('/tipoincidencia/{ciclo}/edit', ['as' => 'ciclo.update', 'uses' => 'TipoIncidenciaController@update']);
+Route::get('/tipoincidencia/{ciclo}/delete', ['as' => 'ciclo.destroy', 'uses' => 'TipoIncidenciaController@destroy']);
 //canvia d'usuari
 Route::get('/profesor/{idProfesor}/change',['as' =>'profesor.change','uses' => 'ProfesorController@change']);
 

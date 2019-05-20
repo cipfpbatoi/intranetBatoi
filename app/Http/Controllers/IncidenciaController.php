@@ -29,7 +29,7 @@ class IncidenciaController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['Xestado', 'DesCurta', 'espacio', 'XResponsable', 'Xtipo', 'fecha'];
+    protected $gridFields = ['Xestado', 'DesCurta', 'Xespacio', 'XResponsable', 'Xtipo', 'fecha'];
     /**
      * @var string
      */
