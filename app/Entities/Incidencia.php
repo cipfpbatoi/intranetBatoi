@@ -90,7 +90,7 @@ class Incidencia extends Model
 
     public function getTipoOptions()
     {
-        return hazArray(TipoIncidencia::all(), 'id', 'nombre');
+        return hazArray(TipoIncidencia::all(), 'id', 'literal');
     }
 
     /**
