@@ -261,6 +261,7 @@ return array(
         'Micolaboracion' => 'Preparar Col.laboracions enguany',
         'Poll' => 'Enquestes',
         'Importaprofesor' => 'Importa Professor',
+        'Tipoincidencias' => "Tipus d'incidències",
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

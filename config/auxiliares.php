@@ -8,7 +8,7 @@ return [
     'estadoIncidencia' => ['Rechazada','Pendiente','En proceso','Resuelta'],
     'estadoOrden' => ['Abierta','Cerrada','Resuelta'],
     'prioridadIncidencia' => ['Baja','Media','Alta'],
-    'tipoIncidencia' => [ 1=> 'Qualitat',2=>'Material Inventariable',3=>'Edifici',4=>'Informàtica'],
+    'tipoIncidencia' => [ 1=> 'Qualitat',2=>'Instal.lacions',3=>'Informàtica',4=>'Programari',5=>'FCT'],
     'tipoVehiculo' => ['Avion','Tren','Taxi','Autobus','Otros'],
     'estadoDocumento' => ['Creado','Pendiente','Autorizado','Impreso'],
     'numeracion' => ['--','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15',30=>'AvaIni',31=>'1Ava',32=>'2Ava',33=>'3Ava',34=>'AvFinal',35=>'AvExtr',21=>'1er Trimestre',22=>'2on Trimestre',23=>'Final'],

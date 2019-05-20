@@ -259,6 +259,7 @@ return array(
         'Micolaboracion' => 'Preparar Colaboraciones',
         'Poll' => 'Encuestas',
         'Importaprofesor' => 'Importa Profesor',
+        'Tipoincidencias' => "Tipos de incidencias",
 
     ),
     'situations' => array(
