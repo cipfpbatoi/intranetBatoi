@@ -95,10 +95,11 @@ class FctAlumnoController extends IntranetController
     
     public function pdf($id)
     {
-        $fct = [AlumnoFct::findOrFail($id)];
+        $fct = AlumnoFct::findOrFail($id);
+        //dd($fct);
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));
-        $dades = ['date' => FechaString(Hoy()),
+        $dades = ['date' => FechaString($fct->hasta),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
             'centro' => config('contacto.nombre'),
@@ -107,7 +108,7 @@ class FctAlumnoController extends IntranetController
             'director' => $director->FullName
         ];
         
-        $pdf = $this->hazPdf('pdf.fct.alumne', $fct, $dades);
+        $pdf = $this->hazPdf('pdf.fct.alumne', [$fct], $dades);
         return $pdf->stream();
     }
     public function email($id)

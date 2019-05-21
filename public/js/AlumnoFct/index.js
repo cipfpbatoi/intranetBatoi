@@ -1,5 +1,6 @@
 'use strict';
 
+const MODEL = "alumnofct";
 var id;
 
 $(function() {
@@ -16,4 +17,13 @@ $(function() {
     $("#formFechas").on("submit", function(){
         $(this).attr("action","fct/"+id+"/print");
     });
+    /*
+    $(".pdf").on("click", function (event) {
+        event.preventDefault();
+        $(this).attr("data-toggle", "modal").attr("data-target", "#fechas").attr("href", "");
+        id = $(this).parents(".lineaGrupo").attr("id");
+    });
+    $("#formFecha").on("submit", function () {
+        $(this).attr("action", MODEL + "/" + id + "/pdf");
+    });*/
 })
