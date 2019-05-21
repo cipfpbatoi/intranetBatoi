@@ -48,6 +48,7 @@ class FctController extends IntranetController
      * @var array
      */
     protected $vista = ['show' => 'fct'];
+    protected $parametresVista = ['modal' => ['fecha']];
 
 
     /**
@@ -85,7 +86,7 @@ class FctController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion','==','1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.delete',['where'=>['Nalumnes','==','1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.pdf',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.pdf',['class'=>'pdf','img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0301.print",['roles' => config('roles.rol.tutor')]));
@@ -156,12 +157,12 @@ class FctController extends IntranetController
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function pdf($id)
+    public function pdf($id,Request $request)
     {
         $fct = Fct::findOrFail($id);
         $instructor = $fct->Instructor;
         if (isset($instructor->surnames)){
-            $fecha = Hoy();
+            $fecha = $request->fecha;
             $secretario = Profesor::find(config('contacto.secretario'));
             $director = Profesor::find(config('contacto.director'));
             $dades = ['date' => FechaString($fecha,'ca'),
@@ -172,7 +173,8 @@ class FctController extends IntranetController
                 'poblacion' => config('contacto.poblacion'),
                 'provincia' => config('contacto.provincia'),
                 'director' => $director->FullName,
-                'instructor' => $instructor
+                'instructor' => $instructor,
+                'horas' => $request->horas
             ];
             $pdf = $this->hazPdf('pdf.fct.instructors', $fct, $dades);
             return $pdf->stream();

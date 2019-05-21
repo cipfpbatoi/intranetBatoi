@@ -18,7 +18,7 @@
         <div class="container" style="width:100%">
             <p style="text-indent: 30px;text-align: justify">Que l'empresa <strong> {{$empresa->nombre}} </strong> , ubicada a {{$empresa->direccion}} de/d'
                 {{$empresa->localidad}}, ha col·laborat en les pràctiques corresponents a la Formació de Centres de Treball (FCT) del {{$todos->Colaboracion->Ciclo->Xtipo}} 
-                <strong>{{$todos->Colaboracion->Ciclo->vliteral}}</strong> durant {{$todos->Colaboracion->Ciclo->horasFct}} hores, en les que han participat els següents alumnes/as:
+                <strong>{{$todos->Colaboracion->Ciclo->vliteral}}</strong> durant {{$datosInforme['horas']}} hores, en les que han participat els següents alumnes/as:
             </p>
             @include('pdf.fct.partials.llistaAlumnes')  
            <p>Que dins d'aquesta empresa, En/Na/N' <strong>{{$datosInforme['instructor']->nombre}}</strong> amb DNI {{$datosInforme['instructor']->dni}},  ha sigut l'instructor/a de les pràctiques
@@ -58,7 +58,7 @@
     <div class="container" style="width:95%">
         <p style="text-indent: 30px;text-align: justify">Que la empresa <strong> {{$empresa->nombre}} </strong> , ubicada en {{$empresa->direccion}} de
             {{$empresa->localidad}}, ha colaborado en las prácticas correspondientes a la Formación de Centros de Trabajo (FCT) del {{$todos->Colaboracion->Ciclo->Xtipo}} 
-            <strong>{{$todos->Colaboracion->Ciclo->cliteral}}</strong> durante {{$todos->horas}} horas, en las que han participado los siguientes alumnos/as:
+            <strong>{{$todos->Colaboracion->Ciclo->cliteral}}</strong> durante {{$datosInforme['horas']}} horas, en las que han participado los siguientes alumnos/as:
         </p>
          @include('pdf.fct.partials.llistaAlumnes') 
        <p>Que dentro de esta empresa, Don/Doña <strong>{{$datosInforme['instructor']->nombre}}</strong> con DNI {{$datosInforme['instructor']->dni}}, ha sido el/la instructor/a de las prácticas
