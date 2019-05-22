@@ -34,7 +34,7 @@
                 <br/><br/>
                 <p><strong>I per tal que així conste on convinga, signa el present escrit.</strong></p>
 
-                <p>{{$datosInforme['poblacion']}},a {{$datosInforme['date']}} </p>
+                <p>{{$datosInforme['poblacion']}}, {{$datosInforme['date']}} </p>
                 <br/><br/><br/><br/>
                 <div style="width:40%; float:left; ">
                     <p><strong>{{$datosInforme['secretario']}}</strong></p>
