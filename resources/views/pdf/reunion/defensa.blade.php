@@ -1,7 +1,8 @@
 @php
    if ($reunion = \Intranet\Entities\Reunion::where('tipo',11)->where('idProfesor',AuthUser()->dni)->orderBy('fecha','desc')->first())
-        $anterior = $reunion->ordenes->toArray();
-   else $anterior = false;
+        $anterior = $reunion->ordenes->sortBy('orden')->toArray();
+   else
+        $anterior = false;
    $ciclo = \Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->count()?\Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->first()->literal:$datosInforme->Ciclo;
 @endphp
 @extends('layouts.pdf')
@@ -27,7 +28,7 @@
         @foreach ($todos as $index => $elemento)
         <tr><td style='font-size: large'>{{$elemento->descripcion}}</td>
 
-            @if (isset($anterior[$index])) <td>@php echo($anterior[$index]['resumen']) @endphp</td><td>@php echo($elemento->resumen) @endphp</td>
+            @if (isset($anterior[$elemento->orden])) <td>@php echo($anterior[$elemento->orden]['resumen']) @endphp</td><td>@php echo($elemento->resumen) @endphp</td>
             @else <td colspan='2'>@php echo($elemento->resumen) @endphp</td>
             @endif
             
