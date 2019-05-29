@@ -21,4 +21,7 @@ class OrdenReunion extends Model
         'descripcion' => 'required'
     ];
 
+    public function Reunion(){
+        return $this->belongsTo(Reunion::class,'idReunion','id');
+    }
 }

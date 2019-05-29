@@ -59,6 +59,7 @@ class ReunionController extends IntranetController
         if ($elemento->fichero != '') return back();
         return redirect()->route('reunion.update', ['reunion' => $elemento->id]);
     }
+
     private function storeItems($contador,$texto,$elemento){
         $consulta = explode('->', $texto,3);
         $clase = $this->namespace . $consulta[0];

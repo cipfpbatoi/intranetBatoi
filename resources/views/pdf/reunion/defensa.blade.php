@@ -1,5 +1,5 @@
 @php
-   if ($reunion = \Intranet\Entities\Reunion::where('tipo',11)->where('idProfesor',AuthUser()->dni)->orderBy('fecha')->first())
+   if ($reunion = \Intranet\Entities\Reunion::where('tipo',11)->where('idProfesor',AuthUser()->dni)->orderBy('fecha','desc')->first())
         $anterior = $reunion->ordenes->toArray();
    else $anterior = false;
    $ciclo = \Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->count()?\Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->first()->literal:$datosInforme->Ciclo;
@@ -26,6 +26,7 @@
             @if ($anterior)<th>Projecte</th><th>Data i Hora</th>@else <th colspan='2'>Projecte - Data i Hora</th>@endif<th>Lloc</th></tr>
         @foreach ($todos as $index => $elemento)
         <tr><td style='font-size: large'>{{$elemento->descripcion}}</td>
+
             @if (isset($anterior[$index])) <td>@php echo($anterior[$index]['resumen']) @endphp</td><td>@php echo($elemento->resumen) @endphp</td>
             @else <td colspan='2'>@php echo($elemento->resumen) @endphp</td>
             @endif

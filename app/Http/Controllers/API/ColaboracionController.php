@@ -8,6 +8,7 @@ use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Profesor;
+use Intranet\Entities\Activity;
 
 class ColaboracionController extends ApiBaseController
 {
@@ -33,7 +34,7 @@ class ColaboracionController extends ApiBaseController
     }
     public function unauthorize($id){
         $colaboracion = Colaboracion::find($id);
-        $colaboracion::unauthorize($id);
+        $colaboracion::putEstado($id,1);
         return $this->sendResponse($colaboracion,'OK');
     }
     public function switch($id){
@@ -42,6 +43,10 @@ class ColaboracionController extends ApiBaseController
         $colaboracion->tutor = $profesor->dni;
         $colaboracion->save();
         return $this->sendResponse($profesor,'OK');
+    }
+    public function telefon($id,Request $request){
+        $activity = Activity::record('phone', Colaboracion::find($id),'Telèfon :'.$request->explicacion);
+        return $this->sendResponse($activity,'OK');
     }
 
 

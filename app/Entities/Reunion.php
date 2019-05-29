@@ -142,6 +142,9 @@ class Reunion extends Model
     public function getAvaluacioAttribute(){
         return $this->numero-20;
     }
+    public function getModificableAttribute(){
+        return TipoReunion::modificable($this->tipo);
+    }
 
     public function getFechaAttribute($entrada)
     {

@@ -278,7 +278,7 @@ return array(
             'seguimiento' => "Seguiment",
             'visita' => "Concertar Visita",
             'student' => 'Citar Alumnes',
-            'switch' => 'Meva',
+            'switch' => 'Assignar',
             'contactos' => "Contactes amb l'empresa",
             'fctAl' => "Contactes amb l'alumnat",
             'fct' => 'FCTs',

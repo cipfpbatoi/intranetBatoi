@@ -12,9 +12,9 @@
                         </li>
                     </ul>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 listActivity">
                     @php
-                        $contactCol = \Intranet\Entities\Activity::mail('Colaboracion')->id($elemento->id)->get();
+                        $contactCol = \Intranet\Entities\Activity::mail('Colaboracion')->id($elemento->id)->orderBy('created_at')->get();
                         $fcts = \Intranet\Entities\Fct::where('idColaboracion',$elemento->id)->where('asociacion',1)->get();
                         $contactFct = \Intranet\Entities\Activity::mail('Fct')->ids(hazArray($fcts,'id','id'))->get();
                         $alumnos = [];

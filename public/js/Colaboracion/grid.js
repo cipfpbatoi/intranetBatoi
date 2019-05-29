@@ -1,16 +1,25 @@
 'use strict';
+
+const MODEL="colaboracion";
+var id;
+var list;
+var texto;
+var day;
+var month;
+
 $(function() {
     var token = $("#_token").text();
-    $("#tab_colabora").find(".resolve").hide();
     $("#tab_descartada").find(".unauthorize").hide();
     $("#tab_descartada").find(".refuse").hide();
-    $('#tab_pendiente').find(".unauthorize").hide();
-    $("#tab_colabora").find(".switch").siblings(".informe").hide();
-    $("#tab_colabora").find(".contacto").hide();
     $("#tab_descartada").find(".informe").hide();
     $("#tab_descartada").find(".contacto").hide();
-    $('#tab_pendiente').find(".switch").siblings(".contacto").hide();
+    $("#tab_descartada").find(".switch").siblings().hide();
+    $('#tab_pendiente').find(".unauthorize").hide();
+    $('#tab_pendiente').find(".switch").siblings().hide();
     $("#tab_pendiente").find(".informe").hide();
+    $("#tab_colabora").find(".resolve").hide();
+    $("#tab_colabora").find(".switch").siblings().hide();
+    $("#tab_colabora").find(".contacto").hide();
     $(".resolve").on("click", function(event){
         event.preventDefault();
         var colaboracion = $(this).parents(".well");
@@ -25,6 +34,7 @@ $(function() {
             boton.siblings(".refuse").show();
             boton.siblings(".contacto").hide();
             if (boton.siblings(".switch").length == 0) boton.siblings(".informe").show();
+
             $("#tab_colabora").append(colaboracion.parent());
         });
     });
@@ -54,9 +64,11 @@ $(function() {
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/unauthorize",
             data: { api_token: token}
         }).then(function (result) {
-
             boton.hide();
-            if (! boton.find(".switch")) boton.siblings(".contacto").show();
+            if (boton.siblings(".switch").length == 0){
+                boton.siblings(".contacto").show();
+                boton.siblings(".resolve").show();
+            }
             boton.siblings(".informe").hide();
             $("#tab_pendiente").append(colaboracion.parent());
         });
@@ -71,10 +83,20 @@ $(function() {
             data: { api_token: token}
         }).then(function (result) {
             boton.hide();
-            if (boton.parents(".profile_details").parent().attr("id") == 'tab_pendiente' )
+            boton.siblings(".estado").show();
+            if (boton.parents(".profile_details").parent().attr("id") == 'tab_pendiente' ){
                 boton.siblings(".contacto").show();
-            if (boton.parents(".profile_details").parent().attr("id") == 'tab_colabora' )
+                boton.siblings(".unauthorize").hide();
+            }
+            if (boton.parents(".profile_details").parent().attr("id") == 'tab_colabora' ){
                 boton.siblings(".informe").show();
+                boton.siblings(".resolve").hide();
+            }
+            if (boton.parents(".profile_details").parent().attr("id") == 'tab_descartada' ){
+                boton.siblings(".refuse").hide();
+                boton.siblings(".unauthorize").hide();
+            }
+
             colaboracion.find(".nombre").text(result.data.nombre+' '+result.data.apellido1+' '+result.data.apellido2);
         });
     });
@@ -82,5 +104,28 @@ $(function() {
             if (!confirm('Vas a enviar els correus de manera automàtica:')) {
                 event.preventDefault();
             }
+    });
+    $(".telefonico").on("click",function(event){
+        event.preventDefault();
+        $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
+        id=$(this).parents(".profile_view").attr("id");
+        list = $(this).parents(".profile_view").find(".listActivity");
+    });
+    $("#formExplicacion").on("submit", function(){
+        event.preventDefault();
+        $.ajax({
+            method: "POST",
+            url: "/api/colaboracion/" + id + "/telefonico",
+            data: {
+                api_token : token,
+                explicacion: this.explicacion.value}
+        }).then(function (result) {
+            texto = list.html();
+            day = new Date;
+            month = day.getMonth()+1;
+            texto = list.html()+"<small>Telèfon- "+day.getDate()+"/"+month+"</small><br/>";
+            list.html(texto);
+            $(this).attr("data-toggle","").attr("data-target", "")
+        });
     });
 })

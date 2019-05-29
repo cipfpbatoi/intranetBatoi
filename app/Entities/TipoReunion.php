@@ -45,6 +45,10 @@ class TipoReunion
     {
         return isset(config('tablas.tipoReunion')[$index]['resumen']) ? config('tablas.tipoReunion')[$index]['resumen'] : [];
     }
+    public static function modificable($index)
+    {
+        return isset(config('tablas.tipoReunion')[$index]['modificable']) ? config('tablas.tipoReunion')[$index]['modificable'] : [];
+    }
 
     public static function acta($index)
     {

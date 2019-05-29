@@ -24,6 +24,7 @@ class Mail
     private $fromPerson;
     private $toPeople;
     private $class;
+    private $register;
 
     /**
      * Mail constructor.
@@ -33,13 +34,14 @@ class Mail
      * @param $content
      * @param $route
      */
-    public function __construct($elements=null,$toPeople=null,$subject=null,$view=null,$from=null,$fromPerson=null,$class=null)
+    public function __construct($elements=null,$toPeople=null,$subject=null,$view=null,$from=null,$fromPerson=null,$class=null,$register=true)
     {
         $this->from = $from?$from:AuthUser()->email;
         $this->subject = $subject;
         $this->fromPerson = $fromPerson?$fromPerson:AuthUser()->FullName;
         $this->view = $view;
         $this->toPeople = $toPeople;
+        $this->register = $register;
         if (is_object($elements)){
             $this->elements = $elements;
             $this->class = get_class($this->elements->first());
@@ -96,7 +98,8 @@ class Mail
                 LaravelMail::to($elemento->email, $elemento->contacto)
                     ->send(new DocumentRequest($this, $this->chooseView(), $elemento));
                 Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
-                Activity::record('email', $elemento, $this->subject);
+                if ($this->register)
+                    Activity::record('email', $elemento, $this->subject);
             }
         }
     }

@@ -64,7 +64,8 @@ return array(
         'simplifica' => 'Ver los últimos datos',
         'falta' => 'Ausencias',
         'desde' => 'Desde',
-        'hasta' => 'Hasta'
+        'hasta' => 'Hasta',
+        'resum' => 'Resumen'
     ),
     'buttons' => array(
         'confirmar' => 'Confirmar',
@@ -157,7 +158,8 @@ return array(
         'change' => 'Volver a mi Usuario',
         'fse' => 'Acta fons social Europeu',
         'fol' => 'Certificat fol',
-        'gestor' => 'Gestor Documental'
+        'gestor' => 'Gestor Documental',
+        'contact' =>'Registrar contacto',
     ),
     'menu' => array(
         'Link' => 'Enlaces externos',
