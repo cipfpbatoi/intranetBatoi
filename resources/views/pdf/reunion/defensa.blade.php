@@ -28,7 +28,7 @@
         @foreach ($todos as $index => $elemento)
         <tr><td style='font-size: large'>{{$elemento->descripcion}}</td>
 
-            @if (isset($anterior[$elemento->orden])) <td>@php echo($anterior[$elemento->orden]['resumen']) @endphp</td><td>@php echo($elemento->resumen) @endphp</td>
+            @if (isset($anterior[$elemento->orden-1])) <td>@php echo($anterior[$elemento->orden-1]['resumen']) @endphp</td><td>@php echo($elemento->resumen) @endphp</td>
             @else <td colspan='2'>@php echo($elemento->resumen) @endphp</td>
             @endif
             
