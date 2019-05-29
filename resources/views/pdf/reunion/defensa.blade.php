@@ -1,6 +1,6 @@
 @php
    if ($reunion = \Intranet\Entities\Reunion::where('tipo',11)->where('idProfesor',AuthUser()->dni)->orderBy('fecha','desc')->first())
-        $anterior = $reunion->ordenes->sortBy('orden')->toArray();
+        $anterior = $reunion->ordenes->sortBy('orden');
    else
         $anterior = false;
    $ciclo = \Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->count()?\Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->first()->literal:$datosInforme->Ciclo;
@@ -27,8 +27,7 @@
             @if ($anterior)<th>Projecte</th><th>Data i Hora</th>@else <th colspan='2'>Projecte - Data i Hora</th>@endif<th>Lloc</th></tr>
         @foreach ($todos as $index => $elemento)
         <tr><td style='font-size: large'>{{$elemento->descripcion}}</td>
-
-            @if (isset($anterior[$elemento->orden-1])) <td>@php echo($anterior[$elemento->orden-1]['resumen']) @endphp</td><td>@php echo($elemento->resumen) @endphp</td>
+            @if ($persona = $anterior->where('orden',$elemento->orden)->first()) <td>{!! $persona->resumen !!}</td><td>@php echo($elemento->resumen) @endphp</td>
             @else <td colspan='2'>@php echo($elemento->resumen) @endphp</td>
             @endif
             
