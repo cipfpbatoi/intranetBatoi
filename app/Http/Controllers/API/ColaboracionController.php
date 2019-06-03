@@ -45,8 +45,15 @@ class ColaboracionController extends ApiBaseController
         return $this->sendResponse($profesor,'OK');
     }
     public function telefon($id,Request $request){
+        $activities = Activity::where('action','phone')->where('model_id',$id)->get();
+        foreach ($activities as $activity)
+            if (esMismoDia($activity->created_at,Hoy())){
+                $activity->comentari = $request->explicacion;
+                $activity->save();
+                return $this->sendError($activity,'404');
+            }
         $activity = Activity::record('phone', Colaboracion::find($id),'Telèfon :'.$request->explicacion);
-        return $this->sendResponse($activity,'OK');
+       return $this->sendResponse($activity,'OK');
     }
 
 

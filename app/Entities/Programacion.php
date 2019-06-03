@@ -85,15 +85,15 @@ class Programacion extends Model
         if (!$profesor) $profesor = AuthUser()->dni;
         $horas = Horario::select('modulo','idGrupo')
                 ->distinct()
-                ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
+                ->whereNotIn('modulo', config('constants.modulosSinProgramacion'))
                 ->Profesor($profesor)
                 ->where('modulo', '!=', null)
                 ->get();
         $modulos = [];
         foreach ($horas as $hora){
-            $mc = Modulo_ciclo::where('idModulo',$hora->modulo)
+            if ($mc = Modulo_ciclo::where('idModulo',$hora->modulo)
                     ->where('idCiclo',$hora->Grupo->idCiclo)
-                    ->first();
+                    ->first())
             $modulos[] = $mc->id;
         }
         return $query->whereIn('idModuloCiclo', $modulos)

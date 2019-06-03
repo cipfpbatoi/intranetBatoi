@@ -349,7 +349,7 @@ class ImportController extends Seeder
     private static function getHoraris(){
         return Horario::distinct()->whereNotNull('idGrupo')
             ->whereNotNull('modulo')->whereNotNull('idProfesor')
-            ->whereNotIn('modulo', config('constants.modulosNoLectivos'))->get();
+            ->whereNotIn('modulo', config('constants.modulosSinProgramacion'))->get();
     }
 
     /**

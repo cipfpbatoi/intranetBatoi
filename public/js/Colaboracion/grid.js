@@ -125,7 +125,10 @@ $(function() {
             month = day.getMonth()+1;
             texto = list.html()+"<small>Telèfon- "+day.getDate()+"/"+month+"</small><br/>";
             list.html(texto);
-            $(this).attr("data-toggle","").attr("data-target", "")
+            $("#dialogo").modal('hide');
+        }, function (result) {
+            console.log("Només es pot un per dia");
+            $("#dialogo").modal('hide');
         });
     });
 })
