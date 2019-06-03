@@ -188,6 +188,7 @@ trait BatoiModels
         if ($type == 'date') return (new Date($value))->format('Y-m-d');
         if ($type == 'datetime') return (new Date($value))->format('Y-m-d H:i');
         if ($type == 'select') return $value == ''?null:$value;
+        if ($type == 'file') return $value = $this->$key;
         return $value;
     }
 
