@@ -23,6 +23,7 @@ class Panel
         $this->botones['index'] = [];
         $this->botones['grid'] = [];
         $this->botones['profile'] = [];
+        $this->botones['infile'] = [];
         if ($creaPestana) $this->setPestana('grid', true, $vista, null, $rejilla,null,$include);
         
     }

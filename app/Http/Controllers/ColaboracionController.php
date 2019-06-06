@@ -43,6 +43,7 @@ class ColaboracionController extends IntranetController
      * @var array
      */
     protected $titulo = [];
+    protected $profile = false;
     protected $vista = ['show'=>'colaboracion'];
 
 
