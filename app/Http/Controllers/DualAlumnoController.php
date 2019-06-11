@@ -109,6 +109,7 @@ class DualAlumnoController extends FctAlumnoController
 
     public function printAnexeXIII($id){
         $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
+        dd($pdf);
         $pdf->fillform($this->makeArrayPdfAnexoXIII($id))
             ->saveAs("dualXIII_$id".'pdf');
         return $this->redirect();
