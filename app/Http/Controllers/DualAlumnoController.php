@@ -63,7 +63,7 @@ class DualAlumnoController extends FctAlumnoController
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vii'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_va'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vb'));
-        $this->panel->setBoton('grid', new BotonImg('dual.anexo',['img'=>'fa-phone']));
+        $this->panel->setBoton('grid', new BotonImg('dual.anexeXIII',['img'=>'fa-phone']));
         $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info','id' => 'anexoVI']));
         Session::put('redirect', 'DualAlumnoController@index');
@@ -81,24 +81,6 @@ class DualAlumnoController extends FctAlumnoController
         return redirect("/fct/$fct->idFct/show");
     }
     
-//    public function pdf($id)
-//    {
-//        $fct = AlumnoFct::findOrFail($id);
-//        $secretario = Profesor::find(config('contacto.secretario'));
-//        $director = Profesor::find(config('contacto.director'));
-//        $dades = ['date' => FechaString(FechaPosterior($fct->hasta)),
-//            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
-//            'secretario' => $secretario->FullName,
-//            'centro' => config('contacto.nombre'),
-//            'codigo' => config('contacto.codi'),
-//            'poblacion' => config('contacto.poblacion'),
-//            'provincia' => config('contacto.provincia'),
-//            'director' => $director->FullName
-//        ];
-//        
-//        $pdf = $this->hazPdf('dual.anexe_vii', $fct,$dades,'landscape','a4',10);
-//        return $pdf->stream();
-//    }
 
     /**
      * @param $id
@@ -125,10 +107,11 @@ class DualAlumnoController extends FctAlumnoController
         return $pdf->stream();
     }
 
-    public function printAnexe13($id){
+    public function printAnexeXIII($id){
         $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
-        $pdf->fillform($this->makeArrayPdfAnexoXIII($id));
-        return $pdf->send("dualXIII_$id".'pdf');
+        $pdf->fillform($this->makeArrayPdfAnexoXIII($id))
+            ->saveAs("dualXIII_$id".'pdf');
+        return $this->redirect();
     }
 
     /**

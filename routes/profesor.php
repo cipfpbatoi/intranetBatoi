@@ -244,7 +244,7 @@ Route::get('/dual/create', ['as' => 'dual.create', 'uses' => 'DualController@cre
 Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@store']);
 Route::get('/dual/{id}/pdf/{informe}',['as' => 'dual.pdf', 'uses' => 'DualAlumnoController@informe']);
 Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualAlumnoController@destroy']);
-Route::get('/dual/{id}/anexo',['as' => 'dual.anexo', 'uses' => 'DualAlumnoController@printAnexe13']);
+Route::get('/dual/{id}/anexeXIII',['as' => 'dual.anexeXIII', 'uses' => 'DualAlumnoController@printAnexeXIII']);
 Route::get('/dual/anexeVI',['as'=>'dual.anexevi','uses'=>'DualController@printAnexeVI']);
 
 
