@@ -101,33 +101,6 @@ class DualController extends IntranetController
         return $this->redirect();
     }
 
-    /**
-     * @return mixed
-
-    public function printAnexeVI(Request $request)
-    {
-        $fct = AlumnoFct::misDual()->get();
-        $empresas = Fct::misFcts(null,true)->esDual()->count();
-        $grupo = $fct->first()->Alumno->Grupo->first();
-        $alumnos = $grupo->Alumnos->where('sexo','H')->count();
-        $alumnas = $grupo->Alumnos->where('sexo','M')->count();
-        $dualH = 0; $dualM = 0;
-        foreach ($fct as $dual){
-            if ($dual->Alumno->sexo == 'H') $dualH++; else $dualM++;
-        }
-        $dades = ['date' => Hoy(),
-            'grupo' => $grupo,
-            'alumnos' => $alumnos,
-            'alumnas' => $alumnas,
-            'dualH' => $dualH,
-            'dualM' => $dualM,
-            'empresas' => $empresas,
-        ];
-
-        $pdf = $this->hazPdf('dual.anexe_vi', $fct, $dades, 'portrait', 'a4', 10);
-        return $pdf->stream();
-    }
-      */
 
     public function printAnexeVI(){
         $pdf = new Pdf('fdf/ANEXO_VI.pdf');
