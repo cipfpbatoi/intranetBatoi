@@ -20,7 +20,7 @@
             <tr>
                 <td>{!! $elemento->Profesor->apellido1 !!} {!! $elemento->Profesor->apellido2 !!} {!! $elemento->Profesor->nombre !!}</td>
                 <td>{!! $elemento->idProfesor !!}</td>
-                <td>{{$elemento->servicio}}</td>
+                <td>{{$elemento->descripcion}}</td>
                 <td>{{$elemento->desde }}</td>
                 <td>{{$elemento->hasta }}</td>
                 <td>{{$elemento->medio }}</td>

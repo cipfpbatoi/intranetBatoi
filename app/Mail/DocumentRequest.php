@@ -30,11 +30,12 @@ class DocumentRequest extends Mailable
      *
      * @return void
      */
-    public function __construct($mail,$view,$elemento)
+    public function __construct($mail,$view,$elemento,$attach)
     {
         $this->mail = $mail;
         $this->view = $view;
         $this->elemento = $elemento;
+        $this->attach = $attach;
     }
 
     /**
@@ -44,6 +45,12 @@ class DocumentRequest extends Mailable
      */
     public function build()
     {
-        return $this->from($this->mail->getFrom(),$this->mail->getFromPerson())->subject($this->mail->getSubject())->view($this->view);
+        $vista =  $this->from($this->mail->getFrom(),$this->mail->getFromPerson())->subject($this->mail->getSubject())->view($this->view);
+
+        if (isset($this->attach))
+            foreach ($this->attach as $index => $value){
+                $vista = $vista->attach(storage_path($index),['mime' => $value]);
+            }
+        return $vista;
     }
 }

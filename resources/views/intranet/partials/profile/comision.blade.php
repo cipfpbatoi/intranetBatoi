@@ -11,7 +11,7 @@
             </h4>
             <h6>@if ($elemento->fct) <strong> FCT</strong> @endif {{$elemento->Profesor->nombre}} {{$elemento->Profesor->apellido1}}</h6>
             <div class="left col-xs-12">
-                <h5>{{substr($elemento->servicio,0,140)}} @if (strlen($elemento->servicio)>140) ... @endif </h5>
+                <h5>{{substr($elemento->descripcion,0,140)}} @if (strlen($elemento->descripcion)>140) ... @endif </h5>
                 <ul class="list-unstyled">
                     <li><i class="fa fa-automobile"></i> {{$elemento->medio}} - {{$elemento->kilometraje}} km.</li>
                     <li><i class="fa fa-automobile"></i> {{ $elemento->marca}} {{$elemento->matricula}}</li>

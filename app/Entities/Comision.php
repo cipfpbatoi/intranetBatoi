@@ -38,6 +38,7 @@ class Comision extends Model
         'idProfesor',
         'servicio',
         'desde',
+        'fct',
         'hasta',
         'alojamiento',
         'comida',
@@ -65,10 +66,10 @@ class Comision extends Model
     protected $inputTypes = [
         'idProfesor' => ['type' => 'hidden'],
         'otros' => ['type' => 'select'],
-        'servicio' => ['type' => 'textarea'],
         'desde' => ['type' => 'datetime'],
         'hasta' => ['type' => 'datetime'],
         'fct' => ['type' => 'checkbox'],
+        'servicio' => ['type' => 'textarea'],
     ];
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
@@ -87,7 +88,8 @@ class Comision extends Model
             $manana->addHours(8);
             $this->desde = $manana;
             $this->hasta = $manana;
-            $this->fct = 1;
+            $this->fct = true;
+            $this->servicio = "Visita a Empreses per FCT: ";
             $this->gastos = 0.00;
             $this->comida = 0.00;
             $this->alojamiento = 0.00;
@@ -123,6 +125,10 @@ class Comision extends Model
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
+    public function Fcts()
+    {
+        return $this->belongsToMany(Fct::class,'comision_fcts', 'idComision', 'idFct','id','id')->withPivot(['hora_ini','aviso']);
+    }
 
     public function getOtrosOptions()
     {
@@ -150,6 +156,14 @@ class Comision extends Model
     }
     public function getTotalAttribute(){
         return $this->comida + $this->gastos + $this->alojamiento + ($this->kilometraje * config('variables.precioKilometro'));
+    }
+
+    public function getDescripcionAttribute(){
+        $descripcion = $this->servicio." ";
+        foreach ($this->Fcts as $fct){
+            $descripcion .= $fct->centro.",";
+        }
+        return trim($descripcion, ',');
     }
 //    public function setServicioAttribute($value){
 //        $this->attributes['servicio'] = $value;

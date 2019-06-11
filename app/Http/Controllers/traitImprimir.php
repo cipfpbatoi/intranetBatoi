@@ -125,11 +125,11 @@ trait traitImprimir
      * @return Calendar
      * @throws \Exception
      */
-    protected function make_ics($id, $descripcion='descripcion', $objetivos='objetivos')
+    public function make_ics($id, $descripcion='descripcion', $objetivos='objetivos')
     {
+
         $elemento = $this->class::findOrFail($id);
-        $vCalendar = new Calendar('intranet.cipfpbatoi.app');
-        $vEvent = new Event();
+
         if (isset($elemento->desde)) {
            $ini =  new DateTime($elemento->desde);
            $fin = new DateTime($elemento->hasta);
@@ -138,11 +138,18 @@ trait traitImprimir
             $fin = new DateTime($elemento->fecha);
             $fin->add(new \DateInterval("PT1H"));
         }
+        return $this->build_ics($ini,$fin,ucfirst($this->model)." : ". $elemento->$descripcion,$elemento->$objetivos,config('contacto.nombre'));
+
+    }
+
+    public function build_ics($ini,$fin,$descripcion,$objetivos,$location){
+        $vCalendar = new Calendar('intranet.cipfpbatoi.es');
+        $vEvent = new Event();
         $vEvent->setDtStart($ini)
-                ->setDtEnd($fin)
-                ->setLocation(config('contacto.nombre'), config('contacto.direccion'))
-                ->setSummary(ucfirst($this->model)." : ". $elemento->$descripcion.'')
-                ->setDescription($elemento->$objetivos);
+            ->setDtEnd($fin)
+            ->setLocation($location)
+            ->setSummary( $descripcion)
+            ->setDescription($objetivos);
         $vCalendar->addComponent($vEvent);
         return $vCalendar;
     }

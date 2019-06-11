@@ -18,7 +18,7 @@ class CreateComisionesFctsTable extends Migration {
 			$table->integer('idFct')->unsigned();
 			$table->integer('idComision')->unsigned();
 			$table->string('hora_ini');
-			$table->string('hora_fin');
+			$table->boolean('aviso');
 			$table->unique(['idFct','idComision'], 'comision_fcts_idFct_idComision_unique');
             $table->foreign('idFct')->references('id')->on('fcts')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreign('idComision')->references('id')->on('comisiones')->onUpdate('CASCADE')->onDelete('CASCADE');

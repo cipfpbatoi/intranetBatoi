@@ -20,7 +20,7 @@
         <tr><th>Serveis que ha realitzar</th><th>Eixida</th><th>Tornada</th><th colspan="3">Nombre de Dietes</th><th colspan="2">Locomoció</th></tr>
         <tr class="titol"><td  style="width:300px">OBJECTE-ITINERARI</td><td>DATA I HORA</td><td>DATA I HORA</td><td>ALLOTJAMENT</td><td>MENJAR</td><td>ALTRES DESPESES</td><td>MITJÀ</td><td>KM.</td></tr>
         <tr>
-            <td><?php echo nl2br($todos->servicio);?></td>
+            <td><?php echo nl2br($todos->descripcion);?></td>
             <td>{{$todos->salida }}</td>
             <td>{{$todos->entrada }}</td>
             <td>{{$todos->alojamiento }}</td>

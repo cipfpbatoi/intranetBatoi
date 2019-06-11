@@ -8,7 +8,6 @@
 
 namespace Intranet\Botones;
 
-use function GuzzleHttp\Psr7\str;
 use Mail as LaravelMail;
 use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
@@ -25,6 +24,7 @@ class Mail
     private $toPeople;
     private $class;
     private $register;
+    private $attach;
 
     /**
      * Mail constructor.
@@ -34,7 +34,7 @@ class Mail
      * @param $content
      * @param $route
      */
-    public function __construct($elements=null,$toPeople=null,$subject=null,$view=null,$from=null,$fromPerson=null,$class=null,$register=true)
+    public function __construct($elements=null,$toPeople=null,$subject=null,$view=null,$from=null,$fromPerson=null,$class=null,$register=true,$attach=null)
     {
         $this->from = $from?$from:AuthUser()->email;
         $this->subject = $subject;
@@ -42,6 +42,7 @@ class Mail
         $this->view = $view;
         $this->toPeople = $toPeople;
         $this->register = $register;
+        $this->attach =$attach;
         if (is_object($elements)){
             $this->elements = $elements;
             $this->class = get_class($this->elements->first());
@@ -92,15 +93,22 @@ class Mail
         return view('email.view',compact('to','from','subject','content','route','fromPerson','toPeople','class'));
     }
 
-    public function send(){
-        foreach ($this->elements as $elemento) {
-            if (isset($elemento->contacto)) {
-                LaravelMail::to($elemento->email, $elemento->contacto)
-                    ->send(new DocumentRequest($this, $this->chooseView(), $elemento));
-                Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
-                if ($this->register)
-                    Activity::record('email', $elemento, $this->subject);
+    public function send($fecha=null){
+        if (is_iterable($this->elements))
+            foreach ($this->elements as $elemento) {
+                $this->sendMail($elemento,$fecha);
             }
+        else $this->sendMail($this->elements,$fecha);
+
+    }
+
+    private function sendMail($elemento,$fecha){
+        if (isset($elemento->contacto)) {
+            LaravelMail::to($elemento->email, $elemento->contacto)
+                ->send(new DocumentRequest($this, $this->chooseView(), $elemento,$this->attach));
+            Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
+            if ($this->register)
+                Activity::record('email', $elemento, $this->subject,$fecha);
         }
     }
 

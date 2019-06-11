@@ -41,7 +41,7 @@ $(function () {
                     if (!primerElem)
                         primerElem = propiedad;
                     if (elem[0].tagName.toUpperCase() == "INPUT" && elem.attr('type').toUpperCase() == "CHECKBOX") {
-                        elem.prop('checked', !!res.data[propiedad]);
+                        elem.prop('checked', res.data[propiedad]);
                     } else {
                         if (elem[0].tagName.toUpperCase() == "INPUT" && elem.attr('type').toUpperCase()=='FILE'){
                             $("[id='Fichero Actual']").text(res.data[propiedad]);
