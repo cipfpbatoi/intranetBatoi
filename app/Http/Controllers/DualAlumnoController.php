@@ -63,7 +63,7 @@ class DualAlumnoController extends FctAlumnoController
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vii'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_va'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vb'));
-        $this->panel->setBoton('grid', new BotonImg('dual.anexeXIII',['img'=>'fa-phone']));
+        $this->panel->setBoton('grid', new BotonImg('dual.anexoXIII',['img'=>'fa-phone']));
         $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info','id' => 'anexoVI']));
         Session::put('redirect', 'DualAlumnoController@index');
