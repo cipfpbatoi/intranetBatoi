@@ -238,7 +238,7 @@ Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFc
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
 
 Route::resource('dual','DualAlumnoController',['except' => ['destroy', 'update', 'show','edit']]);
-Route::get('/dual/{id}/anexoXIII',['as' => 'dual.anexexiii', 'uses' => 'DualAlumnoController@printAnexeXIII']);
+Route::get('/dual/{id}/anexo',['as' => 'dual.anexo', 'uses' => 'DualAlumnoController@printAnexeXIII']);
 Route::get('/dual/{id}/edit', ['as' => 'dual.edit', 'uses' => 'DualController@edit']);
 Route::put('/dual/{id}/edit', ['as' => 'dual.update', 'uses' => 'DualController@update']);
 Route::get('/dual/create', ['as' => 'dual.create', 'uses' => 'DualController@create']);
