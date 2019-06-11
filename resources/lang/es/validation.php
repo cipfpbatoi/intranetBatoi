@@ -255,7 +255,8 @@ return array(
                 'NFcts' => 'Fcts',
                 'TutoresFct' => 'Otros tutores',
                 'nalumnes' => 'Número',
-                'Instructor' => 'Instructor'
+                'Instructor' => 'Instructor',
+                'aviso' => 'Envia correo'
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

@@ -89,6 +89,9 @@ Route::get('/comision/{comision}/pdf', ['as' => 'comision.pdf', 'uses' => 'Comis
 Route::get('/comision/{comision}/init', ['as' => 'comision.init', 'uses' => 'ComisionController@init']);
 Route::get('/comision/{comision}/notification', ['as' => 'comision.notificar', 'uses' => 'ComisionController@notify']);
 Route::get('/comision/{comision}/unpaid', ['as' => 'comision.unpaid', 'uses' => 'ComisionController@unpaid']);
+Route::get('/comision/{comision}/detalle',['as' => 'comision.detalle', 'uses' => 'ComisionController@detalle']);
+Route::post('/comision/{comision}/createFct',['as' => 'comision.fct.create', 'uses' => 'ComisionController@createFct']);
+Route::get('/comision/{comision}/deleteFct/{fct}',['as' => 'comision.fct.delete', 'uses' => 'ComisionController@deleteFct']);
 
 
 Route::get('/grupo', ['as' => 'grupo.index', 'uses' => 'GrupoController@index']);
@@ -242,6 +245,7 @@ Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@sto
 Route::get('/dual/{id}/pdf/{informe}',['as' => 'dual.pdf', 'uses' => 'DualAlumnoController@informe']);
 Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualAlumnoController@destroy']);
 Route::get('/dual/anexeVI',['as'=>'dual.anexevi','uses'=>'DualController@printAnexeVI']);
+Route::get('/dual/{id}/anexexiii',['as' => 'dual.pdf', 'uses' => 'DualAlumnoController@printAnexeXIII']);
 
 
 Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);

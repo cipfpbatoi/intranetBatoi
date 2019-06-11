@@ -262,7 +262,8 @@ return array(
                 'nalumnes' => 'Nombre',
                 'Instructor' => 'Instructor',
                 'question' => 'Enunciat pregunta',
-                'scala' => 'Escala valoració'
+                'scala' => 'Escala valoració',
+                'aviso' => 'Envia correu'
                 
              ),
         'empty_option' => array(

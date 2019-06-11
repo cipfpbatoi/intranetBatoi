@@ -27,6 +27,19 @@ function FechaInglesa($fecha)
     return $hoy->format('Y-m-d');
 }
 
+function FechaInglesaLarga($fecha)
+{
+    $hoy = new Date($fecha);
+    return $hoy->format('Y-m-d H:i:s');
+}
+
+function buildFecha($fecha,$hora)
+{
+    $date = new Date($fecha);
+    $str = $date->format('Y-m-d');
+    return new DateTime($str." ".$hora.":00");
+
+}
 function FechaString($fecha = null, $idioma = null)
 {
     $fc1 = ($fecha == null) ? new Jenssegers\Date\Date() : (is_string($fecha)) ? New Jenssegers\Date\Date($fecha) : $fecha;
