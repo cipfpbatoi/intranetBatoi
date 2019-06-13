@@ -91,9 +91,11 @@ class PanelFctAvalController extends IntranetController
      */
     protected function noApte($id)
     {
+        $grupo = Grupo::QTutor()->first();
+
         $fct = AlumnoFctAval::find($id);
         $fct->calificacion = 0;
-        $fct->calProyecto = null;
+        $fct->calProyecto = $grupo->proyecto?0:null;
         $fct->save();
 
         return back();
