@@ -52,10 +52,11 @@ class SendFctEmails extends Command
                 Mail::to($alumno->Alumno->email, 'Intranet Batoi')->send(new AvalFct($alumno, 'alumno'));
                 $alumno->correoAlumno = 1;
                 $alumno->save();
-                $fct = $alumno->Fct;
+
             } catch (Swift_RfcComplianceException $e){
 
             }
+            $fct = $alumno->Fct;
             if ($fct->correoInstructor == 0){
                 try {
                     Mail::to($fct->Instructor->email, 'Intranet Batoi')->send(new AvalFct($fct, 'instructor'));
