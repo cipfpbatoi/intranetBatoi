@@ -104,10 +104,13 @@ class DualController extends IntranetController
 
     public function printAnexeVI(){
         $pdf = new Pdf('fdf/ANEXO_VI.pdf');
+        dd($pdf->getDataFields());
         $pdf->fillform($this->makeArrayPdfAnexoVI())
             ->send('dualVI'.AuthUser()->dni.'.pdf');
         return back();
     }
+
+
 
     /**
      * @param $array
@@ -231,6 +234,70 @@ class DualController extends IntranetController
     }
 
 
+    public function printAnexeXIV(){
+        $pdf = new Pdf('fdf/ANEXO_XIV.pdf');
+        //dd($pdf->getDataFields());
+        $pdf->fillform($this->makeArrayPdfAnexoXIV())
+            ->send('dualXIV'.AuthUser()->dni.'.pdf');
+        return back();
+    }
 
+    /**
+     * @param $array
+     * @return mixed
+     */
+    private function makeArrayPdfAnexoXIV()
+    {
+        $empresas = Fct::misFcts(null, true)->esDual()->count();
+        $duales = AlumnoFct::misDual()->orderBy('idAlumno')->get();
+        $primero = $duales->first();
+        $grupo = $primero->Alumno->Grupo->first();
+        $ciclo = $primero->Fct->Colaboracion->Ciclo;
+        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_TEXT1[0]'] = config('contacto.nombre');
+        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_TEXT2[0]'] = config('contacto.poblacion');
+        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_TEXT3[0]'] = config('contacto.codi');
+        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_TEXT4[0]'] = AuthUser()->Departamento->literal;
+        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_TEXT5[0]'] = $ciclo->literal;
+
+        $array['form1[0].Pagina1[1].Interior[0].seccion\.a[0].A_TEXT1[0]'] = config('contacto.nombre');
+        $array['form1[0].Pagina1[1].Interior[0].seccion\.a[0].A_TEXT2[0]'] = config('contacto.poblacion');
+        $array['form1[0].Pagina1[1].Interior[0].seccion\.a[0].A_TEXT3[0]'] = config('contacto.codi');
+        $array['form1[0].Pagina1[1].Interior[0].seccion\.a[0].A_TEXT4[0]'] = AuthUser()->Departamento->literal;
+        $array['form1[0].Pagina1[1].Interior[0].seccion\.a[0].A_TEXT5[0]'] = $ciclo->literal;
+
+        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_PUBLIOPRIVA[0]'] = 'On';
+        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_TEXT6[0]'] = AuthUser()->fullName;
+        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_TEXT7[0]'] = AuthUser()->Departamento->literal;
+        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_PRESENOSEMIPRESEN[0]'] = 'On';
+        if ($ciclo->tipo == 1) $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_CICLOS[0]'] = 'On';
+
+
+        foreach ($duales as $index => $dual) {
+            $indice = $index+1;
+            $array["form1[0].Pagina1[0].Interior[0].seccion\.b[0].B\.B_DNI[0].B_DNI$indice"."[0]"] = $dual->Alumno->dni;
+            $array["form1[0].Pagina1[0].Interior[0].seccion\.b[0].B\.B_ALUMNE[0].B_ALUMNO$indice"."[0]"] = $dual->Alumno->FullName;
+            $array["form1[0].Pagina1[0].Interior[0].seccion\.b[0].B\.B_HORAS[0].B_HORAS$indice"."[0]"] = $dual->horas;
+
+            $array["form1[0].Pagina1[1].Interior[0].seccion\.b[0].B\.B_DNI[0].B_DNI$indice"."[0]"] = $dual->Alumno->dni;
+            $array["form1[0].Pagina1[1].Interior[0].seccion\.b[0].B\.B_ALUMNE[0].B_ALUMNO$indice"."[0]"] = $dual->Alumno->FullName;
+            $array["form1[0].Pagina1[1].Interior[0].seccion\.b[0].B\.B_HORAS[0].B_HORAS$indice"."[0]"] = $dual->horas;
+        }
+
+        $fc1 = new Date();
+        Date::setlocale('ca');
+        $array["form1[0].Pagina1[0].Interior[0].seccion\.c[0].C_TEXTFIRMA1[0]"] = AuthUser()->fullName;
+        $array["form1[0].Pagina1[0].Interior[0].seccion\.c[0].C_MES[0]"] = $fc1->format('F');
+        $array["form1[0].Pagina1[0].Interior[0].seccion\.c[0].C_LLOC[0]"] = config('contacto.poblacion');
+        $array["form1[0].Pagina1[0].Interior[0].seccion\.c[0].C_DIA[0]"] = $fc1->format('d');
+        $array["form1[0].Pagina1[0].Interior[0].seccion\.c[0].C_ANY[0]"] = $fc1->format('Y');
+
+        $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_TEXTFIRMA1[0]"] = AuthUser()->fullName;
+        $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_MES[0]"] = $fc1->format('F');
+        $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_LLOC[0]"] = config('contacto.poblacion');
+        $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_DIA[0]"] = $fc1->format('d');
+        $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_ANY[0]"] = $fc1->format('Y');
+        //dd($array);
+        return $array;
+    }
 
 }

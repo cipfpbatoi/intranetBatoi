@@ -44,6 +44,7 @@ class SendFctEmails extends Command
     {
         $alumnosCalificados = hazArray(AlumnoFctAval::calificados()->get(),'idAlumno');
         $alumnosPendientes = AlumnoFctAval::pendienteNotificar($alumnosCalificados)->get();
+        dd($alumnosPendientes);
 
         foreach ($alumnosPendientes as $alumno) {
             Mail::to($alumno->Alumno->email, 'Intranet Batoi')->send(new AvalFct($alumno,'alumno'));
