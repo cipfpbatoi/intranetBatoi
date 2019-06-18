@@ -7,6 +7,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\AlumnoFctAval;
 use Mail;
 use Intranet\Mail\AvalFct;
+use Swift_RfcComplianceException;
 
 class SendFctEmails extends Command
 {
