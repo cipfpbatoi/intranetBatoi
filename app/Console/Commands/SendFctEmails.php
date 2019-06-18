@@ -48,6 +48,7 @@ class SendFctEmails extends Command
 
 
         foreach ($alumnosPendientes as $alumno) {
+            $fct = $alumno->Fct;
             try {
                 Mail::to($alumno->Alumno->email, 'Intranet Batoi')->send(new AvalFct($alumno, 'alumno'));
                 $alumno->correoAlumno = 1;
@@ -56,8 +57,8 @@ class SendFctEmails extends Command
             } catch (Swift_RfcComplianceException $e){
 
             }
-            $fct = $alumno->Fct;
-            if ($fct->correoInstructor == 0){
+
+            if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)){
                 try {
                     Mail::to($fct->Instructor->email, 'Intranet Batoi')->send(new AvalFct($fct, 'instructor'));
                     $fct->correoInstructor = 1;
