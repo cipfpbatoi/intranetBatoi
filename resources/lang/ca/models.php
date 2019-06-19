@@ -318,10 +318,12 @@ return array(
             'edit' => 'Editar Dual',
             'delete' => 'Esborrar Dual',
             'fin' => 'Finalitzar Dual',
-            'anexe_vii' => 'Imprimir Annexe vii',
+            'anexe_vii' => 'Imprimir Annexe VII',
             'anexe_va' => 'Imprimier Annexe V(a)',
             'anexe_vb' => 'Imprimier Annexe V(b)',
             'anexeVI' => 'Imprimir Annexe VI',
+            'anexeXIV' => 'Imprimir Annexe XIV',
+            'anexeXIII' => 'Imprimir AnnexeXIII'
         ),
         'Direccion' => array(
            'acta' => 'Acta completada'

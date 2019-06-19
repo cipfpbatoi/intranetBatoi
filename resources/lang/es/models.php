@@ -311,10 +311,12 @@ return array(
             'edit' => 'Editar Dual',
             'delete' => 'Borrar Dual',
             'fin' => 'Finalizar Dual',
-            'anexe_vii' => 'Imprimir Anexo vii',
+            'anexe_vii' => 'Imprimir Anexo VII',
             'anexe_va' => 'Imprimier Anexo V(a)',
             'anexe_vb' => 'Imprimier Anexo V(b)',
             'anexeVI' => 'Imprimir Anexo VI',
+            'anexeXIV' => 'Imprimir Anexo XIV',
+            'anexeXIII' => 'Imprimir AnexoXIII'
         ),
         'Direccion' => array(
            'acta' => 'Acta completada' 

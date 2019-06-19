@@ -265,11 +265,11 @@ class DualController extends IntranetController
         $array['form1[0].Pagina1[1].Interior[0].seccion\.a[0].A_TEXT4[0]'] = AuthUser()->Departamento->literal;
         $array['form1[0].Pagina1[1].Interior[0].seccion\.a[0].A_TEXT5[0]'] = $ciclo->literal;
 
-        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_PUBLIOPRIVA[0]'] = 'On';
+
         $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_TEXT6[0]'] = AuthUser()->fullName;
         $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_TEXT7[0]'] = AuthUser()->Departamento->literal;
-        $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_PRESENOSEMIPRESEN[0]'] = 'On';
-        if ($ciclo->tipo == 1) $array['form1[0].Pagina1[0].Interior[0].seccion\.a[0].A_CICLOS[0]'] = 'On';
+        $array['form1[0].Pagina1[1].Interior[0].seccion\.a[0].A_TEXT6[0]'] = AuthUser()->fullName;
+        $array['form1[0].Pagina1[1].Interior[0].seccion\.a[0].A_TEXT7[0]'] = AuthUser()->Departamento->literal;
 
 
         foreach ($duales as $index => $dual) {
@@ -277,10 +277,12 @@ class DualController extends IntranetController
             $array["form1[0].Pagina1[0].Interior[0].seccion\.b[0].B\.B_DNI[0].B_DNI$indice"."[0]"] = $dual->Alumno->dni;
             $array["form1[0].Pagina1[0].Interior[0].seccion\.b[0].B\.B_ALUMNE[0].B_ALUMNO$indice"."[0]"] = $dual->Alumno->FullName;
             $array["form1[0].Pagina1[0].Interior[0].seccion\.b[0].B\.B_HORAS[0].B_HORAS$indice"."[0]"] = $dual->horas;
+            $array["form1[0].Pagina1[0].Interior[0].seccion\.b[0].B\.B_LLOC[0].B_LLOC$indice"."[0]"] = "Programador Web";
 
             $array["form1[0].Pagina1[1].Interior[0].seccion\.b[0].B\.B_DNI[0].B_DNI$indice"."[0]"] = $dual->Alumno->dni;
             $array["form1[0].Pagina1[1].Interior[0].seccion\.b[0].B\.B_ALUMNE[0].B_ALUMNO$indice"."[0]"] = $dual->Alumno->FullName;
             $array["form1[0].Pagina1[1].Interior[0].seccion\.b[0].B\.B_HORAS[0].B_HORAS$indice"."[0]"] = $dual->horas;
+            $array["form1[0].Pagina1[1].Interior[0].seccion\.b[0].B\.B_LLOC[0].B_LLOC$indice"."[0]"] = "Programador Web";
         }
 
         $fc1 = new Date();
