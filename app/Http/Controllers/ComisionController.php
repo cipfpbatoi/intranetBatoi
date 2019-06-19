@@ -54,7 +54,7 @@ class ComisionController extends IntranetController
     protected function iniBotones()
      {
          $this->panel->setBotonera(['create']);
-         $this->panel->setBothBoton('comision.detalle', ['where' => ['estado', '<', '2','fct','==',1]]);
+         $this->panel->setBothBoton('comision.detalle', ['where' => ['estado', '<', '2','fct','==',1,'estado','>',-1]]);
          $this->panel->setBoton('grid', new BotonImg('comision.edit', ['where' => ['estado', '>=', '0', 'estado', '<', '2']]));
          $this->panel->setBoton('grid', new BotonImg('comision.delete', ['where' => ['estado', '>=', '0', 'estado', '<', '2']]));
          $this->panel->setBothBoton('comision.cancel', ['where' => ['estado', '>=', '2', 'estado', '<', '4']]);

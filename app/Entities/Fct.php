@@ -128,9 +128,11 @@ class Fct extends Model
             return $value;
         });
     }
+
     public function getIdAlumnoOptions(){
         return hazArray(Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',['NameFull','horasFct'],' - ');
     }
+
     public function getIdInstructorOptions(){
         if ($this->idColaboracion){
             $colaboracion = Colaboracion::find($this->idColaboracion);
@@ -138,6 +140,7 @@ class Fct extends Model
         }
         else return [];
     }
+
     public function getTipusAttribute(){
         return config('auxiliares.asociacionEmpresa')[$this->asociacion];
     }
