@@ -104,7 +104,6 @@ class DualController extends IntranetController
 
     public function printAnexeVI(){
         $pdf = new Pdf('fdf/ANEXO_VI.pdf');
-        dd($pdf->getDataFields());
         $pdf->fillform($this->makeArrayPdfAnexoVI())
             ->send('dualVI'.AuthUser()->dni.'.pdf');
         return back();
