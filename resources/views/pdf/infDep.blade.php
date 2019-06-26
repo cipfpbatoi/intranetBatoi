@@ -42,7 +42,7 @@
                 <td colspan="2"><strong>Totals avaluació {!! config('auxiliares.nombreEval')[$elemento->evaluacion] !!}</strong></td>
                 <td><strong>{{$grupo->sum('evaluados') }}</strong></td>
                 <td><strong>{{$grupo->sum('aprobados') }}</strong></td>
-                <td><strong>{{round(100 * ($grupo->sum('aprobados')/ $grupo->sum('evaluados')),1)}}%</td>
+                <td><strong>{{round(100 * ($grupo->sum('aprobados')/ $grupo->sum('evaluados')),1)}}%</strong></td>
             </tr>
 
             @endforeach
@@ -73,14 +73,18 @@
                 <td>{{$elemento->Profesor->ShortName}}</td>
                 <td>{{$elemento->udProg}}</td>
                 <td>{{$elemento->udImp }}</td>
-                <td>{{round(100 * ($elemento->udImp / $elemento->udProg),2)}} %</td>
+                @if ($elemento->udProg)
+                    <td>{{round(100 * ($elemento->udImp / $elemento->udProg),2)}} %</td>
+                @else
+                    <td>0 %</td>
+                @endif
             </tr>
             @endforeach
             <tr>
                 <td colspan="3"><strong>Totals avaluació {!! config('auxiliares.nombreEval')[$elemento->evaluacion] !!}</strong></td>
                 <td><strong>{{$grupo->sum('udProg') }}</strong></td>
                 <td><strong>{{$grupo->sum('udImp') }}</strong></td>
-                <td><strong>{{round(100 * ($grupo->sum('udImp')/ $grupo->sum('udProg')),1)}} %</td>
+                <td><strong>{{round(100 * ($grupo->sum('udImp')/ $grupo->sum('udProg')),1)}} %</strong></td>
             </tr>
 
             @endforeach

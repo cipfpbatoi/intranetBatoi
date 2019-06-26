@@ -107,7 +107,7 @@ class AdministracionController extends Controller
         //$this->checkForeignKeys(false);
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
             'fcts', 'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
-            'resultados', 'reuniones', 'tutorias_grupos', 'modulo_grupos', 'activities'];
+            'resultados', 'reuniones', 'tutorias_grupos', 'activities','votes'];
         foreach ($tables as $tabla) {
             DB::table($tabla)->delete();
         }
