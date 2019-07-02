@@ -78,5 +78,12 @@ class Empresa extends Model
     {
         return $this->cif.'.'.$extension;
     }
+    public function getCiclesAttribute(){
+        $cicles = '';
+        foreach ($this->centros as $centro)
+            foreach ($centro->colaboraciones as $colaboracion)
+                $cicles .= $colaboracion->XCiclo.' ';
+        return $cicles;
+    }
 
 }

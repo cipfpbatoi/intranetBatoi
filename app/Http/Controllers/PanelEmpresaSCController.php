@@ -25,7 +25,7 @@ class PanelEmpresaSCController extends BaseController
     /**
      * @var array
      */
-    protected $gridFields = ['nombre', 'direccion', 'localidad', 'telefono', 'email', 'actividad'];
+    protected $gridFields = ['nombre', 'direccion', 'localidad', 'telefono', 'email', 'actividad','cicles'];
     /**
      * @var array
      */
