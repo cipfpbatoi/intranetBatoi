@@ -25,7 +25,7 @@ class EmpresaController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Empresa';
-    protected $gridFields = ['concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad','cicles'];
+    protected $gridFields = ['concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad'];
     protected $vista = ['show' => 'empresa','grid'=>'vacia'];
 
     
