@@ -5,7 +5,7 @@
   * [Notificacions](#notificacions)
 * [Menú 'Profesorat'](#menú-profesorat)
   * [Claustre](#claustre)
-  * [Equip directiu](#equio-directiu)
+  * [Equip directiu](#equip-directiu)
   * [Informació dels grups](#informació-dels-grups)
   * [Editar Programacions](#editar-programacions)
   * [Seguiments](#seguiments)
@@ -62,7 +62,7 @@ En la zona 1 del Panel de Control (vuere [il·lustració 2](#fig2)) tenim el men
 
 ### Claustre
 Des del menú **'Profesorat'** polsem en **'Claustre'**:
-![El meu departament](/img/ajuda/07-miDep.png)
+![Claustre](/img/ajuda/07-miDep.png)
 
 Podem veure a tots els professors del claustre i comprovar si estan ara o no en el Centre. A la part superior tenim cada departament en una pestanya (per defecte ens apareix el nostre departament). A la part inferior trobem les icones:
 * rellotge: en blau vol dir que està en el Centre i en roig que no.
