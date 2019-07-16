@@ -135,6 +135,10 @@ class DualController extends IntranetController
         $NOM = 0;
         $exeM = 0;
         $totalHoras = 0;
+        $totalHorasFct = 0;
+        $europa = 0;
+        $iguales = 0;
+        $diferentes = 0;
         foreach ($duales as $index => $dual) {
             if ($dual->Alumno->sexo == 'H') $dualH++; else $dualM++;
             $array[66 + $index * 6] = $index + 1;
@@ -142,39 +146,32 @@ class DualController extends IntranetController
             $array[68 + $index * 6] = $dual->Fct->Colaboracion->Centro->Empresa->nombre;
             $array[69 + $index * 6] = $dual->horas;
             $totalHoras += $dual->horas;
-        }
-        $fcts = AlumnoFct::misFcts($grupo->tutor)
-            ->esAval()
-            ->whereIn('idAlumno', hazArray($duales, 'idAlumno'))
-            ->orderBy('idAlumno')
-            ->get();
-        $totalHorasFct = 0;
-        $europa = 0;
-        foreach ($fcts as $index => $fct) {
-            if ($fct->Alumno->sexo == 'H') {
-                if ($fct->FCT->asociacion == 2) $exeH++;
-                else {
-                    $fctH++;
-                    if ($dual->calificacion) $OKH++; else $NOH++;
-                }
-            } else {
-                if ($fct->FCT->asociacion == 2) $exeM++;
-                else {
-                    $fctM++;
-                    if ($dual->calificacion) $OKM++; else $NOM++;
+            $fct = AlumnoFct::misFcts($grupo->tutor)
+                ->esAval()
+                ->where('idAlumno', $dual->idAlumno)
+                ->first();
+            if ($fct) {
+                $array[70 + $index * 6] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
+                $array[71 + $index * 6] = $fct->horas;
+                $totalHorasFct += $fct->horas;
+                if ($fct->Fct->Colaboracion->Centro->Empresa->europa) $europa++;
+                if ($array[68 + $index * 6] == $array[70 + $index * 6]) $iguales++; else $diferentes++;
+                if ($fct->Alumno->sexo == 'H') {
+                    if ($fct->FCT->asociacion == 2) $exeH++;
+                    else {
+                        $fctH++;
+                        if ($fct->calificacion) $OKH++; else $NOH++;
+                    }
+                } else {
+                    if ($fct->FCT->asociacion == 2) $exeM++;
+                    else {
+                        $fctM++;
+                        if ($fct->calificacion) $OKM++; else $NOM++;
+                    }
                 }
             }
-            $array[70 + $index * 6] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
-            $array[71 + $index * 6] = $fct->horas;
-            $totalHorasFct += $fct->horas;
-            if ($fct->Fct->Colaboracion->Centro->Empresa->europa) $europa++;
         }
-        $iguales = 0;
-        $diferentes = 0;
-        $europa = 0;
-        foreach ($duales as $index => $dual) {
-            if ($array[68 + $index * 6] == $array[70 + $index * 6]) $iguales++; else $diferentes++;
-        }
+
         $array[0] = 'Anexo_VI';
         $array[1] = config('contacto.nombre');
         $array[2] = config('contacto.codi');
@@ -199,8 +196,8 @@ class DualController extends IntranetController
         $array[42] = $dualM;
         $array[43] = $fctH;
         $array[44] = $fctM;
-        $array[43] = $dualH - $fctH;
-        $array[44] = $dualM - $fctM;
+        $array[45] = $dualH - $fctH;
+        $array[46] = $dualM - $fctM;
         $array[47] = $dualH + $dualM;
         $array[48] = $dualH + $dualM;
         $array[49] = $fctH + $fctM;

@@ -7,7 +7,7 @@
     Amb DNI número {{$director->dni}}, com a
     @if ($director->sexo == 'H') Director @else Directora @endif 
     del {{config('contacto.titulo')}}, i segons el programa
-    de formació de manipuladors d'aliments que s'imparteix als alumnes d'aquest centre,
+    de formació de manipuladors d'aliments que s'imparteix a l'alumnat d'aquest centre,
 </div>
 <br/><br/>
 <div class="container col-lg-12" style="width:40%;float: center">
@@ -23,7 +23,7 @@
 </div>
 <br/><br/>
 <div class="container" style="width:95%;clear:right;text-align: justify">
-    <p>realitzada els dies de {{$datosInforme->fecha_inicio}} a {{$datosInforme->fecha_fin}} (expediente de curso 00{{$datosInforme->id}}/{{Curso()}}) amb un total de {{$datosInforme->horas}} hores.</p>
+    <p>realitzada els dies de {{$datosInforme->fecha_inicio}} a {{$datosInforme->fecha_fin}} (expedient curs 00{{$datosInforme->id}}/{{Curso()}}) amb un total de {{$datosInforme->horas}} hores.</p>
 </div>
 <br/><br/>
 <div class="container" style="width:95%;clear:right;text-align: justify">

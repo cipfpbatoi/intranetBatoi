@@ -6,6 +6,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Botones\Panel;
@@ -105,13 +106,14 @@ class AdministracionController extends Controller
     protected function nuevoCurso()
     {
         //$this->checkForeignKeys(false);
+        Colaboracion::where('tutor','!=','')->update(['tutor'=>'']);
+        Colaboracion::where('estado','>',1)->update(['estado' => 1]);
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
             'fcts', 'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
             'resultados', 'reuniones', 'tutorias_grupos', 'activities','votes'];
         foreach ($tables as $tabla) {
             DB::table($tabla)->delete();
         }
-
         return back();
     }
 

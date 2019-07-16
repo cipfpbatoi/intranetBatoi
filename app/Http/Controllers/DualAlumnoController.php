@@ -31,7 +31,7 @@ class DualAlumnoController extends FctAlumnoController
     /**
      * @var array
      */
-    protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas','periode'];
+    protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas'];
     /**
      * @var bool
      */

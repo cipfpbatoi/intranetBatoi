@@ -42,10 +42,11 @@ class AlumnoFct extends Model
     {
         $profesor = $profesor?$profesor:AuthUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
+
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
+
         $fcts = Fct::select('id')->whereIn('idColaboracion',$colaboraciones)->where('asociacion',1)->get()->toArray();
-        
         return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
     }
 

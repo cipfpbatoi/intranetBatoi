@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <div id="area" class="editor-wrapper">{{$content}} </div>
+    <div id="area" class="editor-wrapper">{!! $content  !!} </div>
     {!! Form::submit('Submit', ['class' => 'btn btn-info']) !!}
     {!! Form::close() !!}
 @endsection
