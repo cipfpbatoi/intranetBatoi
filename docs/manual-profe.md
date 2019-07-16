@@ -4,7 +4,8 @@
   * [Control de presència](#control-de-presència)
   * [Notificacions](#notificacions)
 * [Menú 'Profesorat'](#menú-profesorat)
-  * [Informació dels membres del nostre departament](#informació-dels-membres-del-nostre-departament)
+  * [Claustre](#claustre)
+  * [Equip directiu](#equip-directiu)
   * [Informació dels grups](#informació-dels-grups)
   * [Editar Programacions](#editar-programacions)
   * [Seguiments](#seguiments)
@@ -59,17 +60,23 @@ Al polsar la icona es despleguen totes. Podem eliminar-les amb la icona de la pa
 ## Menú 'Profesorat'
 En la zona 1 del Panel de Control (vuere [il·lustració 2](#fig2)) tenim el menú per a totes les accions que podem fer en la intranet. Anem a veure les que més utilitzarem: les del menú **'Profesorat'**.:
 
-### Informació dels membres del nostre departament
-Des del menú **'Profesorat'** polsem en **'El meu departament'**:
-![El meu departament](/img/ajuda/07-miDep.png)
+### Claustre
+Des del menú **'Profesorat'** polsem en **'Claustre'**:
 
-Apareixen tots els menbres del departament i an la part inferior les icones:
+![Claustre](/img/ajuda/07-miDep.png)
+
+Podem veure a tots els professors del claustre i comprovar si estan ara o no en el Centre. A la part superior tenim cada departament en una pestanya (per defecte ens apareix el nostre departament). A la part inferior trobem les icones:
 * rellotge: en blau vol dir que està en el Centre i en roig que no.
-* horari: ens obri l'horari del professor per a saber on trobar-lo.
-* avisar: per enviar-li un missatge (li apareixerà amb les seues notificacions).
-* icoca blava: indica on hauria d'estar ara (en casa o impartint el mòdul indicat). Si es possem damunt ens indica a l'hora a que ve (si no està) o el grup on està impartint classe.
+* horari: ens obri l'horari del professor per a saber quen i on trobar-lo.
+* avisar: per enviar-li una notificació per la Intranet (li apareixerà amb les seues notificacions).
+* botó blau: indica quin mòdul està impartint ara i en quin aula (o si està en casa). Si possem el punter damunt ens indica a quin grup li està impartint classe (o a quina hora ve si està en casa).
 
-Li polsem la pestanya 'Listado' en la part superior dreta poden veure la informació en format de llistat.
+En el nostre usuari apareixen 2 botons més:
+* Carnet: per a imprimir el nostre carnet de l'institut ( hem de imprimmir-ho en la impressora de carnets que hi ha en Caporalia)
+* Imprimir tarjetes de visita: obri un PDF amb targetes de visita que podem imprimir i retallar
+
+### Equip directiu
+Trobem la mateixa informació que en el [claustre](#claustre) però de l'equip educatiu per a poder saber on trobar-los.
 
 ### Informació dels grups
 Des del menú **'Profesorat' → 'Gestió Grups'** podem veure tots els nostres grups. El botó de 'Filtrar' de la part superior dreta ens permet buscar un grup concret.
