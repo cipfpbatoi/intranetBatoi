@@ -89,7 +89,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('colaboracion/instructores/{id}','ColaboracionController@instructores');
     Route::get('/colaboracion/{colaboracion}/resolve','ColaboracionController@resolve');
     Route::get('/colaboracion/{colaboracion}/refuse','ColaboracionController@refuse');
-    Route::get('/colaboracion/{colaboracion}/unauthorize','ColaboracionController@refuse');
+    Route::get('/colaboracion/{colaboracion}/unauthorize','ColaboracionController@unauthorize');
     Route::get('/colaboracion/{colaboracion}/switch','ColaboracionController@switch');
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
 

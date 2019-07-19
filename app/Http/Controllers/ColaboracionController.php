@@ -160,4 +160,5 @@ class ColaboracionController extends IntranetController
         return view($this->chooseView('show'), compact('elemento','contactCol','contactFct','contactAl','fcts'));
     }
 
+
 }

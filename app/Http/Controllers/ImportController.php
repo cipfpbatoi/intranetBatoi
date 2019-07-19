@@ -363,24 +363,26 @@ class ImportController extends Seeder
         $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento) ? Profesor::find($horario->idProfesor)->departamento : '99';
         $mc->enlace = self::getLinkSchedule();
         $mc->save();
+        return $mc;
     }
     /**
      * @param $mc
      * @param $horario
      */
-    private static function newModuloGrupo($mc, $grupo): void
+    private static function newModuloGrupo($mc, $grupo)
     {
         $nuevo = new Modulo_grupo();
         $nuevo->idModuloCiclo = $mc;
         $nuevo->idGrupo = $grupo;
         $nuevo->save();
+        return $nuevo;
 
     }
 
     /**
      * @param $mc
      */
-    function newProgramacion($mc): void
+    function newProgramacion($mc)
     {
         $prg = New Programacion();
         $prg->idModuloCiclo = $mc->id;
@@ -394,6 +396,7 @@ class ImportController extends Seeder
         }
 
         $prg->save();
+        return $prg;
 
     }
 
@@ -405,17 +408,17 @@ class ImportController extends Seeder
         foreach (self::getHoraris() as $horario)
             if (isset($horario->Grupo->idCiclo)) {
                 if (! $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first() )
-                    self::newModuloCiclo($horario);
+                    $mc = self::newModuloCiclo($horario);
                 else
                     if ((isset(Profesor::find($horario->idProfesor)->departamento)) && ($mc->idDepartamento != Profesor::find($horario->idProfesor)->departamento)) {
                         $mc->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
                         $mc->save();
                     }
                 if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo', $horario->idGrupo)->count() == 0)
-                    newModuloGrupo($mc->id, $horario->idGrupo);
+                    self::newModuloGrupo($mc->id, $horario->idGrupo);
 
                 if (!Programacion::where('idModuloCiclo', $mc->id)->where('curso', Curso())->first())
-                    newProgramacion($mc);
+                    self::newProgramacion($mc);
 
             }
 

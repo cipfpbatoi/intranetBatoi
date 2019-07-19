@@ -9,7 +9,7 @@ var month;
 
 $(function() {
     var token = $("#_token").text();
-    $("#tab_descartada").find(".unauthorize").hide();
+    //$("#tab_descartada").find(".unauthorize").hide();
     $("#tab_descartada").find(".refuse").hide();
     $("#tab_descartada").find(".informe").hide();
     $("#tab_descartada").find(".contacto").hide();
@@ -49,7 +49,7 @@ $(function() {
         }).then(function (result) {
             boton.hide();
             boton.siblings(".resolve").show();
-            boton.siblings(".unauthorize").hide();
+            boton.siblings(".unauthorize").show();
             boton.siblings(".informe").hide();
             boton.siblings(".contacto").hide();
             $("#tab_descartada").append(colaboracion.parent());
@@ -68,6 +68,7 @@ $(function() {
             if (boton.siblings(".switch").length == 0){
                 boton.siblings(".contacto").show();
                 boton.siblings(".resolve").show();
+                boton.siblings(".refuse").show();
             }
             boton.siblings(".informe").hide();
             $("#tab_pendiente").append(colaboracion.parent());

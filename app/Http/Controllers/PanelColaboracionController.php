@@ -75,11 +75,9 @@ class PanelColaboracionController extends IntranetController
         $this->panel->setBoton('infile',new BotonIcon('colaboracion.student', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Citar alumne','icon'=>'fa-bullhorn']));
 
 
-        if (Colaboracion::where('estado', '=', 3)->count())
-            $this->panel->setBoton('index', new BotonBasico("colaboracion.inicia",['icon' => 'fa fa-recycle']));
-        if (Colaboracion::where('estado', '=', 1)->count())
+        if (Colaboracion::MiColaboracion()->where('tutor','=',AuthUser()->dni)->where('estado', '=', 1)->count())
             $this->panel->setBoton('index', new BotonBasico("colaboracion.contacto",['icon' => 'fa fa-bell-o']));
-        if (Colaboracion::where('estado', '=', 2)->count()){
+        if (Colaboracion::MiColaboracion()->where('tutor','=',AuthUser()->dni)->where('estado', '=', 2)->count()){
             $this->panel->setBoton('index', new BotonBasico("colaboracion.info",['class'=>'btn-info','icon' => 'fa fa-check']));
             $this->panel->setBoton('index', new BotonBasico("colaboracion.documentacion",['class'=>'btn-info','icon' => 'fa fa-flag-o']));
             $this->panel->setBoton('index', new BotonBasico("colaboracion.seguimiento",['class'=>'btn-info','icon' => 'fa fa-envelope']));
@@ -100,10 +98,7 @@ class PanelColaboracionController extends IntranetController
     /**
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function inicia(){
-        Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->update(['estado' => 1]);
-        return $this->redirect();
-    }
+
 
     public function sendFirstContact($id=null){
         $colaboraciones = $this->selectColaboraciones($id,1);
