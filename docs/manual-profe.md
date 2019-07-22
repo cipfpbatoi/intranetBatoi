@@ -37,7 +37,7 @@ ___
 ## Entrar a la Intranet
 La entrada a l'aplicació es realitza des de cualsevol dispositiu connectat a la xarxa del Centre, tant cablejada com WiFi. Per tant, a més del PC del aula podem usar el nostre portàtil, una tablet o el mòbil.
 
-![login](./img/ajuda/01-login.png)
+![login](/img/ajuda/01-login.png)
 
 El més senzill és polsar el botó roig de 'Google' i serà ell qui ens autentifique demanant-nos el nostre compte d'email del Centre (si ja el tenim obert entrem directament).
 
@@ -46,7 +46,7 @@ També podem polsar el botó blau de 'Professor' (recomanat si estem en un equip
 ## Pàgina d'inici
 Una vegada dins estarem en el Panel de control des d'on tenim accés a totes les opcions:
 
-<a name="fig2">![Panel de control](./img/ajuda/04-panel-control.png)
+<a name="fig2">![Panel de control](/img/ajuda/04-panel-control.png)
 
 Les parts d'aquesta pantalla són:
 1. Logo: permet tornar a aquesta pàgina des de qualsevol altra polsant ací
@@ -81,7 +81,7 @@ Per a marcar que eixim del Centre polsem el rellotge blau que trobem a la part s
 
 ### Notificacions
 En la zona 4 trobem una icona d'un sobre amb el número de notificacions pendents que tenim. Ací apareixen missatges d'altres usuaris i tot tipus d'informacions (si els alumnes se'n van a fer una activitat extraescolar, si hi ha cap reunió de departament, si no hem fixat un dia, ...).
-![Notificacions](./img/ajuda/05-btnNotificacions.png)
+![Notificacions](/img/ajuda/05-btnNotificacions.png)
 Al polsar la icona es despleguen totes. Podem eliminar-les amb la icona de la paperera.
 
 Nosaltres podem enviar una notificació a qualsevol company buscant-lo (menú Professorat->Claustre) i polsant el botó 'Avisar'.
@@ -91,7 +91,7 @@ En la zona 1 del Panel de Control (vuere [il·lustració 2](#fig2)) tenim el men
 
 ### Claustre
 Des del menú **'Profesorat'** polsem en **'Claustre'**:
-![Claustre](./img/ajuda/07-miDep.png)
+![Claustre](/img/ajuda/07-miDep.png)
 
 Apareixen tots els professors del nostre Departament. A la part superior tenim una pestanya per departament per a veure tot el claustre. A la part inferior trobem les icones:
 * rellotge: en blau vol dir que ara està en el Centre i en roig que no.
@@ -250,7 +250,7 @@ La gestió d'incidències de la Intranet se utilitza per a informar de:
 - el procès de la FCT
 - queixes i sugerències
 
-![Gestió d'incidències](./img/ajuda/16-incidencies.png)
+![Gestió d'incidències](/img/ajuda/16-incidencies.png)
 
 Des d'ací podem veure totes les indicències que hem registrat i el seu estat. 
 
