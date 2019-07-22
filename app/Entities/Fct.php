@@ -202,6 +202,11 @@ class Fct extends Model
     public function getContactoAttribute(){
         return isset($this->idInstructor)?$this->Instructor->nombre:'Falta Instructor';
     }
+
+    public function getXinstructorAttribute(){
+        if (isset($this->Instructor->nombre)) return $this->Instructor->nombre;
+        return '';
+    }
     
     
 }

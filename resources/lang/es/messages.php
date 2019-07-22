@@ -163,7 +163,7 @@ return array(
     ),
     'menu' => array(
         'Link' => 'Enlaces externos',
-        'Edit' => 'Profesorado',
+        'Edit' => 'Docencia',
         'Institution' => 'Tutor',
         'Gmail' => 'Abrir cuenta correo',
         'Moodle' => 'Ir a Moodle centro',
@@ -239,7 +239,7 @@ return array(
         'Birret' => 'Olvido Birret',
         'Authbirret' => 'Autorizar Birret',
         'Instructor' => 'Certificado Instructores',
-        'Empresasc' => "Reserva de empresas",
+        'Empresasc' => "Empresas sin Concierto",
         'Avaluar' => "Evaluar Fcts",
         'Infdpto' => 'Informes Departamento',
         'Consell' => 'Consejo Escolar',
@@ -258,10 +258,11 @@ return array(
         'Actasfct' => 'Control Fct/Actas',
         'Actualizacion' => 'Actualización aplicación',
         'Dual' => 'FP Dual',
-        'Micolaboracion' => 'Preparar Colaboraciones',
+        'Micolaboracion' => 'Gestión de contactos',
         'Poll' => 'Encuestas',
         'Importaprofesor' => 'Importa Profesor',
         'Tipoincidencias' => "Tipos de incidencias",
+        'Paper' => 'Tramites',
 
     ),
     'situations' => array(
@@ -286,7 +287,9 @@ return array(
         'todos' => 'Todos',
         'conserge' => 'Conserje',
         'orientador' => 'Orientador',
-        'practicas' => 'Tutor prácticas'
+        'practicas' => 'Tutor prácticas',
+        'dual' => 'Tutor FPDual',
+        'jefe_practicas' => 'Jefe de FCT'
     ),
     'week' => array(
         'L' => 'Lunes',

@@ -67,9 +67,9 @@ class PanelColaboracionController extends IntranetController
         $this->panel->setBoton('infile',new BotonIcon('colaboracion.show',['text' => '','class'=>'btn-primary informe','roles' => [config('roles.rol.practicas')]]));
 
         $this->panel->setBoton('infile',new BotonIcon('colaboracion.contacto', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary contacto','text'=>'','title'=>'Petició pràctiques','icon'=>'fa-bell-o']));
-        $this->panel->setBoton('infile',new BotonIcon('colaboracion.info', ['roles' => config('roles.rol.practicas'),'class'=>'btn-info informe','text'=>'','title'=>'Revissió documentació','icon'=>'fa-check']));
-        $this->panel->setBoton('infile',new BotonIcon('colaboracion.documentacion', ['roles' => config('roles.rol.practicas'),'class'=>'btn-info informe','text'=>'','title'=>'Enviar documentació inici','icon'=>'fa-flag-o']));
-        $this->panel->setBoton('infile',new BotonIcon('colaboracion.seguimiento', ['roles' => config('roles.rol.practicas'),'class'=>'btn-info informe','text'=>'','title'=>'Correu seguiment','icon'=>'fa-envelope']));
+        $this->panel->setBoton('infile',new BotonIcon('colaboracion.info', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Revissió documentació','icon'=>'fa-check']));
+        $this->panel->setBoton('infile',new BotonIcon('colaboracion.documentacion', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Enviar documentació inici','icon'=>'fa-flag-o']));
+        $this->panel->setBoton('infile',new BotonIcon('colaboracion.seguimiento', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Correu seguiment','icon'=>'fa-envelope']));
         $this->panel->setBoton('infile',new BotonIcon('colaboracion.telefonico', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe telefonico','text'=>'','title'=>'Contacte telefònic','icon'=>'fa-phone']));
         $this->panel->setBoton('infile',new BotonIcon('colaboracion.visita', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Concertar visita','icon'=>'fa-car']));
         $this->panel->setBoton('infile',new BotonIcon('colaboracion.student', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Citar alumne','icon'=>'fa-bullhorn']));
@@ -115,33 +115,47 @@ class PanelColaboracionController extends IntranetController
     public function sendRequestInfo($id=null){
         $colaboraciones = $this->selectColaboraciones($id,2);
         if ($colaboraciones->count() == 0) return back();
+        if ($colaboraciones->count() == 1) return $this->sendEmails(config('fctEmails.requestU'),$colaboraciones);
         return $this->sendEmails(config('fctEmails.request'),$colaboraciones);
     }
 
     public function sendDocumentation($id=null){
         $colaboraciones = $this->selectColaboraciones($id,2);
         if ($colaboraciones->count() == 0) return back();
+        if ($colaboraciones->count() == 1) return $this->sendEmails(config('fctEmails.infoU'),$colaboraciones);
         return $this->sendEmails(config('fctEmails.info'),$colaboraciones);
     }
 
     public function sendStudent($id=null){
-        $colaboraciones = $this->selectColaboraciones($id,2);
-        if ($colaboraciones->count() == 0) return back();
-        return $this->sendEmails(config('fctEmails.student'),$this->selectFctAlumnes($colaboraciones));
+        $alumnes = $this->selectFctAlumnes($this->selectColaboraciones($id,2));
+        if ($alumnes->count() == 0){
+            Alert::info('No tens alumnes als que avisar');
+            return back();
+        }
+
+        return $this->sendEmails(config('fctEmails.student'),$alumnes);
     }
 
     public function follow($id=null){
-        $colaboraciones = $this->selectColaboraciones($id,2);
-        if ($colaboraciones->count() == 0) return back();
+        $fcts = $this->selectFcts($this->selectColaboraciones($id,2));
 
-        return $this->sendEmails(config('fctEmails.follow'),$this->selectFcts($colaboraciones));
+        if ($fcts->count() == 0){
+            Alert::info('No tens empreses a les que fer el seguiment');
+            return back();
+        }
+        if ($fcts->count() == 1) return $this->sendEmails(config('fctEmails.followU'),$fcts);
+
+        return $this->sendEmails(config('fctEmails.follow'),$fcts);
     }
 
     public function visit($id=null){
-        $colaboraciones = $this->selectColaboraciones($id,2);
-        if ($colaboraciones->count() == 0) return back();
+        $fcts = $this->selectFcts($this->selectColaboraciones($id,2));
+        if ($fcts->count() == 0){
+            Alert::info('No tens empreses a les que visitar');
+            return back();
+        }
 
-        return $this->sendEmails(config('fctEmails.visit'),$this->selectFcts($colaboraciones));
+        return $this->sendEmails(config('fctEmails.visit'),$fcts);
     }
 
 
@@ -154,7 +168,7 @@ class PanelColaboracionController extends IntranetController
         $fcts = collect();
         foreach ($colaboraciones as $colaboracion){
             foreach ($colaboracion->fcts as $fct)
-                if ($fct->asociacion == 1 ) $fcts->push($fct);
+                if ($fct->asociacion == 1  && $fct->Nalumnes > 0 && $fct->correoInstructor == 0) $fcts->push($fct);
         }
         return $fcts;
     }

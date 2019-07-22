@@ -181,6 +181,7 @@ class ReunionController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('reunion.email', ['where' => ['idProfesor', '==', $actual, 'fichero', '==', '']]));
         $this->panel->setBoton('grid', new BotonImg('reunion.ics', ['img' => 'fa-calendar', 'where' => ['fecha', 'posterior', Date::yesterday()]]));
         $this->panel->setBoton('grid', new BotonImg('reunion.saveFile', ['where' => ['idProfesor', '==', $actual, 'archivada', '==', '0', 'fecha', 'anterior', Date::yesterday()]]));
+        $this->panel->setBoton('grid', new BotonImg('reunion.deleteFile', ['img' => 'fa-pencil','where' => ['idProfesor', '==', $actual, 'archivada', '==', '1', 'fecha', 'anterior', Date::yesterday()]]));
     }
 
     public function pdf($id)
@@ -225,6 +226,23 @@ class ReunionController extends IntranetController
                 'rol' => config('roles.rol.profesor')]);
             $elemento->save();
         });
+        return back();
+    }
+
+    public function deleteFile($id)
+    {
+        $elemento = $this->class::find($id);
+        $document = Documento::where('tipoDocumento','Acta')->where('curso',Curso())->where('idDocumento',$elemento->id)->first();
+        if ($elemento->fichero != '' && $document)
+            DB::transaction(function () use ($elemento,$document) {
+                $nom = $elemento->fichero;
+                $document->delete();
+                $elemento->archivada = 0;
+                $elemento->fichero = '';
+                $elemento->save();
+                unlink(storage_path('/app/' . $nom));
+
+            });
         return back();
     }
 

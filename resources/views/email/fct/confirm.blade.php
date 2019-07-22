@@ -1,6 +1,6 @@
 
-<p>Hola sóc {{AuthUser()->fullName}}.</p>
-<p>T'escric per tal de confirmar la visita al centre de treball per fer el seguiment de les practiques FCT dels alumnes del {{config('contacto.nombre')}}.</p>
-<p>L'horari que em quedat és <strong>{{$elemento->pivot->hora_ini}} del {{FechaString($mail->getToPeople())}}</strong></p>
+<div>Hola sóc {{AuthUser()->fullName}}.</div>
+<div style="text-align: justify">T'escric per tal de confirmar la <strong>visita</strong> al centre de treball per fer el <strong>seguiment de les practiques FCT</strong> dels alumnes del {{config('contacto.nombre')}}.</div>
+<div style="text-align: justify">L'horari que em quedat és <strong>{{$elemento->pivot->hora_ini}} del {{FechaString($mail->getToPeople())}}</strong></div>
 
-<p>Salutacions cordials de {{AuthUser()->shortName}}</p>
+<div>Salutacions cordials de {{AuthUser()->shortName}}</div>

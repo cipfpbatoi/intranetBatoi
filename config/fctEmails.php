@@ -12,15 +12,33 @@ return [
         'view' => 'email.fct.request',
         'receiver' => 'A/A de Recursos Humans',
     ],
+    'requestU' => [
+        'subject' => 'Revisió Documentació Pràctiques',
+        'view' => 'email.fct.requestU',
+        'receiver' => 'A/A de Recursos Humans',
+        'redirect' => 'misColaboraciones'
+    ],
     'info' => [
         'subject' => "Recordatori inici de pràctiques",
         'receiver' => 'A/A de Recursos Humans',
         'view' => 'email.fct.info',
     ],
+    'infoU' => [
+        'subject' => "Recordatori inici de pràctiques",
+        'receiver' => 'A/A de Recursos Humans',
+        'view' => 'email.fct.infoU',
+        'redirect' => 'misColaboraciones',
+    ],
     'follow' => [
         'subject' => "Seguiment Pràctiques de FCT",
         'receiver' => 'Instructor',
         'view' => 'email.fct.follow',
+    ],
+    'followU' => [
+        'subject' => "Seguiment Pràctiques de FCT",
+        'receiver' => 'Instructor',
+        'view' => 'email.fct.followU',
+        'redirect' => 'misColaboraciones',
     ],
     'visit' => [
         'subject' => "Concertar visita de FCT",
