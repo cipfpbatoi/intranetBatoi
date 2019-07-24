@@ -1,5 +1,7 @@
 # Documentació del professor
+
 Índex de continguts:
+
 * [Entrada](#entrada)
   * [Control de presència](#control-de-presència)
   * [Notificacions](#notificacions)
@@ -30,74 +32,46 @@
   * [Projectes](#projectes)
   * [Gestor documental](#gestor-documental)
 * [Altres accions](#altres-accions)
+  * [El Panel de control](#el-panel-de-control)
   * [Canviar el nostre perfil](#canviar-el-nostre-perfil)
   * [Taules d'informació](#taules-dinformació)
 ___
 
-## Entrar a la Intranet
+## Entrada
 La entrada a l'aplicació es realitza des de cualsevol dispositiu connectat a la xarxa del Centre, tant cablejada com WiFi. Per tant, a més del PC del aula podem usar el nostre portàtil, una tablet o el mòbil.
 
 ![login](/img/ajuda/01-login.png)
 
-El més senzill és polsar el botó roig de 'Google' i serà ell qui ens autentifique demanant-nos el nostre compte d'email del Centre (si ja el tenim obert entrem directament).
+El més senzill és polsar el botó roig de 'Google' i serà ell qui ens autentifique demanant-nos el nostre compte d'email del Centre (si je el tenim obert entrem directament).
 
 També podem polsar el botó blau de 'Professor' (recomanat si estem en un equip que no és el nostre i no volem autenticar-nos amb Google) e introduir l'usuari (el nostre codi de 4 números o el nostre compte d'email del Centre) i la contrasenya (al principi el nostre DNI com apareix en Itaca però és convenient canviar-ho).
-
-## Pàgina d'inici
 Una vegada dins estarem en el Panel de control des d'on tenim accés a totes les opcions:
 
 <a name="fig2">![Panel de control](/img/ajuda/04-panel-control.png)
 
-Les parts d'aquesta pantalla són:
-1. Logo: permet tornar a aquesta pàgina des de qualsevol altra polsant ací
-2. Menú: ací està el menú amb totes les opcions. Es pot plegar o desplegar amb la icona que hi ha junt al logo (les 3 ratlles horitzontals). El que més utilitzarem és el de []'Professorat'](#professorat)
-3. Menú inferior: l'opció més útil d'ací és el sobre ('Enviar codi fitxatge') que ens envia al mòbil un enllaç per a fitxar des d'allí. També hi ha una icona per a eixir de la Intranet SENSE fitxar l'eixida del Centre
-4. Menú superior: ací tenim
-    1. Notificacions: ens apareixen les notificacions que tenim. El nº indica les que tenim sense llegir
-    2. Rellotge: en blau indica que hem fitxat i en roig que no. Si el polsem eixim de la Intranet i es fitxa que eixim del Centre
-    3. Menú d'usuari: en el nostre nom tenim un menú amb
-        1. Hora d'entrada: a quina hora hem fitxat l'entrada
-        2. Hora d'eixida (apareixerà buida perquè estem dins)
-        3. [Editar perfil](#editar-perfil): podem canviar el nostre perfil (foto, etc)
-        4. Eixir: tanquen la Intranet però SENSE fitxar l'eixida
-5. Icones d'accions. Són icones de
-    1. Amagar/mostrar la zona de informació de la pantalla
-    2. Tornar a la pantalla anterior
-    3. Configurar l'idioma
-    4. Mostrar l'ajuda
-    5. Tancar la zona de informació de la pantalla
-6. Pestanyes: ens permeten triar la informació que veiem en la pàgina d'inici:
-    1. Properes Activitats Extraescolars que es realitzaran des de qualsevol departament
-    2. Absències: llista de professors que no aniran hui a alguna hora o tot el dia (per estar fent una activitat fora, una comissió, malaltia, ...)
-    3. Darreres accions que hem fet a la Intranet
-    4. Horari: ens mostra el nostre horari setmanal
-    5. Actes: darreres actes penjades del Claustre, COCOPE, ...
-7. Zona d'informació: ací apareix la informació de la pestanya seleccionada
-
 ### Control de presència
-Quan iniciem sessió en la intranet es marca automàticament que estem en el centre, si no havíem fitxat encara.
+Quan iniciem sessió en la intranet es marca automàticament que estem en el centre si no ho estavem ja.
 
-Per a marcar que eixim del Centre polsem el rellotge blau que trobem a la part superior dreta (zona 4). Això a més d'indicar que deixem el Centre ix de la intranet.
+Per a marcar que eixim del Centre polsem el rellotge que trobem a la part superior dreta (zona 5). Això a més d'indicar que deixem el Centre ix de la intranet.
 
 ### Notificacions
-En la zona 4 trobem una icona d'un sobre amb el número de notificacions pendents que tenim. Ací apareixen missatges d'altres usuaris i tot tipus d'informacions (si els alumnes se'n van a fer una activitat extraescolar, si hi ha cap reunió de departament, si no hem fixat un dia, ...).
+En la zona 5 trobem una icona d'un sobre amb el número de notificacions pendents que tenim. Ací apareixen missatges d'altres usuaris i tot tipus d'informacions (si els alumnes se'n van a fer una activitat extraescolar, si hi ha cap reunió de departament, si no hem fixat un dia, ...).
 ![Notificacions](/img/ajuda/05-btnNotificacions.png)
 Al polsar la icona es despleguen totes. Podem eliminar-les amb la icona de la paperera.
-
-Nosaltres podem enviar una notificació a qualsevol company buscant-lo (menú Professorat->Claustre) i polsant el botó 'Avisar'.
 
 ## Menú 'Profesorat'
 En la zona 1 del Panel de Control (vuere [il·lustració 2](#fig2)) tenim el menú per a totes les accions que podem fer en la intranet. Anem a veure les que més utilitzarem: les del menú **'Profesorat'**.:
 
 ### Claustre
 Des del menú **'Profesorat'** polsem en **'Claustre'**:
+
 ![Claustre](/img/ajuda/07-miDep.png)
 
-Apareixen tots els professors del nostre Departament. A la part superior tenim una pestanya per departament per a veure tot el claustre. A la part inferior trobem les icones:
-* rellotge: en blau vol dir que ara està en el Centre i en roig que no.
-* horari: ens obri l'horari del professor per a saber quan i on trobar-lo.
+Podem veure a tots els professors del claustre i comprovar si estan ara o no en el Centre. A la part superior tenim cada departament en una pestanya (per defecte ens apareix el nostre departament). A la part inferior trobem les icones:
+* rellotge: en blau vol dir que està en el Centre i en roig que no.
+* horari: ens obri l'horari del professor per a saber quen i on trobar-lo.
 * avisar: per enviar-li una notificació per la Intranet (li apareixerà amb les seues notificacions).
-* botó blau: indica quin mòdul està impartint ara i en quina aula (o si està en casa). Si possem el punter damunt podem veure a quin grup li està impartint classe (o a quina hora ha de vindre si està en casa).
+* botó blau: indica quin mòdul està impartint ara i en quin aula (o si està en casa). Si possem el punter damunt ens indica a quin grup li està impartint classe (o a quina hora ve si està en casa).
 
 En el nostre usuari apareixen 2 botons més:
 * Carnet: per a imprimir el nostre carnet de l'institut ( hem de imprimmir-ho en la impressora de carnets que hi ha en Caporalia)
@@ -242,34 +216,6 @@ Amb les absències donades d'alta podem fer:
 * Modificació: per a canviar alguna cosa o adjuntar el justificant
 * Avisar a l'equip docent: s'enviarà un missatge a tots els companys en els quals compartim grup eixos dies per a que sàpiem que no estarem per si han de canviar alguna hora amb els alumnes. Els apareixerà com una nova notificació.
 
-### Gestió Incidències
-La gestió d'incidències de la Intranet se utilitza per a informar de:
-- qualsevol problema amb les instal·lacions o l'equipament tant de l'aula com dels espais comuns
-- problemes informàtics
-- problemes amb la Intranet
-- el procès de la FCT
-- queixes i sugerències
-
-![Gestió d'incidències](/img/ajuda/16-incidencies.png)
-
-Des d'ací podem veure totes les indicències que hem registrat i el seu estat. 
-
-Per a informar d'una nova incidència polsem el botó de '**Crear Incidència**'. El que hem d'indicar és:
-- Tipus: ací indiquen el tipus de incidència, que pot ser
-  - Fontaneria, Electricitat, Fusteria, Obra, Estors, Cristaleria, Alumini
-  - Manteniment d'instal·lacions: per a incidències que no siguen dels tipus abans indicats
-  - Mantenimet informàtic: incidències informàtiques d'ordinadors (de l'aula informàtica, departaments, sala de profes, etc), impressores, internet, etc
-  - Intranet: incidències relacionades amb la Intranet
-  - Incidències procés FCT
-  - Queixes i sugerències: podem utilitzar això per a plantejar queixes o fer sugerències a l'equip directiu
-- Espai: indiquem on s'ha produit la incidència
-- Material: al triar un espai apareix tots els materials inventariats en eixe espai. Si la incidència és sobre un d'eixos materials el seleccionem
-- Descripció: informació sobre la incid'encia produida
-- Prioritat: la que considerem que ha de tindre aquesta incidència
-- Observacions: si volem afegir alguna cosa més
-
-Al crear la incid'encia se li notifica automàticament al responsable que li donarà la solució apropiada. Quan es resolga rebrem una notificació.
-
 ### Guàrdia
 Ens permet signar les guàrdies del nostre horari:
 
@@ -365,6 +311,28 @@ Ací apareixeran tots els documents.
 
 ## Altres accions
 En aquest apartat veurem les diferents eines que ens proporcina la intranet.
+
+### El Panel de control
+Des de qualsevol pàgina podem accedir al Panel de control polsant sobre el nom del Centre (part superior esquerra de cada pàgina).
+
+El Panel de control te vàries parts:
+
+![Panel de control](/img/ajuda/04-panel-control.png)
+
+1. Menús: ja els hem vist. Ens permeten realitzar qualsevol acció
+2. Perfil: ací tenim les nostres dades i un botó per a 'Editar el perfil'.
+3. Hores en el centre: podem veure les hores fetes aquesta setmana. En la part superior te un calendar per a indicar una data diferent
+4. Resum: tenim algunes informacions útils com les darreres operacions fetes (comissions, activitats, ...), el nostre horari o les actes (el mateix que trobem en el menú Documentació → Actes)
+5. Menú superior: ací tenim 3 parts
+    1. icona de notificacions (ja la hem vist en 4)
+    2. icona de gestió de presència (ja la hem vist en 4)
+    3. desplegable amb el nostre nom: ens mostra l'hora d'entrada i eixida i ens permet editar el nostre perfil o eixir de la intranet
+6. Menú d'accions: amb 4 icones
+    1. Plegar/desplegar la part central de la pàgina
+    2. Tornar a la pàgina anterior
+    3. Canviar l'idioma
+    4. Tancar la part central de la pàgina
+7. Menú inferior: conté una opció per a tancar la sessió
 
 ### Canviar el nostre perfil
 Des del botó de 'Editar perfil' podem canviar en nostre correu electrònic i la nostra foto.

@@ -3,13 +3,11 @@
 namespace Intranet\Entities;
 
 use Eloquent as Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Jenssegers\Date\Date;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
 use \DB;
 use Intranet\Events\PreventAction;
-use Illuminate\Support\Str;
+use Intranet\Entities\Fct;
 
 class Comision extends Model
 {
@@ -88,12 +86,20 @@ class Comision extends Model
             $manana->addHours(8);
             $this->desde = $manana;
             $this->hasta = $manana;
-            $this->fct = true;
-            $this->servicio = "Visita a Empreses per FCT: ";
             $this->gastos = 0.00;
             $this->comida = 0.00;
             $this->alojamiento = 0.00;
             $this->kilometraje = 0;
+            if (Fct::misFcts()->count()){
+                $this->fct = true;
+                $this->servicio = "Visita a Empreses per FCT: ";
+
+            }
+            else{
+                $this->fct = 0;
+                $this->setInputType('fct',['type'=> 'hidden']);
+                $this->servicio = "Visita a Empreses: ";
+            }
         }
     }
 

@@ -12,7 +12,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th style='width:2%'>N</th><th style='width:15%'>Activitat</th><th style='width:15%'>Descripció</th><th style='width:10%'>Objectius</th><th style='width:10%'>Desde</th><th style='width:10%'>Fins</th><th style='width:10%'>Comentaris</th><th style='width:13%'>Profesors</th><th style='width:15%'>Grups</th>
+                <th style='width:2%'>N</th><th style='width:15%'>Activitat</th><th style='width:15%'>Descripció</th><th style='width:10%'>Objectius</th><th style='width:10%'>Desde</th><th style='width:10%'>Fins</th><th>Tipus</th><th style='width:10%'>Comentaris</th><th style='width:13%'>Profesors</th><th style='width:15%'>Grups</th>
             </tr>
         </thead>
         <tbody>
@@ -24,6 +24,14 @@
                 <td>{!! $elemento->objetivos !!}</td>
                 <td>{!! $elemento->desde !!}</td>
                 <td>{!! $elemento->hasta !!}</td>
+                @if (!$elemento->fueraCentro) <td>PROPI CENTRE</td>
+                @else
+                    @if ($elemento->transport) <td>AMB TRANSPORT</td>
+                    @else <td>SENSE TRANSPORT</td>
+                    @endif
+                @endif
+
+                </td>
                 <td>{!! $elemento->comentarios !!}</td>
                 <td>
                     @foreach ($elemento->profesores as $profesor)

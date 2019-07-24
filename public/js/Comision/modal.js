@@ -27,7 +27,7 @@ $(function () {
             $('#field_comida_id').attr('class','form-group item hidden');
         }
         else {
-            $('#servicio_id').val('');
+            $('#servicio_id').val('Visita empreses');
             $('#field_servicio_id').attr('class','form-group item');
             $('#field_alojamiento_id').attr('class','form-group item');
             $('#field_comida_id').attr('class','form-group item');
