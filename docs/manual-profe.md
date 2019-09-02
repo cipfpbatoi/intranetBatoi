@@ -315,6 +315,8 @@ Ací trobem totes les actes ordenades per pestanyes:
 * Claustres
 * ...
 
+![Actes](/img/ajuda/acta.png)
+
 ### Projectes
 Ací trobem els projectes presentats pels alumnes del cicles de grau superior en el mòdul de 'Projecte'. 
 
