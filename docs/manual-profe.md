@@ -5,21 +5,26 @@
 * [Entrada](#entrada)
   * [Control de presència](#control-de-presència)
   * [Notificacions](#notificacions)
-* [Menú 'Profesorat'](#menú-profesorat)
+* [Menú 'Docència'](#menú-docència)
+  * [Gestió de grups](#gestió-de-grups)
   * [Claustre](#claustre)
   * [Equip directiu](#equip-directiu)
-  * [Informació dels grups](#informació-dels-grups)
-  * [Editar Programacions](#editar-programacions)
+  * [Guàrdia](#guàrdia)
+    * [Fer la guàrdia](#fer-la-guàrdia)
   * [Seguiments](#seguiments)
+  * [Programacions](#programacions)
+  * [Enquestes](#enquestes)
+* [Menú 'Tràmits'](#menú-tràmits)
+  * [Expedients](#expedients)
   * [Activitats extraescolars](#activitats-extraescolars)
     * [Alta de nova activitat](#alta-de-nova-activitat)
   * [Comisions de servei](#comisions-de-servei)
     * [Estat de una comissió](#estat-de-una-comissió)
     * [Alta nova comissió](#alta-nova-comissió)
   * [Notificació absències](#notificació-absències)
-  * [Guàrdia](#guàrdia)
-    * [Fer la guàrdia](#fer-la-guàrdia)
-  * [Reservar espai](#reservar-espai)
+  * [Gestió d'incidències](#gestió -dincidències)
+  * [Reserva aules](#reserva-aules)
+  * [Oblit birret](#oblit-birret)
 * [Menú Actes/Convocatories](#menú-actesconvocatories)
   * [Gestió de reunions](#gestió-de-reunions)
   * [Grups de treball](#grups-de-treball)
@@ -35,7 +40,7 @@
   * [El Panel de control](#el-panel-de-control)
   * [Canviar el nostre perfil](#canviar-el-nostre-perfil)
   * [Taules d'informació](#taules-dinformació)
-___
+
 
 ## Entrada
 L'entrada a l'aplicació es realitza des de qualsevol dispositiu connectat a la xarxa del Centre, tant cablejada com WiFi. Per tant, a més del PC del aula podem usar el nostre portàtil, una tablet o el mòbil.
@@ -59,8 +64,24 @@ En la zona 5 trobem una icona d'un sobre amb el número de notificacions pendent
 ![Notificacions](/img/ajuda/05-btnNotificacions.png)
 Al polsar la icona es despleguen totes. Podem eliminar-les amb la icona de la paperera.
 
-## Menú 'Profesorat'
-En la zona 1 del Panel de Control (vuere [il·lustració 2](#fig2)) tenim el menú per a totes les accions que podem fer en la intranet. Anem a veure les que més utilitzarem: les del menú **'Profesorat'**.:
+## Menú 'Docència'
+En la zona 1 del Panel de Control (vuere [il·lustració 2](#fig2)) tenim el menú per a totes les accions que podem fer en la intranet. Anem a veure les que més utilitzarem: les del menú **'Docència'**.:
+
+### Gestió de grups
+Des del menú **'Profesorat' → 'Gestió Grups'** podem veure tots els nostres grups. El botó de 'Filtrar' de la part superior dreta ens permet buscar un grup concret.
+
+Com qualsevol llistat de la intranet el podem ordenar per la columna desitjada polsant sobre el títol de la columna.
+![Grups](/img/ajuda/09-grupos.png)
+
+Les opcions que tenim per a qualsevol grup són:
+* Imprimir full de fotos: mostra el llistat d'alumnes del grup amb foto.
+* Horari del grup
+* Veure alumnes: llistat dels alumnes del grup des d'on podem
+  * Veure les seues dades.
+  * Modificar el seu perfil (la foto o el e-mail).
+  * Si hi ha curs o jornada disponible podem inscriure a l'alumne.
+  * Imprimir el seu carnet
+* Mostrar equip educatiu: podem veure tots els membres de l'equip educatiu (igual que els membres del departament) i tenim l'opció d'avisar a algú o a tots.
 
 ### Claustre
 Des del menú **'Profesorat'** polsem en **'Claustre'**:
@@ -80,23 +101,38 @@ En el nostre usuari apareixen 2 botons més:
 ### Equip directiu
 Trobem la mateixa informació que en el [claustre](#claustre) però de l'equip educatiu per a poder saber on trobar-los.
 
-### Informació dels grups
-Des del menú **'Profesorat' → 'Gestió Grups'** podem veure tots els nostres grups. El botó de 'Filtrar' de la part superior dreta ens permet buscar un grup concret.
+### Guàrdia
+Ens permet signar les guàrdies del nostre horari:
 
-Com qualsevol llistat de la intranet el podem ordenar per la columna desitjada polsant sobre el títol de la columna.
-![Grups](/img/ajuda/09-grupos.png)
+![Signar guàrdia](/img/ajuda/14-guardia.png)
 
-Les opcions que tenim per a qualsevol grup són:
-* Imprimir full de fotos: mostra el llistat d'alumnes del grup amb foto.
-* Horari del grup
-* Veure alumnes: llistat dels alumnes del grup des d'on podem
-  * Veure les seues dades.
-  * Modificar el seu perfil (la foto o el e-mail).
-  * Si hi ha curs o jornada disponible podem inscriure a l'alumne.
-  * Imprimir el seu carnet
-* Mostrar equip educatiu: podem veure tots els membres de l'equip educatiu (igual que els membres del departament) i tenim l'opció d'avisar a algú o a tots.
+Només podem signar les guàrdies del dia actual, encara que es pot modificar el camp d'observacions persoals de guàrdies ja passades, principalment per a indicar per quin motiu no es va fer una guàrdia.
 
-### Editar Programacions
+Els camps que hi ha són:
+* Guàrdia feta: aquesta casella marcada indica que SÍ hem fet la guàrdia
+* Observacions: per a inclure qualsevol problema o qüestió que haja passat durant la nostra guàrdia
+* Comentari personal: per a indicar a caporalia qualsevol situació nostra (no de la guàrdia), com per exemple que no hem fet la guàrdia perquè estàvem atenent a una pares
+
+#### Fer la guàrdia
+Només es pot marcar des de l'ordinador de la Biblioteca o de la Sala de professors, i dins de l'hora de la nostra guàrdia.
+
+Seleccionem l'hora, marquem la casella 'Guàrdia feta' i polsem el botó **'Guardar'**.
+
+Si per algun motiu no ho hem fet (sens a oblidat marcar-la o no l'hem feta per algun motiu) seleccionem l'hora de la guàrdia, omplim el camp de '**Comentaris personals**' (els altes no estan dsponibles) i polsem el botó '**Guardar**'.
+
+### Seguiments
+Des d'ací pujarem el seguiment de la nostra programació al final de cada avaluació:
+![Seguiments](/img/ajuda/10-seguiments.png)
+
+Les iconas de cada seguiment creat ens permeten esborrar-lo o modificar-lo.
+
+Per a pujar un nou seguiment polsem el botó 'Crea resultats per a un grup' de la part superior i introduïm les dades:
+* Grup, mòdul i avaluació
+* Alumnes matriculats, avaluats i aprovats
+* Unitats programades i impartides
+* Comentaris
+
+### Programacions
 Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament).
 
 Les operacions que podem fer amb cadascuna són:
@@ -123,17 +159,12 @@ Una vegada acabada la programació l'enviarem al nostre Cap de Departament polsa
 
 La programació queda en estat '_No autoritzada_'. Per a que el cap de departament no la pot veure per a revisar-la si no la enviem.
 
-### Seguiments
-Des d'ací pujarem el seguiment de la nostra programació al final de cada avaluació:
-![Seguiments](/img/ajuda/10-seguiments.png)
+### Enquestes
 
-Les iconas de cada seguiment creat ens permeten esborrar-lo o modificar-lo.
+## Menú 'Tràmits'
+Ací tenim molts tràmits usuals com:
 
-Per a pujar un nou seguiment polsem el botó 'Crea resultats per a un grup' de la part superior i introduïm les dades:
-* Grup, mòdul i avaluació
-* Alumnes matriculats, avaluats i aprovats
-* Unitats programades i impartides
-* Comentaris
+### Expedients
 
 ### Activitats extraescolars
 Ací apareixen totes les activitats extraescolars en las que nosaltres participem. Podem veure-las en format llistat o mosaic:
@@ -224,26 +255,9 @@ Amb les absències donades d'alta podem fer:
 * Modificació: per a canviar alguna cosa o adjuntar el justificant
 * Avisar a l'equip docent: s'enviarà un missatge a tots els companys en els quals compartim grup eixos dies per a que sàpiem que no estarem per si han de canviar alguna hora amb els alumnes. Els apareixerà com una nova notificació.
 
-### Guàrdia
-Ens permet signar les guàrdies del nostre horari:
+### Gestió d'incidències
 
-![Signar guàrdia](/img/ajuda/14-guardia.png)
-
-Només podem signar les guàrdies del dia actual, encara que es pot modificar el camp d'observacions persoals de guàrdies ja passades, principalment per a indicar per quin motiu no es va fer una guàrdia.
-
-Els camps que hi ha són:
-* Guàrdia feta: aquesta casella marcada indica que SÍ hem fet la guàrdia
-* Observacions: per a inclure qualsevol problema o qüestió que haja passat durant la nostra guàrdia
-* Comentari personal: per a indicar a caporalia qualsevol situació nostra (no de la guàrdia), com per exemple que no hem fet la guàrdia perquè estàvem atenent a una pares
-
-#### Fer la guàrdia
-Només es pot marcar des de l'ordinador de la Biblioteca o de la Sala de professors, i dins de l'hora de la nostra guàrdia.
-
-Seleccionem l'hora, marquem la casella 'Guàrdia feta' i polsem el botó **'Guardar'**.
-
-Si per algun motiu no ho hem fet (sens a oblidat marcar-la o no l'hem feta per algun motiu) seleccionem l'hora de la guàrdia, omplim el camp de '**Comentaris personals**' (els altes no estan dsponibles) i polsem el botó '**Guardar**'.
-
-### Reservar espai
+### Reserva aules
 Permet a qualsevol professor reservar un espai, com un aula d'informàtica o el Saló d'actes, per a fer en ell qualsevol activitt (un examen, una xarrada, …).
 
 ![Reserves](/img/ajuda/14-reservas.png)
