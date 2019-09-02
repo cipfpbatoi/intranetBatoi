@@ -87,7 +87,7 @@ class Fct extends Model
     public function scopeMisFcts($query,$profesor=null,$dual=false)
     {
         $profesor = $profesor?$profesor:AuthUser()->dni;
-        $cicloC = Grupo::select('idCiclo')->QTutor($profesor,$dual)->first()->idCiclo;
+        $cicloC =  Grupo::select('idCiclo')->QTutor($profesor,$dual)->first()?Grupo::select('idCiclo')->QTutor($profesor,$dual)->first()->idCiclo:null;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
         $alumnos = Alumno::select('nia')->misAlumnos($profesor,$dual)->get()->toArray();
         $alumnos_fct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno',$alumnos)->get()->toArray();
