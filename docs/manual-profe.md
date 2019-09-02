@@ -244,6 +244,7 @@ Per a gestionar els expedients oberts als alumnes. Hi ha 2 tipus d'expedient que
 * Part d'amonestació
 * Perdua d'avaluació contínua, per als alumnes que hagen suerat el màxim de faltes d'assistència
 
+![Expedients](/img/ajuda/expediente.png)
 
 ### Activitats extraescolars
 Ací apareixen totes les activitats extraescolars en las que nosaltres participem. Podem veure-las en format llistat o mosaic:
