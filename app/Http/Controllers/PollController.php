@@ -119,7 +119,7 @@ class PollController extends IntranetController
                         $profe++;
                         $value = 'option'.($question+1).'_'.$profe;
                         $vote = new Vote();
-                        $vote->user_id = $cifrar?hash('md5',AuthUser()->id)?AuthUser()->id;
+                        $vote->user_id = $cifrar?hash('md5',AuthUser()->id):AuthUser()->id;
                         $vote->option_id = $option->id;
                         $vote->idModuloGrupo = $modulo['modulo']->id;
                         $vote->idProfesor = $dni;
