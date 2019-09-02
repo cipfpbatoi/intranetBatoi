@@ -11,8 +11,6 @@ use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Poll\Option;
 use Response;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
@@ -20,30 +18,25 @@ use Styde\Html\Facades\Alert;
 class PollController extends IntranetController
 {
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
-    //protected $perfil = 'alumno';
     protected $model = 'Poll';
     protected $gridFields = [ 'id','title','actiu'];
-    protected $vista = [ 'show' => 'poll.masterslave'];
-    
+
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico("poll.create",inRol('qualitat')));
         $this->panel->setBoton('grid', new BotonImg('poll.edit',inRol('qualitat')));
         $this->panel->setBoton('grid', new BotonImg('poll.delete',inRol('qualitat')));
-        $this->panel->setBoton('grid', new BotonImg('poll.slave',array_merge(['img'=>'fa-plus'],inRol('qualitat'))));
-        $this->panel->setBoton('grid', new BotonImg('poll.active',inRol('qualitat')));
         $this->panel->setBoton('grid',new BotonImg('poll.chart',array_merge(['img' => 'fa-bar-chart'],inRol('qualitat'))));
         $this->panel->setBoton('grid',new BotonImg('poll.show',['img' =>'fa-eye']));
     }
     
     protected function preparaEnquesta($id){
-        $votes = Vote::where('user_id', AuthUser()->nia)
+        $votes = Vote::where('user_id','=', hash('md5',AuthUser()->nia))
                 ->whereIn('option_id', hazArray(Option::where('poll_id',$id)->get(),'id'))
                 ->count();
-
         if ($votes == 0){
             $poll = Poll::find($id);
-            $modulos = $this->ordenModulos();
+            $modulos = $this->calculateAnswers($poll);
             return view('poll.enquesta',compact('modulos','poll'));
         }
 
@@ -55,14 +48,17 @@ class PollController extends IntranetController
         $poll = Poll::find($id);
         $options_numeric = $poll->options->where('scala','>',0);
         $options_text = $poll->options->where('scala','=',0);
+        $myVotes = [];
+        $myGroupsVotes = [];
         foreach (Modulo_grupo::misModulos() as $modulo){
             $myVotes[$modulo->ModuloCiclo->Modulo->literal][$modulo->Grupo->codigo] = Vote::myVotes($id,$modulo->id)->get();
         }
         foreach (Grupo::misGrupos()->get() as $grup){
             $myGroupsVotes[$grup->codigo] = Vote::myGroupVotes($id,$grup->codigo)->get();
         }
-
-        return view('poll.teacherResolts',compact('myVotes','poll','options_numeric','options_text','myGroupsVotes'));
+        if (count($myVotes)) return view('poll.teacherResolts',compact('myVotes','poll','options_numeric','options_text','myGroupsVotes'));
+        Alert::info("L'enquesta no ha estat realitzada encara");
+        return back();
     }
     public function lookAtAllVotes($id)
     {
@@ -123,7 +119,7 @@ class PollController extends IntranetController
                         $profe++;
                         $value = 'option'.($question+1).'_'.$profe;
                         $vote = new Vote();
-                        $vote->user_id = AuthUser()->nia;
+                        $vote->user_id = $cifrar?hash('md5',AuthUser()->id)?AuthUser()->id;
                         $vote->option_id = $option->id;
                         $vote->idModuloGrupo = $modulo['modulo']->id;
                         $vote->idProfesor = $dni;
@@ -136,6 +132,13 @@ class PollController extends IntranetController
         return redirect('home');
     }
     
+    private function calculateAnswers($poll){
+        if ($poll->que == 'Profesor') return $this->ordenModulos();
+        if ($poll->que == '--') return $this->onlyQuestions();
+        if ($poll->que == 'Actividad') return $this->searchActivities();
+
+    }
+
     private function ordenModulos(){
         $modulos = collect();
         foreach (AuthUser()->Grupo as $grupo){
@@ -144,6 +147,16 @@ class PollController extends IntranetController
             }
         }
         return $modulos;
+    }
+    private function searchActivities()
+    {
+        $actividades = collect();
+        foreach (AuthUser()->Grupo as $grupo) {
+            foreach ($grupo->Actividades as $actividad) {
+                $actividades->push($actividad);
+            }
+        }
+        return $actividades;
     }
     
 }

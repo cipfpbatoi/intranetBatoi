@@ -175,4 +175,6 @@ class Alumno extends Authenticatable
         return $this->nia;
     }
 
+
+
 }

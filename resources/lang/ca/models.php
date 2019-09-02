@@ -417,9 +417,10 @@ return array(
            'check' => 'Control documentació'
           
         ),
-        'Poll' => array(
-          'show' => 'Enquesta',
-          'index' => 'Manteniment enquestes',
+        'PPoll' => array(
+          'show' => 'Plantilla Enquesta',
+          'index' => 'Manteniment Plantilles Enquestes',
+          'edit' => 'Editar Plantilla',
         ),
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
@@ -453,6 +454,7 @@ return array(
             'Proyecto' => 'Projecte',
             'Evaluacion' => 'Avaluació',
             'Colaborador' => 'Col.laborador',
+            'PPoll' => 'Plantilla Enquesta',
             'Poll' => 'Enquesta',
         ),
         'resign' => array(

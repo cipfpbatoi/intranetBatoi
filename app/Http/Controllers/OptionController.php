@@ -39,7 +39,7 @@ class OptionController extends IntranetController
     public function store(Request $request)
     {
         parent::store($request);
-        return redirect()->action('PollController@show', ['id' => $request->poll_id]);
+        return redirect()->action('PPollController@show', ['id' => $request->ppoll_id]);
     }
 
     /**
@@ -48,9 +48,9 @@ class OptionController extends IntranetController
      */
     public function destroy($id)
     {
-        $poll = Option::find($id)->poll_id;
+        $poll = Option::find($id)->ppoll_id;
         parent::destroy($id);
-        return redirect()->action('PollController@show', ['id' => $poll]);
+        return redirect()->action('PPollController@show', ['id' => $poll]);
     }
     
     

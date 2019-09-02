@@ -205,6 +205,11 @@ class Profesor extends Authenticatable
         return config('auxiliares.idiomas');
     }
 
+    public function getIdAttribute($cifrar)
+    {
+        return $this->dni;
+    }
+
     public function getDepartamentoOptions()
     {
         return hazArray(Departamento::All(), 'id', 'vliteral');

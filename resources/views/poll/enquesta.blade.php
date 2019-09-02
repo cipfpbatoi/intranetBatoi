@@ -7,7 +7,7 @@
         @csrf
         <div id="wizard" class="form_wizard wizard_verticle">
             @include('poll.partials.wizard_head')
-            @include('poll.partials.wizard')
+            @include('poll.partials.'.$poll->que)
         </div>  
     </form>
 @endsection

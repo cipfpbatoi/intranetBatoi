@@ -71,9 +71,15 @@ function FechaPosterior($fecha1, $fecha2 = null)
     return $fecha1 > $fecha2 ? $fecha1 : $fecha2;
 }
 
+
 function haVencido($fecha)
 {
     return Hoy() >= Fecha($fecha) ? true : false;
+}
+
+function vigente($fecha1,$fecha2)
+{
+    return haVencido($fecha1)&&!haVencido($fecha2);
 }
 
 function esMismoDia($ini, $fin)

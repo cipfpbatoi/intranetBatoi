@@ -13,7 +13,7 @@
                     @csrf
                     <input type='text' name='question' placeholder='@lang("validation.attributes.question")' value="{{ old('question') }}" class='form-control' />
                     <input type='text' name='scala' placeholder='@lang("validation.attributes.scala") *' value="{{ old('scala') }}" class='form-control' />
-                    <input type='hidden' name='poll_id' value="{!!$elemento->id!!}">
+                    <input type='hidden' name='ppoll_id' value="{!!$elemento->id!!}">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

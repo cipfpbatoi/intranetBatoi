@@ -9,14 +9,14 @@ class Option extends Model
 {
     use BatoiModels;
     
-    protected $fillable = ['question','scala','poll_id' ];
+    protected $fillable = ['question','scala','ppoll_id' ];
     protected $rules = [
-        'poll_id' => 'required',
+        'ppoll_id' => 'required',
         'question' => 'required',
         'scala' => 'numeric|between:0,10',
     ];
     protected $inputTypes = [
-        'poll_id' => ['disabled' => 'disabled'],
+        'ppoll_id' => ['disabled' => 'disabled'],
     ];
     public $timestamps = false;
     /**

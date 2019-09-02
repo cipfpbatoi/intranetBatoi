@@ -6,16 +6,22 @@ namespace Intranet\Entities\Poll;
 use Intranet\Entities\BatoiModels;
 use Illuminate\Database\Eloquent\Model;
 
+
 class Poll extends Model
 {
     use BatoiModels;
     
-    protected $fillable = ['title','activo' ];
+    protected $fillable = ['title','desde','hasta','idPPoll'];
     protected $rules = [
         'title' => 'required',
+        'desde' => 'required',
+        'hasta' => 'required',
+        'idPPoll' => 'required'
     ];
     protected $inputTypes = [
-        'activo' => ['type' => 'checkbox']
+        'desde' => ['type' => 'date'],
+        'hasta' => ['type' => 'date'],
+        'idPPoll' => ['type' => 'select']
     ];
     public $timestamps = false;
     
@@ -24,20 +30,29 @@ class Poll extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function options()
+    public function Plantilla()
     {
-        return $this->hasMany(Option::class);
+        return $this->hasOne(PPoll::class);
     }
 
-    
-    /**
-     * Get all of the votes for the poll.
-     */
-    public function votes()
-    {
-        return $this->hasManyThrough(Vote::class, Option::class);
-    }
     public function getActiuAttribute(){
-        return $this->activo?'Activa':'No activa';
+        return vigente($this->desde,$this->hasta)?'Activa':'No activa';
     }
+
+    public function getQuienAttribute(){
+        return config('auxiliares.who')[$this->Plantilla->who];
+    }
+    public function getAnonymousAttribute(){
+        return $this->Plantilla->anonymous;
+    }
+    public function getQueAttribute(){
+        return config('auxiliares.what')[$this->Plantilla->what];
+    }
+
+    public function getIdPPollOptions(){
+        return hazArray(PPoll::all(),'id','title');
+    }
+
+
+
 }

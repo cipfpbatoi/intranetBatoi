@@ -32,6 +32,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('instructor', 'InstructorController', ['except' => ['edit', 'create']]);
     Route::get('autorizar/comision', 'ComisionController@autorizar');
     Route::get('notification/{id}', 'NotificationController@leer');
+    Route::resource('ppoll', 'PPollController', ['except' => ['edit', 'create']]);
 
     Route::resource('profesor', 'ProfesorController', ['except' => ['edit', 'create']]);
     Route::get('profesor/{dni}/rol', 'ProfesorController@rol');

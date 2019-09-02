@@ -394,6 +394,16 @@ return array(
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
         ),
+        'Fctcap' => array(
+            'index' => 'Control Fct :quien',
+            'check' => 'Control documentación'
+
+        ),
+        'PPoll' => array(
+            'show' => 'Plantilla Encuesta',
+            'index' => 'Mantenimento Plantillas Encuestas',
+            'edit' => 'Editar Plantilla',
+        ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',
             'Curso' => 'Curso',
@@ -425,7 +435,9 @@ return array(
             'Instructor' => 'Instructor',
             'Proyecto' => 'Proyecto',
             'Evaluacion' => 'Avaluación',
-            'Colaborador' => 'Col.laborador'
+            'Colaborador' => 'Col.laborador',
+            'PPoll' => 'Plantilla encuesta',
+            'Poll' => 'Encuesta',
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',
