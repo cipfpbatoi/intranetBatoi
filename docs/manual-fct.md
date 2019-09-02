@@ -3,8 +3,8 @@
 Index de continguts:
 
 * [Objectius](#objectius)
-* [Temporalitzacio](#temporalització)
-* [Gestió de contactes](#gestió-de-contactes)
+* [Temporalitzacio](#temporalitzacio)
+* [Gestió de contactes](#gestio-de-contactes)
 * [FCTsxAlumne](#fctxalumne)
 
 ___
