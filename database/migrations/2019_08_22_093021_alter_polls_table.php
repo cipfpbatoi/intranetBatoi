@@ -14,7 +14,7 @@ class AlterPollsTable extends Migration
     public function up()
     {
         Schema::table('polls', function (Blueprint $table) {
-            $table->dropColumn('activo');
+            //$table->dropColumn('activo');
             //$table->date('desde')->nullable();
             //$table->date('hasta')->nullable();
             //$table->integer('idModelo')->nullable()->unsigned();
