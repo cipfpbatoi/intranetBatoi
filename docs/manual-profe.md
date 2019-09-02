@@ -6,10 +6,10 @@
   * [Pàgina d'inici](#pàgina-dinici)
   * [Control de presència](#control-de-presència)
   * [Notificacions](#notificacions)
-* [Menú Documentació](#menu-documentació)
+* [Menú Documentació](#menú-documentació)
   * [Programacions](#veure-les-programacions)
   * [Gestió de Centre](#gestió-de-centre)
-  * [Informació de Centre](#informacií-de-centre)
+  * [Informació de Centre](#informació-de-centre)
   * [Actes](#actes)
   * [Projectes](#projectes)
   * [Gestor documental](#gestor-documental)
@@ -30,7 +30,7 @@
     * [Estat de una comissió](#estat-de-una-comissió)
     * [Alta nova comissió](#alta-nova-comissió)
   * [Notificació absències](#notificació-absències)
-  * [Gestió d'incidències](#gestió -dincidències)
+  * [Gestió d'incidències](#gestió-dincidències)
   * [Reserva aules](#reserva-aules)
   * [Oblit birret](#oblit-birret)
 * [Menú Actes/Convocatories](#menú-actesconvocatories)
@@ -99,19 +99,26 @@ En la zona 4 trobem també una icona d'un sobre amb el número de notificacions 
 Al polsar la icona es despleguen totes. Podem eliminar-les amb la icona de la paperera.
 
 ## Menú Documentació
-Des d'ací tenim accés a informació i documentació que anteriorment es trobaba al Moodle del Centre.
+Des d'ací tenim accés a informació i documentació general del Centre.
 
-### Veure les programacions
-Per a veure totes les programacions del Centre. Podem filtrar i ordenar pel criteri que vulguem (mòdul, cicle, departament, ...).
+### Veure les Programacions
+Ací trobem totes les programacions del Centre. Podem filtrar i ordenar pel criteri que vulguem (mòdul, cicle, departament, ...).
+
 ![Programacions](/img/ajuda/09-programacions.png)
 
-Per a veure la programació desitjada polsem el botó **+** que trobem al final de la línia.
+Per a veure la programació desitjada polsem el botó de la cadena que trobem a la dreta. Si es tracta d'una programació nostra també ens apareix un botó per a editar les seues dades (mòdul a que correspon, any, ...).
 
 ### Gestió de Centre
-Ací és on podem trobar totes les plantilles de centre. Els diferents documents estan organitzats en pestanyes segons qui els ha d'utilitzar (Professor, Tutor, Cap de departament, …). A cada usuario només l'apareixeran les pestanyes referents al seu rol.
+Ací és on podem trobar documents generals del centre com:
+* Justificants d'assistència per als alumnes o per als pares
+* Calendari escolar
+* Plànols del centre
+* ...
+
+Els diferents documents estan organitzats en pestanyes segons qui els ha d'utilitzar (Professor, Tutor, Cap de departament, …). A cada usuario només l'apareixeran les pestanyes referents al seu rol.
 
 ### Informació de Centre
-Ací trobem la informació general del Centre com el Pla Funcional de Centre (PFC), el Pal d'Emergències, el Reglament de Règim Intern (RRI), la PGA...
+Ací trobem la informació general del Centre com el Pla Funcional de Centre (PFC), el Pla d'atenció sanitària,  el Pla d'Emergències, el Reglament de Règim Intern (RRI), la PGA o els resums dels Consells Socials del Centre.
 
 ### Actes
 Ací trobem totes les actes ordenades per pestanyes:
@@ -125,15 +132,17 @@ Ací trobem totes les actes ordenades per pestanyes:
 ### Projectes
 Ací trobem els projectes presentats pels alumnes del cicles de grau superior en el mòdul de 'Projecte'. 
 
+![Projectes](/img/ajuda/projecte.png)
+
 ### Gestor documental
 Ací apareixeran tots els documents.
 
 
 ## Menú 'Docència'
-En la zona 1 del Panel de Control (vuere [il·lustració 2](#fig2)) tenim el menú per a totes les accions que podem fer en la intranet. Anem a veure les que més utilitzarem: les del menú **'Docència'**.:
+Ací trobem les accions més habituals que fan els professors:
 
 ### Gestió de grups
-Des del menú **'Profesorat' → 'Gestió Grups'** podem veure tots els nostres grups. El botó de 'Filtrar' de la part superior dreta ens permet buscar un grup concret.
+Ens mostra tots els nostres grups. El botó de 'Filtrar' de la part superior dreta ens permet buscar un grup concret.
 
 Com qualsevol llistat de la intranet el podem ordenar per la columna desitjada polsant sobre el títol de la columna.
 ![Grups](/img/ajuda/09-grupos.png)
@@ -141,15 +150,14 @@ Com qualsevol llistat de la intranet el podem ordenar per la columna desitjada p
 Les opcions que tenim per a qualsevol grup són:
 * Imprimir full de fotos: mostra el llistat d'alumnes del grup amb foto.
 * Horari del grup
-* Veure alumnes: llistat dels alumnes del grup des d'on podem
-  * Veure les seues dades.
+* Veure alumnes: ens apareix el llistat dels alumnes del grup amb una icona per a veure totes les dades de cada alumne. Si som el tutor del grup a més podem
+  * Veure les seues dades
   * Modificar el seu perfil (la foto o el e-mail).
   * Si hi ha curs o jornada disponible podem inscriure a l'alumne.
   * Imprimir el seu carnet
 * Mostrar equip educatiu: podem veure tots els membres de l'equip educatiu (igual que els membres del departament) i tenim l'opció d'avisar a algú o a tots.
 
 ### Claustre
-Des del menú **'Profesorat'** polsem en **'Claustre'**:
 
 ![Claustre](/img/ajuda/07-miDep.png)
 
@@ -164,14 +172,14 @@ En el nostre usuari apareixen 2 botons més:
 * Imprimir tarjetes de visita: obri un PDF amb targetes de visita que podem imprimir i retallar
 
 ### Equip directiu
-Trobem la mateixa informació que en el [claustre](#claustre) però de l'equip educatiu per a poder saber on trobar-los.
+Trobem la mateixa informació que en el [claustre](#claustre) però de l'equip directiu per a poder saber on trobar-los.
 
 ### Guàrdia
-Ens permet signar les guàrdies del nostre horari:
+Ens permet signar les guàrdies del nostre horari i incloure comentaris:
 
 ![Signar guàrdia](/img/ajuda/14-guardia.png)
 
-Només podem signar les guàrdies del dia actual, encara que es pot modificar el camp d'observacions persoals de guàrdies ja passades, principalment per a indicar per quin motiu no es va fer una guàrdia.
+Només podem signar les guàrdies del dia actual, encara que es pot modificar el camp de comentari persoal de guàrdies ja passades, principalment per a indicar per quin motiu no es va fer una guàrdia.
 
 Els camps que hi ha són:
 * Guàrdia feta: aquesta casella marcada indica que SÍ hem fet la guàrdia
@@ -187,15 +195,16 @@ Si per algun motiu no ho hem fet (sens a oblidat marcar-la o no l'hem feta per a
 
 ### Seguiments
 Des d'ací pujarem el seguiment de la nostra programació al final de cada avaluació:
-![Seguiments](/img/ajuda/10-seguiments.png)
 
-Les iconas de cada seguiment creat ens permeten esborrar-lo o modificar-lo.
+![Seguiments](/img/ajuda/10-seguiments.png)
 
 Per a pujar un nou seguiment polsem el botó 'Crea resultats per a un grup' de la part superior i introduïm les dades:
 * Grup, mòdul i avaluació
 * Alumnes matriculats, avaluats i aprovats
 * Unitats programades i impartides
 * Comentaris
+
+Les iconas de cada seguiment creat ens permeten esborrar-lo o modificar-lo.
 
 ### Programacions
 Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament).
@@ -225,11 +234,16 @@ Una vegada acabada la programació l'enviarem al nostre Cap de Departament polsa
 La programació queda en estat '_No autoritzada_'. Per a que el cap de departament no la pot veure per a revisar-la si no la enviem.
 
 ### Enquestes
+Des d'ací podem accedir a diferents enquestes o crear noves
 
 ## Menú 'Tràmits'
 Ací tenim molts tràmits usuals com:
 
 ### Expedients
+Per a gestionar els expedients oberts als alumnes. Hi ha 2 tipus d'expedient que un professor pot obrir a un alumne:
+* Part d'amonestació
+* Perdua d'avaluació contínua, per als alumnes que hagen suerat el màxim de faltes d'assistència
+
 
 ### Activitats extraescolars
 Ací apareixen totes les activitats extraescolars en las que nosaltres participem. Podem veure-las en format llistat o mosaic:
