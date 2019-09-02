@@ -15,10 +15,10 @@ class AlterPollsTable extends Migration
     {
         Schema::table('polls', function (Blueprint $table) {
             $table->dropColumn('activo');
-            $table->date('desde')->nullable();
-            $table->date('hasta')->nullable();
-            $table->integer('idModelo')->nullable()->unsigned();
-            $table->integer('idPPoll')->default(1)->unsigned();
+            //$table->date('desde')->nullable();
+            //$table->date('hasta')->nullable();
+            //$table->integer('idModelo')->nullable()->unsigned();
+            //$table->integer('idPPoll')->default(1)->unsigned();
             $table->foreign('idPPoll')->references('id')->on('ppolls')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
