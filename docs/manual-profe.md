@@ -309,7 +309,11 @@ Ací és on podem trobar totes les plantilles de centre. Els diferents documents
 Ací trobem la informació general del Centre com el Pla Funcional de Centre (PFC), el Pal d'Emergències, el Reglament de Règim Intern (RRI), la PGA...
 
 ### Actes
-Ací trobem totes les actes: dels Clauestres, reunions de departament, ...
+Ací trobem totes les actes ordenades per pestanyes:
+* COCOPE
+* Reunions de departament
+* Claustres
+* ...
 
 ### Projectes
 Ací trobem els projectes presentats pels alumnes del cicles de grau superior en el mòdul de 'Projecte'. 
