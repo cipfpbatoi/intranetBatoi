@@ -3,6 +3,7 @@
 Índex de continguts:
 
 * [Entrada](#entrada)
+  * [Pàgina d'inici](#pàgina-dinici)
   * [Control de presència](#control-de-presència)
   * [Notificacions](#notificacions)
 * [Menú 'Docència'](#menú-docència)
@@ -50,18 +51,51 @@ L'entrada a l'aplicació es realitza des de qualsevol dispositiu connectat a la 
 El més senzill és polsar el botó roig de 'Google' i serà ell qui ens autentifique demanant-nos el nostre compte d'email del Centre (si je el tenim obert entrem directament).
 
 També podem polsar el botó blau de 'Professor' (recomanat si estem en un equip que no és el nostre i no volem autenticar-nos amb Google) e introduir l'usuari (el nostre codi de 4 números o el nostre compte d'email del Centre) i la contrasenya (al principi el nostre DNI amb 0 davant, com apareix en Itaca, però és convenient canviar-ho).
-Una vegada dins estarem en el Panel de control des d'on tenim accés a totes les opcions:
+Una vegada dins estarem en la pàgina d'inici des d'on tenim accés a totes les opcions.
 
-<a name="fig2">![Panel de control](/img/ajuda/04-panel-control.png)
+### Pàgina d'inici
+Des de qualsevol pàgina podem accedir a aquesta pàgina polsant sobre el nom del Centre (part superior esquerra de cada pàgina).
+
+La pàgina d'inici te vàries parts:
+
+<a name="fig2">![Pàgina d'inici](/img/ajuda/04-panel-control.png)
+
+1. Nom del Centre: des d'ací tornem a la pàgina d'inici des de qualsevol altra pàgina. A la seua dreta hi ha una icona que ens permet amagar o mostrar la barra lateral dels menús
+2. Menús: ens permeten realitzar qualsevol acció e la intranet. Els veurem en detall més avant
+3. Menú inferior: conté iconas per a 
+    1. veure el manual del professor (aquest document)
+    2. veure les FAQs d'ajuda
+    3. enviar-nos el codi de fitxatge per a fitxar des del mòbil
+    4. tancar la sessió en la intranet (però sense fitxar l'eixida del Centre)
+4. Menú superior: ací tenim 3 parts
+    1. icona de [notificacions](#notificacions): missatges de la intranet i d'altres usuaris
+    2. icona de [control de presència](#control de presència) 
+    3. desplegable amb el nostre nom: ens mostra l'hora d'entrada i eixida del Centre i ens permet [editar el nostre perfil](#editar-el-nostre-perfil) o tancar la sessió de la intranet
+5. Menú d'accions: amb 5 icones
+    1. Plegar/desplegar la part central de la pàgina
+    2. Tornar a la pàgina anterior
+    3. Canviar l'idioma
+    4. Mostrar l'ajuda: mostra l'ajuda de la pàgina que estem veient (no totes les pàgines tenen ajuda)
+    5. Tancar la part central de la pàgina
+6. Perfil: ací tenim les nostres dades i un botó per a '[Editar el nostre perfil](#editar-el-nostre-perfil)'.
+7. Resum: tenim algunes informacions útils de la intranet com:
+    1. Properes activitats extraescolars: les prperes activitats que qualsevol departament va a realitzar pròximament
+    2. Absències: professors que no van a estar en el Centre per algun motiu (comissió de servei, activitat extraescolar, malaltia, ...)
+    3. Darreres accions fetes (comissions, activitats, ...)
+    4. Horari: el nostre horari
+    5. Actes: les actes, que podem trobar també en el menú [Documentació → Actes](#actes)
+
 
 ### Control de presència
-Quan iniciem sessió en la intranet es marca automàticament que estem en el centre si no ho estavem ja.
+Cada vegada que entrem o eixim del Centre hem de fitxar. Podem fer-ho des de l'ordinador que hi ha a l'entrada en Consergeria o des de la intranet. 
 
-Per a marcar que eixim del Centre polsem el rellotge que trobem a la part superior dreta (zona 5). Això ix de la intranet i marca que deixem el Centre.
+Quan iniciem sessió en la intranet es fitxa automàticament indicant que estem en el centre (si no ho estavem ja). Per a marcar que eixim del Centre polsem el rellotge que trobem a la part superior dreta (zona 4 de la imatge anterior). Això tanca la sessió en la intranet i marca que deixem el Centre.
 
 ### Notificacions
-En la zona 5 trobem una icona d'un sobre amb el número de notificacions pendents que tenim. Ací apareixen missatges d'altres usuaris i tot tipus d'informacions (si els alumnes se'n van a fer una activitat extraescolar, si hi ha cap reunió de departament, si no hem fixat un dia, ...).
+En la zona 4 trobem també una icona d'un sobre amb el número de notificacions pendents que tenim. Aquestes notificacions són missatges d'altres usuaris de la intranet i tot tipus d'informacions automàtiques: si els alumnes se'n van a fer una activitat extraescolar, si hi ha cap reunió de departament, si no hem fixat un dia, ...
+
 ![Notificacions](/img/ajuda/05-btnNotificacions.png)
+
 Al polsar la icona es despleguen totes. Podem eliminar-les amb la icona de la paperera.
 
 ## Menú 'Docència'
