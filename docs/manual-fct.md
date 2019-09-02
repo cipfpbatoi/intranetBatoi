@@ -1,13 +1,10 @@
 # Documentació d'FCT
 
 Index de continguts:
-
 * [Objectius](#objectius)
 * [Temporalitzacio](#temporalització)
 * [Gestió de contactes](#gestió-de-contactes)
-* [FCTsxAlumne](#fctxalumne)
-
-___
+---
 
 ## Objectius
 
@@ -157,5 +154,3 @@ En la part inferior tinc totes les col·laboracions ordenades amb els botons que
 A més hi ha un botó amb un telèfon per registrar un contacte telefònico amb un instructor.
 
 Cada contacte queda registrat i ix en cada col·laboració per que el tutor veja si ja ha fet un contacte o no.
-
-## FCTXALUMNE
