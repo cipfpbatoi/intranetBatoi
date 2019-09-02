@@ -6,6 +6,13 @@
   * [Pàgina d'inici](#pàgina-dinici)
   * [Control de presència](#control-de-presència)
   * [Notificacions](#notificacions)
+* [Menú Documentació](#menu-documentació)
+  * [Programacions](#veure-les-programacions)
+  * [Gestió de Centre](#gestió-de-centre)
+  * [Informació de Centre](#informacií-de-centre)
+  * [Actes](#actes)
+  * [Projectes](#projectes)
+  * [Gestor documental](#gestor-documental)
 * [Menú 'Docència'](#menú-docència)
   * [Gestió de grups](#gestió-de-grups)
   * [Claustre](#claustre)
@@ -30,13 +37,6 @@
   * [Gestió de reunions](#gestió-de-reunions)
   * [Grups de treball](#grups-de-treball)
 * [Menú Enllaços externs](#menú-enllaços-externs)
-* [Menú Documentació](#menu-documentació)
-  * [Programacions](#veure-les-programacions)
-  * [Gestió de Centre](#gestió-de-centre)
-  * [Informació de Centre](#informacií-de-centre)
-  * [Actes](#actes)
-  * [Projectes](#projectes)
-  * [Gestor documental](#gestor-documental)
 * [Altres accions](#altres-accions)
   * [El Panel de control](#el-panel-de-control)
   * [Canviar el nostre perfil](#canviar-el-nostre-perfil)
@@ -97,6 +97,37 @@ En la zona 4 trobem també una icona d'un sobre amb el número de notificacions 
 ![Notificacions](/img/ajuda/05-btnNotificacions.png)
 
 Al polsar la icona es despleguen totes. Podem eliminar-les amb la icona de la paperera.
+
+## Menú Documentació
+Des d'ací tenim accés a informació i documentació que anteriorment es trobaba al Moodle del Centre.
+
+### Veure les programacions
+Per a veure totes les programacions del Centre. Podem filtrar i ordenar pel criteri que vulguem (mòdul, cicle, departament, ...).
+![Programacions](/img/ajuda/09-programacions.png)
+
+Per a veure la programació desitjada polsem el botó **+** que trobem al final de la línia.
+
+### Gestió de Centre
+Ací és on podem trobar totes les plantilles de centre. Els diferents documents estan organitzats en pestanyes segons qui els ha d'utilitzar (Professor, Tutor, Cap de departament, …). A cada usuario només l'apareixeran les pestanyes referents al seu rol.
+
+### Informació de Centre
+Ací trobem la informació general del Centre com el Pla Funcional de Centre (PFC), el Pal d'Emergències, el Reglament de Règim Intern (RRI), la PGA...
+
+### Actes
+Ací trobem totes les actes ordenades per pestanyes:
+* COCOPE
+* Reunions de departament
+* Claustres
+* ...
+
+![Actes](/img/ajuda/acta.png)
+
+### Projectes
+Ací trobem els projectes presentats pels alumnes del cicles de grau superior en el mòdul de 'Projecte'. 
+
+### Gestor documental
+Ací apareixeran tots els documents.
+
 
 ## Menú 'Docència'
 En la zona 1 del Panel de Control (vuere [il·lustració 2](#fig2)) tenim el menú per a totes les accions que podem fer en la intranet. Anem a veure les que més utilitzarem: les del menú **'Docència'**.:
@@ -340,36 +371,6 @@ Des d'ací podem accedir ràpidament a:
 * Moodle: ens obri el Moodle del Centre. Si ens hem autenticat amb Google per a entrar a la intranet ara no tindrem que tornar-ho a fer
 * Correu: obri el nostre compte de Gmail del Centre (el ...@cipfpbatoi.es)
 * Itaca: ens porta a la pàgina d'Itaca. Ací sí que ens haurem d'autenticar
-
-## Menú Documentació
-Des d'ací tenim accés a informació i documentació que anteriorment es trobaba al Moodle del Centre.
-
-### Veure les programacions
-Per a veure totes les programacions del Centre. Podem filtrar i ordenar pel criteri que vulguem (mòdul, cicle, departament, ...).
-![Programacions](/img/ajuda/09-programacions.png)
-
-Per a veure la programació desitjada polsem el botó **+** que trobem al final de la línia.
-
-### Gestió de Centre
-Ací és on podem trobar totes les plantilles de centre. Els diferents documents estan organitzats en pestanyes segons qui els ha d'utilitzar (Professor, Tutor, Cap de departament, …). A cada usuario només l'apareixeran les pestanyes referents al seu rol.
-
-### Informació de Centre
-Ací trobem la informació general del Centre com el Pla Funcional de Centre (PFC), el Pal d'Emergències, el Reglament de Règim Intern (RRI), la PGA...
-
-### Actes
-Ací trobem totes les actes ordenades per pestanyes:
-* COCOPE
-* Reunions de departament
-* Claustres
-* ...
-
-![Actes](/img/ajuda/acta.png)
-
-### Projectes
-Ací trobem els projectes presentats pels alumnes del cicles de grau superior en el mòdul de 'Projecte'. 
-
-### Gestor documental
-Ací apareixeran tots els documents.
 
 ## Altres accions
 En aquest apartat veurem les diferents eines que ens proporcina la intranet.
