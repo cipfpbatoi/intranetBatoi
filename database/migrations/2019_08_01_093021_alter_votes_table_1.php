@@ -14,7 +14,7 @@ class AlterVotesTable1 extends Migration
     public function up()
     {
         Schema::table('votes', function (Blueprint $table) {
-            $table->integer('idPoll')->unsigned();
+            //$table->integer('idPoll')->unsigned();
             $table->foreign('idPoll')->references('id')->on('polls')->onUpdate('CASCADE')->onDelete('CASCADE');
 
 
@@ -31,7 +31,7 @@ class AlterVotesTable1 extends Migration
 	{
         Schema::table('votes', function (Blueprint $table) {
             $table->dropForeign('votes_idpoll_foreign');
-            $table->dropColumn('idPoll');
+            //$table->dropColumn('idPoll');
         });
 	}
 
