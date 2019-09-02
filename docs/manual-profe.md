@@ -38,13 +38,13 @@
 ___
 
 ## Entrada
-La entrada a l'aplicació es realitza des de cualsevol dispositiu connectat a la xarxa del Centre, tant cablejada com WiFi. Per tant, a més del PC del aula podem usar el nostre portàtil, una tablet o el mòbil.
+L'entrada a l'aplicació es realitza des de qualsevol dispositiu connectat a la xarxa del Centre, tant cablejada com WiFi. Per tant, a més del PC del aula podem usar el nostre portàtil, una tablet o el mòbil.
 
 ![login](/img/ajuda/01-login.png)
 
 El més senzill és polsar el botó roig de 'Google' i serà ell qui ens autentifique demanant-nos el nostre compte d'email del Centre (si je el tenim obert entrem directament).
 
-També podem polsar el botó blau de 'Professor' (recomanat si estem en un equip que no és el nostre i no volem autenticar-nos amb Google) e introduir l'usuari (el nostre codi de 4 números o el nostre compte d'email del Centre) i la contrasenya (al principi el nostre DNI com apareix en Itaca però és convenient canviar-ho).
+També podem polsar el botó blau de 'Professor' (recomanat si estem en un equip que no és el nostre i no volem autenticar-nos amb Google) e introduir l'usuari (el nostre codi de 4 números o el nostre compte d'email del Centre) i la contrasenya (al principi el nostre DNI amb 0 davant, com apareix en Itaca, però és convenient canviar-ho).
 Una vegada dins estarem en el Panel de control des d'on tenim accés a totes les opcions:
 
 <a name="fig2">![Panel de control](/img/ajuda/04-panel-control.png)
@@ -52,7 +52,7 @@ Una vegada dins estarem en el Panel de control des d'on tenim accés a totes les
 ### Control de presència
 Quan iniciem sessió en la intranet es marca automàticament que estem en el centre si no ho estavem ja.
 
-Per a marcar que eixim del Centre polsem el rellotge que trobem a la part superior dreta (zona 5). Això a més d'indicar que deixem el Centre ix de la intranet.
+Per a marcar que eixim del Centre polsem el rellotge que trobem a la part superior dreta (zona 5). Això ix de la intranet i marca que deixem el Centre.
 
 ### Notificacions
 En la zona 5 trobem una icona d'un sobre amb el número de notificacions pendents que tenim. Ací apareixen missatges d'altres usuaris i tot tipus d'informacions (si els alumnes se'n van a fer una activitat extraescolar, si hi ha cap reunió de departament, si no hem fixat un dia, ...).
@@ -97,23 +97,31 @@ Les opcions que tenim per a qualsevol grup són:
 * Mostrar equip educatiu: podem veure tots els membres de l'equip educatiu (igual que els membres del departament) i tenim l'opció d'avisar a algú o a tots.
 
 ### Editar Programacions
-Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament). Les operacions que podem fer amb cadascuna són:
+Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament).
+
+Les operacions que podem fer amb cadascuna són:
 * **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la en Google Drive
 * **Enviar** (icona del sobre): per a enviar la programació al nostre Cap de departament quan estiga acabada
 * **Omplir seguiment** (icona dels prismàtics): per a introduir el seguiment de la programació al final del curs. Al pricipi apareix el seguiment de l'any anterior
 
-Totes les programacions esta al Google Drive i és allí on s'han de modificar. Podem accedir a la nostra programació per a editar-la des de la intranet (botó d'Enllaç) o des de casa (utilitzant un enllaç que ens han enviat al nostre email del Centre). Recordeu que NO HEM DE BAIXAR-NOS la programació sinó que la modificarem directament en Google Drive.
+Els estats pels que pasa una programació són:
+* '_No autoritzada/comunicada_': és el seu estat inicial i vol dir que encara no l'hem enviat al Cap del departament. En aquest estat modificarem la programació i a enviarem al Cap de departament
+* '_No autoritzada_': ja està enviada al Cap de departament per a que la revise. Si hi ha alguna cosa que canviar ens enviarà un email indicant-nos què i haurem de modificar-la i tornar a enviar-la.
+* '_Autoritzada_': quan la nostra programació està correcta en Cap de departament la marca com Autoritzada i ja no podem fer canvis en la mateixa
 
-El primer que farem en la nostra programació es canviar el nom del document. La primera vegada té un codi intern que canviarem per **Cicle - Codi del mòdul - Nom del mòdul**, per exemple:
+Totes les programacions esta al Google Drive i és allí on s'han de modificar. Podem accedir a la nostra programació per a editar-la des de la intranet (botó d'Enllaç) o des de casa (utilitzant un enllaç que ens han enviat al nostre email del Centre). Recordeu que NO HEM DE BAIXAR-NOS la programació per a modificar-la sinó que la modificarem directament en Google Drive.
+
+El primer que farem en la nostra programació és canviar el nom del document. La primera vegada té com a nom un codi intern que canviarem per **Codi del cicle - Codi del mòdul - Nom del mòdul**, per exemple:
+
 ```
 SMX - 0222 - Sistemes Operatius Monolloc
 ```
 
 Si un mateix mòdul es dona en més d'un grup la programació ha de ser la mateixa i per tant l'enllaç és el mateix per a tots els professors que la donen. Les posibles diferències entre els grups es posaran en annexos al final de la programació.
 
-Una vegada acabada la programació la enviem al nostre Cap de Departament polsem el botó de **Enviar** (el del sobre).
+Una vegada acabada la programació l'enviarem al nostre Cap de Departament polsant el botó de **Enviar** (icona del sobre).
 
-La programació queda en estat 'No autoritzada'. Per a que el cap de departament la tinga disponible per a revisar cal polsar el botó del sobre.
+La programació queda en estat '_No autoritzada_'. Per a que el cap de departament no la pot veure per a revisar-la si no la enviem.
 
 ### Seguiments
 Des d'ací pujarem el seguiment de la nostra programació al final de cada avaluació:
@@ -229,11 +237,11 @@ Els camps que hi ha són:
 * Comentari personal: per a indicar a caporalia qualsevol situació nostra (no de la guàrdia), com per exemple que no hem fet la guàrdia perquè estàvem atenent a una pares
 
 #### Fer la guàrdia
-Només es pot marcar des de l'ordinador de la Biblioteca i dins de l'hora de la nostra guàrdia.
+Només es pot marcar des de l'ordinador de la Biblioteca o de la Sala de professors, i dins de l'hora de la nostra guàrdia.
 
-Seleccionem l'hora, marquem la casella 'Guàrdia fete' i polsem el botó **'Guardar'**.
+Seleccionem l'hora, marquem la casella 'Guàrdia feta' i polsem el botó **'Guardar'**.
 
-Si per algun motiu no ho hem fet (sens a oblidat marcar-la o no l'hem feta per alguna cosa) seleccionem l'hora de la guàrdia, omplim el camp de '**Comentaris personals**' (els altes no estan dsponibles) i polsem el botó '**Guardar**'.
+Si per algun motiu no ho hem fet (sens a oblidat marcar-la o no l'hem feta per algun motiu) seleccionem l'hora de la guàrdia, omplim el camp de '**Comentaris personals**' (els altes no estan dsponibles) i polsem el botó '**Guardar**'.
 
 ### Reservar espai
 Permet a qualsevol professor reservar un espai, com un aula d'informàtica o el Saló d'actes, per a fer en ell qualsevol activitt (un examen, una xarrada, …).
