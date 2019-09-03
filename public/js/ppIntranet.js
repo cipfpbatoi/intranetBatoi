@@ -14,9 +14,14 @@ $(function() {
 	// Mensaje de salida
 	$('#imgFitxar').parents('a').on('click', function(event) {
 		if (!confirm('Vas a fitxar que ixes del Centre i es va a tancar la Intranet')) {
-			event.preventDefault();
+
 		}
 
 	})
+	$("#question").on('click', function(event) {
+		event.preventDefault();
+		window.open(this.href,"Ajuda Intranet Batoi","width=520,height=600");
+	})
+
 })
 

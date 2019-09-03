@@ -30,12 +30,12 @@ return [
         'redirect' => 'misColaboraciones',
     ],
     'follow' => [
-        'subject' => "Seguiment Pràctiques de FCT",
+        'subject' => "Email per seguiment Pràctiques de FCT",
         'receiver' => 'Instructor',
         'view' => 'email.fct.follow',
     ],
     'followU' => [
-        'subject' => "Seguiment Pràctiques de FCT",
+        'subject' => "Email seguiment ",
         'receiver' => 'Instructor',
         'view' => 'email.fct.followU',
         'redirect' => 'misColaboraciones',

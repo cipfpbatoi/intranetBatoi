@@ -4,11 +4,13 @@ Index de continguts:
 * [Objectius](#objectius)
 * [Temporalitzacio](#temporalització)
 * [Gestió de contactes](#gestió-de-contactes)
+* [FCTxAlumne](#fctxalumne)
+* 
 ---
 
 ## Objectius
 
-L'objectiu del menú de FCT és portar tot el procés, des del contacte amb l'empresa fins l'avaluació de l'alumnat, deixant les evidències necessàries i facilitant el seguiment per part del tutor.
+L'objectiu del menú de Pràctiques és portar tot el procés, des del contacte amb l'empresa fins l'avaluació de l'alumnat, deixant les evidències necessàries i facilitant el seguiment per part del tutor.
 Cal a dir també que:
 
 * Hi ha una part de documentació que s'ha de fer amb el SAO, i no hi podem fugir.
@@ -154,3 +156,6 @@ En la part inferior tinc totes les col·laboracions ordenades amb els botons que
 A més hi ha un botó amb un telèfon per registrar un contacte telefònico amb un instructor.
 
 Cada contacte queda registrat i ix en cada col·laboració per que el tutor veja si ja ha fet un contacte o no.
+
+## FCTXALUMNE
+

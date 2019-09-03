@@ -47,11 +47,25 @@ class Activity extends Model
     {
         return $query->where('model_class','Intranet\Entities\\'.$modelo)->where('action','email')->orWhere('action','phone');
     }
+
+    public function scopeContactes($query)
+    {
+        return $query->where('action','email')->orWhere('action','phone')->where('comentari','<>','Concertar visita de FCT');
+
+    }
+    public function scopeNotConcertar($query)
+    {
+        return $query->where('comentari','<>','Concertar visita de FCT');
+    }
     public function scopeId($query,$id){
         return $query->where('model_id',$id);
     }
     public function scopeIds($query,$ids){
         return $query->whereIn('model_id',$ids);
+    }
+    public function scopeRelationId($query,$id){
+        $colaboracion = Fct::find($id)->idColaboracion;
+        return $query->where('model_id',$id)->orWhere('model_id',$colaboracion);
     }
 
 }

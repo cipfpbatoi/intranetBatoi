@@ -81,7 +81,7 @@ class ComisionController extends IntranetController
         file_put_contents(storage_path("tmp/visita_$elemento->id.ics"), $this->build_ics($ini,$fin,'Visita del Tutor CIPFPBatoi','Seguimiento Fct',$elemento->Centro)->render());
         $attach = [ "tmp/visita_$elemento->id.ics" => 'text/calendar'];
 
-        $mail = new Mail($elemento,$fecha,'Comissió FCT','email.fct.confirm',AuthUser()->email,AuthUser()->fullName,null,true,$attach);
+        $mail = new Mail($elemento,$fecha,'Visita Empresa','email.fct.confirm',AuthUser()->email,AuthUser()->fullName,null,true,$attach,'visita');
         $mail->send($fecha);
 
     }

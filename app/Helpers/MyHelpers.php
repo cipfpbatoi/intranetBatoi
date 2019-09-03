@@ -354,11 +354,16 @@ function subsRequest(Illuminate\Http\Request $request, $fields)
 function mdFind($file, $link)
 {
     $fichero = Storage::disk('documentacio')->get($file);
+    //dd($fichero);
     $indice = substr($fichero, 0, strpos($fichero, $link));
+    //dd($indice);
     $cadena = substr($indice, strrpos($indice, '[') + 1, strrpos($indice, ']') - strrpos($indice, '[') - 1);
-
+    dd($cadena);
     $resto = strstr($fichero, $link);
+    //dd($resto);
     $desde = strstr($resto, $cadena);
+    dd($desde);
+    dd(substr($desde, 0, strpos($desde, '##')));
 
     return substr($desde, 0, strpos($desde, '###'));
 }

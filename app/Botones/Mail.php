@@ -25,6 +25,7 @@ class Mail
     private $class;
     private $register;
     private $attach;
+    private $action;
 
     /**
      * Mail constructor.
@@ -34,7 +35,7 @@ class Mail
      * @param $content
      * @param $route
      */
-    public function __construct($elements=null,$toPeople=null,$subject=null,$view=null,$from=null,$fromPerson=null,$class=null,$register=true,$attach=null)
+    public function __construct($elements=null,$toPeople=null,$subject=null,$view=null,$from=null,$fromPerson=null,$class=null,$register=true,$attach=null,$action='email')
     {
         $this->from = $from?$from:AuthUser()->email;
         $this->subject = $subject;
@@ -43,6 +44,7 @@ class Mail
         $this->toPeople = $toPeople;
         $this->register = $register;
         $this->attach =$attach;
+        $this->action = $action;
         if (is_object($elements)){
             $this->elements = $elements;
             $this->class = get_class($this->elements->first());
@@ -108,7 +110,7 @@ class Mail
                 ->send(new DocumentRequest($this, $this->chooseView(), $elemento,$this->attach));
             Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
             if ($this->register)
-                Activity::record('email', $elemento, $this->subject,$fecha);
+                Activity::record($this->action, $elemento, $this->subject,$fecha);
         }
     }
 

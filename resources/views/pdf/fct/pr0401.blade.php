@@ -29,43 +29,48 @@
                     </span></td>
                 <td style="text-align:left;width:30.2833cm;padding-left: 5px;font-size: 0.9em "><strong>Tutor:</strong> <span>{{AuthUser()->FullName}}</span></td>
             </tr>
+            <tr>
+                <td colspan="2" style="text-align:left;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Alumnes:</strong>
+                    @foreach ($grupo as $alumno)
+                        <span>{{ $alumno->Alumno->FullName }} </span>
+                    @endforeach
+                </td>
+            </tr>
         </table>
-        <p><strong>SEGUIMENTS</strong></p>
-        <table border="1" >
-            <colgroup><col width="350"/><col width="120"/><col width="120"/><col width="120"/><col width="120"/><col width="120"/><col width="120"/><col width="120"/><col width="120"/></colgroup>
+        <br/>
+        <table border="1" cellspacing="0" cellpadding="0">
             <tr>
-                <td rowspan='2' valign='top' style="text-align:left;padding-left: 5px;font-size: 0.8em"><strong>ALUMNE (NOM I COGNOMS)</strong></td>
-                <td colspan='2' style="text-align:left;padding-left: 5px;"><strong>DATA:<br/>Tipus cte*:</strong></td>
-                <td colspan='2' style="text-align:left;padding-left: 5px;"><strong>DATA:<br/>Tipus cte*:</strong></td>
-                <td colspan='2' style="text-align:left;padding-left: 5px;"><strong>DATA:<br/>Tipus cte*:</strong></td>
-                <td colspan='2' style="text-align:left;padding-left: 5px;"><strong>DATA:<br/>Tipus cte*:</strong></td>
+                <td colspan="3" style="text-align:center;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Seguiments:</strong>
+                </td>
             </tr>
             <tr>
-                <td colspan='2'>Observacions</td><td colspan='2'>Observacions</td><td colspan='2'>Observacions</td><td colspan='2'>Observacions</td>
+                <td>Data</td>
+                <td>Medi</td>
+                <td>Tipus Contacte</td>
             </tr>
-            @foreach ($grupo as $alumno)
-            <tr><td rowspan='2' style="text-align:left;height:1.5cm;padding-left: 5px;font-size: 1em;font-weight: bold " > {{ $alumno->Alumno->FullName }} </p></td><td rowspan='2' colspan="2"><br/><br/></td><td rowspan='2' colspan="2"><br/><br/></td><td rowspan='2' colspan="2"><br/><br/></td><td rowspan='2' colspan="2"><br/><br/></td></tr>
-            <tr></tr>
+            @php
+                $contactFct = \Intranet\Entities\Activity::contactes()->relationId($grupo->first()->idFct)->orderBy('created_at')->get();
+            @endphp
+            @foreach ($contactFct as $contact)
+                <tr>
+                    <td style="text-align:left;padding-left: 5px;font-size: 0.9em "><strong>{{fechaCurta($contact->created_at)}}</strong></td>
+                    <td style="text-align:left;padding-left: 5px;font-size: 0.9em "><strong>{{$contact->action}}</strong></td>
+                    <td style="text-align:left;padding-left: 5px;font-size: 0.9em "><strong>{{$contact->comentari}}</strong></td>
+                </tr>
             @endforeach
-            <tr style="height:3cm">
-                <td valign='top' style="text-align:left;padding-left: 5px;font-size: 1em "><strong>Observacions Generals:</strong></td>
-                <td valign='bottom'>Signatura Tutor</td>
-                <td valign='bottom'>Signatura Instructor</td>
-                <td valign='bottom'>Signatura Tutor</td>
-                <td valign='bottom'>Signatura Instructor</td>
-                <td valign='bottom'>Signatura Tutor</td>
-                <td valign='bottom'>Signatura Instructor</td>
-                <td valign='bottom'>Signatura Tutor</td>
-                <td valign='bottom'>Signatura Instructor</td>
-            </tr>
         </table>
-            <div style="float:left;">
+        <table border='1' style="width:350px;height:100px;float:left;margin-bottom: 20px">
+            <tr><td style='text-align: left; vertical-align: top '><strong>Signatura Tutor:</strong></td></tr>
+        </table>
+        <table border='1' style="width:350px;height:100px;float:left;margin-bottom: 20px">
+            <tr><td style='text-align: left; vertical-align: top '><strong>Signatura Instructor:</strong></td></tr>
+        </table>
+        <div style="float:left;">
             <p style="font-size: x-small; font-weight: bold ">
                En cas d'avaluació negativa s'haurà d'obrir un registre de Queixes i Suggerències (PG06-01) per a resoldre el problema i realitzar un seguiment d'aquest.<br/>
                 *Contacte amb l'instructor a l'empresa o via telefònica.
             </p>
         </div>
-        
     </div>
     @endforeach
 @endsection
