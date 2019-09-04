@@ -90,13 +90,14 @@ class Programacion extends Model
                 ->where('modulo', '!=', null)
                 ->get();
         $modulos = [];
-        //dd($horas);
+
         foreach ($horas as $hora){
             if ($mc = Modulo_ciclo::where('idModulo',$hora->modulo)
                     ->where('idCiclo',$hora->Grupo->idCiclo)
                     ->first())
             $modulos[] = $mc->id;
         }
+
         return $query->whereIn('idModuloCiclo', $modulos)
                 ->where('curso',Curso());
     }

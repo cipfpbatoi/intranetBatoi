@@ -114,6 +114,8 @@ class AdministracionController extends Controller
         foreach ($tables as $tabla) {
             DB::table($tabla)->delete();
         }
+        Programacion::where('estado', 4)->delete();
+        Programacion::where('curso', '!=', Curso())->update(['estado' => 4]);
         return back();
     }
 

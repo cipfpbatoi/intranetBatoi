@@ -11,7 +11,7 @@ class PanelProgramacionAllController extends BaseController
 
    
     protected $model = 'Programacion';
-    protected $gridFields = ['Xciclo','XModulo', 'Xdepartamento','ciclo'];
+    protected $gridFields = ['Xciclo','XModulo', 'Xdepartamento'];
     protected $redirect = 'PanelProgramacionAllController@index';
     protected $parametresVista = [];
     
@@ -27,6 +27,6 @@ class PanelProgramacionAllController extends BaseController
             $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['anexos', '>', 0]]));
         }
         else $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
-        $this->panel->setBoton('grid', new BotonImg('programacion.edit',['roles' => config('roles.rol.administracion')]));
+        $this->panel->setBoton('grid', new BotonImg('programacion.edit',['roles' => config('roles.rol.administrador')]));
     }
 }
