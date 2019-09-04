@@ -1,4 +1,13 @@
 @foreach ($panel->getElementos($pestana) as $elemento)
+    @php
+        $contactCol = \Intranet\Entities\Activity::mail('Colaboracion')->id($elemento->id)->orderBy('created_at')->get();
+        $fcts = \Intranet\Entities\Fct::where('idColaboracion',$elemento->id)->where('asociacion',1)->get();
+        $contactFct = \Intranet\Entities\Activity::mail('Fct')->ids(hazArray($fcts,'id','id'))->orderBy('created_at')->get();
+        $alumnos = [];
+        foreach ($fcts as $fct)
+            $alumnos = array_merge($alumnos,hazArray($fct->Alumnos,'nia','nia'));
+        $contactAl = \Intranet\Entities\Activity::mail('Alumno')->ids($alumnos)->orderBy('created_at')->get();
+    @endphp
     <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
         <div id="{{$elemento->id}}" class="well profile_view">
             <div class="col-sm-12">
@@ -13,15 +22,6 @@
                     </ul>
                 </div>
                 <div class="col-md-4 listActivity">
-                    @php
-                        $contactCol = \Intranet\Entities\Activity::mail('Colaboracion')->id($elemento->id)->orderBy('created_at')->get();
-                        $fcts = \Intranet\Entities\Fct::where('idColaboracion',$elemento->id)->where('asociacion',1)->get();
-                        $contactFct = \Intranet\Entities\Activity::mail('Fct')->ids(hazArray($fcts,'id','id'))->get();
-                        $alumnos = [];
-                        foreach ($fcts as $fct)
-                            $alumnos = array_merge($alumnos,hazArray($fct->Alumnos,'nia','nia'));
-                        $contactAl = \Intranet\Entities\Activity::mail('Alumno')->ids($alumnos)->get();
-                    @endphp
                     @foreach ($contactCol as $contacto)
                         <small>{{firstWord($contacto->comentari)}}-{{fechaCurta($contacto->created_at)}}</small><br/>
                     @endforeach
@@ -38,6 +38,11 @@
                     <p class="ratings">
                         {{$elemento->Centro->localidad}}<br/>
                     </p>
+                    <a href="/colaboracion/{{$elemento->id}}/show" class="btn-success btn btn-xs"><i class="fa fa-eye"></i>
+                        @if (count($alumnos))
+                            {{count($alumnos)}}
+                        @endif
+                    </a>
                 </div>
                 <div class="col-xs-12 col-sm-9 emphasis">
                     @include ('intranet.partials.buttons',['tipo' => 'profile'])<br/>

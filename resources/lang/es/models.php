@@ -282,7 +282,7 @@ return array(
             'fct' => 'FCTs',
         ),
         'Fct' => array(
-            'index' => 'FCT',
+            'index' => 'FCT x Empresa',
             'create' => 'Nueva Fct',
             'edit' => 'Editar Fct',
             'delete' => 'Borrar Fct',
@@ -304,6 +304,7 @@ return array(
             'list' => 'Acta Grupo :quien',
             'acta' => 'Pedir acta de evaluación',
             'empresa' => "Inserción Laboral",
+            'default' => 'x Empresa',
         ),
         'Dual' => array(
             'index' => 'FP Dual',
@@ -389,7 +390,13 @@ return array(
         'AlumnoFct' => array(
           'index' => 'Fct x Alumno',
           'convalidacion' => 'FCT Convalidada/Exento',
-          'edit' => 'Modificar Fct'  
+
+            'create' => 'Nueva Exención',
+            'edit' => 'Modificar Datos Fct',
+            'pdf' => 'Imprimir certificados Alumno',
+            'email' => 'Enviar Correos Valoración Alumno',
+            'pg0301' => "Entregada documentación",
+            'default' => 'x Alumne',
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',

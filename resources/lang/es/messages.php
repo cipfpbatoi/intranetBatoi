@@ -205,7 +205,7 @@ return array(
         'Documento' => 'Gestor Documental',
         'Nohanfichado' => 'Presencia',
         'Fct' => 'FCTsxEmpresa',
-        'Fctxal' => 'FCTsxAlumno',
+        'Fctxal' => 'FCTs',
         'Empresa' => 'Empresas',
         'Extraescolares' => 'Informe Departamento',
         'Lfaltas' => 'Listados mensuales',

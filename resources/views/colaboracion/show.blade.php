@@ -104,11 +104,11 @@
 <div class="col-md-9 col-sm-9 col-xs-12">
     <div class="" role="tabpanel" data-example-id="togglable-tabs">.
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-            <li role="presentation" class="active" ><a href="#tab_content1" role="tab" id="colaboracion-tab" data-toggle="tab" aria-expanded="false">@lang("models.Colaboracion.contactos")</a>
+            <li role="presentation"  ><a href="#tab_content1" role="tab" id="colaboracion-tab" data-toggle="tab" aria-expanded="false">@lang("models.Colaboracion.contactos")</a>
             </li>
             <li role="presentation"><a href="#tab_content2" id="centro-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.fctAl")</a>
             </li>
-            <li role="presentation"><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.fct")</a>
+            <li role="presentation" class="active"><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.fct")</a>
             </li>
         </ul>
         <div id="myTabContent" class="tab-content">
@@ -123,7 +123,7 @@
                 
             </div>
 
-                <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="centro-tab">
+                <div role="tabpanel" class="tab-pane fade " id="tab_content1" aria-labelledby="centro-tab">
 
             
                 <!-- start user projects -->
@@ -132,7 +132,7 @@
                 <!-- end user projects -->
 
             </div>
-            <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="fct-tab">
+            <div role="tabpanel" class="tab-pane fade active in" id="tab_content3" aria-labelledby="fct-tab">
 
 
                 <!-- start user projects -->
@@ -150,5 +150,5 @@
 @lang("messages.menu.Empresa"): {{$elemento->Centro->nombre}}
 @endsection
 @section('scripts')
-
+    {{ Html::script("/js/Colaboracion/modal.js") }}
 @endsection

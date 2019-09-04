@@ -86,7 +86,7 @@ abstract class Boton
         if ($this->href != '#') {
             $a = explode(".", $this->href);
             $this->modelo = $a[0];
-            $this->accion = $a[1];
+            $this->accion = isset($a[1])?$a[1]:'';
             if (isset($a[2])) $this->postUrl = $a[2];
         }
     }
