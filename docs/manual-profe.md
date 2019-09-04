@@ -39,7 +39,7 @@
 * [Menú Enllaços externs](#menú-enllaços-externs)
 * [Altres accions](#altres-accions)
   * [El Panel de control](#el-panel-de-control)
-  * [Canviar el nostre perfil](#canviar-el-nostre-perfil)
+  * [Editar el nostre perfil](#editar-perfil)
   * [Taules d'informació](#taules-dinformació)
 
 
@@ -412,7 +412,7 @@ El Panel de control te vàries parts:
     4. Tancar la part central de la pàgina
 7. Menú inferior: conté una opció per a tancar la sessió
 
-### Canviar el nostre perfil
+### Editar perfil
 Des del botó de 'Editar perfil' podem canviar en nostre correu electrònic i la nostra foto.
 
 ![Editar perfil](/img/ajuda/08-perfil-modificar.png)
