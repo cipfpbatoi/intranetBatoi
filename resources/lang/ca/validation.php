@@ -263,8 +263,9 @@ return array(
                 'Instructor' => 'Instructor',
                 'question' => 'Enunciat pregunta',
                 'scala' => 'Escala valoració',
-                'aviso' => 'Envia correu'
-                
+                'aviso' => 'Envia correu',
+                'Dual' => 'Tutor Dual',
+
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

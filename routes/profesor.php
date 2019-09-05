@@ -209,6 +209,7 @@ Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'Co
 Route::resource('/fct', 'FctController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/fct/{id}/{alumno}/alumnoDelete',['as' => 'fct.alumno.delete', 'uses' => 'FctController@alumnoDelete']);
 Route::post('/fct/{id}/alumnoCreate', ['as' => 'fct.alumno.create', 'uses' => 'FctController@nouAlumno']);
+Route::post('/fct/fctalumnoCreate', ['as' => 'fct.alumno.fct.create', 'uses' => 'FctController@nouFctAlumno']);
 Route::post('/fct/{id}/instructorCreate',['as'=>'fct.instructor.create','uses'=>'FctController@nouInstructor']);
 Route::get('/fct/{id}/{dni}/instructorDelete',['as'=>'fct.instructor.delete','uses'=>'FctController@deleteInstructor']);
 Route::post('/fct/{id}/modificaHoras',['as'=>'fct.modificarHoras','uses'=>'FctController@modificaHoras']);
@@ -380,9 +381,9 @@ Route::resource('/option', 'OptionController', ['except' => ['destroy', 'update'
 Route::post('/option/create', ['as' => 'option.store', 'uses' => 'OptionController@store']);
 Route::get('/option/{id}/delete', ['as' => 'option.destroy', 'uses' => 'OptionController@destroy']);
 
-Route::resource('/poll', 'PollController', ['except' => ['destroy', 'update','show']]);
-Route::post('/poll/create', ['as' => 'poll.store', 'uses' => 'PollController@store']);
-Route::put('/poll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PollController@update']);
+Route::resource('/poll', 'PPollController', ['except' => ['destroy', 'update','show']]);
+Route::post('/poll/create', ['as' => 'poll.store', 'uses' => 'PPollController@store']);
+Route::put('/ppoll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PPollController@update']);
 Route::get('/poll/{id}/show', ['as' => 'poll.resultShow', 'uses' => 'PollController@lookAtMyVotes']);
 Route::get('/poll/{id}/chart', ['as' => 'poll.result', 'uses' => 'PollController@lookAtAllVotes']);
 

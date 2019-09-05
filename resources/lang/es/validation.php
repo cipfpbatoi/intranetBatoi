@@ -256,7 +256,9 @@ return array(
                 'TutoresFct' => 'Otros tutores',
                 'nalumnes' => 'Número',
                 'Instructor' => 'Instructor',
-                'aviso' => 'Envia correo'
+                'aviso' => 'Envia correo',
+                'Dual' => 'Tutor Dual',
+
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

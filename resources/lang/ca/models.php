@@ -144,7 +144,7 @@ return array(
             'detalle' => 'Vore alumnes',
             'edit' => 'Editar Grup',
             'pdf' => 'Imprimir Full de fotos',
-            'asigna' => 'Asigna cicle Automàticament'
+            'asigna' => 'Asigna cicle Automàticament',
         ),
         'Curso' => array(
             'create' => 'Nou Curs/Ponència',

@@ -207,6 +207,7 @@ class FctController extends IntranetController
      */
     public function store(Request $request)
     {
+
         $idFct = DB::transaction(function() use ($request){
             $idAlumno = $request['idAlumno'];
             $hasta = $request['hasta'];
@@ -224,6 +225,7 @@ class FctController extends IntranetController
             if (!$id){ 
                 $elemento = new Fct();
                 $this->validateAll($request, $elemento);
+
                 $id = $elemento->fillAll($request);
             } 
             $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($hasta),'horas'=>$request->horas]);
@@ -273,6 +275,18 @@ class FctController extends IntranetController
         $fct->Alumnos()->attach($request->idAlumno,['calificacion'=>0,'calProyecto'=>0,'actas'=>0,'insercion'=>0,
             'desde'=> FechaInglesa($request->desde),'hasta'=> FechaInglesa($request->hasta),'horas'=>$request->horas]);
         
+        return back();
+    }
+
+    /**
+     * @param $idFct
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function nouFctAlumno(Request $request){
+
+        $this->store($request);
+
         return back();
     }
 

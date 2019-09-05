@@ -12,6 +12,7 @@
             <form id='formFct' action='' method='post'>
                 <div class="modal-body">
                     @csrf
+                    @lang("validation.attributes.alumno") :
                     <select name='idAlumno'>
                         @foreach (hazArray(\Intranet\Entities\Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',['NameFull','horasFct'],'-') as $key => $alumno)
                         <option value="{{ $key }}"> {{ $alumno }}</option>

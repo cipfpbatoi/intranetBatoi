@@ -160,8 +160,10 @@ return array(
         'change' => 'Tornar  al meu Usuari',
         'fse' => 'Acta fons social Europeu',
         'fol' => 'Certificat fol',
+        'aFol' => 'Certificat fol',
         'gestor' => 'Gestor Documental',
         'contact' =>'Registrar contacte',
+
     ),
     'menu' => array(
         'Link' => 'Enllaços externs',

@@ -151,4 +151,5 @@
 @endsection
 @section('scripts')
     {{ Html::script("/js/Colaboracion/modal.js") }}
+    {{ Html::script("/js/datepicker.js") }}
 @endsection
