@@ -95,10 +95,10 @@ class Grupo extends Model
 
     public function getTutorDualOptions()
     {
-        return hazArray(Profesor::orderBy('apellido1')
+        return isset($this->Ciclo->departamento)?hazArray(Profesor::orderBy('apellido1')
                         ->orderBy('apellido2')
                         ->where('departamento', $this->Ciclo->departamento)
-                        ->get(), 'dni', ['apellido1', 'apellido2', 'nombre']);
+                        ->get(), 'dni', ['apellido1', 'apellido2', 'nombre']):[];
     }
 
     public function scopeQTutor($query, $profesor = null, $dual = false)
