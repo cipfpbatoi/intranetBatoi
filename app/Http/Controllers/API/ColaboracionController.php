@@ -52,8 +52,8 @@ class ColaboracionController extends ApiBaseController
                 $activity->save();
                 return $this->sendError($activity,'404');
             }
-        $activity = Activity::record('phone', Colaboracion::find($id),'Contacte Telefònic');
-       return $this->sendResponse($activity,'OK');
+        $activity = Activity::record('phone', Colaboracion::find($id),$request->explicacion,null,'Seguiment telefònic');
+        return $this->sendResponse($activity,'OK');
     }
 
 

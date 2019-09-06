@@ -110,7 +110,7 @@ class Mail
                 ->send(new DocumentRequest($this, $this->chooseView(), $elemento,$this->attach));
             Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
             if ($this->register)
-                Activity::record($this->action, $elemento, $this->subject,$fecha);
+                Activity::record($this->action, $elemento, null,$fecha,$this->subject);
         }
     }
 

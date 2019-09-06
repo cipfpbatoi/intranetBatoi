@@ -47,7 +47,7 @@ class PanelColaboracionController extends IntranetController
     {
         $todos = $this->search();
 
-        $this->crea_pestanas(config('modelos.'.$this->model.'.estados'),"profile.".strtolower($this->model),1,1);
+        $this->crea_pestanas(config('modelos.'.$this->model.'.estados'),"profile.".strtolower($this->model),2,1);
         $this->iniBotones();
         Session::put('redirect','PanelColaboracionController@index');
         return $this->grid($todos);
