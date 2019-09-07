@@ -6,7 +6,7 @@ const ocupacionGuardia=[
 		cod: 3249454,
 		descrip: 'Sala de Profes'
 	},{
-		cod: 9876543,
+		cod: 149034734,
 		descrip: 'Biblioteca'
 	}
 ];
