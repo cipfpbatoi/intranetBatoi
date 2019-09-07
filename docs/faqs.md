@@ -1,26 +1,24 @@
 # Preguntes freqüents
 Ací trobem informació de còm fer coses concretes com:
 * Professor
-  * [Fitxar](#)
-  * [Fitxar una guàrdia](#)
-  * [Localitzar a algú](#)
-  * [Contactar amb algú](#)
-  * [Fer una Activitat extraescolar](#)
-  * [Fer una Comissió de Servei](#)
-  * [Reservar un aula](#)
-  * [Notificar una absència](#)
-  * [Informar d'alguna incidència](#)
-  * [Enviar la meua programació al Cap de Departament](#)
-  * [Buscar una programació o altre document](#)
-  * [Fer el seguiment de la programació](#)
-  * [Imprimir el meu carnet](#)
-  * [](#)
-  * [](#)
+  * [Fitxar](#com-fitxar-lentrada-o-eixida-del-centre)
+  * [Fitxar una guàrdia](#com-fitxar-una-gu%C3%A0rdia)
+  * [Localitzar a algú](#com-localitzar-a-un-professor-o-a-direcci%C3%B3)
+  * [Contactar amb algú](#com-contactar-amb-un-professor)
+  * [Fer una Activitat extraescolar](#com-fer-una-activitat-extraescolar)
+  * [Fer una Comissió de Servei](#com-fer-una-comissi%C3%B3-de-servei)
+  * [Reservar un aula](#com-reservar-un-aula-o-el-sal%C3%B3-dactes)
+  * [Notificar una absència](#com-notificar-una-abs%C3%A8ncia)
+  * [Informar d'alguna incidència](#com-informar-dalgun-problema-o-incid%C3%A8ncia)
+  * [Enviar la meua programació al Cap de Departament](#com-enviar-la-meua-programaci%C3%B3)
+  * [Buscar una programació o altre document](#com-buscar-una-programaci%C3%B3-o-altra-documentaci%C3%B3)
+  * [Fer el seguiment de la programació](#com-fer-el-seguiment-de-la-programaci%C3%B3)
+  * [Imprimir el meu carnet](#com-imprimir-el-meu-carnet-de-professor)
 * Tutor
-  * [Fer un Acta (d'avaluació, ...)](#)
-  * [Imprimir el carnet dels alumnes](#)
-  * [](#)
-  * [](#)
+  * [Fer un Acta (d'avaluació, ...)](#com-fer-un-acta-davaluaci%C3%B3-o-daltre-tipus)
+  * [Imprimir el carnet dels alumnes](#com-imprimir-els-carnets-dels-alumnes)
+* Altres
+  * [Fer l'inventari](#)
 
 ## Com Fitxar l'entrada o eixida del Centre
 Al arribar al Centre hem de fitxar a la Intranet. Podem fer-ho de 3 maneras diferents:
@@ -113,3 +111,10 @@ Es fa des del [menú Professorat->Seguiments](./manual-profe.md#Seguiments).
 ## Com fer un Acta d'Avaluació o d'altre tipus
 
 ## Com imprimir els carnets dels alumnes
+
+# Altres
+
+## Com fer l'inventari
+El responsable de manteniment de cada departament ha de fer al final de curs l'inventari de tots els materials del departament i les aules i tallers. 
+
+En el [manual d'inventari](./inventari.md) te tota al informació de com fer-ho.
