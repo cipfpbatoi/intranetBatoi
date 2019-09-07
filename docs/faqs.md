@@ -18,7 +18,7 @@ Ací trobem informació de còm fer coses concretes com:
   * [Fer un Acta (d'avaluació, ...)](#com-fer-un-acta-davaluaci%C3%B3-o-daltre-tipus)
   * [Imprimir el carnet dels alumnes](#com-imprimir-els-carnets-dels-alumnes)
 * Altres
-  * [Fer l'inventari](#)
+  * [Fer l'inventari](#com-fer-linventari)
 
 ## Com Fitxar l'entrada o eixida del Centre
 Al arribar al Centre hem de fitxar a la Intranet. Podem fer-ho de 3 maneras diferents:
@@ -102,15 +102,23 @@ Al final de cada avaluació hem de fer el seguiment de la programació en cadasc
 
 Es fa des del [menú Professorat->Seguiments](./manual-profe.md#Seguiments).
 
-
 ## Com imprimir el meu Carnet de professor
+Els carnets s'han d'imprimr des de Caporalia d'Estudis on està la impressora de carnets. En un equip d'allí iniciem sessió en la intranet i anem al menú **'Docencia->Claustre'**. Allí ens busquem en la pestanya del nostre departament i ens apareixen 2 botons que no estan en els altres professors:
 
+![Imprimir el meu carnet](./img/el-meu-carnet.png)
+
+* Carnet: per a imprimir el nostre carnet
+* Imprimeix targetes de visita: imprimeix targetes de visita per a utilitzar en les nostres visites a empreses, etc. Això podem fer-ho des de qualsevol ordinador perquè imprimeix un full sencer de visites. És recomanable utilitzar paper més gros per a imprimir-les
 
 # Preguntes freqüents dels Tutors
 
 ## Com fer un Acta d'Avaluació o d'altre tipus
+Des del menú **'Actes/Convocatòries -> Gestió de reunions'** tenim accés a les actes de totes les reunions en les quals hem participat (reunions de departament, d'avaluació, d'equip educatiu, ...).
+
+Els tutors (i en ocasions també altres professors) han de convocar algunes d'aquestes reunions tal i com s'indica en el [manual del tutor](./manual-tutor.html#nova-reuni%C3%B3).
 
 ## Com imprimir els carnets dels alumnes
+Els carnets s'han d'imprimr des de Caporalia d'Estudis on està la impressora de carnets.
 
 # Altres
 
