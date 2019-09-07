@@ -118,7 +118,7 @@ Des del menú **'Actes/Convocatòries -> Gestió de reunions'** tenim accés a l
 Els tutors (i en ocasions també altres professors) han de convocar algunes d'aquestes reunions tal i com s'indica en el [manual del tutor](./manual-tutor.html#nova-reuni%C3%B3).
 
 ## Com imprimir els carnets dels alumnes
-Els carnets s'han d'imprimr des de Caporalia d'Estudis on està la impressora de carnets.
+Els carnets s'han d'imprimr des de Caporalia d'Estudis on està la impressora de carnets. Es fa des de 'Docència -> Gestió Grups'** tal i com s'explica en el [manual del tutor](./manual-tutor.md#men%C3%BA-profesorat--gesti%C3%B3-dels-grups).
 
 # Altres
 
