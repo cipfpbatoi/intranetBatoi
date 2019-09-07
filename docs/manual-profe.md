@@ -63,7 +63,7 @@ La pàgina d'inici te vàries parts:
 1. Nom del Centre: des d'ací tornem a la pàgina d'inici des de qualsevol altra pàgina. A la seua dreta hi ha una icona que ens permet amagar o mostrar la barra lateral dels menús
 2. Menús: ens permeten realitzar qualsevol acció e la intranet. Els veurem en detall més avant
 3. Menú inferior: conté iconas per a 
-    1. veure el manual del professor (aquest document)
+    1. veure l'ajuda de la intranet
     2. veure les FAQs d'ajuda
     3. enviar-nos el codi de fitxatge per a fitxar des del mòbil
     4. tancar la sessió en la intranet (però sense fitxar l'eixida del Centre)
