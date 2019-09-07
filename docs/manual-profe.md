@@ -244,13 +244,15 @@ En la taula tenim les enquestes que el tutor o direcció han pasat als nostres a
 Ací tenim molts tràmits usuals com:
 
 ### Expedients
-Per a gestionar els expedients oberts als alumnes. Hi ha 2 tipus d'expedient que un professor pot obrir a un alumne:
-* Part d'amonestació
-* Perdua d'avaluació contínua, per als alumnes que hagen superat el màxim de faltes d'assistència
+Es vol utilitzar la intranet del Centre per a gestionar diferents expedients dels alumnes (convalidacions, baixes, ...). 
+
+Quan creem un nou expedient hem d'indicar l'alumne, el tipus d'expedient i una explicació. Els tipus que tenim actualment són:
+* Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Només es poden tindre en compte les faltes marcades en Ítaca.
+* Part d'amonestació: per a incoar un part d'amonestació a l'alumne
 
 ![Expedients](/img/ajuda/expediente.png)
 
-Una vegada fet un expedient el podem eliminar o editar però l'expedient no es tramita fins que ho enviem a direcció (icona del sobre). A partir d'eixe moment direcció te conenxement de l'expedient i contactarà amb nosaltres per a fer els tràmits necessaris (com informar oficialment a l'alumne en cas de perdua de l'avaluació contínua).
+Una vegada fet un expedient el podem eliminar o editar però l'expedient no es tramita fins que ho enviem a direcció (icona del sobre). A partir d'eixe moment direcció te conenxement de l'expedient i contactarà amb nosaltres per a fer els tràmits necessaris (com informar oficialment a l'alumne en cas de perdua de l'avaluació contínua, etc).
 
 ### Activitats extraescolars
 Ací apareixen totes les activitats extraescolars en las que nosaltres participem. Podem veure-las en format llistat o mosaic:
