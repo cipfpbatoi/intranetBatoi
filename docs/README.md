@@ -3,9 +3,9 @@ Ací es troba la documentación del projecte d'Intranet del CIP FP Batoi.
 
 ## Manuals d'usuari
 Els manuals estan organitzats per rols. Tenim el manual del professor i a més manuals específics per a les accions que només poden fer els tutors, els cap de departament, ...:
-* [Manual del professor](manual-profe.md)
-* [Manual del tutor](manual-tutor.md)
-* [Manual del tutor de pràctiques](manual-fct.md)
+* [Manual del Professor](manual-profe.md)
+* [Manual del Tutor](manual-tutor.md)
+* [Manual del Tutor de pràctiques](manual-fct.md)
 * [Manual del Cap de departament](manual-cap.md)
 * [Manual de l'Equip directiu](manual-dir.md)
 
