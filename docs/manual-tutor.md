@@ -2,15 +2,14 @@
 Índex de continguts
 * [Introducció](#introducció)
 * [Menú 'Docència' → 'Gestió dels grups'](#men%C3%BA-docència--gesti%C3%B3-dels-grups)
-* [Menú 'Tràmits' → 'Expedients'](#men%C3%BA-tràmits-expedients)
+* [Menú 'Tràmits' → 'Expedients'](#men%C3%BA-tr%C3%A0mits--expedients)
 * [Menú 'Actes/Convocatòries' → 'Gestió de reunions'](#menú-actesconvocatòries--gestió-de-reunions)
   * [Nova reunió](#nova-reunió)
   * [Gestionar les reunions](#gestionar-les-reunions)
   * [Acta de la reunió](#acta-de-la-reunió)
-* [Menú 'Actes/Convocatòries' → 'Gestor documental'](#menú-actesconvocatòries--gestor-documental)
 * [Menú 'Tutor'](#menú-tutor)
   * [Seguiments](#seguiments)
-  * [Expedients](#expedients)
+  * [Tutories](#tutories)
 * [Menú 'Pràctiques'](#menú-pràctiques)
 
 
