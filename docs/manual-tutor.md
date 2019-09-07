@@ -40,8 +40,8 @@ El tutor tindrà que convocar diferents reunions al llarg del curs.
 ### Nova reunió
 Per a convocar una nova reunió premem el botó de 'Nova reunió' i omplim els camps:
 * tipo: ací indiquem el tipus de reunió que anem a convocar: d'equip educatiu, d'un grup de treball, reunió de pares, reunió d'avaluació, …
-* grup: si és una reunió de grup de treball ací indicarem de quin grup
-* numero: indiquem el nº de reunió
+* grup: si és una reunió de grup de treball ací indicarem de quin grup. Si és una reunió d'equip educatiu o d'avaluació no cal posar res perquè s'asigna automàticament al grup del que som tutors
+* numero: indiquem el nº de reunió (per a que estiguen numerades consecutivament)
 * data en que es celebrarà la reunió
 * descripció de la reunió que veuran la resta de convocats
 * objectius de la reunió (camp opcional)
