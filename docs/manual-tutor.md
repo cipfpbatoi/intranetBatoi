@@ -1,7 +1,7 @@
 # Manual del tutor
 Índex de continguts
 * [Introducció](#introducció)
-* [Menú 'Profesorat' → 'Gestió dels grups'](#menú-profesorat--gestió-dels-grups)
+* [Menú 'Docència' → 'Gestió dels grups'](#men%C3%BA-docència--gesti%C3%B3-dels-grups)
 * [Menú 'Actes/Convocatòries' → 'Gestió de reunions'](#menú-actesconvocatòries--gestió-de-reunions)
   * [Nova reunió](#nova-reunió)
   * [Gestionar les reunions](#gestionar-les-reunions)
@@ -23,7 +23,7 @@ L'accés a la intranet és igual per a tots els professors i és el sistema qui 
 
 Els tutor tenen en el menú general un apartat anomenat 'Tutor' però també té noves opcions en alguns altres menús.
 
-## Menú 'Profesorat' → 'Gestió dels grups'
+## Menú 'Docència' → 'Gestió dels grups'
 En el nostre grup apareixen 2 noves icones:
 * Carnet: permet imprimir el carnet de tots els alumnes del grup. Això ha de fer-se des de caporalia que és on es troba la impresora de carnets
 * Acta Fons Social Europeu (icona del €): apareix el full amb tots els alumnes que hem d'omplir i signar després d'haver explicat als alumnes la informació del FSE. Després farem una nova '_Reunió_' de tipus FSE i adjuntarem aquest full signat. L'original s'ha de lliurar a Caporalia.
