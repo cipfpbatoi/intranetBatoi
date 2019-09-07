@@ -132,7 +132,7 @@ Ací trobem totes les actes ordenades per pestanyes:
 ### Projectes
 Ací trobem els projectes presentats pels alumnes del cicles de grau superior en el mòdul de 'Projecte'. 
 
-![Projectes](/img/ajuda/projecte.png)
+![Projectes](/img/ajuda/proyecto.png)
 
 ### Gestor documental
 Ací apareixeran tots els documents.
@@ -234,7 +234,11 @@ Una vegada acabada la programació l'enviarem al nostre Cap de Departament polsa
 La programació queda en estat '_No autoritzada_'. Per a que el cap de departament no la pot veure per a revisar-la si no la enviem.
 
 ### Enquestes
-Des d'ací podem accedir a diferents enquestes o crear noves
+Des d'ací podem accedir als resultats de les diferents enquestes pasades als nostres alumnes.
+
+![Enquestes](/img/ajuda/enquestes.png)
+
+En la taula tenim les enquestes que el tutor o direcció han pasat als nostres alumnes. Aquesta eina encara està en proves.
 
 ## Menú 'Tràmits'
 Ací tenim molts tràmits usuals com:
@@ -242,9 +246,11 @@ Ací tenim molts tràmits usuals com:
 ### Expedients
 Per a gestionar els expedients oberts als alumnes. Hi ha 2 tipus d'expedient que un professor pot obrir a un alumne:
 * Part d'amonestació
-* Perdua d'avaluació contínua, per als alumnes que hagen suerat el màxim de faltes d'assistència
+* Perdua d'avaluació contínua, per als alumnes que hagen superat el màxim de faltes d'assistència
 
 ![Expedients](/img/ajuda/expediente.png)
+
+Una vegada fet un expedient el podem eliminar o editar però l'expedient no es tramita fins que ho enviem a direcció (icona del sobre). A partir d'eixe moment direcció te conenxement de l'expedient i contactarà amb nosaltres per a fer els tràmits necessaris (com informar oficialment a l'alumne en cas de perdua de l'avaluació contínua).
 
 ### Activitats extraescolars
 Ací apareixen totes les activitats extraescolars en las que nosaltres participem. Podem veure-las en format llistat o mosaic:
