@@ -2,6 +2,7 @@
 Índex de continguts
 * [Introducció](#introducció)
 * [Menú 'Docència' → 'Gestió dels grups'](#men%C3%BA-docència--gesti%C3%B3-dels-grups)
+* [Menú 'Tràmits' → 'Expedients'](#men%C3%BA-tràmits-expedients)
 * [Menú 'Actes/Convocatòries' → 'Gestió de reunions'](#menú-actesconvocatòries--gestió-de-reunions)
   * [Nova reunió](#nova-reunió)
   * [Gestionar les reunions](#gestionar-les-reunions)
@@ -9,13 +10,10 @@
 * [Menú 'Actes/Convocatòries' → 'Gestor documental'](#menú-actesconvocatòries--gestor-documental)
 * [Menú 'Tutor'](#menú-tutor)
   * [Seguiments](#seguiments)
-  * [Expedients iniciats](#expedients-iniciats)
-  * [Tutories](#tutories)
-  * [FCT](#fct)
-    * [Menú 'Empresa'](#menú-empresa)
-    * [Centres de treball](#centres-de-treball)
-    * [FCTs](#fcts)
----
+  * [Expedients](#expedients)
+* [Menú 'Pràctiques'](#menú-pràctiques)
+
+
 ## Introducció
 Aquest manual només explica les accions que pot fer un tutor i no un professor normal. Les accions habituals de qualsevol professor estan explicades en el manual del professor.
 
@@ -34,12 +32,36 @@ A més, quan entrem a verure els alumnes del nostre grup apareixen 2 nous icones
 * Carnet: permet imprimir el carnet de l'alumne. Ha de fer-se des de caporalia que és on es troba la impresora de carnets
 * Si hi ha curs o jornada podem inscriure a l'alumne
 
+## Menú 'Tràmits' → 'Expedients'
+### Expedients
+És igual que per al professor però al crear un nou expedient el tutor pot triar entre 3 tipus més:
+
+![Nou expedient reunió](img/tutor/07-nou-expedient.png)
+
+Els tipus que tenim actualment són:
+* **Baixa inassitència**: permet donar de baixa a un alumne per faltes d'assistència segons la normativa
+* Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Tant ací com en el cas anterior només es poden tindre en compte les faltes marcades en Ítaca.
+* **Remisió al departament d'Orientació**: envia un avís als orientadors de que han de atendre a aquest alumne. Més avant l'orientador es posarà en contacte amb el tutor per a concretar quan es farà
+* Part d'amonestació: per a incoar un part d'amonestació a l'alumne
+* **Informe d'exempció FCT**: si un alumne sol·licita l'exempció de les FCT hem d'omplir aquest informe.
+
+Una vegada omplit caldrà avisar a direcció de la tramitació de l'expedient amb el botó del sobre i ja s'encarregan de resoldre'l.
+
 ## Menú 'Actes/Convocatòries' → 'Gestió de reunions'
 El tutor tindrà que convocar diferents reunions al llarg del curs. 
 
 ### Nova reunió
 Per a convocar una nova reunió premem el botó de 'Nova reunió' i omplim els camps:
-* tipo: ací indiquem el tipus de reunió que anem a convocar: d'equip educatiu, d'un grup de treball, reunió de pares, reunió d'avaluació, …
+* tipo: ací indiquem el tipus de reunió que anem a convocar: 
+    * d'equip educatiu: reunió normal de l'equip educatiu del nostre grup
+    * d'un grup de treball
+    * turoria: per indicar que hem fet alguna de les tutories creades pel departament d'orientació o altra
+    * elecció de delegat: per a fer l'acta 
+    * reunió de pares: la reunió de principi de curs o si convoquem alguna més
+    * reunió d'avaluació: només 1 per avaluació
+    * FSE: per a fer l'acta de la tutoria on expliquem als alumnes lo del FSE
+    * acta de valoració de proposta de projectes: per als tutors de 2n de grau superior, reunió on s'aproven o no les propostes dels alumnes per al seu projecte de fi de cicle
+    * data defensa del projecte: reunió on s'aprova la data de defensa del projecte de cada alumne de 2n de grau superior
 * grup: si és una reunió de grup de treball ací indicarem de quin grup. Si és una reunió d'equip educatiu o d'avaluació no cal posar res perquè s'asigna automàticament al grup del que som tutors
 * numero: indiquem el nº de reunió (per a que estiguen numerades consecutivament)
 * data en que es celebrarà la reunió
@@ -98,23 +120,7 @@ etiquetes: podem asociar al projecte tantes etiquetes com vulgam. Per a crear ca
 Aquest menú només els apareix als tutor i inclou la majoria d'accions específiques per a ells.
 
 ### Seguiments
-Apareixen els seguiments que hagen omplit tots els professors de l'equip educatiu per a que el tutor puga fer el seu informe.
-
-### Expedients iniciats
-Es vol utilitzar la intranet del Centre per a gestionar diferents expedients dels alumnes (convalidacions, baixes, ...). 
-
-Creem un nou expedient i indiquem l'alumne, el tipus d'expedient i una explicació:
-
-![Nou expedient reunió](img/tutor/07-nou-expedient.png)
-
-Els tipus que tenim actualment són:
-* Baixa inassitència: permet donar de baixa a un alumne per faltes d'assistència segons la normativa
-* Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Tant ací com en el cas anterior només es poden tindre en compte les faltes marcades en Ítaca.
-* Anul·lació matrícula: si un alumne vol anul·lar la matrícula
-* Remisió al departament d'Orientació: envia un avís als orientadors de que han de atendre a aquest alumne. Més avant l'orientador es posarà en contacte amb el tutor per a concretar quan es farà
-* Part d'amonestació: per a incoar un part d'amonestació a l'alumne
-
-Una vegada omplit caldrà avisar a direcció de la tramitació de l'expedient amb el botó  i ja s'encarregan de resoldre'l.
+Apareixen els seguiments que hagen omplit tots els professors de l'equip educatiu per a que el tutor puga fer el seu informe del grup.
 
 ### Tutories
 Ací apareixen totes les tutories que ompli el departament d'orientació. 
@@ -127,8 +133,9 @@ De cada una podem:
 
 ![Nova tutoria](img/tutor/09-tutoria-crear.png)
 
-### FCT
-Aquestes opcions només les utilitzaran els tutors de 2n curs que gestionen les pràctiques de FCT dels alumnes.
+## Menú 'Pràctiques'
+Aquest menú només els apareix als tutors de 2n curs per a gestionar les FCT tal i com s'explica en el [manual de FCT](./manual-fct.md)
+
 El que fem en la intranet NO substitueix al programa SAO de Conselleria que hem de continuar utilitzant. Omplir la informació en la Intranet ens permetrà obtindre automàticament els certificats per a alumnes i empreses i altres documents que el SAO no proporciona.
 
 #### Menú 'Empresa'
