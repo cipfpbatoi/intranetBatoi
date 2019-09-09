@@ -63,7 +63,7 @@ La pàgina d'inici te vàries parts:
 1. Nom del Centre: des d'ací tornem a la pàgina d'inici des de qualsevol altra pàgina. A la seua dreta hi ha una icona que ens permet amagar o mostrar la barra lateral dels menús
 2. Menús: ens permeten realitzar qualsevol acció e la intranet. Els veurem en detall més avant
 3. Menú inferior: conté iconas per a 
-    1. veure el manual del professor (aquest document)
+    1. veure l'ajuda de la intranet
     2. veure les FAQs d'ajuda
     3. enviar-nos el codi de fitxatge per a fitxar des del mòbil
     4. tancar la sessió en la intranet (però sense fitxar l'eixida del Centre)
@@ -132,7 +132,7 @@ Ací trobem totes les actes ordenades per pestanyes:
 ### Projectes
 Ací trobem els projectes presentats pels alumnes del cicles de grau superior en el mòdul de 'Projecte'. 
 
-![Projectes](/img/ajuda/projecte.png)
+![Projectes](/img/ajuda/proyecto.png)
 
 ### Gestor documental
 Ací apareixeran tots els documents.
@@ -234,17 +234,25 @@ Una vegada acabada la programació l'enviarem al nostre Cap de Departament polsa
 La programació queda en estat '_No autoritzada_'. Per a que el cap de departament no la pot veure per a revisar-la si no la enviem.
 
 ### Enquestes
-Des d'ací podem accedir a diferents enquestes o crear noves
+Des d'ací podem accedir als resultats de les diferents enquestes pasades als nostres alumnes.
+
+![Enquestes](/img/ajuda/enquestes.png)
+
+En la taula tenim les enquestes que el tutor o direcció han pasat als nostres alumnes. Aquesta eina encara està en proves.
 
 ## Menú 'Tràmits'
 Ací tenim molts tràmits usuals com:
 
 ### Expedients
-Per a gestionar els expedients oberts als alumnes. Hi ha 2 tipus d'expedient que un professor pot obrir a un alumne:
-* Part d'amonestació
-* Perdua d'avaluació contínua, per als alumnes que hagen suerat el màxim de faltes d'assistència
+Es vol utilitzar la intranet del Centre per a gestionar diferents expedients dels alumnes (convalidacions, baixes, ...). 
+
+Quan creem un nou expedient hem d'indicar l'alumne, el tipus d'expedient i una explicació. Els tipus que tenim actualment són:
+* Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Només es poden tindre en compte les faltes marcades en Ítaca.
+* Part d'amonestació: per a incoar un part d'amonestació a l'alumne
 
 ![Expedients](/img/ajuda/expediente.png)
+
+Una vegada fet un expedient el podem eliminar o editar però l'expedient no es tramita fins que ho enviem a direcció (icona del sobre). A partir d'eixe moment direcció te conenxement de l'expedient i contactarà amb nosaltres per a fer els tràmits necessaris (com informar oficialment a l'alumne en cas de perdua de l'avaluació contínua, etc).
 
 ### Activitats extraescolars
 Ací apareixen totes les activitats extraescolars en las que nosaltres participem. Podem veure-las en format llistat o mosaic:

@@ -1,26 +1,24 @@
 # Preguntes freqüents
 Ací trobem informació de còm fer coses concretes com:
 * Professor
-  * [Fitxar](#)
-  * [Fitxar una guàrdia](#)
-  * [Localitzar a algú](#)
-  * [Contactar amb algú](#)
-  * [Fer una Activitat extraescolar](#)
-  * [Fer una Comissió de Servei](#)
-  * [Reservar un aula](#)
-  * [Notificar una absència](#)
-  * [Informar d'alguna incidència](#)
-  * [Enviar la meua programació al Cap de Departament](#)
-  * [Buscar una programació o altre document](#)
-  * [Fer el seguiment de la programació](#)
-  * [Imprimir el meu carnet](#)
-  * [](#)
-  * [](#)
+  * [Fitxar](#com-fitxar-lentrada-o-eixida-del-centre)
+  * [Fitxar una guàrdia](#com-fitxar-una-gu%C3%A0rdia)
+  * [Localitzar a algú](#com-localitzar-a-un-professor-o-a-direcci%C3%B3)
+  * [Contactar amb algú](#com-contactar-amb-un-professor)
+  * [Fer una Activitat extraescolar](#com-fer-una-activitat-extraescolar)
+  * [Fer una Comissió de Servei](#com-fer-una-comissi%C3%B3-de-servei)
+  * [Reservar un aula](#com-reservar-un-aula-o-el-sal%C3%B3-dactes)
+  * [Notificar una absència](#com-notificar-una-abs%C3%A8ncia)
+  * [Informar d'alguna incidència](#com-informar-dalgun-problema-o-incid%C3%A8ncia)
+  * [Enviar la meua programació al Cap de Departament](#com-enviar-la-meua-programaci%C3%B3)
+  * [Buscar una programació o altre document](#com-buscar-una-programaci%C3%B3-o-altra-documentaci%C3%B3)
+  * [Fer el seguiment de la programació](#com-fer-el-seguiment-de-la-programaci%C3%B3)
+  * [Imprimir el meu carnet](#com-imprimir-el-meu-carnet-de-professor)
 * Tutor
-  * [Fer un Acta (d'avaluació, ...)](#)
-  * [Imprimir el carnet dels alumnes](#)
-  * [](#)
-  * [](#)
+  * [Fer un Acta (d'avaluació, ...)](#com-fer-un-acta-davaluaci%C3%B3-o-daltre-tipus)
+  * [Imprimir el carnet dels alumnes](#com-imprimir-els-carnets-dels-alumnes)
+* Altres
+  * [Fer l'inventari](#com-fer-linventari)
 
 ## Com Fitxar l'entrada o eixida del Centre
 Al arribar al Centre hem de fitxar a la Intranet. Podem fer-ho de 3 maneras diferents:
@@ -104,12 +102,27 @@ Al final de cada avaluació hem de fer el seguiment de la programació en cadasc
 
 Es fa des del [menú Professorat->Seguiments](./manual-profe.md#Seguiments).
 
-
 ## Com imprimir el meu Carnet de professor
+Els carnets s'han d'imprimr des de Caporalia d'Estudis on està la impressora de carnets. En un equip d'allí iniciem sessió en la intranet i anem al menú **'Docencia->Claustre'**. Allí ens busquem en la pestanya del nostre departament i ens apareixen 2 botons que no estan en els altres professors:
 
+![Imprimir el meu carnet](./img/el-meu-carnet.png)
+
+* Carnet: per a imprimir el nostre carnet
+* Imprimeix targetes de visita: imprimeix targetes de visita per a utilitzar en les nostres visites a empreses, etc. Això podem fer-ho des de qualsevol ordinador perquè imprimeix un full sencer de visites. És recomanable utilitzar paper més gros per a imprimir-les
 
 # Preguntes freqüents dels Tutors
 
 ## Com fer un Acta d'Avaluació o d'altre tipus
+Des del menú **'Actes/Convocatòries -> Gestió de reunions'** tenim accés a les actes de totes les reunions en les quals hem participat (reunions de departament, d'avaluació, d'equip educatiu, ...).
+
+Els tutors (i en ocasions també altres professors) han de convocar algunes d'aquestes reunions tal i com s'indica en el [manual del tutor](./manual-tutor.html#nova-reuni%C3%B3).
 
 ## Com imprimir els carnets dels alumnes
+Els carnets s'han d'imprimr des de Caporalia d'Estudis on està la impressora de carnets. Es fa des de 'Docència -> Gestió Grups'** tal i com s'explica en el [manual del tutor](./manual-tutor.md#men%C3%BA-docència--gesti%C3%B3-dels-grups).
+
+# Altres
+
+## Com fer l'inventari
+El responsable de manteniment de cada departament ha de fer al final de curs l'inventari de tots els materials del departament i les aules i tallers. 
+
+En el [manual d'inventari](./inventari.md) te tota al informació de com fer-ho.

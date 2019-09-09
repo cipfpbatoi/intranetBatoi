@@ -1,13 +1,25 @@
 'use strict'
 
 const MaxDiasAtras=7;	// nº de días que puede cambiar atrás
-const ocupacionGuardia=3249454;
+const ocupacionGuardia=[
+	{
+		cod: 3249454,
+		descrip: 'Sala de Profes'
+	},{
+		cod: 149034734,
+		descrip: 'Biblioteca'
+	}
+];
 
+var miIP='';		// la IP de donde estamos
 var sesion=0;		// value del tramo horario en que estamos
 var guardiasSemana=[];	// datos de las guardias del profesor
 var idGuardia=0;	// indica si ya se ha registrado esta guardia
-var ipGuardia = ''
-var biblio=false;
+var ipGuardia = [];
+var biblio=false;	// indica si está en el sitio: en la biblio si es guardia de biblio
+					// o en la Sala de profes si es guardia normal
+var codLugar=0;		// indica el código de ocupación del sitio donde estamos:
+					// 3249454->Sala profes, XXXX->Biblio, 0->resto
 var diaHoy="";
 var diaSelec="";
 var horaActual="";
@@ -22,15 +34,17 @@ $(function() {
     		api_token: $("#_token").text()
     	}
         }).then(function(res){
-            ipGuardia = res.data;
+			ipGuardia = res.data;
+			if (miIP && !codLugar)	// cuando se recibió la IP no estaba esto
+				setPlace();
         });    
         
 	//Test: Print the IP addresses into the console
-	getIPs(function(ip) {
-		if (ipGuardia.includes(ip)) {
-                	biblio=true;
-			cambiaHora();
-		}
+	getUserIP(function(ip){
+//		showMessage("IP "+ip, "error");
+		miIP = ip;
+		if (ipGuardia.length)	// Ya hemos recibido las IP donde hacer guardias
+			setPlace();
     });
 //    biblio=true;
 //    cambiaHora();
@@ -50,7 +64,7 @@ $(function() {
 	// Pediremos el horario del profesor para ver las guardias y los tramos horarios
 	// Cuando los tengamos habilitamos esas horas en el select de tramos horarios
 	$.ajax ({
-    	url: "/api/horario/idProfesor="+$('#dni').text()+"&ocupacion="+ocupacionGuardia,//&dia_semana="+dias_semana[ahora.getDay()],
+    	url: "/api/horario/idProfesor="+$('#dni').text()+"&ocupacion="+ocupacionGuardia[0].cod,//&dia_semana="+dias_semana[ahora.getDay()],
 //url: "api/horario/idProfesor=021666373M&ocupacion=3249454&dia_semana="+dias_semana[ahora.getDay()],
     	type: "GET",
     	dataType: "json",
@@ -92,7 +106,7 @@ $(function() {
 })
 
 function habilitaHoras(fecha) {
-    var horas=guardiasSemana.filter(guardia=>guardia.dia_semana==dias_semana[fecha.getDay()]);
+    var horas=guardiasSemana.filter(guardia=>guardia.dia_semana==dias_semana[fecha.getDay()] );
 	var guardias_hoy=horas.length;
     for (var i in horas) {
 		$('#hora option[value='+horas[i].sesion_orden+']').removeAttr('disabled');
@@ -128,8 +142,14 @@ function cambiaHora() {
 	$("#hecha").prop("checked","");
 	$("#obs").val("");
 	$("#obs_per").val("");
-	// Miramos si el día es hoy
-	if (biblio && sesion && $("#hora").val() == sesion && dateEspToISO($('#dia').val())==diaHoy) {
+	// Miramos si ese día a esa hora tiene guardia en ese lugar
+	if (codLugar && sesion && dateEspToISO($('#dia').val())==diaHoy) {
+		var correcto=guardiasSemana.some(item=>
+			item.sesion_orden==$("#hora").val()
+			&& item.dia_semana==dias_semana[new Date(dateEspToISO($('#dia').val())).getDay()]
+			&& item.ocupacion==codLugar);
+	}
+	if (correcto) {
 	// Si está en la biblioteca, hay hora elegido, es la hora actual y es el día de hoy
 		$("#hecha").removeAttr("disabled").prev().removeClass("disabled");		
 		$("#obs").removeAttr("disabled").prev().removeClass("disabled");		
@@ -224,85 +244,61 @@ function dateEspToISO(date) {
 	return(arrFecha[2]+'-'+arrFecha[1]+'-'+arrFecha[0]);
 }
 
-// fUENTE: https://es.stackoverflow.com/questions/37404/obtener-ip-local-jquery
-function getIPs(callback){
-    var ip_dups = {};
-
+// fUENTE vieja: https://es.stackoverflow.com/questions/37404/obtener-ip-local-jquery
+// Fuente: https://stackoverflow.com/questions/29959708/how-to-get-local-ip-address-in-javascript-html5?lq=1
+/**
+ * Get the user IP throught the webkitRTCPeerConnection
+ * @param onNewIP {Function} listener function to expose the IP locally
+ * @return undefined
+ */
+function getUserIP(onNewIP) { //  onNewIp - your listener function for new IPs
     //compatibility for firefox and chrome
-    var RTCPeerConnection = window.RTCPeerConnection
-        || window.mozRTCPeerConnection
-        || window.webkitRTCPeerConnection;
-    var useWebKit = !!window.webkitRTCPeerConnection;
+    var myPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+    var pc = new myPeerConnection({
+        iceServers: []
+    }),
+    noop = function() {},
+    localIPs = {},
+    ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/g,
+    key;
 
-    //bypass naive webrtc blocking using an iframe
-    if(!RTCPeerConnection){
-        //NOTE: you need to have an iframe in the page right above the script tag
-        //
-        //<iframe id="iframe" sandbox="allow-same-origin" style="display: none"></iframe>
-        //<script>...getIPs called in here...
-        //
-        var win = iframe.contentWindow;
-        RTCPeerConnection = win.RTCPeerConnection
-            || win.mozRTCPeerConnection
-            || win.webkitRTCPeerConnection;
-        useWebKit = !!win.webkitRTCPeerConnection;
+    function iterateIP(ip) {
+        if (!localIPs[ip]) onNewIP(ip);
+        localIPs[ip] = true;
     }
 
-    //minimal requirements for data connection
-    var mediaConstraints = {
-        optional: [{RtpDataChannels: true}]
-    };
-
-    var servers = {iceServers: [{urls: "stun:stun.services.mozilla.com"}]};
-
-    //construct a new RTCPeerConnection
-    var pc = new RTCPeerConnection(servers, mediaConstraints);
-
-    function handleCandidate(candidate)
-    {
-        //match just the IP address
-        var ip_regex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/
-        var ip_addr = ip_regex.exec(candidate)[1];
-
-        //remove duplicates
-        if(ip_dups[ip_addr] === undefined)
-            callback(ip_addr);
-
-        ip_dups[ip_addr] = true;
-    }
-
-    //listen for candidate events
-    pc.onicecandidate = function(ice){
-
-        //skip non-candidate events
-        if(ice.candidate)
-            handleCandidate(ice.candidate.candidate);
-    };
-
-    //create a bogus data channel
+     //create a bogus data channel
     pc.createDataChannel("");
 
-    //create an offer sdp
-    pc.createOffer(function(result){
-
-        //trigger the stun server request
-        pc.setLocalDescription(result, function(){}, function(){});
-
-    }, function(){});
-
-    //wait for a while to let everything done
-    setTimeout(function(){
-        //read candidate info from local description
-        var lines = pc.localDescription.sdp.split('\n');
-
-
-        lines.forEach(function(line){
-            if(line.indexOf('a=candidate:') === 0)
-            {
-              handleCandidate(line);
-            }
-
+    // create offer and set local description
+    pc.createOffer().then(function(sdp) {
+        sdp.sdp.split('\n').forEach(function(line) {
+            if (line.indexOf('candidate') < 0) return;
+            line.match(ipRegex).forEach(iterateIP);
         });
-    }, 1000);
+
+        pc.setLocalDescription(sdp, noop, noop);
+    }).catch(function(reason) {
+        // An error occurred, so handle the failure to connect
+    });
+
+    //listen for candidate events
+    pc.onicecandidate = function(ice) {
+        if (!ice || !ice.candidate || !ice.candidate.candidate || !ice.candidate.candidate.match(ipRegex)) return;
+        ice.candidate.candidate.match(ipRegex).forEach(iterateIP);
+    };
 }
 
+function setPlace() {
+	let infoIp = ipGuardia.find(item=>item.ip==miIP);
+	if (infoIp) {
+		biblio=true;
+		codLugar = infoIp.codOcup;
+		let descripLugar = ocupacionGuardia.find(item=>item.cod==infoIp.codOcup).descrip;
+		document.querySelector('legend.centrado').textContent = 'Dades de la guàrdia de '+descripLugar;
+	} else {
+		codLugar = 1;
+		document.querySelector('legend.centrado').textContent = 'Dades de la guàrdia';
+	}
+	cambiaHora();
+}

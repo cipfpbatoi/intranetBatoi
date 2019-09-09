@@ -1,4 +1,4 @@
-# Manual del Cap de Departement
+# Manual del Cap de Departament
 Índex de continguts
 * [Introducció](#introducció)
 * [Menú 'Actes/Convocatòries' → 'Gestió de reunions'](#menú-actesconvocatòries--gestió-de-reunions)
@@ -6,9 +6,8 @@
   * [Gestionar les reunions](#gestionar-les-reunions)
   * [Acta de la reunió](#acta-de-la-reunió)
 * [Menú 'Cap de departament'](#menú-cap-de-departament)
-  * [Autorizar programacions](#autorizar-programacions)
+  * [Autoritzar programacions](#autoritzar-programacions)
   * [Informe departament](#informe-departament)
----
 
 ## Introducció
 Aquest manual només explica les accions que pot fer el cap d'un departament i no un professor normal. Les accions habituals de qualsevol professor estan explicades en el manual del professor.
@@ -67,7 +66,7 @@ També apareix una nova icona de 'Guardar en el gestor documental' que puja l'ac
 ## Menú 'Cap de departament'
 Aquest menú només els apareix als caps de departament i inclou les accions específiques per a ells.
 
-### Autorizar programacions
+### Autoritzar programacions
 Des d'ací els caps autortzaran totes les programacions del seu departament. 
 
 ![Nova reunió](img/tutor/01-cap-programacions-mant.png)
