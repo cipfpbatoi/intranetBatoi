@@ -7,7 +7,7 @@
         @include('intranet.partials.before')
         <div class="centrado">
             @include('intranet.partials.buttons',['tipo' => 'index'])
-            @if ($pestana->getNombre() != 'grid')
+            @if ($pestana->getNombre() <> 'grid')
                 @include('intranet.partials.buttons',['tipo' => $pestana->getNombre()])
             @endif
         </div><br/>
