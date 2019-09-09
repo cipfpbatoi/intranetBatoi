@@ -9,6 +9,7 @@ use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Activity;
+use Intranet\Entities\Fct;
 
 class ColaboracionController extends ApiBaseController
 {
@@ -52,7 +53,7 @@ class ColaboracionController extends ApiBaseController
                 $activity->save();
                 return $this->sendError($activity,'404');
             }
-        $activity = Activity::record('phone', Colaboracion::find($id),$request->explicacion,null,'Seguiment telefònic');
+        $activity = Activity::record('phone', Fct::find($id),$request->explicacion,null,'Seguiment telefònic');
         return $this->sendResponse($activity,'OK');
     }
 
