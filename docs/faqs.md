@@ -99,12 +99,12 @@ Les programacions han de modificar-se en Drive, no descarregant-las. Els estats
 ## Com fer el Seguiment de la programació
 Al final de cada avaluació hem de fer el seguiment de la programació en cadascun dels grups en que impartim classe. Haurem d'indicar el total d'alumnes matriculats, avaluats i aprovats  així com les unitats programades i impartides. També podem incloure comentaris.
 
-Es fa des del [menú Professorat->Seguiments](./manual-profe.md#seguiments).
+Es fa des del [menú Docència->Seguiments](./manual-profe.md#seguiments).
 
 ## Com imprimir el meu Carnet de professor
 Els carnets s'han d'imprimr des de Caporalia d'Estudis on està la impressora de carnets. En un equip d'allí iniciem sessió en la intranet i anem al menú **'Docencia->Claustre'**. Allí ens busquem en la pestanya del nostre departament i ens apareixen 2 botons que no estan en els altres professors:
 
-![Imprimir el meu carnet](./img/el-meu-carnet.png)
+![Imprimir el meu carnet](./img/ajuda/el-meu-carnet.png)
 
 * Carnet: per a imprimir el nostre carnet
 * Imprimeix targetes de visita: imprimeix targetes de visita per a utilitzar en les nostres visites a empreses, etc. Això podem fer-ho des de qualsevol ordinador perquè imprimeix un full sencer de visites. És recomanable utilitzar paper més gros per a imprimir-les
