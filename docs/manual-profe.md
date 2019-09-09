@@ -344,6 +344,28 @@ Amb les absències donades d'alta podem fer:
 * Avisar a l'equip docent: s'enviarà un missatge a tots els companys en els quals compartim grup eixos dies per a que sàpiem que no estarem per si han de canviar alguna hora amb els alumnes. Els apareixerà com una nova notificació.
 
 ### Gestió d'incidències
+Ací trobem totes les incidències que hem obert i el seu estat:
+
+![Incidències](/img/ajuda/16-incidencies.png)
+
+També tenim un botó per a obrir una nova incidència que li arribarà al responsable de resoldre-la. Els tipus d'incidències que tenim són:
+* Instal·lacions: fontaneria, electricitat, fusteria, obra, estors, cristaleria, etc
+* Manteniment informàtic: qualsevol problema informàtic en les aules, el departament, etc
+* Intranet: qualsevol problema o error que trobem en la intranet del Centre
+* Gestió de queixes i sugerències: ací podem fer arribar qualsevol sugerència de millora o queixa
+* Incidències procés FCT: totes les incidències realacionades amb les FCT dels alumnes
+
+Quan obrim una nova incidència hem d'indicar el seu tipuso a més:
+
+![Nova incidència](/img/ajuda/nova-incidencia.png)
+
+* Espai: en quin espai (quina aula, taller, etc) s'ha produit la incidència
+* Material: si hem triat espai ací ens apareixen tots els materials inventariats en eixe espai per a triar-lo. SI no està o no és algo inventariable ho deixarem en blanc i ho especificarem en l'apartat de '_descripció_'
+* Descripció: ací detallem la incidència que hem detectat
+* Prioritat: triem la prioritat que considerem més oportuna
+* Obcervacions
+
+Aquesta incidència es crea amb estat de **'Pendent'**.
 
 ### Reserva aules
 Permet a qualsevol professor reservar un espai, com un aula d'informàtica o el Saló d'actes, per a fer en ell qualsevol activitt (un examen, una xarrada, …).
