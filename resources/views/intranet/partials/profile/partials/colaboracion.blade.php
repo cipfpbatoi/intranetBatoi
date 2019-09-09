@@ -18,16 +18,20 @@
                 </div>
             </div>
             <div class="col-xs-12 bottom text-center">
-                <div class="col-xs-12 col-sm-3 emphasis">
+                <div class="col-xs-12 col-sm-4 emphasis">
                     <p class="ratings">
                         {{$elemento->Centro->localidad}}<br/>
                     </p>
-                    <a href="/colaboracion/{{$elemento->id}}/show" class="btn-success btn btn-xs"><i class="fa fa-eye"></i>
-                    </a>
+                    @if ($elemento->estado < 3)
+                    <a href="/colaboracion/{{$elemento->id}}/show" class="btn-success btn btn-xs"><i class="fa fa-eye"></i></a>
+                    @endif
+                    @if ($elemento->estado == 2)
+                    <i class="fa fa-plus btn-success btn btn-xs" data-toggle="modal" data-target="#AddAlumno"></i>
+                    @endif
                 </div>
-                <div class="col-xs-12 col-sm-9 emphasis">
+                <div class="col-xs-12 col-sm-8 emphasis">
                     @include ('intranet.partials.buttons',['tipo' => 'profile'])<br/>
-                    @include ('intranet.partials.buttons',['tipo' => 'infile'])
+                    @include ('intranet.partials.buttons',['tipo' => 'nofct'])
                 </div>
             </div>
         </div>

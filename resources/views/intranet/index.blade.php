@@ -4,8 +4,12 @@
 @endsection
 @foreach ($panel->getPestanas() as $pestana)
     @section($pestana->getNombre())
+
         @include('intranet.partials.before')
-        <div class="centrado">@include('intranet.partials.buttons',['tipo' => 'index'])</div><br/>
+        <div class="centrado">
+            @include('intranet.partials.buttons',['tipo' => 'index'])
+            @include('intranet.partials.buttons',['tipo' => $pestana->getNombre()])
+        </div><br/>
         @include($pestana->getVista(),$pestana->getFiltro())
     @endsection
 @endforeach

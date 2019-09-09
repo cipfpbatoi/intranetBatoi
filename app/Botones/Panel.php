@@ -127,7 +127,7 @@ class Panel
 
     public function getBotones($tipo = null)
     {
-        return $tipo == null ? $this->botones : $this->botones[$tipo];
+        return $tipo == null ? $this->botones : isset($this->botones[$tipo])?$this->botones[$tipo]:[];
     }
     public function countBotones($tipo)
     {

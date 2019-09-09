@@ -9,7 +9,6 @@ var month;
 
 $(function() {
     var token = $("#_token").text();
-    //$("#tab_descartada").find(".unauthorize").hide();
     $("#tab_descartada").find(".refuse").hide();
     $("#tab_descartada").find(".informe").hide();
     $("#tab_descartada").find(".contacto").hide();
@@ -132,4 +131,44 @@ $(function() {
             $("#dialogo").modal('hide');
         });
     });
+    $('.fa-plus').on("click", function(){
+        var id=$(this).parents(".profile_view").attr("id");
+        var instructor = $("#idInstructor");
+        $('#fctalumnoCreate').attr('action', '/fct/fctalumnoCreate');
+        $('#idColaboracion').attr('value',id);
+        $.ajax({
+            method: "GET",
+            url: "/api/colaboracion/instructores/" + id ,
+            dataType: 'json',
+            data: {api_token: token}
+        }).then(function (result) {
+                      instructor.empty(); // remove old options
+                        $.each(result.data, function (key, value) {
+                            instructor.append($("<option></option>")
+                                .attr("value", value.dni).text(value.name+' '+value.surnames));
+                        });
+
+            }, function (result) {
+                console.log("La solicitud no se ha podido completar.");
+            });
+
+    });
+    $('input[type=text].datetime').datetimepicker({
+        sideBySide: true,
+        locale: 'es',
+        format: 'DD-MM-YYYY LT',
+        stepping: 15,
+    });
+    $('input[type=text].time').datetimepicker({
+        sideBySide: true,
+        locale: 'es',
+        format: 'HH:mm',
+        stepping: 15,
+    });
+    $('input[type=text].date').datetimepicker({
+        sideBySide: true,
+        locale: 'es',
+        format: 'DD-MM-YYYY',
+    });
+
 })
