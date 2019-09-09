@@ -34,18 +34,18 @@ Cada vegada que fem una guàrdia hem de fitxar que estem fent-la. Només es pot 
 
 Si per algun motiu no fem la guàrdia la fitxarem després des de qualsevol equip però com no feta (no ens deixarà marcar-la com feta) i en els comentaris indicarem el motiu perl qual no l'hem fet. Això no cal fer-ho si estem d'activitat extraescolar, comissió de servei o si hem notificat prèviament la nostra absència des de la intranet perquè en aquestos casos ja ens apareixerà amrcada com no feta i omplit el comentari amb el motiu.
 
-Les guàrdies el fitxen des del [menú Professorat->Guàrdia](./manual-profe.md#guardia).
+Les guàrdies el fitxen des del [menú Docència->Guàrdia](./manual-profe.md#guardia).
 
 ## Com Localitzar a un professor o a Direcció
-Per a localitzar a qualsevol professor anem al [menú Professorat->Claustre](./manual-profe.md#claustre) i el busquem en el seu departement.
+Per a localitzar a qualsevol professor anem al [menú Docència->Claustre](./manual-profe.md#claustre) i el busquem en el seu departement.
 
-En cas de algú de direcció anem al [menú Professorat->Equip directiu](./manual-profe.md#equip-directiu) on trobem la mateixa informació però de la gent de Direcció.
+En cas de algú de direcció anem al [menú Docència->Equip directiu](./manual-profe.md#equip-directiu) on trobem la mateixa informació però de la gent de Direcció.
 
 ## Com Contactar amb un professor
-Per a contactar amb qualsevol professor anem al [menú Professorat->Claustre](./manual-profe.md#claustre) i el busquem en el seu departement. Allí podem veure on està ara, el seu email i el seu telèfon (si no ho ha amrcat com ocult). A més de enviar-li un e-mail podem enviar-li una notificació de la Intranet des del botó 'Avisar'. Recorda que totes les notificacions no vistes en el dia se li envien a l'usuari automàticament en un e-mail remitit per la Intranet.
+Per a contactar amb qualsevol professor anem al [menú Docència->Claustre](./manual-profe.md#claustre) i el busquem en el seu departement. Allí podem veure on està ara, el seu email i el seu telèfon (si no ho ha amrcat com ocult). A més de enviar-li un e-mail podem enviar-li una notificació de la Intranet des del botó 'Avisar'. Recorda que totes les notificacions no vistes en el dia se li envien a l'usuari automàticament en un e-mail remitit per la Intranet.
 
 ## Com fer una Activitat extraescolar
-Es fa des del [menú Professorat->Activitats Extraescolars](./manual-profe.md#activitats-extraescolars). Els pasos a seguir són:
+Es fa des del [menú Tràmits->Activitats Extraescolars](./manual-profe.md#activitats-extraescolars). Els pasos a seguir són:
 1. Donar d'alta la nova activitat des del botó '**Alta activitat**' (botó blau a la part superior). Hem d'indicar els professors participants i els grups d'alumnes en els que es fa l'activitat
 2. Una vegada feta, des de la taula d'activitats hem de polsar el botó de '**Enviar per a autoritzar**' per a que li arribe a Direcció l'activitat. Allí ens la han d'aprovar
 3. Una vegada aprovada per part de direcció polsem el botó de '**Avisar al professorat**'. Rebran una notificació informant d'aquesta activitat tot el professorat que participa en ella i tots els que imparteixen clase en els grups que participen en l'activitat
@@ -54,7 +54,7 @@ Es fa des del [menú Professorat->Activitats Extraescolars](./manual-profe.md#ac
 ## Com fer una Comissió de servei
 Si hem de fer una visita (per FCT, activitat extraescolar o altre motiu), viatge, etc fora del Centre hem de registrar una Comissió de servei. Això ens permet estar assegurats fora del Centre i poder cobrar posterioment els gastos de desplaçament o altres que tingam.
 
-Es fa des del [menú Professorat->Activitats Extraescolars](./manual-profe.md#comissions.de.servei). Els pasos a seguir són:
+Es fa des del [menú Tràmits->Activitats Extraescolars](./manual-profe.md#comissions.de.servei). Els pasos a seguir són:
 1. Donar d'alta la nova comissió des del botó '**Sol·licitut autorització comissió de servei**' (botó blau a la part superior). Hem d'indicar la data, el motiu i els gastos de quilometratge i altres que esperem tindre.
 2. Una vegada feta, des de la taula de comissions hem de polsar el botó de '**Enviar per a autoritzar**' per a que li arribe a Direcció la comissió. Allí ens la han d'aprovar
 3. Una vegada aprovada per part de direcció polsem el botó de '**Avisar al professorat**'. Rebran una notificació els nostres companys d'equip educatiu per a que sàpien que no estarem en clase a eixes hores
@@ -63,7 +63,7 @@ Es fa des del [menú Professorat->Activitats Extraescolars](./manual-profe.md#co
 ## Com Reservar un aula o el Saló d'Actes
 Si necessitem un espai diferent a la nostra aula (per exemple el Saló d'actes per a fer una xarrada o un aula per a fer un exàmen) hem de reservar-lo per a assegurar que el tindrem eixe dia.
 
-Es fa des del [menú Professorat->Reserva aules](./manual-profe.md#reservar-espai).
+Es fa des del [menú Tràmits->Reserva aules](./manual-profe.md#reservar-espai).
 
 ## Com Notificar una absència
 NOTA: no cal notificar una absència si és per una activitat extraescolar o comissió de servei perquè ja es registra al crear l'activitat o la comissió.
@@ -72,13 +72,12 @@ Si sabem amb antelació que faltarem un dia o unes hores (perque tenim consulta 
 
 Si la nostra absència ha segut inesperada (per malaltia o altre motiu) aquest procès el farem quan tornem al Centre.
 
-Es fa des del [menú Professorat->Notificació Absències](./manual-profe.md#notificacio-absencies). Els pasos a seguir són:
+Es fa des del [menú Tràmits->Notificació Absències](./manual-profe.md#notificacio-absencies). Els pasos a seguir són:
 1. Donar d'alta l'absència des del botó '**Comunicació d'absència professorat**' (botó blau a la part superior). Hem d'indicar la data, el motiu i el justificant (podem escanejar-lo o fer-li una foto en el mòbil i obrir allí la Intranet). Si encara no tenim el justificant l'adjuntarem quan el tingan modificant aquesta absència. Es crea el registre i el seu estat serà '**No enviada/autoritzada**'.
 2. Una vegada feta, des de la taula d'absències hem de polsar el botó de '**Enviar**' per a que li arribe a Direcció. Si no hem adjuntat els justificant el seu estat serà '**Sense justificant**'. Si ho hem adjuntat l'estat serà '**Justificada**'.
 3. Polsem el botó de '**Avisar equip**' per a que rebran una notificació els nostres companys d'equip educatiu per a que sàpien que no estarem en clase a eixes hores
 3. En el moment que tingam el justificant polsem el botó de '**Modificació absència**' i l'adjuntem. Si és un papel podem escanejar-lo o fer-li una foto amb el mòbil i obrir la Intranet en el nostre mòbil per a adjuntar-la
 3. Quan la absència estiga justificada la aprovaran des de direcció i el seu estat pasa a ser '**Resolta**'
-
 
 ## Com Informar d'algun problema o incidència
 La gestió d'incidències de la Intranet se utilitza per a informar de:
@@ -88,10 +87,10 @@ La gestió d'incidències de la Intranet se utilitza per a informar de:
 - el procès de la FCT
 - queixes i sugerències
 
-Es fa des del [menú Professorat->Gestió Incidències](./manual-profe.md#gestio-incidencies).
+Es fa des del [menú Tràmits->Gestió Incidències](./manual-profe.md#gestio-incidencies).
 
 ## Com enviar la meua Programació
-Les programacions es guarden en el _Google Drive_ del Centre. Podem accedir a les nostres des de la intranet en [menú Professorat->Editar Programacions](./manual-profe.md#editar-programacions) (només dins del Centre) o desde casa amb l'enllaç que en han enviat per e-mail des de Caporalia.
+Les programacions es guarden en el _Google Drive_ del Centre. Podem accedir a les nostres des de la intranet en [menú Docència->Programacions](./manual-profe.md#editar-programacions) (només dins del Centre) o desde casa amb l'enllaç que en han enviat per e-mail des de Caporalia.
 
 Les programacions han de modificar-se en Drive, no descarregant-las. Els estats
 
