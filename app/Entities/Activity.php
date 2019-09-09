@@ -46,7 +46,7 @@ class Activity extends Model
 
     public function scopeMail($query,$modelo)
     {
-        return $query->where('model_class','Intranet\Entities\\'.$modelo)->where('action','email')->orWhere('action','phone');
+        return $query->where('model_class','Intranet\Entities\\'.$modelo)->where('action','email')->orWhere('action','phone')->orWhere('action','visita');
     }
 
     public function scopeContactes($query)

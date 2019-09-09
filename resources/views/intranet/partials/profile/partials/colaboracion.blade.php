@@ -2,7 +2,7 @@
         <div id="{{$elemento->id}}" class="well profile_view">
             <div class="col-sm-12">
                 <div class="left col-md-8 col-xs-12">
-                    <h5>{{$elemento->Centro->nombre}} <strong>({{$elemento->puestos}})</strong></h5>
+                    <h5>Col.laboracio {{$elemento->Centro->nombre}} <strong>({{$elemento->puestos}})</strong></h5>
                     <ul class="list-unstyled">
                         <li>{{$elemento->contacto}}</li>
                         <li>{{$elemento->telefono}}</li>
@@ -12,7 +12,7 @@
                     </ul>
                 </div>
                 <div class="col-md-4 listActivity">
-                    @foreach ($contactCol as $contacto)
+                    @foreach ($contactos as $contacto)
                         <small>{{firstWord($contacto->document)}}-{{fechaCurta($contacto->created_at)}}</small><br/>
                     @endforeach
                 </div>

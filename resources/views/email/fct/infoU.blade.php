@@ -1,18 +1,15 @@
 
-    <div>Hola {{$elemento->contacto}},</div>
+    <div>Hola {{$elemento->Instructor->Nombre}},</div>
     <div>T'escric per recordar-te l'inici de les pràctiques de FCT. A continuació et passe relació dels alumnes que t'han estat assignat i les dades de començament de les pràctiques.</div>
-    @foreach ($elemento->fcts as $fct)
         <div>
-            <p>Instructor: {{$fct->Instructor->Nombre}}</p>
-            <p>Data de començament: {{$fct->desde}} </p>
+            <p>Data de començament: {{$elemento->desde}} </p>
             <p>Alumnes assignats: </p>
             <ul>
-            @foreach ($fct->Alumnos as $alumno)
+            @foreach ($elemento->Alumnos as $alumno)
                 <li> {{$alumno->fullName}} - {{$alumno->email}} </li>
             @endforeach
             </ul>
         </div>
-    @endforeach
     <div>Aprofite per donar-te les meues dades per si necessiteu possar-se amb contacte amb mi:</div>
     <div>
         Tutor: {{AuthUser()->fullName}} {{AuthUser()->email}} <br/>

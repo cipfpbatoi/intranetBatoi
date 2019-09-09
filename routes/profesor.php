@@ -185,12 +185,13 @@ Route::get('/colaboracion/seguimiento', ['as' => 'PanelColaboracion.seguimiento'
 Route::get('/colaboracion/visita', ['as' => 'PanelColaboracion.visita', 'uses' => 'PanelColaboracionController@visit']);
 
 
-Route::get('/colaboracion/{colaboracion}/documentacion', 'PanelColaboracionController@sendDocumentation');
 Route::get('/colaboracion/{colaboracion}/contacto', 'PanelColaboracionController@sendFirstContact');
 Route::get('/colaboracion/{colaboracion}/info', 'PanelColaboracionController@sendRequestInfo');
-Route::get('/colaboracion/{colaboracion}/student', 'PanelColaboracionController@sendStudent');
-Route::get('/colaboracion/{colaboracion}/seguimiento', 'PanelColaboracionController@follow');
-Route::get('/colaboracion/{colaboracion}/visita', 'PanelColaboracionController@visit');
+
+Route::get('/fct/{fct}/documentacion', 'PanelColaboracionController@sendDocumentation');
+Route::get('/fct/{fct}/student', 'PanelColaboracionController@sendStudent');
+Route::get('/fct/{fct}/seguimiento', 'PanelColaboracionController@follow');
+Route::get('/fct/{fct}/visita', 'PanelColaboracionController@visit');
 
 Route::resource('/centro', 'CentroController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/centro/{centro}/delete', ['as' => 'centro.destroy', 'uses' => 'CentroController@destroy']);
