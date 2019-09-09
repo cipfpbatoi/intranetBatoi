@@ -26,7 +26,7 @@ Al arribar al Centre hem de fitxar a la Intranet. Podem fer-ho de 3 maneras dife
 2. També podem fer-ho des de l'ordinador que hi ha en Consergeria introduint el nostre codi de professors (4 cifres)
 3. Es fa automàticament al iniciar sessió en la Intranet
 
-Per a fitxar la nostra eixida del Centre podem fer-ho exactament igual (des del mòbil, l'ordinador de Consergeria o la Intranet). Per a fer-ho des de la Intranet només hem de [polsar el rellotge blau](./manual-profe.md#control-de-presencia) que hi ha en la part superior dreta
+Per a fitxar la nostra eixida del Centre podem fer-ho exactament igual (des del mòbil, l'ordinador de Consergeria o la Intranet). Per a fer-ho des de la Intranet només hem de [polsar el rellotge blau](./manual-profe.md#control-de-presència) que hi ha en la part superior dreta
 
 
 ## Com Fitxar una guàrdia
@@ -34,7 +34,7 @@ Cada vegada que fem una guàrdia hem de fitxar que estem fent-la. Només es pot 
 
 Si per algun motiu no fem la guàrdia la fitxarem després des de qualsevol equip però com no feta (no ens deixarà marcar-la com feta) i en els comentaris indicarem el motiu perl qual no l'hem fet. Això no cal fer-ho si estem d'activitat extraescolar, comissió de servei o si hem notificat prèviament la nostra absència des de la intranet perquè en aquestos casos ja ens apareixerà amrcada com no feta i omplit el comentari amb el motiu.
 
-Les guàrdies el fitxen des del [menú Docència->Guàrdia](./manual-profe.md#guardia).
+Les guàrdies el fitxen des del [menú Docència->Guàrdia](./manual-profe.md#guàrdia).
 
 ## Com Localitzar a un professor o a Direcció
 Per a localitzar a qualsevol professor anem al [menú Docència->Claustre](./manual-profe.md#claustre) i el busquem en el seu departement.
@@ -54,7 +54,7 @@ Es fa des del [menú Tràmits->Activitats Extraescolars](./manual-profe.md#activ
 ## Com fer una Comissió de servei
 Si hem de fer una visita (per FCT, activitat extraescolar o altre motiu), viatge, etc fora del Centre hem de registrar una Comissió de servei. Això ens permet estar assegurats fora del Centre i poder cobrar posterioment els gastos de desplaçament o altres que tingam.
 
-Es fa des del [menú Tràmits->Activitats Extraescolars](./manual-profe.md#comissions.de.servei). Els pasos a seguir són:
+Es fa des del [menú Tràmits->Comissions de Servei](./manual-profe.html#comisions-de-servei). Els pasos a seguir són:
 1. Donar d'alta la nova comissió des del botó '**Sol·licitut autorització comissió de servei**' (botó blau a la part superior). Hem d'indicar la data, el motiu i els gastos de quilometratge i altres que esperem tindre.
 2. Una vegada feta, des de la taula de comissions hem de polsar el botó de '**Enviar per a autoritzar**' per a que li arribe a Direcció la comissió. Allí ens la han d'aprovar
 3. Una vegada aprovada per part de direcció polsem el botó de '**Avisar al professorat**'. Rebran una notificació els nostres companys d'equip educatiu per a que sàpien que no estarem en clase a eixes hores
@@ -63,7 +63,7 @@ Es fa des del [menú Tràmits->Activitats Extraescolars](./manual-profe.md#comis
 ## Com Reservar un aula o el Saló d'Actes
 Si necessitem un espai diferent a la nostra aula (per exemple el Saló d'actes per a fer una xarrada o un aula per a fer un exàmen) hem de reservar-lo per a assegurar que el tindrem eixe dia.
 
-Es fa des del [menú Tràmits->Reserva aules](./manual-profe.md#reservar-espai).
+Es fa des del [menú Tràmits->Reserva aules](./manual-profe.md#reserva-aules).
 
 ## Com Notificar una absència
 NOTA: no cal notificar una absència si és per una activitat extraescolar o comissió de servei perquè ja es registra al crear l'activitat o la comissió.
@@ -72,7 +72,7 @@ Si sabem amb antelació que faltarem un dia o unes hores (perque tenim consulta 
 
 Si la nostra absència ha segut inesperada (per malaltia o altre motiu) aquest procès el farem quan tornem al Centre.
 
-Es fa des del [menú Tràmits->Notificació Absències](./manual-profe.md#notificacio-absencies). Els pasos a seguir són:
+Es fa des del [menú Tràmits->Notificació Absències](./manual-profe.md#notificació-absències). Els pasos a seguir són:
 1. Donar d'alta l'absència des del botó '**Comunicació d'absència professorat**' (botó blau a la part superior). Hem d'indicar la data, el motiu i el justificant (podem escanejar-lo o fer-li una foto en el mòbil i obrir allí la Intranet). Si encara no tenim el justificant l'adjuntarem quan el tingan modificant aquesta absència. Es crea el registre i el seu estat serà '**No enviada/autoritzada**'.
 2. Una vegada feta, des de la taula d'absències hem de polsar el botó de '**Enviar**' per a que li arribe a Direcció. Si no hem adjuntat els justificant el seu estat serà '**Sense justificant**'. Si ho hem adjuntat l'estat serà '**Justificada**'.
 3. Polsem el botó de '**Avisar equip**' per a que rebran una notificació els nostres companys d'equip educatiu per a que sàpien que no estarem en clase a eixes hores
@@ -87,10 +87,10 @@ La gestió d'incidències de la Intranet se utilitza per a informar de:
 - el procès de la FCT
 - queixes i sugerències
 
-Es fa des del [menú Tràmits->Gestió Incidències](./manual-profe.md#gestio-incidencies).
+Es fa des del [menú Tràmits->Gestió Incidències](./manual-profe.md#gestió-dincidències).
 
 ## Com enviar la meua Programació
-Les programacions es guarden en el _Google Drive_ del Centre. Podem accedir a les nostres des de la intranet en [menú Docència->Programacions](./manual-profe.md#editar-programacions) (només dins del Centre) o desde casa amb l'enllaç que en han enviat per e-mail des de Caporalia.
+Les programacions es guarden en el _Google Drive_ del Centre. Podem accedir a les nostres des de la intranet en [menú Docència->Programacions](./manual-profe.md#programacions) (només dins del Centre) o desde casa amb l'enllaç que en han enviat per e-mail des de Caporalia.
 
 Les programacions han de modificar-se en Drive, no descarregant-las. Els estats
 
@@ -99,7 +99,7 @@ Les programacions han de modificar-se en Drive, no descarregant-las. Els estats
 ## Com fer el Seguiment de la programació
 Al final de cada avaluació hem de fer el seguiment de la programació en cadascun dels grups en que impartim classe. Haurem d'indicar el total d'alumnes matriculats, avaluats i aprovats  així com les unitats programades i impartides. També podem incloure comentaris.
 
-Es fa des del [menú Professorat->Seguiments](./manual-profe.md#Seguiments).
+Es fa des del [menú Professorat->Seguiments](./manual-profe.md#seguiments).
 
 ## Com imprimir el meu Carnet de professor
 Els carnets s'han d'imprimr des de Caporalia d'Estudis on està la impressora de carnets. En un equip d'allí iniciem sessió en la intranet i anem al menú **'Docencia->Claustre'**. Allí ens busquem en la pestanya del nostre departament i ens apareixen 2 botons que no estan en els altres professors:
