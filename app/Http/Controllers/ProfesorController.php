@@ -62,14 +62,13 @@ use traitAutorizar,
         $todos = Profesor::orderBy('apellido1')
                 ->Activo()
                 ->get();
-        $departamentos = Profesor::join('departamentos', 'profesores.departamento', '=', 'departamentos.id')
-                ->select('departamentos.*')
-                ->distinct()
-                ->get();
+        $departamentos = Departamento::where('didactico',1)->get();
+
         foreach ($departamentos as $departamento) {
             if ($departamento->id != 99 )
-                if($departamento->id == AuthUser()->departamento)
-                   $this->panel->setPestana($departamento->depcurt, true, 'profile.profesor', ['Xdepartamento', $departamento->depcurt],null,1,$this->parametresVista);
+                if($departamento->id == AuthUser()->departamento) {
+                    $this->panel->setPestana($departamento->depcurt, true, 'profile.profesor', ['Xdepartamento', $departamento->depcurt], null, 1, $this->parametresVista);
+                }
                 else
                    $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
         }

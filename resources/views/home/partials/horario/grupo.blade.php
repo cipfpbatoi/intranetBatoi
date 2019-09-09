@@ -11,8 +11,10 @@
                         {{ $horario[$dia_semana][$hora->codigo]->aula }})<br/>
                         @if (isset($horario[$dia_semana][$hora->codigo]->Mestre->Sustituye->dni))
                             {{ $horario[$dia_semana][$hora->codigo]->Mestre->Sustituye->FullName }}
-                        @else    
-                            {{ $horario[$dia_semana][$hora->codigo]->Mestre->FullName }}
+                        @else
+                            @if (isset($horario[$dia_semana][$hora->codigo]->Mestre->FullName))
+                                {{ $horario[$dia_semana][$hora->codigo]->Mestre->FullName }}
+                            @endif
                         @endif    
                 </td>
                     
