@@ -40,37 +40,34 @@
         <br/>
         <table border="1" cellspacing="0" cellpadding="0">
             <tr>
-                <td colspan="3" style="text-align:center;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Seguiments:</strong>
+                <td colspan="4" style="text-align:center;width:40.283cm;padding-left: 5px;font-size: 0.9em "><strong>Seguiments:</strong>
                 </td>
             </tr>
             <tr>
                 <td>Data</td>
                 <td>Medi</td>
                 <td>Tipus Contacte</td>
+                <td>Comentari</td>
             </tr>
             @php
-                $contactFct = \Intranet\Entities\Activity::contactes()->relationId($grupo->first()->idFct)->orderBy('created_at')->get();
+                $contactFct = \Intranet\Entities\Activity::mail('Fct')->Id($grupo->first()->idFct)->orderBy('created_at')->get();
             @endphp
             @foreach ($contactFct as $contact)
                 <tr>
-                    <td style="text-align:left;padding-left: 5px;font-size: 0.9em "><strong>{{fechaCurta($contact->created_at)}}</strong></td>
-                    <td style="text-align:left;padding-left: 5px;font-size: 0.9em "><strong>{{$contact->action}}</strong></td>
-                    <td style="text-align:left;padding-left: 5px;font-size: 0.9em "><strong>{{$contact->comentari}}</strong></td>
+                    <td style="text-align:left;width:2cm;padding-left: 5px;font-size: 0.9em "><strong>{{fechaCurta($contact->created_at)}}</strong></td>
+                    <td style="text-align:left;width:2.283cm;padding-left: 5px;font-size: 0.9em "><strong>{{$contact->action}}</strong></td>
+                    <td style="text-align:left;width:6cm;padding-left: 5px;font-size: 0.9em "><strong>{{$contact->document}}</strong></td>
+                    <td style="text-align:left;width:20cm;padding-left: 5px;font-size: 0.9em "><strong>{{$contact->comentari}}</strong></td>
                 </tr>
             @endforeach
         </table>
+        <br/>
         <table border='1' style="width:350px;height:100px;float:left;margin-bottom: 20px">
             <tr><td style='text-align: left; vertical-align: top '><strong>Signatura Tutor:</strong></td></tr>
         </table>
         <table border='1' style="width:350px;height:100px;float:left;margin-bottom: 20px">
             <tr><td style='text-align: left; vertical-align: top '><strong>Signatura Instructor:</strong></td></tr>
         </table>
-        <div style="float:left;">
-            <p style="font-size: x-small; font-weight: bold ">
-               En cas d'avaluació negativa s'haurà d'obrir un registre de Queixes i Suggerències (PG06-01) per a resoldre el problema i realitzar un seguiment d'aquest.<br/>
-                *Contacte amb l'instructor a l'empresa o via telefònica.
-            </p>
-        </div>
     </div>
     @endforeach
 @endsection

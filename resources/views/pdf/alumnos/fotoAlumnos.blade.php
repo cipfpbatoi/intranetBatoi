@@ -4,7 +4,7 @@
     <table class="table table-bordered">
         <tr>
             <th>Fotos Grup:{{$datosInforme->nombre}}</th>
-            <th>Tutor: {{$datosInforme->Tutor->nombre}} {{$datosInforme->Tutor->apellido1}} {{$datosInforme->Tutor->apellido2}}</th>
+            <th>Tutor: @if (isset($datosInforme->Tutor->nombre)) {{$datosInforme->Tutor->fullName}} @endif</th>
         </tr>
     </table>
 </div>

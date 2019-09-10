@@ -174,10 +174,6 @@ class PanelColaboracionController extends IntranetController
         return $noEnviadas;
     }
 
-    private function findActivities($colaboracion,$document){
-        if ($document->fcts == 0) return (Activity::where('model_class','Intranet\Entities\Colaboracion')->where('model_id',$colaboracion->id)->where('document','=',$document['subject'])->count() == 0);
-        return (Activity::where('model_class','Intranet\Entities\Fct')->where('model_id'));
-    }
 
     private function selectFcts($id,$document=null){
         if ($id) return  Fct::where('id',$id)->get();
