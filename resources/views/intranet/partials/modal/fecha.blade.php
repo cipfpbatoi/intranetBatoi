@@ -12,7 +12,7 @@
 		  <form id="formFechas" action="#" method="POST">
 			 {{ csrf_field() }}
               <label class="control-label" for="horas">Hores:</label>
-              <input type='text' id="horas" name="horas" class="form-control" value="{{$panel->getElementos($pestana)->first()->Colaboracion->Ciclo->horasFct}}"></input>
+              <input type='text' id="horas" name="horas" class="form-control" value="@if (isset($panel->getElementos($pestana)->first()->Colaboracion->Ciclo)) {{$panel->getElementos($pestana)->first()->Colaboracion->Ciclo->horasFct}} @endif"></input>
 			 <label class="control-label" for="desde">Data:</label>
 			 <input type='text' id="fecha" name="fecha" class="form-control date" value="{{hoy('d/m/Y')}}"></input>
           </form>
