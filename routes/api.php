@@ -72,7 +72,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('alumnoGrupoModulo/{dni}/{modulo}','AlumnoGrupoController@getModulo');
     
     Route::resource('horario', 'HorarioController', ['except' => ['edit', 'create']]);
-    Route::get('horario/{idProfesor}/guardia','HorarioController@Guardia')
+    Route::get('horario/{idProfesor}/guardia','HorarioController@Guardia');
     Route::get('horariosDia/{fecha}','HorarioController@HorariosDia');
     Route::resource('hora', 'HoraController', ['except' => ['edit', 'create']]);
 //Route::resource('asistencia','AsistenciaController',['except'=>['edit','create']]);
