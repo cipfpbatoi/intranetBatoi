@@ -69,6 +69,11 @@ class HorarioController extends ApiBaseController
         if ($send) return $this->sendResponse($data, 'OK');
         else return $data;        
     }
+
+    public function guardia($idProfesor){
+        return $this->sendResponse(Horario::where('idProfesor',$idProfesor)->whereIn('ocupacion',config('variables.ocupacionesGuardia'))->get(),
+         'OK');
+    }
     
     public function HorariosDia($fecha){
         $data = [];

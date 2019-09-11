@@ -1,6 +1,6 @@
     <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
         <div id="{{$elemento->id}}" class="well profile_view">
-            <div id="{{$fct->id}} class="fct col-sm-12">
+            <div id="{{$fct->id}}" class="col-sm-12 fct">
                 <div class="left col-md-8 col-xs-12">
                     <h5>FCT {{$elemento->Centro->nombre}} <strong>({{$elemento->puestos}})</strong></h5>
                     <ul class="list-unstyled">
