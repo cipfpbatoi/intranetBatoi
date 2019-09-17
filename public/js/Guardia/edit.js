@@ -64,7 +64,7 @@ $(function() {
 	// Pediremos el horario del profesor para ver las guardias y los tramos horarios
 	// Cuando los tengamos habilitamos esas horas en el select de tramos horarios
 	$.ajax ({
-    	url: "/api/horario/idProfesor="+$('#dni').text()+"&ocupacion="+ocupacionGuardia[0].cod,//&dia_semana="+dias_semana[ahora.getDay()],
+    	url: "/api/horario/"+$('#dni').text()+"/guardia",
 //url: "api/horario/idProfesor=021666373M&ocupacion=3249454&dia_semana="+dias_semana[ahora.getDay()],
     	type: "GET",
     	dataType: "json",
