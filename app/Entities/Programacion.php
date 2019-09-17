@@ -97,7 +97,6 @@ class Programacion extends Model
                     ->first())
             $modulos[] = $mc->id;
         }
-
         return $query->whereIn('idModuloCiclo', $modulos)
                 ->where('curso',Curso());
     }
