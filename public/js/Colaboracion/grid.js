@@ -6,6 +6,7 @@ var list;
 var texto;
 var day;
 var month;
+var tipo;
 
 $(function() {
     var token = $("#_token").text();
@@ -110,26 +111,51 @@ $(function() {
         $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
         id=$(this).parents(".profile_view").find(".fct").attr("id");
         list = $(this).parents(".profile_view").find(".listActivity");
+        tipo = 'telefonico';
+    });
+    $(".small").on("click",function(event){
+        event.preventDefault();
+        $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
+        id=$(this).attr("id");
+        tipo = 'seguimiento';
     });
     $("#formExplicacion").on("submit", function(){
         event.preventDefault();
-        $.ajax({
-            method: "POST",
-            url: "/api/colaboracion/" + id + "/telefonico",
-            data: {
-                api_token : token,
-                explicacion: this.explicacion.value}
-        }).then(function (result) {
-            texto = list.html();
-            day = new Date;
-            month = day.getMonth()+1;
-            texto = list.html()+"<small>Telèfon- "+day.getDate()+"/"+month+"</small><br/>";
-            list.html(texto);
-            $("#dialogo").modal('hide');
-        }, function (result) {
-            console.log("Només es pot un per dia");
-            $("#dialogo").modal('hide');
-        });
+        if (tipo == 'telefonico') {
+            $.ajax({
+                method: "POST",
+                url: "/api/colaboracion/" + id + "/telefonico",
+                data: {
+                    api_token: token,
+                    explicacion: this.explicacion.value
+                }
+            }).then(function (result) {
+                texto = list.html();
+                day = new Date;
+                month = day.getMonth() + 1;
+                texto = list.html() + "<small>Telèfon- " + day.getDate() + "/" + month + "</small><br/>";
+                list.html(texto);
+                $("#dialogo").modal('hide');
+            }, function (result) {
+                console.log("Només es pot un per dia");
+                $("#dialogo").modal('hide');
+            });
+        };
+        if (tipo == 'seguimiento'){
+            $.ajax({
+                method: "PUT",
+                url: "/api/activity/" + id ,
+                data: {
+                    api_token: token,
+                    comentari: this.explicacion.value
+                }
+            }).then(function (result) {
+                $("#dialogo").modal('hide');
+            }, function (result) {
+                console.log("Error al modificar");
+                $("#dialogo").modal('hide');
+            });
+        };
     });
     $('.fa-plus').on("click", function(){
         var id=$(this).parents(".profile_view").attr("id");

@@ -21,7 +21,6 @@
         @include ('intranet.partials.profile.partials.colaboracion')
     @endif
 @endforeach
-<hr/>
 @foreach ($otros as $elemento)
     @php
         $fcts = \Intranet\Entities\Fct::where('idColaboracion',$elemento->id)->where('asociacion',1)->get();

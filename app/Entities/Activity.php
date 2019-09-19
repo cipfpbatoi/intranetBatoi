@@ -7,6 +7,8 @@ use Styde\Html\Facades\Alert;
 
 class Activity extends Model
 {
+    protected $fillable = ['comentari'];
+
 
     public static function record($action, Model $model = null,$comentari = null,$fecha = null,$document=null)
     {

@@ -13,7 +13,7 @@
                 </div>
                 <div class="col-md-4 listActivity">
                     @foreach ($contactos as $contacto)
-                        <small>{{firstWord($contacto->document)}}-{{fechaCurta($contacto->created_at)}}</small><br/>
+                        <small><a href="#" class="small" id="{{$contacto->id}}">{{firstWord($contacto->document)}}-{{fechaCurta($contacto->created_at)}}</a></small><br/>
                     @endforeach
                 </div>
             </div>
