@@ -33,4 +33,5 @@ class ActualizacionController extends Controller{
         else Alert::info('Ja tens la darrera versió');
         return redirect('/');
     }
+
 }
