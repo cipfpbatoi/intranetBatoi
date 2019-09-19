@@ -105,13 +105,17 @@ class Mail
     }
 
     private function sendMail($elemento,$fecha){
-        if (isset($elemento->contacto)) {
-            LaravelMail::to($elemento->email, $elemento->contacto)
-                ->send(new DocumentRequest($this, $this->chooseView(), $elemento,$this->attach));
-            Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
-            if ($this->register)
-                Activity::record($this->action, $elemento, null,$fecha,$this->subject);
+        if (isset($elemento->contacto)  ) {
+            if (filter_var($elemento->email,FILTER_VALIDATE_EMAIL)) {
+                LaravelMail::to($elemento->email, $elemento->contacto)
+                    ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attach));
+                Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
+                if ($this->register)
+                    Activity::record($this->action, $elemento, null, $fecha, $this->subject);
+            }
+            else Alert::danger("No s'ha pogut enviar correu a $elemento->contacto. Comprova email");
         }
+
     }
 
     private function chooseView(){

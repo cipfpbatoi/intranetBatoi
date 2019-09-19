@@ -34,5 +34,5 @@ class ActualizacionController extends Controller{
         return redirect('/');
     }
 
-
+¡¡¡¡
 }
