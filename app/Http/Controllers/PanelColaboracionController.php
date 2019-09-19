@@ -92,7 +92,7 @@ class PanelColaboracionController extends IntranetController
      */
     public function search(){
         $this->titulo = ['quien' => Colaboracion::MiColaboracion()->first()->Ciclo->literal];
-        return Colaboracion::MiColaboracion()->get();
+        return Colaboracion::MiColaboracion()->orderBy('tutor')->get();
     }
 
     /**
