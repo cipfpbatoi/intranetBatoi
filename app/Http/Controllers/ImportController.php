@@ -91,7 +91,7 @@ class ImportController extends Seeder
                 'email' => 'email,nombre,apellido1',
                 'departamento' => '99',
                 'password' => 'cifrar,documento',
-                'api_token' => 'aleatorio,0'
+                'api_token' => 'aleatorio,60'
             )),
         array('nombrexml' => 'grupos',
             'nombreclase' => 'Grupo',
@@ -194,9 +194,9 @@ class ImportController extends Seeder
     /**
      * @return string
      */
-    public function aleatorio()
+    public function aleatorio($long)
     {
-        return str_random(60);
+        return str_random($long);
     }
 
     /**

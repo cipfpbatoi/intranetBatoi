@@ -200,6 +200,20 @@ class AdministracionController extends Controller
         $a->save();
     }
 
+    public static function v2_0(){
+        // partxe per actualitzar professors sense token
+
+        $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
+        $profesores = Profesor::where('api_token','aleatorio')->get();
+
+        foreach ($profesores as $profesor){
+            $profesor->api_token = str_random(60);
+            $profesor->save();
+            dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
+
+        }
+    }
+
     public function importaAnexoI(){
         $canvis = 0;
         $nous = 0;

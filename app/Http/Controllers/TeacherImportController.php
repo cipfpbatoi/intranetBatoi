@@ -61,7 +61,7 @@ class TeacherImportController extends Seeder
                 'email' => 'email,nombre,apellido1',
                 'departamento' => '99',
                 'password' => 'cifrar,documento',
-                'api_token' => 'aleatorio,0'
+                'api_token' => 'aleatorio,60'
             )),
         array('nombrexml' => 'horarios_grupo',
             'nombreclase' => 'Horario',
