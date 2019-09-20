@@ -23,6 +23,9 @@ class EventServiceProvider extends ServiceProvider
         'Intranet\Events\ActividadCreated' => [
             'Intranet\Listeners\ResponsableCreate',
         ],
+        'Intranet\Events\FctCreated' => [
+            'Intranet\Listeners\ColaboracionColabora',
+        ],
         'Intranet\Events\GrupoCreated' => [
             'Intranet\Listeners\CoordinadorCreate',
         ],

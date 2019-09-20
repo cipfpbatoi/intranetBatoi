@@ -8,7 +8,10 @@ use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Grupo;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
+use Intranet\Events\FctCreated;
 use Intranet\Entities\Alumno;
+use phpDocumentor\Reflection\Types\Array_;
+
 
 class Fct extends Model
 {
@@ -42,6 +45,7 @@ class Fct extends Model
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
+        'created' => FctCreated::class,
         'deleted' => ActivityReport::class,
     ];
     
@@ -215,5 +219,6 @@ class Fct extends Model
         $instructor->surnames = $contacto;
         $instructor->save();
     }
+
 
 }

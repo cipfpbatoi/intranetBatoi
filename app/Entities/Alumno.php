@@ -174,7 +174,11 @@ class Alumno extends Authenticatable
     public function getIdAttribute(){
         return $this->nia;
     }
-
+    public function saveContact($contacto,$email)
+    {
+        $this->email = $email;
+        $this->save();
+    }
 
 
 }
