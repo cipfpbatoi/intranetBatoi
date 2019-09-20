@@ -50,16 +50,18 @@ class Activity extends Model
     {
         return $query->where('model_class','Intranet\Entities\\'.$modelo)->where('action','email')->orWhere('action','phone')->orWhere('action','visita');
     }
-
+/*
     public function scopeContactes($query)
     {
         return $query->where('action','email')->orWhere('action','phone')->where('comentari','<>','Concertar visita de FCT');
 
     }
+
     public function scopeNotConcertar($query)
     {
         return $query->where('comentari','<>','Concertar visita de FCT');
     }
+*/
     public function scopeId($query,$id){
         return $query->where('model_id',$id);
     }

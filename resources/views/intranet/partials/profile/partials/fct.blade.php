@@ -13,7 +13,21 @@
                 </div>
                 <div class="col-md-4 listActivity">
                     @foreach ($contactos as $contacto)
-                        <small><a href="#" class="small" id="{{$contacto->id}}">{{firstWord($contacto->document)}}-{{fechaCurta($contacto->created_at)}}</a></small><br/>
+                        <small>
+
+                            {{fechaCurta($contacto->created_at)}}
+                            @if (firstWord($contacto->document)=='Recordatori')
+                                <i class="fa fa-flag"></i>
+                            @else
+                                <a href="#" class="small" id="{{$contacto->id}}">
+                                    @if ($contacto->action == 'email') <i class="fa fa-envelope"></i> @endif
+                                    @if ($contacto->action == 'visita') <i class="fa fa-car"></i> @endif
+                                    @if ($contacto->action == 'phone') <i class="fa fa-phone"></i> @endif
+                                    @if (isset($contacto->comentari))  <i class="fa fa-plus"></i> @endif
+                                </a>
+                            @endif
+                        </small>
+                        <br/>
                     @endforeach
                 </div>
             </div>

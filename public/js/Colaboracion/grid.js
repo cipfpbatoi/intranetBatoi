@@ -115,8 +115,19 @@ $(function() {
     });
     $(".small").on("click",function(event){
         event.preventDefault();
-        $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
         id=$(this).attr("id");
+        $.ajax({
+            method: "GET",
+            url: "/api/activity/" + id ,
+            data: {
+                api_token: token,
+            }
+        }).then(function (result) {
+            $("#dialogo").find("#explicacion").val(result.data.comentari);
+        }, function (result) {
+            console.log("Error al buscarr");
+        });
+        $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
         tipo = 'seguimiento';
     });
     $("#formExplicacion").on("submit", function(){
