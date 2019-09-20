@@ -278,4 +278,10 @@ trait BatoiModels
             return true;
         return false;
     }
+
+    public function saveContact($contacto,$email){
+        $this->contacto = $contacto;
+        $this->email = $email;
+        return $this->save();
+    }
 }

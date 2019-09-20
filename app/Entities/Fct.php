@@ -207,6 +207,13 @@ class Fct extends Model
         if (isset($this->Instructor->nombre)) return $this->Instructor->nombre;
         return '';
     }
-    
-    
+    public function saveContact($contacto,$email)
+    {
+        $instructor = $this->Instructor;
+        $instructor->email = $email;
+        $instructor->name = '';
+        $instructor->surnames = $contacto;
+        $instructor->save();
+    }
+
 }

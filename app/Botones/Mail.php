@@ -77,9 +77,7 @@ class Mail
         $class = $this->class;
         $modelo = $class::find($id);
         if ($modelo->contacto != $contacto || $modelo->email != $email){
-            $modelo->contacto = $contacto;
-            $modelo->email = $email;
-            $modelo->save();
+            $modelo->saveContact($contacto,$email);
         }
         return $modelo;
     }
