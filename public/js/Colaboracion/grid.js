@@ -131,7 +131,7 @@ $(function() {
         tipo = 'seguimiento';
     });
     $("#formExplicacion").on("submit", function(){
-        //event.preventDefault();
+        event.preventDefault();
         if (tipo == 'telefonico') {
             $.ajax({
                 method: "POST",
