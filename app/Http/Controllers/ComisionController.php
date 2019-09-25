@@ -136,7 +136,7 @@ class ComisionController extends IntranetController
     public function detalle($id)
     {
         $comision = Comision::find($id);
-        $allFcts = hazArray(Fct::misFcts()->esFct()->get(),'id','Centro');
+        $allFcts = hazArray(Fct::misFctsColaboracion()->esFct()->get(),'id','Centro');
 
         return view('comision.detalle', compact('comision', 'allFcts'));
     }
