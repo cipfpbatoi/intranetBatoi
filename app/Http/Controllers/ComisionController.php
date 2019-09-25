@@ -9,6 +9,7 @@ use Intranet\Botones\Mail;
 use \PDF;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Activity;
 
 
 /**
@@ -66,6 +67,7 @@ class ComisionController extends IntranetController
     private function enviarCorreos($comision){
         foreach ($comision->Fcts as $fct)
             if ($fct->pivot->aviso)  $this->sendEmail($fct,$comision->desde);
+            else Activity::record('visita', $fct, null, $comision->desde, 'Visita Empresa');
 
     }
 
