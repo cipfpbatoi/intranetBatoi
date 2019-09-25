@@ -177,7 +177,7 @@ class PanelColaboracionController extends IntranetController
 
     private function selectFcts($id,$document=null){
         if ($id) return  Fct::where('id',$id)->get();
-        $fcts = Fct::MisFcts()->EsFct()->get();
+        $fcts = Fct::MisFctsColaboracion()->EsFct()->get();
         if (!$document) return $fcts;
         $noRepeat = collect();
         foreach ($fcts as $fct){

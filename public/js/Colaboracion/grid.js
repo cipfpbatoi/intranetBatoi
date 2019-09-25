@@ -107,7 +107,7 @@ $(function() {
             }
     });
     $(".telefonico").on("click",function(event){
-        event.preventDefault();
+        //event.preventDefault();
         $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
         id=$(this).parents(".profile_view").find(".fct").attr("id");
         list = $(this).parents(".profile_view").find(".listActivity");
