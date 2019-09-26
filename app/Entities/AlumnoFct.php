@@ -4,6 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
+use Intranet\Events\FctAlDeleted;
 
 
 class AlumnoFct extends Model
@@ -23,7 +24,10 @@ class AlumnoFct extends Model
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
     ];
-    public $timestamps = false;   
+    public $timestamps = false;
+    protected $dispatchesEvents = [
+        'deleting' => FctAlDeleted::class,
+    ];
     
     public function Alumno()
     {

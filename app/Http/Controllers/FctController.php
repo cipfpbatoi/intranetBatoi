@@ -84,7 +84,7 @@ class FctController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion','==','1']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.delete',['where'=>['Nalumnes','==','1']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.delete',['where'=>['Nalumnes','<=','1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.pdf',['class'=>'pdf','img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid',new Botonimg('fct.seguimiento',['img'=>'fa-envelope','where'=>['asociacion', '==', '1']]));

@@ -32,16 +32,22 @@
                 </div>
             </div>
             <div class="col-xs-12 bottom text-center">
-                <div class="col-xs-12 col-sm-4 emphasis">
+                <div class="col-xs-12 col-sm-5 emphasis">
                     <p class="ratings">
                         {{$elemento->Centro->localidad}}<br/>
                     </p>
                     <a href="/colaboracion/{{$elemento->id}}/show" class="btn-success btn btn-xs"><i class="fa fa-eye"></i>
-                        @if (count($alumnos)) {{count($alumnos)}} @endif
+
                     </a>
+                    @if (count($alumnos))
+                        <i class="btn-success btn btn-xs">{{count($alumnos)}}</i>
+                    @else
+                        <a href="/fct/{{$fct->id}}/delete" class="btn-success btn btn-xs"><i class="fa fa-trash"></i></a>
+                    @endif
                     <i class="fa fa-plus btn-success btn btn-xs" data-toggle="modal" data-target="#AddAlumno"></i>
+
                 </div>
-                <div class="col-xs-12 col-sm-8 emphasis">
+                <div class="col-xs-12 col-sm-7 emphasis">
                     @include ('intranet.partials.buttons',['tipo' => 'profile'])<br/>
                     @php $elemento = $fct; @endphp
                     @include ('intranet.partials.buttons',['tipo' => 'fct'])
