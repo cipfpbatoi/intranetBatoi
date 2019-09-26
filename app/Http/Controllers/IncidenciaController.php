@@ -111,6 +111,26 @@ class IncidenciaController extends IntranetController
         return $this->redirect();
     }
 
+    /*
+     *  update (Request,$id) return redirect
+     * guarda els valors del formulari
+     */
+    public function update(Request $request, $id)
+    {
+        $elemento =  $this->class::findOrFail($id);
+        $tipo = $elemento->tipo;
+        $this->validateAll($request, $elemento);    // valida les dades
+        $elemento->fillAll($request);
+        if ($elemento->tipo != $tipo){
+            $elemento->responsable =  $elemento->Tipos->idProfesor;
+            $explicacion = "T'han assignat una incidència: " . $elemento->descripcion;
+            $enlace = "/incidencia/" . $elemento->id . "/edit";
+            avisa($elemento->responsable, $explicacion, $enlace);
+            $elemento->save();
+        }
+        return $this->redirect();
+    }
+
     /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
