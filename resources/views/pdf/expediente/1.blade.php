@@ -13,7 +13,7 @@
         <div class="container" style="width:95%;clear:right;text-align: justify">
             <br/><br/><br/>
             <p style="text-indent: 30px">Per la present li comunique que donat el nombre de faltes d'assistència acumulades des de l'inici del curs es procedirà
-                a la seua matrícula de {{Curso()}} del {{\Intranet\Entities\AlumnoGrupo::where('idAlumno',$elemento->idAlumno)->first()->Grupo->Ciclo->ciclo}}, 
+                a la anul·lació de la seua matrícula de {{Curso()}} del {{\Intranet\Entities\AlumnoGrupo::where('idAlumno',$elemento->idAlumno)->first()->Grupo->Ciclo->ciclo}},
                 seguint les instruccions de la Resolució d'inici de Curs, de la Secretaria Autonòmica d'Educació i Investigació,
 				per la que es dicten les instruccions sobre ordenació acadèmica i d'organització de l'activitat docent dels centres de la Comunitat Valenciana
 				que durant el curs {{Curso()}} impartisquen cicles formatius de Formació Profesional.</p>
