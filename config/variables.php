@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'controlDiario' => 0,
+    'controlDiario' => 1,
     'diasNoCompleta' => 45,
     'precioKilometro' => 0.19,
     'reservaAforo' => 1.2,
