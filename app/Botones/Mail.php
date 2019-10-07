@@ -107,7 +107,7 @@ class Mail
             if (filter_var($elemento->email,FILTER_VALIDATE_EMAIL)) {
                 LaravelMail::to($elemento->email, $elemento->contacto)
                     ->bcc($this->from)
-                    ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attac));
+                    ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attach));
                 Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
                 if ($this->register)
                     Activity::record($this->action, $elemento, null, $fecha, $this->subject);
