@@ -1,4 +1,3 @@
-<div>Hola {{$elemento->contacto}},</div>
 <div>T'escric per conèixer de primera ma com van les pràctiques FCT dels alumnes:
     <ul>
         @foreach ($elemento->Alumnos as $alumno)

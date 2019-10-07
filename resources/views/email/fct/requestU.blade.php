@@ -1,4 +1,3 @@
-<div>Hola {{$elemento->contacto}},</div>
 <div>Estic preparant la documentació corresponent a les pràctiques de FCT del
     {{config('auxiliares.tipoEstudio.'.$elemento->ciclo->tipo)}} '{{$elemento->ciclo->literal}}' ,
     i necessitaria que em confirmàreu els següents detalls de la documentació oficial:<br/>

@@ -1,5 +1,3 @@
-
-    <div>Hola {{$elemento->Instructor->Nombre}},</div>
     <div>T'escric per recordar-te l'inici de les pràctiques de FCT. A continuació et passe relació dels alumnes que t'han estat assignat i les dades de començament de les pràctiques.</div>
         <div>
             <p>Data de començament: {{$elemento->desde}} </p>
