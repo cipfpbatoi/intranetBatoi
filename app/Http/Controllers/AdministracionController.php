@@ -200,11 +200,11 @@ class AdministracionController extends Controller
         $a->save();
     }
 
-    public static function v2_0(){
+    public static function v2_01(){
         // partxe per actualitzar professors sense token
 
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
-        $profesores = Profesor::where('api_token','aleatorio')->get();
+        $profesores = Profesor::where('api_token','')->get();
 
         foreach ($profesores as $profesor){
             $profesor->api_token = str_random(60);
