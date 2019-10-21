@@ -118,7 +118,9 @@ El que ens pregunta és:
 A continuació editem el fitxer **/etc/exim4/passwd.client** per posar el nom i contrasenay del compte de gmail a utilitzar per a enviar els correus:
 ```bash
 ### target.mail.server.example:login:password
+gmail-smtp.l.google.com:intranet@gmail.com:abcd@1234
 *.google.com:intranet@gmail.com:abcd@1234
+smtp.gmail.com:intranet@gmail.com:abcd@1234
 ```
 
 Per a finalitzar hem de configurar el compte de GMail per a permetre a exim eixir. Es fa des de **GMail -> Configuració -> Compte -> Configuració del compte de Google -> Inici de sessió i seguretat -> Aplicacions amb accés al compte -> Permet l'accés a les aplicacions menys segures** i ACTIVEM aquesta opció:
