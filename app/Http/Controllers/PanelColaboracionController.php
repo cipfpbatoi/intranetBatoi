@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\View\View;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonBasico;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Fct;
 use Illuminate\Support\Facades\Session;
@@ -126,6 +127,7 @@ class PanelColaboracionController extends IntranetController
 
     public function sendStudent($id=null){
         $alumnes = $this->selectFctAlumnes();
+        //$alumnes = AlumnoFct::MisFcts()->get();
         if ($alumnes->count() == 0){
             Alert::info('No tens alumnes als que avisar');
             return back();
@@ -189,13 +191,12 @@ class PanelColaboracionController extends IntranetController
 
 
     private function selectFctAlumnes(){
-        $fctAl = collect();
-        foreach ($this->selectFcts(null) as $fct)
-            foreach ($fct->Alumnos as $alumno){
-                $fctAl->push($alumno);
-            }
-        return $fctAl;
+        $alumnos = collect();
+        foreach (AlumnoFct::MisFcts()->get() as $fctAl)
+                $alumnos->push($fctAl->Alumno);
+        return $alumnos;
     }
+
 
     private function sendEmails($document,$colaboraciones){
         if (isset($document['redirect'])) return $this->renderEmail($document,$colaboraciones);
