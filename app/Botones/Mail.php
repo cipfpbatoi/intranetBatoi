@@ -66,7 +66,7 @@ class Mail
         if ($element != '') {
             $toCompost = explode('(', $element);
             $id = $toCompost[0];
-            return $this->updateModel(explode('-',$toCompost[1]),$id);
+            return $this->updateModel(explode(';',$toCompost[1]),$id);
         }
         return null;
     }
@@ -131,7 +131,7 @@ class Mail
     }
 
     private function getReceiver($elemento){
-        return $elemento->id.'('.$elemento->email.'-'.$elemento->contacto.')';
+        return $elemento->id.'('.$elemento->email.';'.$elemento->contacto.')';
     }
 
     /**
