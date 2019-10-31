@@ -225,6 +225,7 @@ return array(
         'Reserva' => 'Reserva aulas',
         'Equipo' => 'Equipo Educativo',
         'Controlg' => 'Guardias',
+        'Controlgb' => 'Guardias Biblioteca',
         'Apitoken' => 'Envío de apiTokens',
         'Equipodirectivo' => 'Equipo directivo',
         'Controlp' => 'Semanal',

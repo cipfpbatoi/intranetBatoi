@@ -52,6 +52,25 @@ class GuardiaController extends IntranetController
         return view('guardias.control',compact('horas','arrayG','dias'));
     }
 
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function controlBiblio()
+    {
+        $horas = Hora::all();
+        $dias  = array('L','M','X','J','V');
+        foreach (Horario::GuardiaBiblio()
+                     ->orderBy('sesion_orden')
+                     ->get() as $guardia){
+            $profesor = Profesor::findOrFail($guardia->idProfesor);
+            if (isset($profesor->fecha_baja)) $profesor = $profesor->Sustituye;
+            if ($profesor) $arrayG[$guardia->sesion_orden][$guardia->dia_semana][] =  array('dni'=>$profesor->dni , 'nombre' =>$profesor->ShortName);
+        }
+
+        return view('guardias.control',compact('horas','arrayG','dias'));
+    }
+
     /**
      * @param $fecha
      * @return array

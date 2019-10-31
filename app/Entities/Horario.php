@@ -79,6 +79,12 @@ class Horario extends Model
     {
         return $query->where('ocupacion', '3249454');
     }
+
+    public function scopeGuardiaBiblio($query)
+    {
+        return $query->where('ocupacion', '149034734');
+    }
+
     public function scopeLectivos($query)
     {
         return $query->whereNotIn('modulo',config('constants.modulosNoLectivos'));

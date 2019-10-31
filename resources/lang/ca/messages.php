@@ -228,6 +228,7 @@ return array(
         'Reserva' => 'Reserva aules',
         'Equipo' => 'Equip Educatiu',
         'Controlg' => 'Guàrdies',
+        'Controlgb' => 'Guàrdies Biblioteca',
         'Apitoken' => "Enviament d'apiTokens",
         'Equipodirectivo' => 'Equip directiu',
         'Controlp' => 'Semanal',
