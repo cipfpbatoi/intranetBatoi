@@ -41,7 +41,8 @@ class PanelDocAgrupadosController extends BaseController
      */
     public function search()
     {
-        return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->whereIn('tipoDocumento',TipoDocumento::allDocuments())->whereNull('idDocumento')->get();
+        return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->whereIn('tipoDocumento',TipoDocumento::allDocuments())->whereNull('idDocumento')
+            ->orderBy('curso','desc')->get();
     }
 
     /**

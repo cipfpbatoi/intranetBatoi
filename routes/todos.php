@@ -27,3 +27,6 @@ Route::get('/proyecto', ['as' => 'documento.proyecto', 'uses' => 'PanelProyectoC
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'profesor.mensaje', 'uses' => 'ProfesorController@alerta']);
 
 Route::get('/help/{fichero}/{enlace}',['as' => 'help' ,'uses' => 'AdministracionController@help']);
+
+Route::get('/poll/{id}/do', ['as' => 'enquesta', 'uses' => 'PollController@preparaEnquesta']);
+Route::post('/poll/{id}/do', ['as' => 'enquesta.post', 'uses' => 'PollController@guardaEnquesta']);

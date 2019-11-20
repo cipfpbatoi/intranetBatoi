@@ -20,20 +20,29 @@ class PanelProyectoController extends BaseController
     protected function iniPestanas($parametres = null)
     {
         $dep = isset(AuthUser()->departamento)?AuthUser()->departamento:AuthUser()->Grupo->first()->departamento;
-        $grupos = Ciclo::select('ciclo')
+        $ciclos = Ciclo::select('ciclo')
                 ->where('departamento', $dep)
                 ->where('tipo',2)
                 ->distinct()
                 ->get();
-        foreach ($grupos as $grupo) 
-            $this->panel->setPestana(str_replace([' ', '(', ')'], '', $grupo->ciclo), true, 'profile.documento', ['ciclo', $grupo->ciclo]);
-      
+
+        foreach ($ciclos as $ciclo)
+            $this->panel->setPestana(str_replace([' ', '(', ')','.'], '', $ciclo->ciclo), true, 'profile.documento', ['ciclo', $ciclo->ciclo]);
+        //dd($this->panel);
     }
     
     public function search()
     {
+        $dep = isset(AuthUser()->departamento)?AuthUser()->departamento:AuthUser()->Grupo->first()->departamento;
+        $ciclos = hazArray(Ciclo::select('ciclo')
+            ->where('departamento', $dep)
+            ->where('tipo',2)
+            ->distinct()
+            ->get(),'ciclo','ciclo');
+
         return Documento::where('tipoDocumento', 'Proyecto')
-                ->orderBy('curso')
+                ->whereIn('ciclo',$ciclos)
+                ->orderBy('curso','desc')
                 ->get();
     }
     protected function iniBotones()

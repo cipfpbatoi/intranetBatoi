@@ -382,10 +382,11 @@ Route::resource('/option', 'OptionController', ['except' => ['destroy', 'update'
 Route::post('/option/create', ['as' => 'option.store', 'uses' => 'OptionController@store']);
 Route::get('/option/{id}/delete', ['as' => 'option.destroy', 'uses' => 'OptionController@destroy']);
 
-Route::resource('/poll', 'PPollController', ['except' => ['destroy', 'update','show']]);
-Route::post('/poll/create', ['as' => 'poll.store', 'uses' => 'PPollController@store']);
-Route::put('/ppoll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PPollController@update']);
+Route::resource('/poll', 'PollController', ['except' => ['destroy', 'update','show']]);
+Route::post('/poll/create', ['as' => 'poll.store', 'uses' => 'PollController@store']);
+Route::put('/poll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PollController@update']);
 Route::get('/poll/{id}/show', ['as' => 'poll.resultShow', 'uses' => 'PollController@lookAtMyVotes']);
 Route::get('/poll/{id}/chart', ['as' => 'poll.result', 'uses' => 'PollController@lookAtAllVotes']);
+
 
 Route::post('/myMail','MyMailController@send');

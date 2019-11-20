@@ -1,5 +1,5 @@
 <ul class="list-unstyled wizard_steps">
-    @foreach ($poll->options as $index => $option)
+    @foreach ($poll->Plantilla->options as $index => $option)
        <li>
             <a href="#step-{{$index+1}}">
                 <span class="step_no">

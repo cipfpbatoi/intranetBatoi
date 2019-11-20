@@ -14,5 +14,3 @@ Route::get('/equipo', ['as' => 'alumno.equipo', 'uses' => 'AlumnoController@equi
 
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'alumno.mensaje', 'uses' => 'AlumnoController@alerta']);
 
-Route::get('/poll/{id}', ['as' => 'enquesta.alumno', 'uses' => 'PollController@preparaEnquesta']);
-Route::post('/poll/{id}', ['as' => 'enquesta.post', 'uses' => 'PollController@guardaEnquesta']);

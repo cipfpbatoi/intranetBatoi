@@ -51,6 +51,7 @@ class PanelActaController extends BaseController
         return Documento::whereIn('rol', $roles)
                 ->whereIn('tipoDocumento', TipoDocumento::all($grupo))
                 ->whereIn('grupo', $profe->grupos())
+                ->orderBy('curso','desc')
                 ->get();
     }
 

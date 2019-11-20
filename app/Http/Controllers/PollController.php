@@ -7,6 +7,7 @@ use Intranet\Entities\Departamento;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Ciclo;
+use Intranet\Entities\Fct;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Poll\Option;
@@ -32,11 +33,11 @@ class PollController extends IntranetController
     
     protected function preparaEnquesta($id){
         $votes = Vote::where('user_id','=', hash('md5',AuthUser()->nia))
-                ->whereIn('option_id', hazArray(Option::where('poll_id',$id)->get(),'id'))
+                ->whereIn('option_id', hazArray(Option::where('ppoll_id',$id)->get(),'id'))
                 ->count();
         if ($votes == 0){
             $poll = Poll::find($id);
-            $modulos = $this->calculateAnswers($poll);
+            $modulos = $this->calculateAnswers($poll->que);
             return view('poll.enquesta',compact('modulos','poll'));
         }
 
@@ -90,10 +91,7 @@ class PollController extends IntranetController
                         }
                 }
         }
-
-
         return view('poll.allResolts',compact('votes','poll','options_numeric'));
-
     }
 
     private function initValues(&$votes,$options){
@@ -110,7 +108,7 @@ class PollController extends IntranetController
 
     protected function guardaEnquesta(Request $request,$id){
         $poll = Poll::find($id);
-        $modulos = $this->ordenModulos();
+        $modulos = $this->calculateAnswers($request->que);
         foreach ($poll->options as $question => $option){
             $profe=0;
             foreach ($modulos as $modulo)
@@ -131,11 +129,26 @@ class PollController extends IntranetController
         Alert::info('Enquesta emplenada amb exit');
         return redirect('home');
     }
+
+    private function guardaVoto($){
+        $vote = new Vote();
+        $vote->user_id = $cifrar?hash('md5',AuthUser()->id):AuthUser()->id;
+        $vote->option_id = $option->id;
+        $vote->idModuloGrupo = $modulo['modulo']->id;
+        $vote->idProfesor = $dni;
+        if ($option->scala == 0) $vote->text = $request->$value;
+        else $vote->value = $request->$value;
+    }
+
     
-    private function calculateAnswers($poll){
-        if ($poll->que == 'Profesor') return $this->ordenModulos();
-        if ($poll->que == '--') return $this->onlyQuestions();
-        if ($poll->que == 'Actividad') return $this->searchActivities();
+    private function calculateAnswers($kindPoll){
+        switch ($kindPoll){
+            case 'Profesor' : return $this->ordenModulos();
+            case '--' : return $this->onlyQuestions();
+            case 'Actividad' : return $this->searchActivities();
+            case 'Fct' : return $this->searchFcts();
+        }
+
 
     }
 
@@ -148,6 +161,7 @@ class PollController extends IntranetController
         }
         return $modulos;
     }
+
     private function searchActivities()
     {
         $actividades = collect();
@@ -157,6 +171,11 @@ class PollController extends IntranetController
             }
         }
         return $actividades;
+    }
+
+    private function searchFcts()
+    {
+        return Fct::misFcts()->get();
     }
     
 }

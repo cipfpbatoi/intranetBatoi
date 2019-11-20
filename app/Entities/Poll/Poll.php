@@ -32,7 +32,7 @@ class Poll extends Model
      */
     public function Plantilla()
     {
-        return $this->hasOne(PPoll::class);
+        return $this->hasOne(PPoll::class,'id','idPPoll');
     }
 
     public function getActiuAttribute(){
