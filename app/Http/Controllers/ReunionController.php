@@ -181,7 +181,7 @@ class ReunionController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('reunion.email', ['where' => ['idProfesor', '==', $actual, 'fichero', '==', '']]));
         $this->panel->setBoton('grid', new BotonImg('reunion.ics', ['img' => 'fa-calendar', 'where' => ['fecha', 'posterior', Date::yesterday()]]));
         $this->panel->setBoton('grid', new BotonImg('reunion.saveFile', ['where' => ['idProfesor', '==', $actual, 'archivada', '==', '0', 'fecha', 'anterior', Date::yesterday()]]));
-        $this->panel->setBoton('grid', new BotonImg('reunion.deleteFile', ['img' => 'fa-eraser','where' => ['idProfesor', '==', $actual, 'archivada', '==', '1', 'fecha', 'anterior', Date::yesterday()]]));
+        $this->panel->setBoton('grid', new BotonImg('reunion.deleteFile', ['img' => 'fa-unlock','where' => ['idProfesor', '==', $actual, 'archivada', '==', '1', 'fecha', 'anterior', Date::yesterday()]]));
     }
 
     public function pdf($id)
