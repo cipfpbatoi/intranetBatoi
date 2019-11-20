@@ -217,6 +217,7 @@ return array(
             'ordenes' => 'Orden del dia',
             'detalle' => 'Datos reunión',
             'saveFile' => 'Archivar',
+            'deleteFile' => 'Borrar Acta Archivada',
             'control' => 'Control Reuniones por grupo',
         ),
         'Grupotrabajo'=> array(

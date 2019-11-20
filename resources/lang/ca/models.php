@@ -218,6 +218,7 @@ return array(
             'ordenes' => 'Ordre del dia',
             'detalle' => 'Dades reunió',
             'saveFile' => 'Arxivar',
+            'deleteFile' => 'Esborrar Acta Arxivada',
             'control' => 'Control Reunions per grup',
         ),
         'Grupotrabajo'=> array(

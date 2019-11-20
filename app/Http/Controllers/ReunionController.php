@@ -241,7 +241,6 @@ class ReunionController extends IntranetController
                 $elemento->fichero = '';
                 $elemento->save();
                 unlink(storage_path('/app/' . $nom));
-
             });
         return back();
     }
