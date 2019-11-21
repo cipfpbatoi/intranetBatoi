@@ -54,7 +54,7 @@ $(function () {
             alumnos.empty(); // remove old options
             $.each(result, function (key, value) {
                 alumnos.append($("<option></option>")
-                    .attr("value", key).text(value));
+                    .attr("value", value.id).text(value.name));
             });
         }, function (result) {
             console.log("La solicitud no se ha podido completar.");

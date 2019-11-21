@@ -33,14 +33,23 @@ class Modulo_grupo extends Model
                 ->where('modulo',$this->ModuloCiclo->idModulo)->get()->toArray();
     }
     
-    public static function MisModulos()
+    public static function MisModulos($dni=null,$modulo=null)
     {
-        $modulos = Horario::select('modulo','idGrupo')
-                ->Profesor(AuthUser()->dni)
+        $dni = isset($dni)?$dni:AuthUser()->dni;
+        if ($modulo)
+            $modulos = Horario::select('modulo','idGrupo')
+                ->Profesor($dni)
                 ->whereNotNull('idGrupo')
-                ->whereNotIn('modulo',config('constants.modulosNoLectivos'))
+                ->where('modulo',$modulo)
                 ->distinct()
                 ->get();
+        else
+            $modulos = Horario::select('modulo','idGrupo')
+                    ->Profesor($dni)
+                    ->whereNotNull('idGrupo')
+                    ->whereNotIn('modulo',config('constants.modulosNoLectivos'))
+                    ->distinct()
+                    ->get();
         $todos = [];
         foreach ($modulos as $modulo){
             if ($mc = Modulo_ciclo::where('idModulo',$modulo->modulo)

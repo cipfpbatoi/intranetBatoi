@@ -80,7 +80,6 @@ class Expediente extends Model
     
     public function getIdModuloOptions(){
         return hazArray(Modulo::MisModulos()->Lectivos()->get(),'codigo', 'vliteral');
-       // return hazArray(Modulo::ModulosGrupo(Grupo::Qtutor()->first()->codigo)->Lectivos()->get(),'codigo', 'vliteral');
     }
 
     public function getIdAlumnoOptions()
@@ -93,10 +92,11 @@ class Expediente extends Model
                 $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->codigo)->get();
 
                 foreach ($alumnos as $alumno) {
-                    $misAlumnos[$alumno->idAlumno] = $alumno->Alumno->apellido1 . ' ' . $alumno->Alumno->apellido2 . ', ' . $alumno->Alumno->nombre;
+                    $misAlumnos[$alumno->idAlumno] = $alumno->Alumno->nameFull;
                 }
             }
         }
+        asort($misAlumnos);
         return $misAlumnos;
     }
 

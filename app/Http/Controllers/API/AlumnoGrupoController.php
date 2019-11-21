@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Grupo;
 use Illuminate\Http\Request;
+use Intranet\Entities\Modulo_grupo;
 
 
 class AlumnoGrupoController extends ApiBaseController
@@ -12,18 +13,25 @@ class AlumnoGrupoController extends ApiBaseController
 
     protected $model = 'AlumnoGrupo';
 
-    private function alumnos($migrupo)
+    private function alumnos($misgrupos)
     {
-       if (isset($migrupo->first()->codigo)) {
-            $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->first()->codigo)->get();
-            foreach ($alumnos as $alumno) {
-                $misAlumnos[$alumno->idAlumno] = $alumno->Alumno->apellido1 . ' ' . $alumno->Alumno->apellido2 . ', ' . $alumno->Alumno->nombre;
-            }
-        }
-        return $misAlumnos;
-        if ($send) return $this->sendResponse($misAlumnos, 'OK');
-        else return $misAlumnos; 
+       foreach ($misgrupos as $migrupo){
+           if (isset($migrupo->idGrupo)) {
+               $alumnos = AlumnoGrupo::where('idGrupo', '=',$migrupo->idGrupo)->get();
+               foreach ($alumnos as $alumno) {
+                   $arrayAlumnos[$alumno->idAlumno] = $alumno->Alumno->nameFull;
+               }
+           }
+       }
+       asort($arrayAlumnos);
+       foreach ($arrayAlumnos as $id => $name){
+           $nalum['id']= $id;
+           $nalum['name'] = $name;
+           $misAlumnos[] = $nalum;
+       }
+       return $misAlumnos;
     }
+
     public function show($cadena,$send=true)
     {
         $migrupo = Grupo::Qtutor($cadena)->get();
@@ -31,8 +39,9 @@ class AlumnoGrupoController extends ApiBaseController
     }
     
     public function getModulo($dni,$modulo){
-        $migrupo = Grupo::miGrupoModulo($dni,$modulo)->get();
-        return $this->alumnos($migrupo);
+        //$migrupo = Grupo::miGrupoModulo($dni,$modulo)->get();
+        $misgrupos = Modulo_grupo::misModulos($dni,$modulo);
+        return $this->alumnos($misgrupos);
     }
 
 }
