@@ -13,7 +13,7 @@
                 en la resta de mòduls professionals que componen cadascun dels cicles, complementant els continguts impartits en el mòdul professional de Formació i Orientació Laboral,
                 a fi de satifer els programes de formació de l'annex IV del R.D.39/1997, de 17 de gener.
             </p>
-            @include('pdf.alumnos.partials.signatura')
+            @include('pdf.partials.firmaDS')
         </div>
         <div class="page">
             @include('pdf.alumnos.partials.riesgosCurriculum') 

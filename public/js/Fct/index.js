@@ -10,6 +10,6 @@ $(function () {
         id = $(this).parents(".lineaGrupo").attr("id");
     });
     $("#formFechas").on("submit", function () {
-        $(this).attr("action", MODEL + "/" + id + "/pdf");
+        $(this).attr("action", "/" + MODEL + "/" + id + "/pdf");
     });
 });

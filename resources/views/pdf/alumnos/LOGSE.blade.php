@@ -8,7 +8,7 @@
                 mínims que s'estableixen en el Reial Decret abans mencionat per al módul de Formació i Orientació Laboral contingut en l'esmentat
                 títol amb una duració total de 30 hores.
             </p>
-            @include('pdf.alumnos.partials.signatura')
+            @include('pdf.partials.firmaDS')
         </div>
         <div class="page">
             @include('pdf.alumnos.partials.riesgosCurriculum') 

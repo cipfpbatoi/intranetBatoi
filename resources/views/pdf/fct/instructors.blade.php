@@ -24,21 +24,7 @@
            <p>Que dins d'aquesta empresa, En/Na/N' <strong>{{$datosInforme['instructor']->nombre}}</strong> amb DNI {{$datosInforme['instructor']->dni}},  ha sigut l'instructor/a de les pràctiques
                formatives.</p>
         </div>
-        <div class="container" style="width:90%;">
-            <br/>
-            <p><strong>I per tal que així conste on convinga, signa el present escrit.</strong></p>
-
-            <p>{{$datosInforme['poblacion']}},a {{$datosInforme['date']}} </p>
-            <br/><br/><br/>
-            <div style="width:40%; float:left; ">
-                <p><strong>{{$datosInforme['secretario']}}</strong></p>
-                <p>@if ($datosInforme['consideracion'] == 'En') SECRETARI @else SECRETARIA @endif</p>
-            </div>
-            <div style="width:40%; float:right; ">
-                <p><strong>{{$datosInforme['director']}}</strong></p>
-                <p>Vist-i-plau {{signatura('certificado')}}</p>
-            </div>
-        </div>
+        @include('pdf.partials.firmaSD')
     </div>
 @endif
 @if (!isset($empresa->idioma) || $empresa->idioma == 'es')
@@ -64,21 +50,7 @@
        <p>Que dentro de esta empresa, Don/Doña <strong>{{$datosInforme['instructor']->nombre}}</strong> con DNI {{$datosInforme['instructor']->dni}}, ha sido el/la instructor/a de las prácticas
             formativas.</p>
     </div>
-    <div class="container" style="width:90%;">
-        <br/>
-        <p><strong>I para que así conste donde convenga, firmo el presente escrito.</strong></p>
-        
-        <p>{{$datosInforme['poblacion']}},a {{$datosInforme['fecha']}} </p>
-        <br/><br/><br/>
-        <div style="width:40%; float:left; ">
-            <p><strong>{{$datosInforme['secretario']}}</strong></p>
-            <p>@if ($datosInforme['consideracion'] == 'En') SECRETARIO @else SECRETARIA @endif</p>
-        </div>
-        <div style="width:40%; float:right; ">
-            <p><strong>{{$datosInforme['director']}}</strong></p>
-            <p>Conforme {{signatura('certificado')}}</p>
-        </div>
-    </div>
+    @include('pdf.partials.firmaSDes')
 </div>
 @endif
 
@@ -106,21 +78,7 @@
        <p>Que dins d'aquesta empresa, En/Na/N' <strong>{{$instructor->nombre}} </strong> amb DNI {{$instructor->dni}},  ha col.laborat en l'instrucció dels alumnes en les pràctiques
            formatives durant <strong>{{$instructor->pivot->horas}}</strong> hores.</p>
     </div>
-    <div class="container" style="width:90%;">
-        <br/>
-        <p><strong>I per tal que així conste on convinga, signa el present escrit.</strong></p>
-        
-        <p>{{$datosInforme['poblacion']}}, {{$datosInforme['date']}} </p>
-        <br/><br/><br/>
-        <div style="width:40%; float:left; ">
-            <p><strong>{{$datosInforme['secretario']}}</strong></p>
-            <p>@if ($datosInforme['consideracion'] == 'En') SECRETARI @else SECRETARIA @endif</p>
-        </div>
-        <div style="width:40%; float:right; ">
-            <p><strong>{{$datosInforme['director']}}</strong></p>
-            <p>Vist-i-plau {{signatura('certificado')}}</p>
-        </div>
-    </div>
+    @include('pdf.partials.firmaSD')
 </div>
 @endif
 @if (!isset($empresa->idioma) || $empresa->idioma == 'es')
@@ -146,21 +104,7 @@
        <p>Que dentro de esta empresa, Don/Doña <strong>{{$instructor->nombre}}</strong> con DNI {{$instructor->dni}}, ha colaborador en la instrucción de los alumnos en las prácticas
            formativas durante <strong>{{$instructor->pivot->horas}}</strong> horas.</p>
     </div>
-    <div class="container" style="width:90%;">
-        <br/>
-        <p><strong>I para que así conste donde convenga, firmo el presente escrito.</strong></p>
-        
-        <p>{{$datosInforme['poblacion']}}, {{$datosInforme['fecha']}} </p>
-        <br/><br/><br/>
-        <div style="width:40%; float:left; ">
-            <p><strong>{{$datosInforme['secretario']}}</strong></p>
-            <p>@if ($datosInforme['consideracion'] == 'En') SECRETARIO @else SECRETARIA @endif</p>
-        </div>
-        <div style="width:40%; float:right; ">
-            <p><strong>{{$datosInforme['director']}}</strong></p>
-            <p>Conforme {{signatura('certificado')}}</p>
-        </div>
-    </div>
+    @include('pdf.partials.firmaSDes')
 </div>
 @endif
 @endforeach

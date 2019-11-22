@@ -66,6 +66,14 @@ function signatura($document)
         }
     }
 }
+function imgSig($document)
+{
+    foreach (config('signatures.llistats') as $key => $carrec) {
+        if (array_search($document, $carrec) !== false) {
+            return $key;
+        }
+    }
+}
 
 /**
  * Mira si al usuario actual le esta permitido el nombre de rol 
@@ -395,6 +403,10 @@ function existsTranslate($text){
 function firstWord($cadena){
     $parte = explode(" ",$cadena);
     return $parte[0];
+}
+
+function loadImg($fixer){
+    echo "<img src='/img/pdf/$fixer' />";
 }
 
 
