@@ -2,14 +2,14 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Intranet\Entities\Curso;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonIcon;
 use DB;
 use Intranet\Entities\Documento;
 use Jenssegers\Date\Date;
+use Intranet\Jobs\SendEmail;
+use Styde\Html\Facades\Alert;
 
 /**
  * Class CursoController
@@ -64,7 +64,8 @@ class CursoController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['detalle', 'edit']);
-        $this->panel->setBoton('grid',new BotonImg('curso.pdf',['where' => ['NAlumnos','>',0]]));
+        $this->panel->setBoton('grid',new BotonImg('curso.pdf',['where' => ['NAlumnos','>',0,'fecha_fin','posterior',Hoy()]]));
+        $this->panel->setBoton('grid',new BotonImg('curso.email',['where' => ['NAlumnos','>',0,'fecha_fin','anterior',Hoy()]]));
         $this->panel->setBoton('grid', new BotonImg('curso.delete', ['where' => ['activo', '==', 0]]));
         $this->panel->setBoton('grid', new BotonImg('curso.active'));
         $this->panel->setBoton('grid',new BotonImg('curso.saveFile'),
@@ -115,12 +116,27 @@ class CursoController extends IntranetController
      * @return mixed
      */
     public function pdf($id)
-    {
-        $curso = Curso::find($id);
-        if (haVencido($curso->fecha_fin))
-            return self::hazPdf('pdf.alumnos.manipulador',AlumnoCurso::Curso($id)->Finalizado()->get(),$curso)->stream();
+    {        return self::imprime($id);
+    }
 
-        return self::imprime($id);
+    public function email($id)
+    {
+        $curso = Curso::findOrFail($id);
+        $remitente = ['email' => cargo('director')->email, 'nombre' => cargo('director')->FullName];
+        foreach ($curso->Asistentes as $alumno){
+            $id = $alumno->pivot->id;
+            $ac = AlumnoCurso::where('id',$id)->get();
+            if (file_exists(storage_path("tmp/Curs_$id.pdf")))
+                unlink(storage_path("tmp/Curs_$id.pdf"));
+            self::hazPdf('pdf.alumnos.manipulador', AlumnoCurso::where('id',$id)->get(), $curso)->save(storage_path("tmp/Curs_$id.pdf"));
+            $attach = ["tmp/Curs_$id.pdf" => 'application/pdf'];
+            dispatch(new SendEmail($alumno->email, $remitente, 'email.certificado', AlumnoCurso::find($id), $attach));
+
+
+        }
+        Alert::info('Correus enviats');
+        return back();
+
     }
     
 }

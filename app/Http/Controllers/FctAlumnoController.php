@@ -4,15 +4,12 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\FctConvalidacion;
 use DB;
 use Styde\Html\Facades\Alert;
-use Intranet\Botones\Panel;
-use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
 use Intranet\Jobs\SendEmail;
 use Illuminate\Http\Request;
@@ -97,8 +94,13 @@ class FctAlumnoController extends IntranetController
     
     public function pdf($id)
     {
+        dd(self::preparePdf($id));
+        return self::preparePdf($id)->save(storage_path("tmp/certificatFct_$id.pdf"));
+
+    }
+
+    public static function preparePdf($id){
         $fct = AlumnoFct::findOrFail($id);
-        //dd($fct);
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));
         $dades = ['date' => FechaString($fct->hasta),
@@ -109,10 +111,9 @@ class FctAlumnoController extends IntranetController
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName
         ];
-        
-        $pdf = $this->hazPdf('pdf.fct.alumne', [$fct], $dades);
-        return $pdf->stream();
+        return self::hazPdf('pdf.fct.alumne', [$fct], $dades);
     }
+
     public function email($id)
     {
         // CARREGANT DADES

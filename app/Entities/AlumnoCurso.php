@@ -22,10 +22,11 @@ class AlumnoCurso extends Model
     {
         return $this->belongsTo(Alumno::class, 'idAlumno', 'nia');
     }
-//    public function Curso()
-//    {
-//        return $this->belongsTo(Grupo::class, 'idCurso', 'id');
-//    }
+    public function Curso()
+    {
+        return $this->belongsTo(Curso::class, 'idCurso', 'id');
+    }
+
     public function getNombreAttribute()
     {
         return $this->Alumno->NameFull;

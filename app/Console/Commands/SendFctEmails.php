@@ -3,8 +3,8 @@
 namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\AlumnoFctAval;
+use Intranet\Mail\CertificatAlumneFct;
 use Mail;
 use Intranet\Mail\AvalFct;
 use Swift_RfcComplianceException;
@@ -51,6 +51,8 @@ class SendFctEmails extends Command
             $fct = $alumno->Fct;
             try {
                 Mail::to($alumno->Alumno->email, 'Intranet Batoi')->send(new AvalFct($alumno, 'alumno'));
+                Mail::to($alumno->Alumno->email, 'Secretaria CIPFP BATOI')
+                    ->send(new CertificatAlumneFct($alumno));
                 $alumno->correoAlumno = 1;
                 $alumno->save();
 

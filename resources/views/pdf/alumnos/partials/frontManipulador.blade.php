@@ -1,5 +1,5 @@
 @include('pdf.partials.cabecera')
-@php $director = \Intranet\Entities\Profesor::find(config('contacto.director')); @endphp
+@php $director = cargo('director'); @endphp
 <div class="container col-lg-12" style="width:95%;clear:right;text-align: justify;">
     <br/><br/><br/>
     <strong>{{ $director->FullName }}</strong>
@@ -26,12 +26,6 @@
     <p>realitzada els dies de {{$datosInforme->fecha_inicio}} a {{$datosInforme->fecha_fin}} (expedient curs 00{{$datosInforme->id}}/{{Curso()}}) amb un total de {{$datosInforme->horas}} hores.</p>
 </div>
 <br/><br/>
-<div class="container" style="width:95%;clear:right;text-align: justify">
-    <p>El present certificat s'emet per a que conste i servisca de justificant als efectes d'acreditació d'aprofitament dels programes o activitats
-		de formació de manipuladors d'aliments.</p>
-</div>
-<div class="container" style="width:50%;float: center">
-    <br/><br/><br/><br/>
-    
-    <p>A {{config('contacto.poblacion')}}, a {{FechaString()}} </p>
-</div>
+@include('pdf.partials.firmaGen',
+['title'=>"El present certificat s'emet per a que conste i servisca de justificant als efectes d'acreditació d'aprofitament dels programes o activitats
+		de formació de manipuladors d'aliments.",'signatura'=>'certificado','fecha'=>FechaString()])

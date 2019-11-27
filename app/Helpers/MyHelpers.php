@@ -57,6 +57,11 @@ function fullDireccion()
     return config('contacto.direccion') . ' - ' . config('contacto.postal') . ' ' . config('contacto.poblacion');
 }
 
+function cargo($cargo)
+{
+    return \Intranet\Entities\Profesor::find(config("contacto.$cargo"));
+}
+
 function signatura($document)
 {
     foreach (config('signatures.llistats') as $key => $carrec) {

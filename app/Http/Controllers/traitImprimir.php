@@ -92,26 +92,24 @@ trait traitImprimir
                 ->setOption('page-width', $dimensiones[0])
                 ->setOption('page-height', $dimensiones[1]));
     }
-    
-    //torna arxiu ics per a guardar
+
 
     /**
-     * @param $id
-     * @return string
-     */
+     @param $id
+     @return string
+     **/
     protected function do_ics($id){
         return $this->make_ics($id)->render();
     }
     
     
-    // carrega vista ics
 
     /**
-     * @param $id
-     * @param string $descripcion
-     * @param string $objetivos
-     * @return \Illuminate\Http\Response
-     */
+      @param $id
+      @param string $descripcion
+      @param string $objetivos
+      @return \Illuminate\Http\Response
+     **/
     public function ics($id, $descripcion='descripcion', $objetivos='objetivos')
     {
         $vCalendar = $this->make_ics($id,$descripcion,$objetivos);

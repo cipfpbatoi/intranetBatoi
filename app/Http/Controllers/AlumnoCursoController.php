@@ -53,10 +53,10 @@ class AlumnoCursoController extends IntranetController
     {
         $actual = AlumnoCurso::where('id', $id)->get();
         $curso = Curso::find($actual->first()->idCurso);
-        if (haVencido($curso->fecha_fin)) {
+        if (haVencido($curso->fecha_fin))
             return self::hazPdf('pdf.alumnos.manipulador', $actual, $curso)->stream();
-        } else
-            return self::imprime($id);
+        else
+            return back();
     }
 
     public function registerGrup($grupo, $id)

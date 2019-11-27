@@ -7,10 +7,8 @@
         @yield('css')
  </head>
     <body>
-        @if (!Auth::guest())
         <div id='wrapper'>
             @yield('content')
         </div>
-        @endif
     </body>
 </html>

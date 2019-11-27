@@ -61,6 +61,13 @@ class Curso extends Model
         return $this->belongstoMany(Alumno::class, 'alumnos_cursos', 'idCurso', 'idAlumno')->withPivot('id', 'registrado');
     }
 
+    public function Asistentes()
+    {
+        return $this->belongstoMany(Alumno::class, 'alumnos_cursos', 'idCurso', 'idAlumno')->withPivot('id', 'finalizado')
+            ->where('finalizado',1);
+
+    }
+
     public function Registrado()
     {
         return AlumnoCurso::where('idCurso', $this->id)
