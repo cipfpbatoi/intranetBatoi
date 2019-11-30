@@ -164,30 +164,32 @@ class FctController extends IntranetController
     {
         $fct = Fct::findOrFail($id);
         $instructor = $fct->Instructor;
-        if (isset($instructor->surnames)){
-            $fecha = $request->fecha;
-            $secretario = Profesor::find(config('contacto.secretario'));
-            $director = Profesor::find(config('contacto.director'));
-            $dades = ['date' => FechaString($fecha,'ca'),
-                'fecha' => FechaString($fecha,'es'),
-                'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
-                'secretario' => $secretario->FullName,
-                'centro' => config('contacto.nombre'),
-                'poblacion' => config('contacto.poblacion'),
-                'provincia' => config('contacto.provincia'),
-                'director' => $director->FullName,
-                'instructor' => $instructor,
-                'horas' => $request->horas
-            ];
-            $pdf = $this->hazPdf('pdf.fct.instructors', $fct, $dades);
-            return $pdf->stream();
-        }
+        if (isset($instructor->surnames))
+            return self::preparePdf($fct,$request->fecha,$request->horas)->stream();
         else
         {
             Alert::danger("Completa les dades de l'instructor");
             return back();   
         }
         
+    }
+
+    public static function preparePdf($fct,$fecha,$horas)
+    {
+        $secretario = Profesor::find(config('contacto.secretario'));
+        $director = Profesor::find(config('contacto.director'));
+        $dades = ['date' => FechaString($fecha,'ca'),
+            'fecha' => FechaString($fecha,'es'),
+            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
+            'secretario' => $secretario->FullName,
+            'centro' => config('contacto.nombre'),
+            'poblacion' => config('contacto.poblacion'),
+            'provincia' => config('contacto.provincia'),
+            'director' => $director->FullName,
+            'instructor' => $fct->Instructor,
+            'horas' => $horas
+        ];
+        return self::hazPdf('pdf.fct.instructors', $fct, $dades);
     }
 
 

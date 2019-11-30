@@ -43,7 +43,7 @@ class CertificatAlumneFct extends Mailable
         $pdf = FctAlumnoController::preparePdf($id);
         $pdf->save(storage_path("tmp/certificatFct_$id.pdf"));
         Log::notice("Enviat correu certificat ".$this->fct->Alumno->fullName);
-        return $this->view("email.fct.certificado")->attach(storage_path("tmp/certificatFct_$id.pdf"),['as'=>'certificatFCT.pdf','mime' => 'application/pdf']);
+        return $this->view("email.fct.certificadoAlumno")->attach(storage_path("tmp/certificatFct_$id.pdf"),['as'=>'certificatFCT.pdf','mime' => 'application/pdf']);
     }
 
 
