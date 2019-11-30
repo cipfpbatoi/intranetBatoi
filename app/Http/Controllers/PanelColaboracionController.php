@@ -92,7 +92,8 @@ class PanelColaboracionController extends IntranetController
      * @return mixed
      */
     public function search(){
-        $this->titulo = ['quien' => Colaboracion::MiColaboracion()->first()->Ciclo->literal];
+        if (Colaboracion::MiColaboracion()->first())
+            $this->titulo = ['quien' => Colaboracion::MiColaboracion()->first()->Ciclo->literal];
         return Colaboracion::MiColaboracion()->orderBy('tutor')->get();
     }
 

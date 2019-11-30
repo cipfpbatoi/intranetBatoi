@@ -51,6 +51,10 @@ class AlumnoFctAval extends AlumnoFct
      {
          return $query->whereNotNull('calificacion');
      }
+    public function scopeAprobados($query)
+    {
+        return $query->where('calificacion',1);
+    }
      
      public function scopeMisFcts($query,$profesor=NULL)
      {
