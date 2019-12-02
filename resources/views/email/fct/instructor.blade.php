@@ -13,7 +13,8 @@
 </div>
 <div class="container" >
     <p>Estimat instructor {{$fct->Instructor->Nombre}}. Les pràctiques que venia efectuant l'alumnat del cicle de {{$fct->Colaboracion->Ciclo->literal}} a la seua empressa han arribat a la seua fi. Per tal d'assolir una millora continua ens és de molt utilitat la seua opinió .</p>
-    <p>Hem preparat aquest <a href="https://docs.google.com/forms/d/e/1FAIpQLSesS4LIs_IIiGTDGPjkzSOeDcfD9y0Rfv0FeuEVspJXYABmmw/viewform">formulari</a> per recollir-la.</p>
+    <p>Hem preparat aquest
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSddhhFUBXBkBPfb3WNyYY19cjLYRcJ5Obo7I-mhaaguFbOKWQ/viewform?vc=0&c=0&w=1">formulari</a> per recollir-la.</p>
     <p>Gràcies per la seua col.laboració</p>
 </div>
 @endsection
