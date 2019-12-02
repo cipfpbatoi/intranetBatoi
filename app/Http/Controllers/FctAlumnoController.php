@@ -94,7 +94,6 @@ class FctAlumnoController extends IntranetController
     
     public function pdf($id)
     {
-        dd(self::preparePdf($id));
         return self::preparePdf($id)->save(storage_path("tmp/certificatFct_$id.pdf"));
 
     }
