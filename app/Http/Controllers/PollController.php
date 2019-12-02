@@ -130,7 +130,7 @@ class PollController extends IntranetController
         return redirect('home');
     }
 
-    private function guardaVoto($){
+    private function guardaVoto(){
         $vote = new Vote();
         $vote->user_id = $cifrar?hash('md5',AuthUser()->id):AuthUser()->id;
         $vote->option_id = $option->id;
