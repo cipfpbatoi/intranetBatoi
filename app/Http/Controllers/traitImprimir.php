@@ -74,7 +74,6 @@ trait traitImprimir
                                      $margin_top= 15)
     {
         $datosInforme = $datosInforme==null?FechaString(null,'ca'):$datosInforme;
-        
         if (is_string($dimensiones)) {
             return(PDF::loadView($informe, compact('todos', 'datosInforme'))
                     ->setPaper($dimensiones)
