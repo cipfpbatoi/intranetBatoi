@@ -3,15 +3,11 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\ReunionCreated;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\TipoReunion;
-use Intranet\Entities\GrupoTrabajo;
-use Intranet\Entities\Espacio;
+
 
 class Reunion extends Model
 {

@@ -95,7 +95,8 @@ class Alumno extends Authenticatable
     }
     public function Municipio()
     {
-        return Municipio::where('provincias_id',$this->provincia)->where('cod_municipio',$this->municipio)->first()->municipio;
+        $poble = Municipio::where('provincias_id',$this->provincia)->where('cod_municipio',$this->municipio)->first();
+        return isset($poble)?$poble->municipio:'';
     }
 
     public function scopeQGrupo($query, $grupo)
