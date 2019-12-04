@@ -16,7 +16,7 @@ class AlumnoGrupoController extends IntranetController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoGrupo';
-    protected $gridFields = ['nameFull', 'telef1', 'telef2', 'email'];
+    protected $gridFields = ['nameFull', 'telef1', 'telef2', 'email','poblacion'];
     
     public function search(){
         $this->titulo = ['quien' => $this->search];

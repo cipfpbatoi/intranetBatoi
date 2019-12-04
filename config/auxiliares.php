@@ -28,7 +28,9 @@ return [
     'estadoColaboracion' => [0=>'',1=>'??',2=>'Col·labora',3=>'No col·labora'],
     'incidenciasColaboracion' => [1=>'Envia correu contacte',2=>'Envia confirmació de dades',3=>"Envia documentació d'inici",4=>"Denegació pràctiques",5=>'Comentari Professor',6=>'Comentari Instructor',7=>'Telefònic'],
     'reunionesControlables' => [2, 5, 6, 7, 9],
-    'who' => [1=>'Alumno',2=>'Profesor'],
-    'what' => [1=>'--',2=>'Profesor',3=>'Actividad',4=>'Fct'],
+    'modelsAvailablePoll' => [1=>'--',
+        'Profesor'=>'Professorat',
+        'Actividad'=>'Activitats',
+        'Fct'=>'Fct x Tutor'],
 
 ];

@@ -39,14 +39,18 @@ class Poll extends Model
         return vigente($this->desde,$this->hasta)?'Activa':'No activa';
     }
 
-    public function getQuienAttribute(){
-        return config('auxiliares.who')[$this->Plantilla->who];
+    public function getKeyUserAttribute(){
+        $modelo = $this->modelo;
+        return $modelo::keyInterviewed();
     }
     public function getAnonymousAttribute(){
         return $this->Plantilla->anonymous;
     }
     public function getQueAttribute(){
-        return config('auxiliares.what')[$this->Plantilla->what];
+        return $this->Plantilla->what;
+    }
+    public function getModeloAttribute(){
+        return 'Intranet\\Entities\\Poll\\'.$this->Plantilla->what;
     }
 
     public function getIdPPollOptions(){

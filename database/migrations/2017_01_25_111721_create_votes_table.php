@@ -17,7 +17,7 @@ class CreateVotesTable extends Migration
             $table->string('user_id',8)->collation('utf8_unicode_ci')->index();
             $table->integer('option_id')->unsigned();
             $table->integer('idModuloGrupo')->unsigned();
-            $table->string('idProfesor',10)->collation('utf8_unicode_ci')->index();
+            $table->string('idProfesor',10)->nullable();
             $table->tinyInteger('value')->nullable();
             $table->text('text')->nullable();
             $table->timestamps();

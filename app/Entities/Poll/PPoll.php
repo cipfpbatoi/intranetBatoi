@@ -12,12 +12,12 @@ class PPoll extends Model
     use BatoiModels;
 
     protected $table = 'ppolls';
-    protected $fillable = ['title','who','what','anonymous'];
+    protected $fillable = ['title','what','anonymous'];
     protected $rules = [
         'title' => 'required',
+        'what' => 'required'
     ];
     protected $inputTypes = [
-        'who' => ['type' => 'select'],
         'what' => ['type' => 'select'],
         'anonymous' => ['type' => 'checkbox']
     ];
@@ -36,18 +36,9 @@ class PPoll extends Model
     {
         return $this->hasMany(Option::class,'ppoll_id');
     }
-    public function getQuienAttribute(){
-        return config('auxiliares.who')[$this->who];
-    }
-    public function getQueAttribute(){
-        return config('auxiliares.what')[$this->what];
-    }
 
-    public function getWhoOptions(){
-        return config('auxiliares.who');
-    }
     public function getWhatOptions(){
-        return config('auxiliares.what');
+        return config('auxiliares.modelsAvailablePoll');
     }
 
 }

@@ -30,5 +30,9 @@ class AlumnoGrupo extends Model
     {
         return $this->Alumno->NameFull;
     }
+    public function getPoblacionAttribute()
+    {
+        return $this->Alumno->Poblacion;
+    }
 
 }

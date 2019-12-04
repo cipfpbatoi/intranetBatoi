@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterVotesTable1 extends Migration
+class AlterVotesTable2 extends Migration
 {
 
     /**
@@ -14,12 +14,12 @@ class AlterVotesTable1 extends Migration
     public function up()
     {
         Schema::table('votes', function (Blueprint $table) {
+            $table->dropForeign('votes_idmodulogrupo_foreign');
+            $table->dropForeign('votes_idprofesor_foreign');
+            $table->renameColumn('idModuloGrupo', 'idOption1');
+            $table->renameColumn('idProfesor', 'idOption2');
 
-            $table->integer('idPoll')->unsigned();
-            $table->foreign('idPoll')->references('id')->on('polls')->onUpdate('CASCADE')->onDelete('CASCADE');
-
-
-        });
+         });
     }
 
 
@@ -31,8 +31,8 @@ class AlterVotesTable1 extends Migration
 	public function down()
 	{
         Schema::table('votes', function (Blueprint $table) {
-            $table->dropForeign('votes_idpoll_foreign');
-            $table->dropColumn('idPoll');
+            $table->renameColumn('idOption1','idModuloGrupo');
+            $table->renameColumn('idOption2','idProfesor');
         });
 	}
 

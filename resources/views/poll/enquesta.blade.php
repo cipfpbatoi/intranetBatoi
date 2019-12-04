@@ -7,8 +7,7 @@
         @csrf
         <div id="wizard" class="form_wizard wizard_verticle">
             @include('poll.partials.wizard_head')
-            <input type="hidden" name="que" value="{{$poll->que}}"/>
-            @include('poll.partials.'.$poll->que)
+            @include('poll.partials.models.'.$poll->que)
         </div>  
     </form>
 @endsection

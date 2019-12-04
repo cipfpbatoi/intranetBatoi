@@ -285,7 +285,4 @@ class Profesor extends Authenticatable
         if ($find) return $find->fichero;
         else return false;
     }
-
-
-  
 }

@@ -16,7 +16,7 @@ class CreatePpollsTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->tinyInteger('who')->default(1);
-            $table->tinyInteger('what')->dafault(1);
+            $table->tinyInteger('what')->default(1);
             $table->tinyInteger('anonymous')->default(1);
         });
     }

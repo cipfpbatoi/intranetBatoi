@@ -34,11 +34,11 @@ class Vote extends Model
         return hazArray(Poll::find($id)->options->where('scala','>',0),'id');
     }
     public function scopeMyVotes($query,$id,$modulo){
-        return $query->where('idProfesor', AuthUser()->dni)->whereIn('option_id',$this->optionsPoll($id))
-            ->where('idModuloGrupo',$modulo);
+        return $query->where('idOption2', AuthUser()->dni)->whereIn('option_id',$this->optionsPoll($id))
+            ->where('idOption1',$modulo);
     }
-    public function scopeMyGroupVotes($query,$id,$grup){
-        return $query->whereIn('idModuloGrupo',hazArray(Grupo::find($grup)->Modulos,'id'))
+    public function scopeMyGroupVotes($query,$id,$modulos){
+        return $query->whereIn('idOption1',$modulos)
             ->whereIn('option_id',$this->optionsPoll($id));
     }
     public function scopeAllNumericVotes($query,$id){

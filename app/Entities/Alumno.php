@@ -179,6 +179,8 @@ class Alumno extends Authenticatable
         $this->email = $email;
         $this->save();
     }
-
+    public function getPoblacionAttribute(){
+        return $this->Municipio();
+    }
 
 }

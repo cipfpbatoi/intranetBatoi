@@ -23,7 +23,7 @@ class PPollController extends IntranetController
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
 
     protected $model = 'PPoll';
-    protected $gridFields = [ 'id','title','quien','que'];
+    protected $gridFields = [ 'id','title','what'];
     protected $vista = [ 'show' => 'poll.masterslave'];
     protected $modal = true;
     

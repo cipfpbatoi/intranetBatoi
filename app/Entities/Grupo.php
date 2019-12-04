@@ -47,7 +47,7 @@ class Grupo extends Model
 
     public function Actividades()
     {
-        return $this->belongsToMany(Actividad::class, 'actividad_grupo');
+        return $this->belongsToMany(Actividad::class, 'actividad_grupo','idGrupo','idActividad','codigo','id');
     }
 
     public function Tutor()

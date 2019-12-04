@@ -1,9 +1,9 @@
-@foreach ($poll->options as $question => $option)
+@foreach ($poll->Plantilla->options as $question => $option)
  <div id="step-{{$question+1}}">
     <h1 class="StepTitle">{{ $option->question }}</h1>
     @php  $profe=0; @endphp
-    @foreach ($modulos as $modulo)
-        @foreach ($modulo['profesores'] as $profesores)
+    @foreach ($quests as $quest)
+        @foreach ($quest['option2'] as $profesores)
             @foreach ($profesores as $dni)
                 @php $profe++; $profesor = Intranet\Entities\Profesor::find($dni) @endphp
                 <div class="row grid_slider">
@@ -30,7 +30,7 @@
                                 <textarea name="option{{$question+1}}_{{$profe}}" rows="3" cols="150"></textarea>
                             </div>
                             @endif
-                            <p>{{ $modulo['modulo']->ModuloCiclo->Modulo->literal}}</p>
+                            <p>{{ $quest['option1']->ModuloCiclo->Modulo->literal}}</p>
                         </div>
                     </div>
                     

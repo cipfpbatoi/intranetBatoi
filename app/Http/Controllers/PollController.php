@@ -22,6 +22,10 @@ class PollController extends IntranetController
     protected $model = 'Poll';
     protected $gridFields = [ 'id','title','actiu'];
 
+
+
+
+
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico("poll.create",inRol('qualitat')));
@@ -30,20 +34,66 @@ class PollController extends IntranetController
         $this->panel->setBoton('grid',new BotonImg('poll.chart',array_merge(['img' => 'fa-bar-chart'],inRol('qualitat'))));
         $this->panel->setBoton('grid',new BotonImg('poll.show',['img' =>'fa-eye']));
     }
-    
+
+    private function userKey($poll){
+        $key = $poll->keyUser;
+        if ($poll->anonymous) return hash('md5',AuthUser()->$key);
+        return AuthUser()->$key;
+    }
+
+
     protected function preparaEnquesta($id){
-        $votes = Vote::where('user_id','=', hash('md5',AuthUser()->nia))
-                ->whereIn('option_id', hazArray(Option::where('ppoll_id',$id)->get(),'id'))
+        $poll = Poll::find($id);
+        $votes = Vote::where('user_id','=', $this->userKey($poll))
+                ->where('idPoll', $id)
                 ->count();
         if ($votes == 0){
-            $poll = Poll::find($id);
-            $modulos = $this->calculateAnswers($poll->que);
-            return view('poll.enquesta',compact('modulos','poll'));
+            $modelo = $poll->modelo;
+            $quests = $modelo::loadPoll();
+            return view('poll.enquesta',compact('quests','poll'));
         }
 
         Alert::info("Ja has omplit l'enquesta");
         return redirect('home');
     }
+
+    protected function guardaEnquesta(Request $request,$id){
+        $poll = Poll::find($id);
+        $modelo = $poll->modelo;
+        $quests = $modelo::loadPoll();
+        foreach ($poll->Plantilla->options as $question => $option){
+            $i=0;
+            foreach ($quests as $quest)
+                if (isset($quest['option2'])) {
+                    foreach ($quest['option2'] as $profesores)
+                        foreach ($profesores as $dni) {
+                            $i++;
+                            $field = 'option' . ($question + 1) . '_' . $i;
+                            $this->guardaVoto($poll,$option,$quest['option1']->id,$dni,$request->$field);
+                        }
+                }
+                else {
+                    $field = 'option' . ($question + 1) . '_' . $quest['option1']->id;
+                    $this->guardaVoto($poll,$option,$quest['option1']->id,null,$request->$field);
+                }
+        }
+        Alert::info('Enquesta emplenada amb exit');
+        return redirect('home');
+    }
+
+    private function guardaVoto($poll,$option,$option1,$option2,$value){
+        $vote = new Vote();
+        $vote->idPoll = $poll->id;
+        $vote->user_id = $poll->anonymous ? hash('md5', AuthUser()->id) : AuthUser()->id;
+        $vote->option_id = $option->id;
+        $vote->idOption1 = $option1;
+        $vote->idOption2 = $option2;
+        if ($option->scala == 0) $vote->text = $value;
+        else $vote->value = $value;
+        $vote->save();
+    }
+
+
 
     public function lookAtMyVotes($id){
         $poll = Poll::find($id);
@@ -55,12 +105,14 @@ class PollController extends IntranetController
             $myVotes[$modulo->ModuloCiclo->Modulo->literal][$modulo->Grupo->codigo] = Vote::myVotes($id,$modulo->id)->get();
         }
         foreach (Grupo::misGrupos()->get() as $grup){
-            $myGroupsVotes[$grup->codigo] = Vote::myGroupVotes($id,$grup->codigo)->get();
+            $modulos = hazArray(Grupo::find($grup->codigo)->Modulos,'id');
+            $myGroupsVotes[$grup->codigo] = Vote::myGroupVotes($id,$modulos)->get();
         }
         if (count($myVotes)) return view('poll.teacherResolts',compact('myVotes','poll','options_numeric','options_text','myGroupsVotes'));
         Alert::info("L'enquesta no ha estat realitzada encara");
         return back();
     }
+
     public function lookAtAllVotes($id)
     {
         $poll = Poll::find($id);
@@ -106,76 +158,11 @@ class PollController extends IntranetController
     }
 
 
-    protected function guardaEnquesta(Request $request,$id){
-        $poll = Poll::find($id);
-        $modulos = $this->calculateAnswers($request->que);
-        foreach ($poll->options as $question => $option){
-            $profe=0;
-            foreach ($modulos as $modulo)
-                foreach ($modulo['profesores'] as $profesores)
-                    foreach ($profesores as $dni){
-                        $profe++;
-                        $value = 'option'.($question+1).'_'.$profe;
-                        $vote = new Vote();
-                        $vote->user_id = $cifrar?hash('md5',AuthUser()->id):AuthUser()->id;
-                        $vote->option_id = $option->id;
-                        $vote->idModuloGrupo = $modulo['modulo']->id;
-                        $vote->idProfesor = $dni;
-                        if ($option->scala == 0) $vote->text = $request->$value;
-                        else $vote->value = $request->$value;
-                        $vote->save();
-                    }
-        }
-        Alert::info('Enquesta emplenada amb exit');
-        return redirect('home');
-    }
 
-    private function guardaVoto(){
-        $vote = new Vote();
-        $vote->user_id = $cifrar?hash('md5',AuthUser()->id):AuthUser()->id;
-        $vote->option_id = $option->id;
-        $vote->idModuloGrupo = $modulo['modulo']->id;
-        $vote->idProfesor = $dni;
-        if ($option->scala == 0) $vote->text = $request->$value;
-        else $vote->value = $request->$value;
-    }
+
+
 
     
-    private function calculateAnswers($kindPoll){
-        switch ($kindPoll){
-            case 'Profesor' : return $this->ordenModulos();
-            case '--' : return $this->onlyQuestions();
-            case 'Actividad' : return $this->searchActivities();
-            case 'Fct' : return $this->searchFcts();
-        }
 
-
-    }
-
-    private function ordenModulos(){
-        $modulos = collect();
-        foreach (AuthUser()->Grupo as $grupo){
-            foreach ($grupo->Modulos as $modulo){
-                $modulos->push(['modulo'=>$modulo,'profesores'=>$modulo->Profesores()]);
-            }
-        }
-        return $modulos;
-    }
-
-    private function searchActivities()
-    {
-        $actividades = collect();
-        foreach (AuthUser()->Grupo as $grupo) {
-            foreach ($grupo->Actividades as $actividad) {
-                $actividades->push($actividad);
-            }
-        }
-        return $actividades;
-    }
-
-    private function searchFcts()
-    {
-        return Fct::misFcts()->get();
-    }
     
 }

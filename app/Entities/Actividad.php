@@ -134,6 +134,16 @@ class Actividad extends Model
     {
         return trans('models.Actividad.' . $this->estado);
     }
-    
+
+    public static function loadPoll(){
+        $actividades = collect();
+        foreach (AuthUser()->Grupo as $grupo) {
+            dd($grupo->Actividades);
+            foreach ($grupo->Actividades as $actividad) {
+                $actividades->push(['option1' => $actividad]);
+            }
+        }
+        return $actividades;
+    }
 
 }
