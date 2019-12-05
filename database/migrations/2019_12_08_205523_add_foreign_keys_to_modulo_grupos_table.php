@@ -14,7 +14,7 @@ class AddForeignKeysToModuloGruposTable extends Migration {
 	{
 		Schema::table('modulo_grupos', function(Blueprint $table)
 		{
-            $table->string('idGrupo',5)->collation('utf8_unicode_ci')->change();
+            //$table->string('idGrupo',5)->collation('utf8_unicode_ci')->change();
 			$table->foreign('idModuloCiclo')->references('id')->on('modulo_ciclos')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreign('idGrupo')->references('codigo')->on('grupos')->onUpdate('CASCADE')->onDelete('CASCADE');
 
