@@ -9,10 +9,18 @@
 namespace Intranet\Entities\Poll;
 
 
-interface ModelPoll
+abstract class ModelPoll
 {
-    public static function loadPoll();
-    public static function interviewed();
-    public static function keyInterviewed();
-
+    public static function loadPoll(){}
+    public static function loadVotes($id){}
+    public static function loadGroupVotes($id){}
+    public static function interviewed(){
+        return 'Intranet\\Entities\\Alumno';
+    }
+    public static function keyInterviewed(){
+        return 'nia';
+    }
+    public static function vista(){
+        return class_basename(static::class);
+    }
 }

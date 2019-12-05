@@ -2,9 +2,7 @@
 
 namespace Intranet\Entities\Poll;
 
-use Intranet\Entities\Actividad as ActividadPoll;
-
-class Actividad extends ActividadPoll implements ModelPoll
+class Actividad extends ModelPoll
 {
 
     public static function loadPoll(){
@@ -16,11 +14,6 @@ class Actividad extends ActividadPoll implements ModelPoll
         }
         return $actividades;
     }
-    public static function interviewed(){
-        return 'Intranet\\Entities\\Alumno';
-    }
-    public static function keyInterviewed(){
-        return 'nia';
-    }
+
 
 }

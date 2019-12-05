@@ -52,6 +52,10 @@ class Poll extends Model
     public function getModeloAttribute(){
         return 'Intranet\\Entities\\Poll\\'.$this->Plantilla->what;
     }
+    public function getVistaAttribute(){
+        $modelo = $this->modelo;
+        return $modelo::vista();
+    }
 
     public function getIdPPollOptions(){
         return hazArray(PPoll::all(),'id','title');

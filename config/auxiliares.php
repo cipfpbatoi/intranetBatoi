@@ -31,6 +31,7 @@ return [
     'modelsAvailablePoll' => [1=>'--',
         'Profesor'=>'Professorat',
         'Actividad'=>'Activitats',
-        'Fct'=>'Fct x Tutor'],
+        'Fct'=>'Fct x Tutor',
+        'AlumnoFct'=> 'Fct x Alumno'],
 
 ];

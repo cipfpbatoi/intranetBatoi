@@ -2,26 +2,22 @@
 
 namespace Intranet\Entities\Poll;
 
-use Intranet\Entities\Fct as realFct;
+use Intranet\Entities\Fct;
 
-class Fct extends ModelPoll
+class AlumnoFct extends ModelPoll
 {
     public static function loadPoll(){
+        $alumno = AuthUser();
         $fcts = collect();
-        foreach (realFct::misFcts()->get() as $fct) {
+        foreach ($alumno->fcts()->where('asociacion',1)->get() as $fct) {
             $fcts->push(['option1'=>$fct]);
         }
         return $fcts;
     }
-    public static function interviewed(){
-        return 'Intranet\\Entities\\Profesor';
-    }
-    public static function keyInterviewed(){
-        return 'dni';
-    }
+
     public static function loadVotes($id)
     {
-        $fcts = hazArray(realFct::misFcts()->get(),'id');
+        $fcts = hazArray(Fct::misFcts()->get(),'id');
         $votes = Vote::getVotes($id,$fcts)->get();
         foreach ($votes as $vote){
             $classified[$vote->idOption1][$vote->option_id] = isset($vote->text)?$vote->text:$vote->value;
@@ -31,5 +27,8 @@ class Fct extends ModelPoll
     public static function loadGroupVotes($id)
     {
         return [];
+    }
+    public static function vista(){
+        return 'Fct';
     }
 }

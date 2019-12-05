@@ -94,7 +94,20 @@ class PollController extends IntranetController
     }
 
 
+    public function lookAtMyVotes($id){
+        $poll = Poll::find($id);
+        $modelo = $poll->modelo;
+        $myVotes = $modelo::loadVotes($id);
+        $groupVotes = $modelo::loadGroupVotes($id);
+        $options_numeric = $poll->Plantilla->options->where('scala','>',0);
+        $options_text = $poll->Plantilla->options->where('scala','=',0);
+        if (count($myVotes)) return view('poll.show',compact('myVotes','poll','options_numeric','options_text','groupVotes'));
+        Alert::info("L'enquesta no ha estat realitzada encara");
+        return back();
 
+    }
+
+/**
     public function lookAtMyVotes($id){
         $poll = Poll::find($id);
         $options_numeric = $poll->options->where('scala','>',0);
@@ -112,6 +125,7 @@ class PollController extends IntranetController
         Alert::info("L'enquesta no ha estat realitzada encara");
         return back();
     }
+ */
 
     public function lookAtAllVotes($id)
     {

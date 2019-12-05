@@ -37,6 +37,11 @@ class Vote extends Model
         return $query->where('idOption2', AuthUser()->dni)->whereIn('option_id',$this->optionsPoll($id))
             ->where('idOption1',$modulo);
     }
+    public function scopeGetVotes($query,$poll,$option1,$option2=null){
+        return $query->where('idPoll', $poll)
+            ->whereIn('idOption1',$option1)
+            ->where('idOption2',$option2);
+    }
     public function scopeMyGroupVotes($query,$id,$modulos){
         return $query->whereIn('idOption1',$modulos)
             ->whereIn('option_id',$this->optionsPoll($id));
