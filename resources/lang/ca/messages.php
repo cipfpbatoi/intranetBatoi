@@ -271,8 +271,8 @@ return array(
         'Paper' => 'Tràmits',
         'Qualitat' => 'Qualitat',
         'Enquestes' => 'Enquestes',
-        'mypoll' => 'Resultats',
-        'dopoll' => 'Pendents'
+        'Mypoll' => 'Resultats',
+        'Dopoll' => 'Pendents'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

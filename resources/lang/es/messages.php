@@ -270,8 +270,8 @@ return array(
         'Paper' => 'Tramites',
         'Qualitat' => 'Calidad',
         'Enquestes' => 'Encuestas',
-        'mypoll' => 'Resultados',
-        'dopoll' => 'Pendientes'
+        'Mypoll' => 'Resultados',
+        'Dopoll' => 'Pendientes'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
