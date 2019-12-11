@@ -269,7 +269,10 @@ return array(
         'Importaprofesor' => 'Importa Professor',
         'Tipoincidencias' => "Tipus d'incidències",
         'Paper' => 'Tràmits',
-        'Qualitat' => 'Qualitat'
+        'Qualitat' => 'Qualitat',
+        'Enquestes' => 'Enquestes',
+        'mypoll' => 'Resultats',
+        'dopoll' => 'Pendents'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

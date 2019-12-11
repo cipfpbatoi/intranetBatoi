@@ -269,7 +269,9 @@ return array(
         'Tipoincidencias' => "Tipos de incidencias",
         'Paper' => 'Tramites',
         'Qualitat' => 'Calidad',
-
+        'Enquestes' => 'Encuestas',
+        'mypoll' => 'Resultados',
+        'dopoll' => 'Pendientes'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
