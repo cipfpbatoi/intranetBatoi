@@ -430,6 +430,7 @@ return array(
             'index' => 'Manteniment Enquestes',
             'edit' => 'Editar Enquesta',
             'chart' => 'Vore resultats agregats',
+            'do' => 'Contesta',
         ),
         'modelos' => array(
             'Comision' => 'Comissió de Servei',

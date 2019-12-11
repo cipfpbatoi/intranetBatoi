@@ -412,6 +412,7 @@ return array(
             'index' => 'Mantenimento Encuestas',
             'edit' => 'Editar Encuesta',
             'chart' => 'Ver resultados agregados',
+            'do' => 'Contesta',
         ),
         'Ppoll' => array(
             'show' => 'Plantilla Encuesta',
