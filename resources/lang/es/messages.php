@@ -271,7 +271,7 @@ return array(
         'Qualitat' => 'Calidad',
         'Enquestes' => 'Encuestas',
         'Mypoll' => 'Resultados',
-        'Dopoll' => 'Pendientes'
+        'Dopoll' => 'Realizar'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
