@@ -373,11 +373,10 @@ Route::get('/guardia/control', ['as' => 'guardia.control', 'uses' => 'PanelGuard
 
 //polls
 Route::resource('/ppoll', 'PPollController', ['except' => ['destroy', 'update','show']]);
-Route::post('/ppoll/create', ['as' => 'poll.store', 'uses' => 'PPollController@store']);
-Route::put('/ppoll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PPollController@update']);
-Route::get('/ppoll/{id}/slave', ['as' => 'poll.slave', 'uses' => 'PPollController@show']);
-
-
+Route::post('/ppoll/create', ['as' => 'ppoll.store', 'uses' => 'PPollController@store']);
+Route::put('/ppoll/{id}/edit', ['as' => 'ppoll.update', 'uses' => 'PPollController@update']);
+Route::get('/ppoll/{id}/slave', ['as' => 'ppoll.slave', 'uses' => 'PPollController@show']);
+Route::get('/ppoll/{id}/delete',['as' => 'ppoll.delete', 'uses' => 'PPollController@delete']);
 
 Route::resource('/option', 'OptionController', ['except' => ['destroy', 'update','show']]);
 Route::post('/option/create', ['as' => 'option.store', 'uses' => 'OptionController@store']);
@@ -388,7 +387,7 @@ Route::post('/poll/create', ['as' => 'poll.store', 'uses' => 'PollController@sto
 Route::put('/poll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PollController@update']);
 Route::get('/poll/{id}/show', ['as' => 'poll.resultShow', 'uses' => 'PollController@lookAtMyVotes']);
 Route::get('/poll/{id}/chart', ['as' => 'poll.result', 'uses' => 'PollController@lookAtAllVotes']);
+Route::get('/poll/{id}/delete',['as' => 'poll.delete', 'uses' => 'PollController@delete']);
+
 Route::get('/myPoll',['as' => 'mypoll.index', 'uses' => 'PanelPollResultController@index']);
-
-
 Route::post('/myMail','MyMailController@send');
