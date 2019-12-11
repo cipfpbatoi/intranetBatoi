@@ -54,7 +54,11 @@ class FaltaItacaController extends IntranetController
             ['estado', '2'],
             ['dia', '>=', FechaInglesa($desde)],
             ['dia', '<=',FechaInglesa($hasta)]
-        ])->orderBy('idProfesor')->orderBy('dia')->get();
+        ])->join('profesores','profesores.dni','=','faltas_itaca.idProfesor')
+            ->orderBy('profesores.apellido1')
+            ->orderBy('profesores.apellido2')
+            ->orderBy('profesores.nombre')
+            ->orderBy('dia')->get();
     }
 
     private static function nameFile(String $desde){
