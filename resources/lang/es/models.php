@@ -407,10 +407,11 @@ return array(
             'check' => 'Control documentación'
 
         ),
-        'PPoll' => array(
+        'Ppoll' => array(
             'show' => 'Plantilla Encuesta',
             'index' => 'Mantenimento Plantillas Encuestas',
             'edit' => 'Editar Plantilla',
+            'slave' => 'Ver preguntas',
         ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',
@@ -444,8 +445,9 @@ return array(
             'Proyecto' => 'Proyecto',
             'Evaluacion' => 'Avaluación',
             'Colaborador' => 'Col.laborador',
-            'PPoll' => 'Plantilla encuesta',
+            'Ppoll' => 'Plantilla encuesta',
             'Poll' => 'Encuesta',
+            'Option' => 'Pregunta',
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

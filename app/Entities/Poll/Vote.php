@@ -28,10 +28,10 @@ class Vote extends Model
         return $this->Option->scala;
     }
     private function optionsPoll($id){
-        return hazArray(Poll::find($id)->options,'id');
+        return hazArray(Poll::find($id)->Plantilla->options,'id');
     }
     private function optionsNumericPoll($id){
-        return hazArray(Poll::find($id)->options->where('scala','>',0),'id');
+        return hazArray(Poll::find($id)->Plantilla->options->where('scala','>',0),'id');
     }
     public function scopeMyVotes($query,$id,$modulo){
         return $query->where('idOption2', AuthUser()->dni)->whereIn('option_id',$this->optionsPoll($id))

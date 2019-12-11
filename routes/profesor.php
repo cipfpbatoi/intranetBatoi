@@ -388,6 +388,7 @@ Route::post('/poll/create', ['as' => 'poll.store', 'uses' => 'PollController@sto
 Route::put('/poll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PollController@update']);
 Route::get('/poll/{id}/show', ['as' => 'poll.resultShow', 'uses' => 'PollController@lookAtMyVotes']);
 Route::get('/poll/{id}/chart', ['as' => 'poll.result', 'uses' => 'PollController@lookAtAllVotes']);
+Route::get('/myPoll',['as' => 'mypoll.index', 'uses' => 'PanelPollResultController@index']);
 
 
 Route::post('/myMail','MyMailController@send');

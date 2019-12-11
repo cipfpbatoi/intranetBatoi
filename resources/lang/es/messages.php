@@ -65,7 +65,9 @@ return array(
         'falta' => 'Ausencias',
         'desde' => 'Desde',
         'hasta' => 'Hasta',
-        'resum' => 'Resumen'
+        'resum' => 'Resumen',
+
+
     ),
     'buttons' => array(
         'confirmar' => 'Confirmar',
@@ -262,9 +264,11 @@ return array(
         'Dual' => 'FP Dual',
         'Micolaboracion' => 'Gestión de contactos',
         'Poll' => 'Encuestas',
+        'Ppoll' => 'Plantilla para encuestas',
         'Importaprofesor' => 'Importa Profesor',
         'Tipoincidencias' => "Tipos de incidencias",
         'Paper' => 'Tramites',
+        'Qualitat' => 'Calidad',
 
     ),
     'situations' => array(

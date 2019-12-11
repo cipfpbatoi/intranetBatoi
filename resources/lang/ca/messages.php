@@ -265,9 +265,11 @@ return array(
         'Dual' => 'FP Dual',
         'Micolaboracion' => 'Gestió Contactes',
         'Poll' => 'Enquestes',
+        'Ppoll' => 'Plantilla per enquesta',
         'Importaprofesor' => 'Importa Professor',
         'Tipoincidencias' => "Tipus d'incidències",
         'Paper' => 'Tràmits',
+        'Qualitat' => 'Qualitat'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

@@ -5,6 +5,7 @@ namespace Intranet\Entities\Poll;
 
 use Intranet\Entities\BatoiModels;
 use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Date\Date;
 
 
 class Poll extends Model
@@ -35,8 +36,11 @@ class Poll extends Model
         return $this->hasOne(PPoll::class,'id','idPPoll');
     }
 
-    public function getActiuAttribute(){
-        return vigente($this->desde,$this->hasta)?'Activa':'No activa';
+    public function getStateAttribute(){
+        if (vigente($this->desde,$this->hasta)) return 'Activa';
+        $fin = new Date($this->hasta);
+        if (Hoy()>$fin->format('Y-m-d')) return 'Finalizada';
+        return 'No activa';
     }
 
     public function getKeyUserAttribute(){
@@ -61,6 +65,17 @@ class Poll extends Model
         return hazArray(PPoll::all(),'id','title');
     }
 
+    public function getDesdeAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
+    }
+
+    public function getHastaAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
+    }
 
 
 }

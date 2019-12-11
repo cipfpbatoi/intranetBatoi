@@ -30,3 +30,4 @@ Route::get('/help/{fichero}/{enlace}',['as' => 'help' ,'uses' => 'Administracion
 
 Route::get('/poll/{id}/do', ['as' => 'enquesta', 'uses' => 'PollController@preparaEnquesta']);
 Route::post('/poll/{id}/do', ['as' => 'enquesta.post', 'uses' => 'PollController@guardaEnquesta']);
+Route::get('/doPoll',['as' => 'enquesta.do', 'uses' => 'PanelPollResponseController@index']);

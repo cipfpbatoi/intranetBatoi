@@ -419,10 +419,11 @@ return array(
            'check' => 'Control documentació'
           
         ),
-        'PPoll' => array(
+        'Ppoll' => array(
           'show' => 'Plantilla Enquesta',
           'index' => 'Manteniment Plantilles Enquestes',
           'edit' => 'Editar Plantilla',
+          'slave' => 'Vore preguntes',
         ),
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
@@ -458,6 +459,7 @@ return array(
             'Colaborador' => 'Col.laborador',
             'PPoll' => 'Plantilla Enquesta',
             'Poll' => 'Enquesta',
+            'Option' => 'Pregunta',
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

@@ -5,12 +5,9 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Ciclo;
-use Intranet\Entities\Fct;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
-use Intranet\Entities\Poll\Option;
 use Response;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
@@ -20,7 +17,7 @@ class PollController extends IntranetController
 {
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
     protected $model = 'Poll';
-    protected $gridFields = [ 'id','title','actiu'];
+    protected $gridFields = [ 'id','title','state'];
 
 
 
@@ -94,38 +91,21 @@ class PollController extends IntranetController
     }
 
 
-    public function lookAtMyVotes($id){
+    public function lookAtMyVotes($id)
+    {
         $poll = Poll::find($id);
         $modelo = $poll->modelo;
         $myVotes = $modelo::loadVotes($id);
-        $groupVotes = $modelo::loadGroupVotes($id);
-        $options_numeric = $poll->Plantilla->options->where('scala','>',0);
-        $options_text = $poll->Plantilla->options->where('scala','=',0);
-        if (count($myVotes)) return view('poll.show',compact('myVotes','poll','options_numeric','options_text','groupVotes'));
+        if ($myVotes) {
+            $myGroupsVotes = $modelo::loadGroupVotes($id);
+            $options_numeric = $poll->Plantilla->options->where('scala', '>', 0);
+            $options_text = $poll->Plantilla->options->where('scala', '=', 0);
+            return view('poll.show', compact('myVotes', 'poll', 'options_numeric', 'options_text', 'myGroupsVotes'));
+        }
         Alert::info("L'enquesta no ha estat realitzada encara");
         return back();
 
     }
-
-/**
-    public function lookAtMyVotes($id){
-        $poll = Poll::find($id);
-        $options_numeric = $poll->options->where('scala','>',0);
-        $options_text = $poll->options->where('scala','=',0);
-        $myVotes = [];
-        $myGroupsVotes = [];
-        foreach (Modulo_grupo::misModulos() as $modulo){
-            $myVotes[$modulo->ModuloCiclo->Modulo->literal][$modulo->Grupo->codigo] = Vote::myVotes($id,$modulo->id)->get();
-        }
-        foreach (Grupo::misGrupos()->get() as $grup){
-            $modulos = hazArray(Grupo::find($grup->codigo)->Modulos,'id');
-            $myGroupsVotes[$grup->codigo] = Vote::myGroupVotes($id,$modulos)->get();
-        }
-        if (count($myVotes)) return view('poll.teacherResolts',compact('myVotes','poll','options_numeric','options_text','myGroupsVotes'));
-        Alert::info("L'enquesta no ha estat realitzada encara");
-        return back();
-    }
- */
 
     public function lookAtAllVotes($id)
     {
