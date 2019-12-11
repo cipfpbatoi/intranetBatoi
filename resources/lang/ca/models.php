@@ -425,6 +425,12 @@ return array(
           'edit' => 'Editar Plantilla',
           'slave' => 'Vore preguntes',
         ),
+        'Poll' => array(
+            'show' => 'Mostra resultats',
+            'index' => 'Manteniment Enquestes',
+            'edit' => 'Editar Enquesta',
+            'chart' => 'Vore resultats agregats',
+        ),
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
             'Curso' => 'Curs',

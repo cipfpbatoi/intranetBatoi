@@ -407,6 +407,12 @@ return array(
             'check' => 'Control documentación'
 
         ),
+        'Poll' => array(
+            'show' => 'Muestra resultados',
+            'index' => 'Mantenimento Encuestas',
+            'edit' => 'Editar Encuesta',
+            'chart' => 'Ver resultados agregados',
+        ),
         'Ppoll' => array(
             'show' => 'Plantilla Encuesta',
             'index' => 'Mantenimento Plantillas Encuestas',
