@@ -8,7 +8,7 @@ class Fct extends ModelPoll
 {
     public static function loadPoll(){
         $fcts = collect();
-        foreach (realFct::misFcts()->get() as $fct) {
+        foreach (realFct::misFcts()->esFct()->get() as $fct) {
             $fcts->push(['option1'=>$fct]);
         }
         return $fcts;
@@ -32,6 +32,7 @@ class Fct extends ModelPoll
     {
         return [];
     }
+
     public static function has(){
         return realFct::misFcts()->esFct()->count();
     }
