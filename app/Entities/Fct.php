@@ -228,11 +228,4 @@ class Fct extends Model
         $instructor->save();
     }
 
-    public static function loadPoll(){
-        $fcts = collect();
-        foreach (Fct::misFcts()->get() as $fct) {
-            $fcts->push(['option1'=>$fct]);
-        };
-        return $fcts;
-    }
 }

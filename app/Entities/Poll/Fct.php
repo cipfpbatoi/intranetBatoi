@@ -21,7 +21,7 @@ class Fct extends ModelPoll
     }
     public static function loadVotes($id)
     {
-        $fcts = hazArray(realFct::misFcts()->get(),'id');
+        $fcts = hazArray(realFct::misFcts()->esFct()->get(),'id');
         $votes = Vote::getVotes($id,$fcts)->get();
         foreach ($votes as $vote){
             $classified[$vote->idOption1][$vote->option_id] = isset($vote->text)?$vote->text:$vote->value;
@@ -33,7 +33,7 @@ class Fct extends ModelPoll
         return [];
     }
     public static function has(){
-        return realFct::misFcts()->count();
+        return realFct::misFcts()->esFct()->count();
     }
 
 
