@@ -7,7 +7,8 @@ use Intranet\Entities\Modulo_grupo;
 
 class Profesor extends ModelPoll
 {
-    public static function loadPoll(){
+    public static function loadPoll($votes){
+        if (count($votes)) return null;
         $modulos = collect();
         foreach (AuthUser()->Grupo as $grupo){
             foreach ($grupo->Modulos as $modulo){

@@ -5,7 +5,7 @@ namespace Intranet\Entities\Poll;
 class Actividad extends ModelPoll
 {
 
-    public static function loadPoll(){
+    public static function loadPoll($allVotes){
         $actividades = collect();
         foreach (AuthUser()->Grupo as $grupo) {
             foreach ($grupo->Actividades as $actividad) {

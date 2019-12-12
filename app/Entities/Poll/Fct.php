@@ -6,12 +6,14 @@ use Intranet\Entities\Fct as realFct;
 
 class Fct extends ModelPoll
 {
-    public static function loadPoll(){
+    public static function loadPoll($votes){
+
         $fcts = collect();
-        foreach (realFct::misFctsColaboracion()->haEmpezado()->esFct()->get() as $fct) {
+        foreach (realFct::misFctsColaboracion()->haEmpezado()->esFct()->whereNotIn('id',$votes)->get() as $fct) {
             $fcts->push(['option1'=>$fct]);
         }
-        return $fcts;
+        if (count($fcts)) return $fcts;
+        return null;
     }
     public static function interviewed(){
         return 'Intranet\\Entities\\Profesor';

@@ -11,7 +11,7 @@ namespace Intranet\Entities\Poll;
 
 abstract class ModelPoll
 {
-    public static function loadPoll(){}
+    public static function loadPoll($votes){}
     public static function loadVotes($id){}
     public static function loadGroupVotes($id){}
     public static function interviewed(){

@@ -6,13 +6,14 @@ use Intranet\Entities\Fct;
 
 class AlumnoFct extends ModelPoll
 {
-    public static function loadPoll(){
+    public static function loadPoll($votes){
         $alumno = AuthUser();
         $fcts = collect();
-        foreach ($alumno->fcts()->where('asociacion',1)->get() as $fct) {
+        foreach ($alumno->fcts()->where('alumno_fcts.desde','<',Hoy())->esFct()->whereNotIn('fcts.id',$votes)->get() as $fct) {
             $fcts->push(['option1'=>$fct]);
         }
-        return $fcts;
+        if (count($fcts)) return $fcts;
+        return null;
     }
 
     public static function loadVotes($id)

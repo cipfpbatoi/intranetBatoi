@@ -41,23 +41,25 @@ class PollController extends IntranetController
 
     protected function preparaEnquesta($id){
         $poll = Poll::find($id);
-        $votes = Vote::where('user_id','=', $this->userKey($poll))
-                ->where('idPoll', $id)
-                ->count();
-        if ($votes == 0){
-            $modelo = $poll->modelo;
-            $quests = $modelo::loadPoll();
-            return view('poll.enquesta',compact('quests','poll'));
-        }
+        $modelo = $poll->modelo;
+        $quests = $modelo::loadPoll($this->loadPreviousVotes($poll));
+        if ($quests) return view('poll.enquesta',compact('quests','poll'));
+
 
         Alert::info("Ja has omplit l'enquesta");
         return redirect('home');
     }
 
+    private function loadPreviousVotes($poll){
+        return hazArray(Vote::where('user_id','=', $this->userKey($poll))
+            ->where('idPoll', $poll->id)
+            ->get(),'idOption1','idOption1');
+    }
+
     protected function guardaEnquesta(Request $request,$id){
         $poll = Poll::find($id);
         $modelo = $poll->modelo;
-        $quests = $modelo::loadPoll();
+        $quests = $modelo::loadPoll($this->loadPreviousVotes($poll));
         foreach ($poll->Plantilla->options as $question => $option){
             $i=0;
             foreach ($quests as $quest)
