@@ -8,7 +8,7 @@ class Fct extends ModelPoll
 {
     public static function loadPoll(){
         $fcts = collect();
-        foreach (realFct::misFcts()->esFct()->get() as $fct) {
+        foreach (realFct::misFctsColaboracion()->haEmpezado()->esFct()->get() as $fct) {
             $fcts->push(['option1'=>$fct]);
         }
         return $fcts;
@@ -21,7 +21,7 @@ class Fct extends ModelPoll
     }
     public static function loadVotes($id)
     {
-        $fcts = hazArray(realFct::misFcts()->esFct()->get(),'id');
+        $fcts = hazArray(realFct::misFctsColaboracion()->haEmpezado()->esFct()->get(),'id');
         $votes = Vote::getVotes($id,$fcts)->get();
         foreach ($votes as $vote){
             $classified[$vote->idOption1][$vote->option_id] = isset($vote->text)?$vote->text:$vote->value;
@@ -34,7 +34,7 @@ class Fct extends ModelPoll
     }
 
     public static function has(){
-        return realFct::misFcts()->esFct()->count();
+        return realFct::misFctsColaboracion()->haEmpezado()->esFct()->count();
     }
 
 
