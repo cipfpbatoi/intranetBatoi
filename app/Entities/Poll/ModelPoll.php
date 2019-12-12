@@ -23,4 +23,8 @@ abstract class ModelPoll
     public static function vista(){
         return class_basename(static::class);
     }
+
+    public static function has(){
+        return true;
+    }
 }

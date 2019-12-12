@@ -32,4 +32,9 @@ class Fct extends ModelPoll
     {
         return [];
     }
+    public static function has(){
+        return realFct::misFcts()->count();
+    }
+
+
 }

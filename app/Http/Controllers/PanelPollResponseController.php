@@ -17,8 +17,14 @@ class PanelPollResponseController extends PollController
     protected function search()
     {
         $polls = Poll::all();
-        $modelo = isset(AuthUser()->nia)?'nia':'dni';
-        return $polls->where('state','Activa')->where('keyUser',$modelo);
+        $key = isset(AuthUser()->nia)?'nia':'dni';
+        $activas =  $polls->where('state','Activa')->where('keyUser',$key);
+        $usuario = [];
+        foreach ($activas as $activa){
+            $modelo = $activa->modelo;
+            if ($modelo::has())  $usuario[] = $activa;
+        }
+        return $usuario;
     }
 
 }

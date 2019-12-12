@@ -31,4 +31,7 @@ class AlumnoFct extends ModelPoll
     public static function vista(){
         return 'Fct';
     }
+    public static function has(){
+        return count(AuthUser()->fcts);
+    }
 }

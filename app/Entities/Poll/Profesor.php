@@ -33,5 +33,8 @@ class Profesor extends ModelPoll
         }
         return $myGroupsVotes;
     }
+    public static function has(){
+        return count(AuthUser()->Grupo);
+    }
 
 }
