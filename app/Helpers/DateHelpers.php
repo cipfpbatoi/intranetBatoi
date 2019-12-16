@@ -42,7 +42,7 @@ function buildFecha($fecha,$hora)
 }
 function FechaString($fecha = null, $idioma = null)
 {
-    $fc1 = ($fecha == null) ? new Jenssegers\Date\Date() : (is_string($fecha)) ? New Jenssegers\Date\Date($fecha) : $fecha;
+    $fc1 = ($fecha == null) ? new Jenssegers\Date\Date() : (is_string($fecha) ? New Jenssegers\Date\Date($fecha) : $fecha);
     if (!isset($idioma))
         $idioma = Session::get('lang');
     Jenssegers\Date\Date::setlocale($idioma);
@@ -66,7 +66,7 @@ function Ayer()
 
 function FechaPosterior($fecha1, $fecha2 = null)
 {
-    $fecha2 = is_null($fecha2) ? new Date() : is_string($fecha2) ? new Date($fecha2) : $fecha2;
+    $fecha2 = is_null($fecha2) ? new Date() : (is_string($fecha2) ? new Date($fecha2) : $fecha2);
     $fecha1 = is_string($fecha1) ? new Date($fecha1) : $fecha1;
     return $fecha1 > $fecha2 ? $fecha1 : $fecha2;
 }
