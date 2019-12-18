@@ -66,7 +66,7 @@ class Mail
         if ($element != '') {
             $toCompost = explode('(', $element);
             $id = $toCompost[0];
-            return $this->updateModel(explode(';',$toCompost[1]),$id);
+            if (isset($toCompost[1])) return $this->updateModel(explode(';',$toCompost[1]),$id);
         }
         return null;
     }
@@ -76,7 +76,7 @@ class Mail
         $contacto = substr($contact[1],0,strlen($contact[1])-1);
         $class = $this->class;
         $modelo = $class::find($id);
-        if ($modelo->contacto != $contacto || $modelo->email != $email){
+        if (!isset($modelo->dni) && ($modelo->contacto != $contacto || $modelo->email != $email)){
             $modelo->saveContact($contacto,$email);
         }
         return $modelo;

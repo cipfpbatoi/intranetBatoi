@@ -85,4 +85,8 @@ class Instructor extends Model
     {
         return ucwords(mb_strtolower($this->name . ' ' . $this->surnames,'UTF-8'));
     }
+    public function getIdAttribute()
+    {
+        return $this->dni;
+    }
 }
