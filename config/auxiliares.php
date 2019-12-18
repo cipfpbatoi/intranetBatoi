@@ -33,5 +33,6 @@ return [
         'Actividad'=>'Activitats',
         'Fct'=>'Fct x Tutor',
         'AlumnoFct'=> 'Fct x Alumno'],
+    'collectMailable' => ['Instructor'=> 'Tots els instructors'],
 
 ];

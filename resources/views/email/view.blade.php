@@ -1,7 +1,8 @@
 @extends('layouts.intranet')
 @section('content')
+    
     {!! Form::open(['url' =>  'myMail' ]) !!}
-
+    
         {!! Form::hidden('route',$route) !!}
         {!! Form::hidden('class',$class) !!}
         <div class="form-group">

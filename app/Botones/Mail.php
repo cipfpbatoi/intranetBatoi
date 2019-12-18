@@ -84,12 +84,15 @@ class Mail
 
     public function render($route){
         $to  = $this->getReceivers($this->elements);
+        
+        
         $from = $this->from;
         $subject = $this->subject;
         $content = $this->view;
         $fromPerson = $this->fromPerson;
         $toPeople = $this->toPeople;
         $class = $this->class;
+        
         return view('email.view',compact('to','from','subject','content','route','fromPerson','toPeople','class'));
     }
 
