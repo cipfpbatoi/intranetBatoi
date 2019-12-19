@@ -40,7 +40,7 @@ class MyMailController extends Controller
         
         
         $colectiu = 'Intranet\\Entities\\'.$request->collect;
-        $mail = new myMail($colectiu::all(),null,'CIPFP Batoi',null,null,null,null,false);
+        $mail = new myMail($colectiu::all(),null,null,null,null,null,null,false);
         return $mail->render('\\');
     }
     
