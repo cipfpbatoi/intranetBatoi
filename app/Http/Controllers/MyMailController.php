@@ -27,9 +27,18 @@ class MyMailController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->hasFile('file') && $request->file('file')->isValid()){
+                $directorio = 'tmp/' ;
+                $ext = $request->file('file')->getClientOriginalExtension();
+                $nom = "CIPFPBatoi.".$ext;
+                $request->file('file')->storeAs($directorio,$nom);
+                $fitxer = $directorio.$nom;
+                //$request->file('Anexo')->move(storage_path('/app/'.$directorio), $nom);
+        }  
+        
         $colectiu = 'Intranet\\Entities\\'.$request->collect;
        
-        $mail = new myMail($colectiu::all(),null,null,null,null,null,null);
+        $mail = new myMail($colectiu::all(),null,null,'CIPFP Batoi',null,null,null,false,$fitxer);
         return $mail->render('\\');
     }
     
