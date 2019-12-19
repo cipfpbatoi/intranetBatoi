@@ -19,7 +19,17 @@ class MyMailController extends Controller
     
     public function send(Request $request)
     {
-        $mail = new myMail($request->to,$request->toPeople,$request->subject,$request->content,null,null,$request->class);
+        if ($request->hasFile('file') && $request->file('file')->isValid()){
+            
+            $ext = $request->file('file')->getClientOriginalExtension();
+            $mime = $request->file('file')->getMimeType();
+            $nom = "AdjuntCorreu.".$ext;
+            $request->file('file')->move(storage_path('tmp/'), $nom);
+            $fitxer = 'tmp/'.$nom;
+            
+        }  
+       
+        $mail = new myMail($request->to,$request->toPeople,$request->subject,$request->content,$request->from,$request->fromPerson,$request->class,$request->register,[$fitxer => $mime]);
         $mail->send();
         return redirect($request->route);
     }
@@ -27,18 +37,10 @@ class MyMailController extends Controller
 
     public function store(Request $request)
     {
-        if ($request->hasFile('file') && $request->file('file')->isValid()){
-                $directorio = 'tmp/' ;
-                $ext = $request->file('file')->getClientOriginalExtension();
-                $nom = "CIPFPBatoi.".$ext;
-                $request->file('file')->storeAs($directorio,$nom);
-                $fitxer = $directorio.$nom;
-                //$request->file('Anexo')->move(storage_path('/app/'.$directorio), $nom);
-        }  
+        
         
         $colectiu = 'Intranet\\Entities\\'.$request->collect;
-       
-        $mail = new myMail($colectiu::all(),null,null,'CIPFP Batoi',null,null,null,false,$fitxer);
+        $mail = new myMail($colectiu::all(),null,'CIPFP Batoi',null,null,null,null,false);
         return $mail->render('\\');
     }
     

@@ -46,7 +46,6 @@ class DocumentRequest extends Mailable
     public function build()
     {
         $vista =  $this->from($this->mail->getFrom(),$this->mail->getFromPerson())->subject($this->mail->getSubject())->view($this->view);
-
         if (isset($this->attach))
             foreach ($this->attach as $index => $value){
                 $vista = $vista->attach(storage_path($index),['mime' => $value]);

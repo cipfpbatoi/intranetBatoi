@@ -1,9 +1,10 @@
 @extends('layouts.intranet')
 @section('content')
     
-    {!! Form::open(['url' =>  'myMail' ]) !!}
+    {!! Form::open(['url' =>  'myMail','enctype'=> 'multipart/form-data' ]) !!}
     
         {!! Form::hidden('route',$route) !!}
+        {!! Form::hidden('register',$register) !!}
         {!! Form::hidden('class',$class) !!}
         <div class="form-group">
             {!! Form::label('from', 'De') !!}
@@ -29,6 +30,7 @@
             {!! Form::label('content', 'Contingut') !!}
             {!! Form::textarea('content',$content, ['id'=>'content','class' => 'form-control','style'=>'display:none']) !!}
         </div>
+        
         <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#area">
         <div class="btn-group">
             <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
@@ -50,7 +52,7 @@
                 </li>
             </ul>
         </div>
-
+       
         <div class="btn-group">
             <a class="btn" data-edit="bold" title="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
             <a class="btn" data-edit="italic" title="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a>
@@ -88,6 +90,10 @@
     </div>
 
     <div id="area" class="editor-wrapper">{!! $content  !!} </div>
+    <div class="form-group">
+            {!! Form::label('file', 'Adjunt') !!}
+            {!! Form::file('file') !!}
+    </div>
     {!! Form::submit('Submit', ['class' => 'btn btn-info']) !!}
     {!! Form::close() !!}
 @endsection

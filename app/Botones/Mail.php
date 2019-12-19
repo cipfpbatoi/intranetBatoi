@@ -92,8 +92,9 @@ class Mail
         $fromPerson = $this->fromPerson;
         $toPeople = $this->toPeople;
         $class = $this->class;
+        $register = $this->register;
         
-        return view('email.view',compact('to','from','subject','content','route','fromPerson','toPeople','class'));
+        return view('email.view',compact('to','from','subject','content','route','fromPerson','toPeople','class','register'));
     }
 
     public function send($fecha=null){
@@ -102,7 +103,6 @@ class Mail
                 $this->sendMail($elemento,$fecha);
             }
         else $this->sendMail($this->elements,$fecha);
-
     }
 
     private function sendMail($elemento,$fecha){
