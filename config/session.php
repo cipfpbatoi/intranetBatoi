@@ -151,7 +151,7 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN', 'intranet56.my'),
+    'domain' => env('SESSION_DOMAIN', 'intranet.my'),
 
     /*
     |--------------------------------------------------------------------------

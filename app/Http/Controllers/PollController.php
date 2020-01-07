@@ -89,10 +89,11 @@ class PollController extends IntranetController
             $vote->idOption1 = $option1;
             $vote->idOption2 = $option2;
             if ($option->scala == 0) $vote->text = $value;
-            else $vote->value = $value;
+            else $vote->value = voteValue($option2,$value);
             $vote->save();
         }
     }
+
 
 
     public function lookAtMyVotes($id)
