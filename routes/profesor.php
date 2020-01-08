@@ -52,7 +52,7 @@ Route::get('/reunion/{reunion}/notification', ['as' => 'reunion.notificar', 'use
 Route::get('/reunion/{reunion}/autorizacion', ['as' => 'reunion.autorizacion', 'uses' => 'ReunionController@autorizacion']);
 Route::get('/ordenreunion/update', ['as' => 'ordenreunion.update', 'uses' => 'ReunionController@oupdate']);
 Route::get('/reunion/{reunion}/saveFile', ['as' => 'reunion.saveFile', 'uses' => 'ReunionController@saveFile']);
-Route::get('/reunion/{reunion}/deleteFile', ['as' => 'reunion.deleteFile', 'uses' => 'ReunionController@deleteFile']);
+Route::post('/reunion/{reunion}/deleteFile', ['as' => 'reunion.deleteFile', 'uses' => 'ReunionController@deleteFile']);
 Route::get('/reunion/{reunion}/ics', ['as' => 'reunion.ics', 'uses' => 'ReunionController@ics']);
 
 Route::resource('/grupotrabajo', 'GrupoTrabajoController', ['except' => ['destroy', 'update']]);

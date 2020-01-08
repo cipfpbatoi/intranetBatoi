@@ -13,6 +13,7 @@
 @endsection
 @section('scripts')
     @include('intranet.partials.modal.index')
+    @include('intranet.partials.modal')
     @include('includes.tablesjs')
     @if ($elemento->existsDatepicker())
         {{ Html::script("/js/datepicker.js") }}
@@ -31,6 +32,5 @@
          @endif
       @endif   
      {{ HTML::script('/js/indexModal.js') }}
-     
 @endsection
 

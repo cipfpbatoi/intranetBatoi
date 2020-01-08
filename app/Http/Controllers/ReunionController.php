@@ -26,6 +26,7 @@ class ReunionController extends IntranetController
     protected $model = 'Reunion';
     protected $gridFields = ['XGrupo', 'XTipo', 'Xnumero', 'descripcion', 'fecha', 'curso', 'id'];
     protected $modal = true;
+    protected $parametresVista = [  'modal' => ['password']];
 
     /**
      * @param $elemento
@@ -229,19 +230,21 @@ class ReunionController extends IntranetController
         return back();
     }
 
-    public function deleteFile($id)
+    public function deleteFile(Request $request,$id)
     {
-        $elemento = $this->class::find($id);
-        $document = Documento::where('tipoDocumento','Acta')->where('curso',Curso())->where('idDocumento',$elemento->id)->first();
-        if ($elemento->fichero != '' && $document)
-            DB::transaction(function () use ($elemento,$document) {
-                $nom = $elemento->fichero;
-                $document->delete();
-                $elemento->archivada = 0;
-                $elemento->fichero = '';
-                $elemento->save();
-                unlink(storage_path('/app/' . $nom));
-            });
+        if ($request->pass == date('mdy')){
+            $elemento = $this->class::find($id);
+            $document = Documento::where('tipoDocumento','Acta')->where('curso',Curso())->where('idDocumento',$elemento->id)->first();
+            if ($elemento->fichero != '' && $document)
+                DB::transaction(function () use ($elemento,$document) {
+                    $nom = $elemento->fichero;
+                    $document->delete();
+                    $elemento->archivada = 0;
+                    $elemento->fichero = '';
+                    $elemento->save();
+                    unlink(storage_path('/app/' . $nom));
+                });
+        }
         return back();
     }
 

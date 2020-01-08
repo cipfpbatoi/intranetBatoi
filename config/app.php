@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://intranet.cipfpbatoi.es'),
+    'url' => env('APP_URL', 'https://intranet.my'),
 
     /*
     |--------------------------------------------------------------------------
