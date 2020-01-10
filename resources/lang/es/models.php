@@ -81,7 +81,7 @@ return array(
             'carnet' => 'Imprime Carnets de Grupo',
             'profile' => 'Plantilla Alumnos',
             'show' => 'Lista Alumnos',
-            'edit' => 'Editar Perfil Alumno'
+            'edit' => 'Editar Perfil Alumno',
         ),
         'Inventario' => array(
             'espacios' => 'Ver Espacios',

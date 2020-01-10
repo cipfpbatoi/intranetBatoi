@@ -81,7 +81,8 @@ return array(
             'carnet' => 'Imprimeix Carnets de Grup',
             'profile' => 'Plantilla Alumnes',
             'show' => 'Llista Alumnes',
-            'edit' => 'Editar Perfil Alumne'
+            'edit' => 'Editar Perfil Alumne',
+            'checkFol' => 'Li correspon Certificat Fol'
         ),
         'Inventario' => array(
             'espacios' => 'Vore Espais',

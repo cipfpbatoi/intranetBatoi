@@ -35,4 +35,9 @@ class AlumnoGrupo extends Model
         return $this->Alumno->Poblacion;
     }
 
+    public function getFolAttribute()
+    {
+        return $this->Alumno->fol;
+    }
+
 }

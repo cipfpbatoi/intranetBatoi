@@ -161,6 +161,7 @@ return array(
         'fse' => 'Acta fons social Europeu',
         'fol' => 'Certificat fol',
         'aFol' => 'Certificat fol',
+        'checkFol' => 'Li correspon Certificat Fol',
         'gestor' => 'Gestor Documental',
         'contact' =>'Registrar contacte',
 

@@ -51,6 +51,15 @@ class AlumnoController extends PerfilController
         return $this->hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Date::now()->format('Y'), 'Alumne - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
+    public function checkFol($id)
+    {
+        $alumne = Alumno::findOrFail($id);
+        $alumne->fol = ($alumne->fol==0)?1:0;
+        $alumne->save();
+        return back();
+
+    }
+
 //    public function baja($id)
 //    {
 //        $expediente = new Expediente();

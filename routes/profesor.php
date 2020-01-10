@@ -107,13 +107,16 @@ Route::get('/alumno_grupo/{grupo}/show', ['as' => 'alumnogrupo.index', 'uses' =>
 Route::get('/alumno_grupo/{grupo}/profile', ['as' => 'alumnogrupo.profile', 'uses' => 'AlumnoGrupoController@profile']);
 Route::get('/grupo/{grupo}/horario', ['as' => 'grupo.horario', 'uses' => 'GrupoController@horario']);
 Route::get('/grupo/asigna', ['as' => 'grupo.asigna', 'uses' => 'GrupoController@asigna']);
-
+//Route::get('/grupo/{grupo}/checkFol', ['as' => 'grupo.fol', 'uses' => 'PanelPG0301Controller@indice']);
 
 Route::get('/alumno/{alumno}/muestra', ['as' => 'alumno.show', 'uses' => 'AlumnoController@show']);
 Route::get('/alumno/{alumno}/edit', ['as' => 'alumno.edit', 'uses' => 'AlumnoController@edit']);
 Route::put('/alumno/{alumno}/edit', ['as' => 'alumno.update', 'uses' => 'AlumnoController@update']);
 Route::get('/alumno/{alumno}/carnet', ['as' => 'alumno.carnet', 'uses' => 'AlumnoController@carnet']);
 Route::get('/alumno/{alumno}/baja', ['as' => 'alumno.baja', 'uses' => 'AlumnoController@baja']);
+Route::get('/alumno/{alumno}/checkFol', ['as' => 'alumno.checkFol', 'uses' => 'AlumnoController@checkFol']);
+
+
 
 Route::get('/departamento', ['as' => 'departamento.index', 'uses' => 'ProfesorController@departamento']);
 Route::get('/equipo/{grupo}/grupo', ['as' => 'equipo.grupo', 'uses' => 'ProfesorController@equipo']);
