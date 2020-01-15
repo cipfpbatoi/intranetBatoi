@@ -306,6 +306,7 @@ return array(
             'acta' => 'Pedir acta de evaluación',
             'insercio' => "Inserción Laboral",
             'proyecto' => 'Proyecto',
+            'send' => 'Enviar Correo Inicial Alumnos',
             'default' => 'x Empresa',
         ),
         'Dual' => array(

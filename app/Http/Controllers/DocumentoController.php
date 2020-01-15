@@ -98,9 +98,9 @@ class DocumentoController extends IntranetController
         $elemento->grupo = Grupo::QTutor(AuthUser()->dni)->first()->nombre;
         $elemento->supervisor = AuthUser()->FullName;
         $elemento->propietario = AuthUser()->FullName;
-        $elemento->tags = 'Fct,PR03-01,PR04-01,PR04-02,PR06-01';
+        $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor,PR04-01,PR04-02';
         $elemento->addFillable('instrucciones',true);
-        $elemento->instrucciones = 'Pujar en un sols document comprimit: PR03-01,PR04-01,PR04-02,PR06-01';
+        $elemento->instrucciones = 'Pujar en un sols document comprimit: Entrevista Alumnat i Entrevista Instructor';
         $elemento->setInputType('instrucciones', ['disabled' => 'disabled']);
         $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
         $elemento->setInputType('grupo', ['disabled' => 'disabled']);

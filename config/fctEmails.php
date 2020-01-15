@@ -1,6 +1,13 @@
 <?php
 
 return [
+    'actaIni' => [
+        'subject' => "Informació relativa a l'inici de les Pràctiques de FCT",
+        'receiver' => "Alumnat",
+        'view' => 'email.fct.ini',
+        'fcts' => 0,
+        'default' => '',
+    ],
     'contact' => [
         'subject' => "Sol·licitud Pràctiques de FCT",
         'receiver' => 'A/A de Recursos Humans',

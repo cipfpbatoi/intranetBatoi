@@ -8,7 +8,6 @@ use DB;
 use Intranet\Entities\Fct;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
@@ -20,6 +19,8 @@ use Styde\Html\Facades\Alert;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\Panel;
 use Intranet\Entities\Documento;
+use Intranet\Botones\Mail as myMail;
+
 
 /**
  * Class FctController
@@ -106,6 +107,23 @@ class FctController extends IntranetController
     public function search()
     {
         return Fct::misFcts()->esFct()->get();
+    }
+
+
+    public function send()
+    {
+        $document = config('fctEmails.actaIni');
+        $fctAls = AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idAlumno')->orderBy('desde')->get();
+        $mail = new myMail( $fctAls,$document['receiver'], $document['subject'], $document['view']);
+        $mail->send();
+        return back();
+    }
+
+    private function sendEmails($document,$colaboraciones){
+        if (isset($document['redirect'])) return $this->renderEmail($document,$colaboraciones);
+        $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], $document['view']);
+        $mail->send();
+        return back();
     }
 
     /**

@@ -94,7 +94,12 @@ class AlumnoFct extends Model
         return $query->whereIn('idFct',$fcts);
     }
     
-    
+    public function getEmailAttribute(){
+        return $this->Alumno->email;
+}
+    public function getContactoAttribute(){
+        return $this->Alumno->NameFull;
+    }
     public function getNombreAttribute(){
         return $this->Alumno->NameFull;
     }

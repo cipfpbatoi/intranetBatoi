@@ -311,7 +311,7 @@ return array(
             'insercio' => "Inserció laboral",
             'alumno' => 'x Alumnes',
             'empresa' => 'x Empresa',
-            'proyecto' => 'Projecte',
+            'send' => 'Enviar Correu Alumnes Inici',
             'default' => 'x Empresa',
         ),
         'Dual' => array(
