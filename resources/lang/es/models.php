@@ -304,7 +304,8 @@ return array(
             'pr0401' => 'Imprime Entrevista Final Instructor',
             'list' => 'Acta Grupo :quien',
             'acta' => 'Pedir acta de evaluación',
-            'empresa' => "Inserción Laboral",
+            'insercio' => "Inserción Laboral",
+            'proyecto' => 'Proyecto',
             'default' => 'x Empresa',
         ),
         'Dual' => array(

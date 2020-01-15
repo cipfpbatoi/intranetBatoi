@@ -60,7 +60,7 @@ class ImportController extends Seeder
                 'turno' => 'turno',
                 'trabaja' => 'trabaja',
                 'password' => 'cifrar,documento',
-                'baja' => null
+                'baja' => null,
             ),
             'create' => array(
                 'nia' => 'NIA',

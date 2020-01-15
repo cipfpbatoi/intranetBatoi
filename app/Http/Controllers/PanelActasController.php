@@ -73,7 +73,7 @@ class PanelActasController extends BaseController
         $grupo->acta_pendiente = 0;
         $grupo->save();
         avisa($grupo->tutor, "Ja pots passar a arreplegar l'acta del grup $grupo->nombre", "#");
-        Mail::to($grupo->Tutor->email, 'Intranet Batoi')->send(new AvalFct($empresas,'tutor'));
+        //Mail::to($grupo->Tutor->email, 'Intranet Batoi')->send(new AvalFct($empresas,'tutor'));
         return back();
     }
 

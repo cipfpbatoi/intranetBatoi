@@ -108,6 +108,15 @@ class AdministracionController extends Controller
         //$this->checkForeignKeys(false);
         Colaboracion::where('tutor','!=','')->update(['tutor'=>'']);
         Colaboracion::where('estado','>',1)->update(['estado' => 1]);
+
+        foreach (Alumno::where('fol','==',2)->get() as $alumno)
+            foreach ($alumno->Grupo as $grupo)
+                if ($grupo->curso == 2){
+                    $alumno->fol = 0;
+                    $alumno->save();
+                }
+
+
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
             'fcts', 'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
             'resultados', 'reuniones', 'tutorias_grupos', 'activities','votes'];

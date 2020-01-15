@@ -240,7 +240,7 @@ Route::post('/fct/{fct}/proyecto', ['as' => 'proyecto.create', 'uses' => 'Docume
 Route::get('/fct/upload', ['as' => 'qualitat.new', 'uses' => 'DocumentoController@qualitat']);
 Route::post('/fct/upload', ['as' => 'qualitat.create', 'uses' => 'DocumentoController@store']);
 Route::put('/fct/upload', ['as' => 'qualitat.update', 'uses' => 'DocumentoController@update']);
-Route::get('/fct/{document}/empresa',['as' => 'fct.empresa', 'uses' => 'PanelFctAvalController@empresa']);
+Route::get('/fct/{document}/insercio',['as' => 'fct.insercio', 'uses' => 'PanelFctAvalController@empresa']);
 Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFctAvalController@edit']);
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
 

@@ -14,7 +14,7 @@ class AlterAlumnosTable1 extends Migration
     public function up()
     {
         Schema::table('alumnos', function (Blueprint $table) {
-            $table->boolean('fol')->default(0);
+            $table->tinyInteger('fol')->default(0);
         });
     }
 

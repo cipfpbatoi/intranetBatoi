@@ -82,7 +82,6 @@ return array(
             'profile' => 'Plantilla Alumnes',
             'show' => 'Llista Alumnes',
             'edit' => 'Editar Perfil Alumne',
-            'checkFol' => 'Li correspon Certificat Fol'
         ),
         'Inventario' => array(
             'espacios' => 'Vore Espais',
@@ -309,9 +308,10 @@ return array(
             'only' => 'Vore actius',
             'list' => 'Acta Grupo :quien',
             'acta' => 'Demanar acta d\'avaluació',
-            'empresa' => "Inserció laboral",
+            'insercio' => "Inserció laboral",
             'alumno' => 'x Alumnes',
             'empresa' => 'x Empresa',
+            'proyecto' => 'Projecte',
             'default' => 'x Empresa',
         ),
         'Dual' => array(
