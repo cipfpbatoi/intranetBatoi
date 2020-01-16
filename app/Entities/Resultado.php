@@ -42,7 +42,7 @@ class Resultado extends Model
         'idModuloGrupo' => ['type' => 'select'],
         'evaluacion' => ['type' => 'select'],
         'observaciones' => ['type' => 'textarea'],
-        'idProfesor' => ['type' => 'hidden'],
+        'idProfesor' => ['type' => 'text'],
         
     ];
     protected $dispatchesEvents = [
