@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\FichaCreated;
 use Intranet\Events\FichaSaved;
+use Jenssegers\Date\Date;
 
 class Falta_profesor extends Model
 {
@@ -42,16 +43,25 @@ class Falta_profesor extends Model
         $ultimo = Falta_profesor::Hoy($profesor)
                 ->last();
 
+
         if (($ultimo == null) || ($ultimo->salida != null)) {
             $ultimo = new Falta_profesor;
             $ultimo->idProfesor = $profesor;
             $ultimo->dia = date("Y-m-d", time());
             $ultimo->entrada = date("H:i:s", time());
+            $ultimo->save();
+            return $ultimo;
         } else{
-            $ultimo->salida = date("H:i:s", time());
+            $now = new Date();
+            $last = new Date($ultimo->entrada);
+            $diff = $now->diffInMinutes($last);
+            if ($diff > 10 ){
+                $ultimo->salida = date("H:i:s", time());
+                $ultimo->save();
+                return $ultimo;
+            }
         }
-        $ultimo->save();
-        return $ultimo;
+        return null;
     }
     
     public static function fichaDia($profesor,$dia)

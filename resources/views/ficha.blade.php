@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
-    <head><title>Fichaje profesor</title></head>
+    <head><title>Fitxaje professorat</title></head>
     <body>
-        <h1>{{ $ultimo->profesor }} fitxa  
-        @if (isset($ultimo->salida)) 
-            l'eixida a les {{$ultimo->salida}}. ADEU !!
+        @if ($ultimo)
+            <h1>{{ $ultimo->Profesor->fullName }} fitxa
+            @if (isset($ultimo->salida))
+                l'eixida a les {{$ultimo->salida}}. ADEU !!
+            @else
+                l'entrada a les {{$ultimo->entrada}}. HOLA !!
+            @endif
+            </h1>
         @else
-            l'entrada a les {{$ultimo->entrada}}. HOLA !!
+            <h1>Acabes de fitxar</h1>
         @endif
-        </h1>
     </body>
 </html>

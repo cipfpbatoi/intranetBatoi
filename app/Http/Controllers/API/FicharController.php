@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\Profesor;
 use Illuminate\Http\Request;
-use Jenssegers\Date\Date;
 
 class FicharController extends ApiBaseController
 {
@@ -16,23 +15,12 @@ class FicharController extends ApiBaseController
     {
         $profesor = Profesor::find($datosProfesor->dni);
         if ($datosProfesor->api_token === $profesor->api_token) {
-            $ultimo = Falta_profesor::Hoy($profesor->dni)
-                    ->last();
-
-            if (($ultimo == null) || ($ultimo->salida != null)) {
-                $ultimo = new Falta_profesor;
-                $ultimo->idProfesor = $profesor->dni;
-                $ultimo->dia = date("Y-m-d", time());
-                $ultimo->entrada = date("H:i:s", time());
-            } else
-                $ultimo->salida = date("H:i:s", time());
-
-            $ultimo->save();
-            $ultimo->profesor = $profesor->FullName;
+            $ultimo = Falta_profesor::fichar($profesor->dni);
             return response()->view('ficha', compact('ultimo'), 200)->header('Content-type', 'text/html');
-        } else
-            return $this->sendResponse(['updated' => false], 'Profesor no identificado');
+        }
+        return $this->sendResponse(['updated' => false], 'Profesor no identificado');
     }
+
     public function ip()
     {
         return $this->sendResponse(config('variables.ipGuardias'),'OK');

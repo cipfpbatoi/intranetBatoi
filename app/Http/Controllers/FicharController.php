@@ -46,10 +46,15 @@ class FicharController extends IntranetController
         $profesor = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2')->where('codigo', '=', $request->codigo)->first();
         if (isset($profesor->dni)) {
             $fichaje = Falta_profesor::fichar($profesor->dni);
-            if ($fichaje->salida != null)
+            if ($fichaje == null){
+                Alert::danger('Acabes de fitxar');
+                return back();
+            }
+            if ($fichaje->salida != null){
                 Alert::info(trans('messages.generic.sale') . ' ' . $profesor->FullName . ' a ' . $fichaje->salida);
-            else
-                Alert::success(trans('messages.generic.entra') . ' ' . $profesor->FullName . ' a ' . $fichaje->entrada);
+                return back();
+            }
+            Alert::success(trans('messages.generic.entra') . ' ' . $profesor->FullName . ' a ' . $fichaje->entrada);
             return back();
         }
 

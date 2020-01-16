@@ -106,6 +106,7 @@ $(function() {
                 event.preventDefault();
             }
     });
+
     $(".telefonico").on("click",function(event){
         event.preventDefault();
         $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");

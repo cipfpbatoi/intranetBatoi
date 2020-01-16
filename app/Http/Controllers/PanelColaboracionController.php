@@ -74,16 +74,15 @@ class PanelColaboracionController extends IntranetController
         $this->panel->setBoton('fct',new BotonIcon('fct.seguimiento', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Correu seguiment','icon'=>'fa-envelope']));
         $this->panel->setBoton('fct',new BotonIcon('fct.telefonico', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe telefonico','text'=>'','title'=>'Contacte telefònic','icon'=>'fa-phone']));
         $this->panel->setBoton('fct',new BotonIcon('fct.visita', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Concertar visita','icon'=>'fa-car']));
-        //$this->panel->setBoton('fct',new BotonIcon('colaboracion.student', ['roles' => config('roles.rol.practicas'),'class'=>'btn-primary informe','text'=>'','title'=>'Citar alumne','icon'=>'fa-bullhorn']));
 
-        $colaboraciones = Colaboracion::MiColaboracion()->where('tutor','=',AuthUser()->dni)->get();
-            $this->panel->setBoton('pendiente', new BotonBasico("colaboracion.contacto",['icon' => 'fa fa-bell-o']));
+        $this->panel->setBoton('pendiente', new BotonBasico("colaboracion.contacto",['icon' => 'fa fa-bell-o']));
 
-            $this->panel->setBoton('colabora', new BotonBasico("colaboracion.info",['class'=>'btn-info','icon' => 'fa fa-check']));
-            $this->panel->setBoton('colabora', new BotonBasico("colaboracion.documentacion",['class'=>'btn-info','icon' => 'fa fa-flag-o']));
-            $this->panel->setBoton('colabora', new BotonBasico("colaboracion.seguimiento",['class'=>'btn-info','icon' => 'fa fa-envelope']));
-            $this->panel->setBoton('colabora', new BotonBasico("colaboracion.visita",['icon' => 'fa fa-car']));
-            $this->panel->setBoton('colabora', new BotonBasico("colaboracion.student",['icon' => 'fa fa-bullhorn']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.info",['class'=>'btn-info','icon' => 'fa fa-check']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.documentacion",['class'=>'btn-info','icon' => 'fa fa-flag-o']));
+        $this->panel->setBoton('colabora', new BotonBasico("fct.send",['class'=>'btn-info','icon' => 'fa fa-unlock']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.seguimiento",['class'=>'btn-info','icon' => 'fa fa-envelope']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.visita",['icon' => 'fa fa-car']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.student",['icon' => 'fa fa-bullhorn']));
 
 
     }
