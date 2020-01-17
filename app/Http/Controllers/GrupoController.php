@@ -68,8 +68,13 @@ class GrupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('grupo.edit', ['roles' => config('roles.rol.direccion')]));
         $this->panel->setBoton('grid',new BotonImg('equipo.grupo',['img' => 'fa-graduation-cap']));
         $this->panel->setBoton('grid',new BotonImg('grupo.fse',['img' => 'fa-euro','roles' => config('roles.rol.tutor')]));
+        if (AuthUser()->xdepartamento == 'Fol'){
+            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>['fol','==', 0]]));
+            $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>['fol','==', 1]]));
+        }
+
         $this->panel->setBoton('grid',new BotonImg('direccion.fol',
-            ['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion')]));
+            ['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion'),'where'=>['fol','==', 1]]));
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {
             if (($curso->aforo == 0) || ($curso->NAlumnos < $curso->aforo * config('variables.reservaAforo')))
@@ -154,6 +159,15 @@ class GrupoController extends IntranetController
         $grupo = Alumno::findOrFail($alumno)->Grupo->first();
         $datos['ciclo'] = $grupo->Ciclo;  
         return $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,Alumno::where('nia',$alumno)->get(),$this->cargaDatosCertificado($datos),'portrait')->stream();
+    }
+
+    public function checkFol($id)
+    {
+        $grupo = Grupo::findOrFail($id);
+        $grupo->fol = ($grupo->fol==0)?1:0;
+        $grupo->save();
+        return back();
+
     }
 
     /**

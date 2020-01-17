@@ -56,7 +56,7 @@ class Menu extends Model
                 $menu[$sitem->nombre]['class'] = $sitem->class;
                 foreach ($items as $item) {
                     $menu[$sitem->nombre]['submenu'][$item->nombre] = array(self::tipoUrl($item->url) => $item->url, 
-                        'img' => $item->img, 'roles' => $item->rol);
+                        'img' => $item->img, 'roles' => $item->rol,'secure'=>true);
                     
                 }
             } else {
@@ -65,8 +65,10 @@ class Menu extends Model
         }
         if ($array)
             return $menu;
-        else
+        else {
             return StydeMenu::make($menu);
+        }
+
     }
     
     public function getXrolAttribute()

@@ -107,6 +107,8 @@ Route::get('/alumno_grupo/{grupo}/show', ['as' => 'alumnogrupo.index', 'uses' =>
 Route::get('/alumno_grupo/{grupo}/profile', ['as' => 'alumnogrupo.profile', 'uses' => 'AlumnoGrupoController@profile']);
 Route::get('/grupo/{grupo}/horario', ['as' => 'grupo.horario', 'uses' => 'GrupoController@horario']);
 Route::get('/grupo/asigna', ['as' => 'grupo.asigna', 'uses' => 'GrupoController@asigna']);
+Route::get('/grupo/{grupo}/fol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@checkFol']);
+
 //Route::get('/grupo/{grupo}/checkFol', ['as' => 'grupo.fol', 'uses' => 'PanelPG0301Controller@indice']);
 
 Route::get('/alumno/{alumno}/muestra', ['as' => 'alumno.show', 'uses' => 'AlumnoController@show']);
