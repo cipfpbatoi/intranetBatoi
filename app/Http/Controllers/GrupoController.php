@@ -12,7 +12,8 @@ use Intranet\Entities\Alumno;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Curso;
 use Illuminate\Support\Facades\Session;
-
+use Styde\Html\Facades\Alert;
+use Intranet\Jobs\SendEmail;
 /**
  * Class GrupoController
  * @package Intranet\Http\Controllers
@@ -67,7 +68,8 @@ class GrupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('grupo.carnet', ['roles' => [config('roles.rol.direccion'), config('roles.rol.tutor')]]));
         $this->panel->setBoton('grid', new BotonImg('grupo.edit', ['roles' => config('roles.rol.direccion')]));
         $this->panel->setBoton('grid',new BotonImg('equipo.grupo',['img' => 'fa-graduation-cap']));
-        $this->panel->setBoton('grid',new BotonImg('grupo.fse',['img' => 'fa-euro','roles' => config('roles.rol.tutor')]));
+
+        $this->panel->setBoton('grid',new BotonImg('grupo.fse',['img' => 'fa-euro','where' => ['codigo', '==', AuthUser()->grupoTutoria]]));
         if (AuthUser()->xdepartamento == 'Fol'){
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>['fol','==', 0]]));
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>['fol','==', 1]]));
@@ -146,8 +148,25 @@ class GrupoController extends IntranetController
      */
     public function certificados($grupo)
     {
-        $datos['ciclo'] = Grupo::find($grupo)->Ciclo;    
-        return $this->hazPdf('pdf.alumnos.'.Grupo::find($grupo)->Ciclo->normativa, $this->alumnos($grupo),$this->cargaDatosCertificado($datos),'portrait')->stream();
+        $grupo = Grupo::find($grupo);
+        $datos['ciclo'] = $grupo->Ciclo;
+        $remitente = ['email' => cargo('secretario')->email, 'nombre' => cargo('secretario')->FullName];
+
+        foreach ($grupo->Alumnos as $alumno){
+
+            if ($alumno->fol == 1){
+                $id = $alumno->nia;
+                if (file_exists(storage_path("tmp/fol_$id.pdf")))
+                    unlink(storage_path("tmp/fol_$id.pdf"));
+                self::hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,[$alumno],$this->cargaDatosCertificado($datos),'portrait')->save(storage_path("tmp/fol_$id.pdf"));
+                $attach = ["tmp/fol_$id.pdf" => 'application/pdf'];
+                dispatch(new SendEmail($alumno->email, $remitente, 'email.fol', $alumno , $attach));
+            }
+            else
+                Alert::info('Correus enviats');
+        }
+        Alert::info('Correus enviats');
+        return back();
     }
 
     /**
