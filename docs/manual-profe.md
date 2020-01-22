@@ -33,6 +33,7 @@
   * [Gestió d'incidències](#gestió-dincidències)
   * [Reserva aules](#reserva-aules)
   * [Oblit birret](#oblit-birret)
+  * [Canviar horari](#canviar-horari)
 * [Menú Actes/Convocatories](#menú-actesconvocatories)
   * [Gestió de reunions](#gestió-de-reunions)
   * [Grups de treball](#grups-de-treball)
