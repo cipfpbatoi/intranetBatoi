@@ -393,13 +393,15 @@ Aquesta opció es per justificar si em oblidar marcar el birret a Ítaca. Indiqu
 A continuació seleccionen totes les hores que hem oblidat marcar el birret, indiquem la causa en el quadre de "_Justificació_" i premem el botó _Enviar_.
 
 ### Canviar horari
-Aixó ens permet canviar el nostre horari en Març quan alliberem les hores de 2n.
+Aixó ens permet canviar el nostre horari en Març per a recol·locar les hores que alliberem de 2n. Ens apareix el nostre horari actual i podem arrastar hores a altre horari fins que quede com vullguem:
 
-Ens apareix el nostre horari actual i podem arrastar hores a altre horari fins que quede com vullguem.
+![Canviar-horari](./img/ajuda/canviar-horari.png)
 
 NOTA: no es pot posar cap hora en les hores del pati o migdia
 
-Quan l'horari està com volem omplim el quadre de "_Observacions_" que tenim baix de l'horari indicant a quina activitat dedicarem cadascuna de les hores alliberades i premem el botó de _Guardar canvis i enviar_. Mentres direcció no aprove el nostre nou horari podem fer canvis en el mateix. QUan ens l'aprobe direcció ens apareixerà el seu estat com '_Aprovat_' i ja no podem fer més canvis.
+Si encara no hem fet cap canvi l'estat que apareix és **'No hi ha cap proposta'**.
+
+Quan hem deixat l'horari com volem omplim el quadre de **"_Observacions_"** que tenim baix de l'horari indicant a quina activitat dedicarem cadascuna de les hores alliberades i premem el botó de **_Guardar canvis i enviar_**. L'estat canvia a **'Pendent'**. Podem continuar fent canvis fins que Caporalia accepte la nostra proposta. En eixe moment l'estat canvia a **'Aprovat'** i ja no podem fer més canvis. Encara que estiga aprovat, el nou horari no entra en vigor fins que ens ho indiquen des de Caporalia (normalment a Març).
 
 ## Menú Actes/Convocatories
 Ací trobem informació sobre les reunions de tot tipus i els Grups de treball als que pertanyem.
