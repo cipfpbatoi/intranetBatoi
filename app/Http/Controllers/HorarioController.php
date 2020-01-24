@@ -96,7 +96,7 @@ class HorarioController extends IntranetController
      */
     public function horarioCambiar(){
         $horario = Horario::HorarioSemanal(AuthUser()->id);
-        $profesor = AuthUser();
+        $profesor = Profesor::find(AuthUser()->id);
         return view('horario.profesor-cambiar', compact('horario', 'profesor'));
     }
 
