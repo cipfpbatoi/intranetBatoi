@@ -2,7 +2,6 @@
 
 namespace Intranet\Http\Controllers;
 
-use Response;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Poll\Poll;
 
@@ -18,10 +17,14 @@ class PanelPollResultController extends PollController
     protected function search()
     {
         $polls = Poll::all();
-        if (esRol(AuthUser()->rol, config('roles.rol.practicas')))
-            return $polls->where('state','Finalizada');
+        if (esRol(AuthUser()->rol, config('roles.rol.practicas'))) {
+            $practiques = $polls->where('modelo', '==', 'Intranet\Entities\Poll\AlumnoFct');
+            $practiques = $practiques->union($polls->where('modelo', '==', 'Intranet\Entities\Poll\Fct'));
+        }
         else
-            return $polls->where('state','Finalizada')->where('modelo','Intranet\Entities\Poll\Profesor');
+            $practiques = [];
+        $professorat = $polls->where('state','Finalizada')->where('modelo','Intranet\Entities\Poll\Profesor');
+        return $professorat->union($practiques);
     }
 
 
