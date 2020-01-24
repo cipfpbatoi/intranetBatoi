@@ -395,7 +395,7 @@ A continuació seleccionen totes les hores que hem oblidat marcar el birret, ind
 ### Canviar horari
 Aixó ens permet canviar el nostre horari en Març per a recol·locar les hores que alliberem de 2n. Ens apareix el nostre horari actual i podem arrastar hores a altre horari fins que quede com vullguem:
 
-![Canviar-horari](./img/canviar-horari.png)
+![Canviar-horari](./img/ajuda/canviar-horari.png)
 
 NOTA: no es pot posar cap hora en les hores del pati o migdia
 
