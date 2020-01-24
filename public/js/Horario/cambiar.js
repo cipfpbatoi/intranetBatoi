@@ -77,7 +77,7 @@ function anotaCambios() {
 }
 
 function cargaCambios() {
-	var profe=location.pathname.split('/')[2];
+	var profe= document.getElementById('dni').textContent;
 	$.ajax({
 	    type: "GET",
 	    url: "/api/horarioChange/"+profe+'?api_token='+$("#_token").text(),
