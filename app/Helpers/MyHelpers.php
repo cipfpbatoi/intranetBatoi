@@ -1,5 +1,7 @@
 <?php
 
+use Intranet\Entities\Profesor;
+
 /**
  * Devuelve la fecha de hoy para guardar en BD
  *
@@ -419,5 +421,21 @@ function loadImg($fixer){
     echo "<img src='/img/pdf/$fixer' />";
 }
 
-
+/**
+ * @param $datos
+ * @return mixed
+ */
+function cargaDatosCertificado($datos){
+    $secretario = Profesor::find(config('contacto.secretario'));
+    $director = Profesor::find(config('contacto.director'));
+    $datos['fecha'] = FechaString(null,'ca');
+    $datos['secretario']['titulo'] = $secretario->sexo == 'H'?'En':'Na';
+    $datos['secretario']['articulo'] = $secretario->sexo == 'H'?'El':'La';
+    $datos['secretario']['genero'] = $secretario->sexo == 'H'?'secretari':'secretària';
+    $datos['secretario']['nombre'] = $secretario->fullName;
+    $datos['director']['articulo'] = $director->sexo == 'H'?'El':'La';
+    $datos['director']['genero'] = $director->sexo == 'H'?'director':'directora';
+    $datos['director']['nombre'] = $director->fullName;
+    return $datos;
+}
 

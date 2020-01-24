@@ -4,7 +4,6 @@
  */
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Controller;
 use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\Session;
 

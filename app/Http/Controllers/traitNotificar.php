@@ -8,6 +8,8 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
 use Jenssegers\Date\Date;
 
+
+// A revisar
 trait traitNotificar
 {
 

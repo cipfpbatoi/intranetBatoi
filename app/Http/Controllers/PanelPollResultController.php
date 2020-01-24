@@ -18,7 +18,10 @@ class PanelPollResultController extends PollController
     protected function search()
     {
         $polls = Poll::all();
-        return $polls->where('state','Finalizada')->where('modelo','Intranet\Entities\Poll\Profesor');
+        if (esRol(AuthUser()->rol, config('roles.rol.practicas')))
+            return $polls->where('state','Finalizada');
+        else
+            return $polls->where('state','Finalizada')->where('modelo','Intranet\Entities\Poll\Profesor');
     }
 
 

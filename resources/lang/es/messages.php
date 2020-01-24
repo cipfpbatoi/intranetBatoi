@@ -159,7 +159,7 @@ return array(
         'chooseDate' => 'Escoge Fecha',
         'change' => 'Volver a mi Usuario',
         'fse' => 'Acta fondo social Europeo',
-        'fol' => 'Certificado fol',
+        'fol' => 'Comprovado a que alumnado le corresponde Certificado fol',
         'aFol' => 'Certificado fol',
         'checkFol' => 'Le corresponde Certificado Fol',
         'gestor' => 'Gestor Documental',

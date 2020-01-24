@@ -2,10 +2,6 @@
 
 namespace Intranet\Entities;
 
-use Illuminate\Http\Request;
-use Jenssegers\Date\Date;
-use Intranet\Entities\Documento;
-
 trait TraitEstado
 {
     private static function makeDocument($elemento){
@@ -68,6 +64,7 @@ trait TraitEstado
         return static::where('estado', '=', $estado)->get();
     }
 
+    // a REVISAR
     protected function informa($mensaje)
     {
         foreach (config('modelos.' . getClase($this) . '.avisos') as $quien => $cuando) {

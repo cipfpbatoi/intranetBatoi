@@ -159,7 +159,7 @@ return array(
         'chooseDate' => 'Tria Fecha',
         'change' => 'Tornar  al meu Usuari',
         'fse' => 'Acta fons social Europeu',
-        'fol' => 'Certificat fol',
+        'fol' => 'Comprovat a quin alumnat li correspon Certificat fol',
         'aFol' => 'Certificat fol',
         'checkFol' => 'Li correspon Certificat Fol',
         'gestor' => 'Gestor Documental',

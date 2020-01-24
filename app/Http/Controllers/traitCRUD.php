@@ -3,8 +3,6 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
-use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 use Response;

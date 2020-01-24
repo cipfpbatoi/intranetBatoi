@@ -70,7 +70,7 @@ class GrupoController extends IntranetController
         $this->panel->setBoton('grid',new BotonImg('equipo.grupo',['img' => 'fa-graduation-cap']));
 
         $this->panel->setBoton('grid',new BotonImg('grupo.fse',['img' => 'fa-euro','where' => ['codigo', '==', AuthUser()->grupoTutoria]]));
-        if (AuthUser()->xdepartamento == 'Fol'){
+        if (AuthUser()->xdepartamento == 'Fol'&& date('Y-m-d')>config('curso.evaluaciones.3')[1]){
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>['fol','==', 0]]));
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>['fol','==', 1]]));
         }
@@ -151,21 +151,22 @@ class GrupoController extends IntranetController
         $grupo = Grupo::find($grupo);
         $datos['ciclo'] = $grupo->Ciclo;
         $remitente = ['email' => cargo('secretario')->email, 'nombre' => cargo('secretario')->FullName];
-
+        $count = 0;
         foreach ($grupo->Alumnos as $alumno){
-
             if ($alumno->fol == 1){
                 $id = $alumno->nia;
                 if (file_exists(storage_path("tmp/fol_$id.pdf")))
                     unlink(storage_path("tmp/fol_$id.pdf"));
-                self::hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,[$alumno],$this->cargaDatosCertificado($datos),'portrait')->save(storage_path("tmp/fol_$id.pdf"));
+                self::hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,[$alumno],cargaDatosCertificado($datos),'portrait')->save(storage_path("tmp/fol_$id.pdf"));
                 $attach = ["tmp/fol_$id.pdf" => 'application/pdf'];
                 dispatch(new SendEmail($alumno->email, $remitente, 'email.fol', $alumno , $attach));
+                $count++;
             }
-            else
-                Alert::info('Correus enviats');
         }
-        Alert::info('Correus enviats');
+        $grupo->fol = 2;
+        $grupo->save();
+        if ($count) Alert::info("$count Correus enviats");
+        else Alert::info("Cap Correu enviat");
         return back();
     }
 
@@ -177,7 +178,7 @@ class GrupoController extends IntranetController
     {
         $grupo = Alumno::findOrFail($alumno)->Grupo->first();
         $datos['ciclo'] = $grupo->Ciclo;  
-        return $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,Alumno::where('nia',$alumno)->get(),$this->cargaDatosCertificado($datos),'portrait')->stream();
+        return $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,Alumno::where('nia',$alumno)->get(),cargaDatosCertificado($datos),'portrait')->stream();
     }
 
     public function checkFol($id)

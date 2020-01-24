@@ -2,8 +2,6 @@
 
 namespace Intranet\Botones;
 
-use Illuminate\Database\Eloquent\Model;
-use Intranet\Botones\Boton;
 use HTML;
 
 class Panel

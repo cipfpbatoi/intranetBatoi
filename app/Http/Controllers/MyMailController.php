@@ -8,7 +8,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\Mail as myMail;
 use Illuminate\Http\Request;
-use Intranet\Entities\Instructor;
+
 
 /**
  * Class AdministracionController

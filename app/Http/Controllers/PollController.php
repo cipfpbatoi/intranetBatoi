@@ -57,12 +57,15 @@ class PollController extends IntranetController
     }
 
     protected function guardaEnquesta(Request $request,$id){
+
         $poll = Poll::find($id);
         $modelo = $poll->modelo;
         $quests = $modelo::loadPoll($this->loadPreviousVotes($poll));
+
         foreach ($poll->Plantilla->options as $question => $option){
             $i=0;
             foreach ($quests as $quest)
+
                 if (isset($quest['option2'])) {
                     foreach ($quest['option2'] as $profesores)
                         foreach ($profesores as $dni) {
@@ -72,6 +75,7 @@ class PollController extends IntranetController
                         }
                 }
                 else {
+
                     $field = 'option' . ($question + 1) . '_' . $quest['option1']->id;
                     $this->guardaVoto($poll,$option,$quest['option1']->id,null,$request->$field);
                 }
@@ -81,7 +85,7 @@ class PollController extends IntranetController
     }
 
     private function guardaVoto($poll,$option,$option1,$option2,$value){
-        if ($value != '' && $value != 0){
+        if ($value != '' && $value !== 0){
             $vote = new Vote();
             $vote->idPoll = $poll->id;
             $vote->user_id = $poll->anonymous ? hash('md5', AuthUser()->id) : AuthUser()->id;
@@ -105,7 +109,9 @@ class PollController extends IntranetController
             $myGroupsVotes = $modelo::loadGroupVotes($id);
             $options_numeric = $poll->Plantilla->options->where('scala', '>', 0);
             $options_text = $poll->Plantilla->options->where('scala', '=', 0);
-            return view('poll.show', compact('myVotes', 'poll', 'options_numeric', 'options_text', 'myGroupsVotes'));
+            $options = $poll->Plantilla->options;
+            return view('poll.show', compact('myVotes', 'poll', 'options_numeric',
+                'options_text', 'myGroupsVotes','options'));
         }
         Alert::info("L'enquesta no ha estat realitzada encara");
         return back();

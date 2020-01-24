@@ -16,7 +16,7 @@
                         <a href="/colaboracion/{!!$colaboracion->id!!}/delete" class="delGrupo"><i class="fa fa-trash" title='Esborrar col.laboració'></i></a>
                     @endif
                     @if (\Intranet\Entities\Colaboracion::where('idCentro',$colaboracion->idCentro)->where('idCiclo',$tutor->idCiclo)->count() == 0) <a href="/colaboracion/{!!$colaboracion->id!!}/copy" class="copGrupo"><i class="fa fa-copy"></i></a><small style="color: purple "> @lang('messages.buttons.copy')  {{$tutor->Ciclo->ciclo}} </small>@endif
-                     
+
                     
                 </h4>
             </div>

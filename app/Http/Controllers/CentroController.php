@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
 use Response;
-use Illuminate\Support\Facades\Redirect;
 use Mapper;
 use Illuminate\Support\Facades\Session;
 
