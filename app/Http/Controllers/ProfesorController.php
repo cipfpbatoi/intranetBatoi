@@ -215,12 +215,6 @@ use traitAutorizar,
         return view('horario.profesor', compact('horario', 'profesor'));
     }
 
-    protected function horarioCambiar($id)
-    {
-        $horario = Horario::HorarioSemanal($id);
-        $profesor = Profesor::findOrFail($id);
-        return view('horario.profesor-cambiar', compact('horario', 'profesor'));
-    }
     //-----------------------------
     //impressió de tots els horaris
     //-----------------------------

@@ -124,7 +124,6 @@ Route::get('/departamento', ['as' => 'departamento.index', 'uses' => 'ProfesorCo
 Route::get('/equipo/{grupo}/grupo', ['as' => 'equipo.grupo', 'uses' => 'ProfesorController@equipo']);
 Route::get('/equipoDirectivo', ['as' => 'equipodirectivo.index', 'uses' => 'ProfesorController@equipoDirectivo']);
 Route::get('/profesor/{profesor}/horario', ['as' => 'profesor.horario', 'uses' => 'ProfesorController@horario']);
-Route::get('/profesor/{profesor}/horario-cambiar', ['as' => 'profesor.horario-cambiar', 'uses' => 'ProfesorController@horarioCambiar']);
 Route::get('/profesor/{profesor}/muestra', ['as' => 'profesor.show', 'uses' => 'ProfesorController@show']);
 Route::get('/profesor/{profesor}/edit', ['as' => 'profesor.edit', 'uses' => 'ProfesorController@edit']);
 Route::put('/profesor/{profesor}/edit', ['as' => 'profesor.update', 'uses' => 'ProfesorController@update']);

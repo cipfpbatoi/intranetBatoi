@@ -14,6 +14,7 @@
             
         </ul>
     </li>
+    @php //dd(substr(url()->current(), strlen(url('/')))); @endphp
     @if ($ajuda = exists_help(substr(url()->current(), strlen(url('/')))))
         <li><a id="question" href="https://cipfpbatoi.github.io/intranetBatoi/{{$ajuda}}" target="_blank"><i class="fa fa-question"></i></a>
     @endif

@@ -95,7 +95,9 @@ class HorarioController extends IntranetController
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function horarioCambiar(){
-        return redirect("/profesor/".AuthUser()->dni."/horario-cambiar");
+        $horario = Horario::HorarioSemanal(AuthUser()->id);
+        $profesor = AuthUser();
+        return view('horario.profesor-cambiar', compact('horario', 'profesor'));
     }
 
     /**
