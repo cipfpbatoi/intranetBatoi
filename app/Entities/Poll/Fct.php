@@ -25,10 +25,12 @@ class Fct extends ModelPoll
     {
         $fcts = hazArray(realFct::misFctsColaboracion()->haEmpezado()->esFct()->get(),'id');
         $votes = Vote::getVotes($id,$fcts)->get();
+        $classified = [];
         foreach ($votes as $vote){
             $classified[$vote->idOption1][$vote->option_id] = isset($vote->text)?$vote->text:$vote->value;
         }
-        return $classified;
+        if (count($classified)) return $classified;
+        return null;
     }
     public static function loadGroupVotes($id)
     {

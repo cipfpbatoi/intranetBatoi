@@ -2,19 +2,20 @@
 <table style="border: #00aeef 1px solid">
     <thead>
     <tr>
-        <td>Empresa</td>
-        @foreach ($options_numeric as $item) <th>{{$item->question}} </th> @endforeach
+        <td>Enquesta</td>
+        @foreach ($options as $item) <th>{{$item->question}} </th> @endforeach
     </tr>
     </thead>
-    @foreach (Intranet\Entities\Fct::misFcts()->get() as $fct)
-    <tr>
-        <td>{{$fct->centro}}</td>
-        @foreach ($options_numeric as $item)
-            <td>{{$myVotes[$fct->id][$item->id]}}</td>
-        @endforeach
-    </tr>
+    @foreach ($myVotes as $fct => $fctVotes)
+        <tr>
+            <td>{{Intranet\Entities\Fct::find($fct)->Colaboracion->Empresa}}</td>
+            @foreach ($fctVotes as $option)
+
+                <td> {{ $option }} </td>
+
+            @endforeach
+        </tr>
     @endforeach
 </table>
-
 
 
