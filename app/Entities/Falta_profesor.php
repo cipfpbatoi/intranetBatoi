@@ -43,6 +43,15 @@ class Falta_profesor extends Model
         $ultimo = Falta_profesor::Hoy($profesor)
                 ->last();
 
+        if ($ultimo != null){
+            $now = new Date();
+            if ($ultimo->salida != null)
+                $last = new Date($ultimo->salida);
+            else
+                $last = new Date($ultimo->entrada);
+            $diff = $now->diffInMinutes($last);
+            if ($diff < 10) return null;
+       }
 
         if (($ultimo == null) || ($ultimo->salida != null)) {
             $ultimo = new Falta_profesor;
@@ -52,16 +61,11 @@ class Falta_profesor extends Model
             $ultimo->save();
             return $ultimo;
         } else{
-            $now = new Date();
-            $last = new Date($ultimo->entrada);
-            $diff = $now->diffInMinutes($last);
-            if ($diff > 10 ){
-                $ultimo->salida = date("H:i:s", time());
-                $ultimo->save();
-                return $ultimo;
-            }
+            $ultimo->salida = date("H:i:s", time());
+            $ultimo->save();
+            return $ultimo;
         }
-        return null;
+
     }
     
     public static function fichaDia($profesor,$dia)
