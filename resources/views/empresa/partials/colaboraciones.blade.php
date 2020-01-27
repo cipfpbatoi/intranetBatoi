@@ -4,8 +4,7 @@
      if (!$tutor) $tutor = \Intranet\Entities\Grupo::QTutor(null,true)->first();
 @endphp
 <ul class="messages colaboracion">
-    @foreach ($elemento->centros as $centro)
-        @foreach ($centro->colaboraciones as $colaboracion)
+        @foreach ($elemento->colaboraciones as $colaboracion)
             @php $editar = $ciclos->contains($colaboracion->idCiclo); @endphp
         <li>
             <div class="message_date" style="width:50%">
@@ -16,7 +15,12 @@
                         <a href="/colaboracion/{!!$colaboracion->id!!}/delete" class="delGrupo"><i class="fa fa-trash" title='Esborrar col.laboració'></i></a>
                     @endif
                     @if (\Intranet\Entities\Colaboracion::where('idCentro',$colaboracion->idCentro)->where('idCiclo',$tutor->idCiclo)->count() == 0) <a href="/colaboracion/{!!$colaboracion->id!!}/copy" class="copGrupo"><i class="fa fa-copy"></i></a><small style="color: purple "> @lang('messages.buttons.copy')  {{$tutor->Ciclo->ciclo}} </small>@endif
-
+                    <br/>
+                    @if (count($colaboracion->votes))
+                        <a href="/votes/{{$colaboracion->id}}/show">
+                            <i class="fa fa-bar-chart"></i>Poll
+                        </a>
+                    @endif
                     
                 </h4>
             </div>
@@ -27,7 +31,7 @@
             </div>
         </li>    
         @endforeach
-    @endforeach
+
 </ul>
 <div class="message_wrapper">
     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#AddColaboration">

@@ -54,6 +54,10 @@ class Empresa extends Model
     {
         return $this->hasMany(Centro::class, 'idEmpresa', 'id');
     }
+    public function colaboraciones()
+    {
+        return $this->hasManyThrough(Colaboracion::class, Centro::class,'idEmpresa','idCentro','id');
+    }
     
     public function scopeCiclo($query,$tutor)
     {

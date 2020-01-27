@@ -8,7 +8,10 @@ use Intranet\Entities\Empresa;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\Fct;
 use Intranet\Entities\Ciclo;
+use Intranet\Entities\Poll\Poll;
+use Intranet\Entities\Poll\Vote;
 use Response;
 use Exception;
 use Illuminate\Support\Facades\Redirect;
@@ -38,7 +41,8 @@ class EmpresaController extends IntranetController
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 2;
         $elemento = Empresa::findOrFail($id);
-        $modelo = $this->model;
+        $modelo = 'Empresa';
+        //$fcts = Fct::whereIn('idColaboracion',hazArray($elemento->colaboraciones,'id','id'))->get();
         return view($this->chooseView('show'), compact('elemento', 'modelo','activa'));
     }
     

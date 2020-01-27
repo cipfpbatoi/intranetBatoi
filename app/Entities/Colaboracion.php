@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Ciclo;
+use Intranet\Entities\Poll\Vote;
 use Intranet\Events\ActivityReport;
 
 class Colaboracion extends Model
@@ -26,7 +27,8 @@ class Colaboracion extends Model
         'idCentro' => ['disabled' => 'disabled'],
         'idCiclo' => ['disabled' => 'disabled'],
         'telefono' => ['type'=>'number'],
-        'email' => ['type'=>'email']
+        'email' => ['type'=>'email'],
+        'tutor' => ['type'=>'hidden'],
     ];
     public $timestamps = false;
     protected $dispatchesEvents = [
@@ -61,6 +63,11 @@ class Colaboracion extends Model
     {
         return $this->belongsTo(Profesor::class, 'tutor', 'dni');
     }
+    public function votes()
+    {
+        return $this->hasManyThrough(Vote::class, Fct::class,'idColaboracion','idOption1','id');
+    }
+
     
 
 //    public function getIdCicloOptions()

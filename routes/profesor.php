@@ -393,6 +393,7 @@ Route::put('/poll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PollController@
 Route::get('/poll/{id}/show', ['as' => 'poll.resultShow', 'uses' => 'PollController@lookAtMyVotes']);
 Route::get('/poll/{id}/chart', ['as' => 'poll.result', 'uses' => 'PollController@lookAtAllVotes']);
 Route::get('/poll/{id}/delete',['as' => 'poll.delete', 'uses' => 'PollController@destroy']);
+Route::get('/votes/{colaboracion}/show',['as' => 'votes.colaboracion', 'uses'=> 'VotesController@showColaboracion']);
 
 Route::get('/myPoll',['as' => 'mypoll.index', 'uses' => 'PanelPollResultController@index']);
 Route::post('/myMail','MyMailController@send');

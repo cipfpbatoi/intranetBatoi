@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\Poll\Vote;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\FctCreated;
@@ -73,6 +74,10 @@ class Fct extends Model
     public function AlFct()
     {
         return $this->belongsTo(AlumnoFct::class,'id','idFct');
+    }
+    public function votes()
+    {
+        return $this->hasMany(Vote::class,'idOption1');
     }
     
     public function scopeCentro($query, $centro)

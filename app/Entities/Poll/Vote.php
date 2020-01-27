@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Poll\Option;
+use Intranet\Entities\Fct;
 
 class Vote extends Model
 {
@@ -16,11 +17,18 @@ class Vote extends Model
         return $this->belongsTo(Option::class, 'option_id','id');
     }
     public function ModuloGrupo(){
-        return $this->belongsTo(Modulo_grupo::class,'idModuloGrupo','id');
+        return $this->belongsTo(Modulo_grupo::class,'idOption1','id');
+    }
+    public function Fct(){
+        return $this->belongsTo(Fct::class,'idOption1','id');
     }
     public function Profesor()
     {
-        return $this->belongsTo(Profesor::class, 'idProfesor','dni');
+        return $this->belongsTo(Profesor::class, 'idOption2','dni');
+    }
+    public function Poll()
+    {
+        return $this->belongsTo( Poll::class,'idPoll');
     }
     
     public function getIsValueAttribute()
@@ -58,4 +66,21 @@ class Vote extends Model
     public function getCicloAttribute(){
         return $this->ModuloGrupo->ModuloCiclo->Ciclo->literal;
     }
+    public function getQuestionAttribute(){
+        return $this->Option->question;
+    }
+    public function getAnswerAttribute()
+    {
+        if ($this->isValue) return $this->value;
+        return $this->text;
+    }
+    public function getYearAttribute()
+    {
+        return substr($this->Poll->hasta,6,4);
+    }
+    public function getInstructorAttribute()
+    {
+        return $this->Fct->Instructor->nombre;
+    }
+
 }
