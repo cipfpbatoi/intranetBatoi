@@ -4,9 +4,13 @@
                 <div class="left col-md-8 col-xs-12">
                     <h5>FCT {{$elemento->Centro->nombre}} <strong>({{$elemento->puestos}})</strong></h5>
                     <ul class="list-unstyled">
-                        <li>{{$fct->Instructor->nombre}}</li>
-                        <li>{{$fct->Instructor->telefono}}</li>
-                        <li>{{$fct->Instructor->email}}</li>
+                        @if ($fct->Instructor)
+                            <li>{{$fct->Instructor->nombre}}</li>
+                            <li>{{$fct->Instructor->telefono}}</li>
+                            <li>{{$fct->Instructor->email}}</li>
+                        @else
+                            <li>No hi ha instructor. Cal corregir el problema</li>
+                        @endif
                         <li class="nombre">{{isset($elemento->propietario->fullName)?$elemento->propietario->fullName:$elemento->tutor}}
                         </li>
                     </ul>

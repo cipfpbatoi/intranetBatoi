@@ -305,8 +305,10 @@ class FctController extends IntranetController
      * @return \Illuminate\Http\RedirectResponse
      */
     public function nouFctAlumno(Request $request){
-
-        $this->store($request);
+        if (isset($request->idInstructor))
+            $this->store($request);
+        else
+            Alert::danger('No hi ha instructor.No puc generar la FCT');
 
         return back();
     }
