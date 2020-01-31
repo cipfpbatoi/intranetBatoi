@@ -82,5 +82,11 @@ class Vote extends Model
     {
         return $this->Fct->Instructor->nombre;
     }
+    public function scopeTipusEnquesta($query,$tipusEnquesta)
+    {
+        $ppol = hazArray(PPoll::where('what',$tipusEnquesta)->get(),'id','id');
+        $poll = hazArray(Poll::whereIn('idPPoll',$ppol)->get(),'id','id');
+        return $this->whereIn('idPoll',$poll);
+    }
 
 }
