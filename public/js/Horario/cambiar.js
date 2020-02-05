@@ -1,11 +1,16 @@
 'use strict'
 
 var esDireccion=false;
+var profe;
 
 window.onload=function() {
 	esDireccion=($('#rol').text()%2 == 0);
-	if (esDireccion)
+	if (esDireccion){
 		$('#guardar').text('Aprobar horario');
+		profe=location.pathname.split('/')[2];
+	}
+	else profe= document.getElementById('dni').textContent;
+
 	cargaCambios();
 	$('#guardar').on('click', function(ev) {
 		var cambios=anotaCambios(); 
@@ -14,7 +19,6 @@ window.onload=function() {
 			cambios: cambios,
 			obs: $('#obs').val()
 		}
-		var profe= document.getElementById('dni').textContent;
 		$.ajax({
 		    type: "POST",
 		    url: "/api/horarioChange/"+profe+'?api_token='+$("#_token").text()+'&data='+JSON.stringify(datos),
@@ -77,7 +81,7 @@ function anotaCambios() {
 }
 
 function cargaCambios() {
-	var profe= document.getElementById('dni').textContent;
+	//var profe= document.getElementById('dni').textContent;
 	$.ajax({
 	    type: "GET",
 	    url: "/api/horarioChange/"+profe+'?api_token='+$("#_token").text(),
