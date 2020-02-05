@@ -133,7 +133,7 @@ Route::post('/profesor/{profesor}/mensaje', ['as' => 'profesor.mensaje', 'uses' 
 Route::post('/profesor/colectivo', ['as' => 'profesor.colectivo', 'uses' => 'ProfesorController@avisaColectivo']);
 Route::get('/horario/change',['as' => 'horario.change', 'uses' => 'HorarioController@horarioCambiar']);
 Route::get('/profesor/{profesor}/horario-aceptar',['as' => 'horario.aceptar', 'uses' => 'HorarioController@changeTable']);
-Route::get('/horario/{profesor}/horario-cambiar',['as' => 'horario.profesor.change', 'uses' => 'HorarioController@horarioCambiar']);
+Route::get('/profesor/{profesor}/horario-cambiar',['as' => 'horario.profesor.change', 'uses' => 'HorarioController@horarioCambiar']);
 
 Route::get('/ficha', ['as' => 'fichar.ficha', 'uses' => 'FicharController@ficha']);
 
