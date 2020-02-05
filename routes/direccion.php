@@ -55,6 +55,7 @@ Route::get('/reunion/list', ['as' => 'reunion.list', 'uses' => 'ReunionControlle
 Route::post('/reunion/aviso',['as' => 'reunion.avisaFalta','uses'=>'ReunionController@avisaFaltaActa']);
 Route::get('/horarios/pdf',['as'=>'horarios.pdf','uses'=>'ProfesorController@imprimirHorarios']);
 Route::get('/infDpto',['as'=>'infdpto.control','uses'=>'PanelInfDptoController@index']);
+Route::get('/horario/{id}/change',['as' => 'horario.direccion.change', 'uses' => 'HorarioController@horarioCambiar']);
 
 Route::get('/{grupo}/acta', ['as' => 'fct.acta', 'uses' => 'PanelActasController@indice']);
 Route::get('/{grupo}/finActa', ['as' => 'fct.finActa', 'uses' => 'PanelActasController@finActa']);

@@ -134,7 +134,6 @@ Route::post('/profesor/colectivo', ['as' => 'profesor.colectivo', 'uses' => 'Pro
 Route::get('/horario/change',['as' => 'horario.change', 'uses' => 'HorarioController@horarioCambiar']);
 Route::get('/profesor/{profesor}/horario-aceptar',['as' => 'horario.change', 'uses' => 'HorarioController@changeTable']);
 
-
 Route::get('/ficha', ['as' => 'fichar.ficha', 'uses' => 'FicharController@ficha']);
 
 
