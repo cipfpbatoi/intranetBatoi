@@ -72,20 +72,20 @@ Salutacions cordials de Ignasi Gomis
 **Revissió de documentació**. Envia un correu automàtic a tots els contacted de les col·laboracions de la pestanya de colabora amb el següent text:
 
 ~~~ 
-Hola Carlos Reig Matut,
+Hola Carlos Fabra,
 Estic preparant la documentació corresponent a les pràctiques de FCT del Cicle Formatiu de Grau Superior 'Desenrotllament d'aplicacions web' , i necessitaria que em confirmàreu els següents detalls de la documentació oficial:
-Empresa: Neenot Online Marketing - Carlos Reig Matut
-CIF: 29215552D
-Telèfon: 666812519
-Adreça: Avinguda Constitució, 127 1-A
-Poble: València
+Empresa: Ninots Fallers,SA 
+CIF: 11115551Z
+Telèfon: 567812520
+Adreça: Avinguda Pais Valencià, 13 2-C
+Poble: Ontinyent
 Email-Empresa :
 Horari Pràctiques:
 Tria Instructor:
-Nom: Carlos Reig Matut
-E-mail: hi@neenot.com
-DNI : 29215552D
-Telèfon: 666812519
+Nom: Carlos Fabra 
+E-mail: carlos@ninot.com
+DNI : 29205051A
+Telèfon: 567812520
 O afegueix un altre:
 Nom: ___________________________________________
 E-mail : ____________________________________
@@ -106,9 +106,9 @@ Data de començament: 14-07-2019
 
 Alumnes assignats:
 
-Zaira Bravo Sánchez - igomis@cipfpbatoi.es
+Mireia Bolla Sánchez - iperez@cipfpbatoi.es
 Aprofite per donar-te les meues dades per si necessiteu possar-se amb contacte amb mi:
-Tutor: Ignasi Gomis Mullor igomis@cipfpbatoi.es 
+Tutor: Ignacio Pérez iperez@cipfpbatoi.es 
 Telèfon centre: 966 52 76 60 
 Així com també informació relevant en cas d'accident laboral que trobaràs en aquest enllaç http://www.ceice.gva.es/va/web/formacion-profesional/seguro
 Per qualsevol dubte em tens a la teua disposició
@@ -118,12 +118,12 @@ Salutacions cordials de Ignasi Gomis
 **Seguiment**. Envia un correu automàtic als instructors amb el següent text:
 
 ~~~ 
-Hola Emilio Silvestre Sánchez,
+Hola Emilio Sánchez,
 T'escric per conèixer de primera ma com van les pràctiques FCT dels alumnes:
-Zaira Bravo Sánchez
+Mireia Bolla Sánchez
 Si tot està correcte et tornaria a contactar en aproximadament 15 dies per a fer una visita al centre de treball.
 Aprofite per recordar-te les meues dades per si necessites possar-te amb contacte amb mi:
-Tutor: Ignasi Gomis Mullor igomis@cipfpbatoi.es 
+Tutor: Ignacio Pérez igomis@cipfpbatoi.es 
 Telèfon centre: 966 52 76 60 
 Per qualsevol dubte em tens a la teua disposició
 Salutacions cordials de Ignasi Gomis
@@ -132,18 +132,18 @@ Salutacions cordials de Ignasi Gomis
 **Concertar visita**. Envia un correu, que puc modificar, als instructors amb el següent text:
 
 ~~~
-El meu nom és Ignasi Gomis Mullor i sóc professor-tutor del Centre Integrat Formació Professional Batoi.
+El meu nom és Ignacio Pérez i sóc professor-tutor del Centre Integrat Formació Professional Batoi.
 T'escric per tal de concertar una visita al centre de treball, per tal de fer el seguiment de les practiques FCT dels alumnes dels quals eres l'instructor.
 Els horaris que em vendrien bé són:
 Ja em dius quan et vindria bé.
-Salutacions cordials de Ignasi Gomis
+Salutacions cordials de Ignacio Pérez
 ~~~
 
 **Citar alumnes**. Envia un correu als alumnes amb el següent text:
 
 ~~~
 Et convoque el dia ___________________________ a les _______________ a l'Institut, per a fer el seguiment de les pràctiques de FCT. Recorda't d'emplenar i dur els annexos 4 signats per l'instructor. Si no pots assistir, comunica-me-ho per a tenir-ho en compte i concertar una cita un altre dia.
-Salutacions cordials de Ignasi Gomis
+Salutacions cordials de Ignacio Pérez
 ~~~
 
 En la part inferior tinc totes les col·laboracions ordenades amb els botons que es poden aplicar. Tenim les mateixes que les de dalt (s'identifiquen pel dibuix) a més del SI NO ?? i ASSIGNAR
