@@ -71,7 +71,7 @@ class HorarioController extends ApiBaseController
     }
 
     public function guardia($idProfesor){
-        return $this->sendResponse(Horario::where('idProfesor',$idProfesor)->whereIn('ocupacion',config('variables.ocupacionesGuardia'))->get(),
+        return $this->sendResponse(Horario::Profesor($idProfesor)->whereIn('ocupacion',config('variables.ocupacionesGuardia'))->get(),
          'OK');
     }
     
