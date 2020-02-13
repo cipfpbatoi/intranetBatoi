@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Session;
 abstract class BaseController extends Controller
 { 
     protected $namespace = 'Intranet\Entities\\'; //string on es troben els models de dades
-    protected $model;       // model de dades utilitzat  
+    protected $model;       // model de dades utilitzat
     protected $class;       // clase del model de dades
     protected $perfil = null; // perfil que pot accedir al controlador
     protected $gridFields = null;  // campos que ixen en la rejilla
@@ -19,6 +19,7 @@ abstract class BaseController extends Controller
     protected $panel;       // panel per a la vista
     protected $titulo = []; // paràmetres per al titol de la vista
     protected $parametresVista = null;
+
     
     protected $profile = true;
     protected $modal = false; //utilitza vista modal o ono per a insercions i modificats
