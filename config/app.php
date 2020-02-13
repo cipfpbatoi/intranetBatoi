@@ -170,7 +170,6 @@ return [
         Intranet\Providers\AuthServiceProvider::class,
         // Intranet\Providers\BroadcastServiceProvider::class,
         Intranet\Providers\EventServiceProvider::class,
-        Intranet\Providers\TelescopeServiceProvider::class,
         Intranet\Providers\RouteServiceProvider::class,
         Intranet\Providers\HelperServiceProvider::class,
         Intranet\Providers\HtmlServiceProvider::class,
