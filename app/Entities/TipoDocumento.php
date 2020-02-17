@@ -9,6 +9,7 @@ class TipoDocumento
     
     public static function allPestana()
     {
+        if (esRol(AuthUser()->rol,config('roles.rol.qualitat'))) return ['Millora'=>trans('messages.buttons.Millora')];
         $todos = [];
         foreach (config('tablas.tipoDocumento') as $a) {
             if (UserisAllow($a['rol'])&& $a['pestana'])

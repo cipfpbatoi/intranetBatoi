@@ -74,6 +74,7 @@ return [
             ['index'=>'Emer','rol'=>1,'pestana'=>1,'grupo'=>'2'],
             ['index'=>'Sanit','rol'=>1,'pestana'=>1,'grupo'=>'2'],
             ['index'=>'Pla','rol'=>1,'pestana'=>1,'grupo'=>'2'],
+            ['index'=>'Millora','rol'=>1,'pestana'=>1,'grupo'=>'2'],
             ['index'=>'Acta','rol'=>3,'pestana'=>1,'grupo'=>'3'],
             ['index'=>'Fichero','rol'=>2 ,'pestana'=>'0','grupo'=>'0' ],
             ['index'=>'Proyecto','rol'=>1,'pestana'=>0,'grupo'=>'0'],

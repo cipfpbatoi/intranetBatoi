@@ -147,6 +147,7 @@ return array(
         'Emer' => 'Plan emergencias',
         'Sanit' => 'Plan Atención Sanitaria',
         'Consell' => 'Consell',
+        'Millora' => 'Mejora',
         'Acta' => 'Actas',
         'muestra' => 'Muestra más datos',
         'grupo' => 'Muesta equipo educativo',

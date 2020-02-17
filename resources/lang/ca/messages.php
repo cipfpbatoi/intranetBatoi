@@ -147,6 +147,7 @@ return array(
         'Emer' => 'Pla emergèncias',
         'Sanit' => 'Pla Atenciò Sanitària',
         'Consell' => 'Consell',
+        'Millora' => 'Millora',
         'Acta' => 'Actes',
         'muestra' => 'Mostra mes dades',
         'grupo' => 'Mostra equip educatiu',
