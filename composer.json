@@ -27,7 +27,7 @@
         "laravelcollective/html": "^5.6",
         "mikehaertl/php-pdftk": "^0.5.0",
         "predis/predis": "^1.1",
-        "styde/html": "^1.5"
+        "styde/html": "~1.7"
     },
     "require-dev": {
         "composer/composer": "^1.9",
