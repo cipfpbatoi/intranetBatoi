@@ -3,7 +3,7 @@
 namespace Intranet\Providers;
 
 use Illuminate\Support\ServiceProvider;
-//use Laravel\Dusk\DuskServiceProvider;
+use Laravel\Dusk\DuskServiceProvider;
 use Blade;
 
 class AppServiceProvider extends ServiceProvider
@@ -29,11 +29,12 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         if ($this->app->environment('local', 'testing')) {
-           // $this->app->register(DuskServiceProvider::class);
+           $this->app->register(DuskServiceProvider::class);
+            $this->app->register(TelescopeServiceProvider::class);
         }
         if ($this->app->environment() !== 'production') {
-            $this->app->register(\Way\Generators\GeneratorsServiceProvider::class);
-            $this->app->register(\Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class);
+            //$this->app->register(\Way\Generators\GeneratorsServiceProvider::class);
+           // $this->app->register(\Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class);
         }
 
     }

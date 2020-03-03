@@ -29,7 +29,7 @@
             </div>
             <div class="col-xs-12 col-sm-11 emphasis">
                 @include ('intranet.partials.buttons',['tipo' => 'profile'])
-                <a href='#' class='btn btn-primary btn-xs' title='{{$elemento->momento}}'>{{$elemento->ahora}}</a>
+                <a href='#' class='btn btn-primary btn-xs'>{{$elemento->ahora}}</a>
             </div>
         </div>
     </div>

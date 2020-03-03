@@ -3,8 +3,9 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Providers\AuthServiceProvider;
 use Styde\Html\Facades\Menu as StydeMenu;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class Menu extends Model
 {
@@ -41,9 +42,16 @@ class Menu extends Model
             return 'url';
     }
 
-    public static function make($nom, $array = false)
-    {
+    public static function make($nom, $array = false){
+        $menu = Cache::remember('menu'.$nom.AuthUser()->dni,now()->addDay(),function () use ($nom){
+           return self::build($nom);
+        });
+        if ($array) return $menu;
+        return StydeMenu::make($menu);
+    }
 
+    private static function build($nom)
+    {
         $submenus = Menu::where([['menu', '=', $nom], ['submenu', '=', ''],['activo', '=', 1]])
                 ->whereIn('rol', RolesUser(AuthUser()->rol))
                 ->orderby('orden')
@@ -63,12 +71,7 @@ class Menu extends Model
                 $menu[$sitem->nombre] = array(self::tipoUrl($sitem->url) => $sitem->url, 'class' => $sitem->class);
             }
         }
-        if ($array)
-            return $menu;
-        else {
-            return StydeMenu::make($menu);
-        }
-
+        return $menu;
     }
     
     public function getXrolAttribute()

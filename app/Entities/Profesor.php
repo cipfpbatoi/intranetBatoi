@@ -130,10 +130,11 @@ class Profesor extends Authenticatable
         return $this->hasMany(Reserva::getClass(), 'profesor_id', 'dni');
     }
 
-    public function Horario()
+    public function Horari()
     {
         return $this->hasMany(Horario::class, 'idProfesor', 'dni');
     }
+
 
     public function grupos()
     {
@@ -227,7 +228,8 @@ class Profesor extends Authenticatable
 
     public function getXdepartamentoAttribute()
     {
-        return isset($this->Departamento->depcurt)?$this->Departamento->depcurt:$this->departamento;
+        $departamento = $this->Departamento;
+        return isset($departamento->depcurt)?$departamento->depcurt:$this->departamento;
     }
     public function getLdepartamentoAttribute()
     {
@@ -264,13 +266,20 @@ class Profesor extends Authenticatable
 
     public function getAhoraAttribute()
     {
-        return horarioAhora($this->dni)['ahora'];
+        $sesion = sesion(Hora(now()));
+        $dia = config("auxiliares.diaSemana." . now()->format('w'));
+        $horaActual = $this->Horari->where('dia_semana', $dia)->where('sesion_orden', $sesion)->first();
+        if ($horaActual) {
+            if ($horaActual->ocupacion != null && isset($horaActual->Ocupacion->nombre))
+                return $horaActual->Ocupacion->nombre;
+            if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre)
+                return $horaActual->Modulo->literal . ' (' . $horaActual->aula . ')';
+        }
+        return '';
+
     }
 
-    public function getMomentoAttribute()
-    {
-        return horarioAhora($this->dni)['momento'];
-    }
+
 
     public function getMiJefeAttribute()
     {

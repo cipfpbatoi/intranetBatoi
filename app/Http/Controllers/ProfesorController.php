@@ -43,6 +43,7 @@ use traitAutorizar,
     {
         Session::forget('redirect');
         $todos = Profesor::orderBy('apellido1')
+                ->with('Departamento')
                 ->Activo()
                 ->get();
         $departamentos = Profesor::join('departamentos', 'profesores.departamento', '=', 'departamentos.id')
@@ -60,6 +61,7 @@ use traitAutorizar,
     {
         Session::forget('redirect');
         $todos = Profesor::orderBy('apellido1')
+                ->with('Departamento')
                 ->Activo()
                 ->get();
         $departamentos = Departamento::where('didactico',1)->get();

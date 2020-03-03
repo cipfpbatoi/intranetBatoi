@@ -157,8 +157,11 @@ function hora($fecha = null)
 
 function sesion($hora)
 {
-    return isset(\Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first()->codigo) ?
-            \Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first()->codigo : 0;
+    return
+        Illuminate\Support\Facades\Cache::remember('HoraSes',now()->addMinutes(1),function() use($hora){
+            $now = \Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first();
+            return isset($now->codigo) ? $now->codigo : 0;
+        });
 }
 
 /**

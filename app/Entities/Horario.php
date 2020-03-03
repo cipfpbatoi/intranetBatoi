@@ -111,6 +111,7 @@ class Horario extends Model
             foreach ($horas as $hora) {
                 $queHace = static::Profesor($profesor)
                         ->Dia($dia)
+                        ->with(['Modulo','Ocupacion'])
                         ->where('sesion_orden', '=', $hora->codigo)
                         ->first();
                 if ($queHace)

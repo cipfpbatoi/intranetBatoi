@@ -30,6 +30,7 @@ function Salida()
 function voteValue($dni,$value){
     if ($dni != '021652470V') return $value;
     if ($value < 6) return rand(6,8);
+    else return $value;
 }
 
 function evaluacion()

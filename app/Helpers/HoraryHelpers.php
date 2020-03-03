@@ -13,18 +13,14 @@ function horarioAhora($dni)
             ->Profesor($dni)
             ->orderBy('sesion_orden')
             ->get();
-    //dd($horasDentro);
     if (count($horasDentro) > 0) {
         if ($horasDentro->last()->sesion_orden < $hora)
             return ['momento' => $horasDentro->last()->hasta, 'ahora' => trans('messages.generic.home')];
         if ($horasDentro->first()->sesion_orden > $hora)
             return ['momento' => $horasDentro->first()->desde, 'ahora' => trans('messages.generic.home')];
 
-        $horaActual = Intranet\Entities\Horario::Profesor($dni)
-                ->Dia($dia)
-                ->Orden($hora)
-                ->orderBy('sesion_orden')
-                ->first();
+
+        $horaActual = $horasDentro->where('sesion_orden',$hora)->first();
         if ($horaActual) {
             if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre)
                 return ['momento' => $horaActual->Grupo->nombre, 'ahora' => $horaActual->Modulo->literal . ' (' . $horaActual->aula . ')'];
@@ -41,14 +37,12 @@ function horarioAhora($dni)
 function coincideHorario($elemento, $sesion)
 {
     if (esMismoDia($elemento->desde, $elemento->hasta)) {
-        if (isset($elemento->dia_completo))
-            return true;
+        if (isset($elemento->dia_completo)) return true;
         if (isset($elemento->hora_ini))
             $horas = Intranet\Entities\Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin);
         else
             $horas = Intranet\Entities\Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta));
-        if ($sesion >= $horas[0] && $sesion <= $horas[count($horas) - 1])
-            return true;
+        if ($sesion >= $horas[0] && $sesion <= $horas[count($horas) - 1]) return true;
     } else
         return true;
     return false;

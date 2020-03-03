@@ -3,9 +3,7 @@
 namespace Intranet\Http\Controllers\Auth;
 
 use Intranet\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Entities\Menu;
+use Illuminate\Support\Facades\Cache;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Actividad;
@@ -41,20 +39,30 @@ abstract class HomeController extends Controller
             if ($usuario->dni == '12345678A')
                 return redirect('/fichar');
             else {
-                $horario = Horario::HorarioSemanal($usuario->dni);
-                $actividades = Actividad::next()->auth()->orderby('desde','asc')->take(10)->get();
+                $horario = Cache::remember('horario'.$usuario->dni,now()->addDay(), function () use ($usuario) {
+                    return Horario::HorarioSemanal($usuario->dni);
+                });
+                //$horario = Horario::HorarioSemanal($usuario->dni);
+                $actividades =  Cache::remember('actividades',now()->addHour(),function(){
+                    return Actividad::next()->with(['profesores','grupos','Tutor'])->auth()->orderby('desde','asc')->take(10)->get();
+                });
                 $activities = Activity::Profesor($usuario->dni)
                                 ->orderBy('updated_at', 'desc')
                                 ->take(15)->get();
-                $documents = Documento::where('curso', '=', Curso())->where('tipoDocumento', '=', 'Acta')
-                                ->where('grupo', '=', 'Claustro')->orWhere('grupo', '=', 'COCOPE')->get();
+                $documents = Cache::remember('actas',now()->addDay(),function () {
+                    return Documento::where('curso', '=', Curso())->where('tipoDocumento', '=', 'Acta')
+                        ->where('grupo', '=', 'Claustro')->orWhere('grupo', '=', 'COCOPE')->get();
+                });
+
                 $faltas = Falta::Dia(Hoy())->get();
                 
                 $hoyActividades = Actividad::Dia(Hoy())
-                    ->where('estado','>',1)    
+                    ->where('estado','>',1)
                     ->where('fueraCentro', '=', 1)
                     ->get();
-                $comisiones = Comision::Dia(Hoy())->get();
+                $comisiones = Cache::remember('comisionesHoy',now()->addDay(),function(){
+                   return(Comision::Dia(Hoy())->get());
+                });
 
                 if (!estaDentro() && !Session::get('userChange')) {
                     Falta_profesor::fichar($usuario->dni);
