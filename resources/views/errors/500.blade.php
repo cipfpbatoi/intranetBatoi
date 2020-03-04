@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Error - No he pogut enviar el email</title>
+        <title>Error de servidor</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
@@ -65,6 +65,7 @@
         </style>
     </head>
     <body>
+        @php dd($response) @endphp
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <H1>HO SENTIM, NO S'HA POGUT COMPLETAR L'OPERACIO</H1>
