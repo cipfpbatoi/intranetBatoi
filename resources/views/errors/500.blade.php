@@ -68,7 +68,7 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <H1>HO SENTIM, NO S'HA POGUT COMPLETAR L'OPERACIO</H1>
-                <p>L'error és: </p>
+                <p>L'error és: {{$response}}</p>
            </div>
         </div>
     </body>
