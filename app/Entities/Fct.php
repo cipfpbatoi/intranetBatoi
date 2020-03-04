@@ -3,15 +3,11 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Centro;
-use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Poll\Vote;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\FctCreated;
-use Intranet\Entities\Alumno;
-use phpDocumentor\Reflection\Types\Array_;
+use Illuminate\Support\Arr;
 
 
 class Fct extends Model
@@ -145,7 +141,7 @@ class Fct extends Model
                 if ($colaboracion->Centro->direccion) $todos[$colaboracion->id].=' ('.$colaboracion->Centro->direccion.')';
             }    
         }
-        return array_sort($todos, function ($value) {
+        return Arr::sort($todos, function ($value) {
             return $value;
         });
     }
