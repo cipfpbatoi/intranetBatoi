@@ -66,20 +66,10 @@
     </head>
     <body>
         <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @if (Auth::check())
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ url('/login') }}">Login</a>
-                    @endif
-                </div>
-            @endif
-
             <div class="content">
                 <H1>HO SENTIM, NO S'HA POGUT COMPLETAR L'OPERACIO</H1>
-                <p>L'error és: {{$response}}</p>
-               </div>
+                <p>L'error és: </p>
+           </div>
         </div>
     </body>
 </html>
