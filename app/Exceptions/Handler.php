@@ -28,17 +28,19 @@ class Handler extends ExceptionHandler
      *
      * @var array
      */
+
     protected $dontFlash = [
         'password',
         'password_confirmation',
     ];
 
     /**
-     * Report or log an exception.
-     *
+     Report or log an exception.
+
      * @param  \Exception  $exception
      * @return void
      */
+
     public function report(Exception $exception)
     {
         parent::report($exception);
