@@ -104,6 +104,7 @@ class ApiBaseController extends Controller
                 }
             }
         }
+        return $this->sendError('No se ha podido',403);
         if ($send) return $this->sendResponse($data, 'OK');
         else return $data;
         
@@ -120,14 +121,12 @@ class ApiBaseController extends Controller
 
     protected function sendResponse($result, $message)
     {
-        //return response()->json(['message'=>$message,'result'=>$result]);
-        return Response::json(ResponseUtil::makeResponse($message, $result));
+        return response()->json(['success'=>true,'data'=>$result]);
     }
 
     protected function sendError($error, $code = 404)
     {
-        //return response()->json(['message'=>$error,'result'=>$code]);
-        return Response::json(ResponseUtil::makeError($error), $code);
+        return response()->json(['success'=>false,'message'=>$error]);
     }
 
 }
