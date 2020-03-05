@@ -67,8 +67,8 @@
     <body>
         <div class="flex-center position-ref full-height">
             <div class="content">
-                <H1>HO SENTIM, NO S'HA POGUT COMPLETAR L'OPERACIO</H1>
-                <p>L'error és: {{$exception->getMessage()}}</p>
+                <H1>ALGUNA COSA NO HA ANAT BÉ</H1>
+                <p>Per si pot ajudar-te : {!! $exception->getMessage() !!}</p>
            </div>
         </div>
     </body>
