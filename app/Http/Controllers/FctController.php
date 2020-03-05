@@ -3,22 +3,15 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use DB;
 use Intranet\Entities\Fct;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Profesor;
-use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Empresa;
 use Intranet\Botones\BotonImg;
-use Jenssegers\Date\Date;
 use Illuminate\Support\Facades\Session;
-use Intranet\Jobs\SendEmail;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\BotonBasico;
-use Intranet\Botones\Panel;
-use Intranet\Entities\Documento;
 use Intranet\Botones\Mail as myMail;
 
 
@@ -248,9 +241,14 @@ class FctController extends IntranetController
                 $this->validateAll($request, $elemento);
 
                 $id = $elemento->fillAll($request);
-            } 
-            $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($hasta),'horas'=>$request->horas]);
-            
+            }
+            try {
+                $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($hasta),'horas'=>$request->horas]);
+            } catch (\Exception $e)
+            {
+                Alert::danger("Eixe alumne ja té una fct oberta amb eixa empresa");
+            }
+
             return $id;
         });
         
