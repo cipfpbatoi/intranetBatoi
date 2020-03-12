@@ -31,7 +31,7 @@
                 <li role="presentation" class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-envelope-o"></i>
-                        <span class="badge bg-green">@if (count(AuthUser()->unreadNotifications)){{ count(AuthUser()->unreadNotifications) }} @endif</span>
+                        <span class="badge bg-green">@if ($total  = count(AuthUser()->unreadNotifications)){{ $total }} @endif</span>
                     </a>
                     <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
                     @foreach (AuthUser()->unreadNotifications()->paginate(6) as $notifications)

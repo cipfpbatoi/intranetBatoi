@@ -15,17 +15,7 @@ function multiexplode($delimiters, $string)
     return $launch;
 }
 
-function Entrada()
-{
-    if (isset(Intranet\Entities\Falta_profesor::Hoy(AuthUser()->dni)->last()->entrada))
-        return (substr(Intranet\Entities\Falta_profesor::Hoy(AuthUser()->dni)->last()->entrada, 0, 5));
-}
 
-function Salida()
-{
-    if (isset(Intranet\Entities\Falta_profesor::Hoy(AuthUser()->dni)->last()->salida))
-        return (substr(Intranet\Entities\Falta_profesor::Hoy(AuthUser()->dni)->last()->salida, 0, 5));
-}
 
 function voteValue($dni,$value){
     if ($dni != '021652470V') return $value;

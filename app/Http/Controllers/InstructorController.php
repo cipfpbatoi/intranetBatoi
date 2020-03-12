@@ -3,24 +3,17 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Instructor;
 use Intranet\Entities\Centro;
-use Intranet\Entities\Centro_instructor;
-use Intranet\Entities\Ciclo;
-use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
 use Response;
-use Exception;
 use DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonImg;
 use Jenssegers\Date\Date;
+
 
 
 /**
@@ -87,19 +80,7 @@ class InstructorController extends IntranetController
         return redirect("empresa/$empresa/detalle");
     }
 
-    /**
-     * @param $centro
-     * @param $dni
-     */
-    private function nouCentreInstructor($centro, $dni)
-    {
-        if (!Centro_instructor::where('idInstructor', $dni)->where('idCentro', $centro)->first()) {
-            $ci = new Centro_instructor();
-            $ci->idCentro = $centro;
-            $ci->idInstructor = $dni;
-            $ci->save();
-        }
-    }
+
 
     /**
      * @param $centro
@@ -130,7 +111,7 @@ class InstructorController extends IntranetController
     {
         parent::update($request, $id);
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['id' => Centro::find($centro)->idEmpresa]);
+        return redirect()->action('EmpresaController@show', ['empresa' => Centro::find($centro)->idEmpresa]);
     }
 
     /**
@@ -151,10 +132,11 @@ class InstructorController extends IntranetController
                 }
                 parent::store($request);
             }
-            $this->nouCentreInstructor($centro, $request->dni);
+            $instructor = Instructor::find($request->dni);
+            $instructor->Centros()->attach($centro);
         });
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['id' => Centro::find($centro)->idEmpresa]);
+        return redirect()->action('EmpresaController@show', ['empresa' => Centro::find($centro)->idEmpresa]);
     }
 
     /**
@@ -166,10 +148,14 @@ class InstructorController extends IntranetController
     {
         $instructor = Instructor::find($id);
         $instructor->Centros()->detach($centro);
-        if (Centro_instructor::where('idInstructor', $id)->count() == 0)
-            parent::destroy($id);
+        if ($instructor->Centros()->count() == 0)
+            try {
+                parent::destroy($id);
+            }
+            catch (\Exception $e) {};
+
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['id' => Centro::find($centro)->idEmpresa]);
+        return redirect()->action('EmpresaController@show', ['empresa' => Centro::find($centro)->idEmpresa]);
     }
 
     /**
@@ -181,11 +167,8 @@ class InstructorController extends IntranetController
     {
         $instructor = Instructor::findOrFail($id);
         $centro = Centro::findOrFail($idCentro);
-        $posibles = [];
-        foreach ($centro->Empresa->centros as $centre){
-            if (Centro_instructor::where('idCentro',$centre->id)->where('idInstructor',$id)->count()==0)
-                $posibles[$centre->id] = $centre->nombre.'('.$centre->direccion.')';
-        }
+        $posibles = hazArray($centro->Empresa->centros,'id',['nombre','direccion'],'-');
+
         return view('instructor.copy',compact('instructor','posibles','centro'));
     }
 
@@ -203,7 +186,7 @@ class InstructorController extends IntranetController
         if ($request->accion == 'mou') $instructor->Centros()->detach($idCentro);
 
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['id' => Centro::find($idCentro)->idEmpresa]);
+        return redirect()->action('EmpresaController@show', ['empresa' => Centro::find($idCentro)->idEmpresa]);
     }
 
     /**

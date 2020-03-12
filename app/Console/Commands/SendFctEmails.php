@@ -65,13 +65,23 @@ class SendFctEmails extends Command
             if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)){
                 try {
                     Mail::to($fct->Instructor->email, 'Intranet Batoi')->send(new AvalFct($fct, 'instructor'));
-                    Mail::to($fct->Instructor->email, 'Secretaria CIPFP BATOI')
+                    Mail::to($fct->Instructor->email, 'Secretaria CIPFP Batoi')
                         ->send(new CertificatInstructorFct($fct));
+
                     $fct->correoInstructor = 1;
                     $fct->save();
                 } catch (Swift_RfcComplianceException $e){
 
                 }
+                /**
+                foreach ($fct->Colaboradores as $colaborador){
+                    try {
+                        Mail::to($colaborador->email,'Secretaria CIPFP Batoi')->send(new CertificatColaboradorFct($fct,$colaborador));
+                    } catch (Swift_RfcComplianceException $e){
+
+                    }
+
+                }*/
             }
         }
     }

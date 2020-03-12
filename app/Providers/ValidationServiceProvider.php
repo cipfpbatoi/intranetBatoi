@@ -3,6 +3,7 @@
 namespace Intranet\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Arr;
 
 class ValidationServiceProvider extends ServiceProvider
 {
@@ -58,7 +59,7 @@ class ValidationServiceProvider extends ServiceProvider
 
                 // iterates over the parameters and add as where clauses
                 while ($field = array_shift( $parameters )) {
-                    $query->where( $field, array_get( $data, $field ) );
+                    $query->where( $field, Arr::get( $data, $field ) );
                 }
 
                 // check $lastParameter for except condition. Uses a regular
@@ -78,7 +79,7 @@ class ValidationServiceProvider extends ServiceProvider
                     $query->whereRaw( $exceptField );
                 } else {
                     // is not except condition, add as a normal where
-                    $query->where( $lastParameter, array_get( $data, $lastParameter ) );
+                    $query->where( $lastParameter, Arr::get( $data, $lastParameter ) );
                 }
 
                 // get the result from DB

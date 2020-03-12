@@ -10,7 +10,8 @@ $(function () {
             data: {api_token: token},
         })
         .then(function (result) {
-            $('#nombre_id').val(result.data.nombre);
+            $('#name_id').val(result.data.name);
+            $('#surnames_id').val(result.data.surnames);
             $('#email_id').val(result.data.email);
             $('#telefono_id').val(result.data.telefono);
         }, function (result) {

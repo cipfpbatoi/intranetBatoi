@@ -298,4 +298,5 @@ class Profesor extends Authenticatable
         $miGrupo = Grupo::where('tutor', '=', AuthUser()->dni)->get();
         return isset($miGrupo->first()->codigo) ? $miGrupo->first()->codigo : '';
     }
+
 }

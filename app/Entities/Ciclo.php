@@ -33,6 +33,10 @@ class Ciclo extends Model
         return $this->belongsTo(Departamento::class, 'departamento', 'id');
     }
 
+    public function colaboraciones()
+    {
+        return $this->hasMany(Colaboracion::class, 'idCiclo', 'id');
+    }
     public function getTipoOptions()
     {
         return config('auxiliares.tipoEstudio');

@@ -28,11 +28,11 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
-            \Illuminate\Session\Middleware\StartSession::class,
-            \Intranet\Http\Middleware\EncryptCookies::class,
-            \Styde\Html\Alert\Middleware::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Intranet\Http\Middleware\SessionTimeout::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Styde\Html\Alert\Middleware::class,
+            \Intranet\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Intranet\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,

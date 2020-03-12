@@ -1,7 +1,7 @@
 'use strict';
 
 $(function () {
-    if ($("#dni").text() === $("#creador_id").val() || ($('#rol').text() % 2 == 0) ||
+    if ($("#dni").text() === $("#creador_id").val() || ($('#rol').text() % 41 == 0) ||
         ($('#concierto_id').val() == '')) {
         if ($("#europa_id").is(":checked")) {
             $('#sao_id').prop('disabled', true);

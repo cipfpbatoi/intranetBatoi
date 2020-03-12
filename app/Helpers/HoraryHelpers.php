@@ -58,7 +58,22 @@ function estaDentro($profesor = null)
 {
     $profesor = ($profesor == null ? AuthUser()->dni : $profesor);
     $ultimo = Intranet\Entities\Falta_profesor::Hoy($profesor)->last();
+    session(['ultimoFichaje' => $ultimo]);
     return ($ultimo == null ? false : ($ultimo->salida == null ? true : false));
+}
+
+function Entrada()
+{
+    $registro = session('ultimoFichaje');
+    if (isset($registro->entrada))
+        return (substr($registro->entrada, 0, 5));
+}
+
+function Salida()
+{
+    $registro = session('ultimoFichaje');
+    if (isset($registro->salida))
+        return (substr($registro->salida, 0, 5));
 }
 
 /**

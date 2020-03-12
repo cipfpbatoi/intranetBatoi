@@ -1,4 +1,5 @@
 <!-- Modal -->
+@php $ciclos = \Intranet\Entities\Ciclo::where('departamento',AuthUser()->departamento)->get() @endphp
 <div class="modal fade" id="AddColaboration" tabindex="-1" role="dialog" aria-labelledby="AddColaborationTitle" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -14,11 +15,7 @@
                     {{ csrf_field() }}
                     <select name='idCiclo' class="form-control">
                         @foreach ($ciclos as $ciclo)
-                            @if (\Intranet\Entities\Grupo::QTutor()->first() && \Intranet\Entities\Grupo::QTutor()->first()->idCiclo == $ciclo->id)
-                                <option value='{{ $ciclo->id }}' selected>{!! $ciclo->ciclo !!}</option>
-                            @else    
-                                <option value='{{ $ciclo->id }}'>{!! $ciclo->ciclo !!}</option>
-                            @endif    
+                            <option value='{{ $ciclo->id }}'>{!! $ciclo->ciclo !!}</option>
                         @endforeach
                     </select>
                     <select name='idCentro' class="form-control">

@@ -105,7 +105,12 @@ class FctController extends IntranetController
     public function send()
     {
         $document = config('fctEmails.actaIni');
-        $fctAls = AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idAlumno')->orderBy('desde')->get();
+        $fctAls = AlumnoFct::misFcts()
+            ->where('pg0301',0)
+            ->orderBy('idAlumno')
+            ->orderBy('desde')
+            ->get();
+        dd($fctAls);
         $mail = new myMail( $fctAls,$document['receiver'], $document['subject'], $document['view']);
         $mail->send();
         return back();

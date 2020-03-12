@@ -42,8 +42,9 @@ class EmpresaController extends IntranetController
         $activa = Session::get('pestana') ? Session::get('pestana') : 2;
         $elemento = Empresa::findOrFail($id);
         $modelo = 'Empresa';
+        $misColaboraciones = Grupo::find(AuthUser()->GrupoTutoria)->Ciclo->Colaboraciones;
         //$fcts = Fct::whereIn('idColaboracion',hazArray($elemento->colaboraciones,'id','id'))->get();
-        return view($this->chooseView('show'), compact('elemento', 'modelo','activa'));
+        return view($this->chooseView('show'), compact('elemento', 'modelo','activa','misColaboraciones'));
     }
     
     protected function iniBotones()
@@ -57,7 +58,8 @@ class EmpresaController extends IntranetController
         $dades['cif'] = strtoupper($request->cif);
         if (Empresa::where('cif',strtoupper($request->cif))->count())
             return back()->withInput(Input::all())->withErrors('CIF duplicado');
-        
+
+        //dd($request);
         $id = $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]));
 
         if ($request->europa)  $this->getConcert($id);
@@ -108,10 +110,8 @@ class EmpresaController extends IntranetController
     
     public function update(Request $request, $id)
     {
-        $elemento = Empresa::find($id);
-        $concierto = $elemento->concierto;
         $elemento = Empresa::find($this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]),$id));
-        $this->remainsConcert($elemento,$concierto);
+        if ($elemento->europa) $this->getConcert($elemento->id);
         $touched = FALSE;
         foreach ($elemento->centros as $centro){
             if ($centro->direccion == '') {
@@ -128,9 +128,9 @@ class EmpresaController extends IntranetController
             }
         }
         if ($touched) $centro->save();
-        return redirect()->action('EmpresaController@show', ['id' => $elemento->id]);
+        return redirect()->action('EmpresaController@show', ['empresa' => $elemento->id]);
     }
-
+/*
     private function remainsConcert($elemento,$concierto){
 
         if ($concierto) {
@@ -140,6 +140,7 @@ class EmpresaController extends IntranetController
         else
             if ($elemento->europa) $this->getConcert($elemento->id);
     }
+*/
     /*
      * document ($id)
      * torna el fitxer de un model

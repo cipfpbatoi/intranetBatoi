@@ -66,6 +66,7 @@ class ApiBaseController extends Controller
 
     public function show($cadena,$send=true)
     {
+        //return $this->sendError($cadena);
         if (!strpos($cadena, '=')&&!strpos($cadena, '>')&&!strpos($cadena, '<')&&!strpos($cadena, ']')&&!strpos($cadena, '['))
             $data = $this->class::find($cadena);
         else {
@@ -104,7 +105,8 @@ class ApiBaseController extends Controller
                 }
             }
         }
-        return $this->sendError('No se ha podido',403);
+        //return $this->sendError('No se ha podido',403);
+
         if ($send) return $this->sendResponse($data, 'OK');
         else return $data;
         
