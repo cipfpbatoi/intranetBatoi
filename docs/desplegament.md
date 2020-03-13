@@ -131,3 +131,13 @@ Podem conprovar que funciona correctament enviant un e-mail des de la terminal:
 ```bash
 mail el_meu_micorreu@gmail.com
 ```
+
+També cal possar en el crontab:
+
+* 21,22,23,5,6,7,8 * * 1-5 php /var/www/html/IntranetBatoi/artisan schedule:run >> /var/www/html/IntranetBatoi/schedule.log  2>&1
+00 01 * * * rm /var/www/html/IntranetBatoi/storage/tmp/*
+*/1 * * * * php /var/www/html/IntranetBatoi/artisan queue:work --once --timeout=120 --tries=3
+
+Si estem gastant https:: no funcionaran els pdf por el snapy. Cal mirar la documentació d'esta pàgina per resoldre el bug
+https://github.com/barryvdh/laravel-snappy/issues/217. Depenent de la versió de linux que hem instal·lat variarà. Es tracta de degradar el ssl.
+
