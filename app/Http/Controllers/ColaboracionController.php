@@ -111,7 +111,7 @@ class ColaboracionController extends IntranetController
         parent::update($request, $id);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
         Session::put('pestana',1);
-        return redirect()->action('EmpresaController@show', ['id' => $empresa]);
+        return redirect()->action('EmpresaController@show', ['empresa' => $empresa]);
     }
 
     /**
@@ -123,7 +123,7 @@ class ColaboracionController extends IntranetController
         parent::store($request);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
         Session::put('pestana',1);
-        return redirect()->action('EmpresaController@show', ['id' => $empresa]);
+        return redirect()->action('EmpresaController@show', ['empresa' => $empresa]);
     }
 
     /**
@@ -135,7 +135,7 @@ class ColaboracionController extends IntranetController
         $empresa = Colaboracion::find($id)->Centro->Empresa;
         parent::destroy($id);
         Session::put('pestana',1);
-        return redirect()->action('EmpresaController@show', ['id' => $empresa]);
+        return redirect()->action('EmpresaController@show', ['empresa' => $empresa]);
     }
 
     /**
