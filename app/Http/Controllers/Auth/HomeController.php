@@ -35,7 +35,7 @@ abstract class HomeController extends Controller
     public function index()
     {
         if ($this->guard == 'profesor') {
-            $usuario = Profesor::findOrFail(AuthUser()->dni);
+            $usuario = AuthUser();
             if ($usuario->dni == '12345678A')
                 return redirect('/fichar');
             else {
@@ -54,14 +54,14 @@ abstract class HomeController extends Controller
                         ->where('grupo', '=', 'Claustro')->orWhere('grupo', '=', 'COCOPE')->get();
                 });
 
-                $faltas = Falta::Dia(Hoy())->get();
+                $faltas = Falta::select('idProfesor','dia_completo','hora_ini','hora_fin')->with('profesor')->Dia(Hoy())->get();
                 
                 $hoyActividades = Actividad::Dia(Hoy())
                     ->where('estado','>',1)
                     ->where('fueraCentro', '=', 1)
                     ->get();
-                $comisiones = Cache::remember('comisionesHoy',now()->addDay(),function(){
-                   return(Comision::Dia(Hoy())->get());
+                $comisiones = Cache::remember('comisionesHui',now()->addDay(),function(){
+                   return(Comision::with('profesor')->Dia(Hoy())->get());
                 });
 
                 if (!estaDentro() && !Session::get('userChange')) {
@@ -70,15 +70,13 @@ abstract class HomeController extends Controller
                 return view('home.profile', compact('usuario', 'horario', 'actividades', 'activities', 'documents','faltas','hoyActividades','comisiones'));
             }
         } else {
-            $usuario = Alumno::findOrFail(AuthUser()->nia);
+            $usuario = AuthUser();
             if (isset(AlumnoGrupo::where('idAlumno', AuthUser()->nia)->first()->idGrupo)) {
                 $grupo = AlumnoGrupo::where('idAlumno', AuthUser()->nia)->first()->idGrupo;
                 $horario = Horario::HorarioGrupo($grupo);
             }
             $actividades = Actividad::next()->auth()->take(10)->get();
-            $activities = Activity::Profesor($usuario->dni)
-                            ->orderBy('updated_at', 'desc')
-                            ->take(15)->get();
+            $activities = [];
             $documents = Documento::where('curso', '=', Curso())->where('tipoDocumento', '=', 'Alumno')->get();
 
             return view('home.alumno', compact('usuario', 'horario', 'actividades', 'activities', 'documents'));

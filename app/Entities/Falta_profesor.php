@@ -3,7 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Events\FichaCreated;
 use Intranet\Events\FichaSaved;
 use Jenssegers\Date\Date;
