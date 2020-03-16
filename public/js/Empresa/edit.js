@@ -35,9 +35,9 @@ $(function () {
             }
         });
     } else {
-        $('#concierto_id').prop('disabled', true);
-        $('#europa_id').prop('disabled', true);
-        $('#sao_id').prop('disabled', true);
+        $('#concierto_id').hide();
+        $('#europa_id').hide();
+        $('#sao_id').hide();
     }
 
 });

@@ -121,15 +121,17 @@ class PollController extends IntranetController
     public function lookAtAllVotes($id)
     {
         $poll = Poll::find($id);
-        $options_numeric = $poll->options->where('scala', '>', 0);
+        $options_numeric = $poll->Plantilla->options->where('scala', '>', 0);
         $allVotes = Vote::allNumericVotes($id)->get();
-        $moduloVotes = $allVotes->GroupBy(['idModuloGrupo', 'option_id']);
-        $personalVotes = $allVotes->GroupBy(['idProfesor', 'option_id']);
+        $moduloVotes = $allVotes->GroupBy(['idOption1', 'option_id']);
+        $personalVotes = $allVotes->GroupBy(['idOption2', 'option_id']);
         $this->initValues($votes,$options_numeric);
         $votes['all'] = $allVotes->GroupBy('option_id');
 
+
         foreach (Grupo::all() as $grupo) {
             foreach ($grupo->Modulos as $modulo)
+
                 if (isset($moduloVotes[$modulo->id])) {
                     foreach ($moduloVotes[$modulo->id] as $key => $optionVotes) {
                         foreach ($optionVotes as $optionVote) {
@@ -148,6 +150,7 @@ class PollController extends IntranetController
                         }
                 }
         }
+        //dd($votes);
         return view('poll.allResolts',compact('votes','poll','options_numeric'));
     }
 

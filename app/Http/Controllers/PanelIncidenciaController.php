@@ -49,4 +49,6 @@ class PanelIncidenciaController extends BaseController
         $this->panel->setBoton('profile', new BotonIcon("$this->model.unauthorize", ['class' => 'btn-danger unauthorize', 'where' => ['estado', '==', '3']], 'mantenimiento'));
         $this->panel->setBothBoton('incidencia.orden', ['where' => ['orden', '==',null,'estado','<','3']],'mantenimiento');
     }
+
+
 }

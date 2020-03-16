@@ -43,7 +43,6 @@ class EmpresaController extends IntranetController
         $elemento = Empresa::findOrFail($id);
         $modelo = 'Empresa';
         $misColaboraciones = Grupo::find(AuthUser()->GrupoTutoria)->Ciclo->Colaboraciones;
-        //$fcts = Fct::whereIn('idColaboracion',hazArray($elemento->colaboraciones,'id','id'))->get();
         return view($this->chooseView('show'), compact('elemento', 'modelo','activa','misColaboraciones'));
     }
     
@@ -59,7 +58,6 @@ class EmpresaController extends IntranetController
         if (Empresa::where('cif',strtoupper($request->cif))->count())
             return back()->withInput(Input::all())->withErrors('CIF duplicado');
 
-        //dd($request);
         $id = $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]));
 
         if ($request->europa)  $this->getConcert($id);

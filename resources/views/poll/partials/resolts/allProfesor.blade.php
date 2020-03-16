@@ -1,9 +1,4 @@
-@extends('layouts.intranet')
-@section('css')
-    <title>Resultat Enquesta {{$poll->title}}</title>
-@endsection
-@section('content')
-    <!-- page content -->
+
     <div class="x_content">
         <h2>Resultats agregats</h2>
         <table style="border: #00aeef 1px solid">
@@ -91,12 +86,5 @@
             @endforeach
         </table>
     </div>
-    <!-- /page content -->
-@endsection
-@section('titulo')
-   Resultat enquesta {{$poll->title}}
-@endsection
-@section('scripts')
 
-@endsection
 
