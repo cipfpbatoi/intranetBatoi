@@ -118,39 +118,22 @@ class PollController extends IntranetController
 
     }
 
+
+
     public function lookAtAllVotes($id)
     {
         $poll = Poll::find($id);
+        $modelo = $poll->modelo;
         $options_numeric = $poll->Plantilla->options->where('scala', '>', 0);
         $allVotes = Vote::allNumericVotes($id)->get();
-        $moduloVotes = $allVotes->GroupBy(['idOption1', 'option_id']);
-        $personalVotes = $allVotes->GroupBy(['idOption2', 'option_id']);
+        $option1 = $allVotes->GroupBy(['idOption1', 'option_id']);
+        $option2 = $allVotes->GroupBy(['idOption2', 'option_id']);
         $this->initValues($votes,$options_numeric);
         $votes['all'] = $allVotes->GroupBy('option_id');
 
+        $modelo::aggregate($votes,$option1,$option2);
 
-        foreach (Grupo::all() as $grupo) {
-            foreach ($grupo->Modulos as $modulo)
 
-                if (isset($moduloVotes[$modulo->id])) {
-                    foreach ($moduloVotes[$modulo->id] as $key => $optionVotes) {
-                        foreach ($optionVotes as $optionVote) {
-                            $votes['grup'][$grupo->codigo][$key]->push($optionVote);
-                            $votes['cicle'][$modulo->ModuloCiclo->idCiclo][$key]->push($optionVote);
-                        }
-                    }
-                }
-        }
-        foreach (Departamento::all() as $departamento) {
-            foreach ($departamento->Profesor as $profesor)
-                if (isset($personalVotes[$profesor->dni])) {
-                    foreach ($personalVotes[$profesor->dni] as $key => $optionVotes)
-                        foreach ($optionVotes as $optionVote) {
-                            $votes['departament'][$departamento->id][$key]->push($optionVote);
-                        }
-                }
-        }
-        //dd($votes);
         return view('poll.allResolts',compact('votes','poll','options_numeric'));
     }
 

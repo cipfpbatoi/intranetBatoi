@@ -158,7 +158,6 @@ return [
         //Styde\Html\HtmlServiceProvider::class,
         Barryvdh\Snappy\ServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
-        Fedeisas\LaravelMailCssInliner\LaravelMailCssInlinerServiceProvider::class,
         Cornford\Googlmapper\MapperServiceProvider::class,
         GrahamCampbell\Markdown\MarkdownServiceProvider::class,
         

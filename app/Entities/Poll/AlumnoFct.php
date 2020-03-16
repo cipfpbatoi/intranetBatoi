@@ -2,6 +2,7 @@
 
 namespace Intranet\Entities\Poll;
 
+use Faker\Calculator\TCNo;
 use Intranet\Entities\Fct;
 
 class AlumnoFct extends ModelPoll
@@ -27,6 +28,21 @@ class AlumnoFct extends ModelPoll
         if (count($classified)) return $classified;
         return null;
     }
+
+
+    public static function aggregate(&$votes,$option1,$option2){
+
+        foreach ($option1 as $idFct => $vote){
+                $ciclo = Fct::find($idFct)->Colaboracion->Ciclo;
+                foreach ($vote as $key => $optionVotes) {
+                        foreach ($optionVotes as $optionVote) {
+                            $votes['cicle'][$ciclo->id][$key]->push($optionVote);
+                            $votes['departament'][$ciclo->departamento][$key]->push($optionVote);
+                    }
+                }
+        }
+    }
+
     public static function loadGroupVotes($id)
     {
         return [];

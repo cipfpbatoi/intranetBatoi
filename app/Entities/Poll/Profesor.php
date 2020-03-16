@@ -4,6 +4,7 @@ namespace Intranet\Entities\Poll;
 
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
+use Intranet\Entities\Departamento;
 
 class Profesor extends ModelPoll
 {
@@ -34,6 +35,30 @@ class Profesor extends ModelPoll
         }
         return $myGroupsVotes;
     }
+    public static function aggregate(&$votes,$option1,$option2){
+        foreach (Grupo::all() as $grupo) {
+            foreach ($grupo->Modulos as $modulo)
+
+                if (isset($option1[$modulo->id])) {
+                    foreach ($option1[$modulo->id] as $key => $optionVotes) {
+                        foreach ($optionVotes as $optionVote) {
+                            $votes['grup'][$grupo->codigo][$key]->push($optionVote);
+                            $votes['cicle'][$modulo->ModuloCiclo->idCiclo][$key]->push($optionVote);
+                        }
+                    }
+                }
+        }
+        foreach (Departamento::all() as $departamento) {
+            foreach ($departamento->Profesor as $profesor)
+                if (isset($option2[$profesor->dni])) {
+                    foreach ($option2[$profesor->dni] as $key => $optionVotes)
+                        foreach ($optionVotes as $optionVote) {
+                            $votes['departament'][$departamento->id][$key]->push($optionVote);
+                        }
+                }
+        }
+    }
+
     public static function has(){
         return count(AuthUser()->Grupo);
     }
