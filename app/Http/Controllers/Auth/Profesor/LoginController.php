@@ -44,6 +44,7 @@ use AuthenticatesUsers;
     {
         Auth::guard('profesor')->logout();
         Session()->flush();
+        dd(isPrivateAddress(getClientIpAddress()));
         if (isPrivateAddress(getClientIpAddress()))
             return redirect('/login');
         return redirect()->to('https://www.google.es')->send();
