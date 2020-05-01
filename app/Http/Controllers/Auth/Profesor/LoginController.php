@@ -43,6 +43,7 @@ use AuthenticatesUsers;
     public function logout()
     {
         Auth::guard('profesor')->logout();
+        Session()->flush();
         return redirect('/login');
     }
 
