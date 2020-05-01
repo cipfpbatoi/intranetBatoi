@@ -44,7 +44,10 @@ use AuthenticatesUsers;
     {
         Auth::guard('profesor')->logout();
         Session()->flush();
-        return redirect('/login');
+        if (isPrivateAddress(getClientIpAddress()))
+            return redirect('/login');
+        return redirect()->to('https://www.google.es')->send();
+
     }
 
     public function plogin(Request $request)
