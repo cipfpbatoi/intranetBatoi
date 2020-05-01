@@ -32,8 +32,9 @@ class PanelActaController extends BaseController
     {
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
-        if ($this->iniPestanas($grupo))
+        if ($this->iniPestanas($grupo)){
             return $this->grid($this->search($grupo),$this->modal);
+        }
 
         Alert::danger('No hi ha actes disponibles');
         return redirect()->route('home');
@@ -61,8 +62,9 @@ class PanelActaController extends BaseController
     private function createGrupsPestana($grupos){
         $first = false;
         foreach ($grupos as $grupo) {
-            if ($first)
+            if ($first){
                 $this->panel->setPestana($grupo->grupo, true, 'profile.documento', ['grupo', $grupo->grupo]);
+            }
             else {
                 $this->panel->setPestana($grupo->grupo, true, 'profile.documento', ['grupo', $grupo->grupo],null,1);
                 $first = true;

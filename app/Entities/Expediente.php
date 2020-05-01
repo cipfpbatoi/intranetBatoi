@@ -51,11 +51,7 @@ class Expediente extends Model
         'deleted' => ActivityReport::class,
     ];
 
-    public function __construct()
-    {
-        if (AuthUser())
-            $this->idProfesor = AuthUser()->dni;
-    }
+
     
     public function tipoExpediente(){
         return $this->belongsTo(TipoExpediente::class,'tipo','id');

@@ -32,6 +32,20 @@ class Fct extends ModelPoll
         if (count($classified)) return $classified;
         return null;
     }
+    public static function aggregate(&$votes,$option1,$option2){
+        foreach ($option1 as $idFct => $vote){
+            $ciclo = realFct::find($idFct)->Colaboracion->Ciclo ?? null;
+            if ($ciclo) {
+                foreach ($vote as $key => $optionVotes) {
+                    foreach ($optionVotes as $optionVote) {
+                        $votes['cicle'][$ciclo->id][$key]->push($optionVote);
+                        $votes['departament'][$ciclo->departamento][$key]->push($optionVote);
+                    }
+                }
+            }
+        }
+    }
+
     public static function loadGroupVotes($id)
     {
         return [];

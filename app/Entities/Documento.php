@@ -39,18 +39,12 @@ class Documento extends Model
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
+    protected $attributes = ['tipoDocumento'=>'Fichero'];
 
     public function getCreatedAtAttribute($entrada)
     {
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
-    }
-
-    public function __construct()
-    {
-        $this->tipoDocumento = 'Fichero';
-        $this->curso = Curso();
-        $this->propietario = config('contacto.titulo');
     }
 
 

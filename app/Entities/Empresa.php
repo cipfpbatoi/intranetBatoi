@@ -44,12 +44,8 @@ class Empresa extends Model
     ];
     protected $fileField = 'cif';
 
-    public function __construct()
-    {
-        $this->europa = 0;
-        $this->sao = 1;
-        $this->copia_anexe1 = 1;
-    }
+    protected $attributes = ['europa'=>0,'sao'=>1,'copia_anexe1'=>1];
+
     public function centros()
     {
         return $this->hasMany(Centro::class, 'idEmpresa', 'id');

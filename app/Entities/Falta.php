@@ -59,22 +59,7 @@ class Falta extends Model
     ];
     protected $hidden = ['created_at', 'updated_at'];
 
-    public function __construct()
-    {
-        if (AuthUser()){
-            $desde = new Date('tomorrow');
-            $hasta = new Date('tomorrow');
-
-
-            $this->desde = $desde;
-            if (isProfesor())
-                $this->idProfesor = AuthUser()->dni;
-            $this->hasta = $hasta;
-            $this->dia_completo = 1;
-            $this->baja = 0;
-            $this->estado = 0;
-        }
-    }
+    protected $attributes = ['dia_completo' => 1,'baja' => 0,'estado' => 0];
 
     public function profesor()
     {

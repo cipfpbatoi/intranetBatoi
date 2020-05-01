@@ -131,6 +131,10 @@ class IncidenciaController extends IntranetController
         return $this->redirect();
     }
 
+    protected function createWithDefaultValues()
+    {
+        return new Incidencia(['idProfesor'=>AuthUser()->dni,'fecha'=>new Date('now')]);
+    }
     /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse

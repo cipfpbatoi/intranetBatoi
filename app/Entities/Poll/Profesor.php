@@ -35,6 +35,7 @@ class Profesor extends ModelPoll
         }
         return $myGroupsVotes;
     }
+
     public static function aggregate(&$votes,$option1,$option2){
         foreach (Grupo::all() as $grupo) {
             foreach ($grupo->Modulos as $modulo)

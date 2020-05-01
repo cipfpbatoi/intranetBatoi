@@ -21,13 +21,9 @@ class Dual extends Fct
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
     ];
+    protected $attributes = ['asociacion'=>3,'correoInstructor'=>1];
     
-    public function __construct()
-    {
-        $this->asociacion = 3;
-        $this->correoInstructor = 1;
-    }
-    
+
     public function getIdAlumnoOptions(){
         return hazArray(Alumno::misAlumnos(AuthUser()->dni,true)->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',
                 ['nameFull']);

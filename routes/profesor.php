@@ -398,3 +398,5 @@ Route::get('/votes/{colaboracion}/show',['as' => 'votes.colaboracion', 'uses'=> 
 Route::get('/myPoll',['as' => 'mypoll.index', 'uses' => 'PanelPollResultController@index']);
 Route::post('/myMail','MyMailController@send');
 Route::get('/qualitat/documento',['as' => 'qualitat.docuentacio' ,'uses' => 'QualitatDocumentoController@index']);
+
+Route::get('fiCurs',['as'=>'fiCurs','uses'=>'PanelFinCursoController@index']);

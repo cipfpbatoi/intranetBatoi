@@ -103,7 +103,7 @@ class Grupo extends Model
 
     public function scopeQTutor($query, $profesor = null, $dual = false)
     {
-        $profesor = isset($profesor) ? $profesor : AuthUser()->dni;
+        $profesor = $profesor ?? AuthUser()->dni;
         if ($dual)
             if (($sustituido = Profesor::findOrFail($profesor)->sustituye_a) != ' ')
                 return $query->where('tutorDual', $sustituido)->orWhere('tutorDual', $profesor);
@@ -118,7 +118,7 @@ class Grupo extends Model
 
     public function scopeMisGrupos($query, $profesor = null)
     {
-        $profesor = $profesor ? $profesor : AuthUser();
+        $profesor = $profesor ?? AuthUser();
         $grupos = Horario::select('idGrupo')
                 ->Profesor($profesor->dni)
                 ->whereNotNull('idGrupo')

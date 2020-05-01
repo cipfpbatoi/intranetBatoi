@@ -23,6 +23,9 @@ abstract class ModelPoll
     public static function vista(){
         return class_basename(static::class);
     }
+    public static function aggregate(&$votes,$option1,$option2){
+
+    }
 
     public static function has(){
         return true;

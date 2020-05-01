@@ -66,18 +66,15 @@ trait traitCRUD{
 
     public function create($default = [])
     {
-        $elemento = $this->fillDefaultValues($default);
+        $elemento = $this->createWithDefaultValues();
         $default = $elemento->fillDefautOptions(); // ompli caracteristiques dels camps
         $modelo = $this->model;
         return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
     }
-    
-    protected function fillDefaultValues($defaultValues){
-        $elemento = new $this->class; //crea un nou element del model
-        foreach ($defaultValues as $key => $value) {
-                $elemento->$key = $value;
-            }
-        return $elemento;
+
+
+    protected function createWithDefaultValues(){
+        return new $this->class;
     }
 
     /* 

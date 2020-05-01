@@ -82,6 +82,11 @@ class ExpedienteController extends IntranetController
         return back();
     }
 
+    protected function createWithDefaultValues()
+    {
+        return new Expediente(['idProfesor'=>AuthUser()->dni]);
+    }
+
     /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse

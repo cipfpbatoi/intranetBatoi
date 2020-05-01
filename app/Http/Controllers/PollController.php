@@ -85,7 +85,8 @@ class PollController extends IntranetController
     }
 
     private function guardaVoto($poll,$option,$option1,$option2,$value){
-        if ($value != '' && $value !== 0){
+
+        if ($value != '' && $value != '0'){
             $vote = new Vote();
             $vote->idPoll = $poll->id;
             $vote->user_id = $poll->anonymous ? hash('md5', AuthUser()->id) : AuthUser()->id;

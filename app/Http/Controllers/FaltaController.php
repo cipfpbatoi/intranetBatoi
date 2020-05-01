@@ -143,6 +143,11 @@ class FaltaController extends IntranetController
         return $this->redirect();
     }
 
+    protected function createWithDefaultValues()
+    {
+        $data = new Date('tomorrow');
+        return new Falta(['desde'=>$data,'hasta'=>$data,'idProfesor'=>AuthUser()->dni]);
+    }
 
     /**
      * @param $id

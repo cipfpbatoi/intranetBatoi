@@ -46,6 +46,10 @@ class ReunionController extends IntranetController
         return Reunion::MisReuniones()->get();
     }
 
+    protected function createWithDefaultValues(){
+        return new Reunion(['idProfesor'=>AuthUser()->dni,'curso'=>Curso()]);
+    }
+
     public function store(Request $request)
     {
         $elemento = Reunion::find($this->realStore($request));
@@ -251,7 +255,7 @@ class ReunionController extends IntranetController
     public function listado($dia = null)
     {
         foreach (Grupo::all() as $grupo)
-            foreach ( config('auxiliares.reunionesControlables') as $tipo) {
+            foreach ( config('auxiliares.reunionesControlables') as $tipo => $howMany) {
                 $reuniones[$grupo->nombre][$tipo] = Reunion::Convocante($grupo->tutor)->Tipo($tipo)->Archivada()->get();
             }
         return view('reunion.control', compact('reuniones'));

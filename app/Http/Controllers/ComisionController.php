@@ -10,6 +10,7 @@ use \PDF;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Activity;
+use Jenssegers\Date\Date;
 
 
 /**
@@ -62,6 +63,24 @@ class ComisionController extends IntranetController
          $this->panel->setBothBoton('comision.unpaid', ['where' => ['estado', '==', '3','total','>',0]]);
          $this->panel->setBothBoton('comision.init', ['where' => ['estado', '==', '0']]);
          $this->panel->setBothBoton('comision.notification', ['where' => ['estado', '>', '0', 'hasta', 'posterior', Hoy()]]);
+    }
+
+
+    protected function createWithDefaultValues(){
+        $manana = new Date('tomorrow');
+        $manana->addHours(8);
+        if (Fct::misFcts()->count()){
+            $fct = true;
+            $servicio = "Visita a Empreses per FCT: ";
+        }
+        else{
+            $fct = false;
+            $servicio = "Visita a Empreses: ";
+        }
+        $comision = new Comision(['idProfesor'=>AuthUser()->dni,'desde'=>$manana,'hasta'=>$manana,
+            'fct'=>$fct,'servicio'=>$servicio]);
+        if (!$fct) $comision->setInputType('fct',['type'=> 'hidden']);
+        return $comision;
     }
 
     private function enviarCorreos($comision){

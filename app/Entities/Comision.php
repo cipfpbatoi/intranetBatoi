@@ -7,7 +7,7 @@ use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
 use \DB;
 use Intranet\Events\PreventAction;
-use Intranet\Entities\Fct;
+
 
 class Comision extends Model
 {
@@ -74,34 +74,18 @@ class Comision extends Model
         'saving' => PreventAction::class,
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
+
     ];
     protected $hidden = ['created_at', 'updated_at'];
     protected $descriptionField = 'servicio';
 
-    public function __construct()
-    {
-        if (AuthUser()) {
-            $this->idProfesor = AuthUser()->dni;
-            $manana = new Date('tomorrow');
-            $manana->addHours(8);
-            $this->desde = $manana;
-            $this->hasta = $manana;
-            $this->gastos = 0.00;
-            $this->comida = 0.00;
-            $this->alojamiento = 0.00;
-            $this->kilometraje = 0;
-            if (Fct::misFcts()->count()){
-                $this->fct = true;
-                $this->servicio = "Visita a Empreses per FCT: ";
+    protected $attributes = [
+        'gastos' => 0.00,
+        'comida' => 0.00,
+        'alojamiento' => 0.00,
+        'kilometraje' => 0 ,
+    ];
 
-            }
-            else{
-                $this->fct = 0;
-                $this->setInputType('fct',['type'=> 'hidden']);
-                $this->servicio = "Visita a Empreses: ";
-            }
-        }
-    }
 
     public function scopeActual($query)
     {

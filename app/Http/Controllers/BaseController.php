@@ -52,10 +52,12 @@ abstract class BaseController extends Controller
     
     protected function grid($todos,$modal=false)
     {
-
-        if ($modal) return $this->panel->renderModal($todos,$this->titulo,$this->chooseView('indexModal'),new $this->class);
-        
+        if ($modal) return $this->panel->renderModal($todos,$this->titulo,$this->chooseView('indexModal'),$this->createWithDefaultValues());
         return $this->panel->render($todos,$this->titulo,$this->chooseView('index'));
+    }
+
+    protected function parametres(){
+        return [];
     }
     /*  
      * index return vista
@@ -68,8 +70,12 @@ abstract class BaseController extends Controller
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
         $this->iniPestanas();
+
+
         return $this->grid($this->search(),$this->modal);
     }
+
+
     
     public function indice($search)
     {

@@ -95,6 +95,10 @@ class ProgramacionController extends IntranetController
         $elemento = Programacion::findOrFail($id);
         return redirect()->away($elemento->fichero);
     }
+
+    protected function createWithDefaultValues(){
+        return new Programacion(['idProfesor'=>AuthUser()->dni,'curso'=>Curso()]);
+    }
 //    protected function email($id)
 //    {
 //        $elemento = Programacion::findOrFail($id);

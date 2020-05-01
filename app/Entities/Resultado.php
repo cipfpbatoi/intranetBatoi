@@ -53,13 +53,7 @@ class Resultado extends Model
         'created' => ActivityReport::class,
     ];
 
-    public function __construct()
-    {
-        if (AuthUser()) {
-            $this->idProfesor = AuthUser()->dni;
-        }
-    }
-    
+
     
     public function getEvaluacionOptions()
     {
@@ -89,7 +83,6 @@ class Resultado extends Model
     }
     public function scopeTrimestreCurso($query,$trimestre,$curso){
         $evaluaciones = config("curso.trimestres.$trimestre");
-        //dd(Modulo_grupo::Curso($curso)->get()->toarray());
         return $query->where('evaluacion',$evaluaciones[$curso])
                     ->whereIn('idModuloGrupo', hazArray(Modulo_grupo::Curso($curso)->get(),'id','id'));
     }

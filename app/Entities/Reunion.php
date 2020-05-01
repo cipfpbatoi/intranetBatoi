@@ -56,13 +56,7 @@ class Reunion extends Model
     ];
     protected $hidden = ['created_at', 'updated_at'];
 
-    public function __construct()
-    {
-        if (AuthUser()) {
-            $this->idProfesor = AuthUser()->dni;
-            $this->curso = Curso();
-        }
-    }
+
 
     public function Creador()
     {
@@ -87,8 +81,9 @@ class Reunion extends Model
                 ->toarray();
         return $query->whereIn('id', $reuniones)->orWhere('idProfesor',AuthUser()->dni);
     }
-    public function scopeConvocante($query,$dni)
+    public function scopeConvocante($query,$dni=null)
     {
+        $dni = $dni??AuthUser()->dni;
         $sustituye = (isset(Profesor::find($dni)->sustituye_a))?Profesor::find($dni)->sustituye_a:null;
         return $query->where('idProfesor',$dni)->orWhere('idProfesor',$sustituye);
     }

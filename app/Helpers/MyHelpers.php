@@ -430,3 +430,33 @@ function cargaDatosCertificado($datos){
     return $datos;
 }
 
+function getClientIpAddress(): String
+{
+    if (isset($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
+    if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    if (isset($_SERVER['HTTP_X_FORWARDED'])) return $_SERVER['HTTP_X_FORWARDED'];
+    if (isset($_SERVER['HTTP_FORWARDED_FOR'])) return $_SERVER['HTTP_FORWARDED_FOR'];
+    if (isset($_SERVER['HTTP_FORWARDED'])) return $_SERVER['HTTP_FORWARDED'];
+    if (isset($_SERVER['REMOTE_ADDR'])) return $_SERVER['REMOTE_ADDR'];
+    return 'UNKNOWN';
+}
+
+function isPrivateAddress($ip):bool
+{
+    $privateAddressRange = array(
+      '10.0.0.0|10.255.255.255',
+      '172.16.0.0|172.31.255.255',
+        '192.168.0.0|192.168.255.255',
+        '169.254.0.0|169.254.255.255',
+        '127.0.0.0|127.255.255.255'
+    );
+    $longIpAddress = ip2long($ip);
+    if ($longIpAddress != -1){
+        foreach ($privateAddressRange as $privateAddress){
+            list($start,$end) = explode("|",$privateAddress);
+            if ($longIpAddress >= ip2long($start) && $longIpAddress <= ip2long($end)) return true;
+        }
+    }
+    return false;
+}
+

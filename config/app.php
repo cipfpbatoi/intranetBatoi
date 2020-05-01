@@ -155,7 +155,6 @@ return [
         //dates en local
         Jenssegers\Date\DateServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
-        //Styde\Html\HtmlServiceProvider::class,
         Barryvdh\Snappy\ServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         Cornford\Googlmapper\MapperServiceProvider::class,
@@ -167,7 +166,6 @@ return [
          */
         Intranet\Providers\AppServiceProvider::class,
         Intranet\Providers\AuthServiceProvider::class,
-        // Intranet\Providers\BroadcastServiceProvider::class,
         Intranet\Providers\EventServiceProvider::class,
         Intranet\Providers\RouteServiceProvider::class,
         Intranet\Providers\HelperServiceProvider::class,

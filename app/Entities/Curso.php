@@ -50,11 +50,8 @@ class Curso extends Model
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
+    protected $attributes = ['aforo'=>0];
 
-    public function __construct()
-    {
-        $this->aforo = 0;
-    }
 
     public function Alumnos()
     {

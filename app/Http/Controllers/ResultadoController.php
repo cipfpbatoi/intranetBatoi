@@ -100,4 +100,10 @@ class ResultadoController extends IntranetController
         return back();
     }
 
+    protected function createWithDefaultValues(){
+        return new Resultado(['idProfesor'=>AuthUser()->dni]);
+    }
+
+
+
 }

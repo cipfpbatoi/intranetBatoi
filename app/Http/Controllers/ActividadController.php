@@ -42,16 +42,15 @@ class ActividadController extends IntranetController
 
     protected function grid($todos,$modal=false)
     {
-        return $this->panel->renderModal($todos,$this->titulo,$this->chooseView('indexModal'),$this->fillDefaultValues(['extraescolar' => 1]));
+        return $this->panel->renderModal($todos,$this->titulo,$this->chooseView('indexModal'),$this->createWithDefaultValues());
 
     }
-    /**
-     * @param null $default
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function create($default = null)
+
+
+    protected function createWithDefaultValues()
     {
-        return parent::create(['extraescolar' => 1]);
+        $data = new Date('tomorrow');
+        return new Actividad(['extraescolar' => 1,'desde'=>$data,'hasta'=>$data]);
     }
    
     public function store(Request $request)

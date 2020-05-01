@@ -63,13 +63,16 @@ class DocumentoController extends IntranetController
         else $except = ['nota'];
         return parent::store(subsRequest($request->duplicate(null, $request->except($except)), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
     }
-    
+
+    protected function createWithDefaultValues(){
+        return new Documento(['curso'=>Curso(),'propietario'=>config('contacto.titulo')]);
+     }
 
     public function project($idFct)
     {   
         if ($fct = AlumnoFct::findOrFail($idFct)) {
             
-            $elemento = new Documento;
+            $elemento = $this->createWithDefaultValues();
             $elemento->addFillable('nota');
             $elemento->tipoDocumento = 'Proyecto';
             $elemento->idDocumento = '';
@@ -90,14 +93,15 @@ class DocumentoController extends IntranetController
     }
     
     public function qualitat()
-    {   
-        $elemento = new Documento;
+    {
+        $elemento = $this->createWithDefaultValues();
         $elemento->tipoDocumento = 'Qualitat';
         $elemento->idDocumento = '';
-        $elemento->ciclo = Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo;
-        $elemento->grupo = Grupo::QTutor(AuthUser()->dni)->first()->nombre;
+        $grupo = Grupo::QTutor(AuthUser()->dni)->first();
+        $elemento->ciclo = $grupo->Ciclo->ciclo;
+        $elemento->grupo = $grupo->nombre;
         $elemento->supervisor = AuthUser()->FullName;
-        $elemento->propietario = AuthUser()->FullName;
+        $elemento->propietario = $elemento->supervisor;
         $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor,PR04-01,PR04-02';
         $elemento->addFillable('instrucciones',true);
         $elemento->instrucciones = 'Pujar en un sols document comprimit: Entrevista Alumnat i Entrevista Instructor';

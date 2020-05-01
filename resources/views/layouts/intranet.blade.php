@@ -19,10 +19,13 @@
                 <br />
                 @include('layouts.partials.sidebar')
                 @include('layouts.partials.footerbuttons')
+
               </div>
             </div>
             @include('layouts.partials.topnav')
+
             @if (isset($panel))
+
                 @include('layouts.partials.panel')
             @else
                 @include('layouts.partials.content')

@@ -41,7 +41,6 @@ class Panel
 
         $panel = $this->feedPanel($todos, $titulo);
         $default = $elemento->fillDefautOptions();
-
         return view($vista,compact('panel','elemento','default'));
     }
 

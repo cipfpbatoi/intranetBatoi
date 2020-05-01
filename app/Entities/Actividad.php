@@ -42,12 +42,8 @@ class Actividad extends Model
     ];
     public $descriptionField = 'name';
     protected $hidden = ['created_at', 'updated_at'];
+    protected $attributes = [ 'fueraCentro' => 1];
 
-    public function __construct()
-    {
-        //if (AuthUser()) $this->extraescolar = esRol(AuthUser()->rol, 29)?0:1;
-        $this->fueraCentro = 1;
-    }
     public function grupos()
     {
         return $this->belongsToMany(Grupo::class,'actividad_grupo', 'idActividad', 'idGrupo', 'id', 'codigo');

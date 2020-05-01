@@ -45,18 +45,8 @@ class Incidencia extends Model
         'saved' => IncidenciaSaved::class,
         'created' => ActivityReport::class,
     ];
+    protected $attributes = ['espacio'=>null,'estado'=>0,'prioridad'=>0,'tipo'=>10];
 
-    public function __construct()
-    {
-        if (AuthUser()) {
-            $this->idProfesor = AuthUser()->dni;
-            $this->espacio = null;
-            $this->estado = 0;
-            $this->fecha = new Date('now');
-            $this->prioridad = 0;
-            $this->tipo = 10;
-        }
-    }
 
     public function Creador()
     {

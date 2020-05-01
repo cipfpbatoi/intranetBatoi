@@ -39,7 +39,7 @@ class Programacion extends Model
     ];
     protected $hidden = ['created_at', 'updated_at'];
 
-    
+    protected $attributes = ['criterios'=>0,'metodologia'=>0];
     
     public function ModuloCiclo()
     {
@@ -51,13 +51,6 @@ class Programacion extends Model
     }
     
 
-    public function __construct()
-    {
-        if (AuthUser()) $this->idProfesor = AuthUser()->dni;
-        $this->criterios = 0;
-        $this->metodologia = 0;
-        $this->curso = Curso();
-    }
 
     
     
@@ -80,9 +73,9 @@ class Programacion extends Model
         return $todos;
     }
 
-    public function scopeMisProgramaciones($query,$profesor = null)
+    public function scopeMisProgramaciones($query,$dni = null)
     {
-        if (!$profesor) $profesor = AuthUser()->dni;
+        $profesor = $dni??AuthUser()->dni;
         $horas = Horario::select('modulo','idGrupo')
                 ->distinct()
                 ->whereNotIn('modulo', config('constants.modulosSinProgramacion'))

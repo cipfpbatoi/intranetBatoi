@@ -35,7 +35,7 @@ class Modulo_grupo extends Model
     
     public static function MisModulos($dni=null,$modulo=null)
     {
-        $dni = isset($dni)?$dni:AuthUser()->dni;
+        $dni = $dni??AuthUser()->dni;
         if ($modulo)
             $modulos = Horario::select('modulo','idGrupo')
                 ->Profesor($dni)

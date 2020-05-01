@@ -35,12 +35,11 @@ class Colaboracion extends Model
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
-    public function __construct()
-    {
-        if (AuthUser()) {
-            $this->puestos = 1;
-        }
-    }
+
+    protected $attributes = [
+        'puestos' => 1,
+     ];
+
 
     public function Centro()
     {

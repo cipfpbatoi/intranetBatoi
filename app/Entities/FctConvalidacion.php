@@ -29,12 +29,8 @@ class FctConvalidacion extends Fct
         'correoInstructor' => ['type' => 'hidden'],
         
     ];
+    protected $attributes=['asociacion'=>2,'correoInstructor'=>1];
     
-    public function __construct()
-    {
-        $this->asociacion = 2;
-        $this->correoInstructor = 1;
-        
-    }
+
    
 }

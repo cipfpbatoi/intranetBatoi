@@ -33,13 +33,14 @@ class AlumnoFct extends ModelPoll
     public static function aggregate(&$votes,$option1,$option2){
 
         foreach ($option1 as $idFct => $vote){
-                $ciclo = Fct::find($idFct)->Colaboracion->Ciclo;
-                foreach ($vote as $key => $optionVotes) {
-                        foreach ($optionVotes as $optionVote) {
-                            $votes['cicle'][$ciclo->id][$key]->push($optionVote);
-                            $votes['departament'][$ciclo->departamento][$key]->push($optionVote);
+                $ciclo = Fct::find($idFct)->Colaboracion->Ciclo ?? null;
+                if ($ciclo)
+                    foreach ($vote as $key => $optionVotes) {
+                            foreach ($optionVotes as $optionVote) {
+                                $votes['cicle'][$ciclo->id][$key]->push($optionVote);
+                                $votes['departament'][$ciclo->departamento][$key]->push($optionVote);
+                        }
                     }
-                }
         }
     }
 
