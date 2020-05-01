@@ -42,11 +42,15 @@ use AuthenticatesUsers;
 
     public function logout()
     {
+
+        dd(isPrivateAddress(getClientIpAddress()));
+        if (isPrivateAddress(getClientIpAddress())){
+            Auth::guard('profesor')->logout();
+            Session()->flush();
+            return redirect('/login');
+        }
         Auth::guard('profesor')->logout();
         Session()->flush();
-        dd(isPrivateAddress(getClientIpAddress()));
-        if (isPrivateAddress(getClientIpAddress()))
-            return redirect('/login');
         return redirect()->to('https://www.google.es')->send();
 
     }
