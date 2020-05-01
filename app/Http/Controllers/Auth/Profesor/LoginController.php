@@ -42,8 +42,6 @@ use AuthenticatesUsers;
 
     public function logout()
     {
-
-        dd(isPrivateAddress(getClientIpAddress()));
         if (isPrivateAddress(getClientIpAddress())){
             Auth::guard('profesor')->logout();
             Session()->flush();
