@@ -43,9 +43,10 @@ class Menu extends Model
     }
 
     public static function make($nom, $array = false){
-        $menu = Cache::remember('menu'.$nom.AuthUser()->dni,now()->addDay(),function () use ($nom){
+        /**$menu = Cache::remember('menu'.$nom.AuthUser()->dni,now()->addDay(),function () use ($nom){
            return self::build($nom);
-        });
+        });**/
+        $menu = self::build($nom);
         if ($array) return $menu;
         return StydeMenu::make($menu);
     }
@@ -68,7 +69,7 @@ class Menu extends Model
                     
                 }
             } else {
-                $menu[$sitem->nombre] = array(self::tipoUrl($sitem->url) => $sitem->url, 'class' => $sitem->class);
+                $menu[$sitem->nombre] = array(self::tipoUrl($sitem->url) => $sitem->url, 'class' => $sitem->class,'secure'=>true);
             }
         }
         return $menu;
