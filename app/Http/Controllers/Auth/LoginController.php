@@ -32,8 +32,9 @@ class LoginController extends Controller
         if (isset(AuthUser()->nia)){
             return redirect('/alumno/home');
         }
-        if (isPrivateAddress(getClientIpAddress()))
+        if (isPrivateAddress(getClientIpAddress())){
             return view('login');
+        }
         return redirect('/social/google');
     }
     public function externLogin(Request $request,$token)
