@@ -32,32 +32,6 @@ class SocialController extends Controller
             abort('404');
         return Socialite::driver('google')->redirect();
     }
-/**
-    public function getSocialAuthCallback()
-    {
-        if ($user = Socialite::driver('google')->user()) {
-            if ($the_user = Profesor::select()->where('emailItaca', $user->email)->first()) {
-                Auth::login($the_user);
-                session(['lang' => AuthUser()->idioma]);
-            } else {
-                if ($the_user = Profesor::select()->where('email', $user->email)->first()) {
-                    Auth::login($the_user);
-                    session(['lang' => AuthUser()->idioma]);
-                } else {
-                    if ($the_user = Alumno::select()->where('email', $user->email)->first()) {
-                        Auth::guard('alumno')->login($the_user);
-                        session(['lang' => AuthUser()->idioma]);
-                        return redirect('/alumno/home');
-                    }
-                    else return redirect('login');
-                }
-            }
-            return redirect('/home');
-        } else {
-            return '¡¡¡Algo fue mal!!!';
-        }
-    }
- */
 
     private function checkTokenAndRedirect(Request $request,$user){
         if ($request->session()->has('token') && $user->api_token != session('token')) {

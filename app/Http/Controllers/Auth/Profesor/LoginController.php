@@ -49,7 +49,7 @@ use AuthenticatesUsers;
         }
         Auth::guard('profesor')->logout();
         Session()->flush();
-        return redirect()->to('https://www.cipfpbatoi.es')->send();
+        return redirect()->to('http://www.cipfpbatoi.es/index.php/ca/principal/')->send();
 
     }
 
