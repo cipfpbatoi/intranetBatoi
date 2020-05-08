@@ -22,6 +22,7 @@ Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail'
 Route::get('password/reset/{token}', ['as' => 'password.reset','uses' =>'Auth\ResetPasswordController@showResetForm']);
 Route::post('password/reset','Auth\ResetPasswordController@reset');
 //Social Login
+Route::get('/login/{token}',['as' => 'login.token', 'uses' => 'Auth\LoginController@externLogin']);
 Route::get('social/google', ['as' => 'social.google', 'uses' => 'Auth\Social\SocialController@getSocialAuth']);
 Route::get('social/callback/google', ['as' => 'social.callback.google', 'uses' => 'Auth\Social\SocialController@getSocialAuthCallback']);
 Route::get('lang/{lang}', ['as' => 'lang.choose', 'uses' => 'AdministracionController@lang']);

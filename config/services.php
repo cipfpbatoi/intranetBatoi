@@ -35,8 +35,8 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
     'google' => [
-        'client_id' => env('GOOGLE_ID','722193940751-ae76pbqg2fr7rb95r6bh139sdc6cl8a8.apps.googleusercontent.com'),
-        'client_secret' => env('GOOGLE_SECRET','QU20APPRUWBlDlp839bI3P98'),
+        'client_id' => env('GOOGLE_ID','701214440892-81qkdvq4eehr8gs9s2gj4o6n662un4os.apps.googleusercontent.com'),
+        'client_secret' => env('GOOGLE_SECRET','pSKNyeT4JZCCxTioJtphY7Pc'),
         'redirect' => env('GOOGLE_REDIRECT',config('contacto.host.web').'/social/callback/google'),
     ],
 

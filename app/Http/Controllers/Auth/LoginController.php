@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -22,9 +23,9 @@ class LoginController extends Controller
     use AuthenticatesUsers;
 
     
-    public function login()
+    public function login(Request $request)
     {
-
+        $request->session()->forget('token');
         if (isset(AuthUser()->codigo)){
             return redirect('/home');
         }
@@ -33,6 +34,12 @@ class LoginController extends Controller
         }
         if (isPrivateAddress(getClientIpAddress()))
             return view('login');
-        return redirect('/social/google');
+        return redirect()->to('http://www.cipfpbatoi.es/index.php/ca/principal/')->send();
+        //return redirect('/social/google');
+    }
+    public function externLogin(Request $request,$token)
+    {
+        session(['token'=>$token]);
+        return redirect('/social/google/');
     }
 }

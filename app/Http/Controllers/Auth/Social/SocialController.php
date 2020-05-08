@@ -26,6 +26,13 @@ class SocialController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
+    public function getSocialAuthToken($token)
+    {
+        if (!config("services.google"))
+            abort('404');
+        return Socialite::driver('google')->redirect();
+    }
+/**
     public function getSocialAuthCallback()
     {
         if ($user = Socialite::driver('google')->user()) {
@@ -46,6 +53,37 @@ class SocialController extends Controller
                 }
             }
             return redirect('/home');
+        } else {
+            return '¡¡¡Algo fue mal!!!';
+        }
+    }
+ */
+
+    private function checkTokenAndRedirect(Request $request,$user){
+        if ($request->session()->has('token') && $user->api_token != session('token')) {
+            return redirect()->to('http://www.cipfpbatoi.es/index.php/ca/principal/')->send();
+        }
+        Auth::login($user);
+        session(['lang' => AuthUser()->idioma]);
+        return redirect('/home');
+    }
+
+    public function getSocialAuthCallback(Request $request)
+    {
+        if ($user = Socialite::driver('google')->user()) {
+            if ($the_user = Profesor::select()->where('emailItaca', $user->email)->first()) {
+                return $this->checkTokenAndRedirect($request,$the_user);
+            }
+            if ($the_user = Profesor::select()->where('email', $user->email)->first()) {
+                return $this->checkTokenAndRedirect($request,$the_user);
+            }
+            if ($the_user = Alumno::select()->where('email', $user->email)->first()) {
+                Auth::guard('alumno')->login($the_user);
+                session(['lang' => AuthUser()->idioma]);
+                return redirect('/alumno/home');
+            }
+            return redirect('login');
+
         } else {
             return '¡¡¡Algo fue mal!!!';
         }
