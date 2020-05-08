@@ -34,8 +34,7 @@ class LoginController extends Controller
         }
         if (isPrivateAddress(getClientIpAddress()))
             return view('login');
-        return redirect()->to('http://www.cipfpbatoi.es/index.php/ca/principal/')->send();
-        //return redirect('/social/google');
+        return redirect('/social/google');
     }
     public function externLogin(Request $request,$token)
     {
