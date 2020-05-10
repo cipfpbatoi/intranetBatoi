@@ -42,7 +42,7 @@ class SocialController extends Controller
         }
         return $this->successloginProfesor($user);
     }
-    
+
     private function successloginProfesor($user){
         Auth::login($user);
         session(['lang' => AuthUser()->idioma]);
@@ -64,7 +64,9 @@ class SocialController extends Controller
                     session(['lang' => AuthUser()->idioma]);
                     return redirect('/alumno/home');
                 }
-                abort('401','Ho sentim però no et pots loguejar des de fora del centre')
+                else {
+                    abort('401','Ho sentim però no et pots loguejar des de fora del centre')
+                }
             }
             abort('401',"T'has de loguejar amb el teu compte corporatiu");
 
