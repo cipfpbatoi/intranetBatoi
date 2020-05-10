@@ -35,7 +35,7 @@ class SocialController extends Controller
 
     private function checkTokenAndRedirect(Request $request,$user){
         if (!$request->session()->has('token')){
-            abort('500',"Alguna cosa no ha anat be");
+            abort('500',"No hi ha token");
         }
         if ($user->api_token != session('token')) {
             abort('401',"T'has de loguejar amb el teu compte corporatiu");
