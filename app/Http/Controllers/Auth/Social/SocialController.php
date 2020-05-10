@@ -19,19 +19,19 @@ class SocialController extends Controller
         $this->middleware('guest');
     }
 
-    public function getSocialAuth()
+    public function getSocialAuth($token=null)
     {
         if (!config("services.google"))
             abort('404');
-        return Socialite::driver('google')->redirect();
+        if (!$token) return Socialite::driver('google')->redirect();
+        else{
+            $profesor = Profesor::where('api_token',$token)->first();
+            if ($profesor) return Socialite::driver('google')->with(["prompt" => $profesor->email])->redirect();
+            abort('404');
+        }
     }
 
-    public function getSocialAuthToken($token)
-    {
-        if (!config("services.google"))
-            abort('404');
-        return Socialite::driver('google')->redirect();
-    }
+
 
     private function checkTokenAndRedirect(Request $request,$user){
         if (!$request->session()->has('token')){
@@ -54,7 +54,7 @@ class SocialController extends Controller
         if ($user = Socialite::driver('google')->user()) {
             if ($the_user = Profesor::select()->where('email', $user->email)->first()) {
                 if (isPrivateAddress(getClientIpAddress())){
-                    return $this->successloginProfesor($user);
+                    return $this->successloginProfesor($the_user);
                 }
                 return $this->checkTokenAndRedirect($request,$the_user);
             }

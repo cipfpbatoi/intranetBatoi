@@ -25,7 +25,6 @@ class LoginController extends Controller
     
     public function login(Request $request)
     {
-        $request->session()->forget('token');
         if (isset(AuthUser()->codigo)){
             return redirect('/home');
         }
@@ -35,11 +34,11 @@ class LoginController extends Controller
         if (isPrivateAddress(getClientIpAddress())){
             return view('login');
         }
-        return redirect('/social/google');
+        abort('401',"No estas autoritzat");
     }
     public function externLogin(Request $request,$token)
     {
         session(['token'=>$token]);
-        return redirect('/social/google/');
+        return redirect("/social/google/$token");
     }
 }
