@@ -28,7 +28,7 @@ $programaciones = Intranet\Entities\Programacion::misProgramaciones($elemento->d
             </ul>
         </li>
         <li>Enllaç per a fitxatge fora del centre:
-            <a href="http://ext.intranet.cipfpbatoi.es/{{$elemento->api_token}}">http://ext.intranet.cipfpbatoi.es/{{$elemento->api_token}}</a>
+            <a href="http://ext.intranet.cipfpbatoi.es?{{$elemento->api_token}}">http://ext.intranet.cipfpbatoi.es?{{$elemento->api_token}}</a>
         </li>
     </ul>
     <p></p>
