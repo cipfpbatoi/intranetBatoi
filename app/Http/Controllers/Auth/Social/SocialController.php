@@ -34,9 +34,16 @@ class SocialController extends Controller
     }
 
     private function checkTokenAndRedirect(Request $request,$user){
-        if ($request->session()->has('token') && $user->api_token != session('token')) {
-            return redirect()->to('http://www.cipfpbatoi.es/index.php/ca/principal/')->send();
+        if (!$request->session()->has('token')){
+            abort('500',"Alguna cosa no ha anat be");
         }
+        if ($user->api_token != session('token')) {
+            abort('401',"T'has de loguejar amb el teu compte corporatiu");
+        }
+        return $this->successloginProfesor($user);
+    }
+    
+    private function successloginProfesor($user){
         Auth::login($user);
         session(['lang' => AuthUser()->idioma]);
         return redirect('/home');
@@ -45,21 +52,24 @@ class SocialController extends Controller
     public function getSocialAuthCallback(Request $request)
     {
         if ($user = Socialite::driver('google')->user()) {
-            if ($the_user = Profesor::select()->where('emailItaca', $user->email)->first()) {
-                return $this->checkTokenAndRedirect($request,$the_user);
-            }
             if ($the_user = Profesor::select()->where('email', $user->email)->first()) {
+                if (isPrivateAddress(getClientIpAddress())){
+                    return $this->successloginProfesor($user);
+                }
                 return $this->checkTokenAndRedirect($request,$the_user);
             }
             if ($the_user = Alumno::select()->where('email', $user->email)->first()) {
-                Auth::guard('alumno')->login($the_user);
-                session(['lang' => AuthUser()->idioma]);
-                return redirect('/alumno/home');
+                if (isPrivateAddress(getClientIpAddress())){
+                    Auth::guard('alumno')->login($the_user);
+                    session(['lang' => AuthUser()->idioma]);
+                    return redirect('/alumno/home');
+                }
+                abort('401','Ho sentim però no et pots loguejar des de fora del centre')
             }
-            return redirect('login');
+            abort('401',"T'has de loguejar amb el teu compte corporatiu");
 
         } else {
-            return '¡¡¡Algo fue mal!!!';
+            abort('500','¡¡¡Algo fue mal con google !!!');
         }
     }
     
