@@ -26,7 +26,7 @@ class SocialController extends Controller
         if (!$token) return Socialite::driver('google')->redirect();
         else{
             $profesor = Profesor::where('api_token',$token)->first();
-            if ($profesor) return Socialite::driver('google')->with(["prompt" => $profesor->email])->redirect();
+            if ($profesor) return Socialite::driver('google')->with(["login_hint" => $profesor->email])->redirect();
             abort('404');
         }
     }
