@@ -65,7 +65,7 @@ class SocialController extends Controller
                     return redirect('/alumno/home');
                 }
                 else {
-                    abort('401','Ho sentim però no et pots loguejar des de fora del centre')
+                    abort('401','Ho sentim però no et pots loguejar des de fora del centre');
                 }
             }
             abort('401',"T'has de loguejar amb el teu compte corporatiu");
