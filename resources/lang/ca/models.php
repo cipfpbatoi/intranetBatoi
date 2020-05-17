@@ -239,7 +239,12 @@ return array(
             'avisa' => 'Avisa Professors',
             'estan' => 'Tens tots els resultats del departament disponibles',
             'generado' => "L'informe del departament està disponible",
+
             
+        ),
+        'AlumnoResultado' => array(
+            'index' => 'Inserir qualificacions del modul/grup :quien',
+            'create' => 'Afegir Qualificació'
         ),
         'Documento' => array(
             'index' => 'Cercar Documents',
@@ -468,6 +473,7 @@ return array(
             'PPoll' => 'Plantilla Enquesta',
             'Poll' => 'Enquesta',
             'Option' => 'Pregunta',
+            'AlumnoResultado' => 'Avaluacio Alumne'
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

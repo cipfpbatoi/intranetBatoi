@@ -24,7 +24,12 @@ trait traitCRUD{
     {
         if (Session::get('redirect')) $this->redirect = Session::get('redirect'); //variable session
         
-        if ($this->redirect) return redirect()->action($this->redirect); // variable controlador
+        if ($this->redirect) {
+            if (!isset($this->search))
+                return redirect()->action($this->redirect);
+            else
+                return redirect()->action($this->redirect,$this->search);
+        } // variable controlador
         
         return redirect()->action($this->model . 'Controller@index'); //defecto
     }
@@ -73,8 +78,8 @@ trait traitCRUD{
     }
 
 
-    protected function createWithDefaultValues(){
-        return new $this->class;
+    protected function createWithDefaultValues($default = []){
+        return new $this->class($default);
     }
 
     /* 

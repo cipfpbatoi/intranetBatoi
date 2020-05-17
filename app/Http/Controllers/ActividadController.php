@@ -47,7 +47,7 @@ class ActividadController extends IntranetController
     }
 
 
-    protected function createWithDefaultValues()
+    protected function createWithDefaultValues( $default=[])
     {
         $data = new Date('tomorrow');
         return new Actividad(['extraescolar' => 1,'desde'=>$data,'hasta'=>$data]);

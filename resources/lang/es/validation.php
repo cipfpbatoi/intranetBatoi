@@ -258,7 +258,10 @@ return array(
                 'Instructor' => 'Instructor',
                 'aviso' => 'Envia correo',
                 'Dual' => 'Tutor Dual',
-
+                'adquiridosSI' => "Resultados Aprendizaje Adquiridos",
+                'adquiridosNO' => 'Resultados Aprendizaje No Adquiridos',
+                'nota' => 'Nota',
+                'recomendaciones' => 'Recomendaciones'
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

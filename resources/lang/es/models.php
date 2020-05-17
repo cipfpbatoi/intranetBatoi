@@ -239,6 +239,10 @@ return array(
             'estan' => 'Tienes todos los resultados del departamento disponibles',
             'generado' => 'El informe del departamento está disponible'
         ),
+        'Alumnoresultado' => array(
+            'index' => 'Insertar calificaciones del modulo/grupo :quien',
+            'create' => 'Añadir calificación'
+        ),
         'Documento' => array(
             'index' => 'Buscar Documentos',
             'create' => 'Crear Documento',
@@ -457,6 +461,7 @@ return array(
             'Ppoll' => 'Plantilla encuesta',
             'Poll' => 'Encuesta',
             'Option' => 'Pregunta',
+            'AlumnoResultado' => 'Avaluacio Alumne'
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

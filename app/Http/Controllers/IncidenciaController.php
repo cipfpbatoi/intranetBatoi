@@ -8,6 +8,7 @@ use Intranet\Botones\BotonBasico;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\OrdenTrabajo;
+use Jenssegers\Date\Date;
 
 /**
  * Class IncidenciaController
@@ -131,7 +132,7 @@ class IncidenciaController extends IntranetController
         return $this->redirect();
     }
 
-    protected function createWithDefaultValues()
+    protected function createWithDefaultValues($default = [])
     {
         return new Incidencia(['idProfesor'=>AuthUser()->dni,'fecha'=>new Date('now')]);
     }

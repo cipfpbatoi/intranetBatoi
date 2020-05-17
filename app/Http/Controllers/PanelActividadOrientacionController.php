@@ -66,7 +66,7 @@ class PanelActividadOrientacionController extends IntranetController
      * @param null $default
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    protected function createWithDefaultValues()
+    protected function createWithDefaultValues($default=[])
     {
         return new Actividad(['extraescolar' => 0,'fueraCentro'=>0]);
     }

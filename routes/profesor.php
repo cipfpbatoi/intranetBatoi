@@ -352,6 +352,11 @@ Route::post('/infdepartamento/create',
         ['as' => 'resultado.hazInforme', 'uses' => 'PanelListadoEntregasController@hazInformeTrimestral']);
 Route::put('/infdepartamento/create', 
         ['as' => 'resultado.modificaInforme', 'uses' => 'PanelListadoEntregasController@modificaInformeTrimestral']);
+Route::get('/seguimiento/{seguimiento}/alumno',['as'=>'seguimiento.alumnos.index','uses'=>'PanelSeguimientoAlumnosController@indice']);
+Route::resource('/alumnoresultado','PanelSeguimientoAlumnosController',['except' => ['create','store']]);
+Route::get('/alumnoresultado/{moduloGrupo}/create',['as'=>'seguimiento.alumno.create','uses'=>'PanelSeguimientoAlumnosController@create']);
+Route::post('/alumnoresultado/{moduloGrupo}/create',['as'=>'seguimiento.alumno.store','uses'=>'PanelSeguimientoAlumnosController@store']);
+
 //Programacion
 Route::resource('/programacion', 'ProgramacionController', ['except' => ['destroy', 'update', 'show']]);
 Route::put('/programacion/{programacion}/seguimiento', 

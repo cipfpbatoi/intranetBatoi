@@ -70,21 +70,22 @@ function editRow() {
 		var $span=$(celda).children();
 		$span.hide();
 		switch ($span.attr('class')) {
+			case 'none' :
+				$span.after('<span class="editando">'+$span.text()+'</span>');
+				break;
 			case 'input':
 				$span.after('<span class="editando"><input type="text" class="form-control" name="'
 					+$span.attr('name')+'" value="'+$span.text()+'"></span>');
 				break;
 			case 'textarea':
-//				$span.after('<span class="editando"><textarea rows="3" class="textarea resizable form-control" name="'
-//					+$span.attr('name')+'">'+$span.text()+'</textarea></span>');
-                                var nombre = '#'+$span.attr('name');
-                                $span.after('<span class="editando"><textarea name="'
-					+$span.attr('name')+'" id="'+$span.attr('name')+'" style="display:none;"></textarea><div>'+contenido+$span.html()+'</div>');      
-                                $('#area').wysiwyg();
-                                $('#area').focus();
-                                $('#area').focusout(function() {
-                                    $(nombre).val($('#area').html());
-                                });
+				var nombre = '#'+$span.attr('name');
+				$span.after('<span class="editando"><textarea name="'
+	+$span.attr('name')+'" id="'+$span.attr('name')+'" style="display:none;"></textarea><div>'+contenido+$span.html()+'</div>');
+				$('#area').wysiwyg();
+				$('#area').focus();
+				$('#area').focusout(function() {
+					$(nombre).val($('#area').html());
+				});
 				break;
 			case 'botones':
 				$span.after('<span class="editando"><a href="#" class="imgButton" id="edit-ok">'
@@ -122,7 +123,7 @@ function saveEdit(ev) {
  		data: datos
  	}).then(function(res) {
  		console.log(res);
- 		if (res.message=="OK") {
+ 		if (res.message=="OK" || res.success ) {
 			$('.editando').each(function(index, span) {
 				$anterior=$(span).prev();
 				$anterior.show();

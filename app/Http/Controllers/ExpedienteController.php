@@ -82,7 +82,7 @@ class ExpedienteController extends IntranetController
         return back();
     }
 
-    protected function createWithDefaultValues()
+    protected function createWithDefaultValues($default = [])
     {
         return new Expediente(['idProfesor'=>AuthUser()->dni]);
     }

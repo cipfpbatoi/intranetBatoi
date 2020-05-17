@@ -8,6 +8,7 @@ use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Styde\Html\Facades\Alert;
+use Intranet\Botones\BotonImg;
 
 
 /**
@@ -42,6 +43,8 @@ class ResultadoController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['delete', 'edit']);
+        $this->panel->setBoton('grid', new BotonImg('seguimiento.alumno',['img' =>  'fa-mortar-board','where' => ['evaluacion', '==', 3]]));
+
     }
 
 
@@ -100,7 +103,7 @@ class ResultadoController extends IntranetController
         return back();
     }
 
-    protected function createWithDefaultValues(){
+    protected function createWithDefaultValues( $default=[]){
         return new Resultado(['idProfesor'=>AuthUser()->dni]);
     }
 

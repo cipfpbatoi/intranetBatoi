@@ -64,7 +64,7 @@ class DocumentoController extends IntranetController
         return parent::store(subsRequest($request->duplicate(null, $request->except($except)), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
     }
 
-    protected function createWithDefaultValues(){
+    protected function createWithDefaultValues($default=[]){
         return new Documento(['curso'=>Curso(),'propietario'=>config('contacto.titulo')]);
      }
 

@@ -66,7 +66,7 @@ class ComisionController extends IntranetController
     }
 
 
-    protected function createWithDefaultValues(){
+    protected function createWithDefaultValues( $default=[]){
         $manana = new Date('tomorrow');
         $manana->addHours(8);
         if (Fct::misFcts()->count()){

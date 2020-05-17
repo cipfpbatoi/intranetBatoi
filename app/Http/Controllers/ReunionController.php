@@ -46,7 +46,7 @@ class ReunionController extends IntranetController
         return Reunion::MisReuniones()->get();
     }
 
-    protected function createWithDefaultValues(){
+    protected function createWithDefaultValues( $default=[]){
         return new Reunion(['idProfesor'=>AuthUser()->dni,'curso'=>Curso()]);
     }
 

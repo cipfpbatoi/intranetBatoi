@@ -96,5 +96,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/colaboracion/{colaboracion}/switch','ColaboracionController@switch');
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
 
+    Route::resource('alumnoresultado','AlumnoResultadoContoller');
     //Route::get('/convenio','EmpresaController@indexConvenio');
 });

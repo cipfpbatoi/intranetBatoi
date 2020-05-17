@@ -67,6 +67,7 @@ return array(
         'desde' => 'Des de',
         'hasta' => 'Fins',
         'resum' => 'Resum',
+
      ),
     'buttons' => array(
         'confirmar' => 'Confirmar',

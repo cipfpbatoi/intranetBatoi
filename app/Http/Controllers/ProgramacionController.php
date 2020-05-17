@@ -96,7 +96,7 @@ class ProgramacionController extends IntranetController
         return redirect()->away($elemento->fichero);
     }
 
-    protected function createWithDefaultValues(){
+    protected function createWithDefaultValues( $default=[]){
         return new Programacion(['idProfesor'=>AuthUser()->dni,'curso'=>Curso()]);
     }
 //    protected function email($id)

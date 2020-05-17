@@ -265,6 +265,10 @@ return array(
                 'scala' => 'Escala valoració',
                 'aviso' => 'Envia correu',
                 'Dual' => 'Tutor Dual',
+                'adquiridosSI' => "Resultats Aprenentatge Adquirits",
+                'adquiridosNO' => 'Resultats Aprenentatge No Adquirits',
+                'nota' => 'Nota',
+                'recomendaciones' => 'Recomanacions'
 
              ),
         'empty_option' => array(
