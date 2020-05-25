@@ -258,10 +258,10 @@ return array(
                 'Instructor' => 'Instructor',
                 'aviso' => 'Envia correo',
                 'Dual' => 'Tutor Dual',
-                'adquiridosSI' => "Resultados Aprendizaje Adquiridos",
-                'adquiridosNO' => 'Resultados Aprendizaje No Adquiridos',
+                'adquiridosSI' => "Valoración del trabajo en el 3er trimestre del curso",
+                'adquiridosNO' => 'Medidas educativas complementarias de refuerzo para el curso siguiente',
                 'nota' => 'Nota',
-                'recomendaciones' => 'Recomendaciones'
+                'valoraciones' => "Seguimento del alumno/a en el tercer trimestre"
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

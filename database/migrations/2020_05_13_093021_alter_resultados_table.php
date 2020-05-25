@@ -14,7 +14,6 @@ class AlterResultadosTable extends Migration
     public function up()
     {
         Schema::table('resultados', function (Blueprint $table) {
-            $table->text('adquiridosSI', 65535)->nullable();
             $table->text('adquiridosNO', 65535)->nullable();
         });
     }
@@ -28,7 +27,6 @@ class AlterResultadosTable extends Migration
 	public function down()
 	{
         Schema::table('resultados', function (Blueprint $table) {
-            $table->dropColumn('adquiridosSI');
             $table->dropColumn('adquiridosNO');
         });
 	}

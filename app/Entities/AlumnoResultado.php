@@ -16,17 +16,19 @@ class AlumnoResultado extends Model
         'idAlumno',
         'idModuloGrupo',
         'nota',
-        'recomendaciones',
+        'valoraciones',
+        'observaciones'
     ];
     protected $rules = [
         'idAlumno' => 'required',
         'idModuloGrupo' => 'required',
         'nota' => 'required|integer',
+        'observaciones' => 'max:200',
       ];
     protected $inputTypes = [
         'idModuloGrupo' => ['type' => 'hidden'],
         'idAlumno' => ['type' => 'select'],
-        'recomendaciones' => ['type' => 'textarea'],
+        'valoraciones' => ['type' => 'select'],
     ];
     protected $attributes = [
         'nota' => 0,
@@ -51,5 +53,16 @@ class AlumnoResultado extends Model
         $alumnos_rellenos = hazArray(AlumnoResultado::where('idModuloGrupo',$this->idModuloGrupo)->get(),'idAlumno');
         return hazArray($this->ModuloGrupo->Grupo->Alumnos->whereNotIn('nia',$alumnos_rellenos),'nia','fullName');
     }
+
+    public function getNotaStringAttribute()
+    {
+        return config('auxiliares.notas')[$this->nota];
+    }
+
+    public function getValoracionAttribute()
+    {
+        return config('auxiliares.valoraciones')[$this->valoraciones];
+    }
+
 
 }

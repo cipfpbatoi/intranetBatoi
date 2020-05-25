@@ -4,26 +4,14 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoResultado;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Curso;
-use Intranet\Entities\Alumno;
-use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Resultado;
-use Illuminate\Support\Facades\Session;
 
 class PanelSeguimientoAlumnosController extends IntranetController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoResultado';
     protected $gridFields = ['nombre', 'nota', 'recomanacions'];
-
-
-
-
+    protected $redirect = 'PanelSeguimientoAlumnosController@indice';
 
     public function indice($search)
     {
@@ -33,7 +21,10 @@ class PanelSeguimientoAlumnosController extends IntranetController
         $alumnes = $this->createWithDefaultValues(['idModuloGrupo'=>$resultado->idModuloGrupo])->getidAlumnoOptions();
         return view('seguimiento.index', compact('elemento',  'alumnes', 'resultados'));
 
+
     }
+
+
 
 
     /*
@@ -46,5 +37,9 @@ class PanelSeguimientoAlumnosController extends IntranetController
         return back();
     }
 
-
+    public function destroy($id){
+        $this->search = 1;
+        parent::destroy($id);
+        return back();
+    }
 }

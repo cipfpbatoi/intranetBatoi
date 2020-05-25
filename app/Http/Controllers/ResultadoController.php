@@ -43,7 +43,7 @@ class ResultadoController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['delete', 'edit']);
-        $this->panel->setBoton('grid', new BotonImg('seguimiento.alumno',['img' =>  'fa-mortar-board','where' => ['evaluacion', '==', 3]]));
+        $this->panel->setBoton('grid', new BotonImg('alumnoresultado.alumno',['img' =>  'fa-mortar-board','where' => ['evaluacion', '==', 3]]));
 
     }
 
@@ -106,7 +106,5 @@ class ResultadoController extends IntranetController
     protected function createWithDefaultValues( $default=[]){
         return new Resultado(['idProfesor'=>AuthUser()->dni]);
     }
-
-
-
+    
 }

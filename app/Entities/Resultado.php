@@ -27,7 +27,6 @@ class Resultado extends Model
         'udProg',
         'udImp',
         'observaciones',
-        'adquiridosSI',
         'adquiridosNO',
         'idProfesor',
         
@@ -44,7 +43,6 @@ class Resultado extends Model
         'idModuloGrupo' => ['type' => 'select'],
         'evaluacion' => ['type' => 'select'],
         'observaciones' => ['type' => 'textarea'],
-        'adquiridosSI' => ['type' => 'textarea'],
         'adquiridosNO' => ['type' => 'textarea'],
         'idProfesor' => ['type' => 'text'],
         

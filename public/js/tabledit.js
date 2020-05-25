@@ -75,7 +75,17 @@ function editRow() {
 				break;
 			case 'input':
 				$span.after('<span class="editando"><input type="text" class="form-control" name="'
-					+$span.attr('name')+'" value="'+$span.text()+'"></span>');
+					+$span.attr('name')+'" value="'+$span.text()+' maxlenght=200"></span>');
+				break;
+			case 'select':
+				$span.after('<span class="editando"><select id="'+$span.attr('name')+'" class="form-control" name="'
+					+$span.attr('name')+'"></select></span>');
+				$.each(options[$span.attr('name')],(index,value) => {
+					if (index == $span.text())
+						$("#"+$span.attr('name')).append("<option value='"+index+"' selected>"+value+"</option>")
+					else
+						$("#"+$span.attr('name')).append("<option value='"+index+"'>"+value+"</option>")
+				});
 				break;
 			case 'textarea':
 				var nombre = '#'+$span.attr('name');
@@ -128,8 +138,11 @@ function saveEdit(ev) {
 				$anterior=$(span).prev();
 				$anterior.show();
 				if ($anterior.attr('class')!='botones')
-					$anterior.html($(span).children().val() );
-			})
+					if ($anterior.attr('class') != 'select')
+						$anterior.html($(span).children().val() );
+					else
+						$anterior.html(options[$anterior.attr('name')][$(span).children().val()]);
+			});
 			cancelEdit();
  		}
  	}, function(res) {

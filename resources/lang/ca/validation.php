@@ -265,10 +265,9 @@ return array(
                 'scala' => 'Escala valoració',
                 'aviso' => 'Envia correu',
                 'Dual' => 'Tutor Dual',
-                'adquiridosSI' => "Resultats Aprenentatge Adquirits",
-                'adquiridosNO' => 'Resultats Aprenentatge No Adquirits',
+                'adquiridosNO' => "Mesures educatives complementàries de reforç per al següent curs",
                 'nota' => 'Nota',
-                'recomendaciones' => 'Recomanacions'
+                'valoraciones' => "Seguiment de l'alumne/a en el tercer trimestre"
 
              ),
         'empty_option' => array(

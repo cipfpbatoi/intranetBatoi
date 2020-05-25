@@ -34,6 +34,9 @@ return [
         'Fct'=>'Fct x Tutor',
         'AlumnoFct'=> 'Fct x Alumno'],
     'collectMailable' => ['Instructor'=> 'Tots els instructors'],
-    'notas' => [0=>'No Avaluat',1=>'1',2=>'2',3=>'3',4=>'4',5=>'5',6=>'6',7=>'7',8=>'8',9=>'9',10=>'10',11=>'MH',12=>'No Cursa']
+    'notas' => [0=>'No Avaluat',1=>'1',2=>'2',3=>'3',4=>'4',5=>'5',6=>'6',7=>'7',8=>'8',9=>'9',10=>'10',11=>'MH',12=>'Convalida',13=>'Aprovada amb anterioritat'],
+    'valoraciones' => [0=>'Ha seguit de manera satisfactòria el procés de formació online, realitzant les tasques sol·licitades en la seua majoria'
+        ,1=>'El seguiment de la formació online ha estat suficient, realitzant algunes de les tasques sol·licitades'
+        ,2=>'No ha seguit la formació online i no ha realitzat cap o gairebé cap de les tasques sol·licitades']
 
 ];

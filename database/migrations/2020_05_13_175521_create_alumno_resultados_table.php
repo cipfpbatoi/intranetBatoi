@@ -18,7 +18,8 @@ class CreateAlumnoResultadosTable extends Migration {
             $table->string('idAlumno', 8)->collation('utf8_unicode_ci');
             $table->integer('idModuloGrupo')->unsigned();
             $table->tinyInteger('nota')->default(0);
-            $table->text('recomendaciones')->nullable();
+            $table->tinyInteger('valoraciones')->default(0);
+            $table->string('observaciones',200)->nullable();
 			$table->unique(['idAlumno','idModuloGrupo'], 'alumno_resultados_unique');
             $table->foreign('idModuloGrupo')->references('id')->on('modulo_grupos')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreign('idAlumno')->references('nia')->on('alumnos')->onUpdate('CASCADE')->onDelete('CASCADE');
