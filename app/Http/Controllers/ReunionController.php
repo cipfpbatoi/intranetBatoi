@@ -108,9 +108,9 @@ class ReunionController extends IntranetController
             if (!$elemento->avaluacioFinal){
                 return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
             }
-            $grupo = Grupo::QTutor($elemento->dni)->first();
-            $tAlumnos = hazArray($grupo->Alumnos,'nia','nameFull');
             $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
+            $grupo = Grupo::QTutor($elemento->dni)->first();
+            $tAlumnos = hazArray($grupo->Alumnos->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
             return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes','tAlumnos','sAlumnos'));
 
         }

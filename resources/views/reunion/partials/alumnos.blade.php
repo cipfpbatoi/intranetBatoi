@@ -26,14 +26,16 @@
                 @endforeach
             </table>
         </div>
-        <div class="gruposContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
-            <form method="POST" class="agua" action="/reunion/{!!$elemento->id!!}/nuevoAlumno">
-                {{ csrf_field() }}
-                <input type='hidden' name='idReunion' value="{!!$elemento->id!!}">
-                {{ Form::select('idAlumno',$tAlumnos,0,['id'=>'idAlumno']) }}
-                {{ Form::select('capacitats',config('auxiliares.promociona'),0) }}
-                <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") @lang("models.modelos.Alumno") ">
-            </form>
-        </div>
+        @if (count($tAlumnos))
+            <div class="gruposContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
+                <form method="POST" class="agua" action="/reunion/{!!$elemento->id!!}/nuevoAlumno">
+                    {{ csrf_field() }}
+                    <input type='hidden' name='idReunion' value="{!!$elemento->id!!}">
+                    {{ Form::select('idAlumno',$tAlumnos,0,['id'=>'idAlumno']) }}
+                    {{ Form::select('capacitats',config('auxiliares.promociona'),0) }}
+                    <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") @lang("models.modelos.Alumno") ">
+                </form>
+            </div>
+        @endif
     </div>
 </div>
