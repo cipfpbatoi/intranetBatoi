@@ -265,7 +265,7 @@ return array(
                 'scala' => 'Escala valoració',
                 'aviso' => 'Envia correu',
                 'Dual' => 'Tutor Dual',
-                'adquiridosNO' => "Mesures educatives complementàries de reforç per al següent curs",
+                'adquiridosNO' => "Valoració de la tasca del 3r Trimestre. Continguts que falten per impartir al módul",
                 'nota' => 'Nota',
                 'valoraciones' => "Seguiment de l'alumne/a en el tercer trimestre"
 

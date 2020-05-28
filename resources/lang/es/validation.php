@@ -258,8 +258,7 @@ return array(
                 'Instructor' => 'Instructor',
                 'aviso' => 'Envia correo',
                 'Dual' => 'Tutor Dual',
-                'adquiridosSI' => "Valoración del trabajo en el 3er trimestre del curso",
-                'adquiridosNO' => 'Medidas educativas complementarias de refuerzo para el curso siguiente',
+                'adquiridosNO' => 'Valoración de las tareas del 3r Trimestre. Contenidos que faltan por impartir al módulo',
                 'nota' => 'Nota',
                 'valoraciones' => "Seguimento del alumno/a en el tercer trimestre"
              ),
