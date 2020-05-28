@@ -64,6 +64,11 @@ class AsistentesCreate
                 if ($profe->Sustituye) $reunion->profesores()->attach($profe->Sustituye->dni,['asiste'=>true]);
                 else $reunion->profesores()->attach($profe->dni,['asiste'=>true]);
             }
+            if ($reunion->avaluacioFinal){
+                foreach ($grupo->Alumnos as $alumno){
+                    $reunion->alumnos()->attach($alumno->nia,['capacitats'=>0]);
+                }
+            }
 
         }
     }

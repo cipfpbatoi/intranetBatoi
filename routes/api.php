@@ -78,6 +78,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('hora', 'HoraController', ['except' => ['edit', 'create']]);
 //Route::resource('asistencia','AsistenciaController',['except'=>['edit','create']]);
     Route::put('/asistencia/cambiar', 'AsistenciaController@cambiar');
+    Route::put('/reunion/{idReunion}/alumno/{idAlumno}','ReunionController@putAlumno');
 
 
 

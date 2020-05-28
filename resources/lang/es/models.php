@@ -219,6 +219,7 @@ return array(
             'saveFile' => 'Archivar',
             'deleteFile' => 'Borrar Acta Archivada',
             'control' => 'Control Reuniones por grupo',
+            'alumnos' => 'Avaluación individual'
         ),
         'Grupotrabajo'=> array(
             'show' => 'Muestra grupo de trabajo id.',

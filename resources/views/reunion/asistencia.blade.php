@@ -7,6 +7,9 @@
     @include('reunion.partials.editar')
     @include('reunion.partials.ordenes')
     @include('reunion.partials.profesores')
+    @if ($elemento->avaluacioFinal)
+        @include('reunion.partials.alumnos')
+    @endif
 </div>
 <a href="/reunion" class="btn btn-success">@lang("messages.buttons.atras") </a>
 @endsection
@@ -14,6 +17,9 @@
     @lang("models.Reunion.detalle")
 @endsection
 @section('scripts')
+    @if ($elemento->avaluacioFinal)
+        <script src="/js/Reunion/valoracioAlumnat.js"></script>
+    @endif
 <script src="/js/Reunion/checkAsistencia.js"></script>
 <script src="/js/tabledit.js"></script>
 @endsection

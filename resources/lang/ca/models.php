@@ -220,6 +220,7 @@ return array(
             'saveFile' => 'Arxivar',
             'deleteFile' => 'Esborrar Acta Arxivada',
             'control' => 'Control Reunions per grup',
+            'alumnos' => 'Avaluació individual'
         ),
         'Grupotrabajo'=> array(
             'show' => 'Mostra grup de treball id.',

@@ -71,6 +71,10 @@ class Reunion extends Model
     {
         return $this->hasMany(OrdenReunion::class, 'idReunion', 'id');
     }
+    public function alumnos()
+    {
+        return $this->belongsToMany(Alumno::class, 'alumno_reuniones', 'idReunion', 'idAlumno')->withPivot('capacitats');
+    }
 
     public function scopeMisReuniones($query)
     {
@@ -188,6 +192,9 @@ class Reunion extends Model
     }
     public function getXnumeroAttribute(){
         return config("auxiliares.numeracion.$this->numero");
+    }
+    public function getAvaluacioFinalAttribute(){
+        return ($this->tipo == 7 && $this->numero == 34 );
     }
 
 }

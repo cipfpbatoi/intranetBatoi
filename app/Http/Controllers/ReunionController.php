@@ -105,7 +105,14 @@ class ReunionController extends IntranetController
             $elemento->setInputType('grupo', ['type' => 'hidden']);
             $default = $elemento->fillDefautOptions();
             $modelo = $this->model;
-            return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
+            if (!$elemento->avaluacioFinal){
+                return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
+            }
+            $grupo = Grupo::QTutor($elemento->dni)->first();
+            $tAlumnos = hazArray($grupo->Alumnos,'nia','nameFull');
+            $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
+            return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes','tAlumnos','sAlumnos'));
+
         }
     }
 

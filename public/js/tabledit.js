@@ -75,7 +75,7 @@ function editRow() {
 				break;
 			case 'input':
 				$span.after('<span class="editando"><input type="text" class="form-control" name="'
-					+$span.attr('name')+'" value="'+$span.text()+' maxlenght=200"></span>');
+					+$span.attr('name')+'" value="'+$span.text()+'" maxlenght=200></span>');
 				break;
 			case 'select':
 				$span.after('<span class="editando"><select id="'+$span.attr('name')+'" class="form-control" name="'
