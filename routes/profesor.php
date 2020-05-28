@@ -42,7 +42,9 @@ Route::put('/reunion/{reunion}/edit', ['as' => 'reunion.update', 'uses' => 'Reun
 Route::post('/reunion/{reunion}/nuevoOrden', 'ReunionController@altaOrden');
 Route::get('/reunion/{reunion}/borrarOrden/{orden}', 'ReunionController@borrarOrden');
 Route::post('/reunion/{reunion}/nuevoProfesor', 'ReunionController@altaProfesor');
+Route::post('/reunion/{reunion}/nuevoAlumno', 'ReunionController@altaAlumno');
 Route::get('/reunion/{reunion}/borrarProfesor/{profesor}', 'ReunionController@borrarProfesor');
+Route::get('/reunion/{reunion}/borrarAlumno/{alumno}', 'ReunionController@borrarAlumno');
 Route::get('/reunion/{reunion}/coordinador/{profesor}', 'ReunionController@Coordinador');
 Route::get('reunion/campo/{campo}', 'ReunionController@includegrid');
 Route::get('/reunion/{reunion}/email', ['as' => 'reunion.email', 'uses' => 'ReunionController@email']);

@@ -131,6 +131,21 @@ class ReunionController extends IntranetController
         return redirect()->route('reunion.update', ['reunion' => $reunion_id]);
     }
 
+    public function borrarAlumno($reunion_id, $alumno_id)
+    {
+
+        $reunion = Reunion::find($reunion_id);
+        $reunion->alumnos()->detach($alumno_id);
+        return redirect()->route('reunion.update', ['reunion' => $reunion_id]);
+    }
+
+    public function altaAlumno(Request $request, $reunion_id)
+    {
+        $reunion = Reunion::find($reunion_id);
+        $reunion->alumnos()->syncWithoutDetaching([$request->idAlumno => ['capacitats' => $request->capacitats]]);
+        return redirect()->route('reunion.update', ['reunion' => $reunion_id]);
+    }
+
     public function altaOrden(Request $request, $reunion_id)
     {
         if ($request->orden == '') {

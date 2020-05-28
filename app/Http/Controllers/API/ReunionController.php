@@ -13,7 +13,7 @@ class ReunionController extends ApiBaseController
     protected function putAlumno($idReunion,$idAlumno, Request $request){
         $reunion = Reunion::findOrFail($idReunion);
         if ($reunion){
-            $reunion->alumnos()->attach($idAlumno,['capacitats'=> $request->capacitats]);
+            $reunion->alumnos()->updateExistingPivot($idAlumno,['capacitats'=> $request->capacitats]);
             return $this->sendResponse($request->capacitats, 'OK');
         }
         else return $this->sendError('Reunió no trobada',404);
