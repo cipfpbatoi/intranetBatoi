@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers\Auth\Profesor;
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
+use Styde\Html\Facades\Alert;
 
 class PerfilController extends Perfil
 {
