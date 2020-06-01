@@ -56,6 +56,8 @@ Route::get('/ordenreunion/update', ['as' => 'ordenreunion.update', 'uses' => 'Re
 Route::get('/reunion/{reunion}/saveFile', ['as' => 'reunion.saveFile', 'uses' => 'ReunionController@saveFile']);
 Route::post('/reunion/{reunion}/deleteFile', ['as' => 'reunion.deleteFile', 'uses' => 'ReunionController@deleteFile']);
 Route::get('/reunion/{reunion}/ics', ['as' => 'reunion.ics', 'uses' => 'ReunionController@ics']);
+Route::get('/reunion/{reunion}/informe', ['as' => 'reunion.informeAlumno', 'uses' => 'ReunionController@printInformes']);
+
 
 Route::resource('/grupotrabajo', 'GrupoTrabajoController', ['except' => ['destroy', 'update']]);
 Route::get('/grupotrabajo/{grupotrabajo}/delete', ['as' => 'grupotrabajo.destroy', 'uses' => 'GrupoTrabajoController@destroy']);
@@ -266,7 +268,7 @@ Route::get('/alumnofct/{id}/delete', ['as' => 'alumnofct.destroy', 'uses' => 'Fc
 Route::get('/alumnofct/convalidacion',['as' => 'alumnofct.convalidacion', 'uses' => 'FctAlumnoController@nuevaConvalidacion']);
 Route::post('/alumnofct/convalidacion',['as' => 'alumnofct.convalidacion', 'uses' => 'FctAlumnoController@storeConvalidacion']);
 Route::get('/alumnofct/{id}/pdf', ['as' => 'alumnofct.pdf', 'uses' => 'FctAlumnoController@pdf']);
-Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
+//Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
 Route::get('/alumnofct/{id}/show', ['as' => 'alumnofct.show', 'uses' => 'FctAlumnoController@show']);
 Route::get('/alumnofct/{id}/pg0301', ['as' => 'alumnofct.pg0301', 'uses' => 'FctAlumnoController@pg0301']);
 

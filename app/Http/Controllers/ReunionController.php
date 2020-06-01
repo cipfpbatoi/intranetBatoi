@@ -16,6 +16,7 @@ use Intranet\Entities\Documento;
 use Intranet\Jobs\SendEmail;
 use Intranet\Entities\Grupo;
 use Illuminate\Support\Facades\DB;
+use mikehaertl\pdftk\Pdf;
 
 class ReunionController extends IntranetController
 {
@@ -209,6 +210,8 @@ class ReunionController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('reunion.ics', ['img' => 'fa-calendar', 'where' => ['fecha', 'posterior', Date::yesterday()]]));
         $this->panel->setBoton('grid', new BotonImg('reunion.saveFile', ['where' => ['idProfesor', '==', $actual, 'archivada', '==', '0', 'fecha', 'anterior', Date::yesterday()]]));
         $this->panel->setBoton('grid', new BotonImg('reunion.deleteFile', ['img' => 'fa-unlock','where' => ['idProfesor', '==', $actual, 'archivada', '==', '1', 'fecha', 'anterior', Date::yesterday()]]));
+        //$this->panel->setBoton('grid', new BotonImg('reunion.informe', ['img' => 'fa-print','where' => ['idProfesor', '==', $actual]]));
+
     }
 
     public function pdf($id)
@@ -315,6 +318,88 @@ class ReunionController extends IntranetController
         $orientacion = 'portrait';
         $pdf = $this->hazPdf($informe, $ordenes, $elemento, $orientacion, 'a4');
         return $pdf;
+    }
+
+    public function printInformes($id){
+        $reunion = Reunion::find($id);
+        $aR = $reunion->alumnos->first();
+        $this->printInformeAlumno($aR);
+       /* foreach ($reunion->alumnos as $aR) {
+            $this->printInformeAlumno($aR);
+        }*/
+
+    }
+
+
+    public function printInformeAlumno($aR){
+        $pdf = new Pdf('fdf/InformeAlumne.pdf');
+        //dd($aR);
+        $pdf->fillform($this->makeArrayPdf($aR))
+            ->send("InformeAlumno_".$aR->nia.'.pdf');
+
+        return $this->redirect();
+    }
+
+    /**
+     * @param $array
+     * @return mixed
+     */
+    private function makeArrayPdf($aR)
+    {
+
+        $array[0] = Profesor::find(config('contacto.director'))->fullName;
+
+        $array['untitled1'] = config('contacto.codi');
+        $array['untitled5'] = config('contacto.nombre');
+        $array['untitled2'] = config('contacto.poblacion');
+        $array['untitled3'] = config('contacto.direccion');
+        $array['untitled4'] = config('contacto.provincia');
+        $array['untitled8'] = config('contacto.telefono');
+        $array['untitled9'] = config('contacto.postal');
+        $array['untitled6'] = 'Yes';
+        $array['untitled12'] = $aR->fullName;
+        $array['untitled10'] = $aR->nia;
+        $array['untitled11'] = Curso();
+        $array['untitled15'] = $aR->Grupo->first()->Ciclo->literal;
+        $array['untitled16'] = $aR->Grupo->first()->Ciclo->Xtipo;
+        switch ($aR->pivot->capacitats) {
+            case 0: $array['untitled18'] = 'X';
+                    $array['untitled21'] = 'Yes';
+                break;
+            case 1: $array['untitled17'] = 'X';
+                    $array['untitled22'] = 'Yes';
+                break;
+            case 2: $array['untitled19'] = 'X';
+                    $array['untitled23'] = 'Yes';
+                break;
+            case 3: $array['untitled20'] = 'X';
+                    $array['untitled24'] = 'Yes';
+                break;
+        }
+        $cadena1 = '';
+        $cadena2 = "\n";
+        $cadena3 = "\n";
+        foreach ($aR->AlumnoResultado as $resultado){
+            $cadena1 .= $resultado->modulo.': '.$resultado->notaString."\n";
+            $cadena2 .= $resultado->modulo.': '.$resultado->valoracion."\n";
+            if ($resultado->observaciones) $cadena3 .= $resultado->modulo.': '.$resultado->observaciones."\n";
+        }
+        $cadena3 .= "\n\nTutor:".$aR->Grupo()->first()->xTutor;
+
+        $cadena = "\n";
+        foreach ($aR->Grupo->first()->Modulos as $modulo){
+            foreach ($modulo->resultados->where('evaluacion',3) as $res)
+                $cadena .= $modulo->literal.':'.$res->adquiridosNO."\n";
+        }
+        $array['untitled25'] = $cadena1."\n La nota oficial, en cas de dubte, és la que figura en la web família. \n La nota oficial, en caso de duda, es la que figura en la web familia.";
+        $array['untitled26'] = $cadena;
+        $array['untitled27'] = $cadena2;
+        $array['untitled28'] = $cadena3;
+        $array['untitled30'] = config('contacto.poblacion');
+        $array['untitled31'] = '13';
+        $array['untitled32'] = 'Juny';
+
+        return $array;
     }
 
 }

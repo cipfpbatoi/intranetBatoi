@@ -69,7 +69,8 @@ class Grupo extends Model
     {
         return $this->hasMany(Horario::class, 'codigo', 'idGrupo');
     }
-    
+
+
     public function Modulos()
     {
         return $this->hasMany(Modulo_grupo::class,'idGrupo','codigo');
@@ -166,6 +167,7 @@ class Grupo extends Model
     {
         return isset($this->Ciclo->ciclo) ? $this->Ciclo->ciclo : $this->idCiclo;
     }
+
 
     public function getXtutorAttribute()
     {

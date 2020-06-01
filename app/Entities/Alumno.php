@@ -88,6 +88,11 @@ class Alumno extends Authenticatable
     {
         return $this->HasMany(AlumnoFct::class,'idAlumno' ,'nia');
     }
+
+    public function AlumnoResultado()
+    {
+        return $this->HasMany(AlumnoResultado::class,'idAlumno' ,'nia');
+    }
     
     public function Provincia()
     {

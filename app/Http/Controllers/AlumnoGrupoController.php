@@ -36,7 +36,7 @@ class AlumnoGrupoController extends IntranetController
         //$this->panel->setBoton('grid', new BotonImg('alumno.baja', ['where' => ['idGrupo', '==', $miGrupo]]));
         //$this->panel->setBoton('profile', new BotonIcon('alumno.baja', ['where' => ['idGrupo', '==', $miGrupo]]));
         $this->panel->setBoton('grid', new BotonImg('direccion.aFol', ['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion')]));
-        if (AuthUser()->xdepartamento == 'Fol' && date('Y-m-d')>config('curso.evaluaciones.3')[1]) {
+        if (AuthUser()->xdepartamento == 'Fol' && date('Y-m-d')>config('curso.certificatFol')[1]) {
             $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-square-o', 'where' => ['fol', '==', 0]]));
             $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-check', 'where' => ['fol', '==', 1]]));
         }

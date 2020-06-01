@@ -111,6 +111,7 @@ class FctAlumnoController extends IntranetController
         return self::hazPdf('pdf.fct.alumne', [$fct], $dades);
     }
 
+    /**
     public function email($id)
     {
         // CARREGANT DADES
@@ -118,7 +119,7 @@ class FctAlumnoController extends IntranetController
 
 
         // MANE ELS TREBALLS
-        if ($elemento->Alumno->email != ''){
+        if ($elemento->Alumno->email != '' && config('curso.enquestesAutomatiques')){
             $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName, 'id' => AuthUser()->dni];
             dispatch(new SendEmail($elemento->Alumno->email, $remitente, 'email.fct.alumno', $elemento));
             Alert::info('Correu enviat');
@@ -128,6 +129,7 @@ class FctAlumnoController extends IntranetController
         Alert::info("L'alumne no té correu. Revisa-ho");
         return back();
     }
+     */
     
     public function pg0301($id){
        $fct = AlumnoFct::find($id);

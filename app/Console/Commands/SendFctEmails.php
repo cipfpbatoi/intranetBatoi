@@ -44,46 +44,39 @@ class SendFctEmails extends Command
      */
     public function handle()
     {
-        $alumnosCalificados = hazArray(AlumnoFctAval::calificados()->get(),'idAlumno');
-        $alumnosAprobados = hazArray(AlumnoFctAval::aprobados()->get(),'idAlumno');
-        $alumnosPendientes = AlumnoFctAval::pendienteNotificar($alumnosAprobados)->get();
+        if (config('curso.enquestesAutomatiques')){
+            //$alumnosCalificados = hazArray(AlumnoFctAval::calificados()->get(),'idAlumno');
+            $alumnosAprobados = hazArray(AlumnoFctAval::aprobados()->get(),'idAlumno');
+            $alumnosPendientes = AlumnoFctAval::pendienteNotificar($alumnosAprobados)->get();
 
 
-        foreach ($alumnosPendientes as $alumno) {
-            $fct = $alumno->Fct;
-            try {
-                //Mail::to($alumno->Alumno->email, 'Intranet Batoi')->send(new AvalFct($alumno, 'alumno'));
-                Mail::to($alumno->Alumno->email, 'Secretaria CIPFP BATOI')
-                    ->send(new CertificatAlumneFct($alumno));
-                $alumno->correoAlumno = 1;
-                $alumno->save();
-
-            } catch (Swift_RfcComplianceException $e){
-
-            }
-
-            if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)){
+            foreach ($alumnosPendientes as $alumno) {
+                $fct = $alumno->Fct;
                 try {
-                    Mail::to($fct->Instructor->email, 'Intranet Batoi')->send(new AvalFct($fct, 'instructor'));
-                    Mail::to($fct->Instructor->email, 'Secretaria CIPFP Batoi')
-                        ->send(new CertificatInstructorFct($fct));
+                    Mail::to($alumno->Alumno->email, 'Secretaria CIPFP BATOI')
+                        ->send(new CertificatAlumneFct($alumno));
+                    $alumno->correoAlumno = 1;
+                    $alumno->save();
 
-                    $fct->correoInstructor = 1;
-                    $fct->save();
                 } catch (Swift_RfcComplianceException $e){
 
                 }
-                /**
-                foreach ($fct->Colaboradores as $colaborador){
+
+                if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)){
                     try {
-                        Mail::to($colaborador->email,'Secretaria CIPFP Batoi')->send(new CertificatColaboradorFct($fct,$colaborador));
+                        Mail::to($fct->Instructor->email, 'Intranet Batoi')->send(new AvalFct($fct, 'instructor'));
+                        Mail::to($fct->Instructor->email, 'Secretaria CIPFP Batoi')
+                            ->send(new CertificatInstructorFct($fct));
+
+                        $fct->correoInstructor = 1;
+                        $fct->save();
                     } catch (Swift_RfcComplianceException $e){
 
                     }
-
-                }*/
+                }
             }
         }
     }
+
 
 }

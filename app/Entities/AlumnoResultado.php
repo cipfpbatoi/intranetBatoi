@@ -64,5 +64,10 @@ class AlumnoResultado extends Model
         return config('auxiliares.valoraciones')[$this->valoraciones];
     }
 
+    public function getModuloAttribute()
+    {
+        return $this->ModuloGrupo->literal;
+    }
+
 
 }
