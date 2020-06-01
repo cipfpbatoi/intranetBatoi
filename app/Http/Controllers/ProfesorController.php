@@ -126,7 +126,6 @@ use traitAutorizar,
     {
         $new = Profesor::find($id);
         parent::update($request, $new);
-        Alert::info(system('php ./../artisan cache:clear'));
         return back();
     }
 

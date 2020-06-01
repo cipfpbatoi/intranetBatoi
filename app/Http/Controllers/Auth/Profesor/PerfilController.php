@@ -26,6 +26,7 @@ class PerfilController extends Perfil
             $new->mostrar = 0;
         
         parent::update($request, $new);
+        Alert::info(system('php ./../artisan cache:clear'));
         return redirect("/home");
     }
 
