@@ -37,7 +37,7 @@ Curs 2019-20</p>
 <p class="normal"><br/></p>
 @foreach(config('auxiliares.capacitats') as $index => $capacitat)
     @if ($todos->pivot->capacitats == $index )
-        <p class="left" style="color: #00aeef"><b>{{$capacitat}}</b></p>
+        <p class="left" style="color: #f00"><b>{{$capacitat}}</b></p>
     @else
         <p class="left">{{$capacitat}}</p>
     @endif
@@ -49,7 +49,7 @@ Curs 2019-20</p>
 <p class="normal"><br/></p>
 @foreach(config('auxiliares.promociona') as $index => $capacitat)
     @if ($todos->pivot->capacitats == $index )
-        <p class="left" style="color: #00aeef"><b>{{$capacitat}}</b></p>
+        <p class="left" style="color: #f00"><b>{{$capacitat}}</b></p>
     @else
         <p class="left">{{$capacitat}}</p>
     @endif
