@@ -15,14 +15,12 @@ class AlumnoResultado extends Model
     protected $fillable = [
         'idAlumno',
         'idModuloGrupo',
-        'nota',
         'valoraciones',
         'observaciones'
     ];
     protected $rules = [
         'idAlumno' => 'required',
         'idModuloGrupo' => 'required',
-        'nota' => 'required|integer',
         'observaciones' => 'max:200',
       ];
     protected $inputTypes = [
@@ -54,10 +52,11 @@ class AlumnoResultado extends Model
         return hazArray($this->ModuloGrupo->Grupo->Alumnos->whereNotIn('nia',$alumnos_rellenos),'nia','fullName');
     }
 
+    /**
     public function getNotaStringAttribute()
     {
         return config('auxiliares.notas')[$this->nota];
-    }
+    }*/
 
     public function getValoracionAttribute()
     {

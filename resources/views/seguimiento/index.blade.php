@@ -4,21 +4,12 @@
 @endsection
 @section('content')
     <div class="panel">
-        <table class="table table-striped table-condensed">
-            <tr>
-                <td>@lang('validation.attributes.adquiridosNO')</td>
-                <td>{!! $elemento->adquiridosNO !!}</td>
-            </tr>
-        </table>
-    </div>
-    <div class="panel">
         <div class="panel-body">
             <table class="table table-striped table-condensed" name='alumnoresultado'>
-                <tr><th style="width: 20%">@lang("validation.attributes.Alumno")</th><th style="width: 8%">@lang("validation.attributes.nota")</th> <th style="width: 25%">@lang("validation.attributes.valoraciones")</th><th style="width: 30%">@lang("validation.attributes.observaciones")</th><th style="width: 17%">@lang("validation.attributes.operaciones")</th></tr>
+                <tr><th style="width: 20%">@lang("validation.attributes.Alumno")</th><th style="width: 25%">@lang("validation.attributes.valoraciones")</th><th style="width: 45%">@lang("validation.attributes.observaciones")</th><th style="width: 10%">@lang("validation.attributes.operaciones")</th></tr>
                 @foreach ($resultados as $orden)
                     <tr class="lineaGrupo" id='{{ $orden->id }}'>
                         <td><span class='none' name='nombre'>{!! $orden->nombre !!}</span></td>
-                        <td><span class='select'  name='nota'>{!! $orden->notaString !!}</span></td>
                         <td><span class='select' name='valoraciones'>{!! $orden->valoracion !!}</span></td>
                         <td><span class='input' name='observaciones' maxlength="200">{{ $orden->observaciones }}</td>
                         <td><span class='botones'>
@@ -40,13 +31,6 @@
                             </select>
                         </td>
                         <td>
-                            <select name="nota" class="form-control">
-                                @foreach (config('auxiliares.notas') as $key => $nota)
-                                    <option value="{{$key}}">{{$nota}}</option>
-                                @endforeach
-                            </select>
-                        </td>
-                        <td>
                             <select name="valoraciones" class="form-control">
                                 @foreach (config('auxiliares.valoraciones') as $key => $valoraciones)
                                     <option value="{{$key}}">{{$valoraciones}}</option>
@@ -64,7 +48,7 @@
         </div>
     </div>
 
-    <a href="/reunion" class="btn btn-success">@lang("messages.buttons.atras") </a>
+    <a href="/resultado" class="btn btn-success">@lang("messages.buttons.atras") </a>
 @endsection
 @section('titulo')
    {{ $elemento->literal }}

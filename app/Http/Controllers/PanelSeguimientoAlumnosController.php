@@ -10,7 +10,6 @@ class PanelSeguimientoAlumnosController extends IntranetController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoResultado';
-    protected $gridFields = ['nombre', 'nota', 'recomanacions'];
     protected $redirect = 'PanelSeguimientoAlumnosController@indice';
 
     public function indice($search)
