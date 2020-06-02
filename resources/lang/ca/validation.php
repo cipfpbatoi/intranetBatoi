@@ -267,7 +267,7 @@ return array(
                 'Dual' => 'Tutor Dual',
                 'adquiridosNO' => "Valoració de la tasca del 3r Trimestre. Continguts que falten per impartir al módul",
                 'nota' => 'Nota',
-                'valoraciones' => "Seguiment de l'alumne/a en el tercer trimestre"
+                'valoraciones' => "Valoració de competències, capacitats i nivell d'aprenentatge"
 
              ),
         'empty_option' => array(

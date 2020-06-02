@@ -260,7 +260,7 @@ return array(
                 'Dual' => 'Tutor Dual',
                 'adquiridosNO' => 'Valoración de las tareas del 3r Trimestre. Contenidos que faltan por impartir al módulo',
                 'nota' => 'Nota',
-                'valoraciones' => "Seguimento del alumno/a en el tercer trimestre"
+                'valoraciones' => "Valoración de competencias, capacidades i nivel de aprendizaje"
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',
