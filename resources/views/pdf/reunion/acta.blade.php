@@ -1,6 +1,5 @@
 @extends('layouts.pdf')
 @section('content')
-@
 @include('pdf.partials.cabecera')
 <br/>
 <table class="table table-bordered">
