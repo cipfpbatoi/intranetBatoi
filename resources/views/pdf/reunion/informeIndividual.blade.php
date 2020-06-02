@@ -18,30 +18,42 @@
 </p>
 <p class="normal"><br/><br/><br/></p>
 <p class="normal">
-    <img src="{{url('img/pdf/insti.jpg')}}" alt="logo" style="width:353px;height:369px" /><br/>
+    <img src="{{url('img/pdf/logo.png')}}" alt="logo" style="width:353px;height:369px" /><br/>
 </p>
 <p align="center" class="normal"><br/><br/><br/></p>
 <p class="normal" style="font-weight:bold;margin-top: 0.14cm; margin-bottom: 0cm; line-height: 100%;font-family:Miriam Libre;font-size: 26pt">
 Curs 2019-20</p>
 <p align="center" class="normal" style="page-break-before: always"><br/></p>
-<p class="title"> _____DADES IDENTIFICATIVES__________________________________</p>
+<p class="title"> _______DADES IDENTIFICATIVES__________________________________</p>
 <p class="normal"><br/></p>
-<p class="left"><b>NIA</b>:</p>
-<p class="left"><b>COGNOMS I NOM</b>:</p>
-<p class="left"><b>CICLE FORMATIU:</b></p>
-<p class="left"><b>CURS:</b></p>
-<p class="normal"><br/><br/><br/></p>
-<p class="title">_____DADES ACADÈMIQUES___________________________________</p>
+<p class="left"><b>NIA:</b> {{ $todos->nia }}</p>
+<p class="left"><b>COGNOMS I NOM:</b> {{ $todos->nameFull }}</p>
+<p class="left"><b>CICLE FORMATIU:</b> {{$todos->Grupo->first()->Ciclo->literal}}</p>
+<p class="left"><b>CURS:</b> {{$todos->Grupo->first()->curso}}</p>
+<p class="normal"><br/><br/></p>
+<p class="title">_______DADES ACADÈMIQUES___________________________________</p>
 <p class="normal"><br/></p>
 <p class="left"><b>Desenvolupament general de les capacitats</b></p>
-<p class="left">Escriure les 4  i marcar la seleccionada (per a poder comparar entre les
-    opcions que hi havien disponibles on es troba l’alumne)</p>
+<p class="normal"><br/></p>
+@foreach(config('auxiliares.capacitats') as $index => $capacitat)
+    @if ($todos->pivot->capacitats == $index )
+        <p class="left" style="color: #00aeef"><b>{{$capacitat}}</b></p>
+    @else
+        <p class="left">{{$capacitat}}</p>
+    @endif
+@endforeach
 <p class="normal"><br/></p>
 <p class="left"><b>Adequació global entre capacitats, nivell d’aprenentatge, competències i
         interessos d’acord amb l’observació i la valoració de l’equip
         docent</b></p>
-<p class="left">Escriure les 4 i marcar la seleccionada  (per a poder comparar entre les
-    opcions que hi havien disponibles on es troba l’alumne)</p>
+<p class="normal"><br/></p>
+@foreach(config('auxiliares.promociona') as $index => $capacitat)
+    @if ($todos->pivot->capacitats == $index )
+        <p class="left" style="color: #00aeef"><b>{{$capacitat}}</b></p>
+    @else
+        <p class="left">{{$capacitat}}</p>
+    @endif
+@endforeach
 <p class="normal"><br/></p>
 <p class="left"><b>Qualificacions dels diferents mòduls</b></p>
 <p class="left">Les qualificacions oficials poden consultar-se a la web familia en la
@@ -52,41 +64,51 @@ Curs 2019-20</p>
     <a href="mailto:03012165.secret@gva.es" style="color:#1155cc"><u>03012165.secret@gva.es</u></a>
     o <a href="mailto:secretaria@cipfpbatoi.es" style="color:#1155cc"><u>secretaria@cipfpbatoi.es</u></a>
 </p>
-<p class="normal"><br/><br><br/><br/></p>
-<p class="title">_____INFORMACIÓ DELS MÒDULS______________________________</p>
+<p class="normal"><br/><br></p>
+<p class="title">_______INFORMACIÓ DELS MÒDULS______________________________</p>
 <p class="normal"><br/></p>
 <p class="left"><b>A continuació es detallen els continguts no impartits durant el 3r
         trimestre en el teu grup</b></p>
-<p class="left">Part d’observacions que agafem del seguiment</p>
 <p class="normal"><br/></p>
-<p class="left"><b>Valoració del teu treball durant el 3r trimestre</b></p>
-<p class="left">Agafar per als diferents mòduls de la llista desplegable que cada
-    professor/a ha introduït en el seguiment.</p>
-<p class="normal"><br/><br/><br/></p>
+@foreach ($todos->Grupo->first()->Modulos as $modulo)
+    @foreach ($modulo->resultados->where('evaluacion',3) as $res)
+        <p class="left">{{$modulo->Xmodulo}}: {{$res->adquiridosNO}}</p>
+    @endforeach
+@endforeach
 <p style="margin-top: 0.14cm; margin-bottom: 0cm; line-height: 100%; page-break-before: always"><br/></p>
-<p class="normal"><br/><br/><br/></p>
-<p class="title">_____ALTRES DADES D’INTERÉS________________________________</p>
+<p class="left"><b>Valoració del teu treball durant el 3r trimestre</b></p>
 <p class="normal"><br/></p>
-<p class="left">Agafar les observacions introduïdes pel professorat per a cada mòdul de
-    l’alumne/a en qüestió.</p>
-<p class="normal"><br/><br/><br/></p>
-<p class="title">_____DECISIÓ DE L’EQUIP EDUCATIU___________________________</p>
+@foreach ($todos->AlumnoResultado as $resultado)
+    <p class="left">{{$resultado->modulo}}: {{$resultado->valoracion}}</p>
+@endforeach
+<p class="normal"><br/><br/></p>
+<p class="title">_______ALTRES DADES D’INTERÉS________________________________</p>
+<p class="normal"><br/></p>
+@foreach ($todos->AlumnoResultado as $resultado)
+    @if ($resultado->observaciones)
+        <p class="left">{{$resultado->modulo}}: {{$resultado->observaciones}}</p>
+    @endif
+@endforeach
+<p class="normal"><br/><br/></p>
+<p class="title">_______DECISIÓ DE L’EQUIP EDUCATIU___________________________</p>
 <p class="normal"><br/></p>
 <p class="left">Reunits l’equip educatiu en sessió d’avaluació, es decideix la
-    <em style="color:#f00">promoció/ o no promoció</em> de curs.</p>
+    @if ($todos->pivot->capacitats == 3)
+        <em style="color:#f00">NO promoció </em>
+    @else
+        <em style="color:#f00">promoció </em>
+    @endif
+    de curs.</p>
 <p class="normal"><br/><br/><br/><br/><br/></p>
 <p align="center" class="normal">
-    Alcoi a __13___ de ___Juny________ de 2020</p>
+    Alcoi a ___13___ de ____Juny_____ de 2020</p>
 <p align="center" class="normal"><br/><br/><br/><br/></p>
 <div class="displayed" style="float:left">
     El tutor o tutora <br/><br/><br/><br/><br/><br/>
-    Nom i cognoms del tutor/a
+    {{ $todos->Grupo()->first()->xTutor }}
 </div>
 <div class="displayed" style="float:right">
     Segell del centre <br/><br/>
     <img src="{{url('img/pdf/segell.png')}}" alt="logo" style="width:114px;height:108px" />
-</div>
-<div title="footer"><p align="right" style="margin-top: 0.13cm; margin-bottom: 0cm; line-height: 100%"><br/>
-    </p>
 </div>
 @endsection

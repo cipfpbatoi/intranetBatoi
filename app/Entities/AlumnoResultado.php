@@ -65,7 +65,7 @@ class AlumnoResultado extends Model
 
     public function getModuloAttribute()
     {
-        return $this->ModuloGrupo->literal;
+        return $this->ModuloGrupo->Xmodulo;
     }
 
 

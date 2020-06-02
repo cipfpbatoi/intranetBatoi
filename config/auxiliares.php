@@ -38,12 +38,12 @@ return [
     'valoraciones' => [0=>'Ha seguit de manera satisfactòria el procés de formació online, realitzant les tasques sol·licitades en la seua majoria'
         ,1=>'El seguiment de la formació online ha estat suficient, realitzant algunes de les tasques sol·licitades'
         ,2=>'No ha seguit la formació online i no ha realitzat cap o gairebé cap de les tasques sol·licitades'],
-//    'promociona' => [
-//        0 => "Ha assolit satisfactòriament les capacitats previstes en els objectius dels diferents mòduls.",
-//        1 => "Ha assolit suficientment les capacitats previstes en els objectius dels diferents mòduls.",
-//        2 => "No ha assolit el conjunt de capacitats previstes en alguns mòduls, però s'aprecia maduresa i possibilitats futures de progrés.",
-//        3 => "No ha assolit les capacitats previstes en els objectius dels diferents mòduls i s’hi constaten dificultats d'aprenentatge."
-//    ],
+    'capacitats' => [
+        0 => "Ha assolit satisfactòriament les capacitats previstes en els objectius dels diferents mòduls.",
+        1 => "Ha assolit suficientment les capacitats previstes en els objectius dels diferents mòduls.",
+        2 => "No ha assolit el conjunt de capacitats previstes en alguns mòduls, però s'aprecia maduresa i possibilitats futures de progrés.",
+        3 => "No ha assolit les capacitats previstes en els objectius dels diferents mòduls i s’hi constaten dificultats d'aprenentatge."
+    ],
     'promociona' => [
         0 => "Competència avanzada",
         1 => "Competència mitjana",
