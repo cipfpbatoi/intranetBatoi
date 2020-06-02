@@ -210,7 +210,7 @@ class ReunionController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('reunion.ics', ['img' => 'fa-calendar', 'where' => ['fecha', 'posterior', Date::yesterday()]]));
         $this->panel->setBoton('grid', new BotonImg('reunion.saveFile', ['where' => ['idProfesor', '==', $actual, 'archivada', '==', '0', 'fecha', 'anterior', Date::yesterday()]]));
         $this->panel->setBoton('grid', new BotonImg('reunion.deleteFile', ['img' => 'fa-unlock','where' => ['idProfesor', '==', $actual, 'archivada', '==', '1', 'fecha', 'anterior', Date::yesterday()]]));
-        //$this->panel->setBoton('grid', new BotonImg('reunion.informe', ['img' => 'fa-print','where' => ['idProfesor', '==', $actual]]));
+        $this->panel->setBoton('grid', new BotonImg('reunion.informe', ['img' => 'fa-print','where' => ['idProfesor', '==', '021652470V']]));
 
     }
 
@@ -322,11 +322,10 @@ class ReunionController extends IntranetController
 
     public function printInformes($id){
         $reunion = Reunion::find($id);
-        $aR = $reunion->alumnos->first();
-        $this->printInformeAlumno($aR);
-       /* foreach ($reunion->alumnos as $aR) {
-            $this->printInformeAlumno($aR);
-        }*/
+        $elemento = $reunion->alumnos->first();
+        //$this->printInformeAlumno($aR);
+        $pdf = $this->hazPdf('pdf.reunion.informeIndividual',$elemento,$reunion,'portrait','a4');
+        return $pdf->stream();
 
     }
 
