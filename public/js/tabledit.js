@@ -1,5 +1,6 @@
 $(function(){
 	$('.editGrupo').on("click",editRow);
+	$('#error').hide();
         
 })
 
@@ -75,7 +76,7 @@ function editRow() {
 				break;
 			case 'input':
 				$span.after('<span class="editando"><input type="text" class="form-control" name="'
-					+$span.attr('name')+'" value="'+$span.text()+'" maxlenght=200></span>');
+					+$span.attr('name')+'" value="'+$span.text()+'" maxlenght="200"></span>');
 				break;
 			case 'select':
 				$span.after('<span class="editando"><select id="'+$span.attr('name')+'" class="form-control" name="'
@@ -145,6 +146,15 @@ function saveEdit(ev) {
 			});
 			cancelEdit();
  		}
+ 		else {
+ 			if (options['error']) {
+				$('#error').children().first().text(options['error']);
+			}
+ 			else {
+				$('#error').children().first().text(res.message);
+			}
+			$('#error').show();
+		}
  	}, function(res) {
  		console.log(res);
  	})
