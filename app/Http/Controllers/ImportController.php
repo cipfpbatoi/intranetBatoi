@@ -14,12 +14,11 @@ use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Espacio;
 use DB;
 use Illuminate\Database\Seeder;
-use ImportTableSeeder;
-use Illuminate\Support\Facades\Artisan;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Ocupacion;
+use Illuminate\Support\Str;
 
 /**
  * Class ImportController
@@ -194,9 +193,9 @@ class ImportController extends Seeder
     /**
      * @return string
      */
-    public function aleatorio($long)
+    public function aleatorio($long=60)
     {
-        return str_random(60);
+        return Str::random($long);
     }
 
     /**

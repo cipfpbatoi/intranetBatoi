@@ -196,6 +196,9 @@ class Reunion extends Model
     public function getAvaluacioFinalAttribute(){
         return ($this->tipo == 7 && $this->numero == 34 );
     }
+    public function getExtraOrdinariaAttribute(){
+        return ($this->tipo == 7 && $this->numero == 35);
+    }
     public function getGrupoClaseAttribute(){
         if (TipoReunion::colectivo($this->tipo) != 'Grupo') return null;
         return Grupo::QTutor($this->idProfesor)->first();

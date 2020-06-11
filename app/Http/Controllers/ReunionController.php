@@ -106,7 +106,7 @@ class ReunionController extends IntranetController
             $elemento->setInputType('grupo', ['type' => 'hidden']);
             $default = $elemento->fillDefautOptions();
             $modelo = $this->model;
-            if (!$elemento->avaluacioFinal){
+            if (!$elemento->avaluacioFinal && !$elemento->extraOrdinaria){
                 return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
             }
             $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
@@ -320,6 +320,7 @@ class ReunionController extends IntranetController
         return $pdf;
     }
 
+   /*
     public function printInformes($id){
         $reunion = Reunion::find($id);
         $elemento = $reunion->alumnos->first();
@@ -327,9 +328,15 @@ class ReunionController extends IntranetController
         $pdf = $this->hazPdf('pdf.reunion.informeIndividual',$elemento,$reunion,'portrait','a4');
         return $pdf->stream();
 
+    }*/
+
+    public static function preparePdf($informe,$aR){
+        $hoy = new Date();
+        $elemento = FechaString($hoy,'ca');
+        return self::hazPdf($informe, $aR,$elemento ,'portrait','a4');
     }
 
-
+/**
     public function printInformeAlumno($aR){
         $pdf = new Pdf('fdf/InformeAlumne.pdf');
         //dd($aR);
@@ -339,10 +346,7 @@ class ReunionController extends IntranetController
         return $this->redirect();
     }
 
-    /**
-     * @param $array
-     * @return mixed
-     */
+
     private function makeArrayPdf($aR)
     {
 
@@ -400,5 +404,5 @@ class ReunionController extends IntranetController
 
         return $array;
     }
-
+*/
 }

@@ -92,13 +92,8 @@ Curs 2019-20</p>
 <p class="normal"><br/><br/></p>
 <p class="title">_______DECISIÓ DE L’EQUIP EDUCATIU___________________________</p>
 <p class="normal"><br/></p>
-<p class="left">Reunits l’equip educatiu en sessió d’avaluació, es decideix la
-    @if ($todos->capacitats == 3)
-        <em style="color:#f00">NO promoció </em>
-    @else
-        <em style="color:#f00">promoció </em>
-    @endif
-    de curs.</p>
+<p class="left">La informació i decisions que hi han en aquest informe fan referència només als
+    mòduls en els que estàs matriculat aquest curs.</p>
 <p class="normal"><br/><br/><br/><br/><br/></p>
 <p align="center" class="normal">
     {{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme}}</p>
