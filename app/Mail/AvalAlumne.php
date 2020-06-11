@@ -41,7 +41,10 @@ class AvalAlumne extends Mailable
         $id = $this->aR->idAlumno;
         $pdf->save(storage_path("tmp/certificatAvalAlumne_$id.pdf"));
         Log::notice("Enviat correu avalució alumne ".$this->aR->Alumno->email);
-        return $this->view("email.avalAlumne",['aR'=> $this->aR])->attach(storage_path("tmp/certificatAvalAlumne_$id.pdf"),['as'=>'ResultatsAvaluacio.pdf','mime' => 'application/pdf']);;
+        if ($this->aR->Reunion->GrupoClase->turno == 'S')
+            return $this->view("email.avalSemi",['aR'=> $this->aR])->attach(storage_path("tmp/certificatAvalAlumne_$id.pdf"),['as'=>'ResultatsAvaluacio.pdf','mime' => 'application/pdf']);
+        else
+            return $this->view("email.avalAlumne",['aR'=> $this->aR])->attach(storage_path("tmp/certificatAvalAlumne_$id.pdf"),['as'=>'ResultatsAvaluacio.pdf','mime' => 'application/pdf']);
     }
 
 }

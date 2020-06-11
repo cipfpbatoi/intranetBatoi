@@ -16,5 +16,6 @@ return [
         2 => ['inici' =>'2020-03-04','fi' =>'2020-07-31']
     ],
     'certificatFol' => '2020-06-15',
-    'enquestesAutomatiques' => 0
+    'enquestesAutomatiques' => 0,
+    'convocatoria' => 'convocatoria'
 ];

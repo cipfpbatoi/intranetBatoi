@@ -72,21 +72,21 @@ Curs 2019-20</p>
 <p class="normal"><br/></p>
 @foreach ($todos->Alumno->Grupo->first()->Modulos as $modulo)
     @foreach ($modulo->resultados->where('evaluacion',3) as $res)
-        <p class="left">{{$modulo->Xmodulo}}: {{$res->adquiridosNO}}</p>
+        <p class="left"><strong>{{$modulo->Xmodulo}}</strong>: {{$res->adquiridosNO}}</p>
     @endforeach
 @endforeach
 <p style="margin-top: 0.14cm; margin-bottom: 0cm; line-height: 100%; page-break-before: always"><br/></p>
 <p class="left"><b>Valoració del teu treball durant el 3r trimestre</b></p>
 <p class="normal"><br/></p>
 @foreach ($todos->Alumno->AlumnoResultado as $resultado)
-    <p class="left">{{$resultado->modulo}}: {{$resultado->valoracion}}</p>
+    <p class="left"><strong>{{$resultado->modulo}}</strong>: {{$resultado->valoracion}}</p>
 @endforeach
 <p class="normal"><br/><br/></p>
 <p class="title">_______ALTRES DADES D’INTERÉS________________________________</p>
 <p class="normal"><br/></p>
 @foreach ($todos->Alumno->AlumnoResultado as $resultado)
     @if ($resultado->observaciones)
-        <p class="left">{{$resultado->modulo}}: {{$resultado->observaciones}}</p>
+        <p class="left"><strong>{{$resultado->modulo}}</strong>: {{$resultado->observaciones}}</p>
     @endif
 @endforeach
 <p class="normal"><br/><br/></p>
