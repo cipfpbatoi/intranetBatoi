@@ -3,13 +3,10 @@
 namespace Intranet\Listeners;
 
 use Intranet\Events\ReunionCreated;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Miembro;
+use Intranet\Entities\AlumnoFctAval;
 
 class AsistentesCreate
 {
@@ -67,6 +64,23 @@ class AsistentesCreate
             if ($reunion->avaluacioFinal){
                 foreach ($grupo->Alumnos as $alumno){
                     $reunion->alumnos()->attach($alumno->nia,['capacitats'=>0]);
+                }
+            }
+            if ($reunion->extraOrdinaria){
+                if ($reunion->GrupoClase->curso == 1){
+                    $elementoFinal = Reunion::where('tipo',7)->where('numero',34)->where('idProfesor',$reunion->idProfesor)->first();
+                    if ($elementoFinal) {
+                        foreach ($elementoFinal->noPromocionan as $alumno) {
+                            $reunion->alumnos()->attach($alumno->nia,['capacitats'=>3]);
+                        }
+                    }
+                }
+                else {
+                    foreach ($grupo->Alumnos->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(),'idAlumno')) as $alumno)
+                    {
+                        $reunion->alumnos()->attach($alumno->nia,['capacitats'=>3]);
+                    }
+
                 }
             }
 

@@ -55,20 +55,24 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        
         if ($exception->getMessage()!='The given data was invalid.'&&
                $exception->getMessage()!='Unauthenticated.'&&
                $exception->getMessage()!='')
             avisa(config('contacto.avisos.errores'),$exception->getMessage());
+
         if ($exception instanceof ModelNotFoundException) {
-            $e = new NotFoundHttpException($exception->getMessage(), $exception);
-            //return response()->view('errors.404',[],404);
+            if ($request->wantsJson())
+                return response()->json(['message' => $exception->getMessage()], $exception->getCode());
+            else
+                $e = new NotFoundHttpException($exception->getMessage(), $exception);
         }
         if ($exception instanceof \PDOException){
             
             Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :".$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
             //return response()->view('errors.200',['mensaje'=>$exception->getMessage()],200);
         }
+        if ($request->wantsJson())
+            return response()->json(['message' => $exception->getMessage()], $exception->getCode());
         return parent::render($request, $exception);
     }
 
@@ -81,7 +85,8 @@ class Handler extends ExceptionHandler
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        if ($request->expectsJson()) {
+
+        if ($request->wantsJson()) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 

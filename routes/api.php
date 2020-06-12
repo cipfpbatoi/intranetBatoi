@@ -19,6 +19,8 @@ use Illuminate\Http\Request;
 Route::get('/convenio','EmpresaController@indexConvenio');
 
 
+
+
 Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('actividad', 'ActividadController', ['except' => ['edit', 'create']]);
 //    Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'create']]);
@@ -98,5 +100,11 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
 
     Route::resource('alumnoresultado','AlumnoResultadoContoller');
+    Route::get('/matricula/{convocatoria}/{token}','AlumnoReunionController@getDadesMatricula');
     //Route::get('/convenio','EmpresaController@indexConvenio');
+});
+
+Route::fallback(function(){
+    return response()->json([
+        'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
 });

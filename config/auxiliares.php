@@ -49,5 +49,9 @@ return [
         1 => "Competència mitjana",
         2 => "Competència bàsica",
         3 => "Encara no competent"
-    ]
+    ],
+    'promocionExtraordinaria' => [
+        2 => "Promociona",
+        3 => "No Promociona"
+    ],
 ];

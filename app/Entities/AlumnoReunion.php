@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use \Illuminate\Database\Eloquent\Model;
 
-class AlumnoReuniones extends Model
+class AlumnoReunion extends Model
 {
 
     protected $table = 'alumno_reuniones';

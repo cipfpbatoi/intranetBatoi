@@ -12,7 +12,7 @@
                     <td>{!! $alumno->nameFull !!}</td>
                     <td>
                         <select name="valoraciones" class="valoraciones">
-                            @foreach (config('auxiliares.promociona') as $index => $value)
+                            @foreach (config($select) as $index => $value)
                                 @if ($alumno->pivot->capacitats === $index)
                                     <option value="{{ $index }}" selected>{{$value}}</option>
                                 @else
@@ -32,7 +32,7 @@
                     {{ csrf_field() }}
                     <input type='hidden' name='idReunion' value="{!!$elemento->id!!}">
                     {{ Form::select('idAlumno',$tAlumnos,0,['id'=>'idAlumno']) }}
-                    {{ Form::select('capacitats',config('auxiliares.promociona'),0) }}
+                    {{ Form::select('capacitats',config($select),0) }}
                     <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") @lang("models.modelos.Alumno") ">
                 </form>
             </div>

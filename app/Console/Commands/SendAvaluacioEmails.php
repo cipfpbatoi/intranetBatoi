@@ -3,7 +3,7 @@
 namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
-use Intranet\Entities\AlumnoReuniones;
+use Intranet\Entities\AlumnoReunion;
 use Intranet\Mail\AvalAlumne;
 use Mail;
 use Swift_RfcComplianceException;
@@ -49,7 +49,7 @@ class SendAvaluacioEmails extends Command
      */
     public function handle()
     {
-        foreach ( AlumnoReuniones::where('sent',0)->get() as $aR)
+        foreach ( AlumnoReunion::where('sent',0)->get() as $aR)
         {
             try {
                 $aR->sent = 1;

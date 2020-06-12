@@ -17,7 +17,7 @@
     @lang("models.Reunion.detalle")
 @endsection
 @section('scripts')
-    @if ($elemento->avaluacioFinal)
+    @if ($elemento->avaluacioFinal || $elemento->extraOrdinaria )
         <script src="/js/Reunion/valoracioAlumnat.js"></script>
     @endif
 <script src="/js/Reunion/checkAsistencia.js"></script>

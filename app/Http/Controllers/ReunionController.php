@@ -121,6 +121,7 @@ class ReunionController extends IntranetController
         $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
         if ($elemento->avaluacioFinal){
             $tAlumnos = hazArray($grupo->Alumnos->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
+            $select = 'auxiliares.promociona';
         }
         else {
             if ($elemento->GrupoClase->curso == 1){
@@ -133,8 +134,9 @@ class ReunionController extends IntranetController
                 $tAlumnos = hazArray($grupo->Alumnos->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(),'idAlumno'))
                     ->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
             }
+            $select = 'auxiliares.promocionExtraordinaria';
         }
-        return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes','tAlumnos','sAlumnos'));
+        return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes','tAlumnos','sAlumnos','select'));
 
 
     }
