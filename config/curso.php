@@ -17,5 +17,5 @@ return [
     ],
     'certificatFol' => '2020-06-15',
     'enquestesAutomatiques' => 0,
-    'convocatoria' => 'convocatoria'
+    'convocatoria' => 'MS0yMDIwMDYyOS0yMDIwMDczMQ'
 ];
