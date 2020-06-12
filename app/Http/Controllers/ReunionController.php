@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Asistencia;
@@ -116,15 +117,21 @@ class ReunionController extends IntranetController
 
     private function editAvaluacioFinal($entorno){
         extract($entorno);
+        $grupo = Grupo::QTutor($elemento->dni)->first();
         $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
         if ($elemento->avaluacioFinal){
-            $grupo = Grupo::QTutor($elemento->dni)->first();
             $tAlumnos = hazArray($grupo->Alumnos->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
         }
         else {
-            $elementoFinal = Reunion::where('tipo',7)->where('numero',34)->where('idProfesor',$elemento->idProfesor)->latest()->first();
-            if ($elementoFinal) {
-                $tAlumnos = hazArray($elementoFinal->noPromocionan->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
+            if ($elemento->GrupoClase->curso == 1){
+                $elementoFinal = Reunion::where('tipo',7)->where('numero',34)->where('idProfesor',$elemento->idProfesor)->first();
+                if ($elementoFinal) {
+                    $tAlumnos = hazArray($elementoFinal->noPromocionan->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
+                }
+            }
+            else {
+                $tAlumnos = hazArray($grupo->Alumnos->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(),'idAlumno'))
+                    ->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
             }
         }
         return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes','tAlumnos','sAlumnos'));
