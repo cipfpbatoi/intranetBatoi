@@ -75,6 +75,11 @@ class Reunion extends Model
     {
         return $this->belongsToMany(Alumno::class, 'alumno_reuniones', 'idReunion', 'idAlumno')->withPivot('capacitats');
     }
+    public function noPromocionan()
+    {
+        return $this->belongsToMany(Alumno::class, 'alumno_reuniones', 'idReunion', 'idAlumno')->withPivot('capacitats')
+            ->wherePivot('capacitats',3);
+    }
 
     public function scopeMisReuniones($query)
     {

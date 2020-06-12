@@ -47,7 +47,7 @@ return [
     'promociona' => [
         0 => "Competència avanzada",
         1 => "Competència mitjana",
-        2 => "Comptència bàsica",
+        2 => "Competència bàsica",
         3 => "Encara no competent"
     ]
 ];
