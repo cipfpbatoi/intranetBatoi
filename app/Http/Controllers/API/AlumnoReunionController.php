@@ -23,7 +23,7 @@ class AlumnoReunionController extends ApiBaseController
        $email = $alumno->email ;
        $nia = $alumno->nia;
        $grupo = $alumno->Grupo->first();
-       $ciclo = $grupo->xCiclo;
+       $ciclo = $grupo->idCiclo;
        if ($capacitat == 3) {
            $promociona = false;
            $curso = $grupo->curso;

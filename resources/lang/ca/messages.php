@@ -276,7 +276,8 @@ return array(
         'Enquestes' => 'Enquestes',
         'Mypoll' => 'Resultats',
         'Dopoll' => 'Realitzar',
-        'Spam' => 'Spam'
+        'Spam' => 'Spam',
+        'SendEval' => 'Enviar Avaluació Alumne'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

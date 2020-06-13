@@ -59,3 +59,6 @@ Route::get('/modulo_ciclo/{ciclo}/delete', ['as' => 'moduloCiclo.destroy', 'uses
 Route::get('/actualizacion','ActualizacionController@actualizacion');
 Route::get('/anexoI','AdministracionController@importaAnexoI');
 //Route::get('/tutores','ImportController@asignarTutores');
+
+Route::get('/sendAvaluacio', ['as' => 'sendAvaluacio.create', 'uses' => 'SendAvaluacioEmailController@create']);
+Route::post('/sendAvaluacio', ['as' => 'sendAvaluacio.store', 'uses' => 'SendAvaluacioEmailController@store']);
