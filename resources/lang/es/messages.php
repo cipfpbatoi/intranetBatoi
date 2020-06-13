@@ -275,7 +275,7 @@ return array(
         'Mypoll' => 'Resultados',
         'Dopoll' => 'Realizar',
         'Spam' => 'Spam',
-        'SendEval' => 'Enviar Evaluación Alumno'
+        'Sendeval' => 'Enviar Evaluación Alumno'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
