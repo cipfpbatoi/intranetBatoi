@@ -93,9 +93,9 @@ class PanelFinCursoController extends BaseController
     private static function tutor(){
         $avisos = [];
 
-        self::lookAtPollsTutor($avisos);
+        //self::lookAtPollsTutor($avisos);
         self::lookAtFctsProjects($avisos);
-        self::lookAtQualitatUpload($avisos);
+        //self::lookAtQualitatUpload($avisos);
 
 
         return $avisos;
