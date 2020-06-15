@@ -58,7 +58,7 @@ class PanelFinCursoController extends BaseController
 
     private static function profesor(){
         $avisos = [];
-        self::lookAtActasUpload($avisos);
+
         self::lookForMyResults($avisos);
         self::lookforMyPrograms($avisos);
         self::lookUnPaidBills($avisos);
@@ -96,6 +96,7 @@ class PanelFinCursoController extends BaseController
         $avisos = [];
 
         //self::lookAtPollsTutor($avisos);
+        self::lookAtActasUpload($avisos);
         self::lookAtFctsProjects($avisos);
         //self::lookAtQualitatUpload($avisos);
 
@@ -111,6 +112,7 @@ class PanelFinCursoController extends BaseController
                 $avisos[self::DANGER][] = "FOL Grupo no revisado : ".$grupo->nombre;
             }
         }
+        return $avisos;
     }
 
     private static function lookForIssues(){
