@@ -63,7 +63,7 @@ class PanelFinCursoController extends BaseController
         self::lookforMyPrograms($avisos);
         self::lookUnPaidBills($avisos);
 
-        if (AuthUser()->departamento == 12 ){
+        if (AuthUser()->xdepartamento == 'Fol' ){
 
             self::lookForCheckFol($avisos);
         }
