@@ -52,7 +52,6 @@ class PanelFinCursoController extends BaseController
             }
         }
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        //dd($avisos);
         return view('notification.fiCurs',compact('avisos'));
 
     }
@@ -63,6 +62,9 @@ class PanelFinCursoController extends BaseController
         self::lookForMyResults($avisos);
         self::lookforMyPrograms($avisos);
         self::lookUnPaidBills($avisos);
+        if (AuthUser()->departamento == 'Fol' ){
+            self::lookForCheckFol($avisos);
+        }
         return $avisos;
     }
 
@@ -101,11 +103,21 @@ class PanelFinCursoController extends BaseController
         return $avisos;
     }
 
+    private static function lookForCheckFol(){
+        $avisos = [];
+
+        foreach (Grupo::misGrupos()->get() as $grupo){
+            if (!$grupo->fol){
+                $avisos[self::DANGER][] = "FOL Grupo no revisado : ".$grupo->nombre;
+            }
+        }
+    }
+
     private static function lookForIssues(){
         $avisos = [];
 
         foreach (Incidencia::where('responsable',AuthUser()->dni)->where('estado','<',3)->get() as $incidencia){
-            $avisos[self::DANGER][] = "Incidencia no resolta:".$incidencia->descripcion;
+            $avisos[self::DANGER][] = "Incidencia no resolta : ".$incidencia->descripcion;
         }
 
         return $avisos;
@@ -114,7 +126,7 @@ class PanelFinCursoController extends BaseController
         $avisos = [];
 
         foreach (Grupo::where('acta_pendiente','>',0)->get() as $grupo){
-            $avisos[self::DANGER][] = "Acta pendent del grup:".$grupo->nombre;
+            $avisos[self::DANGER][] = "Acta pendent del grup : ".$grupo->nombre;
         }
 
         return $avisos;
