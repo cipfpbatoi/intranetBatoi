@@ -104,34 +104,25 @@ class PanelFinCursoController extends BaseController
         return $avisos;
     }
 
-    private static function lookForCheckFol(){
-        $avisos = [];
-
+    private static function lookForCheckFol(&$avisos){
         foreach (Grupo::misGrupos()->get() as $grupo){
             if ($grupo->fol == 0){
                 $avisos[self::DANGER][] = "FOL Grupo no revisado : ".$grupo->nombre;
             }
         }
-        return $avisos;
     }
 
-    private static function lookForIssues(){
-        $avisos = [];
-
+    private static function lookForIssues(&$avisos){
         foreach (Incidencia::where('responsable',AuthUser()->dni)->where('estado','<',3)->get() as $incidencia){
             $avisos[self::DANGER][] = "Incidencia no resolta : ".$incidencia->descripcion;
         }
-
-        return $avisos;
     }
-    private static function lookForActesPendents(){
-        $avisos = [];
 
+    private static function lookForActesPendents(&$avisos){
         foreach (Grupo::where('acta_pendiente','>',0)->get() as $grupo){
             $avisos[self::DANGER][] = "Acta pendent del grup : ".$grupo->nombre;
         }
 
-        return $avisos;
     }
 
     private static function lookforInformsDepartment(&$avisos){
