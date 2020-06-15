@@ -107,7 +107,7 @@ class PanelFinCursoController extends BaseController
         $avisos = [];
 
         foreach (Grupo::misGrupos()->get() as $grupo){
-            if (!$grupo->fol){
+            if ($grupo->fol == 0){
                 $avisos[self::DANGER][] = "FOL Grupo no revisado : ".$grupo->nombre;
             }
         }
