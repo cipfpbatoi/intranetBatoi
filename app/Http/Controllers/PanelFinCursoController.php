@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 use Intranet\Entities\Documento;
+use Intranet\Entities\Incidencia;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
@@ -51,19 +52,42 @@ class PanelFinCursoController extends BaseController
             }
         }
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        dd($avisos);
-        if ($this->iniPestanas($grupo)){
-            return $this->grid($this->search($grupo),$this->modal);
-        }
+        //dd($avisos);
+        return view('notification.fiCurs',compact('avisos'));
 
+    }
+
+    private static function profesor(){
+        $avisos = [];
+        self::lookAtActasUpload($avisos);
+        self::lookForMyResults($avisos);
+        self::lookforMyPrograms($avisos);
+        self::lookUnPaidBills($avisos);
+        return $avisos;
+    }
+
+    private static function mantenimiento(){
+        $avisos = [];
+
+        self::lookForIssues();
+
+        return $avisos;
     }
 
     private static function direccion(){
-        return [];
+        $avisos = [];
+
+        self::lookForActesPendents($avisos);
+
+        return $avisos;
     }
 
     private static function jefe_dpto(){
-        return [];
+        $avisos = [];
+
+        self::lookforInformsDepartment($avisos);
+
+        return $avisos;
     }
 
     private static function tutor(){
@@ -72,9 +96,38 @@ class PanelFinCursoController extends BaseController
         self::lookAtPollsTutor($avisos);
         self::lookAtFctsProjects($avisos);
         self::lookAtQualitatUpload($avisos);
-        self::lookAtActasUpload($avisos);
+
 
         return $avisos;
+    }
+
+    private static function lookForIssues(){
+        $avisos = [];
+
+        foreach (Incidencia::where('responsable',AuthUser()->dni)->where('estado','<',3)->get() as $incidencia){
+            $avisos[self::DANGER][] = "Incidencia no resolta:".$incidencia->descripcion;
+        }
+
+        return $avisos;
+    }
+    private static function lookForActesPendents(){
+        $avisos = [];
+
+        foreach (Grupo::where('acta_pendiente','>',0)->get() as $grupo){
+            $avisos[self::DANGER][] = "Acta pendent del grup:".$grupo->nombre;
+        }
+
+        return $avisos;
+    }
+
+    private static function lookforInformsDepartment(&$avisos){
+        if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'Acta')
+            ->where('curso', Curso())->where('descripcion','Informe Trimestral')->count()==3) {
+            $avisos[self::SUCCESS][] = "Informes trimestrals fets";
+        }
+        else {
+            $avisos[self::DANGER][] = "Falta informe trimestral";
+        }
     }
 
     private static function lookAtQualitatUpload(&$avisos){
@@ -87,20 +140,18 @@ class PanelFinCursoController extends BaseController
         }
     }
     private static function lookAtActasUpload(&$avisos){
-
-            foreach ( config('auxiliares.reunionesControlables') as $tipo => $howManyNeeded) {
-                if ($howManyNeeded){
-                    $howManyAre = Reunion::Convocante()->Tipo($tipo)->Archivada()->count();
-                    if ($howManyAre >= $howManyNeeded) {
-                        $avisos[self::SUCCESS][] = "Acta ".TipoReunion::literal($tipo)." Artxivada";
-                    }
-                    else {
-                        $avisos[self::DANGER][] = "Falten Actes de ".TipoReunion::literal($tipo)." per artxivar";
-                    }
-
+        foreach ( config('auxiliares.reunionesControlables') as $tipo => $howManyNeeded) {
+            if ($howManyNeeded){
+                $howManyAre = Reunion::Convocante()->Tipo($tipo)->Archivada()->count();
+                if ($howManyAre >= $howManyNeeded) {
+                    $avisos[self::SUCCESS][] = "Acta ".TipoReunion::literal($tipo)." Artxivada";
                 }
-            }
+                else {
+                    $avisos[self::DANGER][] = "Falten Actes de ".TipoReunion::literal($tipo)." per artxivar";
+                }
 
+            }
+        }
     }
     private static function lookAtPollsTutor(&$avisos){
         $ppols = hazArray(PPoll::where('what','Fct')->get(),'id','id');
@@ -134,8 +185,10 @@ class PanelFinCursoController extends BaseController
             {
                 $avisos[self::DANGER][] = "Projecte de l'alumne ".$fctAval->Nombre.' no existeix';
             }
+
         }
     }
+
 
     private static function loadPreviousVotes($poll){
         return hazArray(Vote::where('user_id','=', AuthUser()->dni)
@@ -144,12 +197,11 @@ class PanelFinCursoController extends BaseController
     }
 
 
-    private static function mantenimiento(){
-        return [];
-    }
 
-    private function profesor(){
-        $avisos = [];
+
+
+
+    private static function lookForMyResults(&$avisos){
         foreach (Modulo_grupo::misModulos() as $modulo){
             if (!$modulo->resultados->where('evaluacion',3)){
                 $avisos[self::DANGER][] = "Falta resultats finals del modul ".$modulo->literal;
@@ -158,6 +210,9 @@ class PanelFinCursoController extends BaseController
                 $avisos[self::SUCCESS][] = "Resultats finals del modul ".$modulo->literal;
             }
         }
+    }
+
+    private static function lookforMyPrograms(&$avisos){
         foreach (Programacion::misProgramaciones()->get() as $programacion){
             if (is_null($programacion->propuestas ) || $programacion->propuestas == ''){
                 $avisos[self::DANGER][] = "Falta avaluació programació del modul ".$programacion->descripcion;
@@ -166,6 +221,9 @@ class PanelFinCursoController extends BaseController
                 $avisos[self::SUCCESS][] = "Hi ha avaluació programació del modul ".$programacion->descripcion;
             }
         }
+    }
+
+    private static function lookUnPaidBills(&$avisos){
         if (Comision::Actual()->where('estado','<',4)
             ->where(function($query) {
                 $query->where('comida','>',0)
@@ -178,7 +236,6 @@ class PanelFinCursoController extends BaseController
         else{
             $avisos[self::SUCCESS][] = 'Comissions correctes';
         }
-        return $avisos;
     }
 
 
