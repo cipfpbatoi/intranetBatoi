@@ -173,7 +173,7 @@ class PanelFinCursoController extends BaseController
         foreach ($alumnes as $alumne){
             $fctAval = AlumnoFctAval::esAval()->where('idAlumno',$alumne['idAlumno'])->orderBy('idAlumno')->first();
 
-            if ($fctAval->acta < 2 && $fctAval->asociacion == 1){
+            if ((!$fctAval->calificacion || $fctAval->actas < 2) && $fctAval->asociacion == 1){
                 $avisos[self::DANGER][] = "Fct de l'alumne ".$fctAval->Nombre.' no avaluada';
             }
 
