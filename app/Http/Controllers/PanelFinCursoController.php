@@ -62,7 +62,9 @@ class PanelFinCursoController extends BaseController
         self::lookForMyResults($avisos);
         self::lookforMyPrograms($avisos);
         self::lookUnPaidBills($avisos);
-        if (AuthUser()->departamento == 'Fol' ){
+
+        if (AuthUser()->departamento == 12 ){
+
             self::lookForCheckFol($avisos);
         }
         return $avisos;
@@ -107,6 +109,7 @@ class PanelFinCursoController extends BaseController
     private static function lookForCheckFol(&$avisos){
         foreach (Grupo::misGrupos()->get() as $grupo){
             if ($grupo->fol == 0){
+
                 $avisos[self::DANGER][] = "FOL Grupo no revisado : ".$grupo->nombre;
             }
         }
