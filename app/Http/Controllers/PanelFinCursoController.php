@@ -71,7 +71,7 @@ class PanelFinCursoController extends BaseController
     private static function mantenimiento(){
         $avisos = [];
 
-        self::lookForIssues();
+        self::lookForIssues($avisos);
 
         return $avisos;
     }
