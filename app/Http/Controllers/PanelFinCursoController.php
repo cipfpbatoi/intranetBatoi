@@ -180,10 +180,10 @@ class PanelFinCursoController extends BaseController
             if (($fctAval->calProyecto >0 && $grupo->proyecto) &&
                 (Documento::where('tipoDocumento','Proyecto')
                         ->where('curso',curso())
-                        ->where('propietario',$fctAval->Nombre)
+                        ->where('propietario',$fctAval->fullName)
                         ->count() == 0))
             {
-                $avisos[self::DANGER][] = "Projecte de l'alumne ".$fctAval->Nombre.' no existeix';
+                $avisos[self::DANGER][] = "Projecte de l'alumne ".$fctAval->fullName.' no existeix';
             }
 
         }

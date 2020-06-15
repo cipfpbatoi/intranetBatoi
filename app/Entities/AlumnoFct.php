@@ -96,12 +96,15 @@ class AlumnoFct extends Model
     
     public function getEmailAttribute(){
         return $this->Alumno->email;
-}
+    }
     public function getContactoAttribute(){
         return $this->Alumno->NameFull;
     }
     public function getNombreAttribute(){
         return $this->Alumno->NameFull;
+    }
+    public function getFullNameAttribute(){
+        return $this->Alumno->fullName;
     }
     public function getPeriodeAttribute(){
         return $this->Fct->periode;
