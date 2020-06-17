@@ -66,10 +66,12 @@ class CursoController extends IntranetController
         $this->panel->setBotonera(['create'], ['detalle', 'edit']);
         $this->panel->setBoton('grid',new BotonImg('curso.pdf',['where' => ['NAlumnos','>',0,'fecha_fin','posterior',Hoy()]]));
         $this->panel->setBoton('grid',new BotonImg('curso.email',['where' => ['NAlumnos','>',0,'fecha_fin','anterior',Hoy()]]));
-        $this->panel->setBoton('grid', new BotonImg('curso.delete', ['where' => ['activo', '==', 0]]));
-        $this->panel->setBoton('grid', new BotonImg('curso.active'));
-        $this->panel->setBoton('grid',new BotonImg('curso.saveFile'),
-              ['where' => ['fecha_fin','anterior',Hoy(),'activo', '==', 0]]);
+        $this->panel->setBoton('grid', new BotonImg('curso.delete', ['where' => ['activo', '==', 0,'archivada','==',0]]));
+        $this->panel->setBoton('grid', new BotonImg('curso.active',['where'=>['archivada','==',0]]));
+        $this->panel->setBoton('grid',new BotonImg('curso.saveFile',
+              ['where' => ['fecha_fin','anterior',Hoy(),'activo', '==', 0,'archivada','==',0]]));
+        $this->panel->setBoton('grid',new BotonImg('curso.show',
+            ['where' => ['archivada','==',1]]));
     }
 
     /**
@@ -104,8 +106,10 @@ class CursoController extends IntranetController
         if ($curso->fichero == ''){
             $nomComplet = 'gestor/' . Curso() . '/' . $this->model. '/' .'Curso_' . $curso->id . '.pdf';
             $curso->fichero = $nomComplet;
-            if (!file_exists(storage_path('/app/' . $nomComplet)))
-                self::hazPdf('pdf.alumnos.manipulador', AlumnoCurso::Curso($id)->Finalizado()->get(), $curso)->save(storage_path('/app/' . $nomComplet));
+            if (!file_exists(storage_path('/app/' . $nomComplet))){
+                self::hazPdf('pdf.alumnos.manipuladores',$curso->Asistentes, $curso)->save(storage_path('/app/' . $nomComplet));
+
+            }
 
         }
         return $curso;
@@ -125,14 +129,11 @@ class CursoController extends IntranetController
         $remitente = ['email' => cargo('director')->email, 'nombre' => cargo('director')->FullName];
         foreach ($curso->Asistentes as $alumno){
             $id = $alumno->pivot->id;
-            $ac = AlumnoCurso::where('id',$id)->get();
             if (file_exists(storage_path("tmp/Curs_$id.pdf")))
                 unlink(storage_path("tmp/Curs_$id.pdf"));
-            self::hazPdf('pdf.alumnos.manipulador', AlumnoCurso::where('id',$id)->get(), $curso)->save(storage_path("tmp/Curs_$id.pdf"));
+            self::hazPdf('pdf.alumnos.manipulador', $alumno, $curso)->save(storage_path("tmp/Curs_$id.pdf"));
             $attach = ["tmp/Curs_$id.pdf" => 'application/pdf'];
             dispatch(new SendEmail($alumno->email, $remitente, 'email.certificado', AlumnoCurso::find($id), $attach));
-
-
         }
         Alert::info('Correus enviats');
         return back();

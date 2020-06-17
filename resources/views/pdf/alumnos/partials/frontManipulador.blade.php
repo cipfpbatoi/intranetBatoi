@@ -15,7 +15,7 @@
 </div>
 <br/><br/>
 <div class="container" style="width:95%;clear:right;text-align: justify">
-    <p>Que @if ($elemento->Alumno->sexo == 'H') en/n' @else na/n' @endif {{$elemento->Alumno->FullName}} amb DNI número {{$elemento->Alumno->dni}} ha rebut la 
+    <p>Que @if ($elemento->sexo == 'H') en/n' @else na/n' @endif {{$elemento->FullName}} amb DNI número {{$elemento->dni}} ha rebut la
 	formació general en pràctiques higièniques de manipulació d'aliments i específica en l'activitat de</p>
 </div>
 <div class="container col-lg-12" style="width:50%;float: center">
