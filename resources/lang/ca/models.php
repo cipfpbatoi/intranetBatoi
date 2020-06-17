@@ -304,6 +304,7 @@ return array(
             'noAval' => 'No Avaluat',
             'noProyecto' => 'No presenta Projecte',
             'nuevoProyecto' => 'Accedeix al Projecte',
+            'nullProyecto' => 'Esborra projecte',
             'upload' => 'Pujar informació Qualitat',
             'pg0301' => 'Imprimeix Full Control Servei',
             'pr0301' => 'Imprimeix Full per Informar Alumnat',

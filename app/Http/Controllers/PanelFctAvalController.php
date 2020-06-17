@@ -8,7 +8,6 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
 use DB;
 use Styde\Html\Facades\Alert;
-use Intranet\Botones\Panel;
 use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
 
@@ -132,6 +131,30 @@ class PanelFctAvalController extends IntranetController
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
+    protected function nullProyecto($id)
+    {
+        DB::transaction(function () use ($id){
+            $fct = AlumnoFctAval::find($id);
+            $fct->calProyecto = null;
+            $fct->save();
+
+            $doc = Documento::where('tipoDocumento','Proyecto')
+                ->where('curso',Curso())
+                ->whereNull('idDocumento')
+                ->where('propietario',$fct->fullName)
+                ->first();
+            if ($doc) {
+                $doc->deleteDoc();
+            }
+        });
+
+
+        return back();
+    }
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function nuevoProyecto($id)
     {
         $fct = AlumnoFctAval::find($id);
@@ -236,6 +259,8 @@ class PanelFctAvalController extends IntranetController
                 'where' => ['calProyecto', '<', '1', 'actas', '<', 2]]));
             $this->panel->setBoton('grid', new BotonImg('fct.noProyecto', ['img' => 'fa-toggle-off', 'roles' => config('roles.rol.tutor'),
                 'where' => ['calProyecto', '<', '0', 'actas', '<', 2]]));
+            $this->panel->setBoton('grid', new BotonImg('fct.nullProyecto', ['img' => 'fa-minus-circle', 'roles' => config('roles.rol.tutor'),
+                'where' => ['calProyecto', '>=', '0', 'actas', '<', 2]]));
             $this->panel->setBoton('grid', new BotonImg('fct.nuevoProyecto', ['img' => 'fa-toggle-on', 'roles' => config('roles.rol.tutor'),
                 'where' => ['calProyecto', '<', '5', 'calProyecto', '>=', 0, 'actas', '==', 2]]));
             $this->panel->setBoton('grid', new BotonImg('fct.modificaNota', ['img' => 'fa-edit', 'roles' => config('roles.rol.tutor'),

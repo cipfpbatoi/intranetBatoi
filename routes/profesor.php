@@ -239,6 +239,7 @@ Route::get('/fct/{document}/apte', ['as' => 'fct.apte', 'uses' => 'PanelFctAvalC
 Route::get('/fct/{document}/noApte', ['as' => 'fct.noApte', 'uses' => 'PanelFctAvalController@noApte']);
 Route::get('/fct/{document}/noAval', ['as' => 'fct.noAval', 'uses' => 'PanelFctAvalController@noAval']);
 Route::get('/fct/{document}/noProyecto', ['as' => 'fct.noProyecto', 'uses' => 'PanelFctAvalController@noProyecto']);
+Route::get('/fct/{document}/nullProyecto', ['as' => 'fct.nullProyecto', 'uses' => 'PanelFctAvalController@nullProyecto']);
 Route::get('/fct/{document}/nuevoProyecto', ['as' => 'fct.nuevoProyecto', 'uses' => 'PanelFctAvalController@nuevoProyecto']);
 Route::get('/fct/acta', ['as' => 'fct.acta', 'uses' => 'PanelFctAvalController@demanarActa']);
 Route::get('/fct/{fct}/proyecto', ['as' => 'proyecto.new', 'uses' => 'DocumentoController@project']);
@@ -249,6 +250,7 @@ Route::put('/fct/upload', ['as' => 'qualitat.update', 'uses' => 'DocumentoContro
 Route::get('/fct/{document}/insercio',['as' => 'fct.insercio', 'uses' => 'PanelFctAvalController@empresa']);
 Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFctAvalController@edit']);
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
+
 
 Route::resource('dual','DualAlumnoController',['except' => ['destroy', 'update', 'show','edit']]);
 Route::get('/dual/{id}/edit', ['as' => 'dual.edit', 'uses' => 'DualController@edit']);

@@ -300,6 +300,7 @@ return array(
             'noAval' => 'No Evaluado',
             'noProyecto' => 'No presenta Proyecto',
             'nuevoProyecto' => 'Accede a Proyecto',
+            'nullProyecto' => 'Borra projecte',
             'upload' => 'Subir información Calidad',
             'convalidacion' => 'FCT Convalidada/Exento',
             'pg0301' => 'Imprime Hoja Control Servicio',
