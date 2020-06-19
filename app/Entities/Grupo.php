@@ -282,5 +282,9 @@ class Grupo extends Model
     {
         return $this->AprobPro . " de $this->AvalPro";
     }
+    public function getisSemiAttribute()
+    {
+        return ($this->turno == 'S');
+    }
 
 }

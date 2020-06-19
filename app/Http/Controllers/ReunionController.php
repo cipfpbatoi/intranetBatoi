@@ -125,9 +125,12 @@ class ReunionController extends IntranetController
         }
         else {
             if ($elemento->GrupoClase->curso == 1){
-                $elementoFinal = Reunion::where('tipo',7)->where('numero',34)->where('idProfesor',$elemento->idProfesor)->first();
-                if ($elementoFinal) {
-                    $tAlumnos = hazArray($elementoFinal->noPromocionan->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
+                if ($grupo->isSemi) {
+                    $tAlumnos = hazArray($grupo->Alumnos->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
+                } else {
+                    if ($actaFinal = Reunion::actaFinal($elemento->idProfesor)->first()) {
+                        $tAlumnos = hazArray($actaFinal->noPromocionan->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
+                    }
                 }
             }
             else {

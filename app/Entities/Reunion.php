@@ -109,6 +109,10 @@ class Reunion extends Model
     {
         return $query->where('archivada',1);
     }
+    public function scopeActaFinal($query,$tutor)
+    {
+        return $query->where('tipo',7)->where('numero',34)->where('idProfesor',$tutor);
+    }
 
     public function getTipoOptions()
     {
