@@ -28,6 +28,7 @@ class AsistentesCreate
      * @return void
      */
 
+
     private function queAlumnes($reunion){
         $grupo = $reunion->GrupoClase;
 

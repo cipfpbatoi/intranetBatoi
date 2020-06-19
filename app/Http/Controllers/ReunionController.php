@@ -110,35 +110,30 @@ class ReunionController extends IntranetController
             if (!$elemento->avaluacioFinal && !$elemento->extraOrdinaria){
                 return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
             }
-            return $this->editAvaluacioFinal(compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
+            return $this->editAvaluacioFinal($elemento,compact( 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
 
         }
     }
 
-    private function editAvaluacioFinal($entorno){
+    private function tAlumnos($reunion,$sAlumnos){
+        $grupo = $reunion->grupoClase;
+        if ($reunion->avaluacionFinal)
+            return hazArray($grupo->Alumnos->whereNotIn('nia',$sAlumnos),'nia','nameFull');
+        if ($grupo->curso == 2)
+            return hazArray($grupo->Alumnos->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(),'idAlumno'))
+                ->whereNotIn('nia',$sAlumnos),'nia','nameFull');
+        if ($grupo->isSemi)
+                return hazArray($grupo->Alumnos->whereNotIn('nia',$sAlumnos),'nia','nameFull');
+        if ($actaFinal = Reunion::actaFinal($reunion->idProfesor)->first())
+            return hazArray($actaFinal->noPromocionan->whereNotIn('nia',$sAlumnos),'nia','nameFull');
+        return hazArray($grupo->Alumnos->whereNotIn('nia',$sAlumnos),'nia','nameFull');
+    }
+
+    private function editAvaluacioFinal($elemento,$entorno){
         extract($entorno);
-        $grupo = Grupo::QTutor($elemento->dni)->first();
+        $select = $elemento->avaluacioFinal?'auxiliares.promociona':'auxiliares.promocionExtraordinaria';
         $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
-        if ($elemento->avaluacioFinal){
-            $tAlumnos = hazArray($grupo->Alumnos->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
-            $select = 'auxiliares.promociona';
-        }
-        else {
-            if ($elemento->GrupoClase->curso == 1){
-                if ($grupo->isSemi) {
-                    $tAlumnos = hazArray($grupo->Alumnos->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
-                } else {
-                    if ($actaFinal = Reunion::actaFinal($elemento->idProfesor)->first()) {
-                        $tAlumnos = hazArray($actaFinal->noPromocionan->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
-                    }
-                }
-            }
-            else {
-                $tAlumnos = hazArray($grupo->Alumnos->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(),'idAlumno'))
-                    ->whereNotIn('nia',hazArray($sAlumnos,'nia')),'nia','nameFull');
-            }
-            $select = 'auxiliares.promocionExtraordinaria';
-        }
+        $tAlumnos = $this->tAlumnos($elemento,hazArray($sAlumnos,'nia'));
         return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes','tAlumnos','sAlumnos','select'));
 
 
