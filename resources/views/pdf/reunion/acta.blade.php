@@ -34,6 +34,8 @@
              @endforeach
         </ul>
     </div>
+@endif
+@if ($datosInforme->avaluacioFinal || $datosInforme->extraOrdinaria)
     <div class="container">
         <br/>
         <strong>Promoció de l'alumnat</strong>
