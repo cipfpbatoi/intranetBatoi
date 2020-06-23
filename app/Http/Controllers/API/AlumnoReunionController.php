@@ -34,14 +34,11 @@ class AlumnoReunionController extends ApiBaseController
        return $this->sendResponse(compact('nia','nombre','apellidos','email','fecha_nac','ciclo','promociona','curso'),'OK');
     }
 
-    private function checkDades($token){
+    public function getDadesMatricula($token){
         $aR = AlumnoReunion::where('token',$token)->first();
         if (!$aR) return $this->sendError('Token no vàlid');
         return $this->getDades($aR->idAlumno);
     }
-    public function getDadesMatricula($convocatoria,$token){
-        if ($convocatoria != config('curso.convocatoria')) return $this->sendError('La convocatòria no està oberta');
-        return $this->checkDades($token);
-    }
+
 
 }

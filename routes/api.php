@@ -100,7 +100,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
 
     Route::resource('alumnoresultado','AlumnoResultadoContoller');
-    Route::get('/matricula/{convocatoria}/{token}','AlumnoReunionController@getDadesMatricula');
+    Route::get('/matricula/{token}','AlumnoReunionController@getDadesMatricula');
     //Route::get('/convenio','EmpresaController@indexConvenio');
 });
 
