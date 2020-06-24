@@ -90,7 +90,7 @@ class SendAvaluacioEmails extends Command
                 $capacitats = ($grupo->isSemi || $grupo->curso == '1' )?self::PROMOCIONA:self::NOPROMOCIONA;
                 if ($aR->capacitats == $capacitats){
                     $informe = ($grupo->isSemi)?'semi':$grupo->curso;
-                    if (!aO){
+                    if (!$aO){
                         $aR->token = $this->generaToken(60);
                     } else {
                         $aR->token = $aO->token;
