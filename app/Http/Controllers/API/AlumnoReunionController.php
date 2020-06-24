@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 class AlumnoReunionController extends ApiBaseController
 {
 
+    const NOPROMOCIONA = 3;
+
     protected $model = 'AlumnoReunion';
 
     private function getDades($nia){
@@ -24,12 +26,12 @@ class AlumnoReunionController extends ApiBaseController
        $nia = $alumno->nia;
        $grupo = $alumno->Grupo->first();
        $ciclo = $grupo->idCiclo;
-       if ($capacitat == 3) {
+       if ($capacitat == self::NOPROMOCIONA) {
            $promociona = false;
            $curso = $grupo->curso;
        } else {
            $promociona = true;
-           $curso = ($grupo->curso == 2)?'fct':2;
+           $curso = ($grupo->isSemi)?'fct':2;
        }
        return $this->sendResponse(compact('nia','nombre','apellidos','email','fecha_nac','ciclo','promociona','curso'),'OK');
     }
