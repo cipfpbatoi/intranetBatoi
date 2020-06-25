@@ -5,7 +5,7 @@
     <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
         <div id="{{$elemento->id}}" class="panel-body">
             <table class="table table-striped table-condensed">
-                <tr><th>NIA</th> <th>@lang("validation.attributes.name")</th><th>@lang("validation.attributes.valoraciones")</th><th>@lang("validation.attributes.operaciones")</th></tr>
+                <tr><th>NIA</th> <th>@lang("validation.attributes.name")</th><th>@lang("validation.attributes.valoraciones")</th>{{-- <th>@lang("validation.attributes.operaciones")</th>--}}</tr>
                 @foreach ($sAlumnos as $alumno)
                 <tr class="lineaAlumno">
                     <td>{!! $alumno->nia !!}</td>
@@ -21,7 +21,9 @@
                             @endforeach
                         </select>
                     </td>
+                    {{--
                     <td><a href="/reunion/{!!$elemento->id!!}/borrarAlumno/{!! $alumno->nia !!}" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a></td>
+                    --}}
                 </tr>
                 @endforeach
             </table>
