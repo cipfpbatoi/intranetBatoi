@@ -3,11 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Alumno;
 use Intranet\Events\ActivityReport;
-use Intranet\Entities\Horario;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Entities\Ciclo;
 
 class Grupo extends Model
 {
@@ -96,25 +92,18 @@ class Grupo extends Model
 
     public function getTutorDualOptions()
     {
-        return isset($this->Ciclo->departamento)?hazArray(Profesor::orderBy('apellido1')
-                        ->orderBy('apellido2')
-                        ->where('departamento', $this->Ciclo->departamento)
-                        ->get(), 'dni', ['apellido1', 'apellido2', 'nombre']):[];
+        return $this->getTutorOptions();
     }
+
 
     public function scopeQTutor($query, $profesor = null, $dual = false)
     {
         $profesor = $profesor ?? AuthUser()->dni;
-        if ($dual)
-            if (($sustituido = Profesor::findOrFail($profesor)->sustituye_a) != ' ')
-                return $query->where('tutorDual', $sustituido)->orWhere('tutorDual', $profesor);
-            else
-                return $query->where('tutorDual', $profesor);
-        else
-            if (($sustituido = Profesor::findOrFail($profesor)->sustituye_a) != ' ')
-                return $query->where('tutor', $sustituido)->orWhere('tutor', $profesor);
-            else
-                return $query->where('tutor', $profesor);
+        $sustituido = Profesor::findOrFail($profesor)->sustituye_a;
+        $searchField = $dual?'tutorDual':'tutor';
+        return ($sustituido != ' ')?
+            $query->where($searchField, $sustituido)->orWhere('tutor', $profesor):
+            $query->where($searchField, $profesor);
     }
 
     public function scopeMisGrupos($query, $profesor = null)
@@ -165,17 +154,17 @@ class Grupo extends Model
 
     public function getXcicloAttribute()
     {
-        return isset($this->Ciclo->ciclo) ? $this->Ciclo->ciclo : $this->idCiclo;
+        return $this->Ciclo->ciclo ?? $this->idCiclo;
     }
 
 
     public function getXtutorAttribute()
     {
-        return isset($this->Tutor->Sustituye->dni) ? $this->Tutor->Sustituye->FullName : (isset($this->Tutor->nombre) ? $this->Tutor->FullName : '');
+        return $this->Tutor->Sustituye->FullName ?? $this->Tutor->FullName ?? '';
     }
     public function getXDualAttribute()
     {
-        return isset($this->TutorDual->Sustituye->dni) ? $this->TutorDual->Sustituye->FullName : (isset($this->TutorDual->nombre) ? $this->TutorDual->FullName : '');
+        return $this->TutorDual->Sustituye->FullName ?? $this->TutorDual->FullName ?? '';
     }
 
     public function getActaAttribute()
@@ -197,12 +186,15 @@ class Grupo extends Model
     {
         $todos = $this->Alumnos;
         $aprob = 0;
-        foreach ($todos as $alumno) 
-            foreach ($alumno->Fcts as $fct)
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo )
-                    if (isset($fct->pivot->calificacion))    
-                        $aprob++;
-        
+        foreach ($todos as $alumno){
+            foreach ($alumno->Fcts as $fct){
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->calificacion)){
+                    $aprob++;
+                }
+            }
+
+        }
+
         return $aprob;
     }
 
@@ -210,12 +202,15 @@ class Grupo extends Model
     {
         $todos = $this->Alumnos;
         $aprob = 0;
-        foreach ($todos as $alumno) 
-            foreach ($alumno->Fcts as $fct)
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo )
-                    if (isset($fct->pivot->calificacion) && $fct->pivot->calificacion == 1 )    
-                        $aprob++;
-        
+        foreach ($todos as $alumno) {
+            foreach ($alumno->Fcts as $fct){
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->calificacion) && $fct->pivot->calificacion == 1 )  {
+                    $aprob++;
+                }
+            }
+
+        }
+
         return $aprob;
     }
 
@@ -223,12 +218,14 @@ class Grupo extends Model
     {
         $todos = $this->Alumnos;
         $aprob = 0;
-        foreach ($todos as $alumno) 
-            foreach ($alumno->Fcts as $fct)
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo)
-                    if (isset($fct->pivot->calProyecto))    
-                        $aprob++;
-        
+        foreach ($todos as $alumno) {
+            foreach ($alumno->Fcts as $fct){
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->calProyecto)) {
+                    $aprob++;
+                }
+            }
+
+        }
         return $aprob;
     }
 
@@ -236,12 +233,15 @@ class Grupo extends Model
     {
         $todos = $this->Alumnos;
         $aprob = 0;
-        foreach ($todos as $alumno) 
-            foreach ($alumno->Fcts as $fct)
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo )
-                    if (isset($fct->pivot->calProyecto) && $fct->pivot->calificacion >= 5)    
-                        $aprob++;
-        
+        foreach ($todos as $alumno) {
+            foreach ($alumno->Fcts as $fct){
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->calProyecto) && $fct->pivot->calificacion >= 5){
+                    $aprob++;
+                }
+            }
+
+        }
+
         return $aprob;
     }
 
@@ -250,21 +250,29 @@ class Grupo extends Model
         
         $todos = $this->Alumnos;
         $aprob = 0;
-        foreach ($todos as $alumno) 
-            foreach ($alumno->Fcts as $fct)
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo  )
-                    if (isset($fct->pivot->insercion)&&$fct->pivot->insercion)    
+        foreach ($todos as $alumno){
+            foreach ($alumno->Fcts as $fct){
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->insercion) && $fct->pivot->insercion)    {
                         $aprob++;
-        
+                }
+            }
+
+        }
+
         return $aprob;
     }
     public function getExentosAttribute()
     {
         $todos = $this->Alumnos;
         $aprob = 0;
-        foreach ($todos as $alumno) 
-            foreach ($alumno->Fcts as $fct)
-                if ($fct->exento) $aprob++;
+        foreach ($todos as $alumno) {
+            foreach ($alumno->Fcts as $fct){
+                if ($fct->exento){
+                    $aprob++;
+                }
+            }
+        }
+
         return $aprob;
     }
 

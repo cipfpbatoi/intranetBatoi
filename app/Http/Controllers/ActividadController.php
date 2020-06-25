@@ -108,9 +108,9 @@ class ActividadController extends IntranetController
             return back();
         }
         $actividad->profesores()->detach($profesor_id);
-        if ((!Actividad_profesor::where('idActividad', '=', $actividad_id)
+        if (!Actividad_profesor::where('idActividad', '=', $actividad_id)
                         ->where('coordinador', '=', '1')
-                        ->count())) {
+                        ->count()) {
             $nuevo_coord = Actividad_profesor::where('idActividad', '=', $actividad_id)
                     ->where('coordinador', '=', '0')
                     ->first();
@@ -125,8 +125,9 @@ class ActividadController extends IntranetController
         $coordActual = Actividad_profesor::where('idActividad', '=', $actividad_id)
                 ->where('coordinador', '=', '1')
                 ->first();
-        if ($coordActual)
+        if ($coordActual){
             $actividad->profesores()->updateExistingPivot($coordActual->idProfesor, ['coordinador' => 0]);
+        }
         $actividad->profesores()->updateExistingPivot($profesor_id, ['coordinador' => 1]);
         return redirect()->route('actividad.detalle', ['actividad' => $actividad_id]);
     }
@@ -148,8 +149,7 @@ class ActividadController extends IntranetController
             $mensaje .= $grupo->nombre . "- ";
         }
         $mensaje .= "se'n van a l'activitat extraescolar: " . $elemento->name . " i jo me'n vaig amb ells. ";
-        $mensaje .= 'Estarem fora des de ' . $elemento->desde . " fins " . $elemento->hasta;
-        return $mensaje;
+        return $mensaje . 'Estarem fora des de ' . $elemento->desde . " fins " . $elemento->hasta;
     }
     
     public function autorizacion($id)
