@@ -66,7 +66,7 @@ class TipoIncidencia extends Model
         return $profesores;
     }
     public function getProfesorAttribute(){
-        return isset($this->Responsable->fullName)?$this->Responsable->fullName:'';
+        return $this->Responsable->fullName??'';
     }
 
 }

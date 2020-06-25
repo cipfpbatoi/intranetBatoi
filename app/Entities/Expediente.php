@@ -119,7 +119,7 @@ class Expediente extends Model
         return $this->tipoExpediente->titulo;
     }
     public function getXmoduloAttribute(){
-        return isset($this->Modulo->cliteral)?$this->Modulo->literal:'';
+        return $this->Modulo->literal??'';
     }
     public function getShortAttribute(){
         return substr($this->explicacion,0,40);

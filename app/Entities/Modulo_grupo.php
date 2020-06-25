@@ -67,7 +67,7 @@ class Modulo_grupo extends Model
     }
     public function getXGrupoAttribute(){
 
-        return isset($this->Grupo->nombre)?$this->Grupo->nombre:$this->idGrupo;
+        return $this->Grupo->nombre??$this->idGrupo;
     }
     public function getXModuloAttribute(){
         return $this->ModuloCiclo->Xmodulo;

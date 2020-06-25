@@ -228,21 +228,20 @@ class Profesor extends Authenticatable
 
     public function getXdepartamentoAttribute()
     {
-        $departamento = $this->Departamento;
-        return isset($departamento->depcurt)?$departamento->depcurt:$this->departamento;
+        return $this->Departamento->depcurt??$this->departamento;
     }
     public function getLdepartamentoAttribute()
     {
-        return isset($this->Departamento->cliteral)?$this->Departamento->literal:'No assignat';
+        return $this->Departamento->cliteral??'No assignat';
     }
 
     public function getEntradaAttribute()
     {
-        return isset(Falta_profesor::Hoy($this->dni)->last()->entrada)?Falta_profesor::Hoy($this->dni)->last()->entrada:' ';
+        return Falta_profesor::Hoy($this->dni)->last()->entrada??' ';
     }
     public function getSalidaAttribute()
     {
-        return isset(Falta_profesor::Hoy($this->dni)->last()->salida)?Falta_profesor::Hoy($this->dni)->last()->salida:' ';
+        return Falta_profesor::Hoy($this->dni)->last()->salida??' ';
     }
     public function getHorarioAttribute()
     {

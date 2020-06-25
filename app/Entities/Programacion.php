@@ -114,13 +114,13 @@ class Programacion extends Model
         }
     }
     public function getXdepartamentoAttribute(){
-        return isset($this->ModuloCiclo->Ciclo->Departament->cliteral)?$this->ModuloCiclo->Ciclo->Departament->literal:'';
+        return $this->ModuloCiclo->Ciclo->Departament->literal??'';
     }
     public function getXModuloAttribute(){
-        return isset($this->ModuloCiclo->Xmodulo)?$this->ModuloCiclo->Xmodulo:'';
+        return $this->ModuloCiclo->Xmodulo??'';
     }
     public function getXCicloAttribute(){
-        return isset($this->ModuloCiclo->Aciclo)?$this->ModuloCiclo->Aciclo:'';
+        return $this->ModuloCiclo->Aciclo??'';
     }
     public function getDescripcionAttribute(){
         return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Aciclo." - ".$this->ModuloCiclo->Xmodulo:'';

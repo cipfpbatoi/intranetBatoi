@@ -206,7 +206,7 @@ trait BatoiModels
         
         if ($request->hasFile('fichero')) $this->fillFile($request->file('fichero'));
         
-        $primaryKey = isset($this->primaryKey) ? $this->primaryKey : 'id';
+        $primaryKey =  $this->primaryKey ?? 'id';
         return $this->$primaryKey;
     }
 

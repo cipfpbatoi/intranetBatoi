@@ -93,7 +93,7 @@ class Reunion extends Model
     public function scopeConvocante($query,$dni=null)
     {
         $dni = $dni??AuthUser()->dni;
-        $sustituye = (isset(Profesor::find($dni)->sustituye_a))?Profesor::find($dni)->sustituye_a:null;
+        $sustituye = Profesor::find($dni)->sustituye_a??null;
         return $query->where('idProfesor',$dni)->orWhere('idProfesor',$sustituye);
     }
     public function scopeTipo($query,$tipo)
@@ -135,11 +135,6 @@ class Reunion extends Model
         return hazArray(GrupoTrabajo::MisGruposTrabajo()->get(), 'id', 'literal');
     }
 
-//    public function Departamento()
-//    {
-//        return Departamento::find(Profesor::find($this->idProfesor)->departamento)->literal;
-//    }
-    
     public function getDepartamentoAttribute(){
         return $this->Creador->Departamento->literal;
     }

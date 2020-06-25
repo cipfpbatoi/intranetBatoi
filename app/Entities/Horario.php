@@ -146,20 +146,20 @@ class Horario extends Model
         return $this->Mestre->ShortName;
     }
     protected function getXGrupoAttribute(){
-        return isset($this->Grupo->nombre)?$this->Grupo->nombre:'';
+        return $this->Grupo->nombre??'';
     }
     
     protected function getXModuloAttribute(){
-        return isset($this->Modulo->literal)?$this->Modulo->literal:'';
+        return$this->Modulo->literal??'';
     }
     protected function getXOcupacionAttribute(){
-        return isset($this->Ocupacion->nom)?$this->Ocupacion->nom:$this->Grupo->nombre;
+        return $this->Ocupacion->nom??$this->Grupo->nombre;
     }
     protected function getDesdeAttribute(){
-        return isset($this->Hora->hora_ini)?$this->Hora->hora_ini:'';
+        return $this->Hora->hora_ini??'';
     }
     protected function getHastaAttribute(){
-        return isset($this->Hora->hora_fin)?$this->Hora->hora_fin:'';
+        return $this->Hora->hora_fin??'';
     }
     
     public function getModuloOptions(){
