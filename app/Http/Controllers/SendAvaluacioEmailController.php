@@ -50,11 +50,11 @@ class SendAvaluacioEmailController extends Seeder
             }
             if ($aR->Reunion->grupoClase->turno == 'S'){
                 Mail::to($aR->Alumno->email,'Secretaria CIPFP Batoi')
-                    ->send(new AvalAlumne($aR,'pdf.reunion.informeSemi'));
+                    ->send(new AvalAlumne($aR,'pdf.reunion.informe.semi'));
             }
             else {
                 Mail::to($aR->Alumno->email,'Secretaria CIPFP Batoi')
-                    ->send(new AvalAlumne($aR,'pdf.reunion.informeIndividual'));
+                    ->send(new AvalAlumne($aR,'pdf.reunion.informe.individual'));
             }
             avisa($aR->Reunion->idProfesor,
                 'Missatge Avaluació Alumne '.$aR->Alumno->fullName. ' enviat a '.$aR->Alumno->email,
