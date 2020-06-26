@@ -3,10 +3,8 @@
 namespace Intranet\Http\Controllers\API;
 
 use Intranet\Entities\Alumno;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoReunion;
-use Intranet\Entities\Grupo;
-use Illuminate\Http\Request;
+
 
 
 class AlumnoReunionController extends ApiBaseController
@@ -26,19 +24,22 @@ class AlumnoReunionController extends ApiBaseController
        $nia = $alumno->nia;
        $grupo = $alumno->Grupo->first();
        $ciclo = $grupo->idCiclo;
+       $curso_actual = $grupo->curso;
        if ($capacitat == self::NOPROMOCIONA) {
            $promociona = false;
-           $curso = $grupo->curso;
+           $curso = $curso_actual;
        } else {
            $promociona = true;
            $curso = ($grupo->isSemi)?'fct':2;
        }
-       return $this->sendResponse(compact('nia','nombre','apellidos','email','fecha_nac','ciclo','promociona','curso'),'OK');
+       return $this->sendResponse(compact('nia','nombre','apellidos','email','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
     }
 
     public function getDadesMatricula($token){
         $aR = AlumnoReunion::where('token',$token)->first();
-        if (!$aR) return $this->sendError('Token no vàlid');
+        if (!$aR) {
+            return $this->sendError('Token no vàlid');
+        }
         return $this->getDades($aR->idAlumno);
     }
 
