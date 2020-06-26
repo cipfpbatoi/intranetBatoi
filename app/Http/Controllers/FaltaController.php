@@ -121,7 +121,9 @@ class FaltaController extends IntranetController
             $request->hora_fin = $dia_completo ? null : $request->hora_fin;
             $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
             $id = parent::realStore($request);
-            if (UserisAllow(config('roles.rol.direccion'))) $this->init($id); // si es direcció autoritza
+            if (UserisAllow(config('roles.rol.direccion'))) {
+                $this->init($id);
+            } // si es direcció autoritza
         }
         return $this->redirect();
     }
@@ -139,7 +141,9 @@ class FaltaController extends IntranetController
         $request->hora_fin = $request->dia_completo ? null : $request->hora_fin;
         $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
         $elemento = Falta::find(parent::realStore($request,$id));
-        if ($elemento->estado == 1 && $elemento->fichero) Falta::putEstado($id,2); // si estava enviat i he pujat fitxer
+        if ($elemento->estado == 1 && $elemento->fichero) {
+            Falta::putEstado($id,2);
+        } // si estava enviat i he pujat fitxer
         return $this->redirect();
     }
 
@@ -156,8 +160,11 @@ class FaltaController extends IntranetController
     public function init($id)
     {
         $elemento = Falta::findOrFail($id);
-        if ($elemento->fichero) Falta::putEstado($id,2);
-        else Falta::putEstado($id,1);
+        if ($elemento->fichero) {
+            Falta::putEstado($id,2);
+        } else {
+            Falta::putEstado($id,1);
+        }
         
         return $this->redirect();
     }
@@ -188,8 +195,9 @@ class FaltaController extends IntranetController
             ['estado', '>', '0'],
             ['estado', '<', '4'],
             ['hasta', '<=', $hasta]
-        ])->get() as $elemento)
-                $elemento::_print($elemento->id);
+        ])->get() as $elemento) {
+            $elemento::_print($elemento->id);
+        }
     }
 
     /**
@@ -245,7 +253,9 @@ class FaltaController extends IntranetController
             $profesor = Profesor::find($idProfesor);
             $profesor->fecha_baja = null;
             $profesor->save();
-            if ($profesor->Sustituye) self::changeWithSubstitute($profesor,$profesor->Sustituye);
+            if ($profesor->Sustituye) {
+                self::changeWithSubstitute($profesor,$profesor->Sustituye);
+            }
         });
     }
 
@@ -256,10 +266,11 @@ class FaltaController extends IntranetController
     private static function changeWithSubstitute($profesorAlta, $sustituto){
 
             //canvi d'horari
-            if (Horario::profesor($profesorAlta->dni)->count()==0)
+            if (Horario::profesor($profesorAlta->dni)->count()==0) {
                 Horario::where('idProfesor',$sustituto->dni)->update(['idProfesor'=> $profesorAlta->dni]);
-            else
+            } else {
                 Horario::where('idProfesor',$sustituto->dni)->delete();
+            }
 
             // asistència a reunions
             foreach (Asistencia::where('idProfesor',$sustituto->dni)->get() as $asistencia){

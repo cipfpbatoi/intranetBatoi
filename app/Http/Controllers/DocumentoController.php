@@ -36,11 +36,12 @@ class DocumentoController extends IntranetController
 
     public function search()
     {
-        if (Session::get('completa'))
-            return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->orderBy('curso','desc')->get();
-        else
+        if (Session::get('completa')) {
+            return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->orderBy('curso', 'desc')->get();
+        } else {
             return Documento::where('curso',Curso())->whereIn('rol', RolesUser(AuthUser()->rol))->orWhere('propietario',AuthUser()->fullName)
                 ->orderBy('curso','desc')->get();
+        }
     }
 
     protected function iniBotones()
@@ -56,11 +57,16 @@ class DocumentoController extends IntranetController
             $this->validate($request,['nota' => 'numeric|min:1|max:10']);
             $fct = AlumnoFct::findOrFail($fct);
             $fct->calProyecto = $request->nota;
-            if ($fct->calificacion < 1) $fct->calificacion = 1;
+            if ($fct->calificacion < 1) {
+                $fct->calificacion = 1;
+            }
             $fct->save();
         }
-        if ($request->enlace) $except = ['nota','fichero'];
-        else $except = ['nota'];
+        if ($request->enlace) {
+            $except = ['nota','fichero'];
+        } else {
+            $except = ['nota'];
+        }
         return parent::store(subsRequest($request->duplicate(null, $request->except($except)), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
     }
 
@@ -121,11 +127,10 @@ class DocumentoController extends IntranetController
         $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
         $elemento->setInputType('grupo', ['type' => 'hidden']);
         if ($elemento->enlace){
-            //$elemento->setRule('fichero','mimes:pdf,zip');
             $elemento->setInputType('fichero', ['disableAll' => 'on']);
-        }  
-        else 
+        } else {
             $elemento->setInputType('enlace', ['type' => 'hidden']);
+        }
         $default = $elemento->fillDefautOptions();
         $modelo = $this->model;
         return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
@@ -135,20 +140,22 @@ class DocumentoController extends IntranetController
     {
         $doc = Documento::find($id);
         if (in_array($doc->rol, RolesUser(AuthUser()->rol))) {
-            if ($doc->enlace != '')
+            if ($doc->enlace != '') {
                 return redirect($doc->enlace);
-            else {
+            } else {
                 return parent::document($id);
             }
-        } else
-            return back();
+        }
+        return back();
     }
 
     public function destroy($id)
     {
         $borrar = Documento::findOrFail($id);
         if ($borrar) {
-            if ($borrar->link && !$borrar->exist) unlink(storage_path('app/' . $borrar->fichero));
+            if ($borrar->link && !$borrar->exist) {
+                unlink(storage_path('app/' . $borrar->fichero));
+            }
             $borrar->delete();
         }
         return $this->redirect();

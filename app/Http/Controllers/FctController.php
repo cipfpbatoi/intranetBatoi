@@ -88,7 +88,6 @@ class FctController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['roles' => config('roles.rol.tutor')]));
-        //$this->panel->setBoton('index', new BotonBasico("fct.pr0601.print",['roles' => config('roles.rol.tutor')]));
         Session::put('redirect', 'FctController@index');
     }
 
@@ -116,12 +115,16 @@ class FctController extends IntranetController
         return back();
     }
 
+    /**
     private function sendEmails($document,$colaboraciones){
-        if (isset($document['redirect'])) return $this->renderEmail($document,$colaboraciones);
+        if (isset($document['redirect'])) {
+            return $this->renderEmail($document,$colaboraciones);
+        }
         $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], $document['view']);
         $mail->send();
         return back();
     }
+    */
 
     /**
      * @param $document
@@ -138,9 +141,10 @@ class FctController extends IntranetController
      * @return \Illuminate\Http\RedirectResponse
      */
     private function printDocument($document, $quienes){
-        if ($quienes->count())
+        if ($quienes->count()) {
             return $this->hazPdf("pdf.fct.$document", $quienes,
                 config("pr.$document"), config("pr.$document.orientacion"))->stream();
+        }
 
         Alert::message('No tens alumnes per a eixa documentació','warning');
         return back();
@@ -152,8 +156,12 @@ class FctController extends IntranetController
      * @return mixed
      */
     private function quienSaleDocumento($tipoDocumento){
-        if ($tipoDocumento == 1) return AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idAlumno')->orderBy('desde')->get();
-        if ($tipoDocumento == 2) return AlumnoFct::misFcts()->where('desde','<=',Hoy())->where('hasta','>=',Hoy())->orderBy('idAlumno')->orderBy('desde')->get();
+        if ($tipoDocumento == 1) {
+            return AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idAlumno')->orderBy('desde')->get();
+        }
+        if ($tipoDocumento == 2) {
+            return AlumnoFct::misFcts()->where('desde','<=',Hoy())->where('hasta','>=',Hoy())->orderBy('idAlumno')->orderBy('desde')->get();
+        }
         return Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
 
     }
@@ -179,10 +187,9 @@ class FctController extends IntranetController
     {
         $fct = Fct::findOrFail($id);
         $instructor = $fct->Instructor;
-        if (isset($instructor->surnames))
+        if (isset($instructor->surnames)) {
             return self::preparePdf($fct,$request->fecha,$request->horas)->stream();
-        else
-        {
+        } else {
             Alert::danger("Completa les dades de l'instructor");
             return back();   
         }
@@ -227,7 +234,7 @@ class FctController extends IntranetController
     public function store(Request $request)
     {
 
-        $idFct = DB::transaction(function() use ($request){
+        DB::transaction(function() use ($request){
             $idAlumno = $request['idAlumno'];
             $hasta = $request['hasta'];
             $elementos = Fct::where('idColaboracion',$request->idColaboracion)
@@ -284,8 +291,9 @@ class FctController extends IntranetController
             parent::destroy($id);
             Session::put('pestana',3);
             return redirect()->action('EmpresaController@show', ['id' => $empresa]);
+        } else {
+            return parent::destroy($id);
         }
-        else return parent::destroy($id);
     }
 
     /**
@@ -308,10 +316,11 @@ class FctController extends IntranetController
      * @return \Illuminate\Http\RedirectResponse
      */
     public function nouFctAlumno(Request $request){
-        if (isset($request->idInstructor))
+        if (isset($request->idInstructor)) {
             $this->store($request);
-        else
+        } else {
             Alert::danger('No hi ha instructor.No puc generar la FCT');
+        }
 
         return back();
     }

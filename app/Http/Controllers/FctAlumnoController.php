@@ -45,7 +45,6 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['id' => '401', 'roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['id' => '402', 'roles' => config('roles.rol.tutor')]));
-        //$this->panel->setBoton('index', new BotonBasico("fct.pr0601.print",['roles' => config('roles.rol.tutor')]));
         Session::put('redirect', 'FctAlumnoController@index');
     }
         //
@@ -60,7 +59,7 @@ class FctAlumnoController extends IntranetController
 
     public function storeConvalidacion(Request $request)
     {
-        $idFct = DB::transaction(function() use ($request){
+        DB::transaction(function() use ($request){
             $idAlumno = $request['idAlumno'];
             $elementos = FctConvalidacion::where('idColaboracion',$request->idColaboracion)
                     ->where('asociacion',$request->asociacion)
@@ -78,7 +77,7 @@ class FctAlumnoController extends IntranetController
                 $id = $elemento->fillAll($request);
             } 
             $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa(Hoy()),'horas'=>$request->horas,'calificacion' => 2,'correoAlumno'=>1]);
-            
+
             return $id;
         });
         

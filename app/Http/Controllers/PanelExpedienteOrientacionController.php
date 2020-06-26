@@ -12,7 +12,6 @@ use Intranet\Botones\BotonImg;
  */
 class PanelExpedienteOrientacionController extends BaseController
 {
-    //use traitPanel;
 
     /**
      * @var array

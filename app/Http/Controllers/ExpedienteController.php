@@ -76,9 +76,9 @@ class ExpedienteController extends IntranetController
         if ($expediente->tipoExpediente->orientacion){
             $mensaje = $expediente->explicacion.' .Grup '.$expediente->Alumno->Grupo->first()->nombre;
             Expediente::putEstado($id, 4, $mensaje);
-        }
-        else
+        } else {
             Expediente::putEstado($id,1);
+        }
         return back();
     }
 

@@ -129,8 +129,9 @@ class CursoController extends IntranetController
         $remitente = ['email' => cargo('director')->email, 'nombre' => cargo('director')->FullName];
         foreach ($curso->Asistentes as $alumno){
             $id = $alumno->pivot->id;
-            if (file_exists(storage_path("tmp/Curs_$id.pdf")))
+            if (file_exists(storage_path("tmp/Curs_$id.pdf"))){
                 unlink(storage_path("tmp/Curs_$id.pdf"));
+            }
             self::hazPdf('pdf.alumnos.manipulador', $alumno, $curso)->save(storage_path("tmp/Curs_$id.pdf"));
             $attach = ["tmp/Curs_$id.pdf" => 'application/pdf'];
             dispatch(new SendEmail($alumno->email, $remitente, 'email.certificado', AlumnoCurso::find($id), $attach));

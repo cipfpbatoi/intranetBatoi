@@ -45,8 +45,9 @@ class ComisionController extends IntranetController
     public function store(Request $request)
     {
         $id = $this->realStore($request);
-        if (Comision::find($id)->fct)
+        if (Comision::find($id)->fct){
             return redirect()->route('comision.detalle', ['comision' => $id]);
+        }
         return $this->redirect();
     }
 
@@ -79,21 +80,30 @@ class ComisionController extends IntranetController
         }
         $comision = new Comision(['idProfesor'=>AuthUser()->dni,'desde'=>$manana,'hasta'=>$manana,
             'fct'=>$fct,'servicio'=>$servicio]);
-        if (!$fct) $comision->setInputType('fct',['type'=> 'hidden']);
+        if (!$fct) {
+            $comision->setInputType('fct',['type'=> 'hidden']);
+        }
         return $comision;
     }
 
     private function enviarCorreos($comision){
-        foreach ($comision->Fcts as $fct)
-            if ($fct->pivot->aviso)  $this->sendEmail($fct,$comision->desde);
-            else Activity::record('visita', $fct, null, $comision->desde, 'Visita Empresa');
+        foreach ($comision->Fcts as $fct){
+            if ($fct->pivot->aviso){
+                $this->sendEmail($fct,$comision->desde);
+            }
+            else {
+                Activity::record('visita', $fct, null, $comision->desde, 'Visita Empresa');
+            }
+
+        }
 
     }
 
     private function sendEmail($elemento,$fecha)
     {
-        if (file_exists(storage_path("tmp/visita_$elemento->id.ics")))
+        if (file_exists(storage_path("tmp/visita_$elemento->id.ics"))){
             unlink(storage_path("tmp/visita_$elemento->id.ics"));
+        }
 
         $ini = buildFecha($fecha,$elemento->pivot->hora_ini);
         $fin = buildFecha($fecha,$elemento->pivot->hora_ini);

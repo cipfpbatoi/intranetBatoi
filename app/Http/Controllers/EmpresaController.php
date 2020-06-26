@@ -55,16 +55,21 @@ class EmpresaController extends IntranetController
     {
         $dades = $request->except('cif');
         $dades['cif'] = strtoupper($request->cif);
-        if (Empresa::where('cif',strtoupper($request->cif))->count())
+        if (Empresa::where('cif',strtoupper($request->cif))->count()) {
             return back()->withInput(Input::all())->withErrors('CIF duplicado');
+        }
 
         $id = $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]));
 
-        if ($request->europa)  $this->getConcert($id);
+        if ($request->europa)  {
+            $this->getConcert($id);
+        }
 
         $idCentro = $this->createCenter($id,$request);
         if (isset(Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo))
-            $idColaboracion = $this->createColaboration($idCentro,$request);
+        {
+            $this->createColaboration($idCentro,$request);
+        }
 
         return redirect()->action('EmpresaController@show', ['id' => $id]);
     }
@@ -100,7 +105,9 @@ class EmpresaController extends IntranetController
     protected function realStore(Request $request, $id = null)
     {
         $elemento = $id ? Empresa::findOrFail($id) : new Empresa(); //busca si hi ha
-        if ($id) $elemento->setRule('concierto',$elemento->getRule('concierto').','.$id);
+        if ($id) {
+            $elemento->setRule('concierto',$elemento->getRule('concierto').','.$id);
+        }
         $this->validateAll($request, $elemento);    // valida les dades
 
         return $elemento->fillAll($request);        // ompli i guarda
@@ -109,7 +116,9 @@ class EmpresaController extends IntranetController
     public function update(Request $request, $id)
     {
         $elemento = Empresa::find($this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]),$id));
-        if ($elemento->europa) $this->getConcert($elemento->id);
+        if ($elemento->europa) {
+            $this->getConcert($elemento->id);
+        }
         $touched = FALSE;
         foreach ($elemento->centros as $centro){
             if ($centro->direccion == '') {
@@ -125,20 +134,12 @@ class EmpresaController extends IntranetController
                 $touched = TRUE;
             }
         }
-        if ($touched) $centro->save();
+        if ($touched) {
+            $centro->save();
+        }
         return redirect()->action('EmpresaController@show', ['empresa' => $elemento->id]);
     }
-/*
-    private function remainsConcert($elemento,$concierto){
 
-        if ($concierto) {
-            $elemento->concierto = $concierto;
-            $elemento->save();
-        }
-        else
-            if ($elemento->europa) $this->getConcert($elemento->id);
-    }
-*/
     /*
      * document ($id)
      * torna el fitxer de un model
@@ -147,7 +148,9 @@ class EmpresaController extends IntranetController
     public function document($id)
     {
         $elemento = Empresa::findOrFail($id);
-        if ($elemento->fichero) return response()->file(storage_path('app/' . $elemento->fichero));
+        if ($elemento->fichero) {
+            return response()->file(storage_path('app/' . $elemento->fichero));
+        }
         Alert::danger(trans("messages.generic.nodocument"));
         return back();
     }

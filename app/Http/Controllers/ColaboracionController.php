@@ -59,8 +59,10 @@ class ColaboracionController extends IntranetController
         
             // para no generar más de uno por ciclo
         $validator = Validator::make($copia->toArray(),$copia->getRules());
-        if ($validator->fails())
+        if ($validator->fails()){
             return Redirect::back()->withInput()->withErrors($validator);
+        }
+
 
         $copia->save();
         return back();
@@ -75,7 +77,9 @@ class ColaboracionController extends IntranetController
     protected function realStore(Request $request, $id = null)
     {
         $elemento = $id ? Colaboracion::findOrFail($id) : new Colaboracion(); //busca si hi ha
-        if ($id) $elemento->setRule('idCentro',$elemento->getRule('idCentro').','.$id);
+        if ($id) {
+            $elemento->setRule('idCentro',$elemento->getRule('idCentro').','.$id);
+        }
         $this->validateAll($request, $elemento);    // valida les dades
         return $elemento->fillAll($request);        // ompli i guarda
     }
@@ -150,8 +154,9 @@ class ColaboracionController extends IntranetController
         $fcts = Fct::where('idColaboracion',$id)->where('asociacion',1)->get();
         $contactFct = Activity::mail('Fct')->ids(hazArray($fcts,'id','id'))->orderBy('created_at')->get();
         $alumnos = [];
-        foreach ($fcts as $fct)
+        foreach ($fcts as $fct){
             $alumnos = array_merge($alumnos,hazArray($fct->Alumnos,'nia','nia'));
+        }
         $contactAl = Activity::mail('Alumno')->ids($alumnos)->orderBy('created_at')->get();
         return view($this->chooseView('show'), compact('elemento','contactCol','contactFct','contactAl','fcts'));
     }

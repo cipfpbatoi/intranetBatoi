@@ -43,7 +43,6 @@ class DualAlumnoController extends FctAlumnoController
     /**
      * @var array
      */
-    //protected $parametresVista = ['before' => [] , 'modal' => ['anexeVI']];
 
     /**
      * @return mixed

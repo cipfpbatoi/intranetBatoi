@@ -53,7 +53,9 @@ class PanelDocAgrupadosController extends BaseController
         $first = false;
         foreach (TipoDocumento::allRol($grupo) as $key => $role) {
             if (UserisAllow($role)){
-                if ($first)  $this->panel->setPestana($key, true, 'profile.documento', ['tipoDocumento', $key]);
+                if ($first)  {
+                    $this->panel->setPestana($key, true, 'profile.documento', ['tipoDocumento', $key]);
+                }
                 else {
                     $this->panel->setPestana($key, true, 'profile.documento', ['tipoDocumento', $key],null,1);
                     $first = true;
