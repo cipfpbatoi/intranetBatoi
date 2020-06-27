@@ -27,7 +27,9 @@ class ProgramacionController extends IntranetController
     protected function search()
     {
         return Programacion::misProgramaciones()
-                ->get();
+            ->with('Ciclo')
+            ->with('Modulo')
+            ->get();
     }
     
     //inicializat a init (normalment 1)

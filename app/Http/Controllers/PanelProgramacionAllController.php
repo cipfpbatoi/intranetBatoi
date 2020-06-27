@@ -19,6 +19,7 @@ class PanelProgramacionAllController extends BaseController
         return Programacion::where('estado',config('variables.mostrarProgramacionesEstado'))
             ->with('Departamento')
             ->with('Ciclo')
+            ->with('Modulo')
             ->get();
     }
     

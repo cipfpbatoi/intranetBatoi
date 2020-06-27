@@ -55,11 +55,11 @@ class Programacion extends Model
     }
     public function Ciclo()
     {
-        return $this->hasOneThrough(Ciclo::class,Modulo_ciclo::class,'idCiclo','ciclo','idModuloCiclo','id');
+        return $this->hasOneThrough(Ciclo::class,Modulo_ciclo::class,'id','ciclo','idModuloCiclo','idCiclo');
     }
     public function Modulo()
     {
-        return $this->hasOneThrough(Modulo::class,Modulo_ciclo::class,'idModulo','codigo','idModuloCiclo','id');
+        return $this->hasOneThrough(Modulo::class,Modulo_ciclo::class,'id','codigo','idModuloCiclo','idModulo');
     }
 
 
@@ -130,10 +130,10 @@ class Programacion extends Model
         return $this->Departamento->literal??'';
     }
     public function getXModuloAttribute(){
-        return $this->Modulo->Xmodulo??'';
+        return $this->Modulo->literal??'';
     }
     public function getXCicloAttribute(){
-        return $this->Ciclo->Aciclo??'';
+        return $this->Ciclo->literal??'';
     }
     public function getDescripcionAttribute(){
         return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Aciclo." - ".$this->ModuloCiclo->Xmodulo:'';
