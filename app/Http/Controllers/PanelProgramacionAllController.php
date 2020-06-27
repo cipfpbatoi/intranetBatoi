@@ -11,7 +11,7 @@ class PanelProgramacionAllController extends BaseController
 
    
     protected $model = 'Programacion';
-    protected $gridFields = ['Xciclo','XModulo', 'Xdepartamento'];
+    protected $gridFields = ['XCiclo','XModulo', 'Xdepartamento'];
     protected $redirect = 'PanelProgramacionAllController@index';
     protected $parametresVista = [];
     
@@ -22,7 +22,10 @@ class PanelProgramacionAllController extends BaseController
             ->with('Modulo')
             ->get();
     }
-    
+    protected function iniPestanas($parametres = null)
+    {
+    }
+
     protected function iniBotones()
     {
         $this->panel->setBotonera();

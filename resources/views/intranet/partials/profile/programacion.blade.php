@@ -3,7 +3,7 @@
     <div id="{{$elemento->idModulo}}" class="well profile_view">
         <div class="col-sm-12">
             <h4 class="brief">
-                 {{ $elemento->departamento }}<br/>
+                 {{ $elemento->Xdepartamento }}<br/>
                  {{ trans('messages.buttons.ciclo')}}: {{ $elemento->Xciclo }}<br/>
                  {{ trans('messages.buttons.modulo')}}: {{ $elemento->Xmodulo }}<br/>
                  {{ trans('validation.attributes.Profesor')}}: {{ $elemento->Profesor->ShortName }}<br/>
