@@ -55,11 +55,11 @@ class Programacion extends Model
     }
     public function Ciclo()
     {
-        return $this->hasOneThrough(Ciclo::class,Modulo_ciclo::class,'idCiclo','ciclo','id','id');
+        return $this->hasOneThrough(Ciclo::class,Modulo_ciclo::class,'idCiclo','ciclo','idModuloCiclo','id');
     }
     public function Modulo()
     {
-        return $this->hasOneThrough(Modulo::class,Modulo_ciclo::class,'idModulo','codigo');
+        return $this->hasOneThrough(Modulo::class,Modulo_ciclo::class,'idModulo','codigo','idModuloCiclo','id');
     }
 
 
