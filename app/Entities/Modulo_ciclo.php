@@ -54,6 +54,10 @@ class Modulo_ciclo extends Model
     {
         return $this->hasOne(Programacion::class, 'idModuloCiclo');
     }
+    public function Profesor()
+    {
+        return $this->hasOneThrough(Profesor::class,Programacion::class,'idModuloCiclo','dni','id','idProfesor');
+    }
 
     public function getXmoduloAttribute(){
         return $this->Modulo->literal;
@@ -68,7 +72,7 @@ class Modulo_ciclo extends Model
         return $this->Ciclo->ciclo;
     }
     public function getNombreAttribute(){
-        return $this->Programacion->Profesor->ShortName;
+        return $this->Profesor->ShortName;
     }
     public function getIdCicloOptions()
     {

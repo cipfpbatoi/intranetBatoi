@@ -23,6 +23,8 @@ class PanelProgramacionController extends BaseController
     {
         return Programacion::where('estado', '>', '0')
                 ->Departamento()
+                ->with('Profesor')
+                ->with('ModuloCiclo')
                 ->get();
     }
 

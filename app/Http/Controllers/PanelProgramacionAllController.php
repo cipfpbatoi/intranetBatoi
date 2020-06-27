@@ -16,7 +16,10 @@ class PanelProgramacionAllController extends BaseController
     protected $parametresVista = [];
     
     public function search(){
-        return Programacion::where('estado',config('variables.mostrarProgramacionesEstado'))->get();
+        return Programacion::where('estado',config('variables.mostrarProgramacionesEstado'))
+            ->with('Departamento')
+            ->with('Ciclo')
+            ->get();
     }
     
     protected function iniBotones()

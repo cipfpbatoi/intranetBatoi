@@ -31,9 +31,17 @@ class PanelControlProgramacionController extends BaseController
     protected function search()
     {
         if (UserisAllow(config('roles.rol.direccion'))) {
-            return Modulo_ciclo::all();
+            return Modulo_ciclo::with('Ciclo')
+                ->with('Modulo')
+                ->with('Programacion')
+                ->with('Profesor')
+                ->get();
         }
-        return Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get();
+        return Modulo_ciclo::with('Ciclo')
+            ->with('Modulo')
+            ->with('Programacion')
+            ->where('idDepartamento', AuthUser()->departamento)
+            ->get();
     }
 
 }

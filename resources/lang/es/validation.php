@@ -260,8 +260,10 @@ return array(
                 'Dual' => 'Tutor Dual',
                 'adquiridosNO' => 'Valoración de las tareas del 3r Trimestre. Contenidos que faltan por impartir al módulo',
                 'nota' => 'Nota',
-                'valoraciones' => "Valoración de competencias, capacidades i nivel de aprendizaje"
-             ),
+                'valoraciones' => "Valoración de competencias, capacidades i nivel de aprendizaje",
+                'espacio' => 'Espacio',
+                'DesCurta' => 'Descripción'
+        ),
         'empty_option' => array(
             'default' => '-Selecciona-',
             'otros'   => '-Selecciona vehiculo-',

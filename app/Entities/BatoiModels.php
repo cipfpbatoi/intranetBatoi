@@ -34,7 +34,9 @@ trait BatoiModels
      */
     public function isRequired($campo)
     {
-        if (isset($this->rules[$campo])&&strpos($this->rules[$campo], 'equired')) return true;
+        if (isset($this->rules[$campo])&&strpos($this->rules[$campo], 'equired')) {
+            return true;
+        }
         return false;
     }
 
@@ -53,7 +55,9 @@ trait BatoiModels
     public function deleteInputType($id){
         unset($this->inputTypes[$id]);
         foreach ($this->fillable as $key => $item){
-            if ($item == $id) unset($this->fillable[$key]);
+            if ($item == $id) {
+                unset($this->fillable[$key]);
+            }
         }
     }
 
@@ -90,11 +94,7 @@ trait BatoiModels
     {
         return $this->rules[$id];
     }
-//    public function removeRequired($id)
-//    {
-//        if ($this->isRequired($id))
-//            $this->setRule($id,substr($this->getRule($id),9));
-//    }
+
 
     /**
      * @param $campo
@@ -111,7 +111,11 @@ trait BatoiModels
     public function existsDatepicker()
     {
         foreach ($this->inputTypes as $type)
-            if ($this->isTypeDate($type)) return true;
+        {
+            if ($this->isTypeDate($type)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -121,31 +125,12 @@ trait BatoiModels
      */
     public function isTypeDate($type)
     {
-        if (isset($type['type']) && (strpos($type['type'], 'ate') or strpos($type['type'], 'ime') or strpos($type['type'], 'ag'))) return true;
+        if (isset($type['type']) && (strpos($type['type'], 'ate') || strpos($type['type'], 'ime') || strpos($type['type'], 'ag'))) {
+            return true;
+        }
         return false;
     }
 
-//    private function lookForEspecialFields()
-//    {
-//        $campos = [];
-//        foreach ($this->inputTypes as $key => $type) {
-//            if (isset($type['type'])) {
-//                if (strpos($type['type'], 'ate')) {
-//                    if (strpos($type['type'], 'ime'))
-//                        $campos[$key] = 'datetime';
-//                    else
-//                        $campos[$key] = 'date';
-//                }
-//                if (strpos($type['type'], 'ile')) {
-//                    $campos[$key] = 'file';
-//                }
-//                if (strpos($type['type'], 'elect')) {
-//                    $campos[$key] = 'select';
-//                }
-//            }
-//        }
-//        return $campos;
-//    }
 
     /**
      * @param Request $request
@@ -173,8 +158,7 @@ trait BatoiModels
             $field = $this->fileField;
             $nombre .= $this->$field.'_';
         }
-        $nombre .= $clase . '.' . $extension;
-        return $nombre;
+        return $nombre . $clase . '.' . $extension;
     }
 
 
@@ -185,10 +169,18 @@ trait BatoiModels
      */
     private function fillField($key, $value){
         $type = isset($this->inputTypes[$key]['type'])?$this->inputTypes[$key]['type']:null;
-        if ($type == 'date') return (new Date($value))->format('Y-m-d');
-        if ($type == 'datetime') return (new Date($value))->format('Y-m-d H:i');
-        if ($type == 'select') return $value == ''?null:$value;
-        if ($type == 'file') return $value = $this->$key;
+        if ($type == 'date') {
+            return (new Date($value))->format('Y-m-d');
+        }
+        if ($type == 'datetime') {
+            return (new Date($value))->format('Y-m-d H:i');
+        }
+        if ($type == 'select') {
+            return $value == ''?null:$value;
+        }
+        if ($type == 'file') {
+            return $value = $this->$key;
+        }
         return $value;
     }
 
@@ -199,17 +191,40 @@ trait BatoiModels
     public function fillAll(Request $request)
     {
         $fillable = $this->notFillable?array_diff($this->fillable,$this->notFillable):$this->fillable;
-        //$dates = $this->lookForEspecialFields();
-        foreach ($fillable as $key)  $this->$key = $this->fillField($key,$request->$key);
+        foreach ($fillable as $key)  {
+            $this->$key = $this->fillField($key,$request->$key);
+        }
 
         $this->save();
         
-        if ($request->hasFile('fichero')) $this->fillFile($request->file('fichero'));
+        if ($request->hasFile('fichero')) {
+            $this->fillFile($request->file('fichero'));
+        }
         
         $primaryKey =  $this->primaryKey ?? 'id';
         return $this->$primaryKey;
     }
 
+
+    private function aspect(&$parametres,$originalType){
+        switch ($originalType){
+            case 'multiple' :
+                $finalType='select';
+                $parametres[] = 'multiple';
+                break;
+            case 'name':
+            case 'card':
+            case 'time':
+            case 'date':
+            case 'datetime':
+                $parametres['template'] = 'themes/bootstrap/fields/'.$originalType;
+                $finalType='text';
+                break;
+            default:
+                $finalType = $originalType;
+        }
+        return $finalType;
+    }
 
     /**
      * @return array
@@ -220,38 +235,27 @@ trait BatoiModels
         foreach ($this->getfillable() as $property) {
             $parametres = [];
             $inputTpe = $this->getInputType($property);
-            $InputType[$property]['type'] = isset($inputTpe['type']) ? $inputTpe['type'] : 'text';
-            switch ($InputType[$property]['type']){
-                case 'name':
-                case 'card':
-                case 'time':
-                case 'date':
-                case 'datetime' :      
-                    $parametres['template'] = 'themes/bootstrap/fields/'.$InputType[$property]['type'];
-                    $InputType[$property]['type']='text';
-                    break;
-                case 'multiple' :
-                    $InputType[$property]['type']='select';
-                    $parametres[] = 'multiple';
-                    break;
-                    
-            }
+            $InputType[$property]['type'] = $this->aspect($parametres,$inputTpe['type'] ?? 'text');
             $ph = !strpos(trans('validation.attributes.' . $property), 'alidation.') ? trans('validation.attributes.' . $property) : ucwords($property);
             
             $parametres['id'] = $property . '_id';
             $parametres['ph'] = $ph;
             $parametres['class'] = 'col-md-7 col-xs-12 ' . $InputType[$property]['type'];
             
-            $InputType[$property]['default'] = isset($inputTpe['default']) ? $inputTpe['default'] : null;
+            $InputType[$property]['default'] = $inputTpe['default'] ?? null;
             
-            if (isset($inputTpe['disabled']))
+            if (isset($inputTpe['disabled'])){
                 $parametres = array_merge($parametres, ['disabled' => 'disabled']);
-             if (isset($inputTpe['disableAll']))
-                $parametres = array_merge($parametres, ['disabled' => 'on']);
-            if ($this->isRequired($property))
+            }
+            if (isset($inputTpe['disableAll'])){
+                 $parametres = array_merge($parametres, ['disabled' => 'on']);
+            }
+            if ($this->isRequired($property)){
                 $parametres = array_merge($parametres, ['required']);
-            if (isset($inputTpe['inline']))
+            }
+            if (isset($inputTpe['inline'])){
                 $parametres = array_merge($parametres, ['inline' => 'inline']);
+            }
             
             $InputType[$property]['params'] = $parametres;
         }
@@ -265,7 +269,9 @@ trait BatoiModels
      */
     public function has($field)
     {
-        if (isset($this->$field) || is_null($this->$field)) return true;
+        if (isset($this->$field) || is_null($this->$field)) {
+            return true;
+        }
         return false;
     }
 
@@ -274,8 +280,9 @@ trait BatoiModels
      */
     public function getLinkAttribute()
     {
-        if (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero)))
+        if (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero))) {
             return true;
+        }
         return false;
     }
 

@@ -49,14 +49,26 @@ class Programacion extends Model
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
-    
+    public function Departamento()
+    {
+        return $this->hasOneThrough(Departamento::class,Profesor::class,'dni','id','idProfesor','departamento');
+    }
+    public function Ciclo()
+    {
+        return $this->hasOneThrough(Ciclo::class,Modulo_ciclo::class,'idCiclo','ciclo','id','id');
+    }
+    public function Modulo()
+    {
+        return $this->hasOneThrough(Modulo::class,Modulo_ciclo::class,'idModulo','codigo');
+    }
 
 
-    
-    
+
+
+
+
     public function getidModuloCicloOptions()
     {
-        //return hazArray(Modulo_ciclo::orderBy('idCiclo')->get(), 'id', ['Xciclo','Xmodulo']);
         $horas = Horario::select()
                 ->Profesor(AuthUser()->dni)
                 ->whereNotNull('idGrupo')
@@ -87,8 +99,9 @@ class Programacion extends Model
         foreach ($horas as $hora){
             if ($mc = Modulo_ciclo::where('idModulo',$hora->modulo)
                     ->where('idCiclo',$hora->Grupo->idCiclo)
-                    ->first())
-            $modulos[] = $mc->id;
+                    ->first()) {
+                $modulos[] = $mc->id;
+            }
         }
         return $query->whereIn('idModuloCiclo', $modulos)
                 ->where('curso',Curso());
@@ -114,13 +127,13 @@ class Programacion extends Model
         }
     }
     public function getXdepartamentoAttribute(){
-        return $this->ModuloCiclo->Ciclo->Departament->literal??'';
+        return $this->Departamento->literal??'';
     }
     public function getXModuloAttribute(){
-        return $this->ModuloCiclo->Xmodulo??'';
+        return $this->Modulo->Xmodulo??'';
     }
     public function getXCicloAttribute(){
-        return $this->ModuloCiclo->Aciclo??'';
+        return $this->Ciclo->Aciclo??'';
     }
     public function getDescripcionAttribute(){
         return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Aciclo." - ".$this->ModuloCiclo->Xmodulo:'';

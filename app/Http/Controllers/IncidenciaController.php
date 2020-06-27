@@ -40,6 +40,14 @@ class IncidenciaController extends IntranetController
      */
     protected $modal = true;
 
+
+    protected function search(){
+        return Incidencia::with('Tipos')
+            ->with('Responsables')
+            ->with('Creador')
+            ->where('idProfesor', '=', AuthUser()->dni)
+            ->get();
+    }
     /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse

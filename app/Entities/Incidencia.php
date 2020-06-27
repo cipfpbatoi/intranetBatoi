@@ -130,12 +130,12 @@ class Incidencia extends Model
     }
 
     public function getXespacioAttribute(){
-        return $this->espacio?$this->Espacios->descripcion:'';
+        return $this->Espacios->descripcion ?? '';
     }
 
     public function getXresponsableAttribute()
     {
-        return ($this->responsable == '') ? $this->responsable : $this->Responsables->ShortName;
+        return  $this->Responsables->ShortName ?? '';
     }
 
     public function getXtipoAttribute()

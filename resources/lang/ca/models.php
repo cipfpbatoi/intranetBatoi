@@ -440,6 +440,9 @@ return array(
             'chart' => 'Vore resultats agregats',
             'do' => 'Contesta',
         ),
+        'Modulo_ciclo' => array(
+            'index' => 'Programacions'
+        ),
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
             'Curso' => 'Curs',
