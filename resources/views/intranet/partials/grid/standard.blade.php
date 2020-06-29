@@ -26,7 +26,15 @@
                 <td><span class='input' name='{{ $item }}'>@if (isset($elemento->leido)&&!($elemento->leido))<strong> {{ substr($elemento->$item,0,$long) }} </strong> @else  {{ mb_substr($elemento->$item,0,$long) }} @endif</span></td>
                 @endforeach
                 @if ($panel->countBotones('grid'))
-                <td><span class="botones">@include('intranet.partials.buttons',['tipo' => 'grid'])</span></td>
+                <td><span class="botones">
+                        @foreach ($panel->getBotones('grid') as $button)
+                            @if (isset($elemento) && $button!='')
+                                {{ $button->show($elemento) }}
+                            @else
+                                {{ $button->show() }}
+                            @endif
+                        @endforeach
+                </span></td>
                 @endif
             </tr>
             @endforeach

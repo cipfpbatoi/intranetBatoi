@@ -21,7 +21,7 @@ class PanelProyectoController extends BaseController
     {
         $dep = isset(AuthUser()->departamento)?AuthUser()->departamento:AuthUser()->Grupo->first()->departamento;
         $ciclos = Ciclo::select('ciclo')
-                ->where('departamento', $dep)
+                 ->where('departamento', $dep)
                 ->where('tipo',2)
                 ->distinct()
                 ->get();

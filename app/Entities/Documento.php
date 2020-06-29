@@ -78,9 +78,7 @@ class Documento extends Model
     
     public function getLinkAttribute()
     {
-        if (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero)))
-            return true;
-        return false;
+        return (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero)));
     }
     
     public static function crea($elemento, $parametres = null)

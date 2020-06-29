@@ -80,6 +80,11 @@ class Reunion extends Model
         return $this->belongsToMany(Alumno::class, 'alumno_reuniones', 'idReunion', 'idAlumno')->withPivot('capacitats')
             ->wherePivot('capacitats',3);
     }
+    public function Departament()
+    {
+        return $this->hasOneThrough(Departamento::class,Profesor::class,'dni','id','idProfesor','departamento');
+    }
+
 
     public function scopeMisReuniones($query)
     {
@@ -136,7 +141,7 @@ class Reunion extends Model
     }
 
     public function getDepartamentoAttribute(){
-        return $this->Creador->Departamento->literal;
+        return $this->Departament->literal;
     }
     public function getAvaluacioAttribute(){
         return $this->numero-20;
