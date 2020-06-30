@@ -24,7 +24,9 @@
                 </p>
             </div>
             <div class="col-xs-12 col-sm-11 emphasis">
-                @include ('intranet.partials.buttons',['tipo' => 'profile'])
+                @foreach ($panel->getBotones('profile') as $button)
+                    {{ $button->show($elemento) }}
+                @endforeach
                 <a href='#' class='btn btn-primary btn-xs' title='{{$elemento->momento}}'>{{$elemento->ahora}}</a>
             </div>
         </div>

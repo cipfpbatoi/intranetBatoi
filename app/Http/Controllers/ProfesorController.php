@@ -46,13 +46,11 @@ use traitAutorizar,
                 ->with('Departamento')
                 ->Activo()
                 ->get();
-        $departamentos = Profesor::join('departamentos', 'profesores.departamento', '=', 'departamentos.id')
-                ->select('departamentos.*')
-                ->distinct()
-                ->get();
+        /**
+        $departamentos = Departamento::where('didactico',1)->get();
         foreach ($departamentos as $departamento) {
             $this->panel->setPestana($departamento->depcurt, false, 'profile.profesor', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
-        }
+        }*/
         $this->iniBotones();
         return $this->grid($todos);
     }
@@ -62,6 +60,8 @@ use traitAutorizar,
         Session::forget('redirect');
         $todos = Profesor::orderBy('apellido1')
                 ->with('Departamento')
+                ->with('Horari.Ocupacion')
+                ->with('Horari.Modulo')
                 ->Activo()
                 ->get();
         $departamentos = Departamento::where('didactico',1)->get();
@@ -78,21 +78,6 @@ use traitAutorizar,
         return $this->grid($todos);
     }
 
-    
-
-//    public function departamento()
-//    {
-//        $todos = Profesor::where('departamento', '=', AuthUser()->departamento)
-//                ->Activo()
-//                ->orderBy('apellido1', 'asc')
-//                ->orderBy('apellido2', 'asc')
-//                ->get();
-//        $this->iniBotones();
-//        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1,$this->parametresVista);
-//        $this->panel->setBoton('index', new BotonBasico("profesor.colectivo", ['class' => 'colectivo btn btn-primary'], true));
-//        Session::put('colectivo', AuthUser()->departamento);
-//        return $this->grid($todos);
-//    }
 
     public function equipoDirectivo()
     {

@@ -13,4 +13,9 @@ class Provincia extends Model
         'nombre',
     ];
 
+    public function Municipio()
+    {
+        return $this->hasMany(Municipio::class, 'provincias_id');
+    }
+
 }

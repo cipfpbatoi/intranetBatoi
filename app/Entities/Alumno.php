@@ -98,10 +98,11 @@ class Alumno extends Authenticatable
     {
         return $this->belongsTo(Provincia::class, 'provincia','id');
     }
+
+
     public function Municipio()
     {
-        $poble = Municipio::where('provincias_id',$this->provincia)->where('cod_municipio',$this->municipio)->first();
-        return isset($poble)?$poble->municipio:'';
+        return $this->belongsTo(Municipio::class,'municipio','cod_municipio')->where('provincias_id',$this->provincia);
     }
 
     public function scopeQGrupo($query, $grupo)
@@ -186,7 +187,7 @@ class Alumno extends Authenticatable
         $this->save();
     }
     public function getPoblacionAttribute(){
-        return $this->Municipio();
+        return $this->Municipio->municipio;
     }
 
 }

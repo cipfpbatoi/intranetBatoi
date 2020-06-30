@@ -56,7 +56,7 @@ function coincideHorario($elemento, $sesion)
  */
 function estaDentro($profesor = null)
 {
-    $ultimo = Intranet\Entities\Falta_profesor::Hoy($profesor == null ? AuthUser()->dni : $profesor)->last();
+    $ultimo = Intranet\Entities\Falta_profesor::Hoy($profesor ?? AuthUser()->dni )->get()->last();
     if ($profesor == null) session(['ultimoFichaje' => $ultimo]);
     return ($ultimo == null ? false : ($ultimo->salida == null ? true : false));
 }

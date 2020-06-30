@@ -5,16 +5,10 @@ namespace Intranet\Entities;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Jenssegers\Date\Date;
-use Intranet\Notifications\mensajePanel;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Entities\Activity;
 use Intranet\Events\ActivityReport;
 use \DB;
 use Intranet\Events\PreventAction;
-use Intranet\Entities\GrupoTrabajo;
-use Intranet\Entities\Departamento;
 use Intranet\Notifications\MyResetPassword;
-use Illuminate\Support\Facades\App;
 
 
 class Profesor extends Authenticatable
@@ -102,12 +96,12 @@ class Profesor extends Authenticatable
 
     public function Comision()
     {
-        return $this->hasMany(Comision::getClass(), 'idProfesor', 'dni');
+        return $this->hasMany(Comision::class, 'idProfesor', 'dni');
     }
 
     public function Faltas()
     {
-        return $this->hasMany(Faltas::getClass(), 'idProfesor', 'dni');
+        return $this->hasMany(Falta_profesor::class, 'idProfesor', 'dni');
     }
 
     public function Actividad()
@@ -269,10 +263,12 @@ class Profesor extends Authenticatable
         $dia = config("auxiliares.diaSemana." . now()->format('w'));
         $horaActual = $this->Horari->where('dia_semana', $dia)->where('sesion_orden', $sesion)->first();
         if ($horaActual) {
-            if ($horaActual->ocupacion != null && isset($horaActual->Ocupacion->nombre))
+            if ($horaActual->ocupacion != null && isset($horaActual->Ocupacion->nombre)){
                 return $horaActual->Ocupacion->nombre;
-            if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre)
+            }
+            if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre) {
                 return $horaActual->Modulo->literal . ' (' . $horaActual->aula . ')';
+            }
         }
         return '';
 
@@ -283,10 +279,13 @@ class Profesor extends Authenticatable
     public function getMiJefeAttribute()
     {
         $todos = Profesor::where('departamento', $this->departamento)->get();
-        foreach ($todos as $uno)
-            if (esRol($uno->rol, config('roles.rol.jefe_dpto')))
+        foreach ($todos as $uno){
+            if (esRol($uno->rol, config('roles.rol.jefe_dpto'))){
                 return $uno->dni;
+            }
+        }
     }
+
     public function getQualitatFile(){
         $find = Documento::where('idProfesor', $this->dni)->where('tipoDocumento','Qualitat')
                 ->where('curso',Curso())->first();

@@ -14,7 +14,6 @@ class Horario extends Model
     use BatoiModels;
     
     protected $primaryKey = 'id';
-    //protected $fillable = ['idProfesor', 'modulo', 'idGrupo', 'ocupacion','aula'];
     protected $fillable = ['idProfesor', 'modulo', 'idGrupo', 'ocupacion','aula','dia_semana','sesion_orden','plantilla'];
     protected $rules = [
         'idProfesor' => 'required',
@@ -102,20 +101,29 @@ class Horario extends Model
      * @param profesor
      * @return array[][]
      */
+
+    private static function profesorActual($profesor){
+        if (Horario::where('idProfesor',$profesor)->count())
+            return $profesor;
+        else
+            return Profesor::findOrFail($profesor)->sustituye_a;
+    }
+
     public static function HorarioSemanal($profesor)
     {
         $horas = Hora::all();
         $dias_semana = array('L', 'M', 'X', 'J', 'V');
         $semana = [];
+        $profesor = self::profesorActual($profesor);
         foreach ($dias_semana as $dia) {
             foreach ($horas as $hora) {
-                $queHace = static::Profesor($profesor)
+                $queHace = static::where('idProfesor',$profesor)
                         ->Dia($dia)
-                        ->with(['Modulo','Ocupacion'])
                         ->where('sesion_orden', '=', $hora->codigo)
                         ->first();
-                if ($queHace)
+                if ($queHace) {
                     $semana[$dia][$hora->codigo] = $queHace;
+                }
             }
         }
         return $semana;

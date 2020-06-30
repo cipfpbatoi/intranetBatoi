@@ -89,7 +89,7 @@ class Modulo_ciclo extends Model
     
     public function getEstadoAttribute()
     {
-        return isset($this->Programacion->estado) ? $this->Programacion->estado : 0;
+        return $this->Programacion->estado ?? 0;
     }
     public function getSituacionAttribute()
     {

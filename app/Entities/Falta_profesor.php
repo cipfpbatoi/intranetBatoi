@@ -23,24 +23,25 @@ class Falta_profesor extends Model
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
+
     public function scopeHoy($query, $profesor)
     {
-        return Falta_profesor::where('dia', '=', date("Y-m-d", time()))
-                        ->where('idProfesor', $profesor)
-                        ->get();
+        return $query->where('dia', '=', date("Y-m-d", time()))
+            ->where('idProfesor', $profesor);
+
     }
     
     public function scopehaFichado($query, $dia, $profesor)
     {
-        return Falta_profesor::where('dia', '=', $dia)
+        return $query->where('dia', '=', $dia)
                         ->where('idProfesor', $profesor);
     }
 
     public static function fichar($profesor = null)
     {
-        $profesor = ($profesor == null ? AuthUser()->dni : $profesor);
-        $ultimo = Falta_profesor::Hoy($profesor)
-                ->last();
+
+        $ultimo = Falta_profesor::Hoy($profesor ?? AuthUser()->dni)
+                ->get()->last();
 
         if ($ultimo != null){
             $now = new Date();
@@ -54,7 +55,7 @@ class Falta_profesor extends Model
 
         if (($ultimo == null) || ($ultimo->salida != null)) {
             $ultimo = new Falta_profesor;
-            $ultimo->idProfesor = $profesor;
+            $ultimo->idProfesor = $profesor ?? AuthUser()->dni;
             $ultimo->dia = date("Y-m-d", time());
             $ultimo->entrada = date("H:i:s", time());
             $ultimo->save();

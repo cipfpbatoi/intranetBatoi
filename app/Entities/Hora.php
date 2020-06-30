@@ -9,8 +9,7 @@ class Hora extends Model
 
     public $primaryKey = 'codigo';
     public $timestamps = false;
-    //protected $fillable = ['codigo', 'turno', 'hora_ini','hora_fin'];
-   
+
 
     public function Horario()
     {

@@ -43,7 +43,7 @@ class GrupoController extends IntranetController
     protected function search(){
 
         return esRol(AuthUser()->rol,config(self::DIRECCION)) ?
-                Grupo::with('Ciclo')->with('Tutor')->with('TutorDual')->get():
+                Grupo::with('Ciclo')->with('Tutor')->with('TutorDual')->with('Tutor.Sustituye')->get():
                 Grupo::with('Ciclo')->MisGrupos()->get();
     }
 
