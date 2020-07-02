@@ -22,13 +22,15 @@ trait traitCRUD{
     
     protected function redirect()
     {
-        if (Session::get('redirect')) $this->redirect = Session::get('redirect'); //variable session
+        if (Session::get('redirect')) {
+            $this->redirect = Session::get('redirect');
+        } //variable session
         
         if ($this->redirect) {
-            if (!isset($this->search))
+            if (!isset($this->search)) {
                 return redirect()->action($this->redirect);
-            else
-                return redirect()->action($this->redirect,$this->search);
+            }
+            return redirect()->action($this->redirect,$this->search);
         } // variable controlador
         
         return redirect()->action($this->model . 'Controller@index'); //defecto
@@ -48,9 +50,15 @@ trait traitCRUD{
     }
     
     protected function borrarFichero($fichero){
-        if (!isset($fichero) || strlen($fichero)<3) return null;
-        if (file_exists($fichero)) unlink($fichero);
-        if (file_exists(storage_path('app/' . $fichero))) unlink(storage_path('app/' . $fichero));
+        if (!isset($fichero) || strlen($fichero)<3) {
+            return null;
+        }
+        if (file_exists($fichero)) {
+            unlink($fichero);
+        }
+        if (file_exists(storage_path('app/' . $fichero))) {
+            unlink(storage_path('app/' . $fichero));
+        }
     }
     
     /* 
@@ -133,10 +141,11 @@ trait traitCRUD{
     public function active($id)
     {
         $elemento = $this->class::findOrFail($id);
-        if ($elemento->activo)
+        if ($elemento->activo) {
             $elemento->activo = false;
-        else
+        } else {
             $elemento->activo = true;
+        }
         $elemento->save();
         return $this->redirect();
     }
@@ -149,7 +158,9 @@ trait traitCRUD{
     public function document($id)
     {
         $elemento = $this->class::findOrFail($id);
-        if ($elemento->link) return response()->file(storage_path('app/' . $elemento->fichero));
+        if ($elemento->link) {
+            return response()->file(storage_path('app/' . $elemento->fichero));
+        }
         Alert::danger(trans("messages.generic.nodocument"));
         return back();
     }
@@ -157,7 +168,9 @@ trait traitCRUD{
     public function gestor($id)
     {
         $documento = $this->class::findOrFail($id)->idDocumento;
-        if ($documento) return redirect("/documento/$documento/show");
+        if ($documento) {
+            return redirect("/documento/$documento/show");
+        }
         
         Alert::danger(trans("messages.generic.nodocument"));
         return back();
@@ -171,8 +184,9 @@ trait traitCRUD{
     protected function manageCheckBox($request,$elemento){
         foreach ($elemento->getFillable() as $property) {
             if (isset($elemento->getInputType($property)['type']) && 
-               ($elemento->getInputType($property)['type'] == 'checkbox'))
+               ($elemento->getInputType($property)['type'] == 'checkbox')) {
                 $request->$property = $request->has($property);
+            }
         }
         return $request;
     }

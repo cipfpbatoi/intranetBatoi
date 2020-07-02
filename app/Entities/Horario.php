@@ -54,9 +54,13 @@ class Horario extends Model
     public function scopeProfesor($query, $profesor)
     {
         if (Horario::where('idProfesor',$profesor)->count())
+        {
             return $query->where('idProfesor', $profesor);
+        }
         else
+        {
             return $query->where('idProfesor', Profesor::findOrFail($profesor)->sustituye_a);
+        }
     }
 
     public function scopeGrup($query, $grupo)
@@ -102,29 +106,18 @@ class Horario extends Model
      * @return array[][]
      */
 
-    private static function profesorActual($profesor){
-        if (Horario::where('idProfesor',$profesor)->count())
-            return $profesor;
-        else
-            return Profesor::findOrFail($profesor)->sustituye_a;
-    }
+
 
     public static function HorarioSemanal($profesor)
     {
-        $horas = Hora::all();
-        $dias_semana = array('L', 'M', 'X', 'J', 'V');
+        $horario = static::Profesor($profesor)
+            ->with('Modulo')
+            ->with('Ocupacion')
+            ->with('Grupo')
+            ->get();
         $semana = [];
-        $profesor = self::profesorActual($profesor);
-        foreach ($dias_semana as $dia) {
-            foreach ($horas as $hora) {
-                $queHace = static::where('idProfesor',$profesor)
-                        ->Dia($dia)
-                        ->where('sesion_orden', '=', $hora->codigo)
-                        ->first();
-                if ($queHace) {
-                    $semana[$dia][$hora->codigo] = $queHace;
-                }
-            }
+        foreach($horario as $hora){
+            $semana[$hora->dia_semana][$hora->sesion_orden] = $hora;
         }
         return $semana;
     }
@@ -144,7 +137,9 @@ class Horario extends Model
                         ->where('modulo', '!=', 'TU02CF')
                         ->first();
                 if ($queHace)
+                {
                     $semana[$dia][$hora->codigo] = $queHace;
+                }
             }
         }
         return $semana;

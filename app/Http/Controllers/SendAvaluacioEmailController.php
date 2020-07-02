@@ -87,6 +87,7 @@ class SendAvaluacioEmailController extends Seeder
         $grupo = $aR->Reunion->grupoClase;
 
         $capacitats = ($grupo->isSemi || $grupo->curso == '1' )?self::PROMOCIONA:self::NOPROMOCIONA;
+
         if ($aR->capacitats == $capacitats){
             $informe = ($grupo->isSemi)?'semi':$grupo->curso;
             $aR->token = $token;
@@ -94,6 +95,9 @@ class SendAvaluacioEmailController extends Seeder
             Mail::to($aR->Alumno->email,'Secretaria CIPFP Batoi')
                 ->send(new extraOrdinariaAlumne(
                     $aR,'email.extra.'.$informe));
+        }
+        else {
+            return $this->sendOrdinaria($aR);
         }
         avisa($aR->Reunion->idProfesor,
             'Missatge Avaluació Alumne '.$aR->Alumno->fullName. ' enviat a '.$aR->Alumno->email,

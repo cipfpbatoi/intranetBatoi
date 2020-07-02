@@ -67,12 +67,14 @@ use traitAutorizar,
         $departamentos = Departamento::where('didactico',1)->get();
 
         foreach ($departamentos as $departamento) {
-            if ($departamento->id != 99 )
+            if ($departamento->id != 99 ) {
                 if($departamento->id == AuthUser()->departamento) {
                     $this->panel->setPestana($departamento->depcurt, true, 'profile.profesor', ['Xdepartamento', $departamento->depcurt], null, 1, $this->parametresVista);
                 }
-                else
-                   $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
+                else {
+                    $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
+                }
+            }
         }
         $this->iniProfileBotones();
         return $this->grid($todos);
@@ -86,8 +88,9 @@ use traitAutorizar,
                 ->orderBy('apellido2', 'asc')
                 ->get();
         $equipo = $todos->filter(function($item) {
-            if (esRol($item->rol, config('roles.rol.direccion')))
+            if (esRol($item->rol, config('roles.rol.direccion'))) {
                 return $item;
+            }
         });
         $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1,$this->parametresVista);
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
@@ -153,7 +156,7 @@ use traitAutorizar,
     {
         $profesor = Profesor::findOrFail($profesor);
         $cargo = 'Professor';
-        if (esRol($profesor->rol, config('roles.rol.direccion')))
+        if (esRol($profesor->rol, config('roles.rol.direccion'))) {
             switch ($profesor->dni) {
                 case config('contacto.director'): $cargo = 'Director';
                     break;
@@ -165,9 +168,12 @@ use traitAutorizar,
                     break;
                 case config('contacto.jefeEstudios2'): $cargo = "Cap d'Estudis";
                     break;
+                default: $cargo = 'Professor';
             }
-        if ($cargo == 'Professor' && esRol($profesor->rol, config('roles.rol.tutor'))) 
-                $cargo .= ' - Tutor';
+        }
+        if ($cargo == 'Professor' && esRol($profesor->rol, config('roles.rol.tutor'))) {
+            $cargo .= ' - Tutor';
+        }
         return $this->hazPdf('pdf.tarjeta', $profesor,  $cargo, 'portrait','a4',2)->stream();
     }
 
@@ -212,10 +218,12 @@ use traitAutorizar,
         $observaciones = [];
         foreach ($profesores as $profesor){
             if (Storage::disk('local')->exists('/horarios/'.$profesor->dni.'.json')){
-                    if (isset(json_decode(Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json'))->obs))
+                    if (isset(json_decode(Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json'))->obs)) {
                         $observaciones[$profesor->dni] = json_decode(Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json'))->obs;
-                    else
+                    }
+                    else {
                         $observaciones[$profesor->dni] = '';
+                    }
                     $horarios[$profesor->dni] = Horario::HorarioSemanal($profesor->dni);
             }
         }

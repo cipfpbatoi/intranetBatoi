@@ -26,7 +26,9 @@ class TutoriaController extends IntranetController
 
     public function index(){
         Session::forget('redirect');
-        if (esRol(AuthUser()->rol, config('roles.rol.orientador'))) return $this->indexTutoria();
+        if (esRol(AuthUser()->rol, config('roles.rol.orientador'))) {
+            return $this->indexTutoria();
+        }
 
         if ($grupo = Grupo::select('nombre')->QTutor()->get()->first()){
             $this->titulo = ['que' => $grupo->nombre];
@@ -56,9 +58,10 @@ class TutoriaController extends IntranetController
         $grupo = Grupo::select('codigo')->QTutor()->get()->first()->codigo;
         $elemento = TutoriaGrupo::where('idTutoria', '=', $id)->where('idGrupo', '=', $grupo)->first();
         if (isset($elemento->idGrupo))
+        {
             return redirect()->route('tutoriagrupo.edit', ['id' => $elemento->id]);
-        else
-            return redirect()->route('tutoriagrupo.create',['tutoria' => $id, 'grupo' => $grupo ]);
+        }
+        return redirect()->route('tutoriagrupo.create',['tutoria' => $id, 'grupo' => $grupo ]);
     }
 
     protected function iniTutBotones()

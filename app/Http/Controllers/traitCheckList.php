@@ -24,8 +24,9 @@ trait traitCheckList
         $elemento = $this->class::findOrFail($id);
         $elemento->checkList = $this->whosCheck($request->items);
         $elemento->save();
-        if ($this->allCheck($elemento->checkList))
+        if ($this->allCheck($elemento->checkList)) {
             return $this->accept($id);
+        }
 
         $request->explicacion = $this->whosLeft($elemento->checkList);
         return $this->refuse($request, $id);
@@ -46,15 +47,17 @@ trait traitCheckList
     private function whosCheck($items)
     {
         $suma = 0;
-        if (isset($items)&& $items>0)
-            foreach ($items as $item)
+        if (isset($items)&& $items>0) {
+            foreach ($items as $item) {
                 $suma += $item;
+            }
+        }
         return $suma;
     }
 
     private function allCheck($suma)
     {
-        return (2 ** ($this->items)) - 1 == $suma ? true : false;
+        return (2 ** ($this->items)) - 1 == $suma;
     }
 
 }

@@ -34,9 +34,10 @@ trait traitPanel{
      */
     protected function search()
     {
-        $orden = isset($this->orden)?$this->orden:'desde';
-        if (Session::get('completa'))
+        $orden = $this->orden??'desde';
+        if (Session::get('completa')) {
             return $this->class::where('estado', '>', '0')->orderBy($orden,'desc')->get();
+        }
         return $this->class::where('estado', '>', '0')
             ->where(function($q) use ($orden) {
                 $fecha = Date::now()->subDays(config('variables.diasNoCompleta'));
@@ -58,8 +59,9 @@ trait traitPanel{
     {
         // Botons colectius
         foreach ($default as $item => $valor) {
-            if ($this->class::where('estado', '=', $item)->count())
+            if ($this->class::where('estado', '=', $item)->count()) {
                 $this->panel->setBoton('index', new BotonBasico("$this->model.$valor", ['id'=>$valor], true));
+            }
         }
         // Botons individuals
         $this->panel->setBoton('profile', new BotonIcon("$this->model.authorize", ['class' => 'btn-success authorize', 'where' => ['estado', '==', '1']], $enlace));

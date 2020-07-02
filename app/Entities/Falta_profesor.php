@@ -26,15 +26,13 @@ class Falta_profesor extends Model
 
     public function scopeHoy($query, $profesor)
     {
-        return $query->where('dia', '=', date("Y-m-d", time()))
-            ->where('idProfesor', $profesor);
+        return $query->where('dia', '=', date("Y-m-d", time()))->where('idProfesor', $profesor);
 
     }
     
     public function scopehaFichado($query, $dia, $profesor)
     {
-        return $query->where('dia', '=', $dia)
-                        ->where('idProfesor', $profesor);
+        return $query->where('dia', '=', $dia)->where('idProfesor', $profesor);
     }
 
     public static function fichar($profesor = null)

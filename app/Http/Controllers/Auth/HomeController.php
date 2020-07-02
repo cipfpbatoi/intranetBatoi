@@ -42,7 +42,6 @@ abstract class HomeController extends Controller
                 $horario = Cache::remember('horario'.$usuario->dni,now()->addDay(), function () use ($usuario) {
                     return Horario::HorarioSemanal($usuario->dni);
                 });
-                //$horario = Horario::HorarioSemanal($usuario->dni);
                 $actividades =  Cache::remember('actividades',now()->addHour(),function(){
                     return Actividad::next()->with(['profesores','grupos','Tutor'])->auth()->orderby('desde','asc')->take(10)->get();
                 });

@@ -52,7 +52,9 @@ trait traitImprimir
             $tags = config("modelos.$this->model.documento");
             $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => $tags ]);
             $this->makeAll($todos, $final);
-            if ($link) $this->makeLink($todos,$doc);
+            if ($link) {
+                $this->makeLink($todos,$doc);
+            }
             return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
         } 
         Alert::info(trans('messages.generic.empty'));
