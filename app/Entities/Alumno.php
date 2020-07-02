@@ -187,7 +187,7 @@ class Alumno extends Authenticatable
         $this->save();
     }
     public function getPoblacionAttribute(){
-        return $this->Municipio->municipio;
+        return $this->Municipio->municipio??'NO TROBAT';
     }
 
 }
