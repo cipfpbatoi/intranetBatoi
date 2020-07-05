@@ -82,7 +82,7 @@ class SendAvaluacioEmailController extends Seeder
             ->where('sent',1)
             ->where('idAlumno',$aR->idAlumno)
             ->first()
-            ->token;
+            ->token??$this->generaToken();
         $aR->sent = 1;
         $grupo = $aR->Reunion->grupoClase;
 
@@ -90,6 +90,7 @@ class SendAvaluacioEmailController extends Seeder
 
         if ($aR->capacitats == $capacitats){
             $informe = ($grupo->isSemi)?'semi':$grupo->curso;
+
             $aR->token = $token;
 
             Mail::to($aR->Alumno->email,'Secretaria CIPFP Batoi')

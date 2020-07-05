@@ -107,10 +107,12 @@ class Alumno extends Authenticatable
 
     public function scopeQGrupo($query, $grupo)
     {
-        if (is_string($grupo))
+        if (is_string($grupo)) {
             $alumnos = AlumnoGrupo::select('idAlumno')->where('idGrupo', '=', $grupo)->get()->toarray();
-        else
+        }
+        else {
             $alumnos = AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupo)->get()->toarray();
+        }
         return $query->whereIn('nia', $alumnos);
     }
 
@@ -131,11 +133,13 @@ class Alumno extends Authenticatable
     }
 
     public function getDepartamentoAttribute(){
-        return $this->Grupo->count()?$this->Grupo->first()->Ciclo->departamento:'99';
+        return $this->Grupo->first()->Ciclo->departamento??'99';
     }
     
     public function getTutorAttribute(){
-        if ($this->Grupo->count() == 0) return [];
+        if ($this->Grupo->count() == 0) {
+            return [];
+        }
         foreach ($this->Grupo as $grupo){
             $tutor[] = $grupo->Tutor;
         }
@@ -176,7 +180,7 @@ class Alumno extends Authenticatable
         return $fecha->format('d-m-Y');
     }
     public function getContactoAttribute(){
-        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2,'UTF-8'));
+        return $this->getFullNameAttribute();
     }
     public function getIdAttribute(){
         return $this->nia;

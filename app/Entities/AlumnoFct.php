@@ -101,7 +101,7 @@ class AlumnoFct extends Model
         return $this->Alumno->NameFull;
     }
     public function getNombreAttribute(){
-        return $this->Alumno->NameFull;
+        return $this->getContactoAttribute();
     }
     public function getFullNameAttribute(){
         return $this->Alumno->fullName;
@@ -110,10 +110,10 @@ class AlumnoFct extends Model
         return $this->Fct->periode;
     }
     public function getQualificacioAttribute(){
-        return isset($this->calificacion)?$this->calificacion?$this->calificacion==2?'Convalidat/Exempt': 'Apte' : 'No Apte' : 'No Avaluat';
+        return isset($this->calificacion)?($this->calificacion?($this->calificacion==2?'Convalidat/Exempt': 'Apte' ): 'No Apte' ): 'No Avaluat';
     }
     public function getProjecteAttribute(){
-        return isset($this->calProyecto) ? $this->calProyecto == 0 ? 'No presenta' : $this->calProyecto : 'No Avaluat';
+        return isset($this->calProyecto) ? ($this->calProyecto == 0 ? 'No presenta' : $this->calProyecto) : 'No Avaluat';
     }
     public function getAsociacionAttribute(){
         return $this->Fct->asociacion;
@@ -132,14 +132,15 @@ class AlumnoFct extends Model
     }
     public function getHastaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
-        return $fecha->format('d-m-Y');
+        return $this->getDesdeAttribute($entrada);
     }
     public function getGrupAttribute()
     {
-        foreach ($this->Alumno->Grupo as $grupo)
-            if ($grupo->Ciclo == $this->Fct->Colaboracion->Ciclo)
+        foreach ($this->Alumno->Grupo as $grupo) {
+            if ($grupo->Ciclo == $this->Fct->Colaboracion->Ciclo) {
                 return $grupo->codigo;
+            }
+        }
     }
     public function scopeGrupo($query,$grupo)
     {
