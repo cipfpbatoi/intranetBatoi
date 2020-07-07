@@ -34,7 +34,10 @@ class PanelListadoEntregasController extends BaseController
     
     public function search()
     {
-        return Modulo_grupo::whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get();
+        return Modulo_grupo::with('Grupo')
+            ->with('resultados')
+            ->with('ModuloCiclo')
+            ->whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get();
     }   
     public function iniBotones()
     {
@@ -43,7 +46,7 @@ class PanelListadoEntregasController extends BaseController
             {
                 $this->panel->setBoton('index',new BotonBasico('Infdepartamento.edit',['roles' => config('roles.rol.jefe_dpto'),'id'=>'generar']));
             }
-            else        
+            else
             {
                 $this->panel->setBoton('index',new BotonBasico('Infdepartamento.create',['roles' => config('roles.rol.jefe_dpto'),'id'=>'generar']));
             }

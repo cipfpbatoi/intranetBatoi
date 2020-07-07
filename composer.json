@@ -8,7 +8,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.2.5",
+        "php": "^7.3",
         "barryvdh/laravel-snappy": "^0.4.1",
         "doctrine/dbal": "^2.6",
         "eluceo/ical": "^0.13.0",
