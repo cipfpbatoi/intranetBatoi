@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Styde\Html\Facades\Alert;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -41,9 +42,9 @@ class Handler extends ExceptionHandler
       @return void
      */
 
-    public function report(Exception $exception)
+    public function report(Throwable $e)
     {
-        parent::report($exception);
+        parent::report($e);
     }
 
     /**
@@ -53,18 +54,23 @@ class Handler extends ExceptionHandler
       @param  \Exception  $exception
       @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Throwable $exception)
     {
         if ($exception->getMessage()!='The given data was invalid.'&&
                $exception->getMessage()!='Unauthenticated.'&&
-               $exception->getMessage()!='')
+               $exception->getMessage()!='') {
             avisa(config('contacto.avisos.errores'),$exception->getMessage());
+        }
 
         if ($exception instanceof ModelNotFoundException) {
             if ($request->wantsJson())
+            {
                 return response()->json(['message' => $exception->getMessage()], $exception->getCode());
+            }
             else
+            {
                 $e = new NotFoundHttpException($exception->getMessage(), $exception);
+            }
         }
         if ($exception instanceof \PDOException){
             
@@ -72,7 +78,9 @@ class Handler extends ExceptionHandler
             //return response()->view('errors.200',['mensaje'=>$exception->getMessage()],200);
         }
         if ($request->wantsJson())
+        {
             return response()->json(['message' => $exception->getMessage()], $exception->getCode());
+        }
         return parent::render($request, $exception);
     }
 

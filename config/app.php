@@ -157,7 +157,6 @@ return [
         Collective\Html\HtmlServiceProvider::class,
         Barryvdh\Snappy\ServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
-        Cornford\Googlmapper\MapperServiceProvider::class,
         GrahamCampbell\Markdown\MarkdownServiceProvider::class,
         
         
@@ -231,7 +230,6 @@ return [
         'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
         
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
-        'Mapper' => Cornford\Googlmapper\Facades\MapperFacade::class,
     ],
 
 ];

@@ -207,7 +207,7 @@ Route::resource('/centro', 'CentroController', ['except' => ['destroy', 'update'
 Route::get('/centro/{centro}/delete', ['as' => 'centro.destroy', 'uses' => 'CentroController@destroy']);
 Route::put('/centro/{centro}/edit', ['as' => 'centro.update', 'uses' => 'CentroController@update']);
 Route::post('/centro/create', ['as' => 'centro.store', 'uses' => 'CentroController@store']);
-Route::get('/centro/{centro}/mapa', ['as' => 'centro.mapa', 'uses' => 'CentroController@mapa']);
+
 
 Route::resource('/colaboracion', 'ColaboracionController', ['except' => ['destroy', 'update', 'show']]);
 Route::post('/empresa/create', ['as' => 'empresa.store', 'uses' => 'EmpresaController@store']);

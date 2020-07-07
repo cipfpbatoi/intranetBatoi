@@ -20,9 +20,7 @@
                 <span class="info">{{$centro->nombre}}</span>
                 <a href="/centro/{!!$centro->id!!}/delete" class="delGrupo"><i class="fa fa-trash"></i></a> <a href="/centro/{{$centro->id}}/edit"><i class="fa fa-edit"></i></a>
             </h4>
-            <h4>
-                <a href='#' onclick="window.open('/centro/{{$centro->id}}/mapa','targetWindow','toolbar=no,location=no,status=no, menubar=no, scrollbars=yes,resizable=yes,width=550,height=550');return false;" >
-                    {{$centro->direccion}}, {{$centro->localidad}} <i class="fa fa-map-marker user-profile-icon"></i></a></h4>
+            <h4>{{$centro->direccion}}, {{$centro->localidad}} <i class="fa fa-map-marker user-profile-icon"></i></h4>
             @if ($centro->horarios) <h4><i class="fa fa-clock-o user-profile-icon"></i> {{$centro->horarios}}</h4> @endif       
             @if ($centro->observaciones) <blockquote class="message">{{$centro->observaciones}}</blockquote> @endif
             <h4>

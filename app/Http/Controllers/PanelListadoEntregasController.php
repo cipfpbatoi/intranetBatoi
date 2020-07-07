@@ -40,15 +40,21 @@ class PanelListadoEntregasController extends BaseController
     {
         if (!$this->faltan()){
             if ($reunion = $this->existeInforme())
-               $this->panel->setBoton('index',new BotonBasico('Infdepartamento.edit',['roles' => config('roles.rol.jefe_dpto'),'id'=>'generar']));
+            {
+                $this->panel->setBoton('index',new BotonBasico('Infdepartamento.edit',['roles' => config('roles.rol.jefe_dpto'),'id'=>'generar']));
+            }
             else        
+            {
                 $this->panel->setBoton('index',new BotonBasico('Infdepartamento.create',['roles' => config('roles.rol.jefe_dpto'),'id'=>'generar']));
+            }
         }
         else {
             $this->panel->setBoton('index',new BotonBasico('Infdepartamento.avisa',['roles' => config('roles.rol.jefe_dpto')]));
         }
         if ($reunion = $this->existeInforme())
+        {
             $this->panel->setBoton('index',new BotonBasico('Infdepartamento.pdf.'.$reunion->id,['roles' => config('roles.rol.jefe_dpto')]));
+        }
          $this->panel->setBoton('grid',new BotonImg('Infdepartamento.aviso',['img' => 'fa-bell','where' => ['seguimiento','==',0],'roles' => config('roles.rol.jefe_dpto')]));
     }
     
@@ -125,7 +131,9 @@ class PanelListadoEntregasController extends BaseController
         $directorio = 'gestor/' . Curso() . '/Reunion';
         $nomComplet = $directorio . '/' . $nom;
         if (file_exists(storage_path('/app/' . $nomComplet)))
+        {
             unlink(storage_path('/app/' . $nomComplet));
+        }
         $pdf->save(storage_path('/app/' . $nomComplet));
 
         return back();
@@ -133,7 +141,11 @@ class PanelListadoEntregasController extends BaseController
     
     public function avisaTodos(){
         foreach (Modulo_grupo::whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get() as $modulo)
-             if ($modulo->seguimiento == 0) $this->avisaFaltaEntrega($modulo->id);
+        {
+            if ($modulo->seguimiento == 0) {
+                $this->avisaFaltaEntrega($modulo->id);
+            }
+        }
         return back();     
     }
     
@@ -181,15 +193,20 @@ class PanelListadoEntregasController extends BaseController
             $programaciones = Programacion::Departamento(AuthUser()->departamento)
                     ->whereNotNull('propuestas')
                     ->get();
-        } else
+        } else {
             $programaciones = null;
+        }
         return $this->hazPdf('pdf.infDep', $actividades, compact('resultados', 'observaciones', 'trimestre', 'proyectos', 'programaciones'));
     }
     private function faltan()
     {
         $empty = 0;
         foreach (Modulo_grupo::whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get() as $modulo)
-             if ($modulo->seguimiento == 0) $empty++;
+        {
+            if ($modulo->seguimiento == 0) {
+                $empty++;
+            }
+        }
         return $empty;     
     }
     

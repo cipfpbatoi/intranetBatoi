@@ -22,13 +22,17 @@ class Panel
         $this->botones['grid'] = [];
         $this->botones['profile'] = [];
         $this->botones['infile'] = [];
-        if ($creaPestana) $this->setPestana('grid', true, $vista, null, $rejilla,null,$include);
+        if ($creaPestana) {
+            $this->setPestana('grid', true, $vista, null, $rejilla,null,$include);
+        }
         
     }
 
 
     public function render($todos,$titulo,$vista){
-        if (!$this->countPestana()) return redirect()->route('home');
+        if (!$this->countPestana()) {
+            return redirect()->route('home');
+        }
 
         $panel = $this->feedPanel($todos, $titulo);
 
@@ -37,7 +41,9 @@ class Panel
     }
 
     public function renderModal($todos,$titulo,$vista,$elemento){
-        if (!$this->countPestana()) return redirect()->route('home');
+        if (!$this->countPestana()) {
+            return redirect()->route('home');
+        }
 
         $panel = $this->feedPanel($todos, $titulo);
         $default = $elemento->fillDefautOptions();
@@ -50,15 +56,21 @@ class Panel
     {
         if ($index != []) {
             foreach ($index as $btn)
+            {
                 $this->botones['index'][] = new BotonBasico("$this->model.$btn");
+            }
         }
         if ($grid != []) {
             foreach ($grid as $btn)
+            {
                 $this->botones['grid'][] = new BotonImg($this->model . "." . $btn);
+            }
         }
         if ($profile != []) {
             foreach ($profile as $btn)
+            {
                 $this->botones['profile'][] = new BotonIcon("$this->model.$btn");
+            }
         }
     }
 
@@ -79,9 +91,15 @@ class Panel
     // sustituye canvia la primera pestana per l'actual
     public function setPestana($nombre, $activo = false, $vista = null, $filtro = null, $rejilla = null, $sustituye = null,$include=[])
     {
-        if ($activo) $this->desactivaAll();
-        if ($sustituye) $this->pestanas[0] = new Pestana($nombre, $activo, $this->getView($nombre, $vista), $filtro, $rejilla,$include);
-        else $this->pestanas[] = new Pestana($nombre, $activo, $this->getView($nombre, $vista), $filtro, $rejilla,$include);
+        if ($activo) {
+            $this->desactivaAll();
+        }
+        if ($sustituye) {
+            $this->pestanas[0] = new Pestana($nombre, $activo, $this->getView($nombre, $vista), $filtro, $rejilla,$include);
+        }
+        else {
+            $this->pestanas[] = new Pestana($nombre, $activo, $this->getView($nombre, $vista), $filtro, $rejilla,$include);
+        }
     }
 
     public function countPestana(){
@@ -98,7 +116,9 @@ class Panel
     {
         if ($this->pestanas) {
             foreach ($this->pestanas as $pestana)
+            {
                 $pestana->setActiva(false);
+            }
         }
     }
     
@@ -162,16 +182,24 @@ class Panel
     public function activaPestana($nombre)
     {
         foreach ($this->pestanas as $pestana) {
-            if ($pestana->getNombre() == $nombre) $pestana->setActiva(true);
-            else $pestana->setActiva(false);
+            if ($pestana->getNombre() == $nombre) {
+                $pestana->setActiva(true);
+            }
+            else {
+                $pestana->setActiva(false);
+            }
         }
     }
 
     private function getView($nombre, $vista)
     {
-        if ($vista == null) return 'intranet.partials.' . $nombre . "." . strtolower($this->model);
+        if ($vista == null) {
+            return 'intranet.partials.' . $nombre . "." . strtolower($this->model);
+        }
 
-        if (substr($vista,0,1)=='.') return substr($vista,1);
+        if (substr($vista,0,1)=='.') {
+            return substr($vista,1);
+        }
         return 'intranet.partials.' . $vista;
     }
 

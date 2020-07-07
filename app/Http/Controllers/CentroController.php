@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
 use Response;
-use Mapper;
 use Illuminate\Support\Facades\Session;
 
 /**
@@ -49,16 +48,7 @@ class CentroController extends IntranetController
         return redirect()->action('EmpresaController@show', ['empresa' => $request->idEmpresa]);
     }
 
-    /**
-     * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function mapa($id)
-    {
-        $centro = Centro::find($id);
-        Mapper::location($centro->localidad.",".$centro->direccion)->map(['zoom'=>'15']);
-        return view('empresa.mapa');
-    }
+
 
     /**
      * @param $id

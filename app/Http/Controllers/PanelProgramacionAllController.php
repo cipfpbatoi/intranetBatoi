@@ -17,7 +17,7 @@ class PanelProgramacionAllController extends BaseController
     
     public function search(){
         return Programacion::where('estado',config('variables.mostrarProgramacionesEstado'))
-            ->with('Departamento')
+            ->with('Departament')
             ->with('Ciclo')
             ->with('Modulo')
             ->get();

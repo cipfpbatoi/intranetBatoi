@@ -49,7 +49,7 @@ class Programacion extends Model
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
-    public function Departamento()
+    public function Departament()
     {
         return $this->hasOneThrough(Departamento::class,Modulo_ciclo::class,'id','id','idModuloCiclo','idDepartamento');
     }
@@ -127,7 +127,7 @@ class Programacion extends Model
         }
     }
     public function getXdepartamentoAttribute(){
-        return $this->Departamento->literal??'';
+        return $this->Departament->literal??'';
     }
     public function getXModuloAttribute(){
         return $this->Modulo->literal??'';
