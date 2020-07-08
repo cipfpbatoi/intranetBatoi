@@ -126,8 +126,18 @@ class PanelListadoEntregasController extends BaseController
             $oR = OrdenReunion::where('idReunion', $request->reunion)
                     ->where('orden', 2)
                     ->first();
-            $oR->resumen = $request->proyectos;
-            $oR->save();
+            if ($oR) {
+                $oR->resumen = $request->proyectos;
+                $oR->save();
+            } else {
+                $orden = new OrdenReunion();
+                $orden->idReunion = $request->reunion;
+                $orden->orden = 2;
+                $orden->descripcion = 'Projectes';
+                $orden->resumen = $request->proyectos;
+                $orden->save();
+            }
+
         }
 
         $nom = 'Informe_' . $request->reunion . '.pdf';
