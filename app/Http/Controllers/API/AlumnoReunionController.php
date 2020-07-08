@@ -5,8 +5,6 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoReunion;
 
-
-
 class AlumnoReunionController extends ApiBaseController
 {
 
@@ -24,6 +22,7 @@ class AlumnoReunionController extends ApiBaseController
        $nia = $alumno->nia;
        $grupo = $alumno->Grupo->first();
        $ciclo = $grupo->idCiclo;
+       $dni = $alumno->dni;
        $curso_actual = $grupo->curso;
        if ($capacitat == self::NOPROMOCIONA) {
            $promociona = false;
@@ -32,7 +31,7 @@ class AlumnoReunionController extends ApiBaseController
            $promociona = true;
            $curso = ($grupo->isSemi)?'fct':2;
        }
-       return $this->sendResponse(compact('nia','nombre','apellidos','email','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
+       return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
     }
 
     public function getDadesMatricula($token){
