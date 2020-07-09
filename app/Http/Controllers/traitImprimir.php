@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Jenssegers\Date\Date;
-use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
+use Intranet\Botones\Pdf as PDF;
 use Styde\Html\Facades\Alert;
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
@@ -69,7 +69,7 @@ trait traitImprimir
      * @param string $dimensiones
      * @param int $margin_top
      * @return mixed
-     */
+
     protected static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
                                      $margin_top= 15)
     {
@@ -90,6 +90,12 @@ trait traitImprimir
                 ->setOption('margin-bottom', 0)
                 ->setOption('page-width', $dimensiones[0])
                 ->setOption('page-height', $dimensiones[1]));
+    }*/
+
+    protected static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
+                                     $margin_top= 15)
+    {
+        return PDF::hazPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones , $margin_top );
     }
 
 
