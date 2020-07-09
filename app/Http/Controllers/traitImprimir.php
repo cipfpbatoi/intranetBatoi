@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Jenssegers\Date\Date;
-use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
+use PDF;
 use Styde\Html\Facades\Alert;
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
