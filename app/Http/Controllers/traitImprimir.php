@@ -3,13 +3,12 @@
 namespace Intranet\Http\Controllers;
 
 use Jenssegers\Date\Date;
-use PDF;
+use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use Styde\Html\Facades\Alert;
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
 use DateTime;
 use Illuminate\Support\Facades\Response;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Documento;
 
 /**
