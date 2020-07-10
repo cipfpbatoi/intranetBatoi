@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        {{ Html::style('/css/pdf.css') }}
+        <link rel="stylesheet" href="{{ public_path('/css/pdf.css') }}" media="all" />
         @yield('css')
  </head>
     <body>

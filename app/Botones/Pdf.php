@@ -12,12 +12,14 @@ use Barryvdh\DomPDF\Facade as DomPDF;
 
 class Pdf
 {
+
     public static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
-                                  $margin_top= 15){
-        if (config('constants.pdf')==='DomPdf'){
+                                  $margin_top= 15,$driver=null){
+        $driver = $driver??env('PDF_DRIVER', 'SnappyPdf');
+        if ($driver==='DomPdf'){
             return self::hazDomPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones , $margin_top);
         }
-        if (config('constants.pdf')==='SnappyPdf'){
+        if ($driver==='SnappyPdf'){
             return self::hazSnappyPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones , $margin_top);
         }
     }
@@ -29,7 +31,8 @@ class Pdf
             return(SnappyPDF::loadView($informe, compact('todos', 'datosInforme'))
                 ->setPaper($dimensiones)
                 ->setOrientation($orientacion)
-                ->setOption('margin-top', $margin_top));
+                ->setOption('margin-top', $margin_top)
+                ->setOption('enable-external-links' , true));
         }
 
         //carnet

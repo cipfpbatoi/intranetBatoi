@@ -17,7 +17,7 @@
         "fideloper/proxy": "^4.0",
         "graham-campbell/markdown": "^11.2",
         "guzzlehttp/guzzle": "^6.3",
-        "h4cc/wkhtmltopdf-amd64": "0.12.*",
+        "h4cc/wkhtmltopdf-amd64": "^0.12.4",
         "jenssegers/date": "^4.0.0@beta",
         "laravel/framework": "^7.0",
         "laravel/socialite": "^4.0",
