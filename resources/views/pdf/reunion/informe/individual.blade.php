@@ -18,7 +18,7 @@
 </p>
 <p class="normal"><br/><br/><br/></p>
 <p class="normal">
-    <img src="{{url('img/pdf/logo.png')}}" alt="logo" style="width:353px;height:369px" /><br/>
+    <img src="{{public_path('img/pdf/logo.png')}}" alt="logo" style="width:353px;height:369px" /><br/>
 </p>
 <p align="center" class="normal"><br/><br/><br/></p>
 <p class="normal" style="font-weight:bold;margin-top: 0.14cm; margin-bottom: 0cm; line-height: 100%;font-family:Miriam Libre;font-size: 26pt">
@@ -109,6 +109,6 @@ Curs 2019-20</p>
 </div>
 <div class="displayed" style="float:right">
     Segell del centre <br/><br/>
-    <img src="{{url('img/pdf/segell.png')}}" alt="logo" style="width:114px;height:108px" />
+    <img src="{{public_path('img/pdf/segell.png')}}" alt="logo" style="width:114px;height:108px" />
 </div>
 @endsection

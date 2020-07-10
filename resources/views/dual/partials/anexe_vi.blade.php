@@ -1,5 +1,5 @@
 <div style="position:absolute;left:50%;margin-left:-600px;top:{{$top}}px;width:1200px;height:1700px;border: 0px">
-    <div style="position:absolute;left:0px;top:0px"><img src="{{url($imagen)}}" width=1200 height=1700></div>
+    <div style="position:absolute;left:0px;top:0px"><img src="{{public_path($imagen)}}" width=1200 height=1700></div>
     
     <div style="position:absolute;left:65.70px;top:250.40px">
         <span style="font-weight: bold"> {{config('contacto.nombre')}}</span>

@@ -11,7 +11,7 @@
             <br/>
         </div>
         <div style="float:right;width:20%;margin-top:5pt;margin-right:8pt;text-align: center">
-            <div style="margin-bottom: 35pt"><img src="{{url('img/pdf/ue.png')}}" width="80px" height="80px"/></div>
+            <div style="margin-bottom: 35pt"><img src="{{public_path('img/pdf/ue.png')}}" width="80px" height="80px"/></div>
         </div>
     </div>
     <div style='width:95%;border-left: 2px #0068BA solid' class="container col-lg-12" >
@@ -23,8 +23,8 @@
             <p style="font-size: 10pt;text-align: left; margin-bottom: 0px;margin-top: 1px;"> {!! config('contacto.provincia') !!} - Espanya</p>
         </div>
         <div style="float:right;width:20%;margin-top:5pt;margin-right:8pt;text-align: center">
-            <div style="margin-bottom: 8pt"><img src="{{url('img/pdf/conselleria.png')}} " width="80px" height="33px"/></div>
-            <div style="margin-bottom: 8pt"><img src="{{url('img/pdf/logo.png')}}" width="80px" height="60px"/></div>
+            <div style="margin-bottom: 8pt"><img src="{{public_path('img/pdf/conselleria.png')}} " width="80px" height="33px"/></div>
+            <div style="margin-bottom: 8pt"><img src="{{public_path('img/pdf/logo.png')}}" width="80px" height="60px"/></div>
         </div>
     </div>
 </div>

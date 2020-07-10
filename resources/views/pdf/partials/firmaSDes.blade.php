@@ -5,7 +5,7 @@
     <p>{{$datosInforme['poblacion']}}, {{$datosInforme['date']}} </p>
     <br/><br/>
     <div style="width:40%; float:left; margin-left: 12%; ">
-        <img src="{{url('img/pdf/secretari-director.png')}}"  /><br/>
+        <img src="{{public_path('img/pdf/secretari-director.png')}}"  /><br/>
     </div>
     <div style="width:35%; float:left; clear: both;margin-left: 6%">
         <p><strong>{{$datosInforme['secretario']}}</strong></p>
