@@ -18,7 +18,7 @@ class Pdf
                                   $margin_top= 15,$driver=null){
         $driver = $driver??env('PDF_DRIVER', 'SnappyPdf');
         if ($driver==='DomPdf'){
-            return self::hazDomPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones , $margin_top);
+            return self::hazDomPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones );
         }
         if ($driver==='SnappyPdf'){
             return self::hazSnappyPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones , $margin_top);
@@ -47,13 +47,12 @@ class Pdf
             ->setOption('page-height', $dimensiones[1]));
     }
 
-    protected static function hazDomPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones , $margin_top)
+    protected static function hazDomPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones )
     {
         $datosInforme = $datosInforme==null?FechaString(null,'ca'):$datosInforme;
         if (is_string($dimensiones)) {
             return(DomPDF::loadView($informe, compact('todos', 'datosInforme'))
                 ->setPaper($dimensiones,$orientacion));
-                //->setOptions(['dpi' => 120]));
         }
 
 
