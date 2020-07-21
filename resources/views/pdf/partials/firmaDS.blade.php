@@ -1,9 +1,9 @@
 <br/>
-<p style='font-size: 1.3em;line-height: 200%'>
+<p style='font-size: 1.2em;line-height: 200%'>
     A {{config('contacto.poblacion')}}, a {{$datosInforme['fecha']}}<br/><br/>
     Vist i plau
 </p>
-<div class="container" style="width:90%;font-size: 1.2em;line-height: 200%">
+<div class="container" style="width:90%;font-size: 1.2em;line-height: 100%">
     <br/><br/>
     <div style="width:40%; float:left; margin-left: 5%; ">
         <img src="{{public_path('img/pdf/director-secretari.png')}}"  /><br/>

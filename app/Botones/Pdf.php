@@ -10,6 +10,7 @@ namespace Intranet\Botones;
 use Barryvdh\Snappy\Facades\SnappyPdf as SnappyPDF;
 use Barryvdh\DomPDF\Facade as DomPDF;
 
+
 class Pdf
 {
 
@@ -36,7 +37,7 @@ class Pdf
         }
 
         //carnet
-        return(PDF::loadView($informe, compact('todos', 'datosInforme'))
+        return(SnappyPdf::loadView($informe, compact('todos', 'datosInforme'))
             ->setOrientation($orientacion)
             ->setOption('margin-top', 2)
             ->setOption('margin-left', 0)
