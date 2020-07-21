@@ -1,5 +1,5 @@
 <br/>
-<p style='font-size: 1.2em;line-height: 200%'>
+<p style='font-size: 1.2em;line-height: 175%'>
     A {{config('contacto.poblacion')}}, a {{$datosInforme['fecha']}}<br/><br/>
     Vist i plau
 </p>
