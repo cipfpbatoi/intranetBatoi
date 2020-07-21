@@ -15,12 +15,14 @@ class AlumnoReunionController extends ApiBaseController
     private function getDades($nia){
        $alumno = Alumno::find($nia);
        $capacitat = AlumnoReunion::where('idAlumno',$nia)->min('capacitats');
+       $grupo = AlumnoReunion::where('idAlumno',$nia)->first()->Reunion->grupoClase;
+       //dd($grupo);
        $fecha_nac = $alumno->fecha_nac;
        $nombre = $alumno->nombre;
        $apellidos = $alumno->apellido1.' '.$alumno->apellido2;
        $email = $alumno->email ;
        $nia = $alumno->nia;
-       $grupo = $alumno->Grupo->first();
+       //$grupo = $alumno->Grupo->first();
        $ciclo = $grupo->idCiclo;
        $dni = $alumno->dni;
        $curso_actual = $grupo->curso;
