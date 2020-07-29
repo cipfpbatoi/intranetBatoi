@@ -209,6 +209,9 @@ class AdministracionController extends Controller
         $a->save();
     }
 
+    public static function v2_0(){
+        Alert::info('Version 2.0');
+    }
     public static function v2_01(){
         // partxe per actualitzar professors sense token
 
