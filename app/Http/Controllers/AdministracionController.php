@@ -8,26 +8,14 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
-use Intranet\Http\Controllers\Controller;
-use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Programacion;
-use Intranet\Entities\Modulo_ciclo;
-use Intranet\Entities\Modulo_grupo;
-use Intranet\Entities\Ciclo;
-use Intranet\Entities\Resultado;
 use DB;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Grupo;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
-use Intranet\Entities\Menu;
 use Intranet\Jobs\SendEmail;
-use Intranet\Entities\Fct;
-use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\FctColaborador;
-use Intranet\Entities\Expediente;
+use Illuminate\Support\Str;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\TipoExpediente;
 
@@ -219,11 +207,12 @@ class AdministracionController extends Controller
         $profesores = Profesor::where('api_token','')->get();
 
         foreach ($profesores as $profesor){
-            $profesor->api_token = str_random(60);
+            $profesor->api_token = Str::random(60);
             $profesor->save();
             dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
 
         }
+
     }
 
     public function importaAnexoI(){
