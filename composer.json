@@ -11,6 +11,7 @@
         "php": "^7.1",
         "barryvdh/laravel-dompdf": "^0.8.6",
         "barryvdh/laravel-snappy": "^0.4.7",
+        "batoi/modal": "dev-master",
         "doctrine/dbal": "^2.6",
         "eluceo/ical": "^0.13.0",
         "fedeisas/laravel-mail-css-inliner": "^3.0.1",
@@ -26,8 +27,7 @@
         "laravelcollective/html": "^6.0",
         "mikehaertl/php-pdftk": "^0.8.1",
         "predis/predis": "^1.1",
-        "styde/html": "~1.8",
-        "batoi/modal": "*"
+        "styde/html": "~1.8"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
@@ -75,7 +75,6 @@
         "sort-packages": true,
         "optimize-autoloader": true
     },
-    "repositories": [ { "type": "path", "url": "../component" } ],
     "minimum-stability": "dev",
     "prefer-stable": true
 }
