@@ -4,7 +4,8 @@
         <div  class="col-sm-12">
             <h4 class="brief">
                 <i class="fa fa-calendar"></i> {{$elemento->fecha}} 
-                <i class="fa fa-calendar"></i> {{$elemento->fechasolucion}} 
+                <i class="fa fa-calendar"></i> {{$elemento->fechasolucion}}
+            </h4>
             <div class="left col-xs-12">
                 <h5>{{substr($elemento->explicacion,0,140)}} @if (strlen($elemento->explicacion)>140) ... @endif </h5>
                 <ul class="list-unstyled">
@@ -30,4 +31,4 @@
     </div>
 </div>
 @endforeach
-@include('intranet.partials.modal.explicacion')
+@include('intranet.partials.newModal.explicacion')

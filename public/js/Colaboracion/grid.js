@@ -131,7 +131,7 @@ $(function() {
         $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
         tipo = 'seguimiento';
     });
-    $("#formExplicacion").on("submit", function(){
+    $("#formDialogo").on("submit", function(){
         event.preventDefault();
         if (tipo == 'telefonico') {
             $.ajax({
@@ -152,7 +152,7 @@ $(function() {
                 console.log("Només es pot un per dia");
                 $("#dialogo").modal('hide');
             });
-        };
+        }
         if (tipo == 'seguimiento'){
             $.ajax({
                 method: "PUT",
@@ -167,12 +167,12 @@ $(function() {
                 console.log("Error al modificar");
                 $("#dialogo").modal('hide');
             });
-        };
+        }
     });
     $('.fa-plus').on("click", function(){
         var id=$(this).parents(".profile_view").attr("id");
         var instructor = $("#idInstructor");
-        $('#fctalumnoCreate').attr('action', '/fct/fctalumnoCreate');
+        $('#formAddAlumno').attr('action', '/fct/fctalumnoCreate');
         $('#idColaboracion').attr('value',id);
         $.ajax({
             method: "GET",

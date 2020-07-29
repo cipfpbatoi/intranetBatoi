@@ -43,6 +43,7 @@ class AsistentesCreate
                 return $actaFinal->noPromocionan;
             return $grupo->Alumnos;
         }
+        return [];
     }
 
     private function assignaAlumnes($reunion)

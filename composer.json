@@ -26,7 +26,8 @@
         "laravelcollective/html": "^6.0",
         "mikehaertl/php-pdftk": "^0.8.1",
         "predis/predis": "^1.1",
-        "styde/html": "~1.8"
+        "styde/html": "~1.8",
+        "batoi/modal": "*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
@@ -74,6 +75,7 @@
         "sort-packages": true,
         "optimize-autoloader": true
     },
+    "repositories": [ { "type": "path", "url": "../component" } ],
     "minimum-stability": "dev",
     "prefer-stable": true
 }

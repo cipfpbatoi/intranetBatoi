@@ -16,7 +16,6 @@ class AlumnoReunionController extends ApiBaseController
        $alumno = Alumno::find($nia);
        $capacitat = AlumnoReunion::where('idAlumno',$nia)->min('capacitats');
        $grupo = AlumnoReunion::where('idAlumno',$nia)->first()->Reunion->grupoClase;
-       //dd($grupo);
        $fecha_nac = $alumno->fecha_nac;
        $nombre = $alumno->nombre;
        $apellidos = $alumno->apellido1.' '.$alumno->apellido2;

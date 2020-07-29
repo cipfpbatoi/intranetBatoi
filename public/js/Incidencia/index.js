@@ -9,7 +9,7 @@ $(function () {
         $(this).attr("data-toggle", "modal").attr("data-target", "#dialogo").attr("href", "");
         id = $(this).parents(".profile_view").attr("id");
     });
-    $("#formExplicacion").on("submit", function () {
+    $("#formDialogo").on("submit", function () {
         $(this).attr("action", MODEL + "/" + id + "/refuse");
     });
 
