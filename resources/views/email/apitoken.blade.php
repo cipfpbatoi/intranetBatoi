@@ -27,9 +27,11 @@ $programaciones = Intranet\Entities\Programacion::misProgramaciones($elemento->d
                 @endforeach
             </ul>
         </li>
-        <li>Enllaç per a fitxatge fora del centre:
-            <a href="http://ext.intranet.cipfpbatoi.es?api_token={{$elemento->api_token}}">http://ext.intranet.cipfpbatoi.es??api_token={{$elemento->api_token}}</a>
-        </li>
+        @if (config('contacto.host.externo'))
+            <li>Enllaç per a connectar-se des de fora del centre:
+                <a href="{{config('contacto.host.externo')}}?api_token={{$elemento->api_token}}">http://ext.intranet.cipfpbatoi.es?api_token={{$elemento->api_token}}</a>
+            </li>
+        @endif
     </ul>
     <p></p>
     
