@@ -5,7 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Ciclo;
-use Intranet\Entities\Poll\Vote;
+use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Events\ActivityReport;
 
 class Colaboracion extends Model
@@ -64,7 +64,7 @@ class Colaboracion extends Model
     }
     public function votes()
     {
-        return $this->hasManyThrough(Vote::class, Fct::class,'idColaboracion','idOption1','id');
+        return $this->hasMany(VoteAnt::class,'idColaboracion','id');
     }
 
     

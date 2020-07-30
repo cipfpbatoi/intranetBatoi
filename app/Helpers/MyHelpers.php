@@ -43,6 +43,15 @@ function Curso()
     $lcurso = $curso . '-' . ($curso + 1);
     return $lcurso;
 }
+function CursoAnterior()
+{
+    $hoy = new Date();
+    $ano = $hoy->format('Y');
+    $mes = $hoy->format('m');
+    $curso = $mes > '07' ? $ano : $ano - 1;
+    $lcurso = ($curso-1) . '-' . $curso;
+    return $lcurso;
+}
 
 /**
  * Devuelve la direccion completa

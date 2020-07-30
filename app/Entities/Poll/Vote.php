@@ -1,11 +1,9 @@
 <?php
 namespace Intranet\Entities\Poll;
 
-use Intranet\Entities\BatoiModels;
+
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
-use Intranet\Entities\Poll\Option;
 use Intranet\Entities\Fct;
 
 class Vote extends Model

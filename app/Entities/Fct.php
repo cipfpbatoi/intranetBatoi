@@ -10,9 +10,11 @@ use Intranet\Events\FctCreated;
 use Illuminate\Support\Arr;
 
 
+
 class Fct extends Model
 {
     use BatoiModels;
+
     
     protected $table = 'fcts';
     public $timestamps = false;

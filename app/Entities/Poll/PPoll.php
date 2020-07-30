@@ -12,14 +12,15 @@ class PPoll extends Model
     use BatoiModels;
 
     protected $table = 'ppolls';
-    protected $fillable = ['title','what','anonymous'];
+    protected $fillable = ['title','what','anonymous','remains'];
     protected $rules = [
         'title' => 'required',
         'what' => 'required'
     ];
     protected $inputTypes = [
         'what' => ['type' => 'select'],
-        'anonymous' => ['type' => 'checkbox']
+        'anonymous' => ['type' => 'checkbox'],
+        'remains' => ['type'=>'checkbox']
     ];
     public $timestamps = false;
     protected $dispatchesEvents = [

@@ -31,7 +31,7 @@ class PPollController extends IntranetController
     {
         $this->panel->setBoton('index', new BotonBasico("ppoll.create",inRol('qualitat')));
         $this->panel->setBoton('grid', new BotonImg('ppoll.edit',inRol('qualitat')));
-        $this->panel->setBoton('grid', new BotonImg('ppoll.delete',inRol('qualitat')));
+        $this->panel->setBoton('grid', new BotonImg('ppoll.delete',array_merge(inRol('qualitat'),['where' => ['remains','==','0']])));
         $this->panel->setBoton('grid', new BotonImg('ppoll.slave',array_merge(['img'=>'fa-plus'],inRol('qualitat'))));
     }
 }

@@ -6,9 +6,11 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Colaboracion;
+
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Poll\Poll;
+use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use DB;
 use Styde\Html\Facades\Alert;
@@ -16,8 +18,12 @@ use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Jobs\SendEmail;
 use Illuminate\Support\Str;
-use Intranet\Entities\Alumno;
+use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\TipoExpediente;
+use Intranet\Entities\Colaboracion;
+use Intranet\Entities\Poll\Vote;
+use Intranet\Entities\Fct;
+
 
 /**
  * Class AdministracionController
@@ -88,18 +94,48 @@ class AdministracionController extends Controller
         return view('nuevo.curso');
     }
 
+    private function esborrarProgramacions(){
+        Programacion::where('estado', 4)->delete();
+        Programacion::where('curso', '!=', Curso())->update(['estado' => 4]);
+    }
+
+    private function esborrarEnquestes(){
+        foreach (Poll::all() as $poll){
+            if (!$poll->remains){
+                $poll->delete();
+            }
+        }
+    }
+    private function ferVotsPermanents(){
+        foreach (Vote::all() as $vote){
+            if ($fct = Fct::find($vote->idOption1)){
+                $newVote = new VoteAnt([
+                    'option_id' => $vote->option_id,
+                    'idColaboracion' => $fct->idColaboracion,
+                    'value' => $vote->value,
+                    'text' => $vote->text,
+                    'curs' => CursoAnterior()
+                ]);
+                $newVote->save();
+            }
+        }
+    }
+
     /**
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function nuevoCurso()
     {
-        //$this->checkForeignKeys(false);
         Colaboracion::where('tutor','!=','')->update(['tutor'=>'']);
         Colaboracion::where('estado','>',1)->update(['estado' => 1]);
 
-        foreach (Alumno::where('fol','==',2)->get() as $alumno)
-            foreach ($alumno->Grupo as $grupo)
-                if ($grupo->curso == 2){
+        $this->esborrarEnquestes();
+        $this->ferVotsPermanents();
+
+        foreach (AlumnoGrupo::with('Grupo')->with('Alumno')->get() as $algr)
+            if ($algr->curso == 2 && $algr->fol > 0)
+                {
+                    $alumno = $algr->Alumno;
                     $alumno->fol = 0;
                     $alumno->save();
                 }
@@ -107,12 +143,12 @@ class AdministracionController extends Controller
 
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
             'fcts', 'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
-            'resultados', 'reuniones', 'tutorias_grupos', 'activities','votes'];
+            'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos','polls'];
         foreach ($tables as $tabla) {
             DB::table($tabla)->delete();
         }
-        Programacion::where('estado', 4)->delete();
-        Programacion::where('curso', '!=', Curso())->update(['estado' => 4]);
+        $this->esborrarProgramacions();
+
         return back();
     }
 

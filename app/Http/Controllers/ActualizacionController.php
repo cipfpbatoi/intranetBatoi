@@ -21,7 +21,7 @@ class ActualizacionController extends Controller{
         Alert::info(system('rm ./../composer.lock'));
         Alert::info(system('git pull'));
         Alert::info(system('php ./../artisan config:cache'));
-        Alert::info(system('php ./../artisan migrate'));
+        Alert::info(system('php ./../artisan migrate --force'));
         $versionesInstaladas = config('constants.version');
         $version_nueva = end($versionesInstaladas );
         $version_actual = Storage::exists('version.txt')?Storage::get('version.txt'):'v0';

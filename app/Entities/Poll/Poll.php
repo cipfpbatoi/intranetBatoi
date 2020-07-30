@@ -53,6 +53,9 @@ class Poll extends Model
     public function getQueAttribute(){
         return $this->Plantilla->what;
     }
+    public function getRemainsAttribute(){
+        return $this->Plantilla->remains;
+    }
     public function getModeloAttribute(){
         return 'Intranet\\Entities\\Poll\\'.$this->Plantilla->what;
     }

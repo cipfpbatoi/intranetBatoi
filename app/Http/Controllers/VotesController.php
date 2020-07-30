@@ -9,14 +9,15 @@ use Response;
 class VotesController extends IntranetController
 {
     protected $namespace = 'Intranet\Entities\Vote\\'; //string on es troben els models de dades
-    protected $model = 'Vote';
-    protected $gridFields = ['year', 'question','instructor','answer'];
+    protected $model = 'VoteAnt';
+    protected $gridFields = ['curs', 'question','answer'];
 
 
     protected function showColaboracion($colaboracion){
         $ppol = hazArray(PPoll::where('what','Fct')->get(),'id','id');
         $poll = hazArray(Poll::whereIn('idPPoll',$ppol)->get(),'id','id');
-        return $this->llist(Colaboracion::find($colaboracion)->votes->whereIn('idPoll',$poll),$this->panel);
+        $colaboracion = Colaboracion::find($colaboracion);
+        return $this->llist($colaboracion->votes,$this->panel);
     }
 
 
