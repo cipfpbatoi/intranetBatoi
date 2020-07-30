@@ -16,7 +16,7 @@ $programaciones = Intranet\Entities\Programacion::misProgramaciones($elemento->d
             {{config('contacto.host.web')}}/api/doficha?dni={{$elemento->dni}}&api_token={{$elemento->api_token}}   
             </a> 
         </li>
-        <li>Enllaç a les programacions:
+        <li>Les teues programacions:
             <ul>
                 @foreach ($programaciones as $programacion)
                 <li>
@@ -29,7 +29,7 @@ $programaciones = Intranet\Entities\Programacion::misProgramaciones($elemento->d
         </li>
         @if (config('contacto.host.externo'))
             <li>Enllaç per a connectar-se des de fora del centre:
-                <a href="{{config('contacto.host.externo')}}?api_token={{$elemento->api_token}}">http://ext.intranet.cipfpbatoi.es?api_token={{$elemento->api_token}}</a>
+                <a href="{{config('contacto.host.externo')}}?api_token={{$elemento->api_token}}">{{config('contacto.host.externo')}}?api_token={{$elemento->api_token}}</a>
             </li>
         @endif
     </ul>
