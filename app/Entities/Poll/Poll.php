@@ -48,13 +48,13 @@ class Poll extends Model
         return $modelo::keyInterviewed();
     }
     public function getAnonymousAttribute(){
-        return $this->Plantilla->anonymous;
+        return $this->Plantilla->anonymous??false;
     }
     public function getQueAttribute(){
-        return $this->Plantilla->what;
+        return $this->Plantilla->what??'';
     }
     public function getRemainsAttribute(){
-        return $this->Plantilla->remains;
+        return $this->Plantilla->remains??null;
     }
     public function getModeloAttribute(){
         return 'Intranet\\Entities\\Poll\\'.$this->Plantilla->what;
