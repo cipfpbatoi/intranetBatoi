@@ -193,9 +193,9 @@ class ImportController extends Seeder
     /**
      * @return string
      */
-    public function aleatorio($long=60)
+    public function aleatorio()
     {
-        return Str::random($long);
+        return Str::random(60);
     }
 
     /**
