@@ -231,11 +231,11 @@ class Profesor extends Authenticatable
 
     public function getEntradaAttribute()
     {
-        return Falta_profesor::Hoy($this->dni)->last()->entrada??' ';
+        return Falta_profesor::Hoy($this->dni)->get()->last()->entrada??' ';
     }
     public function getSalidaAttribute()
     {
-        return Falta_profesor::Hoy($this->dni)->last()->salida??' ';
+        return Falta_profesor::Hoy($this->dni)->get()->last()->salida??' ';
     }
     public function getHorarioAttribute()
     {
