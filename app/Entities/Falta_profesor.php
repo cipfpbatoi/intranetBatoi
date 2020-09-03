@@ -37,33 +37,34 @@ class Falta_profesor extends Model
 
     public static function fichar($profesor = null)
     {
-
-        $ultimo = Falta_profesor::Hoy($profesor ?? AuthUser()->dni)
+        if (isPrivateAddress(getClientIpAddress())) {
+            $ultimo = Falta_profesor::Hoy($profesor ?? AuthUser()->dni)
                 ->get()->last();
 
-        if ($ultimo != null){
-            $now = new Date();
-            if ($ultimo->salida != null)
-                $last = new Date($ultimo->salida);
-            else
-                $last = new Date($ultimo->entrada);
-            $diff = $now->diffInMinutes($last);
-            if ($diff < 10) return null;
-       }
+            if ($ultimo != null) {
+                $now = new Date();
+                if ($ultimo->salida != null)
+                    $last = new Date($ultimo->salida);
+                else
+                    $last = new Date($ultimo->entrada);
+                $diff = $now->diffInMinutes($last);
+                if ($diff < 10) return null;
+            }
 
-        if (($ultimo == null) || ($ultimo->salida != null)) {
-            $ultimo = new Falta_profesor;
-            $ultimo->idProfesor = $profesor ?? AuthUser()->dni;
-            $ultimo->dia = date("Y-m-d", time());
-            $ultimo->entrada = date("H:i:s", time());
-            $ultimo->save();
-            return $ultimo;
-        } else{
-            $ultimo->salida = date("H:i:s", time());
-            $ultimo->save();
-            return $ultimo;
+            if (($ultimo == null) || ($ultimo->salida != null)) {
+                $ultimo = new Falta_profesor;
+                $ultimo->idProfesor = $profesor ?? AuthUser()->dni;
+                $ultimo->dia = date("Y-m-d", time());
+                $ultimo->entrada = date("H:i:s", time());
+                $ultimo->save();
+                return $ultimo;
+            } else {
+                $ultimo->salida = date("H:i:s", time());
+                $ultimo->save();
+                return $ultimo;
+            }
         }
-
+        return null;
     }
     
     public static function fichaDia($profesor,$dia)
