@@ -739,8 +739,13 @@ class ImportController extends Seeder
      */
     private function eliminarHorarios()
     {
-        $maxHorarios = DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla;
-        DB::table('horarios')->where('plantilla', '<>', $maxHorarios)->delete();
+        $ultimoHorario =  DB::table('horarios')->orderBy('plantilla', 'desc')->first();
+        if ($ultimoHorario){
+            $plantilla =  $ultimoHorario->plantilla;
+            DB::table('horarios')->where('plantilla', '<>', $plantilla)->delete();
+        }
+
+
     }
 
     /**
