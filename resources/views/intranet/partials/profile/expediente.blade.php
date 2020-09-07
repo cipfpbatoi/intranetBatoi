@@ -31,4 +31,4 @@
     </div>
 </div>
 @endforeach
-@include('intranet.partials.newModal.explicacion')
+@include('intranet.partials.modal.explicacion')
