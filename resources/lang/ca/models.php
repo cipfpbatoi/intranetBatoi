@@ -240,8 +240,6 @@ return array(
             'avisa' => 'Avisa Professors',
             'estan' => 'Tens tots els resultats del departament disponibles',
             'generado' => "L'informe del departament està disponible",
-
-            
         ),
         'AlumnoResultado' => array(
             'index' => 'Inserir qualificacions del modul/grup :quien',

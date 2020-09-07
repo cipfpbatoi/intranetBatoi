@@ -4,8 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonImg;
-use Intranet\Entities\Ciclo;
-use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Modulo_ciclo;
@@ -17,11 +15,8 @@ use Intranet\Entities\TipoReunion;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Programacion;
-use Styde\Html;
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Date\Date;
-
-
 
 
 class PanelListadoEntregasController extends BaseController
@@ -31,14 +26,15 @@ class PanelListadoEntregasController extends BaseController
     protected $model = 'Modulo_grupo';
     protected $gridFields = ['literal','profesor','seguimiento'];
     protected $parametresVista = ['modal' => ['infDpto']];
-    
+
     public function search()
     {
         return Modulo_grupo::with('Grupo')
             ->with('resultados')
             ->with('ModuloCiclo')
             ->whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get();
-    }   
+    }
+
     public function iniBotones()
     {
         if (!$this->faltan()){
