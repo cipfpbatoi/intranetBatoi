@@ -80,7 +80,7 @@ class Modulo_ciclo extends Model
     }
     public function getIdModuloOptions()
     {
-        return hazArray(Modulo::all(), 'codigo', 'literal');
+        return hazArray(Modulo::orderBy('vliteral')->get(), 'codigo', 'literal');
     }
     public function getIdDepartamentoOptions()
     {
