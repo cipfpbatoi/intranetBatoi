@@ -387,7 +387,6 @@ class ImportController extends Seeder
         $prg->idModuloCiclo = $mc->id;
         $prg->fichero = $mc->enlace;
         $prg->curso = Curso();
-        //$prg->idProfesor = $idProfesor;
 
         if ($antigua = Programacion::where('idModuloCiclo', $mc->id)->first()) {
             $prg->criterios = $antigua->criterios;
