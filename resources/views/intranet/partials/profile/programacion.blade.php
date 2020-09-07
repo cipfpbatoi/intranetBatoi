@@ -6,7 +6,6 @@
                  {{ $elemento->Xdepartamento }}<br/>
                  {{ trans('messages.buttons.ciclo')}}: {{ $elemento->Xciclo }}<br/>
                  {{ trans('messages.buttons.modulo')}}: {{ $elemento->Xmodulo }}<br/>
-                 {{ trans('validation.attributes.Profesor')}}: {{ $elemento->Profesor->ShortName }}<br/>
             </h4>
             <div class="left col-xs-6">
                 @if ($elemento->fichero)
