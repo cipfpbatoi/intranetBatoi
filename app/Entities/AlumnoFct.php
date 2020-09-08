@@ -67,7 +67,7 @@ class AlumnoFct extends Model
     {
         $profesor = $profesor?$profesor:AuthUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor,true)->get()->toArray();
-        $cicloC = Grupo::select('idCiclo')->QTutor($profesor,true)->first()->idCiclo;
+        $cicloC = Grupo::select('idCiclo')->QTutor($profesor,true)->first()->idCiclo??null;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
         $fcts = Fct::select('id')->whereIn('idColaboracion',$colaboraciones)
                 ->where('asociacion',3)->get()->toArray();
@@ -141,6 +141,7 @@ class AlumnoFct extends Model
                 return $grupo->codigo;
             }
         }
+        return null;
     }
     public function scopeGrupo($query,$grupo)
     {

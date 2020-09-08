@@ -2,8 +2,6 @@
 
 namespace Intranet\Entities;
 
-use Intranet\Entities\Fct;
-
 
 class Dual extends Fct
 {
@@ -37,12 +35,12 @@ class Dual extends Fct
         
         foreach ($colaboraciones as $colaboracion){
             $todos[$colaboracion->id] = $colaboracion->Centro->nombre;
-            if ($colaboracion->Centro->direccion) $todos[$colaboracion->id].=' ('.$colaboracion->Centro->direccion.')';
-                
+            if ($colaboracion->Centro->direccion){
+                $todos[$colaboracion->id].=' ('.$colaboracion->Centro->direccion.')';
+            }
         }
-        return array_sort($todos, function ($value) {
-            return $value;
-        });
+        sort($todos);
+        return $todos;
     }
         
 }
