@@ -15,7 +15,7 @@ return [
             'numeracion' => [0=>'--',1=>'01',2=>'02',3=>'03',4=>'04',5=>'05',6=>'06',7=>'07',8=>'08',9=>'09']],
         ['index' => '2', 'vliteral' => 'Reunió Equip Educatiu', 'cliteral' => 'Reunión Equipo Educativo', 'colectivo' => 'Grupo', 'rol' => '17', 'select' => '0',
             'convocatoria' => 'convocatoria', 'acta' => 'acta',
-            'modificable' => 0,
+            'modificable' => 1,
             'ordenes' => ["Revisió d'acords adoptats a la sessió anterior", "Opinió i/o comentaris dels alumnes", "Problemes detectats al grup i mesures a prendre", "Alumnes amb dificultats acadèmiques i mesures a adoptar", "Acords adoptats", "Observacions"],
             'numeracion' => [0=>'--',1=>'01',2=>'02',3=>'03',4=>'04',5=>'05',6=>'06',7=>'07',8=>'08',9=>'09']],
         ['index' => '3', 'vliteral' => 'Reunió Grup de treball', 'cliteral' => 'Reunión Grupo de trabajo', 'colectivo' => 'GrupoTrabajo', 'rol' => '3', 'select' => '1',
