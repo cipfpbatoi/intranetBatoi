@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Entities\Falta;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonIcon;
 
