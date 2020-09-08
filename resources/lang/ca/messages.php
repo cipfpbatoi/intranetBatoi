@@ -4,9 +4,11 @@ return array(
     'generic' => array(
         'go' => 'Ves!',
         'search' => 'Cerca de ...',
-        'noficha' => 'No has fictxat',
+        'noficha' => 'No has fitxat',
         'entrada' => "Hora d'entrada",
         'salida' => "Hora d'eixida",
+        'acaba' => "Ja acabes de fitxar",
+        'fueraCentro' => 'El sistema no pot ubicar-te al centre educatiu',
         'home' => 'A casa',
         'notoday' => 'No ve hui',
         'gone' => "Se'n ha anat",

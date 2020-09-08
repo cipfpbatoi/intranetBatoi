@@ -11,7 +11,11 @@
             @endif
             </h1>
         @else
-            <h1>Acabes de fitxar</h1>
+            @if ($ultimo === false)
+                <h1> {{ Alert::danger(trans('messages.generic.fueraCentro')) }}</h1>
+            @else
+                <h1>{{ Alert::danger(trans('messages.generic.acaba')) }}</h1>
+            @endif
         @endif
     </body>
 </html>

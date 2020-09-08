@@ -47,7 +47,11 @@ class FicharController extends IntranetController
         if (isset($profesor->dni)) {
             $fichaje = Falta_profesor::fichar($profesor->dni);
             if ($fichaje == null){
-                Alert::danger('Acabes de fitxar');
+                Alert::danger(trans('messages.generic.acaba'));
+                return back();
+            }
+            if ($fichaje == false){
+                Alert::danger(trans('messages.generic.fueraCentro'));
                 return back();
             }
             if ($fichaje->salida != null){

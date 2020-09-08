@@ -7,6 +7,8 @@ return array(
         'noficha' => 'No has fichado',
         'entrada' => 'Hora de entrada',
         'salida' => 'Hora de salida',
+        'acaba' => "Ya acabas de fichar",
+        'fueraCentro' => 'El sistema no te ubica al centro',
         'home' => 'En casa',
         'notoday' => 'No viene hoy',
         'gone' => 'Se ha ido',

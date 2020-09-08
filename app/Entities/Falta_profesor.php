@@ -64,7 +64,7 @@ class Falta_profesor extends Model
                 return $ultimo;
             }
         }
-        return null;
+        return false;
     }
     
     public static function fichaDia($profesor,$dia)
