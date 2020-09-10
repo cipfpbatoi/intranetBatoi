@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers\API;
 
 use Intranet\Entities\Alumno;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 
 
