@@ -38,8 +38,10 @@ class PanelFaltaController extends BaseController
 
     protected function search(){
         $todos =  Falta::all(); // carrega totes les dades de un model
-        if (isset($todos->first()->idProfesor)) // Si existe profesor en el model limite la cerca a les seues
+        if (isset($todos->first()->idProfesor)){
+            // Si existe profesor en el model limite la cerca a les seues
             $todos = $todos->where('idProfesor', '=', AuthUser()->dni);
+        }
         return $todos;
     }
 

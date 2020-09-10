@@ -142,7 +142,7 @@ class IncidenciaController extends IntranetController
 
     protected function createWithDefaultValues($default = [])
     {
-        return new Incidencia(['idProfesor'=>AuthUser()->dni,'fecha'=>new Date('now')]);
+        return new Incidencia(['idProfesor'=>AuthUser()->dni,'fecha'=>Hoy('Y-m-d')]);
     }
     /**
      * @param $id

@@ -66,16 +66,16 @@ class ProgramacionController extends IntranetController
 
     protected function storeanexo(Request $request, $id)
     {
-        if ($request->hasFile('Anexo'))
+        if ($request->hasFile('Anexo')) {
             if (($request->file('Anexo')->isValid()) && (($extension = $request->file('Anexo')->getClientOriginalExtension()) == 'pdf')) {
                 $elemento = Programacion::findOrFail($id);
                 $directorio = 'gestor/' . Curso() . '/' . $this->model;
                 $nom = $elemento->nomFichero() . '_an' . ++$elemento->anexos . '.' . $extension;
-                $request->file('Anexo')->storeAs($directorio,$nom);
-                //$request->file('Anexo')->move(storage_path('/app/'.$directorio), $nom);
+                $request->file('Anexo')->storeAs($directorio, $nom);
                 $elemento->save();
                 return back();
             }
+        }
         Alert::danger(trans('messages.generic.invalidFormat'));
         return back();
     }
@@ -101,17 +101,7 @@ class ProgramacionController extends IntranetController
     protected function createWithDefaultValues( $default=[]){
         return new Programacion(['idProfesor'=>AuthUser()->dni,'curso'=>Curso()]);
     }
-//    protected function email($id)
-//    {
-//        $elemento = Programacion::findOrFail($id);
-//        //esborra fitxer si ja estaven
-//        
-//        $asistente = AuthUser();
-//        $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName];
-//        dispatch(new SendEmail(AuthUser()->email, $remitente, 'email.programacion', $elemento));
-//        Alert::info('Correu enviat');
-//        return back();
-//    }
+
     
     
     
@@ -121,7 +111,6 @@ class ProgramacionController extends IntranetController
         if (config('variables.programaciones.enlace')){
             $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
             $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0]]));
-            //$this->panel->setBoton('grid', new BotonImg('programacion.email', ['img' => 'fa-send','where' => ['estado', '==', 0]]));
             $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','orWhere' => ['estado', '==', 0,'estado', '==', 3]]));
         }
         else {

@@ -3,12 +3,12 @@
     <div id="{{$elemento->id}}" class="well profile_view">
         <div class="col-sm-12">
             <h4 class="brief">
-                <i class="fa fa-calendar"></i> {{$elemento->fecha_inicio}} - {{ $elemento->fecha_fin }} <br/>
-                <i class="fa fa-calendar-o"></i> {{$elemento->hora_ini}} - {{$elemento->hora_fin}}<br/>
+                <em class="fa fa-calendar"></em> {{$elemento->fecha_inicio}} - {{ $elemento->fecha_fin }} <br/>
+                <em class="fa fa-calendar-o"></em> {{$elemento->hora_ini}} - {{$elemento->hora_fin}}<br/>
                 @if ($elemento->horas > 0)
-                <i class="fa fa-hourglass"></i> {{$elemento->horas}} {{ trans('messages.generic.horas')}}
+                <em class="fa fa-hourglass"></em> {{$elemento->horas}} {{ trans('messages.generic.horas')}}
                 @endif
-                <i class="fa fa-building"></i> {{$elemento->NAlumnos}}
+                <em class="fa fa-building"></em> {{$elemento->NAlumnos}}
                 @if ($elemento->aforo > 0)
                     / {{$elemento->aforo}}
                 @endif
@@ -17,10 +17,10 @@
                 <h5>{{$elemento->titulo}} </h5>
                 <ul class="list-unstyled">
                     @if (strlen($elemento->profesorado))
-                        <li><i class="fa fa-group"></i> {{$elemento->profesorado}}</li>
+                        <li><em class="fa fa-group"></em> {{$elemento->profesorado}}</li>
                     @endif 
                     @if (strlen($elemento->comentarios))
-                    <li><i class="fa fa-text-width"></i> {{ $elemento->comentarios}} </li>
+                    <li><em class="fa fa-text-width"></em> {{ $elemento->comentarios}} </li>
                     @endif
                 </ul>
             </div>

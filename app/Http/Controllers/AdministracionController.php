@@ -37,10 +37,12 @@ class AdministracionController extends Controller
      */
     public function simplifica()
     {
-        if (Session::get('completa'))
+        if (Session::get('completa')) {
             Session::forget('completa');
-        else
+        }
+        else {
             Session::put('completa', 1);
+        }
         return back();
     }
 
@@ -128,17 +130,18 @@ class AdministracionController extends Controller
     {
         Colaboracion::where('tutor','!=','')->update(['tutor'=>'']);
         Colaboracion::where('estado','>',1)->update(['estado' => 1]);
+        Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
 
         $this->esborrarEnquestes();
         $this->ferVotsPermanents();
 
-        foreach (AlumnoGrupo::with('Grupo')->with('Alumno')->get() as $algr)
-            if ($algr->curso == 2 && $algr->fol > 0)
-                {
-                    $alumno = $algr->Alumno;
-                    $alumno->fol = 0;
-                    $alumno->save();
-                }
+        foreach (AlumnoGrupo::with('Grupo')->with('Alumno')->get() as $algr) {
+            if ($algr->curso == 2 && $algr->fol > 0) {
+                $alumno = $algr->Alumno;
+                $alumno->fol = 0;
+                $alumno->save();
+            }
+        }
 
 
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',

@@ -3,10 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Material;
-use Intranet\Entities\TipoIncidencia;
-use Illuminate\Support\Facades\Auth;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
@@ -17,7 +13,7 @@ class Incidencia extends Model
 
     protected $table = 'incidencias';
     public $timestamps = false;
-    protected $fillable = ['tipo','espacio', 'material', 'descripcion', 'idProfesor',  'prioridad', 'Observaciones'];
+    protected $fillable = ['tipo','espacio', 'material', 'descripcion', 'idProfesor',  'prioridad', 'Observaciones','fecha'];
     protected $descriptionField = 'descripcion';
 
     use BatoiModels,
@@ -83,19 +79,6 @@ class Incidencia extends Model
         return hazArray(TipoIncidencia::all(), 'id', 'literal');
     }
 
-    /**
-    public function getResponsableOptions()
-    {
-        $todos = Profesor::select('dni', 'apellido1',  'nombre')
-                ->whereIn('dni', config('contacto.incidencias'))
-                ->get();
-        $esp = array();
-        foreach ($todos as $uno) {
-            $esp[$uno->dni] = $uno->nombre.' '.$uno->apellido1;
-        }
-        return $esp;
-    }
-    **/
 
     public function getEstadoOptions()
     {
@@ -107,11 +90,7 @@ class Incidencia extends Model
         return config('auxiliares.prioridadIncidencia');
     }
 
-    public function getFechaAttribute($entrada)
-    {
-        $fecha = new Date($entrada);
-        return $fecha->format('d-m-Y');
-    }
+
 
     public function getFechasolucionAttribute($salida)
     {
@@ -151,18 +130,18 @@ class Incidencia extends Model
     public static function putEstado($id, $estado, $mensaje = null, $fecha = null)
     {
         $elemento = static::findOrFail($id);
-        if ($fecha != null) {
-            if (isset($elemento->fechasolucion)) {
-                $elemento->fechasolucion = $fecha;
-            }
+        if (($fecha != null) && (isset($elemento->fechasolucion))) {
+            $elemento->fechasolucion = $fecha;
         }
         if ($elemento->estado < $estado) {
             $elemento->responsable = $estado > 1 ? AuthUser()->dni : $elemento->Tipos->idProfesor;
-        } else
+        } else {
             $elemento->responsable = $estado > 1 ? AuthUser()->dni : '';
+        }
 
-        if ($elemento->has('solucion') && isset($mensaje))
+        if ($elemento->has('solucion') && isset($mensaje)) {
             $elemento->solucion .= $mensaje;
+        }
         
         $elemento->estado = $estado;
         $elemento->save();

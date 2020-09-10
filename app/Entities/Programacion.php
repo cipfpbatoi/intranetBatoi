@@ -95,7 +95,6 @@ class Programacion extends Model
                 ->where('modulo', '!=', null)
                 ->get();
         $modulos = [];
-
         foreach ($horas as $hora){
             if ($mc = Modulo_ciclo::where('idModulo',$hora->modulo)
                     ->where('idCiclo',$hora->Grupo->idCiclo)
@@ -103,6 +102,7 @@ class Programacion extends Model
                 $modulos[] = $mc->id;
             }
         }
+
         return $query->whereIn('idModuloCiclo', $modulos)
                 ->where('curso',Curso());
     }

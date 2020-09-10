@@ -155,8 +155,5 @@ class Comision extends Model
         }
         return trim($descripcion, ',');
     }
-//    public function setServicioAttribute($value){
-//        $this->attributes['servicio'] = $value;
-//        $this->attributes['slug'] = Str::slug($value);
-//    }
+
 }
