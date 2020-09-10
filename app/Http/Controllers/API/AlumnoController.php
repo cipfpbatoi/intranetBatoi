@@ -1,0 +1,30 @@
+<?php
+
+namespace Intranet\Http\Controllers\API;
+
+use Intranet\Entities\Alumno;
+use Illuminate\Http\Request;
+
+
+
+class AlumnoController extends ApiBaseController
+{
+
+    public function putImage(Request $request,$id)
+    {
+        if ($request->hasFile('foto')) {
+            $validator = Validator::make($request->all(), [
+                'foto' => 'required|image:jpeg,png,jpg,gif,svg|max:2048'
+            ]);
+            if ($validator->fails()) {
+                return $this->sendError('Format foto no valida');
+            }
+            $alumno = Alumno::where('dni', $id)->first();
+            $alumno->foto = $request->file('foto')->store('fotos', 'public');
+            $alumno->save();
+            return $this->sendResponse("$id", 'OK');
+        } else {
+            return $this->sendError('No hi ha foto');
+        }
+    }
+}

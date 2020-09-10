@@ -101,6 +101,8 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     Route::resource('alumnoresultado','AlumnoResultadoContoller');
     Route::get('/matricula/{token}','AlumnoReunionController@getDadesMatricula');
+    Route::put('/alumno/{dni}/foto','AlumnoController@putImage');
+
     //Route::get('/convenio','EmpresaController@indexConvenio');
 });
 
