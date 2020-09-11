@@ -22,7 +22,7 @@ class PanelControlProgramacionController extends BaseController
     /**
      * @var array
      */
-    protected $gridFields = ['id','Xciclo', 'Xmodulo', 'estado','Nombre', 'situacion'];
+    protected $gridFields = ['id','Xciclo', 'Xmodulo', 'estado', 'situacion'];
 
 
     /**
@@ -34,7 +34,6 @@ class PanelControlProgramacionController extends BaseController
             return Modulo_ciclo::with('Ciclo')
                 ->with('Modulo')
                 ->with('Programacion')
-                ->with('Profesor')
                 ->get();
         }
         return Modulo_ciclo::with('Ciclo')

@@ -13,7 +13,7 @@ class PanelProgramacionController extends BaseController
     use traitPanel,traitCheckList;
 
     protected $model = 'Programacion';
-    protected $gridFields = ['XModulo', 'Xciclo', 'Xnombre', 'situacion'];
+    protected $gridFields = ['XModulo', 'Xciclo',  'situacion'];
     protected $items = 6;
     protected $vista = ['seguimiento' => 'programacion.seguimiento'];
     protected $modal = true;
@@ -23,7 +23,6 @@ class PanelProgramacionController extends BaseController
     {
         return Programacion::where('estado', '>', '0')
                 ->Departamento()
-                ->with('Profesor')
                 ->with('ModuloCiclo')
                 ->get();
     }
