@@ -203,7 +203,6 @@ class ImportController extends Seeder
      */
     public function store(Request $request)
     {
-        dd($request->hasFile('fichero'));
         if (!$request->hasFile('fichero') || !file_exists($request->file('fichero'))) {
             Alert::danger(trans('messages.generic.noFile'));
             return back();
