@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 Use Intranet\Entities\Alumno;
 Use Intranet\Entities\Profesor;
 use Intranet\Entities\Horario;
@@ -114,7 +115,7 @@ class TeacherImportController extends Seeder
      */
     public function aleatorio()
     {
-        return str_random(60);
+        return Str::random(60);
     }
 
     /**

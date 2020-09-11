@@ -36,9 +36,6 @@ class ProgramacionController extends IntranetController
     protected function init($id)
     {
         Programacion::putEstado($id,$this->init);
-        $prg = Programacion::find($id);
-        $prg->idProfesor = AuthUser()->dni;
-        $prg->save();
         return back();
     }
     
@@ -99,7 +96,7 @@ class ProgramacionController extends IntranetController
     }
 
     protected function createWithDefaultValues( $default=[]){
-        return new Programacion(['idProfesor'=>AuthUser()->dni,'curso'=>Curso()]);
+        return new Programacion(['curso'=>Curso()]);
     }
 
     
