@@ -168,7 +168,7 @@ trait BatoiModels
      * @return mixed|string|null
      */
     private function fillField($key, $value){
-        $type = isset($this->inputTypes[$key]['type'])?$this->inputTypes[$key]['type']:null;
+        $type = $this->inputTypes[$key]['type']??null;
         if ($type == 'date') {
             return (new Date($value))->format('Y-m-d');
         }
@@ -191,10 +191,11 @@ trait BatoiModels
     public function fillAll(Request $request)
     {
         $fillable = $this->notFillable?array_diff($this->fillable,$this->notFillable):$this->fillable;
-        foreach ($fillable as $key)  {
-            $this->$key = $this->fillField($key,$request->$key);
-        }
 
+        foreach ($fillable as $key)  {
+            $value = $request->$key;
+            $this->$key = $this->fillField($key,$value);
+        }
         $this->save();
         
         if ($request->hasFile('fichero')) {

@@ -44,6 +44,7 @@ class ComisionController extends IntranetController
 
     public function store(Request $request)
     {
+
         $id = $this->realStore($request);
         if (Comision::find($id)->fct){
             return redirect()->route('comision.detalle', ['comision' => $id]);
@@ -81,7 +82,7 @@ class ComisionController extends IntranetController
         $comision = new Comision(['idProfesor'=>AuthUser()->dni,'desde'=>$manana,'hasta'=>$manana,
             'fct'=>$fct,'servicio'=>$servicio]);
         if (!$fct) {
-            $comision->setInputType('fct',['type'=> 'hidden']);
+            $comision->deleteInputType('fct');
         }
         return $comision;
     }
