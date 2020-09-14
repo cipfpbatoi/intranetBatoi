@@ -71,11 +71,11 @@ class ComisionController extends IntranetController
         $manana = new Date('tomorrow');
         $manana->addHours(8);
         if (Fct::misFcts()->count()){
-            $fct = true;
+            $fct = 1;
             $servicio = "Visita a Empreses per FCT: ";
         }
         else{
-            $fct = false;
+            $fct = 0;
             $servicio = "Visita a Empreses: ";
         }
         $comision = new Comision(['idProfesor'=>AuthUser()->dni,'desde'=>$manana,'hasta'=>$manana,

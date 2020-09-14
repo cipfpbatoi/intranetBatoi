@@ -109,7 +109,6 @@ class FctController extends IntranetController
             ->orderBy('idAlumno')
             ->orderBy('desde')
             ->get();
-        dd($fctAls);
         $mail = new myMail( $fctAls,$document['receiver'], $document['subject'], $document['view']);
         $mail->send();
         return back();

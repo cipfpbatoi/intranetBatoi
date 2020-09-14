@@ -73,6 +73,9 @@ abstract class HomeController extends Controller
             if (isset(AlumnoGrupo::where('idAlumno', AuthUser()->nia)->first()->idGrupo)) {
                 $grupo = AlumnoGrupo::where('idAlumno', AuthUser()->nia)->first()->idGrupo;
                 $horario = Horario::HorarioGrupo($grupo);
+            } else {
+                $grupo = [];
+                $horario = [];
             }
             $actividades = Actividad::next()->auth()->take(10)->get();
             $activities = [];
