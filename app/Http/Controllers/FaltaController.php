@@ -13,14 +13,13 @@ use Intranet\Entities\Programacion;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\Resultado;
 
-use Illuminate\Support\Facades\Auth;
+use Intranet\Jobs\SendEmail;
 use Jenssegers\Date\Date;
 use \DB;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
 use Illuminate\Http\Request;
 use PDF;
+use Styde\Html\Facades\Alert;
 
 /**
  * Class FaltaController
@@ -93,7 +92,7 @@ class FaltaController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('falta.delete', ['where' => ['estado', '==', '0']]));
         $this->panel->setBoton('grid', new BotonImg('falta.edit', ['where' => ['estado', '<', '3']]));
         $this->panel->setBoton('grid', new BotonImg('falta.init', ['where' => ['estado', '==', '0']]));
-        $this->panel->setBoton('grid', new BotonImg('falta.notification', ['where' => ['estado', '>', '0', 'hasta', 'posterior', Ayer()]]));
+        //$this->panel->setBoton('grid', new BotonImg('falta.notification', ['where' => ['estado', '>', '0', 'hasta', 'posterior', Ayer()]]));
         $this->panel->setBoton('grid', new BotonImg('falta.document', ['where' => ['fichero', '!=', '']]));
     }
 
@@ -160,30 +159,35 @@ class FaltaController extends IntranetController
     public function init($id)
     {
         $elemento = Falta::findOrFail($id);
+        $this->avisaTutor($elemento);
         if ($elemento->fichero) {
             Falta::putEstado($id,2);
         } else {
             Falta::putEstado($id,1);
         }
-        
+
         return $this->redirect();
     }
 /**
     Covid avisa soles al tutor
     amb correu electrònic
-
-    protected function avisaProfesorat($elemento, $mensaje = null, $idEmisor = null, $emisor = null)
+*/
+    protected function avisaTutor($elemento)
     {
-        $mensaje = $mensaje ? $mensaje : "No estaré en el centre des de " . $elemento->desde . " fins " . $elemento->hasta;
-        $idEmisor = $idEmisor ? $idEmisor : $elemento->idProfesor;
-
-        if (count($grupos = $this->gruposAfectados($elemento, $idEmisor)->toArray()) == 0)
-            return;
-
-        foreach ($this->profesoresAfectados($grupos, $idEmisor) as $profesor)
-            avisa($profesor->idProfesor, $mensaje,'#',$emisor);
+        $idEmisor = $elemento->idProfesor;
+        foreach ($this->gruposAfectados($elemento, $idEmisor)->toArray() as $grupos){
+            foreach ($grupos as $item) {
+                $grupo = Grupo::find($item);
+                $correoTutor = $grupo->Tutor->Sustituye->email ?? $grupo->Tutor->email;
+                $correoDireccion = 'faltes@cipfpbatoi.es';
+                $remitente =  ['nombre'=>'Caporalia','email'=>'faltes@cipfpbatoi.es'];
+                SendEmail::dispatch($correoTutor,$remitente, 'email.faltaProfesor', $elemento);
+                SendEmail::dispatch($correoDireccion, $remitente, 'email.faltaProfesor', $elemento);
+                Alert::info("Correos enviados a $item");
+            }
+        }
     }
-**/
+
     /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
