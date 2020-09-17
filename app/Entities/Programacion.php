@@ -19,7 +19,6 @@ class Programacion extends Model
     protected $table = "programaciones";
     protected $fillable = [
         'idModuloCiclo',
-        'idProfesor',
         'curso',
         'fichero',
     ];
@@ -28,7 +27,6 @@ class Programacion extends Model
     ];
     protected $inputTypes = [
         'fichero' => ['type' => 'file'],
-        'idProfesor' => ['type' => 'hidden'],
         'idModuloCiclo' => ['type' => 'select']
     ];
     
@@ -57,6 +55,10 @@ class Programacion extends Model
     public function Modulo()
     {
         return $this->hasOneThrough(Modulo::class,Modulo_ciclo::class,'id','codigo','idModuloCiclo','idModulo');
+    }
+    public function Profesor()
+    {
+        return $this->belongsTo(Profesor::class, 'Profesor', 'dni');
     }
 
 
@@ -134,6 +136,9 @@ class Programacion extends Model
     }
     public function getDescripcionAttribute(){
         return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Aciclo." - ".$this->ModuloCiclo->Xmodulo:'';
+    }
+    public function getXnombreAttribute(){
+        return $this->Profesor->ShortName??'';
     }
 
     

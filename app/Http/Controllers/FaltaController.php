@@ -168,7 +168,22 @@ class FaltaController extends IntranetController
         
         return $this->redirect();
     }
+/**
+    Covid avisa soles al tutor
+    amb correu electrònic
 
+    protected function avisaProfesorat($elemento, $mensaje = null, $idEmisor = null, $emisor = null)
+    {
+        $mensaje = $mensaje ? $mensaje : "No estaré en el centre des de " . $elemento->desde . " fins " . $elemento->hasta;
+        $idEmisor = $idEmisor ? $idEmisor : $elemento->idProfesor;
+
+        if (count($grupos = $this->gruposAfectados($elemento, $idEmisor)->toArray()) == 0)
+            return;
+
+        foreach ($this->profesoresAfectados($grupos, $idEmisor) as $profesor)
+            avisa($profesor->idProfesor, $mensaje,'#',$emisor);
+    }
+**/
     /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse

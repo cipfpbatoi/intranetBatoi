@@ -13,7 +13,7 @@ class PanelProgramacionController extends BaseController
     use traitPanel,traitCheckList;
 
     protected $model = 'Programacion';
-    protected $gridFields = ['XModulo', 'Xciclo',  'situacion'];
+    protected $gridFields = ['XModulo', 'Xciclo','Nombre' , 'situacion'];
     protected $items = 6;
     protected $vista = ['seguimiento' => 'programacion.seguimiento'];
     protected $modal = true;

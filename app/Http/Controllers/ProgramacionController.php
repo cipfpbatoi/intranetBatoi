@@ -36,6 +36,9 @@ class ProgramacionController extends IntranetController
     protected function init($id)
     {
         Programacion::putEstado($id,$this->init);
+        $prg = Programacion::find($id);
+        $prg->Profesor = AuthUser()->dni;
+        $prg->save();
         return back();
     }
     
