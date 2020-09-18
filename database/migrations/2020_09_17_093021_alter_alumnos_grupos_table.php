@@ -14,8 +14,8 @@ class AlterAlumnosGruposTable extends Migration
     public function up()
     {
         Schema::table('alumnos_grupos', function (Blueprint $table) {
-            $table->string('subGrupo', 1);
-            $table->string('posicion', 2);
+            $table->string('subGrupo', 1)->nullable();
+            $table->string('posicion', 2)->nullable();
         });
     }
 
