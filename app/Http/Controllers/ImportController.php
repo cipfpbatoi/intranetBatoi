@@ -647,11 +647,12 @@ class ImportController extends Seeder
         $pasa = true;
         foreach ($required as $key) {
             if ($campos[$key] == ' ') {
+                $campBuid = $key;
                 $pasa = false;
             }
         }
         if (!$pasa) {
-            Alert::danger('Camp buid: ' . print_r($campos, true));
+            Alert::danger("Camp $campBuid buid");
         }
         return $pasa;
     }
