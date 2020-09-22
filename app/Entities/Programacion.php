@@ -58,7 +58,7 @@ class Programacion extends Model
     }
     public function Profesor()
     {
-        return $this->belongsTo(Profesor::class, 'Profesor', 'dni');
+        return $this->belongsTo(Profesor::class, 'profesor', 'dni');
     }
 
 
