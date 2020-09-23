@@ -39,11 +39,8 @@ class ApiBaseController extends Controller
     public function store(Request $request)
     {
         try {
-//          $this->validate($request, $this->rules);
-//            if (empty($errors)) {
             $this->class::create($request->all());
             return $this->sendResponse(['created' => true], 'OK');
-//            }
         } catch (Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -52,13 +49,10 @@ class ApiBaseController extends Controller
     public function update(Request $request, $id)
     {
         try {
-//            $this->validate($request, $this->rules);
-//            if (empty($errors)){
             $registro = $this->class::find($id);
             $registro->update($request->all());
             $registro->save();
             return $this->sendResponse(['updated' => true], 'OK');
-//            }
         } catch (Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -66,7 +60,6 @@ class ApiBaseController extends Controller
 
     public function show($cadena,$send=true)
     {
-        //return $this->sendError($cadena);
         if (!strpos($cadena, '=')&&!strpos($cadena, '>')&&!strpos($cadena, '<')&&!strpos($cadena, ']')&&!strpos($cadena, '['))
             $data = $this->class::find($cadena);
         else {

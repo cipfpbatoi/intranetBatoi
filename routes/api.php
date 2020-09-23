@@ -70,7 +70,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('tipoincidencia', 'TipoIncidenciaController', ['except' => ['edit', 'create']]);
     Route::resource('expediente', 'ExpedienteController', ['except' => ['edit', 'create']]);
     Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => ['edit', 'create']]);    
-    Route::resource('alumnoGrupo', 'AlumnoGrupoController', ['except' => ['edit', 'create']]);
+    Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => ['edit', 'create']]);
     Route::resource('activity', 'ActivityController', ['except' => ['edit', 'create']]);
     Route::get('alumnoGrupoModulo/{dni}/{modulo}','AlumnoGrupoController@getModulo');
     

@@ -18,14 +18,11 @@ class AlumnoGrupo extends Model
         'subGrupo' => 'required',
     ];
     protected $fillable = [
-        'idAlumno',
-        'idGrupo',
         'subGrupo',
         'posicion'];
 
     protected $inputTypes = [
-        'idAlumno' => ['disabled' => 'disabled'],
-        'idGrupo' => ['disabled' => 'disabled'],
+
         ];
     
     public static function find($params)

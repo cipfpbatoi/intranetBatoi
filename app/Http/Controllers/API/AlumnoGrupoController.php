@@ -34,9 +34,16 @@ class AlumnoGrupoController extends ApiBaseController
 
     public function show($cadena,$send=true)
     {
-        $migrupo = Grupo::Qtutor($cadena)->get();
-        return $this->alumnos($migrupo);
+            if (strlen($cadena)==8){
+                return $this->sendResponse(AlumnoGrupo::where('idAlumno',$cadena)->first(),'OK');
+            } else {
+                $migrupo = Grupo::Qtutor($cadena)->get();
+                return $this->alumnos($migrupo);
+            }
     }
+
+
+
     
     public function getModulo($dni,$modulo){
         //$migrupo = Grupo::miGrupoModulo($dni,$modulo)->get();

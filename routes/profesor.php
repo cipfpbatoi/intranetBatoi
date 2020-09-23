@@ -109,8 +109,9 @@ Route::put('/grupo/{grupo}/edit', ['as' => 'grupo.update', 'uses' => 'GrupoContr
 Route::get('/grupo/{grupo}/carnet', ['as' => 'grupo.carnet', 'uses' => 'GrupoController@carnet']);
 Route::get('/grupo/{grupo}/fse', ['as' => 'grupo.fse', 'uses' => 'GrupoController@fse']);
 
-Route::resource('/alumnogrupo', 'AlumnoGrupoController', ['except' => ['destroy', 'update']]);
-Route::put('/alumnogrupo/{alumno}/edit', ['as' => 'alumno_grupo.update', 'uses' => 'AlumnoGrupoController@update']);
+Route::resource('/alumno_grupo', 'AlumnoGrupoController', ['except' => ['destroy', 'update']]);
+Route::put('/alumno_grupo/{grupo}/show/{alumno}/edit', ['as' => 'alumno_grupo.update', 'uses' => 'AlumnoGrupoController@updateModal']);
+Route::put('/alumno_grupo/{alumno}/edit', ['as' => 'alumno_grupo.update', 'uses' => 'AlumnoGrupoController@update']);
 Route::get('/alumno_grupo/{grupo}/show', ['as' => 'alumnogrupo.index', 'uses' => 'AlumnoGrupoController@indice']);
 Route::get('/alumno_grupo/{grupo}/profile', ['as' => 'alumnogrupo.profile', 'uses' => 'AlumnoGrupoController@profile']);
 
