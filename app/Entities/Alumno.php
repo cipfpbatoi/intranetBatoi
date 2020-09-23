@@ -194,4 +194,5 @@ class Alumno extends Authenticatable
         return $this->Municipio->municipio??'NO TROBAT';
     }
 
+
 }

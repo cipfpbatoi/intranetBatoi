@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Ciclo;
@@ -122,7 +123,9 @@ class GrupoController extends IntranetController
      */
     public function pdf($grupo)
     {
-        return $this->hazPdf('pdf.alumnos.fotoAlumnos',$this->alumnos($grupo), Grupo::find($grupo))->stream();
+        return AlumnoGrupo::where('idGrupo',$grupo)->first()->subGrupo
+        ?$this->hazPdf('pdf.alumnos.fotoSubgrupo',AlumnoGrupo::where('idGrupo',$grupo)->orderBy('subGrupo')->orderBy('posicion')->get()->groupBy('subGrupo'), Grupo::find($grupo))->stream()
+        :$this->hazPdf('pdf.alumnos.fotoAlumnos',$this->alumnos($grupo), Grupo::find($grupo))->stream();
     }
 
     /**

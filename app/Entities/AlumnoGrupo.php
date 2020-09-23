@@ -7,11 +7,26 @@ use \Illuminate\Database\Eloquent\Model;
 class AlumnoGrupo extends Model
 {
 
+    use BatoiModels;
+
     public $primaryKey = 'idAlumno';
     protected $keyType = 'string';
     protected $table = 'alumnos_grupos';
     public $timestamps = false;
 
+    protected $rules = [
+        'subGrupo' => 'required',
+    ];
+    protected $fillable = [
+        'idAlumno',
+        'idGrupo',
+        'subGrupo',
+        'posicion'];
+
+    protected $inputTypes = [
+        'idAlumno' => ['disabled' => 'disabled'],
+        'idGrupo' => ['disabled' => 'disabled'],
+        ];
     
     public static function find($params)
     {
@@ -33,6 +48,18 @@ class AlumnoGrupo extends Model
     public function getPoblacionAttribute()
     {
         return $this->Alumno->Poblacion;
+    }
+    public function getEmailAttribute()
+    {
+        return $this->Alumno->email;
+    }
+    public function getTelef2Attribute()
+    {
+        return $this->Alumno->telef2;
+    }
+    public function getTelef1Attribute()
+    {
+        return $this->Alumno->telef1;
     }
 
     public function getFolAttribute()

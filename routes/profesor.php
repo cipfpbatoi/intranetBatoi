@@ -108,8 +108,12 @@ Route::get('/grupo/{grupo}/edit', ['as' => 'grupo.edit', 'uses' => 'GrupoControl
 Route::put('/grupo/{grupo}/edit', ['as' => 'grupo.update', 'uses' => 'GrupoController@update']);
 Route::get('/grupo/{grupo}/carnet', ['as' => 'grupo.carnet', 'uses' => 'GrupoController@carnet']);
 Route::get('/grupo/{grupo}/fse', ['as' => 'grupo.fse', 'uses' => 'GrupoController@fse']);
+
+Route::resource('/alumnogrupo', 'AlumnoGrupoController', ['except' => ['destroy', 'update']]);
+Route::put('/alumnogrupo/{alumno}/edit', ['as' => 'alumno_grupo.update', 'uses' => 'AlumnoGrupoController@update']);
 Route::get('/alumno_grupo/{grupo}/show', ['as' => 'alumnogrupo.index', 'uses' => 'AlumnoGrupoController@indice']);
 Route::get('/alumno_grupo/{grupo}/profile', ['as' => 'alumnogrupo.profile', 'uses' => 'AlumnoGrupoController@profile']);
+
 Route::get('/grupo/{grupo}/horario', ['as' => 'grupo.horario', 'uses' => 'GrupoController@horario']);
 Route::get('/grupo/asigna', ['as' => 'grupo.asigna', 'uses' => 'GrupoController@asigna']);
 Route::get('/grupo/{grupo}/fol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@checkFol']);

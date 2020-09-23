@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Intranet\Entities\AlumnoGrupo;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Botones\BotonBasico;
@@ -16,12 +17,41 @@ class AlumnoGrupoController extends IntranetController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoGrupo';
-    protected $gridFields = ['nameFull', 'telef1', 'telef2', 'email','poblacion'];
+    protected $gridFields = ['nombre', 'telef1', 'telef2', 'email','poblacion','subGrupo','posicion'];
     const FOL = 12;
+    //protected $modal = true;
+
 
     public function search(){
         $this->titulo = ['quien' => $this->search];
-        return Alumno::QGrupo($this->search)->get();
+        return AlumnoGrupo::where('idGrupo',$this->search)->get();
+    }
+
+    /*
+     * edit($id) return vista edit
+     */
+    public function edit($id)
+    {
+        $grupoTutoria = AuthUser()->grupoTutoria;
+        $elemento = AlumnoGrupo::where('idAlumno',$id)->where('idGrupo',$grupoTutoria)->first();
+        $default = $elemento->fillDefautOptions();
+        $modelo = $this->model;
+        return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
+    }
+
+    protected function redirect()
+    {
+        $grupoTutoria = AuthUser()->grupoTutoria;
+        return redirect()->action('AlumnoGrupoController@indice',['grupo'=>$grupoTutoria]);
+    }
+
+    protected function realStore(Request $request, $id = null)
+    {
+        $grupoTutoria = AuthUser()->grupoTutoria;
+        $elemento = AlumnoGrupo::where('idAlumno',$id)->where('idGrupo',$grupoTutoria)->first(); //busca si hi ha
+        $this->validateAll($request, $elemento);    // valida les dades
+
+        return $elemento->fillAll($request);        // ompli i guarda
     }
 
     protected function iniBotones()
@@ -30,6 +60,7 @@ class AlumnoGrupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumno.muestra'));
         $this->panel->setBoton('grid', new BotonImg('alumno.edit', ['roles' => config('roles.rol.direccion'), 'where' => ['idGrupo', '!=',  $grupoTutoria]]));
         $this->panel->setBoton('grid', new BotonImg('alumno.edit', ['where' => ['idGrupo', '==',  $grupoTutoria]]));
+        $this->panel->setBoton('grid', new BotonImg('alumnogrupo.edit', ['img' => 'fa-tags','where' => ['idGrupo', '==',  $grupoTutoria]]));
         $this->panel->setBoton('grid', new BotonImg('alumno.carnet', ['roles' => config('roles.rol.direccion'), 'where' => ['idGrupo', '!=',  $grupoTutoria]]));
         $this->panel->setBoton('profile', new BotonIcon('alumno.carnet', ['roles' => config('roles.rol.direccion'), 'where' => ['idGrupo', '!=',  $grupoTutoria]]));
         $this->panel->setBoton('grid', new BotonImg('alumno.carnet', ['where' => ['idGrupo', '==',  $grupoTutoria]]));

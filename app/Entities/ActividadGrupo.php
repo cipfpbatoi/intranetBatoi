@@ -11,6 +11,7 @@ class ActividadGrupo extends Model
     protected $fillable = [
         'idActividad',
         'idGrupo'];
+
     public $timestamps = false;
 
     public function scopeDepartamento($query, $dep)
