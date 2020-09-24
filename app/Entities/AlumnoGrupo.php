@@ -63,5 +63,9 @@ class AlumnoGrupo extends Model
     {
         return $this->Alumno->fol;
     }
+    public function getFotoAttribute()
+    {
+        return $this->Alumno->foto;
+    }
 
 }
