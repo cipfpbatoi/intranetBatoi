@@ -795,7 +795,7 @@ class ImportController extends Seeder
                 $find->save();
             }
         }
-        DB:statement('DROP table IF exists tmp_alumnos_grupos');
+        DB::statement('DROP table IF exists tmp_alumnos_grupos');
     }
 
     /**
