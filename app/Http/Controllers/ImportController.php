@@ -301,13 +301,17 @@ class ImportController extends Seeder
     private function pre($clase, $xml)
     {
         switch ($clase) {
-            case 'Alumno': $this->alumnosBaja();
+            case 'Alumno':
+
+                $this->alumnosBaja();
                 break;
             case 'Profesor' : $this->profesoresBaja();
                 break;
             case 'Grupo' : $this->gruposBaja();
                 break;
-            case 'AlumnoGrupo' : $this->truncateTables('alumnos_grupos');
+            case 'AlumnoGrupo' :
+                $this->duplicaTable('alumnos_grupos');
+                $this->truncateTables('alumnos_grupos');
                 break;
             case 'Horario' :
                 if (isset(DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla)) {
@@ -340,6 +344,7 @@ class ImportController extends Seeder
                 $this->removeTutor();
                 break;
             case 'AlumnoGrupo' : $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
+                $this->restauraCopia();
                 break;
             case 'Horario' : if ($xml == 'horarios_ocupaciones') {
                     $this->eliminarHorarios();
@@ -763,6 +768,13 @@ class ImportController extends Seeder
         $this->checkForeignKeys(true);
     }
 
+    private function duplicaTable($table)
+    {
+        DB::statement("DROP table IF exists tmp_$table;");
+        DB::statement("CREATE TABLE tmp_$table LIKE $table;");
+        DB::statement("INSERT INTO tmp_$table SELECT * FROM $table;");
+    }
+
     /**
      * @param $table
      * @param $columna
@@ -770,6 +782,20 @@ class ImportController extends Seeder
     private function eliminarRegistrosBlanco($table, $columna)
     {
         DB::table($table)->where($columna, '=', '')->delete();
+    }
+
+    private function restauraCopia(){
+        $tmpAll = DB::select("select * from tmp_alumnos_grupos where subGrupo IS NOT NULL");
+        foreach ($tmpAll as $registro){
+            $find = AlumnoGrupo::where('idAlumno',$registro->idAlumno)
+                ->where('idGrupo',$registro->idGrupo)->first();
+            if ($find) {
+                $find->subGrupo = $registro->subGrupo;
+                $find->posicion = $registro->posicion;
+                $find->save();
+            }
+        }
+        DB:statement('DROP table IF exists tmp_alumnos_grupos');
     }
 
     /**
