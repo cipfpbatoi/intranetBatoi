@@ -29,7 +29,7 @@
             </div>
             <div style="float:left;width:29%;margin-right: 5px;">
                 @if ($elemento->foto)
-                    <img style="border:black solid thin;float:right" src="{{url($elemento->foto)}}" width="68px" height="90px" />
+                    <img src="{{url($elemento->foto)}}" width="68px" height="90px" />
                 @else
                     <img style="border:black solid thin;float:right" src="" width="68px" height="90px" />
                 @endif
