@@ -3,7 +3,7 @@
     @foreach ($todos as $elemento)
     <div class="page">
         <div class="container col-lg-12" style="margin-bottom: 0px;" >
-            <div style="float:left;width:34%;padding-top: 10px"><img src="{{public_path('img/pdf/logo.png')}}" width="70px" height="30px"/></div>
+            <div style="float:left;width:30%;padding-top: 10px"><img src="{{public_path('img/pdf/logo.png')}}" width="70px" height="30px"/></div>
             <div style="float:left;width:30%;padding-top: 10px"><img src="{{public_path('img/pdf/conselleria.png')}} " width="105px" height="30px"/></div>
             <div style="float:left;width:31%;padding-left: 70px"><img src="{{public_path('img/pdf/ue.png')}}" width="60px" height="60px"/></div>
         </div>
