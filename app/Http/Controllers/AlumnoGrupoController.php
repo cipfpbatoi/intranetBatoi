@@ -67,7 +67,7 @@ class AlumnoGrupoController extends IntranetController
     {
         $grupoTutoria = AuthUser()->grupoTutoria;
         $this->panel->setBoton('grid', new BotonImg('alumno.muestra'));
-        $this->panel->setBoton('grid', new BotonImg('alumno.edit', ['roles' => config('roles.rol.direccion'), 'where' => ['idGrupo', '!=',  $grupoTutoria]]));
+        $this->panel->setBoton('grid', new BotonImg('alumno.edit', ['img' => 'fa-tags','roles' => config('roles.rol.direccion'), 'where' => ['idGrupo', '!=',  $grupoTutoria]]));
         $this->panel->setBoton('grid', new BotonImg('alumno.edit', ['img' => 'fa-tags','where' => ['idGrupo', '==',  $grupoTutoria]]));
         $this->panel->setBoton('grid', new BotonImg('alumno_grupo.edit', ['where' => ['idGrupo', '==',  $grupoTutoria]]));
         $this->panel->setBoton('grid', new BotonImg('alumno.carnet', ['roles' => config('roles.rol.direccion'), 'where' => ['idGrupo', '!=',  $grupoTutoria]]));
