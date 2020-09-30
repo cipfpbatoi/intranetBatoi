@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        {{ Html::style('/css/pdf.css')}}
+        {{ Html::style(public_path('/css/pdf.css'))}}
         @yield('css')
  </head>
     <body>

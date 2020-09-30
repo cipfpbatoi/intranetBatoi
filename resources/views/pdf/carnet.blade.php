@@ -1,7 +1,7 @@
 @extends('layouts.pdf')
 @section('content')
     @foreach ($todos as $elemento)
-    <div class="page" style="page-break-after: always;page-break-inside: avoid;">
+    <div class="page" >
         <div class="container col-lg-12" style="margin-bottom: 0px;" >
             <div style="float:left;width:26%;margin-left:15px;padding-top: 10px" style="float:right"><img src="{{public_path('img/pdf/logo.png')}}" width="70px" height="30px"/></div>
             <div style="float:left;width:26%;padding-top: 10px" style="float:right"><img src="{{public_path('img/pdf/conselleria.png')}} " width="105px" height="30px"/></div>
