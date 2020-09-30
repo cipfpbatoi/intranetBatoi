@@ -149,6 +149,7 @@ use traitAutorizar,
 
     public function carnet($profesor)
     {
+        //return $this->hazPdf('pdf.carnet', Profesor::where('dni',$profesor)->get(), [Date::now()->format('Y'), 'Professor - Teacher'], 'portrait', [85.6, 53.98]);
         return $this->hazPdf('pdf.carnet', Profesor::where('dni',$profesor)->get(), [Date::now()->format('Y'), 'Professor - Teacher'], 'portrait', [85.6, 53.98])->stream();
     }
 
