@@ -4,7 +4,7 @@ td { text-align: center; font-size: xx-small}
 .center { text-align: center;}
 thead th { font-size: x-small}
 div .fondo {
-    background-image: url("/img/pdf/insti.jpg");
+    background-image: url('{{public_path("/img/pdf/insti.jpg")}}');
     background-repeat: no-repeat;
     background-size: 120% auto;
     overflow: hidden;
