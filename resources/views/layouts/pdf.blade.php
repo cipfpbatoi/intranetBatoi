@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <title></title>
-        <link rel="stylesheet" href="{{url('css/pdf.css')}}" media="all" />
+        <link rel="stylesheet" href="{{public_path('css/pdf.css')}}" media="all" />
         @yield('css')
  </head>
     <body>
