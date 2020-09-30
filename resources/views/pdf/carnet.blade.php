@@ -1,7 +1,7 @@
 @extends('layouts.pdf')
 @section('content')
     @foreach ($todos as $elemento)
-    <div class="page">
+    <div class="page" style="page-break-after: always;page-break-inside: avoid;">
         <div class="container col-lg-12" style="margin-bottom: 0px;" >
             <div style="float:left;width:26%;margin-left:15px;padding-top: 10px" style="float:right"><img src="{{public_path('img/pdf/logo.png')}}" width="70px" height="30px"/></div>
             <div style="float:left;width:26%;padding-top: 10px" style="float:right"><img src="{{public_path('img/pdf/conselleria.png')}} " width="105px" height="30px"/></div>
@@ -32,7 +32,7 @@
                     @if ($elemento->foto)
                         <img style="border:black solid thin;float:right" src="{{public_path($elemento->foto)}}" width="68px" height="90px" />
                     @else
-                        <img style="border:black solid thin;float:right" src="" width="68px" height="90px" />
+                        <img style="border:black solid thin;float: right" src="" width="68px" height="90px" />
                     @endif
                 </div>
             </div>
