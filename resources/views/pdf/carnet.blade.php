@@ -7,7 +7,7 @@
             <div style="float:left;width:26%;padding-top: 10px" style="float:right"><img src="{{public_path('img/pdf/conselleria.png')}} " width="105px" height="30px"/></div>
             <div style="float:left;width:26%;padding-left: 70px" style="float:right"><img src="{{public_path('img/pdf/ue.png')}}" width="60px" height="60px"/></div>
         </div>
-        <div class="container col-lg-12 fondo"  style="background-image: url('/img/pdf/insti.jpg');
+        <div class="container col-lg-12 fondo"  style="background-image: url({{public_path('/img/pdf/insti.jpg')}});
         background-repeat: no-repeat;
         background-size: 120% auto;
         overflow: hidden;
