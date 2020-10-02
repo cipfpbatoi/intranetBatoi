@@ -33,9 +33,10 @@ class ColaboracionColabora
     {
         if (AuthUser()) {
             $fct= Fct::findOrFail($event->fct->id);
-            $colaboracion = $fct->Colaboracion;
-            $colaboracion->estado = 2;
-            $colaboracion->save();
+            if ($colaboracion = $fct->Colaboracion) {
+                $colaboracion->estado = 2;
+                $colaboracion->save();
+            }
         }
     }
 
