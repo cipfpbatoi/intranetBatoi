@@ -37,7 +37,7 @@ class PanelFaltaController extends BaseController
 
 
     protected function search(){
-        return  Falta::all();
+        return(Falta::orderBy('desde')->get());
     }
 
     /**
