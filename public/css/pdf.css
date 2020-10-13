@@ -22,12 +22,12 @@ tfoot { display:table-footer-group; }
 .table {
     border-collapse: collapse !important;
   }
-  .table td,
-  .table th {
+.table td,
+.table th {
     background-color: #fff !important;
-  }
-  .table-bordered th,
-  .table-bordered td {
+}
+.table-bordered th,
+.table-bordered td {
     border: 1px solid #ddd !important;
- }
+}
   
