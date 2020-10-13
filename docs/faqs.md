@@ -10,6 +10,7 @@ Ací trobem informació de còm fer coses concretes com:
   * [Reservar un aula](#com-reservar-un-aula-o-el-sal%C3%B3-dactes)
   * [Notificar una absència](#com-notificar-una-abs%C3%A8ncia)
   * [Informar d'alguna incidència](#com-informar-dalgun-problema-o-incid%C3%A8ncia)
+  * [Consultar les propostes de millora de l'any anterior per a fer la programació d'un mòdul](#com-consultar-les-propostes-de-millora-per-a-fer-la-meua-programaci%C3%B3)
   * [Enviar la meua programació al Cap de Departament](#com-enviar-la-meua-programaci%C3%B3)
   * [Buscar una programació o altre document](#com-buscar-una-programaci%C3%B3-o-altra-documentaci%C3%B3)
   * [Fer el seguiment de la programació](#com-fer-el-seguiment-de-la-programaci%C3%B3)
@@ -90,6 +91,11 @@ La gestió d'incidències de la Intranet se utilitza per a informar de:
 - queixes i sugerències
 
 Es fa des del [menú Tràmits->Gestió Incidències](./manual-profe.md#gestió-dincidències).
+
+## Com consultar les propostes de millora per a fer la meua Programació
+Un dels punts que hem d'incloure en la Programació és reflectir les propostes de millora anotats en el seguiment de la programació pels professors que van impartir aquest mòdul el curs anterior.
+
+Aquesta informació la trobem en la intranet en [menú Docència->Programacions](./manual-profe.md#programacions). Allí ens apareixen totes les programacions dels mòduls que impartim i l'última icona que tenim en cadascuna és la de 'Omplir seguiment de la programació' (uns binoculars). Des d'alli omplirem el seguiment al final de cada avaluació però al principi de curs trobem les propostes de millora del curs anterior.
 
 ## Com enviar la meua Programació
 Les programacions es guarden en el _Google Drive_ del Centre. Podem accedir a les nostres des de la intranet en [menú Docència->Programacions](./manual-profe.md#programacions) (només dins del Centre) o desde casa amb l'enllaç que ens han enviat per e-mail des de Caporalia.
