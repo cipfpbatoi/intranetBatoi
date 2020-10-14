@@ -128,7 +128,6 @@ class PanelColaboracionController extends IntranetController
 
     public function sendDocumentation($id=null){
         $fcts = $this->selectFcts($id,config('fctEmails.info'));
-        dd($fcts);
         if ($fcts->count() == 0) {
             return back();
         }
