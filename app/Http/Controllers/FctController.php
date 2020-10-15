@@ -109,8 +109,12 @@ class FctController extends IntranetController
             ->orderBy('idAlumno')
             ->orderBy('desde')
             ->get();
-        $mail = new myMail( $fctAls,$document['receiver'], $document['subject'], $document['view']);
-        $mail->send();
+        if (count($fctAls)){
+            $mail = new myMail( $fctAls,$document['receiver'], $document['subject'], $document['view']);
+            $mail->send();
+        } else {
+            Alert::info('No hi ha alumnes');
+        }
         return back();
     }
 
