@@ -39,7 +39,8 @@ class Dual extends Fct
                 $todos[$colaboracion->id].=' ('.$colaboracion->Centro->direccion.')';
             }
         }
-        sort($todos);
+
+        asort($todos);
         return $todos;
     }
         

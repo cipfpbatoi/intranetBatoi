@@ -62,6 +62,7 @@ class DualAlumnoController extends FctAlumnoController
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vii'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_va'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vb'));
+        $this->panel->setBoton('grid', new BotonImg('dual.doc1',['img'=>'fa-file-pdf-o']));
         $this->panel->setBoton('grid', new BotonImg('dual.anexeXIII',['img'=>'fa-file-pdf-o']));
         $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info','id' => 'anexoVI']));
@@ -120,6 +121,81 @@ class DualAlumnoController extends FctAlumnoController
      * @return mixed
      */
     private function makeArrayPdfAnexoXIII($id)
+    {
+        $fct = AlumnoFct::findOrFail($id);
+        $array[1] = Profesor::find(config('contacto.secretario'))->fullName;
+        $array[2] = config('contacto.nombre');
+        $array[3] = config('contacto.codi');
+        $array[4] = $fct->Alumno->fullName;
+        $array[5] = $fct->Alumno->dni;
+        $array[6] = $fct->horas;
+        $array[7] = $fct->Fct->Colaboracion->Ciclo->vliteral;
+        $array[8] = $array[1];
+        $array[9] = config('contacto.nombre');
+        $array[10] = config('contacto.codi');
+        $array[11] = $fct->Alumno->fullName;
+        $array[12] = $fct->Alumno->dni;
+        $array[13] = $fct->horas;
+        $array[14] = $fct->Fct->Colaboracion->Ciclo->cliteral;
+        $array[15] = $fct->Fct->Centro;
+        $array[16] = $fct->Fct->Colaboracion->Centro->direccion;
+        $array[17] = $fct->horas;
+        $array[18] = $fct->desde."/".$fct->hasta;
+        $array[19] = 1;
+        $array[20] = 'Dissenyador web';
+        $array[27] = config('contacto.poblacion');
+        $fc1 = new Date();
+        Date::setlocale('ca');
+        $array[28] = $fc1->format('d');
+        $array[29] = $fc1->format('F');
+        $array[30] = $fc1->format('Y');
+        $array[31] = $array[1];
+        $array[32] = Profesor::find(config('contacto.director'))->fullName;
+
+        $array[33] = $array[1];
+        $array[34] = config('contacto.nombre');
+        $array[35] = config('contacto.codi');
+        $array[36] = $fct->Alumno->fullName;
+        $array[37] = $fct->Alumno->dni;
+        $array[38] = $fct->horas;
+        $array[39] = $fct->Fct->Colaboracion->Ciclo->vliteral;
+        $array[40] = $array[1];
+        $array[41] = config('contacto.nombre');
+        $array[42] = config('contacto.codi');
+        $array[43] = $fct->Alumno->fullName;
+        $array[44] = $fct->Alumno->dni;
+        $array[45] = $fct->horas;
+        $array[46] = $fct->Fct->Colaboracion->Ciclo->cliteral;
+        $array[47] = $fct->Fct->Centro;
+        $array[48] = $fct->Fct->Colaboracion->Centro->direccion;
+        $array[49] = $fct->horas;
+        $array[50] = $fct->desde."/".$fct->hasta;
+        $array[51] = 1;
+        $array[52] = 'Dissenyador web';
+        $array[53] = config('contacto.poblacion');
+        $fc1 = new Date();
+        Date::setlocale('ca');
+        $array[54] = $fc1->format('d');
+        $array[55] = $fc1->format('F');
+        $array[56] = $fc1->format('Y');
+        $array[57] = $array[1];
+        $array[58] = Profesor::find(config('contacto.director'))->fullName;
+
+        return $array;
+    }
+
+    public function printDOC1($id){
+        $pdf = new Pdf('fdf/DOC_1.pdf');
+        $pdf->fillform($this->makeArrayPdfDOC1($id))
+            ->send("dualDOC1_$id".'.pdf');
+        return $this->redirect();
+    }
+
+    /**
+     * @param $array
+     * @return mixed
+     */
+    private function makeArrayPdfDOC1($id)
     {
         $fct = AlumnoFct::findOrFail($id);
         $array[1] = Profesor::find(config('contacto.secretario'))->fullName;
