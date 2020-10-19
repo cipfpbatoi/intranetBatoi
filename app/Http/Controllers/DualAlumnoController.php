@@ -9,6 +9,7 @@ use Intranet\Entities\Profesor;
 use DB;
 
 use Illuminate\Support\Facades\Session;
+use mikehaertl\pdftk\Command;
 use mikehaertl\pdftk\Pdf;
 use Jenssegers\Date\Date;
 
@@ -198,11 +199,11 @@ class DualAlumnoController extends FctAlumnoController
     private function makeArrayPdfDOC1($id)
     {
         $fct = AlumnoFct::findOrFail($id);
-        $array[1] = Profesor::find(config('contacto.secretario'))->fullName;
-        $array[2] = config('contacto.nombre');
-        $array[3] = config('contacto.codi');
-        $array[4] = $fct->Alumno->fullName;
-        $array[5] = $fct->Alumno->dni;
+        $array['texto3'] = config('contacto.nombre');
+        $array['texto5'] = config('contacto.codi');
+        $array['texto6'] = config('contacto.telefono');
+        $array['texto7'] = config('contacto.telefono');
+        /**
         $array[6] = $fct->horas;
         $array[7] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array[8] = $array[1];
@@ -255,7 +256,7 @@ class DualAlumnoController extends FctAlumnoController
         $array[56] = $fc1->format('Y');
         $array[57] = $array[1];
         $array[58] = Profesor::find(config('contacto.director'))->fullName;
-
+    **/
         return $array;
     }
     
