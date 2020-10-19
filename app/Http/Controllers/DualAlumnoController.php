@@ -211,7 +211,7 @@ class DualAlumnoController extends FctAlumnoController
         $array['Texto12'] = Profesor::find(config('contacto.director'))->fullName;
         $array['Grupo1'] = 1;
         $array['Texto13'] = $fct->Fct->Colaboracion->Ciclo->vliteral;
-        $array['Texto14'] = $fct->Fct->Colaboracion->Ciclo->Departamento->vliteral;
+        $array['Texto14'] = $fct->Fct->Colaboracion->Ciclo->Departament->vliteral;
         $array['Grupo2'] = 'Sí';
         $array['Grupo3'] = 'Sí';
         $array['Texto15'] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
