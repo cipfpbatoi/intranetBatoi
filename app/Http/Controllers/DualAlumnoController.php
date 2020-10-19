@@ -211,7 +211,7 @@ class DualAlumnoController extends FctAlumnoController
         $array['Texto12'] = Profesor::find(config('contacto.director'))->fullName;
         $array['Grupo1'] = 'Opción1';
         $array['Texto13'] = $fct->Fct->Colaboracion->Ciclo->vliteral;
-        $array['Texto14'] = $fct->Fct->Colaboracion->Ciclo->Departament->vliteral;
+        $array['Texto14'] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
         $array['Grupo2'] = $fct->Fct->Colaboracion->Ciclo->tipo == 1?'Opción1':'Opción 2';
         $array['Grupo3'] = 'Opción1';
         $array['Texto15'] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
@@ -235,6 +235,21 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text32'] = $fct->Fct->Instructor->Nombre;
         $array['Text33'] = $fct->Fct->Instructor->dni;
         $array['Text34'] = $fct->Fct->Instructor->email;
+        $array['Text39'] = $fct->Alumno->fullName;
+        $array['Text39'] = $fct->Alumno->dni;
+        $array['Grupo5'] = $fct->Alumno->sexo == 'H'?'Opción1':'Opción2';
+        $array['Text40'] = $fct->Alumno->fecha_nac;
+        $array['Text41'] = $fct->Alumno->domicilio;
+        $array['Text42'] = $fct->Alumno->poblacion;
+        $array['Text43'] = $fct->Alumno->provincia;
+        $array['Text44'] = $fct->Alumno->telefono;
+        $array['Text45'] = $fct->Alumno->email;
+        $array['Text47'] = $fct->desde;
+        $array['Text48'] = $fct->hasta;
+        $array['Text50'] = AuthUser()->fullName;
+        $array['Text51'] = $array['Texto14'];
+
+
 
 
 
