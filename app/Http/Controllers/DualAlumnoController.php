@@ -225,8 +225,8 @@ class DualAlumnoController extends FctAlumnoController
         $array['Texto22'] = 'Alacant';
         $array['Texto23'] = '';
         $array['Texto24'] = 'Espanya';
-        $array['Texto25'] = $fct->Fct->Colaboracion->Empresa->direccion;
-        $array['Texto26'] = $fct->Fct->Colaboracion->Empresa->localidad;
+        $array['Texto25'] = $fct->Fct->Colaboracion->Centro->direccion;
+        $array['Texto26'] = $fct->Fct->Colaboracion->Centro->localidad;
         $array['Texto27'] = 'Alacant';
         $array['Texto28'] = '';
         $array['Texto29'] = 'Espanya';
