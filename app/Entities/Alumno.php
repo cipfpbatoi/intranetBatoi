@@ -193,6 +193,7 @@ class Alumno extends Authenticatable
     public function getPoblacionAttribute(){
         return $this->Municipio->municipio??'NO TROBAT';
     }
+
     public function getProvinciaAttribute(){
         return $this->Municipio->Provincia->nombre??'NO TROBAT';
     }
