@@ -209,18 +209,18 @@ class DualAlumnoController extends FctAlumnoController
         $array['Texto11'] = config('contacto.postal');
         $array['Texto4'] = config('contacto.email');
         $array['Texto12'] = Profesor::find(config('contacto.director'))->fullName;
-        $array['Grupo1'] = $array[1];
+        $array['Grupo1'] = 1;
         $array['Texto13'] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array['Texto14'] = $fct->Fct->Colaboracion->Ciclo->Departamento->vliteral;
         $array['Grupo2'] = 'Sí';
         $array['Grupo3'] = 'Sí';
         $array['Texto15'] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
         $array['Texto16'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
-        $array['Texto17'] = $fct->Fct->Colaboracion->Centro->Empresa->telefono;
         $array['Texto18'] = $fct->Fct->Colaboracion->Centro->Empresa->telefono;
-        $array['Texto19'] = $fct->Fct->Colaboracion->Centro->Empresa->email;
+        $array['Texto19'] = $fct->Fct->Colaboracion->Centro->Empresa->telefono;
+        $array['Texto21'] = $fct->Fct->Colaboracion->Centro->Empresa->email;
 
-        $array['Texto21'] = $fct->Fct->Colaboracion->Centro->direccion;
+        $array['Texto22'] = $fct->Fct->Colaboracion->Centro->direccion;
 
         /**
         $array[6] = $fct->horas;
