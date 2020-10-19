@@ -203,6 +203,14 @@ class DualAlumnoController extends FctAlumnoController
         $array['Texto5'] = config('contacto.codi');
         $array['Texto6'] = config('contacto.telefono');
         $array['Texto7'] = config('contacto.telefono');
+        $array['Texto8'] = config('contacto.direccion');
+        $array['Texto9'] = config('contacto.poblacion');
+        $array['Texto10'] = config('contacto.provincia');
+        $array['Texto11'] = config('contacto.postal');
+        $array['Texto4'] = config('contacto.email');
+        $array['Texto12'] = Profesor::find(config('contacto.director'))->fullName;
+
+
         /**
         $array[6] = $fct->horas;
         $array[7] = $fct->Fct->Colaboracion->Ciclo->vliteral;
