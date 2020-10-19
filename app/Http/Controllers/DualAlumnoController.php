@@ -199,10 +199,10 @@ class DualAlumnoController extends FctAlumnoController
     private function makeArrayPdfDOC1($id)
     {
         $fct = AlumnoFct::findOrFail($id);
-        $array['texto3'] = config('contacto.nombre');
-        $array['texto5'] = config('contacto.codi');
-        $array['texto6'] = config('contacto.telefono');
-        $array['texto7'] = config('contacto.telefono');
+        $array['Texto3'] = config('contacto.nombre');
+        $array['Texto5'] = config('contacto.codi');
+        $array['Texto6'] = config('contacto.telefono');
+        $array['Texto7'] = config('contacto.telefono');
         /**
         $array[6] = $fct->horas;
         $array[7] = $fct->Fct->Colaboracion->Ciclo->vliteral;
