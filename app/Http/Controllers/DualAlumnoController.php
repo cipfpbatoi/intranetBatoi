@@ -230,12 +230,12 @@ class DualAlumnoController extends FctAlumnoController
         $array['Texto27'] = 'Alacant';
         $array['Texto28'] = '';
         $array['Texto29'] = 'Espanya';
-        $array['Texto30'] = $fct->Fct->Colaboracion->Centro->telefono;
-        $array['Texto31'] = $array['Texto30'];
-        $array['Texto32'] = $fct->Fct->Instructor->Nombre;
-        $array['Texto33'] = $fct->Fct->Instructor->dni;
-        $array['Texto34'] = $fct->Fct->Instructor->email;
-        $array['Texto35'] = $fct->Fct->Instructor->telefono;
+        $array['Text30'] = $fct->Fct->Colaboracion->Centro->telefono;
+        $array['Text31'] = $array['Texto30'];
+        $array['Text32'] = $fct->Fct->Instructor->Nombre;
+        $array['Text33'] = $fct->Fct->Instructor->dni;
+        $array['Text34'] = $fct->Fct->Instructor->email;
+        $array['Text35'] = $fct->Fct->Instructor->telefono;
 
 
 
