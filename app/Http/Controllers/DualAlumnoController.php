@@ -212,19 +212,31 @@ class DualAlumnoController extends FctAlumnoController
         $array['Grupo1'] = 'Opción1';
         $array['Texto13'] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array['Texto14'] = $fct->Fct->Colaboracion->Ciclo->Departament->vliteral;
-        $array['Grupo2'] = 'Opción1';
-        $array['Grupo3'] = 'Opción2';
+        $array['Grupo2'] = $fct->Fct->Colaboracion->Ciclo->tipo == 1?'Opción1':'Opción 2';
+        $array['Grupo3'] = 'Opción1';
         $array['Texto15'] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
         $array['Texto16'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
         $array['Texto17'] = $fct->Fct->Colaboracion->Centro->Empresa->telefono;
-        $array['Texto18'] = $fct->Fct->Colaboracion->Centro->Empresa->telefono;
+        $array['Texto18'] = $array['Texto17'];
         $array['Texto19'] = $fct->Fct->Colaboracion->Centro->Empresa->email;
 
-        $array['Texto20'] = $fct->Fct->Colaboracion->Centro->direccion;
-        $array['Texto21'] = $fct->Fct->Colaboracion->Centro->localidad;
+        $array['Texto20'] = $fct->Fct->Colaboracion->Centro->Empresa->direccion;
+        $array['Texto21'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
         $array['Texto22'] = 'Alacant';
         $array['Texto23'] = '';
         $array['Texto24'] = 'Espanya';
+        $array['Texto25'] = $fct->Fct->Colaboracion->Empresa->direccion;
+        $array['Texto26'] = $fct->Fct->Colaboracion->Empresa->localidad;
+        $array['Texto27'] = 'Alacant';
+        $array['Texto28'] = '';
+        $array['Texto29'] = 'Espanya';
+        $array['Texto30'] = $fct->Fct->Colaboracion->Centro->telefono;
+        $array['Texto31'] = $array['Texto30'];
+        $array['Texto32'] = $fct->Fct->Instructor->Nombre;
+        $array['Texto33'] = $fct->Fct->Instructor->dni;
+        $array['Texto34'] = $fct->Fct->Instructor->email;
+        $array['Texto35'] = $fct->Fct->Instructor->telefono;
+
 
 
         /**
