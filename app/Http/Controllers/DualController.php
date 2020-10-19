@@ -9,6 +9,7 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
 use mikehaertl\pdftk\Pdf;
 use Jenssegers\Date\Date;
+use Styde\Html\Facades\Alert;
 
 /**
  * Class DualController
@@ -118,6 +119,10 @@ class DualController extends IntranetController
     private function makeArrayPdfAnexoVI()
     {
         $empresas = Fct::misFcts(null, true)->esDual()->count();
+        if ($empresas == 0) {
+            Alert::info('No hi tens duals');
+            return array();
+        }
         $duales = AlumnoFct::misDual()->orderBy('idAlumno')->get();
         $primero = $duales->first();
         $grupo = $primero->Alumno->Grupo->first();
@@ -245,6 +250,10 @@ class DualController extends IntranetController
     private function makeArrayPdfAnexoXIV()
     {
         $empresas = Fct::misFcts(null, true)->esDual()->count();
+        if ($empresas == 0) {
+            Alert::info('No hi tens duals');
+            return array();
+        }
         $duales = AlumnoFct::misDual()->orderBy('idAlumno')->get();
         $primero = $duales->first();
         $grupo = $primero->Alumno->Grupo->first();
@@ -294,7 +303,6 @@ class DualController extends IntranetController
         $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_LLOC[0]"] = config('contacto.poblacion');
         $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_DIA[0]"] = $fc1->format('d');
         $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_ANY[0]"] = $fc1->format('Y');
-        //dd($array);
         return $array;
     }
 
