@@ -248,20 +248,20 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text49'] = $fct->desde;
         $array['Text50'] = $fct->hasta;
         $array['Text51'] = "Programador Web";
-        $array['Text52'] = AuthUser()->fullName;
-        $array['Text53'] = $array['Texto14'];
-        $array['Casilla de Verificación1'] = 'Sí';
-        $array['Casilla de Verificación2'] = 1;
-        $array['Casilla de Verificación3'] = 1;
-        $array['Casilla de Verificación4'] = 'on';
-        $array['Text54'] = $array['Texto9'];
+        $array['Text47'] = AuthUser()->fullName;
+        $array['Text48'] = $array['Texto14'];
+        $array['Casilla de verificación1'] = 'Sí';
+        $array['Casilla de verificación2'] = 'Sí';
+        $array['Casilla de verificación3'] = 'Sí';
+        $array['Casilla de verificación4'] = 'Sí';
+        $array['Text52'] = $array['Texto9'];
 
         $fc1 = new Date();
         Date::setlocale('ca');
-        $array['Text55'] = $fc1->format('d');
-        $array['Text56'] = $fc1->format('F');
-        $array['Text57'] = $fc1->format('Y');
-        $array['Text58'] = $array['Texto12'];
+        $array['Text53'] = $fc1->format('d');
+        $array['Text54'] = $fc1->format('F');
+        $array['Text55'] = $fc1->format('Y');
+        $array['Text56'] = $array['Texto12'];
 
 
 
