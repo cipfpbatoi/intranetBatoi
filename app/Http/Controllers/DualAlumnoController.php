@@ -172,7 +172,7 @@ class DualAlumnoController extends FctAlumnoController
         $array[49] = $fct->horas;
         $array[50] = $fct->desde."/".$fct->hasta;
         $array[51] = 1;
-        $array[52] = 'Dissenyador web';
+        //$array[52] = 'Dissenyador web';
         $array[53] = config('contacto.poblacion');
         $fc1 = new Date();
         Date::setlocale('ca');
@@ -235,6 +235,7 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text32'] = $fct->Fct->Instructor->Nombre;
         $array['Text33'] = $fct->Fct->Instructor->dni;
         $array['Text34'] = $fct->Fct->Instructor->email;
+        $array['Text36'] = $array['Texto13'];
         $array['Text39'] = $fct->Alumno->apellido1.' '.$fct->Alumno->apellido2 ;
         $array['Text38'] = $fct->Alumno->nombre;
         $array['Text37'] = $fct->Alumno->dni;
@@ -243,13 +244,13 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text41'] = $fct->Alumno->domicilio;
         $array['Text42'] = $fct->Alumno->poblacion;
         $array['Text43'] = $fct->Alumno->Provincia->nombre;
-        $array['Text44'] = $fct->Alumno->telefono;
+        $array['Text44'] = $fct->Alumno->telef1;
         $array['Text45'] = $fct->Alumno->email;
         $array['Text49'] = $fct->desde;
         $array['Text50'] = $fct->hasta;
         $array['Text51'] = "Programador Web";
         $array['Text47'] = AuthUser()->fullName;
-        $array['Text48'] = $array['Texto14'];
+        //$array['Text48'] = "Professor d'educació secundària";
         $array['Casilla de verificación1'] = 'Sí';
         $array['Casilla de verificación2'] = 'Sí';
         $array['Casilla de verificación3'] = 'Sí';
