@@ -7,6 +7,7 @@ use DB;
 use Intranet\Entities\Dual;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Profesor;
 use mikehaertl\pdftk\Pdf;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
@@ -102,15 +103,12 @@ class DualController extends IntranetController
         return $this->redirect();
     }
 
-
     public function printAnexeVI(){
         $pdf = new Pdf('fdf/ANEXO_VI.pdf');
         $pdf->fillform($this->makeArrayPdfAnexoVI())
             ->send('dualVI'.AuthUser()->dni.'.pdf');
         return back();
     }
-
-
 
     /**
      * @param $array

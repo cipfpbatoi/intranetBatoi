@@ -330,7 +330,9 @@ return array(
             'anexe_vb' => 'Imprimier Annexe V(b)',
             'anexeVI' => 'Imprimir Annexe VI',
             'anexeXIV' => 'Imprimir Annexe XIV',
-            'anexeXIII' => 'Imprimir AnnexeXIII'
+            'anexeXIII' => 'Imprimir AnnexeXIII',
+            'doc1' => 'Imprimir Document 1',
+            'doc4' => 'Imprimir Document 4'
         ),
         'Direccion' => array(
            'acta' => 'Acta completada'

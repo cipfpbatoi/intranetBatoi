@@ -5,6 +5,8 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use DB;
 
@@ -60,10 +62,11 @@ class DualAlumnoController extends FctAlumnoController
     {
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
+        $this->panel->setBoton('grid', new BotonImg('dual.doc1',['img'=>'fa-file-word-o']));
+        $this->panel->setBoton('grid', new BotonImg('dual.doc4',['img'=>'fa-file-word-o']));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vii'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_va'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vb'));
-        $this->panel->setBoton('grid', new BotonImg('dual.doc1',['img'=>'fa-file-pdf-o']));
         $this->panel->setBoton('grid', new BotonImg('dual.anexeXIII',['img'=>'fa-file-pdf-o']));
         $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info','id' => 'anexoVI']));
@@ -105,10 +108,29 @@ class DualAlumnoController extends FctAlumnoController
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName
         ];
-        
-        $pdf = $this->hazPdf($informe, $fct,$dades,'landscape','a4',10);
+
+        $orientacion =  'landscape';
+        $pdf = $this->hazPdf($informe, $fct,$dades,$orientacion,'a4',10);
         return $pdf->stream();
     }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    protected function printDOC4($id)
+    {
+        $fct = AlumnoFct::findOrFail($id);
+        $grupo = $fct->Alumno->Grupo->first();
+        $horario = Horario::HorarioGrupo($grupo->codigo);
+        $turno = isset($horario['L'][2]) ? 'mati':'vesprada';
+        $ciclo = $fct->Fct->Colaboracion->Ciclo->vliteral;
+        $dades = compact('grupo','ciclo','turno');
+        $pdf = $this->hazPdf('dual.doc4', $horario,$dades,'portrait','a4',10);
+        return $pdf->stream();
+        //return view('dual.doc4', compact('horario', 'ciclo','grupo'));
+    }
+
 
     public function printAnexeXIII($id){
         $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
@@ -248,7 +270,7 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text45'] = $fct->Alumno->email;
         $array['Text49'] = $fct->desde;
         $array['Text50'] = $fct->hasta;
-        $array['Text51'] = "Programador Web";
+        //$array['Text51'] = "Programador Web";
         $array['Text47'] = AuthUser()->fullName;
         //$array['Text48'] = "Professor d'educació secundària";
         $array['Casilla de verificación1'] = 'Sí';
