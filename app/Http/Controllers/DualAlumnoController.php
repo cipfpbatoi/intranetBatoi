@@ -125,7 +125,7 @@ class DualAlumnoController extends FctAlumnoController
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
         $zip->addFile($this->printDOC4($id),$zip_local."doc4.pdf");
-        $zip->addFile($this->printDOC1($id),$zip_local."doc4.pdf");
+        $zip->addFile($this->printDOC1($id),$zip_local."doc1.pdf");
         $zip->close();
 
         return response()->download($zip_file);
