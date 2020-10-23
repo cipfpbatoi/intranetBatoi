@@ -331,8 +331,7 @@ return array(
             'anexeVI' => 'Imprimir Annexe VI',
             'anexeXIV' => 'Imprimir Annexe XIV',
             'anexeXIII' => 'Imprimir AnnexeXIII',
-            'doc1' => 'Imprimir Document 1',
-            'doc4' => 'Imprimir Document 4'
+            'firma' => 'Generar ZIP firma'
         ),
         'Direccion' => array(
            'acta' => 'Acta completada'

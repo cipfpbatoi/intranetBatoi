@@ -62,7 +62,6 @@ class DualAlumnoController extends FctAlumnoController
     {
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
-        $this->panel->setBoton('grid', new BotonImg('dual.pdf.covid',['img'=>'fa-file-word-o']));
         $this->panel->setBoton('grid', new BotonImg('dual.firma',['img'=>'fa-file-word-o']));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vii'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_va'));
@@ -93,7 +92,7 @@ class DualAlumnoController extends FctAlumnoController
      * @param string $informe
      * @return mixed
      */
-    public function informe($id, $informe='anexe_vii')
+    public function informe($id, $informe='anexe_vii',$stream=true)
     {
         $informe = 'dual.'.$informe;
         $fct = AlumnoFct::findOrFail($id);
@@ -112,7 +111,15 @@ class DualAlumnoController extends FctAlumnoController
 
         $orientacion = substr($informe,0,5)==='anexe'?'landscape':'portrait';
         $pdf = $this->hazPdf($informe, $fct,$dades,$orientacion,'a4',10);
-        return $pdf->stream();
+        if ($stream){
+            return $pdf->stream();
+        } else {
+            $file = storage_path("tmp/dual$id/$informe".'.pdf');
+            if (!file_exists($file)){
+                $pdf->save($file);
+            }
+            return $file;
+        }
     }
 
 
@@ -126,6 +133,7 @@ class DualAlumnoController extends FctAlumnoController
 
         $zip->addFile($this->printDOC4($id),$zip_local."doc4.pdf");
         $zip->addFile($this->printDOC1($id),$zip_local."doc1.pdf");
+        $zip->addFile($this->informe($id,'covid',false),$zip_local."covid.pdf");
         $zip->close();
 
         return response()->download($zip_file);
