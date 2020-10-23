@@ -125,7 +125,7 @@ class DualAlumnoController extends FctAlumnoController
 
     protected function zipFirmaConveni($id){
         $fct = AlumnoFct::findOrFail($id);
-        $zip_file = "dual_".$fct->Alumno->dualName.".zip";
+        $zip_file = storage_path("tmp/dual_".$fct->Alumno->dualName.".zip");
         $zip_local = $fct->Fct->Centro."/020_FaseFirmaConveni_".$fct->Alumno->dualName."/";
 
         $zip = new \ZipArchive();
