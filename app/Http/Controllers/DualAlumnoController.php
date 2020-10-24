@@ -203,23 +203,24 @@ class DualAlumnoController extends FctAlumnoController
         $array[14] = $array[6];
         $array[15] = $array[7];
         $array[16] = $array[8];
-        $array[17] = $array[9];
         $fc1 = new Date();
         Date::setlocale('ca');
-        $array[18] = config('contacto.poblacion');
-        $array[19] = $fc1->format('d');
-        $array[20] = $fc1->format('F');
-        $array[21] = $fc1->format('Y');
-        $array[22] = $array[1];
+        $array[17] = config('contacto.poblacion');
+        $array[18] = $fc1->format('d');
+        $array[19] = $fc1->format('F');
+        $array[20] = $fc1->format('Y');
+        $array[21] = $array[1];
         $array[23] = $fct->Fct->Centro;
         $array[24] = $fct->Fct->Colaboracion->Centro->direccion;
-        $array[25] = $fct->Fct->Colaboracion->Centro->localidad;
-        $array[26] = 'Alacant';
-        $array[27] = 'Espanya';
-        $array[28] = $array[18];
-        $array[29] = $array[19];
-        $array[30] = $array[20];
-        $array[31] = $array[21];
+        $array[26] = $fct->Fct->Colaboracion->Centro->localidad;
+        $array[27] = 'Alacant';
+        $array[28] = 'Espanya';
+        $array[29] = $array[23];
+        $array[30] = $array[24];
+        $array[32] = $array[26];
+        $array[34] = $array[27];
+        $array[35] = 'Alacant';
+        $array[36] = 'Espanya';
 
 
         return $array;
