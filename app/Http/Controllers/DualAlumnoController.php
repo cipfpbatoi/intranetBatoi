@@ -191,25 +191,36 @@ class DualAlumnoController extends FctAlumnoController
         $array[3] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array[4] =$fct->Fct->Colaboracion->Ciclo->tipo == 1?'Mitjà':'Superior';
         $array[5] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
-        $array[7] = config('contacto.nombre');
-        $array[8] = config('contacto.codi');
-        $array[9] = curso();
+        $array[6] = config('contacto.nombre');
+        $array[7] = config('contacto.codi');
+        $array[8] = curso();
 
-        $array[10] = $fct->Alumno->fullName;
-        $array[11] = $fct->Alumno->dni;
-        $array[12] = $fct->Fct->Colaboracion->Ciclo->vliteral;
-        $array[13] =$fct->Fct->Colaboracion->Ciclo->tipo == 1?'Mitjà':'Superior';
-        $array[14] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
-        $array[15] = config('contacto.nombre');
-        $array[16] = config('contacto.codi');
-        $array[17] = curso();
-        $array[18] = config('contacto.poblacion');
+        $array[9] = $array[1];
+        $array[10] = $array[2];
+        $array[11] = $fct->Fct->Colaboracion->Ciclo->cliteral;
+        $array[12] =$fct->Fct->Colaboracion->Ciclo->tipo == 1?'Medio':'Superior';
+        $array[13] = $array[5];
+        $array[14] = $array[6];
+        $array[15] = $array[7];
+        $array[16] = $array[8];
+        $array[17] = $array[9];
         $fc1 = new Date();
         Date::setlocale('ca');
+        $array[18] = config('contacto.poblacion');
         $array[19] = $fc1->format('d');
         $array[20] = $fc1->format('F');
         $array[21] = $fc1->format('Y');
         $array[22] = $array[1];
+        $array[23] = $fct->Fct->Centro;
+        $array[24] = $fct->Fct->Colaboracion->Centro->direccion;
+        $array[25] = $fct->Fct->Colaboracion->Centro->localidad;
+        $array[26] = 'Alacant';
+        $array[27] = 'Espanya';
+        $array[28] = $array[18];
+        $array[29] = $array[19];
+        $array[30] = $array[20];
+        $array[31] = $array[21];
+
 
         return $array;
     }
