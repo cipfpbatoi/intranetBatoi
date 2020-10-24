@@ -212,6 +212,7 @@ class DualAlumnoController extends FctAlumnoController
         $array[21] = $array[1];
         $array[23] = $fct->Fct->Centro;
         $array[24] = $fct->Fct->Colaboracion->Centro->direccion;
+        $array[26] = '';
         $array[27] = $fct->Fct->Colaboracion->Centro->localidad;
         $array[28] = 'Alacant';
         $array[29] = 'Espanya';
