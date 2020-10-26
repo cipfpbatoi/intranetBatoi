@@ -72,13 +72,13 @@
                     <div class="form-group item">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Annex XII:</label>
                         <div class="col-md-3 col-sm-3 col-xs-12">
-                            <input type='checkbox' class="form-control" id='annexii' name='ANNEXII'   />
+                            <input type='checkbox' class="form-control" id='annexii' name='annexii'   />
                         </div>
                     </div>
                     <div class="form-group item">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Annex V:</label>
                         <div class="col-md-3 col-sm-3 col-xs-12">
-                            <input type='checkbox' class="form-control" id='annexv' name='ANNEXV'  />
+                            <input type='checkbox' class="form-control" id='annexv' name='annexv'  />
                         </div>
                     </div>
                 </div>
