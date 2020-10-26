@@ -10,7 +10,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use DB;
-
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use mikehaertl\pdftk\Command;
 use mikehaertl\pdftk\Pdf;
@@ -63,7 +63,7 @@ class DualAlumnoController extends FctAlumnoController
     {
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
-        $this->panel->setBoton('grid', new BotonImg('dual.firma',['img'=>'fa-file-word-o']));
+        $this->panel->setBoton('grid', new BotonImg('dual.informe',['img'=>'fa-file-word-o']));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vii'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_va'));
         $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vb'));
@@ -93,10 +93,10 @@ class DualAlumnoController extends FctAlumnoController
      * @param string $informe
      * @return mixed
      */
-    public function informe($id, $informe='anexe_vii',$stream=true)
+    public function informe($fct, $informe='anexe_vii',$stream=true)
     {
+        $id = $fct->id;
         $informe = 'dual.'.$informe;
-        $fct = AlumnoFct::findOrFail($id);
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));
         $dades = ['date' => FechaPosterior($fct->hasta),
@@ -128,39 +128,61 @@ class DualAlumnoController extends FctAlumnoController
         if ($documento) return storage_path('app/'.$documento->fichero);
     }
 
-    protected function zipFirmaConveni($id){
-        $fct = AlumnoFct::findOrFail($id);
+    private function chooseAction($fct,$document,&$zip){
         $ciclo = $fct->Fct->Colaboracion->Ciclo->id;
-        $zip_file = storage_path("tmp/dual_".$fct->Alumno->dualName.".zip");
         $zip_local = $fct->Fct->Centro."/020_FaseFirmaConveni_".$fct->Alumno->dualName."/";
+        switch ($document) {
+            case 'covid':
+                $zip->addFile($this->informe($fct,'covid',false),$zip_local."ConformitatAlumne_Covid19_v20201005.pdf"); break;
+            case 'justAl':
+                $zip->addFile($this->informe($fct,'justAl',false),$zip_local."JustificanteEntregaCalendario_a_Alumno.pdf");break;
+            case 'justEm':
+                $zip->addFile($this->informe($fct,'justEm',false),$zip_local."JustificanteEntregaCalendario_a_Empresa.pdf");break;
+            case 'DOC1':
+                $zip->addFile($this->printDOC1($fct),$zip_local."DOCUMENTO 1 DATOS BÁSICOS PARA EL PROGRAMA DE FORMACIÓN  13-10-14.pdf");break;
+            case 'DOC2':
+                $zip->addFile($this->getGestor('DOC2',$ciclo),$zip_local."DAW_DOCUMENTO 2 CUADRO HORARIO DEL CICLO EN FP DUAL.odt");break;
+            case 'DOC3a' :
+                $zip->addFile($this->getGestor('DOC3',curso()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA 2H 19_20.odt");break;
+            case 'DOC4' :
+                $zip->addFile($this->printDOC4($fct),$zip_local."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO  13-10-14.pdf");break;
+            case 'DOC5' :
+                $zip->addFile($this->getGestor('DOC5',$ciclo),$zip_local."DOCUMENTO 5 PROGRAMA DE FORMACIÓN DE MÓDULOS EN DUAL  13-10-14.odt");break;
+            case 'anexii' :
+                $zip->addFile($this->printAnexeXII($fct),$zip_local."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");
+        }
+    }
 
+    protected function getInforme($id){
+        return view('dual.informe',compact('id'));
+    }
+
+    protected function putInforme($id,Request $request){
+        $input = $request->all();
+        $fct = AlumnoFct::findOrFail($id);
+        $zip_file = storage_path("tmp/dual_".$fct->Alumno->dualName.".zip");
         $zip = new \ZipArchive();
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-
-        $zip->addFile($this->informe($id,'covid',false),$zip_local."ConformitatAlumne_Covid19_v20201005.pdf");
-        $zip->addFile($this->printDOC1($id),$zip_local."DOCUMENTO 1 DATOS BÁSICOS PARA EL PROGRAMA DE FORMACIÓN  13-10-14.pdf");
-        $zip->addFile($this->getGestor('DOC2',$ciclo),$zip_local."DAW_DOCUMENTO 2 CUADRO HORARIO DEL CICLO EN FP DUAL.odt");
-        //$zip->addFile($this->getGestor('DOC3',curso()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA 2H 19_20.odt");
-        $zip->addFile($this->printDOC4($id),$zip_local."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO  13-10-14.pdf");
-        //$zip->addFile($this->getGestor('DOC5',$ciclo),$zip_local."DOCUMENTO 5 PROGRAMA DE FORMACIÓN DE MÓDULOS EN DUAL  13-10-14.odt");
-        $zip->addFile($this->informe($id,'justAl',false),$zip_local."JustificanteEntregaCalendario_a_Alumno.pdf");
-        $zip->addFile($this->informe($id,'justEm',false),$zip_local."JustificanteEntregaCalendario_a_Empresa.pdf");
-        $zip->addFile($this->printAnexeXII($id),$zip_local."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO  13-10-14.pdf");
-
+        foreach ($input as $index => $value) {
+            if ($index !== '_token') {
+                $this->chooseAction($fct, $index, $zip);
+            }
+        }
         $zip->close();
 
         return response()->download($zip_file);
     }
 
+
     /**
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    protected function printDOC4($id)
+    protected function printDOC4($fct)
     {
-        $file = storage_path("tmp/dual$id/doc4".'.pdf');
+        $id = $fct->id;
+        $file = storage_path("tmp/dual$id/doc4.pdf");
         if (!file_exists($file)){
-            $fct = AlumnoFct::findOrFail($id);
             $grupo = $fct->Alumno->Grupo->first();
             $horario = Horario::HorarioGrupo($grupo->codigo);
             $turno = isset($horario['L'][2]) ? 'mati':'vesprada';
@@ -168,24 +190,28 @@ class DualAlumnoController extends FctAlumnoController
             $dades = compact('grupo','ciclo','turno');
             $pdf = $this->hazPdf('dual.doc4', $horario,$dades,'portrait','a4',10);
             $pdf->save($file);
+
         }
         return $file;
     }
 
-    public function printAnexeXIII($id){
-        $pdf = new Pdf('fdf/ANEXO_XII.pdf');
-        $pdf->fillform($this->makeArrayPdfAnexoXII($id))
-            ->send("dualXII_$id".'.pdf');
-        return $this->redirect();
+    public function printAnexeXII($fct){
+        $id = $fct->id;
+        $file = storage_path("tmp/dual$id/anexo_xii.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/ANEXO_XII.pdf');
+            $pdf->fillform($this->makeArrayPdfAnexoXII($id))
+                ->saveAs("dualXII_$id" . '.pdf');
+        }
+        return $file;
     }
 
     /**
      * @param $array
      * @return mixed
      */
-    private function makeArrayPdfAnexoXII($id)
+    private function makeArrayPdfAnexoXII($fct)
     {
-        $fct = AlumnoFct::findOrFail($id);
         $array[1] = $fct->Alumno->fullName;
         $array[2] = $fct->Alumno->dni;
         $array[3] = $fct->Fct->Colaboracion->Ciclo->vliteral;
@@ -232,10 +258,11 @@ class DualAlumnoController extends FctAlumnoController
         return $array;
     }
 
-/**
-    public function printAnexeXIII($id){
+
+    public function printAnexeXIII($fct){
+        $id = $fct->id;
         $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
-        $pdf->fillform($this->makeArrayPdfAnexoXIII($id))
+        $pdf->fillform($this->makeArrayPdfAnexoXIII($fct))
             ->send("dualXIII_$id".'.pdf');
         return $this->redirect();
     }
@@ -243,7 +270,6 @@ class DualAlumnoController extends FctAlumnoController
 
     private function makeArrayPdfAnexoXIII($id)
     {
-        $fct = AlumnoFct::findOrFail($id);
         $array[1] = Profesor::find(config('contacto.secretario'))->fullName;
         $array[2] = config('contacto.nombre');
         $array[3] = config('contacto.codi');
@@ -304,12 +330,13 @@ class DualAlumnoController extends FctAlumnoController
 
         return $array;
     }
-*/
-    public function printDOC1($id){
+
+    public function printDOC1($fct){
+        $id = $fct->id;
         $file = storage_path("tmp/dual$id/doc1".'.pdf');
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/DOC_1.pdf');
-            $pdf->fillform($this->makeArrayPdfDOC1($id))
+            $pdf->fillform($this->makeArrayPdfDOC1($fct))
                 ->saveAs($file);
         }
         return $file;
@@ -319,9 +346,8 @@ class DualAlumnoController extends FctAlumnoController
      * @param $array
      * @return mixed
      */
-    private function makeArrayPdfDOC1($id)
+    private function makeArrayPdfDOC1($fct)
     {
-        $fct = AlumnoFct::findOrFail($id);
         $array['Texto3'] = config('contacto.nombre');
         $array['Texto5'] = config('contacto.codi');
         $array['Texto6'] = config('contacto.telefono');
