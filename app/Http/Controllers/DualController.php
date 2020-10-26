@@ -47,6 +47,7 @@ class DualController extends IntranetController
         $elemento->desde = $alumno->desde;
         $elemento->hasta = $alumno->hasta;
         $elemento->horas = $alumno->horas;
+        $elemento->beca = $alumno->beca;
         $default = $elemento->fillDefautOptions();
         $modelo = $this->model;
 
@@ -67,6 +68,7 @@ class DualController extends IntranetController
                     $alumno->desde = FechaInglesa($request['desde']);
                     $alumno->hasta = FechaInglesa($request['hasta']);
                     $alumno->horas = $request['horas'];
+                    $alumno->beca = $request['beca'];
                     $alumno->save();
                     $elemento->idInstructor = $request['idInstructor'];
                     $elemento->save();
@@ -95,7 +97,7 @@ class DualController extends IntranetController
                         $this->validateAll($request, $elemento);
                         $id = $elemento->fillAll($request);
                     }
-                    $elemento->Alumnos()->attach($idAlumno, ['desde' => FechaInglesa($request->desde), 'hasta' => FechaInglesa($hasta), 'horas' => $request->horas]);
+                    $elemento->Alumnos()->attach($idAlumno, ['desde' => FechaInglesa($request->desde), 'hasta' => FechaInglesa($hasta), 'horas' => $request->horas, 'beca' => $request->beca]);
 
                     return $elemento->id;
                 });

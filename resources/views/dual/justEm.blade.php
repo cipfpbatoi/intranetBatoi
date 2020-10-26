@@ -16,7 +16,7 @@
         i que li ha sigut lliurat i informat amb concreció dels dies i hores que {{ $todos->Alumno->sexo=='H'?"l’alumne":"l'alumna" }} ha d’anar al centre de treball i que són els dies i hores en que està cobert per l’Assegurança Escolar.
     </p>
     <p style="font-size: 20px;text-align: justify;margin-top: 75px;line-height: 1.5em;text-align: justify" >
-        I que En el cas de saltar-se l’esmentat calendari, l'empresa assumeix la responsabiltat si succeís qualsevol incident ja que estaria fora de la cobertura de l'assegurança, eximint de tota responsabilitat al centre de treball i al centre educatiu, en aquest cas al
+        I que en el cas de saltar-se l’esmentat calendari, l'empresa assumeix la responsabiltat si succeís qualsevol incident ja que estaria fora de la cobertura de l'assegurança, eximint de tota responsabilitat al centre educatiu, en aquest cas al
         {{ config('contacto.nombre') }}.
     </p>
     <p style="font-size: 20px;text-align: justify;margin-top: 75px">

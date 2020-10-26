@@ -35,7 +35,7 @@ class DualAlumnoController extends FctAlumnoController
     /**
      * @var array
      */
-    protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas'];
+    protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas','beca'];
     /**
      * @var bool
      */
@@ -134,6 +134,8 @@ class DualAlumnoController extends FctAlumnoController
         switch ($document) {
             case 'covid':
                 $zip->addFile($this->informe($fct,'covid',false),$zip_local."ConformitatAlumne_Covid19_v20201005.pdf"); break;
+            case 'beca':
+                $zip->addFile($this->informe($fct,'beca',false),$zip_local."Beca.pdf"); break;
             case 'justAl':
                 $zip->addFile($this->informe($fct,'justAl',false),$zip_local."JustificanteEntregaCalendario_a_Alumno.pdf");break;
             case 'justEm':

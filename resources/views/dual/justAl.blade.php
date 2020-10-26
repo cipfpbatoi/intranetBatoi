@@ -15,7 +15,7 @@
         i que li ha sigut lliurat i informat amb concreció dels dies i hores que ha d’anar al centre de treball i que són els dies i hores en que està cobert per l’Assegurança Escolar.
     </p>
     <p style="font-size: 20px;text-align: justify;margin-top: 75px;line-height: 1.5em;text-align: justify" >
-        En el cas de saltar-se l’esmentat calendari, {{ $todos->Alumno->sexo=='H'?"L’alumne":"L'alumna" }} assumeix la responsabiltat si succeís qualsevol incident ja que estaria fora de la cobertura de l'assegurança, eximint de tota responsabilitat al centre de treball i al centre educatiu, en aquest cas al
+        En el cas de saltar-se l’esmentat calendari, {{ $todos->Alumno->sexo=='H'?"L’alumne":"L'alumna" }} assumeix la responsabiltat si succeís qualsevol incident ja que estaria fora de la cobertura de l'assegurança, eximint de tota responsabilitat al centre educatiu, en aquest cas al
         {{ config('contacto.nombre') }}.
     </p>
     <p style="font-size: 20px;text-align: right;margin-top: 75px">

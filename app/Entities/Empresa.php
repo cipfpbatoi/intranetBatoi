@@ -14,7 +14,7 @@ class Empresa extends Model
 
     protected $table = 'empresas';
     protected $fillable = [ 'europa','sao','concierto','cif', 'nombre', 'email', 'direccion', 'localidad', 'telefono',
-        'dual', 'actividad', 'delitos', 'menores','copia_anexe1','observaciones', 'fichero','creador'];
+        'dual', 'actividad', 'delitos', 'menores','copia_anexe1','observaciones', 'gerente','fichero','creador'];
     protected $rules = [
         'cif' => 'required|alpha_num',
         'nombre' => 'required|between:0,100',
