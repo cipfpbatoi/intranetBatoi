@@ -139,17 +139,17 @@ class DualAlumnoController extends FctAlumnoController
             case 'justEm':
                 $zip->addFile($this->informe($fct,'justEm',false),$zip_local."JustificanteEntregaCalendario_a_Empresa.pdf");break;
             case 'DOC1':
-                $zip->addFile($this->printDOC1($fct),$zip_local."DOCUMENTO 1 DATOS BÁSICOS PARA EL PROGRAMA DE FORMACIÓN  13-10-14.pdf");break;
+                $zip->addFile($this->printDOC1($fct),$zip_local."DOCUMENTO 1 DATOS BÁSICOS PARA EL PROGRAMA DE FORMACIÓN.pdf");break;
             case 'DOC2':
-                $zip->addFile($this->getGestor('DOC2',$ciclo),$zip_local."DAW_DOCUMENTO 2 CUADRO HORARIO DEL CICLO EN FP DUAL.odt");break;
+                $zip->addFile($this->getGestor('DOC2',$ciclo),$zip_local."DOCUMENTO 2 CUADRO HORARIO DEL CICLO EN FP DUAL.odt");break;
             case 'DOC3a' :
-                $zip->addFile($this->getGestor('DOC3',curso()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA 2H.odt");break;
+                $zip->addFile($this->getGestor('DOC3',curso()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA ".curso().".odt");break;
             case 'DOC3b' :
-                $zip->addFile($this->getGestor('DOC3',cursoAnterior()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA 2H.odt");break;
+                $zip->addFile($this->getGestor('DOC3',cursoAnterior()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA ".cursoAnterior().".odt");break;
             case 'DOC4' :
-                $zip->addFile($this->printDOC4($fct),$zip_local."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO  13-10-14.pdf");break;
+                $zip->addFile($this->printDOC4($fct),$zip_local."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO.pdf");break;
             case 'DOC5' :
-                $zip->addFile($this->getGestor('DOC5',$ciclo),$zip_local."DOCUMENTO 5 PROGRAMA DE FORMACIÓN DE MÓDULOS EN DUAL  13-10-14.odt");break;
+                $zip->addFile($this->getGestor('DOC5',$ciclo),$zip_local."DOCUMENTO 5 PROGRAMA DE FORMACIÓN DE MÓDULOS EN DUAL.odt");break;
             case 'anexii' :
                 $zip->addFile($this->printAnexeXII($fct),$zip_local."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");
         }
