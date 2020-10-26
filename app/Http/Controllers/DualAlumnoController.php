@@ -143,7 +143,9 @@ class DualAlumnoController extends FctAlumnoController
             case 'DOC2':
                 $zip->addFile($this->getGestor('DOC2',$ciclo),$zip_local."DAW_DOCUMENTO 2 CUADRO HORARIO DEL CICLO EN FP DUAL.odt");break;
             case 'DOC3a' :
-                $zip->addFile($this->getGestor('DOC3',curso()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA 2H 19_20.odt");break;
+                $zip->addFile($this->getGestor('DOC3',curso()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA 2H.odt");break;
+            case 'DOC3b' :
+                $zip->addFile($this->getGestor('DOC3',cursoAnterior()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA 2H.odt");break;
             case 'DOC4' :
                 $zip->addFile($this->printDOC4($fct),$zip_local."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO  13-10-14.pdf");break;
             case 'DOC5' :

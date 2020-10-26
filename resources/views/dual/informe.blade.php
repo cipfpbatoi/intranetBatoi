@@ -35,13 +35,13 @@
                         </div>
                     </div>
                     <div class="form-group item">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Document 3 {{ curso() }} i següent :</label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Document 3 {{ curso() }} :</label>
                         <div class="col-md-3 col-sm-3 col-xs-12">
                             <input type='checkbox' class="form-control" id='document3a' name='DOC3a' />
                         </div>
                     </div>
                     <div class="form-group item">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Document 3 {{ curso() }} :</label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Document 3 {{ cursoAnterior() }} :</label>
                         <div class="col-md-3 col-sm-3 col-xs-12">
                             <input type='checkbox' class="form-control" id='document3b' name='DOC3b'  />
                         </div>
