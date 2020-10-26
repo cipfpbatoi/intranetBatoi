@@ -175,6 +175,17 @@ class DualAlumnoController extends FctAlumnoController
         return response()->download($zip_file);
     }
 
+    public function printAnexeXII($fct){
+        $id = $fct->id;
+        $file = storage_path("tmp/dual$id/anexo_xii.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/ANEXO_XII.pdf');
+            $pdf->fillform($this->makeArrayPdfAnexoXII($id))
+                ->saveAs($file);
+        }
+        return $file;
+    }
+
 
     /**
      * @param $id
@@ -197,16 +208,7 @@ class DualAlumnoController extends FctAlumnoController
         return $file;
     }
 
-    public function printAnexeXII($fct){
-        $id = $fct->id;
-        $file = storage_path("tmp/dual$id/anexo_xii.pdf");
-        if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/ANEXO_XII.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoXII($id))
-                ->saveAs("dualXII_$id" . '.pdf');
-        }
-        return $file;
-    }
+
 
     /**
      * @param $array
