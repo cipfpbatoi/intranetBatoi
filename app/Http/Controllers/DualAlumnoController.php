@@ -180,7 +180,7 @@ class DualAlumnoController extends FctAlumnoController
         $file = storage_path("tmp/dual$id/anexo_xii.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/ANEXO_XII.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoXII($id))
+            $pdf->fillform($this->makeArrayPdfAnexoXII($fct))
                 ->saveAs($file);
         }
         return $file;
