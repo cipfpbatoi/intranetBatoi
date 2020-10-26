@@ -150,8 +150,8 @@ class DualAlumnoController extends FctAlumnoController
                 $zip->addFile($this->printDOC4($fct),$zip_local."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO.pdf");break;
             case 'DOC5' :
                 $zip->addFile($this->getGestor('DOC5',$ciclo),$zip_local."DOCUMENTO 5 PROGRAMA DE FORMACIÓN DE MÓDULOS EN DUAL.odt");break;
-            case 'anexii' :
-                $zip->addFile($this->printAnexeXII($fct),$zip_local."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");
+            case 'annexii' :
+                $zip->addFile($this->printAnexeXII($fct),$zip_local."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
         }
     }
 
