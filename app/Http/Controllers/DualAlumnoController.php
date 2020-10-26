@@ -95,7 +95,8 @@ class DualAlumnoController extends FctAlumnoController
      */
     public function informe($fct, $informe='anexe_vii',$stream=true)
     {
-        $id = $fct->id;
+        $id = is_object($fct)?$fct->id:$fct;
+        $fct = is_object($fct)?$fct:AlumnoFct::findOrFail($id);
         $informe = 'dual.'.$informe;
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));
@@ -110,7 +111,7 @@ class DualAlumnoController extends FctAlumnoController
         ];
 
 
-        $orientacion = substr($informe,0,5)==='anexe'?'landscape':'portrait';
+        $orientacion = substr($informe,5,5)==='anexe'?'landscape':'portrait';
         $pdf = $this->hazPdf($informe, $fct,$dades,$orientacion,'a4',10);
         if ($stream){
             return $pdf->stream();
