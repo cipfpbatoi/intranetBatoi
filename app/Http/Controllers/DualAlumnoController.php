@@ -416,7 +416,10 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text44'] = $fct->Alumno->telef1;
         $array['Text45'] = $fct->Alumno->email;
         $array['Grupo6'] = 'Opción2';
-        $array['Text46'] = $fct->beca;
+        $array['Texto2'] = $fct->beca;
+        $array['Texto1'] = 5;
+        $array['Text35'] = 6;
+
         $array['Text49'] = $fct->desde;
         $array['Text50'] = $fct->hasta;
         //$array['Text51'] = "Programador Web";
