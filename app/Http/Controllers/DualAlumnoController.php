@@ -158,14 +158,14 @@ class DualAlumnoController extends FctAlumnoController
                 $zip->addFile($this->printAnexeXII($fct),$carpeta_firma."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
             case 'annexv':
                 $zip->addFile($this->informe($fct,'anexo_v',false),$carpeta_firma."Anexo V Prevención Riesgos Laborales FP Dual.pdf");break;
-            case 'annexvii':
+            case 'annexevii':
                 $zip->addFile($this->informe($fct,'anexe_vii',false),$carpeta_formacio."ANEXO_VII.pdf");break;
             case 'annexva':
-                $zip->addFile($this->informe($fct,'anexe_va',false),$carpeta_formacio."ANEXO_V-a.pdf");break;
+                $zip->addFile($this->informe($fct,'anexe_va',false),$carpeta_formacio."ANEXO_V-A.pdf");break;
             case 'annexvb':
-                $zip->addFile($this->informe($fct,'anexe_vb',false),$carpeta_formacio."ANEXO_V-b.pdf");break;
+                $zip->addFile($this->informe($fct,'anexe_vb',false),$carpeta_formacio."ANEXO_V-B.pdf");break;
             case 'annexiii':
-                $zip->addFile($this->printAnexeXIII($fct),$carpeta_formacio."ANEXO XIII.pdf");break;
+                $zip->addFile($this->printAnexeXIII($fct),$carpeta_formacio."ANEXO_XIII.pdf");break;
         }
     }
 
@@ -279,10 +279,13 @@ class DualAlumnoController extends FctAlumnoController
 
     public function printAnexeXIII($fct){
         $id = $fct->id;
-        $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
-        $pdf->fillform($this->makeArrayPdfAnexoXIII($fct))
-            ->send("dualXIII_$id".'.pdf');
-        return $this->redirect();
+        $file = storage_path("tmp/dual$id/anexo_xiiI.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
+            $pdf->fillform($this->makeArrayPdfAnexoXIII($fct))
+                ->saveAs($file);
+        }
+        return $file;
     }
 
 
