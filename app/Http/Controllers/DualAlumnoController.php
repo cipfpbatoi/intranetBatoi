@@ -63,11 +63,9 @@ class DualAlumnoController extends FctAlumnoController
     {
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
-        $this->panel->setBoton('grid', new BotonImg('dual.informe',['img'=>'fa-file-word-o']));
-        $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vii'));
-        $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_va'));
-        $this->panel->setBoton('grid', new BotonImg('dual.pdf.anexe_vb'));
-        $this->panel->setBoton('grid', new BotonImg('dual.anexeXIII',['img'=>'fa-file-pdf-o']));
+        $this->panel->setBoton('grid', new BotonImg('dual.informe',['img'=>'fa-file-zip-o']));
+        //$this->panel->setBoton('grid', new BotonImg('dual.pdf.anexo_v'));
+        //$this->panel->setBoton('grid', new BotonImg('dual.anexeXIII',['img'=>'fa-file-pdf-o']));
         $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info','id' => 'anexoVI']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeXIV", ['class' => 'btn-info','id' => 'anexoXIV']));
@@ -131,30 +129,43 @@ class DualAlumnoController extends FctAlumnoController
 
     private function chooseAction($fct,$document,&$zip){
         $ciclo = $fct->Fct->Colaboracion->Ciclo->id;
-        $zip_local = $fct->Fct->Centro."/020_FaseFirmaConveni_".$fct->Alumno->dualName."/";
+        $carpeta_autor = $fct->Fct->Centro."/010_FaseAutoritzacioConveni/";
+        $carpeta_firma = $fct->Fct->Centro."/020_FaseFirmaConveni_".$fct->Alumno->dualName."/";
+        $carpeta_formacio = $fct->Fct->Centro."/040_FormacioEmpresa_".$fct->Alumno->dualName."/";
+        $carpeta_final = $fct->Fct->Centro."/050_InformesFinals/";
         switch ($document) {
             case 'covid':
-                $zip->addFile($this->informe($fct,'covid',false),$zip_local."ConformitatAlumne_Covid19_v20201005.pdf"); break;
+                $zip->addFile($this->informe($fct,'covid',false),$carpeta_firma."ConformitatAlumne_Covid19_v20201005.pdf"); break;
             case 'beca':
-                $zip->addFile($this->informe($fct,'beca',false),$zip_local."Beca.pdf"); break;
+                $zip->addFile($this->informe($fct,'beca',false),$carpeta_firma."Beca.pdf"); break;
             case 'justAl':
-                $zip->addFile($this->informe($fct,'justAl',false),$zip_local."JustificanteEntregaCalendario_a_Alumno.pdf");break;
+                $zip->addFile($this->informe($fct,'justAl',false),$carpeta_firma."JustificanteEntregaCalendario_a_Alumno.pdf");break;
             case 'justEm':
-                $zip->addFile($this->informe($fct,'justEm',false),$zip_local."JustificanteEntregaCalendario_a_Empresa.pdf");break;
+                $zip->addFile($this->informe($fct,'justEm',false),$carpeta_firma."JustificanteEntregaCalendario_a_Empresa.pdf");break;
             case 'DOC1':
-                $zip->addFile($this->printDOC1($fct),$zip_local."DOCUMENTO 1 DATOS BÁSICOS PARA EL PROGRAMA DE FORMACIÓN.pdf");break;
+                $zip->addFile($this->printDOC1($fct),$carpeta_firma."DOCUMENTO 1 DATOS BÁSICOS PARA EL PROGRAMA DE FORMACIÓN.pdf");break;
             case 'DOC2':
-                $zip->addFile($this->getGestor('DOC2',$ciclo),$zip_local."DOCUMENTO 2 CUADRO HORARIO DEL CICLO EN FP DUAL.odt");break;
+                $zip->addFile($this->getGestor('DOC2',$ciclo),$carpeta_firma."DOCUMENTO 2 CUADRO HORARIO DEL CICLO EN FP DUAL.odt");break;
             case 'DOC3a' :
-                $zip->addFile($this->getGestor('DOC3',curso()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA ".curso().".odt");break;
+                $zip->addFile($this->getGestor('DOC3',curso()),$carpeta_firma."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA ".curso().".odt");break;
             case 'DOC3b' :
-                $zip->addFile($this->getGestor('DOC3',cursoAnterior()),$zip_local."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA ".cursoAnterior().".odt");break;
+                $zip->addFile($this->getGestor('DOC3',cursoAnterior()),$carpeta_firma."DOCUMENTO 3 CALENDARIO ANUAL CENTRO EMPRESA ".cursoAnterior().".odt");break;
             case 'DOC4' :
-                $zip->addFile($this->printDOC4($fct),$zip_local."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO.pdf");break;
+                $zip->addFile($this->printDOC4($fct),$carpeta_firma."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO.pdf");break;
             case 'DOC5' :
-                $zip->addFile($this->getGestor('DOC5',$ciclo),$zip_local."DOCUMENTO 5 PROGRAMA DE FORMACIÓN DE MÓDULOS EN DUAL.odt");break;
+                $zip->addFile($this->getGestor('DOC5',$ciclo),$carpeta_firma."DOCUMENTO 5 PROGRAMA DE FORMACIÓN DE MÓDULOS EN DUAL.odt");break;
             case 'annexii' :
-                $zip->addFile($this->printAnexeXII($fct),$zip_local."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
+                $zip->addFile($this->printAnexeXII($fct),$carpeta_firma."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
+            case 'annexv':
+                $zip->addFile($this->informe($fct,'anexo_v',false),$carpeta_firma."Anexo V Prevención Riesgos Laborales FP Dual.pdf");break;
+            case 'annexvii':
+                $zip->addFile($this->informe($fct,'anexe_vii',false),$carpeta_formacio."ANEXO_VII.pdf");break;
+            case 'annexva':
+                $zip->addFile($this->informe($fct,'anexe_va',false),$carpeta_formacio."ANEXO_V-a.pdf");break;
+            case 'annexvb':
+                $zip->addFile($this->informe($fct,'anexe_vb',false),$carpeta_formacio."ANEXO_V-b.pdf");break;
+            case 'annexiii':
+                $zip->addFile($this->printAnexeXIII($fct),$carpeta_formacio."ANEXO XIII.pdf");break;
         }
     }
 
@@ -275,7 +286,7 @@ class DualAlumnoController extends FctAlumnoController
     }
 
 
-    private function makeArrayPdfAnexoXIII($id)
+    private function makeArrayPdfAnexoXIII($fct)
     {
         $array[1] = Profesor::find(config('contacto.secretario'))->fullName;
         $array[2] = config('contacto.nombre');

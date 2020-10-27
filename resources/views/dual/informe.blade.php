@@ -87,7 +87,7 @@
                     <div class="form-group item">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Annex VII:</label>
                         <div class="col-md-3 col-sm-3 col-xs-12">
-                            <input type='checkbox' class="form-control" id='annexvii' name='ANNEXvii'  />
+                            <input type='checkbox' class="form-control" id='annexvii' name='annexevii'  />
                         </div>
                     </div>
                     <h4>Final cicle</h4>
@@ -107,13 +107,6 @@
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Annex xiii:</label>
                         <div class="col-md-3 col-sm-3 col-xs-12">
                             <input type='checkbox' class="form-control" id='annexiii' name='annexiii'  />
-                        </div>
-                    </div>
-                    <h4>Final curs</h4>
-                    <div class="form-group item">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Annex vi:</label>
-                        <div class="col-md-3 col-sm-3 col-xs-12">
-                            <input type='checkbox' class="form-control" id='annexvi' name='annexvi'  />
                         </div>
                     </div>
                 </div>
