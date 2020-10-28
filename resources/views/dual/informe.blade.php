@@ -1,5 +1,7 @@
 @extends('layouts.intranet')
 @section('css')
+    {{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.css') }}
+    {{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.min.css') }}
     <title>@lang("models.dual.imprime")</title>
 @endsection
 @section('content')
@@ -109,6 +111,13 @@
                             <input type='checkbox' class="form-control" id='annexiii' name='annexiii'  />
                         </div>
                     </div>
+                    <h4>Altres Dades</h4>
+                    <div class="form-group item">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Data documentació:</label>
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            <input type='text' class="date form-control" id='data' name='data'/></div>
+                        </div>
+                    </div>
                 </div>
                 <div style="float: left;clear: both">
                     <input type='submit' class='btn btn-success'value='Enviar'/>
@@ -121,4 +130,8 @@
 @section('titulo')
     @lang("models.dual.imprime")
 @endsection
-
+@section('scripts')
+    {{ Html::script('/assets/moment.js') }}
+    {{ Html::script('/assets/datetimepicker/js/bootstrap-datetimepicker.min.js') }}
+    {{ Html::script("/js/datepicker.js") }}
+@endsection

@@ -91,15 +91,14 @@ class DualAlumnoController extends FctAlumnoController
      * @param string $informe
      * @return mixed
      */
-    public function informe($fct, $informe='anexe_vii',$stream=true)
+    public function informe($fct, $informe='anexe_vii',$stream=true,$data=null)
     {
         $id = is_object($fct)?$fct->id:$fct;
         $fct = is_object($fct)?$fct:AlumnoFct::findOrFail($id);
         $informe = 'dual.'.$informe;
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));
-        $comienzo = FechaPosterior($fct->desde);
-        $fechaDocument = ($comienzo == $fct->desde)?Manana():FechaPosterior($fct->hasta);
+        $fechaDocument = $data??FechaPosterior($fct->hasta);
         $dades = ['date' => $fechaDocument,
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
@@ -129,7 +128,7 @@ class DualAlumnoController extends FctAlumnoController
         if ($documento) return storage_path('app/'.$documento->fichero);
     }
 
-    private function chooseAction($fct,$document,&$zip){
+    private function chooseAction($fct,$document,&$zip,$data){
         $ciclo = $fct->Fct->Colaboracion->Ciclo->id;
         $carpeta_autor = $fct->Fct->Centro."/010_FaseAutoritzacioConveni/";
         $carpeta_firma = $fct->Fct->Centro."/020_FaseFirmaConveni_".$fct->Alumno->dualName."/";
@@ -137,13 +136,13 @@ class DualAlumnoController extends FctAlumnoController
         $carpeta_final = $fct->Fct->Centro."/050_InformesFinals/";
         switch ($document) {
             case 'covid':
-                $zip->addFile($this->informe($fct,'covid',false),$carpeta_firma."ConformitatAlumne_Covid19_v20201005.pdf"); break;
+                $zip->addFile($this->informe($fct,'covid',false,$data),$carpeta_firma."ConformitatAlumne_Covid19_v20201005.pdf"); break;
             case 'beca':
-                $zip->addFile($this->informe($fct,'beca',false),$carpeta_firma."Beca.pdf"); break;
+                $zip->addFile($this->informe($fct,'beca',false,$data),$carpeta_firma."Beca.pdf"); break;
             case 'justAl':
-                $zip->addFile($this->informe($fct,'justAl',false),$carpeta_firma."JustificanteEntregaCalendario_a_Alumno.pdf");break;
+                $zip->addFile($this->informe($fct,'justAl',false,$data),$carpeta_firma."JustificanteEntregaCalendario_a_Alumno.pdf");break;
             case 'justEm':
-                $zip->addFile($this->informe($fct,'justEm',false),$carpeta_firma."JustificanteEntregaCalendario_a_Empresa.pdf");break;
+                $zip->addFile($this->informe($fct,'justEm',false,$data),$carpeta_firma."JustificanteEntregaCalendario_a_Empresa.pdf");break;
             case 'DOC1':
                 $zip->addFile($this->printDOC1($fct),$carpeta_firma."DOCUMENTO 1 DATOS BÁSICOS PARA EL PROGRAMA DE FORMACIÓN.pdf");break;
             case 'DOC2':
@@ -159,13 +158,13 @@ class DualAlumnoController extends FctAlumnoController
             case 'annexii' :
                 $zip->addFile($this->printAnexeXII($fct),$carpeta_firma."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
             case 'annexv':
-                $zip->addFile($this->informe($fct,'anexo_v',false),$carpeta_firma."Anexo V Prevención Riesgos Laborales FP Dual.pdf");break;
+                $zip->addFile($this->informe($fct,'anexo_v',false,$data),$carpeta_firma."Anexo V Prevención Riesgos Laborales FP Dual.pdf");break;
             case 'annexevii':
-                $zip->addFile($this->informe($fct,'anexe_vii',false),$carpeta_formacio."ANEXO_VII.pdf");break;
+                $zip->addFile($this->informe($fct,'anexe_vii',false,$data),$carpeta_formacio."ANEXO_VII.pdf");break;
             case 'annexva':
-                $zip->addFile($this->informe($fct,'anexe_va',false),$carpeta_formacio."ANEXO_V-A.pdf");break;
+                $zip->addFile($this->informe($fct,'anexe_va',false,$data),$carpeta_formacio."ANEXO_V-A.pdf");break;
             case 'annexvb':
-                $zip->addFile($this->informe($fct,'anexe_vb',false),$carpeta_formacio."ANEXO_V-B.pdf");break;
+                $zip->addFile($this->informe($fct,'anexe_vb',false,$data),$carpeta_formacio."ANEXO_V-B.pdf");break;
             case 'annexiii':
                 $zip->addFile($this->printAnexeXIII($fct),$carpeta_formacio."ANEXO_XIII.pdf");break;
         }
@@ -183,7 +182,7 @@ class DualAlumnoController extends FctAlumnoController
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         foreach ($input as $index => $value) {
             if ($index !== '_token') {
-                $this->chooseAction($fct, $index, $zip);
+                $this->chooseAction($fct, $index, $zip,$request->data);
             }
         }
         $zip->close();
