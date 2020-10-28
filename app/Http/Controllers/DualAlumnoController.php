@@ -98,7 +98,9 @@ class DualAlumnoController extends FctAlumnoController
         $informe = 'dual.'.$informe;
         $secretario = Profesor::find(config('contacto.secretario'));
         $director = Profesor::find(config('contacto.director'));
-        $dades = ['date' => FechaPosterior($fct->hasta),
+        $comienzo = FechaPosterior($fct->desde);
+        $fechaDocument = ($comienzo == $fct->desde)?Manana():FechaPosterior($fct->hasta);
+        $dades = ['date' => $fechaDocument,
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
             'centro' => config('contacto.nombre'),
@@ -271,7 +273,7 @@ class DualAlumnoController extends FctAlumnoController
         $array[39] = $array[19];
         $array[40] = $array[20];
         $array[41] = $array[1];
-
+        $array[42] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
 
         return $array;
     }
@@ -417,7 +419,6 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text45'] = $fct->Alumno->email;
         $array['Grupo6'] = 'Opción2';
         $array['Text57'] = $fct->beca;
-
         $array['Text49'] = $fct->desde;
         $array['Text50'] = $fct->hasta;
         //$array['Text51'] = "Programador Web";

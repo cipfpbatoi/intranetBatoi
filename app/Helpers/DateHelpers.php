@@ -64,6 +64,13 @@ function Ayer()
     return $fecha->toDateString();
 }
 
+function Manana()
+{
+    $fecha = new Date();
+    $fecha->addDay(1);
+    return $fecha;
+}
+
 function FechaPosterior($fecha1, $fecha2 = null)
 {
     $fecha2 = is_null($fecha2) ? new Date() : (is_string($fecha2) ? new Date($fecha2) : $fecha2);

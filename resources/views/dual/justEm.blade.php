@@ -6,7 +6,7 @@
     @include('pdf.partials.cabecera')
     <br/><br/><br/><br/><br/><br/><br/><br/><br/>
     <p style="font-size: 20px;text-align: justify;margin-top: 75px;line-height: 1.5em">
-        L'Empresa: {{$todos->Fct->Centro}} amb NIF: {{$todos->Fct->Colaboracion->Centro->Empresa->nif}}<br/><br/><br/>
+        L'Empresa: {{$todos->Fct->Centro}} amb NIF: {{$todos->Fct->Colaboracion->Centro->Empresa->cif}}<br/><br/><br/>
         que participa en el projecte per a {{ $todos->Alumno->sexo=='H'?"l’alumne":"l'alumna" }}  <strong> {{ $todos->Alumno->FullName }}</strong>, amb DNI:  <strong>{{ $todos->Alumno->dni }}</strong><br/><br/>
         del cicle formatiu <strong>{{ $todos->fct->Colaboracion->Ciclo->vliteral }}</strong> del {{ config('contacto.nombre') }}.
     </p>
