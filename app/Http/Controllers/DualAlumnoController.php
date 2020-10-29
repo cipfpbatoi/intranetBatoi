@@ -129,7 +129,7 @@ class DualAlumnoController extends FctAlumnoController
     }
 
     private function chooseAction($fct,$document,&$zip,$data){
-        $ciclo = $fct->Fct->Colaboracion->Ciclo->acronim;
+        $ciclo = $fct->Fct->Colaboracion->Ciclo->id;
         $carpeta_autor = $fct->Fct->Centro."/010_FaseAutoritzacioConveni/";
         $carpeta_firma = $fct->Fct->Centro."/020_FaseFirmaConveni_".$fct->Alumno->dualName."/";
         $carpeta_formacio = $fct->Fct->Centro."/040_FormacioEmpresa_".$fct->Alumno->dualName."/";
@@ -255,6 +255,7 @@ class DualAlumnoController extends FctAlumnoController
         $array[19] = $fc1->format('F');
         $array[20] = $fc1->format('Y');
         $array[21] = $array[1];
+        $array[22] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array[23] = $fct->Fct->Centro;
         $array[24] = $fct->Fct->Colaboracion->Centro->direccion;
         $array[26] = '';
@@ -311,7 +312,7 @@ class DualAlumnoController extends FctAlumnoController
         $array[17] = $fct->horas;
         $array[18] = $fct->desde."/".$fct->hasta;
         $array[19] = 1;
-        $array[20] = 'Dissenyador web';
+        $array[20] = config('dual.llocTreball.'.$fct->Fct->Colaboracion->Ciclo->acronim);
         $array[27] = config('contacto.poblacion');
         $fc1 = new Date();
         Date::setlocale('ca');
@@ -340,7 +341,7 @@ class DualAlumnoController extends FctAlumnoController
         $array[49] = $fct->horas;
         $array[50] = $fct->desde."/".$fct->hasta;
         $array[51] = 1;
-        //$array[52] = 'Dissenyador web';
+        $array[52] = config('dual.llocTreball.'.$fct->Fct->Colaboracion->Ciclo->acronim);
         $array[53] = config('contacto.poblacion');
         $fc1 = new Date();
         Date::setlocale('ca');
@@ -355,6 +356,7 @@ class DualAlumnoController extends FctAlumnoController
 
     public function printDOC1($fct){
         $id = $fct->id;
+        dd($id);
         $file = storage_path("tmp/dual$id/doc1".'.pdf');
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/DOC_1.pdf');
@@ -416,13 +418,14 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text43'] = $fct->Alumno->Provincia->nombre;
         $array['Text44'] = $fct->Alumno->telef1;
         $array['Text45'] = $fct->Alumno->email;
-        $array['Grupo6'] = 'Opción2';
+        $array['Grupo4'] = 'Opción2';
+        $array['Grupo6'] = 'Opción1';
         $array['Text57'] = $fct->beca;
         $array['Text49'] = $fct->desde;
         $array['Text50'] = $fct->hasta;
-        //$array['Text51'] = config('dual.llocTreball.'.$fct->Fct->Colaboracion->Ciclo->acronim);
+        $array['Text51'] = config('dual.llocTreball.'.$fct->Fct->Colaboracion->Ciclo->acronim);
         $array['Text47'] = AuthUser()->fullName;
-        //$array['Text48'] = config('dual.especialitatTutor.'.$fct->Fct->Colaboracion->Ciclo->acronim);
+        $array['Text48'] = config('dual.especialitatTutor.'.$fct->Fct->Colaboracion->Ciclo->acronim);
         $array['Casilla de verificación1'] = 'Sí';
         $array['Casilla de verificación2'] = 'Sí';
         $array['Casilla de verificación3'] = 'Sí';
