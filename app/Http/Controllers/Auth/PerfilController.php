@@ -24,6 +24,8 @@ abstract class PerfilController extends IntranetController
             $new->idioma = $request->idioma;
         if ($request->departamento)
             $new->departamento = $request->departamento;
+        if ($request->especialitat)
+            $new->especialitat = $request->especialitat;
         $id = $new->dni;
 
         if ($request->hasFile('foto')) {
