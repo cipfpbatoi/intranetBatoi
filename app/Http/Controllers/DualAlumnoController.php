@@ -186,7 +186,7 @@ class DualAlumnoController extends FctAlumnoController
     protected function putInforme($id,Request $request){
         $input = $request->all();
         $fct = AlumnoFct::findOrFail($id);
-        $folder = storage_path("tmp/dual$id");
+        $folder = storage_path("tmp/dual$id/");
         $zip_file = storage_path("tmp/dual_".$fct->Alumno->dualName.".zip");
         if (!file_exists($folder)) {
             mkdir('folder', 0777, true);
