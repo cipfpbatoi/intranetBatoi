@@ -420,9 +420,9 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text57'] = $fct->beca;
         $array['Text49'] = $fct->desde;
         $array['Text50'] = $fct->hasta;
-        $array['Text51'] = config('dual.llocTreball.'.$fct->Fct->Colaboracion->Ciclo->acronim);
+        //$array['Text51'] = config('dual.llocTreball.'.$fct->Fct->Colaboracion->Ciclo->acronim);
         $array['Text47'] = AuthUser()->fullName;
-        $array['Text48'] = config('dual.especialitatTutor.'.$fct->Fct->Colaboracion->Ciclo->acronim);
+        //$array['Text48'] = config('dual.especialitatTutor.'.$fct->Fct->Colaboracion->Ciclo->acronim);
         $array['Casilla de verificación1'] = 'Sí';
         $array['Casilla de verificación2'] = 'Sí';
         $array['Casilla de verificación3'] = 'Sí';
