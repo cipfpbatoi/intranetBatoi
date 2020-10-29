@@ -356,7 +356,6 @@ class DualAlumnoController extends FctAlumnoController
 
     public function printDOC1($fct){
         $id = $fct->id;
-        dd($id);
         $file = storage_path("tmp/dual$id/doc1".'.pdf');
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/DOC_1.pdf');
