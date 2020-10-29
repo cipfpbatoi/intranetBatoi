@@ -23,6 +23,6 @@
         L’empresa signa i fica el seu segell en el present document expresant el seu acord amb el aquí exposat.
     </p>
     <p style="font-size: 20px;text-align: right;margin-top: 150px;">
-        Signatura i seguell:
+        Signatura i segell:
     </p>
 @endsection

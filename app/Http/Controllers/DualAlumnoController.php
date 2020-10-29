@@ -137,6 +137,8 @@ class DualAlumnoController extends FctAlumnoController
         switch ($document) {
             case 'covid':
                 $zip->addFile($this->informe($fct,'covid',false,$data),$carpeta_firma."ConformitatAlumne_Covid19_v20201005.pdf"); break;
+            case 'declaracioResponsable':
+                $zip->addFile($this->informe($fct,'declaracioResponsable',false,$data),$carpeta_firma."ConformitatEmpresa_Covid19_v20201005.pdf"); break;
             case 'beca':
                 $zip->addFile($this->informe($fct,'beca',false,$data),$carpeta_firma."Beca.pdf"); break;
             case 'justAl':
