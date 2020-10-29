@@ -12,7 +12,7 @@ class Centro extends Model
     use BatoiModels;
 
     protected $table = 'centros';
-    protected $fillable = ['idEmpresa', 'nombre','direccion', 'localidad','horarios', 'observaciones','idioma'];
+    protected $fillable = ['idEmpresa', 'nombre','direccion', 'localidad','horarios', 'observaciones','idioma','codiPostal'];
     protected $rules = [
         'idEmpresa' => 'required',
         'nombre' => 'required',
