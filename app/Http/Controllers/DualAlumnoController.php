@@ -144,7 +144,7 @@ class DualAlumnoController extends FctAlumnoController
             case 'justEm':
                 $zip->addFile($this->informe($fct,'justEm',false,$data),$carpeta_firma."JustificanteEntregaCalendario_a_Empresa.pdf");break;
             case 'DOC1':
-                $zip->addFile($this->printDOC1($fct),$carpeta_firma."DOCUMENTO 1 DATOS BÁSICOS PARA EL PROGRAMA DE FORMACIÓN.pdf");break;
+                $zip->addFile($this->printDOC1($fct,$data),$carpeta_firma."DOCUMENTO 1 DATOS BÁSICOS PARA EL PROGRAMA DE FORMACIÓN.pdf");break;
             case 'DOC2':
                 $zip->addFile($this->getGestor('DOC2',$ciclo),$carpeta_firma."DOCUMENTO 2 CUADRO HORARIO DEL CICLO EN FP DUAL.odt");break;
             case 'DOC3a' :
@@ -156,7 +156,7 @@ class DualAlumnoController extends FctAlumnoController
             case 'DOC5' :
                 $zip->addFile($this->getGestor('DOC5',$ciclo),$carpeta_firma."DOCUMENTO 5 PROGRAMA DE FORMACIÓN DE MÓDULOS EN DUAL.odt");break;
             case 'annexii' :
-                $zip->addFile($this->printAnexeXII($fct),$carpeta_firma."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
+                $zip->addFile($this->printAnexeXII($fct,$data),$carpeta_firma."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
             case 'annexv':
                 $zip->addFile($this->informe($fct,'anexo_v',false,$data),$carpeta_firma."Anexo V Prevención Riesgos Laborales FP Dual.pdf");break;
             case 'annexevii':
@@ -166,7 +166,7 @@ class DualAlumnoController extends FctAlumnoController
             case 'annexvb':
                 $zip->addFile($this->informe($fct,'anexe_vb',false,$data),$carpeta_formacio."ANEXO_V-B.pdf");break;
             case 'annexiii':
-                $zip->addFile($this->printAnexeXIII($fct),$carpeta_formacio."ANEXO_XIII.pdf");break;
+                $zip->addFile($this->printAnexeXIII($fct,$data),$carpeta_formacio."ANEXO_XIII.pdf");break;
         }
     }
 
@@ -204,12 +204,12 @@ class DualAlumnoController extends FctAlumnoController
         return response()->download($zip_file);
     }
 
-    public function printAnexeXII($fct){
+    public function printAnexeXII($fct,$data){
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/anexo_xii.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/ANEXO_XII.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoXII($fct))
+            $pdf->fillform($this->makeArrayPdfAnexoXII($fct,$data))
                 ->saveAs($file);
         }
         return $file;
@@ -243,7 +243,7 @@ class DualAlumnoController extends FctAlumnoController
      * @param $array
      * @return mixed
      */
-    private function makeArrayPdfAnexoXII($fct)
+    private function makeArrayPdfAnexoXII($fct,$data)
     {
         $array[1] = $fct->Alumno->fullName;
         $array[2] = $fct->Alumno->dni;
@@ -262,7 +262,7 @@ class DualAlumnoController extends FctAlumnoController
         $array[14] = $array[6];
         $array[15] = $array[7];
         $array[16] = $array[8];
-        $fc1 = new Date();
+        $fc1 = new Date($data);
         Date::setlocale('ca');
         $array[17] = config('contacto.poblacion');
         $array[18] = $fc1->format('d');
@@ -293,19 +293,19 @@ class DualAlumnoController extends FctAlumnoController
     }
 
 
-    public function printAnexeXIII($fct){
+    public function printAnexeXIII($fct,$data){
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/anexo_xiiI.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoXIII($fct))
+            $pdf->fillform($this->makeArrayPdfAnexoXIII($fct,$data))
                 ->saveAs($file);
         }
         return $file;
     }
 
 
-    private function makeArrayPdfAnexoXIII($fct)
+    private function makeArrayPdfAnexoXIII($fct,$data)
     {
         $array[1] = Profesor::find(config('contacto.secretario'))->fullName;
         $array[2] = config('contacto.nombre');
@@ -357,7 +357,7 @@ class DualAlumnoController extends FctAlumnoController
         $array[51] = 1;
         $array[52] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
         $array[53] = config('contacto.poblacion');
-        $fc1 = new Date();
+        $fc1 = new Date($data);
         Date::setlocale('ca');
         $array[54] = $fc1->format('d');
         $array[55] = $fc1->format('F');
@@ -368,12 +368,12 @@ class DualAlumnoController extends FctAlumnoController
         return $array;
     }
 
-    public function printDOC1($fct){
+    public function printDOC1($fct,$data){
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/doc1".'.pdf');
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/DOC_1.pdf');
-            $pdf->fillform($this->makeArrayPdfDOC1($fct))
+            $pdf->fillform($this->makeArrayPdfDOC1($fct,$data))
                 ->saveAs($file);
         }
         return $file;
@@ -383,7 +383,7 @@ class DualAlumnoController extends FctAlumnoController
      * @param $array
      * @return mixed
      */
-    private function makeArrayPdfDOC1($fct)
+    private function makeArrayPdfDOC1($fct,$data)
     {
         $array['Texto3'] = config('contacto.nombre');
         $array['Texto5'] = config('contacto.codi');
@@ -445,7 +445,7 @@ class DualAlumnoController extends FctAlumnoController
         $array['Casilla de verificación4'] = 'Sí';
         $array['Text52'] = $array['Texto9'];
 
-        $fc1 = new Date();
+        $fc1 = new Date($data);
         Date::setlocale('ca');
         $array['Text53'] = $fc1->format('d');
         $array['Text54'] = $fc1->format('F');
