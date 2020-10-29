@@ -174,10 +174,23 @@ class DualAlumnoController extends FctAlumnoController
         return view('dual.informe',compact('id'));
     }
 
+    private function deleteDir($folder)
+    {
+        $files = glob("$folder/*"); //obtenemos todos los nombres de los ficheros
+        foreach ($files as $file) {
+            if (is_file($file)) unlink($file); //elimino el fichero
+        }
+        rmdir($folder);
+    }
+
     protected function putInforme($id,Request $request){
         $input = $request->all();
         $fct = AlumnoFct::findOrFail($id);
+        $folder = storage_path("tmp/dual$id");
         $zip_file = storage_path("tmp/dual_".$fct->Alumno->dualName.".zip");
+        if (!file_exists($folder)) {
+            mkdir('folder', 0777, true);
+        }
         $zip = new \ZipArchive();
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         foreach ($input as $index => $value) {
@@ -186,6 +199,7 @@ class DualAlumnoController extends FctAlumnoController
             }
         }
         $zip->close();
+        $this->deleteDir($folder);
 
         return response()->download($zip_file);
     }
