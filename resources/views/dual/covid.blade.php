@@ -10,7 +10,7 @@
     </p>
     <p style="font-size: 20px;text-align: justify;margin-top: 75px;line-height: 1.5em">
         {{ $todos->Alumno->sexo=='H'?"L’alumne":"L'alumna" }}  <strong> {{ $todos->Alumno->FullName }}</strong>, amb NIF  <strong>{{ $todos->Alumno->dni }}</strong>, matriculat en el cicle formatiu <strong>{{ $todos->fct->Colaboracion->Ciclo->vliteral }}</strong>,
-        de grau  <strong>{{ $todos->fct->Colaboracion->Ciclo->tipo == 1?'mitja':'superior' }}</strong>, de la família professional  <strong>{{ ucfirst(strtolower(substr($todos->fct->Colaboracion->Ciclo->Departament->vliteral,12))) }}</strong>, en Formació Professional Dual, en el centre educatiu
+        de grau  <strong>{{ $todos->fct->Colaboracion->Ciclo->tipo == 1?'mitja':'superior' }}</strong>, de la família professional  <strong>{{ ucfirst(mb_strtolower(substr($todos->fct->Colaboracion->Ciclo->Departament->vliteral,12))) }}</strong>, en Formació Professional Dual, en el centre educatiu
         <strong>{{ config('contacto.nombre') }}</strong>, amb codi de centre <strong>{{ config('contacto.codi') }}</strong>, durant el curs acadèmic
         <strong>{{ curso() }}</strong>, deixa constància de conéixer i acceptar els aspectes següents:
     </p>
