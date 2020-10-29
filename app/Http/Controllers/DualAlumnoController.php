@@ -189,7 +189,7 @@ class DualAlumnoController extends FctAlumnoController
         $folder = storage_path("tmp/dual$id/");
         $zip_file = storage_path("tmp/dual_".$fct->Alumno->dualName.".zip");
         if (!file_exists($folder)) {
-            mkdir('folder', 0777, true);
+            mkdir($folder, 0777, true);
         }
         $zip = new \ZipArchive();
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
