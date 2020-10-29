@@ -129,7 +129,7 @@ class DualAlumnoController extends FctAlumnoController
     }
 
     private function chooseAction($fct,$document,&$zip,$data){
-        $ciclo = $fct->Fct->Colaboracion->Ciclo->id;
+        $ciclo = $fct->Fct->Colaboracion->Ciclo->acronim;
         $carpeta_autor = $fct->Fct->Centro."/010_FaseAutoritzacioConveni/";
         $carpeta_firma = $fct->Fct->Centro."/020_FaseFirmaConveni_".$fct->Alumno->dualName."/";
         $carpeta_formacio = $fct->Fct->Centro."/040_FormacioEmpresa_".$fct->Alumno->dualName."/";
@@ -406,7 +406,7 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text32'] = $fct->Fct->Instructor->Nombre;
         $array['Text33'] = $fct->Fct->Instructor->dni;
         $array['Text34'] = $fct->Fct->Instructor->email;
-        $array['Text36'] = $array['Texto13'];
+        $array['Text36'] = config('dual.llocTreball.'.$fct->Fct->Colaboracion->Ciclo->acronim);
         $array['Text39'] = $fct->Alumno->apellido1.' '.$fct->Alumno->apellido2 ;
         $array['Text38'] = $fct->Alumno->nombre;
         $array['Text37'] = $fct->Alumno->dni;
@@ -417,8 +417,8 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text43'] = $fct->Alumno->Provincia->nombre;
         $array['Text44'] = $fct->Alumno->telef1;
         $array['Text45'] = $fct->Alumno->email;
-        $array['Grupo4'] = 'Opción2';
-        $array['Grupo6'] = 'Opción1';
+        $array['Grupo4'] = 'Opción1';
+        $array['Grupo6'] = 'Opción2';
         $array['Text57'] = $fct->beca;
         $array['Text49'] = $fct->desde;
         $array['Text50'] = $fct->hasta;
