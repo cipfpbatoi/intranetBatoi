@@ -7,7 +7,7 @@
 @endif
 <div class="container" >
     <p><strong>COMUNICACIÓ A l'ALUMNAT SOBRE EL COFINANÇAMENT PEL FONS SOCIAL
-        EUROPEU DE LA FORMACIÓ PROFESSIONAL GM I GS I BÀSICA 2ª OPORTUNITAT
+        EUROPEU DE LA FORMACIÓ PROFESSIONAL GM I GS I BÀSICA
         EN LA COMUNITAT VALENCIANA</strong></p>
     <table class="table table-bordered" style="width: 1000px">
         <colgroup>
