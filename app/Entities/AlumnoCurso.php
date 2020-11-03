@@ -31,4 +31,14 @@ class AlumnoCurso extends Model
     {
         return $this->Alumno->NameFull;
     }
+
+    public function getSexoAttribute(){
+        return $this->Alumno->sexo;
+    }
+    public function getFullNameAttribute(){
+        return $this->Alumno->fullName;
+    }
+    public function getDniAttribute(){
+        return $this->Alumno->dni;
+    }
 }

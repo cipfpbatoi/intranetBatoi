@@ -1,5 +1,5 @@
 @include('pdf.partials.cabecera')
-@php $director = cargo('director'); @endphp
+@php $director = cargo('director');  @endphp
 <div class="container col-lg-12" style="width:95%;clear:right;text-align: justify;">
     <br/><br/><br/>
     <strong>{{ $director->FullName }}</strong>

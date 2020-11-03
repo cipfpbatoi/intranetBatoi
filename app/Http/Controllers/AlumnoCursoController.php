@@ -51,7 +51,7 @@ class AlumnoCursoController extends IntranetController
 
     public function pdf($id)
     {
-        $actual = AlumnoCurso::where('id', $id)->get();
+        $actual = AlumnoCurso::where('id', $id)->first();
         $curso = Curso::find($actual->first()->idCurso);
         if (haVencido($curso->fecha_fin))
             return self::hazPdf('pdf.alumnos.manipulador', $actual, $curso)->stream();
