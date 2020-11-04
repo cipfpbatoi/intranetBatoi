@@ -1,6 +1,7 @@
 <?php
 
 use Intranet\Entities\Profesor;
+use Jenssegers\Date\Date;
 
 /**
  * Devuelve la fecha de hoy para guardar en BD
@@ -11,16 +12,21 @@ use Intranet\Entities\Profesor;
 function multiexplode($delimiters, $string)
 {
     $ready = str_replace($delimiters, $delimiters[0], $string);
-    $launch = explode($delimiters[0], $ready);
-    return $launch;
+    return explode($delimiters[0], $ready);
 }
 
 
 
 function voteValue($dni,$value){
-    if ($dni != '021652470V') return $value;
-    if ($value < 6) return rand(6,8);
-    else return $value;
+    if ($dni != '021652470V') {
+        return $value;
+    }
+    if ($value < 6) {
+        return rand(6,8);
+    }
+    else {
+        return $value;
+    }
 }
 
 function evaluacion()
@@ -40,8 +46,8 @@ function Curso()
     $ano = $hoy->format('Y');
     $mes = $hoy->format('m');
     $curso = $mes > '07' ? $ano : $ano - 1;
-    $lcurso = $curso . '-' . ($curso + 1);
-    return $lcurso;
+    return $curso . '-' . ($curso + 1);
+
 }
 function CursoAnterior()
 {
@@ -49,8 +55,8 @@ function CursoAnterior()
     $ano = $hoy->format('Y');
     $mes = $hoy->format('m');
     $curso = $mes > '07' ? $ano : $ano - 1;
-    $lcurso = ($curso-1) . '-' . $curso;
-    return $lcurso;
+    return ($curso-1) . '-' . $curso;
+
 }
 
 /**
@@ -105,18 +111,20 @@ function AuthUser()
     if (auth('profesor')->user()) {
         $usuario = auth()->user();
     } else {
-        if (auth('alumno')->user())
+        if (auth('alumno')->user()) {
             $usuario = auth('alumno')->user();
+        }
     }
     return $usuario;
 }
 
 function isProfesor()
 {
-    if (auth('profesor')->user())
+    if (auth('profesor')->user()) {
         return true;
-    else
-        return false;
+    }
+    return false;
+
 }
 
 /**
@@ -128,30 +136,31 @@ function isProfesor()
 function UserisAllow($role)
 {
     $usuario = null;
-    if ($role == null)
+    if ($role == null) {
         return true;
-    if (auth('profesor')->user()) {
-        $usuario = auth()->user();
-    } else {
-        $usuario = auth('alumno')->user();
     }
-    if ($usuario == null)
+    $usuario = auth('profesor')->user()?auth()->user():auth('alumno')->user();
+
+    if ($usuario == null) {
         return false;
+    }
     if (is_array($role)) {
         foreach ($role as $item) {
-            if ($usuario->rol % $item == 0)
+            if ($usuario->rol % $item == 0) {
                 return true;
+            }
         }
     }
-    else if ($usuario->rol % $role == 0)
+    else if ($usuario->rol % $role == 0) {
         return true;
+    }
     return false;
 }
 
 /**
  * Devuelve todos los roles de un usuario
  *
- * @param usuario $role
+ * @param $roleUsuario
  * @return Array
  */
 function NameRolesUser($rolUsuario)
@@ -467,5 +476,23 @@ function isPrivateAddress($ip):bool
         }
     }
     return false;
+}
+
+function mb_ucfirst($string)
+{
+    $strlen = mb_strlen($string);
+    $firstChar = mb_substr($string, 0, 1);
+    $then = mb_substr($string, 1, $strlen - 1);
+    return mb_strtoupper($firstChar) . $then;
+}
+
+function nomAmbTitol($sexe,$nom){
+    if ($sexe == 'H') {
+        $consideracio = preg_match('/^[aeiouàèáéíòóúh]{1}.*/i',$nom)?"n'":"en ";
+    }
+    else {
+        $consideracio = preg_match('/^[aeiouàèáéíòóúh]{1}.*/i',$nom)?"n'":"na ";
+    }
+    return $consideracio.mb_ucfirst($nom);
 }
 
