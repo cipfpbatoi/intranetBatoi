@@ -4,7 +4,7 @@
     <div class="container" style="width:50%;float:center">
         <img src="{{public_path('img/pdf/logo.png')}}" alt="logo" style="width:300px;height:300px" /><br/>
     </div> 
-    <div class="container col-lg-12" style="width:65%;clear:right;text-align: justify">
+    <div class="container col-lg-12" style="width:65%;clear:right;text-align: center">
         <br/><br/><br/><br/>
         <strong>Continguts</strong>
         <ol>
