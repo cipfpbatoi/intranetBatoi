@@ -162,7 +162,7 @@ class DualAlumnoController extends FctAlumnoController
             case 'annexv':
                 $zip->addFile($this->informe($fct,'anexo_v',false,$data),$carpeta_firma."Anexo V Prevención Riesgos Laborales FP Dual.pdf");break;
             case 'annexevii':
-                $zip->addFile($this->informe($fct,'anexe_vii',false,$data),$carpeta_formacio."ANEXO_VII.pdf");break;
+                $zip->addFile($this->printAnexeVII($fct,$data),$carpeta_formacio."ANEXO_VII.pdf");break;
             case 'annexva':
                 $zip->addFile($this->informe($fct,'anexe_va',false,$data),$carpeta_formacio."ANEXO_V-A.pdf");break;
             case 'annexvb':
@@ -455,6 +455,53 @@ class DualAlumnoController extends FctAlumnoController
         $array['Text54'] = $fc1->format('F');
         $array['Text55'] = $fc1->format('Y');
         $array['Text56'] = $array['Texto12'];
+
+        return $array;
+    }
+
+    public function printAnexeVII($fct,$data){
+        $id = $fct->id;
+        $file = storage_path("tmp/dual$id/anexo_vii.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/ANEXO_VII.pdf');
+            $pdf->fillform($this->makeArrayPdfAnexoVII($fct,$data))
+                ->saveAs($file);
+        }
+        return $file;
+    }
+
+
+    private function makeArrayPdfAnexoVII($fct,$data)
+    {
+        $array[1] = $fct->Alumno->nia;
+        $array[2] = $fct->Alumno->nombre;
+        $array[3] = $fct->Alumno->apellido1;
+        $array[4] = $fct->Alumno->apellido2;
+        $array[5] = $fct->Alumno->dni;
+        $array[6] = $fct->Alumno->email;
+        $array[7] = $fct->Alumno->fecha_nac;
+        $array[8] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
+        $array[9] = config('contacto.nombre');
+        $array[10] = config('contacto.codi');
+        $array[11] = AuthUser()->fullName;
+        $array[12] = $fct->Fct->Centro;
+        $array[13] = $fct->Fct->Instructor->Nombre;
+        $array[14] = $fct->Fct->Instructor->dni;
+        $array[15] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[20] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[25] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[30] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[35] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[41] = $fct->Fct->Instructor->Nombre;
+        $array[42] = AuthUser()->fullName;
+
+        $fc1 = new Date($data);
+        Date::setlocale('ca');
+        $array[54] = $fc1->format('d');
+        $array[55] = $fc1->format('F');
+        $array[56] = $fc1->format('Y');
+        $array[57] = $array[1];
+        $array[58] = Profesor::find(config('contacto.director'))->fullName;
 
         return $array;
     }
