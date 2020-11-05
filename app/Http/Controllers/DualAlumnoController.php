@@ -475,33 +475,36 @@ class DualAlumnoController extends FctAlumnoController
     {
         $array[1] = $fct->Alumno->nia;
         $array[2] = $fct->Alumno->nombre;
-        $array[3] = $fct->Alumno->apellido1;
-        $array[4] = $fct->Alumno->apellido2;
-        $array[5] = $fct->Alumno->dni;
-        $array[6] = $fct->Alumno->email;
-        $array[7] = $fct->Alumno->fecha_nac;
-        $array[8] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
+        $array[3] = $fct->Alumno->apellido1.' '.$fct->Alumno->apellido2;
+        $array[4] = $fct->Alumno->dni;
+        $array[5] = $fct->Alumno->email;
+        $array[6] = $fct->Alumno->fecha_nac;
+        $array[7] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
+        $array[8] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array[9] = config('contacto.nombre');
         $array[10] = config('contacto.codi');
         $array[11] = AuthUser()->fullName;
-        $array[12] = $fct->Fct->Centro;
+        /*$array[12] = $fct->Fct->Centro;
         $array[13] = $fct->Fct->Instructor->Nombre;
-        $array[14] = $fct->Fct->Instructor->dni;
-        $array[15] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[20] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[25] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[30] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[35] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[14] = $fct->Fct->Instructor->dni;*/
+        $fc1 = new Date($data);
+        $fc2 = new Date($data);
+        $fc2->addDays(6);
+        Date::setlocale('ca');
+        $array[12] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[13] = $fc1->toDateString().' a '.$fc2->toDateString();
+        $array[17] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[22] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[27] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[32] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+
+        $array[37] = $fct->Fct->Colaboracion->Centro->localidad;
+        $array[38] = $fc1->format('d');
+        $array[39] = $fc1->format('F');
+        $array[40] = $fc1->format('Y');
+
         $array[41] = $fct->Fct->Instructor->Nombre;
         $array[42] = AuthUser()->fullName;
-
-        $fc1 = new Date($data);
-        Date::setlocale('ca');
-        $array[54] = $fc1->format('d');
-        $array[55] = $fc1->format('F');
-        $array[56] = $fc1->format('Y');
-        $array[57] = $array[1];
-        $array[58] = Profesor::find(config('contacto.director'))->fullName;
 
         return $array;
     }
