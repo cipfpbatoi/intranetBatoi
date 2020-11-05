@@ -484,19 +484,28 @@ class DualAlumnoController extends FctAlumnoController
         $array[9] = config('contacto.nombre');
         $array[10] = config('contacto.codi');
         $array[11] = AuthUser()->fullName;
-        /*$array[12] = $fct->Fct->Centro;
-        $array[13] = $fct->Fct->Instructor->Nombre;
-        $array[14] = $fct->Fct->Instructor->dni;*/
+        $array['11a'] = $fct->Fct->Centro;
+        $array['11b'] = $fct->Fct->Instructor->Nombre;
+        $array['11c'] = $fct->Fct->Instructor->dni;
         $fc1 = new Date($data);
         $fc2 = new Date($data);
         $fc2->addDays(6);
         Date::setlocale('ca');
         $array[12] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[13] = $fc1->toDateString().' a '.$fc2->toDateString();
+        $array[13] = $fc1->format("d/m/y").' a '.$fc2->toDateString("d/m/y");
+        $fc1->addDays(7);
+        $fc2->addDays(7);
         $array[17] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[18] = $fc1->format("d/m/y").' a '.$fc2->toDateString("d/m/y");
+        $fc1->addDays(7);
+        $fc2->addDays(7);
         $array[22] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[23] = $fc1->format("d/m/y").' a '.$fc2->toDateString("d/m/y");
+        $fc1->addDays(7);
+        $fc2->addDays(7);
         $array[27] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[32] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
+        $array[28] = $fc1->format("d/m/y").' a '.$fc2->toDateString("d/m/y");
+        $fc1->addDays(7);
 
         $array[37] = $fct->Fct->Colaboracion->Centro->localidad;
         $array[38] = $fc1->format('d');
