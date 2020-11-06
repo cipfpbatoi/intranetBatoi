@@ -7,7 +7,7 @@
         <div class="container" style="width:95%;clear:right;text-align: justify">
             <p><strong>COMUNICAT DE LA PÈRDUA DE L'AVALUACIÓ CONTINUA D'UN MÒDUL</strong></p>
             <p style="text-indent: 30px">Com a professor/a del grup <strong>{{$elemento->Alumno->Grupo->first()->nombre }}</strong> del curs {{ Curso() }} 
-                COMUNIQUE la pèrdua de l’avaluació contínua en el procés d’ensenyament-aprenentatge del mòdul <strong>{{$elemento->Modulo->vliteral }}</strong>. 
+                COMUNIQUE la pèrdua de l’avaluació contínua en el procés d’ensenyament-aprenentatge del mòdul <strong>{{ $elemento->Modulo?$elemento->Modulo->vliteral:'Revisa-ho' }}</strong>.
             </p>
             <p tyle="text-indent: 30px"><strong>{{$elemento->explicacion}}</strong></p>
             <p tyle="text-indent: 30px">L’aplicació del procés d’avaluació contínua de l’alumnat requerix la seua assistència regular a les classes
