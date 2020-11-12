@@ -71,7 +71,7 @@ class EmpresaController extends IntranetController
             $this->createColaboration($idCentro,$request);
         }
 
-        return redirect()->action('EmpresaController@show', ['id' => $id]);
+        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
     }
 
     private function getConcert($id){
