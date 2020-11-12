@@ -19,6 +19,14 @@ class Dual extends Fct
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
     ];
+    protected $rules = [
+        'idAlumno' => 'sometimes|required',
+        'idColaboracion' => 'sometimes|required',
+        'idInstructor' => 'sometimes|required',
+        'desde' => 'sometimes|required|date',
+        'hasta' => 'sometimes|required|date',
+        'beca' => 'numeric'
+    ];
     protected $attributes = ['asociacion'=>3,'correoInstructor'=>1];
     
 
