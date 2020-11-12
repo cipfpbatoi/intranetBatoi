@@ -171,7 +171,7 @@ class ReunionController extends IntranetController
 
     public function altaOrden(Request $request, $reunion_id)
     {
-        if ($request->orden == '') {
+        if (!is_numeric($request->orden )) {
             $max = OrdenReunion::where('idReunion', '=', $reunion_id)->max('orden');
             $request->merge(['orden' => $max + 1]);
         }
