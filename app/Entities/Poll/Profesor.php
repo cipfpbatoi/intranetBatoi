@@ -24,7 +24,7 @@ class Profesor extends ModelPoll
         foreach (Modulo_grupo::misModulos() as $modulo) {
             $myVotes[$modulo->ModuloCiclo->Modulo->literal][$modulo->Grupo->codigo] = Vote::myVotes($id, $modulo->id)->get();
         }
-        return $myVotes;
+        return count($myVotes)?$myVotes:null;
     }
 
     public static function loadGroupVotes($id)
