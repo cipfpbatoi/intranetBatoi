@@ -260,17 +260,17 @@ class DualAlumnoController extends FctAlumnoController
         $array[15] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array[16] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         if ($fct->Fct->Colaboracion->Ciclo->tipo == 1) {
-            $array[17] = 'On';
+            $array[17] = 1;
         }
         else {
-            $array[19] = 'On';
+            $array[19] = 1;
         }
-        $array[18] = 'On';
+        $array[18] = 1;
         $array[21] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
-        $array[22] = 'On';
+        $array[22] = 1;
         $array[24] = config('contacto.nombre');
         $array[25] = config('contacto.codi');
-        $array[26] = 'On';
+        $array[26] = 1;
         $array[28] = config('contacto.poblacion');
         $array[29] = config('contacto.provincia');
         $array[30] = config('contacto.email');
