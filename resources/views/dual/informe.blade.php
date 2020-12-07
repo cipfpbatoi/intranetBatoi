@@ -11,7 +11,14 @@
             <form method="POST" action='/dual/{{$id}}/informe' class='form-horizontal form-label-left'>
                 {{ csrf_field() }}
                 <div style="float: left" class="col-md-6 col-sm-6 col-xs-12">
+
                     <h4>Signatura conveni</h4>
+                    <div class="form-group item">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Annex IV:</label>
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            <input type='checkbox' class="form-control" id='annexiv' name='annexiv' />
+                        </div>
+                    </div>
                     <div class="form-group item">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Document COVID alumne:</label>
                         <div class="col-md-3 col-sm-3 col-xs-12">

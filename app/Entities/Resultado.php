@@ -62,16 +62,13 @@ class Resultado extends Model
         return config('auxiliares.nombreEval');
     }
 
-//    public function getIdGrupoOptions()
-//    {
-//        return hazArray(Grupo::MisGrupos()->get(), 'codigo', 'nombre');
-//    }
 
     public function getIdModuloGrupoOptions()
     {
         $todos = [];
-        foreach (Modulo_grupo::MisModulos() as $uno)
-            $todos[$uno->id] = $uno->Grupo->nombre.' - '.$uno->ModuloCiclo->Modulo->literal;
+        foreach (Modulo_grupo::MisModulos() as $uno) {
+            $todos[$uno->id] = $uno->Grupo->nombre . ' - ' . $uno->ModuloCiclo->Modulo->literal;
+        }
         return $todos;
     }
 

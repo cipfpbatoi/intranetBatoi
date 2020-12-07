@@ -157,6 +157,8 @@ class DualAlumnoController extends FctAlumnoController
                 $zip->addFile($this->printDOC4($fct),$carpeta_firma."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO.pdf");break;
             case 'DOC5' :
                 $zip->addFile($this->getGestor('DOC5',$ciclo),$carpeta_firma."DOCUMENTO 5 PROGRAMA DE FORMACIÓN DE MÓDULOS EN DUAL.odt");break;
+            case 'annexiv':
+                $zip->addFile($this->printAnexeIV($fct,$data),$carpeta_autor."ANEXO IV DECLARACION RESPONSABLE DE LA EMPRESA COLABORADORA.pdf");break;
             case 'annexii' :
                 $zip->addFile($this->printAnexeXII($fct,$data),$carpeta_firma."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
             case 'annexv':
@@ -227,6 +229,60 @@ class DualAlumnoController extends FctAlumnoController
                 ->saveAs($file);
         }
         return $file;
+    }
+
+    public function printAnexeIV($fct,$data){
+        $id = $fct->id;
+        $file = storage_path("tmp/dual$id/anexo_iv.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/ANEXO_IV.pdf');
+            $pdf->fillform($this->makeArrayPdfAnexoIV($fct,$data))
+                ->saveAs($file);
+        }
+        return $file;
+    }
+
+    protected function makeArrayPdfAnexoIV($fct,$data){
+        $array[1] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
+        $array[2] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
+        $array[3] = $fct->Fct->Colaboracion->Centro->Empresa->direccion;
+        $array[4] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
+        $array[5] = 'Alacant';
+        $array[6] = 'Espanya';
+        $array[7] = $fct->Fct->Colaboracion->Centro->Empresa->codiPostal;
+        $array[8] = $fct->Fct->Colaboracion->Centro->Empresa->telefono;
+        $array[9] = $fct->Fct->Centro;
+        $array[10] = $fct->Fct->Colaboracion->Centro->direccion;
+        $array[11] = 'Alacant';
+        $array[12] = 'Espanya';
+        $array[13] = $fct->Fct->Colaboracion->Centro->codiPostal;
+        $array[14] = $fct->Fct->Colaboracion->Centro->telefono;
+        $array[15] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
+        $array[16] = $fct->Fct->Colaboracion->Ciclo->vliteral;
+        if ($fct->Fct->Colaboracion->Ciclo->tipo == 1) {
+            $array[17] = 'On';
+        }
+        else {
+            $array[19] = 'On';
+        }
+        $array[18] = 'On';
+        $array[21] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
+        $array[22] = 'On';
+        $array[24] = config('contacto.nombre');
+        $array[25] = config('contacto.codi');
+        $array[26] = 'On';
+        $array[28] = config('contacto.poblacion');
+        $array[29] = config('contacto.provincia');
+        $array[30] = config('contacto.email');
+        $fc1 = new Date($data);
+        Date::setlocale('ca');
+        $array[31] = config('contacto.poblacion');
+        $array[32] = $fc1->format('d');
+        $array[33] = $fc1->format('F');
+        $array[34] = $fc1->format('Y');
+        $array[35] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;;
+
+        return $array;
     }
 
 
