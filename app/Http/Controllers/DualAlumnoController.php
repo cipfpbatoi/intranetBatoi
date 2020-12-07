@@ -260,7 +260,7 @@ class DualAlumnoController extends FctAlumnoController
         $array[15] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array[16] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         if ($fct->Fct->Colaboracion->Ciclo->tipo == 1) {
-            $array[17] = 'S&#237'
+            $array[17] = 'S&#237';
         }
         else {
             $array[19] = 'S&#237';
