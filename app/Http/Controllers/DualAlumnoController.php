@@ -314,13 +314,16 @@ class DualAlumnoController extends FctAlumnoController
 
         $array['undefined_6'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array['undefined_7'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
-        $array['carrerplaça'] = $fct->Fct->Colaboracion->Centro->Empresa->direccion;
-        $array['AA'] = config('contacto.nombre');
-        $array['BB'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
+        $array['undefined_4'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0];
 
-        $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
+        //$array[25] = explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1];
+        $array['AA'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
+        $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
+        // = config('contacto.nombre');
+
+
+
         $array['Província'] = 'Alacant';
-        $array['undefined_4'] = 'Espanya';
         $array['CP'] = $fct->Fct->Colaboracion->Centro->codiPostal;
 
         /**
