@@ -312,11 +312,11 @@ class DualAlumnoController extends FctAlumnoController
         $array['CORRESPONDIENTE AL CICLO FORMATIVO 2'] = $fct->Fct->Colaboracion->Ciclo->cliteral;
 
 
-        $array['undefined_6'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
+        $array['undefined'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array['undefined_7'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array['undefined_4'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0];
 
-        //$array[25] = explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1];
+        $array['undefined_3'] = explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1];
         $array['AA'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
         // = config('contacto.nombre');
