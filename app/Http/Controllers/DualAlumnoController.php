@@ -312,11 +312,11 @@ class DualAlumnoController extends FctAlumnoController
         $array['CORRESPONDIENTE AL CICLO FORMATIVO 2'] = $fct->Fct->Colaboracion->Ciclo->cliteral;
 
 
-        $array['undefined'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
-        $array['undefined_7'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
+        $array['undefined_5'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
+        $array[11] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array['undefined_4'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0];
 
-        $array['undefined_3'] = explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1];
+        $array['undefined_3'] =
         $array['AA'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
         // = config('contacto.nombre');
@@ -324,7 +324,8 @@ class DualAlumnoController extends FctAlumnoController
 
 
         $array['Província'] = 'Alacant';
-        $array['CP'] = $fct->Fct->Colaboracion->Centro->codiPostal;
+        $array['CP'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1];
+        $array['BB'] = $fct->Fct->Colaboracion->Centro->codiPostal;
 
         /**
         $array[2] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
