@@ -157,8 +157,10 @@ class DualAlumnoController extends FctAlumnoController
                 $zip->addFile($this->printDOC4($fct),$carpeta_firma."DOCUMENTO 4 HORARIO DEL CICLO FORMATIVO EN EL CENTRO.pdf");break;
             case 'DOC5' :
                 $zip->addFile($this->getGestor('DOC5',$ciclo),$carpeta_firma."DOCUMENTO 5 PROGRAMA DE FORMACIÓN DE MÓDULOS EN DUAL.odt");break;
+            case 'conveni':
+                $zip->addFile($this->printConveni($fct,$data),$carpeta_autor."CONVENI AMB L'EMPRESA COLABORADORA.pdf");break;
             case 'annexiv':
-                $zip->addFile($this->printAnexeIV($fct,$data),$carpeta_autor."ANEXO IV DECLARACION RESPONSABLE DE LA EMPRESA COLABORADORA.pdf");break;
+                $zip->addFile($this->printAnexeIV($fct,$data),$carpeta_autor."ANEXO IV DECLARACION RESPONSABLE DE L'EMPRESA COLABORADORA.pdf");break;
             case 'annexii' :
                 $zip->addFile($this->printAnexeXII($fct,$data),$carpeta_firma."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
             case 'annexv':
@@ -282,6 +284,76 @@ class DualAlumnoController extends FctAlumnoController
         $array[34] = $fc1->format('Y');
         $array[35] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;;
 
+        return $array;
+    }
+
+    public function printConveni($fct,$data){
+        $id = $fct->id;
+        $file = storage_path("tmp/dual$id/conveni.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/Conveni.pdf');
+            $pdf->fillform($this->makeArrayPdfConveni($fct,$data))
+                ->saveAs($file);
+        }
+        return $file;
+    }
+
+    protected function makeArrayPdfCOnveni($fct,$data){
+        $array[1] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
+        $array[2] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
+        if ($fct->Fct->Colaboracion->Ciclo->tipo == 1) {
+            $array['CORRESPONENT AL CICLE FORMATIU 1'] = 'GRAU MITJA';
+            $array['CORRESPONDIENTE AL CICLO FORMATIVO 1'] = 'GRADO MEDIO';
+        } else {
+            $array['CORRESPONENT AL CICLE FORMATIU 1'] = 'GRAU SUPERIOR';
+            $array['CORRESPONDIENTE AL CICLO FORMATIVO 1'] = 'GRADO SUPERIOR';
+        }
+        $array['CORRESPONENT AL CICLE FORMATIU 2'] = $fct->Fct->Colaboracion->Ciclo->vliteral;
+        $array['CORRESPONDIENTE AL CICLO FORMATIVO 1'] = $fct->Fct->Colaboracion->Ciclo->cliteral;
+
+
+        $array['undefined6'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
+        $array['undefined7'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
+        $array['carrerplaça'] = $fct->Fct->Colaboracion->Centro->Empresa->direccion;
+/**
+        $array[2] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
+
+        $array[4] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
+        $array[5] = 'Alacant';
+        $array[6] = 'Espanya';
+        $array[7] = $fct->Fct->Colaboracion->Centro->Empresa->codiPostal;
+        $array[8] = $fct->Fct->Colaboracion->Centro->Empresa->telefono;
+        $array[9] = $fct->Fct->Centro;
+        $array[10] = $fct->Fct->Colaboracion->Centro->direccion;
+        $array[11] = 'Alacant';
+        $array[12] = 'Espanya';
+        $array[13] = $fct->Fct->Colaboracion->Centro->codiPostal;
+        $array[14] = $fct->Fct->Colaboracion->Centro->telefono;
+        $array[15] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
+        $array[16] = $fct->Fct->Colaboracion->Ciclo->vliteral;
+        if ($fct->Fct->Colaboracion->Ciclo->tipo == 1) {
+            $array[17] = 'Sí';
+        }
+        else {
+            $array[19] = 'Sí';
+        }
+        $array[18] = 'Sí';
+        $array[21] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
+        $array[22] = 'Sí';
+        $array[24] = config('contacto.nombre');
+        $array[25] = config('contacto.codi');
+        $array[26] = 'Sí';
+        $array[28] = config('contacto.poblacion');
+        $array[29] = config('contacto.provincia');
+        $array[30] = config('contacto.email');
+        $fc1 = new Date($data);
+        Date::setlocale('ca');
+        $array[31] = config('contacto.poblacion');
+        $array[32] = $fc1->format('d');
+        $array[33] = $fc1->format('F');
+        $array[34] = $fc1->format('Y');
+        $array[35] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;;
+**/
         return $array;
     }
 

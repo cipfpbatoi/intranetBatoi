@@ -14,6 +14,12 @@
 
                     <h4>Signatura conveni</h4>
                     <div class="form-group item">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Conveni:</label>
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            <input type='checkbox' class="form-control" id='conveni' name='conveni' />
+                        </div>
+                    </div>
+                    <div class="form-group item">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Annex IV:</label>
                         <div class="col-md-3 col-sm-3 col-xs-12">
                             <input type='checkbox' class="form-control" id='annexiv' name='annexiv' />
