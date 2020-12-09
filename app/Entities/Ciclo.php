@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
 use Illuminate\Support\Facades\App;
+use Jenssegers\Date\Date;
 
 class Ciclo extends Model
 {
@@ -59,5 +60,10 @@ class Ciclo extends Model
      public function getLiteralAttribute()
     {
         return App::getLocale(session('lang')) == 'es' ? $this->cliteral : $this->vliteral;
+    }
+    public function getDataSignaturaDualAttribute($salida)
+    {
+        $fecha = new Date($salida);
+        return $fecha->format('d-m-Y');
     }
 }

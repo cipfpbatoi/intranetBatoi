@@ -300,7 +300,6 @@ class DualAlumnoController extends FctAlumnoController
 
     protected function makeArrayPdfCOnveni($fct,$data){
         $array[1] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
-        //$array[2] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
         if ($fct->Fct->Colaboracion->Ciclo->tipo == 1) {
             $array['CORRESPONENT AL CICLE FORMATIU 1'] = 'GRAU MITJA';
             $array['CORRESPONDIENTE AL CICLO FORMATIVO 1'] = 'GRADO MEDIO';
@@ -319,7 +318,7 @@ class DualAlumnoController extends FctAlumnoController
         $array['acceptar'] = config('contacto.nombre');
         $array['AA'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
-        //$array['NÚM CONVENI FP Dual'] = config('contacto.nombre');
+        $array['NÚM CONVENI FP Dual'] = $fct->Fct->Colaboracion->Ciclo->dataSignaturaDual;
 
 
 
