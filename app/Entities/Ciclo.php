@@ -14,7 +14,7 @@ class Ciclo extends Model
     
     protected $table = "ciclos";
     public $timestamps = false;
-    protected $fillable = [ 'ciclo','vliteral','cliteral', 'departamento','tipo','normativa','titol','rd','rd2','horasFct','acronim','llocTreball'];
+    protected $fillable = [ 'ciclo','vliteral','cliteral', 'departamento','tipo','normativa','titol','rd','rd2','horasFct','acronim','llocTreball','dataSignaturaDual'];
     protected $rules = [
         'tipo' => 'required',
         'departamento' => 'required'
@@ -22,6 +22,7 @@ class Ciclo extends Model
     protected $inputTypes = [
         'departamento' => ['type' => 'select'],
         'tipo' => ['type' => 'select'],
+        'dataSignaturaDual' => ['type' => 'date']
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
