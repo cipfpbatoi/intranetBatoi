@@ -316,56 +316,18 @@ class DualAlumnoController extends FctAlumnoController
         $array[11] =  $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array['undefined_4'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0];
 
-        $array['undefined_3'] =
+        $array['undefined_3'] = config('contacto.nombre');
+        $array['undefined_6'] = config('contacto.direccion');
+        $array['undefined_7'] = config('contacto.director');
         $array['AA'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
-        $array['NÚM CONVENI FP Dual'] = config('contacto.nombre');
+        //$array['NÚM CONVENI FP Dual'] = config('contacto.nombre');
 
 
 
         $array['Província de'] = 'Alacant';
         $array['CP'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1];
-        //$array['BB'] =
 
-        /**
-        $array[2] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
-
-        $array[4] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
-        $array[5] = 'Alacant';
-        $array[6] = 'Espanya';
-        $array[7] = $fct->Fct->Colaboracion->Centro->Empresa->codiPostal;
-        $array[8] = $fct->Fct->Colaboracion->Centro->Empresa->telefono;
-        $array[9] = $fct->Fct->Centro;
-        $array[10] = $fct->Fct->Colaboracion->Centro->direccion;
-        $array[11] = 'Alacant';
-        $array[12] = 'Espanya';
-        $array[13] = $fct->Fct->Colaboracion->Centro->codiPostal;
-        $array[14] = $fct->Fct->Colaboracion->Centro->telefono;
-        $array[15] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
-        $array[16] = $fct->Fct->Colaboracion->Ciclo->vliteral;
-        if ($fct->Fct->Colaboracion->Ciclo->tipo == 1) {
-            $array[17] = 'Sí';
-        }
-        else {
-            $array[19] = 'Sí';
-        }
-        $array[18] = 'Sí';
-        $array[21] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
-        $array[22] = 'Sí';
-        $array[24] = config('contacto.nombre');
-        $array[25] = config('contacto.codi');
-        $array[26] = 'Sí';
-        $array[28] = config('contacto.poblacion');
-        $array[29] = config('contacto.provincia');
-        $array[30] = config('contacto.email');
-        $fc1 = new Date($data);
-        Date::setlocale('ca');
-        $array[31] = config('contacto.poblacion');
-        $array[32] = $fc1->format('d');
-        $array[33] = $fc1->format('F');
-        $array[34] = $fc1->format('Y');
-        $array[35] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;;
-**/
         return $array;
     }
 
