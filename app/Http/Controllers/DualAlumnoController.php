@@ -316,9 +316,9 @@ class DualAlumnoController extends FctAlumnoController
         $array[11] =  $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array['undefined_4'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0];
 
-        $array['undefined_3'] = config('contacto.nombre');
-        $array['undefined_6'] = config('contacto.direccion');
-        $array['undefined_7'] = config('contacto.director');
+        $array['undefined'] = config('contacto.nombre');
+        $array[11] = config('contacto.direccion');
+        $array[22] = config('contacto.director');
         $array['AA'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
         //$array['NÚM CONVENI FP Dual'] = config('contacto.nombre');
