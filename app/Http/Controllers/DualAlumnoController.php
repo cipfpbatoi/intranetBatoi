@@ -316,7 +316,7 @@ class DualAlumnoController extends FctAlumnoController
         $array['undefined_4'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0];
 
         $array['acceptar'] = config('contacto.nombre');
-        $array['BB'] = $fct->Fct->Colaboracion->Ciclo->dataSignaturaDual;
+        $array['22'] = $fct->Fct->Colaboracion->Ciclo->dataSignaturaDual;
         $array['AA'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
 
