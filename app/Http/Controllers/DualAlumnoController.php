@@ -313,7 +313,7 @@ class DualAlumnoController extends FctAlumnoController
 
 
         $array['undefined_5'] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
-        $array[11] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
+        $array[11] =  $fct->Fct->Colaboracion->Centro->codiPostal;
         $array['undefined_4'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0];
 
         $array['undefined_3'] =
@@ -323,9 +323,9 @@ class DualAlumnoController extends FctAlumnoController
 
 
 
-        $array['Província'] = 'Alacant';
+        $array['Província de'] = 'Alacant';
         $array['CP'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1];
-        $array['BB'] = $fct->Fct->Colaboracion->Centro->codiPostal;
+        //$array['BB'] =
 
         /**
         $array[2] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
