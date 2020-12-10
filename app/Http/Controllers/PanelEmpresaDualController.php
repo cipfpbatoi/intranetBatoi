@@ -91,6 +91,16 @@ class PanelEmpresaDualController extends IntranetController
         return $file;
     }
 
+    public function printConveni($colaboracion){
+        $file = storage_path("tmp/dual$colaboracion->id/conveni.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/Conveni.pdf');
+            return $pdf->fillform($this->makeArrayPdfConveni($colaboracion))
+                ->saveAs($file);
+        }
+        return $file;
+    }
+
     protected function makeArrayPdfAnexoIV($colaboracion){
         $array[1] = $colaboracion->Centro->Empresa->nombre;
         $array[2] = $colaboracion->Centro->Empresa->cif;
@@ -134,15 +144,7 @@ class PanelEmpresaDualController extends IntranetController
         return $array;
     }
 
-    public function printConveni($colaboracion){
-        $file = storage_path("tmp/dual$colaboracion->id/conveni.pdf");
-        if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/Conveni.pdf');
-            return $pdf->fillform($this->makeArrayPdfConveni($colaboracion))
-                ->saveAs($file);
-        }
-        return $file;
-    }
+
 
     protected function makeArrayPdfConveni($colaboracion){
         $array[1] = $colaboracion->Centro->Empresa->nombre;
@@ -181,11 +183,10 @@ class PanelEmpresaDualController extends IntranetController
         }
         $zip = new \ZipArchive();
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-        //$zip->addFile($this->printConveni($colaboracion),$carpeta_autor."CONVENI AMB L'EMPRESA COLABORADORA.pdf");
         $zip->addFile($this->printAnexeIV($colaboracion),$carpeta_autor."ANEXO IV DECLARACION RESPONSABLE DE L'EMPRESA COLABORADORA.pdf");
         $zip->addFile($this->printConveni($colaboracion),$carpeta_autor."CONVENI AMB L'EMPRESA COLABORADORA.pdf");
         $zip->close();
-        $this->deleteDir($folder);
+        //$this->deleteDir($folder);
 
         return response()->download($zip_file);
     }
