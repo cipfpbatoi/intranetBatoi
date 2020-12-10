@@ -189,6 +189,8 @@ Route::get('/empresa/{empresa}/detalle', ['as' => 'empresa.detalle', 'uses' => '
 Route::get('/empresa/{empresa}/document', ['as' => 'empresa.document', 'uses' => 'EmpresaController@document']);
 Route::get('/colaboracion',['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/empresaSC',['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCController@index']);
+Route::get('/empresaDual',['as'=>'empresaDual.index','uses'=>'PanelEmpresaDualController@index']);
+
 
 Route::get('/misColaboraciones',['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
 Route::get('/colaboracion/inicia', ['as' => 'PanelColaboracion.inicia', 'uses' => 'PanelColaboracionController@inicia']);
@@ -202,6 +204,10 @@ Route::get('/colaboracion/visita', ['as' => 'PanelColaboracion.visita', 'uses' =
 
 Route::get('/colaboracion/{colaboracion}/contacto', 'PanelColaboracionController@sendFirstContact');
 Route::get('/colaboracion/{colaboracion}/info', 'PanelColaboracionController@sendRequestInfo');
+Route::get('/colaboracion/{colaboracion}/print', 'PanelEmpresaDualController@print');
+
+
+
 
 Route::get('/fct/{fct}/documentacion', 'PanelColaboracionController@sendDocumentation');
 Route::get('/fct/{fct}/student', 'PanelColaboracionController@sendStudent');
