@@ -185,7 +185,7 @@ class PanelEmpresaDualController extends IntranetController
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         $zip->addFile($this->printConveni($colaboracion),$carpeta_autor."CONVENI AMB LEMPRESA COLABORADORA.pdf");
         $zip->addFile($this->printAnexeIV($colaboracion),$carpeta_autor."ANEXO IV DECLARACION RESPONSABLE DE L'EMPRESA COLABORADORA.pdf");
-        sleep(1);
+        sleep(5);
         $zip->close();
         $this->deleteDir($folder);
 
