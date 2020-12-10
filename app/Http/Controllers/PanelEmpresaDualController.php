@@ -174,7 +174,7 @@ class PanelEmpresaDualController extends IntranetController
     protected function print($idColaboracion){
         $colaboracion = Colaboracion::find($idColaboracion);
         $folder = storage_path("tmp/dual$idColaboracion/");
-        $carpeta_autor = $colaboracion->Centro."/010_FaseAutoritzacioConveni/";
+        $carpeta_autor = $colaboracion->Centro->Empresa->nombre."/010_FaseAutoritzacioConveni/";
         $zip_file = storage_path("tmp/dual_".$colaboracion->Centro->Empresa->nombre.".zip");
         if (!file_exists($folder)) {
             mkdir($folder, 0777, true);
