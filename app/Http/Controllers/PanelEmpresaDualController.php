@@ -86,7 +86,7 @@ class PanelEmpresaDualController extends IntranetController
         $file = storage_path("tmp/dual$colaboracion/anexo_iv.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/ANEXO_IV.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoIV($colaboracion))->send();
+            $pdf->fillform($this->makeArrayPdfAnexoIV($colaboracion))->saveAs($file);;
         }
         return $file;
     }
@@ -129,7 +129,7 @@ class PanelEmpresaDualController extends IntranetController
         $array[32] = $fc1->format('d');
         $array[33] = $fc1->format('F');
         $array[34] = $fc1->format('Y');
-        $array[35] = $colaboracion->Centro->Empresa->gerente;;
+        $array[35] = $colaboracion->Centro->Empresa->gerente;
 
         return $array;
     }
@@ -139,7 +139,7 @@ class PanelEmpresaDualController extends IntranetController
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/Conveni.pdf');
             return $pdf->fillform($this->makeArrayPdfConveni($colaboracion))
-                ->send();
+                ->saveAs($file);;
         }
         return $file;
     }
