@@ -100,8 +100,8 @@ class PanelEmpresaDualController extends IntranetController
         $array[6] = 'Espanya';
         $array[7] = $colaboracion->Centro->Empresa->codiPostal;
         $array[8] = $colaboracion->Centro->Empresa->telefono;
-        $array[9] = $colaboracion->Centro;
-        $array[10] = $colaboracion->Centro->direccion;
+        $array[9] = $colaboracion->Centro->direccion;
+        $array[10] = $colaboracion->Centro->localidad;
         $array[11] = 'Alacant';
         $array[12] = 'Espanya';
         $array[13] = $colaboracion->Centro->codiPostal;
@@ -181,8 +181,9 @@ class PanelEmpresaDualController extends IntranetController
         }
         $zip = new \ZipArchive();
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-        $zip->addFile($this->printConveni($colaboracion),$carpeta_autor."CONVENI AMB L'EMPRESA COLABORADORA.pdf");
+        //$zip->addFile($this->printConveni($colaboracion),$carpeta_autor."CONVENI AMB L'EMPRESA COLABORADORA.pdf");
         $zip->addFile($this->printAnexeIV($colaboracion),$carpeta_autor."ANEXO IV DECLARACION RESPONSABLE DE L'EMPRESA COLABORADORA.pdf");
+        $zip->addFile($this->printConveni($colaboracion),$carpeta_autor."CONVENI AMB L'EMPRESA COLABORADORA.pdf");
         $zip->close();
         $this->deleteDir($folder);
 
@@ -193,7 +194,9 @@ class PanelEmpresaDualController extends IntranetController
     {
         $files = glob("$folder*"); //obtenemos todos los nombres de los ficheros
         foreach ($files as $file) {
-            if (is_file($file)) unlink($file); //elimino el fichero
+            if (is_file($file)) {
+                unlink($file);
+            } //elimino el fichero
         }
         rmdir($folder);
     }
