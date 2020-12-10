@@ -13,11 +13,9 @@ use Intranet\Entities\Ciclo;
 use Jenssegers\Date\Date;
 use mikehaertl\pdftk\Pdf;
 use Response;
-use Exception;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Redirect;
+
 use Intranet\Botones\BotonImg;
-use Illuminate\Support\Facades\Session;
+
 
 /**
  * Class ColaboracionController

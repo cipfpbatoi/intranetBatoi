@@ -204,7 +204,7 @@ Route::get('/colaboracion/visita', ['as' => 'PanelColaboracion.visita', 'uses' =
 
 Route::get('/colaboracion/{colaboracion}/contacto', 'PanelColaboracionController@sendFirstContact');
 Route::get('/colaboracion/{colaboracion}/info', 'PanelColaboracionController@sendRequestInfo');
-Route::get('/colaboracion/{colaboracion}/print', 'PanelEmpresaDualController@print');
+Route::get('/colaboracion/{colaboracion}/print', 'ColaboracionController@print');
 
 
 

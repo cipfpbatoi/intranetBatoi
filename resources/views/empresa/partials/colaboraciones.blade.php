@@ -1,10 +1,14 @@
 @php
      $tutor = \Intranet\Entities\Grupo::find(AuthUser()->GrupoTutoria);
      if (!$tutor) $tutor = \Intranet\Entities\Grupo::QTutor(null,true)->first();
+     $grupoDual = \Intranet\Entities\Grupo::where('tutorDual',AuthUser()->dni)->first();
+     $cicloDual =  $grupoDual ? $grupoDual->Ciclo->id :null;
 @endphp
 <ul class="messages colaboracion">
         @foreach ($elemento->colaboraciones as $colaboracion)
-            @php $editar = $misColaboraciones->contains($colaboracion->id); @endphp
+            @php $editar = $misColaboraciones->contains($colaboracion->id);
+                 $dual = ($cicloDual == $colaboracion->Ciclo->id) ? 1 : 0;
+            @endphp
         <li>
             <div class="message_date" style="width:50%">
                 <h4>
@@ -20,7 +24,11 @@
                             <i class="fa fa-bar-chart"></i>Poll
                         </a>
                     @endif
-                    
+                    @if ($dual)
+                        <a href="/colaboracion/{{$colaboracion->id}}/print">
+                            <i class="fa fa-file-zip-o"></i>Dual
+                        </a>
+                    @endif
                 </h4>
             </div>
             <div class="message_wrapper" style="width:50%">
