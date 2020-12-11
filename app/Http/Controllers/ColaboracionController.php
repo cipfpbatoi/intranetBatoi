@@ -163,7 +163,7 @@ class ColaboracionController extends IntranetController
         return view($this->chooseView('show'), compact('elemento','contactCol','contactFct','contactAl','fcts'));
     }
     public function printAnexeIV($colaboracion){
-        $file = storage_path("tmp/dual$colaboracion->id/anexo_iv.pdf");
+        $file = storage_path("tmp/dual$colaboracion->id/ANEXO_IV.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/ANEXO_IV.pdf');
             $pdf->fillform($this->makeArrayPdfAnexoIV($colaboracion))->saveAs($file);
@@ -172,7 +172,7 @@ class ColaboracionController extends IntranetController
     }
 
     public function printConveni($colaboracion){
-        $file = storage_path("tmp/dual$colaboracion->id/conveni.pdf");
+        $file = storage_path("tmp/dual$colaboracion->id/Conveni.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/Conveni.pdf');
             return $pdf->fillform($this->makeArrayPdfConveni($colaboracion))
