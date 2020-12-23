@@ -217,9 +217,10 @@ class PanelListadoEntregasController extends BaseController
         {
             if ($modulo->seguimiento == 0) {
                 $empty++;
+                dd($modulo);
             }
         }
-        return $empty;     
+        return $empty;
     }
     
     

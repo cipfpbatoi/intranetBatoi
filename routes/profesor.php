@@ -189,7 +189,6 @@ Route::get('/empresa/{empresa}/detalle', ['as' => 'empresa.detalle', 'uses' => '
 Route::get('/empresa/{empresa}/document', ['as' => 'empresa.document', 'uses' => 'EmpresaController@document']);
 Route::get('/colaboracion',['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/empresaSC',['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCController@index']);
-Route::get('/empresaDual',['as'=>'empresaDual.index','uses'=>'PanelEmpresaDualController@index']);
 
 
 Route::get('/misColaboraciones',['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
@@ -380,7 +379,8 @@ Route::get('/alumnoresultado/{seguimiento}/delete',['as'=>'seguimiento.alumnos.d
 
 //Programacion
 Route::resource('/programacion', 'ProgramacionController', ['except' => ['destroy', 'update', 'show']]);
-Route::put('/programacion/{programacion}/seguimiento', 
+
+Route::put('/programacion/{programacion}/seguimiento',
         ['as' => 'programacion.updateseguimiento', 'uses' => 'ProgramacionController@updateSeguimiento']);
 Route::get('/programacion/{programacion}/seguimiento', ['as' => 'programacion.seguimiento', 'uses' => 'ProgramacionController@seguimiento']);
 Route::get('/itaca',['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
@@ -426,3 +426,8 @@ Route::post('/myMail','MyMailController@send');
 Route::get('/qualitat/documento',['as' => 'qualitat.docuentacio' ,'uses' => 'QualitatDocumentoController@index']);
 
 Route::get('fiCurs',['as'=>'fiCurs','uses'=>'PanelFinCursoController@index']);
+
+
+Route::resource('/lote','LoteController');
+Route::get('/lote/{id}/detalle',['as'=>'lote.detalle','uses'=>'LoteController@detalle']);
+Route::get('/articulo/{id}/lote',['as'=>'articulo.lote','uses'=>'ArticuloController@indice']);

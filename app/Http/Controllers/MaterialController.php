@@ -1,10 +1,8 @@
 <?php
-
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Material;
+use Intranet\Entities\Lote;
 use Illuminate\Support\Facades\Auth;
-use Intranet\Entities\Incidencia;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 
@@ -22,7 +20,7 @@ class MaterialController extends IntranetController
     /**
      * @var string
      */
-    protected $model = 'Material';
+    protected $model = 'Lote';
     /**
      * @var array
      */
@@ -73,7 +71,7 @@ class MaterialController extends IntranetController
     public function copy($id)
     {
         $elemento = Material::find($id);
-        $copia = New Material;
+        $copia = new Material;
         $copia->fill($elemento->toArray());
         $copia->save();
         return redirect("/material/$copia->id/edit");

@@ -6,7 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {{ Html::style('/css/estilo.css')}}
-    {{ Html::style('/css/app.css')}}  
+    {{ Html::style('/css/app.css')}}
+    @stack('styles')
     @yield('css')
   </head>
   <body class="nav-md">
@@ -36,6 +37,7 @@
     @endif
     {{ HTML::script('/js/app.js') }}
     @yield('scripts')
+    @stack('scripts')
     {{ HTML::script('/js/ppIntranet.js') }}
   </body>
 </html>
