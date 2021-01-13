@@ -1,7 +1,6 @@
 $(function(){
 	$('.editGrupo').on("click",editRow);
 	$('#error').hide();
-        
 })
 
 function editRow() {

@@ -103,6 +103,11 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/matricula/{token}','AlumnoReunionController@getDadesMatricula');
     Route::post('/alumno/{dni}/foto','AlumnoController@putImage');
 
+    Route::resource('lote','LoteController',['except' => ['edit', 'create']]);
+    Route::get('lote/{id}/articulos','LoteController@getArticulos');
+    Route::put('lote/{id}/articulos','LoteController@putArticulos');
+    Route::resource('articulo','ArticuloController',['except' => ['edit', 'create']]);
+    Route::get('articulo/{id}/lote/{idLote}','ArticuloController@putLote');
     //Route::get('/convenio','EmpresaController@indexConvenio');
 });
 

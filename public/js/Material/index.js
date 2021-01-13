@@ -130,7 +130,7 @@ $(function () {
                     info+=` - ${titles.eq(i).text().trim()}: ${item.innerHTML}\n`;                  
                 }
             })
-            if (confirm('Vas a borrar el elemento:'+info)) {
+            if (confirm('Vas a donar de baixa el lot:'+info)) {
                 $(this).attr("href","/material/"+$(this).parent().siblings().first().text()+"/delete");
             } else {
                 event.preventDefault();            

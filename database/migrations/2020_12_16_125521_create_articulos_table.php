@@ -23,12 +23,12 @@ class CreateArticulosTable extends Migration {
 			$table->string('espacio_id', 10)->collation('utf8_unicode_ci')->index('espacios');
 			$table->smallInteger('unidades')->default(1);
 			$table->date('fechaultimoinventario')->nullable();
-			$table->date('fechabaja')->nullable();
 			$table->integer('numeracionInventario')->nullable();
 			$table->integer('lote_id')->unsigned()->nullable();
             $table->foreign('espacio_id')->references('aula')->on('espacios')->onUpdate('CASCADE')->onDelete('RESTRICT');
-            $table->foreign('lote_id')->references('id')->on('lotes')->onUpdate('CASCADE')->onDelete('RESTRICT');
+            $table->foreign('lote_id')->references('id')->on('lotes')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->timestamps();
+            $table->softDeletes();
 
         });
 	}

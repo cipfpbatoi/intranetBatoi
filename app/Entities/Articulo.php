@@ -4,6 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Estadomaterial;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Intranet\Entities\Espacio;
 use Intranet\Events\ActivityReport;
 
@@ -13,7 +14,7 @@ class Articulo extends Model
     protected $table = 'articulos';
     protected $fillable = [ 'descripcion','marca','modelo','identificacion', 'espacio_id', 'estado','unidades','numeracionInventario'];
 
-    use BatoiModels;
+    use BatoiModels,SoftDeletes;
 
     protected $rules = [
         'espacio_id' => 'required',
@@ -27,6 +28,9 @@ class Articulo extends Model
 
     protected $attributes = ['estado'=>1];
 
+    public function Lote(){
+        return $this->belongsTo(Lote::class);
+    }
 
     public function Espacios()
     {

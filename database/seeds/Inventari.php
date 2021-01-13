@@ -31,23 +31,33 @@ class Inventari extends Seeder
         return $lote;
     }
 
+    private function llenaLote($lote,$articulos){
+        $total = 0;
+        foreach ($articulos as $articulo){
+            $total += $this->creaArticulo($articulo,$lote->id);
+        }
+        $lote->unidades = $total;
+        $lote->save();
+    }
+
     private function creaArticulo($item,$id){
         $articulo = new Articulo();
         $articulo->lote_id = $id;
         if ($item->ISBN){
-            $articulo->descripcion = $item->descripcion;
             $articulo->identificacion = $item->ISBN;
         } else {
             $articulo->identificacion = $item->nserieprov;
             $articulo->marca = $item->marca;
             $articulo->modelo = $item->modelo;
         }
+        $articulo->descripcion = $item->descripcion;
         $articulo->estado = $item->estado;
         $articulo->espacio_id = $item->espacio;
         $articulo->unidades = $item->unidades;
         $articulo->fechaultimoinventario = $item->fechaultimoinventario;
-        $articulo->fechaBaja = $item->fechaBaja;
         $articulo->save();
+        return $item->unidades;
+
     }
 
     public function run()
@@ -63,20 +73,44 @@ class Inventari extends Seeder
         }
 
         // Llibres
-        $llibre = Lote::create([
-            'descripcion' => 'LIBROS',
+        $baixes = Lote::create([
+            'descripcion' => 'ARTICLES PENDENTS DE BAIXA DEFINITIVA',
             'inventariable' => 0,
         ]);
+        $mobiliari= Lote::create([
+            'descripcion' => 'MOBILIARI',
+            'inventariable' => 1,
+            'procedencia' => 1
+        ]);
+        $llibres = Lote::create([
+            'descripcion' => 'LLIBRES',
+            'inventariable' => 0,
+        ]);
+
+        //baixes
+        $artBaixa = Material::where('estado',3)->get();
+        $this->llenaLote($baixes,$artBaixa);
+
+        //llibres
         $libros = Material::whereNotNull('ISBN')->get();
-        foreach ($libros as $libro){
-            $this->creaArticulo($libro,$llibre->id);
-        }
-        $llibre->unidades = count($libros);
-        $llibre->save();
+        $this->llenaLote($llibres,$libros);
 
+        //mobiliari
+        $allMobles = Material::where('descripcion','like','CADIR%')
+            ->orWhere('descripcion','like','TAULA%')
+            ->orWhere('descripcion','like','TAULES%')
+            ->orWhere('descripcion','like','ARMAR%')
+            ->orWhere('descripcion','like','SILL%')
+            ->orWhere('descripcion','like','MESA%')
+            ->orWhere('descripcion','like','MESIT%')
+            ->get();
+        $mobles = $allMobles->diff($artBaixa);
+        $this->llenaLote($mobiliari,$mobles);
 
-        $allMaterials = Material::orderBy('descripcion')->whereNull('ISBN')->get();
-        $grouped = $allMaterials->groupBy(function ($item, $key) {
+        $allMaterials = Material::orderBy('descripcion')->whereNull('ISBN')
+            ->where('estado','<>',3)->get();
+        $materials = $allMaterials->diff($mobles);
+        $grouped = $materials->groupBy(function ($item, $key) {
             return strtoupper($item->descripcion).$item->procedencia.strtoupper($item->proveedor);
         });
 
@@ -84,10 +118,9 @@ class Inventari extends Seeder
             foreach ($grup as $key => $item){
                 if ($key == '0') {
                     $lote = $this->creaLote($item);
-                    $total = $lote->unidades;
+                    $total = 0;
                 }
-                $this->creaArticulo($item,$lote->id);
-                $total ++;
+                $total += $this->creaArticulo($item,$lote->id);
             }
             $lote->unidades = $total;
             $lote->save();

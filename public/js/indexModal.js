@@ -6,7 +6,6 @@ $(function () {
     var token = $("#_token").text();
     
     $('#create').on('hidden.bs.modal', function () {
-        console.log('hola');// do something…
         var id=$(this).find('#id').val();
         if (id) {
             $(id).find('.fa-edit').parents('a').attr("href", jQuery(location).attr('href')+"/"+id+"/edit");

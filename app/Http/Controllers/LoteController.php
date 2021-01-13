@@ -2,14 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Material;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Entities\Incidencia;
-use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 
 /**
- * Class MaterialController
+ * Class LoteController
  * @package Intranet\Http\Controllers
  */
 class LoteController extends IntranetController
@@ -26,12 +22,13 @@ class LoteController extends IntranetController
     /**
      * @var array
      */
-    //protected $vista = ['index' => 'Material'];
+    protected $vista = ['index' => 'Lote'];
     /**
      * @var array
      */
+    //protected $modal = true;
 
-    protected $gridFields = ['id', 'descripcion', 'proveedor', 'unidades','inventariable' ,'registre'];
+    protected $gridFields = [ 'id','descripcion','origen', 'proveedor' ,'registre','unidades'];
     /**
      * @var array
      */
@@ -52,7 +49,7 @@ class LoteController extends IntranetController
 
     protected function iniBotones()
     {
-        $this->panel->setBotonera(['create'], ['delete', 'edit', 'detalle', 'copy']);
+        $this->panel->setBoton('index', new BotonBasico('lote.create', ['roles' => [config('roles.rol.direccion'), config('roles.rol.mantenimiento')]]));
     }
 
     public function detalle($id){

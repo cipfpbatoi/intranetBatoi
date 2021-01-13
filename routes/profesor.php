@@ -428,6 +428,10 @@ Route::get('/qualitat/documento',['as' => 'qualitat.docuentacio' ,'uses' => 'Qua
 Route::get('fiCurs',['as'=>'fiCurs','uses'=>'PanelFinCursoController@index']);
 
 
-Route::resource('/lote','LoteController');
+Route::resource('/lote','LoteController', ['except' => ['destroy', 'update','show','store']]);
+Route::post('/lote/create',['as' => 'lote.store','uses'=> 'LoteController@store']);
 Route::get('/lote/{id}/detalle',['as'=>'lote.detalle','uses'=>'LoteController@detalle']);
+Route::get('/lote/{id}/show', ['as' => 'lote.show', 'uses' => 'LoteController@show']);
+Route::get('/lote/{id}/delete',['as' => 'lote.delete', 'uses' => 'LoteController@destroy']);
+Route::put('/lote/{id}/edit', ['as' => 'lote.update', 'uses' => 'LoteController@update']);
 Route::get('/articulo/{id}/lote',['as'=>'articulo.lote','uses'=>'ArticuloController@indice']);

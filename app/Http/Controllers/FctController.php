@@ -160,7 +160,7 @@ class FctController extends IntranetController
      */
     private function quienSaleDocumento($tipoDocumento){
         if ($tipoDocumento == 1) {
-            return AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idAlumno')->orderBy('desde')->get();
+            return AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idFct')->orderBy('desde')->get();
         }
         if ($tipoDocumento == 2) {
             return AlumnoFct::misFcts()->where('desde','<=',Hoy())->where('hasta','>=',Hoy())->orderBy('idAlumno')->orderBy('desde')->get();

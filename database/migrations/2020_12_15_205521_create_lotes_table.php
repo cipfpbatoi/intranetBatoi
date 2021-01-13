@@ -21,7 +21,7 @@ class CreateLotesTable extends Migration {
 			$table->string('proveedor', 90)->nullable();
 			$table->string('registre',12)->nullable();
 			$table->boolean('inventariable')->default(1);
-		});
+        });
 	}
 
 

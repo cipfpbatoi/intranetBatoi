@@ -32,7 +32,6 @@ class MaterialController extends IntranetController
     /**
      * @var array
      */
-    protected $parametresVista = ['modal' => ['explicacion']];
 
     /**
      * MaterialController constructor.

@@ -12,23 +12,32 @@ class Lote extends Model
 
     protected $table = 'lotes';
     public $timestamps = false;
-    protected $fillable = ['identificacion', 'descripcion', 'marca', 'modelo',  'procedencia', 'proveedor','unidades'];
+    protected $fillable = [ 'descripcion',   'procedencia', 'proveedor','registre','inventariable' ];
 
     use BatoiModels;
 
     protected $rules = [
         'descripcion' => 'required',
-        'unidades' => 'numeric',
     ];
     protected $inputTypes = [
         'procedencia' => ['type' => 'select'],
-        'estado' => ['type' => 'select']
+        'estado' => ['type' => 'select'],
+        'inventariable' => ['type' => 'checkbox']
     ];
 
-
+    public function Articulos(){
+        return $this->hasMany(Articulo::class);
+    }
     public function getProcedenciaOptions()
     {
         return config('auxiliares.procedenciaMaterial');
+    }
+
+    public function getInventarioAttribute(){
+        return $this->inventariable?'Sí':'No';
+    }
+    public function getOrigenAttribute(){
+        return $this->procedencia?config('auxiliares.procedenciaMaterial')[$this->procedencia]:config('auxiliares.procedenciaMaterial')[0];
     }
 
 }
