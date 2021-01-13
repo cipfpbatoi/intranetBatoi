@@ -133,7 +133,6 @@ class Actividad extends Model
     public static function loadPoll(){
         $actividades = collect();
         foreach (AuthUser()->Grupo as $grupo) {
-            dd($grupo->Actividades);
             foreach ($grupo->Actividades as $actividad) {
                 $actividades->push(['option1' => $actividad]);
             }
