@@ -5,6 +5,7 @@ use Intranet\Entities\Lote;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
+use Intranet\Entities\Material;
 
 /**
  * Class MaterialController
@@ -20,7 +21,7 @@ class MaterialController extends IntranetController
     /**
      * @var string
      */
-    protected $model = 'Lote';
+    protected $model = 'Material';
     /**
      * @var array
      */
