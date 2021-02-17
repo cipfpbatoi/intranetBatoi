@@ -27,10 +27,9 @@ class Resultado extends Model
         'udProg',
         'udImp',
         'observaciones',
-        'adquiridosNO',
         'idProfesor',
-        
     ];
+
     protected $rules = [
         'evaluacion' => 'required|composite_unique:resultados,idModuloGrupo,evaluacion',
         'matriculados' => 'required|numeric|max:60',
@@ -43,7 +42,6 @@ class Resultado extends Model
         'idModuloGrupo' => ['type' => 'select'],
         'evaluacion' => ['type' => 'select'],
         'observaciones' => ['type' => 'textarea'],
-        'adquiridosNO' => ['type' => 'textarea'],
         'idProfesor' => ['type' => 'text'],
         
     ];

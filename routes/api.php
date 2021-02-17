@@ -107,7 +107,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('lote/{id}/articulos','LoteController@getArticulos');
     Route::put('lote/{id}/articulos','LoteController@putArticulos');
     Route::resource('articulo','ArticuloController',['except' => ['edit', 'create']]);
-    Route::get('articulo/{id}/lote/{idLote}','ArticuloController@putLote');
+    Route::get('articulo/{id}/materiales','ArticuloController@getMateriales');
     //Route::get('/convenio','EmpresaController@indexConvenio');
 });
 

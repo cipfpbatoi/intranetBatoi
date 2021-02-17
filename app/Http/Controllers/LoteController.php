@@ -28,7 +28,7 @@ class LoteController extends IntranetController
      */
     //protected $modal = true;
 
-    protected $gridFields = [ 'id','descripcion','origen', 'proveedor' ,'registre','unidades'];
+    protected $gridFields = [ 'registre', 'proveedor','procedencia', 'estado','fechaAlta'];
     /**
      * @var array
      */

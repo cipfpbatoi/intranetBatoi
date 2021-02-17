@@ -15,21 +15,12 @@ class CreateArticulosTable extends Migration {
 		Schema::create('articulos', function(Blueprint $table)
 		{
 			$table->increments('id');
+            $table->string('lote_registre',12)->nullable();
             $table->string('descripcion', 200)->nullable();
             $table->string('marca', 50)->nullable();
             $table->string('modelo', 50)->nullable();
-            $table->string('identificacion', 35)->nullable();
-			$table->tinyInteger('estado')->default(1);
-			$table->string('espacio_id', 10)->collation('utf8_unicode_ci')->index('espacios');
-			$table->smallInteger('unidades')->default(1);
-			$table->date('fechaultimoinventario')->nullable();
-			$table->integer('numeracionInventario')->nullable();
-			$table->integer('lote_id')->unsigned()->nullable();
-            $table->foreign('espacio_id')->references('aula')->on('espacios')->onUpdate('CASCADE')->onDelete('RESTRICT');
-            $table->foreign('lote_id')->references('id')->on('lotes')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->timestamps();
-            $table->softDeletes();
-
+            $table->smallInteger('unidades')->default(1);
+            $table->foreign('lote_registre')->references('registre')->on('lotes')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
 	}
 

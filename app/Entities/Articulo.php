@@ -12,21 +12,17 @@ class Articulo extends Model
 {
 
     protected $table = 'articulos';
-    protected $fillable = [ 'descripcion','marca','modelo','identificacion', 'espacio_id', 'estado','unidades','numeracionInventario'];
+    public $timestamps = false;
+    protected $fillable = [ 'descripcion','marca','modelo', 'unidades','lote_id','lote_registre'];
 
-    use BatoiModels,SoftDeletes;
+    use BatoiModels;
 
     protected $rules = [
-        'espacio_id' => 'required',
         'unidades' => 'numeric',
     ];
     protected $inputTypes = [
-        'espacio_id' => ['type' => 'select'],
-        'estado' => ['type' => 'select']
     ];
 
-
-    protected $attributes = ['estado'=>1];
 
     public function Lote(){
         return $this->belongsTo(Lote::class);
@@ -35,6 +31,10 @@ class Articulo extends Model
     public function Espacios()
     {
         return $this->belongsTo(Espacio::class, 'espacio_id', 'aula');
+    }
+    public function Materiales()
+    {
+        return $this->hasMany(Material::class,'articulo_id','id');
     }
 
     public function getEstadoOptions()

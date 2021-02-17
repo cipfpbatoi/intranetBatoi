@@ -16,6 +16,6 @@ class DatabaseSeeder extends Seeder
         //$this->call(ImportTableSeeder::class);
         //$this->call(newProject::class);
         //$this->call(ModifyEmpresas::class);
-        $this->call(Inventari::class);
+        //$this->call(Inventari::class);
     }
 }

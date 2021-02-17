@@ -4,9 +4,11 @@ namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Lote;
+use Intranet\Entities\Material;
 use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
+use Intranet\Http\Resources\LoteResource;
 use Jenssegers\Date\Date;
 
 class LoteController extends ApiBaseController
@@ -17,18 +19,13 @@ class LoteController extends ApiBaseController
     public function destroy($id)
     {
         $lote = Lote::find($id);
-        $lote_esborrats = Lote::find(1);
-        foreach ($lote->Articulos as $articulo){
-            $articulo->lote_id = 1;
-            if (!isset($articulo->descripcion)){
-                $articulo->descripcion = $lote->descripcion;
-            }
-            $articulo->save();
-            $lote_esborrats->unidades += $articulo->unidades;
-        }
         $lote->delete();
-        $lote_esborrats->save();
-        return $this->sendResponse(['deleted' => true,'total'=>$lote_esborrats->unidades], 'OK');
+        return $this->sendResponse(['success' => true], 'OK');
+    }
+
+    function index(){
+        $data = LoteResource::collection(Lote::get());
+        return $this->sendResponse($data, 'OK');
     }
 
     function getArticulos($lote){
@@ -36,27 +33,31 @@ class LoteController extends ApiBaseController
         return response()->json(['data' => $lote->Articulos,'lote'=> $lote]);
     }
 
-    function putArticulos(Request $request,$lote){
+    function putArticulos(Request $request,$lote)
+    {
         $lote = Lote::find($lote);
-        $loteACopiar = Lote::find($request->lote);
-        if ($lote->procedencia !== $loteACopiar->procedencia) {
-            return $this->sendError('Procedencia diferent');
-        }
-        foreach ($lote->Articulos as $articulo){
-            $articulo->lote_id = $request->lote;
-            if (!isset($articulo->descripcion)){
-                $articulo->descripcion = $lote->descripcion;
+        if ($request->inventariar){
+            foreach ($lote->Articulos as $articulo){
+                for ($i=0;$i<$articulo->unidades;$i++){
+                    $material = new Material(
+                        [   'descripcion'=>$articulo->descripcion,
+                            'marca' => $articulo->marca,
+                            'modelo' => $articulo->modelo,
+                            'procedencia'=> $lote->procedencia,
+                            'estado' => 1,
+                            'unidades' => 1,
+                            'proveedor' => $lote->proveedor,
+                            'inventariable' => 1,
+                            'registre' => $lote->id,
+                            'espacio' => 'INVENT',
+                            'articulo_id' => $articulo->id
+                        ]
+                    );
+                    $material->save();
+                }
             }
-            $loteACopiar->unidades += $articulo->unidades;
-            $articulo->save();
-            $lote->delete();
-            $loteACopiar->save();
         }
-        return $this->sendResponse(['updated' => json_encode($request),'total'=>$loteACopiar->unidades], 'OK');
+        return $this->sendResponse(['updated' => $lote ], 'OK');
     }
-
-
-
-
 
 }
