@@ -49,11 +49,7 @@ class LoteController extends IntranetController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('lote.create', ['roles' => [config('roles.rol.direccion'), config('roles.rol.mantenimiento')]]));
-    }
-
-    public function detalle($id){
-        return redirect(route('articulo.lote',$id));
+        $this->panel->setBoton('index', new BotonBasico('direccion.lote.create', ['text'=>'Nova Factura','roles' => config('roles.rol.direccion')]));
     }
 
 }
