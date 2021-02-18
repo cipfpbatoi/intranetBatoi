@@ -2,6 +2,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Articulo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
@@ -21,31 +22,21 @@ class ArticuloController extends IntranetController
      * @var string
      */
     protected $model = 'Articulo';
-    /**
-     * @var array
-     */
-    //protected $vista = ['index' => 'Material'];
-    /**
-     * @var array
-     */
+    protected $parametresVista = ['modal' => ['explicacion']];
 
-    protected $gridFields = [ 'identificacion','descripcion', 'estat', 'Espacio', 'unidades'];
-    /**
-     * @var array
-     */
-    //protected $parametresVista = ['modal' => ['explicacion']];
 
-    /**
-     * MaterialController constructor.
-     */
-    public function __construct()
+    protected $gridFields = ['id','lote_registre', 'descripcion', 'marca', 'modelo', 'unidades'];
+
+
+    public function search()
     {
-        $this->middleware($this->perfil);
-        parent::__construct();
+        return Articulo::whereHas('materiales', function (Builder $query) {
+            $query->where('espacio', 'like', 'INVENT');
+        })->get();
     }
 
-    public function search(){
-        return Articulo::where('lote_id',$this->search)->get();
-
+    protected function iniBotones()
+    {
+        $this->panel->setBoton('grid', new BotonImg('articulo.show'));
     }
 }

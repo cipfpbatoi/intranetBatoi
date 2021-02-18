@@ -426,3 +426,5 @@ Route::post('/myMail','MyMailController@send');
 Route::get('/qualitat/documento',['as' => 'qualitat.docuentacio' ,'uses' => 'QualitatDocumentoController@index']);
 
 Route::get('fiCurs',['as'=>'fiCurs','uses'=>'PanelFinCursoController@index']);
+
+Route::resource('/articulo','ArticuloController', ['except' => ['destroy', 'update','show','store']]);

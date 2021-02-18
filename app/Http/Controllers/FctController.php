@@ -42,7 +42,7 @@ class FctController extends IntranetController
      * @var array
      */
     protected $vista = ['show' => 'fct'];
-    protected $parametresVista = ['modal' => ['fecha']];
+
 
 
     /**

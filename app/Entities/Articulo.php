@@ -13,7 +13,7 @@ class Articulo extends Model
 
     protected $table = 'articulos';
     public $timestamps = false;
-    protected $fillable = [ 'descripcion','marca','modelo', 'unidades','lote_id','lote_registre'];
+    protected $fillable = ['lote_registre', 'descripcion', 'marca', 'modelo', 'unidades'];
 
     use BatoiModels;
 
@@ -24,35 +24,14 @@ class Articulo extends Model
     ];
 
 
-    public function Lote(){
-        return $this->belongsTo(Lote::class);
+    public function Lote()
+    {
+        return $this->belongsTo(Lote::class, 'lote_registre', 'registre');
     }
 
-    public function Espacios()
-    {
-        return $this->belongsTo(Espacio::class, 'espacio_id', 'aula');
-    }
     public function Materiales()
     {
-        return $this->hasMany(Material::class,'articulo_id','id');
-    }
-
-    public function getEstadoOptions()
-    {
-        return config('auxiliares.estadoMaterial');
-    }
-
-    public function getEspacioOptions()
-    {
-        return hazArray(Espacio::all(), 'aula', 'descripcion');
-    }
-
-    public function getEspacioAttribute(){
-        return $this->Espacios->descripcion;
-    }
-
-    public function getEstatAttribute(){
-        return config('auxiliares.estadoMaterial')[$this->estado];
+        return $this->hasMany(Material::class, 'articulo_id', 'id');
     }
 
 

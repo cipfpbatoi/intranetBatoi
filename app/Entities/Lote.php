@@ -19,7 +19,7 @@ class Lote extends Model
     use BatoiModels;
 
     protected $rules = [
-        'registre' => 'required|alpha_dash',
+        'registre' => 'required|alpha_dash|unique:lotes,registre',
     ];
     protected $inputTypes = [
         'registre' => ['type' => 'text'],

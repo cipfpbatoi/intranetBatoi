@@ -23,29 +23,11 @@ class LoteController extends IntranetController
      * @var array
      */
     protected $vista = ['index' => 'Lote'];
-    /**
-     * @var array
-     */
-    //protected $modal = true;
+
 
     protected $gridFields = [ 'registre', 'proveedor','procedencia', 'estado','fechaAlta'];
-    /**
-     * @var array
-     */
-    //protected $parametresVista = ['modal' => ['explicacion']];
 
-    /**
-     * MaterialController constructor.
-     */
-    public function __construct()
-    {
-        $this->middleware($this->perfil);
-        parent::__construct();
-    }
 
-    /**
-     *
-     */
 
     protected function iniBotones()
     {
