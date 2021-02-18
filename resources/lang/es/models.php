@@ -429,6 +429,12 @@ return array(
             'edit' => 'Editar Plantilla',
             'slave' => 'Ver preguntas',
         ),
+        'Lote' => array(
+            'show' => 'Factura :quien',
+            'index' => 'Libro de Facturas',
+            'edit' => 'Editar Factura',
+            'create' => 'Nueva Factura',
+        ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',
             'Curso' => 'Curso',
@@ -464,7 +470,8 @@ return array(
             'Ppoll' => 'Plantilla encuesta',
             'Poll' => 'Encuesta',
             'Option' => 'Pregunta',
-            'AlumnoResultado' => 'Avaluacio Alumne'
+            'AlumnoResultado' => 'Avaluacio Alumne',
+            'Lote' => 'Factura',
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

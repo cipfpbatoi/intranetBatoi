@@ -483,7 +483,8 @@ return array(
             'PPoll' => 'Plantilla Enquesta',
             'Poll' => 'Enquesta',
             'Option' => 'Pregunta',
-            'AlumnoResultado' => 'Avaluacio Alumne'
+            'AlumnoResultado' => 'Avaluacio Alumne',
+            'Lote' => 'Factura',
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',
