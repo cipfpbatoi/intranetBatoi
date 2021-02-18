@@ -281,6 +281,7 @@ return array(
         'Spam' => 'Spam',
         'Sendeval' => 'Enviar Avaluació Alumne',
         'Ficurs' => 'Tancament Curs',
+        'Facturas' => 'Llibre de Factures',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

@@ -279,6 +279,7 @@ return array(
         'Spam' => 'Spam',
         'Sendeval' => 'Enviar Evaluación Alumno',
         'Ficurs' => 'Cierre Curso',
+        'Facturas' => 'Libro de Facturas',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
