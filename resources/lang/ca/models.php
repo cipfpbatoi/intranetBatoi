@@ -442,6 +442,12 @@ return array(
         'Modulo_ciclo' => array(
             'index' => 'Programacions'
         ),
+        'Lote' => array(
+            'show' => 'Factura :quien',
+            'index' => 'Llibre de Factures',
+            'edit' => 'Editar Factura',
+            'create' => 'Nova Factura',
+        ),
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
             'Curso' => 'Curs',

@@ -54,8 +54,8 @@ var options = {};
             },
             { data:'fechaAlta'},
             { data: null, render: function (data){
-
-                return (data.estado == 1)?contenido+operaciones+inventariable:contenido+operaciones;
+                return (data.estado == 1)?contenido+operaciones+inventariable:
+                    (data.estado > 2) ? contenido+editar:contenido+operaciones;
                 },
             },
         ],
@@ -76,7 +76,7 @@ $(function () {
         event.preventDefault();
         var idLote = $(this).parent().siblings().first().text();
         var estado = $(this).parent().siblings(".estado").text();
-        if (estado == 'ALTA') {
+        if (estado == 'ALTA' || estado == 'BUIDA') {
             estado = true;
         }
         else {
@@ -116,29 +116,32 @@ $(function () {
         $('#datalote').on('click', 'a.edit', function (event) {
             event.preventDefault();
             $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
-            var $registre = $(this).parent().siblings().first().text();
+            var $registre = $(this).parent().siblings().first();
             var $proveedor = $(this).parent().siblings().eq(1);
             var $origen = $(this).parent().siblings().eq(2);
             var $fechaAlta = $(this).parent().siblings().eq(4);
             let dlgControls=[
+                {id: "Registre", type: "text", val:$registre.text()},
                 {id: "Proveedor", type: "text", val: $proveedor.text()},
                 {id: "Origen", type: "select"},
                 {id: "FechaAlta", type: "text", val: $fechaAlta.text()},
             ];
-            $(".modal-title").text("Editar Lote");
+            $(".modal-title").text("Editar Factura "+$registre.text());
             $(".modal-body").html(htmlDialog(dlgControls));
             $(".modal-footer").find("button[type=button]").text("Cancelar");
             $(".modal-footer").find("button[type=submit]").show().one("click", function() {
                 $.ajax({
                     method: "PUT",
-                    url: "/api/lote/"+$registre,
+                    url: "/api/lote/"+$registre.text(),
                     data: {
+                        registre: $("#registre").val(),
                         proveedor: $("#proveedor").val(),
                         procedencia: $("#origen").val(),
                         fechaAlta: $("#fechaalta").val(),
                         api_token: token,
                     },
                 }).then(function (res) {
+                    $registre.text($("#registre").val());
                     $proveedor.text($("#proveedor").val());
                     $origen.text(PROCEDENCIAS[$("#origen").val()]);
                     $fechaAlta.text($("#fechaalta").val());
@@ -273,10 +276,12 @@ function cargaArticulos(entorno,idLote,estado){
                 '</td><td class="unidades"><span class="input" name="unidades">'+item.unidades+'</span></td><td><span class="botones">'+contenido;
             if (estado) html += operaciones;
         });
-        html += '</span></td></tr><tr><td></td><td><input type="text" id="descripcion" name="descripcion" /></td>'+
-            '<td><input type="text" id="marca" name="marca" /></td>'+
-            '<td><input type="text" id="modelo" name="modelo" /></td>'+
-            '<td><input type=number" id="unidades" name="unidades" /></td><td><a class="button new">Nou Article</a></td></tr>';
+        if (estado) {
+            html += '</span></td></tr><tr><td></td><td><input type="text" id="descripcion" name="descripcion" /></td>'+
+                '<td><input type="text" id="marca" name="marca" /></td>'+
+                '<td><input type="text" id="modelo" name="modelo" /></td>'+
+                '<td><input type=number" id="unidades" name="unidades" /></td><td><a class="button new">Nou Article</a></td></tr>';
+        }
         html += '</tbody></table>';
         $(".modal-title").html("Articles del Lot <span id='idLote'>"+result.lote.registre+'</span>');
         $(".modal-body").html(html);

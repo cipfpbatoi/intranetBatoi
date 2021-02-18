@@ -33,6 +33,8 @@ class LoteController extends ApiBaseController
         return response()->json(['data' => $lote->Articulos,'lote'=> $lote]);
     }
 
+
+
     function putArticulos(Request $request,$lote)
     {
         $lote = Lote::find($lote);

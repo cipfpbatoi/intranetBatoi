@@ -56,7 +56,7 @@ class EmpresaController extends IntranetController
         $dades = $request->except('cif');
         $dades['cif'] = strtoupper($request->cif);
         if (Empresa::where('cif',strtoupper($request->cif))->count()) {
-            return back()->withInput(Input::all())->withErrors('CIF duplicado');
+            return back()->withInput($request->all())->withErrors('CIF duplicado');
         }
 
         $id = $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]));

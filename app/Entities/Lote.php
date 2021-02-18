@@ -14,14 +14,15 @@ class Lote extends Model
     protected $primaryKey = 'registre';
     protected $keyType = 'string';
     public $timestamps = false;
-    protected $fillable = [ 'procedencia', 'proveedor','registre','fechaAlta' ];
+    protected $fillable = ['registre', 'procedencia', 'proveedor','fechaAlta' ];
 
     use BatoiModels;
 
     protected $rules = [
-        'registre' => 'required',
+        'registre' => 'required|alpha_dash',
     ];
     protected $inputTypes = [
+        'registre' => ['type' => 'text'],
         'procedencia' => ['type' => 'select'],
         'fechaAlta' => ['type' => 'date']
     ];
