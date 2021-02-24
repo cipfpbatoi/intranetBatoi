@@ -14,7 +14,8 @@ class LoteResource extends JsonResource
      */
     public function toArray($request)
     {
-        return ['registre' => $this->registre,
+        return [
+            'registre' => $this->registre,
             'procedencia' => $this->procedencia,
             'proveedor' => $this->proveedor,
             'fechaAlta' => $this->fechaAlta,

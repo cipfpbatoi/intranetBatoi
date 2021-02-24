@@ -210,6 +210,7 @@ $(function () {
             });
         })
         $('#dialogo').on('click', 'a.new', function (event,idLote) {
+            event.preventDefault();
             $.ajax({
                 context: this,
                 method: "POST",
