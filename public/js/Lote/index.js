@@ -249,7 +249,7 @@ $(function () {
                     if (result.success == true ) {
                         cargaArticulos(this,$("#idLote").text(),true)
                     }
-                });
+                }).catch(error=>console.log(error));
             } else {
                 event.preventDefault();
             }
