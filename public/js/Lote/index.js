@@ -227,7 +227,7 @@ $(function () {
                 if (result.success == true ) {
                     cargaArticulos(this,$("#idLote").text(),true)
                 }
-            });
+            }).catch(error=>console.log(error)) ;;
         })
         // Botón DELETE article
         $('#dialogo').on('click', 'a.delete', function (event) {
