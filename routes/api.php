@@ -15,15 +15,14 @@ use Illuminate\Http\Request;
 
  Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'create']]);  
  Route::get('alumnoFct/{grupo}/grupo','AlumnoFctController@indice'); 
-//Route::resource('profesor', 'ProfesorController', ['except' => ['edit', 'create']]);
-Route::get('/convenio','EmpresaController@indexConvenio');
+ Route::get('/convenio','EmpresaController@indexConvenio');
+ Route::resource('articulo','ArticuloController',['except' => ['edit', 'create']]);
 
 
 
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('actividad', 'ActividadController', ['except' => ['edit', 'create']]);
-//    Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'create']]);
     Route::resource('programacion', 'ProgramacionController', ['except' => ['edit', 'create']]);
     Route::resource('reunion', 'ReunionController', ['except' => ['edit', 'create']]);
     Route::resource('falta', 'FaltaController', ['except' => ['edit', 'create']]);
@@ -38,11 +37,9 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     Route::resource('profesor', 'ProfesorController', ['except' => ['edit', 'create']]);
     Route::get('profesor/{dni}/rol', 'ProfesorController@rol');
-//    Route::resource('fichar','FicharController',['except' => ['edit', 'create']]);
     Route::get('ficha', 'ProfesorController@ficha');
     Route::get('doficha', 'FicharController@fichar');
     Route::get('ipGuardia','FicharController@ip');
-    //Route::get('fichar', 'FicharController@miraficha');
     Route::get('verficha', 'FicharController@entrefechas');
     Route::get('itaca/{dia}/{idProfesor}','FaltaItacaController@potencial');
     Route::post('itaca','FaltaItacaController@guarda');
@@ -78,7 +75,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('horario/{idProfesor}/guardia','HorarioController@Guardia');
     Route::get('horariosDia/{fecha}','HorarioController@HorariosDia');
     Route::resource('hora', 'HoraController', ['except' => ['edit', 'create']]);
-//Route::resource('asistencia','AsistenciaController',['except'=>['edit','create']]);
     Route::put('/asistencia/cambiar', 'AsistenciaController@cambiar');
     Route::put('/reunion/{idReunion}/alumno/{idAlumno}','ReunionController@putAlumno');
 
@@ -108,7 +104,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::put('lote/{id}/articulos','LoteController@putArticulos');
     Route::resource('articulo','ArticuloController',['except' => ['edit', 'create']]);
     Route::get('articulo/{id}/materiales','ArticuloController@getMateriales');
-    //Route::get('/convenio','EmpresaController@indexConvenio');
 });
 
 Route::fallback(function(){
