@@ -214,7 +214,7 @@ $(function () {
             $.ajax({
                 context: this,
                 method: "POST",
-                url: "/api/articulo/",
+                url: "/api/articulo",
                 data: { api_token: token,
                     lote_registre: $("#idLote").text(),
                     descripcion: $("#descripcion").val(),
