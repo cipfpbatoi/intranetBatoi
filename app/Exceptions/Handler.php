@@ -77,6 +77,9 @@ class Handler extends ExceptionHandler
             Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :".$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
             //return response()->view('errors.200',['mensaje'=>$exception->getMessage()],200);
         }
+        if ($exception instanceof AuthenticationException){
+            return $this->unauthenticated($request,$exception);
+        }
         if ($request->wantsJson())
         {
             return response()->json(['message' => $exception->getMessage()], 404);
