@@ -248,7 +248,7 @@ class ColaboracionController extends IntranetController
         $array['AA'] = $colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $colaboracion->Centro->Empresa->cif;
         $array['Província de'] = 'Alacant';
-        $array['CP'] =explode(',',$colaboracion->Centro->direccion)[1];
+        $array['CP'] =explode(',',$colaboracion->Centro->direccion)[1]??'03801';
 
         return $array;
     }
