@@ -11,7 +11,6 @@
                     {{$datosInforme['centro']}} d'{{$datosInforme['poblacion']}}, província d'{{$datosInforme['provincia']}}.</p>
             </div>
             <div class="container" >
-                <br/>
                 <strong>CERTIFICA:</strong>
                 <br/>
             </div>
