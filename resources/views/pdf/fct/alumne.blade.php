@@ -13,7 +13,7 @@
             <div class="container" >
                 <br/>
                 <strong>CERTIFICA:</strong>
-                <br/><br />
+                <br/>
             </div>
             <div class="container" style="width:95%">
                 <p style="text-indent: 30px;text-align: justify">Que segons consta en el seu expedient, @if ($alumnoFct->Alumno->sexo === 'H') l'alumne @else l'alumna @endif <strong>{{$alumnoFct->Alumno->FullName}} </strong>
@@ -30,7 +30,6 @@
                     {{$alumnoFct->Fct->Colaboracion->Centro->localidad}}, con una duración total de {{$alumnoFct->horas}} horas, desempeñadas
                     en el curso lectivo {{Curso()}}, obteniendo una calificación de APTO.</p>
             </div>
-
             @include('pdf.partials.firmaSD')
         </div>
     @endforeach

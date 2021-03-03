@@ -185,7 +185,7 @@ $(function () {
                             $(this).parent().siblings('.estado').text("INVENTARIANT");
                             $(this).parent().html(contenido);
                         }
-                    });
+                    }).fail(error=>console.log(error)) ;
                 }
             })
 
