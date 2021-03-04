@@ -448,7 +448,7 @@ return array(
             'edit' => 'Editar Factura',
             'create' => 'Nova Factura',
         ),
-        'Articulo' => array(
+        'PanelArticulo' => array(
             'index' => 'Articles pendents de ubicar'
         ),
         'modelos' => array(
@@ -488,7 +488,7 @@ return array(
             'Option' => 'Pregunta',
             'AlumnoResultado' => 'Avaluacio Alumne',
             'Lote' => 'Factura',
-            'Articulo' => 'Article'
+            'PanelArticulo' => 'Article'
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

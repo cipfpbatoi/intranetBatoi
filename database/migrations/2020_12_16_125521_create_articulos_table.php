@@ -15,12 +15,8 @@ class CreateArticulosTable extends Migration {
 		Schema::create('articulos', function(Blueprint $table)
 		{
 			$table->increments('id');
-            $table->string('lote_registre',12)->nullable();
             $table->string('descripcion', 200)->nullable();
-            $table->string('marca', 50)->nullable();
-            $table->string('modelo', 50)->nullable();
-            $table->smallInteger('unidades')->default(1);
-            $table->foreign('lote_registre')->references('registre')->on('lotes')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->string('fichero')->nullable();
         });
 	}
 

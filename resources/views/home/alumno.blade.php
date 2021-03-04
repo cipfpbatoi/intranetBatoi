@@ -7,7 +7,7 @@
     <div class="profile_img">
         <div id="crop-avatar">
             <!-- Current avatar -->
-            <img class="img-responsive avatar-view" src="{{ asset(AuthUser()->foto) }}" width="150" height="150" alt="Foto Perfil" title="Foto Perfil">
+            <img class="img-responsive avatar-view" src="{{ asset('storage/'.AuthUser()->foto) }}" width="150" height="150" alt="Foto Perfil" title="Foto Perfil">
         </div>
     </div>
     <h3>{{$usuario->nombre}} {{$usuario->apellido1}}</h3>

@@ -3,36 +3,41 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Estadomaterial;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Intranet\Entities\Espacio;
-use Intranet\Events\ActivityReport;
+
+
 
 class Articulo extends Model
 {
 
     protected $table = 'articulos';
     public $timestamps = false;
-    protected $fillable = ['lote_registre', 'descripcion', 'marca', 'modelo', 'unidades'];
+    protected $fillable = [ 'descripcion', 'fichero'];
+
 
     use BatoiModels;
 
     protected $rules = [
-        'unidades' => 'numeric',
+        'descripcion' => 'required',
     ];
     protected $inputTypes = [
+        'fichero' => ['type' => 'file'],
     ];
-
 
     public function Lote()
     {
-        return $this->belongsTo(Lote::class, 'lote_registre', 'registre');
+        return $this->hasManyThrough(Lote::class, ArticuloLote::class, 'articulo_id', 'lote_id','id','registre');
     }
 
-    public function Materiales()
-    {
-        return $this->hasMany(Material::class, 'articulo_id', 'id');
-    }
+/**
+    public function fillFile($file){
+        if (!$file->isValid()){
+            Alert::danger(trans('messages.generic.invalidFormat'));
+            return ;
+        }
+        $this->fichero = $file->storeAs('Articulo'
+            ,$this->id.'.'.$file->getClientOriginalExtension(),'public');
+        $this->save();
 
+    }**/
 
 }

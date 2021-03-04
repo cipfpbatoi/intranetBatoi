@@ -14,7 +14,7 @@
                 </ul>
             </div>
             <div class="right col-xs-4 text-center">
-                <img src="{{ asset($elemento->foto) }}" alt="" heigth="90px" width="70px" class="img-circle img-responsive">
+                <img src="{{ asset('storage/'.$elemento->foto) }}" alt="" heigth="90px" width="70px" class="img-circle img-responsive">
             </div>
         </div>
         <div class="col-xs-12 bottom text-center">

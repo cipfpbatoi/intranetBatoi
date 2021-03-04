@@ -16,6 +16,6 @@ return [
         2 => ['inici' =>'2021-03-04','fi' =>'2021-07-31']
     ],
     'certificatFol' => '2021-06-14',
-    'enquestesAutomatiques' => 0,
+    'enquestesAutomatiques' => 1,
     'convocatoria' => 'My0yMDIwMDcwOTAwLTIwMjAwOTA5MjM'
 ];

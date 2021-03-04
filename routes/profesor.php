@@ -427,4 +427,9 @@ Route::get('/qualitat/documento',['as' => 'qualitat.docuentacio' ,'uses' => 'Qua
 
 Route::get('fiCurs',['as'=>'fiCurs','uses'=>'PanelFinCursoController@index']);
 
-Route::resource('/articulo','ArticuloController', ['except' => ['destroy', 'update','show','store']]);
+Route::resource('/articulo','ArticuloController', ['except' => ['show','destroy']]);
+Route::get('/articulo/{id}/show', ['as' => 'articulo.show', 'uses' => 'ArticuloController@show']);
+Route::get('/articulo/{id}/delete', ['as' => 'articulo.destroy', 'uses' => 'ArticuloController@destroy']);
+Route::put('/articulo/{id}/edit', ['as' => 'articulo.update', 'uses' => 'ArticuloController@update']);
+
+Route::get('/inventaria',['as'=>'inventariar.index','uses'=>'PanelArticuloController@index']);

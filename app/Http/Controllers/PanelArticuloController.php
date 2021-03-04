@@ -11,7 +11,7 @@ use Intranet\Botones\BotonBasico;
  * Class MaterialController
  * @package Intranet\Http\Controllers
  */
-class ArticuloController extends IntranetController
+class PanelArticuloController extends IntranetController
 {
 
     /**
