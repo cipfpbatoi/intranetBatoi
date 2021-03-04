@@ -3,9 +3,9 @@
     @foreach ($todos as $elemento)
     <div class="page" >
         <div class="container col-lg-12" style="margin-bottom: 0px;" >
-            <div style="float:left;width:26%;margin-left:15px;padding-top: 10px" style="float:right"><img src="{{public_path('img/pdf/logo.png')}}" width="70px" height="30px"/></div>
-            <div style="float:left;width:26%;padding-top: 10px" style="float:right"><img src="{{public_path('img/pdf/conselleria.png')}} " width="105px" height="30px"/></div>
-            <div style="float:left;width:26%;padding-left: 70px" style="float:right"><img src="{{public_path('img/pdf/ue.png')}}" width="60px" height="60px"/></div>
+            <div style="float:left;width:26%;margin-left:15px;padding-top: 10px" style="float:right"><img src="{{public_path('img/pdf/logo.png')}}" width="70px" height="30px" alt="Logo Insti"/></div>
+            <div style="float:left;width:26%;padding-top: 10px" style="float:right"><img src="{{public_path('img/pdf/conselleria.png')}} " width="105px" height="30px" alt="Logo Conselleria"/></div>
+            <div style="float:left;width:26%;padding-left: 70px" style="float:right"><img src="{{public_path('img/pdf/ue.png')}}" width="60px" height="60px" alt="Logo UE"/></div>
         </div>
         <div class="container col-lg-12 fondo"  style="background-image: url({{public_path('/img/pdf/insti.jpg')}});
         background-repeat: no-repeat;
@@ -34,9 +34,9 @@
                 </div>
                 <div style="float:left;width:29%;margin-right: 5px;">
                     @if ($elemento->foto)
-                        <img style="border:black solid thin;float:right" src="{{public_path('/storage/'.$elemento->foto)}}" width="68px" height="90px" />
+                        <img style="border:black solid thin;float:right" src="{{public_path('/storage/'.$elemento->foto)}}" width="68px" height="90px" alt="Foto Carnet"/>
                     @else
-                        <img style="border:black solid thin;float: right" src="" width="68px" height="90px" />
+                        <img style="border:black solid thin;float: right" src="" width="68px" height="90px" alt="Foto blanc" />
                     @endif
                 </div>
             </div>
