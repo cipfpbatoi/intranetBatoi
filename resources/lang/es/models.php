@@ -435,8 +435,15 @@ return array(
             'edit' => 'Editar Factura',
             'create' => 'Nueva Factura',
         ),
-        'ArticuloLote' => array(
+        'Articulolote' => array(
             'index' => 'Articulos pendientes de ubicar',
+            'show' => 'Ver Materiales'
+        ),
+        'Articulo' => array(
+            'index' => 'Mostra Articulos',
+            'edit' => 'Editar Articulo',
+            'show' => 'Mostrar Articulo',
+            'delete' => 'Eliminar Articulo'
         ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',
@@ -475,7 +482,8 @@ return array(
             'Option' => 'Pregunta',
             'AlumnoResultado' => 'Avaluacio Alumne',
             'Lote' => 'Factura',
-            'ArticuloLote' => 'ArticuloLote',
+            'ArticuloLote' => 'Articulo de Factura',
+            'Articulo' => 'Articulo'
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

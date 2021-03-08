@@ -282,7 +282,8 @@ return array(
         'Sendeval' => 'Enviar Avaluació Alumne',
         'Ficurs' => 'Tancament Curs',
         'Facturas' => 'Llibre de Factures',
-        'Articulos' => 'Ubicació Articles',
+        'Articulos' => 'Articles',
+        'Inventariar' => "Materials pendents d'ubicar"
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

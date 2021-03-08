@@ -448,8 +448,15 @@ return array(
             'edit' => 'Editar Factura',
             'create' => 'Nova Factura',
         ),
-        'ArticuloLote' => array(
-            'index' => 'Articles pendents de ubicar'
+        'Articulolote' => array(
+            'index' => 'Articles pendents de ubicar',
+            'show' => 'Vore Materials'
+        ),
+        'Articulo' => array(
+            'index' => 'Mostra Articles',
+            'edit' => 'Editar Article',
+            'show' => 'Mostrar Article',
+            'delete' => 'Esborrar Article'
         ),
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
@@ -488,7 +495,8 @@ return array(
             'Option' => 'Pregunta',
             'AlumnoResultado' => 'Avaluacio Alumne',
             'Lote' => 'Factura',
-            'ArticuloLote' => 'Article'
+            'Articulo' => 'Article',
+            'ArticuloLote' => 'Articles Factura'
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

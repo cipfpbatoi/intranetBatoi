@@ -280,7 +280,8 @@ return array(
         'Sendeval' => 'Enviar Evaluación Alumno',
         'Ficurs' => 'Cierre Curso',
         'Facturas' => 'Libro de Facturas',
-        'Articulos' => 'Ubicación Articulos',
+        'Articulos' => 'Articulos',
+        'Inventariar' => "Materiales pendientes de ubicar"
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
