@@ -12,7 +12,7 @@ use Intranet\Http\Requests\ArticuloRequest;
 class ArticuloController extends LaravelController
 {
 
-    use traitCrudvII;
+    use traitCRUDvII;
     /**
      * @var string
      */
