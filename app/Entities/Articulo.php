@@ -28,16 +28,23 @@ class Articulo extends Model
         return $this->hasManyThrough(Lote::class, ArticuloLote::class, 'articulo_id', 'lote_id','id','registre');
     }
 
-/**
+    public function getMiniaturaAttribute()
+    {
+        return "<img src='".asset('/storage/'.$this->fichero)."' heigth='40px' width='60px'/>";
+    }
+
+
+
+
     public function fillFile($file){
         if (!$file->isValid()){
             Alert::danger(trans('messages.generic.invalidFormat'));
             return ;
         }
-        $this->fichero = $file->storeAs('Articulo'
+        $this->fichero = $file->storeAs('Articulos'
             ,$this->id.'.'.$file->getClientOriginalExtension(),'public');
         $this->save();
 
-    }**/
+    }
 
 }

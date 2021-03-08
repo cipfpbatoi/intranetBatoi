@@ -2,8 +2,6 @@
 
 namespace Intranet\Entities;
 
-use App;
-
 class TipoDocumento
 {
     

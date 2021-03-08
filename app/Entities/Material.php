@@ -12,7 +12,7 @@ class Material extends Model
 
     protected $table = 'materiales';
     public $timestamps = false;
-    protected $fillable = ['nserieprov', 'descripcion', 'marca', 'modelo', 'ISBN', 'espacio', 'procedencia', 'proveedor','estado','unidades','inventariable','articulo_id'];
+    protected $fillable = ['nserieprov', 'descripcion', 'marca', 'modelo', 'ISBN', 'espacio', 'procedencia', 'proveedor','estado','unidades','inventariable','articulo_lote_id'];
 
     use BatoiModels;
 

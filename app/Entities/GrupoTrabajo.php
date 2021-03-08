@@ -3,13 +3,10 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\GrupoCreated;
-use Intranet\Entities\Profesor;
-use App;
+
 
 class GrupoTrabajo extends Model
 {

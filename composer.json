@@ -25,7 +25,7 @@
         "laravel/tinker": "^2.4.1",
         "laravel/ui": "^2.0",
         "laravelcollective/html": "^6.0",
-        "livewire/livewire": "^2.3",
+        "livewire/livewire": "^2.4",
         "mikehaertl/php-pdftk": "^0.8.1",
         "predis/predis": "^1.1",
         "styde/html": "~1.8"

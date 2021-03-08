@@ -40,7 +40,7 @@ function cargaMateriales(entorno,idArticulo){
     $.ajax({
         context: entorno,
         method: "GET",
-        url: "/api/articulo/" + idArticulo +"/materiales",
+        url: "/api/articuloLote/" + idArticulo +"/materiales",
         data: { api_token: token},
         dataType: "json",
     }).then(function (result) {

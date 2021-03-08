@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use App;
+use Illuminate\Support\Facades\App;
 
 class Departamento extends Model
 {

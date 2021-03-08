@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use App;
+
 
 class TipoExpediente extends Model
 {

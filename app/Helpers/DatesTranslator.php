@@ -29,5 +29,5 @@ trait DatesTranslator
 
 }
 
-// use App\Helpers\DatesTranslator
+// use app\Helpers\DatesTranslator
 // use DatesTranslator

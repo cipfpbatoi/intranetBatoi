@@ -432,4 +432,6 @@ Route::get('/articulo/{id}/show', ['as' => 'articulo.show', 'uses' => 'ArticuloC
 Route::get('/articulo/{id}/delete', ['as' => 'articulo.destroy', 'uses' => 'ArticuloController@destroy']);
 Route::put('/articulo/{id}/edit', ['as' => 'articulo.update', 'uses' => 'ArticuloController@update']);
 
-Route::get('/inventaria',['as'=>'inventariar.index','uses'=>'PanelArticuloController@index']);
+Route::get('/inventaria',['as'=>'inventariar.index','uses'=>'ArticuloLoteController@index']);
+
+//Route::view('lote', 'lote.indice');

@@ -15,7 +15,6 @@ class AlterMaterialesTable extends Migration
     {
         Schema::table('materiales', function (Blueprint $table) {
             $table->boolean('inventariable')->default(0);
-            $table->string('registre',12)->nullable();
             $table->integer('articulo_lote_id')->unsigned()->nullable();
             $table->foreign('articulo_lote_id')->references('id')->on('articulos_lote')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
@@ -30,7 +29,6 @@ class AlterMaterialesTable extends Migration
 	public function down()
 	{
         Schema::table('materiales', function (Blueprint $table) {
-            $table->dropColumn('registre');
             $table->dropColumn('inventariable');
             $table->dropForeign('materiales_articulo_lote_id_foreign');
             $table->dropColumn('articulo_lote_id');

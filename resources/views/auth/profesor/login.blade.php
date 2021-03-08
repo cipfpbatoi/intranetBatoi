@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Autenticacion Profesor</title>
-        {{ Html::style('/css/app.css')}}  
+        {{ Html::style('/css/app.css')}}
     </head>
     <body class="login">
         <a class="hiddenanchor" id="signup"></a>

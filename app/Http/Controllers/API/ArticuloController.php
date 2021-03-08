@@ -15,12 +15,7 @@ class ArticuloController extends ApiBaseController
 
     protected $model = 'Articulo';
 
-    function getMateriales($articulo){
-        $lote = Articulo::find($articulo);
-        if (count($lote->Materiales))
-            return response()->json(['data' => $lote->Materiales]);
-        else response()->json([],404);
-    }
+
 
 
 

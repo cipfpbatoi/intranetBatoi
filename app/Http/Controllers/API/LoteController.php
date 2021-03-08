@@ -3,12 +3,15 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use Intranet\Entities\Articulo;
+use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Lote;
 use Intranet\Entities\Material;
 use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Http\Resources\LoteResource;
+use Intranet\Http\Resources\ArticuloLoteResource;
 use Jenssegers\Date\Date;
 
 class LoteController extends ApiBaseController
@@ -30,16 +33,15 @@ class LoteController extends ApiBaseController
 
     function getArticulos($lote){
         $lote = Lote::find($lote);
-        return response()->json(['data' => $lote->Articulos,'lote'=> $lote]);
+        return response()->json(['data' => ArticuloLoteResource::collection($lote->ArticuloLote),'lote'=> $lote->registre]);
     }
-
 
 
     function putArticulos(Request $request,$lote)
     {
         $lote = Lote::find($lote);
         if ($request->inventariar){
-            foreach ($lote->Articulos as $articulo){
+            foreach ($lote->ArticuloLote as $articulo){
                 for ($i=0;$i<$articulo->unidades;$i++){
                     $material = new Material(
                         [   'descripcion'=>$articulo->descripcion,
@@ -50,16 +52,15 @@ class LoteController extends ApiBaseController
                             'unidades' => 1,
                             'proveedor' => $lote->proveedor,
                             'inventariable' => 1,
-                            'registre' => $lote->id,
                             'espacio' => 'INVENT',
-                            'articulo_id' => $articulo->id
+                            'articulo_lote_id' => $articulo->id
                         ]
                     );
                     $material->save();
                 }
             }
         }
-        return $this->sendResponse(['updated' => $lote ], 'OK');
+        return $this->sendResponse(['data' => $lote ], 'OK');
     }
 
 }

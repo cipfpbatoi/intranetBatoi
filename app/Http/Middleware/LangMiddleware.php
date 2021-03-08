@@ -3,6 +3,8 @@
 namespace Intranet\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\App;
+
 
 class LangMiddleware
 {
@@ -17,7 +19,7 @@ class LangMiddleware
     public function handle($request, Closure $next)
     {
         if (!empty(session('lang'))) {
-            \App::setLocale(session('lang'));
+            App::setLocale(session('lang'));
         }
         return $next($request);
     }

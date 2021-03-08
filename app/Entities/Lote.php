@@ -27,15 +27,16 @@ class Lote extends Model
         'fechaAlta' => ['type' => 'date']
     ];
 
-    public function Articulos(){
-        return $this->hasMany(Articulo::class);
+    public function ArticuloLote(){
+        return $this->hasMany(ArticuloLote::class,'lote_id','registre');
     }
+
     public function getProcedenciaOptions()
     {
         return config('auxiliares.procedenciaMaterial');
     }
     public function Materiales(){
-        return $this->hasManyThrough(Material::class,Articulo::class, 'lote_registre','articulo_id','registre','id');
+        return $this->hasManyThrough(Material::class,ArticuloLote::class, 'lote_id','articulo_lote_id','registre','id');
     }
     public function colaboraciones()
     {
@@ -48,7 +49,7 @@ class Lote extends Model
     }
 
     public function getEstadoAttribute(){
-        if ($this->articulos()->count()) {
+        if ($this->articuloLote()->count()) {
             if ($this->materiales()->count()) {
               if ($this->materiales()->where('espacio','INVENT')->count())
                   return 2;
