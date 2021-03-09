@@ -72,6 +72,7 @@ var options = {};
 $(function () {
 
 
+
     // Botón VER
     $('#datalote').on('click', 'a.ver', function (event) {
         event.preventDefault();
@@ -193,6 +194,14 @@ $(function () {
 
         })
         // DIALOGO ARTICLES
+        $("#dialogo").on('change','#articulo_id',function () {
+            if ($('#articulo_id').val() === 'new') {
+                $('#descripcion').removeClass('hidden');
+            }
+            else {
+                $('#descripcion').addClass('hidden');
+            }
+        });
         $('#dialogo').on('click', 'a.ver', function (event) {
             event.preventDefault();
             $("#dialogo").modal("hide");
@@ -219,6 +228,7 @@ $(function () {
                 data: { api_token: token,
                     lote_id: $("#idLote").text(),
                     articulo_id: $("#articulo_id").val(),
+                    descripcion: $("#descripcion").val(),
                     marca: $("#marca").val(),
                     modelo: $("#modelo").val(),
                     unidades: $("#unidades").val(),
@@ -257,6 +267,7 @@ $(function () {
         })
         $('#dialogo').on('click', 'a.edit', editRow);
         $('#materiales').on('click', 'a.edit', editRow);
+
     }
 })
 
@@ -269,7 +280,7 @@ function cargaArticulosLote(entorno,idLote,estado){
         data: { api_token: token},
         dataType: "json",
     }).then(function (result) {
-        var html = '<table id="dataarticle" name="articuloLote" class="table table-striped"><thead><tr><th>Id</th><th>Descripció</th><th>Marca</th><th>Mòdel</th><th>Unitats</th>';
+        var html = '<table id="dataarticle" name="articuloLote" class="table table-striped"><thead><tr><th>Id</th><th>Article</th><th>Marca</th><th>Mòdel</th><th>Unitats</th>';
         html += '<th>Operacions</th></tr></thead><tbody>';
         $(result.data).each(function (  i, item) {
             html += '<tr id="'+item.id+'"><td>'+item.id+'</span></td><td><span class="none" name="descripcion">'+item.descripcion+
@@ -280,10 +291,10 @@ function cargaArticulosLote(entorno,idLote,estado){
         });
         if (estado) {
             html += '</span></td></tr><tr><td></td><td>' + articulos +
-                '</td>'+
+                '<br/><input type="text" id="descripcion" name="descripcion" class="hidden"></td>'+
                 '<td><input type="text" id="marca" name="marca" /></td>'+
                 '<td><input type="text" id="modelo" name="modelo" /></td>'+
-                '<td><input type=number" id="unidades" name="unidades" /></td><td><a class="button new">Nou Article</a></td></tr>';
+                '<td><input type=number" id="unidades" name="unidades" /></td><td><a class="btn btn-info new">Afegir Article</a></td></tr>';
         }
         html += '</tbody></table>';
         $(".modal-title").html("Articles del Lot <span id='idLote'>"+result.lote+'</span>');
@@ -293,16 +304,20 @@ function cargaArticulosLote(entorno,idLote,estado){
     });
 }
 
-function cargaArticulos(){
+function cargaArticulos() {
     $.ajax({
         method: "GET",
         url: "/api/articulo",
-        data: { api_token: token},
+        data: {api_token: token},
         dataType: "json",
     }).then(function (result) {
-        articulos = '<select id="articulo_id" name="articulo_id" >';
-        $(result.data).each(function (  i, item) {
-            articulos += "<option value='"+item.id+"'>"+item.descripcion+"</option>";
+        articulos = '<select id="articulo_id" name="articulo_id" ><option value="new">Article Nou</option>';
+        $(result.data).each(function (i, item) {
+            if (i == 0) {
+                articulos += "<option value='" + item.id + "' selected>" + item.descripcion + "</option>";
+            } else {
+                articulos += "<option value='" + item.id + "'>" + item.descripcion + "</option>";
+            }
         });
     });
 }

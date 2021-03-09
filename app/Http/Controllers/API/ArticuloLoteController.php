@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\ArticuloLote;
+use Intranet\Entities\Articulo;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Http\Requests\ArticuloLoteRequest;
@@ -17,7 +18,18 @@ class ArticuloLoteController extends ApiBaseController
     public function store(Request $request)
     {
         try {
-            $this->class::create($request->all());
+            $articuloLote = new ArticuloLote();
+            $articuloLote->lote_id = $request->lote_id;
+            $articuloLote->marca = $request->marca;
+            $articuloLote->modelo = $request->modelo;
+            $articuloLote->unidades = $request->unidades;
+            if ($request->articulo_id === 'new'){
+                $articulo = Articulo::create(['descripcion' => $request->descripcion]);
+                $articuloLote->articulo_id = $articulo->id;
+            } else {
+                $articuloLote->articulo_id =$request->articulo_id;
+            }
+            $articuloLote->save();
             return $this->sendResponse(['created' => true], 'OK');
         } catch (Exception $e) {
             return $this->sendError($e->getMessage());

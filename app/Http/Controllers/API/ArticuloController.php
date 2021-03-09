@@ -15,8 +15,10 @@ class ArticuloController extends ApiBaseController
 
     protected $model = 'Articulo';
 
-
-
-
+    public function index()
+    {
+        $data = Articulo::orderBy('descripcion')->get();
+        return $this->sendResponse($data, 'OK');
+    }
 
 }

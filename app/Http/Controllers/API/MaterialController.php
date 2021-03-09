@@ -19,6 +19,19 @@ class MaterialController extends ApiBaseController
         return response()->json(Material::where('espacio', $espacio)->get());
     }
 
+    function inventario(){
+        $data = Material::where('inventariable',1)
+                ->where('espacio','<>','INVENT')
+                ->where('estado','=',1)
+                ->get();
+        return $this->sendResponse($data, 'OK');
+    }
+    function index(){
+        $data = Material::where('inventariable',0)->get();
+        return $this->sendResponse($data, 'OK');
+    }
+
+
     public function put(Request $request)
     {
         $material = Material::findOrFail($request->id);

@@ -313,6 +313,10 @@ Route::put('/material/{material}/edit', ['as' => 'material.update', 'uses' => 'M
 Route::get('/material/{espacio}/detalle', ['as' => 'material.espacio', 'uses' => 'MaterialController@espacio']);
 Route::get('/material/{material}/copy', ['as' => 'material.copy', 'uses' => 'MaterialController@copy']);
 Route::get('/material/{material}/incidencia', ['as' => 'material.incidencia', 'uses' => 'MaterialController@incidencia']);
+//RUTAS INVENTARIO
+Route::get('/inventario',['as' => 'inventario.index','uses' => 'InventarioController@index']);
+Route::get('/inventaria',['as'=>'inventariar.index','uses'=>'ArticuloLoteController@index']);
+
 
 //RUTAS INCIDENCIAS
 Route::resource('/incidencia', 'IncidenciaController', ['except' => ['destroy', 'update', 'show']]);
@@ -432,6 +436,5 @@ Route::get('/articulo/{id}/show', ['as' => 'articulo.show', 'uses' => 'ArticuloC
 Route::get('/articulo/{id}/delete', ['as' => 'articulo.destroy', 'uses' => 'ArticuloController@destroy']);
 Route::put('/articulo/{id}/edit', ['as' => 'articulo.update', 'uses' => 'ArticuloController@update']);
 
-Route::get('/inventaria',['as'=>'inventariar.index','uses'=>'ArticuloLoteController@index']);
 
 //Route::view('lote', 'lote.indice');
