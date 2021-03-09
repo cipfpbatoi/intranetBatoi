@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Material;
+use Intranet\Entities\Incidencia;
 
 /**
  * Class MaterialController
@@ -88,8 +89,11 @@ class MaterialController extends IntranetController
         $incidencia->material = $id;
         $incidencia->espacio = $elemento->espacio;
         $incidencia->descripcion = $elemento->descripcion;
+        $incidencia->idProfesor = AuthUser()->dni;
+        $incidencia->fecha = Hoy();
         $incidencia->save();
-        return redirect()->route('incidencia.edit', ['id' => $incidencia->id]);
+        Incidencia::putEstado($incidencia->id,1);
+        return redirect()->route('incidencia.edit', ['incidencium' => $incidencia->id]);
     }
 
 }
