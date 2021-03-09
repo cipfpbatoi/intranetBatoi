@@ -195,6 +195,9 @@ return array(
         'Inventario' => 'Gestió Material',
         'Espacios' => 'Espais',
         'Materiales' => 'Materials fungibles',
+        'Articulos' => 'Articles',
+        'Inventariar' => "Materials pendents d'ubicar",
+        'Muebles' => 'Inventari',
         'Incidencias' => "Gestió d'incidències",
         'Authfalta' => 'Autoritzar Absències Professorat',
         'Incidenciasmant' => "Mantenimient d'Incidèncias",
@@ -282,8 +285,6 @@ return array(
         'Sendeval' => 'Enviar Avaluació Alumne',
         'Ficurs' => 'Tancament Curs',
         'Facturas' => 'Llibre de Factures',
-        'Articulos' => 'Articles',
-        'Inventariar' => "Materials pendents d'ubicar"
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
