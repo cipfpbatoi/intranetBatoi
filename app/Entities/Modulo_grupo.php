@@ -77,9 +77,10 @@ class Modulo_grupo extends Model
     }
     
     public function getseguimientoAttribute(){
-        $tr = evaluacion() - 1;
-        if (!$tr) $tr = 1;
-        $trimestre = config("curso.trimestres.$tr")[$this->ModuloCiclo->curso];
+        $tr = evaluacion() - 1??1;
+        $tipoCiclo = $this->ModuloCiclo->Ciclo->tipo??1;
+        $curso = $this->ModuloCiclo->curso??1;
+        $trimestre = config("curso.trimestres.$tipoCiclo.$tr.$curso");
         return $this->resultados->where('evaluacion',$trimestre)->count();
     }
     public function getprofesorAttribute(){
