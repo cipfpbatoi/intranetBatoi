@@ -5,7 +5,7 @@
     <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
         <div class="panel-body">
             <div class='form_box'>
-                @include('intranet.partials.formCreate',['method'=>'PUT'])
+                @include('intranet.partials.components.formCreate',['method'=>'PUT'])
             </div>
         </div>
     </div>

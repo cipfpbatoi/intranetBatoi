@@ -1,4 +1,4 @@
-<div class='centrado'>@include('intranet.partials.buttons',['tipo' => 'index'])</div><br/>
+<div class='centrado'>@include('intranet.partials.components.buttons',['tipo' => 'index'])</div><br/>
 <div class="x_content">
 <table id='datamaterial' class="table table-striped" data-page-length="25">
     <thead>

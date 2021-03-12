@@ -28,7 +28,7 @@
                 </p>
             </div>
             <div class="col-xs-12 col-sm-11 emphasis">
-                @include ('intranet.partials.buttons',['tipo' => 'profile'])
+                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
             </div>
         </div>
     </div>

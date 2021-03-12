@@ -1,4 +1,4 @@
-<!-- Modal -->
+<!-- Modal create -->
 <div id="create" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
         <!-- Modal content-->
@@ -38,3 +38,4 @@
         </div>
     </div>
 </div>
+@include('intranet.partials.modal.show')

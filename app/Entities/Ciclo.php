@@ -16,10 +16,6 @@ class Ciclo extends Model
     protected $table = "ciclos";
     public $timestamps = false;
     protected $fillable = [ 'ciclo','vliteral','cliteral', 'departamento','tipo','normativa','titol','rd','rd2','horasFct','acronim','llocTreball','dataSignaturaDual'];
-    protected $rules = [
-        'tipo' => 'required',
-        'departamento' => 'required'
-    ];
     protected $inputTypes = [
         'departamento' => ['type' => 'select'],
         'tipo' => ['type' => 'select'],

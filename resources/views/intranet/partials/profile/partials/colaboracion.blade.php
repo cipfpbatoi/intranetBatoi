@@ -30,8 +30,8 @@
                     @endif
                 </div>
                 <div class="col-xs-12 col-sm-8 emphasis">
-                    @include ('intranet.partials.buttons',['tipo' => 'profile'])<br/>
-                    @include ('intranet.partials.buttons',['tipo' => 'nofct'])
+                    @include ('intranet.partials.components.buttons',['tipo' => 'profile'])<br/>
+                    @include ('intranet.partials.components.buttons',['tipo' => 'nofct'])
                 </div>
             </div>
         </div>

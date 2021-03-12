@@ -13,6 +13,6 @@
     Documentos
 @endsection
 @section('scripts')
-    @include('includes.tablesjs')
+    @include('js.tablesjs')
     {{ HTML::script('/js/grid.js') }}
 @endsection

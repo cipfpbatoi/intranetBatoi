@@ -2,8 +2,22 @@
 
 namespace Intranet\Entities;
 
+use Illuminate\Support\Facades\Session;
+
 trait TraitEstado
 {
+
+    protected function crea_pestanas_estado($estados,$vista,$activa=null,$sustituye = null){
+        if (!$activa){
+            $activa = Session::get('pestana')?Session::get('pestana'):0;
+        }
+        foreach ($estados as $key => $estado) {
+            $sustituto = ($key == $sustituye)?1:null;
+            $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,
+                ['estado',$key],null,$sustituto,$this->parametresVista);
+        }
+    }
+
     private static function makeDocument($elemento){
         if ($elemento->fichero != ''){
             $idDocumento = Documento::crea($elemento, [

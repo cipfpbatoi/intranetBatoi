@@ -18,6 +18,26 @@ $(function () {
         $('#metodo').val('POST');
         $(this).attr("data-toggle", "modal").attr("data-target", "#create").attr("href", "");
     });
+    $(".fa-eye").on("click",function(){
+        event.preventDefault();
+        var id = $(this).parents('tr').attr('id');
+        $(this).parents('a').attr("data-toggle", "modal").attr("data-target", "#show").attr("href", "");
+        $.ajax({
+            method: "GET",
+            url: "/api/" + modelo + "/" + id,
+            dataType: 'json',
+            data: {api_token: token},
+        }).then(function (res) {
+            var html = '<ul class="to_do">';
+            for (var propiedad in res.data) {
+                if (propiedad === 'fichero' && res.data[propiedad]!=null)
+                    html += "<li><img src='storage/"+res.data[propiedad]+"' height='400' width='300'/>'</li>";
+                else
+                    html += "<li><strong style='text-transform: capitalize'>"+propiedad+"</strong>: "+res.data[propiedad]+"</li>";
+            }
+            $("#campos").html(html);
+        });
+    });
     $(".fa-edit").on("click", function () {
         event.preventDefault();
 //        var hrefBtn = $(this).parents('a').attr('href');

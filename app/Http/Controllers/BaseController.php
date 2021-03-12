@@ -10,10 +10,6 @@ use Illuminate\Support\Facades\Session;
 
 abstract class BaseController extends Controller
 { 
-    protected $namespace = 'Intranet\Entities\\'; //string on es troben els models de dades
-    protected $model;       // model de dades utilitzat
-    protected $class;       // clase del model de dades
-    protected $perfil = null; // perfil que pot accedir al controlador
     protected $gridFields = null;  // campos que ixen en la rejilla
     protected $vista;       // vistes per defecte
     protected $panel;       // panel per a la vista
@@ -31,8 +27,7 @@ abstract class BaseController extends Controller
      */
     public function __construct()
     {
-        if (isset($this->perfil)) $this->middleware($this->perfil);  
-        $this->class = $this->namespace . $this->model;
+        parent::__construct();
         $this->panel = new Panel($this->model, $this->gridFields,
                 isset($this->vista['grid'])?'grid.'.$this->vista['grid']:'grid.standard',true,$this->parametresVista);
         
@@ -52,6 +47,7 @@ abstract class BaseController extends Controller
     
     protected function grid($todos,$modal=false)
     {
+
         if ($modal) return $this->panel->renderModal($todos,$this->titulo,$this->chooseView('indexModal'),$this->createWithDefaultValues());
         return $this->panel->render($todos,$this->titulo,$this->chooseView('index'));
     }
@@ -70,7 +66,6 @@ abstract class BaseController extends Controller
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
         $this->iniPestanas();
-
 
         return $this->grid($this->search(),$this->modal);
     }

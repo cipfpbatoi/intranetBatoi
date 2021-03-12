@@ -161,7 +161,6 @@ trait BatoiModels
         return $nombre . $clase . '.' . $extension;
     }
 
-
     /**
      * @param $key
      * @param $value
@@ -180,6 +179,9 @@ trait BatoiModels
         }
         if ($type == 'file') {
             return $value = $this->$key;
+        }
+        if ($type == 'checkbox'){
+            return $value == null?0:1;
         }
         return $value;
     }

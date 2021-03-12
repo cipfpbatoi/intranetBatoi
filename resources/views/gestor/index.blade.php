@@ -4,7 +4,7 @@
 @endsection
 @foreach ($panel->getPestanas() as $pestana)
     @section($pestana->getNombre())
-        <div class="centrado">@include('intranet.partials.buttons',['tipo' => 'index'])</div><br/>
+        <div class="centrado">@include('intranet.partials.components.buttons',['tipo' => 'index'])</div><br/>
         @include($pestana->getVista(),$pestana->getFiltro())
     @endsection
 @endforeach
@@ -12,7 +12,7 @@
     {{$panel->getTitulo()}}
 @endsection
 @section('scripts')
-    @include('includes.tablesjs')
+    @include('js.tablesjs')
     {{ HTML::script('/js/Gestor/grid.js') }}
 @endsection
 

@@ -24,7 +24,7 @@ var options = {};
                 </a>`;
     var token = $("#_token").text();
     var articulos = cargaArticulos();
-    $("#datalote").DataTable( {
+    $("#datatable").DataTable( {
         ajax : {
             method: "GET",
             url: '/api/lote',
@@ -71,10 +71,16 @@ var options = {};
 
 $(function () {
 
+    // create
+
+    $(".txtButton").on("click", function () {
+        event.preventDefault();
+        $("#create").modal("show");
+    });
 
 
     // Botón VER
-    $('#datalote').on('click', 'a.ver', function (event) {
+    $('#datatable').on('click', 'a.ver', function (event) {
         event.preventDefault();
         var idLote = $(this).parent().siblings().first().text();
         var estado = $(this).parent().siblings(".estado").text();
@@ -90,7 +96,7 @@ $(function () {
     if (autorizado) {
         // DATALOTE
         // Botón DELETE
-        $('#datalote').on('click', 'a.delete', function (event) {
+        $('#datatable').on('click', 'a.delete', function (event) {
             let info="\n";
             let titles=$(this).parents('table').find('thead').find('th');
             $(this).parent().siblings().each(function(i, item) {
@@ -115,7 +121,7 @@ $(function () {
             }
         })
         // Botón EDIT
-        $('#datalote').on('click', 'a.edit', function (event) {
+        $('#datatable').on('click', 'a.edit', function (event) {
             event.preventDefault();
             $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
             var $registre = $(this).parent().siblings().first();
@@ -128,10 +134,10 @@ $(function () {
                 {id: "Origen", type: "select"},
                 {id: "FechaAlta", type: "text", val: $fechaAlta.text()},
             ];
-            $(".modal-title").text("Editar Factura "+$registre.text());
-            $(".modal-body").html(htmlDialog(dlgControls));
-            $(".modal-footer").find("button[type=button]").text("Cancelar");
-            $(".modal-footer").find("button[type=submit]").show().one("click", function() {
+            $("#dialogo .modal-title").text("Editar Factura "+$registre.text());
+            $("#dialogo .modal-body").html(htmlDialog(dlgControls));
+            $("#dialogo .modal-footer").find("button[type=button]").text("Cancelar");
+            $("#dialogo .modal-footer").find("button[type=submit]").show().one("click", function() {
                 $.ajax({
                     method: "PUT",
                     url: "/api/lote/"+$registre.text(),
@@ -160,7 +166,7 @@ $(function () {
 
         });
         // INVENTARIAR
-        $('#datalote').on('click', 'a.inventary', function (event) {
+        $('#datatable').on('click', 'a.inventary', function (event) {
             var idLote = $(this).parent().siblings().first().text();
             var texto = 'Vas a inventariar el lot amb registre '+idLote+', amb els següents articles.\n';
             $.ajax({
@@ -297,10 +303,10 @@ function cargaArticulosLote(entorno,idLote,estado){
                 '<td><input type=number" id="unidades" name="unidades" /></td><td><a class="btn btn-info new">Afegir Article</a></td></tr>';
         }
         html += '</tbody></table>';
-        $(".modal-title").html("Articles del Lot <span id='idLote'>"+result.lote+'</span>');
-        $(".modal-body").html(html);
-        $(".modal-footer").find("button[type=submit]").hide();
-        $(".modal-footer").find("button[type=button]").text("Cerrar");
+        $("#dialogo .modal-title").html("Articles del Lot <span id='idLote'>"+result.lote+'</span>');
+        $("#dialogo .modal-body").html(html);
+        $("#dialogo .modal-footer").find("button[type=submit]").hide();
+        $("#dialogo .modal-footer").find("button[type=button]").text("Cerrar");
     });
 }
 

@@ -17,6 +17,7 @@ class Modal extends Component
     public $title;
     public $action;
     public $message;
+    public $clase;
 
     /**
      * Modal constructor.
@@ -25,19 +26,21 @@ class Modal extends Component
      * @param $action
      * @param $components
      * @param $message
+     * @param $clase
      */
-    public function __construct(String $name,String $title,String $message,String $action ="#")
+    public function __construct(String $name,String $title,String $message,String $action ="#",String $clase='')
     {
         $this->name = $name;
         $this->title = $title;
         $this->action = $action;
         $this->message = $message;
+        $this->clase = $clase;
     }
 
 
     public function render()
     {
-        return view('batoi-modal::modal');
+        return view('batoiModal.modal');
     }
 
 

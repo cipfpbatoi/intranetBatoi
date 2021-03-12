@@ -9,17 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 class Articulo extends Model
 {
 
-    protected $table = 'articulos';
-    public $timestamps = false;
-    protected $fillable = [ 'descripcion', 'fichero'];
-
-
     use BatoiModels;
 
-    protected $rules = [
-        'descripcion' => 'required',
-    ];
-    protected $inputTypes = [
+    protected   $table = 'articulos';
+    public      $timestamps = false;
+    protected   $fillable = [ 'descripcion', 'fichero'];
+    protected   $inputTypes = [
         'fichero' => ['type' => 'file'],
     ];
 
@@ -30,11 +25,11 @@ class Articulo extends Model
 
     public function getMiniaturaAttribute()
     {
-        return "<img src='".asset('/storage/'.$this->fichero)."' heigth='40px' width='60px'/>";
+        if ($this->fichero)
+            return "<img src='".asset('/storage/'.$this->fichero)."' heigth='40px' width='60px'/>";
+        else
+            return "Sense imatge";
     }
-
-
-
 
     public function fillFile($file){
         if (!$file->isValid()){
@@ -44,7 +39,6 @@ class Articulo extends Model
         $this->fichero = $file->storeAs('Articulos'
             ,$this->id.'.'.$file->getClientOriginalExtension(),'public');
         $this->save();
-
     }
 
 }

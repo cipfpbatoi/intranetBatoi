@@ -25,11 +25,6 @@ class Espacio extends Model
         'gVesprada',
         'reservable'
     ];
-    protected $rules = [
-        'aula' => 'required',
-        'descripcion' => 'required',
-        'idDepartamento' => 'required',
-    ];
     protected $inputTypes = [
         'idDepartamento' => ['type' => 'select'],
         'gMati' => ['type' => 'select'],

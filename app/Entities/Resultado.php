@@ -30,14 +30,7 @@ class Resultado extends Model
         'idProfesor',
     ];
 
-    protected $rules = [
-        'evaluacion' => 'required|composite_unique:resultados,idModuloGrupo,evaluacion',
-        'matriculados' => 'required|numeric|max:60',
-        'evaluados' => 'required|numeric|max:60',
-        'aprobados' => 'required|numeric|max:60',
-        'udProg' => 'required|numeric|max:30',
-        'udImp' => 'required|numeric|max:30',
-    ];
+
     protected $inputTypes = [
         'idModuloGrupo' => ['type' => 'select'],
         'evaluacion' => ['type' => 'select'],

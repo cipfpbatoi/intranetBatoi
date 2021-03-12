@@ -15,6 +15,7 @@ class Expediente extends Model
     use BatoiModels,TraitEstado;
 
     public $timestamps = false;
+    /**
     protected $visible = [
         'id',
         'tipo',
@@ -26,6 +27,7 @@ class Expediente extends Model
         'fechasolucion',
         'explicacion',
     ];
+     */
     protected $fillable = [
         'tipo',
         'idModulo',
@@ -33,12 +35,6 @@ class Expediente extends Model
         'idProfesor',
         'explicacion',
         'fecha',
-    ];
-    protected $rules = [
-        'fecha' => 'required',
-        'explicacion' => 'required',
-        'idAlumno' => 'required',
-        'tipo' => 'required'
     ];
     protected $inputTypes = [
         'tipo' => ['type' => 'select'],

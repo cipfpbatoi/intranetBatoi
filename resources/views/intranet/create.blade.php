@@ -3,7 +3,7 @@
 <title>{{trans("models.$modelo.create")}}</title>
 @endsection
 @section('content')
-@include('intranet.partials.formCreate',['method'=>'POST'])
+@include('intranet.partials.components.formCreate',['method'=>'POST'])
 @endsection
 @section('titulo')
 {{trans("models.$modelo.create")}}

@@ -2,11 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use DB;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\Http\Requests\ExpedienteRequest;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\Documento;
@@ -17,7 +15,7 @@ use Intranet\Entities\TipoExpediente;
  * Class ExpedienteController
  * @package Intranet\Http\Controllers
  */
-class ExpedienteController extends IntranetController
+class ExpedienteController extends ModalController
 {
 
     use traitImprimir,
@@ -30,23 +28,29 @@ class ExpedienteController extends IntranetController
     /**
      * @var string
      */
-    protected $perfil = 'profesor';
-    /**
-     * @var string
-     */
     protected $model = 'Expediente';
-    /**
-     * @var bool
-     */
-    protected $modal = true;
+    protected $profile = false;
+
+
+    public function store(ExpedienteRequest $request)
+    {
+        $new = new Expediente();
+        $new->fillAll($request);
+        return $this->redirect();
+    }
+
+    public function update(ExpedienteRequest $request, $id)
+    {
+        Expediente::findOrFail($id)->fillAll($request);
+        return $this->redirect();
+    }
 
     /**
      *
      */
     protected function iniBotones()
     {
-        $this->panel->setBotonera([]);
-        $this->panel->setBoton('index', new BotonBasico('expediente.create'));
+        $this->panel->setBotonera(['create']);
         $this->panel->setBoton('grid', new BotonImg('expediente.pdf', ['where' => ['estado', '==', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.edit', ['where' => ['estado', '<', '2']]));

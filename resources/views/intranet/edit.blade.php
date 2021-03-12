@@ -3,7 +3,7 @@
 <title>{{trans("models.$modelo.edit")}}</title>
 @endsection
 @section('content')
-@include('intranet.partials.formCreate',['method'=>'PUT'])
+@include('intranet.partials.components.formCreate',['method'=>'PUT'])
 @endsection
 @section('titulo')
 {{trans("models.$modelo.edit")}} 

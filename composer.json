@@ -11,7 +11,6 @@
         "php": "^7.1",
         "barryvdh/laravel-dompdf": "^0.8.6",
         "barryvdh/laravel-snappy": "^0.4.7",
-        "batoi/modal": "dev-master",
         "doctrine/dbal": "^2.6",
         "eluceo/ical": "^0.13.0",
         "fedeisas/laravel-mail-css-inliner": "^3.0.1",

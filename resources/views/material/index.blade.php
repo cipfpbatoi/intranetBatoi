@@ -9,5 +9,5 @@
     {{$panel->getTitulo()}}
 @endsection
 @section('scripts')
-@include('includes.tablesjs')
+@include('js.tablesjs')
 @endsection
