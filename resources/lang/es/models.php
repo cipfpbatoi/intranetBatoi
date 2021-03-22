@@ -308,6 +308,7 @@ return array(
             'pr0601' => 'Imprime PR06-01 (Entrega Certificado)',
             'pr0402' => 'Imprime Entrevista Alumnado',
             'pr0401' => 'Imprime Entrevista Final Instructor',
+            'pasqua' => 'Imprime Hoja Vacaciones pascua',
             'list' => 'Acta Grupo :quien',
             'acta' => 'Pedir acta de evaluación',
             'insercio' => "Inserción Laboral",
