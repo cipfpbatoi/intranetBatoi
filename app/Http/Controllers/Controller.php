@@ -24,7 +24,9 @@ class Controller extends BaseController
      */
     public function __construct()
     {
-        if (isset($this->perfil)) $this->middleware($this->perfil);
+        if (isset($this->perfil)) {
+            $this->middleware($this->perfil);
+        }
         $this->class = $this->namespace . $this->model;
     }
 }

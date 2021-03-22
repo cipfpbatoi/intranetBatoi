@@ -31,4 +31,10 @@ return [
             'cuando' => 2,
             'orientacion' => 'landscape'
         ],
+    'pasqua' => ['documento' => 'Pasqua',
+        'nombre' => 'PASQUA',
+        'descripcion' => 'VACACIONS DE PASQUA',
+        'cuando' => 2,
+        'orientacion' => 'portrait'
+        ]
     ];

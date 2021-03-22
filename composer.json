@@ -24,7 +24,6 @@
         "laravel/tinker": "^2.4.1",
         "laravel/ui": "^2.0",
         "laravelcollective/html": "^6.0",
-        "livewire/livewire": "^2.4",
         "mikehaertl/php-pdftk": "^0.8.1",
         "predis/predis": "^1.1",
         "styde/html": "~1.8"
@@ -33,6 +32,8 @@
         "barryvdh/laravel-debugbar": "^3.2",
         "composer/composer": "^1.9",
         "filp/whoops": "^2.0",
+        "laravel/browser-kit-testing": "^6.2",
+        "laravel/dusk": "^6.13",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9.0",

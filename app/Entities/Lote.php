@@ -3,9 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Estadomaterial;
-use Intranet\Entities\Espacio;
-use Intranet\Events\ActivityReport;
+
 
 class Lote extends Model
 {
@@ -18,9 +16,6 @@ class Lote extends Model
 
     use BatoiModels;
 
-    protected $rules = [
-        'registre' => 'required|alpha_dash|unique:lotes,registre',
-    ];
     protected $inputTypes = [
         'registre' => ['type' => 'text'],
         'procedencia' => ['type' => 'select'],
@@ -51,8 +46,9 @@ class Lote extends Model
     public function getEstadoAttribute(){
         if ($this->articuloLote()->count()) {
             if ($this->materiales()->count()) {
-              if ($this->materiales()->where('espacio','INVENT')->count())
+              if ($this->materiales()->where('espacio','INVENT')->count()) {
                   return 2;
+              }
               return 3;
             }
             return 1;

@@ -50,6 +50,16 @@ class Panel
         return view($vista,compact('panel','elemento','default'));
     }
 
+    public function modalRender($todos,$titulo,$vista,$elemento,$default){
+        if (!$this->countPestana()) {
+            return redirect()->route('home');
+        }
+
+        $panel = $this->feedPanel($todos, $titulo);
+
+        return view($vista,compact('panel','elemento','default'));
+    }
+
 
     
     public function setBotonera($index = [], $grid = [], $profile = [])

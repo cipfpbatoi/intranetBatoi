@@ -12,6 +12,7 @@ use Intranet\Entities\Lote;
  */
 class LoteController extends ModalController
 {
+    //use traitAutomaticForm;
 
     /**
      * @var string
@@ -24,6 +25,7 @@ class LoteController extends ModalController
 
 
     protected $gridFields = [ 'registre', 'proveedor','procedencia', 'estado','fechaAlta'];
+
 
 
     public function store(LoteRequest $request)

@@ -35,9 +35,13 @@ abstract class BaseController extends Controller
     //seleciona vista para metodo, por defecto intranet
     protected function chooseView($tipo)
     {
-        if (!isset($this->vista[$tipo])) return "intranet.$tipo";
+        if (!isset($this->vista[$tipo])) {
+            return "intranet.$tipo";
+        }
         
-        if (strpos($this->vista[$tipo], '.')) return strtolower($this->vista[$tipo]);
+        if (strpos($this->vista[$tipo], '.')) {
+            return strtolower($this->vista[$tipo]);
+        }
         
         return strtolower($this->vista[$tipo]) . ".$tipo";
         
@@ -48,7 +52,9 @@ abstract class BaseController extends Controller
     protected function grid($todos,$modal=false)
     {
 
-        if ($modal) return $this->panel->renderModal($todos,$this->titulo,$this->chooseView('indexModal'),$this->createWithDefaultValues());
+        if ($modal) {
+            return $this->panel->renderModal($todos, $this->titulo, $this->chooseView('indexModal'), $this->createWithDefaultValues());
+        }
         return $this->panel->render($todos,$this->titulo,$this->chooseView('index'));
     }
 
@@ -84,7 +90,9 @@ abstract class BaseController extends Controller
     protected function search(){
         $todos =  $this->class::all(); // carrega totes les dades de un model
         if (isset($todos->first()->idProfesor)) // Si existe profesor en el model limite la cerca a les seues
-                $todos = $todos->where('idProfesor', '=', AuthUser()->dni);
+        {
+            $todos = $todos->where('idProfesor', '=', AuthUser()->dni);
+        }
         return $todos;
     }
     
@@ -102,8 +110,9 @@ abstract class BaseController extends Controller
      */
     protected function iniBotones(){}
     protected function iniPestanas($parametres = null){
-        if (view()->exists('intranet.partials.profile.'.strtolower($this->model))&&$this->profile) 
-                    $this->panel->setPestana('profile', false,null,null,null,null,$this->parametresVista);
+        if (view()->exists('intranet.partials.profile.'.strtolower($this->model))&&$this->profile) {
+            $this->panel->setPestana('profile', false, null, null, null, null, $this->parametresVista);
+        }
     }
     
     protected function crea_pestanas($estados,$vista,$activa=null,$sustituye = null){

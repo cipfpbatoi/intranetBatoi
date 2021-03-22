@@ -7,11 +7,13 @@ use Tests\FeatureTestCase;
 
 class CreateComisionTest extends FeatureTestCase
 {
+
     function test_user_guest_comision()
     {
-        $this->visit(route('comision.create'));
-        $this->seePageIs(route('login'));
+        $this->visit(route('comision.create'))
+            ->seeHeader('status',401);
     }
+
     
     function test_a_user_create_a_comision()
     {
@@ -20,8 +22,8 @@ class CreateComisionTest extends FeatureTestCase
         
         $this->visit(route('comision.create'))
                 ->type('Prueba','servicio')
-                ->type('04-08-2019 08:00','desde')
-                ->type('04-08-2019 14:00','hasta')
+                ->type('04-04-2021 08:00','desde')
+                ->type('04-04-2021 14:00','hasta')
                 ->type('COCHE','medio')
                 ->type('SEAT ALTEA XL','marca')
                 ->type('1023-HDX','matricula')

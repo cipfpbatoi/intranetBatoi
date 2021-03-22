@@ -10,15 +10,16 @@ use Intranet\Entities\Documento;
 use Jenssegers\Date\Date;
 use Intranet\Jobs\SendEmail;
 use Styde\Html\Facades\Alert;
+use Intranet\Http\Requests\CursoRequest;
 
 /**
  * Class CursoController
  * @package Intranet\Http\Controllers
  */
-class CursoController extends IntranetController
+class CursoController extends ModalController
 {
 
-    use traitImprimir;
+    use traitImprimir,traitActive;
 
 
     /**
@@ -30,6 +31,19 @@ class CursoController extends IntranetController
      */
     protected $gridFields = ['id', 'titulo', 'estado', 'fecha_inicio','NAlumnos'];
 
+
+    public function store(CursoRequest $request)
+    {
+        $new = new Curso();
+        $new->fillAll($request);
+        return $this->redirect();
+    }
+
+    public function update(CursoRequest $request, $id)
+    {
+        Curso::findOrFail($id)->fillAll($request);
+        return $this->redirect();
+    }
     /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse

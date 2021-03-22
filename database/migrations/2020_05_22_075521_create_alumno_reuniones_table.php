@@ -16,7 +16,7 @@ class CreateAlumnoReunionesTable extends Migration {
 		{
 			$table->integer('id', true);
 			$table->integer('idReunion')->unsigned()->index('asistencias_idreunion_foreign');
-			$table->string('idAlumno', 8)->collation('utf8_unicode_ci')->index('asistencias_idAlumno_foreign');
+			$table->string('idAlumno', 8)->collation('utf8mb4_unicode_ci')->index('asistencias_idAlumno_foreign');
 			$table->tinyInteger('capacitats')->default(0);
 			$table->foreign('idAlumno')->references('nia')->on('alumnos')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->foreign('idReunion')->references('id')->on('reuniones')->onUpdate('CASCADE')->onDelete('CASCADE');

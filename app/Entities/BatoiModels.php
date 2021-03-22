@@ -110,10 +110,11 @@ trait BatoiModels
      */
     public function existsDatepicker()
     {
-        foreach ($this->inputTypes as $type)
-        {
-            if ($this->isTypeDate($type)) {
-                return true;
+        if (isset($this->inputTypes)) {
+            foreach ($this->inputTypes as $type) {
+                if ($this->isTypeDate($type)) {
+                    return true;
+                }
             }
         }
         return false;

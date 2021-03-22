@@ -13,6 +13,7 @@ use Intranet\Http\Requests\CicloRequest;
  */
 class CicloController extends ModalController
 {
+    const ADMINISTRADOR = 'roles.rol.administrador';
 
     /**
      * @var string
@@ -26,16 +27,16 @@ class CicloController extends ModalController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('ciclo.create', ['roles' => config('roles.rol.administrador')]));
-        $this->panel->setBoton('grid', new BotonImg('ciclo.show', ['roles' => config('roles.rol.administrador')]));
-        $this->panel->setBoton('grid', new BotonImg('ciclo.edit', ['roles' => config('roles.rol.administrador')]));
-        $this->panel->setBoton('grid', new BotonImg('ciclo.delete', ['roles' => config('roles.rol.administrador')]));
+        $this->panel->setBoton('index', new BotonBasico('ciclo.create', ['roles' => self::ADMINISTRADOR]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.show',['roles' => self::ADMINISTRADOR]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.edit', ['roles' => self::ADMINISTRADOR]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.delete',['roles' => self::ADMINISTRADOR]));
     }
 
     public function store(CicloRequest $request)
     {
-        $newArt = new Ciclo();
-        $newArt->fillAll($request);
+        $new = new Ciclo();
+        $new->fillAll($request);
         return $this->redirect();
     }
 

@@ -49,18 +49,7 @@ class Comision extends Model
         'otros',
         
     ];
-    protected $rules = [
-        'servicio' => 'required',
-        'kilometraje' => 'required|integer',
-        'desde' => 'required|date|after:tomorrow',
-        'hasta' => 'required|date|after:desde',
-        'alojamiento' => 'required|numeric',
-        'comida' => 'required|numeric',
-        'gastos' => 'required|numeric',
-        'medio' => 'required|max:30',
-        'marca' => 'required|max:30',
-        'matricula' => 'required|max:10'
-    ];
+
     protected $inputTypes = [
         'idProfesor' => ['type' => 'hidden'],
         'otros' => ['type' => 'select'],
@@ -86,6 +75,10 @@ class Comision extends Model
         'kilometraje' => 0 ,
     ];
 
+
+    public function Creador(){
+        return $this->dni;
+    }
 
     public function scopeActual($query)
     {

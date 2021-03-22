@@ -16,7 +16,7 @@ class CreateAlumnoFctsTable extends Migration {
 		{
                         $table->increments('id');
 			$table->integer('idFct')->unsigned();
-			$table->string('idAlumno', 8)->collation('utf8_unicode_ci')->index('alumno_fcts_idAlumno_foreign');
+			$table->string('idAlumno', 8)->collation('utf8mb4_unicode_ci')->index('alumno_fcts_idAlumno_foreign');
 			$table->boolean('calificacion')->nullable();
 			$table->boolean('calProyecto')->nullable();
 			$table->boolean('actas')->default(0);

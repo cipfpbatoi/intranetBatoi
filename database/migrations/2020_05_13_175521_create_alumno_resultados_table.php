@@ -15,7 +15,7 @@ class CreateAlumnoResultadosTable extends Migration {
 		Schema::create('alumno_resultados', function(Blueprint $table)
 		{
 			$table->increments('id');
-            $table->string('idAlumno', 8)->collation('utf8_unicode_ci');
+            $table->string('idAlumno', 8)->collation('utf8mb4_unicode_ci');
             $table->integer('idModuloGrupo')->unsigned();
             $table->tinyInteger('nota')->default(0);
             $table->tinyInteger('valoraciones')->default(0);

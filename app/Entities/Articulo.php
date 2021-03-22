@@ -25,10 +25,11 @@ class Articulo extends Model
 
     public function getMiniaturaAttribute()
     {
-        if ($this->fichero)
-            return "<img src='".asset('/storage/'.$this->fichero)."' heigth='40px' width='60px'/>";
-        else
+        if ($this->fichero) {
+            return "<img src='" . asset('/storage/' . $this->fichero) . "' heigth='40px' width='60px'/>";
+        } else {
             return "Sense imatge";
+        }
     }
 
     public function fillFile($file){

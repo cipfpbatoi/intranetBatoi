@@ -31,6 +31,7 @@ class Espacio extends Model
         'gVesprada' => ['type' => 'select'],
         'reservable' => ['type' => 'checkbox'],
     ];
+
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,

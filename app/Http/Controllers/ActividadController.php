@@ -9,17 +9,13 @@ use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\Actividad_profesor;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\Resultado;
 use Response;
-use Exception;
-use Illuminate\Support\Facades\Redirect;
-use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
 use Styde\Html\Facades\Alert;
 use Jenssegers\Date\Date;
-use Illuminate\Support\Facades\Session;
 use DB;
+
 
 class ActividadController extends IntranetController
 {
