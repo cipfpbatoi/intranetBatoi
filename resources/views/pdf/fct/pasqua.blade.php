@@ -21,7 +21,7 @@
                 <ul>
                 @foreach ($todos as $alumno)
                     @if ($alumno->festiusEscolars == 0)
-                        <li>{{$alumno->fullName}}</li>
+                        <li>{{$alumno->dni}} - {{$alumno->fullName}}</li>
                     @endif
                 @endforeach
                 </ul>
