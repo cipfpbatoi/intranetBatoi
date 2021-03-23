@@ -30,11 +30,5 @@ return [
             'descripcion' => 'ENTREVISTA DEL TUTOR CON EL INSTRUCTOR DE LA EMPRESA',
             'cuando' => 2,
             'orientacion' => 'landscape'
-        ],
-    'pasqua' => ['documento' => 'Pasqua',
-        'nombre' => 'PASQUA',
-        'descripcion' => 'VACACIONS DE PASQUA',
-        'cuando' => 2,
-        'orientacion' => 'portrait'
         ]
     ];

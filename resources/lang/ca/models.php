@@ -416,7 +416,10 @@ return array(
           'email' => 'Enviar Correu Valoració Alumne',
           'pg0301' => "Entregada documentació",
             'default' => 'x Alumne',
-
+            'selecciona' => 'Alumno'
+        ),
+        'alumnoFct' => array(
+          'selecciona' => 'Alumne'
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',

@@ -373,9 +373,6 @@ class FctController extends IntranetController
         }
         return back();
     }
-    
-   
-    
-   
+
 
 }
