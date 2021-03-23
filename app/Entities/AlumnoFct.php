@@ -11,7 +11,7 @@ class AlumnoFct extends Model
 {
 
     use BatoiModels;
-    protected $fillable = ['id', 'desde','hasta','horas','festiusEscolars','beca'];
+    protected $fillable = ['id', 'desde','hasta','horas','beca'];
     
     protected $rules = [
         'id' => 'required',
@@ -24,7 +24,6 @@ class AlumnoFct extends Model
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
         'beca' => ['type' => 'text'],
-        'festiusEscolars' => ['type' => 'checkbox'],
     ];
     public $timestamps = false;
     protected $dispatchesEvents = [

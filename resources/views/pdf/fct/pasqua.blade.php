@@ -20,9 +20,7 @@
                 </p>
                 <ul>
                 @foreach ($todos as $alumno)
-                    @if ($alumno->festiusEscolars == 0)
-                        <li>{{$alumno->Alumno->dni}} - {{$alumno->fullName}}</li>
-                    @endif
+                    <li>{{$alumno->Alumno->dni}} - {{$alumno->fullName}}</li>
                 @endforeach
                 </ul>
             </div>
