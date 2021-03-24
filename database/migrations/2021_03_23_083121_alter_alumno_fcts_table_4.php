@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterAlumnoFctsTable3 extends Migration {
+class AlterAlumnoFctsTable4 extends Migration {
 
 	/**
 	 * Run the migrations.
