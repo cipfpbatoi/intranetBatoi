@@ -50,7 +50,6 @@ abstract class Boton
         $this->atributos = $atributos;
         $this->relative = $relative;
         $this->text = $this->translateText();
-
       }
 
     public function __set($name, $value)
@@ -102,6 +101,18 @@ abstract class Boton
         if ($key == null) return $this->id != '' ? " id='" . $this->id . "'" : '';
         return $this->id != '' ? " id='" . $this->id . $key . "'" : '';
 
+    }
+
+    // torna data del boto en format html
+    protected function data()
+    {
+        $cadena = "";
+        foreach ($this->atributos as $key => $value){
+            if (substr($key,0,5)=='data-'){
+                $cadena = " ".$key."='".$value."'";
+            }
+        }
+        return $cadena;
     }
 
     // forma el text de l'enllaç amb la clau ($key)

@@ -15,6 +15,7 @@ use Styde\Html\Facades\Alert;
 use Illuminate\Http\Request;
 use Intranet\Botones\Mail as myMail;
 use Intranet\Entities\Activity;
+use Illuminate\Support\Collection;
 
 
 
@@ -39,7 +40,7 @@ class PanelColaboracionController extends IntranetController
      */
     protected $model = 'Colaboracion';
 
-    protected $parametresVista = ['modal' => ['contacto','afegirFct']];
+    protected $parametresVista = ['modal' => ['contacto','afegirFct','seleccion']];
 
 
     /**
@@ -77,7 +78,7 @@ class PanelColaboracionController extends IntranetController
 
         $this->panel->setBoton('pendiente', new BotonBasico("colaboracion.contacto",['icon' => 'fa fa-bell-o']));
 
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.info",['class'=>'btn-info','icon' => 'fa fa-check']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.info",['class'=>'btn-primary selecciona','icon' => 'fa fa-check','data-url'=>'/api/colaboracion/'.AuthUser()->dni.'/info']));
         $this->panel->setBoton('colabora', new BotonBasico("colaboracion.documentacion",['class'=>'btn-info','icon' => 'fa fa-flag-o']));
         $this->panel->setBoton('colabora', new BotonBasico("fct.send",['class'=>'btn-info','icon' => 'fa fa-unlock']));
         $this->panel->setBoton('colabora', new BotonBasico("colaboracion.seguimiento",['class'=>'btn-info','icon' => 'fa fa-envelope']));
@@ -240,6 +241,14 @@ class PanelColaboracionController extends IntranetController
         return $mail->render($document['redirect']);
     }
 
-
+    protected function selecciona(Request $request){
+        $colaboraciones = new Collection();
+        foreach ($request->request as $item => $value){
+            if ($value == 'on'){
+                $colaboraciones->push(Colaboracion::find($item));
+            }
+        }
+        return $this->sendEmails(config('fctEmails.request'),$colaboraciones);
+    }
 
 }

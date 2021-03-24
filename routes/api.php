@@ -96,6 +96,8 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/colaboracion/{colaboracion}/unauthorize','ColaboracionController@unauthorize');
     Route::get('/colaboracion/{colaboracion}/switch','ColaboracionController@switch');
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
+    Route::get('/colaboracion/{dni}/info','ColaboracionController@info');
+
 
     Route::resource('alumnoresultado','AlumnoResultadoContoller');
     Route::get('/matricula/{token}','AlumnoReunionController@getDadesMatricula');

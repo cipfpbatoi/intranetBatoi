@@ -10,7 +10,7 @@ class BotonPost extends BotonElemento
 
     protected function html($key = null)
     {
-        return "<input " . $this->clase() . $this->id() . " type=submit  value='" . $this->text . "' />";
+        return "<input " . $this->clase() . $this->id() . $this->data(). " type=submit  value='" . $this->text . "' />";
     }
 
 }

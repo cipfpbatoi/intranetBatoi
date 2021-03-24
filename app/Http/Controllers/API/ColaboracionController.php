@@ -10,6 +10,7 @@ use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Fct;
+use Intranet\Http\Resources\ColaboracionResource;
 
 class ColaboracionController extends ApiBaseController
 {
@@ -55,6 +56,29 @@ class ColaboracionController extends ApiBaseController
             }
         $activity = Activity::record('phone', Fct::find($id),$request->explicacion,null,'Seguiment telefònic');
         return $this->sendResponse($activity,'OK');
+    }
+    public function info($dni){
+        return ColaboracionResource::collection($this->selectColaboraciones($dni,2,config('fctEmails.request')));
+    }
+
+    private function selectColaboraciones($dni,$estado,$document=null){
+        $colaboraciones = Colaboracion::MiColaboracion(null,$dni)->where('tutor',$dni)->where('estado',$estado)->get();
+        if (!$document) {
+            return $colaboraciones;
+        }
+        $noEnviadas = collect();
+        foreach ($colaboraciones as $colaboracion){
+            if (Activity::where('model_class','Intranet\Entities\Colaboracion')->where('model_id',$colaboracion->id)->where('document','=',$document['subject'])->count() == 0){
+                if ($document['fcts'] && count($colaboracion->Fcts)) {
+                    $noEnviadas->push($colaboracion);
+                }
+                if (!$document['fcts'] && count($colaboracion->Fcts) == 0) {
+                    $noEnviadas->push($colaboracion);
+                }
+            }
+
+        }
+        return $noEnviadas;
     }
 
 

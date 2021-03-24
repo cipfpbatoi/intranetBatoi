@@ -43,7 +43,7 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['id' => '401', 'roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['id' => '402', 'roles' => config('roles.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pasqua",['id' => 'btn-selecciona','roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pasqua",['class' => 'selecciona btn-info','data-url'=> "/api/alumnoFct/".AuthUser()->dni."/misAlumnos",'roles' => config('roles.rol.tutor')]));
         Session::put('redirect', 'FctAlumnoController@index');
     }
         //

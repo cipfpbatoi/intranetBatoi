@@ -11,7 +11,7 @@ class BotonBasico extends Boton
     //pinta el boto
     protected function html($key = null)
     {
-        return "<a " . $this->href() . $this->clase() . $this->id() . ">".$this->hasIcon().' '.$this->text."</a>";
+        return "<a " . $this->href() . $this->clase() . $this->id() .$this->data() .">".$this->hasIcon().' '.$this->text."</a>";
     }
 
     private function hasIcon(){

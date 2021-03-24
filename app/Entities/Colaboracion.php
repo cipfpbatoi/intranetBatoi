@@ -82,9 +82,10 @@ class Colaboracion extends Model
         $centros = Centro::select('id')->Empresa($empresa)->get()->toarray();
         return $query->whereIn('idCentro',$centros);
     }
-    public function scopeMiColaboracion($query, $empresa=null)
+    public function scopeMiColaboracion($query, $empresa=null,$dni=null)
     {
-        $cicloC = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->get();
+        $dni = $dni??AuthUser()->dni;
+        $cicloC = Grupo::select('idCiclo')->QTutor($dni)->get();
         $ciclo = $cicloC->count()>0?$cicloC->toarray():[];
         if ($empresa) return $query->whereIn('idCiclo',$ciclo)->Empresa($empresa);
         else return $query->whereIn('idCiclo',$ciclo);
