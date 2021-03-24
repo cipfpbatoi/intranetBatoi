@@ -14,7 +14,7 @@
                 </ul>
             </div>
             <div class="right col-xs-5 text-center">
-                <img src="{{asset($elemento->foto)}}" alt="" heigth="90px" width="70px" class="img-circle img-responsive">
+                <img src="{{asset('storage/'.$elemento->foto)}}" alt="" heigth="90px" width="70px" class="img-circle img-responsive">
             </div>
             <div class="left col-xs-12">
                 <ul class="list-unstyled">
@@ -49,7 +49,7 @@
                 </p>
             </div>
             <div class="col-xs-12 col-sm-6 emphasis">
-                @include ('intranet.partials.buttons',['tipo' => 'profile'])
+                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
              </div>
         </div>
     </div>

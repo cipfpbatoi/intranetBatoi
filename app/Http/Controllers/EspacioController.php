@@ -3,23 +3,18 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Espacio;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonBasico;
-use Illuminate\Support\Facades\Session;
+use Intranet\Http\Requests\EspacioRequest;
 
 /**
  * Class EspacioController
  * @package Intranet\Http\Controllers
  */
-class EspacioController extends IntranetController
+class EspacioController extends ModalController
 {
 
-    /**
-     * @var string
-     */
-    protected $perfil = 'profesor';
+    use traitAutomaticForm;
     /**
      * @var string
      */
@@ -28,10 +23,28 @@ class EspacioController extends IntranetController
      * @var array
      */
     protected $gridFields = ['Xdepartamento', 'aula', 'descripcion', 'gMati', 'gVesprada'];
-    /**
-     * @var bool
-     */
-    protected $modal = true;
+    protected $formFields = [
+        'aula' => 'text',
+        'descripcion' => 'text',
+        'idDepartamento' => 'select',
+        'gMati' => 'select',
+        'gVesprada' => 'select',
+        'reservable' => 'checkbox'
+    ];
+
+
+    public function store(EspacioRequest $request)
+    {
+        $new = new Espacio();
+        $new->fillAll($request);
+        return $this->redirect();
+    }
+
+    public function update(EspacioRequest $request, $id)
+    {
+        Espacio::findOrFail($id)->fillAll($request);
+        return $this->redirect();
+    }
 
     /**
      * @param $id
@@ -47,12 +60,9 @@ class EspacioController extends IntranetController
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('espacio.create', ['roles' => [config('roles.rol.direccion'), config('roles.rol.mantenimiento')]]));
+        $this->panel->setBoton('index', new BotonBasico('espacio.create', ['roles' => config('roles.rol.direccion')]));
         $this->panel->setBoton('grid', new BotonImg('material.detalle'));
         $this->panel->setBoton('grid', new BotonImg('espacio.edit', ['roles' => config('roles.rol.direccion')]));
         $this->panel->setBoton('grid', new BotonImg('espacio.delete', ['roles' => config('roles.rol.direccion')]));
-        $this->panel->setBoton('profile', new BotonIcon('material.detalle', ['icon' => 'fa-folder']));
-        $this->panel->setBoton('profile', new BotonIcon('espacio.edit', ['roles' => config('roles.rol.direccion')]));
-        $this->panel->setBoton('profile', new BotonIcon('espacio.delete', ['roles' => config('roles.rol.direccion'), 'class' => 'btn-danger']));
     }
 }

@@ -11,9 +11,8 @@
                     {{$datosInforme['centro']}} d'{{$datosInforme['poblacion']}}, província d'{{$datosInforme['provincia']}}.</p>
             </div>
             <div class="container" >
-                <br/>
                 <strong>CERTIFICA:</strong>
-                <br/><br />
+                <br/>
             </div>
             <div class="container" style="width:95%">
                 <p style="text-indent: 30px;text-align: justify">Que segons consta en el seu expedient, @if ($alumnoFct->Alumno->sexo === 'H') l'alumne @else l'alumna @endif <strong>{{$alumnoFct->Alumno->FullName}} </strong>
@@ -26,11 +25,10 @@
             <div class="container" style="width:95%">
                 <p style="text-indent: 30px;text-align: justify">Que según consta en su expediente, @if ($alumnoFct->Alumno->sexo === 'H') el alumno @else la alumna @endif <strong>{{$alumnoFct->Alumno->FullName}} </strong>
                     con DNI núm. {{$alumnoFct->Alumno->dni}}, ha realizado la Formación en Centros de Trabajo (FCT) del <strong>{{$alumnoFct->Fct->Colaboracion->Ciclo->Ctipo}}
-                        {{$alumnoFct->Fct->Colaboracion->Ciclo->cliteral}} </strong> en la empresa {{$alumnoFct->Fct->Colaboracion->Centro->Empresa->nombre}}, ubicada en {{$alumnoFct->Fct->Colaboracion->Centro->direccion}} de
+                        {{$alumnoFct->Fct->Colaboracion->Ciclo->cliteral}} </strong> en la empresa {{$alumnoFct->Fct->Colaboracion->Centro->nombre}}, ubicada en {{$alumnoFct->Fct->Colaboracion->Centro->direccion}} de
                     {{$alumnoFct->Fct->Colaboracion->Centro->localidad}}, con una duración total de {{$alumnoFct->horas}} horas, desempeñadas
                     en el curso lectivo {{Curso()}}, obteniendo una calificación de APTO.</p>
             </div>
-
             @include('pdf.partials.firmaSD')
         </div>
     @endforeach

@@ -1,8 +1,5 @@
 @extends('layouts.pdf')
 @section('content')
-@php
-   $agrupados = $todos->groupBy('idFct');
-@endphp
 <body style="max-width:27.59cm;margin-top:1.251cm; margin-bottom:1.251cm; margin-left:1cm; margin-right:1cm; ">
     @include('pdf.fct.partials.cabecera')
     <br/>
@@ -20,7 +17,7 @@
             <td colspan='8' style="text-align:left;font-weight: bold;font-size: 1.1em">Tutor i cicle: {{AuthUser()->FullName}} - {{ $todos->first()->Fct->Colaboracion->Ciclo->ciclo}}</td>
         </tr>
         <tr >
-            <td style="text-align:left;font-weight: bold;font-size: 0.8em ">EMPRESA I NOMBRE D'ALUMNES</td>
+            <td style="text-align:left;font-weight: bold;font-size: 0.8em ">ALUMNE I EMPRESA</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em">I</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">II</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em">III</td>
@@ -29,8 +26,11 @@
             <td style="text-align:center;font-weight: bold;font-size: 0.8em">SIGNATURA TUTOR</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">SIGNATURA CAP PRÀCTIQUES</td>
         </tr>
-        @foreach ($agrupados as $Alfct)
-        <tr style="height: 50px"><td style="text-align:left;font-size: 0.9em " >{{ $Alfct->first()->Fct->Colaboracion->Centro->nombre }} ({{ $Alfct->count() }})</td>
+        @foreach ($todos as $fct)
+        <tr style="height: 50px">
+            <td style="text-align:left;font-size: 0.9em " >
+                {{ $fct->Fct->Colaboracion->Centro->nombre }} ({{ $fct->Alumno->fullName }})
+            </td>
             <td></td>
             <td></td>
             <td></td>

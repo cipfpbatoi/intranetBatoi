@@ -1,0 +1,358 @@
+---
+FieldType: Text
+FieldName: Texto3
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto5
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto6
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto7
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto8
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto9
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto10
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto11
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Button
+FieldName: Grupo1
+FieldFlags: 49154
+FieldJustification: Left
+FieldStateOption: Off
+FieldStateOption: Opci&#243;n1
+FieldStateOption: Opci&#243;n2
+---
+FieldType: Text
+FieldName: Texto4
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto12
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto13
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto14
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto15
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto16
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto18
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto19
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Button
+FieldName: Grupo2
+FieldFlags: 49154
+FieldJustification: Left
+FieldStateOption: Off
+FieldStateOption: Opci&#243;n 2
+FieldStateOption: Opci&#243;n1
+---
+FieldType: Button
+FieldName: Grupo3
+FieldFlags: 49154
+FieldJustification: Left
+FieldStateOption: Off
+FieldStateOption: Opci&#243;n 2
+FieldStateOption: Opci&#243;n1
+---
+FieldType: Text
+FieldName: Texto21
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto22
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto17
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto24
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto20
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto25
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto26
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto27
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto23
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto29
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Texto28
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text32
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text30
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text33
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text34
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text35
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text36
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text31
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text37
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text39
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text40
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text38
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Button
+FieldName: Grupo4
+FieldFlags: 49154
+FieldJustification: Left
+FieldStateOption: Off
+FieldStateOption: Opci&#243;n1
+FieldStateOption: Opci&#243;n2
+FieldStateOption: Opci&#243;n3
+---
+FieldType: Button
+FieldName: Grupo5
+FieldFlags: 49154
+FieldJustification: Left
+FieldStateOption: Off
+FieldStateOption: Opci&#243;n1
+FieldStateOption: Opci&#243;n2
+---
+FieldType: Button
+FieldName: Grupo6
+FieldFlags: 49154
+FieldJustification: Left
+FieldStateOption: Off
+FieldStateOption: Opci&#243;n1
+FieldStateOption: Opci&#243;n2
+FieldStateOption: Opci&#243;n3
+---
+FieldType: Text
+FieldName: Text42
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text43
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text41
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text46
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text45
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text47
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text48
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text44
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text50
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text51
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text49
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text52
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text53
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text54
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text56
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text55
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text57
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Text
+FieldName: Text58
+FieldFlags: 0
+FieldJustification: Left
+---
+FieldType: Button
+FieldName: Casilla de verificaci&#243;n2
+FieldFlags: 2
+FieldJustification: Left
+FieldStateOption: Off
+FieldStateOption: S&#237;
+---
+FieldType: Button
+FieldName: Casilla de verificaci&#243;n3
+FieldFlags: 2
+FieldJustification: Left
+FieldStateOption: Off
+FieldStateOption: S&#237;
+---
+FieldType: Button
+FieldName: Casilla de verificaci&#243;n1
+FieldFlags: 2
+FieldJustification: Left
+FieldStateOption: Off
+FieldStateOption: S&#237;
+---
+FieldType: Button
+FieldName: Casilla de verificaci&#243;n4
+FieldFlags: 2
+FieldJustification: Left
+FieldStateOption: Off
+FieldStateOption: S&#237;

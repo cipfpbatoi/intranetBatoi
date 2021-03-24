@@ -212,5 +212,11 @@ class Reunion extends Model
         if (TipoReunion::colectivo($this->tipo) != 'Grupo') return null;
         return Grupo::QTutor($this->idProfesor)->first();
     }
+    public function getInformeAttribute(){
+        if ($this->extraOrdinaria) return true;
+        if (!$this->avaluacionFinal) return false;
+        if ($this->grupoClase->curso == 2) return false;
+        return true;
+    }
 
 }

@@ -113,7 +113,7 @@ Route::resource('/alumno_grupo', 'AlumnoGrupoController', ['except' => ['destroy
 Route::put('/alumno_grupo/{grupo}/show/{alumno}/edit', ['as' => 'alumno_grupo.update', 'uses' => 'AlumnoGrupoController@updateModal']);
 Route::put('/alumno_grupo/{alumno}/edit', ['as' => 'alumno_grupo.update', 'uses' => 'AlumnoGrupoController@update']);
 Route::get('/alumno_grupo/{grupo}/show', ['as' => 'alumnogrupo.index', 'uses' => 'AlumnoGrupoController@indice']);
-Route::get('/alumno_grupo/{grupo}/profile', ['as' => 'alumnogrupo.profile', 'uses' => 'AlumnoGrupoController@profile']);
+Route::get('/alumno_grupof/{grupo}/profile', ['as' => 'alumnogrupo.profile', 'uses' => 'AlumnoGrupoController@profile']);
 
 Route::get('/grupo/{grupo}/horario', ['as' => 'grupo.horario', 'uses' => 'GrupoController@horario']);
 Route::get('/grupo/asigna', ['as' => 'grupo.asigna', 'uses' => 'GrupoController@asigna']);
@@ -190,6 +190,7 @@ Route::get('/empresa/{empresa}/document', ['as' => 'empresa.document', 'uses' =>
 Route::get('/colaboracion',['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/empresaSC',['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCController@index']);
 
+
 Route::get('/misColaboraciones',['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
 Route::get('/colaboracion/inicia', ['as' => 'PanelColaboracion.inicia', 'uses' => 'PanelColaboracionController@inicia']);
 Route::get('/colaboracion/contacto', ['as' => 'PanelColaboracion.contacto', 'uses' => 'PanelColaboracionController@sendFirstContact']);
@@ -202,11 +203,16 @@ Route::get('/colaboracion/visita', ['as' => 'PanelColaboracion.visita', 'uses' =
 
 Route::get('/colaboracion/{colaboracion}/contacto', 'PanelColaboracionController@sendFirstContact');
 Route::get('/colaboracion/{colaboracion}/info', 'PanelColaboracionController@sendRequestInfo');
+Route::get('/colaboracion/{colaboracion}/print', 'ColaboracionController@print');
+
+
+
 
 Route::get('/fct/{fct}/documentacion', 'PanelColaboracionController@sendDocumentation');
 Route::get('/fct/{fct}/student', 'PanelColaboracionController@sendStudent');
 Route::get('/fct/{fct}/seguimiento', 'PanelColaboracionController@follow');
 Route::get('/fct/{fct}/visita', 'PanelColaboracionController@visit');
+
 
 Route::resource('/centro', 'CentroController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/centro/{centro}/delete', ['as' => 'centro.destroy', 'uses' => 'CentroController@destroy']);
@@ -266,6 +272,8 @@ Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@sto
 Route::get('/dual/{id}/pdf/{informe}',['as' => 'dual.pdf', 'uses' => 'DualAlumnoController@informe']);
 Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualAlumnoController@destroy']);
 Route::get('/dual/{id}/anexeXIII',['as' => 'dual.anexeXIII', 'uses' => 'DualAlumnoController@printAnexeXIII']);
+Route::get('/dual/{id}/informe',['as' => 'dual.informe', 'uses' => 'DualAlumnoController@getInforme']);
+Route::post('/dual/{id}/informe',['as' => 'dual.firma', 'uses' => 'DualAlumnoController@putInforme']);
 Route::get('/dual/anexeVI',['as'=>'dual.anexevi','uses'=>'DualController@printAnexeVI']);
 Route::get('/dual/anexeXIV',['as'=>'dual.anexexiv','uses'=>'DualController@printAnexeXIV']);
 
@@ -279,7 +287,7 @@ Route::get('/alumnofct/{id}/pdf', ['as' => 'alumnofct.pdf', 'uses' => 'FctAlumno
 //Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
 Route::get('/alumnofct/{id}/show', ['as' => 'alumnofct.show', 'uses' => 'FctAlumnoController@show']);
 Route::get('/alumnofct/{id}/pg0301', ['as' => 'alumnofct.pg0301', 'uses' => 'FctAlumnoController@pg0301']);
-
+Route::post('/alumnofct/selecciona',['as' => 'alumnofct.selecciona', 'uses' => 'FctAlumnoController@imprimePasqua']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
@@ -306,6 +314,10 @@ Route::put('/material/{material}/edit', ['as' => 'material.update', 'uses' => 'M
 Route::get('/material/{espacio}/detalle', ['as' => 'material.espacio', 'uses' => 'MaterialController@espacio']);
 Route::get('/material/{material}/copy', ['as' => 'material.copy', 'uses' => 'MaterialController@copy']);
 Route::get('/material/{material}/incidencia', ['as' => 'material.incidencia', 'uses' => 'MaterialController@incidencia']);
+//RUTAS INVENTARIO
+Route::get('/inventario',['as' => 'inventario.index','uses' => 'InventarioController@index']);
+Route::get('/inventaria',['as'=>'inventariar.index','uses'=>'ArticuloLoteController@index']);
+
 
 //RUTAS INCIDENCIAS
 Route::resource('/incidencia', 'IncidenciaController', ['except' => ['destroy', 'update', 'show']]);
@@ -372,7 +384,8 @@ Route::get('/alumnoresultado/{seguimiento}/delete',['as'=>'seguimiento.alumnos.d
 
 //Programacion
 Route::resource('/programacion', 'ProgramacionController', ['except' => ['destroy', 'update', 'show']]);
-Route::put('/programacion/{programacion}/seguimiento', 
+
+Route::put('/programacion/{programacion}/seguimiento',
         ['as' => 'programacion.updateseguimiento', 'uses' => 'ProgramacionController@updateSeguimiento']);
 Route::get('/programacion/{programacion}/seguimiento', ['as' => 'programacion.seguimiento', 'uses' => 'ProgramacionController@seguimiento']);
 Route::get('/itaca',['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
@@ -418,3 +431,11 @@ Route::post('/myMail','MyMailController@send');
 Route::get('/qualitat/documento',['as' => 'qualitat.docuentacio' ,'uses' => 'QualitatDocumentoController@index']);
 
 Route::get('fiCurs',['as'=>'fiCurs','uses'=>'PanelFinCursoController@index']);
+
+Route::resource('/articulo','ArticuloController', ['except' => ['show','destroy']]);
+Route::get('/articulo/{id}/show', ['as' => 'articulo.show', 'uses' => 'ArticuloController@show']);
+Route::get('/articulo/{id}/delete', ['as' => 'articulo.destroy', 'uses' => 'ArticuloController@destroy']);
+Route::put('/articulo/{id}/edit', ['as' => 'articulo.update', 'uses' => 'ArticuloController@update']);
+
+
+//Route::view('lote', 'lote.indice');

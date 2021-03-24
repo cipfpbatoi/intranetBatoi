@@ -22,7 +22,7 @@ class Documento extends Model
     protected $rules = [
         'tipoDocumento' => 'required',
         'descripcion' => 'required',
-        'fichero' => 'sometimes|mimes:pdf,zip',
+        'fichero' => 'sometimes|mimes:pdf,zip,odt',
     ];
     protected $inputTypes = [
         'tipoDocumento' => ['type' => 'select'],
@@ -93,7 +93,7 @@ class Documento extends Model
             //$doc->tipoDocumento = $doc->tipoDocumento == '' ? $this->model : $doc->tipoDocumento;
             if ($elemento) {
                 $doc->idDocumento = $doc->idDocumento == '' ? isset($elemento->id) ? $elemento->id : $elemento->$primaryKey : $doc->tipoDocumento;
-                $doc->propietario = $doc->propietario == '' ? $elemento->Profesor->FullName : $doc->propietario;
+                $doc->propietario = $doc->propietario == '' ? (isset($elemento->Profesor) ? $elemento->Profesor->FullName:'') : $doc->propietario;
                 $doc->fichero = $doc->fichero == '' ? $elemento->fichero : $doc->fichero;
                 $doc->descripcion = $doc->descripcion == '' ? 'Registre dia ' . Hoy('d-m-Y') : $doc->descripcion;
             } else {

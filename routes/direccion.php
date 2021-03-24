@@ -75,4 +75,7 @@ Route::get('/documento',['as'=> 'documentosP.index','uses' => 'PanelDocumentoCon
 Route::get('/myMail','MyMailController@create');
 Route::post('/myMail','MyMailController@store');
 
+Route::resource('/lote','LoteController', ['except' => ['destroy', 'update','show']]);
+Route::post('/lote/create',['as' => 'lote.store','uses'=> 'LoteController@store']);
+
 

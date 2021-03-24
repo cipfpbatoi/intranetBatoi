@@ -7,15 +7,15 @@ use Intranet\Entities\Falta;
 
 class CreateFaltaTest extends FeatureTestCase
 {
+
     function test_user_guest_falta()
     {
-        $this->visit(route('falta.create'));
-        $this->seePageIs(route('login'));
+        $this->visit(route('falta.create'))
+            ->seeHeader('status',401);
     }
     
     function test_a_user_create_a_falta()
     {
-        
         $this->actingAs($this->defaultUser());
         
         $this->visit(route('falta.create'))

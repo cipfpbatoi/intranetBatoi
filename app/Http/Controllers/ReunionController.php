@@ -107,13 +107,13 @@ class ReunionController extends IntranetController
             $elemento->setInputType('grupo', ['type' => 'hidden']);
             $default = $elemento->fillDefautOptions();
             $modelo = $this->model;
-            if (!$elemento->avaluacioFinal && !$elemento->extraOrdinaria){
-                return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
+            if ($elemento->informe){
+                return $this->editAvaluacioFinal($elemento,compact( 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
             }
-            return $this->editAvaluacioFinal($elemento,compact( 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
-
+            return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
         }
     }
+
 
     private function tAlumnos($reunion,$sAlumnos){
         $grupo = $reunion->grupoClase;
@@ -135,8 +135,6 @@ class ReunionController extends IntranetController
         $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
         $tAlumnos = $this->tAlumnos($elemento,hazArray($sAlumnos,'nia'));
         return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes','tAlumnos','sAlumnos','select'));
-
-
     }
 
     public function altaProfesor(Request $request, $reunion_id)
@@ -171,7 +169,7 @@ class ReunionController extends IntranetController
 
     public function altaOrden(Request $request, $reunion_id)
     {
-        if ($request->orden == '') {
+        if (!is_numeric($request->orden )) {
             $max = OrdenReunion::where('idReunion', '=', $reunion_id)->max('orden');
             $request->merge(['orden' => $max + 1]);
         }

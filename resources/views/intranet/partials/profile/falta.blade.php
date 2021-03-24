@@ -51,7 +51,7 @@
                                 </a>
                                 @endforeach
                                 @endif
-                                @include ('intranet.partials.buttons',['tipo' => 'profile'])
+                                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
                             </div>
                         </div>
                     </div>

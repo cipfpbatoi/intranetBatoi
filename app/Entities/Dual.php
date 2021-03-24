@@ -9,8 +9,8 @@ class Dual extends Fct
     protected $table = 'fcts';
     
     protected $fillable = ['idAlumno', 'idColaboracion','idInstructor','desde','hasta'
-        ,'horas','asociacion'];
-    protected $notFillable = ['desde','hasta','idAlumno','horas'];
+        ,'horas','asociacion','beca'];
+    protected $notFillable = ['desde','hasta','idAlumno','horas','beca'];
     protected $inputTypes = [
         'idAlumno' => ['type' => 'select'],
         'idColaboracion' => ['type' => 'select'],
@@ -18,6 +18,14 @@ class Dual extends Fct
         'asociacion' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
+    ];
+    protected $rules = [
+        'idAlumno' => 'sometimes|required',
+        'idColaboracion' => 'sometimes|required',
+        'idInstructor' => 'sometimes|required',
+        'desde' => 'sometimes|required|date',
+        'hasta' => 'sometimes|required|date',
+        'beca' => 'numeric'
     ];
     protected $attributes = ['asociacion'=>3,'correoInstructor'=>1];
     
@@ -39,7 +47,8 @@ class Dual extends Fct
                 $todos[$colaboracion->id].=' ('.$colaboracion->Centro->direccion.')';
             }
         }
-        sort($todos);
+
+        asort($todos);
         return $todos;
     }
         

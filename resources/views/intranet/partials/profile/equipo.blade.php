@@ -14,7 +14,7 @@
                 </ul>
             </div>
             <div class="right col-xs-4 text-center">
-                <img src="{{ asset($elemento->foto) }}" alt="" class="img-circle img-responsive">
+                <img src="{{ asset('storage/'.$elemento->foto) }}" alt="" class="img-circle img-responsive">
             </div>
         </div>
         <div class="col-xs-12 bottom text-center">
@@ -28,7 +28,7 @@
                 </p>
             </div>
             <div class="col-xs-12 col-sm-11 emphasis">
-                @include ('intranet.partials.buttons',['tipo' => 'profile'])
+                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
             </div>
         </div>
     </div>

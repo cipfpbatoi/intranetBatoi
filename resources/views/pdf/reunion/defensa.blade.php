@@ -28,7 +28,7 @@
             @if ($anterior)<th>Projecte</th><th>Data i Hora</th>@else <th colspan='2'>Projecte - Data i Hora</th>@endif<th>Lloc</th></tr>
         @foreach ($all as $index => $elemento)
         <tr><td style='font-size: large'>{{$elemento->descripcion}}</td>
-            @if ($persona = $anterior->where('orden',$elemento->orden)->first()) <td>{!! $persona->resumen !!}</td><td>@php echo($elemento->resumen) @endphp</td>
+            @if ($anterior && $persona = $anterior->where('orden',$elemento->orden)->first()) <td>{!! $persona->resumen !!}</td><td>@php echo($elemento->resumen) @endphp</td>
             @else <td colspan='2'>@php echo($elemento->resumen) @endphp</td>
             @endif
             

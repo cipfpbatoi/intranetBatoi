@@ -52,9 +52,9 @@
 
                 </div>
                 <div class="col-xs-12 col-sm-7 emphasis">
-                    @include ('intranet.partials.buttons',['tipo' => 'profile'])<br/>
+                    @include ('intranet.partials.components.buttons',['tipo' => 'profile'])<br/>
                     @php $elemento = $fct; @endphp
-                    @include ('intranet.partials.buttons',['tipo' => 'fct'])
+                    @include ('intranet.partials.components.buttons',['tipo' => 'fct'])
                 </div>
             </div>
         </div>

@@ -6,8 +6,6 @@ use Intranet\Entities\Comision;
 
 class EstadoComisionTest extends IntegrationTestCase
 {
-  
-    
     function test_alta_comision_sin_identificar()
     {
         $comision = $this->newModel(\Intranet\Entities\Comision::class,[
@@ -28,7 +26,7 @@ class EstadoComisionTest extends IntegrationTestCase
     }
     function test_estado_0(){
         $this->actingAs($this->defaultUser());
-        $comision = $this->newModel(\Intranet\Entities\Comision::class,[
+        $comision = $this->newModel(Comision::class,[
         'servicio' => 'Prueba',
         'desde' =>'2017-08-04 08:00:00',
         'hasta' => '2017-08-04 14:00:00',
@@ -64,9 +62,10 @@ class EstadoComisionTest extends IntegrationTestCase
             'read_at' => NULL
         ]);
     }
+
     function test_estado_1(){
         $this->actingAs($this->defaultUser());
-        $comision = $this->newModel(\Intranet\Entities\Comision::class,[
+        $comision = $this->newModel(Comision::class,[
         'servicio' => 'Prueba',
         'desde' =>'2017-08-04 08:00:00',
         'hasta' => '2017-08-04 14:00:00',
@@ -100,7 +99,7 @@ class EstadoComisionTest extends IntegrationTestCase
     }
     function test_estado_3(){
         $this->actingAs($this->defaultUser());
-        $comision = $this->newModel(\Intranet\Entities\Comision::class,[
+        $comision = $this->newModel(Comision::class,[
         'servicio' => 'Prueba',
         'desde' =>'2017-08-04 08:00:00',
         'hasta' => '2017-08-04 14:00:00',
@@ -129,7 +128,7 @@ class EstadoComisionTest extends IntegrationTestCase
     
     function test_estado_4(){
         $this->actingAs($this->defaultUser());
-        $comision = $this->newModel(\Intranet\Entities\Comision::class,[
+        $comision = $this->newModel(Comision::class,[
         'servicio' => 'Prueba',
         'desde' =>'2017-08-04 08:00:00',
         'hasta' => '2017-08-04 14:00:00',

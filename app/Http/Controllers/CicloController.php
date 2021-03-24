@@ -4,18 +4,17 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
+use Intranet\Entities\Ciclo;
+use Intranet\Http\Requests\CicloRequest;
 
 /**
  * Class CicloController
  * @package Intranet\Http\Controllers
  */
-class CicloController extends IntranetController
+class CicloController extends ModalController
 {
+    const ADMINISTRADOR = 'roles.rol.administrador';
 
-    /**
-     * @var string
-     */
-    protected $perfil = 'profesor';
     /**
      * @var string
      */
@@ -23,24 +22,28 @@ class CicloController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = [ 'ciclo','literal','Xdepartamento','Xtipo','normativa','titol','rd','rd2'];
-    /**
-     * @var
-     */
-    protected $vista;
-    /**
-     * @var bool
-     */
-    protected $modal = true;
+    protected $gridFields = [ 'ciclo','literal','Xdepartamento','Xtipo'];
 
-    /**
-     *
-     */
+
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('ciclo.create', ['roles' => config('roles.rol.administrador')]));
-        $this->panel->setBoton('grid', new BotonImg('ciclo.edit', ['roles' => config('roles.rol.administrador')]));
-        $this->panel->setBoton('grid', new BotonImg('ciclo.delete', ['roles' => config('roles.rol.administrador')]));
+        $this->panel->setBoton('index', new BotonBasico('ciclo.create', ['roles' => self::ADMINISTRADOR]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.show',['roles' => self::ADMINISTRADOR]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.edit', ['roles' => self::ADMINISTRADOR]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.delete',['roles' => self::ADMINISTRADOR]));
+    }
+
+    public function store(CicloRequest $request)
+    {
+        $new = new Ciclo();
+        $new->fillAll($request);
+        return $this->redirect();
+    }
+
+    public function update(CicloRequest $request, $id)
+    {
+        Ciclo::findOrFail($id)->fillAll($request);
+        return $this->redirect();
     }
 
 }

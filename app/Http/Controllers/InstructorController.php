@@ -133,7 +133,7 @@ class InstructorController extends IntranetController
                 parent::store($request);
             }
             $instructor = Instructor::find($request->dni);
-            $instructor->Centros()->attach($centro);
+            $instructor->Centros()->syncWithoutDetaching($centro);
         });
         Session::put('pestana',2);
         return redirect()->action('EmpresaController@show', ['empresa' => Centro::find($centro)->idEmpresa]);

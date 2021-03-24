@@ -11,7 +11,7 @@ class AlumnoFct extends Model
 {
 
     use BatoiModels;
-    protected $fillable = ['id', 'desde','hasta','horas'];
+    protected $fillable = ['id', 'desde','hasta','horas','beca'];
     
     protected $rules = [
         'id' => 'required',
@@ -23,6 +23,7 @@ class AlumnoFct extends Model
         'id' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
+        'beca' => ['type' => 'text'],
     ];
     public $timestamps = false;
     protected $dispatchesEvents = [
@@ -39,7 +40,7 @@ class AlumnoFct extends Model
     }
     public function Dual()
     {
-        return $this->belongsTo(Fct::class, 'idFct', 'id');
+        return $this->belongsTo(Dual::class, 'idFct', 'id');
     }
 
     public function scopeMisFcts($query,$profesor=null)

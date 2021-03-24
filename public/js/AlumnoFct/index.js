@@ -17,6 +17,7 @@ $(function() {
     $("#formEntreFechas").on("submit", function(){
         $(this).attr("action","fct/"+id+"/print");
     });
+
     /*
     $(".pdf").on("click", function (event) {
         event.preventDefault();

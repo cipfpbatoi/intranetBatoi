@@ -17,15 +17,15 @@ class ShowComisionTest extends FeatureTestCase
         $this->actingAs($this->defaultUser());
         $comision = $this->newModel(Comision::class,[
         'servicio' => 'Prueba',
-        'desde' =>'2017-08-04 08:00:00',
-        'hasta' => '2017-08-04 14:00:00',
+        'desde' =>'2021-04-04 08:00:00',
+        'hasta' => '2021-04-04 14:00:00',
         'medio' => 'COCHE',
         'marca' => 'SEAT ALTEA XL',
         'matricula' => '1023-HDX',
         'kilometraje' => random_int(0,100),
         ]);
-        $comision->save();
-        $this->visit(route('comision.show',$comision))
+
+        $this->visit(route('comision.show',['comision'=>$comision]))
              ->seeInElement('h2','Muestra Comisión id. '.$comision->id)
              ->see('COCHE')
              ->see('SEAT ALTEA XL');

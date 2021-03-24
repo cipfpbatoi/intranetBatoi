@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonImg;
+use Intranet\Entities\Horario;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Modulo_ciclo;
@@ -29,10 +30,12 @@ class PanelListadoEntregasController extends BaseController
 
     public function search()
     {
+        $modulos = hazArray(Modulo_ciclo::whereIn('idModulo',hazArray(Horario::distinct()->get(),'modulo'))
+            ->where('idDepartamento',AuthUser()->departamento)->get(),'id');
         return Modulo_grupo::with('Grupo')
             ->with('resultados')
             ->with('ModuloCiclo')
-            ->whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get();
+            ->whereIn('idModuloCiclo',$modulos)->get();
     }
 
     public function iniBotones()
@@ -216,7 +219,7 @@ class PanelListadoEntregasController extends BaseController
                 $empty++;
             }
         }
-        return $empty;     
+        return $empty;
     }
     
     

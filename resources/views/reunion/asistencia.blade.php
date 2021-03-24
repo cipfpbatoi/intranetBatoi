@@ -7,7 +7,7 @@
     @include('reunion.partials.editar')
     @include('reunion.partials.ordenes')
     @include('reunion.partials.profesores')
-    @if ($elemento->avaluacioFinal || $elemento->extraOrdinaria)
+    @if ($elemento->informe)
         @include('reunion.partials.alumnos')
     @endif
 </div>

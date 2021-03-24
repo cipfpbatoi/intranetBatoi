@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {{ Html::style('/css/estilo.css')}}
-    {{ Html::style('/css/app.css')}}  
+    {{ Html::style('/css/app.css')}}
     @yield('css')
   </head>
   <body class="nav-md">
@@ -23,9 +23,7 @@
               </div>
             </div>
             @include('layouts.partials.topnav')
-
             @if (isset($panel))
-
                 @include('layouts.partials.panel')
             @else
                 @include('layouts.partials.content')

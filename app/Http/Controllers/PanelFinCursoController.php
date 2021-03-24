@@ -12,7 +12,6 @@ use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\TipoReunion;
-use Styde\Html\Facades\Alert;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Reunion;

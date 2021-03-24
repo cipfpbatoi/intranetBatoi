@@ -149,8 +149,9 @@ class Programacion extends Model
     public static function resolve($id,$mensaje = null)
     {
         $elemento = Programacion::findorFail($id);
+        $propietario = $elemento->Profesor?$elemento->Profesor->FullName:'';
         Documento::crea($elemento,['tipoDocumento' => 'Programacion' ,'fichero' => $elemento->fichero,
-            'modulo'=>$elemento->ModuloCiclo->Modulo->literal,'propietario' => $elemento->Profesor->FullName,
+            'modulo'=>$elemento->ModuloCiclo->Modulo->literal,'propietario' => $propietario,
             'descripcion'=>'Autorizada dia '. Hoy('d-m-Y'),'ciclo'=> $elemento->ciclo, 'tags' => 'Programació']);
         return static::putEstado($id, config('modelos.' . getClass(static::class) . '.resolve'), $mensaje);
     }

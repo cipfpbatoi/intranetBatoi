@@ -4,11 +4,11 @@
 @endsection
 @foreach ($panel->getPestanas() as $pestana)
     @section($pestana->getNombre())
-        @include('intranet.partials.before')
+        @include('intranet.partials.components.loadBefores')
         <div class="centrado">
-            @include('intranet.partials.buttons',['tipo' => 'index'])
+            @include('intranet.partials.components.buttons',['tipo' => 'index'])
             @if ($pestana->getNombre() <> 'grid')
-                @include('intranet.partials.buttons',['tipo' => $pestana->getNombre()])
+                @include('intranet.partials.components.buttons',['tipo' => $pestana->getNombre()])
             @endif
         </div><br/>
         @include($pestana->getVista(),$pestana->getFiltro())
@@ -18,7 +18,7 @@
     {{$panel->getTitulo()}}
 @endsection
 @section('scripts')
-    @include('intranet.partials.modal')
-    @include('intranet.partials.js') 
+    @include('intranet.partials.components.loadModals')
+    @include('js.js')
 @endsection
 

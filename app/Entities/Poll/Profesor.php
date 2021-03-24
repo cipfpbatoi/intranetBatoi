@@ -9,7 +9,9 @@ use Intranet\Entities\Departamento;
 class Profesor extends ModelPoll
 {
     public static function loadPoll($votes){
-        if (count($votes)) return null;
+        if (count($votes)) {
+            return null;
+        }
         $modulos = collect();
         foreach (AuthUser()->Grupo as $grupo){
             foreach ($grupo->Modulos as $modulo){
@@ -21,10 +23,11 @@ class Profesor extends ModelPoll
 
     public static function loadVotes($id)
     {
+        $myVotes = array();
         foreach (Modulo_grupo::misModulos() as $modulo) {
             $myVotes[$modulo->ModuloCiclo->Modulo->literal][$modulo->Grupo->codigo] = Vote::myVotes($id, $modulo->id)->get();
         }
-        return $myVotes;
+        return count($myVotes)?$myVotes:null;
     }
 
     public static function loadGroupVotes($id)
@@ -38,8 +41,7 @@ class Profesor extends ModelPoll
 
     public static function aggregate(&$votes,$option1,$option2){
         foreach (Grupo::all() as $grupo) {
-            foreach ($grupo->Modulos as $modulo)
-
+            foreach ($grupo->Modulos as $modulo){
                 if (isset($option1[$modulo->id])) {
                     foreach ($option1[$modulo->id] as $key => $optionVotes) {
                         foreach ($optionVotes as $optionVote) {
@@ -48,15 +50,18 @@ class Profesor extends ModelPoll
                         }
                     }
                 }
+            }
         }
         foreach (Departamento::all() as $departamento) {
-            foreach ($departamento->Profesor as $profesor)
+            foreach ($departamento->Profesor as $profesor) {
                 if (isset($option2[$profesor->dni])) {
-                    foreach ($option2[$profesor->dni] as $key => $optionVotes)
+                    foreach ($option2[$profesor->dni] as $key => $optionVotes) {
                         foreach ($optionVotes as $optionVote) {
                             $votes['departament'][$departamento->id][$key]->push($optionVote);
                         }
+                    }
                 }
+            }
         }
     }
 

@@ -1,12 +1,12 @@
 <?php
-
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Material;
+use Intranet\Entities\Lote;
 use Illuminate\Support\Facades\Auth;
-use Intranet\Entities\Incidencia;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
+use Intranet\Entities\Material;
+use Intranet\Entities\Incidencia;
 
 /**
  * Class MaterialController
@@ -34,7 +34,6 @@ class MaterialController extends IntranetController
     /**
      * @var array
      */
-    protected $parametresVista = ['modal' => ['explicacion']];
 
     /**
      * MaterialController constructor.
@@ -73,7 +72,7 @@ class MaterialController extends IntranetController
     public function copy($id)
     {
         $elemento = Material::find($id);
-        $copia = New Material;
+        $copia = new Material;
         $copia->fill($elemento->toArray());
         $copia->save();
         return redirect("/material/$copia->id/edit");
@@ -90,8 +89,11 @@ class MaterialController extends IntranetController
         $incidencia->material = $id;
         $incidencia->espacio = $elemento->espacio;
         $incidencia->descripcion = $elemento->descripcion;
+        $incidencia->idProfesor = AuthUser()->dni;
+        $incidencia->fecha = Hoy();
         $incidencia->save();
-        return redirect()->route('incidencia.edit', ['id' => $incidencia->id]);
+        Incidencia::putEstado($incidencia->id,1);
+        return redirect()->route('incidencia.edit', ['incidencium' => $incidencia->id]);
     }
 
 }

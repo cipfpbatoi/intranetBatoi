@@ -46,10 +46,15 @@ class Activity extends Model
         return $this->belongsTo(Profesor::class, 'author_id', 'dni');
     }
 
-    public function scopeMail($query,$modelo)
-    {
-        return $query->where('model_class','Intranet\Entities\\'.$modelo)->where('action','email')->orWhere('action','phone')->orWhere('action','visita');
+    public function scopeModelo($query,$modelo){
+        return $query->where('model_class','Intranet\Entities\\'.$modelo);
     }
+
+    public function scopeMail($query)
+    {
+        return $query->where('action','email')->orWhere('action','phone')->orWhere('action','visita');
+    }
+
 /*
     public function scopeContactes($query)
     {

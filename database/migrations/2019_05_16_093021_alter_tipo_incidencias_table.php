@@ -14,7 +14,7 @@ class AlterTipoIncidenciasTable extends Migration
     public function up()
     {
         Schema::table('tipoincidencias', function (Blueprint $table) {
-            $table->string('idProfesor', 10)->nullable()->collation('utf8_unicode_ci')->index();
+            $table->string('idProfesor', 10)->nullable()->collation('utf8mb4_unicode_ci')->index();
             $table->tinyInteger('tipus')->nullable();
             $table->foreign('idProfesor')->references('dni')->on('profesores')->onUpdate('RESTRICT')->onDelete('CASCADE');
         });

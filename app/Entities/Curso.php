@@ -28,14 +28,6 @@ class Curso extends Model
         'hora_fin',
         'aforo'
     ];
-    protected $rules = [
-        'titulo' => 'required',
-        'fecha_inicio' => 'required|date',
-        'fecha_fin' => 'required|date',
-        'horas' => 'required|integer',
-        'aforo' => 'numeric',
-        'comentarios' => 'required'
-    ];
     protected $inputTypes = [
         'tipo' => ['type' => 'hidden'],
         'comentario' => ['type' => 'textarea'],

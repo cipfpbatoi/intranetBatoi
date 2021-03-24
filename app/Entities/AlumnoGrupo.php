@@ -15,7 +15,8 @@ class AlumnoGrupo extends Model
     public $timestamps = false;
 
     protected $rules = [
-        'subGrupo' => 'required',
+        'subGrupo' => 'required|max:1',
+        'posicion' => 'max:2'
     ];
     protected $fillable = [
         'subGrupo',

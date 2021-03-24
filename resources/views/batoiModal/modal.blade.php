@@ -1,5 +1,5 @@
 <div id="{{$name}}" class="modal fade" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog {{$clase}}">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>

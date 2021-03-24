@@ -27,23 +27,14 @@ class Resultado extends Model
         'udProg',
         'udImp',
         'observaciones',
-        'adquiridosNO',
         'idProfesor',
-        
     ];
-    protected $rules = [
-        'evaluacion' => 'required|composite_unique:resultados,idModuloGrupo,evaluacion',
-        'matriculados' => 'required|numeric|max:60',
-        'evaluados' => 'required|numeric|max:60',
-        'aprobados' => 'required|numeric|max:60',
-        'udProg' => 'required|numeric|max:30',
-        'udImp' => 'required|numeric|max:30',
-    ];
+
+
     protected $inputTypes = [
         'idModuloGrupo' => ['type' => 'select'],
         'evaluacion' => ['type' => 'select'],
         'observaciones' => ['type' => 'textarea'],
-        'adquiridosNO' => ['type' => 'textarea'],
         'idProfesor' => ['type' => 'text'],
         
     ];
@@ -62,16 +53,13 @@ class Resultado extends Model
         return config('auxiliares.nombreEval');
     }
 
-//    public function getIdGrupoOptions()
-//    {
-//        return hazArray(Grupo::MisGrupos()->get(), 'codigo', 'nombre');
-//    }
 
     public function getIdModuloGrupoOptions()
     {
         $todos = [];
-        foreach (Modulo_grupo::MisModulos() as $uno)
-            $todos[$uno->id] = $uno->Grupo->nombre.' - '.$uno->ModuloCiclo->Modulo->literal;
+        foreach (Modulo_grupo::MisModulos() as $uno) {
+            $todos[$uno->id] = $uno->Grupo->nombre . ' - ' . $uno->ModuloCiclo->Modulo->literal;
+        }
         return $todos;
     }
 

@@ -7,21 +7,36 @@
 @endif
 <div class="container" >
     <p><strong>COMUNICACIÓ A l'ALUMNAT SOBRE EL COFINANÇAMENT PEL FONS SOCIAL
-        EUROPEU DE LA FORMACIÓ PROFESSIONAL GM I GS I BÀSICA 2ª OPORTUNITAT
+        EUROPEU DE LA FORMACIÓ PROFESSIONAL GM I GS I BÀSICA
         EN LA COMUNITAT VALENCIANA</strong></p>
-    <table class="table table-bordered">
+    <table class="table table-bordered" style="width: 1000px">
+        <colgroup>
+            <col style="width:20%" />
+            <col style="width:50%" />
+            <col style="width:30%" />
+        </colgroup>
         <tr><th colspan="3">Centre Educatiu</th></tr>
         <tr><th>Codi</th><th>Denominació</th><th>Municipi</th></tr>
         <tr><td><span style="font-size: 16px">{{ config('contacto.codi') }}</span></td><td><span style="font-size: 16px">{{ config('contacto.nombre') }}</span></td><td><span style="font-size: 16px">{{ config('contacto.poblacion') }}</span></td></tr>
+    </table>
+    <br/><br/><br/>
+    <table class="table table-bordered" style="width: 1000px">
+        <colgroup>
+            <col style="width: 15%">
+            <col style="width: 35%">
+            <col style="width: 50%">
+        </colgroup>
+        <tr><td style="font-size:20px;text-align: left">Nom del cicle </td><td style="font-size:20px;text-align: left" ><strong>{{$datosInforme->Ciclo->ciclo}}</strong></td><td style="font-size:20px;text-align: left">Grau: <strong>{{$datosInforme->Ciclo->tipo==1?'Mitjà':($datosInforme->Ciclo->tipo==2?'Superior':'Bàsic')}}</strong> </td></tr>
+        <tr><td style="font-size:20px;text-align: left">Curs/Grup</td><td  style="font-size:20px;text-align: left"><strong>{{$datosInforme->nombre}}</strong></td><td  style="font-size:20px;text-align: left">Data:</td></tr>
+        <tr><td style="font-size:20px;text-align: left">Tutor/a</td><td  style="font-size:20px;text-align: left"><strong>{{$datosInforme->Tutor->FullName}}</strong></td><td  style="font-size:20px;text-align: left">Signatura:<br/><br/><br/><br/></td></tr>
     </table>   
-    <table class="table table-bordered" >
-        <tr><td style="text-align: left"><strong>Nom del cicle: </strong><span style="font-size: 16px">{{$datosInforme->Ciclo->ciclo}}</span></td><td style="text-align: left; font-weight: bold">Grau:</td></tr>
-        <tr><td style="text-align: left"><strong>Curs/Grup: </strong><span style="font-size: 16px">{{$datosInforme->nombre}}</span></td><td style="text-align: left; font-weight: bold">Data:</td></tr>
-        <tr><td style="text-align: left"><strong>Tutor/a: </strong><span style="font-size: 16px">{{$datosInforme->Tutor->FullName}}</span></td><td style="text-align: left; font-weight: bold">Signatura:<br/><br/><br/><br/></td></tr>
-    </table>   
-    <p>S'ha facilitat la informació sobre el cofinançament del Fons Social Europeu dels cicles de FP GM i GS 
+    <p style="font-size: 20px">S'ha facilitat la informació sobre el cofinançament del Fons Social Europeu dels cicles de FP GM i GS
         i FP Bàsica de 2ª oportunitat a la Comunitat Valenciana a l'alumnat següent: </p>
-    <table class="table table-bordered">
+    <table class="table table-bordered" style="width:1000px">
+        <colgroup>
+            <col style="width: 50%">
+            <col style="width: 50%">
+        </colgroup>
         <tr><th>Cognoms i Nom</th><th>Cognoms i Nom</th></tr><tr>
         @foreach ($todos as $key => $elemento)
         <td><span style="font-size: 18px">{{$elemento->apellido1.' '.$elemento->apellido2.', '.$elemento->nombre}}</span></td>

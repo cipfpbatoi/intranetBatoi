@@ -1,10 +1,10 @@
 <br/><br/>
 <div style="border: 2px #000 solid">
     <br/><br/><br/><br/>
-    <div class="container" style="width:50%;float:center">
+    <div class="container" style="width:50%;margin:auto;">
         <img src="{{public_path('img/pdf/logo.png')}}" alt="logo" style="width:300px;height:300px" /><br/>
     </div> 
-    <div class="container col-lg-12" style="width:65%;clear:right;text-align: justify">
+    <div class="container col-lg-12" style="width:65%;clear:right;margin: auto">
         <br/><br/><br/><br/>
         <strong>Continguts</strong>
         <ol>

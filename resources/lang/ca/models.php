@@ -309,6 +309,7 @@ return array(
             'pr0601' => 'Imprimeix PR06-01 (Entrega Certificat)',
             'pr0402' => 'Imprimeix Entrevista Alumnat',
             'pr0401' => 'Imprimeix Entrevista Final Instructor',
+            'pasqua' => 'Imprimeix Full Vacacions pasqua',
             'all' => 'Vore tots',
             'only' => 'Vore actius',
             'list' => 'Acta Grupo :quien',
@@ -330,7 +331,8 @@ return array(
             'anexe_vb' => 'Imprimier Annexe V(b)',
             'anexeVI' => 'Imprimir Annexe VI',
             'anexeXIV' => 'Imprimir Annexe XIV',
-            'anexeXIII' => 'Imprimir AnnexeXIII'
+            'anexeXIII' => 'Imprimir AnnexeXIII',
+            'firma' => 'Generar ZIP firma'
         ),
         'Direccion' => array(
            'acta' => 'Acta completada'
@@ -414,7 +416,10 @@ return array(
           'email' => 'Enviar Correu Valoració Alumne',
           'pg0301' => "Entregada documentació",
             'default' => 'x Alumne',
-
+            'selecciona' => 'Alumno'
+        ),
+        'alumnoFct' => array(
+          'selecciona' => 'Alumne'
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
@@ -440,6 +445,22 @@ return array(
         ),
         'Modulo_ciclo' => array(
             'index' => 'Programacions'
+        ),
+        'Lote' => array(
+            'show' => 'Factura :quien',
+            'index' => 'Llibre de Factures',
+            'edit' => 'Editar Factura',
+            'create' => 'Nova Factura',
+        ),
+        'Articulolote' => array(
+            'index' => 'Articles pendents de ubicar',
+            'show' => 'Vore Materials'
+        ),
+        'Articulo' => array(
+            'index' => 'Mostra Articles',
+            'edit' => 'Editar Article',
+            'show' => 'Mostrar Article',
+            'delete' => 'Esborrar Article'
         ),
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
@@ -476,7 +497,10 @@ return array(
             'PPoll' => 'Plantilla Enquesta',
             'Poll' => 'Enquesta',
             'Option' => 'Pregunta',
-            'AlumnoResultado' => 'Avaluacio Alumne'
+            'AlumnoResultado' => 'Avaluacio Alumne',
+            'Lote' => 'Factura',
+            'Articulo' => 'Article',
+            'ArticuloLote' => 'Articles Factura'
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

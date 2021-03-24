@@ -42,7 +42,7 @@ class FctController extends IntranetController
      * @var array
      */
     protected $vista = ['show' => 'fct'];
-    protected $parametresVista = ['modal' => ['fecha']];
+
 
 
     /**
@@ -109,8 +109,12 @@ class FctController extends IntranetController
             ->orderBy('idAlumno')
             ->orderBy('desde')
             ->get();
-        $mail = new myMail( $fctAls,$document['receiver'], $document['subject'], $document['view']);
-        $mail->send();
+        if (count($fctAls)){
+            $mail = new myMail( $fctAls,$document['receiver'], $document['subject'], $document['view']);
+            $mail->send();
+        } else {
+            Alert::info('No hi ha alumnes');
+        }
         return back();
     }
 
@@ -156,7 +160,7 @@ class FctController extends IntranetController
      */
     private function quienSaleDocumento($tipoDocumento){
         if ($tipoDocumento == 1) {
-            return AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idAlumno')->orderBy('desde')->get();
+            return AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idFct')->orderBy('desde')->get();
         }
         if ($tipoDocumento == 2) {
             return AlumnoFct::misFcts()->where('desde','<=',Hoy())->where('hasta','>=',Hoy())->orderBy('idAlumno')->orderBy('desde')->get();
@@ -257,7 +261,7 @@ class FctController extends IntranetController
                 $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($hasta),'horas'=>$request->horas]);
             } catch (\Exception $e)
             {
-               throw new \Exception("L'alumne $idAlumno ja té una Fct oberta amb eixa <aAlert Ahref='/fct/$id/show'>empresa</aAlert> ",500);
+               Alert::danger("L'alumne $idAlumno ja té una Fct oberta amb eixa empresa ");
             }
 
             return $id;
@@ -369,9 +373,6 @@ class FctController extends IntranetController
         }
         return back();
     }
-    
-   
-    
-   
+
 
 }

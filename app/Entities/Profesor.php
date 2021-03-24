@@ -63,6 +63,7 @@ class Profesor extends Authenticatable
         'departamento',
         'idioma',
         'mostrar',
+        'especialitat'
     ];
     protected $casts = [
         'codigo' => 'integer',

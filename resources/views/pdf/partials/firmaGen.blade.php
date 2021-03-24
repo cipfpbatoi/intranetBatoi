@@ -5,7 +5,7 @@
         <img src="{{public_path('img/pdf/'.imgSig($signatura).'.png')}}"  /><br/>
     </div>
     <div style="width:50%;float:left">SIGNAT {{signatura($signatura)}}:</div>
-    <div style="width:50%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A
+    <div style="width:50%;float:left">{{strtoupper(config('contacto.poblacion'))}} A
         @if (isset($fecha)) {{$fecha}} @else {{ $datosInforme }} @endif
     </div>
 </div>

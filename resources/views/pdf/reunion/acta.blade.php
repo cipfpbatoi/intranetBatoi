@@ -22,7 +22,7 @@
         @endforeach
     </ul>
 </div>
-@if ($datosInforme->avaluacioFinal)
+@if ($datosInforme->informe)
     <div class="container">
         <br/>
         <strong>Continguts NO impartits per mòdul</strong>
@@ -35,7 +35,7 @@
         </ul>
     </div>
 @endif
-@if ($datosInforme->avaluacioFinal || $datosInforme->extraOrdinaria)
+@if ($datosInforme->informe)
     <div class="container">
         <br/>
         <strong>Promoció de l'alumnat</strong>
@@ -75,7 +75,7 @@
     <div style="width:50%;float:left">SIGNAT: {{$datosInforme->Responsable->nombre}}  {{$datosInforme->Responsable->apellido1}}  {{$datosInforme->Responsable->apellido2}}</div>
     <div style="width:50%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme->hoy}}</div>
 </div>
-@if ($datosInforme->avaluacioFinal)
+@if ($datosInforme->informe)
     <div class="container" style="page-break-before: always">
         <br/>
         <strong>Annex: Valoració tasca de l'alumnat</strong><br/>

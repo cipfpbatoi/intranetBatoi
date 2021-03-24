@@ -30,5 +30,5 @@ return [
             'descripcion' => 'ENTREVISTA DEL TUTOR CON EL INSTRUCTOR DE LA EMPRESA',
             'cuando' => 2,
             'orientacion' => 'landscape'
-        ],
+        ]
     ];

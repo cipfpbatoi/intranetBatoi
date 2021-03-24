@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
 use Illuminate\Support\Facades\App;
+use Jenssegers\Date\Date;
 
 class Ciclo extends Model
 {
@@ -14,14 +15,11 @@ class Ciclo extends Model
     
     protected $table = "ciclos";
     public $timestamps = false;
-    protected $fillable = [ 'ciclo','vliteral','cliteral', 'departamento','tipo','normativa','titol','rd','rd2','horasFct'];
-    protected $rules = [
-        'tipo' => 'required',
-        'departamento' => 'required'
-    ];
+    protected $fillable = [ 'ciclo','vliteral','cliteral', 'departamento','tipo','normativa','titol','rd','rd2','horasFct','acronim','llocTreball','dataSignaturaDual'];
     protected $inputTypes = [
         'departamento' => ['type' => 'select'],
         'tipo' => ['type' => 'select'],
+        'dataSignaturaDual' => ['type' => 'date']
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
@@ -58,5 +56,10 @@ class Ciclo extends Model
      public function getLiteralAttribute()
     {
         return App::getLocale(session('lang')) == 'es' ? $this->cliteral : $this->vliteral;
+    }
+    public function getDataSignaturaDualAttribute($salida)
+    {
+        $fecha = new Date($salida);
+        return $fecha->format('d-m-Y');
     }
 }

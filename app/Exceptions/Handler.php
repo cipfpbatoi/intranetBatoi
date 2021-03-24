@@ -77,9 +77,12 @@ class Handler extends ExceptionHandler
             Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :".$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
             //return response()->view('errors.200',['mensaje'=>$exception->getMessage()],200);
         }
+        if ($exception instanceof AuthenticationException){
+            return $this->unauthenticated($request,$exception);
+        }
         if ($request->wantsJson())
         {
-            return response()->json(['message' => $exception->getMessage()], $exception->getCode());
+            return response()->json(['message' => $exception->getMessage()], 404);
         }
         return parent::render($request, $exception);
     }
@@ -95,7 +98,7 @@ class Handler extends ExceptionHandler
     {
 
         if ($request->wantsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            return response()->json(['error' => $exception->getMessage(),'linea'=>$exception->getFile().'->'.$exception->getLine()], 401);
         }
 
         return redirect()->guest('login');

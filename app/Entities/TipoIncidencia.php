@@ -4,8 +4,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Profesor;
-use App;
+use Illuminate\Support\Facades\App;
 
 class TipoIncidencia extends Model
 {

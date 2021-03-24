@@ -53,7 +53,7 @@ class SendFctEmails extends Command
             foreach ($alumnosPendientes as $alumno) {
                 $fct = $alumno->Fct;
                 try {
-                    Mail::to($alumno->Alumno->email, 'Secretaria CIPFP BATOI')
+                    Mail::to($alumno->Alumno->email, '')
                         ->send(new CertificatAlumneFct($alumno));
                     $alumno->correoAlumno = 1;
                     $alumno->save();

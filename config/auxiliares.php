@@ -3,7 +3,7 @@ return [
     'diaSemana' => [ '1' => 'L','2' => 'M','3' => 'X', '4' => 'J','5' => 'V','6' => 'S','7' => 'D'],
     'estadoMaterial' => ['??','OK','Reparandose','Baja'],
     'actasEnabled' => ['Claustro'=>'Claustro','COCOPE'=>'COCOPE'],
-    'procedenciaMaterial' => ['','Dotación','Compra','Donación'],
+    'procedenciaMaterial' => ['Desconocido','Dotación','Compra','Donación'],
     'idiomas' => ['es' => 'Español', 'ca' => 'Valencià' , 'en' => 'English'],
     'estadoIncidencia' => ['Rechazada','Pendiente','En proceso','Resuelta'],
     'estadoOrden' => ['Abierta','Cerrada','Resuelta'],

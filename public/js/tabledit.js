@@ -1,7 +1,6 @@
 $(function(){
 	$('.editGrupo').on("click",editRow);
 	$('#error').hide();
-        
 })
 
 function editRow() {
@@ -87,6 +86,16 @@ function editRow() {
 					else
 						$("#"+$span.attr('name')).append("<option value='"+index+"'>"+value+"</option>")
 				});
+				break;
+			case 'objselect':
+				$span.after('<span class="editando"><select id="'+$span.attr('name')+'" class="form-control" name="'
+					+$span.attr('name')+'"></select></span>');
+				for (var index  in options) {
+				if (index == $span.text())
+					$("#"+$span.attr('name')).append("<option value='"+index+"' selected>"+options[index]+"</option>")
+				else
+					$("#"+$span.attr('name')).append("<option value='"+index+"'>"+options[index]+"</option>")
+				}
 				break;
 			case 'textarea':
 				var nombre = '#'+$span.attr('name');

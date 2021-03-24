@@ -21,7 +21,7 @@ class Fct extends Model
 
     protected $fillable = ['idAlumno',
         'idColaboracion','idInstructor' ,'desde', 'hasta',
-        'horas','asociacion',
+        'horas','asociacion'
         ];
     protected $notFillable = ['hasta','idAlumno','horas'];
 
@@ -39,6 +39,7 @@ class Fct extends Model
         'asociacion' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
+
         
     ];
     protected $dispatchesEvents = [

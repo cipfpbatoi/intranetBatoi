@@ -25,17 +25,13 @@ class Espacio extends Model
         'gVesprada',
         'reservable'
     ];
-    protected $rules = [
-        'aula' => 'required',
-        'descripcion' => 'required',
-        'idDepartamento' => 'required',
-    ];
     protected $inputTypes = [
         'idDepartamento' => ['type' => 'select'],
         'gMati' => ['type' => 'select'],
         'gVesprada' => ['type' => 'select'],
         'reservable' => ['type' => 'checkbox'],
     ];
+
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,

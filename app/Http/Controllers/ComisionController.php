@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use DB;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\Mail;
+use Intranet\Http\Requests\ComisionRequest;
 use \PDF;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Fct;
@@ -17,7 +18,7 @@ use Jenssegers\Date\Date;
  * Class ComisionController
  * @package Intranet\Http\Controllers
  */
-class ComisionController extends IntranetController
+class ComisionController extends ModalController
 {
 
     use traitImprimir,
@@ -31,26 +32,27 @@ class ComisionController extends IntranetController
     /**
      * @var string
      */
-    protected $perfil = 'profesor';
-    /**
-     * @var string
-     */
     protected $model = 'Comision';
-    /**
-     * @var bool
-     */
-    protected $modal = true;
 
 
-    public function store(Request $request)
+
+    public function store(ComisionRequest $request)
     {
-
-        $id = $this->realStore($request);
-        if (Comision::find($id)->fct){
-            return redirect()->route('comision.detalle', ['comision' => $id]);
+        $new = new Comision();
+        $new->fillAll($request);
+        if ($new->fct) {
+            return redirect()->route('comision.detalle', ['comision' => $new->id]);
         }
         return $this->redirect();
     }
+
+    public function update(ComisionRequest $request, $id)
+    {
+        Comision::findOrFail($id)->fillAll($request);
+        return $this->redirect();
+    }
+
+
 
     /**
      *
@@ -79,8 +81,13 @@ class ComisionController extends IntranetController
             $fct = 0;
             $servicio = "Visita a Empreses: ";
         }
-        $comision = new Comision(['idProfesor'=>AuthUser()->dni,'desde'=>$manana,'hasta'=>$manana,
-            'fct'=>$fct,'servicio'=>$servicio]);
+        $comision = new Comision([
+                'idProfesor'=>AuthUser()->dni,
+                'desde'=>$manana,
+                'hasta'=>$manana,
+                'fct'=>$fct,
+                'servicio'=>$servicio
+        ]);
         if (!$fct) {
             $comision->deleteInputType('fct');
         }

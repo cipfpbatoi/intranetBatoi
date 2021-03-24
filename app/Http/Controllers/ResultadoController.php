@@ -2,20 +2,20 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
+use Intranet\Http\Requests\ResultadoStoreRequest;
+use Intranet\Http\Requests\ResultadoUpdateRequest;
 use Styde\Html\Facades\Alert;
-use Intranet\Botones\BotonImg;
 
 
 /**
  * Class ResultadoController
  * @package Intranet\Http\Controllers
  */
-class ResultadoController extends IntranetController
+class ResultadoController extends ModalController
 {
 
     use traitImprimir;
@@ -43,20 +43,32 @@ class ResultadoController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['delete', 'edit']);
-        $this->panel->setBoton('grid', new BotonImg('alumnoresultado.alumno',['img' =>  'fa-mortar-board','where' => ['evaluacion', '==', 3]]));
+        //$this->panel->setBoton('grid', new BotonImg('alumnoresultado.alumno',['img' =>  'fa-mortar-board','where' => ['evaluacion', '==', 3]]));
 
     }
 
+    private function rellenaPropuestasMejora($idModulo){
+        $programacion = Programacion::where('idModuloCiclo', $idModulo)->where('curso', Curso())->first()->id;
+        return redirect("/programacion/$programacion/seguimiento");
+    }
 
-    /**
-     * @param Request $request
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function update(Request $request, $id)
+    public function store(ResultadoStoreRequest $request)
     {
-        $elemento = $this->class::findOrFail($id); //busca si hi ha
-        $elemento->fillAll($request);        // ompli i guarda
+        if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
+            $newRes = new Resultado();
+            $newRes->fillAll($request);
+            if ($request->evaluacion == 3) {
+                return $this->rellenaPropuestasMejora($modulogrupo->idModuloCiclo);
+            }
+            return $this->redirect();
+        }
+        Alert::danger("Eixe mòdul no es dona en eixe grup");
+        return $this->redirect();
+    }
+
+    public function update(ResultadoUpdateRequest $request, $id)
+    {
+        Resultado::findOrFail($id)->fillAll($request);
         return $this->redirect();
     }
 
@@ -66,26 +78,6 @@ class ResultadoController extends IntranetController
     public function search()
     {
         return Resultado::whereIn('idModuloGrupo', hazArray(Modulo_Grupo::MisModulos(), 'id', 'id'))->get();
-    }
-
-
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     */
-    public function store(Request $request)
-    {
-        if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
-            $this->realStore($request);
-            if ($request->evaluacion == 3) {
-                $programacion = Programacion::where('idModuloCiclo', $modulogrupo->idModuloCiclo)->where('curso', Curso())->first()->id;
-                return redirect("/programacion/$programacion/seguimiento");
-            }
-            return $this->redirect();
-        }
-        Alert::danger("Eixe mòdul no es dona en eixe grup");
-        return $this->redirect();
-
     }
 
     /**

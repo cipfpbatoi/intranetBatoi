@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Support\Collection;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\AlumnoFct;
@@ -9,9 +10,7 @@ use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\FctConvalidacion;
 use DB;
-use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Session;
-use Intranet\Jobs\SendEmail;
 use Illuminate\Http\Request;
 
 class FctAlumnoController extends IntranetController
@@ -23,8 +22,7 @@ class FctAlumnoController extends IntranetController
     protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas','periode'];
     protected $profile = false;
     protected $titulo = [];
-    protected $parametresVista = ['modal' => ['entreFechas']];
-
+    protected $parametresVista = ['modal' => ['entreFechas','seleccion']];
 
 
     public function search()
@@ -45,6 +43,7 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['id' => '401', 'roles' => config('roles.rol.tutor')]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['id' => '402', 'roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pasqua",['id' => 'btn-selecciona','roles' => config('roles.rol.tutor')]));
         Session::put('redirect', 'FctAlumnoController@index');
     }
         //
@@ -135,6 +134,18 @@ class FctAlumnoController extends IntranetController
        $fct->pg0301 = $fct->pg0301?0:1;
        $fct->save();
        return redirect()->action('PanelPG0301Controller@indice',['id' => $fct->Grup]);
+    }
+
+    public function imprimePasqua(Request $request){
+        $todos = new Collection();
+        foreach ($request->request as $item => $value){
+            if ($value == 'on'){
+                $todos->push(AlumnoFct::find($item));
+            }
+        }
+        return $this->hazPdf("pdf.fct.pasqua", $todos,
+            null, 'portrait')->stream();
+
     }
 
 } 

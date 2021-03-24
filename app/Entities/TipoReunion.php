@@ -3,7 +3,7 @@
 
 namespace Intranet\Entities;
 
-use App;
+use Illuminate\Support\Facades\App;
 
 class TipoReunion
 {

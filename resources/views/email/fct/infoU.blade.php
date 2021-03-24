@@ -8,7 +8,7 @@
             @endforeach
             </ul>
         </div>
-    <div>Aprofite per donar-te les meues dades per si necessiteu possar-se amb contacte amb mi:</div>
+    <div>Aprofite per donar-te les meues dades per si necessites possar-te en contacte amb mi:</div>
     <div>
         Tutor: {{AuthUser()->fullName}} {{AuthUser()->email}} <br/>
         Telèfon centre: {{ config('contacto.telefono') }} <br/>

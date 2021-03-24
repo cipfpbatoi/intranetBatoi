@@ -298,7 +298,7 @@ class FaltaController extends IntranetController
             // tota la feina del substitut pasa al subtituit
             Reunion::where('idProfesor',$sustituto->dni)->update(['idProfesor'=>$profesorAlta->dni]);
             Grupo::where('tutor',$sustituto->dni)->update(['tutor'=>$profesorAlta->dni]);
-            Programacion::where('idProfesor',$sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
+            Programacion::where('profesor',$sustituto->dni)->update(['profesor' => $profesorAlta->dni]);
             Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
             Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
 

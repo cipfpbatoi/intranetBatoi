@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Grupo;
 use Illuminate\Http\Request;
+use Intranet\Http\Resources\AlumnoFctResource;
 
 
 class AlumnoFctController extends ApiBaseController
@@ -31,6 +32,10 @@ class AlumnoFctController extends ApiBaseController
         $registro->pg0301 = $request->pg0301==='true'?1:0;
         $registro->save();
         return $this->sendResponse(['updated' => true], 'OK');
+    }
+
+    public function misAlumnos($dni){
+        return AlumnoFctResource::collection(AlumnoFct::MisFcts($dni)->get());
     }
 
 }
