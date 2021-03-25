@@ -25,6 +25,9 @@ class Ciclo extends Model
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
+    public $casts = [
+        'dataSignaturaDual' => 'date'
+    ];
 
     public function Departament()
     {
@@ -57,9 +60,5 @@ class Ciclo extends Model
     {
         return App::getLocale(session('lang')) == 'es' ? $this->cliteral : $this->vliteral;
     }
-    public function getDataSignaturaDualAttribute($salida)
-    {
-        $fecha = new Date($salida);
-        return $fecha->format('d-m-Y');
-    }
+
 }

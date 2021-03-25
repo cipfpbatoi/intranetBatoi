@@ -14,7 +14,6 @@ class FaltaProfesorController extends ApiBaseController
     public function horas($cadena){
         $result = parent::show($cadena,false);
         $dias=array();
-        //dd($result);
         foreach ($result as $registro) {
             if ($registro->salida != null) {
                 if (isset($dias[$registro->idProfesor][$registro->dia])) {
@@ -30,7 +29,7 @@ class FaltaProfesorController extends ApiBaseController
                     $dias[$registro->idProfesor][$registro->dia] = array('idProfesor'=>$registro->idProfesor,'fecha' => $registro->dia, 'horas' => '01:00:00');
             }
         }
-        return $this->sendResponse(['ok'], $dias);
+        return $this->sendResponse($dias,['ok']);
     }
     
 

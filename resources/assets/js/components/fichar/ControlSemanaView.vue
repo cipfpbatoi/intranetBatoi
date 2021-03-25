@@ -45,7 +45,7 @@ export default {
       this.msg='Esperando al servidor ...';
       axios.get('/api/faltaProfesor/horas/dia]'+this.sumaFecha(1)+'&dia['+this.sumaFecha(5)+'?api_token='+token)
       .then(resp=>{
-        this.fichajes=resp.data.message;
+        this.fichajes=resp.data;
         this.msg='';
       })
       .catch(resp=>this.msg='ERROR del servidor '+resp.status+'('+resp.statusText+')');

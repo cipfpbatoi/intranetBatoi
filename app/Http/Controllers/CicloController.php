@@ -27,10 +27,10 @@ class CicloController extends ModalController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('ciclo.create', ['roles' => self::ADMINISTRADOR]));
-        $this->panel->setBoton('grid', new BotonImg('ciclo.show',['roles' => self::ADMINISTRADOR]));
-        $this->panel->setBoton('grid', new BotonImg('ciclo.edit', ['roles' => self::ADMINISTRADOR]));
-        $this->panel->setBoton('grid', new BotonImg('ciclo.delete',['roles' => self::ADMINISTRADOR]));
+        $this->panel->setBoton('index', new BotonBasico('ciclo.create', ['roles' => config(self::ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.show',['roles' => config(self::ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.edit', ['roles' => config(self::ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('ciclo.delete',['roles' => config(self::ADMINISTRADOR)]));
     }
 
     public function store(CicloRequest $request)

@@ -75,18 +75,18 @@ class ApiBaseController extends Controller
                         $data = $this->fields($key);
                 }
             }
-           
+
             foreach ($filtros as $filtro) {
                 foreach (['=','<','>',']','['] as $operacion){
                     $campos = explode($operacion, $filtro);
                     
                     if (count($campos)==2){
-                        
                         $value = $campos[0];
                         $key = $campos[1];
                         if ($value != 'fields')
                             $data = $data->filter(function ($filtro) use ($value, $key,$operacion) {
                                 switch ($operacion){
+
                                     case '=' : return $filtro->$value == $key;break;
                                     case '>' : return $filtro->$value > $key; break;
                                     case '<' : return $filtro->$value < $key; break;
@@ -94,6 +94,7 @@ class ApiBaseController extends Controller
                                     case '[' : return $filtro->$value <= $key; break;
                                 }
                             });
+
                     }
                 }
             }
