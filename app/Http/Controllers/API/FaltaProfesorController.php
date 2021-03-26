@@ -29,7 +29,8 @@ class FaltaProfesorController extends ApiBaseController
                     $dias[$registro->idProfesor][$registro->dia] = array('idProfesor'=>$registro->idProfesor,'fecha' => $registro->dia, 'horas' => '01:00:00');
             }
         }
-        return $this->sendResponse($dias,['ok']);
+
+        return $this->sendResponse($dias,'OK');
     }
     
 

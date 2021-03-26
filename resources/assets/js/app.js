@@ -8,20 +8,26 @@
 // Lo comento para no cargarlo todo
 //require('./bootstrap');
 
-window.Vue = require('vue');
-
+//window.Vue = require('vue');
+import Vue from 'vue'
+window.Vue = Vue;
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+import ControlDiaView from './components/fichar/ControlDiaView.vue';
+import ControlSemanaView from './components/fichar/ControlSemanaView.vue';
+import ControlGuardiaView from './components/guardias/ControlGuardiaView.vue';
+import ReservasView from './components/reservas/ReservasView.vue';
+import BirretItacaView from './components/fichar/BirretItacaView.vue';
 
-Vue.component('example', require('./components/Example.vue'));
-Vue.component('control-dia-view', require('./components/fichar/ControlDiaView.vue'));
-Vue.component('control-semana-view', require('./components/fichar/ControlSemanaView.vue'));
-Vue.component('control-guardia-view', require('./components/guardias/ControlGuardiaView.vue'));
-Vue.component('reservas-view', require('./components/reservas/ReservasView.vue'));
-Vue.component('birret-itaca-view', require('./components/fichar/BirretItacaView.vue'));
+
+Vue.component('control-dia-view', ControlDiaView);
+Vue.component('control-semana-view', ControlSemanaView);
+Vue.component('control-guardia-view', ControlGuardiaView);
+Vue.component('reservas-view', ReservasView);
+Vue.component('birret-itaca-view', BirretItacaView);
 //Vue.component('horas-table', require('./components/HorasTable.vue'));
 
 const app = new Vue({

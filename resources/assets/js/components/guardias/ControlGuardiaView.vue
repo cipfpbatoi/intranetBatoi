@@ -26,13 +26,14 @@
 
 <script>
 import axios from 'axios'
+import ControlGuardiaItem from './ControlGuardiaItem.vue';
+import ControlNav from '../utils/ControlNav.vue';
 
 const token=document.getElementById('_token').innerHTML;
 
 export default {
   components: {
-    'control-guardia-item': require('./ControlGuardiaItem.vue'),
-    'control-nav': require('../utils/ControlNav.vue'),
+    ControlGuardiaItem,ControlNav
   },
   props: ['horas', 'profesGuardia', 'dias'],
   data() {

@@ -38,6 +38,8 @@
 
 <script>
 import axios from 'axios'
+import AppMsg from '../utils/AppMsg.vue';
+import FechaPicker from "../utils/FechaPicker";
 
 const token=document.getElementById('_token').innerHTML;
 const idProfesor = document.getElementById('dni').innerHTML;
@@ -45,8 +47,7 @@ const idProfesor = document.getElementById('dni').innerHTML;
 export default {
 
     components: {
-        'fecha-picker': require('../utils/FechaPicker.vue'),
-        'app-msg': require('../utils/AppMsg.vue'),
+        FechaPicker,AppMsg
     },
     data() {
         return {

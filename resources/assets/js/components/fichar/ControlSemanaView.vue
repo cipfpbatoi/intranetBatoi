@@ -22,12 +22,13 @@
 
 <script>
 import axios from 'axios'
+import ControlNav from '../utils/ControlNav.vue';
 
 const token=document.getElementById('_token').innerHTML;
 
 export default {
   components: {
-    'control-nav': require('../utils/ControlNav.vue'),
+    ControlNav
   },
   props: ['profes'],
   data() {
@@ -45,7 +46,7 @@ export default {
       this.msg='Esperando al servidor ...';
       axios.get('/api/faltaProfesor/horas/dia]'+this.sumaFecha(1)+'&dia['+this.sumaFecha(5)+'?api_token='+token)
       .then(resp=>{
-        this.fichajes=resp.data;
+        this.fichajes=resp.data.data;
         this.msg='';
       })
       .catch(resp=>this.msg='ERROR del servidor '+resp.status+'('+resp.statusText+')');

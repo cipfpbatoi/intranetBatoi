@@ -26,13 +26,14 @@
 
 <script>
 import axios from 'axios'
+import ControlNav from '../utils/ControlNav.vue';
+import FechaPicker from "../utils/FechaPicker";
 
 const token=document.getElementById('_token').innerHTML;
 
 export default {
   components: {
-    'control-nav': require('../utils/ControlNav.vue'),
-    'fecha-picker': require('../utils/FechaPicker.vue'),
+    ControlNav,FechaPicker
   },
   props: ['profes', 'horarioInicial'],
   data() {

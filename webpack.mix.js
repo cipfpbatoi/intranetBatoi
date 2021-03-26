@@ -30,26 +30,26 @@ mix.combine([
 //    vendors+'pnotify/dist/pnotify.css',
 //    vendors+'select2/dist/css/select2.css',
     vendors+'bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css',
-    
-    
+
+
 
 // de Natxo
     vendors+'bootstrap-daterangepicker/daterangepicker.css',
     plugins+'datetimepicker/css/bootstrap-datetimepicker.min.css',
     vendors+'datatables.net-bs/css/dataTables.bootstrap.min.css',
     vendors+'datatables.net-responsive-bs/css/responsive.bootstrap.min.css',
-    
+
     //rangeSlider
     vendors+'ion.rangeSlider/css/normalize.css' ,
     vendors+'ion.rangeSlider/css/ion.rangeSlider.css',
     vendors+'ion.rangeSlider/css/ion.rangeSlider.skinFlat.css',
-    
-    
+
+
     //Now lets add the custom css
     vendors+'nprogress/nprogress.css',
     gentelella+'build/css/custom.min.css',//this is the default from gentelella
     'resources/assets/css/mycustom.css' //All your custom css can go here
-    
+
 
 ],'public/css/app.css');
 
@@ -77,12 +77,12 @@ mix.combine([
     vendors+'google-code-prettify/bin/prettify.min.js',
     vendors+'autosize/dist/autosize.min.js',
 
-    
-    plugins+'datetime-moment/dist/datetime-moment.js', 
+
+    plugins+'datetime-moment/dist/datetime-moment.js',
     vendors+'datatables.net-bs/js/dataTables.bootstrap.min.js',
     vendors+'datatables.net-responsive/js/dataTables.responsive.min.js',
     vendors+'datatables.net-responsive-bs/js/responsive.bootstrap.js',
-    
+
     vendors+'datatables.net-buttons/js/dataTables.buttons.min.js',
     vendors+'datatables.net-buttons-bs/js/buttons.bootstrap.min.js',
     vendors+'datatables.net-buttons/js/buttons.print.min.js',
@@ -95,5 +95,5 @@ mix.combine([
     'resources/assets/js/init.js' //initialize other plugins here
 ],'public/js/app.js');
 
-mix.js('resources/assets/js/app.js', 'public/js/components')
-   .sass('resources/assets/sass/app.scss', 'public/css/components');
+mix.js('resources/assets/js/app.js', 'public/js/components').vue({ version: 2 })
+    .sass('resources/assets/sass/app.scss', 'public/css/components');
