@@ -18,7 +18,7 @@ use Intranet\Entities\TipoExpediente;
 class ExpedienteController extends ModalController
 {
 
-    use traitImprimir,
+    use traitImprimir,traitGestor,
         traitAutorizar;
 
     /**
