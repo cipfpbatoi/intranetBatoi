@@ -38,7 +38,6 @@ class Incidencia extends Model
         'deleting' => PreventAction::class,
         'saving' => PreventAction::class,
         'deleted' => ActivityReport::class,
-        'saved' => IncidenciaSaved::class,
         'created' => ActivityReport::class,
     ];
     protected $attributes = ['espacio'=>null,'estado'=>0,'prioridad'=>0,'tipo'=>10];

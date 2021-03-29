@@ -41,9 +41,6 @@ class EventServiceProvider extends ServiceProvider
         'Intranet\Events\PreventAction' => [
             'Intranet\Listeners\BlockAction',
         ],
-        'Intranet\Events\IncidenciaSaved' => [
-            'Intranet\Listeners\MaterialChange',
-        ],
         'Intranet\Events\FichaCreated' => [
             'Intranet\Listeners\VeepCreated',
         ],

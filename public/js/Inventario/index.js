@@ -22,7 +22,10 @@ const mesesCaduca=6;
                 </a>
                 `;
     }
-    contenido+=`<a href="#" class="ver">
+    contenido+=`            <a href="#" class="incidencia">
+                    <i class="fa fa-wrench" title="Crear incidencia"></i>                
+                </a>
+                <a href="#" class="ver">
                     <i class="fa fa-eye" title="Ver"></i>                
                 </a>
     `;

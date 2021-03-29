@@ -22,7 +22,7 @@ class MaterialController extends ApiBaseController
     function inventario(){
         $data = Material::where('inventariable',1)
                 ->where('espacio','<>','INVENT')
-                ->where('estado','=',1)
+                ->where('estado','<',3)
                 ->get();
         return $this->sendResponse($data, 'OK');
     }
