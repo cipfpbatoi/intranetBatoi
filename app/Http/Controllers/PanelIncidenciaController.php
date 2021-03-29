@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\OrdenTrabajo;
 
-class PanelIncidenciaController extends BaseController
+class   PanelIncidenciaController extends BaseController
 {
 
     use traitPanel;
