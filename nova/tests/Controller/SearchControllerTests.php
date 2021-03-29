@@ -27,7 +27,7 @@ trait SearchControllerTests
         $this->assertNull($original[0]['avatar']);
 
         $this->assertEquals('users', $original[1]['resourceName']);
-        $this->assertEquals('User Resources', $original[1]['resourceTitle']);
+        $this->assertEquals('Profesor Resources', $original[1]['resourceTitle']);
         $this->assertEquals($user->id, $original[1]['title']);
         $this->assertEquals($user->id, $original[1]['resourceId']);
         $this->assertEquals('http://localhost/nova/resources/users/'.$user->id, $original[1]['url']);

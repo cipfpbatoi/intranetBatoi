@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeder;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;

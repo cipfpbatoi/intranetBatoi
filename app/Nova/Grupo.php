@@ -3,28 +3,30 @@
 namespace Intranet\Nova;
 
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\HasOne;
+use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-
-class Departamento extends Resource
+class Grupo extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \Intranet\Entities\Departamento::class;
+    public static $model = \Intranet\Entities\Grupo::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'vliteral';
+    public static $title = 'nombre';
 
     /**
      * The columns that should be searched.
@@ -32,7 +34,7 @@ class Departamento extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'vliteral','cliteral'
+        'nombre','tutor'
     ];
 
     /**
@@ -44,19 +46,22 @@ class Departamento extends Resource
     public function fields(Request $request)
     {
         return [
-            Number::make('id')->sortable()->rules('required')
-                ->creationRules('unique:tipoincidencias,id','max:250')->hideWhenUpdating(),
-            Text::make('vliteral')
+            Text::make('codigo')->sortable()->rules('required')->
+            creationRules('unique:grupos,codigo','max:5')->hideWhenUpdating(),
+            Text::make(__('validation.attributes.nombre'),'nombre')
                 ->sortable()
-                ->rules('required', 'max:100'),
-            Text::make('cliteral')
+                ->rules('required', 'max:45'),
+            Text::make(__('validation.attributes.turno'),'turno')
                 ->sortable()
-                ->rules('required', 'max:100')
+                ->rules('required', 'max:1')
                 ->hideFromIndex(),
-            Text::make('depcurt')
+            HasOne::make('Profesor','Tutor'),
+            BelongsTo::make('Ciclo'),
+            Select::make(__('validation.attributes.tipo'),'tipo')->options(config('auxiliares.tipoEstudio'))->displayUsingLabels(),
+            Text::make('curso')
                 ->sortable()
-                ->rules('required', 'max:3'),
-            Boolean::make('didactico')->hideFromIndex()
+                ->rules( 'integer','max:3')
+                ->hideFromIndex(),
         ];
     }
 

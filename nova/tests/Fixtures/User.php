@@ -35,7 +35,7 @@ class User extends Authenticatable
     ];
 
     protected $attributes = [
-        'name' => 'Anonymous User',
+        'name' => 'Anonymous Profesor',
     ];
 
     /**

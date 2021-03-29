@@ -31,7 +31,7 @@ class DetailMorphToFieldTest extends DuskTestCase
                                 ->assertSee('Post')
                                 ->clickLink($post->title);
                     })
-                    ->waitForText('User Post Details: '.$post->id)
+                    ->waitForText('Profesor Post Details: '.$post->id)
                     ->assertPathIs('/nova/resources/posts/'.$post->id);
 
             $browser->blank();
@@ -50,7 +50,7 @@ class DetailMorphToFieldTest extends DuskTestCase
             $browser->loginAs(User::find(1))
                     ->visit(new Detail('comments', 1))
                     ->waitForText('Comment Details', 15)
-                    ->assertSee('User Post');
+                    ->assertSee('Profesor Post');
 
             $browser->blank();
         });
@@ -67,7 +67,7 @@ class DetailMorphToFieldTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->loginAs(User::find(1))
                     ->visit(new Detail('comments', 1))
-                    ->assertSee('User Video');
+                    ->assertSee('Profesor Video');
 
             $browser->blank();
         });
@@ -129,8 +129,8 @@ class DetailMorphToFieldTest extends DuskTestCase
                     ->visit(new Detail('comments', 1))
                     ->waitForText('Comment Details', 15)
                     ->clickLink($post->title)
-                    ->waitForTextIn('h1', 'User Post Details', 25)
-                    ->assertSee('User Post Details: '.$post->id);
+                    ->waitForTextIn('h1', 'Profesor Post Details', 25)
+                    ->assertSee('Profesor Post Details: '.$post->id);
 
             $browser->blank();
         });

@@ -45,7 +45,7 @@ class ResourceShowTest extends IntegrationTest
         $this->assertTrue($response->original['resource']['authorizedToDelete']);
         $this->assertTrue($response->original['resource']['softDeletes']);
 
-        $this->assertEquals('User Resource Details: 1', $response->original['panels'][0]->name);
+        $this->assertEquals('Profesor Resource Details: 1', $response->original['panels'][0]->name);
     }
 
     public function test_can_show_resource_with_null_relation()

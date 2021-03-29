@@ -8,14 +8,14 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Modulo_ciclo extends Resource
+class ModuloGrupo extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \Intranet\Entities\Modulo_ciclo::class;
+    public static $model = \Intranet\Entities\Modulo_grupo::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -43,15 +43,8 @@ class Modulo_ciclo extends Resource
     {
         return [
             ID::make(__('ID'), 'id')->sortable(),
-            BelongsTo::make('Departamento'),
-            BelongsTo::make('Ciclo'),
-            BelongsTo::make('Modulo'),
-            Text::make('curso')
-                ->sortable()
-                ->rules( 'required','max:1')
-                ->hideFromIndex(),
-            Text::make('enlace')
-                ->hideFromIndex()
+            BelongsTo::make('ModuloCiclo'),
+            BelongsTo::make('Grupo'),
         ];
     }
 

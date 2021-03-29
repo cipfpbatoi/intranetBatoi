@@ -77,7 +77,7 @@ class ActionResource extends Resource
             }),
 
             Text::make(__('Action Initiated By'), function () {
-                return $this->user->name ?? $this->user->email ?? __('Nova User');
+                return $this->user->name ?? $this->user->email ?? __('Nova Profesor');
             }),
 
             MorphToActionTarget::make(__('Action Target'), 'target'),

@@ -144,7 +144,7 @@ class CreationControllerTest extends IntegrationTest
         $response = $this->withExceptionHandling()
             ->getJson('/nova-api/users/creation-fields?editing=true&editMode=create');
 
-        $this->assertEquals('Anonymous User', $response->original['fields']->where('attribute', 'name')->first()->value);
+        $this->assertEquals('Anonymous Profesor', $response->original['fields']->where('attribute', 'name')->first()->value);
     }
 }
 

@@ -110,7 +110,7 @@ return array(
             '1' => 'Pendent',
             '0' => 'Rebutjada/No comunicada'
         ),
-        'Incidencia' => array(
+        'TipoIncidencia' => array(
             'index' => 'Gestionar Incidències',
             'create' => 'Crear Incidència',
             'email' => 'Passar a processament',
@@ -486,7 +486,7 @@ return array(
             'Tutoria' => 'Tutoria',
             'TutoriaGrupo' => 'FeedBack Tutoria',
             'Material' => 'Material',
-            'Incidencia' => 'Incidència',
+            'TipoIncidencia' => 'Incidència',
             'OrdenTrabajo' => 'Ordre de Treball',
             'Ciclo' => 'Cicle',
             'Falta_itaca' => 'Justificar Birret',

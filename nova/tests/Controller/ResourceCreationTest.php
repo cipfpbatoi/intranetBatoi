@@ -165,7 +165,7 @@ class ResourceCreationTest extends IntegrationTest
 
         $response->assertStatus(422);
 
-        // Ensure base User::relatableQuery was called...
+        // Ensure base Profesor::relatableQuery was called...
         $this->assertFalse(isset($_SERVER['nova.post.relatableUsers']));
     }
 

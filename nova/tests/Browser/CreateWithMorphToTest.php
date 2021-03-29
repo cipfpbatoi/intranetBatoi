@@ -114,8 +114,8 @@ class CreateWithMorphToTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->loginAs(User::find(1))
                     ->visit(new Create('comments'))
-                    ->assertSee('User Post')
-                    ->assertSee('User Video');
+                    ->assertSee('Profesor Post')
+                    ->assertSee('Profesor Video');
 
             $browser->blank();
         });

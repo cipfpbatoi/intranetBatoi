@@ -3,28 +3,27 @@
 namespace Intranet\Nova;
 
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Http\Requests\NovaRequest;
 
 
-class Departamento extends Resource
+class Profesor extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \Intranet\Entities\Departamento::class;
+    public static $model = \Intranet\Entities\Profesor::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'vliteral';
+    public static $title = 'fullName';
 
     /**
      * The columns that should be searched.
@@ -32,7 +31,7 @@ class Departamento extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'vliteral','cliteral'
+        'dni', 'nombre', 'email',
     ];
 
     /**
@@ -44,19 +43,25 @@ class Departamento extends Resource
     public function fields(Request $request)
     {
         return [
-            Number::make('id')->sortable()->rules('required')
-                ->creationRules('unique:tipoincidencias,id','max:250')->hideWhenUpdating(),
-            Text::make('vliteral')
+            Text::make('dni')->sortable()->rules('required')->
+            creationRules('unique:profesores,dni','max:10')->hideWhenUpdating(),
+
+            Gravatar::make()->maxWidth(50),
+
+            Text::make('nombre')
                 ->sortable()
-                ->rules('required', 'max:100'),
-            Text::make('cliteral')
+                ->rules('required', 'max:255'),
+
+            Text::make('email')
                 ->sortable()
-                ->rules('required', 'max:100')
-                ->hideFromIndex(),
-            Text::make('depcurt')
-                ->sortable()
-                ->rules('required', 'max:3'),
-            Boolean::make('didactico')->hideFromIndex()
+                ->rules('required', 'email', 'max:254')
+                ->creationRules('unique:users,email')
+                ->updateRules('unique:users,email,{{resourceId}}'),
+
+            Password::make('password')
+                ->onlyOnForms()
+                ->creationRules('required', 'string', 'min:8')
+                ->updateRules('nullable', 'string', 'min:8'),
         ];
     }
 

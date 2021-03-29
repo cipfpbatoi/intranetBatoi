@@ -11,6 +11,7 @@ class TipoIncidencia extends Model
     use BatoiModels,TraitEstado;
 
     protected $table = 'tipoincidencias';
+    public $incrementing = false;
     public $timestamps = false;
 
     protected $fillable = [

@@ -39,7 +39,7 @@ class RecipientResource extends Resource
 
             Text::make('Name'),
 
-            BelongsTo::make('User', 'user', UserResource::class),
+            BelongsTo::make('Profesor', 'user', UserResource::class),
         ];
     }
 

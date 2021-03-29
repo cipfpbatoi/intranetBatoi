@@ -55,7 +55,7 @@ return [
         'resolve' => '3',
         'refuse' => '0',
     ],
-    'Incidencia' => [
+    'TipoIncidencia' => [
         'estados' => [  1 => 'pendiente', 
                         2 => 'proceso', 
                         3 => 'resuelta'],

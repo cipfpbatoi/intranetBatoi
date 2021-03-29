@@ -42,7 +42,8 @@ class Modulo extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make('codigo'),
+            Text::make('codigo')->sortable()->rules('required')->
+            creationRules('unique:grupos,codigo','max:6')->hideWhenUpdating(),
             Text::make(__('validation.attributes.vliteral'),'vliteral')
             ->sortable()
             ->rules('required', 'max:100'),

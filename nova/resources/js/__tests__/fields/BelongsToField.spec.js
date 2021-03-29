@@ -10,7 +10,7 @@ describe('BelongsToField', () => {
       stubs: ['default-field'],
       propsData: {
         field: {
-          name: 'User',
+          name: 'Profesor',
           belongsToId: '',
           attribute: 'user',
           searchable: false,
@@ -50,7 +50,7 @@ describe('BelongsToField', () => {
       stubs: ['default-field'],
       propsData: {
         field: {
-          name: 'User',
+          name: 'Profesor',
           belongsToId: '',
           attribute: 'user',
           searchable: true,
@@ -119,7 +119,7 @@ describe('BelongsToField', () => {
       stubs: ['default-field'],
       propsData: {
         field: {
-          name: 'User',
+          name: 'Profesor',
           belongsToId: 1,
           attribute: 'user',
           searchable: false,
@@ -160,7 +160,7 @@ describe('BelongsToField', () => {
       stubs: ['default-field'],
       propsData: {
         field: {
-          name: 'User',
+          name: 'Profesor',
           belongsToId: 1,
           attribute: 'user',
           searchable: true,
@@ -194,7 +194,7 @@ describe('BelongsToField', () => {
       stubs: ['default-field'],
       propsData: {
         field: {
-          name: 'User',
+          name: 'Profesor',
           belongsToId: 1,
           attribute: 'user',
           searchable: true,
@@ -214,7 +214,7 @@ describe('BelongsToField', () => {
       stubs: ['default-field'],
       propsData: {
         field: {
-          name: 'User',
+          name: 'Profesor',
           belongsToId: '',
           attribute: 'user',
           searchable: true,
@@ -274,7 +274,7 @@ describe('BelongsToField', () => {
       stubs: ['default-field'],
       propsData: {
         field: {
-          name: 'User',
+          name: 'Profesor',
           belongsToId: '',
           attribute: 'user',
           searchable: true,
@@ -325,7 +325,7 @@ describe('BelongsToField', () => {
       stubs: ['default-field'],
       propsData: {
         field: {
-          name: 'User',
+          name: 'Profesor',
           belongsToId: 1,
           attribute: 'user',
           searchable: true,

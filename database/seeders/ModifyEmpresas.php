@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeder;
 
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Centro;

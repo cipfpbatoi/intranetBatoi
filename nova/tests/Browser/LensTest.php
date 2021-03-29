@@ -46,8 +46,8 @@ class LensTest extends DuskTestCase
                         $browser->waitForTable(25)
                                 ->click('@1-view-button');
                     })
-                    ->waitForTextIn('h1', 'User Details', 25)
-                    ->assertSee('User Details')
+                    ->waitForTextIn('h1', 'Profesor Details', 25)
+                    ->assertSee('Profesor Details')
                     ->assertPathIs('/nova/resources/users/1');
 
             $browser->blank();
@@ -67,7 +67,7 @@ class LensTest extends DuskTestCase
                                 ->click('@1-edit-button');
                     })
                     ->pause(1000)
-                    ->assertSee('Update User')
+                    ->assertSee('Update Profesor')
                     ->assertPathIs('/nova/resources/users/1/edit');
 
             $browser->blank();

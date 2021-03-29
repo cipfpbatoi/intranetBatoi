@@ -36,7 +36,7 @@ class PostLens extends Lens
         return [
             ID::make('ID', 'id')->sortable(),
 
-            BelongsTo::make('User', 'user', UserResource::class)->display('name')->sortable(),
+            BelongsTo::make('Profesor', 'user', UserResource::class)->display('name')->sortable(),
 
             Text::make('Title', 'title')->rules('required', 'string', 'max:255'),
 

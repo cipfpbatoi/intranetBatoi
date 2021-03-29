@@ -70,10 +70,10 @@ class AuthenticationTest extends IntegrationTest
     //     DB::table('password_resets')->delete();
 
     //     config(['mail.driver' => 'array']);
-    //     config(['auth.providers.users.model' => User::class]);
+    //     config(['auth.providers.users.model' => Profesor::class]);
 
     //     // Request Password Reset Link...
-    //     $user = factory(User::class)->create([
+    //     $user = factory(Profesor::class)->create([
     //         'email' => 'taylor@laravel.com',
     //         'password' => bcrypt('password'),
     //     ]);
@@ -83,19 +83,19 @@ class AuthenticationTest extends IntegrationTest
     //                         'email' => 'taylor@laravel.com',
     //                     ]);
 
-    //     $this->assertNotNull(User::$passwordResetToken);
+    //     $this->assertNotNull(Profesor::$passwordResetToken);
     //     $response->assertStatus(302);
     //     $response->assertSessionHas('status', 'We have e-mailed your password reset link!');
 
     //     // Reset Password...
     //     $response = $this->withExceptionHandling()
-    //                     ->get('/nova/password/reset/'.User::$passwordResetToken);
+    //                     ->get('/nova/password/reset/'.Profesor::$passwordResetToken);
 
     //     $response->assertStatus(200);
 
     //     $response = $this->withExceptionHandling()
     //                     ->post('/nova/password/reset', [
-    //                         'token' => User::$passwordResetToken,
+    //                         'token' => Profesor::$passwordResetToken,
     //                         'email' => 'taylor@laravel.com',
     //                         'password' => 'taylor',
     //                         'password_confirmation' => 'taylor',

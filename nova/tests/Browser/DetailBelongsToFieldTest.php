@@ -27,7 +27,7 @@ class DetailBelongsToFieldTest extends DuskTestCase
                     ->within(new DetailComponent('posts', $post->id), function ($browser) use ($user) {
                         $browser->clickLink($user->name);
                     })
-                    ->waitForTextIn('h1', 'User Details', 25)
+                    ->waitForTextIn('h1', 'Profesor Details', 25)
                     ->assertPathIs('/nova/resources/users/'.$user->id);
 
             $browser->blank();
@@ -66,7 +66,7 @@ class DetailBelongsToFieldTest extends DuskTestCase
                     ->within(new DetailComponent('posts', $post->id), function ($browser) use ($user) {
                         $browser->clickLink($user->name);
                     })
-                    ->waitForTextIn('h1', 'User Details: '.$user->id, 25)
+                    ->waitForTextIn('h1', 'Profesor Details: '.$user->id, 25)
                     ->assertPathIs('/nova/resources/users/'.$user->id);
 
             $browser->blank();

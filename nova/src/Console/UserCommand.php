@@ -30,6 +30,6 @@ class UserCommand extends Command
     {
         Nova::createUser($this);
 
-        $this->info('User created successfully.');
+        $this->info('Profesor created successfully.');
     }
 }

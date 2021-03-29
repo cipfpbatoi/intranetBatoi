@@ -62,9 +62,9 @@ class IndexTest extends DuskTestCase
                     ->within(new IndexComponent('users'), function ($browser) {
                         $browser->click('@create-button');
                     })
-                    ->waitForTextIn('h1', 'Create User', 25)
+                    ->waitForTextIn('h1', 'Create Profesor', 25)
                     ->assertSee('Create & Add Another')
-                    ->assertSee('Create User');
+                    ->assertSee('Create Profesor');
 
             $browser->blank();
         });
@@ -90,7 +90,7 @@ class IndexTest extends DuskTestCase
                 'Nova.app.$router.push({ name: "index", params: { resourceName: "posts" }});',
             ]);
 
-            $browser->waitForTextIn('h1', 'User Post', 25)
+            $browser->waitForTextIn('h1', 'Profesor Post', 25)
                     ->within(new IndexComponent('posts'), function ($browser) use ($post) {
                         $browser->assertSee($post->title)
                             ->assertDontSee('Mohamed Said')
@@ -113,8 +113,8 @@ class IndexTest extends DuskTestCase
                         $browser->waitForTable(25)
                                 ->click('@1-view-button');
                     })
-                    ->waitForText('User Details', 25)
-                    ->assertSee('User Details')
+                    ->waitForText('Profesor Details', 25)
+                    ->assertSee('Profesor Details')
                     ->assertPathIs('/nova/resources/users/1');
 
             $browser->blank();
@@ -133,8 +133,8 @@ class IndexTest extends DuskTestCase
                         $browser->waitForTable(25)
                                 ->click('@1-edit-button');
                     })
-                    ->waitForText('Update User', 25)
-                    ->assertSee('Update User')
+                    ->waitForText('Update Profesor', 25)
+                    ->assertSee('Update Profesor')
                     ->assertPathIs('/nova/resources/users/1/edit');
 
             $browser->blank();
@@ -147,7 +147,7 @@ class IndexTest extends DuskTestCase
     public function resources_can_be_searched()
     {
         $this->browse(function (Browser $browser) {
-            // Search For Single User By ID...
+            // Search For Single Profesor By ID...
             $browser->loginAs(User::find(1))
                     ->visit(new UserIndex)
                     ->within(new IndexComponent('users'), function ($browser) {
@@ -159,7 +159,7 @@ class IndexTest extends DuskTestCase
                                 ->assertSee('1-1 of 1');
                     });
 
-            // Search For Single User By Name...
+            // Search For Single Profesor By Name...
             $browser->loginAs(User::find(1))
                     ->visit(new UserIndex)
                     ->within(new IndexComponent('users'), function ($browser) {
@@ -180,7 +180,7 @@ class IndexTest extends DuskTestCase
     public function resources_search_query_will_reset_on_revisit()
     {
         $this->browse(function (Browser $browser) {
-            // Search For Single User By ID...
+            // Search For Single Profesor By ID...
             $browser->loginAs(User::find(1))
                     ->visit(new UserIndex)
                     ->within(new IndexComponent('users'), function ($browser) {

@@ -103,7 +103,7 @@ class FieldCollectionTest extends IntegrationTest
     public function test_can_reject_listable_fields()
     {
         $fields = FieldCollection::make([
-            BelongsToMany::make('User', 'user', UserResource::class),
+            BelongsToMany::make('Profesor', 'user', UserResource::class),
             Text::make('Text1'),
         ])->withoutListableFields();
 
@@ -114,7 +114,7 @@ class FieldCollectionTest extends IntegrationTest
     public function test_can_filter_to_many_to_many_relations()
     {
         $fields = FieldCollection::make([
-            BelongsToMany::make('User', 'user', UserResource::class),
+            BelongsToMany::make('Profesor', 'user', UserResource::class),
             Text::make('Text1'),
         ])->filterForManyToManyRelations();
 

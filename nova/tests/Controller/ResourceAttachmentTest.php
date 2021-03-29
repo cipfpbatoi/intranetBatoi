@@ -134,13 +134,13 @@ class ResourceAttachmentTest extends IntegrationTest
     // This behavior was changed...
     // public function test_cant_attach_resources_that_arent_relatable_at_all()
     // {
-    //     $user = factory(User::class)->create();
+    //     $user = factory(Profesor::class)->create();
     //     $role = factory(Role::class)->create();
 
     //     $_SERVER['nova.user.authorizable'] = true;
     //     $_SERVER['nova.user.attachAnyRole'] = false;
 
-    //     Gate::policy(User::class, UserPolicy::class);
+    //     Gate::policy(Profesor::class, UserPolicy::class);
 
     //     $response = $this->withExceptionHandling()
     //                     ->postJson('/nova-api/users/'.$user->id.'/attach/roles', [
@@ -153,7 +153,7 @@ class ResourceAttachmentTest extends IntegrationTest
     //     unset($_SERVER['nova.user.attachAnyRole']);
 
     //     $response->assertStatus(422);
-    //     $this->assertInstanceOf(User::class, $_SERVER['nova.user.attachAnyRoleUser']);
+    //     $this->assertInstanceOf(Profesor::class, $_SERVER['nova.user.attachAnyRoleUser']);
     //     $this->assertEquals($user->id, $_SERVER['nova.user.attachAnyRoleUser']->id);
 
     //     unset($_SERVER['nova.user.attachAnyRoleUser']);

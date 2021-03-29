@@ -39,7 +39,7 @@ class AddressResource extends Resource
 
             // This simulates filling another field from a belongs to if the user has other fields that can be derived
             // from this field such as other foreign keys that are only present for querying convenience...
-            BelongsTo::make('User', 'user', UserResource::class)->filled(function ($request, $model) {
+            BelongsTo::make('Profesor', 'user', UserResource::class)->filled(function ($request, $model) {
                 $model->name = 'Filled Name';
             }),
 

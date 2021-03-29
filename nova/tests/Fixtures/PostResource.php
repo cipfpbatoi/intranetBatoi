@@ -39,7 +39,7 @@ class PostResource extends Resource
     public function fields(Request $request)
     {
         return [
-            BelongsTo::make('User', 'user', UserResource::class)
+            BelongsTo::make('Profesor', 'user', UserResource::class)
                 ->nullable()
                 ->viewable($_SERVER['nova.user.viewable-field'] ?? true)
                 ->default($_SERVER['nova.user.default-value'] ?? null),

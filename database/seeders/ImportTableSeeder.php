@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeder;
 
 Use Intranet\Entities\Alumno;
 Use Intranet\Entities\Profesor;
@@ -11,7 +12,7 @@ class ImportTableSeeder extends Seeder
 {
 
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      *
      * @return void
      */

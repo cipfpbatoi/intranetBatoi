@@ -35,7 +35,7 @@ class RelationsTest extends IntegrationTest
             'user' => $user2->id,
         ]))->setMethod('POST');
 
-        BelongsTo::make('User', 'user', UserResource::class)->fill($request, $post);
+        BelongsTo::make('Profesor', 'user', UserResource::class)->fill($request, $post);
 
         $this->assertFalse($post->relationLoaded('user'));
 

@@ -54,7 +54,9 @@ const mesesCaduca=6;
         columns: [
             { data:'id'},
             { data:'descripcion'},
-            { data:'estado'},
+            { data: null, render: function (data){
+                return ESTADOS[data.estado];
+                }},
             { data:'espacio'},
             { data:'unidades'},
             { data: null, defaultContent: contenido},

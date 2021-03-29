@@ -33,7 +33,7 @@ class ResourceIndexTest extends IntegrationTest
         $response = $this->withExceptionHandling()
                         ->getJson('/nova-api/users');
 
-        $this->assertEquals('User Resources', $response->original['label']);
+        $this->assertEquals('Profesor Resources', $response->original['label']);
         $this->assertEquals($user->id, $response->original['resources'][0]['id']->value);
         $this->assertTrue($response->original['resources'][0]['authorizedToUpdate']);
         $this->assertTrue($response->original['resources'][0]['authorizedToDelete']);
@@ -136,14 +136,14 @@ class ResourceIndexTest extends IntegrationTest
 
         $user2 = factory(User::class)->create();
 
-        // User that has posts...
+        // Profesor that has posts...
         $response = $this->withExceptionHandling()
                         ->getJson('/nova-api/posts?viaResource=users&viaResourceId='.$user->id.'&viaRelationship=posts');
 
         $response->assertJsonCount(3, 'resources');
         $this->assertEquals(4, Post::count());
 
-        // User that has no posts...
+        // Profesor that has no posts...
         $response = $this->withExceptionHandling()
                         ->getJson('/nova-api/posts?viaResource=users&viaResourceId='.$user2->id.'&viaRelationship=posts');
 

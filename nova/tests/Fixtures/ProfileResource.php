@@ -37,7 +37,7 @@ class ProfileResource extends Resource
         return [
             ID::make('ID', 'id'),
 
-            BelongsTo::make('User', 'user', UserResource::class)->nullable(),
+            BelongsTo::make('Profesor', 'user', UserResource::class)->nullable(),
 
             Text::make('Phone')->onlyOnIndex(),
         ];

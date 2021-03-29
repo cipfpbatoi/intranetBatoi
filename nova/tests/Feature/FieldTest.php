@@ -44,7 +44,7 @@ class FieldTest extends IntegrationTest
         Text::useComponent('something');
         $this->assertEquals('something', (new Text('Foo', 'foo'))->component());
 
-        $this->assertEquals('belongs-to-field', (new BelongsTo('User', 'user', UserResource::class))->component());
+        $this->assertEquals('belongs-to-field', (new BelongsTo('Profesor', 'user', UserResource::class))->component());
     }
 
     public function test_fields_can_have_custom_display_callback()
@@ -512,7 +512,7 @@ class FieldTest extends IntegrationTest
     {
         $request = NovaRequest::create('/', 'GET', []);
 
-        $field = BelongsTo::make('User', 'user', UserResource::class);
+        $field = BelongsTo::make('Profesor', 'user', UserResource::class);
 
         $field->showCreateRelationButton(false);
         $this->assertFalse($field->createRelationShouldBeShown($request));
@@ -621,7 +621,7 @@ class FieldTest extends IntegrationTest
             ->assertJson([
                 'fields' => [
                     [
-                        'name' => 'User',
+                        'name' => 'Profesor',
                         'component' => 'belongs-to-field',
                         'value' => 4, // This is the default value of the field.
                     ],

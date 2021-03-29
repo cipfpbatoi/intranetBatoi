@@ -1,4 +1,5 @@
 <?php
+namespace Database\Seeder;
 
 use Illuminate\Database\Seeder;
 use Intranet\Entities\Material;
@@ -9,7 +10,7 @@ use Intranet\Entities\Articulo;
 class Inventari extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the database seeders.
      *
      * @return void
      */

@@ -42,7 +42,7 @@ class DiscussionResource extends Resource
     public function fields(Request $request)
     {
         return [
-            BelongsTo::make('User', 'user', UserResource::class),
+            BelongsTo::make('Profesor', 'user', UserResource::class),
             Text::make('Title')->rules('required', 'string', 'max:255'),
             Trix::make('Body')->rules('required')->withFiles('public'),
         ];

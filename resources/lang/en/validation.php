@@ -167,7 +167,7 @@ return [
                ,'fecha_ingreso' =>'Entry date'
                ,'fecha_nac' =>'Date of birth'
                ,'fecha_baja' =>'Leaving date'
-               ,'rol' =>"User's role"
+               ,'rol' =>"Profesor's role"
                ,'dni' =>"ID card"
                ,'nia' =>"NIA"
                ,'expediente' =>'File'

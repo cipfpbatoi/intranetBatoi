@@ -3,28 +3,26 @@
 namespace Intranet\Nova;
 
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Number;
 
-
-class Departamento extends Resource
+class TipoIncidencia extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \Intranet\Entities\Departamento::class;
+    public static $model = \Intranet\Entities\TipoIncidencia::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'vliteral';
+    public static $title = 'nom';
 
     /**
      * The columns that should be searched.
@@ -32,7 +30,7 @@ class Departamento extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'vliteral','cliteral'
+        'nombre','nom'
     ];
 
     /**
@@ -45,18 +43,15 @@ class Departamento extends Resource
     {
         return [
             Number::make('id')->sortable()->rules('required')
-                ->creationRules('unique:tipoincidencias,id','max:250')->hideWhenUpdating(),
-            Text::make('vliteral')
+            ->creationRules('unique:tipoincidencias,id','max:250')->hideWhenUpdating(),
+            Text::make(__('validation.attributes.nombre'),'nombre')
                 ->sortable()
-                ->rules('required', 'max:100'),
-            Text::make('cliteral')
+                ->rules('required', 'max:30'),
+            Text::make(__('validation.attributes.nombre'),'nom')
                 ->sortable()
-                ->rules('required', 'max:100')
-                ->hideFromIndex(),
-            Text::make('depcurt')
-                ->sortable()
-                ->rules('required', 'max:3'),
-            Boolean::make('didactico')->hideFromIndex()
+                ->rules('required', 'max:30'),
+            BelongsTo::make('Profesor','Responsable'),
+            Select::make(__('validation.attributes.tipo'),'tipus')->searchable()->options(config('auxiliares.tipoIncidencia'))->displayUsingLabels(),
         ];
     }
 
