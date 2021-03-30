@@ -112,7 +112,8 @@ class ExpedienteController extends ModalController
     public function pdf($id)
     {
         $expediente = Expediente::find($id);
-        return self::hazPdf("pdf.expediente.$expediente->tipo",$expediente)->stream();
+        $dades[] = $expediente;
+        return self::hazPdf("pdf.expediente.$expediente->tipo",$dades)->stream();
     }
 
     /**
