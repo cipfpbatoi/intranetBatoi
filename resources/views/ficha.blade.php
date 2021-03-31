@@ -5,9 +5,9 @@
         @if ($ultimo)
             <h1>{{ $ultimo->Profesor->fullName }} fitxa
             @if (isset($ultimo->salida))
-                l'eixida a les {{$ultimo->salida}}. ADEU !!
+                l'eixida a les {{$ultimo->salida}} del dia {{ $ultimo->dia }}. ADEU !!
             @else
-                l'entrada a les {{$ultimo->entrada}}. HOLA !!
+                l'entrada a les {{$ultimo->entrada}} del dia {{ $ultimo->dia }}. HOLA !!
             @endif
             </h1>
         @else
