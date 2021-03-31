@@ -18,7 +18,7 @@ class OrdenReunion extends Model
     ];
     protected $rules = [
         'orden' => 'required|integer',
-        'descripcion' => 'required'
+        'descripcion' => 'required|max:120',
     ];
 
     public function Reunion(){
