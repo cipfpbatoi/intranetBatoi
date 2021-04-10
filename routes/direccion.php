@@ -34,6 +34,8 @@ Route::get('/falta', ['as' => 'falta.direccion.index', 'uses' => 'PanelFaltaCont
 Route::get('/falta/{falta}/resolve', ['as' => 'falta.resolve', 'uses' => 'FaltaController@resolve']);
 Route::get('/falta/{falta}/show', ['as' => 'falta.show', 'uses' => 'FaltaController@show']);
 Route::post('/falta/{falta}/refuse', ['as' => 'falta.refuse', 'uses' => 'FaltaController@refuse']);
+Route::post('/falta', ['as' => 'falta.store', 'uses' => 'FaltaController@store']);
+Route::put('/falta/{falta}/edit',['as' => 'falta.edit', 'uses' => 'FaltaController@update']);
 Route::get('/falta/{falta}/alta', ['as' => 'falta.alta', 'uses' => 'FaltaController@alta']);
 Route::get('/falta_itaca',['as' => 'faltaItaca.direccion.index', 'uses' => 'PanelFaltaItacaController@index']);
 Route::get('/falta_itaca/{falta}/resolve', ['as' => 'faltaItaca.resolve', 'uses' => 'FaltaItacaController@resolve']);

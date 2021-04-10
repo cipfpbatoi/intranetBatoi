@@ -7,7 +7,7 @@ use Jenssegers\Date\Date;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
-use Intranet\Entities\Grupo;
+use Intranet\Entities\Gestor;
 use Intranet\Entities\Modulo_ciclo;
 
 class Programacion extends Model
@@ -60,11 +60,6 @@ class Programacion extends Model
     {
         return $this->belongsTo(Profesor::class, 'profesor', 'dni');
     }
-
-
-
-
-
 
     public function getidModuloCicloOptions()
     {
@@ -125,6 +120,7 @@ class Programacion extends Model
             return $partido[0];
         }
     }
+
     public function getXdepartamentoAttribute(){
         return $this->Departament->literal??'';
     }
@@ -148,11 +144,6 @@ class Programacion extends Model
     }
     public static function resolve($id,$mensaje = null)
     {
-        $elemento = Programacion::findorFail($id);
-        $propietario = $elemento->Profesor?$elemento->Profesor->FullName:'';
-        Documento::crea($elemento,['tipoDocumento' => 'Programacion' ,'fichero' => $elemento->fichero,
-            'modulo'=>$elemento->ModuloCiclo->Modulo->literal,'propietario' => $propietario,
-            'descripcion'=>'Autorizada dia '. Hoy('d-m-Y'),'ciclo'=> $elemento->ciclo, 'tags' => 'Programació']);
         return static::putEstado($id, config('modelos.' . getClass(static::class) . '.resolve'), $mensaje);
     }
     

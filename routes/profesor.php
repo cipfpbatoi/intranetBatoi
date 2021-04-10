@@ -264,16 +264,16 @@ Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFc
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
 
 
-Route::resource('dual','DualAlumnoController',['except' => ['destroy', 'update', 'show','edit']]);
+Route::resource('dual','DualController',['except' => ['destroy', 'update', 'show','edit']]);
 Route::get('/dual/{id}/edit', ['as' => 'dual.edit', 'uses' => 'DualController@edit']);
 Route::put('/dual/{id}/edit', ['as' => 'dual.update', 'uses' => 'DualController@update']);
 Route::get('/dual/create', ['as' => 'dual.create', 'uses' => 'DualController@create']);
 Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@store']);
-Route::get('/dual/{id}/pdf/{informe}',['as' => 'dual.pdf', 'uses' => 'DualAlumnoController@informe']);
-Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualAlumnoController@destroy']);
-Route::get('/dual/{id}/anexeXIII',['as' => 'dual.anexeXIII', 'uses' => 'DualAlumnoController@printAnexeXIII']);
-Route::get('/dual/{id}/informe',['as' => 'dual.informe', 'uses' => 'DualAlumnoController@getInforme']);
-Route::post('/dual/{id}/informe',['as' => 'dual.firma', 'uses' => 'DualAlumnoController@putInforme']);
+Route::get('/dual/{id}/pdf/{informe}',['as' => 'dual.pdf', 'uses' => 'DualController@informe']);
+Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualController@destroy']);
+Route::get('/dual/{id}/anexeXIII',['as' => 'dual.anexeXIII', 'uses' => 'DualController@printAnexeXIII']);
+Route::get('/dual/{id}/informe',['as' => 'dual.informe', 'uses' => 'DualController@getInforme']);
+Route::post('/dual/{id}/informe',['as' => 'dual.firma', 'uses' => 'DualController@putInforme']);
 Route::get('/dual/anexeVI',['as'=>'dual.anexevi','uses'=>'DualController@printAnexeVI']);
 Route::get('/dual/anexeXIV',['as'=>'dual.anexexiv','uses'=>'DualController@printAnexeXIV']);
 
@@ -340,8 +340,6 @@ Route::get('/programacion/{programacion}/delete', ['as' => 'programacion.destroy
 Route::put('/programacion/{programacion}/edit', ['as' => 'programacion.store', 'uses' => 'ProgramacionController@update']);
 Route::post('/programacion/create', ['as' => 'programacion.create', 'uses' => 'ProgramacionController@store']);
 Route::get('/programacion/{programacion}/init', ['as' => 'programacion.init', 'uses' => 'ProgramacionController@init']);
-Route::post('/programacion/{programacion}/anexo', ['as' => 'programacion.storeanexo', 'uses' => 'ProgramacionController@storeanexo']);
-Route::get('/programacion/{programacion}/deleteanexo', ['as' => 'programacion.deleteanexo', 'uses' => 'ProgramacionController@deleteanexo']);
 Route::get('/programacion/{programacion}/email', ['as' => 'programacion.email', 'uses' => 'ProgramacionController@email']);
 
 //RUTAS TUTORIAS

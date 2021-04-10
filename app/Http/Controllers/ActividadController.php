@@ -9,6 +9,7 @@ use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\Actividad_profesor;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
+use Intranet\Services\FormBuilder;
 use Response;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
@@ -38,8 +39,7 @@ class ActividadController extends IntranetController
 
     protected function grid($todos,$modal=false)
     {
-        return $this->panel->renderModal($todos,$this->titulo,$this->chooseView('indexModal'),$this->createWithDefaultValues());
-
+        return $this->panel->render($todos,$this->titulo,$this->chooseView('indexModal'),new FormBuilder($this->createWithDefaultValues(),$this->formFields));
     }
 
 

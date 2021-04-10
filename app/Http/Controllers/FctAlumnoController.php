@@ -12,6 +12,7 @@ use Intranet\Entities\FctConvalidacion;
 use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use Intranet\Services\FormBuilder;
 
 class FctAlumnoController extends IntranetController
 {
@@ -51,9 +52,13 @@ class FctAlumnoController extends IntranetController
     public function nuevaConvalidacion()
     {
         $elemento = new FctConvalidacion();
-        $default = $elemento->fillDefautOptions(); // ompli caracteristiques dels camps
+        $formulario = new FormBuilder($elemento,[
+            'idAlumno' => ['type' => 'select'],
+            'asociacion' => ['type' => 'hidden'],
+            'horas' => ['type' => 'text'],
+        ]);
         $modelo = $this->model;
-        return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
+        return view($this->chooseView('create'), compact('formulario', 'modelo'));
     }
 
     public function storeConvalidacion(Request $request)

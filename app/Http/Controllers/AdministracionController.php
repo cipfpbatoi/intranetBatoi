@@ -57,25 +57,6 @@ class AdministracionController extends Controller
     }
 
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    protected function deleteProgramacionIndex()
-    {
-        $cuantas = Programacion::where('estado', 3)->where('curso', '!=', Curso())->count();
-        return view('programacion.deleteOld', compact('cuantas'));
-    }
-
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    protected function deleteProgramacion()
-    {
-        Programacion::where('estado', 4)->delete();
-        Programacion::where('curso', '!=', Curso())->update(['estado' => 4]);
-        return back();
-    }
-
-    /**
      * @return \Illuminate\Http\RedirectResponse
      */
     public function allApiToken()

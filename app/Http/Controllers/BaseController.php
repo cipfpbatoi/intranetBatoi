@@ -6,6 +6,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\Session;
+use Intranet\Services\FormBuilder;
 
 
 abstract class BaseController extends Controller
@@ -20,7 +21,7 @@ abstract class BaseController extends Controller
     protected $profile = true;
     protected $modal = false; //utilitza vista modal o ono per a insercions i modificats
     protected $search = null; //es gasta quan cal filtrar la cerca
-    
+    protected $formFields = null;
     /*  
      * Constructor
      *  asigna: perfil ,classe, panel grid per defecte
@@ -51,9 +52,8 @@ abstract class BaseController extends Controller
     
     protected function grid($todos,$modal=false)
     {
-
         if ($modal) {
-            return $this->panel->renderModal($todos, $this->titulo, $this->chooseView('indexModal'), $this->createWithDefaultValues());
+            return $this->panel->render($todos, $this->titulo, $this->chooseView('indexModal'), new FormBuilder($this->createWithDefaultValues(),$this->formFields));
         }
         return $this->panel->render($todos,$this->titulo,$this->chooseView('index'));
     }
@@ -114,17 +114,7 @@ abstract class BaseController extends Controller
             $this->panel->setPestana('profile', false, null, null, null, null, $this->parametresVista);
         }
     }
-    
-    protected function crea_pestanas($estados,$vista,$activa=null,$sustituye = null){
-        if (!$activa){
-            $activa = Session::get('pestana')?Session::get('pestana'):0;
-        }
-        foreach ($estados as $key => $estado) {
-            $sustituto = ($key == $sustituye)?1:null;
-            $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,
-                ['estado',$key],null,$sustituto,$this->parametresVista);
-        }
-    }
+
     
 
     

@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
 use Response;
 
@@ -79,10 +80,9 @@ trait traitCRUD{
 
     public function create($default = [])
     {
-        $elemento = $this->createWithDefaultValues();
-        $default = $elemento->fillDefautOptions(); // ompli caracteristiques dels camps
+        $formulario = new FormBuilder($this->createWithDefaultValues(),$this->formFields);
         $modelo = $this->model;
-        return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
+        return view($this->chooseView('create'), compact('formulario', 'modelo'));
     }
 
 
@@ -119,10 +119,9 @@ trait traitCRUD{
      */
     public function edit($id)
     {
-        $elemento = $this->class::findOrFail($id);
-        $default = $elemento->fillDefautOptions();
+        $formulario = new FormBuilder($this->class::findOrFail($id),$this->formFields);
         $modelo = $this->model;
-        return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
+        return view($this->chooseView('edit'), compact('formulario', 'modelo'));
     }
 
     /*

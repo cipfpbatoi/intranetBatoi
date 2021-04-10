@@ -13,26 +13,14 @@ class Incidencia extends Model
 
     protected $table = 'incidencias';
     public $timestamps = false;
-    protected $fillable = ['tipo','espacio', 'material', 'descripcion', 'idProfesor',  'prioridad', 'Observaciones','fecha'];
+    protected $fillable = ['tipo','espacio', 'material', 'descripcion', 'idProfesor',  'prioridad', 'observaciones','fecha'];
     protected $descriptionField = 'descripcion';
 
     use BatoiModels,
         TraitEstado;
 
-    protected $rules = [
-        'descripcion' => 'required',
-        'tipo' => 'required',
-        'idProfesor' => 'required',
-        'prioridad' => 'required',
-        'fecha' => 'date',
-    ];
     protected $inputTypes = [
-        'espacio' => ['type' => 'select'],
-        'material' => ['type' => 'select'],
-        'descripcion' => ['type' => 'textarea'],
-        'idProfesor' => ['type' => 'hidden'],
-        'tipo' => ['type' => 'select'],
-        'prioridad' => ['type' => 'select'],
+        'fecha' => ['type' => 'date']
     ];
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,

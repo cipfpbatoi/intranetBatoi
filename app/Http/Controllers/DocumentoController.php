@@ -2,24 +2,17 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 use DB;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Documento;
 use Intranet\Entities\TipoDocumento;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Programacion;
-use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Fct;
-use Styde\Html\Facades\Alert;
-use Intranet\Botones\Panel;
+use Intranet\Services\FormBuilder;
+use Intranet\Services\Gestor;
 use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Ciclo;
-use Illuminate\Support\Facades\Route;
 
 class DocumentoController extends IntranetController
 {
@@ -33,7 +26,20 @@ class DocumentoController extends IntranetController
     protected $panel;
     protected $modal = false;
     protected $profile = false;
-    
+    protected $formFields = ['tipoDocumento' => ['type' => 'select'],
+        'rol' => ['type' => 'hidden'],
+        'propietario' => ['disabled' => 'disabled'],
+        'grupo' => ['type' => 'select'],
+        'supervisor' => ['type' => 'hidden'],
+        'ciclo' => ['type' => 'hidden'],
+        'detalle' => ['type' => 'textarea'],
+        'curso' => ['disabled'=> 'disabled'],
+        'descripcion' => ['type' => 'text'],
+        'enlace' => ['type' => 'text'],
+        'fichero' => ['type' => 'file'],
+        'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']],
+    ];
+
 
 
     public function search()
@@ -55,21 +61,19 @@ class DocumentoController extends IntranetController
 
     public function store(Request $request, $fct = null)
     {
-        if ($request->has('nota')) {
-            $this->validate($request,['nota' => 'numeric|min:1|max:10']);
-            $fct = AlumnoFct::findOrFail($fct);
-            $fct->calProyecto = $request->nota;
-            if ($fct->calificacion < 1) {
-                $fct->calificacion = 1;
-            }
-            $fct->save();
+        if ($request->has('nota') and $this->validate($request,['nota' => 'numeric|min:1|max:10'])) {
+            $this->saveNota($request->nota,$fct);
         }
-        if ($request->enlace) {
-            $except = ['nota','fichero'];
-        } else {
-            $except = ['nota'];
+        return parent::store(subsRequest($request->duplicate(null, $request->except(['nota'])), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
+    }
+
+    private function saveNota($nota,$fct){
+        $fctAl = AlumnoFct::findOrFail($fct);
+        $fctAl->calProyecto = $nota;
+        if ($fctAl->calificacion < 1) {
+            $fctAl->calificacion = 1;
         }
-        return parent::store(subsRequest($request->duplicate(null, $request->except($except)), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
+        $fctAl->save();
     }
 
     protected function createWithDefaultValues($default=[]){
@@ -81,20 +85,24 @@ class DocumentoController extends IntranetController
         if ($fct = AlumnoFct::findOrFail($idFct)) {
             
             $elemento = $this->createWithDefaultValues();
-            $elemento->addFillable('nota');
+            $elemento->supervisor = AuthUser()->FullName;
+            $elemento->propietario = $fct->Alumno->FullName;
             $elemento->tipoDocumento = 'Proyecto';
             $elemento->idDocumento = '';
             $elemento->ciclo = Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo;
-            $elemento->supervisor = AuthUser()->FullName;
-            $elemento->propietario = $fct->Alumno->FullName;
-            $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
-            $elemento->setInputType('grupo', ['type' => 'hidden']);
-            $elemento->setInputType('enlace', ['type' => 'hidden']);
-            $elemento->setRule('nota','required');
-            $default = $elemento->fillDefautOptions();
+            $formulario = new FormBuilder($elemento,['tipoDocumento' => ['disabled' => 'disabled'],
+                'propietario' => ['disabled' => 'disabled'],
+                'curso' => ['disabled'=> 'disabled'],
+                'supervisor' => ['type' => 'hidden'],
+                'descripcion' => ['type' => 'text'],
+                'detalle' => ['type' => 'textarea'],
+                'nota' => ['type' => 'text'],
+                'fichero' => ['type' => 'file'],
+                'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']],
+            ]);
             $modelo = $this->model;
             Session::put('redirect', 'PanelFctAvalController@index');
-            return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
+            return view($this->chooseView('create'), compact('formulario', 'modelo'));
         } else {
             return back();
         }
@@ -111,44 +119,54 @@ class DocumentoController extends IntranetController
         $elemento->supervisor = AuthUser()->FullName;
         $elemento->propietario = $elemento->supervisor;
         $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor,PR04-01,PR04-02';
-        $elemento->addFillable('instrucciones',true);
         $elemento->instrucciones = 'Pujar en un sols document comprimit: Entrevista Alumnat i Entrevista Instructor';
-        $elemento->setInputType('instrucciones', ['disabled' => 'disabled']);
-        $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
-        $elemento->setInputType('grupo', ['disabled' => 'disabled']);
-        $elemento->setInputType('enlace', ['type' => 'hidden']);
-        $default = $elemento->fillDefautOptions();
+        $formulario = new FormBuilder($elemento,['tipoDocumento' => ['disabled' => 'disabled'],
+            'instrucciones' => ['disabled' => 'disabled'],
+            'curso' => ['disabled'=> 'disabled'],
+            'rol' => ['type' => 'hidden'],
+            'propietario' => ['disabled' => 'disabled'],
+            'grupo' => ['disabled' => 'disabled'],
+            'supervisor' => ['type' => 'hidden'],
+            'ciclo' => ['type' => 'hidden'],
+            'detalle' => ['type' => 'textarea'],
+            'descripcion' => ['type' => 'text'],
+            'fichero' => ['type' => 'file'],
+            'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']],
+        ]);
         $modelo = $this->model;
         Session::put('redirect', 'FctController@index');
-        return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
+        return view($this->chooseView('create'), compact('formulario', 'modelo'));
     }
 
     public function edit($id)
     {
         $elemento = Documento::findOrFail($id);
-        $elemento->setInputType('tipoDocumento', ['disabled' => 'disabled']);
-        $elemento->setInputType('grupo', ['type' => 'hidden']);
-        if ($elemento->enlace){
-            $elemento->setInputType('fichero', ['disableAll' => 'on']);
-        } else {
-            $elemento->setInputType('enlace', ['type' => 'hidden']);
-        }
-        $default = $elemento->fillDefautOptions();
+        $formulario = $elemento->enlace?
+            $formulario = new FormBuilder($elemento, ['tipoDocumento' => ['disabled' => 'disabled'],
+                'fichero' => ['type' => ['disableAll' => 'on']],
+                'propietario' => ['disabled' => 'disabled'],
+                'rol' => ['type' => 'hidden'],
+                'detalle' => ['type' => 'textarea'],
+                'curso' => ['disabled' => 'disabled'],
+                'descripcion' => ['type' => 'text'],
+                'enlace' => ['type' => 'text'],
+                'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]]):
+            new FormBuilder($elemento, ['tipoDocumento' => ['disabled' => 'disabled'],
+                'propietario' => ['disabled' => 'disabled'],
+                'rol' => ['type' => 'hidden'],
+                'detalle' => ['type' => 'textarea'],
+                'curso' => ['disabled' => 'disabled'],
+                'descripcion' => ['type' => 'text'],
+                'fichero' => ['type' => 'file'],
+                'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]]);
         $modelo = $this->model;
-        return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
+        return view($this->chooseView('edit'), compact('formulario', 'modelo'));
     }
     
     public function show($id)
     {
-        $doc = Documento::find($id);
-        if (in_array($doc->rol, RolesUser(AuthUser()->rol))) {
-            if ($doc->enlace != '') {
-                return redirect($doc->enlace);
-            } else {
-                return parent::document($id);
-            }
-        }
-        return back();
+        $gestor = new Gestor(Documento::find($id));
+        return $gestor->render();
     }
 
     public function destroy($id)

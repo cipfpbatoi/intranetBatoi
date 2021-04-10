@@ -68,4 +68,16 @@ trait traitPanel{
         $this->panel->setBoton('profile', new BotonIcon("$this->model.unauthorize", ['class' => 'btn-danger unauthorize', 'where' => ['estado', '==', '2']], $enlace));
         $this->panel->setBoton('profile', new BotonIcon("$this->model.refuse", ['class' => 'btn-danger refuse', 'where' => ['estado', '==', '1']], $enlace));
     }
+
+
+    protected function crea_pestanas($estados,$vista,$activa=null,$sustituye = null){
+        if (!$activa){
+            $activa = Session::get('pestana')?Session::get('pestana'):0;
+        }
+        foreach ($estados as $key => $estado) {
+            $sustituto = ($key == $sustituye)?1:null;
+            $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,
+                ['estado',$key],null,$sustituto,$this->parametresVista);
+        }
+    }
 }

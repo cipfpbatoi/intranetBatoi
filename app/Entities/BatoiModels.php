@@ -105,6 +105,10 @@ trait BatoiModels
         return isset($this->inputTypes[$campo]) ? $this->inputTypes[$campo] : ['type' => 'text'];
     }
 
+    public function getInputTypes(){
+        return $this->inputTypes;
+    }
+
     /**
      * @return bool
      */
@@ -194,11 +198,11 @@ trait BatoiModels
     public function fillAll(Request $request)
     {
         $fillable = $this->notFillable?array_diff($this->fillable,$this->notFillable):$this->fillable;
-
         foreach ($fillable as $key)  {
             $value = $request->$key;
             $this->$key = $this->fillField($key,$value);
         }
+
         $this->save();
         
         if ($request->hasFile('fichero')) {
@@ -210,61 +214,7 @@ trait BatoiModels
     }
 
 
-    private function aspect(&$parametres,$originalType){
-        switch ($originalType){
-            case 'multiple' :
-                $finalType='select';
-                $parametres[] = 'multiple';
-                break;
-            case 'name':
-            case 'card':
-            case 'time':
-            case 'date':
-            case 'datetime':
-                $parametres['template'] = 'themes/bootstrap/fields/'.$originalType;
-                $finalType='text';
-                break;
-            default:
-                $finalType = $originalType;
-        }
-        return $finalType;
-    }
 
-    /**
-     * @return array
-     */
-    public function fillDefautOptions()
-    {
-        $InputType = [];
-        foreach ($this->getfillable() as $property) {
-            $parametres = [];
-            $inputTpe = $this->getInputType($property);
-            $InputType[$property]['type'] = $this->aspect($parametres,$inputTpe['type'] ?? 'text');
-            $ph = !strpos(trans('validation.attributes.' . $property), 'alidation.') ? trans('validation.attributes.' . $property) : ucwords($property);
-            
-            $parametres['id'] = $property . '_id';
-            $parametres['ph'] = $ph;
-            $parametres['class'] = 'col-md-7 col-xs-12 ' . $InputType[$property]['type'];
-            
-            $InputType[$property]['default'] = $inputTpe['default'] ?? null;
-            
-            if (isset($inputTpe['disabled'])){
-                $parametres = array_merge($parametres, ['disabled' => 'disabled']);
-            }
-            if (isset($inputTpe['disableAll'])){
-                 $parametres = array_merge($parametres, ['disabled' => 'on']);
-            }
-            if ($this->isRequired($property)){
-                $parametres = array_merge($parametres, ['required']);
-            }
-            if (isset($inputTpe['inline'])){
-                $parametres = array_merge($parametres, ['inline' => 'inline']);
-            }
-            
-            $InputType[$property]['params'] = $parametres;
-        }
-        return($InputType);
-    }
 
 
     /**

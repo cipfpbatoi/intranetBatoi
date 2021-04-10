@@ -2,9 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\FormBuilder;
 use Response;
 
 
@@ -29,21 +27,16 @@ trait traitSCRUD{
 
     public function create($default = [])
     {
-        $elemento = $this->createWithDefaultValues();
-        $default = $elemento->fillDefautOptions(); // ompli caracteristiques dels camps
+        $formulario = new FormBuilder($this->createWithDefaultValues(),$this->formFields);
         $modelo = $this->model;
-        return view('intranet.create', compact('elemento', 'default', 'modelo'));
+        return view('intranet.create', compact('formulario', 'modelo'));
     }
 
-    /*
-     * edit($id) return vista edit 
-     */
     public function edit($id)
     {
-        $elemento = $this->class::findOrFail($id);
-        $default = $elemento->fillDefautOptions();
+        $formulario = new FormBuilder($this->class::findOrFail($id),$this->formFields);
         $modelo = $this->model;
-        return view('intranet.edit', compact('elemento', 'default', 'modelo'));
+        return view('intranet.edit', compact('formulario', 'modelo'));
     }
 
 }

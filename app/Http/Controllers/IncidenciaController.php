@@ -3,26 +3,21 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Incidencia;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonBasico;
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\IncidenciaRequest;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\OrdenTrabajo;
-use Jenssegers\Date\Date;
+use Intranet\Services\FormBuilder;
+
 
 /**
  * Class IncidenciaController
  * @package Intranet\Http\Controllers
  */
-class IncidenciaController extends IntranetController
+class IncidenciaController extends ModalController
 {
 
     use traitImprimir,traitAutorizar;
 
-    /**
-     * @var string
-     */
-    protected $perfil = 'profesor';
     /**
      * @var string
      */
@@ -35,10 +30,16 @@ class IncidenciaController extends IntranetController
      * @var string
      */
     protected $descriptionField = 'descripcion';
-    /**
-     * @var bool
-     */
-    protected $modal = true;
+    protected $formFields = [
+        'tipo' => ['type' => 'select'],
+        'espacio' => ['type' => 'select'],
+        'material' => ['type' => 'select'],
+        'descripcion' => ['type' => 'textarea'],
+        'idProfesor' => ['type' => 'hidden'],
+        'prioridad' => ['type' => 'select'],
+        'observaciones' => ['type' => 'text'],
+        'fecha' => ['type' => 'date']
+    ];
 
 
     protected function search(){
@@ -61,7 +62,7 @@ class IncidenciaController extends IntranetController
                 ->get()
                 ->first();
 
-        if (!$orden) $this->generateOrder($incidencia);
+        if (!$orden) $orden = $this->generateOrder($incidencia);
 
         $incidencia->orden = $orden->id;
         $incidencia->save();
@@ -73,13 +74,14 @@ class IncidenciaController extends IntranetController
     /**
      * @param $incidencia
      */
-    protected function generateOrder(Incidencia $incidencia){
+    protected function generateOrder(Incidencia $incidencia):OrdenTrabajo{
         $orden = new OrdenTrabajo();
         $orden->idProfesor = AuthUser()->dni;
         $orden->estado = 0;
         $orden->tipo = $incidencia->tipo;
         $orden->descripcion = 'Ordre oberta el dia '.Hoy().' pel profesor '.AuthUser()->FullName.' relativa a '.$incidencia->Tipos->literal;
         $orden->save();
+        return $orden;
     }
 
     /**
@@ -102,21 +104,26 @@ class IncidenciaController extends IntranetController
     public function edit($id)
     {
         $elemento = Incidencia::findOrFail($id);
-        $elemento->setInputType('espacio', ['disabled' => 'disabled']);
-        $elemento->setInputType('material', ['disabled' => 'disabled']);
-        $default = $elemento->fillDefautOptions();
+        $formulario = new FormBuilder($elemento,[
+            'espacio' => ['disabled' => 'disabled'],
+            'material' => ['disabled' => 'disabled'],
+            'descripcion' => ['type' => 'textarea'],
+            'idProfesor' => ['type' => 'hidden'],
+            'tipo' => ['type' => 'select'],
+            'prioridad' => ['type' => 'select'],
+            'observaciones' => ['type' => 'text'],
+            'fecha' => ['type' => 'date']
+        ]);
         $modelo = $this->model;
-        return view('intranet.edit', compact('elemento', 'default', 'modelo'));
+        return view('intranet.edit', compact('formulario',  'modelo'));
     }
 
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function store(Request $request)
+
+    public function store(IncidenciaRequest $request)
     {
-        $id = $this->realStore($request);
-        $this->init($id);
+        $new = new Incidencia();
+        $new->fillAll($request);
+        $this->init($new->id);
         return $this->redirect();
     }
 
@@ -124,11 +131,10 @@ class IncidenciaController extends IntranetController
      *  update (Request,$id) return redirect
      * guarda els valors del formulari
      */
-    public function update(Request $request, $id)
+    public function update(IncidenciaRequest $request, $id)
     {
-        $elemento =  $this->class::findOrFail($id);
+        $elemento =  Incidencia::findOrFail($id);
         $tipo = $elemento->tipo;
-        $this->validateAll($request, $elemento);    // valida les dades
         $elemento->fillAll($request);
         if ($elemento->tipo != $tipo){
             $elemento->responsable =  $elemento->Tipos->idProfesor;

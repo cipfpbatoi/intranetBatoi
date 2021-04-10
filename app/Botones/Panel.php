@@ -3,6 +3,7 @@
 namespace Intranet\Botones;
 
 use HTML;
+use Intranet\Services\FormBuilder;
 
 class Panel
 {
@@ -29,39 +30,18 @@ class Panel
     }
 
 
-    public function render($todos,$titulo,$vista){
+    public function render($todos,$titulo,$vista,$formulario=null){
         if (!$this->countPestana()) {
             return redirect()->route('home');
         }
 
         $panel = $this->feedPanel($todos, $titulo);
 
-        return view($vista,compact('panel'));
+        return view($vista,compact('panel','formulario'));
 
     }
 
-    public function renderModal($todos,$titulo,$vista,$elemento){
-        if (!$this->countPestana()) {
-            return redirect()->route('home');
-        }
 
-        $panel = $this->feedPanel($todos, $titulo);
-        $default = $elemento->fillDefautOptions();
-        return view($vista,compact('panel','elemento','default'));
-    }
-
-    public function modalRender($todos,$titulo,$vista,$elemento,$default){
-        if (!$this->countPestana()) {
-            return redirect()->route('home');
-        }
-
-        $panel = $this->feedPanel($todos, $titulo);
-
-        return view($vista,compact('panel','elemento','default'));
-    }
-
-
-    
     public function setBotonera($index = [], $grid = [], $profile = [])
     {
         if ($index != []) {

@@ -13,8 +13,6 @@ use Intranet\Http\Requests\EspacioRequest;
  */
 class EspacioController extends ModalController
 {
-
-    use traitAutomaticForm;
     /**
      * @var string
      */
@@ -23,13 +21,14 @@ class EspacioController extends ModalController
      * @var array
      */
     protected $gridFields = ['Xdepartamento', 'aula', 'descripcion', 'gMati', 'gVesprada'];
+
     protected $formFields = [
-        'aula' => 'text',
-        'descripcion' => 'text',
-        'idDepartamento' => 'select',
-        'gMati' => 'select',
-        'gVesprada' => 'select',
-        'reservable' => 'checkbox'
+        'aula' => ['type' => 'text'],
+        'descripcion' => ['type' => 'text'],
+        'idDepartamento' => ['type' => 'select'],
+        'gMati' => ['type' => 'select'],
+        'gVesprada' => ['type' => 'select'],
+        'reservable' => ['type' => 'checkbox'],
     ];
 
 

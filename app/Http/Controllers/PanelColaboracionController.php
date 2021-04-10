@@ -26,7 +26,7 @@ use Illuminate\Support\Collection;
  */
 class PanelColaboracionController extends IntranetController
 {
-
+    use traitPanel;
     /**
      * @var array
      */
@@ -97,8 +97,6 @@ class PanelColaboracionController extends IntranetController
             $this->titulo = ['quien' => $colaboracions->first()->Ciclo->literal];
         }
         return $colaboracions;
-
-
     }
 
     /**

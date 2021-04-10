@@ -3,7 +3,7 @@
 <title>{{trans("models.$modelo.edit")}}</title>
 @endsection
 @section('content')
-@include('intranet.partials.components.formCreate',['method'=>'PUT'])
+    {{ $formulario->render('put') }}
 @endsection
 @section('titulo')
 {{trans("models.$modelo.edit")}} 
@@ -12,8 +12,6 @@
 @if (file_exists("js/$modelo/edit.js"))
     {{ Html::script("/js/$modelo/edit.js") }}
 @endif
-@if ($elemento->existsDatepicker())
 {{ Html::script("/js/datepicker.js") }}
-@endif
 @endsection
 

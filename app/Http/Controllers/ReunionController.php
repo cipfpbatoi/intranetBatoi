@@ -7,6 +7,7 @@ use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Asistencia;
+use Intranet\Services\FormBuilder;
 use Response;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\TipoReunion;
@@ -102,40 +103,34 @@ class ReunionController extends IntranetController
                 $tProfesores[$profesor->dni] = $profesor->apellido1 . ' ' . $profesor->apellido2 . ',' . $profesor->nombre;
             }
             $sProfesores = $elemento->profesores()->orderBy('apellido1')->orderBy('apellido2')->get(['dni', 'apellido1', 'apellido2', 'nombre']);
-
-            $elemento->setInputType('tipo', ['type' => 'hidden']);
-            $elemento->setInputType('grupo', ['type' => 'hidden']);
-            $default = $elemento->fillDefautOptions();
+            $formulario = new FormBuilder($elemento,[
+                'idProfesor' => ['type' => 'hidden'],
+                'numero' => ['type' => 'select'],
+                'tipo' => ['type' => 'hidden'],
+                'grupo' => ['type' => 'hidden'],
+                'curso' => ['disabled' => 'disabled'],
+                'fecha' => ['type' => 'datetime'],
+                'descripcion' => ['type' => 'text'],
+                'objetivos' => ['type' => 'textarea'],
+                'idEspacio' => ['type' => 'select'],
+                'fichero' => ['type' => 'file'],
+            ]);
             $modelo = $this->model;
             if ($elemento->informe){
-                return $this->editAvaluacioFinal($elemento,compact( 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
+                $select = $elemento->isSemi?'auxiliares.promocionaSemi':'auxiliares.promociona';
+                $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
+                $tAlumnos = $this->tAlumnos($elemento,hazArray($sAlumnos,'nia'));
+                return view('reunion.asistencia', compact('formulario', 'modelo', 'tProfesores', 'sProfesores', 'ordenes','tAlumnos','sAlumnos','select'));
             }
-            return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
+            return view('reunion.asistencia', compact('formulario', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
         }
     }
 
-
     private function tAlumnos($reunion,$sAlumnos){
         $grupo = $reunion->grupoClase;
-        if ($reunion->avaluacionFinal)
-            return hazArray($grupo->Alumnos->whereNotIn('nia',$sAlumnos),'nia','nameFull');
-        if ($grupo->curso == 2)
-            return hazArray($grupo->Alumnos->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(),'idAlumno'))
-                ->whereNotIn('nia',$sAlumnos),'nia','nameFull');
-        if ($grupo->isSemi)
-                return hazArray($grupo->Alumnos->whereNotIn('nia',$sAlumnos),'nia','nameFull');
-        if ($actaFinal = Reunion::actaFinal($reunion->idProfesor)->first())
-            return hazArray($actaFinal->noPromocionan->whereNotIn('nia',$sAlumnos),'nia','nameFull');
         return hazArray($grupo->Alumnos->whereNotIn('nia',$sAlumnos),'nia','nameFull');
     }
 
-    private function editAvaluacioFinal($elemento,$entorno){
-        extract($entorno);
-        $select = $elemento->avaluacioFinal?'auxiliares.promociona':'auxiliares.promocionExtraordinaria';
-        $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
-        $tAlumnos = $this->tAlumnos($elemento,hazArray($sAlumnos,'nia'));
-        return view('reunion.asistencia', compact('elemento', 'default', 'modelo', 'tProfesores', 'sProfesores', 'ordenes','tAlumnos','sAlumnos','select'));
-    }
 
     public function altaProfesor(Request $request, $reunion_id)
     {

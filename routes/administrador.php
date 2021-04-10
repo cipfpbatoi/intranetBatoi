@@ -40,10 +40,6 @@ Route::get('/profesor/{idProfesor}/change',['as' =>'profesor.change','uses' => '
 Route::get('/nuevoCurso',['as' => 'curso.nuevo.index', 'uses' => 'AdministracionController@nuevoCursoIndex']);
 Route::post('/nuevoCurso',['as' => 'curso.nuevo', 'uses' => 'AdministracionController@nuevoCurso']);
 
-// esborra programacions obsoletes
-Route::get('/programacion/deleteOld',['as' => 'programacion.deleteCall', 'uses' => 'AdministracionController@deleteProgramacionIndex']);
-Route::post('/programacion/deleteOld',['as' => 'programacion.deleteOld', 'uses' => 'AdministracionController@deleteProgramacion']);
-
 // modificar funcions en l'horari
 Route::resource('/horario', 'HorarioController', ['except' => ['destroy', 'update','create']]);
 Route::get('/horario/{profesor}/cambiar',['uses'=>'HorarioController@modificarHorario']);

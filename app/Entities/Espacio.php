@@ -17,20 +17,7 @@ class Espacio extends Model
 
     use BatoiModels;
 
-    protected $fillable = [
-        'aula',
-        'descripcion',
-        'idDepartamento',
-        'gMati',
-        'gVesprada',
-        'reservable'
-    ];
-    protected $inputTypes = [
-        'idDepartamento' => ['type' => 'select'],
-        'gMati' => ['type' => 'select'],
-        'gVesprada' => ['type' => 'select'],
-        'reservable' => ['type' => 'checkbox'],
-    ];
+
 
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,

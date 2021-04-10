@@ -10,6 +10,7 @@ use Intranet\Entities\Alumno;
 use Intranet\Entities\Profesor;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
+use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\Mail as myMail;
@@ -53,22 +54,25 @@ class FctController extends IntranetController
     use traitImprimir;
 
 
-    /**
-     * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
+
     public function edit($id)
     {
-        $elemento = Fct::findOrFail($id);
-        $elemento->setInputType('idAlumno', ['type' => 'hidden','disableAll' => 'disableAll']);
-        $elemento->setInputType('idColaboracion', ['disabled' => 'disabled']);
-        $elemento->setInputType('desde',['type'=>'hidden']);
-        $elemento->setInputType('hasta',['type'=>'hidden']);
-        $elemento->setInputType('horas',['type'=>'hidden']);
-        $default = $elemento->fillDefautOptions();
+        $formulario = new FormBuilder(Fct::findOrFail($id),['idInstructor' => 'select']);
         $modelo = $this->model;
-        
-        return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
+        return view($this->chooseView('edit'), compact('formulario', 'modelo'));
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, $id)
+    {
+        $fct = Fct::findOrFail($id);
+        $fct->idInstructor = $request->idInstructor;
+        $fct->save();
+        return $this->redirect();
     }
 
 
@@ -219,16 +223,7 @@ class FctController extends IntranetController
 
 
 
-    /**
-     * @param Request $request
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function update(Request $request, $id)
-    {
-        parent::update($request, $id);
-        return $this->redirect();
-    }
+
 
     /**
      * @param Request $request

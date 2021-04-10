@@ -7,7 +7,7 @@
     @include('reunion.partials.editar')
     @include('reunion.partials.ordenes')
     @include('reunion.partials.profesores')
-    @if ($elemento->informe)
+    @if ($formulario->getElemento()->informe)
         @include('reunion.partials.alumnos')
     @endif
 </div>
@@ -17,7 +17,7 @@
     @lang("models.Reunion.detalle")
 @endsection
 @section('scripts')
-    @if ($elemento->avaluacioFinal || $elemento->extraOrdinaria )
+    @if ($formulario->getElemento()->informe )
         <script src="/js/Reunion/valoracioAlumnat.js"></script>
     @endif
 <script src="/js/Reunion/checkAsistencia.js"></script>

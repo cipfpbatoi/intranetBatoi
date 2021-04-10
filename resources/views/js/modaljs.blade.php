@@ -1,7 +1,4 @@
 @include('js.tablesjs')
-@if ($elemento->existsDatepicker())
-    {{ Html::script("/js/datepicker.js") }}
-@endif
 @if (file_exists('js/'.$panel->getModel().'/grid.js'))
     {{ HTML::script('/js/'.$panel->getModel().'/grid.js') }}
 @else
@@ -17,3 +14,4 @@
 @endif
 {{ HTML::script('/js/delete.js') }}
 {{ HTML::script('/js/indexModal.js') }}
+{{ Html::script("/js/datepicker.js") }}

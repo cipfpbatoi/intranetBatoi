@@ -21,6 +21,7 @@ use Illuminate\Http\Request;
 
 
 Route::group(['middleware' => 'auth:api'], function() {
+    Route::resource('dual', 'DualController', ['except' => ['edit', 'create']]);
     Route::get('alumnoFct/{dni}/misAlumnos','AlumnoFctController@misAlumnos');
     Route::resource('actividad', 'ActividadController', ['except' => ['edit', 'create']]);
     Route::resource('programacion', 'ProgramacionController', ['except' => ['edit', 'create']]);

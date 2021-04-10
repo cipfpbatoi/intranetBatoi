@@ -37,13 +37,12 @@ class Reunion extends Model
     ];
     protected $inputTypes = [
         'idProfesor' => ['type' => 'hidden'],
-        //    'select' => ['type' => 'hidden'],
         'numero' => ['type' => 'select'],
         'tipo' => ['type' => 'select'],
         'grupo' => ['type' => 'select'],
         'curso' => ['disabled' => 'disabled'],
         'fecha' => ['type' => 'datetime'],
-        'objectivos' => ['type' => 'textarea'],
+        'objetivos' => ['type' => 'textarea'],
         'idEspacio' => ['type' => 'select'],
         'fichero' => ['type' => 'file'],
     ];
@@ -214,9 +213,10 @@ class Reunion extends Model
     }
     public function getInformeAttribute(){
         if ($this->extraOrdinaria) return true;
-        if (!$this->avaluacionFinal) return false;
-        if ($this->grupoClase->curso == 2) return false;
-        return true;
+        return false;
+    }
+    public function getIsSemiAttribute(){
+        return $this->GrupoClase->isSemi;
     }
 
 }

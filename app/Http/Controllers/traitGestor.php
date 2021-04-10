@@ -2,8 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\Storage;
+use Intranet\Services\Gestor;
 use Response;
 
 
@@ -15,13 +14,8 @@ trait traitGestor{
     */
     public function gestor($id)
     {
-        $documento = $this->class::findOrFail($id)->idDocumento;
-        if ($documento) {
-            return redirect("/documento/$documento/show");
-        }
-
-        Alert::danger(trans("messages.generic.nodocument"));
-        return back();
+        $gestor = new Gestor($this->class::findOrFail($id));
+        return $gestor->render();
     }
     
 }

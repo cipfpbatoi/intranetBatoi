@@ -12,18 +12,18 @@
                     <td><span class='input'  name='descripcion'>{!! $orden->descripcion !!}</span></td> 
                     <td><span class='textarea' name='resumen'>{!! $orden->resumen !!}</span></td> 
                     <td><span class='botones'>
-                            @if ($elemento->modificable)
-                                <a href="/reunion/{!!$elemento->id!!}/borrarOrden/{!! $orden->id !!}" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a>
+                            @if ($formulario->getElemento()->modificable)
+                                <a href="/reunion/{!!$formulario->getElemento()->id!!}/borrarOrden/{!! $orden->id !!}" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a>
                             @endif
                             <a href="#" class="editGrupo">{!! Html::image('img/edit.png',trans("messages.buttons.edit"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.edit"))) !!}</a>
                         </span>
                     </td>
                 </tr>
                 @endforeach
-                @if ($elemento->modificable)
-                <form method="POST" class="agua" action="/reunion/{!!$elemento->id!!}/nuevoOrden">
+                @if ($formulario->getElemento()->modificable)
+                <form method="POST" class="agua" action="/reunion/{!!$formulario->getElemento()->id!!}/nuevoOrden">
                     {{ csrf_field() }}
-                    <input type='hidden' name='idReunion' value="{!!$elemento->id!!}">
+                    <input type='hidden' name='idReunion' value="{!!$formulario->getElemento()->id!!}">
                     <tr>
                         <td><input type='text' required name='orden' class="form-control"></td>
                         <td><input type='text' required name='descripcion' class="form-control"></td>

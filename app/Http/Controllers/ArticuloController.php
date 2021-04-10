@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
 use Intranet\Http\Requests\ArticuloRequest;
 use Intranet\Entities\Articulo;
 
@@ -39,6 +40,11 @@ class ArticuloController extends ModalController
         return $this->redirect();
     }
 
+    protected function borrarFichero($fichero){
+        if (Storage::disk('public')->exists($fichero)) {
+            Storage::disk('public')->delete($fichero);
+        }
+    }
 
 
 }

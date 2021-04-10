@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\Panel;
-use Illuminate\Support\Facades\Session;
+use Intranet\Services\FormBuilder;
 use Response;
 
 
@@ -16,7 +16,7 @@ abstract class ModalController extends Controller
     protected $titulo = []; // paràmetres per al titol de la vista
     protected $profile = true; // se mostra profile o no
     protected $redirect = null;  // pàgina a la que redirigir després de inserció o modificat
-    protected $formFields = [];
+    protected $formFields = null;
     /*
      * Constructor
      *  asigna: perfil ,classe, panel grid per defecte
@@ -40,8 +40,16 @@ abstract class ModalController extends Controller
                 //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
         $this->iniPestanas();
-        return $this->render($this->createWithDefaultValues());
+        return $this->grid();
 
+    }
+
+    protected function grid(){
+        return $this->panel->render(
+            $this->search(),
+            $this->titulo,
+            $this->vista ?? 'intranet.indexModal',
+            new FormBuilder($this->createWithDefaultValues(),$this->formFields));
     }
 
 
@@ -90,21 +98,5 @@ abstract class ModalController extends Controller
     {
         return redirect()->action($this->model . 'Controller@index'); //defecto
     }
-
-    /**
-     * @param $elemento
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     */
-    public function render($elemento)
-    {
-        // S'hauria de quedar el de dalt
-        if (method_exists($this, 'fillDefaultOptionsToForm')) {
-            $default = $this->fillDefaultOptionsToForm();
-            return $this->panel->modalRender($this->search(), $this->titulo, $this->vista ?? 'intranet.indexModal', $elemento, $default);
-        } else {
-            return $this->panel->renderModal($this->search(), $this->titulo, $this->vista ?? 'intranet.indexModal', $elemento);
-        }
-    }
-
 
 }

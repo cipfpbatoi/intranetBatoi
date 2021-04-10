@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Support\Facades\Session;
+use Intranet\Services\Gestor;
 
 trait TraitEstado
 {
@@ -20,6 +21,16 @@ trait TraitEstado
 
     private static function makeDocument($elemento){
         if ($elemento->fichero != ''){
+            $gestor = new Gestor($elemento);
+            $gestor->save([
+                'tipoDocumento' => getClase($elemento),
+                'rol'=> '2',
+            ]);
+        }
+    }
+    /*
+    private static function makeDocument($elemento){
+        if ($elemento->fichero != ''){
             $idDocumento = Documento::crea($elemento, [
                 'tipoDocumento' => getClase($elemento),
                 'rol'=> '2',
@@ -27,6 +38,7 @@ trait TraitEstado
         }
 
     }
+    */
     private static function dateResolve($elemento,$fecha){
         if (isset($elemento->fechasolucion)) {
             $elemento->fechasolucion = $fecha;

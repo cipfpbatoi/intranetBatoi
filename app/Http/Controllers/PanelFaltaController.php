@@ -10,7 +10,7 @@ use Intranet\Botones\BotonIcon;
  * Class PanelFaltaController
  * @package Intranet\Http\Controllers
  */
-class PanelFaltaController extends BaseController
+class PanelFaltaController extends ModalController
 {
     use traitPanel;
 
@@ -34,23 +34,23 @@ class PanelFaltaController extends BaseController
      * @var array
      */
     protected $parametresVista = ['modal' => ['explicacion']];
+    protected $formFields = [
+        'idProfesor' => ['type' => 'select'],
+        'estado' => ['type' => 'hidden'],
+        'desde' => ['type' => 'date'],
+        'hasta' => ['type' => 'date'],
+        'baja' => ['type' => 'checkbox'],
+        'dia_completo' => ['type' => 'checkbox'],
+        'hora_ini' => ['type' => 'time'],
+        'hora_fin' => ['type' => 'time'],
+        'motivos' => ['type' => 'select'],
+        'observaciones' => ['type' => 'text'],
+        'fichero' => ['type' => 'file'],
 
+    ];
 
     protected function search(){
         return(Falta::orderBy('desde')->get());
-    }
-
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    protected function create()
-    {
-        $elemento = new $this->class;
-        $elemento->setInputType('idProfesor', ['type' => 'select']);
-        $elemento->setInputType('baja', ['type' => 'checkbox']);
-        $default = $elemento->fillDefautOptions();
-        $modelo = $this->model;
-        return view($this->chooseView('create'), compact('elemento', 'default', 'modelo'));
     }
 
 
@@ -59,7 +59,7 @@ class PanelFaltaController extends BaseController
      */
     protected function iniBotones()
     {
-        $this->panel->setBotonera(['create.direccion']);
+        $this->panel->setBotonera(['create']);
         $this->panel->setBoton('profile', new BotonIcon("$this->model.resolve", ['class' => 'btn-success authorize', 'where' => ['estado', '>', '0', 'estado', '<', '3']], true));
         $this->panel->setBoton('profile', new BotonIcon("$this->model.refuse", ['class' => 'btn-danger refuse', 'where' => ['estado', '>', '0', 'estado', '<', '4']], true));
         $this->panel->setBoton('profile', new BotonIcon("$this->model.alta", ['class' => 'btn-success alta', 'where' => ['estado', '==', '5']], true));

@@ -224,6 +224,7 @@ return [
         'Date' => Jenssegers\Date\Date::class,
        
         'Form' => Collective\Html\FormFacade::class,
+        'Formulario' => Intranet\Services\FormBuilder::class,
         'Html' => Collective\Html\HtmlFacade::class,
         'Markdown' => GrahamCampbell\Markdown\Facades\Markdown::class,
         'SnappyPDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,

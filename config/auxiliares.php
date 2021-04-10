@@ -45,13 +45,11 @@ return [
         3 => "No ha assolit les capacitats previstes en els objectius dels diferents mòduls i s’hi constaten dificultats d'aprenentatge."
     ],
     'promociona' => [
-        0 => "Competència avanzada",
-        1 => "Competència mitjana",
-        2 => "Competència bàsica",
-        3 => "Encara no competent"
-    ],
-    'promocionExtraordinaria' => [
-        2 => "Promociona",
+        1 => "Promociona",
         3 => "No Promociona"
+    ],
+    'promocionaSemi' => [
+        1 => "Només li queda la FCT",
+        3 => "Encara no pot cursar la FCT"
     ],
 ];

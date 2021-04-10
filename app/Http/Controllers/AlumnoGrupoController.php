@@ -12,6 +12,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Curso;
 use Intranet\Entities\Alumno;
+use Intranet\Services\FormBuilder;
 
 class AlumnoGrupoController extends IntranetController
 {
@@ -29,15 +30,18 @@ class AlumnoGrupoController extends IntranetController
 
     /*
      * edit($id) return vista edit
-     */
+
     public function edit($id)
     {
         $grupoTutoria = AuthUser()->grupoTutoria;
         $elemento = AlumnoGrupo::where('idAlumno',$id)->where('idGrupo',$grupoTutoria)->first();
-        $default = $elemento->fillDefautOptions();
+        dd($grupoTutoria);
+        $formulario = new FormBuilder($elemento);
         $modelo = $this->model;
-        return view($this->chooseView('edit'), compact('elemento', 'default', 'modelo'));
+        return view($this->chooseView('edit'), compact('formulario', 'modelo'));
+
     }
+    */
 
     protected function redirect()
     {
