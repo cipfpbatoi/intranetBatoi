@@ -13,7 +13,9 @@ class AlumnoFct extends ModelPoll
         foreach ($alumno->fcts()->where('alumno_fcts.desde','<',Hoy())->esFct()->whereNotIn('fcts.id',$votes)->get() as $fct) {
             $fcts->push(['option1'=>$fct]);
         }
-        if (count($fcts)) return $fcts;
+        if (count($fcts)) {
+            return $fcts;
+        }
         return null;
     }
 
@@ -25,7 +27,9 @@ class AlumnoFct extends ModelPoll
         foreach ($votes as $vote){
             $classified[$vote->idOption1][$vote->option_id] = isset($vote->text)?$vote->text:$vote->value;
         }
-        if (count($classified)) return $classified;
+        if (count($classified)) {
+            return $classified;
+        }
         return null;
     }
 
@@ -34,13 +38,14 @@ class AlumnoFct extends ModelPoll
 
         foreach ($option1 as $idFct => $vote){
                 $ciclo = Fct::find($idFct)->Colaboracion->Ciclo ?? null;
-                if ($ciclo)
+                if ($ciclo) {
                     foreach ($vote as $key => $optionVotes) {
-                            foreach ($optionVotes as $optionVote) {
-                                $votes['cicle'][$ciclo->id][$key]->push($optionVote);
-                                $votes['departament'][$ciclo->departamento][$key]->push($optionVote);
+                        foreach ($optionVotes as $optionVote) {
+                            $votes['cicle'][$ciclo->id][$key]->push($optionVote);
+                            $votes['departament'][$ciclo->departamento][$key]->push($optionVote);
                         }
                     }
+                }
         }
     }
 

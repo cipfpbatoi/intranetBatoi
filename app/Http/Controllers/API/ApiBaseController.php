@@ -11,8 +11,6 @@ use Intranet\Http\Controllers\Controller;
 class ApiBaseController extends Controller
 {
 
-//    protected $perfil;
-//    
     protected $namespace = 'Intranet\\Entities\\';
     protected $model;
     protected $class;
@@ -60,19 +58,22 @@ class ApiBaseController extends Controller
 
     public function show($cadena,$send=true)
     {
-        if (!strpos($cadena, '=')&&!strpos($cadena, '>')&&!strpos($cadena, '<')&&!strpos($cadena, ']')&&!strpos($cadena, '['))
+        if (!strpos($cadena, '=')&&!strpos($cadena, '>')&&!strpos($cadena, '<')&&!strpos($cadena, ']')&&!strpos($cadena, '[')) {
             $data = $this->class::find($cadena);
+        }
         else {
             $filtros = explode('&', $cadena);
-            if (!strpos($cadena, 'ields='))
+            if (!strpos($cadena, 'ields=')) {
                 $data = $this->class::all();
+            }
             else {
                 foreach ($filtros as $filtro) {
                     $campos = explode('=', $filtro);
                     $value = $campos[0];
                     $key = $campos[1];
-                    if ($value == 'fields')
+                    if ($value == 'fields') {
                         $data = $this->fields($key);
+                    }
                 }
             }
 
@@ -83,26 +84,40 @@ class ApiBaseController extends Controller
                     if (count($campos)==2){
                         $value = $campos[0];
                         $key = $campos[1];
-                        if ($value != 'fields')
-                            $data = $data->filter(function ($filtro) use ($value, $key,$operacion) {
-                                switch ($operacion){
+                        if ($value != 'fields') {
+                            $data = $data->filter(function ($filtro) use ($value, $key, $operacion) {
+                                switch ($operacion) {
 
-                                    case '=' : return $filtro->$value == $key;break;
-                                    case '>' : return $filtro->$value > $key; break;
-                                    case '<' : return $filtro->$value < $key; break;
-                                    case ']' : return $filtro->$value >= $key; break;
-                                    case '[' : return $filtro->$value <= $key; break;
+                                    case '=' :
+                                        return $filtro->$value == $key;
+                                        break;
+                                    case '>' :
+                                        return $filtro->$value > $key;
+                                        break;
+                                    case '<' :
+                                        return $filtro->$value < $key;
+                                        break;
+                                    case ']' :
+                                        return $filtro->$value >= $key;
+                                        break;
+                                    case '[' :
+                                        return $filtro->$value <= $key;
+                                        break;
                                 }
                             });
-
+                        }
                     }
                 }
             }
         }
-        //return $this->sendError('No se ha podido',403);
 
-        if ($send) return $this->sendResponse($data, 'OK');
-        else return $data;
+
+        if ($send) {
+            return $this->sendResponse($data, 'OK');
+        }
+        else {
+            return $data;
+        }
         
     }
 
@@ -111,7 +126,7 @@ class ApiBaseController extends Controller
         $campos = explode(',', $fields);
         foreach ($campos as $campo) {
             $value[] = $campo;
-        };
+        }
         return $this->class::all($value);
     }
 

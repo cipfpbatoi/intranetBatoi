@@ -45,16 +45,19 @@ class FaltaItacaController extends ApiBaseController
                     $horasT['checked'] = FALSE;
                     $horasT['estado'] = 0;
                     $horasT['justificacion'] = '';
-                    if (estaInstituto($idProfesor, $dia, sumarHoras($hora->desde, '00:30:00')))
+                    if (estaInstituto($idProfesor, $dia, sumarHoras($hora->desde, '00:30:00'))) {
                         $horasT['enCentro'] = TRUE;
-                    else
+                    }
+                    else {
                         $horasT['enCentro'] = FALSE;
+                    }
                 }
                 $horasJ[] = $horasT;
             }
             return $this->sendResponse($horasJ, 'OK');
-        } else
+        } else {
             return $this->sendResponse([], 'OK');
+        }
     }
 
     public function guarda(Request $request)
@@ -78,7 +81,6 @@ class FaltaItacaController extends ApiBaseController
                 } else
 
                 if ($hora['checked']) {
-                    //dd($hora);
                     $dia = new Date($hora['dia']);
                     $falta = new Falta_itaca();
                     $falta->idProfesor = $hora['idProfesor'];
@@ -93,7 +95,9 @@ class FaltaItacaController extends ApiBaseController
                 }
             }
         }
-        if ($alta)  Falta_itaca::putEstado($alta,1,'Birret Pendent');
+        if ($alta) {
+            Falta_itaca::putEstado($alta, 1, 'Birret Pendent');
+        }
         
         return $this->sendResponse($respuesta, 'OK');
     }

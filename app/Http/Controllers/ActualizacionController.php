@@ -14,6 +14,7 @@ use Intranet\Http\Controllers\AdministracionController;
  */
 class ActualizacionController extends Controller{
 
+    const FITXER_VERSION = 'version.txt';
     /**
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
@@ -24,13 +25,15 @@ class ActualizacionController extends Controller{
         Alert::info(system('php ./../artisan migrate --force'));
         $versionesInstaladas = config('constants.version');
         $version_nueva = end($versionesInstaladas );
-        $version_actual = Storage::exists('version.txt')?Storage::get('version.txt'):'v0';
+        $version_actual = Storage::exists(self::FITXER_VERSION)?Storage::get(self::FITXER_VERSION):'v0';
         if ($version_nueva > $version_actual){
             AdministracionController::exe_actualizacion($version_actual);
-            Storage::put('version.txt',$version_nueva);
+            Storage::put(self::FITXER_VERSION,$version_nueva);
             Alert::info('Actualització realitzada correctament');
         }
-        else Alert::info('Ja tens la darrera versió');
+        else {
+            Alert::info('Ja tens la darrera versió');
+        }
         return redirect('/');
     }
 

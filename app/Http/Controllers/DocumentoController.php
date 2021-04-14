@@ -61,7 +61,7 @@ class DocumentoController extends IntranetController
 
     public function store(Request $request, $fct = null)
     {
-        if ($request->has('nota') and $this->validate($request,['nota' => 'numeric|min:1|max:10'])) {
+        if ($request->has('nota') && $this->validate($request,['nota' => 'numeric|min:1|max:10'])) {
             $this->saveNota($request->nota,$fct);
         }
         return parent::store(subsRequest($request->duplicate(null, $request->except(['nota'])), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));

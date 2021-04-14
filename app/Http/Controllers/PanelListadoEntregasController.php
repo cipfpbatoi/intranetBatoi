@@ -23,7 +23,8 @@ use Jenssegers\Date\Date;
 class PanelListadoEntregasController extends BaseController
 {
     use traitImprimir;
-    
+
+    const ROLES_ROL_JEFE_DPTO = 'roles.rol.jefe_dpto';
     protected $model = 'Modulo_grupo';
     protected $gridFields = ['literal','profesor','seguimiento'];
     protected $parametresVista = ['modal' => ['infDpto']];
@@ -41,23 +42,23 @@ class PanelListadoEntregasController extends BaseController
     public function iniBotones()
     {
         if (!$this->faltan()){
-            if ($reunion = $this->existeInforme())
+            if ($this->existeInforme())
             {
-                $this->panel->setBoton('index',new BotonBasico('Infdepartamento.edit',['roles' => config('roles.rol.jefe_dpto'),'id'=>'generar']));
+                $this->panel->setBoton('index',new BotonBasico('Infdepartamento.edit',['roles' => config(self::ROLES_ROL_JEFE_DPTO),'id'=>'generar']));
             }
             else
             {
-                $this->panel->setBoton('index',new BotonBasico('Infdepartamento.create',['roles' => config('roles.rol.jefe_dpto'),'id'=>'generar']));
+                $this->panel->setBoton('index',new BotonBasico('Infdepartamento.create',['roles' => config(self::ROLES_ROL_JEFE_DPTO),'id'=>'generar']));
             }
         }
         else {
-            $this->panel->setBoton('index',new BotonBasico('Infdepartamento.avisa',['roles' => config('roles.rol.jefe_dpto')]));
+            $this->panel->setBoton('index',new BotonBasico('Infdepartamento.avisa',['roles' => config(self::ROLES_ROL_JEFE_DPTO)]));
         }
         if ($reunion = $this->existeInforme())
         {
-            $this->panel->setBoton('index',new BotonBasico('Infdepartamento.pdf.'.$reunion->id,['roles' => config('roles.rol.jefe_dpto')]));
+            $this->panel->setBoton('index',new BotonBasico('Infdepartamento.pdf.'.$reunion->id,['roles' => config(self::ROLES_ROL_JEFE_DPTO)]));
         }
-         $this->panel->setBoton('grid',new BotonImg('Infdepartamento.aviso',['img' => 'fa-bell','where' => ['seguimiento','==',0],'roles' => config('roles.rol.jefe_dpto')]));
+         $this->panel->setBoton('grid',new BotonImg('Infdepartamento.aviso',['img' => 'fa-bell','where' => ['seguimiento','==',0],'roles' => config(self::ROLES_ROL_JEFE_DPTO)]));
     }
     
     
@@ -100,7 +101,7 @@ class PanelListadoEntregasController extends BaseController
             $reunion->fichero = $nomComplet;
             $reunion->save();
 
-            $documento = Documento::crea($reunion, ['propietario' => AuthUser()->FullName,
+            Documento::crea($reunion, ['propietario' => AuthUser()->FullName,
                         'tipoDocumento' => 'Acta',
                         'descripcion' => $reunion->descripcion,
                         'fichero' => $reunion->fichero,

@@ -38,7 +38,9 @@ trait traitAutorizar
     {
         $inicial = $this->class::getEstado($id);
         $final = $this->class::resolve($id,$request->explicacion);
-        if ($redirect) return $this->follow($inicial,$final);
+        if ($redirect) {
+            return $this->follow($inicial, $final);
+        }
     }
 
     // estat + 1
@@ -47,7 +49,9 @@ trait traitAutorizar
         $inicial = $this->class::getEstado($id);
         
         $final = $this->class::putEstado($id,$inicial+1);
-        if ($redirect) return $this->follow($inicial,$final);
+        if ($redirect) {
+            return $this->follow($inicial, $final);
+        }
     }
 
     // estat -1
@@ -55,7 +59,9 @@ trait traitAutorizar
     {
         $inicial = $this->class::getEstado($id);
         $final = $this->class::putEstado($id,$inicial-1);
-        if ($redirect) return $this->follow($inicial,$final);
+        if ($redirect) {
+            return $this->follow($inicial, $final);
+        }
     }
 
     // refusa
@@ -63,7 +69,9 @@ trait traitAutorizar
     {
         $inicial = $this->class::getEstado($id);
         $final = $this->class::refuse($id,$request->explicacion);
-        if ($redirect) return $this->follow($inicial,$final);
+        if ($redirect) {
+            return $this->follow($inicial, $final);
+        }
     }
     
     // rediriguix o no a un altra pestana
@@ -76,14 +84,16 @@ trait traitAutorizar
     //efectuar sobre tots una acció
     protected function makeAll($todos, $accion)
     {
-        if (is_string($accion))
+        if (is_string($accion)) {
             foreach ($todos as $uno) {
                 $this->$accion($uno->id, false);
             }
-        else
+        }
+        else {
             foreach ($todos as $uno) {
-                $this->class::putEstado($uno->id,$accion);
+                $this->class::putEstado($uno->id, $accion);
             }
+        }
     }
     
     //crea link a gestor documental

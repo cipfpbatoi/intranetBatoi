@@ -12,7 +12,6 @@ use Intranet\Entities\Lote;
  */
 class LoteController extends ModalController
 {
-    //use traitAutomaticForm;
 
     /**
      * @var string

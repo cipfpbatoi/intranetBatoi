@@ -42,7 +42,8 @@ class ComisionController extends ModalController
         $new = new Comision();
         $new->fillAll($request);
         if ($new->fct) {
-            return redirect()->route('comision.detalle', ['comision' => $new->id]);
+            return $this->detalle($new->id);
+            //return redirect()->route('comision.detalle', ['comision' => $new->id]);
         }
         return $this->redirect();
     }
@@ -186,14 +187,14 @@ class ComisionController extends ModalController
         $comision = Comision::find($comision_id);
         $aviso = isset($request->aviso)?1:0;
         $comision->fcts()->syncWithoutDetaching([$request->idFct => ['hora_ini' => $request->hora_ini ,'aviso' => $aviso]]);
-        return redirect()->route('comision.detalle', ['comision' => $comision_id]);
+        return $this->detalle($comision_id);
     }
 
     public function deleteFct($comision_id,$fct_id)
     {
         $comision = Comision::find($comision_id);
         $comision->fcts()->detach($fct_id);
-        return redirect()->route('comision.detalle', ['comision' => $comision_id]);
+        return $this->detalle($comision_id);
     }
 
 }

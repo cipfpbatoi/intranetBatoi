@@ -27,18 +27,6 @@ class FicharController extends ApiBaseController
         
     }
 
-//    public function miraFicha(Request $datosProfesor)
-//    {
-//        $dni = $datosProfesor->dni;
-//        $fec_hoy = time();
-//        $que_dia = date("Y-m-d", $fec_hoy);
-//        $registro = Falta_profesor::where('dia', '=', $que_dia)
-//                ->where('idProfesor', '=', $dni)
-//                ->get()
-//                ->last();
-//        return $this->sendResponse($registro, 'OK');
-//    }
-
     public function entrefechas(Request $datos)
     {
         $registros = Falta_profesor::where('dia', '>=', $datos->desde)
@@ -49,15 +37,17 @@ class FicharController extends ApiBaseController
             if ($registro->salida != null) {
                 if (isset($dias[$registro->dia])) {
                     $dias[$registro->dia]['horas'] = sumarHoras($dias[$registro->dia]['horas'], restarHoras($registro->entrada, $registro->salida));
-                } else
+                } else {
                     $dias[$registro->dia] = array('fecha' => $registro->dia, 'horas' =>
                         restarHoras($registro->entrada, $registro->salida));
+                }
             }
             else {
                 if (isset($dias[$registro->dia])) {
                     $dias[$registro->dia]['horas'] = sumarHoras($dias[$registro->dia]['horas'], "01:00:00");
-                } else
+                } else {
                     $dias[$registro->dia] = array('fecha' => $registro->dia, 'horas' => '01:00:00');
+                }
             }
         }
         foreach ($dias as $dia) {

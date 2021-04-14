@@ -53,10 +53,12 @@ class AlumnoCursoController extends IntranetController
     {
         $actual = AlumnoCurso::where('id', $id)->first();
         $curso = Curso::find($actual->first()->idCurso);
-        if (haVencido($curso->fecha_fin))
+        if (haVencido($curso->fecha_fin)) {
             return self::hazPdf('pdf.alumnos.manipulador', $actual, $curso)->stream();
-        else
+        }
+        else {
             return back();
+        }
     }
 
     public function registerGrup($grupo, $id)
@@ -84,7 +86,9 @@ class AlumnoCursoController extends IntranetController
             Alert::info($alumno->FullName.': '.$mensaje);
             avisa($alumno->nia,$mensaje);
         }
-        else Alert::danger($alumno->FullName.': Ja estas registrat');
+        else {
+            Alert::danger($alumno->FullName . ': Ja estas registrat');
+        }
     }
 
     private function getRegister($alumno,$curso){
@@ -126,6 +130,8 @@ class AlumnoCursoController extends IntranetController
             }
             avisa($alumno, 'Esborrat/ada del curs ');
         }
-        if ($redirect) return back();
+        if ($redirect) {
+            return back();
+        }
     }
 }

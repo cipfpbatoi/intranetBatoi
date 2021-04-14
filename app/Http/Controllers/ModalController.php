@@ -36,7 +36,6 @@ abstract class ModalController extends Controller
 
     public function index()
     {
-        //Session::forget('redirect');
                 //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
         $this->iniPestanas();
@@ -78,7 +77,9 @@ abstract class ModalController extends Controller
     protected function search(){
         $todos =  $this->class::all(); // carrega totes les dades de un model
         if (isset($todos->first()->idProfesor)) // Si existe profesor en el model limite la cerca a les seues
+        {
             $todos = $todos->where('idProfesor', '=', AuthUser()->dni);
+        }
         return $todos;
     }
 
@@ -90,8 +91,9 @@ abstract class ModalController extends Controller
 
     protected function iniPestanas(){
         // Pestana per al profile
-        if ($this->profile && view()->exists('intranet.partials.profile.'.strtolower($this->model)))
-            $this->panel->setPestana('profile', false,null,null,null,null,$this->parametresVista);
+        if ($this->profile && view()->exists('intranet.partials.profile.'.strtolower($this->model))) {
+            $this->panel->setPestana('profile', false, null, null, null, null, $this->parametresVista);
+        }
     }
 
     protected function redirect()

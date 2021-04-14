@@ -13,8 +13,9 @@ class ReservaController extends ApiBaseController
     public function show($cadena,$send=true){
         $data = parent::show($cadena,false);
         foreach ($data as $uno){
-            if (isset($uno->Profesor->nombre))
+            if (isset($uno->Profesor->nombre)) {
                 $uno->nomProfe = $uno->Profesor->ShortName;
+            }
         }
         return $this->sendResponse($data, 'OK');
     }

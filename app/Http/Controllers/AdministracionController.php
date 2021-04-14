@@ -31,7 +31,7 @@ use Intranet\Entities\Fct;
  */
 class AdministracionController extends Controller
 {
-
+    const DIRECTORIO_GESTOR = 'gestor/Empresa/';
     /**
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -241,14 +241,14 @@ class AdministracionController extends Controller
         $malament = 0;
         foreach (Empresa::all() as $elemento){
             if (isset($elemento->fichero)&&strpos($elemento->fichero,'2018-2019')&&(file_exists(storage_path('/app/'.$elemento->fichero)))){
-                Storage::put('gestor/Empresa/'.$elemento->cif.'.pdf',Storage::get($elemento->fichero));
-                $elemento->fichero = 'gestor/Empresa/'.$elemento->cif.'.pdf';
+                Storage::put(self::DIRECTORIO_GESTOR.$elemento->cif.'.pdf',Storage::get($elemento->fichero));
+                $elemento->fichero = self::DIRECTORIO_GESTOR.$elemento->cif.'.pdf';
                 $elemento->save();
                 $canvis++;
             }
             else {
-                if (file_exists(storage_path('app/gestor/Empresa/' . $elemento->cif.'.pdf'))) {
-                    $elemento->fichero = 'gestor/Empresa/' . $elemento->cif.'.pdf';
+                if (file_exists(storage_path('app/'.self::DIRECTORIO_GESTOR . $elemento->cif.'.pdf'))) {
+                    $elemento->fichero = self::DIRECTORIO_GESTOR . $elemento->cif.'.pdf';
                     $elemento->save();
                     $nous++;
                 } else {

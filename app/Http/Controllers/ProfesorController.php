@@ -33,6 +33,7 @@ class ProfesorController extends PerfilController
 use traitAutorizar,
     traitImprimir;
 
+    const PROFILE_PROFESOR = 'profile.profesor';
     protected $model = 'Profesor';
     protected $vista = ['show' => 'perfil', 'edit' => 'perfil'];
     protected $gridFields = ['Xdepartamento', 'FullName', 'Xrol'];
@@ -69,7 +70,7 @@ use traitAutorizar,
         foreach ($departamentos as $departamento) {
             if ($departamento->id != 99 ) {
                 if($departamento->id == AuthUser()->departamento) {
-                    $this->panel->setPestana($departamento->depcurt, true, 'profile.profesor', ['Xdepartamento', $departamento->depcurt], null, 1, $this->parametresVista);
+                    $this->panel->setPestana($departamento->depcurt, true, self::PROFILE_PROFESOR, ['Xdepartamento', $departamento->depcurt], null, 1, $this->parametresVista);
                 }
                 else {
                     $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
@@ -92,7 +93,7 @@ use traitAutorizar,
                 return $item;
             }
         });
-        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1,$this->parametresVista);
+        $this->panel->setPestana('profile', true, self::PROFILE_PROFESOR, null, null, 1,$this->parametresVista);
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
         $this->panel->setBoton('profile', new BotonIcon('profesor.horario', ['icon' => 'fa-user', 'class' => 'btn-success']));
 
@@ -102,7 +103,7 @@ use traitAutorizar,
 
     public function equipo($grupo)
     {
-        $this->panel->setPestana('profile', true, 'profile.profesor', null, null, 1,$this->parametresVista);
+        $this->panel->setPestana('profile', true, self::PROFILE_PROFESOR, null, null, 1,$this->parametresVista);
         $this->panel->setBoton('index', new BotonBasico("profesor.colectivo", ['class' => 'colectivo btn btn-primary'], true));
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
         Session::put('colectivo', $grupo);
@@ -149,7 +150,6 @@ use traitAutorizar,
 
     public function carnet($profesor)
     {
-        //return $this->hazPdf('pdf.carnet', Profesor::where('dni',$profesor)->get(), [Date::now()->format('Y'), 'Professor - Teacher'], 'portrait', [85.6, 53.98]);
         return $this->hazPdf('pdf.carnet', Profesor::where('dni',$profesor)->get(), [Date::now()->format('Y'), 'Professor - Teacher'], 'portrait', [85.6, 53.98])->stream();
     }
 

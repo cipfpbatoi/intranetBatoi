@@ -43,7 +43,6 @@ class ResultadoController extends ModalController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['delete', 'edit']);
-        //$this->panel->setBoton('grid', new BotonImg('alumnoresultado.alumno',['img' =>  'fa-mortar-board','where' => ['evaluacion', '==', 3]]));
 
     }
 

@@ -18,10 +18,6 @@ class PanelPG0301Controller extends BaseController
     
     protected function iniBotones()
     {
-//         $this->panel->setBoton('grid', new BotonImg('alumnofct.pg0301', ['img' => 'fa-square-o',
-//            'where' => ['pg0301', '==', '0','asociacion','==',1]]));
-//        $this->panel->setBoton('grid', new BotonImg('alumnofct.pg0301', ['img' => 'fa-check-square-o', 
-//            'where' => ['pg0301', '==', '1','asociacion','==',1]]));
          Session::put('redirect', 'PanelPG0301Controller@indice');
     }
     

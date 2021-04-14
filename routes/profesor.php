@@ -119,7 +119,6 @@ Route::get('/grupo/{grupo}/horario', ['as' => 'grupo.horario', 'uses' => 'GrupoC
 Route::get('/grupo/asigna', ['as' => 'grupo.asigna', 'uses' => 'GrupoController@asigna']);
 Route::get('/grupo/{grupo}/fol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@checkFol']);
 
-//Route::get('/grupo/{grupo}/checkFol', ['as' => 'grupo.fol', 'uses' => 'PanelPG0301Controller@indice']);
 
 Route::get('/alumno/{alumno}/muestra', ['as' => 'alumno.show', 'uses' => 'AlumnoController@show']);
 Route::get('/alumno/{alumno}/edit', ['as' => 'alumno.edit', 'uses' => 'AlumnoController@edit']);
@@ -284,7 +283,6 @@ Route::get('/alumnofct/{id}/delete', ['as' => 'alumnofct.destroy', 'uses' => 'Fc
 Route::get('/alumnofct/convalidacion',['as' => 'alumnofct.convalidacion', 'uses' => 'FctAlumnoController@nuevaConvalidacion']);
 Route::post('/alumnofct/convalidacion',['as' => 'alumnofct.convalidacion', 'uses' => 'FctAlumnoController@storeConvalidacion']);
 Route::get('/alumnofct/{id}/pdf', ['as' => 'alumnofct.pdf', 'uses' => 'FctAlumnoController@pdf']);
-//Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
 Route::get('/alumnofct/{id}/show', ['as' => 'alumnofct.show', 'uses' => 'FctAlumnoController@show']);
 Route::get('/alumnofct/{id}/pg0301', ['as' => 'alumnofct.pg0301', 'uses' => 'FctAlumnoController@pg0301']);
 Route::post('/alumnofct/selecciona',['as' => 'alumnofct.selecciona', 'uses' => 'FctAlumnoController@imprimePasqua']);
@@ -302,10 +300,6 @@ Route::get('/instructor/{id}/copy/{centro}', ['as' => 'instructor.editcopy', 'us
 Route::post('/instructor/{id}/copy/{centro}', ['as' => 'instructor.copy', 'uses' => 'InstructorController@toCopy']);
 Route::get('/instructor/{instructor}/pdf', ['as' => 'instructor.pdf', 'uses' => 'InstructorController@pdf']);
 
-//    Route::get('/fct/{alumno}/asigna', ['as' => 'fct.asigna', 'uses' => 'FctController@asigna']);
-//    Route::post('/fct/{alumno}/asigna', ['as' => 'fct.store', 'uses' => 'FctController@store']);
-//    Route::put('/fct/{alumno}/asigna', ['as' => 'fct.update', 'uses' => 'FctController@update']);
-//    
 //RUTAS MATERIALES
 Route::resource('/material', 'MaterialController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/material/{material}/delete', ['as' => 'material.destroy', 'uses' => 'MaterialController@destroy']);
@@ -316,7 +310,12 @@ Route::get('/material/{material}/copy', ['as' => 'material.copy', 'uses' => 'Mat
 Route::get('/material/{material}/incidencia', ['as' => 'material.incidencia', 'uses' => 'MaterialController@incidencia']);
 //RUTAS INVENTARIO
 Route::get('/inventario',['as' => 'inventario.index','uses' => 'InventarioController@index']);
+Route::get('/inventario/{material}/edit', ['as' => 'inventario.edit', 'uses' => 'InventarioController@edit']);
+Route::get('/inventario/{material}/qr', ['as' => 'inventario.qr', 'uses' => 'InventarioController@qr']);
+Route::put('/inventario/{material}/edit', ['as' => 'inventario.update', 'uses' => 'InventarioController@update']);
+
 Route::get('/inventaria',['as'=>'inventariar.index','uses'=>'ArticuloLoteController@index']);
+
 
 
 //RUTAS INCIDENCIAS
@@ -436,4 +435,3 @@ Route::get('/articulo/{id}/delete', ['as' => 'articulo.destroy', 'uses' => 'Arti
 Route::put('/articulo/{id}/edit', ['as' => 'articulo.update', 'uses' => 'ArticuloController@update']);
 
 
-//Route::view('lote', 'lote.indice');

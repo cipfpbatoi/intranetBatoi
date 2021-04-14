@@ -20,13 +20,14 @@
         "h4cc/wkhtmltopdf-amd64": "^0.12.4",
         "jenssegers/date": "^4.0.0@beta",
         "laravel/framework": "^8.0",
+        "laravel/nova": "*",
         "laravel/socialite": "^5.0",
         "laravel/tinker": "^2.4.1",
         "laravel/ui": "^2.0",
         "laravelcollective/html": "^6.0",
         "mikehaertl/php-pdftk": "^0.8.1",
         "predis/predis": "^1.1",
-        "laravel/nova": "*",
+        "simplesoftwareio/simple-qrcode": "~4",
         "styde/html": "~1.8"
     },
     "require-dev": {

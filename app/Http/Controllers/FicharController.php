@@ -31,7 +31,9 @@ class FicharController extends IntranetController
     public function ficha()
     {
         Falta_profesor::fichar();
-        if (!estaDentro())  return redirect('/logout');
+        if (!estaDentro()) {
+            return redirect('/logout');
+        }
         return back();
     }
     
@@ -50,7 +52,7 @@ class FicharController extends IntranetController
                 Alert::danger(trans('messages.generic.acaba'));
                 return back();
             }
-            if ($fichaje == false){
+            if (!$fichaje){
                 Alert::danger(trans('messages.generic.fueraCentro'));
                 return back();
             }
@@ -89,8 +91,9 @@ class FicharController extends IntranetController
     private function loadHorary($profesor){
         $horario = Horario::Primera($profesor->dni,FechaInglesa(Hoy()))->orderBy('sesion_orden')->get();
 
-        if (isset($horario->first()->desde))
-             return $horario->first()->desde . " - " . $horario->last()->hasta;
+        if (isset($horario->first()->desde)) {
+            return $horario->first()->desde . " - " . $horario->last()->hasta;
+        }
 
         return '';
 

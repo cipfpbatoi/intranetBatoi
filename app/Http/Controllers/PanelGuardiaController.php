@@ -55,23 +55,27 @@ class PanelGuardiaController extends BaseController
                     ->get();
             
             // Ompli les dades de les extaescolas per grup i per profe
-            foreach ($actividades as $actividad)
+            foreach ($actividades as $actividad) {
                 if (coincideHorario($actividad, $sesion)) {
                     foreach ($actividad->grupos as $grupo) {
                         $horario = $ahora->firstWhere('idGrupo', $grupo->codigo);
-                        if ($horario)
+                        if ($horario) {
                             $horario->donde = "Extraescolar Grup";
+                        }
                     }
                     foreach ($actividad->profesores as $profesor) {
                         $horario = $ahora->firstWhere('idProfesor', $profesor->dni);
-                        if ($horario && !isset($horario->donde))
+                        if ($horario && !isset($horario->donde)) {
                             $horario->donde = "Extraescolar Profesor";
+                        }
                     }
                 }
+            }
 
             // Mire si tot el món és al seu lloc
             foreach ($ahora as $horario)
                 // si no està d'extraescolar
+            {
                 if (!isset($horario->donde)) {
                     $profesor = Profesor::find($horario->idProfesor);
                     if (estaDentro($profesor->dni))
@@ -89,6 +93,7 @@ class PanelGuardiaController extends BaseController
                         }
                     }
                 }
+            }
             return $ahora;
         } else {
             Alert('No estas de guardia ara');

@@ -16,17 +16,22 @@ abstract class PerfilController extends IntranetController
     public function update(Request $request, $new)
     {
         $this->validate($request, $new->getRules());
-        if ($request->email)
+        if ($request->email) {
             $new->email = $request->email;
-        if ($request->emailItaca)
+        }
+        if ($request->emailItaca) {
             $new->emailItaca = $request->emailItaca;
-        if ($request->idioma)
+        }
+        if ($request->idioma) {
             $new->idioma = $request->idioma;
-        if ($request->departamento)
+        }
+        if ($request->departamento) {
             $new->departamento = $request->departamento;
-        if ($request->especialitat)
+        }
+        if ($request->especialitat) {
             $new->especialitat = $request->especialitat;
-        $id = $new->dni;
+        }
+
 
         if ($request->hasFile('foto')) {
 

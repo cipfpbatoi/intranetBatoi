@@ -67,8 +67,12 @@ class GuardiaController extends IntranetController
                      ->orderBy('sesion_orden')
                      ->get() as $guardia){
             $profesor = Profesor::findOrFail($guardia->idProfesor);
-            if (isset($profesor->fecha_baja)) $profesor = $profesor->Sustituye;
-            if ($profesor) $arrayG[$guardia->sesion_orden][$guardia->dia_semana][] =  array('dni'=>$profesor->dni , 'nombre' =>$profesor->ShortName);
+            if (isset($profesor->fecha_baja)) {
+                $profesor = $profesor->Sustituye;
+            }
+            if ($profesor) {
+                $arrayG[$guardia->sesion_orden][$guardia->dia_semana][] = array('dni' => $profesor->dni, 'nombre' => $profesor->ShortName);
+            }
         }
 
         return view('guardias.control',compact('horas','arrayG','dias'));
@@ -84,13 +88,14 @@ class GuardiaController extends IntranetController
         $guardias = Horario::Guardia()
                 ->Dia(nameDay($fecha))
                 ->get();
-        foreach ($guardias as $guardia)
-            if (!Guardia::where('idProfesor',$guardia->idProfesor)
-                    ->where('dia',$fecha)
-                    ->where('hora',$guardia->sesion_orden)
-                    ->count())
+        foreach ($guardias as $guardia) {
+            if (!Guardia::where('idProfesor', $guardia->idProfesor)
+                ->where('dia', $fecha)
+                ->where('hora', $guardia->sesion_orden)
+                ->count()) {
                 $noGuardia[$guardia->idProfesor] = $guardia->idProfesor;
-            
+            }
+        }
         return $noGuardia;
     }        
 

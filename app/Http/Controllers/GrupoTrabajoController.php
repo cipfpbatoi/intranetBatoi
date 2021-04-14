@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Session;
  */
 class GrupoTrabajoController extends IntranetController
 {
+    const GRUPOTRABAJO_DETALLE = 'grupotrabajo.detalle';
 
     /**
      * @var string
@@ -76,8 +77,8 @@ class GrupoTrabajoController extends IntranetController
      */
     public function altaProfesor(Request $request, $gt_id)
     {
-        $ExtGrupo = Miembro::create($request->all());
-        return redirect()->route('grupotrabajo.detalle', ['grupotrabajo' => $gt_id]);
+        Miembro::create($request->all());
+        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $gt_id]);
     }
 
     /**
@@ -92,7 +93,7 @@ class GrupoTrabajoController extends IntranetController
                 ->where('coordinador',0)
                 ->delete();
         
-        return redirect()->route('grupotrabajo.detalle', ['grupo_trabajo' => $gt_id]);
+        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupo_trabajo' => $gt_id]);
     }
 
     /**
@@ -102,9 +103,11 @@ class GrupoTrabajoController extends IntranetController
      */
     public function coordinador($grupo_id, $profesor_id)
     {
-        if ($this->removeCoord($grupo_id)) $this->addCoord($grupo_id,$profesor_id);
+        if ($this->removeCoord($grupo_id)) {
+            $this->addCoord($grupo_id, $profesor_id);
+        }
 
-        return redirect()->route('grupotrabajo.detalle', ['grupotrabajo' => $grupo_id]);
+        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $grupo_id]);
     }
 
     /**
@@ -143,7 +146,7 @@ class GrupoTrabajoController extends IntranetController
     {
         $this->panel->setBotonera(['create'], ['delete']);
         $this->panel->setBoton('grid', new BotonImg('#', ['img' => 'fa-pencil', 'class' => 'editGrupo', 'text' => 'edita']));
-        $this->panel->setBoton('grid', new BotonImg('grupotrabajo.detalle', ['img' => 'fa-group', 'text' => 'participantes']));
+        $this->panel->setBoton('grid', new BotonImg(self::GRUPOTRABAJO_DETALLE, ['img' => 'fa-group', 'text' => 'participantes']));
     }
 
 }

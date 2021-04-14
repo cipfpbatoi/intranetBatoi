@@ -16,7 +16,9 @@ class ReunionController extends ApiBaseController
             $reunion->alumnos()->updateExistingPivot($idAlumno,['capacitats'=> $request->capacitats]);
             return $this->sendResponse($request->capacitats, 'OK');
         }
-        else return $this->sendError('Reunió no trobada',404);
+        else {
+            return $this->sendError('Reunió no trobada', 404);
+        }
     }
 
 }

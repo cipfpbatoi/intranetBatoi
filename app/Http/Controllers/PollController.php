@@ -34,7 +34,9 @@ class PollController extends IntranetController
 
     private function userKey($poll){
         $key = $poll->keyUser;
-        if ($poll->anonymous) return hash('md5',AuthUser()->$key);
+        if ($poll->anonymous) {
+            return hash('md5', AuthUser()->$key);
+        }
         return AuthUser()->$key;
     }
 
@@ -43,7 +45,9 @@ class PollController extends IntranetController
         $poll = Poll::find($id);
         $modelo = $poll->modelo;
         $quests = $modelo::loadPoll($this->loadPreviousVotes($poll));
-        if ($quests) return view('poll.enquesta',compact('quests','poll'));
+        if ($quests) {
+            return view('poll.enquesta', compact('quests', 'poll'));
+        }
 
 
         Alert::info("Ja has omplit l'enquesta");
@@ -64,21 +68,20 @@ class PollController extends IntranetController
 
         foreach ($poll->Plantilla->options as $question => $option){
             $i=0;
-            foreach ($quests as $quest)
-
+            foreach ($quests as $quest) {
                 if (isset($quest['option2'])) {
                     foreach ($quest['option2'] as $profesores)
                         foreach ($profesores as $dni) {
                             $i++;
                             $field = 'option' . ($question + 1) . '_' . $i;
-                            $this->guardaVoto($poll,$option,$quest['option1']->id,$dni,$request->$field);
+                            $this->guardaVoto($poll, $option, $quest['option1']->id, $dni, $request->$field);
                         }
-                }
-                else {
+                } else {
 
                     $field = 'option' . ($question + 1) . '_' . $quest['option1']->id;
-                    $this->guardaVoto($poll,$option,$quest['option1']->id,null,$request->$field);
+                    $this->guardaVoto($poll, $option, $quest['option1']->id, null, $request->$field);
                 }
+            }
         }
         Alert::info('Enquesta emplenada amb exit');
         return redirect('home');
@@ -93,8 +96,12 @@ class PollController extends IntranetController
             $vote->option_id = $option->id;
             $vote->idOption1 = $option1;
             $vote->idOption2 = $option2;
-            if ($option->scala == 0) $vote->text = $value;
-            else $vote->value = voteValue($option2,$value);
+            if ($option->scala == 0) {
+                $vote->text = $value;
+            }
+            else {
+                $vote->value = voteValue($option2, $value);
+            }
             $vote->save();
         }
     }
@@ -142,10 +149,16 @@ class PollController extends IntranetController
         $grupos = Grupo::all();
         $ciclos = Ciclo::all();
         $departamentos = Departamento::all();
-        foreach ($options as $key => $value){
-            foreach ($grupos as $grupo) $votes['grup'][$grupo->codigo][$value->id] = collect();
-            foreach ($ciclos as $ciclo) $votes['cicle'][$ciclo->id][$value->id] = collect();
-            foreach ($departamentos as $departamento) $votes['departament'][$departamento->id][$value->id] = collect();
+        foreach ($options as $value){
+            foreach ($grupos as $grupo) {
+                $votes['grup'][$grupo->codigo][$value->id] = collect();
+            }
+            foreach ($ciclos as $ciclo) {
+                $votes['cicle'][$ciclo->id][$value->id] = collect();
+            }
+            foreach ($departamentos as $departamento) {
+                $votes['departament'][$departamento->id][$value->id] = collect();
+            }
         }
     }
 

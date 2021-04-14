@@ -21,9 +21,12 @@ class HorarioController extends IntranetController
 
 
     private function getJsonFromFile($dni){
-        if (Storage::disk('local')->exists('/horarios/'.$dni.'.json') && $fichero = Storage::disk('local')->get('/horarios/'.$dni.'.json'))
+        if (Storage::disk('local')->exists('/horarios/'.$dni.'.json') && $fichero = Storage::disk('local')->get('/horarios/'.$dni.'.json')) {
             return json_decode($fichero);
-        return null;
+        }
+        return {
+            null;
+        }
     }
     private function changeHorary($dni,$cambios){
         foreach ($cambios as $cambio) {
@@ -38,8 +41,9 @@ class HorarioController extends IntranetController
         }
     }
     private function saveCopy($dni,$data){
-        if (! Storage::disk('local')->exists('/horarios/horariosCambiados/'.$dni.'.json'))
-            Storage::disk('local')->put('/horarios/horariosCambiados/'.$dni.'.json', json_encode($data));
+        if (! Storage::disk('local')->exists('/horarios/horariosCambiados/'.$dni.'.json')) {
+            Storage::disk('local')->put('/horarios/horariosCambiados/' . $dni . '.json', json_encode($data));
+        }
 
     }
 
@@ -53,10 +57,12 @@ class HorarioController extends IntranetController
 
                         $data->estado="Guardado";
                         $data->cambios=[];
-                        if (Storage::disk('local')->put('/horarios/'.$dni.'.json', json_encode($data)))
+                        if (Storage::disk('local')->put('/horarios/'.$dni.'.json', json_encode($data))) {
                             $correcto = true;
-                        else
+                        }
+                        else {
                             Alert::warning("Horari amb dni $dni modificat però no s\'ha pogut guardar el fitxer");
+                        }
                         break;
                     case "Guardado":
                         Alert::info("Horari amb dni $dni ja està guardat");
@@ -64,10 +70,16 @@ class HorarioController extends IntranetController
                     default:
                         Alert::warning("Horari amb dni $dni no està aceptat");
                 }
-        } else  Alert::danger("Horari amb dni $dni no té canvis");
+        } else {
+            Alert::danger("Horari amb dni $dni no té canvis");
+        }
 
-        if ($redirect) return back();
-        else return $correcto;
+        if ($redirect) {
+            return back();
+        }
+        else {
+            return $correcto;
+        }
     }
 
     /**
@@ -95,7 +107,9 @@ class HorarioController extends IntranetController
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function horarioCambiar($id = null){
-        if ($id == null) $id = AuthUser()->id;
+        if ($id == null) {
+            $id = AuthUser()->id;
+        }
         $horario = Horario::HorarioSemanal($id);
         $profesor = Profesor::find($id);
         return view('horario.profesor-cambiar', compact('horario', 'profesor'));

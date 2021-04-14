@@ -62,11 +62,15 @@ class IncidenciaController extends ModalController
                 ->get()
                 ->first();
 
-        if (!$orden) $orden = $this->generateOrder($incidencia);
+        if (!$orden) {
+            $orden = $this->generateOrder($incidencia);
+        }
 
         $incidencia->orden = $orden->id;
         $incidencia->save();
-        if ($incidencia->estado == 1) return $this->accept($id);
+        if ($incidencia->estado == 1) {
+            return $this->accept($id);
+        }
         Session::put('pestana',$incidencia->estado);
         return back();
     }

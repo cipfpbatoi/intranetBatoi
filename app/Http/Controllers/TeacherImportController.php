@@ -28,6 +28,7 @@ use Intranet\Entities\Ocupacion;
  */
 class TeacherImportController extends Seeder
 {
+    const INTRANET_ENTITIES = "\Intranet\Entities\\";
 
     /**
      * @var
@@ -149,9 +150,12 @@ class TeacherImportController extends Seeder
     public function run($fxml, Request $request)
     {
         $xml = simplexml_load_file($fxml);
-        if ($request->horari) $this->esborraHoraris($request->idProfesor);
-        foreach ($this->campos_bd_xml as $table)
-            $this->manageTable($xml->{$table['nombrexml']},$table,$request->idProfesor);
+        if ($request->horari) {
+            $this->esborraHoraris($request->idProfesor);
+        }
+        foreach ($this->campos_bd_xml as $table) {
+            $this->manageTable($xml->{$table['nombrexml']}, $table, $request->idProfesor);
+        }
 
     }
 
@@ -161,10 +165,12 @@ class TeacherImportController extends Seeder
      * @param $firstImport
      */
     private function manageTable($xmltable, $table, $idProfesor){
-        if (count($xmltable))
+        if (count($xmltable)) {
             $this->import($xmltable, $table, $idProfesor);
-        else
+        }
+        else {
             Alert::danger('No hay registros de ' . $table['nombrexml'] . ' en el xml');
+        }
     }
 
     /**
@@ -173,10 +179,12 @@ class TeacherImportController extends Seeder
      */
     private function esborraHoraris($idProfesor)
     {
-        if (isset(DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla))
+        if (isset(DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla)) {
             $this->plantilla = DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla;
-        else
+        }
+        else {
             $this->plantilla = 0;
+        }
         DB::table('horarios')->where('idProfesor',$idProfesor)->delete();
 
     }
@@ -189,7 +197,6 @@ class TeacherImportController extends Seeder
     {
         $fecha = str_replace('/', '-', $fecha);
         $fecha2 = date_create_from_format('j-m-Y', $fecha);
-        //var_dump($fecha2);
         if (!$fecha2) {
             return null;
         } else {
@@ -204,7 +211,6 @@ class TeacherImportController extends Seeder
     private function cifrar($cadena)
     {
         return bcrypt(trim($cadena));
-        //return crypt($cadena, $this->hash);
     }
 
     /**
@@ -249,14 +255,18 @@ class TeacherImportController extends Seeder
         $letra = ($letra == null) ? "" : trim($letra);
         $piso = ($piso == null) ? "" : trim($piso);
         $domic = $tipo_via . " " . $domicilio . ", " . $numero;
-        if ($puerta != "")
+        if ($puerta != "") {
             $domic .= " pta." . $puerta;
-        if ($escalera != "")
+        }
+        if ($escalera != "") {
             $domic .= " esc." . $escalera;
-        if ($piso != "")
+        }
+        if ($piso != "") {
             $domic .= " " . $piso . "º";
-        if ($letra != "")
+        }
+        if ($letra != "") {
             $domic .= "-" . $letra;
+        }
         return ($domic);
     }
 
@@ -270,19 +280,23 @@ class TeacherImportController extends Seeder
     {
         $lista = explode(",", $llave, 99);
         if (count($lista) == 1) {
-            if (isset($atrxml[$llave]))
-                return(mb_convert_encoding($atrxml[$llave], 'utf8'));
-            else
-                return($llave);
+            if (isset($atrxml[$llave])) {
+                return (mb_convert_encoding($atrxml[$llave], 'utf8'));
+            }
+            else {
+                return ($llave);
+            }
         }
         else {
             for ($i = $func; $i < count($lista); $i++) {
                 $params[$i - $func] = mb_convert_encoding($atrxml[$lista[$i]], 'utf8');
             }
-            if ($func)
+            if ($func) {
                 return (call_user_func_array(array($this, $lista[0]), $params));
-            else
+            }
+            else {
                 return ($params);
+            }
         }
     }
 
@@ -308,11 +322,13 @@ class TeacherImportController extends Seeder
     {
         $pasa = true;
         foreach ($required as $key) {
-            if ($campos[$key] == ' ')
+            if ($campos[$key] == ' ') {
                 $pasa = false;
+            }
         }
-        if (!$pasa)
+        if (!$pasa) {
             Alert::danger('Camp buid: ' . print_r($campos, true));
+        }
         return $pasa;
     }
 
@@ -322,17 +338,19 @@ class TeacherImportController extends Seeder
      */
     private function import($xmltable, $tabla,$idProfesor)
     {
-        $guard = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::unguard';
+        $guard = self::INTRANET_ENTITIES . $tabla['nombreclase'] . '::unguard';
         $pt = call_user_func($guard);
         $pasa = true;
         foreach ($xmltable->children() as $registroxml) {  //recorro registro del xml
             $atributosxml = $registroxml->attributes(); // saco los valores de los atributos xml
-            if (isset($tabla['filtro']))
+            if (isset($tabla['filtro'])) {
                 $pasa = $this->filtro($tabla['filtro'], $atributosxml);
-            if (isset($tabla['required']))
+            }
+            if (isset($tabla['required'])) {
                 $pasa = $pasa && $this->required($tabla['required'], $atributosxml);
+            }
             if ($pasa) {
-                $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
+                $clase = self::INTRANET_ENTITIES . $tabla['nombreclase']; //busco si ya existe en la bd
                 $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
 
                 if ($pt = $this->encuentra($clase, $clave)) {   //Update
@@ -341,12 +359,13 @@ class TeacherImportController extends Seeder
                     }
                     $pt->save();
                 } else {  //create
-                    if (isset($arrayDatos))
+                    if (isset($arrayDatos)) {
                         unset($arrayDatos); //borra el array de carga cada vez que entro bucle
+                    }
                     foreach ($tabla['update'] + $tabla['create'] as $keybd => $keyxml) {
                         $arrayDatos[$keybd] = $this->saca_campos($atributosxml, $keyxml);
                     }
-                    $create = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::create';
+                    $create = self::INTRANET_ENTITIES . $tabla['nombreclase'] . '::create';
 
                     try {
                         switch ($tabla['nombreclase']) {
@@ -362,8 +381,9 @@ class TeacherImportController extends Seeder
                                 }
                                 break;
                             case 'Profesor':
-                                if ($arrayDatos['dni']==$idProfesor)
-                                Profesor::create($arrayDatos);
+                                if ($arrayDatos['dni']==$idProfesor) {
+                                    Profesor::create($arrayDatos);
+                                }
                                 break;
                         }
                     } catch (\Illuminate\Database\QueryException $e) {
@@ -392,11 +412,13 @@ class TeacherImportController extends Seeder
     private function truncateTables($tables)
     {
         $this->checkForeignKeys(false);
-        if (is_array($tables))
+        if (is_array($tables)) {
             foreach ($tables as $tabla) {
                 DB::table($tabla)->truncate();
-            } else
+            }
+        }else {
             DB::table($tables)->truncate();
+        }
         $this->checkForeignKeys(true);
     }
 

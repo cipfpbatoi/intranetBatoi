@@ -38,9 +38,12 @@ class ArticuloLoteController extends ApiBaseController
 
     function getMateriales($articulo){
         $lote = ArticuloLote::find($articulo);
-        if (count($lote->Materiales))
+        if (count($lote->Materiales)) {
             return response()->json(['data' => $lote->Materiales]);
-        else response()->json([],404);
+        }
+        else {
+            response()->json([], 404);
+        }
     }
     /**
     function postArticulo(ArticuloLoteRequest $request){

@@ -13,7 +13,6 @@ class Actividad_profesor extends Model
         'idProfesor',
         'coordinador'];
     
-    //protected $keyType = 'string';
     public $timestamps = false;
 
     public function scopeTutor($query)

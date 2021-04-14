@@ -24,6 +24,7 @@ class PanelProgramacionAllController extends BaseController
     }
     protected function iniPestanas($parametres = null)
     {
+        // buid
     }
 
     protected function iniBotones()
@@ -33,7 +34,9 @@ class PanelProgramacionAllController extends BaseController
             $this->panel->setBoton('grid', new BotonImg('programacion.document', ['img' => 'fa-eye','where' => ['fichero','isNNull','']]));
             $this->panel->setBoton('grid', new BotonImg('programacion.anexo', ['img' => 'fa-plus','where' => ['anexos', '>', 0]]));
         }
-        else $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
+        else {
+            $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
+        }
         $this->panel->setBoton('grid', new BotonImg('programacion.edit',['roles' => config('roles.rol.administrador')]));
     }
 }

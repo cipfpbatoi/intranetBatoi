@@ -26,6 +26,14 @@ class DualController extends ModalController
 {
     use traitImprimir;
 
+    const CONTACTO_DIRECTOR = 'contacto.director';
+    const CONTACTO_NOMBRE = 'contacto.nombre';
+    const CONTACTO_CODI = 'contacto.codi';
+    const CONTACTO_POBLACION = 'contacto.poblacion';
+    const CONTACTO_PROVINCIA = 'contacto.provincia';
+    const OPCIÓN_1 = 'Opción1';
+    const D_M_Y = "d/m/y";
+
 
     /**
      * @var string
@@ -70,8 +78,6 @@ class DualController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
         $this->panel->setBoton('grid', new BotonImg('dual.informe',['img'=>'fa-file-zip-o']));
-        //$this->panel->setBoton('grid', new BotonImg('dual.pdf.anexo_v'));
-        //$this->panel->setBoton('grid', new BotonImg('dual.anexeXIII',['img'=>'fa-file-pdf-o']));
         $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-info']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info','id' => 'anexoVI']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeXIV", ['class' => 'btn-info','id' => 'anexoXIV']));
@@ -140,15 +146,15 @@ class DualController extends ModalController
         $fct = is_object($fct)?$fct:AlumnoFct::findOrFail($id);
         $informe = 'dual.'.$informe;
         $secretario = Profesor::find(config('contacto.secretario'));
-        $director = Profesor::find(config('contacto.director'));
+        $director = Profesor::find(config(self::CONTACTO_DIRECTOR));
         $fechaDocument = $data??FechaPosterior($fct->hasta);
         $dades = ['date' => $fechaDocument,
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
-            'centro' => config('contacto.nombre'),
-            'codigo' => config('contacto.codi'),
-            'poblacion' => config('contacto.poblacion'),
-            'provincia' => config('contacto.provincia'),
+            'centro' => config(self::CONTACTO_NOMBRE),
+            'codigo' => config(self::CONTACTO_CODI),
+            'poblacion' => config(self::CONTACTO_POBLACION),
+            'provincia' => config(self::CONTACTO_PROVINCIA),
             'director' => $director->FullName
         ];
 
@@ -172,7 +178,9 @@ class DualController extends ModalController
 
     protected function getGestor($doc,$ciclo){
         $documento = Documento::where('tags',"$doc,$ciclo")->where('tipoDocumento','Dual')->first();
-        if ($documento) return storage_path('app/'.$documento->fichero);
+        if ($documento) {
+            return storage_path('app/' . $documento->fichero);
+        }
     }
 
 
@@ -234,6 +242,7 @@ class DualController extends ModalController
                 $zip->addFile($this->informe($fct,'anexe_vb',false,$data),$carpeta_formacio."ANEXO_V-B.pdf");break;
             case 'annexiii':
                 $zip->addFile($this->printAnexeXIII($fct,$data),$carpeta_formacio."ANEXO_XIII.pdf");break;
+            default : break;
         }
     }
 
@@ -245,7 +254,9 @@ class DualController extends ModalController
     {
         $files = glob("$folder*"); //obtenemos todos los nombres de los ficheros
         foreach ($files as $file) {
-            if (is_file($file)) unlink($file); //elimino el fichero
+            if (is_file($file)) {
+                unlink($file);
+            } //elimino el fichero
         }
         rmdir($folder);
     }
@@ -319,19 +330,19 @@ class DualController extends ModalController
         $array[18] = 'Sí';
         $array[21] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
         $array[22] = 'Sí';
-        $array[24] = config('contacto.nombre');
-        $array[25] = config('contacto.codi');
+        $array[24] = config(self::CONTACTO_NOMBRE);
+        $array[25] = config(self::CONTACTO_CODI);
         $array[26] = 'Sí';
-        $array[28] = config('contacto.poblacion');
-        $array[29] = config('contacto.provincia');
+        $array[28] = config(self::CONTACTO_POBLACION);
+        $array[29] = config(self::CONTACTO_PROVINCIA);
         $array[30] = config('contacto.email');
         $fc1 = new Date($data);
         Date::setlocale('ca');
-        $array[31] = config('contacto.poblacion');
+        $array[31] = config(self::CONTACTO_POBLACION);
         $array[32] = $fc1->format('d');
         $array[33] = $fc1->format('F');
         $array[34] = $fc1->format('Y');
-        $array[35] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;;
+        $array[35] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
 
         return $array;
     }
@@ -364,7 +375,7 @@ class DualController extends ModalController
         $array[11] =  $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array['undefined_4'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0];
 
-        $array['acceptar'] = config('contacto.nombre');
+        $array['acceptar'] = config(self::CONTACTO_NOMBRE);
         $array['este conveni precisa el contingut i abast'] =  $fct->Fct->Colaboracion->Ciclo->dataSignaturaDual;
         $array['AA'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
@@ -409,8 +420,8 @@ class DualController extends ModalController
         $array[3] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array[4] =$fct->Fct->Colaboracion->Ciclo->tipo == 1?'Mitjà':'Superior';
         $array[5] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
-        $array[6] = config('contacto.nombre');
-        $array[7] = config('contacto.codi');
+        $array[6] = config(self::CONTACTO_NOMBRE);
+        $array[7] = config(self::CONTACTO_CODI);
         $array[8] = curso();
 
         $array[9] = $array[1];
@@ -423,7 +434,7 @@ class DualController extends ModalController
         $array[16] = $array[8];
         $fc1 = new Date($data);
         Date::setlocale('ca');
-        $array[17] = config('contacto.poblacion');
+        $array[17] = config(self::CONTACTO_POBLACION);
         $array[18] = $fc1->format('d');
         $array[19] = $fc1->format('F');
         $array[20] = $fc1->format('Y');
@@ -469,15 +480,15 @@ class DualController extends ModalController
     private function makeArrayPdfAnexoXIII($fct,$data)
     {
         $array[1] = Profesor::find(config('contacto.secretario'))->fullName;
-        $array[2] = config('contacto.nombre');
-        $array[3] = config('contacto.codi');
+        $array[2] = config(self::CONTACTO_NOMBRE);
+        $array[3] = config(self::CONTACTO_CODI);
         $array[4] = $fct->Alumno->fullName;
         $array[5] = $fct->Alumno->dni;
         $array[6] = $fct->horas;
         $array[7] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array[8] = $array[1];
-        $array[9] = config('contacto.nombre');
-        $array[10] = config('contacto.codi');
+        $array[9] = config(self::CONTACTO_NOMBRE);
+        $array[10] = config(self::CONTACTO_CODI);
         $array[11] = $fct->Alumno->fullName;
         $array[12] = $fct->Alumno->dni;
         $array[13] = $fct->horas;
@@ -488,25 +499,25 @@ class DualController extends ModalController
         $array[18] = $fct->desde."/".$fct->hasta;
         $array[19] = 1;
         $array[20] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[27] = config('contacto.poblacion');
+        $array[27] = config(self::CONTACTO_POBLACION);
         $fc1 = new Date();
         Date::setlocale('ca');
         $array[28] = $fc1->format('d');
         $array[29] = $fc1->format('F');
         $array[30] = $fc1->format('Y');
         $array[31] = $array[1];
-        $array[32] = Profesor::find(config('contacto.director'))->fullName;
+        $array[32] = Profesor::find(config(self::CONTACTO_DIRECTOR))->fullName;
 
         $array[33] = $array[1];
-        $array[34] = config('contacto.nombre');
-        $array[35] = config('contacto.codi');
+        $array[34] = config(self::CONTACTO_NOMBRE);
+        $array[35] = config(self::CONTACTO_CODI);
         $array[36] = $fct->Alumno->fullName;
         $array[37] = $fct->Alumno->dni;
         $array[38] = $fct->horas;
         $array[39] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array[40] = $array[1];
-        $array[41] = config('contacto.nombre');
-        $array[42] = config('contacto.codi');
+        $array[41] = config(self::CONTACTO_NOMBRE);
+        $array[42] = config(self::CONTACTO_CODI);
         $array[43] = $fct->Alumno->fullName;
         $array[44] = $fct->Alumno->dni;
         $array[45] = $fct->horas;
@@ -517,14 +528,14 @@ class DualController extends ModalController
         $array[50] = $fct->desde."/".$fct->hasta;
         $array[51] = 1;
         $array[52] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[53] = config('contacto.poblacion');
+        $array[53] = config(self::CONTACTO_POBLACION);
         $fc1 = new Date($data);
         Date::setlocale('ca');
         $array[54] = $fc1->format('d');
         $array[55] = $fc1->format('F');
         $array[56] = $fc1->format('Y');
         $array[57] = $array[1];
-        $array[58] = Profesor::find(config('contacto.director'))->fullName;
+        $array[58] = Profesor::find(config(self::CONTACTO_DIRECTOR))->fullName;
 
         return $array;
     }
@@ -546,21 +557,21 @@ class DualController extends ModalController
      */
     private function makeArrayPdfDOC1($fct,$data)
     {
-        $array['Texto3'] = config('contacto.nombre');
-        $array['Texto5'] = config('contacto.codi');
+        $array['Texto3'] = config(self::CONTACTO_NOMBRE);
+        $array['Texto5'] = config(self::CONTACTO_CODI);
         $array['Texto6'] = config('contacto.telefono');
         $array['Texto7'] = config('contacto.telefono');
         $array['Texto8'] = config('contacto.direccion');
-        $array['Texto9'] = config('contacto.poblacion');
-        $array['Texto10'] = config('contacto.provincia');
+        $array['Texto9'] = config(self::CONTACTO_POBLACION);
+        $array['Texto10'] = config(self::CONTACTO_PROVINCIA);
         $array['Texto11'] = config('contacto.postal');
         $array['Texto4'] = config('contacto.email');
-        $array['Texto12'] = Profesor::find(config('contacto.director'))->fullName;
-        $array['Grupo1'] = 'Opción1';
+        $array['Texto12'] = Profesor::find(config(self::CONTACTO_DIRECTOR))->fullName;
+        $array['Grupo1'] = self::OPCIÓN_1;
         $array['Texto13'] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array['Texto14'] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
-        $array['Grupo2'] = $fct->Fct->Colaboracion->Ciclo->tipo == 1?'Opción1':'Opción 2';
-        $array['Grupo3'] = 'Opción1';
+        $array['Grupo2'] = $fct->Fct->Colaboracion->Ciclo->tipo == 1? self::OPCIÓN_1 :'Opción 2';
+        $array['Grupo3'] = self::OPCIÓN_1;
         $array['Texto15'] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
         $array['Texto16'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
         $array['Texto17'] = $fct->Fct->Colaboracion->Centro->Empresa->telefono;
@@ -585,14 +596,14 @@ class DualController extends ModalController
         $array['Text39'] = $fct->Alumno->apellido1.' '.$fct->Alumno->apellido2 ;
         $array['Text38'] = $fct->Alumno->nombre;
         $array['Text37'] = $fct->Alumno->dni;
-        $array['Grupo5'] = $fct->Alumno->sexo == 'H'?'Opción1':'Opción2';
+        $array['Grupo5'] = $fct->Alumno->sexo == 'H'? self::OPCIÓN_1 :'Opción2';
         $array['Text40'] = $fct->Alumno->fecha_nac;
         $array['Text41'] = $fct->Alumno->domicilio;
         $array['Text42'] = $fct->Alumno->poblacion;
         $array['Text43'] = $fct->Alumno->Provincia->nombre;
         $array['Text44'] = $fct->Alumno->telef1;
         $array['Text45'] = $fct->Alumno->email;
-        $array['Grupo4'] = 'Opción1';
+        $array['Grupo4'] = self::OPCIÓN_1;
         $array['Grupo6'] = 'Opción2';
         $array['Text57'] = $fct->beca;
         $array['Text49'] = $fct->desde;
@@ -638,8 +649,8 @@ class DualController extends ModalController
         $array[6] = $fct->Alumno->fecha_nac;
         $array[7] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
         $array[8] = $fct->Fct->Colaboracion->Ciclo->vliteral;
-        $array[9] = config('contacto.nombre');
-        $array[10] = config('contacto.codi');
+        $array[9] = config(self::CONTACTO_NOMBRE);
+        $array[10] = config(self::CONTACTO_CODI);
         $array[11] = AuthUser()->fullName;
         $array['11a'] = $fct->Fct->Centro;
         $array['11b'] = $fct->Fct->Instructor->Nombre;
@@ -649,19 +660,19 @@ class DualController extends ModalController
         $fc2->addDays(6);
         Date::setlocale('ca');
         $array[12] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[13] = $fc1->format("d/m/y").' a '.$fc2->format("d/m/y");
+        $array[13] = $fc1->format(self::D_M_Y).' a '.$fc2->format(self::D_M_Y);
         $fc1->addDays(7);
         $fc2->addDays(7);
         $array[17] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[18] = $fc1->format("d/m/y").' a '.$fc2->format("d/m/y");
+        $array[18] = $fc1->format(self::D_M_Y).' a '.$fc2->format(self::D_M_Y);
         $fc1->addDays(7);
         $fc2->addDays(7);
         $array[22] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[23] = $fc1->format("d/m/y").' a '.$fc2->format("d/m/y");
+        $array[23] = $fc1->format(self::D_M_Y).' a '.$fc2->format(self::D_M_Y);
         $fc1->addDays(7);
         $fc2->addDays(7);
         $array[27] = $fct->Fct->Colaboracion->Ciclo->llocTreball;
-        $array[28] = $fc1->format("d/m/y").' a '.$fc2->format("d/m/y");
+        $array[28] = $fc1->format(self::D_M_Y).' a '.$fc2->format(self::D_M_Y);
         $fc1->addDays(7);
 
         $array[37] = $fct->Fct->Colaboracion->Centro->localidad;

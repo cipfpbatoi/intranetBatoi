@@ -19,8 +19,9 @@ class AsistenciaController extends ApiBaseController
         if ($reunion) {
             $reunion->profesores()->updateExistingPivot($request->idProfesor, ['asiste' => $request->asiste]);
             return $this->sendResponse(['updated' => true], $reunion);
-        } else
+        } else {
             return $this->sendResponse(['updated' => false], 'KO');
+        }
     }
 
 }

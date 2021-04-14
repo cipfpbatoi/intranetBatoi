@@ -26,9 +26,9 @@ class PanelProyectoController extends BaseController
                 ->distinct()
                 ->get();
 
-        foreach ($ciclos as $ciclo)
-            $this->panel->setPestana(str_replace([' ', '(', ')','.'], '', $ciclo->ciclo), true, 'profile.documento', ['ciclo', $ciclo->ciclo]);
-        //dd($this->panel);
+        foreach ($ciclos as $ciclo) {
+            $this->panel->setPestana(str_replace([' ', '(', ')', '.'], '', $ciclo->ciclo), true, 'profile.documento', ['ciclo', $ciclo->ciclo]);
+        }
     }
     
     public function search()

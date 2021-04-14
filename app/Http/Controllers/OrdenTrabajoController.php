@@ -57,7 +57,7 @@ class OrdenTrabajoController extends IntranetController
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id){
-        $todos = Incidencia::where('orden',$id)->get();
+        Incidencia::where('orden',$id)->get();
         return parent::destroy($id);
     }
 

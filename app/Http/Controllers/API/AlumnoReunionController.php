@@ -21,7 +21,6 @@ class AlumnoReunionController extends ApiBaseController
        $apellidos = $alumno->apellido1.' '.$alumno->apellido2;
        $email = $alumno->email ;
        $nia = $alumno->nia;
-       //$grupo = $alumno->Grupo->first();
        $ciclo = $grupo->idCiclo;
        $dni = $alumno->dni;
        $curso_actual = $grupo->curso;

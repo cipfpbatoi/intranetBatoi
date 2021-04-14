@@ -66,12 +66,13 @@ class Actividad extends Model
         if (Actividad_profesor::select('idProfesor')
                         ->where('idActividad', $this->id)
                         ->where('coordinador', 1)
-                        ->count())
-        return Actividad_profesor::select('idProfesor')
-                        ->where('idActividad', $this->id)
-                        ->where('coordinador', 1)
-                        ->first()
-                        ->idProfesor;
+                        ->count()) {
+            return Actividad_profesor::select('idProfesor')
+                ->where('idActividad', $this->id)
+                ->where('coordinador', 1)
+                ->first()
+                ->idProfesor;
+        }
     }
     public function scopeProfesor($query,$dni)
     {

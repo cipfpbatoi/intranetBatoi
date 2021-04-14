@@ -1,12 +1,6 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Lote;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
-use Intranet\Entities\Material;
-
 /**
  * Class MaterialController
  * @package Intranet\Http\Controllers
@@ -17,15 +11,11 @@ class InventarioController extends IntranetController
     /**
      * @var string
      */
-    protected $perfil = 'profesor';
-    /**
-     * @var string
-     */
     protected $model = 'Inventario';
     /**
      * @var array
      */
-    protected $vista = ['index' => 'Material'];
+    protected $vista = ['index' => 'material' ];
     /**
      * @var array
      */
@@ -34,16 +24,27 @@ class InventarioController extends IntranetController
      * @var array
      */
 
-    /**
-     * MaterialController constructor.
-     */
-    public function __construct()
-    {
-        $this->middleware($this->perfil);
-        parent::__construct();
-    }
+    protected $formFields =  [
+        'nserieprov' => ['type' => 'text'],
+        'descripcion' => ['type' => 'text'],
+        'marca' => ['type' => 'text'],
+        'modelo' => ['type' => 'text'],
+        'ISBN' => ['type' => 'text'],
+        'espacio' => ['disabled' => 'disabled'],
+        'procedencia' => ['disabled' => 'disabled'],
+        'proveedor' => ['disabled' => 'disabled'],
+        'inventariable' => ['type' => 'checkbox'],
+        'estado' => ['disabled' => 'disabled'],
+        'articulo_lote_id' => ['disabled' => 'disabled'],
+        'unidades' => ['type' => 'hidden']
+    ];
+
 
     public function search(){
+        // empty
+    }
+
+    protected function qr($id){
 
     }
 

@@ -34,7 +34,11 @@ class CentroController extends IntranetController
     {
         parent::update($request, $id);
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['empresa' => $request->idEmpresa]);
+        return $this->showEmpresa($request->idEmpresa);
+    }
+
+    private function showEmpresa($id){
+        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
     }
 
     /**
@@ -45,7 +49,7 @@ class CentroController extends IntranetController
     {
         parent::store($request);
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['empresa' => $request->idEmpresa]);
+        return $this->showEmpresa($request->idEmpresa);
     }
 
 
@@ -59,7 +63,7 @@ class CentroController extends IntranetController
         $empresa = Centro::find($id)->idEmpresa;
         parent::destroy($id);
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['empresa' => $empresa]);
+        return $this->showEmpresa($empresa);
     }
     
 

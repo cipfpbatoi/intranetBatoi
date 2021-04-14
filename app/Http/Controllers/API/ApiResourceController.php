@@ -11,8 +11,6 @@ use Intranet\Http\Controllers\Controller;
 class ApiResourceController extends Controller
 {
 
-//    protected $perfil;
-//    
     protected $namespace = 'Intranet\\Entities\\';
     protected $model;
     protected $class;

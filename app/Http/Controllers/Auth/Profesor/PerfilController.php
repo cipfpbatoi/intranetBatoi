@@ -21,10 +21,12 @@ class PerfilController extends Perfil
     public function update(Request $request, $id = null)
     {
         $new = $this->class::find(Auth::user('profesor')->dni);
-        if (isset($request->mostrar))
+        if (isset($request->mostrar)) {
             $new->mostrar = $request->mostrar;
-        else 
+        }
+        else {
             $new->mostrar = 0;
+        }
         
         parent::update($request, $new);
         Alert::info(system('php ./../artisan cache:clear'));

@@ -28,17 +28,7 @@ trait TraitEstado
             ]);
         }
     }
-    /*
-    private static function makeDocument($elemento){
-        if ($elemento->fichero != ''){
-            $idDocumento = Documento::crea($elemento, [
-                'tipoDocumento' => getClase($elemento),
-                'rol'=> '2',
-            ]);
-        }
 
-    }
-    */
     private static function dateResolve($elemento,$fecha){
         if (isset($elemento->fechasolucion)) {
             $elemento->fechasolucion = $fecha;
@@ -73,10 +63,11 @@ trait TraitEstado
 
     public static function _print($id)
     {
-        if ( config('modelos.' . getClass(static::class) . '.print') == config('modelos.' . getClass(static::class) . '.resolve'))
-            return static::putEstado($id, config('modelos.' . getClass(static::class) . '.print'),'',Hoy());
-        else        
+        if ( config('modelos.' . getClass(static::class) . '.print') == config('modelos.' . getClass(static::class) . '.resolve')) {
+            return static::putEstado($id, config('modelos.' . getClass(static::class) . '.print'), '', Hoy());
+        }  else {
             return static::putEstado($id, config('modelos.' . getClass(static::class) . '.print'));
+        }
     }
 
     public static function getEstado($id)
@@ -121,12 +112,14 @@ trait TraitEstado
                     case 'secretario' : 
                     case 'orientador' :    
                     case 'vicedirector': 
-                        if (is_array(config('contacto.'.$quien)))
-                           foreach (config('contacto.'.$quien) as $id){
-                            avisa($id,$explicacion,$enlace);
-                           }     
-                        else        
-                           avisa(config('contacto.'.$quien),$explicacion,$enlace);
+                        if (is_array(config('contacto.'.$quien))) {
+                            foreach (config('contacto.' . $quien) as $id) {
+                                avisa($id, $explicacion, $enlace);
+                            }
+                        }
+                        else {
+                            avisa(config('contacto.' . $quien), $explicacion, $enlace);
+                        }
                         break;
                     case 'jefeDepartamento' : isset($this->Profesor->dni)?avisa($this->Profesor->miJefe,$explicacion,$enlace):avisa(AuthUser()->miJefe,$explicacion,$enlace);break;
                     default :

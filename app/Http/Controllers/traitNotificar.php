@@ -24,11 +24,13 @@ trait traitNotificar
         $mensaje = $mensaje ? $mensaje : "No estaré en el centre des de " . $elemento->desde . " fins " . $elemento->hasta;
         $idEmisor = $idEmisor ? $idEmisor : $elemento->idProfesor;
 
-        if (count($grupos = $this->gruposAfectados($elemento, $idEmisor)->toArray()) == 0)
+        if (count($grupos = $this->gruposAfectados($elemento, $idEmisor)->toArray()) == 0) {
             return;
+        }
         
-        foreach ($this->profesoresAfectados($grupos, $idEmisor) as $profesor)
-            avisa($profesor->idProfesor, $mensaje,'#',$emisor);
+        foreach ($this->profesoresAfectados($grupos, $idEmisor) as $profesor) {
+            avisa($profesor->idProfesor, $mensaje, '#', $emisor);
+        }
     }
 
     protected function profesoresAfectados($grupos,$emisor){
@@ -40,32 +42,36 @@ trait traitNotificar
     }
     protected function gruposAfectados($elemento, $idProfesor)
     {
-        if (!esMismoDia($elemento->desde, $elemento->hasta))
-            return(Horario::distinct()
-                            ->select('idGrupo')
-                            ->Profesor($idProfesor)
-                            ->whereNotNull('idGrupo')
-                            ->get());
+        if (!esMismoDia($elemento->desde, $elemento->hasta)) {
+            return (Horario::distinct()
+                ->select('idGrupo')
+                ->Profesor($idProfesor)
+                ->whereNotNull('idGrupo')
+                ->get());
+        }
 
         $dia_semana = nameDay($elemento->desde);
-        if (count($horas = $this->horasAfectadas($elemento))) 
+        if (count($horas = $this->horasAfectadas($elemento))) {
             return (Horario::distinct()
-                            ->select('idGrupo')
-                            ->Profesor($idProfesor)
-                            ->Dia($dia_semana)
-                            ->whereNotNull('idGrupo')
-                            ->whereIn('sesion_orden', $horas)
-                            ->get());
+                ->select('idGrupo')
+                ->Profesor($idProfesor)
+                ->Dia($dia_semana)
+                ->whereNotNull('idGrupo')
+                ->whereIn('sesion_orden', $horas)
+                ->get());
+        }
         
-        return [];
+        return collect();
     }
 
     protected function horasAfectadas($elemento)
     {
-        if (!isset($elemento->dia_completo)) 
+        if (!isset($elemento->dia_completo)) {
             return Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta));
-        if ($elemento->dia_completo) 
+        }
+        if ($elemento->dia_completo) {
             return Hora::horasAfectadas('07:00', '23:00');
+        }
         return Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin);
         
     }

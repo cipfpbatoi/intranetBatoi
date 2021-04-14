@@ -22,7 +22,9 @@ class PanelPollResponseController extends PollController
         $usuario = [];
         foreach ($activas as $activa){
             $modelo = $activa->modelo;
-            if ($modelo::has())  $usuario[] = $activa;
+            if ($modelo::has()) {
+                $usuario[] = $activa;
+            }
         }
         return $usuario;
     }

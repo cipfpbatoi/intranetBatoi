@@ -80,9 +80,11 @@ class Empresa extends Model
     }
     public function getCiclesAttribute(){
         $cicles = '';
-        foreach ($this->centros as $centro)
-            foreach ($centro->colaboraciones as $colaboracion)
-                $cicles .= $colaboracion->XCiclo.' ';
+        foreach ($this->centros as $centro) {
+            foreach ($centro->colaboraciones as $colaboracion) {
+                $cicles .= $colaboracion->XCiclo . ' ';
+            }
+        }
         return $cicles;
     }
 

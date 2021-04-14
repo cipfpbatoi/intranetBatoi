@@ -27,7 +27,9 @@ class MyMailController extends Controller
             $fitxer = 'tmp/'.$nom;
             $attach = [$fitxer => $mime];
         }
-        else $attach = null;
+        else {
+            $attach = null;
+        }
        
         $mail = new myMail($request->to,$request->toPeople,$request->subject,$request->content,$request->from,$request->fromPerson,$request->class,$request->register,$attach);
         $mail->send();

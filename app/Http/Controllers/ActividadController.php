@@ -51,10 +51,12 @@ class ActividadController extends IntranetController
    
     public function store(Request $request)
     {
-        $id = $this->realStore($request);
-        return redirect()->route('actividad.detalle', ['actividad' => $id]);
+        return $this->showDetalle($this->realStore($request));
     }
 
+    private function showDetalle($id){
+        return redirect()->route('actividad.detalle', ['actividad' => $id]);
+    }
     public function detalle($id)
     {
         $tGrupos = Grupo::pluck('nombre', 'codigo')->toArray();
@@ -78,21 +80,21 @@ class ActividadController extends IntranetController
     {
         $actividad = Actividad::find($actividad_id);
         $actividad->grupos()->syncWithoutDetaching([$request->idGrupo]);
-        return redirect()->route('actividad.detalle', ['actividad' => $actividad_id]);
+        return $this->showDetalle($actividad_id);
     }
 
     public function borrarGrupo($actividad_id, $grupo_id)
     {
         $actividad = Actividad::find($actividad_id);
         $actividad->grupos()->detach($grupo_id);
-        return redirect()->route('actividad.detalle', ['actividad' => $actividad_id]);
+        return $this->showDetalle($actividad_id);
     }
 
     public function altaProfesor(Request $request, $actividad_id)
     {
         $actividad = Actividad::find($actividad_id);
         $actividad->profesores()->syncWithoutDetaching([$request->idProfesor]);
-        return redirect()->route('actividad.detalle', ['actividad' => $actividad_id]);
+        return $this->showDetalle($actividad_id);
     }
 
     public function borrarProfesor($actividad_id, $profesor_id)
@@ -112,7 +114,7 @@ class ActividadController extends IntranetController
                     ->first();
             $actividad->profesores()->updateExistingPivot($nuevo_coord->idProfesor, ['coordinador' => 1]);
         }
-        return redirect()->route('actividad.detalle', ['actividad' => $actividad_id]);
+        return $this->showDetalle($actividad_id);
     }
 
     public function coordinador($actividad_id, $profesor_id)
@@ -125,7 +127,7 @@ class ActividadController extends IntranetController
             $actividad->profesores()->updateExistingPivot($coordActual->idProfesor, ['coordinador' => 0]);
         }
         $actividad->profesores()->updateExistingPivot($profesor_id, ['coordinador' => 1]);
-        return redirect()->route('actividad.detalle', ['actividad' => $actividad_id]);
+        return $this->showDetalle($actividad_id);
     }
 
     public function notify($id)

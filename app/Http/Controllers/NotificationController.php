@@ -40,8 +40,8 @@ class NotificationController extends IntranetController
      */
     protected function search()
     {
-        $key = AuthUser()->primaryKey;
-        return Notification::where('notifiable_id', "=", AuthUser()->$key)
+        $userKey = AuthUser()->primaryKey;
+        return Notification::where('notifiable_id', "=", AuthUser()->$userKey)
                 ->orderBy('created_at','desc')
                 ->get();  
     }
@@ -63,11 +63,13 @@ class NotificationController extends IntranetController
      */
     public function readAll()
     {
-        $key = AuthUser()->primaryKey;
-        if ($key == 'dni')
-            $user = Profesor::find(AuthUser()->$key);
-        else
-            $user = Alumno::find(AuthUser()->$key);
+        $userKey = AuthUser()->primaryKey;
+        if ($userKey == 'dni') {
+            $user = Profesor::find(AuthUser()->$userKey);
+        }
+        else {
+            $user = Alumno::find(AuthUser()->$userKey);
+        }
         $user->unreadNotifications->markAsRead();
 
         return back();
@@ -78,11 +80,13 @@ class NotificationController extends IntranetController
      */
     public function deleteAll()
     {
-        $key = AuthUser()->primaryKey;
-        if ($key == 'dni')
-            $user = Profesor::find(AuthUser()->$key);
-        else
-            $user = Alumno::find(AuthUser()->$key);
+        $userKey = AuthUser()->primaryKey;
+        if ($userKey == 'dni') {
+            $user = Profesor::find(AuthUser()->$userKey);
+        }
+        else {
+            $user = Alumno::find(AuthUser()->$userKey);
+        }
         $user->notifications()->delete();
 
         return back();

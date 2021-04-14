@@ -48,12 +48,13 @@ class ColaboracionController extends ApiBaseController
     }
     public function telefon($id,Request $request){
         $activities = Activity::where('action','phone')->where('model_id',$id)->get();
-        foreach ($activities as $activity)
-            if (esMismoDia($activity->created_at,Hoy())){
+        foreach ($activities as $activity) {
+            if (esMismoDia($activity->created_at, Hoy())) {
                 $activity->comentari = $request->explicacion;
                 $activity->save();
-                return $this->sendError($activity,'404');
+                return $this->sendError($activity, '404');
             }
+        }
         $activity = Activity::record('phone', Fct::find($id),$request->explicacion,null,'Seguiment telefònic');
         return $this->sendResponse($activity,'OK');
     }

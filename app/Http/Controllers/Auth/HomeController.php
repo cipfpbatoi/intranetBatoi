@@ -36,8 +36,9 @@ abstract class HomeController extends Controller
     {
         if ($this->guard == 'profesor') {
             $usuario = AuthUser();
-            if ($usuario->dni == '12345678A')
+            if ($usuario->dni == '12345678A') {
                 return redirect('/fichar');
+            }
             else {
                 $horario = Cache::remember('horario'.$usuario->dni,now()->addDay(), function () use ($usuario) {
                     return Horario::HorarioSemanal($usuario->dni);

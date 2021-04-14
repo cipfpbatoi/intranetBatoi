@@ -21,6 +21,8 @@ class SendAvaluacioEmailController extends Seeder
 
     const PROMOCIONA = 2;
     const NOPROMOCIONA = 3;
+    const SECRETARIA_CIPFP_BATOI = 'Secretaria CIPFP Batoi';
+
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -64,11 +66,11 @@ class SendAvaluacioEmailController extends Seeder
             $aR->save();
         }
         if ($aR->Reunion->grupoClase->turno == 'S'){
-            Mail::to($aR->Alumno->email,'Secretaria CIPFP Batoi')
+            Mail::to($aR->Alumno->email, self::SECRETARIA_CIPFP_BATOI)
                 ->send(new AvalAlumne($aR,'pdf.reunion.informe.semi'));
         }
         else {
-            Mail::to($aR->Alumno->email,'Secretaria CIPFP Batoi')
+            Mail::to($aR->Alumno->email, self::SECRETARIA_CIPFP_BATOI)
                 ->send(new AvalAlumne($aR,'pdf.reunion.informe.individual'));
         }
         avisa($aR->Reunion->idProfesor,
@@ -93,7 +95,7 @@ class SendAvaluacioEmailController extends Seeder
 
             $aR->token = $token;
 
-            Mail::to($aR->Alumno->email,'Secretaria CIPFP Batoi')
+            Mail::to($aR->Alumno->email, self::SECRETARIA_CIPFP_BATOI)
                 ->send(new extraOrdinariaAlumne(
                     $aR,'email.extra.'.$informe));
         }

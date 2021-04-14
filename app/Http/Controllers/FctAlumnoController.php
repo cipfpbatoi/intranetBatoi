@@ -17,7 +17,8 @@ use Intranet\Services\FormBuilder;
 class FctAlumnoController extends IntranetController
 {
     use traitImprimir;
-    
+
+    const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';
     protected $model = 'AlumnoFct';
     protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas','periode'];
@@ -38,13 +39,13 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumnofct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '1']]));
 
-        $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct", ['class' => 'btn-info','roles' => config('roles.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config('roles.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['id' => '401', 'roles' => config('roles.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['id' => '402', 'roles' => config('roles.rol.tutor')]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pasqua",['class' => 'selecciona btn-info','data-url'=> "/api/alumnoFct/".AuthUser()->dni."/misAlumnos",'roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("fct", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['id' => '401', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['id' => '402', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pasqua",['class' => 'selecciona btn-info','data-url'=> "/api/alumnoFct/".AuthUser()->dni."/misAlumnos",'roles' => config(self::ROLES_ROL_TUTOR)]));
         Session::put('redirect', 'FctAlumnoController@index');
     }
         //

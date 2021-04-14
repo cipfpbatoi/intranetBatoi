@@ -11,6 +11,7 @@ use Intranet\Botones\BotonBasico;
  */
 class Modulo_cicloController extends IntranetController
 {
+    const ROLES_ROL_ADMINISTRADOR = 'roles.rol.administrador';
 
     /**
      * @var string
@@ -40,9 +41,9 @@ class Modulo_cicloController extends IntranetController
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('modulo_ciclo.create', ['roles' => config('roles.rol.administrador')]));
-        $this->panel->setBoton('grid', new BotonImg('modulo_ciclo.edit', ['roles' => config('roles.rol.administrador')]));
-        $this->panel->setBoton('grid', new BotonImg('modulo_ciclo.delete', ['roles' => config('roles.rol.administrador')]));
+        $this->panel->setBoton('index', new BotonBasico('modulo_ciclo.create', ['roles' => config(self::ROLES_ROL_ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('modulo_ciclo.edit', ['roles' => config(self::ROLES_ROL_ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('modulo_ciclo.delete', ['roles' => config(self::ROLES_ROL_ADMINISTRADOR)]));
     }
 
 }

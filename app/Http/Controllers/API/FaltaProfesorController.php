@@ -18,15 +18,17 @@ class FaltaProfesorController extends ApiBaseController
             if ($registro->salida != null) {
                 if (isset($dias[$registro->idProfesor][$registro->dia])) {
                     $dias[$registro->idProfesor][$registro->dia]['horas'] = sumarHoras($dias[$registro->idProfesor][$registro->dia]['horas'], restarHoras($registro->entrada, $registro->salida));
-                } else
-                    $dias[$registro->idProfesor][$registro->dia] = array('idProfesor'=>$registro->idProfesor,'fecha' => $registro->dia, 'horas' =>
+                } else {
+                    $dias[$registro->idProfesor][$registro->dia] = array('idProfesor' => $registro->idProfesor, 'fecha' => $registro->dia, 'horas' =>
                         restarHoras($registro->entrada, $registro->salida));
+                }
             }
             else {
                 if (isset($dias[$registro->idProfesor][$registro->dia])) {
                     $dias[$registro->idProfesor][$registro->dia]['horas'] = sumarHoras($dias[$registro->idProfesor][$registro->dia]['horas'], "01:00:00");
-                } else
-                    $dias[$registro->idProfesor][$registro->dia] = array('idProfesor'=>$registro->idProfesor,'fecha' => $registro->dia, 'horas' => '01:00:00');
+                } else {
+                    $dias[$registro->idProfesor][$registro->dia] = array('idProfesor' => $registro->idProfesor, 'fecha' => $registro->dia, 'horas' => '01:00:00');
+                }
             }
         }
 

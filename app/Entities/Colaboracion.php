@@ -67,12 +67,6 @@ class Colaboracion extends Model
         return $this->hasMany(VoteAnt::class,'idColaboracion','id');
     }
 
-    
-
-//    public function getIdCicloOptions()
-//    {
-//        return hazArray(Ciclo::all()->get(), 'id', 'ciclo');
-//    }
     public function scopeCiclo($query, $ciclo)
     {
         return $query->where('idCiclo',$ciclo);
@@ -87,8 +81,12 @@ class Colaboracion extends Model
         $dni = $dni??AuthUser()->dni;
         $cicloC = Grupo::select('idCiclo')->QTutor($dni)->get();
         $ciclo = $cicloC->count()>0?$cicloC->toarray():[];
-        if ($empresa) return $query->whereIn('idCiclo',$ciclo)->Empresa($empresa);
-        else return $query->whereIn('idCiclo',$ciclo);
+        if ($empresa) {
+            return $query->whereIn('idCiclo', $ciclo)->Empresa($empresa);
+        }
+        else {
+            return $query->whereIn('idCiclo', $ciclo);
+        }
     }
     public function getEmpresaAttribute()
     {

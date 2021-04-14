@@ -21,12 +21,17 @@ class SocialController extends Controller
 
     public function getSocialAuth($token=null)
     {
-        if (!config("services.google"))
+        if (!config("services.google")) {
             abort('404');
-        if (!$token) return Socialite::driver('google')->redirect();
+        }
+        if (!$token) {
+            return Socialite::driver('google')->redirect();
+        }
         else{
             $profesor = Profesor::where('api_token',$token)->first();
-            if ($profesor) return Socialite::driver('google')->with(["login_hint" => $profesor->email])->redirect();
+            if ($profesor) {
+                return Socialite::driver('google')->with(["login_hint" => $profesor->email])->redirect();
+            }
             abort('404');
         }
     }

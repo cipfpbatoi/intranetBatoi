@@ -111,7 +111,11 @@ class InstructorController extends IntranetController
     {
         parent::update($request, $id);
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['empresa' => Centro::find($centro)->idEmpresa]);
+        return $this->showEmpresa(Centro::find($centro)->idEmpresa);
+    }
+
+    private function showEmpresa($id){
+        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
     }
 
     /**
@@ -136,7 +140,7 @@ class InstructorController extends IntranetController
             $instructor->Centros()->syncWithoutDetaching($centro);
         });
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['empresa' => Centro::find($centro)->idEmpresa]);
+        return $this->showEmpresa(Centro::find($centro)->idEmpresa);
     }
 
     /**
@@ -148,14 +152,15 @@ class InstructorController extends IntranetController
     {
         $instructor = Instructor::find($id);
         $instructor->Centros()->detach($centro);
-        if ($instructor->Centros()->count() == 0)
+        if ($instructor->Centros()->count() == 0) {
             try {
                 parent::destroy($id);
-            }
-            catch (\Exception $e) {};
+            } catch (\Exception $e) {
+            };
+        }
 
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['empresa' => Centro::find($centro)->idEmpresa]);
+        return $this->showEmpresa(Centro::find($centro)->idEmpresa);
     }
 
     /**
@@ -181,12 +186,13 @@ class InstructorController extends IntranetController
     public function toCopy(Request $request, $id, $idCentro)
     {
         $instructor = Instructor::findOrFail($id);
-        $centro = Centro::findOrFail($idCentro);
         $instructor->Centros()->attach($request->centro);
-        if ($request->accion == 'mou') $instructor->Centros()->detach($idCentro);
+        if ($request->accion == 'mou') {
+            $instructor->Centros()->detach($idCentro);
+        }
 
         Session::put('pestana',2);
-        return redirect()->action('EmpresaController@show', ['empresa' => Centro::find($idCentro)->idEmpresa]);
+        return $this->showEmpresa(Centro::find($idCentro)->idEmpresa);
     }
 
     /**
@@ -211,14 +217,16 @@ class InstructorController extends IntranetController
                 'director' => $director->FullName,
                 'instructor' => $instructor
             ];
-            if ($fcts->count()==1)
+            if ($fcts->count()==1) {
                 $pdf = $this->hazPdf('pdf.fct.instructor', $fcts->first(), $dades);
+            }
             else
             {
                 $centros = [];
                 foreach ($fcts as $fct){
-                    if (!in_array($fct->Colaboracion->idCentro, $centros))
+                    if (!in_array($fct->Colaboracion->idCentro, $centros)) {
                         $centros[] = $fct->Colaboracion->idCentro;
+                    }
                 }
                 $pdf = $this->hazPdf('pdf.fct.instructors', $centros, $dades);
             }

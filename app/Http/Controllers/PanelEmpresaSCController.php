@@ -13,6 +13,8 @@ use Intranet\Botones\BotonImg;
  */
 class PanelEmpresaSCController extends BaseController
 {
+    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
+    const ROLES_ROL_DUAL = 'roles.rol.dual';
 
     /**
      * @var string
@@ -44,8 +46,8 @@ class PanelEmpresaSCController extends BaseController
      */
     protected function iniBotones()
     {
-       $this->panel->setBoton('index', new BotonBasico("empresa.create",['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
-       $this->panel->setBoton('grid', new BotonImg('empresa.detalle',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
-       $this->panel->setBoton('grid', new BotonImg('empresa.delete',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
+       $this->panel->setBoton('index', new BotonBasico("empresa.create",['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]));
+       $this->panel->setBoton('grid', new BotonImg('empresa.detalle',['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]));
+       $this->panel->setBoton('grid', new BotonImg('empresa.delete',['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]));
     }
 }

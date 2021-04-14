@@ -13,6 +13,7 @@ use Intranet\Http\Requests\EspacioRequest;
  */
 class EspacioController extends ModalController
 {
+    const DIRECCION = 'roles.rol.direccion';
     /**
      * @var string
      */
@@ -59,9 +60,9 @@ class EspacioController extends ModalController
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('espacio.create', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('index', new BotonBasico('espacio.create', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid', new BotonImg('material.detalle'));
-        $this->panel->setBoton('grid', new BotonImg('espacio.edit', ['roles' => config('roles.rol.direccion')]));
-        $this->panel->setBoton('grid', new BotonImg('espacio.delete', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('grid', new BotonImg('espacio.edit', ['roles' => config(self::DIRECCION)]));
+        $this->panel->setBoton('grid', new BotonImg('espacio.delete', ['roles' => config(self::DIRECCION)]));
     }
 }

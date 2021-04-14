@@ -21,8 +21,9 @@ class PanelPollResultController extends PollController
             $practiques = $polls->where('modelo', '==', 'Intranet\Entities\Poll\AlumnoFct');
             $practiques = $practiques->union($polls->where('modelo', '==', 'Intranet\Entities\Poll\Fct'));
         }
-        else
+        else {
             $practiques = [];
+        }
         $professorat = $polls->where('state','Finalizada')->where('modelo','Intranet\Entities\Poll\Profesor');
         return $professorat->union($practiques);
     }

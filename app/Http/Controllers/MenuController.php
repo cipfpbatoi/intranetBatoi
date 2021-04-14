@@ -43,7 +43,7 @@ class MenuController extends IntranetController
             if ($anterior != $menu->menu) {$orden = 1;$anterior=$menu->menu; }
             $menu->orden = $orden ++;
             $menu->save();
-        };
+        }
 
         foreach (Menu::where('submenu','')->orderBy('menu')->orderBy('orden')->get() as $menu){
             $orden = 1;
@@ -78,9 +78,9 @@ class MenuController extends IntranetController
         $inicial = $elemento->orden;
         $orden = $elemento->orden;
         $find = false;
-        while (!$find && $orden>1) 
-            $find = Menu::where('orden',--$orden)->where('menu',$elemento->menu)->where('submenu',$elemento->submenu)->first(); 
-        
+        while (!$find && $orden>1) {
+            $find = Menu::where('orden', --$orden)->where('menu', $elemento->menu)->where('submenu', $elemento->submenu)->first();
+        }
         if ($find){
             $find->orden = $inicial;
             $elemento->orden = $orden;
@@ -99,9 +99,9 @@ class MenuController extends IntranetController
         $inicial = $elemento->orden;
         $orden = $elemento->orden;
         $find = false;
-        while (!$find && $orden < 100)
-            $find = Menu::where('orden',++$orden)->where('menu',$elemento->menu)->where('submenu',$elemento->submenu)->first(); 
-        
+        while (!$find && $orden < 100) {
+            $find = Menu::where('orden', ++$orden)->where('menu', $elemento->menu)->where('submenu', $elemento->submenu)->first();
+        }
         if ($find){
             $find->orden = $inicial;
             $elemento->orden = $orden;

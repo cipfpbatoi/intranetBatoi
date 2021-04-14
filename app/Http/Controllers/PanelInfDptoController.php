@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Session;
 class PanelInfDptoController extends BaseController
 {
 
-    //use traitPanel;
-    
+
     protected $perfil = 'profesor';
     protected $model = 'InfDepartamento';
     protected $gridFields = ['departamento', 'avaluacio'];
