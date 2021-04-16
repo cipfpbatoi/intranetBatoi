@@ -59,7 +59,7 @@ var options = {};
             { data:'fechaAlta'},
             { data: null, render: function (data){
                 return (data.estado == 1)?contenido+operaciones+inventariable:
-                    (data.estado > 2) ? contenido+editar+imprimir:contenido+operaciones;
+                    (data.estado > 2) ? contenido+editar+imprimir:contenido+operaciones+imprimir;
                 },
             },
         ],
