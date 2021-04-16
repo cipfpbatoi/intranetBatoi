@@ -4,7 +4,7 @@ namespace Intranet\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ArticuloLoteResource extends JsonResource
+class InventariableResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +16,10 @@ class ArticuloLoteResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'descripcion' => $this->articulo->descripcion,
-            'marca' => $this->marca??'',
-            'modelo' => $this->modelo??'',
-            'unidades' => $this->unidades,
+            'nserieprov' => $this->nserieprov??'',
+            'espacio' => $this->espacio,
+            'descripcion' => $this->descripcio,
+
         ];
     }
 }

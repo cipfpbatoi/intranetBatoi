@@ -27,15 +27,6 @@ class SendFctEmails extends Command
      */
     protected $description = 'Email valoració FCT';
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * Execute the console command.
@@ -45,7 +36,6 @@ class SendFctEmails extends Command
     public function handle()
     {
         if (config('curso.enquestesAutomatiques')){
-            //$alumnosCalificados = hazArray(AlumnoFctAval::calificados()->get(),'idAlumno');
             $alumnosAprobados = hazArray(AlumnoFctAval::aprobados()->get(),'idAlumno');
             $alumnosPendientes = AlumnoFctAval::pendienteNotificar($alumnosAprobados)->get();
 

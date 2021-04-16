@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonBasico;
 use Intranet\Http\Requests\LoteRequest;
 use Intranet\Entities\Lote;
+use Jenssegers\Date\Date;
 
 /**
  * Class LoteController
@@ -12,6 +13,8 @@ use Intranet\Entities\Lote;
  */
 class LoteController extends ModalController
 {
+
+    use traitImprimir;
 
     /**
      * @var string
@@ -43,6 +46,11 @@ class LoteController extends ModalController
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico('direccion.lote.create', ['text'=>'Nova Factura','roles' => config('roles.rol.direccion')]));
+    }
+
+    protected function print($id){
+        $lote = Lote::findOrFail($id);
+        return $this->hazPdf('pdf.inventario.lote', Lote::findOrFail($id)->Materiales, [Date::now()->format('Y')], 'portrait')->stream();
     }
 
 }

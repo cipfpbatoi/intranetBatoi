@@ -22,6 +22,9 @@ var options = {};
     var inventariable = `<a href="#" class="inventary">
                     <i class="fa fa-cubes" title="Inventariar"></i>                
                 </a>`;
+    var imprimir = `<a href="#" class="QR">
+                    <i class="fa fa-barcode" title="Codi QR"></i>                
+                </a>`;
     var token = $("#_token").text();
     var articulos = cargaArticulos();
     $("#datatable").DataTable( {
@@ -56,7 +59,7 @@ var options = {};
             { data:'fechaAlta'},
             { data: null, render: function (data){
                 return (data.estado == 1)?contenido+operaciones+inventariable:
-                    (data.estado > 2) ? contenido+editar:contenido+operaciones;
+                    (data.estado > 2) ? contenido+editar+imprimir:contenido+operaciones;
                 },
             },
         ],
@@ -120,6 +123,12 @@ $(function () {
                 event.preventDefault();
             }
         })
+
+        $('#datatable').on('click', 'a.QR', function (event) {
+            var url = '/direccion/lote/'+$(this).parent().siblings().first().text()+'/print';
+            $(location).attr('href',url);
+        })
+
         // Botón EDIT
         $('#datatable').on('click', 'a.edit', function (event) {
             event.preventDefault();

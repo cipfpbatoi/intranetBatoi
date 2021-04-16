@@ -7,7 +7,7 @@ use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Articulo;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
-use Intranet\Http\Requests\ArticuloLoteRequest;
+use Intranet\Http\Resources\InventariableResource;
 
 class ArticuloLoteController extends ApiBaseController
 {
@@ -20,8 +20,8 @@ class ArticuloLoteController extends ApiBaseController
         try {
             $articuloLote = new ArticuloLote();
             $articuloLote->lote_id = $request->lote_id;
-            $articuloLote->marca = $request->marca;
-            $articuloLote->modelo = $request->modelo;
+            $articuloLote->marca = $request->marca??null;
+            $articuloLote->modelo = $request->modelo??null;
             $articuloLote->unidades = $request->unidades;
             if ($request->articulo_id === 'new'){
                 $articulo = Articulo::create(['descripcion' => $request->descripcion]);
@@ -39,7 +39,9 @@ class ArticuloLoteController extends ApiBaseController
     function getMateriales($articulo){
         $lote = ArticuloLote::find($articulo);
         if (count($lote->Materiales)) {
-            return response()->json(['data' => $lote->Materiales]);
+            //return response()->json(['data' => $lote->Materiales]);
+            return response()->json(['data' => InventariableResource::collection($lote->Materiales)]);
+
         }
         else {
             response()->json([], 404);

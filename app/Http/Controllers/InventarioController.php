@@ -1,13 +1,17 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Entities\Inventario;
+use Intranet\Services\FormBuilder;
+use Jenssegers\Date\Date;
+
 /**
  * Class MaterialController
  * @package Intranet\Http\Controllers
  */
 class InventarioController extends IntranetController
 {
-
+    use traitImprimir;
     /**
      * @var string
      */
@@ -45,7 +49,22 @@ class InventarioController extends IntranetController
     }
 
     protected function qr($id){
+        $material = Inventario::findOrFail($id);
+        return $this->hazPdf('pdf.inventario.qr', Inventario::findOrFail($id), [Date::now()->format('Y'), 'Alumne - Student'], 'portrait', [85.6, 53.98])->stream();
+    }
 
+    public function edit($id){
+        $material = Inventario::findOrFail($id);
+        if ($material->espacio == 'INVENT'){
+            $formulario = new FormBuilder($material,[
+                'descripcion' => ['disabled' => 'disabled'],
+                'marca' => ['disabled' => 'disabled'],
+                'modelo' => ['disabled' => 'disabled'],
+                'nserieprov' => ['type' => 'text'],
+                'espacio' => ['type' => 'select']]);
+            $modelo =  $this->model;
+            return view('intranet.edit',compact('formulario','modelo'));
+        }
     }
 
 

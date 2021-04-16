@@ -12,7 +12,6 @@ use Intranet\Entities\Articulo;
 class ArticuloController extends ModalController
 {
 
-    use traitFile;
 
     /**
      * @var string

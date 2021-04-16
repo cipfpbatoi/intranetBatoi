@@ -4,13 +4,11 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Auth\PerfilController;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Botones\BotonIcon;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Profesor;
-use Intranet\Entities\Expediente;
-use Intranet\Entities\AlumnoGrupo;
+
 
 /**
  * Class AlumnoController

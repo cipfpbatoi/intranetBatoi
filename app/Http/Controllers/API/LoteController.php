@@ -45,8 +45,8 @@ class LoteController extends ApiBaseController
                 for ($i=0;$i<$articulo->unidades;$i++){
                     $material = new Material(
                         [   'descripcion'=>$articulo->descripcion,
-                            'marca' => $articulo->marca,
-                            'modelo' => $articulo->modelo,
+                            'marca' => $articulo->marca??null,
+                            'modelo' => $articulo->modelo??null,
                             'procedencia'=> $lote->procedencia,
                             'estado' => 1,
                             'unidades' => 1,
