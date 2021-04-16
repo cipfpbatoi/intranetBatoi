@@ -262,7 +262,8 @@ return array(
                 'nota' => 'Nota',
                 'valoraciones' => "Valoración de competencias, capacidades i nivel de aprendizaje",
                 'espacio' => 'Espacio',
-                'DesCurta' => 'Descripción'
+                'DesCurta' => 'Descripción',
+                'punto' => 'Punto a tratar'
         ),
         'empty_option' => array(
             'default' => '-Selecciona-',

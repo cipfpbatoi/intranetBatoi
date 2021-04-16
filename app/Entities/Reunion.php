@@ -33,7 +33,7 @@ class Reunion extends Model
         'fecha' => 'required|date',
         'descripcion' => 'required|between:0,120',
         'idProfesor' => 'required',
-        'idEspacio' => 'required'
+        'idEspacio' => 'required',
     ];
     protected $inputTypes = [
         'idProfesor' => ['type' => 'hidden'],
@@ -106,8 +106,12 @@ class Reunion extends Model
     }
     public function scopeNumero($query,$numero)
     {
-        if ($numero > 0) return $query->where('numero',$numero);
-        else return $query;
+        if ($numero > 0) {
+            return $query->where('numero', $numero);
+        }
+        else {
+            return $query;
+        }
     }
     public function scopeArchivada($query)
     {
@@ -130,8 +134,12 @@ class Reunion extends Model
 
     public function getNumeroOptions()
     {
-        if (isset($this->tipo)) return TipoReunion::numeracion($this->tipo);
-        else return config('auxiliares.numeracion');
+        if (isset($this->tipo)) {
+            return TipoReunion::numeracion($this->tipo);
+        }
+        else {
+            return config('auxiliares.numeracion');
+        }
     }
 
     public function getGrupoOptions()
@@ -183,13 +191,23 @@ class Reunion extends Model
 
     public function getXgrupoAttribute()
     {
-        if ($this->grupo) return ($this->Grupos->literal);
+        if ($this->grupo) {
+            return ($this->Grupos->literal);
+        }
         $colectivo = TipoReunion::colectivo($this->tipo);
-        if ($colectivo == 'Profesor') return 'Claustro';
-        if ($colectivo == 'Jefe') return 'COCOPE';
+        if ($colectivo == 'Profesor') {
+            return 'Claustro';
+        }
+        if ($colectivo == 'Jefe') {
+            return 'COCOPE';
+        }
         $profesor = Profesor::where('dni', '=', $this->idProfesor)->get()->first();
-        if ($colectivo == 'Departamento') return (Departamento::where('id', '=', $profesor->departamento)->get()->first()->cliteral);
-        if ($colectivo == 'Grupo') return Grupo::QTutor($profesor->dni)->count()?Grupo::QTutor($profesor->dni)->first()->nombre:'';
+        if ($colectivo == 'Departamento') {
+            return (Departamento::where('id', '=', $profesor->departamento)->get()->first()->cliteral);
+        }
+        if ($colectivo == 'Grupo') {
+            return Grupo::QTutor($profesor->dni)->count() ? Grupo::QTutor($profesor->dni)->first()->nombre : '';
+        }
     }
     public function getCicloAttribute()
     {
@@ -208,11 +226,16 @@ class Reunion extends Model
         return ($this->tipo == 7 && $this->numero == 35);
     }
     public function getGrupoClaseAttribute(){
-        if (TipoReunion::colectivo($this->tipo) != 'Grupo') return null;
+        if (TipoReunion::colectivo($this->tipo) != 'Grupo') {
+            return null;
+        }
         return Grupo::QTutor($this->idProfesor)->first();
+
     }
     public function getInformeAttribute(){
-        if ($this->extraOrdinaria) return true;
+        if ($this->extraOrdinaria) {
+            return true;
+        }
         return false;
     }
     public function getIsSemiAttribute(){

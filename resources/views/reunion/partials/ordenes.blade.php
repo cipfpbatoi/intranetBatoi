@@ -5,7 +5,7 @@
     <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
         <div class="panel-body">
             <table class="table table-striped table-condensed" name='ordenreunion'>
-                <tr><th style="width: 5%">@lang("validation.attributes.orden")</th><th style="width: 40%">@lang("validation.attributes.descripcion")</th> <th style="width: 40%">@lang("validation.attributes.resumen")</th><th style="width: 10%">@lang("validation.attributes.operaciones")</th></tr>
+                <tr><th style="width: 5%">@lang("validation.attributes.orden")</th><th style="width: 40%">@lang("validation.attributes.punto")</th> <th style="width: 40%">@lang("validation.attributes.resumen")</th><th style="width: 10%">@lang("validation.attributes.operaciones")</th></tr>
                 @foreach ($ordenes as $orden)
                 <tr class="lineaGrupo" id='{{ $orden->id }}'>
                     <td><span class='input'  name='orden'>{!! $orden->orden !!}</span></td>

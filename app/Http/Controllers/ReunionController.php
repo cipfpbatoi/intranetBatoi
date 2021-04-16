@@ -7,6 +7,7 @@ use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Asistencia;
+use Intranet\Http\Requests\OrdenReunionStoreRequest;
 use Intranet\Services\FormBuilder;
 use Response;
 use Intranet\Botones\BotonImg;
@@ -168,7 +169,7 @@ class ReunionController extends IntranetController
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
-    public function altaOrden(Request $request, $reunion_id)
+    public function altaOrden(OrdenReunionStoreRequest $request, $reunion_id)
     {
         if (!is_numeric($request->orden )) {
             $max = OrdenReunion::where('idReunion', '=', $reunion_id)->max('orden');
