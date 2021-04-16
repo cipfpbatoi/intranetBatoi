@@ -244,8 +244,9 @@ class ReunionController extends IntranetController
     {
         $elemento = Reunion::findOrFail($id);
         if ($elemento->fichero != '') {
-            if (file_exists(storage_path('/app/' . $elemento->fichero)))
+            if (file_exists(storage_path('/app/' . $elemento->fichero))) {
                 return response()->file(storage_path('/app/' . $elemento->fichero));
+            }
             else {
                 Alert::message('No trobe fitxer', 'danger');
                 return back();
