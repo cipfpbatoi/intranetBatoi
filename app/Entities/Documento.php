@@ -4,12 +4,8 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
-use Intranet\Events\ActividadCreated;
 use Intranet\Events\ActivityReport;
-use Intranet\Events\PreventAction;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\TipoDocumento;
-use Intranet\Entities\Programacion;
+
 
 class Documento extends Model
 {
@@ -86,9 +82,10 @@ class Documento extends Model
     {
         return (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero)));
     }
-    /**
+
     public static function crea($elemento, $parametres = null)
     {
+        $primaryKey = $elemento->primaryKey;
         if (isset($elemento->fichero) && $doc = Documento::where('fichero', $elemento->fichero)->first()) {
             $doc->llena($parametres);
         } else {
@@ -121,7 +118,7 @@ class Documento extends Model
             }
         }
     }
-    */
+
 
     public function deleteDoc()
     {

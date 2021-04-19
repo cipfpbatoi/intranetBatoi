@@ -99,7 +99,9 @@ class Gestor
 
     private function isAllowed(){
         if ($this->document){
-            if (in_array($this->document->rol, RolesUser(AuthUser()->rol))) return true;
+            if (in_array($this->document->rol, RolesUser(AuthUser()->rol))) {
+                return true;
+            }
             return false;
         }
         return true;

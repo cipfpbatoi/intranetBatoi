@@ -49,7 +49,6 @@ class InventarioController extends IntranetController
     }
 
     protected function qr($id){
-        $material = Inventario::findOrFail($id);
         return $this->hazPdf('pdf.inventario.qr', Inventario::findOrFail($id), [Date::now()->format('Y'), 'Alumne - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
@@ -64,6 +63,8 @@ class InventarioController extends IntranetController
                 'espacio' => ['type' => 'select']]);
             $modelo =  $this->model;
             return view('intranet.edit',compact('formulario','modelo'));
+        } else {
+            return parent::edit($id);
         }
     }
 

@@ -49,8 +49,7 @@ class LoteController extends ModalController
     }
 
     protected function print($id){
-        $lote = Lote::findOrFail($id);
-        return $this->hazPdf('pdf.inventario.lote', Lote::findOrFail($id)->Materiales, [Date::now()->format('Y')], 'portrait')->stream();
+        return $this->hazPdf('pdf.inventario.lote', Lote::findOrFail($id)->Materiales, [Date::now()->format('Y')], 'portrait','a4','1.9cm')->stream();
     }
 
 }
