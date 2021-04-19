@@ -85,7 +85,6 @@ class Documento extends Model
 
     public static function crea($elemento, $parametres = null)
     {
-        $primaryKey = $elemento->primaryKey;
         if (isset($elemento->fichero) && $doc = Documento::where('fichero', $elemento->fichero)->first()) {
             $doc->llena($parametres);
         } else {
