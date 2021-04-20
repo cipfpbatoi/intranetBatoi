@@ -129,7 +129,8 @@ class ExpedienteController extends ModalController
                     $pdf = $this->hazPdf("pdf.expediente.$tipo->id", $todos);
                     $nom = $this->model . new Date() . '.pdf';
                     $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-                    $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "listado llistat expediente expedient $tipo->titulo"]);
+                    $gestor = new Gestor();
+                    $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "listado llistat expediente expedient $tipo->titulo"]);
                     $this->makeAll($todos, '_print');
                     $this->makeLink($todos,$doc);
                     $pdf->save(storage_path('/app/' . $nomComplet));

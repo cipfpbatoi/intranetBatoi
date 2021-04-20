@@ -49,7 +49,8 @@ trait traitImprimir
             $nom = $this->model . new Date() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
             $tags = config("modelos.$this->model.documento");
-            $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => $tags ]);
+            $gestor = new Gestor();
+            $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => $tags ]);
             $this->makeAll($todos, $final);
             if ($link) {
                 $this->makeLink($todos,$doc);

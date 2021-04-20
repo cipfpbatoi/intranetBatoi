@@ -7,6 +7,7 @@ use Intranet\Entities\AlumnoCurso;
 use Intranet\Botones\BotonImg;
 use DB;
 use Intranet\Entities\Documento;
+use Intranet\Services\Gestor;
 use Jenssegers\Date\Date;
 use Intranet\Jobs\SendEmail;
 use Styde\Html\Facades\Alert;
@@ -96,7 +97,8 @@ class CursoController extends ModalController
     {
         $elemento = $this->makeReport($id);
         DB::transaction(function () use ($elemento) {
-            Documento::crea($elemento, ['propietario' => $elemento->profesorado,
+            $gestor = new Gestor($elemento);
+            $gestor->save(['propietario' => $elemento->profesorado,
                 'tipoDocumento' => 'Curso',
                 'descripcion' => $elemento->titulo,
                 'tags' => 'Curs',

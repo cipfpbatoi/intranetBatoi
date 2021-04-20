@@ -3,7 +3,7 @@
     @isset ($material->nserieprov)
         <strong>{{ $material->nserieprov }}</strong><br/>
     @endisset
-    {{ $material->descripcion }}
+    <strong>{{ $material->id }} </strong>{{ $material->descripcion }}
     @isset ($material->marca) <br/> {{$material->marca}} - {{$material->modelo}} @endisset
     <br/>{{FechaString($datosInforme[0])}}
 </p>

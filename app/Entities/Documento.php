@@ -82,7 +82,7 @@ class Documento extends Model
     {
         return (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero)));
     }
-
+/**
     public static function crea($elemento, $parametres = null)
     {
         if (isset($elemento->fichero) && $doc = Documento::where('fichero', $elemento->fichero)->first()) {
@@ -117,7 +117,7 @@ class Documento extends Model
             }
         }
     }
-
+*/
 
     public function deleteDoc()
     {

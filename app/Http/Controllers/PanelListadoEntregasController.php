@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Horario;
+use Intranet\Services\Gestor;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Modulo_ciclo;
@@ -101,7 +102,9 @@ class PanelListadoEntregasController extends BaseController
             $reunion->fichero = $nomComplet;
             $reunion->save();
 
-            Documento::crea($reunion, ['propietario' => AuthUser()->FullName,
+            $gestor = new Gestor($reunion);
+            $gestor->save(
+                    ['propietario' => AuthUser()->FullName,
                         'tipoDocumento' => 'Acta',
                         'descripcion' => $reunion->descripcion,
                         'fichero' => $reunion->fichero,
@@ -110,6 +113,7 @@ class PanelListadoEntregasController extends BaseController
                         'tags' => TipoReunion::literal($reunion->tipo) . ',' . config('auxiliares.numeracion')[$reunion->numero],
                         'created_at' => new Date($reunion->fecha),
                         'rol' => config('roles.rol.profesor')]);
+
         });
         return back();
     }

@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Falta;
 use Intranet\Entities\Profesor;
-use Intranet\Entities\Documento;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Asistencia;
 use Intranet\Entities\Reunion;
@@ -14,6 +13,7 @@ use Intranet\Entities\Expediente;
 use Intranet\Entities\Resultado;
 
 use Intranet\Jobs\SendEmail;
+use Intranet\Services\Gestor;
 use Jenssegers\Date\Date;
 use \DB;
 use Intranet\Botones\BotonImg;
@@ -239,7 +239,8 @@ class FaltaController extends IntranetController
         }
 
         $nomComplet = self::nameFile();
-        $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"]);
+        $gestor = new Gestor();
+        $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"]);
 
         $elementos = self::findElements($desde,$hasta);
         self::markPrinted($hasta);

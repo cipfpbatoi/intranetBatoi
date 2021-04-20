@@ -36,7 +36,7 @@ use traitAutorizar,
     const PROFILE_PROFESOR = 'profile.profesor';
     protected $model = 'Profesor';
     protected $vista = ['show' => 'perfil', 'edit' => 'perfil'];
-    protected $gridFields = ['Xdepartamento', 'FullName', 'Xrol'];
+    protected $gridFields = ['Xdepartamento', 'FullName', 'Xrol','fecha_baja'];
     protected $perfil = 'profesor';
     protected $parametresVista = ['modal' => ['detalle','aviso']];
 
@@ -45,7 +45,7 @@ use traitAutorizar,
         Session::forget('redirect');
         $todos = Profesor::orderBy('apellido1')
                 ->with('Departamento')
-                ->Activo()
+                ->Plantilla()
                 ->get();
         /**
         $departamentos = Departamento::where('didactico',1)->get();
@@ -55,7 +55,7 @@ use traitAutorizar,
         $this->iniBotones();
         return $this->grid($todos);
     }
-    
+
     public function departamento()
     {
         Session::forget('redirect');

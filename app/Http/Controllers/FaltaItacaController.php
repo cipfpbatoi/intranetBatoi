@@ -36,8 +36,9 @@ class FaltaItacaController extends IntranetController
         }
 
         self::deleteFile($nomComplet = self::nameFile($request->desde));
+        $gestor = new Gestor();
 
-        $doc = Documento::crea(null, ['fichero' => $nomComplet, 'tags' => "Birret listado llistat autorizacion autorizacio"]);
+        $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "Birret listado llistat autorizacion autorizacio"]);
         self::makeLink($elementos, $doc);
         return self::hazPdf("pdf.birret", $elementos)
                         ->save(storage_path('/app/' . $nomComplet))
