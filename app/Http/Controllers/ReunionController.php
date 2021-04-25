@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\AlumnoFctAval;
+use Intranet\Services\Gestor;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Asistencia;
@@ -19,7 +19,6 @@ use Intranet\Entities\Documento;
 use Intranet\Jobs\SendEmail;
 use Intranet\Entities\Grupo;
 use Illuminate\Support\Facades\DB;
-use mikehaertl\pdftk\Pdf;
 
 class ReunionController extends IntranetController
 {

@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Falta_profesor;
-use Intranet\Entities\Profesor;
 use Illuminate\Http\Request;
 use Jenssegers\Date\Date;
 

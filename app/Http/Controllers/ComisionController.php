@@ -21,7 +21,7 @@ use Jenssegers\Date\Date;
 class ComisionController extends ModalController
 {
 
-    use traitImprimir, traitGestor, traitSCRUD,
+    use traitImprimir,  traitSCRUD,
         traitNotificar,
         traitAutorizar;
 

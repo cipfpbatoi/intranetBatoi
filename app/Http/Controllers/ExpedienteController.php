@@ -7,7 +7,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Http\Requests\ExpedienteRequest;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Expediente;
-use Intranet\Entities\Documento;
+use Intranet\Services\Gestor;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\TipoExpediente;
 
@@ -18,7 +18,7 @@ use Intranet\Entities\TipoExpediente;
 class ExpedienteController extends ModalController
 {
 
-    use traitImprimir,traitGestor,
+    use traitImprimir,
         traitAutorizar;
 
     /**
@@ -144,5 +144,7 @@ class ExpedienteController extends ModalController
             return back();
         }
     }
+
+
     
 }

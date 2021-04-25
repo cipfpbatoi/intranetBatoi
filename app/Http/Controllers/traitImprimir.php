@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Services\Gestor;
 use Jenssegers\Date\Date;
 use Intranet\Botones\Pdf as PDF;
 use Styde\Html\Facades\Alert;
@@ -156,6 +157,12 @@ trait traitImprimir
             ->setDescription($objetivos);
         $vCalendar->addComponent($vEvent);
         return $vCalendar;
+    }
+
+    public function gestor($id)
+    {
+        $gestor = new Gestor($this->class::findOrFail($id));
+        return $gestor->render();
     }
 
 
