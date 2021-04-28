@@ -17,8 +17,11 @@ $(".selecciona").on("click",function(event){
 });
 function pintaTablaSeleccion(newOptions){
     var $el = $("#tableSeleccion");
+    var checked;
     $el.empty(); // remove old options
     $.each(newOptions, function (key, value) {
-        $el.append($("<tr><td><input type='checkbox' name='"+value.id+"' checked> "+value.texto+"</td></tr>"));
+        if (value.marked == true || value.marked == null) checked = ' checked';
+        else checked = '';
+        $el.append($("<tr><td><input type='checkbox' name='"+value.id+"'"+checked+"> "+value.texto+"</td></tr>"));
     });
 }

@@ -3,14 +3,16 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Fct;
-use Intranet\Http\Resources\ColaboracionResource;
+use Intranet\Http\Resources\SelectColaboracionResource;
+use Intranet\Services\ColaboracionFindService;
+use Intranet\Services\DocFCTFindService;
+use Intranet\Services\DocumentFctService;
 
 class ColaboracionController extends ApiBaseController
 {
@@ -58,29 +60,18 @@ class ColaboracionController extends ApiBaseController
         $activity = Activity::record('phone', Fct::find($id),$request->explicacion,null,'Seguiment telefònic');
         return $this->sendResponse($activity,'OK');
     }
+
+    public function first($dni){
+        $finder = new ColaboracionFindService($dni,2,config('fctEmails.contact'));
+        return SelectColaboracionResource::collection($finder->exec());
+    }
     public function info($dni){
-        return ColaboracionResource::collection($this->selectColaboraciones($dni,2,config('fctEmails.request')));
+        $document = new DocumentFctService('request',$dni);
+        return SelectColaboracionResource::collection($document->finder());
     }
 
-    private function selectColaboraciones($dni,$estado,$document=null){
-        $colaboraciones = Colaboracion::MiColaboracion(null,$dni)->where('tutor',$dni)->where('estado',$estado)->get();
-        if (!$document) {
-            return $colaboraciones;
-        }
-        $noEnviadas = collect();
-        foreach ($colaboraciones as $colaboracion){
-            if (Activity::where('model_class','Intranet\Entities\Colaboracion')->where('model_id',$colaboracion->id)->where('document','=',$document['subject'])->count() == 0){
-                if ($document['fcts'] && count($colaboracion->Fcts)) {
-                    $noEnviadas->push($colaboracion);
-                }
-                if (!$document['fcts'] && count($colaboracion->Fcts) == 0) {
-                    $noEnviadas->push($colaboracion);
-                }
-            }
 
-        }
-        return $noEnviadas;
-    }
+
 
 
 

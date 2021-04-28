@@ -6,7 +6,6 @@ return [
         'receiver' => "Alumnat",
         'view' => 'email.fct.ini',
         'fcts' => 0,
-        'default' => '',
     ],
     'contact' => [
         'subject' => "Sol·licitud Pràctiques de FCT",
@@ -14,50 +13,29 @@ return [
         'view' => 'email.fct.contact',
         'redirect' => 'misColaboraciones',
         'fcts' => 0,
-        'default' => '',
-    ],
+        'modelo' => 'Colaboracion'
+     ],
     'request' => [
         'subject' => 'Revisió Documentació Pràctiques',
         'view' => 'email.fct.request',
+        'viewContent' => 'email.fct.requestU',
         'receiver' => 'A/A de Recursos Humans',
         'fcts' => 0,
-        'default' => '',
-    ],
-    'requestU' => [
-        'subject' => 'Revisió Documentació Pràctiques',
-        'view' => 'email.fct.requestU',
-        'receiver' => 'A/A de Recursos Humans',
-        'redirect' => 'misColaboraciones',
-        'fcts' => 0,
-        'default' => '',
+        'modelo' => 'Colaboracion'
     ],
     'info' => [
         'subject' => "Recordatori inici de pràctiques",
         'receiver' => 'Instructor',
         'view' => 'email.fct.info',
+        'viewContent' =>'email.fct.infoU',
         'fcts' => 1,
-        'default' => '',
-    ],
-    'infoU' => [
-        'subject' => "Recordatori inici de pràctiques",
-        'receiver' => 'Instructor',
-        'view' => 'email.fct.infoU',
-        'redirect' => 'misColaboraciones',
-        'fcts' => 1,
-        'default' => '',
+        'finder' => ['service' => 'FctAlumnoFindService'],
     ],
     'follow' => [
         'subject' => "Seguiment Pràctiques de FCT",
         'receiver' => 'Instructor',
         'view' => 'email.fct.follow',
-        'fcts' => 1,
-        'default' => 'Les pràctiques es desenvolupen amb normalitat',
-    ],
-    'followU' => [
-        'subject' => "Seguiment Pràctiques de FCT",
-        'receiver' => 'Instructor',
-        'view' => 'email.fct.followU',
-        'redirect' => 'misColaboraciones',
+        'viewContent' =>  'email.fct.followU',
         'fcts' => 1,
         'default' => 'Les pràctiques es desenvolupen amb normalitat',
     ],
@@ -75,7 +53,6 @@ return [
         'view' => 'email.fct.student',
         'redirect' => 'misColaboraciones',
         'fcts' => 1,
-        'default' => '',
     ],
 
 ];

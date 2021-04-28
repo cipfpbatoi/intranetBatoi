@@ -7,14 +7,16 @@ use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Fct;
 use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Instructor;
-use Intranet\Mail\DocumentRequest;
+use Intranet\Filters\ActivityAlreadyDone;
+use Intranet\Filters\EmptyFinder;
+use Intranet\Finders\ColaboracionFinder;
+use Intranet\Botones\DocumentoFct;
+use Intranet\Finders\UniqueFinder;
+use Intranet\Services\DocumentFctService;
 use Styde\Html\Facades\Alert;
 use Illuminate\Http\Request;
 use Intranet\Botones\Mail as myMail;
-use Intranet\Entities\Activity;
 use Illuminate\Support\Collection;
 
 
@@ -81,10 +83,10 @@ class PanelColaboracionController extends IntranetController
 
         $this->panel->setBoton('pendiente', new BotonBasico("colaboracion.contacto",['icon' => 'fa fa-bell-o']));
 
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.info",['class'=>'btn-primary selecciona','icon' => 'fa fa-check','data-url'=>'/api/colaboracion/'.AuthUser()->dni.'/info']));
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.documentacion",['class'=>'btn-info','icon' => 'fa fa-flag-o']));
-        $this->panel->setBoton('colabora', new BotonBasico("fct.send",['class'=>'btn-info','icon' => 'fa fa-unlock']));
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.seguimiento",['class'=>'btn-info','icon' => 'fa fa-envelope']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.info",['class'=>'btn-primary','icon' => 'fa fa-check']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.documentacion",['class'=>'btn-info selecciona','icon' => 'fa fa-flag-o','data-url'=>'/api/colaboracion/'.AuthUser()->dni.'/info']));
+        $this->panel->setBoton('colabora', new BotonBasico("fct.send",['class'=>'btn-info selecciona','icon' => 'fa fa-unlock','data-url'=>'/api/fct/'.AuthUser()->dni.'/documentation']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.seguimiento",['class'=>'btn-info selecciona','icon' => 'fa fa-envelope', 'fa fa-flag-o','data-url'=>'/api/fct/'.AuthUser()->dni.'/follow']));
         $this->panel->setBoton('colabora', new BotonBasico("colaboracion.visita",['icon' => 'fa fa-car']));
         $this->panel->setBoton('colabora', new BotonBasico("colaboracion.student",['icon' => 'fa fa-bullhorn']));
 
@@ -107,25 +109,40 @@ class PanelColaboracionController extends IntranetController
      */
 
 
-    public function sendFirstContact($id=null){
-        $colaboraciones = $this->selectColaboraciones($id,1,config('fctEmails.contact'));
-        if ($colaboraciones->count() == 0){
-            Alert('No tens col.laboracions ','info');
-            return back();
+    public function sendContact($id=null){
+        $document = new DocumentoFct('contact');
+        if ($id) {
+            $finder = new UniqueFinder('',$id);
+            $filter = new EmptyFilter($document);
+        } else {
+            $finder = new ColaboracionFinder(AuthUser()->dni,1);
+            $filter = new ActivityAlreadyDone($document);
         }
-        return $this->sendEmails(config('fctEmails.contact'),$colaboraciones);
+        $service = new DocumentFctService($finder,$filter);
+        return $document->exec();
     }
 
+    public function info($dni){
+        $document = new DocumentFctService('request',new ColaboracionFinder(AuthUser()->dni,1));
+        $document->load();
 
-    public function sendRequestInfo($id=null){
-        $colaboraciones = $this->selectColaboraciones($id,2,config(self::FCT_EMAILS_REQUEST));
-        if ($colaboraciones->count() == 0) {
-            return back();
+
+        $finder = new ColaboracionFindService($dni,1,config('fctEmails.request'));
+        return SelectColaboracionResource::collection($finder->exec());
+    }
+
+    public function sendRequest($id=null){
+        $document = new DocumentoFct('request');
+        if ($id) {
+            $finder = new UniqueFinder('Colaboracion',$id);
+            $filter = new EmptyFilter($document);
+        } else {
+            $finder = new ColaboracionFinder(AuthUser()->dni,2);
+            $filter = new ActivityAlreadyDone($document);
         }
-        if ($colaboraciones->count() == 1) {
-            return $this->sendEmails(config('fctEmails.requestU'),$colaboraciones);
-        }
-        return $this->sendEmails(config(self::FCT_EMAILS_REQUEST),$colaboraciones);
+        $service = new DocumentFctService($finder,$filter);
+        $service->exec();
+        return back();
     }
 
     public function sendDocumentation($id=null){
@@ -174,46 +191,6 @@ class PanelColaboracionController extends IntranetController
     }
 
 
-    private function selectColaboraciones($id,$estado,$document=null){
-        if ($id) {
-            return  Colaboracion::where('id',$id)->get();
-        }
-        $colaboraciones = Colaboracion::MiColaboracion()->where('tutor',AuthUser()->dni)->where('estado',$estado)->get();
-        if (!$document) {
-            return $colaboraciones;
-        }
-        $noEnviadas = collect();
-        foreach ($colaboraciones as $colaboracion){
-            if (Activity::where('model_class','Intranet\Entities\Colaboracion')->where('model_id',$colaboracion->id)->where('document','=',$document['subject'])->count() == 0){
-                if ($document['fcts'] && count($colaboracion->Fcts)) {
-                    $noEnviadas->push($colaboracion);
-                }
-                if (!$document['fcts'] && count($colaboracion->Fcts) == 0) {
-                    $noEnviadas->push($colaboracion);
-                }
-            }
-
-        }
-        return $noEnviadas;
-    }
-
-
-    private function selectFcts($id,$document=null){
-        if ($id) {
-            return  Fct::where('id',$id)->get();
-        }
-        $fcts = Fct::MisFctsColaboracion()->EsFct()->get();
-        if (!$document) {
-            return $fcts;
-        }
-        $noRepeat = collect();
-        foreach ($fcts as $fct){
-            if ($fct->Nalumnes > 0 && $fct->correoInstructor == 0 && Activity::where('model_class','Intranet\Entities\Fct')->where('model_id',$fct->id)->where('document','=',$document['subject'])->count() == 0) {
-                $noRepeat->push($fct);
-            }
-        }
-        return $noRepeat;
-    }
 
 
     private function selectFctAlumnes(){
@@ -227,12 +204,11 @@ class PanelColaboracionController extends IntranetController
 
     private function sendEmails($document,$colaboraciones){
         // Aci estic pintant-lo
-        if (isset($document['redirect'])) {
-            return $this->renderEmail($document,$colaboraciones);
+        if ($document->redirect) {
+            return $this->renderEmail($document, $colaboraciones);
+        } else {
+            $document->send($colaboraciones);
         }
-        // Enviat directe
-        $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], $document['view']);
-        $mail->send();
         return back();
     }
 
@@ -248,6 +224,9 @@ class PanelColaboracionController extends IntranetController
             if ($value == 'on'){
                 $colaboraciones->push(Colaboracion::find($item));
             }
+        }
+        if ($colaboraciones->count() == 1) {
+            return $this->sendEmails(config('fctEmails.followU'),$fcts);
         }
         return $this->sendEmails(config(self::FCT_EMAILS_REQUEST),$colaboraciones);
     }

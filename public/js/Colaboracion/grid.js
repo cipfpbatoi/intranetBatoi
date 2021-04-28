@@ -101,12 +101,6 @@ $(function() {
             colaboracion.find(".nombre").text(result.data.nombre+' '+result.data.apellido1+' '+result.data.apellido2);
         });
     });
-    $(".btn-info").on("click",function(event){
-            if (!confirm('Vas a enviar els correus de manera automàtica:')) {
-                event.preventDefault();
-            }
-    });
-
     $(".telefonico").on("click",function(event){
         event.preventDefault();
         $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");

@@ -102,9 +102,10 @@ class Fct extends Model
     }
 
 
-    public function scopeMisFctsColaboracion($query)
+    public function scopeMisFctsColaboracion($query,$profesor=null)
     {
-        $colaboraciones = hazArray(Colaboracion::where('tutor',AuthUser()->dni)->get(),'id','id');
+        $dni = $profesor??AuthUser()->dni;
+        $colaboraciones = hazArray(Colaboracion::where('tutor',$dni)->get(),'id','id');
         return $query->whereIn('idColaboracion',$colaboraciones);
     }
 

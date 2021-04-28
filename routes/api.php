@@ -98,6 +98,8 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/colaboracion/{colaboracion}/switch','ColaboracionController@switch');
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
     Route::get('/colaboracion/{dni}/info','ColaboracionController@info');
+    Route::get('/fct/{dni}/documentation','FctController@documentation');
+    Route::get('/fct/{dni}/follow','FctController@follow');
 
 
     Route::resource('alumnoresultado','AlumnoResultadoContoller');

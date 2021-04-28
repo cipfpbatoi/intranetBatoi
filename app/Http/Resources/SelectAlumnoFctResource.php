@@ -4,7 +4,7 @@ namespace Intranet\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ColaboracionResource extends JsonResource
+class SelectAlumnoFctResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,7 +16,8 @@ class ColaboracionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'texto' => $this->Centro->nombre,
+            'texto' => $this->Alumno->fullName,
+            'marked' => $this->marked??1
         ];
     }
 }
