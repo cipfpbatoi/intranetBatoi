@@ -118,6 +118,11 @@ function AuthUser()
     return $usuario;
 }
 
+function apiAuthUser()
+{
+    return Intranet\Entities\Profesor::where('api_token',$_GET['api_token'])->get()->first();
+}
+
 function isProfesor()
 {
     if (auth('profesor')->user()) {

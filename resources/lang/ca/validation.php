@@ -111,7 +111,7 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	| The following language lines are used to swap attribute place-holders
-	| with something more reader friendly such as "E-Mail Address" instead
+	| with something more reader friendly such as "E-MyMail Address" instead
 	| of "email". Your users will thank you.
 	|
 	| The Validator class will automatically search this array of lines it

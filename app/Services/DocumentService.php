@@ -1,38 +1,28 @@
 <?php
-
-
 namespace Intranet\Services;
-
-
-use Intranet\Botones\Mail as myMail;
+use Intranet\Botones\MyMail;
 use Intranet\Finders\Finder;
-use Intranet\Filters\Filter;
 
-
-
-class DocumentFctService
+class DocumentService
 {
     private $elements;
     private $document;
 
-
-
     /**
-     * DocumentFctService constructor.
+     * DocumentService constructor.
      * @param $elements
      */
-    public function __construct(Finder $finder,Filter $filter)
+    public function __construct(Finder $finder)
     {
         $this->elements = $finder->exec();
-        $this->document = $filter->getDocument();
-        $filter->exec($this->elements);
+        $this->document = $finder->getDocument();
     }
 
     public function __get($key){
         return isset($this->$key)?$this->$key:(isset($this->features[$key])?$this->features[$key]:null);
     }
 
-    public function getElements(){
+    public function load(){
        return $this->elements;
     }
 
@@ -46,13 +36,14 @@ class DocumentFctService
 
     public function render(){
         $elemento = $this->elements->first();
-        $mail = new myMail($this->elements,$this->document->receiver, $this->document->subject, view($this->document->viewContent,compact('elemento')) );
-        return $mail->render($this->redirect);
+        $mail = new MyMail($this->elements, view($this->document->template,compact('elemento')),$this->document->email );
+        return $mail->render($this->document->redirect);
     }
 
     public function send(){
-        $mail = new myMail( $this->elements,$this->document->receiver, $this->document->subject, $this->document->view);
+        $mail = new MyMail( $this->elements,$this->document->receiver, $this->document->subject, $this->document->view);
         $mail->send();
+        return back();
     }
 
 

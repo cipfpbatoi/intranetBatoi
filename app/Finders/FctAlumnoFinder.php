@@ -9,42 +9,20 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
 
 
-class fctAlumnoFinder implements Finder
+class fctAlumnoFinder extends Finder
 {
-      protected $dni;
-      protected $document;
-
-
-
-    /**
-     * DocFCTService constructor.
-     * @param $tipo
-     * @param $dni
-     * @param $estado
-     * @param $document
-     * @param $id
-     */
-    public function __construct( $dni, $document )
-    {
-        $this->dni = $dni;
-        $this->document = $document;
-    }
+    protected $modelo = "Intranet\\Entities\\Fct";
 
     public function exec(){
         $fcts = AlumnoFct::whereIn('idFct',hazArray(Fct::MisFctsColaboracion($this->dni)->EsFct()->get(),'id','id'))->get();
-        $this->markFct($fcts);
-        return $fcts;
+        return $this->filter($fcts);
     }
 
-    private function markFct(&$elements){
+    private function filter(&$elements){
         foreach ($elements as $element){
-            if ($element->Fct->Nalumnes > 0 && $element->Fct->correoInstructor == 0 && Activity::where('model_class','Intranet\Entities\Fct')->where('model_id',$element->idFct)->where('document','=',$this->document['subject'])->count() == 0) {
-                $element->marked = true;
-            }
-            else {
-                $element->marked = false;
-            }
+            $element->marked = ($element->Fct->correoInstructor == 0 && !$this->existsActivity($element->idFct))?true:false;
         }
+        return $elements;
     }
 
 }

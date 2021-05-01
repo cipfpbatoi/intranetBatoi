@@ -3,6 +3,8 @@ namespace Intranet\Botones;
 
 class DocumentoFct
 {
+    private $features;
+
     public function __construct($document)
     {
         $this->features = config('fctEmails.' . $document);
@@ -12,5 +14,7 @@ class DocumentoFct
     {
         return isset($this->$key) ? $this->$key : (isset($this->features[$key]) ? $this->features[$key] : null);
     }
+
+
 }
 

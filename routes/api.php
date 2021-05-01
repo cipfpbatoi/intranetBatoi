@@ -13,8 +13,8 @@ use Illuminate\Http\Request;
   |
  */
 
- Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'create']]);  
- Route::get('alumnoFct/{grupo}/grupo','AlumnoFctController@indice'); 
+Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'create']]);
+Route::get('alumnoFct/{grupo}/grupo','AlumnoFctController@indice');
  Route::get('/convenio','EmpresaController@indexConvenio');
 
 
@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('dual', 'DualController', ['except' => ['edit', 'create']]);
-    Route::get('alumnoFct/{dni}/misAlumnos','AlumnoFctController@misAlumnos');
+    Route::get('misAlumnosFct','AlumnoFctController@misAlumnos');
     Route::resource('actividad', 'ActividadController', ['except' => ['edit', 'create']]);
     Route::resource('programacion', 'ProgramacionController', ['except' => ['edit', 'create']]);
     Route::resource('reunion', 'ReunionController', ['except' => ['edit', 'create']]);
@@ -81,8 +81,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::put('/asistencia/cambiar', 'AsistenciaController@cambiar');
     Route::put('/reunion/{idReunion}/alumno/{idAlumno}','ReunionController@putAlumno');
 
-
-
     Route::get('/tiporeunion/{id}', 'TipoReunionController@show');
     Route::get('/modulo/{id}', 'ModuloController@show');
     Route::get('/ciclo/{id}', 'CicloController@show');
@@ -97,9 +95,12 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/colaboracion/{colaboracion}/unauthorize','ColaboracionController@unauthorize');
     Route::get('/colaboracion/{colaboracion}/switch','ColaboracionController@switch');
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
-    Route::get('/colaboracion/{dni}/info','ColaboracionController@info');
-    Route::get('/fct/{dni}/documentation','FctController@documentation');
-    Route::get('/fct/{dni}/follow','FctController@follow');
+
+    Route::get('/documentacionFCT/colaboracion/{documento}','DocumentacionFCTController@colaboracion');
+    Route::get('/documentacionFCT/alumno/{documento}','DocumentacionFCTController@alumno');
+    Route::get('/documentacionFCT/fct/{documento}','DocumentacionFCTController@fct');
+    Route::get('/fct/documentation','FctController@documentation');
+    Route::get('/fct/follow','FctController@follow');
 
 
     Route::resource('alumnoresultado','AlumnoResultadoContoller');

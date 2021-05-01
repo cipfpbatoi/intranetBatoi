@@ -24,10 +24,9 @@ class HorarioController extends IntranetController
         if (Storage::disk('local')->exists('/horarios/'.$dni.'.json') && $fichero = Storage::disk('local')->get('/horarios/'.$dni.'.json')) {
             return json_decode($fichero);
         }
-        return {
-            null;
-        }
+        return null;
     }
+
     private function changeHorary($dni,$cambios){
         foreach ($cambios as $cambio) {
 

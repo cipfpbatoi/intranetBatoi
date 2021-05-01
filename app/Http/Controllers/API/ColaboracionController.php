@@ -3,16 +3,12 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Fct;
-use Intranet\Http\Resources\SelectColaboracionResource;
-use Intranet\Services\ColaboracionFindService;
-use Intranet\Services\DocFCTFindService;
-use Intranet\Services\DocumentFctService;
+
 
 class ColaboracionController extends ApiBaseController
 {
@@ -60,18 +56,6 @@ class ColaboracionController extends ApiBaseController
         $activity = Activity::record('phone', Fct::find($id),$request->explicacion,null,'Seguiment telefònic');
         return $this->sendResponse($activity,'OK');
     }
-
-    public function first($dni){
-        $finder = new ColaboracionFindService($dni,2,config('fctEmails.contact'));
-        return SelectColaboracionResource::collection($finder->exec());
-    }
-    public function info($dni){
-        $document = new DocumentFctService('request',$dni);
-        return SelectColaboracionResource::collection($document->finder());
-    }
-
-
-
 
 
 

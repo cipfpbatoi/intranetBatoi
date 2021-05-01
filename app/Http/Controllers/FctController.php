@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Session;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\BotonBasico;
-use Intranet\Botones\Mail as myMail;
+
 
 
 /**
@@ -105,34 +105,6 @@ class FctController extends IntranetController
         return Fct::misFcts()->esFct()->get();
     }
 
-
-    public function send()
-    {
-        $document = config('fctEmails.actaIni');
-        $fctAls = AlumnoFct::misFcts()
-            ->where('pg0301',0)
-            ->orderBy('idAlumno')
-            ->orderBy('desde')
-            ->get();
-        if (count($fctAls)){
-            $mail = new myMail( $fctAls,$document['receiver'], $document['subject'], $document['view']);
-            $mail->send();
-        } else {
-            Alert::info('No hi ha alumnes');
-        }
-        return back();
-    }
-
-    /**
-    private function sendEmails($document,$colaboraciones){
-        if (isset($document['redirect'])) {
-            return $this->renderEmail($document,$colaboraciones);
-        }
-        $mail = new myMail( $colaboraciones,$document['receiver'], $document['subject'], $document['view']);
-        $mail->send();
-        return back();
-    }
-    */
 
     /**
      * @param $document

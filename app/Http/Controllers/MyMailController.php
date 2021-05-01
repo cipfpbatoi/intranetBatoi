@@ -6,7 +6,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\Mail as myMail;
+use Intranet\Botones\MyMail;
 use Illuminate\Http\Request;
 
 
@@ -30,8 +30,8 @@ class MyMailController extends Controller
         else {
             $attach = null;
         }
-       
-        $mail = new myMail($request->to,$request->toPeople,$request->subject,$request->content,$request->from,$request->fromPerson,$request->class,$request->register,$attach);
+
+        $mail = new MyMail($request->to,$request->contenido,$request->toArray(),$attach);
         $mail->send();
         return redirect($request->route);
     }
@@ -39,10 +39,8 @@ class MyMailController extends Controller
 
     public function store(Request $request)
     {
-        
-        
         $colectiu = 'Intranet\\Entities\\'.$request->collect;
-        $mail = new myMail($colectiu::all(),null,null,null,null,null,null,false);
+        $mail = new MyMail($colectiu::all());
         return $mail->render('\\');
     }
     

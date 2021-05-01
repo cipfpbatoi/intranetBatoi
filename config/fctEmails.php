@@ -1,58 +1,93 @@
 <?php
 
 return [
-    'actaIni' => [
-        'subject' => "Informació relativa a l'inici de les Pràctiques de FCT",
-        'receiver' => "Alumnat",
-        'view' => 'email.fct.ini',
-        'fcts' => 0,
-    ],
-    'contact' => [
-        'subject' => "Sol·licitud Pràctiques de FCT",
-        'receiver' => 'A/A de Recursos Humans',
+    'contacto' => [
+        'email' => [
+            'subject' => "Sol·licitud Pràctiques de FCT",
+            'toPeople' => 'A/A de Recursos Humans',
+            'editable' => true
+        ],
         'view' => 'email.fct.contact',
+        'template' => 'email.fct.contact',
         'redirect' => 'misColaboraciones',
         'fcts' => 0,
-        'modelo' => 'Colaboracion'
-     ],
-    'request' => [
-        'subject' => 'Revisió Documentació Pràctiques',
+        'estado' => 1,
+        'unique' => 1,
+    ],
+    'revision' => [
+        'email' => [
+            'subject' => 'Revisió Documentació Pràctiques',
+            'toPeople' => 'A/A de Recursos Humans',
+            'editable' => false
+        ],
         'view' => 'email.fct.request',
-        'viewContent' => 'email.fct.requestU',
-        'receiver' => 'A/A de Recursos Humans',
+        'template' => 'email.fct.requestU',
         'fcts' => 0,
-        'modelo' => 'Colaboracion'
-    ],
-    'info' => [
-        'subject' => "Recordatori inici de pràctiques",
-        'receiver' => 'Instructor',
-        'view' => 'email.fct.info',
-        'viewContent' =>'email.fct.infoU',
-        'fcts' => 1,
-        'finder' => ['service' => 'FctAlumnoFindService'],
-    ],
-    'follow' => [
-        'subject' => "Seguiment Pràctiques de FCT",
-        'receiver' => 'Instructor',
-        'view' => 'email.fct.follow',
-        'viewContent' =>  'email.fct.followU',
-        'fcts' => 1,
-        'default' => 'Les pràctiques es desenvolupen amb normalitat',
-    ],
-    'visit' => [
-        'subject' => "Concertar visita de FCT",
-        'receiver' => 'Instructor',
-        'view' => 'email.fct.visit',
-        'redirect' => 'misColaboraciones',
-        'fcts' => 1,
-        'default' => 'Les pràctiques es desenvolupen amb normalitat',
-    ],
-    'student' => [
-        'subject' => "Citar alumnes per seguiment de FCT",
-        'receiver' => 'Alumno',
-        'view' => 'email.fct.student',
-        'redirect' => 'misColaboraciones',
-        'fcts' => 1,
-    ],
+        'estado' => 2,
+        'unique' => 1,
 
+    ],
+    'inicioEmpresa' => [
+        'email' => [
+            'subject' => "Recordatori inici de pràctiques",
+            'to' => 'Instructor',
+            'editable' => false
+        ],
+        'view' => 'email.fct.info',
+        'template' =>'email.fct.infoU',
+        'fcts' => 1,
+        'unique' => 1,
+
+    ],
+    'inicioAlumno' => [
+        'email' => [
+            'subject' => "Informació relativa a l'inici de les Pràctiques de FCT",
+            'toPeople' => "Alumnat",
+            'editable' => false
+        ],
+        'view' => 'email.fct.ini',
+        'template' => 'email.fct.ini',
+        'fcts' => 0,
+        'unique' => 1,
+
+    ],
+    'seguimiento' => [
+        'email' => [
+            'subject' => "Seguiment Pràctiques de FCT",
+            'toPeople' => 'Instructor',
+            'editable' => false
+        ],
+        'view' => 'email.fct.follow',
+        'template' =>  'email.fct.followU',
+        'fcts' => 1,
+        'unique' => 0,
+        'default' => 'Les pràctiques es desenvolupen amb normalitat',
+
+    ],
+    'visitaEmpresa' => [
+        'email' => [
+            'subject' => "Concertar visita de FCT",
+            'toPeople' => 'Instructor',
+            'editable' => true
+        ],
+        'template' => 'email.fct.visit',
+        'redirect' => 'misColaboraciones',
+        'fcts' => 1,
+        'unique' => 0,
+        'default' => 'Les pràctiques es desenvolupen amb normalitat',
+
+    ],
+    'citarAlumnos' => [
+        'email' => [
+            'subject' => "Citar alumnes per seguiment de FCT",
+            'toPeople' => 'Alumno',
+            'editable' => true
+        ],
+        'view' => 'email.fct.student',
+        'template' => 'email.fct.student',
+        'redirect' => 'misColaboraciones',
+        'fcts' => 1,
+        'unique' => 0,
+
+    ],
 ];

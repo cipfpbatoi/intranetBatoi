@@ -16,7 +16,7 @@ class SelectFctResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'texto' => $this->Colaboracion->Centro->nombre,
+            'texto' => $this->Instructor->nombre.'('.$this->Colaboracion->Centro->nombre.')',
             'marked' => $this->marked
         ];
     }

@@ -4,15 +4,15 @@
     <div>
         <table style='text-align: center' style=" border:#000 solid 1;">
             <tr>
-                <th>{{$mail->getToPeople()}}</th>
+                <th>{{$mail->toPeople}}</th>
             </tr>
             <tr>
-                <td><strong>De {{$mail->getFromPerson()}} del {{config('contacto.nombre')}} </strong></td>
+                <td><strong>De {{$mail->fromPerson}} del {{config('contacto.nombre')}} </strong></td>
             </tr>
         </table>
     </div>
     <div>
             <p>Hola, {{$elemento->contacto}}</p>
-            {!! $mail->getContent() !!}
+            {!! $mail->view !!}
     </div>
 @endsection

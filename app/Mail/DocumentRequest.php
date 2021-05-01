@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**
  * Class DocumentRequest
- * @package Intranet\Mail
+ * @package Intranet\MyMail
  */
 class DocumentRequest extends Mailable
 {
@@ -45,7 +45,7 @@ class DocumentRequest extends Mailable
      */
     public function build()
     {
-        $vista =  $this->from($this->mail->getFrom(),$this->mail->getFromPerson())->subject($this->mail->getSubject())->view($this->view);
+        $vista =  $this->from($this->mail->from,$this->mail->fromPerson)->subject($this->mail->subject)->view($this->view);
         if (isset($this->attach))
             foreach ($this->attach as $index => $value){
                 $vista = $vista->attach(storage_path($index),['mime' => $value]);

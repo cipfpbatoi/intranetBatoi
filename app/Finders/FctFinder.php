@@ -3,38 +3,19 @@ namespace Intranet\Finders;
 
 use Intranet\Entities\Fct;
 
-
-class FctFinder implements Finder
+class FctFinder extends Finder
 {
-      protected $dni;
-      protected $document;
-
-
-
-    /**
-     * DocFCTService constructor.
-     * @param $tipo
-     * @param $dni
-     * @param $estado
-     * @param $document
-     * @param $id
-     */
-    public function __construct( $dni, $document )
-    {
-        $this->dni = $dni;
-        $this->document = $document;
-    }
+    protected $modelo = "Intranet\\Entities\\Fct";
 
     public function exec(){
         $fcts = Fct::MisFctsColaboracion($this->dni)->EsFct()->get();
-        $this->markFct($fcts);
-        return $fcts;
+        return $this->filter($fcts);
     }
 
-    private function markFct(&$elements){
+    private function filter(&$elements){
         foreach ($elements as $element){
-                $element->marked = true;
+            $element->marked = !$this->existsActivity($element->id)?true:false;
         }
+        return $elements;
     }
-
 }

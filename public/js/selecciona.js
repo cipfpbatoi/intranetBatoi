@@ -3,6 +3,7 @@ $(".selecciona").on("click",function(event){
     $(this).attr("data-toggle", "modal").attr("data-target", "#seleccion").attr("href", "");
     var token = $("#_token").text();
     var url = $(this).attr("data-url");
+    $('#formSeleccion').attr("action",url.substring(4));
     $.ajax({
         method: "GET",
         url: url,

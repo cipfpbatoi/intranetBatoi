@@ -1,33 +1,35 @@
 <?php
-
-
 namespace Intranet\Finders;
 
+use Intranet\Entities\Activity;
 use Intranet\Entities\Colaboracion;
 
-class ColaboracionFinder implements Finder
+class ColaboracionFinder extends Finder
 {
-    private $dni;
-    private $estado;
 
-    /**
-     * DocFCTService constructor.
-     * @param $dni
-     * @param $estado
-     * @param $document
-     */
-    public function __construct($dniTutor,$faseColaboracion)
-    {
-        $this->dni = $dniTutor;
-        $this->estado = $faseColaboracion;
-
-    }
+    protected $modelo = "Intranet\\Entities\\Colaboracion";
 
     public function exec(){
-        $colaboraciones = Colaboracion::MiColaboracion(null,$this->dni)->where('tutor',$this->dni)->where('estado',$this->estado)->get();
-        return $colaboraciones;
+        $colaboraciones = Colaboracion::MiColaboracion(null,$this->dni)->where('tutor',$this->dni)->where('estado',$this->document->estado)->get();
+        return $this->filter($colaboraciones);
     }
 
+    public function filter(&$elements){
+        foreach ($elements as $element){
+            $element->marked = (!$this->existsActivity($element->id) && $this->checkFcts($this->document->fcts,count($element->Fcts)))?true:false;
+        }
+        return $elements;
+    }
+
+    private function checkFcts($needsFcts,$existsFcts){
+        if ($needsFcts && $existsFcts) {
+            return true;
+        }
+        if (!$needsFcts && !$existsFcts) {
+            return true;
+        }
+        return false;
+    }
 
 
 }

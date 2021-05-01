@@ -1,26 +1,19 @@
 <?php
-
 namespace Intranet\Finders;
 
-class UniqueFinder implements Finder{
 
-    private $modelo;
+class UniqueFinder extends Finder
+{
     private $id;
 
-    /**
-     * UniqueFinder constructor.
-     * @param $modelo
-     * @param $id
-     */
-    public function __construct($modelo, $id)
+    public function __construct($document)
     {
-        $this->modelo = "Intranet\\Entities\\".$modelo;
-        $this->id = $id;
+        $this->modelo = "Intranet\\Entities\\".$document['modelo'];
+        $this->document = $document['document'];
+        $this->request = $document['id'];
     }
 
     public function exec(){
-        return $this->Modelo::where('id',$this->id)->get();
+        return $this->modelo::where('id',$this->id)->get();
     }
-
 }
-

@@ -39,4 +39,3 @@
     </ul>
 </div>
 <div>Salutacions cordials de {{AuthUser()->shortName}}</div>
-
