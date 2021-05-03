@@ -1,6 +1,5 @@
 @extends('layouts.email')
 @section('body')
-
     <div>
         <table style='text-align: center' style=" border:#000 solid 1;">
             <tr>

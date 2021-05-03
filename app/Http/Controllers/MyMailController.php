@@ -30,11 +30,13 @@ class MyMailController extends Controller
         else {
             $attach = null;
         }
-
         $mail = new MyMail($request->to,$request->contenido,$request->toArray(),$attach);
+
         $mail->send();
         return redirect($request->route);
     }
+
+
 
 
     public function store(Request $request)

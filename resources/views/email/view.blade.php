@@ -6,6 +6,7 @@
         {!! Form::hidden('route',$route) !!}
         {!! Form::hidden('register',$register) !!}
         {!! Form::hidden('class',$class) !!}
+        {!! Form::hidden('editable',$editable) !!}
         <div class="form-group">
             {!! Form::label('from', 'De') !!}
             {!! Form::text('from', $from, ['class' => 'form-control']) !!}
@@ -27,8 +28,13 @@
             {!! Form::text('subject', $subject, ['class' => 'form-control']) !!}
         </div>
         <div class="form-group">
-            {!! Form::label('contenido', 'Contingut') !!}
-            {!! Form::textarea('contenido',$contenido, ['id'=>'contenido','class' => 'form-control','style'=>'display:none']) !!}
+            @if (!$editable)
+                {!! Form::label('contenido', 'Exemple') !!}
+                {!! Form::textarea('contenido',$template, ['id'=>'contenido','class' => 'form-control','style'=>'display:none']) !!}
+            @else
+                {!! Form::label('contenido', 'Contingut') !!}
+                {!! Form::textarea('contenido',$contenido, ['id'=>'content','class' => 'form-control','style'=>'display:none']) !!}
+            @endif
         </div>
 
         <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#area">
@@ -88,7 +94,7 @@
             <a class="btn" data-edit="redo" title="Redo (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
         </div>
     </div>
-    <div id="area" class="editor-wrapper">{!! $contenido  !!} </div>
+    <div id="area" class="editor-wrapper">{!! $contenido !!} </div>
     <div class="form-group">
             {!! Form::label('file', 'Adjunt') !!}
             {!! Form::file('file') !!}

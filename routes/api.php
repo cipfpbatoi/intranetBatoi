@@ -96,9 +96,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/colaboracion/{colaboracion}/switch','ColaboracionController@switch');
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
 
-    Route::get('/documentacionFCT/colaboracion/{documento}','DocumentacionFCTController@colaboracion');
-    Route::get('/documentacionFCT/alumno/{documento}','DocumentacionFCTController@alumno');
-    Route::get('/documentacionFCT/fct/{documento}','DocumentacionFCTController@fct');
+    Route::get('/documentacionFCT/{documento}','DocumentacionFCTController@exec');
     Route::get('/fct/documentation','FctController@documentation');
     Route::get('/fct/follow','FctController@follow');
 

@@ -5,8 +5,6 @@ use Intranet\Entities\Fct;
 
 class FctFinder extends Finder
 {
-    protected $modelo = "Intranet\\Entities\\Fct";
-
     public function exec(){
         $fcts = Fct::MisFctsColaboracion($this->dni)->EsFct()->get();
         return $this->filter($fcts);

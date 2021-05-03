@@ -8,12 +8,12 @@ class UniqueFinder extends Finder
 
     public function __construct($document)
     {
-        $this->modelo = "Intranet\\Entities\\".$document['modelo'];
         $this->document = $document['document'];
-        $this->request = $document['id'];
+        $this->id = $document['id'];
     }
 
     public function exec(){
-        return $this->modelo::where('id',$this->id)->get();
+        $modelo = "Intranet\\Entities\\".$this->document->modelo;
+        return $modelo::where('id',$this->id)->get();
     }
 }

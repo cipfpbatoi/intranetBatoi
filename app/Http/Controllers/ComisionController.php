@@ -5,7 +5,8 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\Mail;
+use Intranet\Botones\DocumentoFct;
+use Intranet\Botones\MyMail;
 use Intranet\Http\Requests\ComisionRequest;
 use \PDF;
 use Intranet\Entities\Comision;
@@ -100,11 +101,9 @@ class ComisionController extends ModalController
         foreach ($comision->Fcts as $fct){
             if ($fct->pivot->aviso){
                 $this->sendEmail($fct,$comision->desde);
-            }
-            else {
-                Activity::record('visita', $fct, null, $comision->desde, 'Visita Empresa');
-            }
 
+            }
+            Activity::record('visita', $fct, null, $comision->desde, 'Visita Empresa');
         }
 
     }
@@ -121,8 +120,8 @@ class ComisionController extends ModalController
 
         file_put_contents(storage_path("tmp/visita_$elemento->id.ics"), $this->build_ics($ini,$fin,'Visita del Tutor CIPFPBatoi','Seguimiento Fct',$elemento->Centro)->render());
         $attach = [ "tmp/visita_$elemento->id.ics" => 'text/calendar'];
-
-        $mail = new Mail($elemento,$fecha,'Visita Empresa','email.fct.confirm',AuthUser()->email,AuthUser()->fullName,null,true,$attach,'visita');
+        $documento = new DocumentoFct('visitaComision');
+        $mail = new MyMail($elemento,$documento->view,$documento->email,$attach,'visita');
         $mail->send($fecha);
 
     }

@@ -17,6 +17,16 @@ use Intranet\Services\DocumentService;
 class DocumentacionFCTController
 {
 
+    public function exec($documento){
+        $documento = new DocumentoFct($documento);
+        $finder = "Intranet\\Finders\\".$documento->modelo."Finder";
+        $resource = "Intranet\\Http\\Resources\\Select".$documento->modelo."Resource";
+
+        $service = new DocumentService(new $finder($documento));
+        return $resource::collection($service->load());
+    }
+
+    /**
     public function colaboracion($documento){
         $finder = new ColaboracionFinder(new DocumentoFct($documento));
         $service = new DocumentService($finder);
@@ -37,4 +47,5 @@ class DocumentacionFCTController
 
         return SelectFctResource::collection($service->load());
     }
+     */
 }

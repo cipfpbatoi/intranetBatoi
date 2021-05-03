@@ -190,12 +190,9 @@ Route::get('/empresaSC',['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCControll
 
 
 Route::get('/misColaboraciones',['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
-Route::get('/documentacionfct/{id}/colaboracion/{documento}', ['as' => 'PanelColaboracion.colaboracion', 'uses' => 'PanelColaboracionController@idcolaboracion']);
-Route::get('/documentacionfct/{id}/fct/{documento}', ['as' => 'PanelColaboracion.fct', 'uses' => 'PanelColaboracionController@idfct']);
+Route::get('/documentacionfct/{id}/{documento}', ['as' => 'PanelColaboracion.colaboracion', 'uses' => 'PanelColaboracionController@showMailById']);
+Route::post('/documentacionFCT/{documento}','PanelColaboracionController@showMailByRequest');
 
-Route::post('/documentacionFCT/colaboracion/{documento}','PanelColaboracionController@colaboracion');
-Route::post('/documentacionFCT/alumno/{documento}','PanelColaboracionController@alumno');
-Route::post('/documentacionFCT/fct/{documento}','PanelColaboracionController@fct');
 
 
 Route::resource('/centro', 'CentroController', ['except' => ['destroy', 'update', 'show']]);

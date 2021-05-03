@@ -17,7 +17,6 @@ class RequestFinder extends Finder{
 
     public function __construct($document)
     {
-        $this->modelo = "Intranet\\Entities\\".$document['modelo'];
         $this->document = $document['document'];
         $this->request = $document['request'];
 
@@ -25,9 +24,10 @@ class RequestFinder extends Finder{
 
     public function exec(){
         $elementos = new Collection();
+        $modelo = "Intranet\\Entities\\".$this->document->modelo;
         foreach ($this->request->toArray() as $item => $value){
             if ($value == 'on'){
-                $elementos->push($this->modelo::find($item));
+                $elementos->push($modelo::find($item));
             }
         }
         return $elementos;

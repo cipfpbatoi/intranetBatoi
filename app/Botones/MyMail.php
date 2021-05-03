@@ -19,8 +19,7 @@ class MyMail
     private $elements;
     private $features;
     private $view;
-    private $template;
-    private $register;
+    private $template=null;
     private $attach;
 
 
@@ -51,7 +50,12 @@ class MyMail
         else{
             $this->elements = $this->recoveryObjects($elements);
         }
-        $this->view = $view;
+        if (is_array($view)){
+            $this->view = $view['view'];
+            $this->template = $view['template'];
+        } else {
+            $this->view = $view;
+        }
         $this->attach =$attach;
     }
 
@@ -75,7 +79,6 @@ class MyMail
     public function render($route){
         $to  = $this->getReceivers($this->elements);
         $editable = (count($this->elements) > 1)?$this->editable:true;
-
         $from = $this->from;
         $subject = $this->subject;
         $contenido = $this->view;
@@ -83,8 +86,9 @@ class MyMail
         $toPeople = $this->toPeople;
         $class = $this->class;
         $register = $this->register;
+        $template = $this->template;
 
-        return view('email.view',compact('to','from','subject','contenido','route','fromPerson','toPeople','class','register','editable'));
+        return view('email.view',compact('to','from','subject','contenido','route','fromPerson','toPeople','class','register','editable','template'));
     }
 
     public function send($fecha=null){
@@ -102,8 +106,9 @@ class MyMail
                     ->bcc($this->from)
                     ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attach));
                 Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
-                if ($this->register)
+                if ($this->register) {
                     Activity::record('email', $elemento, null, $fecha, $this->subject);
+                }
             }
             else Alert::danger("No s'ha pogut enviar correu a $elemento->contacto. Comprova email");
         }
@@ -111,7 +116,7 @@ class MyMail
     }
 
     private function chooseView(){
-        if (strlen($this->view)> 50 || !$this->editable ) return'email.standard';
+        if (strlen($this->view)> 50) return'email.standard';
         return $this->view;
     }
 

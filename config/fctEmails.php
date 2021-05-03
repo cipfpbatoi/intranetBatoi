@@ -7,9 +7,9 @@ return [
             'toPeople' => 'A/A de Recursos Humans',
             'editable' => true
         ],
+        'modelo' => 'Colaboracion',
         'view' => 'email.fct.contact',
         'template' => 'email.fct.contact',
-        'redirect' => 'misColaboraciones',
         'fcts' => 0,
         'estado' => 1,
         'unique' => 1,
@@ -20,6 +20,7 @@ return [
             'toPeople' => 'A/A de Recursos Humans',
             'editable' => false
         ],
+        'modelo' => 'Colaboracion',
         'view' => 'email.fct.request',
         'template' => 'email.fct.requestU',
         'fcts' => 0,
@@ -30,9 +31,10 @@ return [
     'inicioEmpresa' => [
         'email' => [
             'subject' => "Recordatori inici de pràctiques",
-            'to' => 'Instructor',
+            'toPeople' => 'Instructor',
             'editable' => false
         ],
+        'modelo' => 'Fct',
         'view' => 'email.fct.info',
         'template' =>'email.fct.infoU',
         'fcts' => 1,
@@ -45,11 +47,11 @@ return [
             'toPeople' => "Alumnat",
             'editable' => false
         ],
+        'modelo'=> 'AlumnoFct',
         'view' => 'email.fct.ini',
         'template' => 'email.fct.ini',
         'fcts' => 0,
         'unique' => 1,
-
     ],
     'seguimiento' => [
         'email' => [
@@ -57,12 +59,12 @@ return [
             'toPeople' => 'Instructor',
             'editable' => false
         ],
+        'modelo' => 'Fct',
         'view' => 'email.fct.follow',
         'template' =>  'email.fct.followU',
         'fcts' => 1,
         'unique' => 0,
         'default' => 'Les pràctiques es desenvolupen amb normalitat',
-
     ],
     'visitaEmpresa' => [
         'email' => [
@@ -70,8 +72,8 @@ return [
             'toPeople' => 'Instructor',
             'editable' => true
         ],
+        'modelo' => 'Fct',
         'template' => 'email.fct.visit',
-        'redirect' => 'misColaboraciones',
         'fcts' => 1,
         'unique' => 0,
         'default' => 'Les pràctiques es desenvolupen amb normalitat',
@@ -83,11 +85,20 @@ return [
             'toPeople' => 'Alumno',
             'editable' => true
         ],
+        'modelo' => 'AlumnoFct',
         'view' => 'email.fct.student',
         'template' => 'email.fct.student',
-        'redirect' => 'misColaboraciones',
         'fcts' => 1,
         'unique' => 0,
-
     ],
+    'visitaComision' => [
+        'email' => [
+            'subject' => "Visita Empresa",
+            'toPeople' => 'Instructor',
+            'register' => false,
+            'editable' => false
+        ],
+        'modelo' => 'Fct',
+        'view' => 'email.fct.confirm'
+    ]
 ];

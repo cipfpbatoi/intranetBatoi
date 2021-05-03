@@ -3,16 +3,12 @@
 
 namespace Intranet\Finders;
 
-
-use Intranet\Entities\Activity;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
 
 
-class fctAlumnoFinder extends Finder
+class AlumnoFctFinder extends Finder
 {
-    protected $modelo = "Intranet\\Entities\\Fct";
-
     public function exec(){
         $fcts = AlumnoFct::whereIn('idFct',hazArray(Fct::MisFctsColaboracion($this->dni)->EsFct()->get(),'id','id'))->get();
         return $this->filter($fcts);

@@ -36,11 +36,18 @@ class DocumentService
 
     public function render(){
         $elemento = $this->elements->first();
-        $mail = new MyMail($this->elements, view($this->document->template,compact('elemento')),$this->document->email );
-        return $mail->render($this->document->redirect);
+        $contenido = view($this->document->template, compact('elemento'));
+        if (!$this->document->email['editable']) {
+            $contingut['view'] = $contenido;
+            $contingut['template'] = $this->document->template;
+        }
+
+        $mail = new MyMail($this->elements, $contingut,$this->document->email );
+        return $mail->render('misColaboraciones');
     }
 
     public function send(){
+
         $mail = new MyMail( $this->elements,$this->document->receiver, $this->document->subject, $this->document->view);
         $mail->send();
         return back();

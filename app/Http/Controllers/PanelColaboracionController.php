@@ -67,22 +67,22 @@ class PanelColaboracionController extends IntranetController
         $this->panel->setBoton('nofct',new BotonIcon('colaboracion.resolve', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-success resolve estado']));
         $this->panel->setBoton('nofct',new BotonIcon('colaboracion.refuse', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-danger refuse estado']));
 
-        $this->panel->setBoton('nofct',new BotonIcon('documentacionFCT.colaboracion.contacto', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary contacto','text'=>'','title'=>'Petició pràctiques','icon'=>'fa-bell-o']));
-        $this->panel->setBoton('nofct',new BotonIcon('documentacionFCT.colaboracion.revision', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Revissió documentació','icon'=>'fa-check']));
+        $this->panel->setBoton('nofct',new BotonIcon('documentacionFCT.contacto', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary contacto','text'=>'','title'=>'Petició pràctiques','icon'=>'fa-bell-o']));
+        $this->panel->setBoton('nofct',new BotonIcon('documentacionFCT.revision', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Revissió documentació','icon'=>'fa-check']));
 
-        $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.fct.inicioEmpresa', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Enviar documentació inici','icon'=>'fa-flag-o']));
-        $this->panel->setBoton('fct',new BotonIcon('documentacionfct.fct.seguimiento', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Correu seguiment','icon'=>'fa-envelope']));
+        $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.inicioEmpresa', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Enviar documentació inici','icon'=>'fa-flag-o']));
+        $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.seguimiento', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Correu seguiment','icon'=>'fa-envelope']));
         $this->panel->setBoton('fct',new BotonIcon('fct.telefonico', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe telefonico','text'=>'','title'=>'Contacte telefònic','icon'=>'fa-phone']));
-        $this->panel->setBoton('fct',new BotonIcon('documentacionfct.fct.visitaEmpresa', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Concertar visita','icon'=>'fa-car']));
+        $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.visitaEmpresa', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Concertar visita','icon'=>'fa-car']));
 
-        $this->panel->setBoton('pendiente', new BotonBasico("colaboracion.contacto",['class'=>'btn-primary selecciona','icon' => 'fa fa-bell-o','data-url'=>'/api/documentacionFCT/colaboracion/contacto']));
+        $this->panel->setBoton('pendiente', new BotonBasico("colaboracion.contacto",['class'=>'btn-primary selecciona','icon' => 'fa fa-bell-o','data-url'=>'/api/documentacionFCT/contacto']));
 
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.revision",['class'=>'btn-primary selecciona','icon' => 'fa fa-check','data-url'=>'/api/documentacionFCT/colaboracion/revision']));
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.inicioEmpresa",['class'=>'btn-info selecciona','icon' => 'fa fa-flag-o','data-url'=>'/api/documentacionFCT/fct/inicioEmpresa']));
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.inicioAlumno",['class'=>'btn-info selecciona','icon' => 'fa fa-unlock','data-url'=>'/api/documentacionFCT/alumno/inicioAlumno']));
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.seguimiento",['class'=>'btn-info selecciona','icon' => 'fa fa-envelope','data-url'=>'/api/documentacionFCT/fct/seguimiento']));
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.visitaEmpresa",['class'=>'btn-info selecciona','icon' => 'fa fa-car','data-url'=>'/api/documentacionFCT/fct/visitaEmpresa']));
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.citarAlumnos",['class'=>'btn-info selecciona','icon' => 'fa fa-bullhorn','data-url'=>'/api/documentacionFCT/alumno/citarAlumnos']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.revision",['class'=>'btn-primary selecciona','icon' => 'fa fa-check','data-url'=>'/api/documentacionFCT/revision']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.inicioEmpresa",['class'=>'btn-info selecciona','icon' => 'fa fa-flag-o','data-url'=>'/api/documentacionFCT/inicioEmpresa']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.inicioAlumno",['class'=>'btn-info selecciona','icon' => 'fa fa-unlock','data-url'=>'/api/documentacionFCT/inicioAlumno']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.seguimiento",['class'=>'btn-info selecciona','icon' => 'fa fa-envelope','data-url'=>'/api/documentacionFCT/seguimiento']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.visitaEmpresa",['class'=>'btn-info selecciona','icon' => 'fa fa-car','data-url'=>'/api/documentacionFCT/visitaEmpresa']));
+        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.citarAlumnos",['class'=>'btn-info selecciona','icon' => 'fa fa-bullhorn','data-url'=>'/api/documentacionFCT/citarAlumnos']));
 
     }
 
@@ -102,37 +102,20 @@ class PanelColaboracionController extends IntranetController
      */
 
 
-    public function idcolaboracion($id,$documento){
+    public function showMailbyId($id,$documento){
         $document = new DocumentoFct($documento);
-        $parametres = array('id' => $id,'modelo' =>'Colaboracion','document'=>$document);
+        $parametres = array('id' => $id,'document'=>$document);
         $service = new DocumentService(new UniqueFinder($parametres));
         return $service->render();
     }
 
-    public function idfct($id,$documento){
-        $document = new DocumentoFct($documento);
-        $parametres = array('id' => $id,'modelo' =>'Fct','document'=>$document);
-        $service = new DocumentService(new UniqueFinder($parametres));
+
+    protected function showMailbyRequest(Request $request,$documento){
+        $documento = new DocumentoFct($documento);
+        $parametres = array('request' => $request,'document'=>$documento);
+        $service = new DocumentService(new RequestFinder($parametres));
         return $service->render();
     }
 
-    protected function colaboracion(Request $request,$documento){
-        $documento = new DocumentoFct($documento);
-        $parametres = array('request' => $request,'modelo' =>'Colaboracion','document'=>$documento);
-        $service = new DocumentService(new RequestFinder($parametres));
-        return $service->render();
-    }
-    protected function alumno(Request $request,$documento){
-        $documento = new DocumentoFct($documento);
-        $parametres = array('request' => $request,'modelo' =>'AlumnoFct','document'=>$documento);
-        $service = new DocumentService(new RequestFinder($parametres));
-        return $service->render();
-    }
-    protected function fct(Request $request,$documento){
-        $documento = new DocumentoFct($documento);
-        $parametres = array('request' => $request,'modelo' =>'Fct','document'=>$documento);
-        $service = new DocumentService(new RequestFinder($parametres));
-        return $service->render();
-    }
 
 }

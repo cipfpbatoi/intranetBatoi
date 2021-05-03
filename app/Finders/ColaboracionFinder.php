@@ -6,9 +6,6 @@ use Intranet\Entities\Colaboracion;
 
 class ColaboracionFinder extends Finder
 {
-
-    protected $modelo = "Intranet\\Entities\\Colaboracion";
-
     public function exec(){
         $colaboraciones = Colaboracion::MiColaboracion(null,$this->dni)->where('tutor',$this->dni)->where('estado',$this->document->estado)->get();
         return $this->filter($colaboraciones);
