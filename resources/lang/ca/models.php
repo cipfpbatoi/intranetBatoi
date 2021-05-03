@@ -278,16 +278,16 @@ return array(
             'unauthorize' => '??',
             'refuse' => 'NO',
             'contacto' => 'Sol·licitud Pràctiques',
-            'info' => 'Revissió documentació',
-            'documentacion' => "Recordatori inici",
-            'seguimiento' => "Seguiment",
-            'visita' => "Concertar Visita",
-            'student' => 'Citar Alumnes',
             'switch' => 'Assignar',
             'contactos' => "Contactes amb l'empresa",
             'fctAl' => "Contactes amb l'alumnat",
             'fct' => 'FCTs',
-
+            'revision' => 'Revisió Documentació',
+            'inicioEmpresa' => 'Recordatori inici',
+            'inicioAlumno' => 'Documentació Alumne',
+            'seguimiento' => "Seguiment",
+            'visitaEmpresa'=> "Concertar visita",
+            'citarAlumnos' => 'Citar Alumnes'
         ),
         'Fct' => array(
             'index' => 'FCT x Empresa',
