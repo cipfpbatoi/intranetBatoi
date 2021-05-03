@@ -37,7 +37,7 @@
             @endif
         </div>
 
-        <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#area">
+    <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#area">
         <div class="btn-group">
             <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
             <ul class="dropdown-menu">
