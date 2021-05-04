@@ -47,7 +47,6 @@ trait traitAutorizar
     protected function accept($id, $redirect = true)
     {
         $inicial = $this->class::getEstado($id);
-        
         $final = $this->class::putEstado($id,$inicial+1);
         if ($redirect) {
             return $this->follow($inicial, $final);

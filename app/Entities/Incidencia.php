@@ -129,10 +129,10 @@ class Incidencia extends Model
         if ($elemento->has('solucion') && isset($mensaje)) {
             $elemento->solucion .= $mensaje;
         }
-        
         $elemento->estado = $estado;
         $elemento->save();
         $elemento->informa($mensaje);
+
         return ($elemento->estado);
     }
 
