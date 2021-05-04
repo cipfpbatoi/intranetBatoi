@@ -100,5 +100,8 @@ return [
         ],
         'modelo' => 'Fct',
         'view' => 'email.fct.confirm'
+    ],
+    'alumnoFct' => [
+        'modelo' => 'AlumnoFct'
     ]
 ];

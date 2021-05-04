@@ -4,8 +4,6 @@ namespace Intranet\Http\Controllers\Auth;
 
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Alumno;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Falta;

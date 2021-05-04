@@ -36,8 +36,6 @@ class Pdf
                 ->setOption('enable-external-links' , true));
         }
 
-        //carnet
-        //return view($informe,compact('todos', 'datosInforme'));
         return(SnappyPdf::loadView($informe, compact('todos', 'datosInforme'))
             ->setOrientation($orientacion)
             ->setOption('margin-top', 2)

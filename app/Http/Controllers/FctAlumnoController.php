@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Support\Collection;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
+use Intranet\Botones\DocumentoFct;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Profesor;
@@ -12,6 +13,7 @@ use Intranet\Entities\FctConvalidacion;
 use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use Intranet\Finders\RequestFinder;
 use Intranet\Services\FormBuilder;
 
 class FctAlumnoController extends IntranetController
@@ -143,13 +145,8 @@ class FctAlumnoController extends IntranetController
     }
 
     public function imprimePasqua(Request $request){
-        $todos = new Collection();
-        foreach ($request->request as $item => $value){
-            if ($value == 'on'){
-                $todos->push(AlumnoFct::find($item));
-            }
-        }
-        return $this->hazPdf("pdf.fct.pasqua", $todos,
+        $finder = new RequestFinder(['document' => new DocumentoFct('alumnoFct'),'request' => $request]);
+        return $this->hazPdf("pdf.fct.pasqua", $finder->exec(),
             null, 'portrait')->stream();
 
     }

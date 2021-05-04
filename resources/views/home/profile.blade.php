@@ -30,22 +30,6 @@
 </div>
 <div class="col-md-9 col-sm-9 col-xs-12">
 
-<!--    <div class="profile_title">
-        <div class="col-md-6">
-            <h2>@lang("messages.generic.activityReport")</h2>
-        </div>
-        <div class="col-md-6">
-            <div id="" class="pull-right" style="margin-top: 5px; background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #E6E9ED">
-                <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
-                <input type="text" name="datefilter" value="" /></span> <b class="caret"></b>
-            </div>
-        </div>
-    </div>
-     start of user-activity-graph 
-    <div id='dniP' data-dni='{{$usuario->dni}}'>
-    <div id="fichar_bar" style="width:100%; height:200px;"></div>
-     end of user-activity-graph -->
-
     <div class="" role="tabpanel" data-example-id="togglable-tabs">
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
             <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("messages.generic.nextActivities")</a>

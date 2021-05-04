@@ -5,11 +5,10 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Intranet\Entities\Fct;
-use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Alumno;
 use Intranet\Entities\Profesor;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
+use Intranet\Finders\DocumentoFctFinder;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\BotonBasico;
@@ -112,7 +111,8 @@ class FctController extends IntranetController
      */
     public function document($document)
     {
-        return $this->printDocument($document,$this->quienSaleDocumento(config("pr.$document.cuando")));
+        $finder = new DocumentoFctFinder(['tipo' => config("pr.$document.cuando"),'desde'=>Hoy(),'hasta'=>Hoy()]);
+        return $this->printDocument($document,$finder->exec());
     }
 
     /**
@@ -120,9 +120,9 @@ class FctController extends IntranetController
      * @param $quienes
      * @return \Illuminate\Http\RedirectResponse
      */
-    private function printDocument($document, $quienes){
+    private function printDocument($document, $elements){
         if ($quienes->count()) {
-            return $this->hazPdf("pdf.fct.$document", $quienes,
+            return $this->hazPdf("pdf.fct.$document", $elements,
                 config("pr.$document"), config("pr.$document.orientacion"))->stream();
         }
 
@@ -131,20 +131,7 @@ class FctController extends IntranetController
 
     }
 
-    /**
-     * @param $tipoDocumento
-     * @return mixed
-     */
-    private function quienSaleDocumento($tipoDocumento){
-        if ($tipoDocumento == 1) {
-            return AlumnoFct::misFcts()->where('pg0301',0)->orderBy('idFct')->orderBy('desde')->get();
-        }
-        if ($tipoDocumento == 2) {
-            return AlumnoFct::misFcts()->where('desde','<=',Hoy())->where('hasta','>=',Hoy())->orderBy('idAlumno')->orderBy('desde')->get();
-        }
-        return Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
 
-    }
 
     /**
      * @param Request $request
@@ -153,10 +140,8 @@ class FctController extends IntranetController
      */
     public function documentPost(Request $request, $document)
     {
-        return $this->printDocument($document,
-            AlumnoFct::misFcts()->where('desde','<=',FechaInglesa($request->hasta))
-                ->where('hasta','>=',FechaInglesa($request->desde))->orderBy('idAlumno')->orderBy('desde')->get());
-
+        $finder = new DocumentoFctFinder(['tipo' => config("pr.$document.cuando"),'desde'=>FechaInglesa($request->desde),'hasta'=>FechaInglesa($request->hasta)]);
+        return $this->printDocument($document,$finder->exec());
     }
 
     /**

@@ -1,5 +1,5 @@
 @if (AuthUser()->rol % config('roles.rol.alumno') == 0)
-    <div class="navbar nav_title" style="border: 0;">
+    <div class="navbar nav_title" style="border: 0;"></div>
 @else
     <div class="navbar nav_title" style="border: 0;">
         <a href="/home" class="site_title"><i class="fa fa-paw"></i> <span>{!! config('contacto.titulo') !!}</span></a>
