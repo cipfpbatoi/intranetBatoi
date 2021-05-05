@@ -13,8 +13,8 @@
                 <div class="modal-body">
                     {{ csrf_field() }}
                     <select name='idInstructor' class="form-control">
-                        @foreach ($fct->Colaboracion->Centro->Instructores->whereNotIn('dni',$instructores) as $instructor)
-                            <option value='{{ $instructor->dni }}'>{!! $instructor->nombre !!}</option>
+                        @foreach ($fct->Colaboracion->Centro->Instructores->whereNotIn('dni',$instructores)->sortBy('surnames') as $instructor)
+                            <option value='{{ $instructor->dni }}'>{{ $instructor->surnames }},{!! $instructor->name !!} </option>
                         @endforeach
                     </select>
                     <input type="text"  name="horas" placeholder="@lang("validation.attributes.horas")" value="{{ old('horas') }}" class="form-control" />

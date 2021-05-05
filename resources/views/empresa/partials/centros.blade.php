@@ -5,7 +5,7 @@
         <div class="message_date" style="width:55%">
             @if ($misColaboraciones->where('idCentro',$centro->id)->count())
                 <a href='/instructor/{!!$centro->id!!}/create'>Nou Instructor</a>
-                @foreach ($centro->instructores as $instructor)
+                @foreach ($centro->instructores->sortBy('surnames') as $instructor)
                 <h4 class="text-info">
                     @if ($centros > 1)<a href='/instructor/{!!$instructor->dni!!}/copy/{!!$centro->id!!}'><i class="fa fa-copy"></i></a> @endif
                     <a href='/instructor/{!!$instructor->dni!!}/edit/{!!$centro->id!!}'><i class="fa fa-edit"></i></a>
