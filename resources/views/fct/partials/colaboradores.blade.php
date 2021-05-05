@@ -2,7 +2,7 @@
 <form action='/fct/{!!$fct->id!!}/modificaHoras' method ='post'>
      @csrf
     <ul class="messages fct">
-        @foreach ($fct->Colaboradores as $instructor)
+        @foreach ($fct->Colaboradores->sortBy('surnames') as $instructor)
         <li>
             <div class="message_date">
                 <h4 class="text-info"><i class="fa fa-calendar-times-o user-profile-icon"></i> Certifica:
