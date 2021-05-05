@@ -120,9 +120,9 @@ class FctController extends IntranetController
      * @param $quienes
      * @return \Illuminate\Http\RedirectResponse
      */
-    private function printDocument($document, $elements){
+    private function printDocument($document, $quienes){
         if ($quienes->count()) {
-            return $this->hazPdf("pdf.fct.$document", $elements,
+            return $this->hazPdf("pdf.fct.$document", $quienes,
                 config("pr.$document"), config("pr.$document.orientacion"))->stream();
         }
 
