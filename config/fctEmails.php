@@ -118,7 +118,14 @@ return [
         'modelo' => 'AlumnoFct'
     ],
     'pg0301' => [
+        'pdf' => [
+            'documento'=> 'PG03-01',
+            'nombre' => 'MANUAL DE PROCEDIMIENTOS',
+            'descripcion' => 'HOJA DE CONTROL DE SERVICIO',
+            'cuando' => 1,
+            'orientacion' => 'portrait'],
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoPG0301',
+        'view' => 'pdf.fct.pg0301',
     ]
 ];

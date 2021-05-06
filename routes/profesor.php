@@ -225,6 +225,7 @@ Route::get('/fct/create/{colaboracio}', ['as' => 'fct.create2', 'uses' => 'FctCo
 Route::post('/fct/create', ['as' => 'fct.store', 'uses' => 'FctController@store']);
 Route::post('/fct/pass',['as' => 'fct.pass', 'uses' => 'FctController@store']);
 Route::post('/fct/{id}/pdf', ['as' => 'fct.pdf', 'uses' => 'FctController@pdf']);
+Route::get('/fct/{id}/pdf', ['as' => 'fct.pdf', 'uses' => 'FctController@certificat']);
 Route::get('/fct/{document}/print', ['as' => 'fct.print', 'uses' => 'FctController@document']);
 Route::post('/fct/{document}/print',['as'=>'fct.print.post','uses'=> 'FctController@documentPost']);
 

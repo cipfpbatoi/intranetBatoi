@@ -84,7 +84,7 @@ class FctController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion','==','1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.delete',['where'=>['Nalumnes','<=','1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.pdf',['class'=>'pdf','img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.pdf',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid',new Botonimg('fct.seguimiento',['img'=>'fa-envelope','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid',new Botonimg('fct.telefonico',['img'=>'fa-phone','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
@@ -161,6 +161,19 @@ class FctController extends IntranetController
         
     }
 
+    public function certificat($id)
+    {
+        $fct = Fct::findOrFail($id);
+        $instructor = $fct->Instructor;
+        if (isset($instructor->surnames)) {
+            return self::preparePdf($fct,$fct->hasta,$fct->AlFct->first()->horas)->stream();
+        } else {
+            Alert::danger("Completa les dades de l'instructor");
+            return back();
+        }
+
+    }
+
     public static function preparePdf($fct,$fecha,$horas)
     {
         $secretario = Profesor::find(config('contacto.secretario'));
@@ -176,6 +189,7 @@ class FctController extends IntranetController
             'instructor' => $fct->Instructor,
             'horas' => $horas
         ];
+
         return self::hazPdf('pdf.fct.instructors', $fct, $dades);
     }
 

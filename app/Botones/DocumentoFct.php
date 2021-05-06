@@ -15,6 +15,17 @@ class DocumentoFct
         return isset($this->$key) ? $this->$key : (isset($this->features[$key]) ? $this->features[$key] : null);
     }
 
+    public function getFinder(){
+        return isset($this->finder) ?
+            "Intranet\\Finders\\".$this->finder."Finder":
+            "Intranet\\Finders\\".$this->modelo."Finder";
+    }
+    public function getResource(){
+        return isset($this->resource)?
+            "Intranet\\Http\\Resources\\Select".$this->resource."Resource":
+            "Intranet\\Http\\Resources\\Select".$this->modelo."Resource";
+    }
+
 
 }
 

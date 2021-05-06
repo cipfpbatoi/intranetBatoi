@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Services;
 use Intranet\Botones\MyMail;
+use Intranet\Botones\Pdf;
 use Intranet\Finders\Finder;
 
 class DocumentService
@@ -26,15 +27,16 @@ class DocumentService
        return $this->elements;
     }
 
-    public function exec(){
-        if ($this->document->redirect){
-            $this->render();
-        } else{
-            $this->send();
+    public function render(){
+        if (isset($this->document->email)) {
+            return $this->mail();
+        } else {
+            return $this->print();
         }
     }
 
-    public function render(){
+
+    private function mail(){
         $elemento = $this->elements->first();
 
         if (!$this->document->email['editable']) {
@@ -48,12 +50,12 @@ class DocumentService
         return $mail->render('misColaboraciones');
     }
 
-    public function send(){
+    private function print(){
+        return Pdf::hazPdf($this->document->view, $this->elements,
+            $this->document->pdf, $this->document->pdf['orientacion'])->stream();
 
-        $mail = new MyMail( $this->elements,$this->document->receiver, $this->document->subject, $this->document->view);
-        $mail->send();
-        return back();
     }
+
 
 
 }
