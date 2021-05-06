@@ -10,7 +10,7 @@ use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
 use DateTime;
 use Illuminate\Support\Facades\Response;
-use Intranet\Entities\Documento;
+
 
 /**
  * Trait traitImprimir

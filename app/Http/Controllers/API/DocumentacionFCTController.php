@@ -19,8 +19,9 @@ class DocumentacionFCTController
 
     public function exec($documento){
         $documento = new DocumentoFct($documento);
-        $finder = "Intranet\\Finders\\".$documento->modelo."Finder";
-        $resource = "Intranet\\Http\\Resources\\Select".$documento->modelo."Resource";
+
+        $finder = isset($documento->finder)?"Intranet\\Finders\\".$documento->finder."Finder":"Intranet\\Finders\\".$documento->modelo."Finder";
+        $resource = isset($documento->resource)?"Intranet\\Http\\Resources\\Select".$documento->resource."Resource":"Intranet\\Http\\Resources\\Select".$documento->modelo."Resource";
 
         $service = new DocumentService(new $finder($documento));
         return $resource::collection($service->load());

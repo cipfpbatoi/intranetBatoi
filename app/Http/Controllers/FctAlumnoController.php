@@ -44,7 +44,7 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("fct", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['class'=>'selecciona','roles' => config(self::ROLES_ROL_TUTOR),'data-url'=>'/api/documentacionFCT/pg0301']));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['id' => '401', 'roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['id' => '402', 'roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("fct.pasqua",['class' => 'selecciona btn-info','data-url'=> "/api/misAlumnosFct",'roles' => config(self::ROLES_ROL_TUTOR)]));

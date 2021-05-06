@@ -97,9 +97,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
 
     Route::get('/documentacionFCT/{documento}','DocumentacionFCTController@exec');
-    Route::get('/fct/documentation','FctController@documentation');
-    Route::get('/fct/follow','FctController@follow');
-
 
     Route::resource('alumnoresultado','AlumnoResultadoContoller');
     Route::get('/matricula/{token}','AlumnoReunionController@getDadesMatricula');

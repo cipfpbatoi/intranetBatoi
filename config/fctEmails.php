@@ -5,7 +5,8 @@ return [
         'email' => [
             'subject' => "Sol·licitud Pràctiques de FCT",
             'toPeople' => 'A/A de Recursos Humans',
-            'editable' => true
+            'editable' => true,
+            'register' => false
         ],
         'modelo' => 'Colaboracion',
         'view' => 'email.fct.contact',
@@ -13,12 +14,14 @@ return [
         'fcts' => 0,
         'estado' => 1,
         'unique' => 1,
+
     ],
     'revision' => [
         'email' => [
             'subject' => 'Revisió Documentació Pràctiques',
             'toPeople' => 'A/A de Recursos Humans',
-            'editable' => false
+            'editable' => false,
+            'register' => true
         ],
         'modelo' => 'Colaboracion',
         'view' => 'email.fct.request',
@@ -32,7 +35,8 @@ return [
         'email' => [
             'subject' => "Recordatori inici de pràctiques",
             'toPeople' => 'Instructor',
-            'editable' => false
+            'editable' => false,
+            'register' => true
         ],
         'modelo' => 'Fct',
         'view' => 'email.fct.info',
@@ -40,24 +44,28 @@ return [
         'fcts' => 1,
         'unique' => 1,
 
+
     ],
     'inicioAlumno' => [
         'email' => [
             'subject' => "Informació relativa a l'inici de les Pràctiques de FCT",
             'toPeople' => "Alumnat",
-            'editable' => false
+            'editable' => false,
+            'register' => true
         ],
         'modelo'=> 'AlumnoFct',
         'view' => 'email.fct.ini',
         'template' => 'email.fct.ini',
         'fcts' => 0,
         'unique' => 1,
+
     ],
     'seguimiento' => [
         'email' => [
             'subject' => "Seguiment Pràctiques de FCT",
             'toPeople' => 'Instructor',
-            'editable' => false
+            'editable' => false,
+            'register' => true
         ],
         'modelo' => 'Fct',
         'view' => 'email.fct.follow',
@@ -65,12 +73,14 @@ return [
         'fcts' => 1,
         'unique' => 0,
         'default' => 'Les pràctiques es desenvolupen amb normalitat',
+
     ],
     'visitaEmpresa' => [
         'email' => [
             'subject' => "Concertar visita de FCT",
             'toPeople' => 'Instructor',
-            'editable' => true
+            'editable' => true,
+            'register' => true
         ],
         'modelo' => 'Fct',
         'template' => 'email.fct.visit',
@@ -78,12 +88,14 @@ return [
         'unique' => 0,
         'default' => 'Les pràctiques es desenvolupen amb normalitat',
 
+
     ],
     'citarAlumnos' => [
         'email' => [
             'subject' => "Citar alumnes per seguiment de FCT",
             'toPeople' => 'Alumno',
-            'editable' => true
+            'editable' => true,
+            'register' => false
         ],
         'modelo' => 'AlumnoFct',
         'view' => 'email.fct.student',
@@ -99,9 +111,14 @@ return [
             'editable' => false
         ],
         'modelo' => 'Fct',
-        'view' => 'email.fct.confirm'
+        'view' => 'email.fct.confirm',
+
     ],
     'alumnoFct' => [
         'modelo' => 'AlumnoFct'
+    ],
+    'pg0301' => [
+        'modelo' => 'AlumnoFct',
+        'finder' => 'AlumnoPG0301',
     ]
 ];

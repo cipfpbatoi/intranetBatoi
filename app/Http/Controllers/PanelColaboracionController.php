@@ -106,6 +106,7 @@ class PanelColaboracionController extends IntranetController
         $document = new DocumentoFct($documento);
         $parametres = array('id' => $id,'document'=>$document);
         $service = new DocumentService(new UniqueFinder($parametres));
+
         return $service->render();
     }
 
