@@ -12,7 +12,11 @@ class DocumentoFct
 
     public function __get($key)
     {
-        return isset($this->$key) ? $this->$key : (isset($this->features[$key]) ? $this->features[$key] : null);
+        return $this->features[$key]??null;
+    }
+
+    public function __isset($key){
+        return isset($this->features[$key]);
     }
 
     public function getFinder(){
