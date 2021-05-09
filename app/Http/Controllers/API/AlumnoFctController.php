@@ -34,8 +34,6 @@ class AlumnoFctController extends ApiBaseController
         return $this->sendResponse(['updated' => true], 'OK');
     }
 
-    public function misAlumnos(){
-        return SelectAlumnoFctResource::collection(AlumnoFct::MisFcts(apiAuthUser()->dni)->get());
-    }
+
 
 }

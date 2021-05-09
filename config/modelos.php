@@ -2,6 +2,7 @@
 
 return [
     'Falta' => [
+        'modelo' => 'Falta',
         'estados' => [  1 => 'nojustify', 
                         2 => 'withjustify', 
                         3 => 'autorizada', 
@@ -12,9 +13,11 @@ return [
         'refuse' => '0',
         'print' => '4',
         'completa' => '4',
-        'documento' => 'llistat listado mensual ausència profesorat ausencia profesorado',
+        'tags' => 'llistat listado mensual ausència profesorat ausencia profesorado',
+        'orientation' => 'portrait'
     ],
     'Actividad' => [
+        'modelo' => 'Actividad',
         'estados' => [  1 => 'pendiente', 
                         2 => 'autorizada', 
                         3 => 'impresa'],
@@ -22,9 +25,11 @@ return [
         'resolve' => '3',
         'refuse' => '0',
         'print' => '3',
-        'documento' => 'llistat activitats extraescolars listado autorización actividades extraescolares',
+        'tags' => 'llistat activitats extraescolars listado autorización actividades extraescolares',
+        'orientation' => 'portrait'
     ],
     'Comision' => [
+        'modelo' => 'Comision',
         'estados' => [  1 => 'pendiente', 
                         2 => 'autorizada', 
                         3 => 'registrada',
@@ -35,9 +40,11 @@ return [
         'refuse' => '0',
         'print' => '3',
         'completa' => '5',
-        'documento' => 'llistat autorització comissions servei listado autorización comisiones servicio',
+        'tags' => 'llistat autorització comissions servei listado autorización comisiones servicio',
+        'orientation' => 'portrait'
     ],
     'Expediente' => [
+        'modelo' => 'Expediente',
         'estados' => [  1 => 'pendiente', 
                         2 => 'tramitada', 
                         3 => 'resuelta',
@@ -45,9 +52,11 @@ return [
         'avisos' => [ 'idProfesor' => [0, 3, 5],'jefeEstudios'=>[1],'orientador'=>[4]],
         'resolve' => '3',
         'refuse' => '0',
-        'print' => '3'
+        'print' => '3',
+        'orientation' => 'portrait'
     ],
     'Programacion' => [
+        'modelo' => 'Programacion',
         'estados' => [  1 => 'pendiente', 
                         2 => 'checkeada', 
                         3 => 'aprobada'],
@@ -56,6 +65,7 @@ return [
         'refuse' => '0',
     ],
     'Incidencia' => [
+        'modelo' => 'Incidencia',
         'estados' => [  1 => 'pendiente', 
                         2 => 'proceso', 
                         3 => 'resuelta'],
@@ -64,6 +74,7 @@ return [
         'refuse' => '0',
     ],
     'OrdenTrabajo' => [
+        'modelo' => 'OrdenTrabajo',
         'estados' => [
             0 => 'abierta',
             1 => 'cerrada',
@@ -74,6 +85,7 @@ return [
         'refuse' => 0
     ],
     'Falta_itaca' =>[
+        'modelo' => 'Falta_itaca',
         'estados' => [
             1 => 'pendiente',
             2 => 'autorizada',
@@ -84,6 +96,7 @@ return [
         'refuse' => 3
     ],
     'Colaboracion' => [
+        'modelo' => 'Colaboracion',
         'estados' => [
             1 => 'pendiente',
             2 => 'colabora',

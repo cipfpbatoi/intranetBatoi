@@ -114,18 +114,43 @@ return [
         'view' => 'email.fct.confirm',
 
     ],
-    'alumnoFct' => [
-        'modelo' => 'AlumnoFct'
-    ],
     'pg0301' => [
         'pdf' => [
             'documento'=> 'PG03-01',
             'nombre' => 'MANUAL DE PROCEDIMIENTOS',
             'descripcion' => 'HOJA DE CONTROL DE SERVICIO',
-            'cuando' => 1,
             'orientacion' => 'portrait'],
         'modelo' => 'AlumnoFct',
-        'finder' => 'AlumnoPG0301',
+        'finder' => 'AlumnoNoFct',
         'view' => 'pdf.fct.pg0301',
+    ],
+    'pr0401' => [
+        'pdf' => ['documento'=> 'PR04-01',
+            'nombre' => 'MANUAL DE PROCESOS',
+            'descripcion' => 'ENTREVISTA DEL TUTOR CON EL INSTRUCTOR DE LA EMPRESA',
+            'orientacion' => 'landscape'
+        ],
+        'modelo' => 'AlumnoFct',
+        'finder' => 'AlumnoEnFct',
+        'view' => 'pdf.fct.pr0401',
+    ],
+    'pr0402' => [
+        'pdf' => ['documento'=> 'PR04-02',
+            'nombre' => 'MANUAL DE PROCESOS',
+            'descripcion' => 'ENTREVISTA DEL TUTOR CON ALUMNO',
+            'orientacion' => 'landscape'
+        ],
+        'modelo' => 'AlumnoFct',
+        'finder' => 'AlumnoEnFct',
+        'view' => 'pdf.fct.pr0402',
+    ],
+    'pasqua' => [
+        'pdf' => ['documento'=> 'PASQUA',
+            'nombre' => 'FCT VACACIONES DE PASQUA',
+            'orientacion' => 'portrait'
+        ],
+        'modelo' => 'AlumnoFct',
+        'finder' => 'AlumnoEnFct',
+        'view' => 'pdf.fct.pasqua',
     ]
 ];

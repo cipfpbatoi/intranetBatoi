@@ -20,12 +20,12 @@ class DocumentoFct
     }
 
     public function getFinder(){
-        return isset($this->finder) ?
+        return isset($this->features['finder']) ?
             "Intranet\\Finders\\".$this->finder."Finder":
             "Intranet\\Finders\\".$this->modelo."Finder";
     }
     public function getResource(){
-        return isset($this->resource)?
+        return isset($this->features['resource'])?
             "Intranet\\Http\\Resources\\Select".$this->resource."Resource":
             "Intranet\\Http\\Resources\\Select".$this->modelo."Resource";
     }

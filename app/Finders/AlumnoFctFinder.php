@@ -16,7 +16,7 @@ class AlumnoFctFinder extends Finder
 
     private function filter(&$elements){
         foreach ($elements as $element){
-            $element->marked = ($element->Fct->correoInstructor == 0 && !$this->existsActivity($element->idFct))?true:false;
+            $element->marked = ($element->Fct->correoInstructor == 0 && !$this->existsActivity($element->idFct));
         }
         return $elements;
     }
