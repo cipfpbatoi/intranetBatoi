@@ -26,7 +26,7 @@ class FctAlumnoController extends IntranetController
     protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas','periode'];
     protected $profile = false;
     protected $titulo = [];
-    protected $parametresVista = ['modal' => ['entreFechas','seleccion']];
+    protected $parametresVista = ['modal' => ['seleccion']];
 
 
     public function search()
@@ -44,10 +44,10 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("fct", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['class'=>'btn-info selecciona','roles' => config(self::ROLES_ROL_TUTOR),'data-url'=>'/api/documentacionFCT/pg0301']));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['id' => '401', 'roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['id' => '402', 'roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pasqua",['class' => 'selecciona btn-info','data-url'=> "/api/misAlumnosFct",'roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['class'=>'btn-primary selecciona','roles' => config(self::ROLES_ROL_TUTOR),'data-url'=>'/api/documentacionFCT/pg0301']));
+        $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['class'=>'btn-primary selecciona' ,'roles' => config(self::ROLES_ROL_TUTOR),'data-url'=>'/api/documentacionFCT/pr0401']));
+        $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['class'=>'btn-primary selecciona' , 'roles' => config(self::ROLES_ROL_TUTOR),'data-url'=>'/api/documentacionFCT/pr0402']));
+        $this->panel->setBoton('index', new BotonBasico("fct.pasqua.print",['class' => 'selecciona btn-primary','data-url'=> "/api/documentacionFCT/pasqua",'roles' => config(self::ROLES_ROL_TUTOR)]));
         Session::put('redirect', 'FctAlumnoController@index');
     }
         //
@@ -142,13 +142,6 @@ class FctAlumnoController extends IntranetController
        $fct->pg0301 = $fct->pg0301?0:1;
        $fct->save();
        return redirect()->action('PanelPG0301Controller@indice',['id' => $fct->Grup]);
-    }
-
-    public function imprimePasqua(Request $request){
-        $finder = new RequestFinder(['document' => new DocumentoFct('alumnoFct'),'request' => $request]);
-        return $this->hazPdf("pdf.fct.pasqua", $finder->exec(),
-            null, 'portrait')->stream();
-
     }
 
 } 

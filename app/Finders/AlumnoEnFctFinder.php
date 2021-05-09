@@ -5,18 +5,18 @@ namespace Intranet\Finders;
 use Intranet\Entities\AlumnoFct;
 
 
-class AlumnoPG0301Finder extends Finder
+class AlumnoEnFctFinder extends Finder
 {
     public function exec(){
-        $fcts =  AlumnoFct::misFcts()->where('pg0301',0)->get();
+        $fcts =  AlumnoFct::misFcts($this->dni)->orderBy('idAlumno')->orderBy('desde')->get();
         return $this->filter($fcts);
     }
 
     private function filter(&$elements){
         foreach ($elements as $element){
-            $element->marked = ($element->pg0301 == 0);
+            $element->marked = (FechaInglesa($element->desde) <= Hoy() && FechaInglesa($element->hasta) >= Hoy());
         }
         return $elements;
-    }
 
+    }
 }

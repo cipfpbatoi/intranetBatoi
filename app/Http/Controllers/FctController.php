@@ -89,10 +89,7 @@ class FctController extends IntranetController
         $this->panel->setBoton('grid',new Botonimg('fct.telefonico',['img'=>'fa-phone','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("alumnofct", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['roles' => config(self::ROLES_ROL_TUTOR)]));
-        Session::put('redirect', 'FctController@index');
+         Session::put('redirect', 'FctController@index');
     }
 
 
@@ -104,45 +101,6 @@ class FctController extends IntranetController
         return Fct::misFcts()->esFct()->get();
     }
 
-
-    /**
-     * @param $document
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function document($document)
-    {
-        $finder = new DocumentoFctFinder(['tipo' => config("pr.$document.cuando"),'desde'=>Hoy(),'hasta'=>Hoy()]);
-        return $this->printDocument($document,$finder->exec());
-    }
-
-    /**
-     * @param $document
-     * @param $quienes
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    private function printDocument($document, $quienes){
-        if ($quienes->count()) {
-            return $this->hazPdf("pdf.fct.$document", $quienes,
-                config("pr.$document"), config("pr.$document.orientacion"))->stream();
-        }
-
-        Alert::message('No tens alumnes per a eixa documentació','warning');
-        return back();
-
-    }
-
-
-
-    /**
-     * @param Request $request
-     * @param $document
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function documentPost(Request $request, $document)
-    {
-        $finder = new DocumentoFctFinder(['tipo' => config("pr.$document.cuando"),'desde'=>FechaInglesa($request->desde),'hasta'=>FechaInglesa($request->hasta)]);
-        return $this->printDocument($document,$finder->exec());
-    }
 
     /**
      * @param $id
