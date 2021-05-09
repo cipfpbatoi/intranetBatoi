@@ -8,7 +8,6 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
-use Intranet\Finders\DocumentoFctFinder;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\BotonBasico;
@@ -57,7 +56,7 @@ class FctController extends IntranetController
 
     public function edit($id)
     {
-        $formulario = new FormBuilder(Fct::findOrFail($id),['idInstructor' => 'select']);
+        $formulario = new FormBuilder(Fct::findOrFail($id),['idInstructor' => ['type'=>'select']]);
         $modelo = $this->model;
         return view($this->chooseView('edit'), compact('formulario', 'modelo'));
     }
