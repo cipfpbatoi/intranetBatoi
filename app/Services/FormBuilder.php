@@ -17,9 +17,8 @@ class FormBuilder
             $this->default = $this->fillDefaultOptionsToForm($formFields);
             $this->fillable = array_keys($formFields);
         } else {
-            $this->default = $this->fillDefaultOptionsFromModel();
             $this->fillable = $elemento->getFillable();
-
+            $this->default = $this->fillDefaultOptionsFromModel();
         }
     }
 
