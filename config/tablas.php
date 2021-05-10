@@ -60,7 +60,7 @@ return [
         ['index' => '12', 'vliteral' => 'Data Defensa del mòdul de projecte', 'cliteral' => 'Fecha Defensa del módulo de proyecto', 'colectivo' => 'Grupo', 'rol' => '17','select' => '0','modificable' => 1,
             'convocatoria' => 'convocatoria', 'acta' => 'defensa',
             'numeracion' => [0=>'--'],
-            'ordenes' => ['AlumnoFct->misProyectos->nombre'],
+            'ordenes' => ['AlumnoFct->misProyectos->FullName'],
             'resumen' => '(Projecte) Data i Hora '],
     ],
     'tipoDocumento' => [

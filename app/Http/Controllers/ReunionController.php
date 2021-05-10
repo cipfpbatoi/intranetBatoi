@@ -9,6 +9,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\Asistencia;
 use Intranet\Http\Requests\OrdenReunionStoreRequest;
 use Intranet\Services\FormBuilder;
+use Intranet\Services\MeetingOrderGenerateService;
 use Response;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\TipoReunion;
@@ -57,42 +58,19 @@ class ReunionController extends IntranetController
 
     public function store(Request $request)
     {
-        $elemento = Reunion::find($this->realStore($request));
-        $contador = 1;
-        foreach (TipoReunion::ordenes($elemento->tipo) as $key => $texto) {
-            if (strpos($texto, '->')) {
-                $contador = $this->storeItems($contador, $texto, $elemento);
-            }
-            else {
-                $contador = $this->storeItem($elemento->id, $contador, $texto, TipoReunion::resumen($elemento->tipo) != null ? TipoReunion::resumen($elemento->tipo)[$key] : '');
-            }
-        }
+        $elemento = DB::transaction(function() use ($request) {
+            $elemento = Reunion::find($this->realStore($request));
+            $service = new MeetingOrderGenerateService($elemento);
+            $service->exec();
+            return $elemento;
+        });
         if ($elemento->fichero != '') {
             return back();
         }
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $elemento->id]);
     }
 
-    private function storeItems($contador,$texto,$elemento){
-        $consulta = explode('->', $texto,3);
-        $clase = $this->namespace . $consulta[0];
-        $funcion = $consulta[1];
-        $campo = $consulta[2];
-        foreach ($clase::$funcion()->get() as $element) {
-            $contador = $this->storeItem($elemento->id, $contador, $element->$campo, TipoReunion::resumen($elemento->tipo) != null ? TipoReunion::resumen($elemento->tipo) . $contador : '');
-        }
-        return $contador;
-    }
 
-    private function storeItem($id,$contador,$text,$resumen){
-        $orden = new OrdenReunion();
-        $orden->idReunion = $id;
-        $orden->orden = $contador++;
-        $orden->descripcion = $text;
-        $orden->resumen = $resumen;
-        $orden->save();
-        return $contador;
-    }
     public function edit($id)
     {
         $elemento = Reunion::find($id);

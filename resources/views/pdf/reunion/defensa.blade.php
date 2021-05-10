@@ -4,7 +4,7 @@
    else
         $anterior = false;
    $ciclo = \Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->count()?\Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->first()->literal:$datosInforme->Ciclo;
-   $all = $todos->sortBy('resumen');
+   $all = $todos->sortBy('orden');
 @endphp
 @extends('layouts.pdf')
 @section('content')
@@ -28,8 +28,9 @@
             @if ($anterior)<th>Projecte</th><th>Data i Hora</th>@else <th colspan='2'>Projecte - Data i Hora</th>@endif<th>Lloc</th></tr>
         @foreach ($all as $index => $elemento)
         <tr><td style='font-size: large'>{{$elemento->descripcion}}</td>
-            @if ($anterior && $persona = $anterior->where('orden',$elemento->orden)->first()) <td>{!! $persona->resumen !!}</td><td>@php echo($elemento->resumen) @endphp</td>
-            @else <td colspan='2'>@php echo($elemento->resumen) @endphp</td>
+            @if ($anterior && $persona = $anterior->where('descripcion',trim($elemento->descripcion))->first()) <td>{!! $persona->resumen !!}</td><td>{{$elemento->resumen}}</td>
+            @else
+                <td colspan='2'>{{$elemento->resumen}}</td>
             @endif
             
             <td style='font-size: 0.8em'>{{$datosInforme->Espacio->descripcion}}</td>
