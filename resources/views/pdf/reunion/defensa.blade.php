@@ -4,7 +4,7 @@
    else
         $anterior = false;
    $ciclo = \Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->count()?\Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->first()->literal:$datosInforme->Ciclo;
-   $all = $todos->sortBy('orden');
+   $all = $todos->sortBy('resumen');
 @endphp
 @extends('layouts.pdf')
 @section('content')
