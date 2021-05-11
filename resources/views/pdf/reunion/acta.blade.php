@@ -4,7 +4,7 @@
 <br/>
 <table class="table table-bordered">
     <tr>
-        <th>Acta reunió <strong> {{$datosInforme->Tipos()['vliteral']}}</strong> "{{$datosInforme->Xgrupo}}"</th>
+        <th>Acta reunió <strong> {{$datosInforme->Tipos()->vliteral}}</strong> "{{$datosInforme->Xgrupo}}"</th>
     </tr>
 </table>
 

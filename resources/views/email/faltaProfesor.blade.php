@@ -21,7 +21,7 @@
                 {{$elemento->desde}} de {{$elemento->hora_ini}} - {{$elemento->hora_fin}}
             @endif
             </p>
-            <p>El protocol ha seguir serà: </p>
+            <p>El protocol a seguir serà: </p>
             <ul>
                 <li>si el profe falta a primera, dir al delegat i/o grup que vinguen més tard</li>
                 <li>si és a última, no passa res perquè el grup s'anirà abans</li>

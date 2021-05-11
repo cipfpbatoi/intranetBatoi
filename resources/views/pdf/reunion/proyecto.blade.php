@@ -4,7 +4,7 @@
 <br/>
 <table class="table table-bordered">
     <tr>
-        <th><h3>{{$datosInforme->Tipos()['vliteral']}}</h3></th>
+        <th><h3>{{$datosInforme->Tipos()->vliteral}}</h3></th>
     </tr>
     <tr>
         <th><h4>Equip docent del grup "{{$datosInforme->Xgrupo}}" - Curs {{Curso()}}</h4></th>

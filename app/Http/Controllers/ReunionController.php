@@ -261,7 +261,7 @@ class ReunionController extends IntranetController
                 'fichero' => $elemento->fichero,
                 'supervisor' => $elemento->Creador->FullName,
                 'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
-                'tags' => TipoReunion::literal($elemento->tipo),
+                'tags' => TipoReunion::find($elemento->tipo)->vliteral,
                 'created_at' => new Date($elemento->fecha),
                 'rol' => config('roles.rol.profesor')]);
             $elemento->save();
@@ -310,7 +310,7 @@ class ReunionController extends IntranetController
         
         foreach ($grupos as $grupo) {
             if (!Reunion::Convocante($grupo->tutor)->Tipo($request->tipo)->Numero($request->numero)->Archivada()->count()) {
-                $texto = 'Et falta per fer i/o arxivar la reunio ' . TipoReunion::literal($request->tipo) . ' ';
+                $texto = 'Et falta per fer i/o arxivar la reunio ' . TipoReunion::find($request->tipo)->vliteral . ' ';
                 $texto .= $request->numero > 0 ? config('auxiliares.numeracion')[$request->numero] : '';
                 avisa($grupo->tutor, $texto);
                 $cont++;
@@ -328,11 +328,14 @@ class ReunionController extends IntranetController
         $elemento->hora = $hoy->format('H:i');
         $hoy = new Date($elemento->updated_at);
         $elemento->hoy = haVencido($elemento->fecha) ? $elemento->dia : FechaString($hoy);
+        return $this->hazPdf($this->informe($elemento), OrdenReunion::where('idReunion', '=', $id)->get(), $elemento, 'portrait', 'a4');
+    }
 
-        $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
-        $informe = haVencido($elemento->fecha) ? 'pdf.reunion.' . TipoReunion::acta($elemento->tipo) : 'pdf.reunion.' . TipoReunion::convocatoria($elemento->tipo);
-        $orientacion = 'portrait';
-        return $this->hazPdf($informe, $ordenes, $elemento, $orientacion, 'a4');
+    private function informe($elemento){
+        $tipo_reunion = TipoReunion::find($elemento->tipo);
+        return haVencido($elemento->fecha) ?
+            'pdf.reunion.'.$tipo_reunion->acta:
+            'pdf.reunion.'.$tipo_reunion->convocatoria;
     }
 
 

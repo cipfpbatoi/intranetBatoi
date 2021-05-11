@@ -15,17 +15,17 @@ class MeetingOrderGenerateService
 
         public function __construct($reunion){
             $this->reunion = $reunion;
-            $this->tipo = $reunion->tipo;
+            $this->tipo = $reunion->Tipos();
         }
 
         public function exec(){
             $contador = 1;
-            foreach (TipoReunion::ordenes($this->tipo) as $key => $texto) {
+            foreach ($this->tipo->ordenes as $key => $texto) {
                 if ($this->isOrderAdvanced($texto)) {
                     $this->storeAdvancedItems($texto);
                 }
                 else {
-                    $this->storeItem( $contador, $texto,  TipoReunion::resumen($this->tipo)[$key] ?? '');
+                    $this->storeItem( $contador, $texto,  $this->tipo->resumen[$key] ?? '');
                 }
             }
         }
@@ -43,7 +43,7 @@ class MeetingOrderGenerateService
         $funcion = $descomposedQuery[1];
         $campo = $descomposedQuery[2];
         foreach ($class::$funcion()->get() as $element) {
-            $this->storeItem($contador, $element->$campo, TipoReunion::resumen($this->tipo) != null ? TipoReunion::resumen($this->tipo) . $contador : '');
+            $this->storeItem($contador, $element->$campo, $this->tipo->resumen != null ? $this->tipo->resumen . $contador : '');
         }
     }
 

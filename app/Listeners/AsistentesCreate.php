@@ -59,23 +59,24 @@ class AsistentesCreate
     {
         if (AuthUser()) {
             $reunion = $event->reunion;
-            if ($reunion->Tipos()['colectivo'] == 'Departamento') {
+            $tipo = $reunion->Tipos();
+            if ($tipo->colectivo == 'Departamento') {
                 $profesores = Profesor::Activo()->where('departamento', '=', AuthUser()->departamento)->get();
             }
-            if ($reunion->Tipos()['colectivo'] == 'Profesor') {
+            if ($tipo->colectivo == 'Profesor') {
                 $profesores = Profesor::Activo()->get();
             }
-            if ($reunion->Tipos()['colectivo'] == 'GrupoTrabajo') {
+            if ($tipo->colectivo == 'GrupoTrabajo') {
                 $profesores = Profesor::GrupoT($reunion->grupo)->get();
             }
-            if ($reunion->Tipos()['colectivo'] == 'Grupo') {
+            if ($tipo->colectivo == 'Grupo') {
                 $profesores = Profesor::Grupo($reunion->GrupoClase->codigo)->get();
                 $this->assignaAlumnes($reunion);
             }
-            if ($reunion->Tipos()['colectivo'] == '') {
+            if ($tipo->colectivo == '') {
                 $profesores = [];
             }
-            if ($reunion->Tipos()['colectivo'] == 'Jefe'){
+            if ($tipo->colectivo == 'Jefe'){
                 $todos = Profesor::Activo()->get();
                 $profesores = [];
                 foreach ($todos as $uno){

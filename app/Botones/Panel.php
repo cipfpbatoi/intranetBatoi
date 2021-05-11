@@ -3,7 +3,6 @@
 namespace Intranet\Botones;
 
 use HTML;
-use Intranet\Services\FormBuilder;
 
 class Panel
 {

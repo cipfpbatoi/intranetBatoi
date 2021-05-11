@@ -12,7 +12,8 @@
 <br/>
 <table class="table table-bordered">
     <tr>
-        <th><h3>{{strtoupper($datosInforme->Tipos()['vliteral'])}}</h3></th>
+
+        <th><h3>{{strtoupper($datosInforme->Tipos()->vliteral)}}</h3></th>
     </tr>
     <tr>
         <th>    

@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
@@ -135,7 +136,7 @@ class Reunion extends Model
     public function getNumeroOptions()
     {
         if (isset($this->tipo)) {
-            return TipoReunion::numeracion($this->tipo);
+            return $this->Tipos()->numeracion;
         }
         else {
             return config('auxiliares.numeracion');
@@ -154,7 +155,7 @@ class Reunion extends Model
         return $this->numero-20;
     }
     public function getModificableAttribute(){
-        return TipoReunion::modificable($this->tipo);
+        return $this->Tipos()->modificable;
     }
 
     public function getFechaAttribute($entrada)
@@ -171,7 +172,7 @@ class Reunion extends Model
 
     public function Tipos()
     {
-        return TipoReunion::get($this->tipo);
+        return new TipoReunion($this->tipo);
     }
 
     public function Grupos()
@@ -194,7 +195,7 @@ class Reunion extends Model
         if ($this->grupo) {
             return ($this->Grupos->literal);
         }
-        $colectivo = TipoReunion::colectivo($this->tipo);
+        $colectivo =$this->Tipos()->colectivo;
         if ($colectivo == 'Profesor') {
             return 'Claustro';
         }
@@ -214,7 +215,8 @@ class Reunion extends Model
         return Grupo::QTutor($this->idProfesor)->count()?Grupo::QTutor($this->idProfesor)->first()->Ciclo->ciclo:'';   
     }
     public function getXtipoAttribute(){
-        return TipoReunion::literal($this->tipo);
+        $tr = $this->Tipos();
+        return App::getLocale(session('lang')) == 'es'?$tr->cliteral:$tr->vliteral;
     }
     public function getXnumeroAttribute(){
         return config("auxiliares.numeracion.$this->numero");
@@ -226,10 +228,7 @@ class Reunion extends Model
         return ($this->tipo == 7 && $this->numero == 35);
     }
     public function getGrupoClaseAttribute(){
-        if (TipoReunion::colectivo($this->tipo) != 'Grupo') {
-            return null;
-        }
-        return Grupo::QTutor($this->idProfesor)->first();
+        return $this->Tipos()->colectivo == 'Grupo'?Grupo::QTutor($this->idProfesor)->first():null;
 
     }
     public function getInformeAttribute(){
