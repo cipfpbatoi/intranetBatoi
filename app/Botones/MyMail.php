@@ -23,6 +23,8 @@ class MyMail
     private $attach;
 
 
+
+
     public function __get($key)
     {
         return isset($this->$key) ? $this->$key : (isset($this->features[$key]) ? $this->features[$key] : null);
@@ -70,10 +72,18 @@ class MyMail
         if ($element != '') {
             $toCompost = explode('(', $element);
             $id = $toCompost[0];
-            if (isset($toCompost[1])) return $this->class::find($id);
+            $element = $this->class::find($id);
+            if (isset($toCompost[1])) {
+                $email = explode(';', $toCompost[1]);
+                $element->mail = $email[0];
+                $element->contact = $email[1];
+            }
+            return $element;
         }
         return null;
     }
+
+
 
 
     public function render($route){
@@ -100,19 +110,26 @@ class MyMail
     }
 
     private function sendMail($elemento,$fecha){
-        if (isset($elemento->contacto)  ) {
-            if (filter_var($elemento->email,FILTER_VALIDATE_EMAIL)) {
-                Mail::to($elemento->email, $elemento->contacto)
+        if (isset($elemento->contacto)) {
+            $mail = $elemento->mail??$elemento->email;
+            $contacto = $elemento->contact??$elemento->contacto;
+            if (filter_var($mail,FILTER_VALIDATE_EMAIL)) {
+                Mail::to($mail, $contacto)
                     ->bcc($this->from)
                     ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attach));
-                Alert::info('Enviat correus ' . $this->subject . ' a ' . $elemento->contacto);
+                Alert::info('Enviat correus ' . $this->subject . ' a ' . $contacto);
                 if ($this->register) {
                     Activity::record('email', $elemento, null, $fecha, $this->subject);
                 }
             }
-            else Alert::danger("No s'ha pogut enviar correu a $elemento->contacto. Comprova email");
+            else {
+                Alert::danger("No s'ha pogut enviar correu a $contacto. Comprova email");
+            }
+        } else {
+            if (isset($elemento)) {
+                Alert::info("No s'ha pogut enviar. Falta contacte");
+            }
         }
-
     }
 
     private function chooseView(){
