@@ -12,7 +12,12 @@ class FctFinder extends Finder
 
     private function filter(&$elements){
         foreach ($elements as $element){
-            $element->marked = !$this->existsActivity($element->id)?true:false;
+            $fechaUltimaFct = $element->AlFct()->orderBy('hasta','desc')->first()->hasta;
+            if (FechaInglesa($fechaUltimaFct) < Hoy()){
+                $element->marked = false;
+            } else {
+                $element->marked = !$this->existsActivity($element->id)?true:false;
+            }
         }
         return $elements;
     }

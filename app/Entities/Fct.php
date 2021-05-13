@@ -130,6 +130,7 @@ class Fct extends Model
     {
         return $query->where('desde','<',Hoy());
     }
+   
 
    
     public function getIdColaboracionOptions(){
