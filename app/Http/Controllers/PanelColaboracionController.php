@@ -71,6 +71,7 @@ class PanelColaboracionController extends IntranetController
         $this->panel->setBoton('nofct',new BotonIcon('documentacionFCT.revision', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Revissió documentació','icon'=>'fa-check']));
 
         $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.inicioEmpresa', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Enviar documentació inici','icon'=>'fa-flag-o']));
+        $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.inicioAlumno', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Enviar documentació inici Alumne','icon'=>'fa-unlock']));
         $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.seguimiento', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Correu seguiment','icon'=>'fa-envelope']));
         $this->panel->setBoton('fct',new BotonIcon('fct.telefonico', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe telefonico','text'=>'','title'=>'Contacte telefònic','icon'=>'fa-phone']));
         $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.visitaEmpresa', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Concertar visita','icon'=>'fa-car']));
