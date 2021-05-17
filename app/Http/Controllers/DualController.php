@@ -377,6 +377,7 @@ class DualController extends ModalController
 
         $array['acceptar'] = config(self::CONTACTO_NOMBRE);
 
+        dd($fct->Fct->Colaboracion->Ciclo->dataSignaturaDual->format('d/m/Y')??'');
         $array['este conveni precisa el contingut i abast'] =  $fct->Fct->Colaboracion->Ciclo->dataSignaturaDual->format('d/m/Y')??'';
         $array['AA'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;

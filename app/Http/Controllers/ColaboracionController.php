@@ -179,9 +179,10 @@ class ColaboracionController extends IntranetController
         $file = storage_path("tmp/dual$colaboracion->id/Conveni.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/Conveni.pdf');
-            return $pdf->fillform($this->makeArrayPdfConveni($colaboracion))
+            $pdf->fillform($this->makeArrayPdfConveni($colaboracion))
                 ->saveAs($file);
         }
+
         return $file;
     }
 
