@@ -249,7 +249,7 @@ class ColaboracionController extends IntranetController
         $array['undefined_4'] =explode(',',$colaboracion->Centro->direccion)[0];
 
         $array['acceptar'] = config('contacto.nombre');
-        $array['este conveni precisa el contingut i abast'] =  $colaboracion->Ciclo->dataSignaturaDual;
+        $array['este conveni precisa el contingut i abast'] =  $colaboracion->Ciclo->dataSignaturaDual->format('d/m/Y')??'';
         $array['AA'] = $colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $colaboracion->Centro->Empresa->cif;
         $array['Província de'] = 'Alacant';
