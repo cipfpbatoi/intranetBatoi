@@ -373,14 +373,15 @@ class DualController extends ModalController
 
         $array['undefined_5'] = $fct->Fct->Colaboracion->Centro->codiPostal;
         $array[11] =  $fct->Fct->Colaboracion->Centro->Empresa->gerente;
-        $array['undefined_4'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0];
+        $array['undefined_4'] = explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0]??'';
 
         $array['acceptar'] = config(self::CONTACTO_NOMBRE);
-        $array['este conveni precisa el contingut i abast'] =  $fct->Fct->Colaboracion->Ciclo->dataSignaturaDual;
+
+        $array['este conveni precisa el contingut i abast'] =  $fct->Fct->Colaboracion->Ciclo->dataSignaturaDual?$fct->Fct->Colaboracion->Ciclo->dataSignaturaDual->format('d-m-Y'):'';
         $array['AA'] = $fct->Fct->Colaboracion->Centro->Empresa->localidad;
         $array['undefined_2'] = $fct->Fct->Colaboracion->Centro->Empresa->cif;
         $array['Província de'] = 'Alacant';
-        $array['CP'] =explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1];
+        $array['CP'] = explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1]??'';
 
         return $array;
     }
