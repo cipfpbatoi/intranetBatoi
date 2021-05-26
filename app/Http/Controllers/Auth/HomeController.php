@@ -13,6 +13,7 @@ use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Comision;
+use Intranet\Entities\Task;
 
 /**
  * Description of HomeIdentifyController
@@ -44,9 +45,10 @@ abstract class HomeController extends Controller
                 $actividades =  Cache::remember('actividades',now()->addHour(),function(){
                     return Actividad::next()->with(['profesores','grupos','Tutor'])->auth()->orderby('desde','asc')->take(10)->get();
                 });
-                $activities = Activity::Profesor($usuario->dni)
+                $tasks = Task::misTareas()->get();
+                /*$activities = Activity::Profesor($usuario->dni)
                                 ->orderBy('updated_at', 'desc')
-                                ->take(15)->get();
+                                ->take(15)->get();*/
                 $documents = Cache::remember('actas',now()->addDay(),function () {
                     return Documento::where('curso', '=', Curso())->where('tipoDocumento', '=', 'Acta')
                         ->where('grupo', '=', 'Claustro')->orWhere('grupo', '=', 'COCOPE')->get();
@@ -65,7 +67,7 @@ abstract class HomeController extends Controller
                 if (!estaDentro() && !Session::get('userChange')) {
                     Falta_profesor::fichar($usuario->dni);
                 }
-                return view('home.profile', compact('usuario', 'horario', 'actividades', 'activities', 'documents','faltas','hoyActividades','comisiones'));
+                return view('home.profile', compact('usuario', 'horario', 'actividades', 'tasks', 'documents','faltas','hoyActividades','comisiones'));
             }
         } else {
             $usuario = AuthUser();

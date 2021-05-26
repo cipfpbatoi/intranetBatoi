@@ -4,29 +4,30 @@ namespace Intranet\Nova;
 
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Select;
-use Laravel\Nova\Fields\HasOne;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Date;
+use Laravel\Nova\Fields\HasOne;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class Grupo extends Resource
+class Task extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \Intranet\Entities\Grupo::class;
+    public static $model = \Intranet\Entities\Task::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'nombre';
+    public static $title = 'id';
 
     /**
      * The columns that should be searched.
@@ -34,7 +35,7 @@ class Grupo extends Resource
      * @var array
      */
     public static $search = [
-        'nombre','tutor'
+        'id','descripcion','vencimiento'
     ];
 
     /**
@@ -46,21 +47,21 @@ class Grupo extends Resource
     public function fields(Request $request)
     {
         return [
-            Text::make('codigo')->sortable()->rules('required')->
-            creationRules('unique:grupos,codigo','max:5')->hideWhenUpdating(),
-            Text::make(__('validation.attributes.nombre'),'nombre')
+            ID::make(__('ID'), 'id')->sortable(),
+            Text::make(__('validation.attributes.descripcion'),'descripcion')
                 ->sortable()
-                ->rules('required', 'max:45'),
-            Text::make(__('validation.attributes.turno'),'turno')
+                ->rules('required', 'max:100'),
+            Date::make(__('validation.attributes.vencimiento'),'vencimiento')
+                ->rules('required','after:today'),
+            Text::make(__('validation.attributes.enlace'),'enlace')
                 ->sortable()
-                ->rules('required', 'max:1')
+                ->rules( 'max:200')
                 ->hideFromIndex(),
-            HasOne::make('Profesor','tutor'),
-            BelongsTo::make('Ciclo'),
-            Text::make('curso')
-                ->sortable()
-                ->rules( 'integer','max:3')
-                ->hideFromIndex(),
+            File::make('fichero')->disk('public')->path('/Eventos')->prunable(),
+            Boolean::make(__('validation.attributes.informativa'),'informativa'),
+            Boolean::make(__('validation.attributes.activa'),'activa'),
+            Select::make(__('validation.attributes.destinatario'),'destinatario')->options(config('roles.lor'))->displayUsingLabels(),
+            Select::make(__('validation.attributes.accion'),'action')->options(config('roles.actions'))->displayUsingLabels(),
         ];
     }
 

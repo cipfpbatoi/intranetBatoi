@@ -31,4 +31,11 @@ return [
         37 => 'dual',
         41 => 'jefe_practicas',
         43 => 'qualitat'
+    ],
+    'actions' => [
+        'SegAval' => 'Seguiments Avaluació',
+        'InfDept' => 'Informe departament',
+        'ArtxAct' => 'Artxiu actes',
+        'AvalPrg' => 'Avaluació de la programació',
+        'EntrPrg' => 'Entrega de la programació'
     ]];

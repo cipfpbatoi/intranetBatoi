@@ -122,8 +122,8 @@ return array(
 
 	'attributes' => array(
                 'read_at' => 'leído en',
-		'username' => 'usuario',
-		'password' => 'contraseña',
+                'username' => 'usuario',
+                'password' => 'contraseña',
                 'name' => 'Nombre',
                 'nombre' => 'Nombre',
                 'surnames' => 'Apellidos',
@@ -263,7 +263,12 @@ return array(
                 'valoraciones' => "Valoración de competencias, capacidades i nivel de aprendizaje",
                 'espacio' => 'Espacio',
                 'DesCurta' => 'Descripción',
-                'punto' => 'Punto a tratar'
+                'punto' => 'Punto a tratar',
+                'vencimiento' => 'Fecha vencimento',
+                'enlace' => 'Enlace',
+                'informativa' => 'Es informativa?',
+                'activa' => 'Activa',
+                'destinatario' => 'Destinatarios'
         ),
         'empty_option' => array(
             'default' => '-Selecciona-',

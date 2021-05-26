@@ -68,8 +68,7 @@ return array(
         'desde' => 'Desde',
         'hasta' => 'Hasta',
         'resum' => 'Resumen',
-
-
+        'tasks' => 'Tareas pendientes'
     ),
     'buttons' => array(
         'confirmar' => 'Confirmar',

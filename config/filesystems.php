@@ -66,6 +66,7 @@ return [
             'root' => base_path('docs'),
             'visibility' => 'public',
         ],
+
         
         's3' => [
             'driver' => 's3',

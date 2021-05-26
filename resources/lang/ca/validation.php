@@ -270,7 +270,12 @@ return array(
                 'valoraciones' => "Valoració de competències, capacitats i nivell d'aprenentatge",
                 'espacio' => 'Espai',
                 'DesCurta' => 'Descripció',
-                'punto' => 'Punt a tractar'
+                'punto' => 'Punt a tractar',
+                'vencimiento' => 'Data venciment',
+                'enlace' => 'Enllaç',
+                'informativa' => 'És informativa?',
+                'activa' => 'Activa',
+                'destinatario' => 'Destinataris'
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

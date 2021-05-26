@@ -14,7 +14,6 @@ return [
         'fcts' => 0,
         'estado' => 1,
         'unique' => 1,
-
     ],
     'revision' => [
         'email' => [

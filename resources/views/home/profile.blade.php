@@ -32,11 +32,11 @@
 
     <div class="" role="tabpanel" data-example-id="togglable-tabs">
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-            <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("messages.generic.nextActivities")</a>
+            <li role="presentation" class=""><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("messages.generic.nextActivities")</a>
             </li>
             <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">@lang("messages.generic.faltas")</a>
             </li>
-            <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab1" data-toggle="tab" aria-expanded="false">@lang("messages.generic.lastActivity")</a>
+            <li role="presentation" class="active"><a href="#tab_content3" role="tab" id="profile-tab1" data-toggle="tab" aria-expanded="false">@lang("messages.generic.tasks")</a>
             </li>
             <li role="presentation" class=""><a href="#tab_content4" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">@lang("messages.generic.timeTable")</a>
             </li>
@@ -44,7 +44,7 @@
             </li>
         </ul>
         <div id="myTabContent" class="tab-content">
-            <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+            <div role="tabpanel" class="tab-pane fade" id="tab_content1" aria-labelledby="home-tab">
                 <!-- start recent activity -->
                 @include('home.partials.activities')
                 <!-- end recent activity -->
@@ -54,9 +54,9 @@
                 @include('home.partials.faltas')
                 <!-- end recent activity -->
             </div>
-            <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
+            <div role="tabpanel" class="tab-pane fade active in" id="tab_content3" aria-labelledby="profile-tab">
                 <!-- start user projects -->
-                @include('home.partials.last')
+                @include('home.partials.tasks')
                 <!-- end user projects -->
             </div>
             <div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="profile-tab">
