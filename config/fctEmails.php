@@ -130,8 +130,8 @@ return [
             'descripcion' => 'ENTREVISTA DEL TUTOR CON EL INSTRUCTOR DE LA EMPRESA',
             'orientacion' => 'landscape'
         ],
-        'modelo' => 'AlumnoFct',
-        'finder' => 'AlumnoEnFct',
+        'modelo' => 'Fct',
+        'finder' => 'Fct',
         'view' => 'pdf.fct.pr0401',
     ],
     'pr0402' => [

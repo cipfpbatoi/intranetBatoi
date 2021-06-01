@@ -1,9 +1,6 @@
 @extends('layouts.pdf')
 @section('content')
-@php
-   $agrupados = $todos->groupBy('idFct')
-@endphp
-    @foreach ($agrupados as $grupo)
+    @foreach ($todos as $grupo)
     <div class="page">
         @include('pdf.fct.partials.cabecera')
         <br/>
@@ -20,19 +17,19 @@
         <br/>
         <table border="1" cellspacing="0" cellpadding="0">
             <tr>
-                <td style="text-align:left;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Empresa:</strong> <span>{{$grupo->first()->Fct->Colaboracion->Centro->nombre}}</span></td>
-                <td style="text-align:left;width:30.2833cm;padding-left: 5px;font-size: 0.9em "><strong>Cicle:</strong> <span>{{$grupo->first()->Fct->Colaboracion->Ciclo->ciclo}}</span></td>
+                <td style="text-align:left;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Empresa:</strong> <span>{{$grupo->Colaboracion->Centro->nombre}}</span></td>
+                <td style="text-align:left;width:30.2833cm;padding-left: 5px;font-size: 0.9em "><strong>Cicle:</strong> <span>{{$grupo->Colaboracion->Ciclo->ciclo}}</span></td>
             </tr>
             <tr>
                 <td style="text-align:left;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Instructors:</strong> <span>
-                      {{$grupo->first()->Fct->XInstructor}} @foreach ($grupo->first()->Fct->Colaboradores as $instructor)  ,{{$instructor->nombre}} @endforeach
+                      {{$grupo->XInstructor}} @foreach ($grupo->Colaboradores as $instructor)  ,{{$instructor->nombre}} @endforeach
                     </span></td>
                 <td style="text-align:left;width:30.2833cm;padding-left: 5px;font-size: 0.9em "><strong>Tutor:</strong> <span>{{AuthUser()->FullName}}</span></td>
             </tr>
             <tr>
                 <td colspan="2" style="text-align:left;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Alumnes:</strong>
-                    @foreach ($grupo as $alumno)
-                        <span>{{ $alumno->Alumno->FullName }} </span>
+                    @foreach ($grupo->Alumnos as $alumno)
+                        <span>{{ $alumno->FullName }} </span>
                     @endforeach
                 </td>
             </tr>
@@ -50,7 +47,7 @@
                 <td>Comentari</td>
             </tr>
             @php
-                $contactFct = \Intranet\Entities\Activity::mail('Fct')->Id($grupo->first()->idFct)->orderBy('created_at')->get();
+                $contactFct = \Intranet\Entities\Activity::mail('Fct')->Id($grupo->id)->orderBy('created_at')->get();
             @endphp
             @foreach ($contactFct as $contact)
                 <tr>

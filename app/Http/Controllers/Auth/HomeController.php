@@ -45,7 +45,7 @@ abstract class HomeController extends Controller
                 $actividades =  Cache::remember('actividades',now()->addHour(),function(){
                     return Actividad::next()->with(['profesores','grupos','Tutor'])->auth()->orderby('desde','asc')->take(10)->get();
                 });
-                $tasks = Task::misTareas()->get();
+                $tasks = Task::misTareas()->orderBy('vencimiento')->get();
                 /*$activities = Activity::Profesor($usuario->dni)
                                 ->orderBy('updated_at', 'desc')
                                 ->take(15)->get();*/

@@ -11,7 +11,7 @@ class Task extends Model
         'vencimiento' => 'date'
     ];
 
-    public function Profesor()
+    public function Profesores()
     {
         return $this->belongsToMany(Profesor::class, 'tasks_profesores','id_task','id_profesor','id','dni')->withPivot('check','valid')->withTimestamps();
     }
@@ -24,6 +24,25 @@ class Task extends Model
             ->where('activa',1)
             ->where('vencimiento','>=',Hoy());
     }
+
+    public function getmyDetailsAttribute(){
+        $teacher = $teacher?? AuthUser()->dni;
+        return $this->profesores()->where('dni',$teacher)->first();
+    }
+
+    public function getValidAttribute(){
+        $taskTeacher = $this->myDetails;
+        if (!$taskTeacher) {
+            return 0;
+        }
+        elseif ($taskTeacher->pivot->valid) {
+            return  1;
+        }
+        else {
+            return $this->informativa;
+        }
+    }
+
 
 
 

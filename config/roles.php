@@ -34,8 +34,11 @@ return [
     ],
     'actions' => [
         'SegAval' => 'Seguiments Avaluació',
+        'ActAval' => "Acta d'avaluació",
+        'ActaFSE' => "Acta Fons Social Europeu",
+        'ActaDel' => "Acta d'elecció de delegat",
         'InfDept' => 'Informe departament',
-        'ArtxAct' => 'Artxiu actes',
         'AvalPrg' => 'Avaluació de la programació',
-        'EntrPrg' => 'Entrega de la programació'
+        'EntrPrg' => 'Entrega de la programació',
+        'AprAval' => 'Aprovació de programacions'
     ]];
