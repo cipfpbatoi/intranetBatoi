@@ -62,7 +62,6 @@ class Actividad extends Model
      */
     public function Creador()
     {
-        
         if (Actividad_profesor::select('idProfesor')
                         ->where('idActividad', $this->id)
                         ->where('coordinador', 1)

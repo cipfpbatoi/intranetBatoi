@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Integration;
+namespace Tests\Feature;
 
 use Tests\IntegrationTestCase;
 use Intranet\Entities\Falta;

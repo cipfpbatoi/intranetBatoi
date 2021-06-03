@@ -19,10 +19,10 @@ abstract class TestCase extends BaseTestCase
         return Profesor::find('007864107Q');
     }
     public function defaultUser(){
-        return '021652470V';
+        return Profesor::find('021652470V');
     }  
     public function defaultTutor(){
-        return '021652470V';
+        return Profesor::find('021652470V');
     }
     public function siguiente($tabla){
        $ultim = DB::select("SELECT `AUTO_INCREMENT` AS ultimo FROM  INFORMATION_SCHEMA.TABLES

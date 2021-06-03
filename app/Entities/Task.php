@@ -21,8 +21,7 @@ class Task extends Model
         $profesor = Profesor::find($profesor) ?? AuthUser();
         $rolesProfesor = RolesUser($profesor->rol);
         return $query->whereIn('destinatario',$rolesProfesor)
-            ->where('activa',1)
-            ->where('vencimiento','>=',Hoy());
+            ->where('activa',1);
     }
 
     public function getmyDetailsAttribute(){

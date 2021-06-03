@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Integration;
+namespace Tests\Feature;
 
 use Tests\IntegrationTestCase;
 use Intranet\Entities\Comision;
@@ -18,6 +18,7 @@ class EstadoComisionTest extends IntegrationTestCase
         'kilometraje' => random_int(0,100),
         'idProfesor' => '021642470V',   
         ]);
+        $comision->save();
         $this->notSeeInDatabase('comisiones',[
             'desde' => '2017-08-04 08:00:00',
             'estado' => '0',
@@ -34,14 +35,13 @@ class EstadoComisionTest extends IntegrationTestCase
         'marca' => 'SEAT ALTEA XL',
         'matricula' => '1023-HDX',
         'kilometraje' => random_int(0,100),
-        'estado' => 2,
         ]);
         $comision->save();
         $this->seeInDatabase('comisiones',[
            'servicio' => 'Prueba',
             'desde' => '2017-08-04 08:00:00',
             'idProfesor' => $this->defaultUser()->dni,
-            'estado' => '2'
+            'estado' => '0'
         ]);
         $this->notSeeInDatabase('notifications', [
             'type' => 'Intranet\Notifications\mensajePanel',
