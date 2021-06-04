@@ -193,6 +193,16 @@ class Fct extends Model
         if ($inici <= config('curso.fct.2')['inici']) return 1;
         else return 2;    
     }
+    public function getinTimeAttribute(){
+        $hoy = Hoy('Y-m-d');
+
+        if ( $hoy > config('curso.fct.2')['inici'] ){
+            return ($this->periode == 2);
+        } else {
+            return ($this->periode == 1);
+        }
+    }
+
     public function getCicloAttribute(){
         return $this->Colaboracion->Ciclo->ciclo;
     }

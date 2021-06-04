@@ -1,5 +1,9 @@
-    <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
-        <div id="{{$elemento->id}}" class="well profile_view">
+    <div class="col-md-4 col-sm-4 col-xs-12 profile_details" >
+        @if ($fct->inTime)
+            <div id="{{$elemento->id}}" class="well profile_view">
+        @else
+            <div id="{{$elemento->id}}" class="well profile_view" style="background-color: lightcyan">
+        @endif
             <div id="{{$fct->id}}" class="col-sm-12 fct">
                 <div class="left col-md-8 col-xs-12">
                     <h5>FCT {{$elemento->Centro->nombre}} <strong>({{$elemento->puestos}})</strong></h5>
@@ -56,7 +60,9 @@
                 <div class="col-xs-12 col-sm-7 emphasis">
                     @include ('intranet.partials.components.buttons',['tipo' => 'profile'])<br/>
                     @php $elemento = $fct; @endphp
-                    @include ('intranet.partials.components.buttons',['tipo' => 'fct'])
+                    @if ($fct->inTime)
+                        @include ('intranet.partials.components.buttons',['tipo' => 'fct'])
+                    @endif
                 </div>
             </div>
         </div>
