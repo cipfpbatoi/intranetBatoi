@@ -57,11 +57,15 @@ class Task extends Resource
                 ->sortable()
                 ->rules( 'max:200')
                 ->hideFromIndex(),
-            File::make('fichero')->disk('public')->path('/Eventos')->prunable(),
+            File::make('fichero')->disk('public')->path('/Eventos')->prunable()
+                ->if(['enlace'], fn($value) => $value['enlace'] === '')
+                ->if(['enlace'], "_value.enlace === ''"),
             Boolean::make(__('validation.attributes.informativa'),'informativa'),
             Boolean::make(__('validation.attributes.activa'),'activa'),
             Select::make(__('validation.attributes.destinatario'),'destinatario')->options(config('roles.lor'))->displayUsingLabels(),
-            Select::make(__('validation.attributes.accion'),'action')->options(config('roles.actions'))->displayUsingLabels(),
+            Select::make(__('validation.attributes.accion'),'action')->options(config('roles.actions'))->displayUsingLabels()
+                ->if(['informativa'], fn($value) => $value['informativa'] === 'false')
+                ->if(['informativa'], "_value.informativa === 'false'"),
         ];
     }
 

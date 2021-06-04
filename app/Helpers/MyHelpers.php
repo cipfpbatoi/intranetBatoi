@@ -414,6 +414,17 @@ function inRol($roles){
 
 }
 
+function usuarios($tipo,$field='email'){
+    $usuarios = [];
+    foreach (Intranet\Entities\Profesor::Activo()->get() as $profesor){
+        if ($profesor->rol % config('roles.rol.'.$tipo) == 0){
+            $usuarios[] = $profesor->$field;
+        }
+    }
+
+    return $usuarios;
+}
+
 function existsTranslate($text){
     if (trans($text) != $text) return trans($text);
     return null;

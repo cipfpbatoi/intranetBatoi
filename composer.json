@@ -18,6 +18,7 @@
         "graham-campbell/markdown": "^13.1.1",
         "guzzlehttp/guzzle": "^7.0.1",
         "h4cc/wkhtmltopdf-amd64": "^0.12.4",
+        "izi-dev/nova-conditional-field": "^2.1",
         "jenssegers/date": "^4.0.0@beta",
         "laravel/framework": "^8.0",
         "laravel/nova": "*",
