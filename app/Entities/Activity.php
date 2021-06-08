@@ -52,7 +52,7 @@ class Activity extends Model
 
     public function scopeMail($query)
     {
-        return $query->where('action','email')->orWhere('action','phone')->orWhere('action','visita');
+        return $query->where('action','email')->orWhere('action','phone')->orWhere('action','visita')->orWhere('action','review');
     }
     public function scopeId($query,$id){
         return $query->where('model_id',$id);

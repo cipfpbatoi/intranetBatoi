@@ -417,3 +417,5 @@ Route::get('/articulo/{id}/delete', ['as' => 'articulo.destroy', 'uses' => 'Arti
 Route::put('/articulo/{id}/edit', ['as' => 'articulo.update', 'uses' => 'ArticuloController@update']);
 
 Route::get('/task/{id}/check',['as'=>'task.check','uses'=>'TaskController@check']);
+Route::get('/ciclodual/edit',['as'=>'cicloDual.edit','uses'=>'CicloDualController@edit']);
+Route::put('/ciclodual/edit',['as'=>'cicloDual.update','uses'=>'CicloDualController@update']);

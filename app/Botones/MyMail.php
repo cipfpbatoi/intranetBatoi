@@ -12,6 +12,7 @@ use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Activity;
 use Illuminate\Support\Facades\Mail;
+use function Symfony\Component\String\s;
 
 class MyMail
 {
@@ -59,6 +60,7 @@ class MyMail
             $this->view = $view;
         }
         $this->attach =$attach;
+
     }
 
     private function recoveryObjects($elements){

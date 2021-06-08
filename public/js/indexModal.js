@@ -11,7 +11,7 @@ $(function () {
             $(id).find('.fa-edit').parents('a').attr("href", jQuery(location).attr('href')+"/"+id+"/edit");
         }
     })
-    $(".txtButton").on("click", function () {
+    $("a.btn-primary.btn.txtButton").on("click", function () {
         event.preventDefault();
         $('.form-horizontal')[0].reset();
         formModal.attr('action',jQuery(location).attr('href'));

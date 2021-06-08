@@ -61,4 +61,9 @@ class Ciclo extends Model
         return App::getLocale(session('lang')) == 'es' ? $this->cliteral : $this->vliteral;
     }
 
+    public function getCompleteDualAttribute()
+    {
+        return isset($this->acronim) && isset($this->llocTreball) && isset($this->dataSignaturaDual);
+    }
+
 }

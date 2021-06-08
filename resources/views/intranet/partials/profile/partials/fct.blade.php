@@ -23,20 +23,8 @@
                 <div class="col-md-4 listActivity">
                     @foreach ($contactos as $contacto)
                         <small>
-
                             {{fechaCurta($contacto->created_at)}}
-                            @if (firstWord($contacto->document)=='Recordatori')
-                                <i class="fa fa-flag"></i>
-                            @elseif (firstWord($contacto->document)=='Informació')
-                                <i class="fa fa-lock"></i>
-                                @else
-                                    <a href="#" class="small" id="{{$contacto->id}}">
-                                        @if ($contacto->action == 'email') <i class="fa fa-envelope"></i> @endif
-                                        @if ($contacto->action == 'visita') <i class="fa fa-car"></i> @endif
-                                        @if ($contacto->action == 'phone') <i class="fa fa-phone"></i> @endif
-                                        @if (isset($contacto->comentari))  <i class="fa fa-plus"></i> @endif
-                                    </a>
-                            @endif
+                            @include('intranet.partials.profile.partials.icono')
                         </small>
                         <br/>
                     @endforeach
@@ -61,9 +49,7 @@
                 <div class="col-xs-12 col-sm-7 emphasis">
                     @include ('intranet.partials.components.buttons',['tipo' => 'profile'])<br/>
                     @php $elemento = $fct; @endphp
-                    @if ($fct->inTime)
-                        @include ('intranet.partials.components.buttons',['tipo' => 'fct'])
-                    @endif
+                    @include ('intranet.partials.components.buttons',['tipo' => 'fct'])
                 </div>
             </div>
         </div>
