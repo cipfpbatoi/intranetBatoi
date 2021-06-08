@@ -142,8 +142,7 @@ class DocumentoController extends IntranetController
     {
         $elemento = Documento::findOrFail($id);
         $formulario = $elemento->enlace?
-            $formulario = new FormBuilder($elemento, ['tipoDocumento' => ['disabled' => 'disabled'],
-                'fichero' => ['type' => ['disableAll' => 'on']],
+            new FormBuilder($elemento, ['tipoDocumento' => ['disabled' => 'disabled'],
                 'propietario' => ['disabled' => 'disabled'],
                 'rol' => ['type' => 'hidden'],
                 'detalle' => ['type' => 'textarea'],
