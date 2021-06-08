@@ -14,7 +14,7 @@
 </div>
 <div class="container" >
     <ul>
-        <li>{{$elemento->Tipos()['vliteral']}} {{$elemento->descripcion}}</li>
+        <li>{{$elemento->Tipos()->vliteral}} {{$elemento->descripcion}}</li>
         <li>Numeració: {{$elemento->curso}} / {{$elemento->numero}} </li>
         <li>Lloc: {{$elemento->Espacio->descripcion}}</li>
         <li>Data: {{$elemento->fecha}}</li>
