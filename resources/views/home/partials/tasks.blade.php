@@ -17,8 +17,14 @@
                 </div>
 
                 <div class="message_wrapper">
-                    <h4 class="heading"><a href="/storage/{{$task->fichero}}" title="Més Informació">{{$task->descripcion}}&nbsp;&nbsp;&nbsp;&nbsp;
-                            <i class="fa fa-clipboard"></i></a> &nbsp;&nbsp;&nbsp;&nbsp;
+                    <h4 class="heading">
+                        @if ($task->fichero)
+                            <a href="/storage/{{$task->fichero}}" title="Més Informació">{{$task->descripcion}}&nbsp;&nbsp;&nbsp;&nbsp;
+                                <i class="fa fa-clipboard"></i></a> &nbsp;
+                        @else
+                            <a href="{{$task->enlace}}" title="Més Informació">{{$task->descripcion}}&nbsp;&nbsp;&nbsp;&nbsp;
+                                <i class="fa fa-clipboard"></i></a> &nbsp;
+                        @endif    &nbsp;&nbsp;&nbsp;
                         @if ($task->valid)
                             <a href="/task/{{$task->id}}/check" title="Tasca revisada"><i class="fa fa-check-square-o"></i></a>
                         @else
