@@ -13,25 +13,25 @@ class Gestor
     private $link;
     private $isFile;
 
-    public function __construct($elemento=null){
-        if (isset($elemento)) {
-            $this->elemento = $elemento;
+    public function __construct($elemento=null,$documento=null){
+        $this->elemento = $elemento;
+        if (isset($documento)){
+            $this->document = $documento;
+        } else {
             $this->document = $this->elemento->idDocumento ? Documento::find($this->elemento->idDocumento) : (isset($elemento->fichero) ? Documento::where('fichero', $elemento->fichero)->first() : null);
-            if ($this->document) {
-                if (isset($this->document->enlace)) {
-                    $this->link = $this->document->enlace;
-                    $this->isFile = false;
-                }
-                if (isset($this->document->fichero)) {
-                    $this->link = storage_path('app/' . $this->document->fichero);
-                    $this->isFile = true;
-                }
-            } else {
-                $this->getFileIfExistFromModel();
+        }
+        if ($this->document) {
+            if (isset($this->document->enlace)) {
+                $this->link = $this->document->enlace;
+                $this->isFile = false;
+            }
+
+            if (isset($this->document->fichero)) {
+                $this->link = storage_path('app/' . $this->document->fichero);
+                $this->isFile = true;
             }
         } else {
-            $this->elemento = null;
-            $this->document = null;
+            $this->getFileIfExistFromModel();
         }
     }
 
