@@ -14,4 +14,10 @@ return [
         [ 'ip' => '172.16.109.207', 'codOcup' => 3249454 ],
         [ 'ip' => '172.16.109.208', 'codOcup' => 3249454 ]],
     'ocupacionesGuardia' => [3249454,149034734],
+    'pdf' =>
+        [   'partAmonestacio' => ['codi' => 'F1.PC01' , 'edicio' => '00', 'vista'=>'pdf.expediente.4'],
+            'memoriaDepartament' => ['codi' => 'F3.PC02' , 'edicio' => '00','vista' => 'pdf.infDep'],
+
+        ]
+    ,
 ];

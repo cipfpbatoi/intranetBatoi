@@ -18,7 +18,9 @@ class Gestor
         if (isset($documento)){
             $this->document = $documento;
         } else {
-            $this->document = $this->elemento->idDocumento ? Documento::find($this->elemento->idDocumento) : (isset($elemento->fichero) ? Documento::where('fichero', $elemento->fichero)->first() : null);
+            if (isset($this->elemento)) {
+                $this->document = $this->elemento->idDocumento ? Documento::find($this->elemento->idDocumento) : (isset($elemento->fichero) ? Documento::where('fichero', $elemento->fichero)->first() : null);
+            }
         }
         if ($this->document) {
             if (isset($this->document->enlace)) {

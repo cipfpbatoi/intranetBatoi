@@ -38,8 +38,8 @@ class Kernel extends ConsoleKernel
                 ->dailyAt('23:30');
         $schedule->command('guard:Daily')
                 ->dailyAt('07:30');
-        $schedule->command('fct:Weekly')
-                ->weeklyOn(1,'07:45');
+        $schedule->command('fct:Daily')
+                ->dailyAt('07:45');
     }
 
     /**

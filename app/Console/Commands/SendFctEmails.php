@@ -18,7 +18,7 @@ class SendFctEmails extends Command
      *
      * @var string
      */
-    protected $signature = 'fct:Weekly';
+    protected $signature = 'fct:Daily';
 
     /**
      * The console command description.
