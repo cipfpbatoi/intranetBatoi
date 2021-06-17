@@ -22,4 +22,5 @@
         </div>
     </div>
     @endforeach
+    @include('pdf.partials.pie',['document'=>'autoritzacioMenors'])
 @endsection

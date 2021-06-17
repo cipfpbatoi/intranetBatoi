@@ -36,7 +36,7 @@ return [
         ['index' => '6', 'vliteral' => 'Reunió pares', 'cliteral' => 'Reunión de padres', 'colectivo' => 'Grupo', 'rol' => '17', 'select' => '0','modificable' => 1,
             'convocatoria' => 'citacion', 'acta' => 'acta','numeracion' => [0=>'--']],
         ['index' => '7', 'vliteral' => 'Reunió Avaluació', 'cliteral' => 'Reunión de evaluación', 'colectivo' => 'Grupo', 'rol' => '17', 'select' => '0',
-            'convocatoria' => 'convocatoria', 'acta' => 'acta','modificable' => 0,
+            'convocatoria' => 'convocatoria', 'acta' => 'avaluacio','modificable' => 0,
             'ordenes' => ["Opinió dels alumnes", "Revisió d'acords adoptats a la sessió anterior", "Revisió de l'acta de qualificacions",
                 "Valoració general dels resultats obtinguts", "Problemes detectats al grup i mesures a pendre", "Alumnes amb dificultats acadèmiques i mesures a adoptar", 
                 "Acords adoptats", "Observacions"],

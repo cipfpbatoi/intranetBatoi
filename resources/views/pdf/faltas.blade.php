@@ -46,6 +46,7 @@
     </table>
 </div>
 @include('pdf.partials.firmaGen',['title'=>'La direcció AUTORITZA les baixes durant el/s die/s i hor/es indicats','signatura'=>'falta'])
+@include('pdf.partials.pie',['document'=>'comunicacioAbsencia'])
 @endsection
 
 

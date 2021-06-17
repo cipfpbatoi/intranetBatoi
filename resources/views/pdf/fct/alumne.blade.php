@@ -30,6 +30,7 @@
                     en el curso lectivo {{Curso()}}, obteniendo una calificación de APTO.</p>
             </div>
             @include('pdf.partials.firmaSD')
+            @include('pdf.partials.pie',['document'=>'certificatsFCT'])
         </div>
     @endforeach
 @endsection

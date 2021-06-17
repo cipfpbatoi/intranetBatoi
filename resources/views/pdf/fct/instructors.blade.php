@@ -25,6 +25,7 @@
                formatives.</p>
         </div>
         @include('pdf.partials.firmaSD')
+        @include('pdf.partials.pie',['document'=>'certificatsFCT'])
     </div>
 @endif
 @if (!isset($empresa->idioma) || $empresa->idioma == 'es')
@@ -51,6 +52,7 @@
             formativas.</p>
     </div>
     @include('pdf.partials.firmaSDes')
+    @include('pdf.partials.pie',['document'=>'certificatsFCT'])
 </div>
 @endif
 
@@ -79,6 +81,7 @@
            formatives durant <strong>{{$instructor->pivot->horas}}</strong> hores.</p>
     </div>
     @include('pdf.partials.firmaSD')
+    @include('pdf.partials.pie',['document'=>'certificatsFCT'])
 </div>
 @endif
 @if (!isset($empresa->idioma) || $empresa->idioma == 'es')
@@ -105,6 +108,7 @@
            formativas durante <strong>{{$instructor->pivot->horas}}</strong> horas.</p>
     </div>
     @include('pdf.partials.firmaSDes')
+    @include('pdf.partials.pie',['document'=>'certificatsFCT'])
 </div>
 @endif
 @endforeach

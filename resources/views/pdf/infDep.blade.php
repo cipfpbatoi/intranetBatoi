@@ -163,6 +163,7 @@
         <tr><td style="text-align: justify">{!!$datosInforme['observaciones']!!}</td></tr>
     </table>    
 </div>
+@include('pdf.partials.pie',['document'=>'memoriaDepartament'])
 @endsection
 
 

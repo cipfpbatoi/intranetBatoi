@@ -57,6 +57,7 @@
             </td>
         </tr>
     </table>
+    @include('pdf.partials.pie',['document'=>'controlServei'])
 </body>
 </html>
 @endsection

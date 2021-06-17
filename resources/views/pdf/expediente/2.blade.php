@@ -58,6 +58,7 @@
 										EL PARE, MARE O TUTOR/A LEGAL.
         </div>
         @endif
+        @include('pdf.partials.pie',['document'=>'perdidaContinua'])
     </div>
     @endforeach
 @endsection

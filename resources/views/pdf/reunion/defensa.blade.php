@@ -46,4 +46,5 @@
         <p>{{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme->hoy}}</p>
     </div>       
 </div>
+@include('pdf.partials.pie',['document'=>'actaDefensa'])
 @endsection

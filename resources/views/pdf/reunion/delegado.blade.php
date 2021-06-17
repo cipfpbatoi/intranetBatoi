@@ -33,4 +33,5 @@
         SECRETARI/A</div>
     <div style="width:45%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme->hoy}}</div>
 </div>
+@include('pdf.partials.pie',['document'=>'actaDelegat'])
 @endsection
