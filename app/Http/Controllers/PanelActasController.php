@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\AvalFct;
 
 /**

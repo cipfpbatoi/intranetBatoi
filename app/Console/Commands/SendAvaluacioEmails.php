@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Intranet\Entities\AlumnoReunion;
 use Intranet\Mail\AvalAlumne;
 use Intranet\Mail\extraOrdinariaAlumne;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Swift_RfcComplianceException;
 use Illuminate\Support\Str;
 

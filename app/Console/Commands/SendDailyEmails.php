@@ -5,7 +5,7 @@ namespace Intranet\Console\Commands;
 use Illuminate\Console\Command;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Notification;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\ResumenDiario;
 
 class SendDailyEmails extends Command

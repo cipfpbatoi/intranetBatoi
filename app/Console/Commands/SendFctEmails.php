@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Mail\CertificatAlumneFct;
 use Intranet\Mail\CertificatInstructorFct;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\AvalFct;
 use Swift_RfcComplianceException;
 

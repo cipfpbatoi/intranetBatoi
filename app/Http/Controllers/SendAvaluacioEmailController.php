@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\AlumnoReunion;
 use Illuminate\Support\Str;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\AvalAlumne;
 use Intranet\Mail\extraOrdinariaAlumne;
 
