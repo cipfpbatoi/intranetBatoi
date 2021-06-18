@@ -110,7 +110,7 @@ class PanelListadoEntregasController extends BaseController
                         'fichero' => $reunion->fichero,
                         'supervisor' => $reunion->idProfesor,
                         'grupo' => str_replace(' ', '_', $reunion->Xgrupo),
-                        'tags' => TipoReunion::find($reunion->tipo)->literal . ',' . config('auxiliares.numeracion')[$reunion->numero],
+                        'tags' => TipoReunion::find($reunion->tipo)->vliteral . ',' . config('auxiliares.numeracion')[$reunion->numero],
                         'created_at' => new Date($reunion->fecha),
                         'rol' => config('roles.rol.profesor')]);
 
