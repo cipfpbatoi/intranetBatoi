@@ -6,7 +6,8 @@ use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
 use Illuminate\Support\Facades\Mail;
-use Intranet\Mail\AvalFct;
+use Intranet\Mail\TitolAlumne;
+use Styde\Html\Facades\Alert;
 
 /**
  * Class PanelActasController
@@ -64,16 +65,25 @@ class PanelActasController extends BaseController
     public function finActa($idGrupo){
         $grupo = Grupo::findOrFail($idGrupo);
         $fcts = AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
+        $correus = 0;
         foreach ($fcts as $fct){
             $fct->actas = 2;
             $fct->save();
-            if (isset($fct->Fct->Colaboracion->Centro->nombre)) {
+            /**if (isset($fct->Fct->Colaboracion->Centro->nombre)) {
                 $empresas[$fct->Fct->Colaboracion->Centro->nombre] =
                     isset($empresas[$fct->Fct->Colaboracion->Centro->nombre])
                         ? $empresas[$fct->Fct->Colaboracion->Centro->nombre] . " , " . $fct->Alumno->FullName
                         : $fct->Alumno->FullName;
+            }*/
+
+            if ($fct->calificacion == 1){
+                Mail::to($fct->Alumno->email)
+                    ->send(new TitolAlumne($fct));
+                $correus++;
             }
+
         }
+        Alert::info("$correus enviats a Alumnes");
         $grupo->acta_pendiente = 0;
         $grupo->save();
         avisa($grupo->tutor, "Ja pots passar a arreplegar l'acta del grup $grupo->nombre", "#");
