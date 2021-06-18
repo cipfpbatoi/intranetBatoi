@@ -39,7 +39,7 @@
                             <a class="papelera" href="/notification/{{$notifications->id}}/delete">
                                 <span class="image"><img src="/img/delete.png" alt="Marcar como leida" class="iconopequeno" /></span>
                             </a>
-                            <a href="{{$notifications->data['enlace']}}">
+                            <a href="#">
                                 <span>
                                     <span>{{$notifications->data['emissor']}}</span>
                                     <span class="time">{{$notifications->data['data']}}</span>
