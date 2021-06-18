@@ -67,5 +67,5 @@
             </table>
             @include('pdf.partials.pie',['document'=>'seguimentInstructor'])
         </div>
-    u@endforeach
+    @endforeach
 @endsection
