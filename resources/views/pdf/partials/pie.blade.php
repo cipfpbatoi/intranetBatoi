@@ -1,4 +1,4 @@
-<div class="container col-lg-12" style="font-size: x-small;" >
+<div class="container col-lg-12" style="font-size: x-small;clear: both" >
     <hr/>
     @php($documento = config('variables.pdf.'.$document))
     @if ($documento!= null)
