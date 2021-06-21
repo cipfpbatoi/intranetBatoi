@@ -81,8 +81,15 @@ class Modulo_grupo extends Model
         $tipoCiclo = $this->ModuloCiclo->Ciclo->tipo??1;
         $curso = $this->ModuloCiclo->curso??1;
         $trimestre = config("curso.trimestres.$tipoCiclo.$tr.$curso");
-        return $this->resultados->where('evaluacion',$trimestre)->count();
+        $quants = $this->resultados->where('evaluacion',$trimestre)->count();
+        if ($quants){
+            return true;
+        }elseif (count($this->profesores())) {
+            return false;
+        }
+        return true;
     }
+
     public function getprofesorAttribute(){
         $a = '';
         foreach ($this->profesores() as $profesor){
