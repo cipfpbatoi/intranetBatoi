@@ -52,5 +52,5 @@
 @lang("models.Reunion.control")
 @endsection
 @section('scripts')
-    {{ Html::script("/js/reunion/control.js") }}
+    {{ Html::script("/js/Reunion/control.js") }}
 @endsection
