@@ -36,7 +36,7 @@ class TipoReunion
     }
 
     public static function find($id){
-        return new TipoReunion($id);
+        return config('tablas.tipoReunion')[$id];
     }
 
     public static function all()

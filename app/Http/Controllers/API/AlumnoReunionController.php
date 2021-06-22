@@ -21,6 +21,8 @@ class AlumnoReunionController extends ApiBaseController
        $apellidos = $alumno->apellido1.' '.$alumno->apellido2;
        $email = $alumno->email ;
        $nia = $alumno->nia;
+       $telef1 = $alumno->telef1;
+       $telef2 = $alumno->telef2;
        $ciclo = $grupo->idCiclo;
        $dni = $alumno->dni;
        $curso_actual = $grupo->curso;
@@ -31,7 +33,7 @@ class AlumnoReunionController extends ApiBaseController
            $promociona = true;
            $curso = ($grupo->isSemi)?'fct':2;
        }
-       return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
+       return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
     }
 
     public function getDadesMatricula($token){
