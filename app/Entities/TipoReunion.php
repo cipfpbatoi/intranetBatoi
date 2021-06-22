@@ -36,7 +36,8 @@ class TipoReunion
     }
 
     public static function find($id){
-        return new TipoReunion($id);
+        $tr = new TipoReunion($id);
+        return $tr;
     }
 
     public static function all()

@@ -11,7 +11,7 @@ class TipoReunionController extends ApiBaseController
     public function show($id,$send=true)
     {
         $data = TipoReunion::find($id);
-        return $this->sendResponse($data, 'OK');
+        return $this->sendResponse($data->get(), 'OK');
     }
 
 }
