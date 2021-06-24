@@ -342,7 +342,7 @@ Route::get('/tutoriagrupo/indice/{id}', ['as' => 'tutoriagrupo.indice', 'uses' =
 Route::get('/guardia', ['as' => 'guardia.index', 'uses' => 'GuardiaController@index']);
 Route::get('/reserva', ['as' => 'reserva.index', 'uses' => 'ReservaController@index']);
 
-//API_TOKEN
+//API_TOKENF
 Route::get('/myApiToken', ['as' => 'profesor.miapiToken', 'uses' => 'ProfesorController@miApiToken']);
 //Documentaci
 Route::get('/readme', ['as' => 'documentacio.miapiToken', 'uses' => 'ProfesorController@readme']);

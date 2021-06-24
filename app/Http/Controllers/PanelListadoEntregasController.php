@@ -203,6 +203,7 @@ class PanelListadoEntregasController extends BaseController
         $segundo = Resultado::Departamento($dep)
                 ->TrimestreCurso($trimestre, 2)
                 ->get();
+
         $resultados = $primero
                 ->concat($segundo)
                 ->sortBy('Modulo');
