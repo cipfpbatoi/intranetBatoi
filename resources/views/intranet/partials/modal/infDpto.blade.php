@@ -11,6 +11,7 @@
             {!! Intranet\Entities\OrdenReunion::where('idReunion',$informes[evaluacion()-1])->where('orden',1)->first()->resumen !!}
         @endif
     </textarea>
+
     @if (evaluacion()-1==3)
         <label class='control-label' for='proyectos'>   {!! trans('validation.attributes.proyectos') !!}: </label>
         <textarea id='proyectos' name="proyectos" class="form-control" placeholder="@lang("validation.attributes.proyectos")" style=' width: 570px; height:300px;'/>

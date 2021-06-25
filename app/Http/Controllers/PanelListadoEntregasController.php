@@ -66,6 +66,7 @@ class PanelListadoEntregasController extends BaseController
     public function hazInformeTrimestral(Request $request)
     {
         $pdf = $this->hazPdfInforme($request->observaciones, $request->trimestre, $request->proyectos);
+
         // cree reunio
         DB::transaction(function () use ($pdf, $request) {
             $reunion = new Reunion();
@@ -120,6 +121,7 @@ class PanelListadoEntregasController extends BaseController
 
     public function modificaInformeTrimestral(Request $request)
     {
+
         $pdf = $this->hazPdfInforme($request->observaciones, $request->trimestre,$request->proyectos);
         $oR = OrdenReunion::where('idReunion', $request->reunion)
                 ->where('orden', 1)
@@ -197,16 +199,29 @@ class PanelListadoEntregasController extends BaseController
                 ->where('estado', 3)
                 ->orderBy('desde')
                 ->get();
-        $primero = Resultado::Departamento($dep)
+        $todos = Resultado::Departamento($dep)->with('ModuloGrupo')->get();
+
+        $resultados = collect();
+        foreach ($todos as $resultado){
+            $modulo = $resultado->ModuloGrupo;
+            $curso = $modulo->Grupo->curso;
+            $tipoCiclo = $modulo->ModuloCiclo->Ciclo->tipo;
+            if (config("curso.trimestres.$tipoCiclo.$trimestre.$curso")==$resultado->evaluacion){
+                $resultados->add($resultado);
+            }
+        }
+        $resultados->sortBy('Modulo');
+        /*$primero = Resultado::Departamento($dep)
                 ->TrimestreCurso($trimestre, 1)
                 ->get();
         $segundo = Resultado::Departamento($dep)
                 ->TrimestreCurso($trimestre, 2)
                 ->get();
 
+        dd($trimestre);
         $resultados = $primero
                 ->concat($segundo)
-                ->sortBy('Modulo');
+                ->sortBy('Modulo');*/
         if ($trimestre == 3) {
             $programaciones = Programacion::Departamento(AuthUser()->departamento)
                     ->whereNotNull('propuestas')

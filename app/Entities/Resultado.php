@@ -71,8 +71,8 @@ class Resultado extends Model
         $profesores = Profesor::select('dni')->where('departamento',$dep)->get()->toarray();
         return $query->whereIn('idProfesor',$profesores);
     }
-    public function scopeTrimestreCurso($query,$trimestre,$curso){
-        $evaluaciones = config("curso.trimestres.$trimestre");
+    public function scopeTrimestreCurso($query,$trimestre,$ciclo,$curso){
+        $evaluaciones = config("curso.trimestres.$ciclo.$trimestre");
         return $query->where('evaluacion',$evaluaciones[$curso])
                     ->whereIn('idModuloGrupo', hazArray(Modulo_grupo::Curso($curso)->get(),'id','id'));
     }
