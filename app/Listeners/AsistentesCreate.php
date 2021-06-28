@@ -32,26 +32,22 @@ class AsistentesCreate
     private function queAlumnes($reunion){
         $grupo = $reunion->GrupoClase;
 
-        if ($reunion->avaluacioFinal) return $grupo->Alumnos;
-
         if ($reunion->extraOrdinaria) {
-            if ($grupo->curso == 2)
+            if ($grupo->curso == 2) {
                 return $grupo->Alumnos->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(), 'idAlumno'));
-            if ($grupo->isSemi)
+            } else {
                 return $grupo->Alumnos;
-            if ($actaFinal = Reunion::actaFinal($reunion->idProfesor)->first())
-                return $actaFinal->noPromocionan;
-            return $grupo->Alumnos;
+            }
         }
         return [];
     }
 
     private function assignaAlumnes($reunion)
     {
-        $capacitat = $reunion->avaluacioFinal?0:3;
+        //$capacitat = $reunion->avaluacioFinal?0:3;
 
         foreach ($this->queAlumnes($reunion) as $alumno)
-            $reunion->alumnos()->attach($alumno->nia,['capacitats'=>$capacitat]);
+            $reunion->alumnos()->attach($alumno->nia,['capacitats'=>3]);
     }
 
 

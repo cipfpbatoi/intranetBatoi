@@ -28,8 +28,8 @@ Curs 2019-20</p>
 <p class="normal"><br/></p>
 <p class="left"><b>NIA:</b> {{ $todos->Alumno->nia }}</p>
 <p class="left"><b>COGNOMS I NOM:</b> {{ $todos->Alumno->FullName }}</p>
-<p class="left"><b>CICLE FORMATIU:</b> {{$todos->Alumno->Grupo->first()->Ciclo->literal}}</p>
-<p class="left"><b>CURS:</b> {{$todos->Alumno->Grupo->first()->curso}}</p>
+<p class="left"><b>CICLE FORMATIU:</b> {{$todos->Alumno->Grupo->first()->Ciclo->literal??''}}</p>
+<p class="left"><b>CURS:</b> {{$todos->Alumno->Grupo->first()->curso??''}}</p>
 <p class="normal"><br/><br/></p>
 <p class="title">_______DADES ACADÈMIQUES___________________________________</p>
 <p class="normal"><br/></p>
