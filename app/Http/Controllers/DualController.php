@@ -251,6 +251,8 @@ class DualController extends ModalController
                 $zip->addFile($this->informe($fct,'anexe_vb',false,$data),$carpeta_formacio."ANEXO_V-B.pdf");break;
             case 'annexiii':
                 $zip->addFile($this->printAnexeXIII($fct,$data),$carpeta_formacio."ANEXO_XIII.pdf");break;
+            case 'justificants' :
+                $zip->addFile($this->informe($fct,'justificants',false,$data),$carpeta_formacio."Justificants.pdf");break;
             default : break;
         }
     }
@@ -479,6 +481,16 @@ class DualController extends ModalController
     public function printAnexeXIII($fct,$data){
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/anexo_xiiI.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
+            $pdf->fillform($this->makeArrayPdfAnexoXIII($fct,$data))
+                ->saveAs($file);
+        }
+        return $file;
+    }
+    public function printJustificants($fct,$data){
+        $id = $fct->id;
+        $file = storage_path("tmp/dual$id/justificants.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/ANEXO_XIII.pdf');
             $pdf->fillform($this->makeArrayPdfAnexoXIII($fct,$data))

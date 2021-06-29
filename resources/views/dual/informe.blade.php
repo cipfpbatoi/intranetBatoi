@@ -130,6 +130,12 @@
                             <input type='checkbox' class="form-control" id='annexiii' name='annexiii'  />
                         </div>
                     </div>
+                    <div class="form-group item">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Justificants d'entrega:</label>
+                        <div class="col-md-3 col-sm-3 col-xs-12">
+                            <input type='checkbox' class="form-control" id='justificants' name='justificants'  />
+                        </div>
+                    </div>
                     <h4>Altres Dades</h4>
                     <div class="form-group item">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Data documentació:</label>

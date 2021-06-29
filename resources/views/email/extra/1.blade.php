@@ -13,9 +13,8 @@
         </table>
     </div>
     <div class="container" >
-        <p>Hola, primer que tot, esperem que estigues bé, tant tu com la teu família.
-            T’enviem aquest correu per a informar-te del procés de matrícula per al curs 202122.</p>
-        <p>La teua matrícula per al curs 2021-22 es farà de la següent forma:</p>
+        <p>Hola, des del CIPFP Batoi, volem informar-te que el procediment per a realitzar la matrícula per al curs 2021-22
+         es farà de la següent forma:</p>
         <ul>
             <li>La data de matrícula serà del 8 al 18 de juliol (ambdós inclosos).</li>
             <li>La matrícula es farà de forma telemàtica mitjançant un assistent al qual entraràs polsant sobre el
