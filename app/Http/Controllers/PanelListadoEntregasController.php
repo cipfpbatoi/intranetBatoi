@@ -27,7 +27,7 @@ class PanelListadoEntregasController extends BaseController
 
     const ROLES_ROL_JEFE_DPTO = 'roles.rol.jefe_dpto';
     protected $model = 'Modulo_grupo';
-    protected $gridFields = ['literal','profesor','seguimiento'];
+    protected $gridFields = ['literal','seguimiento','profesor'];
     protected $parametresVista = ['modal' => ['infDpto']];
 
     public function search()
@@ -59,7 +59,7 @@ class PanelListadoEntregasController extends BaseController
         {
             $this->panel->setBoton('index',new BotonBasico('Infdepartamento.pdf.'.$reunion->id,['roles' => config(self::ROLES_ROL_JEFE_DPTO)]));
         }
-         $this->panel->setBoton('grid',new BotonImg('Infdepartamento.aviso',['img' => 'fa-bell','where' => ['seguimiento','==',0],'roles' => config(self::ROLES_ROL_JEFE_DPTO)]));
+        $this->panel->setBoton('grid',new BotonImg('Infdepartamento.aviso',['img' => 'fa-bell','where' => ['seguimiento','!=',1],'roles' => config(self::ROLES_ROL_JEFE_DPTO)]));
     }
     
     
