@@ -252,7 +252,9 @@ class DualController extends ModalController
             case 'annexiii':
                 $zip->addFile($this->printAnexeXIII($fct,$data),$carpeta_formacio."ANEXO_XIII.pdf");break;
             case 'justificants' :
-                $zip->addFile($this->informe($fct,'justificants',false,$data),$carpeta_formacio."Justificants.pdf");break;
+                $zip->addFile($this->informe($fct,'justificant_alumne',false,$data),$carpeta_formacio."Justificant_alumne.pdf");break;
+                $zip->addFile($this->informe($fct,'justificant_empresa',false,$data),$carpeta_formacio."Justificant_empresa.pdf");break;
+                $zip->addFile($this->informe($fct,'justificant_instructor',false,$data),$carpeta_formacio."Justificant_instructor.pdf");break;
             default : break;
         }
     }
