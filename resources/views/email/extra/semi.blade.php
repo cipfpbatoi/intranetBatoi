@@ -2,7 +2,7 @@
 @section('body')
     <table style='text-align: center'>
         <tr>
-            <th>Resultats Avaluació Extraordinària</th>
+            <th>Matrícula curs 2021/22</th>
         </tr>
     </table>
     <div>
@@ -16,9 +16,9 @@
         <p>Hola, primer que tot, esperem que estigues bé, tant tu com la teu família.
             T’enviem aquest correu perquè et queda només matricular-te del mòdul FCT.
             Si vols matricular-te en el nostre centre perquè gestionem també les teues pràctiques, has de realitzar el següent procediment. </p>
-        <p>La teua matrícula per al curs 2020-21 es farà de la següent forma:</p>
+        <p>La teua matrícula per al curs 2021-22 es farà de la següent forma:</p>
         <ul>
-            <li>La data de matrícula serà del 29 de juny al 7 de juliol (ambdós inclosos).</li>
+            <li>La data de matrícula serà del 8 al 18 de juliol (ambdós inclosos).</li>
             <li>La matrícula es farà de forma telemàtica mitjançant un assistent al qual entraràs polsant sobre el
                 següent enllaç: <a href="http://ext.matricula.cipfpbatoi.es/{{config('curso.convocatoria')}}/{{$aR->token}}" >http://ext.matricula.cipfpbatoi.es/{{config('curso.convocatoria')}}/{{$aR->token}}</a>.
                 Aquest enllaç és únic i vàlid només per a tú en el període específicat.</li>
