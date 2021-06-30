@@ -100,6 +100,7 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     Route::resource('alumnoresultado','AlumnoResultadoContoller');
     Route::get('/matricula/{token}','AlumnoReunionController@getDadesMatricula');
+    Route::get('/test/matricula/{token}','AlumnoReunionController@getTestMatricula');
     Route::post('/alumno/{dni}/foto','AlumnoController@putImage');
 
     Route::resource('lote','LoteController',['except' => ['edit', 'create']]);

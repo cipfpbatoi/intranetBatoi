@@ -44,5 +44,71 @@ class AlumnoReunionController extends ApiBaseController
         return $this->getDades($aR->idAlumno);
     }
 
+    public function getTestMatricula($token){
+        if ($token == '2Kpd5xIfNYfx3U7aTaRWPQZtmF9LFlP6dXR07DB88DdL28ZMfWXsYKWAC0TV') {
+            $alumno = Alumno::find('10001551');
+            $fecha_nac = $alumno->fecha_nac;
+            $nombre = $alumno->nombre;
+            $apellidos = $alumno->apellido1.' '.$alumno->apellido2;
+            $email = $alumno->email ;
+            $nia = $alumno->nia;
+            $telef1 = $alumno->telef1;
+            $telef2 = $alumno->telef2;
+            $ciclo = '51';
+            $dni = $alumno->dni;
+            $curso_actual = 2;
+            $promociona = false;
+            $curso = $curso_actual;
+        }
+        if ($token == '1Kpd5xIfNYfx3U7aTaRWPQZtmF9LFlP6dXR07DB88DdL28ZMfWXsYKWAC0TV') {
+            $alumno = Alumno::find('10659775');
+            $fecha_nac = $alumno->fecha_nac;
+            $nombre = $alumno->nombre;
+            $apellidos = $alumno->apellido1.' '.$alumno->apellido2;
+            $email = $alumno->email ;
+            $nia = $alumno->nia;
+            $telef1 = $alumno->telef1;
+            $telef2 = $alumno->telef2;
+            $ciclo = '51';
+            $dni = $alumno->dni;
+            $curso_actual = 1;
+            $promociona = true;
+            $curso = 2;
+
+        }
+        if ($token == '3Kpd5xIfNYfx3U7aTaRWPQZtmF9LFlP6dXR07DB88DdL28ZMfWXsYKWAC0TV') {
+            $alumno = Alumno::find('10810396');
+            $fecha_nac = $alumno->fecha_nac;
+            $nombre = $alumno->nombre;
+            $apellidos = $alumno->apellido1.' '.$alumno->apellido2;
+            $email = $alumno->email ;
+            $nia = $alumno->nia;
+            $telef1 = $alumno->telef1;
+            $telef2 = $alumno->telef2;
+            $ciclo = '51';
+            $dni = $alumno->dni;
+            $curso_actual = 1;
+            $promociona = true;
+            $curso = 2;
+        }
+        if ($token == '4Kpd5xIfNYfx3U7aTaRWPQZtmF9LFlP6dXR07DB88DdL28ZMfWXsYKWAC0TV') {
+            $alumno = Alumno::find('10677040');
+            $fecha_nac = $alumno->fecha_nac;
+            $nombre = $alumno->nombre;
+            $apellidos = $alumno->apellido1.' '.$alumno->apellido2;
+            $email = $alumno->email ;
+            $nia = $alumno->nia;
+            $telef1 = $alumno->telef1;
+            $telef2 = $alumno->telef2;
+            $ciclo = '51';
+            $dni = $alumno->dni;
+            $curso_actual = 2;
+            $promociona = true;
+            $curso = 'fct';
+        }
+
+        return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
+    }
+
 
 }
