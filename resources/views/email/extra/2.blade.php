@@ -20,10 +20,10 @@
         <li>La matrícula es farà de forma telemàtica mitjançant un assistent al qual entraràs polsant sobre el
             següent enllaç: <a href="http://ext.matricula.cipfpbatoi.es/{{config('curso.convocatoria')}}/{{$aR->token}}" >http://ext.matricula.cipfpbatoi.es/{{config('curso.convocatoria')}}/{{$aR->token}}</a>.
             Aquest enllaç és únic i vàlid només per a tú en el període específicat.</li>
+        <li>Hem fet un manual del procediment que pots consultar en el següent enllaç <a href="https://bit.ly/3x59772">https://bit.ly/3x59772</a></li>
         <li>Per a qualsevol dubte, pots cridar al centre (966527660) o enviar un correu a info@cipfpbatoi.es.</li>
     </ul>
-    <p>Et recordem que pots veure les teues qualificacions en la web família (<a href="https://familia.edu.gva.es/">https://familia.edu.gva.es/</a>).
-        Si tens qualsevol problema per a entrar, fica’t en contacte amb la secretaria del centre (<strong>secretaria@cipfpbatoi.es</strong> o <strong>03012165.secret@gva.es</strong>).</p>
+
     <p>Salutacions cordials.</p>
 </div>
 @endsection
