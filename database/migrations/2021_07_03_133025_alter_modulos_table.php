@@ -14,16 +14,16 @@ class AlterModulosTable extends Migration
     public function up()
     {
         Schema::table('modulos', function (Blueprint $table) {
-            $table->string('codigo',10)->change();
+            $table->string('codigo',12)->change();
         });
         Schema::table('modulo_ciclos', function (Blueprint $table) {
-            $table->string('idModulo',10)->change();
+            $table->string('idModulo',12)->change();
         });
         Schema::table('horarios', function (Blueprint $table) {
-            $table->string('modulo',10)->change();
+            $table->string('modulo',12)->change();
         });
         Schema::table('expedientes', function (Blueprint $table) {
-            $table->string('idModulo',10)->change();
+            $table->string('idModulo',12)->change();
         });
     }
 
