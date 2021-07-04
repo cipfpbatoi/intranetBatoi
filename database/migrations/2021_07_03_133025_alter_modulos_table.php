@@ -35,7 +35,7 @@ class AlterModulosTable extends Migration
 	 */
 	public function down()
 	{
-        Schema::table('action_events', function (Blueprint $table) {
+        Schema::table('modulos', function (Blueprint $table) {
             $table->string('codigo',6)->change();
         });
         Schema::table('modulo_ciclos', function (Blueprint $table) {
