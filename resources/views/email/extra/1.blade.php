@@ -20,7 +20,7 @@
             <li>La matrícula es farà de forma telemàtica mitjançant un assistent al qual entraràs polsant sobre el
                 següent enllaç: <a href="http://ext.matricula.cipfpbatoi.es/{{config('curso.convocatoria')}}/{{$aR->token}}" >http://ext.matricula.cipfpbatoi.es/{{config('curso.convocatoria')}}/{{$aR->token}}</a>.
                 Aquest enllaç és únic i vàlid només per a tú en el període específicat.</li>
-            <li>Hem fet un manual del procediment que pots consultar en el següent enllaç <a href="https://bit.ly/3x59772">https://bit.ly/3x59772</a></li>
+            <li>Hem fet un manual del procediment que pots consultar en el següent enllaç <a href="https://bit.ly/2SGWC2o">https://bit.ly/2SGWC2o</a></li>
             <li>Per a qualsevol dubte, pots cridar al centre (966527660) o enviar un correu a info@cipfpbatoi.es.</li>
         </ul>
 
