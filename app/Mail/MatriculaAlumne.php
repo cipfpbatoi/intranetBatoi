@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Intranet\Http\Controllers\ReunionController;
 
-class extraOrdinariaAlumne extends Mailable
+class MatriculaAlumne extends Mailable
 {
 
     use Queueable,
@@ -38,7 +38,7 @@ class extraOrdinariaAlumne extends Mailable
      */
     public function build()
     {
-        Log::notice("Enviat correu avalució extraordinària alumne ".$this->aR->Alumno->email);
+        Log::notice("Enviat correu matrícula alumne ".$this->aR->Alumno->email);
         return $this->view($this->vista,['aR'=> $this->aR]);
     }
 

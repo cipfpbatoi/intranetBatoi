@@ -4,16 +4,15 @@ namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
 use Intranet\Entities\AlumnoReunion;
-use Intranet\Mail\AvalAlumne;
-use Intranet\Mail\extraOrdinariaAlumne;
 use Illuminate\Support\Facades\Mail;
+use Intranet\Mail\MatriculaAlumne;
 use Swift_RfcComplianceException;
 use Illuminate\Support\Str;
 
 class SendAvaluacioEmails extends Command
 {
-    const PROMOCIONA = 2;
     const NOPROMOCIONA = 3;
+    const PROMOCIONA = 1;
     /**
      * The name and signature of the console command.
      *
@@ -26,7 +25,7 @@ class SendAvaluacioEmails extends Command
      *
      * @var string
      */
-    protected $description = 'Email Avaluació Alumnat';
+    protected $description = 'Email Matricula Alumnat';
 
     /**
      * Create a new command instance.
@@ -44,67 +43,34 @@ class SendAvaluacioEmails extends Command
         return Str::random(60);
     }
 
-    private function sendOrdinaria($aR){
-        try {
-            $aR->sent = 1;
-            if ($aR->Reunion->grupoClase->turno == 'S'){
-                Mail::to($aR->Alumno->email,'Secretaria CIPFP Batoi')
-                    ->send(new AvalAlumne($aR,'pdf.reunion.informe.semi'));
-            }
-            else {
-                $aR->token = $this->generaToken(60);
-                Mail::to($aR->Alumno->email,'Secretaria CIPFP Batoi')
-                    ->send(new AvalAlumne($aR,'pdf.reunion.informe.individual'));
-            }
-            $aR->save();
-            avisa($aR->Reunion->idProfesor,
-                'Missatge Avaluació Alumne '.$aR->Alumno->fullName. ' enviat a '.$aR->Alumno->email,
-                '#','Servidor de correu');
-
-        }
-        catch (Swift_RfcComplianceException $e){
-            avisa($aR->Reunion->idProfesor,
-                'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email,
-                '#','Servidor de correu');
-        }
-    }
-
-    private function deleteToken($aO)
+    private function obtenToken($aR)
     {
-        $aO->token = null;
-        $aO->save();
-    }
-
-    private function sendExtraOrdinaria($aR){
-        $aO = AlumnoReunion::with('Reunion')
-            ->where('sent',1)
-            ->where('idAlumno',$aR->idAlumno)
-            ->first();
-        try {
-            $aR->sent = 1;
-            $grupo = $aR->Reunion->grupoClase;
-
-            if ($aO && $grupo->isSemi && $aR->capacitats == self::NOPROMOCIONA){
-                $this->deleteToken($aO);
+        $grupo = $aR->Reunion->grupoClase;
+        if ($grupo->isSemi){
+            if ($aR->capacitats == self::PROMOCIONA) {
+                return $this->generaToken();
             } else {
-                $capacitats = ($grupo->isSemi || $grupo->curso == '1' )?self::PROMOCIONA:self::NOPROMOCIONA;
-                if ($aR->capacitats == $capacitats){
-                    $informe = ($grupo->isSemi)?'semi':$grupo->curso;
-                    if (!$aO){
-                        $aR->token = $this->generaToken(60);
-                    } else {
-                        $aR->token = $aO->token;
-                    }
-
-                    Mail::to($aR->Alumno->email,'Secretaria CIPFP Batoi')
-                        ->send(new extraOrdinariaAlumne(
-                            $aR,'email.extra.'.$informe));
-                }
-                avisa($aR->Reunion->idProfesor,
-                    'Missatge Avaluació Alumne '.$aR->Alumno->fullName. ' enviat a '.$aR->Alumno->email,
-                    '#','Servidor de correu');
+                return false;
             }
-            $aR->save();
+        }
+        if ($grupo->curso == '1') return $this->generaToken();
+        if ($aR->capacitats == self::NOPROMOCIONA)  return $this->generaToken();
+
+        return false;
+    }
+    private function sendMatricula($aR){
+        try {
+            if ($token = $this->obtenToken($aR)) {
+                $aR->sent = 1;
+                $aR->token = $token;
+                Mail::to($aR->Alumno->email, 'Secretaria CIPFP Batoi')
+                    ->send(new MatriculaAlumne(
+                        $aR, 'email.matricula'));
+                avisa($aR->Reunion->idProfesor,
+                    'Missatge Avaluació Alumne ' . $aR->Alumno->fullName . ' enviat a ' . $aR->Alumno->email,
+                    '#', 'Servidor de correu');
+                $aR->save();
+            }
         }
         catch (Swift_RfcComplianceException $e){
             avisa($aR->Reunion->idProfesor,
@@ -121,13 +87,7 @@ class SendAvaluacioEmails extends Command
     {
         foreach ( AlumnoReunion::with('Reunion')->where('sent',0)->get() as $aR)
         {
-            if ($aR->Reunion->extraOrdinaria){
-                $this->sendExtraOrdinaria($aR);
-            }
-            else {
-                $this->sendOrdinaria($aR);
-            }
-
+            $this->sendMatricula($aR);
         }
 
     }

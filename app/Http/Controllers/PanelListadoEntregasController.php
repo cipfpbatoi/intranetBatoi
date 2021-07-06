@@ -149,8 +149,7 @@ class PanelListadoEntregasController extends BaseController
         $nom = 'Informe_' . $request->reunion . '.pdf';
         $directorio = 'gestor/' . Curso() . '/Reunion';
         $nomComplet = $directorio . '/' . $nom;
-        if (file_exists(storage_path('/app/' . $nomComplet)))
-        {
+        if (file_exists(storage_path('/app/' . $nomComplet))) {
             unlink(storage_path('/app/' . $nomComplet));
         }
         $pdf->save(storage_path('/app/' . $nomComplet));
