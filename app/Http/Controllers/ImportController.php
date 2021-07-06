@@ -39,7 +39,8 @@ class ImportController extends Seeder
             'id' => 'NIA',
             'filtro' => ['estado_matricula', '<>', 'B'],
             'update' => array(
-                'dni' => 'documento',
+                'dni' => 'hazDNI,documento',
+                'nia' => 'NIA',
                 'nombre' => 'nombre',
                 'apellido1' => 'apellido1',
                 'apellido2' => 'apellido2',
@@ -61,7 +62,6 @@ class ImportController extends Seeder
                 'baja' => null,
             ),
             'create' => array(
-                'nia' => 'NIA',
                 'email' => 'email1'
             )),
         array('nombrexml' => 'docentes',
@@ -195,6 +195,11 @@ class ImportController extends Seeder
     public function aleatorio()
     {
         return Str::random(60);
+    }
+
+    public function hazDNI($dni){
+        if ($dni != '') return $dni;
+        return 'F'.Str::random(9);
     }
 
     /**
