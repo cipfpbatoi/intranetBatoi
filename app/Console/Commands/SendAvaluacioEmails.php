@@ -67,7 +67,7 @@ class SendAvaluacioEmails extends Command
                     ->send(new MatriculaAlumne(
                         $aR, 'email.matricula'));
                 avisa($aR->Reunion->idProfesor,
-                    'Missatge Avaluació Alumne ' . $aR->Alumno->fullName . ' enviat a ' . $aR->Alumno->email,
+                    'El correu per a la matrícula de  ' . $aR->Alumno->fullName . " ha estat enviat a l'adreça " . $aR->Alumno->email,
                     '#', 'Servidor de correu');
                 $aR->save();
             }
