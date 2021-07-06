@@ -115,7 +115,7 @@ class ImportController extends Seeder
             )),
         array('nombrexml' => 'aulas',
             'nombreclase' => 'Espacio',
-            'id' => 'aula',
+            'id' => 'codigo',
             'update' => array(
                 'descripcion' => 'nombre',
             ),
@@ -689,7 +689,7 @@ class ImportController extends Seeder
             if ($pasa) {
                 $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
                 $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
-                if ($tabla['nombreclase'] == 'Espacio') dd($clave);
+
                 if ($pt = $this->encuentra($clase, $clave)) {   //Update
                     foreach ($tabla['update'] as $keybd => $keyxml) {
                         $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
