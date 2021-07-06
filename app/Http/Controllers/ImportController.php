@@ -199,7 +199,9 @@ class ImportController extends Seeder
 
     public function hazDNI($dni){
         if (strlen($dni) > 8) return $dni;
-        return 'F'.Str::random(9);
+        $dniFictici = 'F'.Str::random(9);
+        Alert::warning('Alumne amb DNI Fictici '.$dniFictici);
+        return $dniFictici;
     }
 
     /**
