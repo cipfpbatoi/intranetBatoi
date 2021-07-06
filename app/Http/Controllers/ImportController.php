@@ -39,7 +39,7 @@ class ImportController extends Seeder
             'id' => 'NIA',
             'filtro' => ['estado_matricula', '<>', 'B'],
             'update' => array(
-                'dni' => 'hazDNI,documento',
+                'dni' => 'hazDNI,documento,NIA',
                 'nia' => 'NIA',
                 'nombre' => 'nombre',
                 'apellido1' => 'apellido1',
@@ -197,11 +197,15 @@ class ImportController extends Seeder
         return Str::random(60);
     }
 
-    public function hazDNI($dni){
+    public function hazDNI($dni,$nia){
         if (strlen($dni) > 8) return $dni;
-        $dniFictici = 'F'.Str::random(9);
-        Alert::warning('Alumne amb DNI Fictici '.$dniFictici);
-        return $dniFictici;
+        $alumno = Alumno::find($nia);
+        if ($alumno) return $alumno->dni;
+        else {
+            $dniFictici = 'F'.Str::random(9);
+            Alert::warning('Alumne amb DNI Fictici '.$dniFictici);
+            return $dniFictici;
+        }
     }
 
     /**
