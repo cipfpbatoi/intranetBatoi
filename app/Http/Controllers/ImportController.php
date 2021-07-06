@@ -52,7 +52,7 @@ class ImportController extends Seeder
                 'provincia' => 'provincia',
                 'municipio' => 'municipio',
                 'telef1' => 'digitos,telefono1',
-                'telef2' => 'telefono2',
+                'telef2' => 'digitos,telefono2',
                 'fecha_ingreso' => 'getFechaFormatoIngles,fecha_ingreso_centro',
                 'fecha_matricula' => 'getFechaFormatoIngles,fecha_matricula',
                 'repite' => 'repite',
@@ -75,7 +75,7 @@ class ImportController extends Seeder
                 'codigo_postal' => 'cod_postal',
                 'domicilio' => 'domicilio',
                 'movil1' => 'digitos,telefono1',
-                'movil2' => 'telefono2',
+                'movil2' => 'digitos,telefono2',
                 'emailItaca' => 'email1',
                 'sustituye_a' => 'titular_sustituido',
                 'fecha_nac' => 'getFechaFormatoIngles,fecha_nac',
@@ -689,7 +689,7 @@ class ImportController extends Seeder
             if ($pasa) {
                 $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
                 $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
-
+                if ($tabla['nombreclase'] == 'Espacio') dd($clave);
                 if ($pt = $this->encuentra($clase, $clave)) {   //Update
                     foreach ($tabla['update'] as $keybd => $keyxml) {
                         $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
