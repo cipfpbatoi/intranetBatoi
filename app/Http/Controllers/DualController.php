@@ -144,6 +144,14 @@ class DualController extends ModalController
         });
         return $this->redirect();
     }
+
+    public function destroy($id)
+    {
+        if ($elemento = AlumnoFct::findOrFail($id)) {
+            $elemento->delete();
+        }
+        return $this->redirect();
+    }
     /**
      * @param $id
      * @param string $informe
