@@ -72,16 +72,21 @@ class SendAvaluacioEmailController extends Seeder
     }
     private function sendMatricula($aR){
         try {
-            if ($token = $this->obtenToken($aR)) {
-                $aR->sent = 1;
-                $aR->token = $token;
+            $token = true;
+            if (!$aR->sent) {
+                if ($token = $this->obtenToken($aR)){
+                    $aR->sent = 1;
+                    $aR->token = $token;
+                    $aR->save();
+                }
+            }
+            if ($token) {
                 Mail::to($aR->Alumno->email, 'Secretaria CIPFP Batoi')
                     ->send(new MatriculaAlumne(
                         $aR, 'email.matricula'));
                 avisa($aR->Reunion->idProfesor,
                     'El correu per a la matrícula de  ' . $aR->Alumno->fullName . " ha estat enviat a l'adreça " . $aR->Alumno->email,
                     '#', 'Servidor de correu');
-                $aR->save();
             }
         }
         catch (Swift_RfcComplianceException $e){
