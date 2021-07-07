@@ -84,7 +84,7 @@ class SendAvaluacioEmailController extends Seeder
                 avisa($aR->Reunion->idProfesor,
                     'El correu per a la matrícula de  ' . $aR->Alumno->fullName . " ha estat enviat a l'adreça " . $aR->Alumno->email,
                     '#', 'Servidor de correu');
-                Alert::info('Correu enviat');
+                Alert::info('Correu enviat a '.$aR->Alumno->email);
             }
         }
         catch (Swift_RfcComplianceException $e){
