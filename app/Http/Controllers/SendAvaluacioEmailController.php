@@ -3,15 +3,12 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DB;
 use Illuminate\Database\Seeder;
 use Intranet\Mail\MatriculaAlumne;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\AlumnoReunion;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
-use Intranet\Mail\AvalAlumne;
-use Intranet\Mail\extraOrdinariaAlumne;
 
 /**
  * Class ImportController
