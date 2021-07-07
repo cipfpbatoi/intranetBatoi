@@ -456,8 +456,8 @@ class DualController extends ModalController
         $array[21] = $array[1];
         $array[22] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
         $array[23] = $fct->Fct->Centro;
-        $array[24] = explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0];
-        $array[25] = explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1];
+        $array[24] = explode(',',$fct->Fct->Colaboracion->Centro->direccion)[0]??$fct->Fct->Colaboracion->Centro->direccion;
+        $array[25] = explode(',',$fct->Fct->Colaboracion->Centro->direccion)[1]??'';
         $array[26] = $fct->Fct->Colaboracion->Centro->codiPostal;
         $array[27] = $fct->Fct->Colaboracion->Centro->localidad;
         $array[28] = 'Alacant';
