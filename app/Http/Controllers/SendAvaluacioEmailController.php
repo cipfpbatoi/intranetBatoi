@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Database\Seeder;
+use Intranet\Mail\MatriculaAlumne;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\AlumnoReunion;
 use Illuminate\Support\Str;
@@ -19,9 +20,8 @@ use Intranet\Mail\extraOrdinariaAlumne;
 class SendAvaluacioEmailController extends Seeder
 {
 
-    const PROMOCIONA = 2;
+    const PROMOCIONA = 1;
     const NOPROMOCIONA = 3;
-    const SECRETARIA_CIPFP_BATOI = 'Secretaria CIPFP Batoi';
 
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -48,71 +48,47 @@ class SendAvaluacioEmailController extends Seeder
             Alert::danger('Eixe Alumne no ha estat avaluat');
         }
         else {
-            if ($aR->Reunion->Extraordinaria){
-                $this->sendExtraOrdinaria($aR);
-            }
-            else{
-                $this->sendOrdinaria($aR);
-            }
+            $this->sendMatricula($aR);
         }
         return back();
 
     }
 
-    private function sendOrdinaria($aR){
-        if (!$aR->token){
-            $aR->sent = 1;
-            $aR->token = $this->generaToken(60);
-            $aR->save();
-        }
-        if ($aR->Reunion->grupoClase->turno == 'S'){
-            Mail::to($aR->Alumno->email, self::SECRETARIA_CIPFP_BATOI)
-                ->send(new AvalAlumne($aR,'pdf.reunion.informe.semi'));
-        }
-        else {
-            Mail::to($aR->Alumno->email, self::SECRETARIA_CIPFP_BATOI)
-                ->send(new AvalAlumne($aR,'pdf.reunion.informe.individual'));
-        }
-        avisa($aR->Reunion->idProfesor,
-            'Missatge Avaluació Alumne '.$aR->Alumno->fullName. ' enviat a '.$aR->Alumno->email,
-            '#','Servidor de correu');
-        Alert::info('Correu processat');
-    }
 
-    private function sendExtraOrdinaria($aR){
-        $token = $aR->token??AlumnoReunion::with('Reunion')
-            ->where('sent',1)
-            ->where('idAlumno',$aR->idAlumno)
-            ->first()
-            ->token??$this->generaToken();
-        $aR->sent = 1;
+    private function obtenToken($aR)
+    {
         $grupo = $aR->Reunion->grupoClase;
-
-        $capacitats = ($grupo->isSemi || $grupo->curso == '1' )?self::PROMOCIONA:self::NOPROMOCIONA;
-
-        if ($aR->capacitats == $capacitats){
-            $informe = ($grupo->isSemi)?'semi':$grupo->curso;
-
-            $aR->token = $token;
-
-            Mail::to($aR->Alumno->email, self::SECRETARIA_CIPFP_BATOI)
-                ->send(new extraOrdinariaAlumne(
-                    $aR,'email.extra.'.$informe));
+        if ($grupo->isSemi){
+            if ($aR->capacitats == self::PROMOCIONA) {
+                return $this->generaToken();
+            } else {
+                return false;
+            }
         }
-        else {
-            return $this->sendOrdinaria($aR);
-        }
-        avisa($aR->Reunion->idProfesor,
-            'Missatge Avaluació Alumne '.$aR->Alumno->fullName. ' enviat a '.$aR->Alumno->email,
-            '#','Servidor de correu');
+        if ($grupo->curso == '1') return $this->generaToken();
+        if ($aR->capacitats == self::NOPROMOCIONA)  return $this->generaToken();
 
-        $aR->save();
-        Alert::info('Correu processat');
-
-
-
+        return false;
     }
-
-
+    private function sendMatricula($aR){
+        try {
+            if ($token = $this->obtenToken($aR)) {
+                $aR->sent = 1;
+                $aR->token = $token;
+                Mail::to($aR->Alumno->email, 'Secretaria CIPFP Batoi')
+                    ->send(new MatriculaAlumne(
+                        $aR, 'email.matricula'));
+                avisa($aR->Reunion->idProfesor,
+                    'El correu per a la matrícula de  ' . $aR->Alumno->fullName . " ha estat enviat a l'adreça " . $aR->Alumno->email,
+                    '#', 'Servidor de correu');
+                $aR->save();
+            }
+        }
+        catch (Swift_RfcComplianceException $e){
+            avisa($aR->Reunion->idProfesor,
+                'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email,
+                '#','Servidor de correu');
+        }
+    }
 
 }
