@@ -94,6 +94,7 @@ class DocumentoController extends IntranetController
                 'propietario' => ['disabled' => 'disabled'],
                 'curso' => ['disabled'=> 'disabled'],
                 'supervisor' => ['type' => 'hidden'],
+                'ciclo' => ['type' => 'hidden'],
                 'descripcion' => ['type' => 'text'],
                 'detalle' => ['type' => 'textarea'],
                 'nota' => ['type' => 'text'],

@@ -7,8 +7,10 @@
 namespace Intranet\Http\Controllers;
 
 
+use Intranet\Entities\Documento;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Grupo;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
@@ -262,6 +264,28 @@ class AdministracionController extends Controller
         Alert::info($canvis.' canviats,'.$nous.' nous,'.$malament.' esborrats');
         return back();
     }
-    
+
+
+    public static function v2_02()
+    {
+        $proyectos = Documento::where('tipoDocumento','Proyecto')->where('curso','2020-2021')->get();
+        $grupos = $proyectos->groupBy('supervisor');
+        foreach ($grupos as $grupo){
+            $dni = self::findProfesor($grupo->first()->supervisor);
+            foreach ($grupo as $proyecto){
+                $proyecto->ciclo = Grupo::QTutor($dni)->first()->Ciclo->ciclo;
+                $proyecto->save();
+            }
+        }
+    }
+
+    private static function findProfesor($nombre){
+        foreach (Profesor::all() as $profesor){
+            if ($profesor->fullName == $nombre){
+                return $profesor->dni;
+            }
+
+        }
+    }
     
 }
