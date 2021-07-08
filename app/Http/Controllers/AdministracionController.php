@@ -245,9 +245,13 @@ class AdministracionController extends Controller
         $grupos = $proyectos->groupBy('supervisor');
         foreach ($grupos as $grupo){
             $dni = self::findProfesor($grupo->first()->supervisor);
-            foreach ($grupo as $proyecto){
-                $proyecto->ciclo = Grupo::QTutor($dni)->first()->Ciclo->ciclo;
-                $proyecto->save();
+            if ($dni) {
+                foreach ($grupo as $proyecto) {
+                    $proyecto->ciclo = Grupo::QTutor($dni)->first()->Ciclo->ciclo ?? '';
+                    $proyecto->save();
+                }
+            } else {
+                Alert::danger('Profesor '.$grupo->first()->supervisor.' no trobat');
             }
         }
     }
@@ -259,6 +263,7 @@ class AdministracionController extends Controller
             }
 
         }
+        return false;
     }
     
 }
