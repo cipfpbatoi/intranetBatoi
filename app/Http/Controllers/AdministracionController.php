@@ -189,34 +189,7 @@ class AdministracionController extends Controller
      */
     public static function v1_3_4()
     {
-        $a = new TipoExpediente();
-        $a->id = 1;
-        $a->titulo = 'Baixa Inasistència';
-        $a->rol = 17;
-        $a->save();
-        $a = new TipoExpediente();
-        $a->id = 2;
-        $a->titulo = 'Pèrdua Avaluació Continua';
-        $a->rol = 3;
-        $a->save();
-        $a = new TipoExpediente();
-        $a->id = 3;
-        $a->titulo = "Remisió al departament d'Orientació";
-        $a->rol = 17;
-        $a->orientacion = 1;
-        $a->save();
-        $a = new TipoExpediente();
-        $a->id = 4;
-        $a->titulo = "Part d'amonestació";
-        $a->rol = 3;
-        $a->orientacion = 0;
-        $a = new TipoExpediente();
-        $a->titulo = "Informe d'exempció FCT";
-        $a->id = 5;
-        $a->rol = 3;
-        $a->orientacion = 0;
-        $a->informe = 1;
-        $a->save();
+        Alert::info('Version 1.3.4');
     }
 
     public static function v2_0(){
