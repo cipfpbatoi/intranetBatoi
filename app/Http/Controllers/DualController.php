@@ -275,9 +275,8 @@ class DualController extends ModalController
     {
         $grupo = $fct->Alumno->Grupo->first();
         $id = $fct->id;
-        $informe = ''
         $datos['ciclo'] = $grupo->Ciclo;
-        $pdf =  $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,$fct->Alumno,cargaDatosCertificado($datos),'portrait');
+        $pdf =  $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,Alumno::where('nia',$fct->Alumno->nia)->get(),cargaDatosCertificado($datos),'portrait');
         $file = storage_path("tmp/dual$id/$informe".'.pdf');
         if (!file_exists($file)){
             $pdf->save($file);
