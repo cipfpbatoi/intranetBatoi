@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
+use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Dual;
@@ -193,6 +194,8 @@ class DualController extends ModalController
 
 
 
+
+
     protected function getGestor($doc,$ciclo){
         $documento = Documento::where('tags',"$doc,$ciclo")->where('tipoDocumento','Dual')->first();
         if ($documento) {
@@ -238,7 +241,7 @@ class DualController extends ModalController
             case 'annexii' :
                 $zip->addFile($this->printAnexeXII($fct,$data),$carpeta_firma."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
             case 'annexv':
-                $zip->addFile($this->informe($fct,'anexo_v',false,$data),$carpeta_firma."Anexo V Prevención Riesgos Laborales FP Dual.pdf");break;
+                $zip->addFile($this->certificado($fct,$carpeta_firma."ANEXO V CERTIFICAT DE RIESGOS LABORALES"));break;
             case 'annexevii':
                 if ($data != null ) {
                     $zip->addFile($this->printAnexeVII($fct, $data), $carpeta_formacio . "ANEXO_VII.pdf");
@@ -265,6 +268,21 @@ class DualController extends ModalController
                 $zip->addFile($this->informe($fct,'justificant_instructor',false,$data),$carpeta_formacio."Justificant_instructor.pdf");break;
             default : break;
         }
+    }
+
+
+    public function certificado($fct,$informe)
+    {
+        $grupo = $fct->Alumno->Grupo->first();
+        $id = $fct->id;
+        $informe = ''
+        $datos['ciclo'] = $grupo->Ciclo;
+        $pdf =  $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,$fct->Alumno,cargaDatosCertificado($datos),'portrait');
+        $file = storage_path("tmp/dual$id/$informe".'.pdf');
+        if (!file_exists($file)){
+            $pdf->save($file);
+        }
+        return $file;
     }
 
     protected function getInforme($id){
@@ -482,7 +500,6 @@ class DualController extends ModalController
         $array[39] = $array[19];
         $array[40] = $array[20];
         $array[41] = $array[1];
-        $array[42] = $fct->Fct->Colaboracion->Centro->Empresa->gerente;
 
         return $array;
     }
