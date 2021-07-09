@@ -443,10 +443,10 @@ function loadImg($fixer){
  * @param $datos
  * @return mixed
  */
-function cargaDatosCertificado($datos){
+function cargaDatosCertificado($datos,$date=null){
     $secretario = Profesor::find(config('contacto.secretario'));
     $director = Profesor::find(config('contacto.director'));
-    $datos['fecha'] = FechaString(null,'ca');
+    $datos['fecha'] = FechaString($date,'ca');
     $datos['secretario']['titulo'] = $secretario->sexo == 'H'?'En':'Na';
     $datos['secretario']['articulo'] = $secretario->sexo == 'H'?'El':'La';
     $datos['secretario']['genero'] = $secretario->sexo == 'H'?'secretari':'secretària';
