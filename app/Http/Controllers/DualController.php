@@ -241,7 +241,7 @@ class DualController extends ModalController
             case 'annexii' :
                 $zip->addFile($this->printAnexeXII($fct,$data),$carpeta_firma."ANEXO XII CONFORMIDAD DEL ALUMNADO.pdf");break;
             case 'annexv':
-                $zip->addFile($this->certificado($fct,$data),$carpeta_firma."ANEXO V CERTIFICAT DE RIESGOS LABORALES");break;
+                $zip->addFile($this->certificado($fct,$data),$carpeta_firma."ANEXO V CERTIFICADO DE RIESGOS LABORALES.pdf");break;
             case 'annexevii':
                 if ($data != null ) {
                     $zip->addFile($this->printAnexeVII($fct, $data), $carpeta_formacio . "ANEXO_VII.pdf");
