@@ -55,7 +55,8 @@ class Departamento extends Resource
                 ->hideFromIndex(),
             Text::make('depcurt')
                 ->sortable()
-                ->rules('required','unique:departamentos,depcurt', 'max:3'),
+                ->rules('required', 'max:3')
+                ->creationRules('unique:departamentos,depcurt'),
             Boolean::make('didactico')->hideFromIndex()
         ];
     }
