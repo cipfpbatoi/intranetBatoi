@@ -5,6 +5,7 @@ namespace Intranet\Nova;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Date;
@@ -44,7 +45,8 @@ class Ciclo extends Resource
     public function fields(Request $request)
     {
         return [
-            ID::make(__('ID'), 'id')->sortable(),
+            Number::make('id')->sortable()->rules('required')
+                ->creationRules('unique:ciclos,id')->hideWhenUpdating(),
             Text::make(__('validation.attributes.ciclo'),'ciclo')
                 ->sortable()
                 ->rules('required', 'max:50'),

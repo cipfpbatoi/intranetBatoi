@@ -14,7 +14,7 @@ class AddForeignKeysToProgramacionesTable extends Migration {
 	{
 		Schema::table('programaciones', function(Blueprint $table)
 		{
-			$table->foreign('idModuloCiclo')->references('id')->on('modulo_ciclos')->onUpdate('CASCADE')->onDelete('RESTRICT');
+			$table->foreign('idModuloCiclo')->references('id')->on('modulo_ciclos')->onUpdate('CASCADE')->onDelete('CASCADE');
 			$table->foreign('idProfesor')->references('dni')->on('profesores')->onUpdate('CASCADE')->onDelete('RESTRICT');
 		});
 	}

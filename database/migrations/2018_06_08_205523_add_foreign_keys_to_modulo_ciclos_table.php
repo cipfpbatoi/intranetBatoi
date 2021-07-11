@@ -14,7 +14,7 @@ class AddForeignKeysToModuloCiclosTable extends Migration {
 	{
 		Schema::table('modulo_ciclos', function(Blueprint $table)
 		{
-			$table->foreign('idCiclo')->references('id')->on('ciclos')->onUpdate('CASCADE')->onDelete('RESTRICT');
+			$table->foreign('idCiclo')->references('id')->on('ciclos')->onUpdate('CASCADE')->onDelete('CASCADE');
 			$table->foreign('idDepartamento')->references('id')->on('departamentos')->onUpdate('CASCADE')->onDelete('CASCADE');
 			$table->foreign('idModulo')->references('codigo')->on('modulos')->onUpdate('CASCADE')->onDelete('CASCADE');
 		});
