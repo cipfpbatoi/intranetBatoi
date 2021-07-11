@@ -62,7 +62,7 @@ class Ciclo extends Resource
             Select::make(__('validation.attributes.tipo'),'tipo')->searchable()->options(config('auxiliares.tipoEstudio'))->displayUsingLabels(),
             Text::make('normativa')
                 ->sortable()
-                ->rules( 'max:10')
+                ->rules( 'required','max:10')
                 ->hideFromIndex(),
             Text::make('titol')
                 ->rules( 'max:100')
