@@ -45,7 +45,7 @@ class Departamento extends Resource
     {
         return [
             Number::make('id')->sortable()->rules('required')
-                ->creationRules('unique','max:250')->hideWhenUpdating(),
+                ->creationRules('unique:departamentos,id')->hideWhenUpdating(),
             Text::make('vliteral')
                 ->sortable()
                 ->rules('required', 'max:100'),
@@ -55,7 +55,7 @@ class Departamento extends Resource
                 ->hideFromIndex(),
             Text::make('depcurt')
                 ->sortable()
-                ->rules('required','unique', 'max:3'),
+                ->rules('required','unique:departamentos,depcurt', 'max:3'),
             Boolean::make('didactico')->hideFromIndex()
         ];
     }
