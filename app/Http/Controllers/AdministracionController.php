@@ -15,13 +15,13 @@ use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use DB;
+use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Jobs\SendEmail;
 use Illuminate\Support\Str;
 use Intranet\Entities\AlumnoGrupo;
-use Intranet\Entities\TipoExpediente;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Fct;
@@ -91,6 +91,8 @@ class AdministracionController extends Controller
             }
         }
     }
+
+
     private function ferVotsPermanents(){
         foreach (Vote::all() as $vote){
             if ($fct = Fct::find($vote->idOption1)){
@@ -111,8 +113,11 @@ class AdministracionController extends Controller
      */
     protected function nuevoCurso()
     {
+
+
         Colaboracion::where('tutor','!=','')->update(['tutor'=>'']);
         Colaboracion::where('estado','>',1)->update(['estado' => 1]);
+        Fct::where('asociacion','!=',3)->delete();
         Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
 
         $this->esborrarEnquestes();
@@ -128,12 +133,13 @@ class AdministracionController extends Controller
 
 
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
-            'fcts', 'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
-            'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos','polls'];
+            'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
+            'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos','polls','autorizaciones'];
         foreach ($tables as $tabla) {
             DB::table($tabla)->delete();
         }
         $this->esborrarProgramacions();
+
 
         return back();
     }

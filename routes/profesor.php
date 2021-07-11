@@ -419,3 +419,5 @@ Route::put('/articulo/{id}/edit', ['as' => 'articulo.update', 'uses' => 'Articul
 Route::get('/task/{id}/check',['as'=>'task.check','uses'=>'TaskController@check']);
 Route::get('/ciclodual/edit',['as'=>'cicloDual.edit','uses'=>'CicloDualController@edit']);
 Route::put('/ciclodual/edit',['as'=>'cicloDual.update','uses'=>'CicloDualController@update']);
+
+Route::get('/autorizacion/{nia}/actividad/{id}',['as'=>'actividad.autorizacion','uses'=>'ActividadController@menorAuth']);

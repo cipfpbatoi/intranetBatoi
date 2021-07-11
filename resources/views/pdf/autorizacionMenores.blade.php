@@ -20,7 +20,8 @@
             <p>{!! config('contacto.poblacion') !!} a {{ FechaString() }}</p><br/><br/>
             <p>Firma / Signatura :</p>
         </div>
+        {!! QrCode::size(125)->generate(env('APP_URL','http://intranet.cipfpbatoi.es').'/autorizacion/'.$elemento->nia.'/actividad/'.$datosInforme->id); !!}
     </div>
     @endforeach
-    @include('pdf.partials.pie',['document'=>'autoritzacioMenors'])
+     @include('pdf.partials.pie',['document'=>'autoritzacioMenors'])
 @endsection

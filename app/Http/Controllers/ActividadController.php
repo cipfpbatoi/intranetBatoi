@@ -152,18 +152,25 @@ class ActividadController extends IntranetController
     
     public function autorizacion($id)
     {
+
         $grups = [];
-        $elemento = Actividad::findOrFail($id);
+        $actividad = Actividad::findOrFail($id);
+        if ($actividad->menores()->count()) {
+            return view('actividad.autorizados', compact('actividad'));
+        }
         $grups = hazArray(ActividadGrupo::select('idGrupo')->where('idActividad', '=', $id)->get(),'idGrupo');
         $todos = Alumno::join('alumnos_grupos', 'idAlumno', '=', 'nia')
                 ->select('alumnos.*', 'idGrupo')
                 ->QGrupo($grups)
-                ->Menor($elemento->desde)
+                ->Menor($actividad->desde)
                 ->orderBy('idGrupo')
                 ->orderBy('apellido1')
                 ->orderBy('apellido2')
                 ->get();
-        return $this->hazPdf('pdf.autorizacionMenores', $todos, $elemento, 'portrait')->stream();
+        foreach ($todos as $alumno){
+            $actividad->menores()->attach($alumno->nia,['autorizado' => 0]);
+        }
+        return $this->hazPdf('pdf.autorizacionMenores', $todos, $actividad, 'portrait')->stream();
     }
 
     protected function iniBotones()
@@ -190,6 +197,17 @@ class ActividadController extends IntranetController
     public function i_c_s($id)
     {
         return $this->ics($id, 'name', 'descripcion');
+    }
+
+    public function menorAuth($nia,$id){
+        $actividad = Actividad::findOrFail($id);
+        if ($actividad->menores()->where('nia',$nia)->first()->pivot->autorizado){
+            $autorizado = 0;
+        } else {
+            $autorizado = 1;
+        }
+        $actividad->menores()->updateExistingPivot($nia,['autorizado' => $autorizado]);
+        return view('actividad.autorizados',compact('actividad'));
     }
 
 }

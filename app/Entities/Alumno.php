@@ -197,6 +197,11 @@ class Alumno extends Authenticatable
     public function getPoblacionAttribute(){
         return $this->Municipio->municipio??'NO TROBAT';
     }
+    public function getesMenorAttribute(){
+        $hoy = new Date();
+        $hace18 = $hoy->subYears(18)->toDateString();
+        return $this->fecha_nac > $hace18 ;
+    }
 
 
 }

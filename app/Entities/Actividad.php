@@ -7,8 +7,7 @@ use Jenssegers\Date\Date;
 use Intranet\Events\ActividadCreated;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
-use Intranet\Entities\ActividadGrupo;
-use Intranet\Entities\Profesor;
+
 
 class Actividad extends Model
 {
@@ -52,6 +51,10 @@ class Actividad extends Model
     public function profesores()
     {
         return $this->belongsToMany(Profesor::class,'actividad_profesor', 'idActividad', 'idProfesor', 'id', 'dni')->withPivot('coordinador');
+    }
+
+    public function menores(){
+        return $this->belongsToMany(Alumno::class,'autorizaciones', 'idActividad', 'idAlumno', 'id', 'nia')->withPivot('autorizado');
     }
     
 
