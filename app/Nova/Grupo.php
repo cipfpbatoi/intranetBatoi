@@ -59,7 +59,7 @@ class Grupo extends Resource
             BelongsTo::make('Ciclo'),
             Text::make('curso')
                 ->sortable()
-                ->rules( 'integer','max:3')
+                ->rules( 'integer','max:6')
                 ->hideFromIndex(),
         ];
     }
