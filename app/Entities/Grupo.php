@@ -63,7 +63,7 @@ class Grupo extends Model
 
     public function Horario()
     {
-        return $this->hasMany(Horario::class, 'codigo', 'idGrupo');
+        return $this->hasMany(Horario::class, 'idGrupo', 'codigo');
     }
 
 
@@ -293,6 +293,17 @@ class Grupo extends Model
     public function getIsSemiAttribute()
     {
         return ($this->turno == 'S');
+    }
+
+    public function getTornAttribute(){
+        if  ($this->turno == 'S') {
+            return $this->turno;
+        }
+        $turno = $this->Horario->where('dia_semana','L')->where('modulo','<>','TU01CF')->where('modulo','<>','TU02CF')->sortBy('sesion_orden',0)->first();
+        if ($turno) {
+            return ucfirst(substr($turno->Hora->turno,0,1));
+        }
+        return '??';
     }
 
 }

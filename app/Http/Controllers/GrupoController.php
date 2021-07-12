@@ -34,7 +34,7 @@ class GrupoController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo','XDual'];
+    protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo','XDual','Torn'];
 
 
 

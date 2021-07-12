@@ -26,6 +26,7 @@ class AlumnoReunionController extends ApiBaseController
        $ciclo = $grupo->idCiclo;
        $dni = $alumno->dni;
        $curso_actual = $grupo->curso;
+       $turno = $grupo->torn;
        if ($capacitat == self::NOPROMOCIONA) {
            $promociona = false;
            $curso = $curso_actual;
@@ -33,7 +34,8 @@ class AlumnoReunionController extends ApiBaseController
            $promociona = true;
            $curso = ($grupo->isSemi)?'fct':2;
        }
-       return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
+
+       return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual','turno'),'OK');
     }
 
     public function getDadesMatricula($token){
@@ -59,7 +61,8 @@ class AlumnoReunionController extends ApiBaseController
             $curso_actual = 2;
             $promociona = false;
             $curso = $curso_actual;
-            return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
+            $turno = 'M';
+            return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual','turno'),'OK');
         }
         if ($token == '1Kpd5xIfNYfx3U7aTaRWPQZtmF9LFlP6dXR07DB88DdL28ZMfWXsYKWAC0TV') {
             $alumno = Alumno::find('10659775');
@@ -75,7 +78,8 @@ class AlumnoReunionController extends ApiBaseController
             $curso_actual = 1;
             $promociona = true;
             $curso = 2;
-            return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
+            $turno = 'V';
+            return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual','turno'),'OK');
         }
         if ($token == '3Kpd5xIfNYfx3U7aTaRWPQZtmF9LFlP6dXR07DB88DdL28ZMfWXsYKWAC0TV') {
             $alumno = Alumno::find('10810396');
@@ -91,7 +95,8 @@ class AlumnoReunionController extends ApiBaseController
             $curso_actual = 1;
             $promociona = true;
             $curso = 2;
-            return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
+            $turno = 'M';
+            return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual','turno'),'OK');
         }
         if ($token == '4Kpd5xIfNYfx3U7aTaRWPQZtmF9LFlP6dXR07DB88DdL28ZMfWXsYKWAC0TV') {
             $alumno = Alumno::find('10677040');
@@ -107,7 +112,8 @@ class AlumnoReunionController extends ApiBaseController
             $curso_actual = 2;
             $promociona = true;
             $curso = 'fct';
-            return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual'),'OK');
+            $turno = 'S';
+            return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual','turno'),'OK');
         }
         return $this->sendError('Token no vàlid');
     }
