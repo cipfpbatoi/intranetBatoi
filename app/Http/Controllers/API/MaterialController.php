@@ -23,6 +23,7 @@ class MaterialController extends ApiBaseController
         $data = Material::where('inventariable',1)
                 ->where('espacio','<>','INVENT')
                 ->where('estado','<',3)
+                ->whereNotNull('articulo_lote_id')
                 ->get();
         return $this->sendResponse($data, 'OK');
     }

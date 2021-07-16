@@ -19,6 +19,9 @@ var options = {};
                     <i class="fa fa-pencil" title="Editar"></i>
                 </a>`;
     var operaciones = borrar + editar;
+    var capturar = `<a href="#" class="capture">
+                    <i class="fa fa-flag" title="Capturar des d'inventari"></i>
+                </a>`;
     var inventariable = `<a href="#" class="inventary">
                     <i class="fa fa-cubes" title="Inventariar"></i>                
                 </a>`;
@@ -59,7 +62,8 @@ var options = {};
             { data:'fechaAlta'},
             { data: null, render: function (data){
                 return (data.estado == 1)?contenido+operaciones+inventariable:
-                    (data.estado == 2) ? contenido+editar+imprimir:contenido+operaciones;
+                    (data.estado == 2) ? contenido+editar+imprimir:
+                        (data.estado == 0) ? operaciones+capturar:  contenido+operaciones;
                 },
             },
         ],
@@ -126,6 +130,11 @@ $(function () {
 
         $('#datatable').on('click', 'a.QR', function (event) {
             var url = '/direccion/lote/'+$(this).parent().siblings().first().text()+'/print';
+            $(location).attr('href',url);
+        })
+
+        $('#datatable').on('click', 'a.capture', function (event) {
+            var url = '/direccion/lote/'+$(this).parent().siblings().first().text()+'/capture';
             $(location).attr('href',url);
         })
 

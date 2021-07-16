@@ -80,5 +80,7 @@ Route::post('/myMail','MyMailController@store');
 Route::resource('/lote','LoteController', ['except' => ['destroy', 'update','show']]);
 Route::post('/lote/create',['as' => 'lote.store','uses'=> 'LoteController@store']);
 Route::get('/lote/{id}/print',['as' => 'lote.print','uses' => 'LoteController@print']);
+Route::get('/lote/{id}/capture',['as' => 'lote.capture','uses' => 'LoteController@capture']);
+Route::post('/lote/{id}/capture',['as' => 'lote.capture','uses' => 'LoteController@postcapture']);
 
 
