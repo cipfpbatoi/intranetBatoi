@@ -63,7 +63,7 @@ var options = {};
             { data: null, render: function (data){
                 return (data.estado == 1)?contenido+operaciones+inventariable:
                     (data.estado == 2) ? contenido+editar+imprimir:
-                        (data.estado == 0) ? operaciones+capturar:  contenido+operaciones;
+                        (data.estado == 0) ? contenido+operaciones+capturar:  contenido+operaciones;
                 },
             },
         ],

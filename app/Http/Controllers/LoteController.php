@@ -71,9 +71,6 @@ class LoteController extends ModalController
            DB::transaction(function () use ($material,$value,$lote){
                $articulo = Articulo::where('descripcion',$value)->first();
                if (!$articulo){
-                   if ($value == ' '){
-
-                   }
                    $articulo = new Articulo(['descripcion'=>$value]);
                    $articulo->save();
                }

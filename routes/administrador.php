@@ -58,3 +58,4 @@ Route::get('/anexoI','AdministracionController@importaAnexoI');
 
 Route::get('/sendAvaluacio', ['as' => 'sendAvaluacio.create', 'uses' => 'SendAvaluacioEmailController@create']);
 Route::post('/sendAvaluacio', ['as' => 'sendAvaluacio.store', 'uses' => 'SendAvaluacioEmailController@store']);
+Route::post('/getToken',['as' => 'sendAvaluacion.getToken','uses' => 'SendAvaluacioEmailController@getToken']);

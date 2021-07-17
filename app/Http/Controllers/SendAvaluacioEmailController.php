@@ -47,10 +47,19 @@ class SendAvaluacioEmailController extends Seeder
         else {
             $this->sendMatricula($aR);
         }
-        return back();
+        return view('seeder.sendAvaluacio');
 
     }
 
+    public function getToken(Request $request){
+        $aR = AlumnoReunion::where('token',$request->token)->first();
+        if (!$aR){
+            Alert::danger('No hi ha cap alumne amb eixe token');
+            return back();
+        } else {
+            return view('seeder.sendAvaluacio',compact('aR'));
+        }
+    }
 
     private function obtenToken($aR)
     {
@@ -67,6 +76,7 @@ class SendAvaluacioEmailController extends Seeder
 
         return false;
     }
+
     private function sendMatricula($aR){
         try {
             $token = true;
