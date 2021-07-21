@@ -7,6 +7,10 @@
 namespace Intranet\Http\Controllers;
 
 
+use Intranet\Entities\Articulo;
+use Intranet\Entities\ArticuloLote;
+use Intranet\Entities\Material;
+use Intranet\Entities\Lote;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
@@ -261,6 +265,33 @@ class AdministracionController extends Controller
             }
         }
     }
+
+    public static function v2_03()
+    {
+        $ordenadores = DB::table('ordenadores')->get();
+
+       DB::transaction(function () use ($ordenadores){
+           $lote = Lote::where('registre','2021-IMP')->first();
+           $registre = '2021-IMP';
+           if (!$lote){
+               $lote = new Lote(['registre'=>$registre,'procedencia'=>1,'proveedor'=>'Inventario']);
+               $lote->save();
+           }
+
+           $articulo = Articulo::where('descripcion','Ordenador Torre')->first();
+           $articulo_lote = new ArticuloLote(['lote_id'=>$registre,'articulo_id'=>$articulo->id,'unidades'=>0]);
+           $articulo_lote->save();
+           $quantitat = 0;
+           foreach ($ordenadores as $ordenador){
+               $material = new Material(['descripcion'=>'Ordenador Torre','procedencia'=>1,'estado'=>1,'espacio'=>$ordenador->aula,'unidades'=>1,'inventariable'=>1,'articulo_lote_id'=>$articulo_lote->id,'nserieprov'=>$ordenador->serie]);
+               $material->save();
+               $quantitat++;
+            }
+           $articulo_lote->unidades = $quantitat;
+           $articulo_lote->save();
+        });
+    }
+
 
     private static function findProfesor($nombre){
         foreach (Profesor::all() as $profesor){
