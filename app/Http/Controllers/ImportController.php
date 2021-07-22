@@ -459,6 +459,8 @@ class ImportController extends Seeder
                 if (!Programacion::where('idModuloCiclo', $mc->id)->where('curso', Curso())->first()){
                     self::newProgramacion($mc,$horario->idProfesor);
                 }
+            } else {
+                Alert::danger($horario->Grupo->id.' sin ciclo');
             }
         }
 

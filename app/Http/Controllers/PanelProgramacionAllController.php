@@ -16,7 +16,7 @@ class PanelProgramacionAllController extends BaseController
     protected $parametresVista = [];
     
     public function search(){
-        return Programacion::where('estado',config('variables.mostrarProgramacionesEstado'))
+        return Programacion::where('estado',3)
             ->with('Departament')
             ->with('Ciclo')
             ->with('Modulo')
