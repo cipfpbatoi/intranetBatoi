@@ -251,6 +251,8 @@ class AdministracionController extends Controller
 
     public static function v2_02()
     {
+        Alert::info('Version 2.02');
+        return ;
         $proyectos = Documento::where('tipoDocumento','Proyecto')->where('curso','2020-2021')->get();
         $grupos = $proyectos->groupBy('supervisor');
         foreach ($grupos as $grupo){
@@ -268,6 +270,8 @@ class AdministracionController extends Controller
 
     public static function v2_03()
     {
+        Alert::info('Version 2.3');
+        return ;
         $ordenadores = DB::table('ordenadores')->get();
 
        DB::transaction(function () use ($ordenadores){
