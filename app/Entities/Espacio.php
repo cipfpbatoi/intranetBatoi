@@ -14,6 +14,8 @@ class Espacio extends Model
     public $timestamps = false;
     protected $primaryKey = 'aula';
     protected $keyType = 'string';
+    protected $fillable = [ 'aula','descripcion','idDepartamento','gMati', 'gVesprada','reservable'];
+
 
     use BatoiModels;
 

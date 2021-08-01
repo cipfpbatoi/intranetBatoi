@@ -348,6 +348,7 @@ class ImportController extends Seeder
     {
         switch ($clase) {
             case 'Profesor' : $this->noSustituye();
+                $this->asignaDepartamento();
                 break;
             case 'Alumno': $this->bajaAlumnos();
                 break;
@@ -487,6 +488,21 @@ class ImportController extends Seeder
             if ($sustituido && $sustituido->fecha_baja == NULL) {
                 $sustituto->sustituye_a = '';
                 $sustituto->save();
+            }
+        }
+    }
+
+    private function asignaDepartamento()
+    {
+        foreach (Profesor::where('departamento', '99')->get() as $profesor) {
+            $horario = Horario::where('idProfesor',$profesor->dni)->whereNull('ocupacion')->where('modulo','!=','TU02CF')
+                ->where('modulo','!=','TU01CF')->first();
+            if ($horario) {
+                $modulo = Modulo_ciclo::where('idModulo',$horario->modulo)->first();
+                if ($modulo) {
+                    $profesor->departamento = $modulo->idDepartamento;
+                }
+
             }
         }
     }
