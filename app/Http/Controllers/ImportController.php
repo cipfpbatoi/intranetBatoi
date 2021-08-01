@@ -501,6 +501,7 @@ class ImportController extends Seeder
                 $modulo = Modulo_ciclo::where('idModulo',$horario->modulo)->first();
                 if ($modulo) {
                     $profesor->departamento = $modulo->idDepartamento;
+                    $profesor->save();
                 }
 
             }
