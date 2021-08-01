@@ -398,7 +398,8 @@ class ImportController extends Seeder
         $mc->idModulo = $horario->modulo;
         $mc->idCiclo = $horario->Grupo->idCiclo;
         $mc->curso = substr($horario->idGrupo, 0, 1);
-        $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento) ? Profesor::find($horario->idProfesor)->departamento : '99';
+        $profesor = Profesor::find($horario->idProfesor);
+        $mc->idDepartamento = isset($profesor) && $profesor->departamento != 99 ? $profesor->departamento : $horario->Grupo->Ciclo->departamento;
         $mc->enlace = self::getLinkSchedule();
         $mc->save();
         return $mc;
@@ -498,10 +499,9 @@ class ImportController extends Seeder
             $horario = Horario::where('idProfesor',$profesor->dni)->whereNull('ocupacion')->where('modulo','!=','TU02CF')
                 ->where('modulo','!=','TU01CF')->first();
             if ($horario) {
-                dd($horario);
                 $modulo = Modulo_ciclo::where('idModulo',$horario->modulo)->first();
                 if ($modulo) {
-                    $profesor->departamento = $modulo->idDepartamento;
+                    $profesor->departamento = $modulo->Ciclo->departamento;
                     $profesor->save();
                 }
 
