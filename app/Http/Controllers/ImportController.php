@@ -497,7 +497,7 @@ class ImportController extends Seeder
         foreach (Profesor::where('departamento', 99)->get() as $profesor) {
             $horario = Horario::where('idProfesor',$profesor->dni)->whereNull('ocupacion')->where('modulo','!=','TU02CF')
                 ->where('modulo','!=','TU01CF')->first();
-            dd($profesor);
+            dd($horario);
             if ($horario) {
                 $modulo = Modulo_ciclo::where('idModulo',$horario->modulo)->first();
                 if ($modulo) {
