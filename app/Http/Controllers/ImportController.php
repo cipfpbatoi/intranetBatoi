@@ -495,9 +495,10 @@ class ImportController extends Seeder
     private function asignaDepartamento()
     {
         foreach (Profesor::where('departamento', 99)->get() as $profesor) {
-            $horario = Horario::where('idProfesor',$profesor->dni)->get();
-            dd($horario);
+            $horario = Horario::where('idProfesor',$profesor->dni)->whereNull('ocupacion')->where('modulo','!=','TU02CF')
+                ->where('modulo','!=','TU01CF')->first();
             if ($horario) {
+                dd($horario);
                 $modulo = Modulo_ciclo::where('idModulo',$horario->modulo)->first();
                 if ($modulo) {
                     $profesor->departamento = $modulo->idDepartamento;
