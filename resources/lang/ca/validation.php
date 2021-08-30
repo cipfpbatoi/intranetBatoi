@@ -275,7 +275,12 @@ return array(
                 'enlace' => 'Enllaç',
                 'informativa' => 'És informativa?',
                 'activa' => 'Activa',
-                'destinatario' => 'Destinataris'
+                'destinatario' => 'Destinataris',
+                'desenvolupament' => 'Desenvolupament',
+                'valoracio' => 'Valoració Pedagògica',
+                'aspectes' => 'Aspectes Transversals',
+                'dades' =>  'Altres dades',
+                'recomanada' => 'Es recomanable per a el curs següent'
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

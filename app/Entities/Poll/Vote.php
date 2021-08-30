@@ -17,6 +17,10 @@ class Vote extends Model
     public function ModuloGrupo(){
         return $this->belongsTo(Modulo_grupo::class,'idOption1','id');
     }
+
+    public function Actividad(){
+        return $this->belongsTo(Actividad::class,'idOption1','id');
+    }
     public function Fct(){
         return $this->belongsTo(Fct::class,'idOption1','id');
     }

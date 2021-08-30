@@ -11,7 +11,7 @@ Route::get('/perfil', ['as' => 'perfil.edit', 'uses' => 'Auth\Profesor\PerfilCon
 Route::put('/perfil', ['as' => 'perfil.update', 'uses' => 'Auth\Profesor\PerfilController@update']);
 
 
-Route::resource('/actividad', 'ActividadController', ['except' => ['show', 'destroy', 'update']]);
+Route::resource('/actividad', 'ActividadController', ['except' => ['show', 'destroy']]);
 Route::get('/actividad/{actividad}/delete', ['as' => 'actividad.destroy', 'uses' => 'ActividadController@destroy']);
 Route::get('/actividad/listado', ['as' => 'actividad.listado', 'uses' => 'ActividadController@listado']);
 Route::post('/actividad/create', ['as' => 'actividad.store', 'uses' => 'ActividadController@store']);
@@ -32,7 +32,9 @@ Route::get('/actividad/{actividad}/ics', ['as' => 'actividad.ics', 'uses' => 'Ac
 Route::get('/actividadOrientacion', ['as' => 'actividad.orientacion', 'uses' => 'PanelActividadOrientacionController@index']);
 Route::get('/actividadorientacion/create', ['as' => 'actividad.createOrientacion', 'uses' => 'PanelActividadOrientacionController@create']);
 Route::post('/actividadorientacion/create', ['as' => 'actividad.storeOrientacion', 'uses' => 'ActividadController@store']);
-
+Route::get('/actividad/{actividad}/value', ['as' => 'actividad.value', 'uses' => 'ActividadController@value']);
+Route::patch('/actividad/{actividad}',['as' => 'actividad.patch', 'uses' => 'ActividadController@patch']);
+Route::get('/actividad/{actividad}/valoracion', ['as' => 'actividad.valoracion', 'uses' => 'ActividadController@printValue']);
 
 
 Route::resource('/reunion', 'ReunionController', ['except' => ['destroy', 'update']]);

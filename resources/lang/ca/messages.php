@@ -69,7 +69,8 @@ return array(
         'desde' => 'Des de',
         'hasta' => 'Fins',
         'resum' => 'Resum',
-        'tasks' => 'Tasques pendents'
+        'tasks' => 'Tasques pendents',
+
 
      ),
     'buttons' => array(
@@ -82,12 +83,14 @@ return array(
         'detalle' => 'Detall',
         'autorizacion' => 'Autorització Menors',
         'email' => 'Enviar email',
+        'volver' => 'Tornar',
         'init' => 'Enviar',
         'create' => 'Crear',
         'submit' => 'Guardar',
         'cancel' => 'Cancelar',
         'reset' => 'Desfer',
         'show' => 'Mostra',
+        'value' => 'Valorar',
         'coordinador' => 'Tria Coordinador',
         'atras' => 'Tornar arrere',
         'active' => 'Activar/Desactivar',

@@ -36,4 +36,5 @@ return [
         'down' => 'fa-arrow-down',
         'orden' => 'fa-calendar',
         'open' => 'fa-toggle-on',
+        'valoracion' => 'fa-file-pdf-o'
     ];

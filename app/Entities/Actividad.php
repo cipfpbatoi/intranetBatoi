@@ -15,7 +15,7 @@ class Actividad extends Model
     use BatoiModels,TraitEstado;
 
     protected $table = 'actividades';
-    protected $fillable = ['name', 'extraescolar','desde', 'hasta','fueraCentro', 'transport','objetivos', 'descripcion', 'comentarios'];
+    protected $fillable = ['name', 'extraescolar','desde', 'hasta','fueraCentro', 'transport','objetivos', 'descripcion', 'comentarios','poll','desenvolupament','valoracio','aspectes','dades'];
     protected $rules = [
         'name' => 'required|between:1,75',
         'desde' => 'required|date',
@@ -29,8 +29,10 @@ class Actividad extends Model
         'comentarios' => ['type' => 'textarea'],
         'desde' => ['type' => 'datetime'],
         'hasta' => ['type' => 'datetime'],
+        //'poll' => ['type' => 'checkbox'],
         'fueraCentro' => ['type' => 'checkbox'],
-        'transport' => ['type' => 'checkbox']
+        'transport' => ['type' => 'checkbox'],
+
     ];
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
@@ -141,6 +143,10 @@ class Actividad extends Model
             }
         }
         return $actividades;
+    }
+
+    public function getRecomendadaAttribute(){
+        return $this->recomanada?'Sí':'No';
     }
 
 }

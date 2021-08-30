@@ -9,26 +9,40 @@ use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\Actividad_profesor;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
-use Intranet\Services\FormBuilder;
 use Response;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
 use Styde\Html\Facades\Alert;
 use Jenssegers\Date\Date;
 use DB;
+use Intranet\Http\Requests\ActividadRequest;
+use Intranet\Http\Requests\ValoracionRequest;
 
 
-class ActividadController extends IntranetController
+class ActividadController extends ModalController
 {
 
-    use traitAutorizar,    
+    use traitAutorizar,  traitSCRUD,
         traitImprimir,
         traitNotificar;
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';
     protected $gridFields = ['name', 'desde', 'hasta', 'situacion'];
-    protected $modal = true;
+    protected $formFields= [
+        'id' => ['type' => 'hidden'],
+        'name' => ['type' => 'text'],
+        'desde' => ['type' => 'datetime'],
+        'hasta' => ['type' => 'datetime'],
+        'poll' => ['type' => 'checkbox'],
+        'fueraCentro' => ['type' => 'checkbox'],
+        'transport' => ['type' => 'checkbox'],
+        'descripcion' => ['type' => 'textarea'],
+        'objetivos' => ['type' => 'textarea'],
+        'extraescolar' => ['type' => 'hidden'],
+        'comentarios' => ['type' => 'textarea'],
+        'recomanada' => ['type' => 'hidden']
+    ];
     
     protected function search()
     {
@@ -37,21 +51,51 @@ class ActividadController extends IntranetController
                 ->get();
     }
 
-    protected function grid($todos,$modal=false)
-    {
-        return $this->panel->render($todos,$this->titulo,$this->chooseView('indexModal'),new FormBuilder($this->createWithDefaultValues(),$this->formFields));
-    }
-
 
     protected function createWithDefaultValues( $default=[])
     {
         $data = new Date('tomorrow');
-        return new Actividad(['extraescolar' => 1,'desde'=>$data,'hasta'=>$data]);
+        return new Actividad(['extraescolar' => 1,'desde'=>$data,'hasta'=>$data,'poll' => 1,'recomanada'=>1]);
     }
-   
-    public function store(Request $request)
+
+    public function store(ActividadRequest $request)
     {
-        return $this->showDetalle($this->realStore($request));
+        $new = new Actividad();
+        $new->fillAll($request);
+        return $this->showDetalle($new);
+    }
+
+    public function update(ActividadRequest $request, $id)
+    {
+        Actividad::findOrFail($id)->fillAll($request);
+        return $this->redirect();
+    }
+
+    public function patch(ValoracionRequest $request, $id)
+    {
+        $actividad = Actividad::findOrFail($id);
+        $actividad->desenvolupament = $request->desenvolupament;
+        $actividad->valoracio = $request->valoracio;
+        $actividad->dades = $request->dades;
+        $actividad->aspectes = $request->aspectes;
+        $actividad->recomanada = isset($request->recomanada)?1:0;
+        $actividad->estado = 4;
+        $actividad->save();
+
+        return $this->redirect();
+    }
+
+
+    public function value($id){
+        $Actividad = Actividad::find($id);
+        return view('extraescolares.value', compact('Actividad'));
+    }
+
+    public function printValue($id){
+        $elemento = $this->class::findOrFail($id);
+        $informe = 'pdf.valoracionActividad';
+        $pdf = $this->hazPdf($informe, $elemento, null);
+        return $pdf->stream();
     }
 
     private function showDetalle($id){
@@ -181,7 +225,9 @@ class ActividadController extends IntranetController
         $this->panel->setBothBoton('actividad.edit', ['where' => ['estado', '<', '2']]);
         $this->panel->setBothBoton('actividad.init', ['where' => ['estado', '==', '0']]);
         $this->panel->setBothBoton('actividad.notification', ['where' => ['estado', '>', '0', 'estado', '<', '3', 'coord', '==', '1']]);
-        $this->panel->setBothBoton('actividad.autorizacion', ['where' => ['estado', '>', '0']]);
+        $this->panel->setBothBoton('actividad.autorizacion', ['where' => ['estado', '>', '0','estado','<','4']]);
+        $this->panel->setBothBoton('actividad.valoracion', ['where' => ['estado', '==', '4']]);
+        $this->panel->setBoton('grid',new BotonImg('actividad.value', ['img'=>'fa-eyedropper','where' => ['estado', '>=', '3']]));
         $this->panel->setBoton('grid', new BotonImg('actividad.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('profile', new BotonIcon('actividad.delete', ['class' => 'btn-danger', 'where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Date::yesterday()]]));
