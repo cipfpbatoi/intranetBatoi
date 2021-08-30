@@ -34,7 +34,7 @@ class ActividadController extends ModalController
         'name' => ['type' => 'text'],
         'desde' => ['type' => 'datetime'],
         'hasta' => ['type' => 'datetime'],
-        'poll' => ['type' => 'checkbox'],
+        'poll' => ['type' => 'hidden'],
         'fueraCentro' => ['type' => 'checkbox'],
         'transport' => ['type' => 'checkbox'],
         'descripcion' => ['type' => 'textarea'],
@@ -55,7 +55,7 @@ class ActividadController extends ModalController
     protected function createWithDefaultValues( $default=[])
     {
         $data = new Date('tomorrow');
-        return new Actividad(['extraescolar' => 1,'desde'=>$data,'hasta'=>$data,'poll' => 1,'recomanada'=>1]);
+        return new Actividad(['extraescolar' => 1,'desde'=>$data,'hasta'=>$data,'poll' => 0,'recomanada'=>1]);
     }
 
     public function store(ActividadRequest $request)
