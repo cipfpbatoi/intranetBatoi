@@ -1,4 +1,4 @@
-# Documentació del professor
+# Manual del professor
 
 Índex de continguts:
 
