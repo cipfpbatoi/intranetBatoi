@@ -7,7 +7,7 @@
   * [Control de presència](#control-de-presència)
   * [Notificacions](#notificacions)
 * [Menú Documentació](#menú-documentació)
-  * [Programacions](#programacions)
+  * [Programacions](#veure-les-programacions)
   * [Gestió de Centre](#gestió-de-centre)
   * [Informació de Centre](#informació-de-centre)
   * [Actes](#actes)
@@ -107,7 +107,7 @@ Si no hem vist alguna notificació al acabar el día rebrem automàticament un e
 ## Menú Documentació
 Des d'ací tenim accés a informació i documentació general del Centre.
 
-### Programacions
+### Veure les Programacions
 Ací trobem totes les programacions del Centre. Podem filtrar i ordenar pel criteri que vulguem (mòdul, cicle, departament, ...).
 
 ![Programacions](/img/ajuda/09-programacions.png)
