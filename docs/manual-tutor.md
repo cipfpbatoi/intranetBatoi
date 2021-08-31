@@ -11,23 +11,24 @@
   * [Seguiments](#seguiments)
   * [Tutories](#tutories)
 * [Menú 'Pràctiques'](#menú-pràctiques)
+* [Menú 'FP Dual'](#menú-fp-dual)
 
 
 ## Introducció
-Aquest manual només explica les accions que pot fer un tutor i no un professor normal. Les accions habituals de qualsevol professor estan explicades en el manual del professor.
+Aquest manual només explica les accions que pot fer un tutor i no un professor normal. Les accions habituals de qualsevol professor estan explicades en el [manual del professor](./manual-profe.html).
 
 L'accés a la intranet és igual per a tots els professors i és el sistema qui detecta quin és el seu rol (professor, tutor, cap de departament, …) i mostra les opcions adequades en cada cas.
 
-Els tutor tenen en el menú general un apartat anomenat 'Tutor' però també té noves opcions en alguns altres menús.
+Els tutors tenen en el menú general un apartat anomenat 'Tutor' però també té noves opcions en alguns altres menús.
 
 ## Menú 'Docència' → 'Gestió dels grups'
 En el nostre grup apareixen 2 noves icones:
 * Carnet: permet imprimir el carnet de tots els alumnes del grup. Això ha de fer-se des de caporalia que és on es troba la impresora de carnets
-* Acta Fons Social Europeu (icona del €): apareix el full amb tots els alumnes que hem d'omplir i signar després d'haver explicat als alumnes la informació del FSE. Després farem una nova '_Reunió_' de tipus FSE i adjuntarem aquest full signat. L'original s'ha de lliurar a Caporalia.
+* Acta Fons Social Europeu (icona del €): apareix el full amb tots els alumnes que hem d'omplir i signar després d'haver explicat als alumnes la informació del FSE. Després farem una nova '_Reunió_' de tipus FSE i adjuntarem aquest full signat escanejat. L'original s'ha de lliurar a Caporalia.
 * Si hi ha curs o jornada activa podem inscriure a tots els alumnes
 
-A més, quan entrem a verure els alumnes del nostre grup apareixen 2 nous icones:
-* Modificació Perfil Alumne: podem obrir el perfil d'eixe alumne per a modificar el seu e-mail la seua foto o l'idioma de la intranet per a l'alumne
+A més, quan entrem a **Vore els alumnes** del nostre grup apareixen noves icones:
+* Modificació Perfil Alumne: podem obrir el perfil d'eixe alumne per a modificar el seu e-mail, la seua foto o l'idioma de la intranet per a l'alumne
 * Carnet: permet imprimir el carnet de l'alumne. Ha de fer-se des de caporalia que és on es troba la impresora de carnets
 * Si hi ha curs o jornada podem inscriure a l'alumne
 
@@ -38,13 +39,13 @@ A més, quan entrem a verure els alumnes del nostre grup apareixen 2 nous icones
 ![Nou expedient reunió](img/tutor/07-nou-expedient.png)
 
 Els tipus que tenim actualment són:
-* **Baixa inassitència**: permet donar de baixa a un alumne per faltes d'assistència segons la normativa
+* **Baixa inasistència**: permet donar de baixa a un alumne per faltes d'asistència segons la normativa
 * Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Tant ací com en el cas anterior només es poden tindre en compte les faltes marcades en Ítaca.
 * **Remisió al departament d'Orientació**: envia un avís als orientadors de que han de atendre a aquest alumne. Més avant l'orientador es posarà en contacte amb el tutor per a concretar quan es farà
 * Part d'amonestació: per a incoar un part d'amonestació a l'alumne
 * **Informe d'exempció FCT**: si un alumne sol·licita l'exempció de les FCT hem d'omplir aquest informe.
 
-Una vegada omplit caldrà avisar a direcció de la tramitació de l'expedient amb el botó del sobre i ja s'encarregan de resoldre'l.
+Una vegada omplit **caldrà avisar a direcció de la tramitació de l'expedient** polsant el botó del sobre i ja s'encarregan de resoldre'l.
 
 ## Menú 'Actes/Convocatòries' → 'Gestió de reunions'
 El tutor tindrà que convocar diferents reunions al llarg del curs. 
@@ -83,7 +84,7 @@ També apareixen ja seleccionats els professors participants: tots els de l'equi
 Igualment podem afegir o eliminar professors participants.
 
 ### Gestionar les reunions
-Una vegada creada la reunió ens apareix en el llistat de reunions des d'on podem fer:
+Una vegada creada la reunió ens apareix en el llistat de reunions, des d'on podem:
 
 ![Reunions](img/tutor/04-reunions.png)
 
@@ -137,7 +138,7 @@ Aquest menú només els apareix als tutors de 2n curs per a gestionar les FCT ta
 
 El que fem en la intranet NO substitueix al programa SAO de Conselleria que hem de continuar utilitzant. Omplir la informació en la Intranet ens permetrà obtindre automàticament els certificats per a alumnes i empreses i altres documents que el SAO no proporciona.
 
-#### Menú 'Empresa'
+### Menú 'Empresa'
 El primer pas és comprobar que si la empresa ja està donada de alta en la intranet. Totes les empreses en les que hi ha concert de pràctiques estan afegides a la intranet. 
 
 Des d'aquest menú busquem la empresa. Si la empresa ja està ens hem d'asegurar que està asociada al nostre cicle (si no afegim una nova col·laboració amb el cicle).
@@ -159,12 +160,14 @@ Si posterioment l'empresa ha de acogir alumnes de qualsevol altre cicle afegirem
 ![Nova col·laboració](img/tutor/12-nova-colaboracio.png)
 ![Nova col·laboració](img/tutor/13-nova-colaboracio-ii.png)
 
-#### Centres de treball
+### Centres de treball
 Una col.laboració no es vincula a una empresa sinó a un centre de treball. Una empresa pot tindre varios centres de treballs. Per defecte una empresa té un centre de treball que concidix amb les dades de l'empresa. Si calen més s'han de donar d'alta de la mateixa forma que s'ha fet amb les col.laboracions.
 
-#### FCTs
+### FCTs
 Quan ja existeix l'empresa i la col·laboració amb el nostre cicle ja podem crear la nova FCT des del menú FCTs amb el botó 'Nova FCT':
 
 ![Nova FCT](img/tutor/14-nova-fct.png)
 
 Una vegada guardada podem esborrar-la, editar-la o imprimir els certificats una vegada acabades les pràctiques.
+
+## Menú 'FP Dual'
