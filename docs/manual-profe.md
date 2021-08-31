@@ -12,7 +12,6 @@
   * [Informació de Centre](#informació-de-centre)
   * [Actes](#actes)
   * [Projectes](#projectes)
-  * [Gestor documental](#gestor-documental)
 * [Menú 'Docència'](#menú-docència)
   * [Gestió de grups](#gestió-de-grups)
   * [Claustre](#claustre)
@@ -22,7 +21,6 @@
   * [Seguiments](#seguiments)
   * [Programacions](#programacions)
   * [Tancament de curs](#tancament-de-curs)
-  * [Enquestes](#enquestes)
 * [Menú 'Tràmits'](#menú-tràmits)
   * [Expedients](#expedients)
   * [Activitats extraescolars](#activitats-extraescolars)
@@ -35,6 +33,7 @@
   * [Reserva aules](#reserva-aules)
   * [Oblit birret](#oblit-birret)
   * [Canviar horari](#canviar-horari)
+* [Menú Enquestes](#menú-enquestes)
 * [Menú Actes/Convocatories](#menú-actesconvocatories)
   * [Gestió de reunions](#gestió-de-reunions)
   * [Grups de treball](#grups-de-treball)
@@ -70,8 +69,8 @@ La pàgina d'inici te vàries parts:
     4. Logout: tancar la sessió en la intranet (però sense fitxar l'eixida del Centre)
 4. Menú superior: ací tenim 3 parts
     1. Sobre: icona de [notificacions](#notificacions) amb els missatges de la intranet i d'altres usuaris (sobre el sobre apareix el número de misstages que tenim)
-    2. Rellotge: icona de [control de presència](#control de presència). En blau indica que estem al centre
-    3. Desplegable amb el nostre nom: menú amb l'hora d'entrada i eixida del Centre i opcions per a [editar el nostre perfil](#editar-el-nostre-perfil) i tancar la sessió de la intranet (com el Logout de la part inferior esquerra)
+    2. Rellotge: icona de [control de presència](#control-de-presència). En blau indica que estem al centre
+    3. Desplegable amb el nostre nom: menú amb l'hora d'entrada i eixida del Centre i opcions per a [editar el nostre perfil](#editar--perfil) i tancar la sessió de la intranet (com el Logout de la part inferior esquerra)
 5. Menú d'accions: amb 5 icones
     1. Amagar/mostrar la part central de la pàgina
     2. Tornar a la pàgina anterior
@@ -429,11 +428,6 @@ Des d'ací podem accedir ràpidament a:
 ## Altres accions
 En aquest apartat veurem altres eines que ens proporcina la intranet.
 
-### Editar perfil
-Des del botó de 'Editar perfil' podem canviar en nostre correu electrònic i la nostra foto.
-
-![Editar perfil](/img/ajuda/08-perfil-modificar.png)
-
 ### Taules amb informació
 El moltes pàgines tenim la informació ordenada en taules. En qualsevol d'elles podem fer:
 
@@ -448,3 +442,7 @@ Baix de la taula podem veure quins registres estem veient ('Mostrant de 26 a 50 
 
 Moltes pàgines tenen a la part superio dreta 2 pestanyes per a poder veure la informació en forma de taula (**Llistat**) o de **Mosaic**.
 
+### Editar perfil
+Des del botó de 'Editar perfil' podem canviar en nostre correu electrònic i la nostra foto.
+
+![Editar perfil](/img/ajuda/08-perfil-modificar.png)
