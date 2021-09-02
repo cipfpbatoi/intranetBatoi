@@ -44,13 +44,14 @@
 
 
 ## Entrada
-L'entrada a l'aplicació es realitza des de qualsevol dispositiu connectat a la xarxa del Centre, tant cablejada com WiFi. Per tant, a més del PC del aula podem usar el nostre portàtil, una tablet o el mòbil.
+L'entrada a l'aplicació es realitza des de qualsevol dispositiu connectat a la xarxa del Centre, tant cablejada com WiFi. Per tant, a més del PC del aula podem usar el nostre portàtil, una tablet o el mòbil. Actualment també es pot accedir des de fora del Centre mitjançant l'enllaç que heu rebut al vostre email del Centre.
 
 ![login](/img/ajuda/01-login.png)
 
-El més senzill és polsar el botó roig de 'Google' i serà ell qui ens autentifique demanant-nos el nostre compte d'email del Centre (si je el tenim obert entrem directament).
+El més senzill és polsar el botó roig de 'Google' i serà ell qui ens autentifique demanant-nos el nostre compte d'email del Centre (si ja el tenim obert entrem directament).
 
 També podem polsar el botó blau de 'Professor' (recomanat si estem en un equip que no és el nostre i no volem autenticar-nos amb Google) e introduir l'usuari (el nostre codi de 4 números o el nostre compte d'email del Centre) i la contrasenya (al principi el nostre DNI amb 0 davant, com apareix en Itaca, però és convenient canviar-ho).
+
 Una vegada dins estarem en la pàgina d'inici des d'on tenim accés a totes les opcions.
 
 ### Pàgina d'inici
@@ -65,7 +66,7 @@ La pàgina d'inici te vàries parts:
 3. Menú inferior: conté iconas per a 
     1. Ajuda: obri una nova pestanya amb els manuals d'ajuda de la intranet i les FAQs d'ajuda
     2. FullScreen: mostra la intranet a pantalla completa
-    3. Enviar-nos el codi de fitxatge al nostre email de Batoi per a fitxar des del mòbil
+    3. Enviar-nos el codi de fitxatge. Aquesta icona ens torna a enviar al nostre compte de correu de Batoi un email amb l'enllaç per a fitxar des del mòbil, l'enllaç per a entrar a la intranet des de fora del Centre i el nostre codi de professor (per a loguejar-nos en la intranet, fer fotocòpies, etc)
     4. Logout: tancar la sessió en la intranet (però sense fitxar l'eixida del Centre)
 4. Menú superior: ací tenim 3 parts
     1. Sobre: icona de [notificacions](#notificacions) amb els missatges de la intranet i d'altres usuaris (sobre el sobre apareix el número de misstages que tenim)
