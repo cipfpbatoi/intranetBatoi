@@ -28,5 +28,5 @@ return [
     ],
     'certificatFol' => '2021-06-14',
     'enquestesAutomatiques' => 1,
-    'convocatoria' => '83tg2hurz40r'
+    'convocatoria' => 'wtr60qi92o4s'
 ];
