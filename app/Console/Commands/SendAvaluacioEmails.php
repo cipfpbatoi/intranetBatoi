@@ -65,7 +65,7 @@ class SendAvaluacioEmails extends Command
                 $aR->token = $token;
                 Mail::to($aR->Alumno->email, 'Secretaria CIPFP Batoi')
                     ->send(new MatriculaAlumne(
-                        $aR, 'email.matricula'));
+                        $aR, 'email.matriculaSetembre'));
                 avisa($aR->Reunion->idProfesor,
                     'El correu per a la matrícula de  ' . $aR->Alumno->fullName . " ha estat enviat a l'adreça " . $aR->Alumno->email,
                     '#', 'Servidor de correu');
