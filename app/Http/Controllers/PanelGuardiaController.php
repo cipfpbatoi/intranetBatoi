@@ -96,7 +96,7 @@ class PanelGuardiaController extends BaseController
             }
             return $ahora;
         } else {
-            Alert('No estas de guardia ara');
+            Alert::info('No estas de guardia ara');
             return [];
         }
     }
