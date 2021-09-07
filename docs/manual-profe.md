@@ -82,7 +82,7 @@ La pàgina d'inici te vàries parts:
 7. Resum: tenim algunes informacions útils de la intranet com:
     1. Properes activitats extraescolars: les prperes activitats que qualsevol departament va a realitzar pròximament
     2. Absències: professors que no van a estar en el Centre per algun motiu (comissió de servei, activitat extraescolar, malaltia, ...)
-    3. Tasques pendents de fer en la intranet (seguiments, avaluacions, ..)
+    3. Tasques pendents de fer en la intranet (lliurament de la programació, seguiments, avaluacions, ..)
     4. Horari: el nostre horari
     5. Actes: les actes, que podem trobar també en el menú [Documentació → Actes](#actes)
 
