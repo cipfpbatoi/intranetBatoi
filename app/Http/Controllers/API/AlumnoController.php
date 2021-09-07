@@ -19,13 +19,9 @@ class AlumnoController extends ApiBaseController
                 return $this->sendError('Format foto no valida');
             }
             if ($alumno = Alumno::where('dni', $id)->first()){
-                if ($alumno->foto){
-                    return $this->sendError("L'alumne $id ja te foto");
-                } else {
-                    $alumno->foto = $request->file('foto')->store('fotos', 'public');
-                    $alumno->save();
-                    return $this->sendResponse("$id", 'OK');
-                }
+                $alumno->foto = $request->file('foto')->store('fotos', 'public');
+                $alumno->save();
+                return $this->sendResponse("$id", 'OK');
             }
             else {
                 return $this->sendError('No existeix alumne '.$id);
