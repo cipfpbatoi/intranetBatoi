@@ -6,8 +6,6 @@ use Intranet\Entities\Alumno;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-
-
 class AlumnoController extends ApiBaseController
 {
 
