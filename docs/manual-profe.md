@@ -92,9 +92,17 @@ Cada vegada que entrem o eixim del Centre hem de fitxar. Podem fer-ho des del no
 
 Quan iniciem sessió en la intranet es fitxa automàticament indicant que estem en el centre (si no ho estavem ja). Per a marcar que eixim del Centre polsem el rellotge que trobem a la part superior dreta (zona 4 de la imatge anterior). Això tanca la sessió en la intranet i marca que deixem el Centre.
  
-De totes formes el més senzill és marcar l'entrada i l'eixida des del nostre mòbil quan estem connectats a la Wifi del Centre. Per a això només hem d'obrir l'enllaç que hi ha al email que ens han enviat des de Caporalia i s'obri una pàgina web en el navegador indicant que entrem al Centre (o eixim). Si no trobem eixe email podem fer que ens torne a arribar polsant l'icona del sobre que hi ha a la part inferior esquerra de la intranet. 
+De totes formes el més senzill és marcar l'entrada i l'eixida des del nostre mòbil quan estem connectats a la Wifi del Centre. Per a això només hem d'obrir l'enllaç que hi ha al email que ens han enviat des de Caporalia i s'obri una pàgina web en el navegador indicant que entrem al Centre (o eixim). 
  
-Per a no haber d'obrir el email cada vegada en el mòbil el més senzill és, una vegada que hem obert la pàgina de fitxar, en el menú de Chrome li indiquen **Afegir a pantalla d'inici** i ens crea en el nostre escriptori del mòbil una icona anomenada **Fitxatge professorat** que ens permet fitxar només polsant-la.
+![fitxa](./img/fitxa.png)
+ 
+Si no trobem eixe email podem fer que ens torne a arribar polsant l'icona del sobre que hi ha a la part inferior esquerra de la intranet (zona 3). 
+ 
+Per a no haber d'obrir el email cada vegada en el mòbil el més senzill és guardar la pàgina en el nostre mòbil: per a això, una vegada que hem obert la pàgina de fitxar en el navegador fem:
+ - en Android: cliquem en el **menú** (icona de 3 botons del cantó superior dret) i triem **Afegir a pantalla d'inici**
+ - en IOS: des de la barra inferior polsem la icona de **Compartir** i triem **Afegir a pantalla d'inici**
+ 
+ En els dos casos ens crea en el nostre escriptori del mòbil una icona anomenada **Fitxatge professorat** que ens permet fitxar només polsant-la.
 
 ### Notificacions
 En la zona 4 trobem una icona amb un sobre i el número de notificacions pendents que tenim. Aquestes notificacions són missatges d'altres usuaris de la intranet i tot tipus d'informacions automàtiques: si els alumnes se'n van a fer una activitat extraescolar, si hi ha una reunió de departament, si no hem fixat un dia, ...
