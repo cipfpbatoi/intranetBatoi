@@ -224,7 +224,7 @@ Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu
 Les operacions que podem fer amb cadascuna són:
 * **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la en Google Drive
 * **Enviar** (icona del sobre): per a enviar la programació al nostre Cap de departament quan estiga acabada
-* **Omplir seguiment** (icona dels prismàtics): per a introduir el seguiment de la programació al final del curs. Al pricipi apareix el seguiment de l'any anterior
+* **Omplir seguiment** (icona dels prismàtics): per a introduir al final del curs el seguiment de la programació i les **propostes de millora** per al proper curs. Al pricipi de curs apareix el seguiment de l'any anterior amb les propostes de millora que va fer el professor que va impartir aquest mòdul l'any anterior. Aquestes propostes hem d'incliure-les en la nostra programació d'enguany.
 
 Els estats pels que pasa una programació són:
 * '_No autoritzada/comunicada_': és el seu estat inicial i vol dir que encara no l'hem enviat al Cap del departament. En aquest estat modificarem la programació i a enviarem al Cap de departament
