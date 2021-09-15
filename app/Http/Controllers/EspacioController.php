@@ -42,7 +42,7 @@ class EspacioController extends ModalController
 
     public function update(EspacioRequest $request, $id)
     {
-        Espacio::findOrFail($id)->fillAll($request);
+        $espacio = Espacio::findOrFail($id)->fillAll($request);
         return $this->redirect();
     }
 

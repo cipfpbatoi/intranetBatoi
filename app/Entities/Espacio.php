@@ -3,8 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Departamento;
-use Intranet\Entities\Grupo;
 use Intranet\Events\ActivityReport;
 
 class Espacio extends Model
@@ -15,7 +13,9 @@ class Espacio extends Model
     protected $primaryKey = 'aula';
     protected $keyType = 'string';
     protected $fillable = [ 'aula','descripcion','idDepartamento','gMati', 'gVesprada','reservable'];
-
+    protected $inputTypes = [
+        'reservable' => ['type' => 'checkbox'],
+    ];
 
     use BatoiModels;
 
