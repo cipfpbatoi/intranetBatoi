@@ -92,9 +92,17 @@ Cada vegada que entrem o eixim del Centre hem de fitxar. Podem fer-ho des del no
 
 Quan iniciem sessió en la intranet es fitxa automàticament indicant que estem en el centre (si no ho estavem ja). Per a marcar que eixim del Centre polsem el rellotge que trobem a la part superior dreta (zona 4 de la imatge anterior). Això tanca la sessió en la intranet i marca que deixem el Centre.
  
-De totes formes el més senzill és marcar l'entrada i l'eixida des del nostre mòbil quan estem connectats a la Wifi del Centre. Per a això només hem d'obrir l'enllaç que hi ha al email que ens han enviat des de Caporalia i s'obri una pàgina web en el navegador indicant que entrem al Centre (o eixim). Si no trobem eixe email podem fer que ens torne a arribar polsant l'icona del sobre que hi ha a la part inferior esquerra de la intranet. 
+De totes formes el més senzill és marcar l'entrada i l'eixida des del nostre mòbil quan estem connectats a la Wifi del Centre. Per a això només hem d'obrir l'enllaç que hi ha al email que ens han enviat des de Caporalia i s'obri una pàgina web en el navegador indicant que entrem al Centre (o eixim). 
  
-Per a no haber d'obrir el email cada vegada en el mòbil el més senzill és, una vegada que hem obert la pàgina de fitxar, en el menú de Chrome li indiquen **Afegir a pantalla d'inici** i ens crea en el nostre escriptori del mòbil una icona anomenada **Fitxatge professorat** que ens permet fitxar només polsant-la.
+![fitxa](./img/fitxa.png)
+ 
+Si no trobem eixe email podem fer que ens torne a arribar polsant l'icona del sobre que hi ha a la part inferior esquerra de la intranet (zona 3). 
+ 
+Per a no haber d'obrir el email cada vegada en el mòbil el més senzill és guardar la pàgina en el nostre mòbil: per a això, una vegada que hem obert la pàgina de fitxar en el navegador fem:
+ - en Android: cliquem en el **menú** (icona de 3 botons del cantó superior dret) i triem **Afegir a pantalla d'inici**
+ - en IOS: des de la barra inferior polsem la icona de **Compartir** i triem **Afegir a pantalla d'inici**
+ 
+ En els dos casos ens crea en el nostre escriptori del mòbil una icona anomenada **Fitxatge professorat** que ens permet fitxar només polsant-la.
 
 ### Notificacions
 En la zona 4 trobem una icona amb un sobre i el número de notificacions pendents que tenim. Aquestes notificacions són missatges d'altres usuaris de la intranet i tot tipus d'informacions automàtiques: si els alumnes se'n van a fer una activitat extraescolar, si hi ha una reunió de departament, si no hem fixat un dia, ...
@@ -216,7 +224,7 @@ Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu
 Les operacions que podem fer amb cadascuna són:
 * **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la en Google Drive
 * **Enviar** (icona del sobre): per a enviar la programació al nostre Cap de departament quan estiga acabada
-* **Omplir seguiment** (icona dels prismàtics): per a introduir el seguiment de la programació al final del curs. Al pricipi apareix el seguiment de l'any anterior
+* **Omplir seguiment** (icona dels prismàtics): per a introduir al final del curs el seguiment de la programació i les **propostes de millora** per al proper curs. Al pricipi de curs apareix el seguiment de l'any anterior amb les propostes de millora que va fer el professor que va impartir aquest mòdul l'any anterior. Aquestes propostes hem d'incliure-les en la nostra programació d'enguany.
 
 Els estats pels que pasa una programació són:
 * '_No autoritzada/comunicada_': és el seu estat inicial i vol dir que encara no l'hem enviat al Cap del departament. En aquest estat modificarem la programació i a enviarem al Cap de departament
