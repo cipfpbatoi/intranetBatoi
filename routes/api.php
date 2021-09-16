@@ -16,8 +16,7 @@ use Illuminate\Http\Request;
 Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'create']]);
 Route::get('alumnoFct/{grupo}/grupo','AlumnoFctController@indice');
  Route::get('/convenio','EmpresaController@indexConvenio');
-
-
+Route::get('miIp','IPController@miIP');
 
 
 Route::group(['middleware' => 'auth:api'], function() {
@@ -109,7 +108,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('articuloLote','ArticuloLoteController');
     Route::resource('articulo','ArticuloController');
     Route::get('articuloLote/{id}/materiales','ArticuloLoteController@getMateriales');
-    Route::get('miIp','IPController@miIP');
+
 });
 
 Route::fallback(function(){

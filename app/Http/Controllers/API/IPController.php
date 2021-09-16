@@ -1,7 +1,7 @@
 <?php
 
 namespace Intranet\Http\Controllers\API;
-
+use Intranet\Http\Controllers\Controller;
 
 class IPController extends Controller
 {
