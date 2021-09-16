@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 
 Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'create']]);
 Route::get('alumnoFct/{grupo}/grupo','AlumnoFctController@indice');
- Route::get('/convenio','EmpresaController@indexConvenio');
+Route::get('/convenio','EmpresaController@indexConvenio');
 Route::get('miIp','IPController@miIP');
 
 
