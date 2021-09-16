@@ -198,13 +198,21 @@ class ImportController extends Seeder
     }
 
     public function hazDNI($dni,$nia){
-        if (strlen($dni) > 8) return $dni;
-        $alumno = Alumno::find($nia);
-        if ($alumno) return $alumno->dni;
-        else {
-            $dniFictici = 'F'.Str::random(9);
-            Alert::warning('Alumne amb DNI Fictici '.$dniFictici);
-            return $dniFictici;
+        // nia diferent per al mateix dni
+        $alumno = Alumno::where('dni',$dni)->where('nia','<>',$nia)->first();
+        if ($alumno){
+            $alumno->nia = $nia;
+            $alumno->save();
+            return $dni;
+        } else {
+            if (strlen($dni) > 8) return $dni;
+            $alumno = Alumno::find($nia);
+            if ($alumno) return $alumno->dni;
+            else {
+                $dniFictici = 'F'.Str::random(9);
+                Alert::warning('Alumne amb DNI Fictici '.$dniFictici);
+                return $dniFictici;
+            }
         }
     }
 

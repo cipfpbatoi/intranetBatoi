@@ -47,7 +47,7 @@ class GuardiaController extends IntranetController
                      ->get() as $guardia){
             $profesor = Profesor::find($guardia->idProfesor);
             if ($profesor) {
-                $profesorActual = $profesor->fecha_baja?$profesor->Sustituye:$profesor;
+                $profesorActual = $profesor->fecha_baja?($profesor->Sustituye??$profesor):$profesor;
                 $arrayG[$guardia->sesion_orden][$guardia->dia_semana][] =  array('dni'=>$profesorActual->dni , 'nombre' =>$profesorActual->ShortName);
             }
         }
