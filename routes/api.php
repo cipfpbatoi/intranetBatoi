@@ -109,6 +109,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('articuloLote','ArticuloLoteController');
     Route::resource('articulo','ArticuloController');
     Route::get('articuloLote/{id}/materiales','ArticuloLoteController@getMateriales');
+    Route::get('miIp','IPController@miIP');
 });
 
 Route::fallback(function(){
