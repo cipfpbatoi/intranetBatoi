@@ -34,7 +34,8 @@ $(function() {
     		api_token: $("#_token").text()
     	}
         })
-		.then((response) => miIP = response.data)
+		.then(
+			(response) => miIP = response.data)
     $.ajax ({
     	url: "/api/ipGuardia",
     	type: "GET",
@@ -54,7 +55,6 @@ $(function() {
 //		miIP = ip;
 		if (ipGuardia.length)	// Ya hemos recibido las IP donde hacer guardias
 			setPlace();
-    });
 //    biblio=true;
 //    cambiaHora();
     $('#hora option').attr('disabled', 'disabled');
