@@ -26,6 +26,15 @@ var horaActual="";
 var dias_semana=["D", "L", "M", "X", "J", "V", "S"];
 
 $(function() {
+	$.ajax({
+    	url: "/api/miIp",
+    	type: "GET",
+    	dataType: "json",
+        data: {
+    		api_token: $("#_token").text()
+    	}
+        })
+		.then((response) => miIP = response.data)
     $.ajax ({
     	url: "/api/ipGuardia",
     	type: "GET",
@@ -40,9 +49,9 @@ $(function() {
         });    
         
 	//Test: Print the IP addresses into the console
-	getUserIP(function(ip){
+//	getUserIP(function(ip){
 //		showMessage("IP "+ip, "error");
-		miIP = ip;
+//		miIP = ip;
 		if (ipGuardia.length)	// Ya hemos recibido las IP donde hacer guardias
 			setPlace();
     });
