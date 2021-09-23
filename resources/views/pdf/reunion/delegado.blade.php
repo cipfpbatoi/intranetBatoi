@@ -15,7 +15,7 @@
    <div style="width:55%;float:left"><strong>Curs:</strong> {{$datosInforme->curso}}</div><div style="width:45%;float:right;text-align: right"><strong>{{$todos[0]->descripcion}}:</strong> {{ $todos[0]->resumen }} <strong>{{$todos[1]->descripcion}}:</strong> {{ $todos[1]->resumen }}</div>
     <br/>
 </div>
-<div class="container" style="clear: left" >
+<div class="container" style="clear: both" >
         @if (isset($todos[2]))<br/><strong> {{$todos[2]->descripcion}}:</strong>{{strip_tags($todos[2]->resumen)}}@endif
         @if (isset($todos[3]))<br/><strong> {{$todos[3]->descripcion}}:</strong>{{strip_tags($todos[3]->resumen)}}@endif
         @if (isset($todos[4]))<br/><strong>{{$todos[4]->descripcion}}:</strong> {{strip_tags($todos[4]->resumen)}}@endif
@@ -25,10 +25,7 @@
 </div>
 <div class="container">
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-    <div style="width:55%;float:left">SIGNAT:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        TUTOR/A&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        VOCAL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        SECRETARI/A</div>
+    <div style="width:55%;float:left">CREAT PER: {{$datosInforme->Responsable->nombre}}&nbsp;&nbsp;&nbsp;</div>
     <div style="width:45%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme->hoy}}</div>
 </div>
 @include('pdf.partials.pie',['document'=>'actaDelegat'])
