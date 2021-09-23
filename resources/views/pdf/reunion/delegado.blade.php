@@ -16,6 +16,7 @@
     <br/>
 </div>
 <div class="container" style="clear: both" >
+        <br/><br/><br/><br/>
         @if (isset($todos[2]))<br/><strong> {{$todos[2]->descripcion}}:</strong>{{strip_tags($todos[2]->resumen)}}@endif
         @if (isset($todos[3]))<br/><strong> {{$todos[3]->descripcion}}:</strong>{{strip_tags($todos[3]->resumen)}}@endif
         @if (isset($todos[4]))<br/><strong>{{$todos[4]->descripcion}}:</strong> {{strip_tags($todos[4]->resumen)}}@endif
