@@ -13,11 +13,12 @@
     <div style="width:55%;float:left"><strong>Tutor:</strong> {{$datosInforme->Responsable->nombre}} {{$datosInforme->Responsable->apellido1}}  {{$datosInforme->Responsable->apellido2}}</div>
     <div style="width:45%;float:right;text-align: right"><strong>Grup:</strong> {{$datosInforme->Xgrupo}}</div>
     <div style="width:55%;float:left;clear:both"><strong>Curs:</strong> {{$datosInforme->curso}}</div>
-    <br/>
+
 </div>
+<br/><br/><br/>
 <div class="container" style="clear: both" >
-        <strong> {{$todos[0]->descripcion}}:</strong>{{strip_tags($todos[0]->resumen)}}
-        <strong> {{$todos[1]->descripcion}}:</strong>{{strip_tags($todos[1]->resumen)}}
+        <br/><strong> {{$todos[0]->descripcion}}:</strong>{{strip_tags($todos[0]->resumen)}}
+        <br/><strong> {{$todos[1]->descripcion}}:</strong>{{strip_tags($todos[1]->resumen)}}
         @if (isset($todos[2]))<br/><strong> {{$todos[2]->descripcion}}:</strong>{{strip_tags($todos[2]->resumen)}}@endif
         @if (isset($todos[3]))<br/><strong> {{$todos[3]->descripcion}}:</strong>{{strip_tags($todos[3]->resumen)}}@endif
         @if (isset($todos[4]))<br/><strong>{{$todos[4]->descripcion}}:</strong> {{strip_tags($todos[4]->resumen)}}@endif
