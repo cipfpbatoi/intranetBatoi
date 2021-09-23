@@ -15,11 +15,9 @@
    <div style="width:55%;float:left"><strong>Curs:</strong> {{$datosInforme->curso}}</div><div style="width:45%;float:right;text-align: right"><strong>{{$todos[0]->descripcion}}:</strong> {{ $todos[0]->resumen }} <strong>{{$todos[1]->descripcion}}:</strong> {{ $todos[1]->resumen }}</div>
     <br/>
 </div>
-<div class="container" >
-    @if (isset($todos[2]))<br/><strong> {{$todos[2]->descripcion}}:</strong> <br/>
-    <pre>{{$todos[2]->resumen}}</pre> @endif
-    @if (isset($todos[3]))<br/><strong>{{$todos[3]->descripcion}}:</strong><br/>
-    <pre>{{$todos[3]->resumen}} @endphp</pre> @endif
+<div class="container" style="clear: left" >
+        @if (isset($todos[2]))<br/><strong> {{$todos[2]->descripcion}}:</strong>{{strip_tags($todos[2]->resumen)}}@endif
+        @if (isset($todos[3]))<br/><strong> {{$todos[3]->descripcion}}:</strong>{{strip_tags($todos[3]->resumen)}}@endif
         @if (isset($todos[4]))<br/><strong>{{$todos[4]->descripcion}}:</strong> {{strip_tags($todos[4]->resumen)}}@endif
         @if (isset($todos[5]))<br/><strong>{{$todos[5]->descripcion}}:</strong> {{strip_tags($todos[5]->resumen)}}@endif
         @if (isset($todos[6]))<br/><strong>{{$todos[6]->descripcion}}:</strong> {{strip_tags($todos[6]->resumen)}}@endif
