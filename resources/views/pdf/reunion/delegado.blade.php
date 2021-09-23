@@ -16,14 +16,14 @@
     <br/>
 </div>
 <div class="container" >
-    @if (isset($todos[2]))<br/> {{$todos[2]->descripcion}}: <br/>
-    <pre>@php echo($todos[2]->resumen) @endphp</pre> @endif
-    @if (isset($todos[3]))<br/>{{$todos[3]->descripcion}}:<br/>
-    <pre>@php echo($todos[3]->resumen) @endphp</pre> @endif
-    @if (isset($todos[4]))<br/>{{$todos[4]->descripcion}}: {{strip_tags($todos[4]->resumen)}}@endif
-    @if (isset($todos[5]))<br/>{{$todos[5]->descripcion}}: {{strip_tags($todos[5]->resumen)}}@endif
-    @if (isset($todos[6]))<br/>{{$todos[6]->descripcion}}: {{strip_tags($todos[6]->resumen)}}@endif
-    @if (isset($todos[7]))<br/>{{$todos[7]->descripcion}}: {{strip_tags($todos[7]->resumen)}}@endif
+    @if (isset($todos[2]))<br/><strong> {{$todos[2]->descripcion}}:</strong> <br/>
+    <pre>{{$todos[2]->resumen}}</pre> @endif
+    @if (isset($todos[3]))<br/><strong>{{$todos[3]->descripcion}}:</strong><br/>
+    <pre>{{$todos[3]->resumen}} @endphp</pre> @endif
+        @if (isset($todos[4]))<br/><strong>{{$todos[4]->descripcion}}:</strong> {{strip_tags($todos[4]->resumen)}}@endif
+        @if (isset($todos[5]))<br/><strong>{{$todos[5]->descripcion}}:</strong> {{strip_tags($todos[5]->resumen)}}@endif
+        @if (isset($todos[6]))<br/><strong>{{$todos[6]->descripcion}}:</strong> {{strip_tags($todos[6]->resumen)}}@endif
+        @if (isset($todos[7]))<br/><strong>{{$todos[7]->descripcion}}:</strong> {{strip_tags($todos[7]->resumen)}}@endif
 </div>
 <div class="container">
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
