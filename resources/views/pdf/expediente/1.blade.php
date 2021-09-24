@@ -8,7 +8,7 @@
             {{$elemento->Alumno->FullName}}<br/>
             {{$elemento->Alumno->domicilio}}<br/>
             {{$elemento->Alumno->codigo_postal}} {{$elemento->Alumno->Poblacion}}<br/>
-            {{$elemento->Alumno->Provincia->nombre}}<br/>
+            {{$elemento->Alumno->Provincia->nombre ?? 'Alacant'}}<br/>
         </div>
         <div class="container" style="width:95%;clear:right;text-align: justify">
             <br/><br/><br/>
