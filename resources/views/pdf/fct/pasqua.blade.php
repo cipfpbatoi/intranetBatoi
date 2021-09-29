@@ -26,10 +26,10 @@
             </div>
             <hr/>
             <div class="container" style="width:95%">
-                <p style="text-indent: 30px;text-align: justify">Durante estas semanas sus centro de Prácticas permanecerán abiertos prestando el mismo
-                    servicio por lo que pueden acudir en su horario habitual, y cumplir con su programa formativo,
+                <p style="text-indent: 30px;text-align: justify">Durante este periodo sus centros de Prácticas permanecen abiertos prestando el mismo
+                    servicio, por lo que los/las alumnos/as pueden acudir en su horario habitual, y cumplir con su programa formativo,
                     con el fin de poder completar la realización de las prácticas en el periodo ordinario.</p>
-                <p style="text-indent: 30px;text-align: justify">Durante estas semanas los/as alumnos/as y el centro podrán contactar de forma telefónica o via e-mail con su tutor/a para resolver cualquier incidencia que pudiera surgir.</p>
+                <p style="text-indent: 30px;text-align: justify">Durante este periodo los/as alumnos/as y el centro podrán contactar de forma telefónica o via e-mail con su tutor/a para resolver cualquier incidencia que pudiera surgir.</p>
                 <p style="text-indent: 30px;text-align: justify">Para que conste a los efectos oportunos,</p>
             </div>
             <div class="container col-lg-6" style='padding-right: 200px;float:right' >
