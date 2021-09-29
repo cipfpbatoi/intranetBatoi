@@ -1,7 +1,11 @@
 @extends('layouts.pdf')
-@section('content')
+@section('header')
     @include('pdf.fct.partials.cabecera')
-    <br/>
+@endsection
+@section('footer')
+    @include('pdf.partials.pie',['document'=>'controlServei'])
+@endsection
+@section('content')
     <table border="1" cellspacing="0" cellpadding="">
         <colgroup><col width="449"/><col width="329"/></colgroup>
         <tr>
@@ -57,7 +61,4 @@
         </tr>
     </table>
 
-@endsection
-@section('footer')
-    @include('pdf.partials.pie',['document'=>'controlServei'])
 @endsection
