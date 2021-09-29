@@ -58,7 +58,6 @@
         </tr>
     </table>
 </body>
-</html>
 @endsection
 @section('footer')
     @include('pdf.partials.pie',['document'=>'controlServei'])
