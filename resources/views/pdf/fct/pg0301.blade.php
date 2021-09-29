@@ -1,6 +1,5 @@
 @extends('layouts.pdf')
 @section('content')
-<body style="max-width:27.59cm;margin-top:1.251cm; margin-bottom:1.251cm; margin-left:1cm; margin-right:1cm; ">
     @include('pdf.fct.partials.cabecera')
     <br/>
     <table border="1" cellspacing="0" cellpadding="">
@@ -57,7 +56,7 @@
             </td>
         </tr>
     </table>
-</body>
+
 @endsection
 @section('footer')
     @include('pdf.partials.pie',['document'=>'controlServei'])
