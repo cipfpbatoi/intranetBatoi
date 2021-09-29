@@ -6,9 +6,5 @@
         <link rel="stylesheet" href="{{public_path('/css/pdf.css')}}" >
         @yield('css')
  </head>
-    <body>
-        <div id='wrapper'>
-            @yield('content')
-        </div>
-    </body>
+    @yield('content')
 </html>
