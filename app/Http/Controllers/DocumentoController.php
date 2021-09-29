@@ -59,12 +59,17 @@ class DocumentoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('documento.edit', ['roles' => config('roles.rol.direccion')]));
     }
 
+
+
     public function store(Request $request, $fct = null)
     {
+        $except = ['nota'];
         if ($request->has('nota') && $this->validate($request,['nota' => 'numeric|min:1|max:10'])) {
             $this->saveNota($request->nota,$fct);
+            if ($request->nota < 5)
+                $except[] = 'fichero'; // no funciona
         }
-        return parent::store(subsRequest($request->duplicate(null, $request->except(['nota'])), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
+        return parent::store(subsRequest($request->duplicate(null,$request->except($except)), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
     }
 
     private function saveNota($nota,$fct){

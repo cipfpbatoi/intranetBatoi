@@ -312,7 +312,7 @@ return array(
             'pr0601' => 'Imprimeix PR06-01 (Entrega Certificat)',
             'pr0402' => 'Imprimeix Entrevista Alumnat',
             'pr0401' => 'Imprimeix Entrevista Final Instructor',
-            'pasqua' => 'Imprimeix Full Vacacions pasqua',
+            'pasqua' => 'Imprimeix Full Vacances',
             'all' => 'Vore tots',
             'only' => 'Vore actius',
             'list' => 'Acta Grupo :quien',

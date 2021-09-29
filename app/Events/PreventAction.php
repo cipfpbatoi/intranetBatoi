@@ -26,23 +26,28 @@ class PreventAction
     public $clau;
     public $autorizados;
 
+    private function creador($model){
+        if (isset($model->dni)) {
+            return $model->dni;
+        }
+        if (isset($model->idProfesor)) {
+            return $model->idProfesor;
+        }
+        if ($model->Creador() != null) {
+            return $model->Creador();
+        }
+    }
+
     public function __construct(Model $model)
     {
-        if (isset($model->dni))
-            $this->clau = $model->dni;
-        else
-            if (isset($model->idProfesor))
-                $this->clau = $model->idProfesor;
-            else 
-                if ($model->Creador()!=null)
-                    $this->clau = $model->Creador();
+        $this->clau = $this->creador($model);
+
         switch (substr(get_class($model), 18)) {
             case 'Incidencia' : $this->autorizados = [config('roles.rol.direccion'), config('roles.rol.mantenimiento')];break;
             case 'TipoIncidencia' : $this->autorizados = [config('roles.rol.direccion'), config('roles.rol.mantenimiento')];break;
             case 'Programacion' :  $this->autorizados = [ config('roles.rol.jefe_dpto')];break;
             default : $this->autorizados = [config('roles.rol.direccion')]; break;
-       
-        }       
+        }
     }
 
     /**

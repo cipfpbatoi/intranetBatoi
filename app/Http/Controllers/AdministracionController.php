@@ -84,8 +84,7 @@ class AdministracionController extends Controller
     }
 
     private function esborrarProgramacions(){
-        Programacion::where('estado', 4)->delete();
-        Programacion::where('curso', '!=', Curso())->update(['estado' => 4]);
+        Programacion::where('curso', '!=', Curso())->delete();
     }
 
     private function esborrarEnquestes(){

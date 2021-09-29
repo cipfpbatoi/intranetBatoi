@@ -146,7 +146,7 @@ return [
     ],
     'pasqua' => [
         'pdf' => ['documento'=> 'PASQUA',
-            'nombre' => 'FCT VACACIONES DE PASQUA',
+            'nombre' => 'FCT VACANCES',
             'orientacion' => 'portrait'
         ],
         'modelo' => 'AlumnoFct',

@@ -16,7 +16,7 @@
             <div class="container" style="width:95%">
                 <p style="text-indent: 30px;text-align: justify">
                     Según Orden 77/2010 en su artículo 14.3, la relación del alumnado que realizará las prácticas formativas
-                    durante el periodo escolar no lectivo de Pascua.
+                    durante periodo escolar no lectivo és:
                 </p>
                 <ul>
                 @foreach ($todos as $alumno)

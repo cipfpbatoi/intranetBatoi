@@ -3,8 +3,6 @@
 namespace Intranet\Listeners;
 
 use Intranet\Events\PreventAction;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Auth;
 use Styde\Html\Facades\Alert;
 
@@ -27,18 +25,27 @@ class BlockAction
      * @param  PreventAction  $event
      * @return void
      */
+
+    private function usuario(){
+        if (auth('profesor')->user()) {
+            return auth()->user()->dni;
+        }
+        if (auth('alumno')->user()) {
+            return auth('alumno')->user()->nia;
+        }
+        return null;
+    }
+
     public function handle(PreventAction $event)
     {
         if ($event->clau){
             if (!UserisAllow($event->autorizados)) {
-                if (auth('profesor')->user()) $usuario = auth()->user()->dni;
-                else if (auth('alumno')->user()) $usuario = auth('alumno')->user()->nia;
-                    else {
-                        Alert::danger(trans('messages.generic.notAllowed'));
-                        return false;
-                    }
+                if (! ($usuario = $this->usuario())) {
+                    Alert::danger(trans('messages.generic.notAllowed'));
+                    return false;
+                }
                 if ($usuario != $event->clau) {
-                     Alert::danger(trans('messages.generic.notAllowed'));
+                    Alert::danger(trans('messages.generic.notAllowed'));
                     return false;
                 }
             }
