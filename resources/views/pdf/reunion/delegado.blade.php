@@ -28,7 +28,7 @@
 </div>
 <div class="container">
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-    <div style="width:55%;float:left">CREAT PER: {{$datosInforme->Responsable->fullNamw}}&nbsp;&nbsp;&nbsp;</div>
+    <div style="width:55%;float:left">CREAT PER: {{$datosInforme->Responsable->fullName}}&nbsp;&nbsp;&nbsp;</div>
     <div style="width:45%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme->hoy}}</div>
 </div>
 @include('pdf.partials.pie',['document'=>'actaDelegat'])
