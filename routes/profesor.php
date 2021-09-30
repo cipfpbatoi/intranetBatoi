@@ -324,6 +324,7 @@ Route::put('/programacion/{programacion}/edit', ['as' => 'programacion.store', '
 Route::post('/programacion/create', ['as' => 'programacion.create', 'uses' => 'ProgramacionController@store']);
 Route::get('/programacion/{programacion}/init', ['as' => 'programacion.init', 'uses' => 'ProgramacionController@init']);
 Route::get('/programacion/{programacion}/email', ['as' => 'programacion.email', 'uses' => 'ProgramacionController@email']);
+Route::get('/programacion/{programacion}/advise', ['as' => 'programacion.advise', 'uses' => 'ProgramacionController@advise']);
 
 //RUTAS TUTORIAS
 Route::resource('/tutoria', 'TutoriaController', ['except' => ['destroy', 'update']]);

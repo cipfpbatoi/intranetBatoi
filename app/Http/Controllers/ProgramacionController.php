@@ -2,6 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Entities\Horario;
+use Intranet\Entities\Modulo_ciclo;
+use Intranet\Entities\Modulo_grupo;
+use Intranet\Entities\Profesor;
 use Intranet\Entities\Programacion;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonPost;
@@ -47,6 +51,34 @@ class ProgramacionController extends IntranetController
     {
         $elemento = Programacion::findOrFail($id);
         return view($this->chooseView('seguimiento'), compact('elemento'));
+    }
+
+
+    public function avisaFaltaEntrega($id)
+    {
+        $modulo = Modulo_grupo::find($id);
+        foreach ($modulo->profesores() as $profesor){
+            $texto = "Et falta per omplir el seguiment de l'avaluacio '" .
+                "' del mòdul '$modulo->Xmodulo' del Grup '$modulo->Xgrupo'";
+            avisa($profesor['idProfesor'], $texto);
+        }
+        Alert::info('Aviss enviat');
+        return back();
+    }
+
+    protected function advise($id){
+        $elemento = Modulo_ciclo::findOrFail($id);
+        if (isset($elemento->Modulo->codigo)){
+            $horario = Horario::where('modulo',$elemento->Modulo->codigo)
+                ->first();
+            if ($horario){
+                avisa($horario->idProfesor, 'Et falta entregar la programacio de '.$elemento->Modulo->vliteral);
+                Alert::danger("El professor ".$horario->Mestre->FullName." del mòdul ".$elemento->Modulo->vliteral." ha estat avisat.");
+            } else {
+                Alert::danger("El mòdul ".$elemento->Modulo->vliteral." no té professor associat.");
+            }
+        }
+        return back();
     }
     
     protected function updateSeguimiento(Request $request,$id){

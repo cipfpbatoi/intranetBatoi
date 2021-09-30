@@ -43,4 +43,9 @@ class PanelControlProgramacionController extends BaseController
             ->get();
     }
 
+    protected function iniBotones()
+    {
+        $this->panel->setBothBoton('programacion.advise',['img' => 'fa-bell', 'where'=>['estado','==',0]]);
+    }
+
 }
