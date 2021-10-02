@@ -9,7 +9,7 @@ Route::get('/comision/{comision}/authorize', ['as' => 'comision.authorize', 'use
 Route::get('/comision/{comision}/unauthorize', ['as' => 'comision.unauthorize', 'uses' => 'ComisionController@resign']);
 Route::get('/comision/{comision}/show', ['as' => 'comision.dir.show', 'uses' => 'ComisionController@show']);
 Route::post('/comision/{comision}/refuse', ['as' => 'comision.refuse', 'uses' => 'ComisionController@refuse']);
-Route::get('/comision/pdf', ['as' => 'comision.pdf', 'uses' => 'ComisionController@imprimir']);
+Route::get('/comision/pdf', ['as' => 'comision.pdf', 'uses' => 'ComisionController@printAutoritzats']);
 Route::get('/comision/autorizar', ['as' => 'comision.autorizar', 'uses' => 'ComisionController@autorizar']);
 Route::get('/comision/paid', ['as' => 'comision.paid', 'uses' => 'ComisionController@payment']);
 
@@ -27,7 +27,7 @@ Route::get('/actividad/{actividad}/authorize', ['as' => 'actividad.authorize', '
 Route::get('/actividad/{actividad}/unauthorize', ['as' => 'actividad.unauthorize', 'uses' => 'ActividadController@resign']);
 Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => 'ActividadController@show']);
 Route::post('/actividad/{actividad}/refuse', ['as' => 'actividad.refuse', 'uses' => 'ActividadController@refuse']);
-Route::get('/actividad/pdf', ['as' => 'actividad.pdf', 'uses' => 'ActividadController@imprimir']);
+Route::get('/actividad/pdf', ['as' => 'actividad.pdf', 'uses' => 'ActividadController@printAutoritzats']);
 Route::get('/actividad/autorizar', ['as' => 'actividad.autorizar', 'uses' => 'ActividadController@autorizar']);
 
 Route::get('/falta', ['as' => 'falta.direccion.index', 'uses' => 'PanelFaltaController@index']);

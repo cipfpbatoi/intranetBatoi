@@ -31,7 +31,6 @@
     </table>
 </div>
 @include('pdf.partials.firmaGen',['title'=>'La direcció MARCARÁ el birret el/s die/s i hor/es indicats','signatura'=>'birret'])
-@include('pdf.partials.pie',['document'=>'comunicacioBirret'])
 @endsection
 
 

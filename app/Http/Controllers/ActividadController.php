@@ -214,7 +214,7 @@ class ActividadController extends ModalController
         foreach ($todos as $alumno){
             $actividad->menores()->attach($alumno->nia,['autorizado' => 0]);
         }
-        return $this->hazPdf('pdf.autorizacionMenores', $todos, $actividad, 'portrait')->stream();
+        return $this->hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait')->stream();
     }
 
     protected function iniBotones()
@@ -237,6 +237,10 @@ class ActividadController extends ModalController
     {
         $this->makeAll(Actividad::where('estado', '1')->get(), 2);
         return back();
+    }
+
+    public function printAutoritzats(){
+        return $this->imprimir('extraescolars');
     }
 
 

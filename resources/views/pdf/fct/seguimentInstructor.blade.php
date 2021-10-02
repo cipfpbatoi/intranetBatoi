@@ -65,7 +65,6 @@
             <table border='1' style="width:350px;height:100px;float:left;margin-bottom: 20px">
                 <tr><td style='text-align: left; vertical-align: top '><strong>Signatura Instructor:</strong></td></tr>
             </table>
-            @include('pdf.partials.pie',['document'=>'seguimentInstructor'])
-        </div>
+       </div>
     @endforeach
 @endsection

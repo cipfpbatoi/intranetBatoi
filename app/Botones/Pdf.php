@@ -14,6 +14,16 @@ use Barryvdh\DomPDF\Facade as DomPDF;
 class Pdf
 {
 
+    private static function pie($informe){
+        $rutaDesglosada = explode('.',$informe);
+        $document = end($rutaDesglosada);
+        $pie = config('footers.'.$document);
+        if (isset($pie)){
+            return  "Codi: ".$pie['codi']."  - Num. edicio: ".$pie['edicio'];
+        }
+        return "";
+    }
+
     public static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
                                   $margin_top= 15,$driver=null){
         $driver = $driver??env('PDF_DRIVER', 'SnappyPdf');
@@ -27,12 +37,15 @@ class Pdf
     protected static function hazSnappyPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
                                      $margin_top= 15)
     {
+        $pie = self::pie($informe);
         $datosInforme = $datosInforme==null?FechaString(null,'ca'):$datosInforme;
         if (is_string($dimensiones)) {
             return(SnappyPDF::loadView($informe, compact('todos', 'datosInforme'))
                 ->setPaper($dimensiones)
                 ->setOrientation($orientacion)
                 ->setOption('margin-top', $margin_top)
+                ->setOption('footer-line',true)
+                ->setOption('footer-right',$pie)
                 ->setOption('enable-external-links' , true));
         }
 

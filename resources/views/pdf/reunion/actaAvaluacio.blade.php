@@ -56,6 +56,5 @@
     </div>
 @endif
 --}}
-@include('pdf.partials.pie',['document'=>'actaAvaluacio'])
 @endsection
 

@@ -23,5 +23,4 @@
         {!! QrCode::size(125)->generate(env('APP_URL','https://intranet.cipfpbatoi.es').'/autorizacion/'.$elemento->nia.'/actividad/'.$datosInforme->id); !!}
     </div>
     @endforeach
-     @include('pdf.partials.pie',['document'=>'autoritzacioMenors'])
 @endsection

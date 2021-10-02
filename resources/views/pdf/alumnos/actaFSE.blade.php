@@ -45,6 +45,5 @@
         </tr>
     </table>
 </div>
-@include('pdf.partials.pie',['document'=>'actaFSE'])
 @endsection
 

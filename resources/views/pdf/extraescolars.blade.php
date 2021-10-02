@@ -54,7 +54,6 @@
     <div style="width:50%;float:left">SIGNAT {{signatura('actividad')}}:</div>
     <div style="width:50%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{ $datosInforme }}</div>
 </div>
-@include('pdf.partials.pie',['document'=>'extraescolars'])
 @endsection
 
 

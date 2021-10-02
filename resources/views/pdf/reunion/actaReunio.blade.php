@@ -15,6 +15,5 @@
 @include('pdf.reunion.partials.punts')
 @include('pdf.reunion.partials.asistents')
 @include('pdf.reunion.partials.signatura')
-@include('pdf.partials.pie',['document'=>'actaReunio'])
 @endsection
 

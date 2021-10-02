@@ -132,7 +132,7 @@ class GrupoController extends IntranetController
      */
     public function fse($grupo)
     {
-        return $this->hazPdf('pdf.alumnos.fse',$this->alumnos($grupo), Grupo::find($grupo) )->stream();
+        return $this->hazPdf('pdf.alumnos.actaFSE',$this->alumnos($grupo), Grupo::find($grupo) )->stream();
     }
 
     /**

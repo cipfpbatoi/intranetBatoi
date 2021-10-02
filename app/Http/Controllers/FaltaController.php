@@ -227,7 +227,7 @@ class FaltaController extends IntranetController
         $desde = new Date($request->desde);
         $hasta = new Date($request->hasta);
         if ($request->mensual != 'on') {
-            return self::hazPdf("pdf.faltas", Falta::where('estado', '>', '0')
+            return self::hazPdf("pdf.comunicacioAbsencia", Falta::where('estado', '>', '0')
                 ->where('estado', '<', '5')
                 ->whereBetween('desde', [$desde, $hasta])
                 ->orWhereBetween('hasta', [$desde, $hasta])

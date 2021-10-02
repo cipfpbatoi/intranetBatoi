@@ -32,7 +32,7 @@ class FaltaItacaController extends IntranetController
         $elementos = self::findElements($request->desde,$request->hasta);
 
         if ($request->mensual != 'on') {
-            return self::hazPdf("pdf.birret", $elementos)->stream();
+            return self::hazPdf("pdf.comunicacioBirret", $elementos)->stream();
         }
 
         self::deleteFile($nomComplet = self::nameFile($request->desde));

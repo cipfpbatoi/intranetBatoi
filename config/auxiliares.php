@@ -13,11 +13,6 @@ return [
     'estadoDocumento' => ['Creado','Pendiente','Autorizado','Impreso'],
     'numeracion' => ['--','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15',30=>'AvaIni',31=>'1Ava',32=>'2Ava',33=>'3Ava',34=>'AvFinal',35=>'AvExtr',21=>'1er Trimestre',22=>'2on Trimestre',23=>'Final'],
     'nombreEval' => [1=>'Primera', 2=> 'Segona', 3=>'Final'],
-    'tipoExpediente' => [   1=>'Baixa Inasistència',
-                            2=>'Pèrdua Avaluació Continua',
-                            4=>"Remisió al departament d'Orientació",
-                            5=>"Part d'amonestació"
-     ],
     'asociacionEmpresa' => [1=>'FCT',2=>'FCT Convalidada/Exempció'],
     'grupoTutoria' => [0=>'Tots el grups',1=>'Grau mitjà',2=>'Grau Superior'],
     'motivoAusencia' => ['Baja médica', 'Licencia por formación', 'Enfermedad común', 'Traslado de domicilio', 'Asistencia pruebas selectivas', 'Enfermedad grave o muerte del cónyuge', 'Asistencia médica, educativa o asistencial', 'Otros (rellenar cuadro de observaciones)'],

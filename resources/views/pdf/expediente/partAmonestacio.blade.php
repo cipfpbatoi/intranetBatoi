@@ -51,7 +51,6 @@
             <li>Explicar la causa per la qual es comet la falta, segons el RRI.</li>
             <li>No podran imposar-se sancions per faltes greus o molt greus, sense la prèvia instrucció d'un expedient.</li>
         </ul>
-        @include('pdf.partials.pie',['document'=>'partAmonestacio'])
     </div>
     @endforeach
 @endsection

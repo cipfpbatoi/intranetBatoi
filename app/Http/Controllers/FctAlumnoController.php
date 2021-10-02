@@ -114,7 +114,7 @@ class FctAlumnoController extends IntranetController
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName
         ];
-        return self::hazPdf('pdf.fct.alumne', [$fct], $dades);
+        return self::hazPdf('pdf.fct.certificatsFCT', [$fct], $dades);
     }
 
     /**

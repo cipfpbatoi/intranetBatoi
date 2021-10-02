@@ -143,6 +143,11 @@ class ComisionController extends ModalController
         return $this->imprimir('payments',4,5,'landscape',false);
     }
 
+    public function printAutoritzats()
+    {
+        return $this->imprimir('comisionsServei');
+    }
+
     /**
      * @param $id
      */

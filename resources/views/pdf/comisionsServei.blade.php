@@ -34,7 +34,6 @@
     </table>
 </div>
 @include('pdf.partials.firmaGen',['title'=>'La direcció AUTORITZA el/s servei/s al/s lloc/s i durant el/s die/s i hor/es indicats amb el mitjà de locomoció assenyalat','signatura'=>'comision'])
-@include('pdf.partials.pie',['document'=>'comisions'])
 @endsection
 
 

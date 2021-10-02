@@ -122,7 +122,7 @@ return [
             'orientacion' => 'portrait'],
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoNoFct',
-        'view' => 'pdf.fct.pg0301',
+        'view' => 'pdf.fct.controlServei',
     ],
     'pr0401' => [
         'pdf' => ['documento'=> 'PR04-01',
@@ -132,7 +132,7 @@ return [
         ],
         'modelo' => 'Fct',
         'finder' => 'Fct',
-        'view' => 'pdf.fct.pr0401',
+        'view' => 'pdf.fct.seguimentInstructor',
     ],
     'pr0402' => [
         'pdf' => ['documento'=> 'PR04-02',
@@ -142,7 +142,7 @@ return [
         ],
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoEnFct',
-        'view' => 'pdf.fct.pr0402',
+        'view' => 'pdf.fct.seguimentAlumnes',
     ],
     'pasqua' => [
         'pdf' => ['documento'=> 'PASQUA',
@@ -151,6 +151,6 @@ return [
         ],
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoEnFct',
-        'view' => 'pdf.fct.pasqua',
+        'view' => 'pdf.fct.fullVacances',
     ]
 ];

@@ -37,5 +37,4 @@
                 <p>Firma / Signatura :</p>
             </div>
         </div>
-        @include('pdf.partials.pie',['document'=>'fullVacances'])
 @endsection

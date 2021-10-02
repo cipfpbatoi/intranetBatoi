@@ -113,8 +113,12 @@ class ExpedienteController extends ModalController
     {
         $expediente = Expediente::find($id);
         $dades[] = $expediente;
-        return self::hazPdf("pdf.expediente.$expediente->tipo",$dades)->stream();
+        $vista = $expediente->TipoExpediente->vista;
+
+        return self::hazPdf("pdf.expediente.$vista",$dades)->stream();
     }
+
+
 
     /**
      * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
@@ -126,7 +130,7 @@ class ExpedienteController extends ModalController
             foreach (TipoExpediente::all() as $tipo) {
                 $todos = $expendientes->where('tipo', $tipo->id);
                 if ($todos->Count()) {
-                    $pdf = $this->hazPdf("pdf.expediente.$tipo->id", $todos);
+                    $pdf = $this->hazPdf("pdf.expediente.$tipo->vista", $todos);
                     $nom = $this->model . new Date() . '.pdf';
                     $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
                     $gestor = new Gestor();

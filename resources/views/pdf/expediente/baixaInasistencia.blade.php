@@ -33,7 +33,6 @@
                 <p>{{signatura('expediente')}}</p>
             </div>
         </div>
-        @include('pdf.partials.pie',['document'=>'baixaInasistencia'])
     </div>
     @endforeach
 @endsection
