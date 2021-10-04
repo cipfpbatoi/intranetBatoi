@@ -2,7 +2,8 @@
 @section('content')
 @include('pdf.partials.cabecera')
 <br/>
-<table class="table table-bordered">
+<div class="container col-lg-12" >
+<table class="table table-bordered ">
     <tr>
         <th><h3>{{$datosInforme->Tipos()->vliteral}}</h3></th>
     </tr>
@@ -10,7 +11,7 @@
         <th><h4>Equip docent del grup "{{$datosInforme->Xgrupo}}" - Curs {{Curso()}}</h4></th>
     </tr>
 </table>
-
+</div>
 <div class="container col-lg-12" >
     <p>Reunits els professors 
     @foreach ($datosInforme->profesores as $key => $profesor)
