@@ -28,8 +28,8 @@
 <div class="container" >
     <ul style='list-style:none'>
         @foreach ($todos as $elemento)
-        <li><strong>{{$elemento->descripcion}}</strong>:</li>
-        <li class="ident">@php echo($elemento->resumen) @endphp</li>
+        <li><strong>{!! $elemento->descripcion !!}}</strong>:</li>
+        <li class="ident">{!! $elemento->resumen !!} @endphp</li>
         @endforeach    
     </ul>
 </div>

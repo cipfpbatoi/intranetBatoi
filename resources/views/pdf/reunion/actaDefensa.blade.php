@@ -9,15 +9,14 @@
 @extends('layouts.pdf')
 @section('content')
 @include('pdf.partials.cabecera')
-<div class="container col-lg-12" >
-<table class="table table-bordered">
+<div class="container" >
+<table class="table table-bordered" style='font-size: large;width: 90%'>
     <tr>
         <th><h4>{{strtoupper($datosInforme->Tipos()->vliteral)}}</h4></th>
     </tr>
     <tr>
         <th>    
-            <h5>CICLE FORMATIU DE GRAU SUPERIOR</h5>
-            <h5>{{$ciclo}}</h5>
+            <h5>CICLE FORMATIU DE GRAU SUPERIOR {{$ciclo}}</h5>
             <h5>Curs {{Curso()}}</h5>
         </th>
     </tr>
@@ -26,15 +25,14 @@
 <div class="container" >
     <table class="table table-bordered" style='font-size: large'>
         <tr><th>Alumne</th>
-            @if ($anterior)<th>Projecte</th><th>Data i Hora</th>@else <th colspan='2'>Projecte - Data i Hora</th>@endif<th>Lloc</th></tr>
+        <th>Projecte - Data i Hora</th>
+        <th>Lloc</th></tr>
+
         @foreach ($all as $index => $elemento)
         <tr><td style='font-size: large'>{{$elemento->descripcion}}</td>
-            @if ($anterior && $persona = $anterior->where('descripcion',trim($elemento->descripcion))->first()) <td>{!! $persona->resumen !!}</td><td>{!! $elemento->resumen !!}</td>
-            @else
-                <td colspan='2'>{!! $elemento->resumen !!}</td>
-            @endif
-            
-            <td style='font-size: 0.8em'>{{$datosInforme->Espacio->descripcion}}</td>
+            <td style='font-size: 0.8em'>{!! $elemento->resumen !!}</td>
+            <td style='font-size: 0.8em'>{{ $datosInforme->Espacio->descripcion }}</td>
+        </tr>
         @endforeach    
     </table>
 </div>
