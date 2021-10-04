@@ -53,5 +53,4 @@
    
         
 </div>
-@include('pdf.partials.pie',['document'=>'actaProyecto'])
 @endsection
