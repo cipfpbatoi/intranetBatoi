@@ -22,6 +22,7 @@ class MyMail
     private $view;
     private $template=null;
     private $attach;
+    private $editable;
 
 
 
@@ -41,7 +42,7 @@ class MyMail
 
     }
 
-    public function __construct($elements=null,$view=null,$features=[],$attach=null)
+    public function __construct($elements=null,$view=null,$features=[],$attach=null,$editable=null)
     {
         $this->features = $features;
         $this->from = !isset($this->features['from'])?AuthUser()->email:$this->from;
@@ -60,7 +61,7 @@ class MyMail
             $this->view = $view;
         }
         $this->attach =$attach;
-
+        $this->editable = $editable;
     }
 
     private function recoveryObjects($elements){

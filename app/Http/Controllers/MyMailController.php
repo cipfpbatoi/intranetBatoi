@@ -31,7 +31,6 @@ class MyMailController extends Controller
             $attach = null;
         }
         $mail = new MyMail($request->to,$request->contenido,$request->toArray(),$attach);
-
         $mail->send();
         return redirect($request->route);
     }
@@ -42,7 +41,7 @@ class MyMailController extends Controller
     public function store(Request $request)
     {
         $colectiu = 'Intranet\\Entities\\'.$request->collect;
-        $mail = new MyMail($colectiu::all());
+        $mail = new MyMail($colectiu::all(),null,[],null,true);
         return $mail->render('\\');
     }
     
