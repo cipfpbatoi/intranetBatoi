@@ -66,8 +66,9 @@ class DocumentoController extends IntranetController
         $except = ['nota'];
         if ($request->has('nota') && $this->validate($request,['nota' => 'numeric|min:1|max:10'])) {
             $this->saveNota($request->nota,$fct);
-            if ($request->nota < 5)
-                $except[] = 'fichero'; // no funciona
+            if ($request->nota < 5){
+                return $this->redirect();
+            }
         }
         return parent::store(subsRequest($request->duplicate(null,$request->except($except)), ['rol' => TipoDocumento::rol($request->tipoDocumento)]));
     }

@@ -69,12 +69,12 @@ class TaskController extends Controller
 
     private function ActAval(){
         $howManyAre = Reunion::Convocante()->Tipo(self::ACTA_AVAL)->Archivada()->count();
-        if ($howManyAre == evaluacion()) {
-                    return 1;
-        } else {
-                    return 0;
-                }
-
+        if ($howManyAre >= evaluacion()) {
+            return 1;
+        } else
+        {
+            return 0;
+        }
     }
 
     private function ActaDel(){
@@ -87,7 +87,7 @@ class TaskController extends Controller
 
     private function InfDept(){
         if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'Acta')
-                ->where('curso', Curso())->where('descripcion','Informe Trimestral')->count()==evaluacion()) {
+                ->where('curso', Curso())->where('descripcion','Informe Trimestral')->count()>=evaluacion()) {
             return 1;
         }
         return 0;

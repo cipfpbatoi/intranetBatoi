@@ -13,4 +13,13 @@ $(function () {
         $('#grupo_id').prop('disabled', true);
     }
     });
+    $('#nota_id').change(function () {
+        var nota = $("#nota_id").val();
+        if (nota < 5){
+            $('#fichero_id').prop('disabled', true);
+        }
+        else {
+            $('#fichero_id').prop('disabled', false);
+        }
+    });
 })

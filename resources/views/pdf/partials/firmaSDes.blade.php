@@ -8,11 +8,11 @@
         <img src="{{public_path('img/pdf/secretari-director.png')}}"  width="800px" /><br/>
     </div>
     <div style="width:35%; float:left; clear: both;margin-right: 100px">
-        <p><strong>{{$datosInforme['secretario']}}</strong></p>
-        <p>@if ($datosInforme['consideracion'] == 'En') SECRETARIO @else SECRETARIA @endif</p>
+        <strong>{{$datosInforme['secretario']}}</strong><br/>
+        @if ($datosInforme['consideracion'] == 'En') SECRETARIO @else SECRETARIA @endif
     </div>
     <div style="width:35%; float:left;margin-left: 150px ">
-        <p><strong>{{$datosInforme['director']}}</strong></p>
-        <p>Conforme {{signatura('certificado')}}</p>
+        <strong>{{$datosInforme['director']}}</strong><br/>
+        Conforme {{signatura('certificado')}}
     </div>
 </div>
