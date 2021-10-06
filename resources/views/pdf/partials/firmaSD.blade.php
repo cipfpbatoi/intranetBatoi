@@ -4,15 +4,15 @@
 
     <p>{{$datosInforme['poblacion']}}, {{$datosInforme['date']}} </p>
     <br/><br/>
-    <div style="width:40%; float:left; margin-left: 12%; ">
-        <img src="{{public_path('img/pdf/secretari-director.png')}}"  /><br/>
+    <div style="width:40%; float:left;  ">
+        <img src="{{public_path('img/pdf/secretari-director.png')}}"  width="800px" /><br/>
     </div>
-    <div style="width:35%; float:left; clear: both;margin-left: 6%">
-        <p><strong>{{$datosInforme['secretario']}}</strong></p>
-        <p>@if ($datosInforme['consideracion'] == 'En') SECRETARI @else SECRETARIA @endif</p>
+    <div style="width:35%; float:left; clear: both;margin-right: 100px">
+        <strong>{{$datosInforme['secretario']}}</strong><br/>
+        @if ($datosInforme['consideracion'] == 'En') SECRETARI @else SECRETARIA @endif
     </div>
-    <div style="width:35%; float:left;margin-left: 15% ">
-        <p><strong>{{$datosInforme['director']}}</strong></p>
-        <p>Vist-i-plau {{signatura('certificado')}}</p>
+    <div style="width:35%; float:left;margin-left: 150px ">
+        <strong>{{$datosInforme['director']}}</strong><br/>
+        Vist-i-plau {{signatura('certificado')}}
     </div>
 </div>
