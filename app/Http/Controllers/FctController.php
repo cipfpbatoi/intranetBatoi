@@ -147,7 +147,7 @@ class FctController extends IntranetController
             'horas' => $horas
         ];
 
-        return self::hazPdf('pdf.fct.instructors', $fct, $dades);
+        return self::hazPdf('pdf.fct.certificatInstructor', $fct, $dades);
     }
 
 
