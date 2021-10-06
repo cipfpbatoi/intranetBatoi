@@ -26,8 +26,8 @@
             <col style="width: 35%">
             <col style="width: 50%">
         </colgroup>
-        <tr><td style="font-size:20px;text-align: left">Nom del cicle </td><td style="font-size:20px;text-align: left" ><strong>{{$datosInforme->Ciclo->ciclo}}</strong></td><td style="font-size:20px;text-align: left">Grau: <strong>{{$datosInforme->Ciclo->tipo==1?'Mitjà':($datosInforme->Ciclo->tipo==2?'Superior':'Bàsic')}}</strong> </td></tr>
-        <tr><td style="font-size:20px;text-align: left">Curs/Grup</td><td  style="font-size:20px;text-align: left"><strong>{{$datosInforme->nombre}}</strong></td><td  style="font-size:20px;text-align: left">Data:</td></tr>
+        <tr><td style="font-size:20px;text-align: left">Nom del cicle </td><td style="font-size:20px;text-align: left" ><strong>{{$datosInforme->Ciclo->vliteral}}</strong></td><td style="font-size:20px;text-align: left">Grau: <strong>{{$datosInforme->Ciclo->tipo==1?'Mitjà':($datosInforme->Ciclo->tipo==2?'Superior':'Bàsic')}}</strong> </td></tr>
+        <tr><td style="font-size:20px;text-align: left">Curs/Grup</td><td  style="font-size:20px;text-align: left"><strong>{{$datosInforme->nombre}}</strong></td><td  style="font-size:20px;text-align: left">Data:<strong> {{Hoy('d/m/Y')}} </strong></td></tr>
         <tr><td style="font-size:20px;text-align: left">Tutor/a</td><td  style="font-size:20px;text-align: left"><strong>{{$datosInforme->Tutor->FullName}}</strong></td><td  style="font-size:20px;text-align: left">Signatura:<br/><br/><br/><br/></td></tr>
     </table>   
     <p style="font-size: 20px">S'ha facilitat la informació sobre el cofinançament del Fons Social Europeu dels cicles de FP GM i GS
