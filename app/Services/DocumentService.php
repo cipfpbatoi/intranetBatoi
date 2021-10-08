@@ -45,8 +45,7 @@ class DocumentService
         } else {
             $contenido = view($this->document->template, compact('elemento'));
         }
-
-        $mail = new MyMail($this->elements, $contenido,$this->document->email );
+        $mail = new MyMail($this->elements, $contenido,$this->document->email,null,$this->document->email['editable'] );
         return $mail->render('misColaboraciones');
     }
 
