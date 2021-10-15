@@ -150,13 +150,13 @@ use traitAutorizar,
 
     public function carnet($profesor)
     {
-        return $this->hazPdf('pdf.carnet', Profesor::where('dni',$profesor)->get(), [Date::now()->format('Y'), 'Professor - Teacher'], 'portrait', [85.6, 53.98])->stream();
+        return $this->hazPdf('pdf.carnet', Profesor::where('dni',$profesor)->get(), [Date::now()->format('Y'), 'Professorat - Teacher'], 'portrait', [85.6, 53.98])->stream();
     }
 
     public function tarjeta($profesor)
     {
         $profesor = Profesor::findOrFail($profesor);
-        $cargo = 'Professor';
+        $cargo = 'Professorat';
         if (esRol($profesor->rol, config('roles.rol.direccion'))) {
             switch ($profesor->dni) {
                 case config('contacto.director'): $cargo = 'Director';
@@ -169,10 +169,10 @@ use traitAutorizar,
                     break;
                 case config('contacto.jefeEstudios2'): $cargo = "Cap d'Estudis";
                     break;
-                default: $cargo = 'Professor';
+                default: $cargo = 'Professorat';
             }
         }
-        if ($cargo == 'Professor' && esRol($profesor->rol, config('roles.rol.tutor'))) {
+        if ($cargo == 'Professorat' && esRol($profesor->rol, config('roles.rol.tutor'))) {
             $cargo .= ' - Tutor';
         }
         return $this->hazPdf('pdf.tarjeta', $profesor,  $cargo, 'portrait','a4',2)->stream();
