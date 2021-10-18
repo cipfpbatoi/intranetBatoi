@@ -199,9 +199,6 @@ class ActividadController extends ModalController
 
         $grups = [];
         $actividad = Actividad::findOrFail($id);
-        if ($actividad->menores()->count()) {
-            return view('actividad.autorizados', compact('actividad'));
-        }
         $grups = hazArray(ActividadGrupo::select('idGrupo')->where('idActividad', '=', $id)->get(),'idGrupo');
         $todos = Alumno::join('alumnos_grupos', 'idAlumno', '=', 'nia')
                 ->select('alumnos.*', 'idGrupo')
@@ -211,10 +208,21 @@ class ActividadController extends ModalController
                 ->orderBy('apellido1')
                 ->orderBy('apellido2')
                 ->get();
-        foreach ($todos as $alumno){
-            $actividad->menores()->attach($alumno->nia,['autorizado' => 0]);
+        if ($actividad->menores()->count()==0){
+            foreach ($todos as $alumno){
+                $actividad->menores()->attach($alumno->nia,['autorizado' => 0]);
+            }
         }
         return $this->hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait')->stream();
+    }
+
+    public function autorize($id){
+        $actividad = Actividad::findOrFail($id);
+        if ($actividad->menores()->count()) {
+            return view('actividad.autorizados', compact('actividad'));
+        }
+        Alert::danger('No has imprés cap autorització');
+        return back();
     }
 
     protected function iniBotones()
@@ -227,6 +235,7 @@ class ActividadController extends ModalController
         $this->panel->setBothBoton('actividad.notification', ['where' => ['estado', '>', '0', 'estado', '<', '3', 'coord', '==', '1']]);
         $this->panel->setBothBoton('actividad.autorizacion', ['where' => ['estado', '>', '0','estado','<','4']]);
         $this->panel->setBothBoton('actividad.valoracion', ['where' => ['estado', '==', '4']]);
+        $this->panel->setBoton('grid',new BotonImg('actividad.autorize', ['img'=>'fa-filter','where' => ['estado', '>', '0','estado','<','3']]));
         $this->panel->setBoton('grid',new BotonImg('actividad.value', ['img'=>'fa-eyedropper','where' => ['estado', '>=', '3']]));
         $this->panel->setBoton('grid', new BotonImg('actividad.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('profile', new BotonIcon('actividad.delete', ['class' => 'btn-danger', 'where' => ['estado', '<', '2']]));

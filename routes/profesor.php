@@ -28,6 +28,7 @@ Route::get('/actividad/{actividad}/init', ['as' => 'actividad.init', 'uses' => '
 Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => 'ActividadController@show']);
 Route::get('/actividad/{actividad}/notification', ['as' => 'actividad.notificar', 'uses' => 'ActividadController@notify']);
 Route::get('/actividad/{actividad}/autorizacion', ['as' => 'actividad.autorizacion', 'uses' => 'ActividadController@autorizacion']);
+Route::get('/actividad/{actividad}/autorize', ['as' => 'actividad.autorize', 'uses' => 'ActividadController@autorize']);
 Route::get('/actividad/{actividad}/ics', ['as' => 'actividad.ics', 'uses' => 'ActividadController@i_c_s']);
 Route::get('/actividadOrientacion', ['as' => 'actividad.orientacion', 'uses' => 'PanelActividadOrientacionController@index']);
 Route::get('/actividadorientacion/create', ['as' => 'actividad.createOrientacion', 'uses' => 'PanelActividadOrientacionController@create']);
