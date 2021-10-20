@@ -85,7 +85,6 @@ $(function () {
            formModal.attr('action',href);
         }
         $('#create').modal('show');
-        
     }
 })
 

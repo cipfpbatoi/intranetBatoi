@@ -77,10 +77,10 @@ class Gestor
             if ($this->isFile === false) {
                 return redirect($this->link);
             }
-            Alert::danger(trans("messages.generic.nodocument"));
+            Alert::warning(trans("messages.generic.nodocument"));
 
         } else {
-            Alert::danger('Sense Permisos');
+            Alert::warning('Sense Permisos');
         }
         return back();
     }
