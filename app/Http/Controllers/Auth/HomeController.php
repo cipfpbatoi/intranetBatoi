@@ -60,7 +60,7 @@ abstract class HomeController extends Controller
                     ->where('estado','>',1)
                     ->where('fueraCentro', '=', 1)
                     ->get();
-                $comisiones = Cache::remember('comisionesHui',now()->addHours(12),function(){
+                $comisiones = Cache::remember('comisionesHui',now()->addHours(6),function(){
                    return(Comision::with('profesor')->Dia(Hoy())->get());
                 });
 
