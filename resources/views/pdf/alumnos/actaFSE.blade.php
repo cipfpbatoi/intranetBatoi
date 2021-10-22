@@ -1,10 +1,6 @@
 @extends('layouts.pdf')
 @section('content')
-@if ($datosInforme->Ciclo->tipo != 3)
-    @include('pdf.partials.cabecera')
-@else
-    @include('pdf.partials.cabeceraBasica')
-@endif
+@include('pdf.partials.cabeceraFSE')
 <div class="container" >
     <p><strong>COMUNICACIÓ A l'ALUMNAT SOBRE EL COFINANÇAMENT PEL FONS SOCIAL
         EUROPEU DE LA FORMACIÓ PROFESSIONAL GM I GS I BÀSICA
