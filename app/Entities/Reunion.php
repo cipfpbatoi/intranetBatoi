@@ -214,6 +214,7 @@ class Reunion extends Model
     {
         return Grupo::QTutor($this->idProfesor)->count()?Grupo::QTutor($this->idProfesor)->first()->Ciclo->ciclo:'';   
     }
+
     public function getXtipoAttribute(){
         $tr = $this->Tipos();
         return App::getLocale(session('lang')) == 'es'?$tr->cliteral:$tr->vliteral;
