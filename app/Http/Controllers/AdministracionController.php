@@ -222,12 +222,7 @@ class AdministracionController extends Controller
          */
 
     }
-    public static function v2_02(){
-        Alert::info('Version 2.02');
-    }
-    public static function v2_03(){
-        Alert::info('Version 2.03');
-    }
+
 
     public static function v2_04(){
         $menu = new Menu();
