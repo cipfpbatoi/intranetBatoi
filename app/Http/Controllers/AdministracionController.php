@@ -15,6 +15,7 @@ use Intranet\Entities\Documento;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\Menu;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
@@ -29,6 +30,7 @@ use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Menu;
 
 
 /**
