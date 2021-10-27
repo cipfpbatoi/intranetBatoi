@@ -30,7 +30,6 @@ use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Fct;
-use Intranet\Entities\Menu;
 
 
 /**
@@ -227,7 +226,7 @@ class AdministracionController extends Controller
 
 
     public static function v2_04(){
-        $menu = new Menu();
+        $menu =
         $menu->nombre = 'importaEmail';
         $menu->url = '/importEmail';
         $menu->rol = 11;
