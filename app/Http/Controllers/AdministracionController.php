@@ -207,6 +207,9 @@ class AdministracionController extends Controller
     public static function v2_01(){
         // partxe per actualitzar professors sense token
 
+        Alert::info('Version 2.01');
+
+        /*
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
         $profesores = Profesor::where('api_token','')->get();
 
@@ -216,7 +219,26 @@ class AdministracionController extends Controller
             dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
 
         }
+         */
 
+    }
+    public static function v2_02(){
+        Alert::info('Version 2.02');
+    }
+    public static function v2_03(){
+        Alert::info('Version 2.03');
+    }
+
+    public static function v2_04(){
+        $menu = new Menu();
+        $menu->nombre = 'importaEmail';
+        $menu->url = '/importEmail';
+        $menu->rol = 11;
+        $menu->menu = 'general';
+        $menu->submenu = 'administracion';
+        $menu->activo = 1;
+        $menu->orden = 9;
+        $menu->save();
     }
 
     public function importaAnexoI(){

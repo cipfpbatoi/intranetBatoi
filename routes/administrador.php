@@ -15,6 +15,8 @@ Route::get('/import', ['as' => 'import.create', 'uses' => 'ImportController@crea
 Route::post('/import', ['as' => 'import.store', 'uses' => 'ImportController@store']);
 Route::get('/teacherImport', ['as' => 'teacherImport.create', 'uses' => 'TeacherImportController@create']);
 Route::post('/teacherImport', ['as' => 'teacherImport.store', 'uses' => 'TeacherImportController@store']);
+Route::get('/importEmail', ['as' => 'importEmail.create', 'uses' => 'ImportEmailController@create']);
+Route::post('/importEmail', ['as' => 'importEmail.store', 'uses' => 'ImportEmailController@store']);
 
 //manteniment taula mòduls
 Route::resource('/modulo', 'ModuloController', ['except' => ['destroy', 'update', 'show']]);
