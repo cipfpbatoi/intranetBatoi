@@ -279,6 +279,7 @@ return array(
         'Poll' => 'Enquestes',
         'Ppoll' => 'Plantilla per enquesta',
         'Importaprofesor' => 'Importa Professor',
+        'Importaemail' => 'Importa Emails Corporatius',
         'Tipoincidencias' => "Tipus d'incidències",
         'Paper' => 'Tràmits',
         'Qualitat' => 'Qualitat',

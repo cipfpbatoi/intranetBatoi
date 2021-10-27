@@ -272,6 +272,7 @@ return array(
         'Poll' => 'Encuestas',
         'Ppoll' => 'Plantilla para encuestas',
         'Importaprofesor' => 'Importa Profesor',
+        'Importaemail' => 'Importa Emails Corporativos',
         'Tipoincidencias' => "Tipos de incidencias",
         'Paper' => 'Tramites',
         'Qualitat' => 'Calidad',

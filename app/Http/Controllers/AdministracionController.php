@@ -226,8 +226,8 @@ class AdministracionController extends Controller
 
 
     public static function v2_04(){
-        $menu =
-        $menu->nombre = 'importaEmail';
+        $menu = new Menu([]);
+        $menu->nombre = 'importaemail';
         $menu->url = '/importEmail';
         $menu->rol = 11;
         $menu->menu = 'general';
