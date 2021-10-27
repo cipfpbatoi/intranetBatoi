@@ -210,7 +210,7 @@ return array(
                 'orden' => 'Orden',
                 'resumen' => 'Resumen',
                 'idDocumento' => 'Doc.',
-                'ciclo' => 'Ciclo',
+                'ciclo' => 'Ciclo/Nivel',
                 'itinerario' => 'intinerario',
                 'contacto' => 'Persona contacto',
                 'tutor' => 'Tutor',

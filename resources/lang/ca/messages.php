@@ -249,7 +249,7 @@ return array(
         'Controlreunion' => 'Reunions',
         'Control' => 'Llistats de Control',
         'Controlsegui' => 'Seguiments',
-        'Cicle' => 'Manteniment cicles',
+        'Cicle' => 'Manteniment cicles/nivells',
         'Practicas' => 'Pràctiques',
         'Colaboracion' => 'Colaboracions Departament',
         'Horarios' => 'Llistat Horaris',

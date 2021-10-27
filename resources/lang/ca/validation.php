@@ -211,7 +211,7 @@ return array(
                 'orden' => 'Ordre',
                 'resumen' => 'Resumen',
                 'idDocumento' => 'Doc.',
-                'ciclo' => 'Cicle',
+                'ciclo' => 'Cicle / Nivell',
                 'contacto' => 'Persona contacte',
                 'tutor' => 'Tutor',
                 'puestos' => 'Llocs',
