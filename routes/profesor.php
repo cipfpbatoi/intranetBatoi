@@ -162,7 +162,7 @@ Route::get('/falta/{falta}/notification', ['as' => 'falta.notificar', 'uses' => 
 Route::get('/falta/{falta}/show', ['as' => 'falta.show', 'uses' => 'FaltaController@show']);
 Route::get('/falta/{falta}/document', ['as' => 'falta.document', 'uses' => 'FaltaController@document']);
 
-Route::resource('/expediente', 'ExpedienteController', ['except' => ['destroy', 'update', 'show']]);
+Route::resource('/expediente', 'ExpedienteController', ['except' => ['destroy', 'update']]);
 Route::get('/expediente/{expediente}/delete', ['as' => 'expediente.destroy', 'uses' => 'ExpedienteController@destroy']);
 Route::post('/expediente/create', ['as' => 'expediente.store', 'uses' => 'ExpedienteController@store']);
 Route::put('/expediente/{expediente}/edit', ['as' => 'expediente.update', 'uses' => 'ExpedienteController@update']);
