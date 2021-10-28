@@ -149,6 +149,18 @@ class ExpedienteController extends ModalController
         }
     }
 
+    /*
+    * show($id) return vista
+    * busca en model de dades i el mostra amb vista show
+    */
+
+    public function show($id)
+    {
+        $elemento = Expediente::findOrFail($id);
+        $modelo = $this->model;
+        return view($this->chooseView('show'), compact('elemento', 'modelo'));
+    }
+
 
     
 }
