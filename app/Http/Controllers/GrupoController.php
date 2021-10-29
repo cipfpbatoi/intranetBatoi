@@ -200,7 +200,7 @@ class GrupoController extends IntranetController
      * @param $grupo
      * @return mixed
      */
-    private function alumnos($grupo){
+    private static function alumnos($grupo){
         return Alumno::QGrupo($grupo)
                 ->OrderBy('apellido1')
                 ->OrderBy('apellido2')
