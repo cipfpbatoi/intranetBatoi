@@ -158,7 +158,7 @@ class ExpedienteController extends ModalController
     {
         $elemento = Expediente::findOrFail($id);
         $modelo = $this->model;
-        return view('intranet.show', compact('elemento', 'modelo'));
+        return view('expediente.show', compact('elemento', 'modelo'));
     }
 
 
