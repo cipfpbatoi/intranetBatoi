@@ -16,17 +16,6 @@ class Expediente extends Model
 
     public $timestamps = false;
 
-    protected $visible = [
-        'id',
-        'tipo',
-        'idModulo',
-        'idAlumno',
-        'idProfesor',
-        'estado',
-        'fecha',
-        'fechasolucion',
-        'explicacion',
-    ];
 
     protected $fillable = [
         'tipo',
