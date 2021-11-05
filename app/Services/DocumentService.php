@@ -38,7 +38,6 @@ class DocumentService
 
     private function mail(){
         $elemento = $this->elements->first();
-
         if (!$this->document->email['editable']) {
             $contenido['view'] = view($this->document->template, compact('elemento'));
             $contenido['template'] = $this->document->template;
