@@ -141,7 +141,7 @@ class GrupoController extends IntranetController
      */
     public function carnet($grupo)
     {
-        return $this->hazPdf('pdf.carnet', $this->alumnos($grupo), [Date::now()->format('Y'), 'Alumnes - Student'], 'portrait', [85.6, 53.98])->stream();
+        return $this->hazPdf('pdf.carnet', $this->alumnos($grupo), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
     /**
