@@ -12,6 +12,7 @@
                     <li><i class="fa fa-user"></i> {{$elemento->Alumno->nombre}} {{$elemento->Alumno->apellido1}} {{$elemento->Alumno->apellido2}}</li>
                     <li><i class="fa fa-user-plus"></i> {{$elemento->Profesor->nombre}} {{$elemento->Profesor->apellido1}} {{$elemento->Profesor->apellido2}}</li>
                 </ul>
+                <h6>{{$elemento->Modulo->literal??''}} - {{ $elemento->Alumno->Grupo->first()->codigo??''}})</h6>
             </div>
         </div>
         <div class="col-xs-12 bottom text-center">
