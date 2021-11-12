@@ -29,7 +29,7 @@
     <ul style='list-style:none'>
         @foreach ($todos as $elemento)
         <li><strong>{!! $elemento->descripcion !!}}</strong>:</li>
-        <li class="ident">{!! $elemento->resumen !!} @endphp</li>
+        <li class="ident">{!! $elemento->resumen !!}</li>
         @endforeach    
     </ul>
 </div>
