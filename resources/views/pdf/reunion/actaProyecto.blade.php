@@ -28,7 +28,7 @@
 <div class="container" >
     <ul style='list-style:none'>
         @foreach ($todos as $elemento)
-        <li><strong>{!! $elemento->descripcion !!}}</strong>:</li>
+        <li><strong>{!! $elemento->descripcion !!}</strong>:</li>
         <li class="ident">{!! $elemento->resumen !!}</li>
         @endforeach    
     </ul>

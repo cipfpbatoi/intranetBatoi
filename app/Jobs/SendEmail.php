@@ -36,7 +36,6 @@ class SendEmail implements ShouldQueue
         $this->vista = $vista;
         $this->elemento = $elemento;
         $this->attach = $attach;
-        
     }
 
     /**
