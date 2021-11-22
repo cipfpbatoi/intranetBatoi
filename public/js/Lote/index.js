@@ -47,6 +47,7 @@ var options = {};
         columns: [
             { data:'registre'},
             { data:'proveedor'},
+            { data:'factura'},
             {
                 data: null, render: function (data) {
                     if (data.procedencia)
@@ -144,10 +145,12 @@ $(function () {
             $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
             var $registre = $(this).parent().siblings().first();
             var $proveedor = $(this).parent().siblings().eq(1);
-            var $origen = $(this).parent().siblings().eq(2);
-            var $fechaAlta = $(this).parent().siblings().eq(4);
+            var $factura = $(this).parent().siblings().eq(2);
+            var $origen = $(this).parent().siblings().eq(3);
+            var $fechaAlta = $(this).parent().siblings().eq(5);
             let dlgControls=[
                 {id: "Registre", type: "text", val:$registre.text()},
+                {id: "Factura", type: "text", val:$factura.text()},
                 {id: "Proveedor", type: "text", val: $proveedor.text()},
                 {id: "Origen", type: "select"},
                 {id: "FechaAlta", type: "text", val: $fechaAlta.text()},
@@ -161,6 +164,7 @@ $(function () {
                     url: "/api/lote/"+$registre.text(),
                     data: {
                         registre: $("#registre").val(),
+                        factura: $("#factura").val(),
                         proveedor: $("#proveedor").val(),
                         procedencia: $("#origen").val(),
                         fechaAlta: $("#fechaalta").val(),
@@ -169,6 +173,7 @@ $(function () {
                 }).then(function (res) {
                     $registre.text($("#registre").val());
                     $proveedor.text($("#proveedor").val());
+                    $factura.text($("#factura").val());
                     $origen.text(PROCEDENCIAS[$("#origen").val()]);
                     $fechaAlta.text($("#fechaalta").val());
                     console.log(res)

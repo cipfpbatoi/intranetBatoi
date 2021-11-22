@@ -16,6 +16,7 @@ class LoteResource extends JsonResource
     {
         return [
             'registre' => $this->registre,
+            'factura' => $this->factura,
             'procedencia' => $this->procedencia,
             'proveedor' => $this->proveedor,
             'fechaAlta' => $this->fechaAlta,

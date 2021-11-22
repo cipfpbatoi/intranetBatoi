@@ -12,7 +12,7 @@ class Lote extends Model
     protected $primaryKey = 'registre';
     protected $keyType = 'string';
     public $timestamps = false;
-    protected $fillable = ['registre',  'proveedor','procedencia','fechaAlta' ];
+    protected $fillable = ['registre',  'proveedor','factura','procedencia','fechaAlta' ];
 
     use BatoiModels;
 
