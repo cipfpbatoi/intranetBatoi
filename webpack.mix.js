@@ -47,6 +47,7 @@ mix.combine([
 
     //Now lets add the custom css
     vendors+'nprogress/nprogress.css',
+    vendors+'dropzone/dist/min/dropzone.min.css',
     gentelella+'build/css/custom.min.css',//this is the default from gentelella
     'resources/assets/css/mycustom.css' //All your custom css can go here
 
@@ -89,6 +90,8 @@ mix.combine([
     vendors+'morris.js/morris.min.js',
     vendors+'raphael/raphael.min.js',
     vendors+'ion.rangeSlider/js/ion.rangeSlider.min.js',
+    // upload files
+    vendors+'dropzone/dist/min/dropzone.min.js',
 
     //lets add custom scripts
     'resources/assets/js/custom.js',//this default from gentelella

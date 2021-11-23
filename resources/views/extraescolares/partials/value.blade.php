@@ -1,5 +1,5 @@
 <div class="valueContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
-    <form method="POST" class="agua" action="/actividad/{!!$Actividad->id!!}">
+    <form method="POST" action="/actividad/{!!$Actividad->id!!}">
         @csrf
         @method('PATCH')
         {!! Field::textarea('desenvolupament',$Actividad->desenvolupament) !!}

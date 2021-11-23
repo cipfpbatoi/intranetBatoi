@@ -213,13 +213,18 @@ class ActividadController extends ModalController
                 $actividad->menores()->attach($alumno->nia,['autorizado' => 0]);
             }
         }
-        return $this->hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait')->stream();
+        if ($todos->count()){
+            $pdf = $this->hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait');
+            return $pdf->stream();
+        }
+        Alert::info('No hi han menors');
+        return back();
     }
 
     public function autorize($id){
         $actividad = Actividad::findOrFail($id);
         if ($actividad->menores()->count()) {
-            return view('actividad.autorizados', compact('actividad'));
+            return view('extraescolares.autorizados', compact('actividad'));
         }
         Alert::danger('No has imprés cap autorització');
         return back();
@@ -227,16 +232,15 @@ class ActividadController extends ModalController
 
     protected function iniBotones()
     {
-
         $this->panel->setBotonera(['create']);
         $this->panel->setBothBoton('actividad.detalle', ['where' => ['estado', '<', '2']]);
         $this->panel->setBothBoton('actividad.edit', ['where' => ['estado', '<', '2']]);
         $this->panel->setBothBoton('actividad.init', ['where' => ['estado', '==', '0']]);
-        $this->panel->setBothBoton('actividad.notification', ['where' => ['estado', '>', '0', 'estado', '<', '3', 'coord', '==', '1']]);
-        $this->panel->setBothBoton('actividad.autorizacion', ['where' => ['estado', '>', '0','estado','<','4']]);
-        $this->panel->setBothBoton('actividad.valoracion', ['where' => ['estado', '==', '4']]);
-        $this->panel->setBoton('grid',new BotonImg('actividad.autorize', ['img'=>'fa-filter','where' => ['estado', '>', '0','estado','<','3']]));
-        $this->panel->setBoton('grid',new BotonImg('actividad.value', ['img'=>'fa-eyedropper','where' => ['estado', '>=', '3']]));
+        $this->panel->setBothBoton('actividad.notification', ['where' => ['estado', '>', '0', 'estado', '<', '4', 'coord', '==', '1','desde','posterior',Hoy()]]);
+        $this->panel->setBothBoton('actividad.autorizacion', ['where' => ['estado', '>', '0','estado','<','4','desde','posterior',Hoy()]]);
+        $this->panel->setBothBoton('actividad.valoracion', ['where' => ['estado', '==', '4','hasta','anterior',Hoy()]]);
+        $this->panel->setBoton('grid',new BotonImg('actividad.autorize', ['img'=>'fa-filter','where' => ['estado', '>', '0','estado','<=','3','desde','posterior',Hoy()]]));
+        $this->panel->setBoton('grid',new BotonImg('actividad.value', ['img'=>'fa-eyedropper','where' => ['estado', '>=', '3','hasta','anterior',Hoy()]]));
         $this->panel->setBoton('grid', new BotonImg('actividad.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('profile', new BotonIcon('actividad.delete', ['class' => 'btn-danger', 'where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Date::yesterday()]]));
@@ -266,7 +270,7 @@ class ActividadController extends ModalController
             $autorizado = 1;
         }
         $actividad->menores()->updateExistingPivot($nia,['autorizado' => $autorizado]);
-        return view('actividad.autorizados',compact('actividad'));
+        return view('extraescolares.autorizados',compact('actividad'));
     }
 
 }

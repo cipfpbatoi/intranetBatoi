@@ -97,6 +97,7 @@ trait traitImprimir
     protected static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
                                      $margin_top= 15)
     {
+
         return PDF::hazPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones , $margin_top );
     }
 

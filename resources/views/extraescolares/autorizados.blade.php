@@ -13,9 +13,9 @@
                     <td>{!! $menor->Fullname !!}</td>
                     <td>
                         @if (!$menor->pivot->autorizado)
-                            <a href="/autorizacion/{!!$menor->nia!!}/actividad/{!! $actividad->id !!}" class="delGrupo">{!! Html::image('img/unauthorized.jpeg',trans("messages.buttons.autorizacion"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.authorize"))) !!}</a>
+                            <a href="/autorizacion/{!!$menor->nia!!}/actividad/{!! $actividad->id !!}" class="delGrupo">{!! Html::image('img/unauthorized.png',trans("messages.buttons.autorizacion"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.authorize"))) !!}</a>
                         @else
-                            <a href="/autorizacion/{!!$menor->nia!!}/actividad/{!! $actividad->id !!}" class="delGrupo">{!! Html::image('img/actividad.png',trans("messages.buttons.unauthorize"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.unauthorize"))) !!}</a>
+                            <a href="/autorizacion/{!!$menor->nia!!}/actividad/{!! $actividad->id !!}" class="delGrupo">{!! Html::image('img/check.jpeg',trans("messages.buttons.unauthorize"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.unauthorize"))) !!}</a>
                         @endif
                     </td>
                 </tr>

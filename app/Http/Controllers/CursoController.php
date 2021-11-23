@@ -85,8 +85,8 @@ class CursoController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('curso.active',['where'=>['archivada','==',0]]));
         $this->panel->setBoton('grid',new BotonImg('curso.saveFile',
               ['where' => ['fecha_fin','anterior',Hoy(),'activo', '==', 0,'archivada','==',0]]));
-        $this->panel->setBoton('grid',new BotonImg('curso.show',
-            ['where' => ['archivada','==',1]]));
+        $this->panel->setBoton('grid',new BotonImg('curso.shows',
+            ['img' => 'fa-file-pdf-o','where' => ['archivada','==',1]]));
     }
 
     /**
@@ -124,11 +124,21 @@ class CursoController extends ModalController
             $curso->fichero = $nomComplet;
             if (!file_exists(storage_path('/app/' . $nomComplet))){
                 self::hazPdf('pdf.alumnos.manipuladores',$curso->Asistentes, $curso)->save(storage_path('/app/' . $nomComplet));
-
             }
 
         }
         return $curso;
+    }
+
+
+    public function document($id)
+    {
+        $elemento = Curso::findOrFail($id);
+        if ($elemento->link) {
+            return response()->file(storage_path('app/' . $elemento->fichero));
+        }
+        Alert::danger(trans("messages.generic.nodocument"));
+        return back();
     }
 
     /**

@@ -95,6 +95,7 @@ return array(
             'create' => 'Alta actividad',
             'createO' => 'Alta activitat Orientació',
             'autorizacion' => 'Imprimir Autorización menores',
+            'autorize' => "Control Autoritzaciones",
             'valoracion' => 'Imprimir Valoración',
             'edit' => 'Modificar Actividad extraescolar',
             'detalle' => 'Detalle actividad',

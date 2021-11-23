@@ -66,7 +66,5 @@ class Pdf
             return(DomPDF::loadView($informe, compact('todos', 'datosInforme'))
                 ->setPaper($dimensiones,$orientacion));
         }
-
-
     }
 }
