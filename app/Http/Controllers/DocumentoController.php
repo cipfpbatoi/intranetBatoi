@@ -154,6 +154,7 @@ class DocumentoController extends IntranetController
                 'rol' => ['type' => 'hidden'],
                 'detalle' => ['type' => 'textarea'],
                 'curso' => ['disabled' => 'disabled'],
+                'grupo' => ['disabled' => 'disabled'],
                 'descripcion' => ['type' => 'text'],
                 'enlace' => ['type' => 'text'],
                 'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]]):
@@ -162,6 +163,7 @@ class DocumentoController extends IntranetController
                 'rol' => ['type' => 'hidden'],
                 'detalle' => ['type' => 'textarea'],
                 'curso' => ['disabled' => 'disabled'],
+                'grupo' => ['disabled' => 'disabled'],
                 'descripcion' => ['type' => 'text'],
                 'fichero' => ['type' => 'file'],
                 'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]]);

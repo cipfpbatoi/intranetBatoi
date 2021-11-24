@@ -8,6 +8,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\MyMail;
 use Illuminate\Http\Request;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -30,18 +31,23 @@ class MyMailController extends Controller
         else {
             $attach = null;
         }
-        $mail = new MyMail($request->to,$request->contenido,$request->toArray(),$attach);
-        $mail->send();
+        if (strlen($request->contenido) < 50) {
+            Alert::danger('El contingut ha de ser més de 50 caracters');
+        } else {
+            $mail = new MyMail($request->to, $request->contenido, $request->toArray(), $attach);
+            $mail->send();
+
+        }
         return redirect($request->route);
     }
 
 
-
-
     public function store(Request $request)
     {
-        $colectiu = 'Intranet\\Entities\\'.$request->collect;
-        $mail = new MyMail($colectiu::all(),null,[],null,true);
+        $stringFinder = 'Intranet\\Finders\\MailFinders\\'.$request->collect.'Finder';
+        $finder = new $stringFinder();
+
+        $mail = new MyMail($finder->getElements(),null,[],null,true);
         return $mail->render('\\');
     }
     
