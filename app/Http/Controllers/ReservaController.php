@@ -6,6 +6,7 @@ use Intranet\Entities\Espacio;
 use Intranet\Entities\Hora;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Profesor;
 
 /**
  * Class ReservaController
@@ -30,6 +31,13 @@ class ReservaController extends IntranetController
         Session::forget('redirect');
         $espacios = Espacio::where('reservable',1)->get();
         $horas = Hora::all();
-        return view('reservas.reserva', compact('espacios', 'horas'));
+        if (esRol(AuthUser()->rol,config('roles.rol.direccion'))){
+            $profes = Profesor::Activo()->orderBy('apellido1')->get();
+        } else
+        {
+            $profes = Profesor::where('dni',AuthUser()->dni)->get();
+        }
+
+        return view('reservas.reserva', compact('espacios', 'horas','profes'));
     }
 }

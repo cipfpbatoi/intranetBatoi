@@ -96,6 +96,7 @@ mix.combine([
     //lets add custom scripts
     'resources/assets/js/custom.js',//this default from gentelella
     'resources/assets/js/init.js' //initialize other plugins here
+
 ],'public/js/app.js');
 
 mix.js('resources/assets/js/app.js', 'public/js/components').vue({ version: 2 })

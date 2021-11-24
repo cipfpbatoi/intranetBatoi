@@ -210,6 +210,8 @@ function esRol($rolUsuario, $rol)
         return false;
 }
 
+
+
 /**
  * Devuelve todos los items checkeados
  *

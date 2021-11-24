@@ -186,8 +186,8 @@ function modDatos(accion) {
 		var datos={
 				idEspacio: $("#recurso").val(), 
 //				dia: fecha, 
-				idProfesor: $('#dni').text(),
-                                observaciones: $('#observaciones').val(),
+				idProfesor: $('#idProfesor').val(),
+				observaciones: $('#observaciones').val(),
 				api_token: $("#_token").text()
 			};
 //		datos.dia_fin=$("#dia_fin").val();

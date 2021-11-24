@@ -1,6 +1,6 @@
 <template>
   <div>
-    <br><h4 class="centrado">RESERVAR RECURSO2</h4><br>
+    <br><h4 class="centrado">RESERVAR RECURSOS</h4><br>
 
     <recursos-select v-model="espacio" :espacios="espacios" @change="getReservas"></recursos-select>
 
@@ -14,8 +14,9 @@
 
         <horas-select v-model="horaIni" :horas="horas" title="Desde hora" ini-val="0"></horas-select>
         <horas-select v-model="horaFin" :horas="horas" title="Hasta hora" :ini-val="horaIni"></horas-select>
+        <profes-select v-model="idProfesor" :horas="profes" title="Professor" ></profes-select>
 
-        <br><label for="dia"> Observaciones: </label>
+      <br><label for="dia"> Observaciones: </label>
         <input v-model="observaciones" type="text" class="noFlotar" />
         <div v-if="esDirecc">
           <br><label for="dia_fin"> Todos los <span id="nom_dia_fin"></span> hasta el día: </label>
@@ -40,27 +41,22 @@ const ruta='/api/reserva/';
 const token=document.getElementById('_token').innerHTML;
 const rolDirecc=2;
 const esDirecc=((document.getElementById('rol').innerHTML%rolDirecc)==0);
+const idProfesor = document.getElementById('dni').innerHTML;
 
 const maxDiasReserva=30;
 
     export default {
         components: {
+          'profes-select': require('./ProfesSelect.vue'),
           'recursos-select': require('./RecursosSelect.vue'),
           'horas-select': require('./HorasSelect.vue'),
           'horas-table': require('./HorasTable.vue'),
           'fecha-picker': require('../utils/FechaPicker.vue'),
         },
-        props: ['horas', 'espacios'],
+        props: ['horas', 'espacios','profes'],
         data() {
           return {
-            reservas: [,,,,
-              {
-                nomProfe: 'Juan',
-                observaciones: 'kk',
-                idProfesor: '0232342342',
-                id: 34
-              },
-            ],
+            reservas: [],
             fechaIni: '',
             fechaFin: '',
             horaIni: '0',

@@ -43,6 +43,13 @@
                 <option value="{{$hora->codigo}}">{{$hora->turno}} {{$hora->hora_ini}}-{{$hora->hora_fin}}</option>
                 @endforeach
             </select>
+            <br><label for="idProfesor"> Profesor que fa la reserva:</label>
+            <select id="idProfesor" name="idProfesor" class="noFlotar">
+                <option value="0">-- Selecciona --</option>
+                @foreach ($profes as $profe)
+                    <option value="{{$profe->dni}}" @if ($profe->dni == AuthUser()->dni) selected @endif >{{$profe->apellido1}} {{$profe->apellido2}}, {{$profe->nombre}}</option>
+                @endforeach
+            </select>
             <br><label for="dia"> Observaciones: </label>
             <input id="observaciones" type="text" name="observaciones" class="noFlotar" autofocus />
             <div id="periodica">
