@@ -1,7 +1,5 @@
 @extends('layouts.intranet')
 @section('css')
-{{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.css') }}
-{{Html::style('/assets/datetimepicker/css/bootstrap-datetimepicker.min.css') }}
 <title>@lang("models.Reserva.edit")</title>
 @endsection
 @section('content')
@@ -14,7 +12,7 @@
                 @foreach ($espacios as $espacio)
                     <option value="{{$espacio->aula}}">{{$espacio->descripcion}}</option>
                 @endforeach
-        </select></p>
+        </select>
 
         <div id="gestion">
             <br><label for="dia"> Día: </label>
@@ -54,7 +52,7 @@
             <input id="observaciones" type="text" name="observaciones" class="noFlotar" autofocus />
             <div id="periodica">
                 <br><label for="dia_fin"> Todos los <span id="nom_dia_fin"></span> hasta el día: </label>
-                <input id="dia_fin" type="text" name="dia_fin" class="noFlotar date" autofocus />					
+                <input id="dia_fin" type="text" name="dia_fin" class="noFlotar date" autofocus />
             </div>
             <div id="botones">
                 <input id="reservar" class="btn btn-danger" type="button" value="Reservar">
@@ -70,7 +68,5 @@
 @endsection
 @section('scripts')
 {{ Html::script("/js/Reserva/edit.js") }}
-{{ Html::script('/assets/moment.js') }}
-{{ Html::script('/assets/datetimepicker/js/bootstrap-datetimepicker.min.js') }}
 {{ Html::script("/js/datepicker.js") }}
 @endsection
