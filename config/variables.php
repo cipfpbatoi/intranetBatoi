@@ -11,5 +11,6 @@ return [
         [ 'ip' => '172.16.109.206', 'codOcup' => 3249454 ],
         [ 'ip' => '172.16.109.207', 'codOcup' => 3249454 ],
         [ 'ip' => '172.16.109.208', 'codOcup' => 3249454 ]],
-    'ocupacionesGuardia' => [3249454,149034734]
+    'ocupacionesGuardia' => [3249454,149034734],
+    'actividadImg' => 1
 ];

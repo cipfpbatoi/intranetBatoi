@@ -19,6 +19,7 @@ Route::get('/convenio','EmpresaController@indexConvenio');
 Route::get('miIp','IPController@miIP');
 
 
+
 Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('dual', 'DualController', ['except' => ['edit', 'create']]);
     Route::get('misAlumnosFct','AlumnoFctController@misAlumnos');

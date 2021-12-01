@@ -82,7 +82,11 @@ class ActividadController extends ModalController
         $actividad->estado = 4;
         $actividad->save();
 
-        return $this->redirect();
+        if (config('variables.actividadImg')){
+            return view('extraescolares.img',compact('actividad'));
+        } else {
+            return $this->redirect();
+        }
     }
 
 
@@ -271,6 +275,27 @@ class ActividadController extends ModalController
         }
         $actividad->menores()->updateExistingPivot($nia,['autorizado' => $autorizado]);
         return view('extraescolares.autorizados',compact('actividad'));
+    }
+
+    public function fileUpload(Request $request,$id){
+
+        $actividad = Actividad::find($id);
+
+        if ($actividad){
+
+            $path = public_path().'/uploads/';
+            if ($request->hasFile('file')){
+                $files = $request->file('file');
+                foreach($files as $file){
+                    $fileName = $file->getClientOriginalName();
+                    $file->move($path, $fileName);
+                    $actividad->image1 = $fileName;
+                }
+            }
+            Alert::info($id);
+            $actividad->save();
+        }
+        return ($id);
     }
 
 }

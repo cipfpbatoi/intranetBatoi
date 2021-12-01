@@ -36,7 +36,7 @@ Route::post('/actividadorientacion/create', ['as' => 'actividad.storeOrientacion
 Route::get('/actividad/{actividad}/value', ['as' => 'actividad.value', 'uses' => 'ActividadController@value']);
 Route::patch('/actividad/{actividad}',['as' => 'actividad.patch', 'uses' => 'ActividadController@patch']);
 Route::get('/actividad/{actividad}/valoracion', ['as' => 'actividad.valoracion', 'uses' => 'ActividadController@printValue']);
-
+Route::put('/actividad/{actividad}/fileupload',['as' => 'actividad.fileupload','uses' => 'ActividadController@fileUpload']);
 
 Route::resource('/reunion', 'ReunionController', ['except' => ['destroy', 'update']]);
 Route::get('/reunion/{reunion}/delete', ['as' => 'reunion.destroy', 'uses' => 'ReunionController@destroy']);
