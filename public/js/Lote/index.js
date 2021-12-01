@@ -41,8 +41,8 @@ var options = {};
         rowId : 'registre',
         order: [[ 4, "desc" ]],
         columnDefs: [
-            {className: "estado", "targets": [ 3 ]} ,
-            {className: "operaciones", "targets": [ 5 ]} ,
+            {className: "estado", "targets": [ 4 ]} ,
+            {className: "operaciones", "targets": [ 6 ]} ,
         ],
         columns: [
             { data:'registre'},
