@@ -51,6 +51,14 @@ class ImportEmailController extends Controller
     {
         if (!$request->hasFile('fichero') || !file_exists($request->file('fichero'))) {
             Alert::danger(trans('messages.generic.noFile'));
+            foreach (Profesor::all() as $profesor){
+                $profesor->email = trim($profesor->email);
+                $profesor->save();
+            }
+            foreach (Alumno::all() as $alumno){
+                $alumno->email = trim($alumno->email);
+                $alumno->save();
+            }
             return back();
         }
         $extension = $request->file('fichero')->getClientOriginalExtension();
@@ -83,7 +91,7 @@ class ImportEmailController extends Controller
         if ($long == 9){
             $key = '0'.$key;
             if ($profesor = Profesor::find($key)){
-                $profesor->email = $email;
+                $profesor->email = trim($email);
                 $profesor->save();
                 Alert::success("Professor: Email $email incorporat a DNI $key");
                 return 1;
@@ -91,7 +99,7 @@ class ImportEmailController extends Controller
         } else {
             if ($long == 8) {
                 if ($alumne = Alumno::find($key)) {
-                    $alumne->email = $email;
+                    $alumne->email = trim($email);
                     $alumne->save();
                     Alert::success("Alumne: Email $email incorporat a NIA $key");
                     return 1;
