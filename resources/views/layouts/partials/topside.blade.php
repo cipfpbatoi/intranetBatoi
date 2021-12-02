@@ -2,7 +2,7 @@
     <div class="navbar nav_title" style="border: 0;"></div>
 @else
     <div class="navbar nav_title" style="border: 0;">
-        <a href="/home" class="site_title"><i class="fa fa-paw"></i> <span>{!! config('contacto.titulo') !!}</span></a>
+        <a href="/home" class="site_title"><span>{!! config('contacto.titulo') !!}</span></a>
     </div> 
 @endif
 
@@ -14,7 +14,7 @@
     <div id="dni" class="hidden">{!! AuthUser()->dni !!}</div>
     <div id="rol" class="hidden">{!! AuthUser()->rol !!}</div>
     @if (isset(AuthUser()->api_token))
-    <div id="_token" class="hidden">{!! AuthUser()->api_token !!}</div>
+        <div id="_token" class="hidden">{!! AuthUser()->api_token !!}</div>
     @endif
     <div class="profile_pic">
         <img src="{{ asset('/storage/'.AuthUser()->foto) }}" alt="FotoUsuari" class="img-circle profile_img">

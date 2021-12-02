@@ -31,7 +31,7 @@
                         <div class="clearfix"></div>
                         <br />
                         <div>
-                            <h1><i class="fa fa-paw"></i> {{config('contacto.titulo')}}</h1>
+                            <h1>{{config('contacto.titulo')}}</h1>
                             <p>©2017 All Rights Reserved. CIPFP BATOI</p>
                         </div>
                     </div>
