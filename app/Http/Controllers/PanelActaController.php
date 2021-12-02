@@ -35,7 +35,6 @@ class PanelActaController extends BaseController
         if ($this->iniPestanas($grupo)){
             return $this->grid($this->search($grupo),$this->modal);
         }
-
         Alert::danger('No hi ha actes disponibles');
         return redirect()->route('home');
      }
@@ -86,7 +85,7 @@ class PanelActaController extends BaseController
                 ->whereIn('grupo', $profe->grupos())
                 ->distinct()
                 ->get();
-        if ($grupos){
+        if ($grupos->count()){
             $this->createGrupsPestana($grupos);
             return true;
         }
