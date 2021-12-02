@@ -65,17 +65,17 @@ use traitAutorizar,
                 ->with('Horari.Modulo')
                 ->Activo()
                 ->get();
-        $departamentos = Departamento::where('didactico',1)->get();
+        $departamentos = Departamento::where('didactico',1)->orWhere('id',99)->get();
 
         foreach ($departamentos as $departamento) {
-            //if ($departamento->id != 99 ) {
+            if ($departamento->id != 99 ) {
                 if($departamento->id == AuthUser()->departamento) {
                     $this->panel->setPestana($departamento->depcurt, true, self::PROFILE_PROFESOR, ['Xdepartamento', $departamento->depcurt], null, 1, $this->parametresVista);
                 }
                 else {
                     $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
                 }
-            //}
+            }
         }
         $this->iniProfileBotones();
         return $this->grid($todos);
