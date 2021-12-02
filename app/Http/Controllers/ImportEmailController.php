@@ -51,6 +51,7 @@ class ImportEmailController extends Controller
     {
         if (!$request->hasFile('fichero') || !file_exists($request->file('fichero'))) {
             Alert::danger(trans('messages.generic.noFile'));
+            /**
             foreach (Profesor::all() as $profesor){
                 $profesor->email = trim($profesor->email);
                 $profesor->save();
@@ -58,7 +59,7 @@ class ImportEmailController extends Controller
             foreach (Alumno::all() as $alumno){
                 $alumno->email = trim($alumno->email);
                 $alumno->save();
-            }
+            }*/
             return back();
         }
         $extension = $request->file('fichero')->getClientOriginalExtension();
