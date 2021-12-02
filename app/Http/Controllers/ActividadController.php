@@ -17,6 +17,7 @@ use Jenssegers\Date\Date;
 use DB;
 use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
+use Symfony\Component\Console\Input\Input;
 
 
 class ActividadController extends ModalController
@@ -280,7 +281,6 @@ class ActividadController extends ModalController
     public function fileUpload(Request $request,$id){
 
         $actividad = Actividad::find($id);
-
         if ($actividad){
 
             $path = public_path().'/uploads/';
@@ -292,10 +292,9 @@ class ActividadController extends ModalController
                     $actividad->image1 = $fileName;
                 }
             }
-            Alert::info($id);
+
             $actividad->save();
         }
-        return ($id);
     }
 
 }

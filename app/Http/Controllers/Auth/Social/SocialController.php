@@ -43,7 +43,7 @@ class SocialController extends Controller
             abort('500',"No hi ha token");
         }
         if ($user->api_token != session('token')) {
-            abort('401',"T'has de loguejar amb el teu compte corporatiu");
+            abort('401',"T'has de loguejar amb el teu compte corporatiu des de fora de l'institut");
         }
         return $this->successloginProfesor($user);
     }

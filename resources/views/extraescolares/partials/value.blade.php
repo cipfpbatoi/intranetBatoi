@@ -1,5 +1,7 @@
-<div class="valueContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
-    <form method="POST" action="/actividad/{!!$Actividad->id!!}">
+<div id="dropzone" class="valueContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
+    <form method="POST" class="dropzone"
+          id="my-dropzone" enctype="multipart/form-data"
+          action="/actividad/{!!$Actividad->id!!}">
         @csrf
         @method('PATCH')
         {!! Field::textarea('desenvolupament',$Actividad->desenvolupament) !!}
@@ -12,5 +14,5 @@
         <input id="submit" class="boton" type="submit" value="@lang("messages.buttons.value") @lang("models.modelos.Actividad") ">
         <a href="/actividad" class="boton" >@lang('messages.buttons.volver')</a>
     </form>
-
 </div>
+
