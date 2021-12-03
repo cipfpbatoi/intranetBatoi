@@ -42,11 +42,11 @@ $(function() {
 		}
 	});
 
-	$("#dia").on("dp.change", function () {
+	$("#dia").on("change", function () {
 		// borramos los datos actuales
 		$("#horario").find("td").removeClass("warning").html("Libre");
 
-		var fecha=getEngDate($("#dia").val());
+		var fecha =$("#dia").val();
 		var queFecha=new Date(fecha);
 		// Ponemos el día en la fecha de fin de reserva para dirección
 		var nomDias=["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -154,7 +154,7 @@ function checkData() {
 //    {
 //        errores.push("el campo 'Hasta Dia' debe tener formato dd/mm/aaaa");
 //	} else 
-		if (getEngDate(fecha_fin) < getEngDate(fecha)) {
+		if (fecha_fin < fecha) {
         	errores.push("el campo 'hasta día' debe ser mayor que 'día'");		
 		}
 	if (errores.length>0) {
@@ -166,7 +166,7 @@ function checkData() {
 }
 
 function modDatos(accion) {
-	var fecha=getEngDate($("#dia").val());
+	var fecha=$("#dia").val();
 	var fechaDate=new Date(fecha);
     var respuestas=[];	// donde guardo el nº de hora si es una reserva o la id si es liberar
     var peticiones=[];	// donde guardo las respuestas para saber si ya ha acabado el proceso
@@ -191,7 +191,7 @@ function modDatos(accion) {
 			};
 //		datos.dia_fin=$("#dia_fin").val();
 		if ($("#dia_fin").val()) {
-			var fechaFin=getEngDate($("#dia_fin").val());
+			var fechaFin=$("#dia_fin").val();
 			var fechaFinDate=new Date(fechaFin);
 		} else {
 			var fechaFinDate=new Date(fecha);			
@@ -263,8 +263,4 @@ function getFechaInt(fechaDate) {
 	var dia='0'+fechaDate.getDate();
 	dia=dia.substr(dia.length-2,2);
 	return fechaDate.getFullYear()+'-'+mes+'-'+dia;
-}
-function getEngDate(fecha){
-	var arrFecha = fecha.split("-");
-	return arrFecha[2]+"-"+arrFecha[1]+"-"+arrFecha[0];
 }

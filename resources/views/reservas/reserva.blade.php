@@ -16,7 +16,7 @@
 
         <div id="gestion">
             <br><label for="dia"> Día: </label>
-            <input id="dia" type="text" name="dia" class="noFlotar date" autofocus />
+            <input id="dia" type="date" name="dia"  autofocus />
             <div id="tableContainer" class="calendario">
                 <table class="table" id="horario">
                     @foreach ($horas as $hora)
