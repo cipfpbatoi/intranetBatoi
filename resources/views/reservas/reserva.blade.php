@@ -52,7 +52,7 @@
             <input id="observaciones" type="text" name="observaciones" class="noFlotar" autofocus />
             <div id="periodica">
                 <br><label for="dia_fin"> Todos los <span id="nom_dia_fin"></span> hasta el día: </label>
-                <input id="dia_fin" type="text" name="dia_fin" class="noFlotar date" autofocus />
+                <input id="dia_fin" type="date" name="dia_fin"  autofocus />
             </div>
             <div id="botones">
                 <input id="reservar" class="btn btn-danger" type="button" value="Reservar">
