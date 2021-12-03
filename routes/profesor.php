@@ -174,7 +174,7 @@ Route::get('/expediente/{expediente}/active', ['as' => 'expediente.active', 'use
 Route::get('/expedienteO', ['as' => 'expediente.orientacion', 'uses' => 'PanelExpedienteOrientacionController@index']);
 
 
-Route::resource('/resultado', 'ResultadoController', ['except' => ['destroy', 'update', 'show']]);
+Route::resource('/resultado', 'ResultadoController', ['except' => ['destroy','update', 'show']]);
 Route::get('/resultado/{resultado}/delete', ['as' => 'resultado.destroy', 'uses' => 'ResultadoController@destroy']);
 Route::post('/resultado/create', ['as' => 'resultado.store', 'uses' => 'ResultadoController@store']);
 Route::put('/resultado/{resultado}/edit', ['as' => 'resultado.update', 'uses' => 'ResultadoController@update']);

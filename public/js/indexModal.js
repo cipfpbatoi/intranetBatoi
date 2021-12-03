@@ -14,7 +14,7 @@ $(function () {
     $("a.btn-primary.btn.txtButton").on("click", function () {
         event.preventDefault();
         $('.form-horizontal')[0].reset();
-        formModal.attr('action',jQuery(location).attr('href'));
+        formModal.attr('action',jQuery(location).attr('href').replace(/#/,""));
         $('#metodo').val('POST');
         $(this).attr("data-toggle", "modal").attr("data-target", "#create").attr("href", "");
     });
@@ -50,7 +50,7 @@ $(function () {
             dataType: 'json',
             data: {api_token: token},
         }).then(function (res) {
-            formModal.attr('action', jQuery(location).attr('href')+"/"+id+"/edit");
+            formModal.attr('action', jQuery(location).attr('href').replace(/#/,"")+"/"+id+"/edit");
             formModal.find('#metodo').val('PUT').end().find('#id').val(id);
             var primerElem = "";
             for (var propiedad in res.data) {
