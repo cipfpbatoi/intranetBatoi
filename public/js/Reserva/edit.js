@@ -107,7 +107,8 @@ $(function() {
             data: {api_token: token},
 		}).then(function(res){
 			for (i in res.data) {
-				$("#hora-"+res.data[i].hora).addClass("warning").html(res.data[i].nomProfe+' ('+res.data[i].observaciones+')<span class="hidden idProfe">'+res.data[i].idProfesor+'</span>'+'<span class="hidden idReserva">'+res.data[i].id+'</span>');
+				var observaciones = res.data[i].observaciones?'('+res.data[i].observaciones+')':' ';
+				$("#hora-"+res.data[i].hora).addClass("warning").html(res.data[i].nomProfe+observaciones+'<span class="hidden idProfe">'+res.data[i].idProfesor+'</span>'+'<span class="hidden idReserva">'+res.data[i].id+'</span>');
 			}
 		}, function(error){
 			showMessage(["Error "+error.status+": "+error.statusText, "error"], 'error');
@@ -300,6 +301,7 @@ function showMessage(msgs, tipo) {
 	msgs.forEach(function(msg) {
 		$msg.append(`<p><strong>`+msg+`</strong></p>`);
 	});
+	$("#errores").html($msg);
 }
 
 function getFechaInt(fechaDate) {
