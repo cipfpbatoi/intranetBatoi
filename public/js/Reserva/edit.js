@@ -10,6 +10,7 @@ const esDireccion=2;
 $(function() {
     var token = $("#_token").text();
     var errores = [];
+
 	$(".errores").empty();
 	$("#recurso").focus();
 	$("#gestion").hide();	// Ocultamos los inputs de añadir
@@ -50,6 +51,18 @@ $(function() {
 			$("#dia").trigger('change');
 		}
 	})
+
+	$(".hora").on("click",function (ev) {
+		ev.preventDefault();
+		var hora = this.id.split('-')[1];
+		var desde = parseInt($("#desde").val());
+		$("#hasta").val(hora);
+		if (desde == 0 || parseInt(hora) < desde) {
+			$("#desde").val(hora);
+		}
+		marcar();
+	})
+
 
 	$("#back").on("click",function (ev) {
 		ev.preventDefault();
@@ -125,6 +138,12 @@ $(function() {
 		} else {
 			$("#desde").val(0);
 		}
+		marcar();
+		click = 1;
+	});
+	$("#hasta").on("change", function () {
+		marcar();
+		click = 0;
 	});
 
 	$("#reservar").on("click", function (ev) {
@@ -134,7 +153,7 @@ $(function() {
 			// Antes de reservar comprobamos que todas las horas estén libres
 			$("#horario td").slice($("#desde").val()-1, $("#hasta").val()).each(function() {
 					if ($(this).text()!="Lliure")
-						errores.push("En el intervalo indicado no está libre la hora "+$(this).prev().text());
+						errores.push("En l'interval indicat no està lliure l'hora "+$(this).prev().text());
 				});
 			if (errores.length==0) 
 				modDatos("reserva");
@@ -154,7 +173,7 @@ $(function() {
 			} else {
 				$("#horario td").slice($("#desde").val()-1, $("#hasta").val()).each(function() {
 					if ($(this).text()!="Lliure" && $(this).find('span.idProfe').text()!=$('#dni').text())
-						errores.push("En el intervalo indicado la hora "+$(this).prev().text()+" está reservada por "+$(this).text() );
+						errores.push("En l'interval indicat l'hora "+$(this).prev().text()+" està reservada per "+$(this).text() );
 					});
 				if (errores.length==0) 
 					modDatos("libera");
@@ -171,30 +190,30 @@ function checkData() {
 
     // recurso
     if ($("#recurso").val()=="0") {
-        errores.push("el campo 'Recurso' debe estar seleccionado");
+        errores.push("el camp 'Recurs' ha d'estar seleccionat");
 	}
     if ($("#observaciones").val().length>20){
-        errores.push("el campo 'Observaciones' tiene un máximo de 20 caracteres");
+        errores.push("el camp 'Observacions' té un màxim de 20 caracters");
 	}
 
     // dia
     var fecha = $("#dia").val();
     if (fecha=="") {
-        errores.push("el campo 'Dia' debe estar seleccionado");
+        errores.push("el camp 'Dia' ha d'estar seleccionat");
 	}
 
     // desde
 	var desde = parseInt( $("#desde").val() );
     if (desde==0) {
-        errores.push("el campo 'Desde hora' debe estar seleccionado");
+        errores.push("el camp 'Des d'hora' ha d'estar seleccionat");
 	}
 
     // hasta
 	var hasta=parseInt($("#hasta").val());
     if (hasta==0) {
-        errores.push("el campo 'hasta hora' debe estar seleccionado");
+        errores.push("el camp 'fins hora' ha d'estar seleccionat");
 	} else if (hasta < desde)
-        errores.push("el campo 'hasta hora' debe ser mayor que 'desde hora'");
+        errores.push("el camp 'fins hora' ha de ser major que 'des d'hora'");
 
     // dia_fin
     var fecha_fin = $("#dia_fin").val();
@@ -203,7 +222,7 @@ function checkData() {
 //        errores.push("el campo 'Hasta Dia' debe tener formato dd/mm/aaaa");
 //	} else 
 		if (fecha_fin < fecha) {
-        	errores.push("el campo 'hasta día' debe ser mayor que 'día'");		
+        	errores.push("el camp 'fins dia' ha de ser major que 'dia'");
 		}
 	if (errores.length>0) {
 		showMessage(errores,'error');
@@ -310,4 +329,15 @@ function getFechaInt(fechaDate) {
 	var dia='0'+fechaDate.getDate();
 	dia=dia.substr(dia.length-2,2);
 	return fechaDate.getFullYear()+'-'+mes+'-'+dia;
+}
+
+function marcar(){
+	var desde = parseInt($("#desde").val());
+	var hasta = parseInt($("#hasta").val())?parseInt($("#hasta").val()):desde;
+	for (i=1;i<=20;i++) {
+		$("#hora-"+i).removeClass("green");
+	}
+	for (j=desde;j<=hasta;j++) {
+		$("#hora-"+j).addClass("green");
+	}
 }

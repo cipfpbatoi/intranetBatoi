@@ -89,7 +89,7 @@
                         @foreach ($horas as $hora)
                             <tr>
                                 <th>{{$hora->turno}} {{$hora->hora_ini}}-{{$hora->hora_fin}}</th>
-                                <td id="hora-{{$hora->codigo}}">Lliure</td>
+                                <td id="hora-{{$hora->codigo}}" class="hora" style="font-weight: bold">Lliure</td>
                             </tr>
                         @endforeach
                     </table>
