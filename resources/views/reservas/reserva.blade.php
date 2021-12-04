@@ -15,8 +15,13 @@
         </select>
 
         <div id="gestion">
-            <br><label for="dia"> Día: </label>
-            <input id="dia" type="date" name="dia"  autofocus />
+            <br><label for="dia"><span id="nom_dia_semana"></span></label>
+            <a id="reward" class="btn btn-small" href="#"><i class="fa fa-angle-double-left"></i></a>
+            <a id="back" class="btn btn-small" href="#"><i class="fa fa-angle-left"></i></a>
+            <input id="dia" type="date" name="dia" value="{{Hoy()}}"  autofocus />
+            <a id="next" class="btn btn-small" href="#"><i class="fa fa-angle-right"></i></a>
+            <a id="forward" class="btn btn-small" href="#"><i class="fa fa-angle-double-right"></i></a>
+            <br/>
             <div id="tableContainer" class="calendario">
                 <table class="table" id="horario">
                     @foreach ($horas as $hora)

@@ -15,16 +15,13 @@ $(function() {
 	$("#gestion").hide();	// Ocultamos los inputs de añadir
 
     //datepickers ui
-//    $('#dia').datepicker();
 	var maxFecha=new Date();
 	$('#dia').attr('minDate',maxFecha.toISOString().substr(0,10));
 	if ($('#rol').text()%esDireccion == 0) {
-//	    $('#dia_fin').datepicker();
-//	    datepickerCastellano();
+
 		$('#dia').removeAttr('max');
 		$("#periodica").show();
 	} else {
-//	    datepickerCastellano(0, maxDiasReserva);
 		var maxFecha=new Date();
 		maxFecha.setDate(maxFecha.getDate()+maxDiasReserva);
 		$('#dia').attr('max',maxFecha.toISOString().substr(0,10));
@@ -42,16 +39,66 @@ $(function() {
 		}
 	});
 
+	$("#next").on("click",function (ev) {
+		ev.preventDefault();
+		var fecha =$("#dia").val();
+		if (fecha) {		// Si hay fecha se están iendo las reservas de ese día y hay que cambiarlas
+			var queFecha=new Date(fecha);
+			queFecha.setDate(queFecha.getDate()+1);
+			fecha=getFechaInt(queFecha);
+			$("#dia").val(fecha);
+			$("#dia").trigger('change');
+		}
+	})
+
+	$("#back").on("click",function (ev) {
+		ev.preventDefault();
+		var fecha =$("#dia").val();
+		if (fecha) {		// Si hay fecha se están iendo las reservas de ese día y hay que cambiarlas
+			var queFecha=new Date(fecha);
+			queFecha.setDate(queFecha.getDate()-1);
+			fecha=getFechaInt(queFecha);
+			$("#dia").val(fecha);
+			$("#dia").trigger('change');
+		}
+	})
+
+	$("#forward").on("click",function (ev) {
+		ev.preventDefault();
+		var fecha =$("#dia").val();
+		if (fecha) {		// Si hay fecha se están iendo las reservas de ese día y hay que cambiarlas
+			var queFecha=new Date(fecha);
+			queFecha.setDate(queFecha.getDate()+7);
+			fecha=getFechaInt(queFecha);
+			$("#dia").val(fecha);
+			$("#dia").trigger('change');
+		}
+	})
+
+	$("#reward").on("click",function (ev) {
+		ev.preventDefault();
+		var fecha =$("#dia").val();
+		if (fecha) {		// Si hay fecha se están iendo las reservas de ese día y hay que cambiarlas
+			var queFecha=new Date(fecha);
+			queFecha.setDate(queFecha.getDate()-7);
+			fecha=getFechaInt(queFecha);
+			$("#dia").val(fecha);
+			$("#dia").trigger('change');
+		}
+	})
+
 	$("#dia").on("change", function () {
 		// borramos los datos actuales
-		$("#horario").find("td").removeClass("warning").html("Libre");
+		$("#horario").find("td").removeClass("warning").html("Lliure");
 
 		var fecha =$("#dia").val();
 		var queFecha=new Date(fecha);
 		// Ponemos el día en la fecha de fin de reserva para dirección
-		var nomDias=["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+		var nomDias=["Diumenge", "Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte"];
 
 		$("#nom_dia_fin").html(nomDias[queFecha.getDay()]);
+		$("#nom_dia_semana").html(nomDias[queFecha.getDay()]);
+
 		// pedimos las reservas del recurso para el día seleccionado
 		$.ajax ({
 	    	url: "api/reserva/idEspacio="+$("#recurso").val()+"&dia="+fecha,
@@ -85,7 +132,7 @@ $(function() {
 		if (checkData()) {
 			// Antes de reservar comprobamos que todas las horas estén libres
 			$("#horario td").slice($("#desde").val()-1, $("#hasta").val()).each(function() {
-					if ($(this).text()!="Libre")
+					if ($(this).text()!="Lliure")
 						errores.push("En el intervalo indicado no está libre la hora "+$(this).prev().text());
 				});
 			if (errores.length==0) 
@@ -105,7 +152,7 @@ $(function() {
 				modDatos("libera");
 			} else {
 				$("#horario td").slice($("#desde").val()-1, $("#hasta").val()).each(function() {
-					if ($(this).text()!="Libre" && $(this).find('span.idProfe').text()!=$('#dni').text())
+					if ($(this).text()!="Lliure" && $(this).find('span.idProfe').text()!=$('#dni').text())
 						errores.push("En el intervalo indicado la hora "+$(this).prev().text()+" está reservada por "+$(this).text() );
 					});
 				if (errores.length==0) 
@@ -184,12 +231,10 @@ function modDatos(accion) {
 		var url="api/reserva?api_token="+$("#_token").text();
 		var datos={
 				idEspacio: $("#recurso").val(), 
-//				dia: fecha, 
 				idProfesor: $('#idProfesor').val(),
 				observaciones: $('#observaciones').val(),
 				api_token: $("#_token").text()
 			};
-//		datos.dia_fin=$("#dia_fin").val();
 		if ($("#dia_fin").val()) {
 			var fechaFin=$("#dia_fin").val();
 			var fechaFinDate=new Date(fechaFin);
