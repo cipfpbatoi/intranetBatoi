@@ -311,6 +311,7 @@ function modDatos(accion) {
 			}
 		});
     }
+    marcar();
 }
 
 function showMessage(msgs, tipo) {
@@ -335,9 +336,13 @@ function marcar(){
 	var desde = parseInt($("#desde").val());
 	var hasta = parseInt($("#hasta").val())?parseInt($("#hasta").val()):desde;
 	for (i=1;i<=20;i++) {
-		$("#hora-"+i).removeClass("green");
+		$("#hora-"+i).removeClass("green").removeClass("red");
 	}
 	for (j=desde;j<=hasta;j++) {
-		$("#hora-"+j).addClass("green");
+		if ($("#hora-"+j).text() == "Lliure") {
+			$("#hora-" + j).addClass("green");
+		} else {
+			$("#hora-" + j).addClass("red");
+		}
 	}
 }
