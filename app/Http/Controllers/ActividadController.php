@@ -17,7 +17,6 @@ use Jenssegers\Date\Date;
 use DB;
 use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
-use Symfony\Component\Console\Input\Input;
 
 
 class ActividadController extends ModalController
@@ -72,24 +71,83 @@ class ActividadController extends ModalController
         return $this->redirect();
     }
 
-    public function patch(ValoracionRequest $request, $id)
+    public function valoracion(ValoracionRequest $request)
     {
-        $actividad = Actividad::findOrFail($id);
+        $actividad = Actividad::findOrFail($request->idActividad);
         $actividad->desenvolupament = $request->desenvolupament;
         $actividad->valoracio = $request->valoracio;
         $actividad->dades = $request->dades;
         $actividad->aspectes = $request->aspectes;
         $actividad->recomanada = isset($request->recomanada)?1:0;
         $actividad->estado = 4;
-        $actividad->save();
-
-        if (config('variables.actividadImg')){
-            return view('extraescolares.img',compact('actividad'));
-        } else {
-            return $this->redirect();
+        try {
+            $countMockFiles = $this->mockFilesProcess($request,$actividad);
+        } catch (\Exception $e){
+            $countMockFiles = 0;
         }
+
+
+
+        if ($request->hasFile('file')){
+            $path = storage_path().'/app/public/Extraescolars/';
+            $files = $request->file('file');
+
+
+            for ($i = $countMockFiles ; $i<3 ; $i++){
+                $imagekey = 'image'.($i+1);
+                if (isset($files[$i])){
+                    $file = $files[$i];
+                    $fileName = 'Act'.$request->idActividad.$imagekey.'.'.$file->getClientOriginalExtension();
+                    $file->move($path, $fileName);
+                    $actividad->$imagekey = $fileName;
+                } else {
+                    if ($file = $actividad->$imagekey){
+                        $fileName = $path.$file;
+                        if (file_exists($fileName)){
+                            unlink($fileName);
+                            $actividad->$imagekey = 'cocodrilo';
+                        }
+                    }
+                }
+            }
+        }
+        $actividad->save();
+        return redirect(route('actividad.showVal',['actividad' => $request->idActividad]));
     }
 
+
+    private function mockFilesProcess($request,&$actividad){
+        $path = storage_path().'/app/public/Extraescolars/';
+        $remains = 0;
+        for ($i = 1; $i<4; $i++){
+            $imagekey = 'image'. $i;
+            if ($request->$imagekey != "") {
+                $remains++;
+                if ($actividad->$imagekey != $request->$imagekey)
+                {
+                    $deleteFileName = $path.$actividad->$imagekey;
+                    if (file_exists($deleteFileName)){
+                        unlink($deleteFileName);
+                    }
+                    $substituteFileName = $path.$request->$imagekey;
+
+                    rename($substituteFileName,$deleteFileName);
+                }
+            } else {
+                $deleteFileName = $path.$actividad->$imagekey;
+                if ($actividad->$imagekey && file_exists($deleteFileName)){
+                    unlink($deleteFileName);
+                }
+                $actividad->$imagekey = NULL;
+            }
+        }
+        return $remains;
+    }
+
+    public function showValue($id){
+        $Actividad = Actividad::find($id);
+        return view('extraescolares.showValue', compact('Actividad'));
+    }
 
     public function value($id){
         $Actividad = Actividad::find($id);
@@ -148,7 +206,6 @@ class ActividadController extends ModalController
 
     public function borrarProfesor($actividad_id, $profesor_id)
     {
-
         $actividad = Actividad::find($actividad_id);
         if ($actividad->profesores()->count() == 1) {
             Alert::info('No es pot donar de baixa el últim profesor');
@@ -201,7 +258,6 @@ class ActividadController extends ModalController
     
     public function autorizacion($id)
     {
-
         $grups = [];
         $actividad = Actividad::findOrFail($id);
         $grups = hazArray(ActividadGrupo::select('idGrupo')->where('idActividad', '=', $id)->get(),'idGrupo');
@@ -243,7 +299,8 @@ class ActividadController extends ModalController
         $this->panel->setBothBoton('actividad.init', ['where' => ['estado', '==', '0']]);
         $this->panel->setBothBoton('actividad.notification', ['where' => ['estado', '>', '0', 'estado', '<', '4', 'coord', '==', '1','desde','posterior',Hoy()]]);
         $this->panel->setBothBoton('actividad.autorizacion', ['where' => ['estado', '>', '0','estado','<','4','desde','posterior',Hoy()]]);
-        $this->panel->setBothBoton('actividad.valoracion', ['where' => ['estado', '==', '4','hasta','anterior',Hoy()]]);
+        $this->panel->setBoton('grid',new BotonImg('actividad.pdfVal', ['img'=>'fa-file-pdf-o','where' => ['estado', '==', '4','hasta','anterior',Hoy()]]));
+        $this->panel->setBoton('grid',new BotonImg('actividad.showVal', ['img'=>'fa-eye-slash','where' => ['estado', '==', '4','hasta','anterior',Hoy()]]));
         $this->panel->setBoton('grid',new BotonImg('actividad.autorize', ['img'=>'fa-filter','where' => ['estado', '>', '0','estado','<=','3','desde','posterior',Hoy()]]));
         $this->panel->setBoton('grid',new BotonImg('actividad.value', ['img'=>'fa-eyedropper','where' => ['estado', '>=', '3','hasta','anterior',Hoy()]]));
         $this->panel->setBoton('grid', new BotonImg('actividad.delete', ['where' => ['estado', '<', '2']]));
@@ -278,23 +335,6 @@ class ActividadController extends ModalController
         return view('extraescolares.autorizados',compact('actividad'));
     }
 
-    public function fileUpload(Request $request,$id){
 
-        $actividad = Actividad::find($id);
-        if ($actividad){
-
-            $path = public_path().'/uploads/';
-            if ($request->hasFile('file')){
-                $files = $request->file('file');
-                foreach($files as $file){
-                    $fileName = $file->getClientOriginalName();
-                    $file->move($path, $fileName);
-                    $actividad->image1 = $fileName;
-                }
-            }
-
-            $actividad->save();
-        }
-    }
 
 }

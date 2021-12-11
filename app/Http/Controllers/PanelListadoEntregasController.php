@@ -228,7 +228,7 @@ class PanelListadoEntregasController extends BaseController
         } else {
             $programaciones = null;
         }
-        return $this->hazPdf('pdf.infDep', $actividades, compact('resultados', 'observaciones', 'trimestre', 'proyectos', 'programaciones'));
+        return $this->hazPdf('pdf.memoriaDepartament', $actividades, compact('resultados', 'observaciones', 'trimestre', 'proyectos', 'programaciones'));
     }
     private function faltan()
     {

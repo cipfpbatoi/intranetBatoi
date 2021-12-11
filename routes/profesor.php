@@ -34,9 +34,10 @@ Route::get('/actividadOrientacion', ['as' => 'actividad.orientacion', 'uses' => 
 Route::get('/actividadorientacion/create', ['as' => 'actividad.createOrientacion', 'uses' => 'PanelActividadOrientacionController@create']);
 Route::post('/actividadorientacion/create', ['as' => 'actividad.storeOrientacion', 'uses' => 'ActividadController@store']);
 Route::get('/actividad/{actividad}/value', ['as' => 'actividad.value', 'uses' => 'ActividadController@value']);
-Route::patch('/actividad/{actividad}',['as' => 'actividad.patch', 'uses' => 'ActividadController@patch']);
-Route::get('/actividad/{actividad}/valoracion', ['as' => 'actividad.valoracion', 'uses' => 'ActividadController@printValue']);
-Route::put('/actividad/{actividad}/fileupload',['as' => 'actividad.fileupload','uses' => 'ActividadController@fileUpload']);
+Route::post('/actividad/valoracion',['as' => 'actividad.valoracion.post', 'uses' => 'ActividadController@valoracion']);
+Route::get('/actividad/{actividad}/pdfVal', ['as' => 'actividad.pdfVal', 'uses' => 'ActividadController@printValue']);
+Route::get('/actividad/{actividad}/showVal', ['as' => 'actividad.showVal', 'uses' => 'ActividadController@showValue']);
+
 
 Route::resource('/reunion', 'ReunionController', ['except' => ['destroy', 'update']]);
 Route::get('/reunion/{reunion}/delete', ['as' => 'reunion.destroy', 'uses' => 'ReunionController@destroy']);

@@ -13,7 +13,7 @@ Dropzone.options.dropzone =
 
             // Get images
             var myDropzone = this;
-            var actividad = $('#actividad').attr('value');
+            var actividad = $('#idctividad').attr('value');
             $.ajax({
                 url: 'actividad/'+actividad+'/getFiles',
                 type: 'GET',
@@ -24,7 +24,7 @@ Dropzone.options.dropzone =
 
                         var file = {name: value.name, size: value.size};
                         myDropzone.options.addedfile.call(myDropzone, file);
-                        myDropzone.options.thumbnail.call(myDropzone, file, value.path);
+                        myDropzone.options.thumbnail.call(myDropzone, file,'/storage/Extraescolars/');
                         myDropzone.emit("complete", file);
                     });
                 }

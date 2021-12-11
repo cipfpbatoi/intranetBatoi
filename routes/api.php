@@ -17,6 +17,7 @@ Route::resource('alumnoFct', 'AlumnoFctController', ['except' => ['edit', 'creat
 Route::get('alumnoFct/{grupo}/grupo','AlumnoFctController@indice');
 Route::get('/convenio','EmpresaController@indexConvenio');
 Route::get('miIp','IPController@miIP');
+Route::get('actividad/{actividad}/getFiles','ActividadController@getFiles');
 
 
 
