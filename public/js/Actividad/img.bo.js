@@ -85,6 +85,8 @@ Dropzone.options.myDropzone = {
             formData.append("estado", jQuery("#estado").val())
             formData.append("idActividad", jQuery("#idActividad").val());
             serverFiles.forEach(function(file,index){
+                var etiqueta = "#image"+(index+1);
+                $(etiqueta).val(file.name);
                 formData.append("image"+(index+1),file.name);
             })
         });

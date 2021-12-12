@@ -17,6 +17,7 @@ use Jenssegers\Date\Date;
 use DB;
 use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
+use Illuminate\Support\Facades\Log;
 
 
 class ActividadController extends ModalController
@@ -93,26 +94,16 @@ class ActividadController extends ModalController
             $files = $request->file('file');
 
 
-            for ($i = $countMockFiles ; $i<3 ; $i++){
-                $imagekey = 'image'.($i+1);
-                if (isset($files[$i])){
-                    $file = $files[$i];
-                    $fileName = 'Act'.$request->idActividad.$imagekey.'.'.$file->getClientOriginalExtension();
-                    $file->move($path, $fileName);
-                    $actividad->$imagekey = $fileName;
-                } else {
-                    if ($file = $actividad->$imagekey){
-                        $fileName = $path.$file;
-                        if (file_exists($fileName)){
-                            unlink($fileName);
-                            $actividad->$imagekey = 'cocodrilo';
-                        }
-                    }
-                }
+            foreach ($files as $key => $file) {
+                $imagekey = 'image'.($countMockFiles+1+$key);
+                Log::info("Bucle $key $imagekey");
+                $fileName = 'Act'.$request->idActividad.$imagekey.'.'.$file->getClientOriginalExtension();
+                $file->move($path, $fileName);
+                $actividad->$imagekey = $fileName;
             }
         }
         $actividad->save();
-        return redirect(route('actividad.showVal',['actividad' => $request->idActividad]));
+        return back();
     }
 
 
@@ -138,7 +129,7 @@ class ActividadController extends ModalController
                 if ($actividad->$imagekey && file_exists($deleteFileName)){
                     unlink($deleteFileName);
                 }
-                $actividad->$imagekey = NULL;
+                $actividad->$imagekey = null;
             }
         }
         return $remains;
