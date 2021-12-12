@@ -25,7 +25,6 @@
         <input type='hidden' id="idActividad" name='idActividad' value="{!!$Actividad->id!!}">
         <input id="submit" class="btn btn-info" type="submit" value="@lang("messages.buttons.value") @lang("models.modelos.Actividad") ">
         <a href="/actividad" class="btn btn-info" >@lang('messages.buttons.volver')</a>
-        <a href="{{route('actividad.showVal',['actividad' => $Actividad->id ])}}" class="btn btn-info" >Vore Valoració</a>
     </form>
 
 </div>

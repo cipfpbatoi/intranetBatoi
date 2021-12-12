@@ -96,7 +96,6 @@ class ActividadController extends ModalController
 
             foreach ($files as $key => $file) {
                 $imagekey = 'image'.($countMockFiles+1+$key);
-                Log::info("Bucle $key $imagekey");
                 $fileName = 'Act'.$request->idActividad.$imagekey.'.'.$file->getClientOriginalExtension();
                 $file->move($path, $fileName);
                 $actividad->$imagekey = $fileName;
