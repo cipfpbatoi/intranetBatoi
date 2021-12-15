@@ -66,17 +66,8 @@ class PanelColaboracionController extends IntranetController
         $this->panel->setBoton('nofct',new BotonIcon('colaboracion.unauthorize', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary unauthorize estado']));
         $this->panel->setBoton('nofct',new BotonIcon('colaboracion.resolve', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-success resolve estado']));
         $this->panel->setBoton('nofct',new BotonIcon('colaboracion.refuse', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-danger refuse estado']));
-
-        $this->panel->setBoton('nofct',new BotonIcon('documentacionFCT.contacto', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary contacto','text'=>'','title'=>'Petició pràctiques','icon'=>'fa-bell-o']));
-        $this->panel->setBoton('nofct',new BotonIcon('documentacionFCT.revision', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Revissió documentació','icon'=>'fa-check']));
-
-        $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.inicioEmpresa', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Enviar documentació inici','icon'=>'fa-flag-o']));
-        $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.seguimiento', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Correu seguiment','icon'=>'fa-envelope']));
         $this->panel->setBoton('fct',new BotonIcon('fct.telefonico', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe telefonico','text'=>'','title'=>'Contacte telefònic','icon'=>'fa-phone']));
-        $this->panel->setBoton('fct',new BotonIcon('documentacionFCT.visitaEmpresa', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe','text'=>'','title'=>'Concertar visita','icon'=>'fa-car']));
-
         $this->panel->setBoton('pendiente', new BotonBasico("colaboracion.contacto",['class'=>'btn-primary selecciona','icon' => 'fa fa-bell-o','data-url'=>'/api/documentacionFCT/contacto']));
-
         $this->panel->setBoton('colabora', new BotonBasico("colaboracion.revision",['class'=>'btn-primary selecciona','icon' => 'fa fa-check','data-url'=>'/api/documentacionFCT/revision']));
         $this->panel->setBoton('colabora', new BotonBasico("colaboracion.inicioEmpresa",['class'=>'btn-primary selecciona','icon' => 'fa fa-flag-o','data-url'=>'/api/documentacionFCT/inicioEmpresa']));
         $this->panel->setBoton('colabora', new BotonBasico("colaboracion.inicioAlumno",['class'=>'btn-primary selecciona','icon' => 'fa fa-unlock','data-url'=>'/api/documentacionFCT/inicioAlumno']));
