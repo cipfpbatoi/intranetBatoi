@@ -24,7 +24,7 @@
             <div class="col-xs-12 bottom text-center">
                 <div class="col-xs-12 col-sm-4 emphasis">
                     <p class="ratings">
-                        {{$elemento->Centro->localidad}}<br/>
+                        {{$elemento->localidad}}<br/>
                     </p>
                     @if ($elemento->estado < 3)
                     <a href="/colaboracion/{{$elemento->id}}/show" class="btn-success btn btn-xs"><i class="fa fa-eye"></i></a>

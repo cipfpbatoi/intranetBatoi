@@ -96,17 +96,14 @@ class Colaboracion extends Model
     {
         return $this->Ciclo->ciclo;
     }
-    public function getLocalidadAttribute()
-    {
-        return $this->Centro->localidad;
-    }
+
     public function getXEstadoAttribute()
     {
         return config('auxiliares.estadoColaboracion')[$this->estado];
     }
-    public function getLocalidadAttribure()
+    public function getLocalidadAttribute()
     {
-        return $this->Centro->localidad??'Desconeguda';
+        return $this->Centro->localidad?strtoupper($this->Centro->localidad):'Desconeguda';
     }
 
 

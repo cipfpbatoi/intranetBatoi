@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Fct;
 use Illuminate\Support\Facades\Session;
 use Intranet\Finders\UniqueFinder;
 use Intranet\Botones\DocumentoFct;
