@@ -104,6 +104,10 @@ class Colaboracion extends Model
     {
         return config('auxiliares.estadoColaboracion')[$this->estado];
     }
+    public function getLocalidadAttribure()
+    {
+        return $this->Centro->localidad??'Desconeguda';
+    }
 
 
 }
