@@ -4,7 +4,7 @@
         <div class="col-sm-12">
             <h4 class="brief"><i>{{ $elemento->FullName }}</i></h4>
             <div class="left col-xs-8">
-                <p>{{ $elemento->Departamento->literal}}</p>
+                <p>@if (esRol($elemento->rol,13)) <strong>{{ $elemento->Departamento->literal}}</strong> @else {{ $elemento->Departamento->literal}} @endif</p>
                 <ul class="list-unstyled">
                     @if (isset(AuthUser()->codigo))
                     <li><i class="fa fa-phone"></i>@if ($elemento->mostrar) {{$elemento->movil1}} @else -oculto- @endif</li>
