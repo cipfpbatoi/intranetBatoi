@@ -135,7 +135,7 @@ class ResourceAttachmentTest extends IntegrationTest
     // public function test_cant_attach_resources_that_arent_relatable_at_all()
     // {
     //     $user = factory(Profesor::class)->create();
-    //     $role = factory(Role::class)->create();
+    //     $role = factory(RoleMiddleware::class)->create();
 
     //     $_SERVER['nova.user.authorizable'] = true;
     //     $_SERVER['nova.user.attachAnyRole'] = false;

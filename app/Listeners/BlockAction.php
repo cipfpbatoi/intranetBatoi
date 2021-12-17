@@ -38,13 +38,13 @@ class BlockAction
 
     public function handle(PreventAction $event)
     {
-        if ($event->clau){
+        if ($event->owner){
             if (!UserisAllow($event->autorizados)) {
                 if (! ($usuario = $this->usuario())) {
                     Alert::danger(trans('messages.generic.notAllowed'));
                     return false;
                 }
-                if ($usuario != $event->clau) {
+                if ($usuario != $event->owner) {
                     Alert::danger(trans('messages.generic.notAllowed'));
                     return false;
                 }

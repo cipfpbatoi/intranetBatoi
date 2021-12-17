@@ -23,7 +23,7 @@ class PreventAction
      *
      * @return void
      */
-    public $clau;
+    public $owner;
     public $autorizados;
 
     private function creador($model){
@@ -40,7 +40,7 @@ class PreventAction
 
     public function __construct(Model $model)
     {
-        $this->clau = $this->creador($model);
+        $this->owner = $this->creador($model);
 
         switch (substr(get_class($model), 18)) {
             case 'Incidencia' : $this->autorizados = [config('roles.rol.direccion'), config('roles.rol.mantenimiento')];break;

@@ -52,13 +52,13 @@ class PivotActionControllerTest extends IntegrationTest
 
     public function test_pivot_actions_can_have_a_custom_pivot_name()
     {
-        $_SERVER['nova.user.rolePivotName'] = 'Role Assignment';
+        $_SERVER['nova.user.rolePivotName'] = 'RoleMiddleware Assignment';
 
         $response = $this->withExceptionHandling()
                         ->get('/nova-api/roles/actions?viaResource=users&viaResourceId=1&viaRelationship=roles');
 
         $response->assertStatus(200);
-        $this->assertEquals('Role Assignment', $response->original['pivotActions']['name']);
+        $this->assertEquals('RoleMiddleware Assignment', $response->original['pivotActions']['name']);
 
         unset($_SERVER['nova.user.rolePivotName']);
     }

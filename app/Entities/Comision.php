@@ -59,8 +59,6 @@ class Comision extends Model
         'servicio' => ['type' => 'textarea'],
     ];
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
-        'saving' => PreventAction::class,
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
 

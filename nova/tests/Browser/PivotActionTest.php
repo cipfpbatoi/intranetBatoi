@@ -30,7 +30,7 @@ class PivotActionTest extends DuskTestCase
                                 ->openActionSelector()
                                 ->within('@action-select', function ($browser) {
                                     $label = $browser->attribute('optgroup.pivot-option-group', 'label');
-                                    $this->assertEquals('Role Assignment', $label);
+                                    $this->assertEquals('RoleMiddleware Assignment', $label);
                                 });
                     });
         });

@@ -4,7 +4,7 @@ namespace Intranet\Http\Middleware;
 
 use Closure;
 
-class Role
+class RoleMiddleware
 {
 
     public function handle($request, Closure $next, $role)

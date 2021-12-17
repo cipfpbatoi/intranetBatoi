@@ -174,11 +174,11 @@ class ResourceShowTest extends IntegrationTest
 
         $fields = $response->original['resource']['fields'];
 
-        $this->assertEquals('Role Resource Details: 1', collect($fields)->where('attribute', 'id')->first()->panel);
+        $this->assertEquals('RoleMiddleware Resource Details: 1', collect($fields)->where('attribute', 'id')->first()->panel);
 
         $panels = $response->original['panels'];
         $this->assertEquals(1, count($panels));
-        $this->assertEquals('Role Resource Details: 1', $panels[0]->name);
+        $this->assertEquals('RoleMiddleware Resource Details: 1', $panels[0]->name);
     }
 
     public function test_resource_tool_component_name()

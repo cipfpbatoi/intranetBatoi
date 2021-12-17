@@ -17,7 +17,7 @@ describe('UpdateAttached', () => {
         {
           uriKey: 'roles',
           label: 'Roles',
-          singularLabel: 'Role',
+          singularLabel: 'RoleMiddleware',
           authorizedToCreate: true,
           searchable: false,
         },

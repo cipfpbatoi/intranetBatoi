@@ -90,10 +90,11 @@ Route::get('/alumnocurso/{grupo}/registerGrupo/{curso}', ['as' => 'Alumnocurso.r
 Route::get('/alumnocurso/{id}/pdf', ['as' => 'Alumnocurso.pdf', 'uses' => 'AlumnoCursoController@pdf']);
 
 
-Route::resource('/comision', 'ComisionController', ['except' => ['destroy', 'update']]);
-Route::get('/comision/{comision}/delete', ['as' => 'comision.destroy', 'uses' => 'ComisionController@destroy']);
+Route::resource('/comision', 'ComisionController', ['except' => ['destroy', 'update','edit']]);
+Route::get('/comision/{comision}/delete', ['as' => 'comision.destroy', 'uses' => 'ComisionController@destroy'])->middleware('owner:Comision');
 Route::post('/comision/create', ['as' => 'comision.store', 'uses' => 'ComisionController@store']);
-Route::put('/comision/{comision}/edit', ['as' => 'comision.update', 'uses' => 'ComisionController@update']);
+Route::get('/comision/{comision}/edit', ['as' => 'comision.edit', 'uses' => 'ComisionController@edit'])->middleware('owner:Comision');
+Route::put('/comision/{comision}/edit', ['as' => 'comision.update', 'uses' => 'ComisionController@update'])->middleware('owner:Comision');
 Route::get('/comision/{comision}/cancel', ['as' => 'comision.cancel', 'uses' => 'ComisionController@cancel']);
 Route::get('/comision/{comision}/show', ['as' => 'comision.show', 'uses' => 'ComisionController@show']);
 Route::get('/comision/{comision}/pdf', ['as' => 'comision.pdf', 'uses' => 'ComisionController@pdf']);
