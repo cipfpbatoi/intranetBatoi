@@ -32,8 +32,6 @@ class Menu extends Model
         
     ];
 
-
-
     private static function tipoUrl($url)
     {
         if (strpos($url, 'ttp::'))
@@ -52,10 +50,13 @@ class Menu extends Model
 
     private static function build($nom)
     {
-        $submenus = Menu::where([['menu', '=', $nom], ['submenu', '=', ''],['activo', '=', 1]])
-                ->whereIn('rol', RolesUser(AuthUser()->rol))
-                ->orderby('orden')
-                ->get();
+        $submenus = Menu::where([['menu', '=', $nom], ['submenu', '=', ''],['activo', '=', 1]]);
+        if (!isAdmin()) {
+            $submenus = $submenus->whereIn('rol', RolesUser(AuthUser()->rol));
+        } else {
+            $submenus = $submenus->where('rol','<>',5);
+        }
+        $submenus = $submenus->orderby('orden')->get();
         foreach ($submenus as $sitem) {
             if ($sitem->url == '') {
                 $items = Menu::where([['menu', '=', $nom], ['submenu', '=', $sitem->nombre], ['activo', '=', 1]])
@@ -65,7 +66,6 @@ class Menu extends Model
                 foreach ($items as $item) {
                     $menu[$sitem->nombre]['submenu'][$item->nombre] = array(self::tipoUrl($item->url) => $item->url, 
                         'img' => $item->img, 'roles' => $item->rol,'secure'=>true);
-                    
                 }
             } else {
                 $menu[$sitem->nombre] = array(self::tipoUrl($sitem->url) => $sitem->url, 'class' => $sitem->class,'secure'=>true);

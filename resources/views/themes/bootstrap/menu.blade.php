@@ -7,8 +7,9 @@
             <span class="fa fa-chevron-down"></span>       
             @endif
         </a>
+
             @if (!empty($item['submenu']))
-            <ul class="nav child_menu">
+                <ul class="nav child_menu">
                     @foreach ($item['submenu'] as $subitem)
                         <li>
                              @if (isset($subitem['full-url']))

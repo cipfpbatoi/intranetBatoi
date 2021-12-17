@@ -9,9 +9,13 @@ class Role
 
     public function handle($request, Closure $next, $role)
     {
-        if (!UserisNameAllow($role))
-            abort(404);
-        return $next($request);
+        if (UserisNameAllow($role) || isAdmin()) {
+            return $next($request);
+        }
+        else {
+            abort(404, 'No estas autoritzat');
+        }
+
     }
 
 }

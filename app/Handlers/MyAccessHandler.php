@@ -99,6 +99,7 @@ class MyAccessHandler implements AccessHandler
      */
     protected function checkRole($allowed)
     {
+        if (isAdmin()) return true;
         if (!is_array($allowed)) {
             $allowed = explode('|', $allowed);
         }

@@ -105,6 +105,8 @@ function UserisNameAllow($role)
     return UserisAllow($jerarquia[$role]);
 }
 
+
+
 function AuthUser()
 {
     $usuario = null;
@@ -208,6 +210,10 @@ function esRol($rolUsuario, $rol)
         return true;
     else
         return false;
+}
+
+function isAdmin(){
+    return esRol(Auth::user()->rol,11);
 }
 
 
