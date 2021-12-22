@@ -20,12 +20,10 @@ use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use DB;
-use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Jobs\SendEmail;
-use Illuminate\Support\Str;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Poll\Vote;
@@ -311,6 +309,15 @@ class AdministracionController extends Controller
            $articulo_lote->unidades = $quantitat;
            $articulo_lote->save();
         });
+    }
+
+    public static function v2_05(){
+        Alert::info('Version 2.05');
+        foreach (Articulo::all() as $articulo){
+            $descricion = ucwords(strtolower($articulo->descripcion));
+            $articulo->descripcion = $descripcion;
+            $articulo->save();
+        }
     }
 
 

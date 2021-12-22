@@ -42,4 +42,8 @@ class Articulo extends Model
         $this->save();
     }
 
+    public function setDescripcionAttribute($value){
+        $this->attributes['descripcion'] =ucwords(strtolower($value));
+    }
+
 }
