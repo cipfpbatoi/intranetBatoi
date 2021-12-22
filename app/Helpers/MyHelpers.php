@@ -213,7 +213,7 @@ function esRol($rolUsuario, $rol)
 }
 
 function isAdmin(){
-    return esRol(Auth::user()->rol,11);
+    return Auth::user()?esRol(Auth::user()->rol,11):false;
 }
 
 

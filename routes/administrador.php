@@ -37,6 +37,7 @@ Route::put('/tipoincidencia/{ciclo}/edit', ['as' => 'ciclo.update', 'uses' => 'T
 Route::get('/tipoincidencia/{ciclo}/delete', ['as' => 'ciclo.destroy', 'uses' => 'TipoIncidenciaController@destroy']);
 //canvia d'usuari
 Route::get('/profesor/{idProfesor}/change',['as' =>'profesor.change','uses' => 'ProfesorController@change']);
+Route::get('/alumno/{idAlumne}/change',['as' =>'alumno.change','uses' => 'AlumnoController@change']);
 
 // esborra taules canvi de curs
 Route::get('/nuevoCurso',['as' => 'curso.nuevo.index', 'uses' => 'AdministracionController@nuevoCursoIndex']);

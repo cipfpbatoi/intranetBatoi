@@ -4,9 +4,6 @@ namespace Intranet\Entities;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Curso;
-use Intranet\Entities\Municipio;
 use Jenssegers\Date\Date;
 
 

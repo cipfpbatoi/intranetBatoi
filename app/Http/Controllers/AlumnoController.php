@@ -3,6 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\Botones\BotonIcon;
 use Jenssegers\Date\Date;
@@ -106,5 +108,7 @@ class AlumnoController extends PerfilController
         avisa($id, $request->explicacion != '' ? $request->explicacion : 'Te ha dado un toque.');
         return back();
     }
+
+
 
 }

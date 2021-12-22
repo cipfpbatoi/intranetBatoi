@@ -83,7 +83,6 @@ class AlumnoGrupoController extends IntranetController
             $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-square-o', 'where' => ['fol', '==', 0]]));
             $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-check', 'where' => ['fol', '==', 1]]));
         }
-
         $cursos = Curso::Activo()->get();
         foreach ($cursos as $curso) {
             if (($curso->aforo == 0) || ($curso->NAlumnos < $curso->aforo * config('variables.reservaAforo'))) {

@@ -63,10 +63,11 @@ Route::get('/reunion/{reunion}/ics', ['as' => 'reunion.ics', 'uses' => 'ReunionC
 Route::get('/reunion/{reunion}/informe', ['as' => 'reunion.informeAlumno', 'uses' => 'ReunionController@printInformes']);
 
 
-Route::resource('/grupotrabajo', 'GrupoTrabajoController', ['except' => ['destroy', 'update']]);
-Route::get('/grupotrabajo/{grupotrabajo}/delete', ['as' => 'grupotrabajo.destroy', 'uses' => 'GrupoTrabajoController@destroy']);
+Route::resource('/grupotrabajo', 'GrupoTrabajoController', ['except' => ['destroy', 'update','edit']]);
+Route::get('/grupotrabajo/{grupotrabajo}/delete', ['as' => 'grupotrabajo.destroy', 'uses' => 'GrupoTrabajoController@destroy'])->middleware('owner:GrupoTrabajo');
 Route::post('/grupotrabajo/create', ['as' => 'grupotrabajo.store', 'uses' => 'GrupoTrabajoController@store']);
-Route::put('/grupotrabajo/{grupotrabajo}/edit', ['as' => 'grupotrabajo.update', 'uses' => 'GrupoTrabajoController@update']);
+Route::get('/grupotrabajo/{grupotrabajo}/edit', ['as' => 'grupotrabajo.edit', 'uses' => 'GrupoTrabajoController@edit'])->middleware('owner:GrupoTrabajo');
+Route::put('/grupotrabajo/{grupotrabajo}/edit', ['as' => 'grupotrabajo.update', 'uses' => 'GrupoTrabajoController@update'])->middleware('owner:GrupoTrabajo');
 Route::get('/grupotrabajo/{grupotrabajo}/detalle', ['as' => 'grupotrabajo.detalle', 'uses' => 'GrupoTrabajoController@detalle']);
 Route::post('/grupotrabajo/{grupotrabajo}/nuevoProfesor', 'GrupoTrabajoController@altaProfesor');
 Route::get('/grupotrabajo/{grupotrabajo}/borrarProfesor/{profesor}', 'GrupoTrabajoController@borrarProfesor');
