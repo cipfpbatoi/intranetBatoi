@@ -285,7 +285,7 @@ class AdministracionController extends Controller
 
     public static function v2_03()
     {
-        Alert::info('Version 2.3');
+        Alert::info('Version 2.03');
         return ;
         $ordenadores = DB::table('ordenadores')->get();
 
@@ -314,7 +314,7 @@ class AdministracionController extends Controller
     public static function v2_05(){
         Alert::info('Version 2.05');
         foreach (Articulo::all() as $articulo){
-            $descricion = ucwords(strtolower($articulo->descripcion));
+            $descripcion = ucwords(strtolower($articulo->descripcion));
             $articulo->descripcion = $descripcion;
             $articulo->save();
         }
