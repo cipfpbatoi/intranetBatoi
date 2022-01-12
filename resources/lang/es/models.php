@@ -90,6 +90,10 @@ return array(
         'Alumno_curso' => array(
             'index' => 'Alumnos Curso',
         ),
+        'Incidencia' => array(
+            'index' => 'Gestionar incidencias',
+            'create' => 'Incidencia'
+        ),
         'Actividad' => array(
             'index' => 'Gestionar Actividades extraescolares',
             'create' => 'Alta actividad',
@@ -489,7 +493,8 @@ return array(
             'AlumnoResultado' => 'Avaluacio Alumne',
             'Lote' => 'Factura',
             'ArticuloLote' => 'Articulo de Factura',
-            'Articulo' => 'Articulo'
+            'Articulo' => 'Articulo',
+            'Incidencia' => 'Incidencia',
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

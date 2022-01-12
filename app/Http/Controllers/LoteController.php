@@ -50,7 +50,7 @@ class LoteController extends ModalController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('direccion.lote.create', ['text'=>'Nova Factura','roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('index', new BotonBasico('direccion.lote.create', ['text'=>'Nova Factura','roles' => [config('roles.rol.direccion'), config('roles.rol.administrador')]]));
     }
 
     protected function print($id){
