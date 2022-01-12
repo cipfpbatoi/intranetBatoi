@@ -178,6 +178,7 @@ return array(
             'edit' => 'Editar programación',
             'email' => 'Enviar para revisar',
             'seguimiento' => 'Llenar el seguimiento de la programación',
+            'link' => 'Ver programación',
             'resolve' => 'Aprobar',
             'show' => 'Mostrar Programación id.',
             '2' => 'Comprobada y cumple los requirimientos.',

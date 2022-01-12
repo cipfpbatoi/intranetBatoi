@@ -378,7 +378,7 @@ Route::get('/programacion/{programacion}/seguimiento', ['as' => 'programacion.se
 Route::get('/itaca',['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
 
 
-Route::get('/profesor/change',['as' =>'profesor.backChange','uses' => 'ProfesorController@backChange']);
+Route::get('/profesor/backChange',['as' =>'profesor.backChange','uses' => 'ProfesorController@backChange']);
 
 //Jefa de practicas
 Route::get('/fctcap/{grupo}/check', ['as' => 'fct.acta', 'uses' => 'PanelPG0301Controller@indice']);

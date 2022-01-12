@@ -13,5 +13,5 @@
     {!! Intranet\Entities\Menu::make('topalumno') !!}
 @endif
 @if (Illuminate\Support\Facades\Session::get('userChange'))
-    <li><a href='/profesor/change'><i class="fa fa-user pull-right"></i>{!!trans("messages.generic.change")!!}</a></li>
+    <li><a href='/profesor/backChange'><i class="fa fa-user pull-right"></i>{!!trans("messages.generic.backChange")!!}</a></li>
 @endif

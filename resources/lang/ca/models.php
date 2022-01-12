@@ -181,6 +181,7 @@ return array(
             'email' => 'Enviar per revisar',
             'show' => 'Mostrar Programació id.',
             'seguimiento' => 'Omplir seguiment de la programació',
+            'link' => 'Vore programació',
             '2' => 'Comprobada i compleix els requeriments.',
             '3' => 'Aprobada pel departament',
             '1' => 'Pendent de revisar',
