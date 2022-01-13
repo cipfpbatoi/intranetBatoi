@@ -74,6 +74,12 @@ class AdministracionController extends Controller
         return back();
     }
 
+    public function cleanCache()
+    {
+        Alert::info(system('php ./../artisan cache:clear'));
+        return back();
+    }
+
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
@@ -85,6 +91,8 @@ class AdministracionController extends Controller
     private function esborrarProgramacions(){
         Programacion::where('curso', '!=', Curso())->delete();
     }
+
+
 
     private function esborrarEnquestes(){
         foreach (Poll::all() as $poll){

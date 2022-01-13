@@ -5,6 +5,7 @@
  */
 
 const maxDiasReserva=30;
+const minDiasReserva=3;
 const esDireccion=2;
 
 $(function() {
@@ -17,6 +18,7 @@ $(function() {
 
     //datepickers ui
 	var maxFecha=new Date();
+	maxFecha.setDate(maxFecha.getDate()-minDiasReserva);
 	$('#dia').attr('minDate',maxFecha.toISOString().substr(0,10));
 	if ($('#rol').text()%esDireccion == 0) {
 
