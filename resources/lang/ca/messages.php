@@ -291,6 +291,7 @@ return array(
         'Sendeval' => 'Enviar Avaluació Alumne',
         'Ficurs' => 'Tancament Curs',
         'Facturas' => 'Llibre de Factures',
+        'Cleancache' => 'Netejar la Cache'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
