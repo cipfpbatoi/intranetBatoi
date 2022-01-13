@@ -15,7 +15,7 @@ return [
     'nombreEval' => [1=>'Primera', 2=> 'Segona', 3=>'Final'],
     'asociacionEmpresa' => [1=>'FCT',2=>'FCT Convalidada/Exempció'],
     'grupoTutoria' => [0=>'Tots el grups',1=>'Grau mitjà',2=>'Grau Superior'],
-    'motivoAusencia' => ['Baja médica', 'Licencia por formación', 'Enfermedad común', 'Traslado de domicilio', 'Asistencia pruebas selectivas', 'Enfermedad grave o muerte del cónyuge', 'Asistencia médica, educativa o asistencial', 'Otros (rellenar cuadro de observaciones)'],
+    'motivoAusencia' => ['Baixa mèdica', 'LLicència per formació', 'Malaltia comú', 'Trasllat de domicili', 'Assistència proves sel·lectives', 'Malaltia greu o defunció de familiar en primer grau', 'Assistència mèdica, educativa o assistencial', "Altres (omplir cuadre d'observacions)"],
     'tipoEstudio' => [1=>'Cicle Formatiu de Grau Mitjà','2'=>'Cicle Formatiu de Grau Superior','3'=>'Cicle Formatiu Bàsic','4'=>'Batxiller','5'=>'ESO','6'=>'Primària'],
     'tipoEstudioC' => [1=>'Ciclo Formativo de Grado Medio','2'=>'Ciclo Formativo de Grado Superior','3'=>'Ciclo Formativo Básico','4'=>'Bachiller','5'=>'ESO','6'=>'Primaria'],
     'tipoTutoria' => [0=>'No assignada',1=>'Xarrades Programades',2=>'Convivència',3=>'Acadèmiques-Professionals',4=>'Temes transversals'],
