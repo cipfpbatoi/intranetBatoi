@@ -88,6 +88,8 @@ class Colaboracion extends Model
             return $query->whereIn('idCiclo', $ciclo);
         }
     }
+
+
     public function getEmpresaAttribute()
     {
         return $this->Centro->nombre;

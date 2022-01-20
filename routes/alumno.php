@@ -11,6 +11,7 @@ Route::get('/curso', ['as' => 'curso.direccion.index', 'uses' => 'PanelAlumnoCur
 Route::get('/alumnocurso/{curso}/register', ['as' => 'alumnocurso.register', 'uses' => 'AlumnoCursoController@register']);
 Route::get('/alumnocurso/{curso}/unregister', ['as' => 'alumnocurso.unregister', 'uses' => 'AlumnoCursoController@unregister']);
 Route::get('/equipo', ['as' => 'alumno.equipo', 'uses' => 'AlumnoController@equipo']);
+Route::get('/empresas',['as' => 'alumno.empresa', 'uses' => 'ColaboracionAlumnoController@index']);
 
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'alumno.mensaje', 'uses' => 'AlumnoController@alerta']);
 
