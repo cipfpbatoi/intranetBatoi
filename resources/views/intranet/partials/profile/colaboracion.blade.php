@@ -9,14 +9,14 @@
     @if (count($fcts))
         @foreach ($fcts as $fct)
             @php
-                $contactos = \Intranet\Entities\Activity::mail('Fct')->id($fct->id)->orderBy('created_at')->get();
+                $contactos = \Intranet\Entities\Activity::mail()->id($fct->id)->orderBy('created_at')->get();
                 $alumnos = $fct->Alumnos;
             @endphp
             @include('intranet.partials.profile.partials.fct')
         @endforeach
     @else
         @php
-        $contactos = \Intranet\Entities\Activity::mail('Colaboracion')->id($elemento->id)->orderBy('created_at')->get();
+        $contactos = \Intranet\Entities\Activity::modelo('Colaboracion')->id($elemento->id)->orderBy('created_at')->get();
         @endphp
         @include ('intranet.partials.profile.partials.colaboracion')
     @endif
@@ -35,7 +35,7 @@
         @endforeach
     @else
         @php
-            $contactos = \Intranet\Entities\Activity::mail('Colaboracion')->id($elemento->id)->orderBy('created_at')->get();
+            $contactos = \Intranet\Entities\Activity::modelo('Colaboracion')->id($elemento->id)->orderBy('created_at')->get();
         @endphp
         @include ('intranet.partials.profile.partials.colaboracion')
     @endif
