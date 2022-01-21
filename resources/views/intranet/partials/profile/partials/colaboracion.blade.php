@@ -7,9 +7,15 @@
                         <li>{{$elemento->contacto}}</li>
                         <li>{{$elemento->telefono}}</li>
                         <li>{{$elemento->email}}</li>
-                        <li class="nombre">{{isset($elemento->propietario->fullName)?$elemento->propietario->fullName:$elemento->tutor}}
-                        </li>
+                        @if (isset($colaboraciones))
+                            @foreach ($colaboraciones as $colaboracion)
+                                @if ($colaboracion->Propietario)
+                                    <li class="nombre" style="background-color:@if ($colaboracion->estado == 2) lightblue @endif @if ($colaboracion->estado == 3) coral @endif ">{{$colaboracion->Xciclo}} - {{ $colaboracion->Propietario->shortName }}</li>
+                                @endif
+                            @endforeach
+                        @endif
                     </ul>
+
                 </div>
                 <div class="col-md-4 listActivity">
                     @foreach ($contactos as $contacto)
