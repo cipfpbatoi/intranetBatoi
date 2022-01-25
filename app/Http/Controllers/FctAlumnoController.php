@@ -40,6 +40,8 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumnofct.edit',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '2']]));
+
 
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
@@ -99,7 +101,33 @@ class FctAlumnoController extends IntranetController
     
     public function pdf($id)
     {
-        return self::preparePdf($id)->stream();
+        $fct = AlumnoFct::findOrFail($id);
+        if ($fct->asociacion == 1) {
+            return self::preparePdf($id)->stream();
+        }
+        if ($fct->asociacion == 2) {
+            return self::prepareExem($id)->stream();
+        }
+
+    }
+
+    public static function prepareExem($id){
+        $fct = AlumnoFct::findOrFail($id);
+        $grupo = $fct->Alumno->Grupo->first();
+        $cicle = $grupo->Ciclo;
+        $tutor = $grupo->Tutor;
+        $cdept = $cicle->departament->Jefe;
+        $director = Profesor::find(config('contacto.director'));
+        $dades = ['date' => FechaString($fct->hasta),
+            'cicle' => $cicle,
+            'tutor' => $tutor,
+            'cdept' => $cdept,
+            'centro' => config('contacto.nombre'),
+            'poblacion' => config('contacto.poblacion'),
+            'provincia' => config('contacto.provincia'),
+            'director' => $director->FullName
+        ];
+        return self::hazPdf('pdf.fct.exempcio', $fct, $dades);
     }
 
     public static function preparePdf($id){

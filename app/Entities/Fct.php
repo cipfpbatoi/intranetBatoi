@@ -69,7 +69,7 @@ class Fct extends Model
     }
     public function AlFct()
     {
-        return $this->belongsTo(AlumnoFct::class,'id','idFct');
+        return $this->hasMany(AlumnoFct::class,'idFct');
     }
     public function votes()
     {

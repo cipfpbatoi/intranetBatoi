@@ -20,6 +20,7 @@ use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use DB;
+use Intranet\Entities\Departamento;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
@@ -325,6 +326,17 @@ class AdministracionController extends Controller
             $descripcion = ucwords(strtolower($articulo->descripcion));
             $articulo->descripcion = $descripcion;
             $articulo->save();
+        }
+    }
+
+    public static function v2_06(){
+        Alert::info('Version 2.06');
+        foreach (Profesor::where('activo',1)->get() as $profesor){
+            if (esRol($profesor->rol,13)){
+                $departamento = Departamento::find($profesor->departamento);
+                $departamento->idProfesor = $profesor->dni;
+                $departamento->save();
+            }
         }
     }
 

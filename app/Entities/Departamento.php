@@ -18,7 +18,11 @@ class Departamento extends Model
     public function Modulo()
     {
         return $this->belongstoMany(Modulo::class,'modulo_ciclos','idDepartamento','idModulo');
-    } 
+    }
+    public function Jefe()
+    {
+        return $this->belongsTo(Profesor::class,'idProfesor','dni');
+    }
     
     public function getLiteralAttribute()
     {
