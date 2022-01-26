@@ -73,8 +73,7 @@ class Ciclo extends Resource
             Text::make('rd2')
                 ->rules( 'max:100')
                 ->hideFromIndex(),
-            Text::make('horasFct')
-                ->hideFromIndex(),
+            Text::make('horasFct'),
             Text::make('acronim')
                 ->rules( 'max:10')
                 ->hideFromIndex(),

@@ -122,12 +122,13 @@ class FctAlumnoController extends IntranetController
             'cicle' => $cicle,
             'tutor' => $tutor,
             'cdept' => $cdept,
+            'modulos' => $grupo->Modulos,
             'centro' => config('contacto.nombre'),
             'poblacion' => config('contacto.poblacion'),
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName
         ];
-        return self::hazPdf('pdf.fct.exempcio', $fct, $dades);
+        return self::hazPdf($cicle->normativa=='LOE'?'pdf.fct.exempcio_loe':'pdf.fct.exempcio_logse', $fct, $dades);
     }
 
     public static function preparePdf($id){

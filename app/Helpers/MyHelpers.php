@@ -15,6 +15,10 @@ function multiexplode($delimiters, $string)
     return explode($delimiters[0], $ready);
 }
 
+function genre($persona,$masculi=''){
+    return $persona->sexe == 'M'?'a':$masculi;
+}
+
 
 
 function voteValue($dni,$value){
