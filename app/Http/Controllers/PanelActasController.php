@@ -41,6 +41,7 @@ class PanelActasController extends BaseController
     {
         if (Grupo::findOrFail($this->search)->acta_pendiente) {
             $this->panel->setBoton('index', new BotonBasico("direccion.$this->search.finActa", ['text' => 'acta']));
+            $this->panel->setBoton('index', new BotonBasico("direccion.$this->search.rejectActa", ['text' => 'reject']));
         }
     }
 
@@ -87,6 +88,20 @@ class PanelActasController extends BaseController
         $grupo->acta_pendiente = 0;
         $grupo->save();
         avisa($grupo->tutor, "Ja pots passar a arreplegar l'acta del grup $grupo->nombre", "#");
+        return back();
+    }
+
+    public function rejectActa($idGrupo){
+        $grupo = Grupo::findOrFail($idGrupo);
+        $fcts = AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
+        $correus = 0;
+        foreach ($fcts as $fct){
+            $fct->actas = 0;
+            $fct->save();
+        }
+        $grupo->acta_pendiente = 0;
+        $grupo->save();
+        avisa($grupo->tutor, "S'han detectat errades en l'acta de FCT del grup $grupo->nombre. Ja pots corregir-les", "#");
         return back();
     }
 

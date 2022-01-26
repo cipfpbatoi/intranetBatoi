@@ -61,7 +61,7 @@ Route::get('/infDpto',['as'=>'infdpto.control','uses'=>'PanelInfDptoController@i
 
 Route::get('/{grupo}/acta', ['as' => 'fct.acta', 'uses' => 'PanelActasController@indice']);
 Route::get('/{grupo}/finActa', ['as' => 'fct.finActa', 'uses' => 'PanelActasController@finActa']);
-
+Route::get('/{grupo}/rejectActa', ['as' => 'fct.rejectActa', 'uses' => 'PanelActasController@rejectActa']);
 
 
 Route::get('/{grupo}/fol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificados']);

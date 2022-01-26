@@ -341,7 +341,8 @@ return array(
             'firma' => 'Generar zip firma'
         ),
         'Direccion' => array(
-           'acta' => 'Acta completada' 
+           'acta' => 'Acta completada' ,
+            'reject' => 'Rechazar acta',
         ),
         'Falta_profesor' => array(
             'index' => 'Panel Fichaje'

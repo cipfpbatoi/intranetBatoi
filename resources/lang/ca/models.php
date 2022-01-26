@@ -344,7 +344,8 @@ return array(
             'firma' => 'Generar ZIP firma'
         ),
         'Direccion' => array(
-           'acta' => 'Acta completada'
+           'acta' => 'Acta completada',
+            'reject' => 'Rebutjar Acta',
         ),
         'Falta_profesor' => array(
             'index' => 'Panel Fitxaje'

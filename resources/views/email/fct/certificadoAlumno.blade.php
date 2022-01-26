@@ -15,8 +15,6 @@
 <div class="container" >
     Estimat {{$fct->Alumno->fullName}}:<br/>
     Adjunt et remet certificat de les pràctiques de FCT realitzatdes.<br/>
-    Recorda que has de sol·licitar el títol. El procediment el tens en el següent <a href="http://www.cipfpbatoi.es/index.php/ca/tramits/">enllaç</a>.<br/>
     Salutacions cordials.
-
 </div>
 @endsection
