@@ -13,7 +13,7 @@
         @endif
         <p style="margin-top: 1cm;">Contra aquesta resolució l'interessat pot presentar recurs d'alçada en el termini d'un mes des de la seua notificació davant la Direcció Territorial d'Educació d'Alacant.</p>
         <p style="text-align: right;margin: 1cm;">{{$datosInforme['poblacion']}}, {{$datosInforme['date']}} </p>
-        <p style="margin: 4cm;"></p>
+        <p style="margin: 3cm;"></p>
         @foreach ($datosInforme['modulos'] as $modulo)
             @foreach ($modulo->Profesores() as $idProfesor)
                 @php $profesor = \Intranet\Entities\Profesor::find($idProfesor)->first() @endphp
