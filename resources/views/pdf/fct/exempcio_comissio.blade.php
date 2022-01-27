@@ -1,4 +1,5 @@
 <div class="page" style="font-size:large;line-height: 2em;text-align: justify;">
+    @include('pdf.partials.cabecera')
     <br/>
     <h3 style="text-align: center;margin: 2cm">INFORME DE LA COMISSIÓ DE VALORACIÓ D'EXEMPCIÓ DE LA FCT DEL CICLE FORMATIU {{strtoupper($datosInforme['cicle']->vliteral)}}.</h3>
     <p style="margin: 1cm;">Reunida la comissió de valoració de les exempcions de la FCT del CIP d'FP Batoi del curs {{ curso() }} del cicle formatiu {{$datosInforme['cicle']->vliteral}},

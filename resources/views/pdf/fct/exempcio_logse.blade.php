@@ -1,6 +1,7 @@
 @extends('layouts.pdf')
 @section('content')
-    <div class="page" style="font-size:large;line-height: 2em;text-align: justify;">
+    @include('pdf.partials.cabecera')
+    <div class="page" style="font-size:large;line-height: 2em;text-align: justify;margin-top:1cm">
         <h2 style="text-align: center;margin: 2cm">INFORME D'EXEMPCIÓ F.C.T.</h2>
         <p style="margin: 1cm;">{{$datosInforme['tutor']->fullName}}, coordinador{{genre($datosInforme['tutor'])}} del Mòdul de Formació en Centres de Treball del {{$datosInforme['cicle']->vliteral}} informa que:</p>
         <p style="margin-top: 1cm;">
