@@ -290,6 +290,7 @@ return array(
         'Facturas' => 'Llibre de Factures',
         'Cleancache' => 'Netejar la Cache',
         'Igualtat' => 'Igualtat i Convivència',
+        'Comissio' => 'Membres de la comissió'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
