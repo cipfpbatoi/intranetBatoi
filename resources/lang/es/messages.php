@@ -275,7 +275,8 @@ return array(
         'Sendeval' => 'Enviar Evaluación Alumno',
         'Ficurs' => 'Cierre Curso',
         'Facturas' => 'Libro de Facturas',
-        'Cleancache' => 'Limipiar la Cache'
+        'Cleancache' => 'Limipiar la Cache',
+        'Igualtat' => 'Igualdad y Convivencia',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
