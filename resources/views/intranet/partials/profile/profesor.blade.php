@@ -31,7 +31,9 @@
                 @foreach ($panel->getBotones('profile') as $button)
                     {{ $button->show($elemento) }}
                 @endforeach
-                <a href='#' class='btn btn-primary btn-xs'>{{$elemento->ahora}}</a>
+                @if ($elemento->ahora)
+                    <a href='#' class='btn btn-primary btn-xs'>{{$elemento->ahora}}</a>
+                @endif
             </div>
         </div>
     </div>

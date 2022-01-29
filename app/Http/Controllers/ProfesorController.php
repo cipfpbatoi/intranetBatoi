@@ -84,21 +84,30 @@ use traitAutorizar,
 
     public function equipoDirectivo()
     {
+        $equipo = $this->rol( config('roles.rol.direccion'));
+        return $this->grid($equipo);
+    }
+
+    public function comissio()
+    {
+        $equipo = $this->rol( config('comissio_IiC'));
+        return $this->grid($equipo);
+    }
+
+    public function rol($rol)
+    {
+        $this->panel->setPestana(config("roles.lor.$rol"), true, self::PROFILE_PROFESOR, null, null, 1,$this->parametresVista);
+        $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
+        $this->panel->setBoton('profile', new BotonIcon('profesor.horario', ['icon' => 'fa-user', 'class' => 'btn-success']));
         $todos = Profesor::Activo()
-                ->orderBy('apellido1', 'asc')
-                ->orderBy('apellido2', 'asc')
-                ->get();
-        $equipo = $todos->filter(function($item) {
+            ->orderBy('apellido1', 'asc')
+            ->orderBy('apellido2', 'asc')
+            ->get();
+        return $todos->filter(function($item) {
             if (esRol($item->rol, config('roles.rol.direccion'))) {
                 return $item;
             }
         });
-        $this->panel->setPestana('profile', true, self::PROFILE_PROFESOR, null, null, 1,$this->parametresVista);
-        $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
-        $this->panel->setBoton('profile', new BotonIcon('profesor.horario', ['icon' => 'fa-user', 'class' => 'btn-success']));
-
-        Session::put('colectivo', 'Equipo directivo');
-        return $this->grid($equipo);
     }
 
     public function equipo($grupo)

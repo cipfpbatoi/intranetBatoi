@@ -15,6 +15,7 @@ return [
         'dual' => 37,
         'jefe_practicas' => 41,
         'qualitat' => 43,
+        'comissio_IiC' => 47
     ],
     'lor' => [
         2 => 'direccion',
@@ -30,7 +31,8 @@ return [
         31 => 'practicas',
         37 => 'dual',
         41 => 'jefe_practicas',
-        43 => 'qualitat'
+        43 => 'qualitat',
+        47 => 'comissio_IiC',
     ],
     'actions' => [
         'SegAval' => 'Seguiments Avaluació',
