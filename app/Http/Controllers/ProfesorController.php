@@ -90,7 +90,7 @@ use traitAutorizar,
 
     public function comissio()
     {
-        $equipo = $this->rol( config('comissio_IiC'));
+        $equipo = $this->rol( config('roles.rol.comissio_IiC'));
         return $this->grid($equipo);
     }
 
@@ -103,8 +103,8 @@ use traitAutorizar,
             ->orderBy('apellido1', 'asc')
             ->orderBy('apellido2', 'asc')
             ->get();
-        return $todos->filter(function($item) {
-            if (esRol($item->rol, config('roles.rol.direccion'))) {
+        return $todos->filter(function($item) use ($rol){
+            if (esRol($item->rol, $rol)) {
                 return $item;
             }
         });

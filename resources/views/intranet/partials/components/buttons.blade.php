@@ -1,7 +1,9 @@
 @foreach ($panel->getBotones($tipo) as $button)
-    @if (isset($elemento) && $button!='')
-        {{ $button->show($elemento) }}
-    @else
-        {{ $button->show() }}
-    @endif    
+    @if (!empty($button))
+        @if (isset($elemento))
+            {{ $button->show($elemento) }}
+        @else
+            {{ $button->show() }}
+        @endif
+    @endif
 @endforeach
