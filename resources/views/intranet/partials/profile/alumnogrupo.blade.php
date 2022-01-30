@@ -4,28 +4,28 @@
         <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
             <div id="{{$alumno->nia}}" class="well profile_view">
                 <div class="col-sm-12">
-                    <h4 class="brief"><i>Nia : {{ $alumno->nia}}</i> <i class="fa fa-credit-card"> {{ $alumno->dni}}</i></h4>
+                    <h4 class="brief"><em>Nia : {{ $alumno->nia}}</em> <em class="fa fa-credit-card"> {{ $alumno->dni}}</em></h4>
                     <div class="left col-xs-7">
                         <h2>{{ $alumno->fullName }} </h2>
                         @if($alumno->expediente != ' ')
                             <p><strong>{{ trans("validation.attributes.expediente") }} {{$alumno->expediente}}</strong> </p>
                         @endif
                         <ul class="list-unstyled">
-                            <li><i class="fa fa-phone"></i> {{$elemento->telef1}}</li>
+                            <li><em class="fa fa-phone"></em> {{$elemento->telef1}}</li>
                             @if ($elemento->telef2 != " ")
-                            <li><i class="fa fa-phone"></i> {{$elemento->telef2}}</li>
+                            <li><em class="fa fa-phone"></em> {{$elemento->telef2}}</li>
                             @endif
                         </ul>
                     </div>
                     <div class="right col-xs-5 text-center">
-                        <img src="{{asset('storage/'.$alumno->foto)}}" alt="" heigth="100px" width="90px" class="img-circle img-responsive">
+                        <img src="{{asset('storage/'.$alumno->foto)}}" alt="" style="width: 90px; height: 100px" class="img-circle img-responsive">
                     </div>
                     <div class="left col-xs-12">
                         <ul class="list-unstyled">
-                            <li><i class="fa fa-building"></i> {{$alumno->domicilio}} </li>
-                            <li><i class="fa fa-envelope-o"></i> {{$alumno->codigo_postal}} {{$alumno->Municipio->municipio}}</li>
+                            <li><em class="fa fa-building"></em> {{$alumno->domicilio}} </li>
+                            <li><em class="fa fa-envelope-o"></em> {{$alumno->codigo_postal}}@isset($alumno->Municipio){{$alumno->Municipio->municipio}}@endisset</li>
                             @if ($elemento->email != " ")
-                            <li><i class="fa fa-envelope"></i> {{$alumno->email}}</li>
+                            <li><em class="fa fa-envelope"></em> {{$alumno->email}}</li>
                             @endif
                         </ul>
                     </div>
