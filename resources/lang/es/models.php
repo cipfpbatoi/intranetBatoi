@@ -206,6 +206,8 @@ return array(
             'authorize' => 'Tramitar',
             'unauthorize' => 'No tramitar',
             'autorizar' => 'Tramitar todos expedientes',
+            'link' => 'Adjuntar ficheros',
+            'titulo' => 'Ficheros adjuntos expediente :expediente',
             '2' => 'En tramite',
             '3' => 'Resueltos',
             '1' => 'Peniente de revisar',

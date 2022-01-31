@@ -36,5 +36,6 @@ return [
         'down' => 'fa-arrow-down',
         'orden' => 'fa-calendar',
         'open' => 'fa-toggle-on',
-        'valoracion' => 'fa-file-pdf-o'
+        'valoracion' => 'fa-file-pdf-o',
+        'link' => 'fa-paperclip'
     ];

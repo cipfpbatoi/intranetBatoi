@@ -45,6 +45,11 @@ class ExpedienteController extends ModalController
         return $this->redirect();
     }
 
+    public function link($id){
+        $expediente = Expediente::findOrFail($id);
+        return view('expediente.value',compact('expediente'));
+    }
+
     /**
      *
      */
@@ -54,6 +59,7 @@ class ExpedienteController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('expediente.pdf', ['where' => ['estado', '==', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.edit', ['where' => ['estado', '<', '2']]));
+        $this->panel->setBoton('grid', new BotonImg('expediente.link', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.init', ['where' => ['estado', '==', '0','esInforme','==','0']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.pdf', ['where' => ['esInforme', '==', 1]]));
     }
