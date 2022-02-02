@@ -6,16 +6,13 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <div class="dropzone-previews" style="clear: both">
             <div class="dz-message" style="height:200px;">
-                Posa els teus fitxers ací
+                Posa els teus fitxers ací (Màxim 5 fitxers)
             </div>
         </div>
         <br/>
         <br/>
-        <input type='hidden' id="image1" name='image1' value="">
-        <input type='hidden' id="image2" name='image2' value="">
-        <input type='hidden' id="image3" name='image3' value="">
-        <input type='hidden' id="idExpediente" name='idExpediente' value="{!!$expediente->id!!}">
-        <input id="submit" class="btn btn-info" type="submit" value="@lang("messages.buttons.submit")">
+        <input type='hidden' id="id" name='id' value="{!!$expediente->id!!}">
+        <input id="submit" class="hidden" type="submit">
         <a href="/expediente" class="btn btn-info" >@lang('messages.buttons.volver')</a>
     </form>
 

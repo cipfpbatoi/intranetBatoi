@@ -10,6 +10,7 @@ use Intranet\Entities\Expediente;
 use Intranet\Services\Gestor;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\TipoExpediente;
+use Illuminate\Http\Request;
 
 /**
  * Class ExpedienteController
@@ -37,6 +38,35 @@ class ExpedienteController extends ModalController
         $new = new Expediente();
         $new->fillAll($request);
         return $this->redirect();
+    }
+
+    public function adjuntos(Request $request){
+        $id = $request->id;
+        $path = storage_path()."/app/public/Expedientes/$id";
+        if ($request->delete) {
+            $this->deleteAdjuntos($path, $request->except('_token', 'id'));
+        }
+        if ($request->hasFile('file')){
+            $files = $request->file('file');
+            foreach ($files as $file) {
+                $file->move($path, $file->getClientOriginalName());
+            }
+        }
+    }
+
+    private function deleteAdjuntos($path,$request){
+        try{
+            $dir = opendir($path);
+            while ($elemento = readdir($dir)){
+                if( $elemento != "." && $elemento != ".." && !is_dir($path.'/'.$elemento) ){
+                    if (!array_search($elemento,$request)) {
+                        unlink($path . '/' . $elemento);
+                    }
+                }
+            }
+        }catch (\Exception $e){
+            dd($e);
+        }
     }
 
     public function update(ExpedienteRequest $request, $id)

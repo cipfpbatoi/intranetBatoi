@@ -177,7 +177,7 @@ Route::get('/expediente/{expediente}/notification', ['as' => 'expediente.notific
 Route::get('/expediente/{expediente}/init', ['as' => 'expediente.init', 'uses' => 'ExpedienteController@init']);
 Route::get('/expediente/{expediente}/active', ['as' => 'expediente.active', 'uses' => 'ExpedienteController@pasaOrientacion']);
 Route::get('/expedienteO', ['as' => 'expediente.orientacion', 'uses' => 'PanelExpedienteOrientacionController@index']);
-
+Route::post('/expediente/adjuntos',['as' => 'expediente.adjuntos', 'uses' => 'ExpedienteController@adjuntos']);
 
 Route::resource('/resultado', 'ResultadoController', ['except' => ['destroy','update', 'show']]);
 Route::get('/resultado/{resultado}/delete', ['as' => 'resultado.destroy', 'uses' => 'ResultadoController@destroy']);

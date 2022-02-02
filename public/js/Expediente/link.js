@@ -1,5 +1,5 @@
 Dropzone.options.myDropzone = {
-    autoProcessQueue: false,
+    autoProcessQueue: true,
     uploadMultiple: true,
     maxFilezise: 10,
     maxFiles: 5,
@@ -7,7 +7,7 @@ Dropzone.options.myDropzone = {
     addRemoveLinks: true,
     timeout: 50000,
     method: 'POST',
-    acceptedFiles: 'pdf/*',
+    acceptedFiles: 'application/pdf',
     previewsContainer: ".dropzone-previews",
 
     headers: {
@@ -15,11 +15,12 @@ Dropzone.options.myDropzone = {
     },
 
     init: function() {
-        var submitBtn = document.querySelector("#submit");
-        var expediente = $('#idExpediente').attr('value');
-        var serverFiles = [];
+        var expediente = $('#id').attr('value');
         myDropzone = this;
 
+        this.on("complete", function(file) {
+            $(".dz-remove").html("<div><span class='fa fa-trash text-danger' style='font-size: 1.5em'></span></div>");
+        });
 
         $.ajax({
             url: '/api/expediente/'+expediente+'/getFiles',
@@ -29,33 +30,26 @@ Dropzone.options.myDropzone = {
                 //console.log(data);
                 $.each(data.data, function (key, mockFile) {
                     myDropzone.emit("addedfile", mockFile);
-                    myDropzone.createThumbnailFromUrl(mockFile,'/storage/Expedients/'+mockFile.name);
+                    myDropzone.createThumbnailFromUrl(mockFile,'/storage/Expedientes/'+expediente+'/'+mockFile.name);
                     myDropzone.emit("success", mockFile);
                     myDropzone.files.push(mockFile);
                     myDropzone.emit("complete", mockFile);
-                    serverFiles.push(mockFile);
                 });
             },
-        });
-
-
-        submitBtn.addEventListener("click", function(e){
-            if (myDropzone.getQueuedFiles().length > 0) {
-                e.preventDefault();
-                e.stopPropagation();
-                myDropzone.processQueue();
-            }  else {
-                serverFiles.forEach(function(file,index){
-                    var etiqueta = "#image"+(index+1);
-                    $(etiqueta).val(file.name);
-                })
-            }
         });
 
         this.on("addedfile", function (file) {
             if (file.size == 0) {
                 this.removeFile(file);
                 return;
+            } else {
+                var a = document.createElement('a');
+                a.setAttribute('style','float:right');
+                a.setAttribute('href', '/storage/Expedientes/'+expediente+'/'+file.name);
+                a.setAttribute('target', "_blank");
+                a.innerHTML = "<em class='fa fa-download'></em>";
+                file.previewTemplate.appendChild(a);
+                myDropzone.processQueue();
             }
         });
 
@@ -69,20 +63,14 @@ Dropzone.options.myDropzone = {
         );
 
         this.on("removedfile", function(file){
-            const fakeFileIndex = serverFiles.findIndex(x => x.name === file.name);
-            if (fakeFileIndex !== -1) {
-                serverFiles.splice(fakeFileIndex, 1);
-            }
+            $.ajax({
+                    url: '/api/expediente/'+expediente+'/removefile/'+file.name,
+                    type: 'GET',
+                    dataType: 'json',
+            });
         })
 
-        this.on("sendingmultiple", function(data, xhr, formData) {
-            formData.append("idExpediente", jQuery("#idExpediente").val());
-            serverFiles.forEach(function(file,index){
-                var etiqueta = "#image"+(index+1);
-                $(etiqueta).val(file.name);
-                formData.append("image"+(index+1),file.name);
-            })
-        });
+
     },
 
 };
