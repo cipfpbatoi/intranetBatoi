@@ -6,6 +6,7 @@
 	<p>El plazo para proponer el cambio de horario es hasta 31 de enero.</p>
 	<p>En el campo observaciones debes poner el nº de horas que liberas y a qué tareas dedicarás cada una de dichas horas.</p>
 	<strong>Estado: </strong><input type="text" id="estado" readonly><br>
+	<button id="init">Iniciar Procedimiento</button>
 @include('home.partials.horario.profesor')
 	Observaciones: <textarea class="form-control" id="obs" placeholder="Indica el nº de horas liberadas y a qué las dedicarás"></textarea><br>
 	<button id="guardar">Guardar cambios y enviar</button>

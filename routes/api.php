@@ -18,8 +18,7 @@ Route::get('alumnoFct/{grupo}/grupo','AlumnoFctController@indice');
 Route::get('/convenio','EmpresaController@indexConvenio');
 Route::get('miIp','IPController@miIP');
 Route::get('actividad/{actividad}/getFiles','ActividadController@getFiles');
-Route::get('expediente/{expediente}/getFiles','ExpedienteController@getFiles');
-Route::get('expediente/{expediente}/removefile/{file}','ExpedienteController@removeFile');
+
 
 
 
@@ -112,6 +111,9 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('articuloLote','ArticuloLoteController');
     Route::resource('articulo','ArticuloController');
     Route::get('articuloLote/{id}/materiales','ArticuloLoteController@getMateriales');
+
+    Route::get('expediente/{expediente}/getFiles','ExpedienteController@getFiles');
+    Route::get('expediente/{expediente}/removefile/{file}','ExpedienteController@removeFile');
 
 });
 

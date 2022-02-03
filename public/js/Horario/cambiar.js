@@ -12,6 +12,26 @@ window.onload=function() {
 	else profe= document.getElementById('dni').textContent;
 
 	cargaCambios();
+	$('#init').on('click', function(ev) {
+		var datos={
+			estado: 'Pendiente',
+			cambios: [],
+			obs: ''
+		}
+		$.ajax({
+			type: "POST",
+			url: "/api/horarioChange/"+profe+'?api_token='+$("#_token").text()+'&data='+JSON.stringify(datos),
+			contentType: "application/json",
+			dataType: "json"
+		}).then(function(res) {
+			alert("Ja pots modificar l'horari");
+			location.reload();
+		}, function(err) {
+			alert('Error al guardar los datos: '+err);
+		});
+
+	});
+
 	$('#guardar').on('click', function(ev) {
 		var cambios=anotaCambios(); 
 		var datos={

@@ -6,7 +6,6 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <div class="dropzone-previews" style="clear: both">
             <div class="dz-message" style="height:200px;">
-                Posa els teus fitxers ací (Màxim 5 fitxers)
             </div>
         </div>
         <br/>
