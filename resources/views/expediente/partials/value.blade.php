@@ -12,7 +12,7 @@
         <br/>
         <input type='hidden' id="id" name='id' value="{!!$expediente->id!!}">
         <input id="submit" class="hidden" type="submit">
-        <a href="/expediente" class="btn btn-info" >@lang('messages.buttons.volver')</a>
+        <a href="{{$url}}" class="btn btn-info" >@lang('messages.buttons.volver')</a>
     </form>
 
 </div>

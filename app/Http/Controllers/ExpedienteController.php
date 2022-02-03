@@ -83,7 +83,8 @@ class ExpedienteController extends ModalController
 
     public function link($id){
         $expediente = Expediente::findOrFail($id);
-        return view('expediente.value',compact('expediente'));
+        $url = back()->getTargetUrl();
+        return view('expediente.value',compact('expediente','url'));
     }
 
     /**

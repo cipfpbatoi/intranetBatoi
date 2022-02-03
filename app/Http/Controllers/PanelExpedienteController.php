@@ -1,6 +1,7 @@
 <?php
 
 namespace Intranet\Http\Controllers;
+use Intranet\Botones\BotonImg;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
 
@@ -41,6 +42,8 @@ class PanelExpedienteController extends BaseController
     {
         $this->panel->setBotonera([], ['delete', 'edit']);
         $this->panel->setBothBoton('expediente.gestor',['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
+        $this->panel->setBothBoton('expediente.link');
+
         $this->setAuthBotonera();
     }
 
