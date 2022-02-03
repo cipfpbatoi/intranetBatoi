@@ -1,5 +1,5 @@
 <div id="dropzone" class="valueContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
-    <form method="POST"  enctype="multipart/form-data"
+    <form method="POST" enctype="multipart/form-data"
           action="/expediente/adjuntos/"
           class="dropzone" id="myDropzone">
         @csrf

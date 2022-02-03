@@ -1,4 +1,3 @@
-
 Dropzone.options.myDropzone = {
     autoProcessQueue: true,
     uploadMultiple: true,
@@ -7,6 +6,7 @@ Dropzone.options.myDropzone = {
     addRemoveLinks: true,
     timeout: 50000,
     method: 'POST',
+    url: '/expediente/adjuntos',
     acceptedFiles: 'application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     previewsContainer: ".dropzone-previews",
     createImageThumbnails: true,
