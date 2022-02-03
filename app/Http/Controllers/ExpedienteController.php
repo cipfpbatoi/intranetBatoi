@@ -43,9 +43,6 @@ class ExpedienteController extends ModalController
     public function adjuntos(Request $request){
         $id = $request->id;
         $path = storage_path()."/app/public/Expedientes/$id";
-        if ($request->delete) {
-            $this->deleteAdjuntos($path, $request->except('_token', 'id'));
-        }
         if ($request->hasFile('file')){
             $files = $request->file('file');
             foreach ($files as $file) {
@@ -54,19 +51,28 @@ class ExpedienteController extends ModalController
         }
     }
 
-    private function deleteAdjuntos($path,$request){
+    private function deleteAdjuntos($id){
+        $path = storage_path()."/app/public/Expedientes/$id";
         try{
             $dir = opendir($path);
             while ($elemento = readdir($dir)){
                 if( $elemento != "." && $elemento != ".." && !is_dir($path.'/'.$elemento) ){
-                    if (!array_search($elemento,$request)) {
-                        unlink($path . '/' . $elemento);
-                    }
+                    unlink($path . '/' . $elemento);
                 }
             }
         }catch (\Exception $e){
             dd($e);
         }
+        rmdir($path);
+    }
+
+    public function destroy($id)
+    {
+        if ($elemento = $this->class::findOrFail($id)) {
+            $this->deleteAdjuntos($id);
+            $elemento->delete();
+        }
+        return $this->redirect();
     }
 
     public function update(ExpedienteRequest $request, $id)
