@@ -6,7 +6,7 @@ Dropzone.options.myDropzone = {
     addRemoveLinks: true,
     timeout: 50000,
     method: 'POST',
-    url: '/dropzone',
+    url: '/api/attachFile',
     acceptedFiles: 'application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     previewsContainer: ".dropzone-previews",
     createImageThumbnails: true,
@@ -28,7 +28,7 @@ Dropzone.options.myDropzone = {
         });
 
         $.ajax({
-            url: '/api/'+modelo+'/'+expediente+'/getFiles',
+            url: '/api/getAttached/'+modelo+'/'+expediente,
             type: 'GET',
             dataType: 'json',
             data: {api_token: $("#_token").text()},
@@ -65,7 +65,7 @@ Dropzone.options.myDropzone = {
         );
         this.on("removedfile", function(file){
             $.ajax({
-                    url: '/api/'+modelo+'/'+expediente+'/removefile/'+file.name,
+                    url: '/api/removeAttached/'+modelo+'/'+expediente+'/'+file.name,
                     type: 'GET',
                     dataType: 'json',
                     data: {api_token: $("#_token").text()},
