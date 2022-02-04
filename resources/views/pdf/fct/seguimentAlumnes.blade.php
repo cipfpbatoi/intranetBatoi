@@ -2,16 +2,6 @@
 @section('content')
     @include('pdf.fct.partials.cabecera')
     <br/>
-    <table border="1" style="margin-bottom: 10px">
-        <colgroup><col width="449"/><col width="329"/></colgroup>
-        <tr>
-            <td style="text-align:left;width:23.283cm;padding-left: 5px "><strong>Revisió actual:</strong><span> 7</span></td>
-            <td style="text-align:left;width:20.523cm;padding-left: 5px "><strong>Data revisió actual:</strong><span> 20-03-2014</span></td>
-        </tr>
-        <tr>
-            <td style="text-align:left;padding-left: 5px" colspan="2"><strong>Objectiu:</strong><span>  Facilitar al tutor el seguiment dels alumnes durant l'FCT</span></td>
-        </tr>
-    </table>
     <table border="1" style="margin-bottom: 5px">
         <tr>
             <td style="text-align:left;width:23.283cm;padding-left: 5px;font-size: 0.8em"><strong>Tutor: </strong><span>{{AuthUser()->FullName}}</span></td>

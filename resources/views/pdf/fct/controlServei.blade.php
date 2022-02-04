@@ -3,13 +3,6 @@
     @include('pdf.fct.partials.cabecera')
 @endsection
 @section('content')
-    <table border="1" cellspacing="0" cellpadding="">
-        <colgroup><col width="449"/><col width="329"/></colgroup>
-        <tr>
-            <td style="text-align:left;width:13.283cm; "><strong>Revisió actual:</strong><span> 8</span></td>
-            <td style="text-align:left;width:10.523cm; "><strong>Data revisió actual:</strong><span> 4-10-2017</span></td>
-        </tr>
-    </table>
     <br/>
     <table border="1" >
         <colgroup><col width="400"/><col width="40"/><col width="40"/><col width="40"/><col width="40"/><col width="100"/><col width="150"/><col width="150"/></colgroup>

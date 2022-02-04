@@ -4,17 +4,6 @@
         <div class="page">
             @include('pdf.fct.partials.cabecera')
             <br/>
-            <table border="1" style="margin-bottom: 10px">
-                <colgroup><col width="449"/><col width="329"/></colgroup>
-                <tr>
-                    <td style="text-align:left;width:23.283cm;padding-left: 5px "><strong>Revisió actual:</strong><span> 7</span></td>
-                    <td style="text-align:left;width:20.523cm;padding-left: 5px  "><strong>Data revisió actual:</strong><span> 15-12-2017</span></td>
-                </tr>
-                <tr>
-                    <td style="text-align:left;padding-left: 5px " colspan="2"><strong>Objectiu:</strong><span> Facilitar a l'instructor de l'empresa el seguiment dels alumnes durant l'FCT.</span></td>
-                </tr>
-            </table>
-            <br/>
             <table border="1" cellspacing="0" cellpadding="0">
                 <tr>
                     <td style="text-align:left;width:30.283cm;padding-left: 5px;font-size: 0.9em "><strong>Empresa:</strong> <span>{{$grupo->Colaboracion->Centro->nombre}}</span></td>

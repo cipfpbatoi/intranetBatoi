@@ -116,18 +116,15 @@ return [
     ],
     'pg0301' => [
         'pdf' => [
-            'documento'=> 'PG03-01',
-            'nombre' => 'MANUAL DE PROCEDIMIENTOS',
-            'descripcion' => 'HOJA DE CONTROL DE SERVICIO',
+            'descripcion' => 'FULL DE CONTROL DE SERVEI',
             'orientacion' => 'portrait'],
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoNoFct',
         'view' => 'pdf.fct.controlServei',
     ],
     'pr0401' => [
-        'pdf' => ['documento'=> 'PR04-01',
-            'nombre' => 'MANUAL DE PROCESOS',
-            'descripcion' => 'ENTREVISTA DEL TUTOR CON EL INSTRUCTOR DE LA EMPRESA',
+        'pdf' => [
+            'descripcion' => "ENTREVISTA DEL TUTOR AMB L'INSTRUCTOR DE L'EMPRESA",
             'orientacion' => 'landscape'
         ],
         'modelo' => 'Fct',
@@ -135,9 +132,8 @@ return [
         'view' => 'pdf.fct.seguimentInstructor',
     ],
     'pr0402' => [
-        'pdf' => ['documento'=> 'PR04-02',
-            'nombre' => 'MANUAL DE PROCESOS',
-            'descripcion' => 'ENTREVISTA DEL TUTOR CON ALUMNO',
+        'pdf' => [
+            'descripcion' => "ENTREVISTA DEL TUTOR AMB L'ALUMNAT",
             'orientacion' => 'landscape'
         ],
         'modelo' => 'AlumnoFct',
@@ -145,7 +141,7 @@ return [
         'view' => 'pdf.fct.seguimentAlumnes',
     ],
     'pasqua' => [
-        'pdf' => ['documento'=> 'PASQUA',
+        'pdf' => [
             'nombre' => 'FCT VACANCES',
             'orientacion' => 'portrait'
         ],
