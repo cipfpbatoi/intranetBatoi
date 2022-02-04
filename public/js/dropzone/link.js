@@ -6,7 +6,7 @@ Dropzone.options.myDropzone = {
     addRemoveLinks: true,
     timeout: 50000,
     method: 'POST',
-    url: '/expediente/adjuntos',
+    url: '/dropzone',
     acceptedFiles: 'application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     previewsContainer: ".dropzone-previews",
     createImageThumbnails: true,
@@ -16,6 +16,7 @@ Dropzone.options.myDropzone = {
 
     init: function() {
         var expediente = $('#id').attr('value');
+        var modelo = $('#modelo').attr('value');
         myDropzone = this;
 
         this.on("complete", function(file) {
@@ -27,14 +28,14 @@ Dropzone.options.myDropzone = {
         });
 
         $.ajax({
-            url: '/api/expediente/'+expediente+'/getFiles',
+            url: '/api/'+modelo+'/'+expediente+'/getFiles',
             type: 'GET',
             dataType: 'json',
             data: {api_token: $("#_token").text()},
             success: function(data){
                 $.each(data.data, function (key, mockFile) {
                     myDropzone.emit("addedfile", mockFile);
-                    myDropzone.createThumbnailFromUrl(mockFile,'/storage/Expedientes/'+expediente+'/'+mockFile.name);
+                    myDropzone.createThumbnailFromUrl(mockFile,'/storage/adjuntos/'+modelo+'/'+expediente+'/'+mockFile.name);
                     myDropzone.emit("success", mockFile);
                     myDropzone.files.push(mockFile);
                     myDropzone.emit("complete", mockFile);
@@ -48,7 +49,7 @@ Dropzone.options.myDropzone = {
             } else {
                 var a = document.createElement('a');
                 a.setAttribute('style','float:right');
-                a.setAttribute('href', '/storage/Expedientes/'+expediente+'/'+file.name);
+                a.setAttribute('href', '/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.name);
                 a.setAttribute('target', "_blank");
                 a.innerHTML = "<em class='fa fa-download'></em>";
                 file.previewTemplate.appendChild(a);
@@ -64,7 +65,7 @@ Dropzone.options.myDropzone = {
         );
         this.on("removedfile", function(file){
             $.ajax({
-                    url: '/api/expediente/'+expediente+'/removefile/'+file.name,
+                    url: '/api/'+modelo+'/'+expediente+'/removefile/'+file.name,
                     type: 'GET',
                     dataType: 'json',
                     data: {api_token: $("#_token").text()},

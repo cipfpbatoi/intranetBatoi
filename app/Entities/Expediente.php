@@ -114,5 +114,8 @@ class Expediente extends Model
     public function getEsInformeAttribute(){
         return $this->tipoExpediente->informe;
     }
+    public function getQuienAttribute(){
+        return $this->Alumno->FullName;
+    }
 
 }

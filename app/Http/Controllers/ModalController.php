@@ -68,6 +68,9 @@ abstract class ModalController extends Controller
             if ($elemento->fichero && method_exists($this,'borrarFichero')) {
                 $this->borrarFichero($elemento->fichero);
             }
+            if (method_exists($this,'deleteAttached')){
+                $this->deleteAttached($id);
+            }
             $elemento->delete();
         }
         return $this->redirect();

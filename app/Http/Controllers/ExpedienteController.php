@@ -19,7 +19,7 @@ use Illuminate\Http\Request;
 class ExpedienteController extends ModalController
 {
 
-    use traitImprimir,
+    use traitImprimir,traitDropZone,
         traitAutorizar;
 
     /**
@@ -33,6 +33,7 @@ class ExpedienteController extends ModalController
     protected $profile = false;
 
 
+
     public function store(ExpedienteRequest $request)
     {
         $new = new Expediente();
@@ -40,40 +41,6 @@ class ExpedienteController extends ModalController
         return $this->redirect();
     }
 
-    public function adjuntos(Request $request){
-        $id = $request->id;
-        $path = storage_path()."/app/public/Expedientes/$id";
-        if ($request->hasFile('file')){
-            $files = $request->file('file');
-            foreach ($files as $file) {
-                $file->move($path, $file->getClientOriginalName());
-            }
-        }
-    }
-
-    private function deleteAdjuntos($id){
-        $path = storage_path()."/app/public/Expedientes/$id";
-        try{
-            $dir = opendir($path);
-            while ($elemento = readdir($dir)){
-                if( $elemento != "." && $elemento != ".." && !is_dir($path.'/'.$elemento) ){
-                    unlink($path . '/' . $elemento);
-                }
-            }
-        }catch (\Exception $e){
-            dd($e);
-        }
-        rmdir($path);
-    }
-
-    public function destroy($id)
-    {
-        if ($elemento = $this->class::findOrFail($id)) {
-            $this->deleteAdjuntos($id);
-            $elemento->delete();
-        }
-        return $this->redirect();
-    }
 
     public function update(ExpedienteRequest $request, $id)
     {
@@ -81,11 +48,7 @@ class ExpedienteController extends ModalController
         return $this->redirect();
     }
 
-    public function link($id){
-        $expediente = Expediente::findOrFail($id);
-        $url = back()->getTargetUrl();
-        return view('expediente.value',compact('expediente','url'));
-    }
+
 
     /**
      *

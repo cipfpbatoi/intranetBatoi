@@ -1,6 +1,6 @@
 <div id="dropzone" class="valueContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
     <form method="POST" enctype="multipart/form-data"
-          action="/expediente/adjuntos/"
+          action="/dropzone"
           class="dropzone" id="myDropzone">
         @csrf
         <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -10,10 +10,10 @@
         </div>
         <br/>
         <br/>
-        <input type='hidden' id="id" name='id' value="{!!$expediente->id!!}">
+        <input type='hidden' id="id" name='id' value="{{ $registre->id }}">
+        <input type='hidden' id="modelo" name="modelo" value="{{ $modelo }}">
         <input id="submit" class="hidden" type="submit">
         <a href="{{$url}}" class="btn btn-info" >@lang('messages.buttons.volver')</a>
     </form>
-
 </div>
 

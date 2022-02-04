@@ -8,13 +8,10 @@ use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
 
-class ExpedienteController extends ApiBaseController
+class DropZoneController extends ApiBaseController
 {
-
-    protected $model = 'Expediente';
-
-    public function getFiles($id){
-        $path = storage_path()."/app/public/adjuntos/expediente/$id";
+    public function getFiles($modelo,$id){
+        $path = storage_path()."/app/public/adjuntos/$modelo/$id";
         $data = [];
         try{
             $dir = opendir($path);
@@ -38,8 +35,8 @@ class ExpedienteController extends ApiBaseController
         return $this->sendResponse($data, 'OK');
     }
 
-    public function removeFile($id,$file){
-        $path = storage_path()."/app/public/adjuntos/expediente/$id/".$file;
+    public function removeFile($modelo,$id,$file){
+        $path = storage_path()."/app/public/adjuntos/$modelo/$id/$file";
         if (is_file($path)) {
             unlink($path);
         }
