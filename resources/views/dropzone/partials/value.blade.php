@@ -10,11 +10,11 @@
         </div>
         <br/>
         <br/>
-        <input type='hidden' id="id" name='id' value="{{ $registre->id }}">
+        <input type='hidden' id="id" name='id' value="{{ $id }}">
         <input type='hidden' id="modelo" name="modelo" value="{{ $modelo }}">
         <input type="hidden" name="api_token" value="{{AuthUser()->api_token}}">
         <input id="submit" class="hidden" type="submit">
-        <a href="{{$url}}" class="btn btn-info" >@lang('messages.buttons.volver')</a>
+        <a href="{{$back}}" class="btn btn-info" >@lang('messages.buttons.volver')</a>
     </form>
 </div>
 

@@ -49,7 +49,7 @@ return [
                         2 => 'tramitada', 
                         3 => 'resuelta',
                         ],
-        'avisos' => [ 'idProfesor' => [0, 3, 5],'jefeEstudios'=>[1],'orientador'=>[4]],
+        'avisos' => [ 'idProfesor' => [0, 3, 5],'jefeEstudios'=>[1],'comissioIC'=>[2],'orientador'=>[4]],
         'resolve' => '3',
         'refuse' => '0',
         'print' => '3',

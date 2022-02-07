@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use InfyOm\Generator\Utils\ResponseUtil;
+use Intranet\Entities\Profesor;
 use Response;
 use Exception;
 use Intranet\Http\Controllers\Controller;
@@ -42,6 +43,10 @@ class ApiBaseController extends Controller
         } catch (Exception $e) {
             return $this->sendError($e->getMessage());
         }
+    }
+
+    public function ApiUser(Request $request){
+        return Profesor::where('api_token',$request->api_token)->get()->first();
     }
 
     public function update(Request $request, $id)

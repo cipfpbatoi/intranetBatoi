@@ -1,31 +1,28 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Entities\Adjunto;
+use Intranet\Services\AttachedFileService;
 use Response;
 
 trait traitDropZone{
 
     protected function deleteAttached($id){
         $modelo = strtolower($this->model);
-        $path = storage_path()."/app/public/adjuntos/$modelo/$id";
-        try{
-            $dir = opendir($path);
-            while ($elemento = readdir($dir)){
-                if( $elemento != "." && $elemento != ".." && !is_dir($path.'/'.$elemento) ){
-                    unlink($path . '/' . $elemento);
-                }
-            }
-        }catch (\Exception $e){
-            dd($e);
+        $attached = Adjunto::findByModel($modelo,$id)->get();
+        foreach ($attached as $attach){
+            AttachedFileService::delete($attach);
+            $directory = $attach->directory;
         }
-        rmdir($path);
+        rmdir($directory);
     }
 
     public function link($id){
         $registre = $this->class::findOrFail($id);
+        $quien = $registre->quien;
         $modelo = strtolower($this->model);
-        $url = back()->getTargetUrl();
-        return view('dropzone.index',compact('registre','url','modelo'));
+        $back = back()->getTargetUrl();
+        return view('dropzone.index',compact('modelo','id','quien','back'));
     }
 
 }

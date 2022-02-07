@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Support\Facades\Session;
+use Intranet\Services\AdviseService;
 use Intranet\Services\Gestor;
 
 trait TraitEstado
@@ -47,7 +48,9 @@ trait TraitEstado
       
         $elemento->estado = $estado;
         $elemento->save();
-        $elemento->informa($mensaje);
+        $adviseService = new AdviseService($elemento,$mensaje);
+        $adviseService->send();
+
         return ($elemento->estado);
     }
 
@@ -81,55 +84,5 @@ trait TraitEstado
         return static::where('estado', '=', $estado)->get();
     }
 
-    // a REVISAR
-    protected function informa($mensaje)
-    {
-        foreach (config('modelos.' . getClase($this) . '.avisos') as $quien => $cuando) {
-            
-            if (in_array($this->estado, $cuando)) {
-                // clase
-                $explicacion = getClase($this) . ' ' . primryKey($this) . ' ' . trans('models.' . getClase($this) . '.' . $this->estado) . ": ";
-               
-                if (isset($this->descriptionField)) {
-                    $descripcion = $this->descriptionField;
-                    $explicacion .= mb_substr(str_replace(array("\r\n", "\n", "\r"),' ',$this->$descripcion),0,50) . ". ";
-                }
-                //mensaje que pasa el usuario
-               
-                $explicacion .= isset($mensaje) ? $mensaje : '';
-                
-                // mensaje específico del fichero de modelos
-                $explicacion .= blankTrans("models." . $this->estado . "." . getClase($this));
-                
-                //enllaç al element
-                $enlace = "/" . strtolower(getClase($this)) . "/" . $this->id;
-                $enlace .= $this->estado < 2  ? "/edit" : "/show";
-                
-                switch ($quien){
-                    case 'Creador': avisa($this->Creador(), $explicacion, $enlace);break;
-                    case 'director': 
-                    case 'jefeEstudios':
-                    case 'secretario' : 
-                    case 'orientador' :    
-                    case 'vicedirector': 
-                        if (is_array(config('contacto.'.$quien))) {
-                            foreach (config('contacto.' . $quien) as $id) {
-                                avisa($id, $explicacion, $enlace);
-                            }
-                        }
-                        else {
-                            avisa(config('contacto.' . $quien), $explicacion, $enlace);
-                        }
-                        break;
-                    case 'jefeDepartamento' : isset($this->Profesor->dni)?avisa($this->Profesor->miJefe,$explicacion,$enlace):avisa(AuthUser()->miJefe,$explicacion,$enlace);break;
-                    default :
-                        if (isset($this->$quien) && $this->$quien != ''){
-                            
-                            avisa($this->$quien, $explicacion, $enlace);
-                        }
-                }
-            }
-        }
-    }
 
 }
