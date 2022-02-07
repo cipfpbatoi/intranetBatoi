@@ -402,13 +402,17 @@ A continuació seleccionen totes les hores que hem oblidat marcar el birret, ind
 ### Canviar horari
 Aquesta opció només està disponible poc abans d'acabar les classes els grups de segon. Ens permet canviar el nostre horari a partir de Març per a recol·locar les hores que alliberem de 2n. Ens apareix el nostre horari actual i podem arrastar hores a altre horari fins que quede com vullguem:
 
-![Canviar-horari](./img/ajuda/canviar-horari.png)
+![Canviar-horari](./img/ajuda/cambiarHorarioUp.png)
 
+Per començar hem de polsar el botó '**Iniciar procediment**' i a partir d'eixe moment ja podem arrastrar hores del nostre horari. **ATENCIÓ**: si tornes a polsar aquest botó el teu horari es torna a quedar com estava i es perden els canvis que hages fet
+ 
 NOTA: no s'ha de posar cap hora en les hores del pati o migdia
 
-Si encara no hem fet cap canvi l'estat que apareix és **'No hi ha cap proposta'**.
+Podem fer canvis totes les vegades que vulguem. Quan hem deixat l'horari com volem i hem omplit el quadre de **"_Observacions_"** que tenim baix de l'horari indicant a quina activitat dedicarem cadascuna de les hores alliberades haurem de premer el botó de **_Guardar canvis i enviar_**. L'estat canvia a **'Pendent'**. 
 
-Quan hem deixat l'horari com volem omplim el quadre de **"_Observacions_"** que tenim baix de l'horari indicant a quina activitat dedicarem cadascuna de les hores alliberades i premem el botó de **_Guardar canvis i enviar_**. L'estat canvia a **'Pendent'**. Podem continuar fent canvis fins que Caporalia accepte la nostra proposta. En eixe moment l'estat canvia a **'Aprovat'** i ja no podem fer més canvis. Encara que estiga aprovat, el nou horari no entra en vigor fins que ens ho indiquen des de Caporalia (normalment a Març).
+![Canviar-horari](./img/ajuda/cambiarHorarioDown.png)
+
+Podem continuar fent canvis fins que Caporalia accepte la nostra proposta. En eixe moment l'estat canvia a **'Aprovat'** i ja no podem fer més canvis. Encara que estiga aprovat, el nou horari no entra en vigor fins que ens ho indiquen des de Caporalia (normalment a Març).
 
 ## Menú Enquestes
 Des d'ací podem accedir als resultats de les diferents enquestes pasades als nostres alumnes.
