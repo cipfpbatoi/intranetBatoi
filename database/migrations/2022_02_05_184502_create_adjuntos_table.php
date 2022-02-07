@@ -22,7 +22,7 @@ class CreateAdjuntosTable extends Migration
             $table->string('referencesTo',12)->nullable();
             $table->string('title',100);
             $table->string('extension',4);
-            $table->int('size')->default(0);
+            $table->integer('size')->default(0);
             $table->timestamps();
         });
     }
