@@ -83,7 +83,7 @@ class ExpedienteController extends ModalController
     {
         $expediente = Expediente::find($id);
             // orientacion
-        if ($expediente->tipoExpediente->orientacion){
+        if ($expediente->tipoExpediente->orientacion == 1){
             $mensaje = $expediente->explicacion.' .Grup '.$expediente->Alumno->Grupo->first()->nombre;
             Expediente::putEstado($id, 4, $mensaje);
         } else {
