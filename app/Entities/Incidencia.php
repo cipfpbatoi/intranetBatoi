@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Services\AdviseService;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
@@ -131,7 +132,8 @@ class Incidencia extends Model
         }
         $elemento->estado = $estado;
         $elemento->save();
-        $elemento->informa($mensaje);
+        $adviseService = new AdviseService($elemento,$mensaje);
+        $adviseService->send();
 
         return ($elemento->estado);
     }
