@@ -31,7 +31,7 @@ class AdviseService
     {
         if (isset($this->element->descriptionField)) {
             $descripcion = $this->element->descriptionField;
-            return mb_substr(str_replace(array("\r\n", "\n", "\r"),' ',$this->$descripcion),0,50) . ". ";
+            return mb_substr(str_replace(array("\r\n", "\n", "\r"),' ',$this->element->$descripcion),0,50) . ". ";
         }
         return '';
     }
