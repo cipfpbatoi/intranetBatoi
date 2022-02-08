@@ -175,6 +175,7 @@ Route::get('/expediente/{expediente}/pdf', ['as' => 'expediente.pdf', 'uses' => 
 Route::get('/expediente/{expediente}/notification', ['as' => 'expediente.notificar', 'uses' => 'ExpedienteController@notify']);
 Route::get('/expediente/{expediente}/init', ['as' => 'expediente.init', 'uses' => 'ExpedienteController@init']);
 Route::get('/expediente/{expediente}/active', ['as' => 'expediente.active', 'uses' => 'ExpedienteController@pasaOrientacion']);
+Route::get('/acompanyant',['as'=> 'expediente.acompanyant','uses'=>'PanelExpedienteAcompanyantController@index']);
 Route::get('/expedienteO', ['as' => 'expediente.orientacion', 'uses' => 'PanelExpedienteOrientacionController@index']);
 
 Route::post('/dropzone',['as' => 'dropzone.store', 'uses' => 'DropZoneController@storeAttached']);
