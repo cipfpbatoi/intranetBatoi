@@ -290,7 +290,9 @@ return array(
         'Facturas' => 'Llibre de Factures',
         'Cleancache' => 'Netejar la Cache',
         'Igualtat' => 'Igualtat i Convivència',
-        'Comissio' => 'Membres de la comissió'
+        'Comissio' => 'Membres de la comissió',
+        'Procediment' => 'Inici Procediment',
+        'Acompanyant' => 'Procediments en curs'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
@@ -317,6 +319,7 @@ return array(
         'practicas' => 'Tutor pràctiques',
         'dual' => 'Tutor FPDual',
         'jefe_practicas' => "Cap d'FCT",
+        'acompanyant' => 'Professor acompanyant',
     ),
     'week' => array(
         'L' => 'Dilluns',

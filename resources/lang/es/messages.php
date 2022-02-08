@@ -283,7 +283,9 @@ return array(
         'Facturas' => 'Libro de Facturas',
         'Cleancache' => 'Limipiar la Cache',
         'Igualtat' => 'Igualdad y Convivencia',
-        'Comissio' => 'Miembros de la comisión'
+        'Comissio' => 'Miembros de la comisión',
+        'Procediment' => 'Inicio Procedimiento',
+        'Acompanyant' => 'Procedimentos en curso'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
