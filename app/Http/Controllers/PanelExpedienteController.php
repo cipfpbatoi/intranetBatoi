@@ -52,7 +52,7 @@ class PanelExpedienteController extends BaseController
      */
     protected function search()
     {
-        return Expediente::whereIn('tipo', hazArray(TipoExpediente::where('orientacion',0)->get(), 'id'))->get();
+        return Expediente::whereIn('tipo', hazArray(TipoExpediente::where('orientacion','!=',1)->get(), 'id'))->get();
     }
     
 
