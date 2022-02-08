@@ -8,8 +8,8 @@ use Response;
 trait traitDropZone{
 
     protected function deleteAttached($id){
-        $modelo = strtolower($this->model);
-        $attached = Adjunto::findByModel($modelo,$id)->get();
+        $path = strtolower($this->model)."/$id";
+        $attached = Adjunto::getByPath($path)->get();
         foreach ($attached as $attach){
             AttachedFileService::delete($attach);
             $directory = $attach->directory;

@@ -16,22 +16,29 @@ class Adjunto extends Model
         return $this->belongsTo(Profesor::class, 'owner', 'dni');
     }
 
-    public function scopeFindByName($query, $model,$model_id,$name)
+    public function scopeFindByName($query, $path,$name)
     {
-        return $query->where('model',$model)->where('model_id',$model_id)
-            ->where('name',$name);
+        return $query->where('route',$path)->where('name',$name);
     }
 
-    public function scopeFindByModel($query, $model,$model_id)
+    public function scopeGetByPath($query, $path)
     {
-        return $query->where('model',$model)->where('model_id',$model_id);
+        return $query->where('route',$path);
     }
 
     public function getPathAttribute(){
-        return storage_path().self::CARPETA.$this->model.'/'.$this->model_id.'/'.$this->name;
+        return storage_path().self::CARPETA.$this->route.'/'.$this->name;
     }
 
     public function getDirectoryAttribute(){
-        return storage_path().self::CARPETA.$this->model.'/'.$this->model_id;
+        return storage_path().self::CARPETA.$this->route;
+    }
+
+    public function getModeloAttribute(){
+        return explode('/',$this->path)[0];
+    }
+
+    public function getModelo_idAttribute(){
+        return explode('/',$this->path)[1];
     }
 }

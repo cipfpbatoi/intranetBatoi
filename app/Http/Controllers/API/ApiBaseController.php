@@ -145,4 +145,9 @@ class ApiBaseController extends Controller
         return response()->json(['success'=>false,'message'=>$error]);
     }
 
+    protected function sendFail($error,$code = 400)
+    {
+        return response()->json($error,$code);
+    }
+
 }

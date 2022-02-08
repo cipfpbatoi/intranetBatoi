@@ -7,13 +7,12 @@ use Intranet\Entities\Adjunto;
 
 class AttachedFileService
 {
-    private static function safeFile($file,$model,$id,$dni,$title){
+    private static function safeFile($file,$route,$dni,$title){
         $nameFile = $file->getClientOriginalName();
-        $adjunto = Adjunto::findByName($model,$id,$nameFile)->first();
+        $adjunto = Adjunto::findByName($route,$nameFile)->first();
         if (!$adjunto) {
             $attached = new Adjunto();
-            $attached->model_id = $id;
-            $attached->model = $model;
+            $attached->route = $route;
             $attached->name = $nameFile;
             $attached->title = $title ?? pathinfo($file->getClientOriginalName())['filename'];
             $attached->extension = pathinfo($file->getClientOriginalName())['extension'];
@@ -29,14 +28,14 @@ class AttachedFileService
     }
 
 
-    public static function save($files,$modelo,$id,$dni=null,$title=null)
+    public static function save($files,$route,$dni=null,$title=null)
     {
         if (is_array($files)) {
             foreach ($files as $file) {
-                return self::safeFile($file,$modelo,$id,$dni,$title);
+                return self::safeFile($file,$route,$dni,$title);
             }
         }
-        return self::safeFile($files,$modelo,$id,$dni,$title);
+        return self::safeFile($files,$route,$dni,$title);
     }
 
     public static function delete($attached){

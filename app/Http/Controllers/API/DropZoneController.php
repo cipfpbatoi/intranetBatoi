@@ -12,7 +12,8 @@ use Intranet\Services\AttachedFileService;
 class DropZoneController extends ApiBaseController
 {
     public function getAttached($modelo,$id){
-        $files = Adjunto::findByModel($modelo,$id)->get();
+        $path = "$modelo/$id";
+        $files = Adjunto::getByPath($path)->get();
         $data = [];
         foreach ($files as $key => $attached){
             $data[$key]['name'] = $attached->name;
@@ -24,23 +25,28 @@ class DropZoneController extends ApiBaseController
     }
 
     public function removeAttached($modelo,$id,$file){
-        $adjunto = Adjunto::findByName($modelo,$id,$file)->first();
+        $user = apiAuthUser();
+        $path = "$modelo/$id";
+        $adjunto = Adjunto::findByName($path,$file)->first();
+        if ($adjunto->owner != $user->dni){
+            return $this->sendFail("Sense permisos, no ets el propietari");
+        }
         if ($adjunto) {
             if (AttachedFileService::delete($adjunto)){
                 return $this->sendResponse([],'OK');
             }
-            return $this->sendError("No s'ha pogut esborrar");
+            return $this->sendFail("Error a l'esborrar");
         }
-        return $this->sendError("No s'ha trobat");
+        return $this->sendFail("No s'ha trobat el document");
     }
 
     public function attachFile(Request $request){
         $user = $this->ApiUser($request);
-        if (AttachedFileService::save($request->file('file'),$request->modelo,
-            $request->id,$user->dni)) {
+        $path = "$request->modelo/$request->id";
+        if (AttachedFileService::save($request->file('file'),$path,$user->dni)) {
             return $this->sendResponse(['data'=>'OK'],'OK');
         } else {
-            return $this->sendError("No s'ha pogut completar l'operacio");
+            return $this->sendFail("No s'ha pogut completar l'operacio");
         }
     }
 
