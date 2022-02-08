@@ -37,7 +37,6 @@ class PanelExpedienteAcompanyantController extends BaseController
     protected function iniBotones()
     {
         $this->panel->setBotonera([], ['show']);
-        $this->panel->setBoton('grid', new BotonImg('expediente.active', ['where' => ['estado', '==', '4']]));
         $this->panel->setBothBoton('expediente.link');
         
     }
@@ -47,7 +46,7 @@ class PanelExpedienteAcompanyantController extends BaseController
      */
     protected function search()
     {
-        return Expediente::whereIn('tipo', hazArray(TipoExpediente::where('orientacion',2)->get(), 'id'))->get();
+        return Expediente::whereIn('tipo', hazArray(TipoExpediente::where('orientacion',2)->where('estado',2)->get(), 'id'))->get();
     }
 
     
