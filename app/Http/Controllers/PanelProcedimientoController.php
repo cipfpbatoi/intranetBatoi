@@ -40,7 +40,7 @@ class PanelProcedimientoController extends BaseController
     {
         $todos = $this->search();
 
-        $this->panel->setPestana("Sense Assignar",  true , 'profile.expediente',
+        $this->panel->setPestana("Per_assignar",  true , 'profile.expediente',
             ['estado',4],null,'index',$this->parametresVista);
         $this->panel->setPestana("Assignades",  false , 'profile.expediente',
             ['estado',5],null,null,$this->parametresVista);
