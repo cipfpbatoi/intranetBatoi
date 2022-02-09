@@ -57,7 +57,7 @@ class PanelProcedimientoController extends BaseController
         $this->panel->setBoton('profile', new BotonImg('expediente.link'));
         if (esRol(AuthUser()->rol,config('roles.rol.direccion'))) {
             $this->panel->setBoton('profile', new BotonImg('expediente.delete'));
-            $this->panel->setBoton('profile',new BotonImg('expediente.user', ['text' => 'Assignar Acompanyant', 'img' => 'fa-user', 'where' => ['estado', '==', 4]]));
+            $this->panel->setBoton('profile',new BotonImg('expediente.user', ['text' => 'Assignar Acompanyant', 'img' => 'fa-user', 'class' => 'btn-primary user', 'where' => ['estado', '==', 4]]));
         }
         $this->panel->setBoton('profile', new BotonImg('expediente.show'));
     }
