@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\Panel;
 use Intranet\Entities\Expediente;
@@ -35,10 +36,19 @@ class PanelProcedimientoController extends BaseController
 
     protected $parametresVista = ['before' => [] , 'modal' => ['select']];
 
-/*
-    protected function iniPestanas($parametres = null){
-        $this->panel->setPestana('profile', true, null, null, null, 'index', $this->parametresVista);
+    public function index()
+    {
+        $todos = $this->search();
+
+        $this->panel->setPestana("Sense Assignar",  true , 'profile.expediente',
+            ['estado',4],null,'index',$this->parametresVista);
+        $this->panel->setPestana("Assignades",  false , 'profile.expediente',
+            ['estado',5],null,null,$this->parametresVista);
+        $this->iniBotones();
+        return $this->grid($todos);
     }
+
+
     /**
      *
      */
