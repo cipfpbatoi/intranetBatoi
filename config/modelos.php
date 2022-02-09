@@ -51,7 +51,7 @@ return [
                         4 => 'comissio',
                         5 => 'tancada'
                         ],
-        'avisos' => [ 'idProfesor' => [0, 3, 5],'jefeEstudios'=>[1],'comissioIC'=>[2],'orientador'=>[4]],
+        'avisos' => [ 'idProfesor' => [0, 3, 5],'jefeEstudios'=>[1],'jefeEstudios'=>[4],'idAcompanyant'=>[5]],
         'resolve' => '3',
         'refuse' => '0',
         'print' => '3',
