@@ -151,6 +151,18 @@ class Profesor extends Authenticatable
         return $query->where('fecha_baja', null)->where('activo', 1);
     }
 
+    public static function getRol($rol)
+    {
+        $all = Profesor::Activo()->get();
+        $data = [];
+        foreach ($all as $profesor){
+            if ($profesor->rol % $rol == 0){
+                $data[$profesor->dni]=$profesor->fullName;
+            }
+        }
+        return $data;
+    }
+
     public function scopePlantilla($query)
     {
         return $query->where('activo', 1);
@@ -290,8 +302,12 @@ class Profesor extends Authenticatable
     public function getQualitatFile(){
         $find = Documento::where('idProfesor', $this->dni)->where('tipoDocumento','Qualitat')
                 ->where('curso',Curso())->first();
-        if ($find) return $find->fichero;
-        else return false;
+        if ($find) {
+            return $find->fichero;
+        }
+        else {
+            return false;
+        }
     }
     public function getGrupoTutoriaAttribute(){
         $miGrupo = Grupo::where('tutor', '=', AuthUser()->dni)->get();

@@ -40,6 +40,7 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     Route::resource('profesor', 'ProfesorController', ['except' => ['edit', 'create']]);
     Route::get('profesor/{dni}/rol', 'ProfesorController@rol');
+    Route::get('profesor/rol/{rol}','ProfesorController@getRol');
     Route::get('ficha', 'ProfesorController@ficha');
     Route::get('doficha', 'FicharController@fichar');
     Route::get('ipGuardia','FicharController@ip');
@@ -116,8 +117,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('getAttached/{modelo}/{id}','DropZoneController@getAttached');
     Route::get('removeAttached/{modelo}/{id}/{file}','DropZoneController@removeAttached');
 
-    //Route::get('expediente/{expediente}/getFiles','ExpedienteController@getFiles');
-    //Route::get('expediente/{expediente}/removefile/{file}','ExpedienteController@removeFile');
 
 });
 

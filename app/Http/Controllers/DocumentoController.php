@@ -118,14 +118,14 @@ class DocumentoController extends IntranetController
     public function qualitat()
     {
         $elemento = $this->createWithDefaultValues();
-        $elemento->tipoDocumento = 'Qualitat';
+        $elemento->tipoDocumento = 'FCT - Entrevistes';
         $elemento->idDocumento = '';
         $grupo = Grupo::QTutor(AuthUser()->dni)->first();
         $elemento->ciclo = $grupo->Ciclo->ciclo;
         $elemento->grupo = $grupo->nombre;
         $elemento->supervisor = AuthUser()->FullName;
         $elemento->propietario = $elemento->supervisor;
-        $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor,PR04-01,PR04-02';
+        $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor';
         $elemento->instrucciones = 'Pujar en un sols document comprimit: Entrevista Alumnat i Entrevista Instructor';
         $formulario = new FormBuilder($elemento,['tipoDocumento' => ['disabled' => 'disabled'],
             'instrucciones' => ['disabled' => 'disabled'],

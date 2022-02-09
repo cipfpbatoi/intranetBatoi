@@ -96,10 +96,10 @@ class PanelFinCursoController extends BaseController
     private static function tutor(){
         $avisos = [];
 
-        //self::lookAtPollsTutor($avisos);
+        self::lookAtPollsTutor($avisos);
         self::lookAtActasUpload($avisos);
         self::lookAtFctsProjects($avisos);
-        //self::lookAtQualitatUpload($avisos);
+        self::lookAtQualitatUpload($avisos);
 
 
         return $avisos;
@@ -138,7 +138,7 @@ class PanelFinCursoController extends BaseController
     }
 
     private static function lookAtQualitatUpload(&$avisos){
-        if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'Qualitat')
+        if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'FCT - Entrevistes')
             ->where('curso', Curso())->first()) {
             $avisos[self::SUCCESS][] = "Documentacio qualitat correcta";
         }

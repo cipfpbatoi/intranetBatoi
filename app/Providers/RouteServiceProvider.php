@@ -140,6 +140,7 @@ class RouteServiceProvider extends ServiceProvider
             require base_path('routes/direccion.php');
         });
     }
+
     protected function alumnoRoutes()
     {
         Route::group([

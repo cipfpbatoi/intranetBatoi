@@ -59,7 +59,7 @@ class ExpedienteController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('expediente.pdf', ['where' => ['estado', '==', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.edit', ['where' => ['estado', '<', '2']]));
-        $this->panel->setBoton('grid', new BotonImg('expediente.link', ['where' => ['estado', '<', '2']]));
+        $this->panel->setBoton('grid', new BotonImg('expediente.link', ['where' => ['annexo','!=',0]]));
         $this->panel->setBoton('grid', new BotonImg('expediente.init', ['where' => ['estado', '==', '0','esInforme','==','0']]));
         $this->panel->setBoton('grid', new BotonImg('expediente.pdf', ['where' => ['esInforme', '==', 1]]));
     }
@@ -83,7 +83,7 @@ class ExpedienteController extends ModalController
     {
         $expediente = Expediente::find($id);
             // orientacion
-        if ($expediente->tipoExpediente->orientacion == 1){
+        if ($expediente->tipoExpediente->orientacion >= 1){
             $mensaje = $expediente->explicacion.' .Grup '.$expediente->Alumno->Grupo->first()->nombre;
             Expediente::putEstado($id, 4, $mensaje);
         } else {
@@ -105,6 +105,16 @@ class ExpedienteController extends ModalController
     {
         $expediente = Expediente::find($id);
         Expediente::putEstado($id, 5);
+        $expediente->fechasolucion = Hoy();
+        $expediente->save();
+
+        return back();
+    }
+
+    protected function assigna($id,Request $request){
+        $expediente = Expediente::find($id);
+        $expediente->idAcompanyant = $request->idAcompanyant;
+        Expediente::putEstado($id,5,"Assignat professor Acompanyant ".$expediente->Acompanyant->fullName);
         $expediente->fechasolucion = Hoy();
         $expediente->save();
 

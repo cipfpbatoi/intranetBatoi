@@ -40,9 +40,9 @@ class PanelExpedienteController extends BaseController
      */
     protected function iniBotones()
     {
-        $this->panel->setBotonera([], ['delete', 'edit']);
+        $this->panel->setBotonera([], ['delete']);
         $this->panel->setBothBoton('expediente.gestor',['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
-        $this->panel->setBothBoton('expediente.link');
+
 
         $this->setAuthBotonera();
     }

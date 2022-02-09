@@ -3,14 +3,17 @@
     <div id="{{$elemento->id}}" class="well profile_view">
         <div  class="col-sm-12">
             <h4 class="brief">
-                <i class="fa fa-calendar"></i> {{$elemento->fecha}} 
-                <i class="fa fa-calendar"></i> {{$elemento->fechasolucion}}
+                <em class="fa fa-calendar"></em> {{$elemento->fecha}}
+                <em class="fa fa-calendar"></em> {{$elemento->fechasolucion}}
             </h4>
             <div class="left col-xs-12">
                 <h5>{{substr($elemento->explicacion,0,140)}} @if (strlen($elemento->explicacion)>140) ... @endif </h5>
                 <ul class="list-unstyled">
-                    <li><i class="fa fa-user"></i> {{$elemento->Alumno->nombre}} {{$elemento->Alumno->apellido1}} {{$elemento->Alumno->apellido2}}</li>
-                    <li><i class="fa fa-user-plus"></i> {{$elemento->Profesor->nombre}} {{$elemento->Profesor->apellido1}} {{$elemento->Profesor->apellido2}}</li>
+                    <li><em class="fa fa-user"></em> {{$elemento->Alumno->fullName}} </li>
+                    <li><em class="fa fa-user-plus">Tutor</em> {{$elemento->Profesor->fullName}} </li>
+                    @if ($elemento->idAcompanyant)
+                    <li><em class="fa fa-user-plus">Acompanyant</em> {{$elemento->Acompanyant->fullName}}</li>
+                    @endif
                 </ul>
                 <h6>{{$elemento->Modulo->literal??''}} - {{ $elemento->Alumno->Grupo->first()->codigo??''}})</h6>
             </div>

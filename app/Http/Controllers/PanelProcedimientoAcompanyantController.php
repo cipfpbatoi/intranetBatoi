@@ -10,7 +10,7 @@ use Intranet\Botones\BotonImg;
  * Class PanelExpedienteOrientacionController
  * @package Intranet\Http\Controllers
  */
-class PanelExpedienteAcompanyantController extends BaseController
+class PanelProcedimientoAcompanyantController extends BaseController
 {
 
     /**
@@ -31,12 +31,17 @@ class PanelExpedienteAcompanyantController extends BaseController
     protected $orden = 'fecha';
 
 
+
+    protected function iniPestanas($parametres = null){
+        $this->panel->setPestana('profile', true, null, null, null, 'index', $this->parametresVista);
+    }
+
     /**
      *
      */
     protected function iniBotones()
     {
-        $this->panel->setBotonera([], ['show']);
+        $this->panel->setBothBoton('expediente.show');
         $this->panel->setBothBoton('expediente.link');
         
     }
@@ -46,7 +51,7 @@ class PanelExpedienteAcompanyantController extends BaseController
      */
     protected function search()
     {
-        return Expediente::whereIn('tipo', hazArray(TipoExpediente::where('orientacion',2)->get(), 'id'))->where('estado',2)->get();
+        return Expediente::whereIn('tipo', hazArray(TipoExpediente::where('orientacion',2)->get(), 'id'))->where('estado',5)->where('idAcompanyant',AuthUser()->dni)->get();
     }
 
     

@@ -48,6 +48,8 @@ return [
         'estados' => [  1 => 'pendiente', 
                         2 => 'tramitada', 
                         3 => 'resuelta',
+                        4 => 'comissio',
+                        5 => 'tancada'
                         ],
         'avisos' => [ 'idProfesor' => [0, 3, 5],'jefeEstudios'=>[1],'comissioIC'=>[2],'orientador'=>[4]],
         'resolve' => '3',

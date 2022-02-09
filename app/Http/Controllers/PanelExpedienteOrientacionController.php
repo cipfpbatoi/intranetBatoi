@@ -6,6 +6,7 @@ use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
 use Intranet\Botones\BotonImg;
 
+
 /**
  * Class PanelExpedienteOrientacionController
  * @package Intranet\Http\Controllers

@@ -87,6 +87,10 @@ class Expediente extends Model
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
+    public function Acompanyant()
+    {
+        return $this->belongsTo(Profesor::class, 'idAcompanyant', 'dni');
+    }
 
     public function Alumno()
     {
@@ -116,6 +120,10 @@ class Expediente extends Model
     }
     public function getQuienAttribute(){
         return $this->Alumno->FullName;
+    }
+
+    public function getAnnexoAttribute(){
+        return $this->tipoExpediente->orientacion;
     }
 
 }

@@ -19,5 +19,17 @@ class ProfesorController extends ApiBaseController
                 ->first();
         return $this->sendResponse($data, 'OK');
     }
+
+    public function getRol($rol)
+    {
+        $all = Profesor::Activo()->get();
+        $data = [];
+        foreach ($all as $profesor){
+            if ($profesor->rol % $rol == 0){
+                $data[$profesor->dni]=$profesor->fullName;
+            }
+        }
+        return $this->sendResponse($data, 'OK');
+    }
     
 }

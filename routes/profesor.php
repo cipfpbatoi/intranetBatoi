@@ -170,13 +170,16 @@ Route::resource('/expediente', 'ExpedienteController', ['except' => ['destroy', 
 Route::get('/expediente/{expediente}/delete', ['as' => 'expediente.destroy', 'uses' => 'ExpedienteController@destroy']);
 Route::get('/expediente/{expediente}/show', ['as' => 'expediente.show', 'uses' => 'ExpedienteController@show']);
 Route::post('/expediente/create', ['as' => 'expediente.store', 'uses' => 'ExpedienteController@store']);
+Route::put('/expediente/{expediente}/assigna', ['as' => 'expediente.assigna', 'uses' => 'ExpedienteController@assigna']);
 Route::put('/expediente/{expediente}/edit', ['as' => 'expediente.update', 'uses' => 'ExpedienteController@update']);
 Route::get('/expediente/{expediente}/pdf', ['as' => 'expediente.pdf', 'uses' => 'ExpedienteController@pdf']);
 Route::get('/expediente/{expediente}/notification', ['as' => 'expediente.notificar', 'uses' => 'ExpedienteController@notify']);
 Route::get('/expediente/{expediente}/init', ['as' => 'expediente.init', 'uses' => 'ExpedienteController@init']);
 Route::get('/expediente/{expediente}/active', ['as' => 'expediente.active', 'uses' => 'ExpedienteController@pasaOrientacion']);
-Route::get('/acompanyant',['as'=> 'expediente.acompanyant','uses'=>'PanelExpedienteAcompanyantController@index']);
 Route::get('/expedienteO', ['as' => 'expediente.orientacion', 'uses' => 'PanelExpedienteOrientacionController@index']);
+
+Route::get('/procedimento',['as'=> 'procedimiento.all','uses'=>'PanelProcedimientoController@index']);
+Route::get('/procedimentoA',['as'=> 'procedimiento.acompanyant','uses'=>'PanelProcedimientoAcompanyantController@index']);
 
 Route::post('/dropzone',['as' => 'dropzone.store', 'uses' => 'DropZoneController@storeAttached']);
 Route::get('/expediente/{expediente}/link', ['as' => 'expediente.link', 'uses' => 'ExpedienteController@link']);

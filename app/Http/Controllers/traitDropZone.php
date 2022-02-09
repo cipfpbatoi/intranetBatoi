@@ -14,7 +14,9 @@ trait traitDropZone{
             AttachedFileService::delete($attach);
             $directory = $attach->directory;
         }
-        rmdir($directory);
+        if (isset($directory)) {
+            rmdir($directory);
+        }
     }
 
     public function link($id){
