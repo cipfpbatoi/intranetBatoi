@@ -118,7 +118,7 @@ class DocumentoController extends IntranetController
     public function qualitat()
     {
         $elemento = $this->createWithDefaultValues();
-        $elemento->tipoDocumento = 'Qualitat';
+        $elemento->tipoDocumento = 'FCT';
         $elemento->idDocumento = '';
         $grupo = Grupo::QTutor(AuthUser()->dni)->first();
         $elemento->ciclo = $grupo->Ciclo->ciclo;
