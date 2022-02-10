@@ -79,6 +79,7 @@ return [
             ['index'=>'Fichero','rol'=>2 ,'pestana'=>'0','grupo'=>'0' ],
             ['index'=>'Proyecto','rol'=>1,'pestana'=>0,'grupo'=>'0'],
             ['index'=>'Qualitat','rol'=>1,'pestana'=>0,'grupo'=>'0'],
-            ['index'=>'Dual','rol'=>17,'pestana'=>1,'grupo'=>'2'],
+            ['index'=>'Dual','rol'=>37,'pestana'=>1,'grupo'=>'2'],
+            ['index'=>'FCT','rol'=>31,'pestana'=>1,'grupo'=>'2'],
         ],
 ];
