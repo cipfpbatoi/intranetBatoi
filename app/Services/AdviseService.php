@@ -62,7 +62,7 @@ class AdviseService
     public function send(){
         foreach ($this->getAdvises() as $people) {
                 switch ($people){
-                    case 'Creador': $this->advise($this->Creador());break;
+                    case 'Creador': $this->advise($this->element->Creador());break;
                     case 'director':
                     case 'jefeEstudios':
                     case 'secretario' :
