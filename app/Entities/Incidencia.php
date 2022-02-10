@@ -138,4 +138,8 @@ class Incidencia extends Model
         return ($elemento->estado);
     }
 
+    public function getSubTipoAttribute(){
+        return config('auxiliares.tipoIncidencia')[$this->Tipos->tipus];
+    }
+
 }
