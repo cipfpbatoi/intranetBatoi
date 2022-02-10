@@ -46,10 +46,10 @@ class TipoIncidencia extends Resource
             ->creationRules('unique:tipoincidencias,id','max:250')->hideWhenUpdating(),
             Text::make(__('validation.attributes.nombre'),'nombre')
                 ->sortable()
-                ->rules('required', 'max:30'),
+                ->rules('required', 'max:40'),
             Text::make(__('validation.attributes.nombre'),'nom')
                 ->sortable()
-                ->rules('required', 'max:30'),
+                ->rules('required', 'max:40'),
             BelongsTo::make('Profesor','Responsable'),
             Select::make(__('validation.attributes.tipo'),'tipus')->searchable()->options(config('auxiliares.tipoIncidencia'))->displayUsingLabels(),
         ];
