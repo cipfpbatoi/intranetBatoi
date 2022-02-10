@@ -29,7 +29,7 @@ class Incidencia extends Model
         'deleted' => ActivityReport::class,
         'created' => ActivityReport::class,
     ];
-    protected $attributes = ['espacio'=>null,'estado'=>0,'prioridad'=>0,'tipo'=>10];
+    protected $attributes = ['espacio'=>null,'estado'=>0,'prioridad'=>0];
 
 
     public function Creador()
