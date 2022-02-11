@@ -48,8 +48,8 @@ trait TraitEstado
       
         $elemento->estado = $estado;
         $elemento->save();
-        $adviseService = new AdviseService($elemento,$mensaje);
-        $adviseService->send();
+
+        AdviseService::exec($elemento,$mensaje);
 
         return ($elemento->estado);
     }

@@ -6,13 +6,15 @@
  * Time: 13:47
  */
 
-namespace Intranet\Botones;
+namespace Intranet\Componentes;
 
+use Illuminate\Support\Facades\Mail;
+use Intranet\Entities\Activity;
 use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
-use Intranet\Entities\Activity;
-use Illuminate\Support\Facades\Mail;
-use function Symfony\Component\String\s;
+use function AuthUser;
+use function collect;
+use function view;
 
 class MyMail
 {
@@ -29,7 +31,7 @@ class MyMail
 
     public function __get($key)
     {
-        return isset($this->$key) ? $this->$key : (isset($this->features[$key]) ? $this->features[$key] : null);
+        return $this->$key??($this->features[$key]??null);
     }
 
     public function __set($key,$value)
@@ -105,11 +107,14 @@ class MyMail
     }
 
     public function send($fecha=null){
-        if (is_iterable($this->elements))
+        if (is_iterable($this->elements)) {
             foreach ($this->elements as $elemento) {
-                $this->sendMail($elemento,$fecha);
+                $this->sendMail($elemento, $fecha);
             }
-        else $this->sendMail($this->elements,$fecha);
+        }
+        else {
+            $this->sendMail($this->elements, $fecha);
+        }
     }
 
     private function sendMail($elemento,$fecha){
@@ -136,7 +141,9 @@ class MyMail
     }
 
     private function chooseView(){
-        if (strlen($this->view)> 50) return'email.standard';
+        if (strlen($this->view)> 50) {
+            return 'email.standard';
+        }
         return $this->view;
     }
 

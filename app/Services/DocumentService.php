@@ -1,7 +1,7 @@
 <?php
 namespace Intranet\Services;
-use Intranet\Botones\MyMail;
-use Intranet\Botones\Pdf;
+use Intranet\Componentes\MyMail;
+use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
 
 class DocumentService
@@ -20,7 +20,7 @@ class DocumentService
     }
 
     public function __get($key){
-        return isset($this->$key)?$this->$key:(isset($this->features[$key])?$this->features[$key]:null);
+        return $this->$key??($this->features[$key]??null);
     }
 
     public function load(){

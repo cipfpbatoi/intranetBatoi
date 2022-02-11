@@ -7,7 +7,7 @@ use Intranet\Services\AdviseService;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
-use Intranet\Events\IncidenciaSaved;
+use function AuthUser;
 
 class Incidencia extends Model
 {
@@ -132,8 +132,8 @@ class Incidencia extends Model
         }
         $elemento->estado = $estado;
         $elemento->save();
-        $adviseService = new AdviseService($elemento,$mensaje);
-        $adviseService->send();
+        AdviseService::exec($elemento,$mensaje);
+
 
         return ($elemento->estado);
     }

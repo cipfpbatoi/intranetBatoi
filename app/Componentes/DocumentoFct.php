@@ -1,5 +1,7 @@
 <?php
-namespace Intranet\Botones;
+namespace Intranet\Componentes;
+
+use function config;
 
 class DocumentoFct
 {

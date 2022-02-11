@@ -4,7 +4,7 @@
 namespace Intranet\Services;
 
 
-use Intranet\Botones\Pdf;
+use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;

@@ -7,7 +7,5 @@ return [
     'jefeEstudios2' => '029071324Z',
     'orientador' => ['021634142C','021669338A'],
     'comissioIC' => ['021652470V','020823669K'],
-    'avisos' => [
-        'errores' => '021652470V',
-    ],
+    'errores' => '021652470V',
 ];

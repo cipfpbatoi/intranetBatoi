@@ -3,7 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Services\AdviseService;
 use Jenssegers\Date\Date;
 
@@ -60,8 +59,7 @@ class Falta_itaca extends Model
             $element->estado = $estado;
             $element->save();
         }
-        $adviseService = new AdviseService($element,$mensaje);
-        $adviseService->send();
+        AdviseService::exec($element,$mensaje);
 
         return ($element->estado);
     }

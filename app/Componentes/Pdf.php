@@ -6,9 +6,12 @@
  * Time: 23:14
  */
 
-namespace Intranet\Botones;
-use Barryvdh\Snappy\Facades\SnappyPdf as SnappyPDF;
+namespace Intranet\Componentes;
 use Barryvdh\DomPDF\Facade as DomPDF;
+use Barryvdh\Snappy\Facades\SnappyPdf as SnappyPDF;
+use function config;
+use function env;
+use function FechaString;
 
 
 class Pdf

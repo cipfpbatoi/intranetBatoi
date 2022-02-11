@@ -6,9 +6,10 @@
  * Time: 09:54
  */
 
-namespace Intranet\Botones;
+namespace Intranet\Componentes;
 
 use Illuminate\View\Component;
+use function view;
 
 class Modal extends Component
 {

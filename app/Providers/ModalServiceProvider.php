@@ -2,8 +2,8 @@
 
 namespace Intranet\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\ServiceProvider;
 
 class ModalServiceProvider extends ServiceProvider
 {
@@ -12,6 +12,6 @@ class ModalServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'../../resources/views/batoiModal', 'batoi-modal');
 
-        Blade::component('Intranet\Botones\Modal','modal');
+        Blade::component('Intranet\Componentes\Modal','modal');
     }
 }

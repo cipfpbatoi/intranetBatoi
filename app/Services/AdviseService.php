@@ -1,9 +1,8 @@
 <?php
 
 namespace Intranet\Services;
-use Intranet\Entities\Alumno;
-use Intranet\Entities\Profesor;
-use Intranet\Notifications\mensajePanel;
+use Intranet\Componentes\Mensaje;
+
 
 class AdviseService
 {
@@ -12,31 +11,10 @@ class AdviseService
     protected $explanation;
     protected $link;
 
-    private static function receptor($id){
-        if (strlen($id) == 8) {
-            return Alumno::find($id);
-        }
-        return Profesor::find($id);
-    }
 
-    public static function avisa($id, $mensaje, $enlace = '#', $emisor = null)
-    {
-        $emisor = $emisor??AuthUser()->shortName;
-        $receptor = self::receptor($id);
-        $fecha = FechaString();
-        if ($emisor && $receptor) {
-            $receptor->notify(new mensajePanel(
-                ['motiu' => $mensaje,
-                    'emissor' => $emisor,
-                    'data' => $fecha,
-                    'enlace' => $enlace]));
-        } else {
-            AuthUser()->notify(new mensajePanel(
-                ['motiu' => "No trobe usuari $id",
-                    'emissor' => $emisor,
-                    'data' => $fecha,
-                    'enlace' => $enlace]));
-        }
+    public static function exec($element,$message=null){
+        $service = new AdviseService($element,$message);
+        $service->send();
     }
 
 
@@ -45,6 +23,12 @@ class AdviseService
         $this->setExplanation($message);
         $this->setLink();
     }
+
+    private static function file(){
+        return is_file(base_path().'/config/avisos.php')?'avisos.':'contacto.';
+    }
+
+
 
     private function getAdvises(){
         $advises = [];
@@ -69,11 +53,11 @@ class AdviseService
     private function advise($dnis){
         if (is_array($dnis)) {
             foreach ($dnis as $dni) {
-                self::avisa($dni, $this->explanation, $this->link);
+                Mensaje::send($dni, $this->explanation, $this->link);
             }
         }
         else {
-            self::avisa($dnis, $this->explanation, $this->link);
+                Mensaje::send($dnis, $this->explanation, $this->link);
         }
     }
 
@@ -98,7 +82,7 @@ class AdviseService
                     case 'secretario' :
                     case 'orientador' :
                     case 'vicedirector':
-                        $this->advise(config('contacto.'.$people));
+                        $this->advise(config(self::file().$people));
                         break;
                     case 'jefeDepartamento' :
                         $this->advise(isset($this->element->Profesor->dni)?$this->element->Profesor->miJefe:AuthUser()->miJefe);break;

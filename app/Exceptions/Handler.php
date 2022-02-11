@@ -4,9 +4,13 @@ namespace Intranet\Exceptions;
 
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Intranet\Componentes\Mensaje;
+use Intranet\Services\AdviseService;
 use Styde\Html\Facades\Alert;
 use Throwable;
+
 
 class Handler extends ExceptionHandler
 {
@@ -35,17 +39,6 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
-    /**
-     Report or log an exception.
-
-      @param  \Exception  $exception
-      @return void
-     */
-
-    public function report(Throwable $e)
-    {
-        parent::report($e);
-    }
 
     /**
       Render an exception into an HTTP response.
@@ -59,7 +52,7 @@ class Handler extends ExceptionHandler
         if ($exception->getMessage()!='The given data was invalid.'&&
                $exception->getMessage()!='Unauthenticated.'&&
                $exception->getMessage()!='') {
-            avisa(config('contacto.avisos.errores'),$exception->getMessage());
+            Mensaje::send('avisos.errores',$exception->getMessage());
         }
 
         if ($exception instanceof ModelNotFoundException) {
@@ -75,7 +68,6 @@ class Handler extends ExceptionHandler
         if ($exception instanceof \PDOException){
             
             Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :".$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
-            //return response()->view('errors.200',['mensaje'=>$exception->getMessage()],200);
         }
         if ($exception instanceof AuthenticationException){
             return $this->unauthenticated($request,$exception);
