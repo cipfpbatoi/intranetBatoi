@@ -8,12 +8,12 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.3",
+        "php": "^7.3|^8.0",
         "barryvdh/laravel-dompdf": "^0.8.6",
         "barryvdh/laravel-snappy": "^0.4.7",
         "doctrine/dbal": "^2.6",
         "eluceo/ical": "^0.13.0",
-        "fedeisas/laravel-mail-css-inliner": "^3.0.1",
+        "fedeisas/laravel-mail-css-inliner": "^4.0",
         "fideloper/proxy": "^4.0",
         "graham-campbell/markdown": "^13.1.1",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -29,7 +29,7 @@
         "mikehaertl/php-pdftk": "^0.8.1",
         "predis/predis": "^1.1",
         "simplesoftwareio/simple-qrcode": "~4",
-        "styde/html": "~1.8"
+        "styde/html": "~1.9"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",

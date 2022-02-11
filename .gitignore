@@ -20,6 +20,7 @@ yarn-error.log
 /config/mail.php
 /config/modelos.php
 /config/tablas.php
+/config/avisos.php
 /public/img/pdf
 composer.lock
 /nbproject/private/
