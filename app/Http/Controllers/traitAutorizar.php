@@ -72,6 +72,8 @@ trait traitAutorizar
             return $this->follow($inicial, $final);
         }
     }
+
+
     
     // rediriguix o no a un altra pestana
     private function follow($inicial,$final)

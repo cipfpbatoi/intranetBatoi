@@ -3,7 +3,6 @@
 
 namespace Intranet\Services;
 
-
 use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
 use Jenssegers\Date\Date;
@@ -43,7 +42,7 @@ class PrintReportService
             $pdf = Pdf::hazPdf($this->document->getView(), $this->elements, null, $this->document->orientation);
             $nom = $this->document->modelo . new Date() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-            $gestor = new Gestor();
+            $gestor = new GestorService();
             $doc = $gestor->save([
                 'fichero' => $nomComplet,
                 'tags' => $this->document->tags
