@@ -6,7 +6,7 @@ namespace Intranet\Services;
 use Intranet\Entities\Documento;
 use Styde\Html\Facades\Alert;
 
-class Gestor
+class GestorService
 {
     private $elemento;
     private $document;
@@ -15,13 +15,7 @@ class Gestor
 
     public function __construct($elemento=null,$documento=null){
         $this->elemento = $elemento;
-        if (isset($documento)){
-            $this->document = $documento;
-        } else {
-            if (isset($this->elemento)) {
-                $this->document = $this->elemento->idDocumento ? Documento::find($this->elemento->idDocumento) : (isset($elemento->fichero) ? Documento::where('fichero', $elemento->fichero)->first() : null);
-            }
-        }
+        $this->document = $documento??$this->findDocument();
         if ($this->document) {
             if (isset($this->document->enlace)) {
                 $this->link = $this->document->enlace;
@@ -37,6 +31,16 @@ class Gestor
         }
     }
 
+    private function findDocument(){
+        if (isset($this->elemento)) {
+            if ($this->elemento->idDocumento) {
+                return Documento::find($this->elemento->idDocumento);
+            } else {
+                return isset($this->elemento->fichero) ? Documento::where('fichero', $this->elemento->fichero)->first() : null;
+            }
+        }
+        return null;
+    }
 
     public function save($parametres = null)
     {

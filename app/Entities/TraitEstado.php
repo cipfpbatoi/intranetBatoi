@@ -2,27 +2,16 @@
 
 namespace Intranet\Entities;
 
-use Illuminate\Support\Facades\Session;
 use Intranet\Services\AdviseService;
-use Intranet\Services\Gestor;
+use Intranet\Services\GestorService;
 
 trait TraitEstado
 {
 
-    protected function crea_pestanas_estado($estados,$vista,$activa=null,$sustituye = null){
-        if (!$activa){
-            $activa = Session::get('pestana')?Session::get('pestana'):0;
-        }
-        foreach ($estados as $key => $estado) {
-            $sustituto = ($key == $sustituye)?1:null;
-            $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,
-                ['estado',$key],null,$sustituto,$this->parametresVista);
-        }
-    }
 
     private static function makeDocument($elemento){
         if ($elemento->fichero != ''){
-            $gestor = new Gestor($elemento);
+            $gestor = new GestorService($elemento);
             $gestor->save([
                 'tipoDocumento' => getClase($elemento),
                 'rol'=> '2',
@@ -48,7 +37,6 @@ trait TraitEstado
       
         $elemento->estado = $estado;
         $elemento->save();
-
         AdviseService::exec($elemento,$mensaje);
 
         return ($elemento->estado);
