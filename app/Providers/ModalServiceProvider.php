@@ -12,6 +12,6 @@ class ModalServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__.'../../resources/views/batoiModal', 'batoi-modal');
 
-        Blade::component('Intranet\Componentes\Modal','modal');
+        Blade::component('Intranet\Botones\Modal','modal');
     }
 }
