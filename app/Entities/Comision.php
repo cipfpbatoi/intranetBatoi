@@ -2,17 +2,14 @@
 
 namespace Intranet\Entities;
 
-use Eloquent as Model;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
-use \DB;
-use Intranet\Events\PreventAction;
-
+use Illuminate\Database\Eloquent\Model;
 
 class Comision extends Model
 {
 
-    use BatoiModels,TraitEstado;
+    use BatoiModels;
 
     protected $table = 'comisiones';
     protected $fillable = [

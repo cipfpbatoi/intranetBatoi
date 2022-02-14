@@ -5,12 +5,13 @@ namespace Intranet\Http\Controllers;
 use DB;
 use Intranet\Botones\BotonImg;
 use Intranet\Http\Requests\ExpedienteRequest;
+use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Expediente;
-use Intranet\Services\Gestor;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\TipoExpediente;
 use Illuminate\Http\Request;
+
 
 /**
  * Class ExpedienteController
@@ -83,12 +84,13 @@ class ExpedienteController extends ModalController
     protected function init($id)
     {
         $expediente = Expediente::find($id);
+        $staSrv = new StateService($expediente);
             // orientacion
         if ($expediente->tipoExpediente->orientacion >= 1){
             $mensaje = $expediente->explicacion.' .Grup '.$expediente->Alumno->Grupo->first()->nombre;
-            Expediente::putEstado($id, 4, $mensaje);
+            $staSrv->(4, $mensaje);
         } else {
-            Expediente::putEstado($id,1);
+            $staSrv->putEstado(1);
         }
         return back();
     }
@@ -105,7 +107,8 @@ class ExpedienteController extends ModalController
     protected function pasaOrientacion($id)
     {
         $expediente = Expediente::find($id);
-        Expediente::putEstado($id, 5);
+        $staSrv = new StateService($expediente);
+        $staSrv->putEstado(5);
         $expediente->fechasolucion = Hoy();
         $expediente->save();
 
@@ -114,12 +117,11 @@ class ExpedienteController extends ModalController
 
     protected function assigna($id,Request $request){
         $expediente = Expediente::find($id);
+        $staSrv = new StateService($expediente);
         $expediente->idAcompanyant = $request->idAcompanyant;
         $expediente->fechasolucion = Hoy();
         $expediente->save();
-        Expediente::putEstado($id,5,"Assignat professor Acompanyant ".$expediente->Acompanyant->fullName);
-
-
+        $staSrv->putEstado(5,"Assignat professor Acompanyant ".$expediente->Acompanyant->fullName);
 
         return back();
     }
