@@ -2,9 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
-use DB;
+
 use Intranet\Botones\BotonImg;
 use Intranet\Http\Requests\ExpedienteRequest;
+use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Expediente;
@@ -88,7 +89,7 @@ class ExpedienteController extends ModalController
             // orientacion
         if ($expediente->tipoExpediente->orientacion >= 1){
             $mensaje = $expediente->explicacion.' .Grup '.$expediente->Alumno->Grupo->first()->nombre;
-            $staSrv->(4, $mensaje);
+            $staSrv->putEstado(4, $mensaje);
         } else {
             $staSrv->putEstado(1);
         }
@@ -154,7 +155,7 @@ class ExpedienteController extends ModalController
                     $pdf = $this->hazPdf("pdf.expediente.$tipo->vista", $todos);
                     $nom = $this->model . new Date() . '.pdf';
                     $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-                    $gestor = new Gestor();
+                    $gestor = new GestorService();
                     $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "listado llistat expediente expedient $tipo->titulo"]);
                     $this->makeAll($todos, '_print');
                     $this->makeLink($todos,$doc);
