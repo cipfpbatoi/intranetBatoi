@@ -6,7 +6,7 @@
  * Time: 09:54
  */
 
-namespace Intranet\Componentes;
+namespace Intranet\Botones;
 
 use Illuminate\View\Component;
 use function view;
