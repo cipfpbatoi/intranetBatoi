@@ -31,7 +31,7 @@ class MyMailController extends Controller
         else {
             $attach = null;
         }
-        if (strlen($request->contenido) < 50) {
+        if (strlen($request->contenido) < 50 && $request->editable == true) {
             Alert::danger('El contingut ha de ser més de 50 caracters');
         } else {
             $mail = new MyMail($request->to, $request->contenido, $request->toArray(), $attach);
