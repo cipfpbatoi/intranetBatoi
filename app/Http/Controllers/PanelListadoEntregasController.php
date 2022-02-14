@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Horario;
-use Intranet\Services\Gestor;
+use Intranet\Services\GestorService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Modulo_ciclo;

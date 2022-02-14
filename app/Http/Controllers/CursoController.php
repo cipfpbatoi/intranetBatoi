@@ -7,7 +7,7 @@ use Intranet\Entities\AlumnoCurso;
 use Intranet\Botones\BotonImg;
 use DB;
 use Intranet\Entities\Documento;
-use Intranet\Services\Gestor;
+use Intranet\Services\GestorService;
 use Jenssegers\Date\Date;
 use Intranet\Jobs\SendEmail;
 use Styde\Html\Facades\Alert;

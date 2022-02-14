@@ -11,7 +11,7 @@ use Intranet\Entities\TipoDocumento;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Services\FormBuilder;
-use Intranet\Services\Gestor;
+use Intranet\Services\GestorService;
 use Illuminate\Support\Facades\Session;
 
 class DocumentoController extends IntranetController

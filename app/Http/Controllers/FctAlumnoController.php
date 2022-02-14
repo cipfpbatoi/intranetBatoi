@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Support\Collection;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
-use Intranet\Botones\DocumentoFct;
+use Intranet\Componentes\DocumentoFct;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Profesor;

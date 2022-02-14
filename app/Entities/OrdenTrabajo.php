@@ -8,7 +8,7 @@ use Jenssegers\Date\Date;
 class OrdenTrabajo extends Model
 {
 
-    use BatoiModels,TraitEstado;
+    use BatoiModels;
      
     protected $table = 'ordenes_trabajo';
     protected $primaryKey = 'id';

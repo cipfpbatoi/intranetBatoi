@@ -17,8 +17,7 @@ class Incidencia extends Model
     protected $fillable = ['tipo','espacio', 'material', 'descripcion', 'idProfesor',  'prioridad', 'observaciones','fecha'];
     protected $descriptionField = 'descripcion';
 
-    use BatoiModels,
-        TraitEstado;
+    use BatoiModels;
 
     protected $inputTypes = [
         'fecha' => ['type' => 'date']

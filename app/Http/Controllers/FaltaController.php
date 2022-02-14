@@ -13,7 +13,7 @@ use Intranet\Entities\Expediente;
 use Intranet\Entities\Resultado;
 
 use Intranet\Jobs\SendEmail;
-use Intranet\Services\Gestor;
+use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
 use \DB;

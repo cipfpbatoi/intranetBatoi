@@ -12,7 +12,7 @@ use Intranet\Entities\Modulo;
 class Expediente extends Model
 {
 
-    use BatoiModels,TraitEstado;
+    use BatoiModels;
 
     public $timestamps = false;
 

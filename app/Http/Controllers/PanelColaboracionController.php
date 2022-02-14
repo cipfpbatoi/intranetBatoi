@@ -7,7 +7,7 @@ use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Colaboracion;
 use Illuminate\Support\Facades\Session;
 use Intranet\Finders\UniqueFinder;
-use Intranet\Botones\DocumentoFct;
+use Intranet\Componentes\DocumentoFct;
 use Intranet\Finders\RequestFinder;
 use Intranet\Services\DocumentService;
 use Illuminate\Http\Request;

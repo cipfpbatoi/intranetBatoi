@@ -3,22 +3,20 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
-use Intranet\Entities\Ciclo;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Events\ActivityReport;
+
 
 class Colaboracion extends Model
 {
 
-    use BatoiModels,TraitEstado;
+    use BatoiModels;
 
     protected $table = 'colaboraciones';
     protected $fillable = ['idCentro', 'idCiclo', 'contacto', 'telefono','email', 'puestos','tutor'];
     protected $rules = [
         'idCentro' => 'required|composite_unique:colaboraciones,idCentro,idCiclo',
         'idCiclo' => 'required',
-        'puestos' => 'required',
         'email' => 'email',
         'puestos' => 'required|numeric',
         'telefono' => 'max:20'
@@ -56,7 +54,7 @@ class Colaboracion extends Model
     }
     public function incidencias()
     {
-        return $this->hasMany(IncidenciaColaboracion::class, 'idColaboracion', 'id');
+        return $this->hasMany(Incidencia::class, 'idColaboracion', 'id');
     }
     public function Propietario()
     {

@@ -12,7 +12,7 @@ use Intranet\Events\PreventAction;
 class Actividad extends Model
 {
 
-    use BatoiModels,TraitEstado;
+    use BatoiModels;
 
     protected $table = 'actividades';
     protected $fillable = ['name', 'extraescolar','desde', 'hasta','fueraCentro', 'transport','objetivos', 'descripcion', 'comentarios','poll','desenvolupament','valoracio','aspectes','dades'];
@@ -77,6 +77,7 @@ class Actividad extends Model
                 ->first()
                 ->idProfesor;
         }
+        return null;
     }
     public function scopeProfesor($query,$dni)
     {

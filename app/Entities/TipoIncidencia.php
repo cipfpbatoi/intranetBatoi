@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\App;
 
 class TipoIncidencia extends Model
 {
-    use BatoiModels,TraitEstado;
+    use BatoiModels;
 
     protected $table = 'tipoincidencias';
     public $incrementing = false;
@@ -60,9 +60,11 @@ class TipoIncidencia extends Model
 
     public function Rol($rol){
         $profesores = collect();
-        foreach (Profesor::where('activo',1)->get() as $profe)
-        if ($profe->rol % $rol == 0)
-            $profesores->push($profe);
+        foreach (Profesor::where('activo',1)->get() as $profe) {
+            if ($profe->rol % $rol == 0) {
+                $profesores->push($profe);
+            }
+        }
         return $profesores;
     }
     public function getProfesorAttribute(){
