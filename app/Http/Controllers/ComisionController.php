@@ -120,7 +120,7 @@ class ComisionController extends ModalController
         $fin = buildFecha($fecha,$elemento->pivot->hora_ini);
         $fin->add(new \DateInterval("PT30M"));
 
-        file_put_contents(storage_path("tmp/visita_$elemento->id.ics"), CalendarService::render_ics($ini,$fin,'Visita del Tutor CIPFPBatoi','Seguimiento Fct',$elemento->Centro)->render());
+        file_put_contents(storage_path("tmp/visita_$elemento->id.ics"), CalendarService::render($ini,$fin,'Visita del Tutor CIPFPBatoi','Seguimiento Fct',$elemento->Centro)->render());
         $attach = [ "tmp/visita_$elemento->id.ics" => 'text/calendar'];
         $documento = new DocumentoFct('visitaComision');
         $mail = new MyMail($elemento,$documento->view,$documento->email,$attach,'visita');
