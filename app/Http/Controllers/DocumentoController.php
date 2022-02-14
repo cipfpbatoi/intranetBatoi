@@ -173,7 +173,7 @@ class DocumentoController extends IntranetController
     
     public function show($id)
     {
-        $gestor = new Gestor(null,Documento::find($id));
+        $gestor = new GestorService(null,Documento::find($id));
         return $gestor->render();
     }
 

@@ -7,6 +7,7 @@ use Intranet\Entities\Horario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonIcon;
+use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Falta_itaca;
@@ -37,7 +38,7 @@ class FaltaItacaController extends IntranetController
         }
 
         self::deleteFile($nomComplet = self::nameFile($request->desde));
-        $gestor = new Gestor();
+        $gestor = new GestorService();
 
         $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "Birret listado llistat autorizacion autorizacio"]);
         self::makeLink($elementos, $doc);

@@ -103,7 +103,7 @@ class PanelListadoEntregasController extends BaseController
             $reunion->fichero = $nomComplet;
             $reunion->save();
 
-            $gestor = new Gestor($reunion);
+            $gestor = new GestorService($reunion);
             $gestor->save(
                     ['propietario' => AuthUser()->FullName,
                         'tipoDocumento' => 'Acta',

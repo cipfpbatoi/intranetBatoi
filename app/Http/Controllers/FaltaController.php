@@ -241,7 +241,7 @@ class FaltaController extends IntranetController
         }
 
         $nomComplet = self::nameFile();
-        $gestor = new Gestor();
+        $gestor = new GestorService();
         $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"]);
 
         $elementos = self::findElements($desde,$hasta);

@@ -254,7 +254,7 @@ class ReunionController extends IntranetController
         $elemento->archivada = 1;
         $elemento->fichero = $nomComplet;
         DB::transaction(function () use ($elemento) {
-            $gestor = new Gestor($elemento);
+            $gestor = new GestorService($elemento);
             $gestor->save(['propietario' => $elemento->Creador->FullName,
                 'tipoDocumento' => 'Acta',
                 'descripcion' => $elemento->descripcion,

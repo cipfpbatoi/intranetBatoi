@@ -97,7 +97,7 @@ class CursoController extends ModalController
     {
         $elemento = $this->makeReport($id);
         DB::transaction(function () use ($elemento) {
-            $gestor = new Gestor($elemento);
+            $gestor = new GestorService($elemento);
             $gestor->save(['propietario' => $elemento->profesorado,
                 'tipoDocumento' => 'Curso',
                 'descripcion' => $elemento->titulo,
