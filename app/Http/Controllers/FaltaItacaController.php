@@ -7,6 +7,7 @@ use Intranet\Entities\Horario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonIcon;
+use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Documento;
@@ -66,5 +67,17 @@ class FaltaItacaController extends IntranetController
     private static function nameFile(String $desde){
         $fecha = new Date($desde);
         return 'gestor/' . Curso() . '/informes/' . 'Birret' . $fecha->format('M') . '.pdf';
+    }
+
+    public function resolve($id){
+        $falta = Falta_itaca::find($id);
+
+        $faltes_dia = Falta_itaca::where('idProfesor',$falta->idProfesor)->
+            where('dia',FechaInglesa($falta->dia))->where('estado',1)->get();
+        foreach ($faltes_dia as $falta_hora){
+            $staSer = new StateService($falta_hora);
+            $staSer->resolve();
+        }
+        return $this->follow(1,2);
     }
 }
