@@ -3,7 +3,10 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
+use Jenssegers\Date\Date;
+use Styde\Html\Facades\Alert;
 
 
 trait traitAutorizar
@@ -113,6 +116,39 @@ trait traitAutorizar
             $uno->idDocumento = $doc;
             $uno->save();
          }
+    }
+
+    /**
+     * @param string $modelo
+     * @param null $inicial
+     * @param null $final
+     * @param string $orientacion
+     * @param bool $link
+     * @return \Illuminate\Http\RedirectResponse
+     */
+
+    public function imprimir($modelo = '', $inicial = null, $final = null, $orientacion='portrait', $link=true)
+    {
+        $modelo = $modelo ?? strtolower($this->model) . 's';
+        $final = $final ?? '_print';
+        $inicial =  $inicial ?? config('modelos.' . getClass($this->class) . '.print') - 1;
+        $todos = $this->class::where('estado', '=', $inicial)->get();
+        if ($todos->Count()) {
+            $pdf = $this->hazPdf("pdf.$modelo", $todos,null,$orientacion);
+            $nom = $this->model . new Date() . '.pdf';
+            $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
+            $tags = config("modelos.$this->model.documento");
+            $gestor = new GestorService();
+            $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => $tags ]);
+            $this->makeAll($todos, $final);
+            if ($link) {
+                $this->makeLink($todos,$doc);
+            }
+            return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
+        }
+        Alert::info(trans('messages.generic.empty'));
+        return back();
+
     }
     
 

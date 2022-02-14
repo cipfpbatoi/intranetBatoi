@@ -3,9 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Services\GestorService;
-use Jenssegers\Date\Date;
 use Intranet\Componentes\Pdf as PDF;
-use Styde\Html\Facades\Alert;
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
 use DateTime;
@@ -31,70 +29,6 @@ trait traitImprimir
         $pdf = $this->hazPdf($informe, $elemento, null, $orientacion);
         return $pdf->stream();
     }
-
-    /**
-     * @param string $modelo
-     * @param null $inicial
-     * @param null $final
-     * @param string $orientacion
-     * @param bool $link
-     * @return \Illuminate\Http\RedirectResponse
-     */
-
-    public function imprimir($modelo = '', $inicial = null, $final = null, $orientacion='portrait', $link=true)
-    {
-        $modelo = $modelo ?? strtolower($this->model) . 's';
-        $final = $final ?? '_print';
-        $inicial =  $inicial ?? config('modelos.' . getClass($this->class) . '.print') - 1;
-        $todos = $this->class::where('estado', '=', $inicial)->get();
-        if ($todos->Count()) {
-            $pdf = $this->hazPdf("pdf.$modelo", $todos,null,$orientacion);
-            $nom = $this->model . new Date() . '.pdf';
-            $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-            $tags = config("modelos.$this->model.documento");
-            $gestor = new GestorService();
-            $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => $tags ]);
-            $this->makeAll($todos, $final);
-            if ($link) {
-                $this->makeLink($todos,$doc);
-            }
-            return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
-        } 
-        Alert::info(trans('messages.generic.empty'));
-        return back();
-        
-    }
-
-    /**
-     * @param $informe
-     * @param $todos
-     * @param null $datosInforme
-     * @param string $orientacion
-     * @param string $dimensiones
-     * @param int $margin_top
-     * @return mixed
-
-    protected static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
-                                     $margin_top= 15)
-    {
-        $datosInforme = $datosInforme==null?FechaString(null,'ca'):$datosInforme;
-        if (is_string($dimensiones)) {
-            return(PDF::loadView($informe, compact('todos', 'datosInforme'))
-                    ->setPaper($dimensiones)
-                    ->setOrientation($orientacion)
-                    ->setOption('margin-top', $margin_top));
-        } 
-            
-        //carnet
-        return(PDF::loadView($informe, compact('todos', 'datosInforme'))
-                ->setOrientation($orientacion)
-                ->setOption('margin-top', 2)
-                ->setOption('margin-left', 0)
-                ->setOption('margin-right', 0)
-                ->setOption('margin-bottom', 0)
-                ->setOption('page-width', $dimensiones[0])
-                ->setOption('page-height', $dimensiones[1]));
-    }*/
 
     protected static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
                                      $margin_top= 15)

@@ -216,7 +216,8 @@ class FaltaController extends IntranetController
             ['estado', '<', '4'],
             ['hasta', '<=', $hasta]
         ])->get() as $elemento) {
-            $elemento::_print($elemento->id);
+            $staSer = new StateService($elemento);
+            $staSer->_print();
         }
     }
 
