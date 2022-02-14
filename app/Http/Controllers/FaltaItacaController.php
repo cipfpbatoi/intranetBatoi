@@ -80,4 +80,16 @@ class FaltaItacaController extends IntranetController
         }
         return $this->follow(1,2);
     }
+
+    public function refuse($id,Request $request){
+        $falta = Falta_itaca::find($id);
+
+        $faltes_dia = Falta_itaca::where('idProfesor',$falta->idProfesor)->
+            where('dia',FechaInglesa($falta->dia))->get();
+        foreach ($faltes_dia as $falta_hora){
+            $staSer = new StateService($falta_hora);
+            $staSer->refuse($request->explicacion);
+        }
+        return $this->follow(2,1);
+    }
 }
