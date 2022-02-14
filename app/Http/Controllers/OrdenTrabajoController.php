@@ -67,12 +67,15 @@ class OrdenTrabajoController extends IntranetController
      * @param string $orientacion
      * @return mixed
      */
+
+    //TODO
+
     public function imprime($id, $orientacion = 'portrait')
     {
         $elemento = $this->class::findOrFail($id);
         $incidencias = Incidencia::where('orden',$elemento->id)->get();
         $informe = 'pdf.' . strtolower($this->model);
-        $pdf = $this->hazPdf($informe, $incidencias,$elemento, $orientacion);
+        $pdf = self::hazPdf($informe, $incidencias,$elemento, $orientacion);
         if ($elemento->estado == 0){
             $elemento->estado = 1;
             $elemento->save();

@@ -16,22 +16,17 @@ trait traitImprimir
 {
 
     /**
-     * @param $id
-     * @param string $orientacion
-     * @return mixed
+     * @param $informe
+     * @param $todos
+     * @param $datosInforme
+     * @param $orientacion
+     * @param $dimensiones
+     * @param $margin_top
+     * @return void
      */
-    public function imprime($id, $orientacion = 'portrait')
-    {
-        $elemento = $this->class::findOrFail($id);
-        $informe = 'pdf.' . strtolower($this->model);
-        $pdf = $this->hazPdf($informe, $elemento, null, $orientacion);
-        return $pdf->stream();
-    }
-
     protected static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
                                      $margin_top= 15)
     {
-
         return PDF::hazPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones , $margin_top );
     }
 
@@ -48,6 +43,10 @@ trait traitImprimir
         return Response::view('ics', compact('vCalendar'))->header('Content-Type', 'text/calendar');
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function gestor($id)
     {
         $gestor = new GestorService($this->class::findOrFail($id));

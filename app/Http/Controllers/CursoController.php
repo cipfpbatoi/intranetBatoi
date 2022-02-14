@@ -146,7 +146,11 @@ class CursoController extends ModalController
      * @return mixed
      */
     public function pdf($id)
-    {        return self::imprime($id);
+    {
+        $elemento = $this->class::findOrFail($id);
+        $informe = 'pdf.' . strtolower($this->model);
+        $pdf = self::hazPdf($informe, $elemento, null, 'portrait');
+        return $pdf->stream();
     }
 
     public function email($id)
