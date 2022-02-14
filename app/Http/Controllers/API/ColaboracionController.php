@@ -3,11 +3,11 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Fct;
+use Intranet\Services\StateService;
 
 
 class ColaboracionController extends ApiBaseController
@@ -23,18 +23,21 @@ class ColaboracionController extends ApiBaseController
 
     public function resolve($id){
         $colaboracion = Colaboracion::find($id);
-        $colaboracion::resolve($id);
+        $staSer = new StateService($colaboracion);
+        $staSer->resolve();
         return $this->sendResponse($colaboracion,'OK');
     }
 
     public function refuse($id){
         $colaboracion = Colaboracion::find($id);
-        $colaboracion::refuse($id);
+        $staSer = new StateService($colaboracion);
+        $staSer->refuse();
         return $this->sendResponse($colaboracion,'OK');
     }
     public function unauthorize($id){
         $colaboracion = Colaboracion::find($id);
-        $colaboracion::putEstado($id,1);
+        $staSer = new StateService($colaboracion);
+        $staSer->putEstado(1);
         return $this->sendResponse($colaboracion,'OK');
     }
     public function switch($id){

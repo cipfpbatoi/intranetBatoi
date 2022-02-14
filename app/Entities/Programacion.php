@@ -3,17 +3,13 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
-use Intranet\Entities\Gestor;
-use Intranet\Entities\Modulo_ciclo;
 
 class Programacion extends Model
 {
 
-    use BatoiModels,TraitEstado;
+    use BatoiModels;
     
     public $fileField = 'idModulo';
     protected $table = "programaciones";

@@ -2,9 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Services\Gestor;
+use Intranet\Services\GestorService;
 use Jenssegers\Date\Date;
-use Intranet\Botones\Pdf as PDF;
+use Intranet\Componentes\Pdf as PDF;
 use Styde\Html\Facades\Alert;
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
@@ -40,17 +40,19 @@ trait traitImprimir
      * @param bool $link
      * @return \Illuminate\Http\RedirectResponse
      */
+
     public function imprimir($modelo = '', $inicial = null, $final = null, $orientacion='portrait', $link=true)
     {
-        $modelo = $modelo ? $modelo : strtolower($this->model) . 's';
-        $final = $final ? $final : '_print';
-        $todos = $this->class::listos($inicial);
+        $modelo = $modelo ?? strtolower($this->model) . 's';
+        $final = $final ?? '_print';
+        $inicial =  $inicial ?? config('modelos.' . getClass($this->class) . '.print') - 1;
+        $todos = $this->class::where('estado', '=', $inicial)->get();
         if ($todos->Count()) {
             $pdf = $this->hazPdf("pdf.$modelo", $todos,null,$orientacion);
             $nom = $this->model . new Date() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
             $tags = config("modelos.$this->model.documento");
-            $gestor = new Gestor();
+            $gestor = new GestorService();
             $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => $tags ]);
             $this->makeAll($todos, $final);
             if ($link) {
@@ -162,7 +164,7 @@ trait traitImprimir
 
     public function gestor($id)
     {
-        $gestor = new Gestor($this->class::findOrFail($id));
+        $gestor = new GestorService($this->class::findOrFail($id));
         return $gestor->render();
     }
 

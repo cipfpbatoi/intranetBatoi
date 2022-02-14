@@ -13,7 +13,8 @@ use Intranet\Entities\Expediente;
 use Intranet\Entities\Resultado;
 
 use Intranet\Jobs\SendEmail;
-use Intranet\Services\Gestor;
+use Intranet\Services\GestorService;
+use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
 use \DB;
 use Intranet\Botones\BotonImg;
@@ -159,10 +160,11 @@ class FaltaController extends IntranetController
     {
         $elemento = Falta::findOrFail($id);
         $this->avisaTutor($elemento);
+        $stSrv = new StateService($elemento);
         if ($elemento->fichero) {
-            Falta::putEstado($id,2);
+            $stSrv->putEstado(2);
         } else {
-            Falta::putEstado($id,1);
+            $stSrv->putEstado(1);
         }
 
         return $this->redirect();

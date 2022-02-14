@@ -12,6 +12,7 @@ use Intranet\Botones\BotonPost;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Illuminate\Http\Request;
+use Intranet\Services\StateService;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Session;
 use Intranet\Jobs\SendEmail;
@@ -39,8 +40,9 @@ class ProgramacionController extends IntranetController
     //inicializat a init (normalment 1)
     protected function init($id)
     {
-        Programacion::putEstado($id,$this->init);
         $prg = Programacion::find($id);
+        $staSrv = new StateService($prg);
+        $staSrv->putEstado($this->init);
         $prg->Profesor = AuthUser()->dni;
         $prg->save();
         return back();

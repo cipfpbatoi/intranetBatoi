@@ -2,14 +2,13 @@
 
 namespace Intranet\Exceptions;
 
-use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Intranet\Componentes\Mensaje;
-use Intranet\Services\AdviseService;
 use Styde\Html\Facades\Alert;
 use Throwable;
+use function config;
 
 
 class Handler extends ExceptionHandler
@@ -52,48 +51,20 @@ class Handler extends ExceptionHandler
         if ($exception->getMessage()!='The given data was invalid.'&&
                $exception->getMessage()!='Unauthenticated.'&&
                $exception->getMessage()!='') {
-            Mensaje::send('avisos.errores',$exception->getMessage());
-        }
-
-        if ($exception instanceof ModelNotFoundException) {
-            if ($request->wantsJson())
-            {
-                return response()->json(['message' => $exception->getMessage()], $exception->getCode());
-            }
-            else
-            {
-                $e = new NotFoundHttpException($exception->getMessage(), $exception);
-            }
+            Mensaje::send(config('avisos.errores'),$exception->getMessage());
         }
         if ($exception instanceof \PDOException){
-            
             Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :".$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
         }
-        if ($exception instanceof AuthenticationException){
-            return $this->unauthenticated($request,$exception);
+        if ($request->wantsJson()) {
+            return response()->json(['message' => $exception->getMessage()], $exception->getCode());
         }
-        if ($request->wantsJson())
-        {
-            return response()->json(['message' => $exception->getMessage()], 404);
+        if ($exception instanceof AuthenticationException){
+            return redirect()->guest('login');
         }
         return parent::render($request, $exception);
     }
 
-    /**
-     * Convert an authentication exception into an unauthenticated response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Auth\AuthenticationException  $exception
-     * @return \Illuminate\Http\Response
-     */
-    protected function unauthenticated($request, AuthenticationException $exception)
-    {
 
-        if ($request->wantsJson()) {
-            return response()->json(['error' => $exception->getMessage(),'linea'=>$exception->getFile().'->'.$exception->getLine()], 401);
-        }
-
-        return redirect()->guest('login');
-    }
 
 }

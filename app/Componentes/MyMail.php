@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * Profesor: igomis
- * Date: 2019-04-11
- * Time: 13:47
- */
+
 
 namespace Intranet\Componentes;
 
@@ -12,9 +7,8 @@ use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Activity;
 use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
-use function AuthUser;
-use function collect;
-use function view;
+use function AuthUser,collect,view;
+
 
 class MyMail
 {
@@ -25,9 +19,6 @@ class MyMail
     private $template=null;
     private $attach;
     private $editable;
-
-
-
 
     public function __get($key)
     {

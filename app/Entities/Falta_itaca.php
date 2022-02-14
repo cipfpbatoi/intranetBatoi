@@ -8,8 +8,7 @@ use Jenssegers\Date\Date;
 
 class Falta_itaca extends Model
 {
-    use TraitEstado;
-    
+
     protected $table = 'faltas_itaca';
     public $timestamps = false;
     

@@ -7,6 +7,7 @@ use Intranet\Botones\BotonIcon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\OrdenTrabajo;
+use Intranet\Services\StateService;
 
 /**
  * Class OrdenTrabajoController
@@ -88,7 +89,8 @@ class OrdenTrabajoController extends IntranetController
         $elemento->estado = 2;
         $incidencias = Incidencia::where('orden',$elemento->id)->get();
         foreach ($incidencias as $incidencia){
-            Incidencia::resolve($incidencia->id);
+            $staSer = new StateService($incidencia);
+            $staSer->resolve();
         }
         $elemento->save();
         return back();

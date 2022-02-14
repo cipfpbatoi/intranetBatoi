@@ -3,8 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use DB;
-
+use Intranet\Services\StateService;
 
 
 trait traitAutorizar
@@ -16,60 +15,68 @@ trait traitAutorizar
     // cancela pasa a estat -1
     protected function cancel($id)
     {
-        $this->class::putEstado($id,-1);
+        $stSrv = new StateService($this->class,$id);
+        $stSrv->putEstado(-1);
         return back();
     }
     
     //inicializat a init (normalment 1)
     protected function init($id)
     {
-        $this->class::putEstado($id,$this->init);
+        $stSrv = new StateService($this->class,$id);
+        $stSrv->putEstado(1);
+
         return back();
     }
     
     //imprimeix
     protected function _print($id)
     {
-        $this->class::_print($id);
+        $stSrv = new StateService($this->class,$id);
+        $stSrv->_print();
     }
 
     //resol    
     protected function resolve($id, $redirect = true,Request $request)
     {
-        $inicial = $this->class::getEstado($id);
-        $final = $this->class::resolve($id,$request->explicacion);
+        $stSrv = new StateService($this->class,$id);
+        $iniSta = $stSrv->getEstado();
+        $finSta = $stSrv->resolve($request->explicacion);
         if ($redirect) {
-            return $this->follow($inicial, $final);
+            return $this->follow($iniSta, $finSta);
         }
     }
 
     // estat + 1
     protected function accept($id, $redirect = true)
     {
-        $inicial = $this->class::getEstado($id);
-        $final = $this->class::putEstado($id,$inicial+1);
+        $stSrv = new StateService($this->class,$id);
+        $iniSta = $stSrv->getEstado();
+        $finSta = $stSrv->putEstado($iniSta+1);
         if ($redirect) {
-            return $this->follow($inicial, $final);
+            return $this->follow($iniSta, $finSta);
         }
     }
 
     // estat -1
     protected function resign($id, $redirect = true)
     {
-        $inicial = $this->class::getEstado($id);
-        $final = $this->class::putEstado($id,$inicial-1);
+        $stSrv = new StateService($this->class,$id);
+        $iniSta = $stSrv->getEstado();
+        $finSta = $stSrv->putEstado($iniSta-1);
         if ($redirect) {
-            return $this->follow($inicial, $final);
+            return $this->follow($iniSta, $finSta);
         }
     }
 
     // refusa
     protected function refuse(Request $request, $id, $redirect = true)
     {
-        $inicial = $this->class::getEstado($id);
-        $final = $this->class::refuse($id,$request->explicacion);
+        $stSrv = new StateService($this->class,$id);
+        $iniSta = $stSrv->getEstado();
+        $finSta = $stSrv->refuse($request->explicacion);
         if ($redirect) {
-            return $this->follow($inicial, $final);
+            return $this->follow($iniSta, $finSta);
         }
     }
 
@@ -87,12 +94,14 @@ trait traitAutorizar
     {
         if (is_string($accion)) {
             foreach ($todos as $uno) {
-                $this->$accion($uno->id, false);
+                $stSrv = new StateService($uno);
+                $stSrv->$accion(false);
             }
         }
         else {
             foreach ($todos as $uno) {
-                $this->class::putEstado($uno->id, $accion);
+                $stSrv = new StateService($uno);
+                $stSrv->putEstado($accion);
             }
         }
     }

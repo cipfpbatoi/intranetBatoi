@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Botones\DocumentoFct;
+use Intranet\Componentes\DocumentoFct;
 use Intranet\Services\DocumentService;
 
 

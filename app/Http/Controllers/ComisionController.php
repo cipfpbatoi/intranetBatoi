@@ -5,9 +5,10 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\DocumentoFct;
-use Intranet\Botones\MyMail;
+use Intranet\Componentes\DocumentoFct;
+use Intranet\Componentes\MyMail;
 use Intranet\Http\Requests\ComisionRequest;
+use Intranet\Services\StateService;
 use \PDF;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Fct;
@@ -128,9 +129,11 @@ class ComisionController extends ModalController
 
     protected function init($id)
     {
+        $comision = Comision::find($id);
+        $this->enviarCorreos($comision);
+        $stSrv = new StateService($comision);
+        $stSrv->putEstado($this->init);
 
-        $this->enviarCorreos(Comision::find($id));
-        $this->class::putEstado($id,$this->init);
         return back();
     }
 
