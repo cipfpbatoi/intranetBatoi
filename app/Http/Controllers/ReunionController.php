@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Services\CalendarService;
 use Intranet\Services\GestorService;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Profesor;
@@ -20,6 +21,7 @@ use Intranet\Entities\Documento;
 use Intranet\Jobs\SendEmail;
 use Intranet\Entities\Grupo;
 use Illuminate\Support\Facades\DB;
+use function dispatch;
 
 class ReunionController extends IntranetController
 {
@@ -171,6 +173,8 @@ class ReunionController extends IntranetController
         return back();
     }
 
+
+
     public function email($id)
     {
         $elemento = Reunion::findOrFail($id);
@@ -184,7 +188,7 @@ class ReunionController extends IntranetController
         //guarda fitxers i construix variable
         $this->construye_pdf($id)->save(storage_path("tmp/Reunion_$id.pdf"));
         if (!haVencido($elemento->fecha)) {
-            file_put_contents(storage_path("tmp/invita_$id.ics"), $this->do_ics($elemento->id));
+            file_put_contents(storage_path("tmp/invita_$id.ics"), CalendarService::build($elemento)->render());
             $attach = ["tmp/Reunion_$id.pdf" => 'application/pdf', "tmp/invita_$id.ics" => 'text/calendar'];
         } else {
             $attach = ["tmp/Reunion_$id.pdf" => 'application/pdf'];
@@ -199,7 +203,7 @@ class ReunionController extends IntranetController
                 dispatch(new SendEmail($asistente->Profesor->email, $remitente, 'email.reunion', $elemento, $attach));
             }
         }
-        Alert::info('Correus enviats');
+        Alert::info('Correus en qua.Prompte arribaran al seu destinari');
         return back();
     }
 
