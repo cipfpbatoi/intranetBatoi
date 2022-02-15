@@ -121,6 +121,9 @@ class Expediente extends Model
     public function getQuienAttribute(){
         return $this->Alumno->FullName;
     }
+    public function scopeListos($query){
+        return $query->where('estado',2);
+    }
 
     public function getAnnexoAttribute(){
         return $this->tipoExpediente->orientacion;
