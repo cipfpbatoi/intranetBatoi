@@ -147,7 +147,7 @@ class ExpedienteController extends ModalController
      */
     public function imprimir()
     {
-        $expendientes = Expediente::listos();
+        $expendientes = Expediente::listos()->get();
         if ($expendientes->Count()){
             foreach (TipoExpediente::all() as $tipo) {
                 $todos = $expendientes->where('tipo', $tipo->id);
