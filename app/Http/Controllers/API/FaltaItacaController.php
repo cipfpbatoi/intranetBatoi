@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Componentes\Mensaje;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Falta_profesor;
@@ -93,16 +94,15 @@ class FaltaItacaController extends ApiBaseController
                     $falta->idGrupo = $hora['idGrupo'];
                     $falta->enCentro = $hora['enCentro'];
                     $falta->justificacion = $hora['justificacion'];
+                    $falta->estado = 1;
                     $falta->save();
-                    $alta = $falta->id;
+                    $alta = true;
                     $respuesta[$hora['sesion_orden']]=1;
                 }
             }
         }
         if ($alta){
-            $falta = Falta_itaca::find($alta);
-            $staSer = new StateService($falta);
-            $staSer->putEstado(1,'Birret Marcat');
+            Mensaje::send(config('avisos.director'),'Oblit Birret');
         }
 
         
