@@ -133,11 +133,10 @@ class Programacion extends Model
         return $this->Profesor->ShortName??'';
     }
 
-    
-    
     public function getSituacionAttribute(){
         return isblankTrans('models.Comision.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Comision.' . $this->estado);
     }
+
     public static function resolve($id,$mensaje = null)
     {
         return static::putEstado($id, config('modelos.' . getClass(static::class) . '.resolve'), $mensaje);

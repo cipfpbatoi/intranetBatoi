@@ -4,10 +4,12 @@ function PeriodePractiques($fecha = null)
 {
     $inici = $fecha ? new Date($fecha) : new Date(Hoy());
     $inici->format('Y-m-d');
-    if ($inici <= config('curso.fct.2')['inici'])
+    if ($inici <= config('curso.fct.2')['inici']) {
         return 1;
-    else
+    }
+    else {
         return 2;
+    }
 }
 
 function fechaCurta($fecha){
@@ -43,8 +45,9 @@ function buildFecha($fecha,$hora)
 function FechaString($fecha = null, $idioma = null)
 {
     $fc1 = ($fecha == null) ? new Jenssegers\Date\Date() : (is_string($fecha) ? New Jenssegers\Date\Date($fecha) : $fecha);
-    if (!isset($idioma))
+    if (!isset($idioma)) {
         $idioma = Session::get('lang');
+    }
     Jenssegers\Date\Date::setlocale($idioma);
 
     return $fc1->format('d') . ' de ' . $fc1->format('F') .
@@ -101,7 +104,7 @@ function esMayor($ini, $fin)
 {
     $fec1 = new Date($ini);
     $fec2 = new Date($fin);
-    //dd($ini);
+
     return $fec1 > $fec2 ? true : false;
 }
 
@@ -208,13 +211,13 @@ function sumarHoras($horaini, $horafin)
 {
     $horai = substr($horaini, 0, 2);
     $mini = substr($horaini, 3, 2);
-    $segi = substr($horaini, 6, 2);
 
     $horaf = substr($horafin, 0, 2);
     $minf = substr($horafin, 3, 2);
     $segf = substr($horafin, 6, 2);
 
-    $ini = ((($horai * 60) * 60) + ($mini * 60) + $segi);
+    $ini = ((($horai * 60) * 60) + ($mini * 60));
+
     $fin = ((($horaf * 60) * 60) + ($minf * 60) + $segf);
 
     $dif = $fin + $ini;
@@ -222,6 +225,7 @@ function sumarHoras($horaini, $horafin)
     $difh = floor($dif / 3600);
     $difm = floor(($dif - ($difh * 3600)) / 60);
     $difs = $dif - ($difm * 60) - ($difh * 3600);
+
     return date("H:i:s", mktime($difh, $difm, $difs));
 }
 
@@ -236,8 +240,6 @@ function Horas($hora)
     $horai = substr($hora, 0, 2);
     $mini = substr($hora, 3, 2);
 
-    $horas = $horai + $mini / 60;
-
-    return $horas;
+    return $horai + $mini / 60;
 }
 

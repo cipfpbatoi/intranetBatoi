@@ -15,12 +15,25 @@ class Mensaje
         return Profesor::find($id);
     }
 
+    private static function emisor($emisor){
+        if ($emisor) {
+            return $emisor;
+        }
+        if (AuthUser()) {
+            return AuthUser()->shortName;
+        }
+        if (apiAuthUser()) {
+            return apiAuthUser()->shortName;
+        }
+    }
+
 
     static public function send($id, $mensaje, $enlace = '#', $emisor = null)
     {
-        $emisor = $emisor??AuthUser()->shortName;
+        $emisor = self::emisor($emisor);
         $receptor = self::receptor($id);
         $fecha = FechaString();
+
         if ($emisor && $receptor) {
             $receptor->notify(new mensajePanel(
                 ['motiu' => $mensaje,

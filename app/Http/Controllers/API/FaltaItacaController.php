@@ -6,7 +6,9 @@ use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Falta_profesor;
 use Illuminate\Http\Request;
+use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
+use function estaInstituto,sumarHoras;
 
 class FaltaItacaController extends ApiBaseController
 {
@@ -15,6 +17,7 @@ class FaltaItacaController extends ApiBaseController
 
     public function potencial($dia, $idProfesor)
     {
+
         if (Falta_profesor::haFichado($dia, $idProfesor)->count()) {
             $horas = Horario::Profesor($idProfesor)
                     ->Dia(nameDay($dia))
@@ -23,6 +26,7 @@ class FaltaItacaController extends ApiBaseController
                     ->orderBy('sesion_orden')
                     ->get();
             $horasJ = [];
+
             foreach ($horas as $hora) {
 
                 $horasT['idProfesor'] = $idProfesor;
@@ -52,6 +56,7 @@ class FaltaItacaController extends ApiBaseController
                     }
                 }
                 $horasJ[] = $horasT;
+
             }
             return $this->sendResponse($horasJ, 'OK');
         } else {
@@ -61,7 +66,7 @@ class FaltaItacaController extends ApiBaseController
 
     public function guarda(Request $request)
     {
-        $alta = FALSE;
+        $alta = false;
         $respuesta = [];
         foreach ($request->toArray() as $hora) {
             if (isset($hora['idProfesor'])) {
@@ -94,9 +99,12 @@ class FaltaItacaController extends ApiBaseController
                 }
             }
         }
-        if ($alta) {
-            Falta_itaca::putEstado($alta, 1, 'Birret Pendent');
+        if ($alta){
+            $falta = Falta_itaca::find($alta);
+            $staSer = new StateService($falta);
+            $staSer->putEstado(1,'Birret Marcat');
         }
+
         
         return $this->sendResponse($respuesta, 'OK');
     }
