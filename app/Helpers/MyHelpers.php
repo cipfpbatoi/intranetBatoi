@@ -370,7 +370,6 @@ function avisa($id, $mensaje, $enlace = '#', $emisor = null)
         else {
             $quien = \Intranet\Entities\Profesor::find($id);
         }
-
         if ($quien)
             $quien->notify(new \Intranet\Notifications\mensajePanel(
                     ['motiu' => $mensaje,

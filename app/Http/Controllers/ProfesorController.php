@@ -139,11 +139,14 @@ use traitAutorizar,
     public function avisaColectivo(Request $request)
     {
         if (Session::get('colectivo')) {
-            foreach (Profesor::where('departamento', Session::get('colectivo'))->get() as $profesor) {
-                avisa($profesor->dni, $request->explicacion != '' ? $request->explicacion : 'Te ha dado un toque.');
-            }
-            foreach (Profesor::Grupo(Session::get('colectivo'))->get() as $profesor) {
-                avisa($profesor->dni, $request->explicacion != '' ? $request->explicacion : 'Te ha dado un toque.');
+            if (strlen(Session::get('colectivo'))<4) {
+                foreach (Profesor::where('departamento', "=", Session::get('colectivo'))->get() as $profesor) {
+                    avisa($profesor->dni, $request->explicacion != '' ? $request->explicacion : 'Te ha dado un toque.');
+                }
+            } else {
+                foreach (Profesor::Grupo(Session::get('colectivo'))->get() as $profesor) {
+                    avisa($profesor->dni, $request->explicacion != '' ? $request->explicacion : 'Te ha dado un toque.');
+                }
             }
         }
         return back();
