@@ -15,7 +15,12 @@ function multiexplode($delimiters, $string)
     return explode($delimiters[0], $ready);
 }
 
-function genre($persona,$masculi=''){
+/**
+ * @param $persona
+ * @param $masculi
+ * @return mixed|string
+ */
+function genre($persona, $masculi=''){
     return $persona->sexe == 'M'?'a':$masculi;
 }
 
@@ -178,8 +183,9 @@ function NameRolesUser($rolUsuario)
 {
     $jerarquia = config('roles.rol');
 
-    if ($rolUsuario == 1)
+    if ($rolUsuario == 1) {
         return array(trans('messages.rol.todos'));
+    }
 
     foreach ($jerarquia as $key => $rol) {
         if (($rol != 1) && ($rolUsuario % $rol == 0)) {
@@ -199,7 +205,7 @@ function RolesUser($rolUsuario)
 {
     $jerarquia = config('roles.rol');
 
-    foreach ($jerarquia as $key => $rol) {
+    foreach ($jerarquia as $rol) {
         if ($rolUsuario % $rol == 0) {
             $roles[] = $rol;
         }
@@ -210,10 +216,7 @@ function RolesUser($rolUsuario)
 function esRol($rolUsuario, $rol)
 {
     $roles = RolesUser($rolUsuario);
-    if (in_array($rol, $roles))
-        return true;
-    else
-        return false;
+    return (in_array($rol, $roles))?true:false;
 }
 
 function isAdmin(){
@@ -257,12 +260,9 @@ function Rol($roles)
 }
 
 
-
 /**
- * Mira si dos fechas son el mismo dia
- * 
- * @param fechaIn fechaFin
- * @return boolean
+ * @param $mensaje
+ * @return array|\Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Translation\Translator|string|null
  */
 function blankTrans($mensaje)
 {
@@ -281,15 +281,16 @@ function valorReal($elemento, $string)
         $sub1 = $sub[0];
         $sub2 = $sub[1];
         return $elemento->$sub1->$sub2;
-    } else
+    } else {
         return $elemento->$string;
+    }
 }
 
 function hazArray($elementos, $campo1, $campo2=null, $separador = ' ')
 {
     $todos = [];
     $campo2 = $campo2?$campo2:$campo1;
-    foreach ($elementos as $elemento)
+    foreach ($elementos as $elemento) {
         if ($elemento) {
             if (is_string($campo1)) {
                 $val = valorReal($elemento, $campo1);
@@ -309,6 +310,7 @@ function hazArray($elementos, $campo1, $campo2=null, $separador = ' ')
             }
             $todos[$val] = $res;
         }
+    }
     return $todos;
 }
 
@@ -316,8 +318,8 @@ function hazArrayRole($elementos, $campo1, $campo2=null, $separador = ' ')
 {
     $todos = [];
     $campo2 = $campo2?$campo2:$campo1;
-    foreach ($elementos as $elemento)
-        if ($elemento && UserisAllow ($elemento->rol)) {
+    foreach ($elementos as $elemento) {
+        if ($elemento && UserisAllow($elemento->rol)) {
             if (is_string($campo1)) {
                 $val = valorReal($elemento, $campo1);
             } else {
@@ -336,6 +338,7 @@ function hazArrayRole($elementos, $campo1, $campo2=null, $separador = ' ')
             }
             $todos[$val] = $res;
         }
+    }
     return $todos;
 }
 
@@ -361,10 +364,12 @@ function avisa($id, $mensaje, $enlace = '#', $emisor = null)
         $emisor = ($emisor == null) ? AuthUser()->shortName : $emisor;
         $fecha = FechaString();
 
-        if (strlen($id) == 8)
+        if (strlen($id) == 8) {
             $quien = \Intranet\Entities\Alumno::find($id);
-        else
+        }
+        else {
             $quien = \Intranet\Entities\Profesor::find($id);
+        }
 
         if ($quien)
             $quien->notify(new \Intranet\Notifications\mensajePanel(
@@ -372,12 +377,13 @@ function avisa($id, $mensaje, $enlace = '#', $emisor = null)
                 'emissor' => $emisor,
                 'data' => $fecha,
                 'enlace' => $enlace]));
-        else
+        else {
             AuthUser()->notify(new \Intranet\Notifications\mensajePanel(
-                    ['motiu' => "No trobe usuari $id",
-                'emissor' => $emisor,
-                'data' => $fecha,
-                'enlace' => $enlace]));
+                ['motiu' => "No trobe usuari $id",
+                    'emissor' => $emisor,
+                    'data' => $fecha,
+                    'enlace' => $enlace]));
+        }
     }
 }
 
@@ -409,8 +415,9 @@ function mdFind($file, $link)
 
 function exists_help($url)
 {
-    if ($menu = Intranet\Entities\Menu::where('url', $url)->first())
+    if ($menu = Intranet\Entities\Menu::where('url', $url)->first()) {
         return $menu->ajuda;
+    }
 }
 
 function inRol($roles){
@@ -438,7 +445,9 @@ function usuarios($tipo,$field='email'){
 }
 
 function existsTranslate($text){
-    if (trans($text) != $text) return trans($text);
+    if (trans($text) != $text) {
+        return trans($text);
+    }
     return null;
 }
 
@@ -471,12 +480,24 @@ function cargaDatosCertificado($datos,$date=null){
 
 function getClientIpAddress(): String
 {
-    if (isset($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
-    if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) return $_SERVER['HTTP_X_FORWARDED_FOR'];
-    if (isset($_SERVER['HTTP_X_FORWARDED'])) return $_SERVER['HTTP_X_FORWARDED'];
-    if (isset($_SERVER['HTTP_FORWARDED_FOR'])) return $_SERVER['HTTP_FORWARDED_FOR'];
-    if (isset($_SERVER['HTTP_FORWARDED'])) return $_SERVER['HTTP_FORWARDED'];
-    if (isset($_SERVER['REMOTE_ADDR'])) return $_SERVER['REMOTE_ADDR'];
+    if (isset($_SERVER['HTTP_CLIENT_IP'])) {
+        return $_SERVER['HTTP_CLIENT_IP'];
+    }
+    if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
+    if (isset($_SERVER['HTTP_X_FORWARDED'])) {
+        return $_SERVER['HTTP_X_FORWARDED'];
+    }
+    if (isset($_SERVER['HTTP_FORWARDED_FOR'])) {
+        return $_SERVER['HTTP_FORWARDED_FOR'];
+    }
+    if (isset($_SERVER['HTTP_FORWARDED'])) {
+        return $_SERVER['HTTP_FORWARDED'];
+    }
+    if (isset($_SERVER['REMOTE_ADDR'])) {
+        return $_SERVER['REMOTE_ADDR'];
+    }
     return 'UNKNOWN';
 }
 
@@ -493,7 +514,9 @@ function isPrivateAddress($ip):bool
     if ($longIpAddress != -1){
         foreach ($privateAddressRange as $privateAddress){
             list($start,$end) = explode("|",$privateAddress);
-            if ($longIpAddress >= ip2long($start) && $longIpAddress <= ip2long($end)) return true;
+            if ($longIpAddress >= ip2long($start) && $longIpAddress <= ip2long($end)) {
+                return true;
+            }
         }
     }
     return false;

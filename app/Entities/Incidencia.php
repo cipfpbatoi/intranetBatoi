@@ -114,22 +114,16 @@ class Incidencia extends Model
         return substr($this->descripcion, 0, 30);
     }
 
-    public static function putEstado($id, $estado, $mensaje = null, $fecha = null)
+    public static function putEstado($id, $estado)
     {
         $elemento = Incidencia::findOrFail($id);
-        $mensaje .= $elemento->descripcion;
-        if (($fecha != null) && (isset($elemento->fechasolucion))) {
-            $elemento->fechasolucion = $fecha;
-        }
+        $mensaje = "T'han assignat una incidència: ".$elemento->descripcion;
         if ($elemento->estado < $estado) {
             $elemento->responsable = $estado > 1 ? AuthUser()->dni : $elemento->Tipos->idProfesor;
         } else {
             $elemento->responsable = $estado > 1 ? AuthUser()->dni : '';
         }
 
-        if ($elemento->has('solucion') && isset($mensaje)) {
-            $elemento->solucion .= $mensaje;
-        }
         $elemento->estado = $estado;
         $elemento->save();
         AdviseService::exec($elemento,$mensaje);

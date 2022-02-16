@@ -62,9 +62,8 @@ class AdviseService
     }
 
     private function setExplanation($message){
-        $this->explanation = getClase($this->element) . ' ' . primryKey($this->element) . ' ' . trans('models.' . getClase($this->element) . '.' . $this->element->estado) . ": ";
+        $this->explanation = $message??$this->explanation = getClase($this->element) . ' ' . primryKey($this->element) . ' ' . trans('models.' . getClase($this->element) . '.' . $this->element->estado) . ": ";
         $this->explanation .= $this->addDescriptionToMessage();
-        $this->explanation .= isset($message) ? $message : '';
         $this->explanation .= blankTrans("models." . $this->element->estado . "." . getClase($this->element));
     }
 
