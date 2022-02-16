@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
+use Intranet\Services\StateService;
 
 class Programacion extends Model
 {
@@ -139,7 +140,9 @@ class Programacion extends Model
 
     public static function resolve($id,$mensaje = null)
     {
-        return static::putEstado($id, config('modelos.' . getClass(static::class) . '.resolve'), $mensaje);
+        Programacion::find($id);
+        $staServ = new StateService(Programacion::find($id));
+        return $staServ->putEstado( config('modelos.' . getClass(static::class) . '.resolve'), $mensaje);
     }
     
 }

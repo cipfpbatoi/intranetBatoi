@@ -46,6 +46,7 @@ class Falta_itaca extends Model
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
+
     public static function putEstado($id, $estado, $mensaje = null)
     {
         

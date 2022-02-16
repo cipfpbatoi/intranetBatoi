@@ -141,7 +141,8 @@ class FaltaController extends IntranetController
         $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
         $elemento = Falta::find(parent::realStore($request,$id));
         if ($elemento->estado == 1 && $elemento->fichero) {
-            Falta::putEstado($id,2);
+            $staSer = new StateService($elemento);
+            $staSer->putEstado(2);
         } // si estava enviat i he pujat fitxer
         return $this->redirect();
     }

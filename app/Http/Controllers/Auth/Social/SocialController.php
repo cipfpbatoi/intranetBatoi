@@ -7,7 +7,6 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Auth;
 use Socialite;
-use Illuminate\Support\Facades\Storage;
 use Intranet\Http\Controllers\Controller;
 
 
