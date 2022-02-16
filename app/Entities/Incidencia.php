@@ -116,7 +116,7 @@ class Incidencia extends Model
 
     public static function putEstado($id, $estado, $mensaje = null, $fecha = null)
     {
-        $elemento = static::findOrFail($id);
+        $elemento = Incidencia::findOrFail($id);
         if (($fecha != null) && (isset($elemento->fechasolucion))) {
             $elemento->fechasolucion = $fecha;
         }
@@ -132,7 +132,6 @@ class Incidencia extends Model
         $elemento->estado = $estado;
         $elemento->save();
         AdviseService::exec($elemento,$mensaje);
-
 
         return ($elemento->estado);
     }
