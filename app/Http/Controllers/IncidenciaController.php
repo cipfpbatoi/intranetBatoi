@@ -6,6 +6,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Http\Requests\IncidenciaRequest;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\OrdenTrabajo;
+use Intranet\Services\AdviseService;
 use Intranet\Services\FormBuilder;
 
 
@@ -127,9 +128,10 @@ class IncidenciaController extends ModalController
     {
         $new = new Incidencia();
         $new->fillAll($request);
-        $this->init($new->id);
+        Incidencia::putEstado($new->id,$this->init);
         return $this->redirect();
     }
+
 
     /*
      *  update (Request,$id) return redirect
