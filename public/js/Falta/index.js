@@ -10,10 +10,10 @@ $(function() {
 //		$("#formExplicacion").find("input[name=_token]").val(getToken());
 		id=$(this).parents(".profile_view").attr("id");
 	});
-	$("#formExplicacion").on("submit", function(){
+	$("#formDialogo").on("submit", function(){
 		$(this).attr("action",MODEL+"/"+id+"/refuse");
 	});
-	$("#explicacion").focus();
+	$("#dialogo").focus();
 })
 
 function getToken() {
