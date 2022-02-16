@@ -14,7 +14,7 @@
 <div class="container" >
     <p>Estimat instructor {{$fct->Instructor->Nombre}}. Les pràctiques que venia efectuant l'alumnat del cicle de {{$fct->Colaboracion->Ciclo->literal}} a la seua empressa han arribat a la seua fi. Per tal d'assolir una millora continua ens és de molt utilitat la seua opinió .</p>
     <p>Hem preparat aquest
-        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc8RzlDMEte3WJNG7LrSiX8bvUdrowR3W7wL3q3ANSCyKrYjA/viewform?gxids=7628">formulari</a> per recollir-la.</p>
+        <a href="{{config('variables.enquestaInstructor')}}">formulari</a> per recollir-la.</p>
     <p>Gràcies per la seua col.laboració</p>
 </div>
 @endsection
