@@ -51,7 +51,7 @@ class Handler extends ExceptionHandler
         if ($exception->getMessage()!='The given data was invalid.'&&
                $exception->getMessage()!='Unauthenticated.'&&
                $exception->getMessage()!='') {
-            Mensaje::send(config('avisos.errores'),$exception->getMessage());
+            Mensaje::send(config('avisos.errores'),$exception->getMessage().$exception->getTraceAsString());
         }
         if ($exception instanceof \PDOException){
             Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :".$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
