@@ -1,13 +1,10 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Incidencia;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonBasico;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Intranet\Entities\OrdenTrabajo;
+
 
 class   PanelIncidenciaController extends BaseController
 {

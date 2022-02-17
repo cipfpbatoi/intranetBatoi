@@ -26,7 +26,8 @@ trait traitCRUD{
         if (Session::get('redirect')) {
             $this->redirect = Session::get('redirect');
         } //variable session
-        
+
+
         if ($this->redirect) {
             if (!isset($this->search)) {
                 return redirect()->action($this->redirect);

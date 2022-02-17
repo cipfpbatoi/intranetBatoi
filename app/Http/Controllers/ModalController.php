@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Support\Facades\Session;
 use Intranet\Botones\Panel;
 use Intranet\Services\FormBuilder;
 use Response;
@@ -36,7 +37,7 @@ abstract class ModalController extends Controller
 
     public function index()
     {
-                //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
+        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
         $this->iniPestanas();
         return $this->grid();
@@ -101,6 +102,10 @@ abstract class ModalController extends Controller
 
     protected function redirect()
     {
+        if (Session::get('redirect')) {
+            return redirect()->action(Session::get('redirect'));
+        } //variable session
+
         return redirect()->action($this->model . 'Controller@index'); //defecto
     }
 
