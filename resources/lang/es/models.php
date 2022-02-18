@@ -207,7 +207,7 @@ return array(
             'unauthorize' => 'No tramitar',
             'autorizar' => 'Tramitar todos expedientes',
             'link' => 'Adjuntar ficheros',
-            'titulo' => 'Ficheros adjuntos expediente :expediente',
+            'titulo' => 'Ficheros adjuntos expediente :quien',
             '2' => 'En tramite',
             '3' => 'Resueltos',
             '1' => 'Peniente de revisar',
@@ -421,6 +421,8 @@ return array(
             'email' => 'Enviar Correos Valoración Alumno',
             'pg0301' => "Entregada documentación",
             'default' => 'x Alumne',
+            'link' => 'Adjuntar ficheros',
+            'titulo' => "Fitxer adjunts :quien"
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',

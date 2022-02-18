@@ -1,6 +1,6 @@
 @extends('layouts.intranet')
 @section('content')
-<h4 class="centrado">{{trans("models.".ucfirst($modelo).".titulo",[$modelo=>$quien])}}</h4>
+<h4 class="centrado">{{trans("models.".ucfirst($modelo).".titulo",['quien'=>$quien])}}</h4>
 @include('dropzone.partials.value')
 @endsection
 @section('scripts')

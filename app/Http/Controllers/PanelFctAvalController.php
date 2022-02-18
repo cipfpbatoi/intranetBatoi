@@ -68,6 +68,8 @@ class PanelFctAvalController extends IntranetController
             'where' => ['insercion', '==', '0','asociacion','==',1]]));
         $this->panel->setBoton('grid', new BotonImg('fct.insercio', ['img' => 'fa-check-square-o', 'roles' => config(self::ROLES_ROL_TUTOR),
             'where' => ['insercion', '==', '1','asociacion','==',1]]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.link', ['where' => ['calificacion','>=',1]]));
+
 
     }
 
