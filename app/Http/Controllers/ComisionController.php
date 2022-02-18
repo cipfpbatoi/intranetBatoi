@@ -123,6 +123,9 @@ class ComisionController extends ModalController
         file_put_contents(storage_path("tmp/visita_$elemento->id.ics"), CalendarService::render($ini,$fin,'Visita del Tutor CIPFPBatoi','Seguimiento Fct',$elemento->Centro)->render());
         $attach = [ "tmp/visita_$elemento->id.ics" => 'text/calendar'];
         $documento = new DocumentoFct('visitaComision');
+        $documento->fecha = $fecha;
+
+
         $mail = new MyMail($elemento,$documento->view,$documento->email,$attach,'visita');
         $mail->send($fecha);
 

@@ -48,8 +48,12 @@ class Fct extends Model
         'deleted' => ActivityReport::class,
     ];
     protected $attributes  = ['asociacion'=>1];
-    
 
+
+    public function Comision()
+    {
+        return $this->belongsToMany(Comision::class,'comision_fcts', 'idFct', 'idComision','id','id')->withPivot(['hora_ini','aviso']);
+    }
     
     public function Colaboracion()
     {
