@@ -69,7 +69,7 @@ return array(
                 'index' => 'LListat Professors',
                 'list' => 'Professors Absents',
                 'horario-cambiar' => 'Canviar horari Professor',
-                'titulo' => 'Adjunts FCTs de :quien'
+                'titulo' => 'Entrevistes FCTs de :quien'
         ),
         'Menu' => array(
                 'index' => 'Elements del menú',
@@ -441,7 +441,6 @@ return array(
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
           'list' => "Llistat pendents d'avaluació grup :quien",
-
             'titulo' => "Fitxer adjunts :quien"
         ),
         'Fctcap' => array(
