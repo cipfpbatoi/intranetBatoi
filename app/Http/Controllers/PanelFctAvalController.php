@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Session;
  */
 class PanelFctAvalController extends IntranetController
 {
+    use traitDropZone;
+
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
 
     /**
@@ -59,6 +61,7 @@ class PanelFctAvalController extends IntranetController
         Session::put('redirect', 'PanelFctAvalController@index');
         $this->panel->setPestana('Resum', false, 'profile.resumenfct');
         $this->setQualityB();
+        $this->panel->setBoton('index', new BotonBasico("profesor.link", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->setActaB();
         $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => ['calificacion', '!=', '1', 'actas', '==', 0, 'asociacion', '==', 1]]));
         $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['calProyecto', '<', '5', 'calificacion', '!=', '0', 'actas', '==', 0, 'asociacion', '==', 1]]));
@@ -68,7 +71,7 @@ class PanelFctAvalController extends IntranetController
             'where' => ['insercion', '==', '0','asociacion','==',1]]));
         $this->panel->setBoton('grid', new BotonImg('fct.insercio', ['img' => 'fa-check-square-o', 'roles' => config(self::ROLES_ROL_TUTOR),
             'where' => ['insercion', '==', '1','asociacion','==',1]]));
-        $this->panel->setBoton('grid', new BotonImg('alumnofct.link', ['where' => ['calificacion','>=',1]]));
+        $this->panel->setBoton('grid', new BotonImg('fct.link', ['where' => ['calificacion','>=',1]]));
 
 
     }

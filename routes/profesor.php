@@ -183,7 +183,7 @@ Route::get('/procedimentoA',['as'=> 'procedimiento.acompanyant','uses'=>'PanelPr
 
 Route::post('/dropzone',['as' => 'dropzone.store', 'uses' => 'DropZoneController@storeAttached']);
 Route::get('/expediente/{expediente}/link', ['as' => 'expediente.link', 'uses' => 'ExpedienteController@link']);
-Route::get('/alumnofct/{expediente}/link', ['as' => 'alumnofct.link', 'uses' => 'FctAlumnoController@link']);
+Route::get('/fct/{expediente}/link', ['as' => 'alumnofct.link', 'uses' => 'PanelFctAvalController@link']);
 
 
 Route::resource('/resultado', 'ResultadoController', ['except' => ['destroy','update', 'show']]);

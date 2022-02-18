@@ -329,6 +329,7 @@ return array(
             'alumno' => 'x Alumnes',
             'empresa' => 'x Empresa',
             'send' => 'Enviar Correu Alumnes Inici',
+            'link' => 'Adjuntar fitxers',
             'default' => 'x Empresa',
         ),
         'Dual' => array(
@@ -429,16 +430,18 @@ return array(
           'pg0301' => "Entregada documentació",
             'default' => 'x Alumne',
             'selecciona' => 'Alumno',
-            'link' => 'Adjuntar fitxers',
-            'titulo' => "Fitxer adjunts :quien"
+
         ),
         'alumnoFct' => array(
           'selecciona' => 'Alumne',
 
+
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
-          'list' => "Llistat pendents d'avaluació grup :quien"
+          'list' => "Llistat pendents d'avaluació grup :quien",
+
+            'titulo' => "Fitxer adjunts :quien"
         ),
         'Fctcap' => array(
           'index' => 'Control Fct :quien',

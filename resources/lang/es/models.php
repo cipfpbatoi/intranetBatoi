@@ -327,6 +327,7 @@ return array(
             'proyecto' => 'Proyecto',
             'send' => 'Enviar Correo Inicial Alumnos',
             'default' => 'x Empresa',
+            'link' => 'Adjuntar ficheros',
         ),
         'Dual' => array(
             'index' => 'FP Dual',
@@ -421,11 +422,12 @@ return array(
             'email' => 'Enviar Correos Valoración Alumno',
             'pg0301' => "Entregada documentación",
             'default' => 'x Alumne',
-            'link' => 'Adjuntar ficheros',
-            'titulo' => "Fitxer adjunts :quien"
+
+
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
+            'titulo' => "Fitxer adjunts :quien"
         ),
         'Fctcap' => array(
             'index' => 'Control Fct :quien',

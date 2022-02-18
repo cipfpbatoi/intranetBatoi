@@ -18,7 +18,7 @@ use Intranet\Services\FormBuilder;
 
 class FctAlumnoController extends IntranetController
 {
-    use traitImprimir,traitDropZone;
+    use traitImprimir;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';
