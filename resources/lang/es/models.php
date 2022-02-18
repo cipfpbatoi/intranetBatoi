@@ -428,7 +428,7 @@ return array(
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
-            'titulo' => "Fitxer adjunts :quien"
+            'titulo' => "Anexos 5 :quien"
         ),
         'Fctcap' => array(
             'index' => 'Control Fct :quien',
