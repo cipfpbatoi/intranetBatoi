@@ -6,7 +6,6 @@ use Intranet\Entities\Curso;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Botones\BotonImg;
 use DB;
-use Intranet\Entities\Documento;
 use Intranet\Services\GestorService;
 use Jenssegers\Date\Date;
 use Intranet\Jobs\SendEmail;
@@ -20,7 +19,7 @@ use Intranet\Http\Requests\CursoRequest;
 class CursoController extends ModalController
 {
 
-    use traitImprimir,traitActive;
+    use traitImprimir;
 
 
     /**
@@ -169,6 +168,22 @@ class CursoController extends ModalController
         Alert::info('Correus enviats');
         return back();
 
+    }
+
+    /*
+    * active ($id)
+    * canvia la variable activo del elemento (alumnocurso,curso,menu)
+    */
+    public function active($id)
+    {
+        $elemento = $this->class::findOrFail($id);
+        if ($elemento->activo) {
+            $elemento->activo = false;
+        } else {
+            $elemento->activo = true;
+        }
+        $elemento->save();
+        return $this->redirect();
     }
     
 }

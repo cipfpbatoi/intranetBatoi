@@ -217,7 +217,7 @@ class FctController extends IntranetController
             $empresa = Fct::find($id)->Colaboracion->Centro->idEmpresa;
             parent::destroy($id);
             Session::put('pestana',3);
-            return redirect()->action('EmpresaController@show', ['id' => $empresa]);
+            return redirect()->action('EmpresaController@show', ['empresa' => $empresa]);
         } else {
             return parent::destroy($id);
         }

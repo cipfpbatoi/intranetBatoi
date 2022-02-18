@@ -66,10 +66,10 @@ return array(
         'Profesor' => array(
                 'edit' => 'Modificar Perfil Professor',
                 'show' => 'Dades Professor',
-                'index' => 'Listat Professors',
+                'index' => 'LListat Professors',
                 'list' => 'Professors Absents',
                 'horario-cambiar' => 'Canviar horari Professor',
-                
+                'titulo' => 'Entrevistes FCTs de :quien'
         ),
         'Menu' => array(
                 'index' => 'Elements del menú',
@@ -208,7 +208,7 @@ return array(
             'authorize' => 'Tramitar',
             'unauthorize' => 'No tramitar',
             'autorizar' => 'Tramitar tots els expedients',
-            'titulo' => 'Fitxer adjunts expediente :expediente',
+            'titulo' => 'Fitxer adjunts expediente :quien',
             '2' => 'En tramit',
             '3' => 'Resolts',
             '1' => 'Pendent de revisar',
@@ -329,7 +329,9 @@ return array(
             'alumno' => 'x Alumnes',
             'empresa' => 'x Empresa',
             'send' => 'Enviar Correu Alumnes Inici',
+            'link' => 'Adjuntar fitxers',
             'default' => 'x Empresa',
+
         ),
         'Dual' => array(
             'index' => 'FP Dual',
@@ -428,14 +430,18 @@ return array(
           'email' => 'Enviar Correu Valoració Alumne',
           'pg0301' => "Entregada documentació",
             'default' => 'x Alumne',
-            'selecciona' => 'Alumno'
+            'selecciona' => 'Alumno',
+
         ),
         'alumnoFct' => array(
-          'selecciona' => 'Alumne'
+          'selecciona' => 'Alumne',
+
+
         ),
         'Alumnofctaval' => array(
-          'index' => 'Avaluació FCT i projecte',
-          'list' => "Llistat pendents d'avaluació grup :quien"
+            'index' => 'Avaluació FCT i projecte',
+            'list' => "Llistat pendents d'avaluació grup :quien",
+            'titulo' => "Annexos 5 :quien"
         ),
         'Fctcap' => array(
           'index' => 'Control Fct :quien',

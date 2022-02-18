@@ -111,10 +111,21 @@ class AlumnoFct extends Model
         return $this->Fct->periode;
     }
     public function getQualificacioAttribute(){
-        return isset($this->calificacion)?($this->calificacion?($this->calificacion==2?'Convalidat/Exempt': 'Apte' ): 'No Apte' ): 'No Avaluat';
+        return match($this->calificacion){
+            0 => 'No Apte',
+            1 => 'Apte' ,
+            2 => 'Convalidat/Exempt',
+            null =>  'No Avaluat',
+        };
     }
+
     public function getProjecteAttribute(){
-        return isset($this->calProyecto) ? ($this->calProyecto == 0 ? 'No presenta' : $this->calProyecto) : 'No Avaluat';
+        return match($this->calProyecto){
+            0 =>  'No presenta' ,
+            null => 'No Avaluat',
+            default => $this->calProyecto,
+        };
+
     }
     public function getAsociacionAttribute(){
         return $this->Fct->asociacion;
@@ -148,5 +159,9 @@ class AlumnoFct extends Model
     {
         $alumnos = Alumno::select('nia')->QGrupo($grupo->codigo)->get()->toArray();
         return $query->whereIn('idAlumno',$alumnos);
+    }
+
+    public function getQuienAttribute(){
+        return $this->fullName;
     }
 }
