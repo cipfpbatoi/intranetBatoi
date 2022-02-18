@@ -10,6 +10,7 @@ use DB;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Profesor;
 
 /**
  * Class PanelFctAvalController
@@ -61,7 +62,6 @@ class PanelFctAvalController extends IntranetController
         Session::put('redirect', 'PanelFctAvalController@index');
         $this->panel->setPestana('Resum', false, 'profile.resumenfct');
         $this->setQualityB();
-        $this->panel->setBoton('index', new BotonBasico("profesor.link", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->setActaB();
         $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => ['calificacion', '!=', '1', 'actas', '==', 0, 'asociacion', '==', 1]]));
         $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['calProyecto', '<', '5', 'calificacion', '!=', '0', 'actas', '==', 0, 'asociacion', '==', 1]]));
@@ -239,7 +239,8 @@ class PanelFctAvalController extends IntranetController
         $find = Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'Qualitat')
                                     ->where('curso', Curso())->first();
         if (!$find) {
-            $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+            $this->panel->setBoton('index', new BotonBasico("fct.upload.".AuthUser()->dni, ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+            //$this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
         }
         else {
             $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
@@ -276,6 +277,15 @@ class PanelFctAvalController extends IntranetController
             $this->panel->setBoton('grid', new BotonImg('fct.modificaNota', ['img' => 'fa-edit', 'roles' => config(self::ROLES_ROL_TUTOR),
                 'where' => ['calProyecto', '>', 0, 'actas', '<', 2]]));
         }
+    }
+
+    public function linkQuality($id){
+        $registre = Profesor::findOrFail($id);
+        $quien = $registre->fullName;
+        $modelo = strtolower('Profesor');
+        $back = back()->getTargetUrl();
+        return view('dropzone.index',compact('modelo','id','quien','back'));
+
     }
 
 } 

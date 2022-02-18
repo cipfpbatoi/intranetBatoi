@@ -66,10 +66,10 @@ return array(
         'Profesor' => array(
                 'edit' => 'Modificar Perfil Professor',
                 'show' => 'Dades Professor',
-                'index' => 'Listat Professors',
+                'index' => 'LListat Professors',
                 'list' => 'Professors Absents',
                 'horario-cambiar' => 'Canviar horari Professor',
-                
+                'titulo' => 'Adjunts FCTs de :quien'
         ),
         'Menu' => array(
                 'index' => 'Elements del menú',
@@ -331,6 +331,7 @@ return array(
             'send' => 'Enviar Correu Alumnes Inici',
             'link' => 'Adjuntar fitxers',
             'default' => 'x Empresa',
+
         ),
         'Dual' => array(
             'index' => 'FP Dual',
