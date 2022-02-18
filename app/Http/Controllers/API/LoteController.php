@@ -21,8 +21,7 @@ class LoteController extends ApiBaseController
 
     public function destroy($id)
     {
-        $lote = Lote::find($id);
-        $lote->delete();
+        Lote::destroy($id);
         return $this->sendResponse(['success' => true], 'OK');
     }
 

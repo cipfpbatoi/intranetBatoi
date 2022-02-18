@@ -2,14 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Intranet\Entities\Notification;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Botones\BotonImg;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
-use Illuminate\Support\Facades\Session;
 
 /**
  * Class NotificationController
@@ -98,8 +95,9 @@ class NotificationController extends IntranetController
      */
     public function destroy($id)
     {
-        $borrar = $this->class::findOrFail($id);
-        $borrar->delete();
+        if ($borrar = Notification::find($id)){
+            $borrar->delete();
+        }
         return back();
     }
 
