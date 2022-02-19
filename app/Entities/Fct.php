@@ -48,8 +48,12 @@ class Fct extends Model
         'deleted' => ActivityReport::class,
     ];
     protected $attributes  = ['asociacion'=>1];
-    
 
+
+    public function Comision()
+    {
+        return $this->belongsToMany(Comision::class,'comision_fcts', 'idFct', 'idComision','id','id')->withPivot(['hora_ini','aviso']);
+    }
     
     public function Colaboracion()
     {
@@ -142,8 +146,10 @@ class Fct extends Model
         foreach ($colaboraciones as $colaboracion){
             if ($colaboracion->Centro->Empresa->concierto){
                 $todos[$colaboracion->id] = $colaboracion->Centro->nombre;
-                if ($colaboracion->Centro->direccion) $todos[$colaboracion->id].=' ('.$colaboracion->Centro->direccion.')';
-            }    
+                if ($colaboracion->Centro->direccion) {
+                    $todos[$colaboracion->id] .= ' (' . $colaboracion->Centro->direccion . ')';
+                }
+            }
         }
         return Arr::sort($todos, function ($value) {
             return $value;
@@ -159,7 +165,7 @@ class Fct extends Model
             $colaboracion = Colaboracion::find($this->idColaboracion);
            return hazArray($colaboracion->Centro->instructores,'dni',['nombre']);
         }
-        else return [];
+        return [];
     }
 
     public function getTipusAttribute(){
@@ -190,8 +196,12 @@ class Fct extends Model
     public function getPeriodeAttribute(){
         $inici = new Date($this->desde);
         $inici->format('Y-m-d');
-        if ($inici <= config('curso.fct.2')['inici']) return 1;
-        else return 2;    
+        if ($inici <= config('curso.fct.2')['inici']) {
+            return 1;
+        }
+        else {
+            return 2;
+        }
     }
     public function getinTimeAttribute(){
         $hoy = Hoy('Y-m-d');
@@ -209,21 +219,25 @@ class Fct extends Model
     public function getQuantsAttribute(){
        $quants = 0;
         foreach ($this->Alumnos as $alumno){
-            if (in_array(AuthUser(),$alumno->tutor)) $quants ++;
+            if (in_array(AuthUser(),$alumno->tutor)) {
+                $quants++;
+            }
         } 
         return $quants;
     }
     public function getNalumnesAttribute(){
-        if ($this->quants != $this->Alumnos->Count())
-            return $this->quants.' ('.$this->Alumnos->Count().')';
-        else
-            return $this->quants;
+        if ($this->quants != $this->Alumnos->Count()) {
+            return $this->quants . ' (' . $this->Alumnos->Count() . ')';
+        }
+        return $this->quants;
     }
+
     public function getLalumnesAttribute(){
         $alumnes = '';
         foreach ($this->Alumnos as $alumno){
-            if (in_array(AuthUser(),$alumno->tutor)) 
-                $alumnes .= $alumno->ShortName.', ';
+            if (in_array(AuthUser(),$alumno->tutor)) {
+                $alumnes .= $alumno->ShortName . ', ';
+            }
         } 
         return substr($alumnes,0, strlen($alumnes)-2);
     }
@@ -235,7 +249,9 @@ class Fct extends Model
     }
 
     public function getXinstructorAttribute(){
-        if (isset($this->Instructor->nombre)) return $this->Instructor->nombre;
+        if (isset($this->Instructor->nombre)) {
+            return $this->Instructor->nombre;
+        }
         return '';
     }
     public function saveContact($contacto,$email)

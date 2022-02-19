@@ -119,7 +119,7 @@ class Expediente extends Model
         return $this->tipoExpediente->informe;
     }
     public function getQuienAttribute(){
-        return $this->Alumno->FullName;
+        return $this->nomAlumn;
     }
     public function scopeListos($query){
         return $query->where('estado',2);

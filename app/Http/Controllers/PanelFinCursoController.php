@@ -166,7 +166,7 @@ class PanelFinCursoController extends BaseController
         foreach ($polls as $id){
             $poll = Poll::find($id);
             $modelo = $poll->modelo;
-            $quests = $modelo::loadPoll(self::loadPreviousVotes($poll));
+            $quests = $modelo::loadPoll(self::loadPreviousVotes($poll))??[];
             foreach ($quests as $fcts){
                 foreach ($fcts as $fct){
                     $avisos[self::DANGER][] = "Falta omplir enquesta FCT centre ".$fct->Centro;

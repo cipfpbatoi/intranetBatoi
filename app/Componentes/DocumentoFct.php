@@ -21,6 +21,10 @@ class DocumentoFct
         return isset($this->features[$key]);
     }
 
+    public function __set($key,$value){
+        $this->features['email'][$key] = $value;
+    }
+
     public function getFinder(){
         return isset($this->features['finder']) ?
             "Intranet\\Finders\\".$this->finder."Finder":

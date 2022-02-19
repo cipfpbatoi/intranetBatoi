@@ -68,7 +68,8 @@ return array(
                 'show' => 'Datos Profesor',
                 'index' => 'Listado Profesores',
                 'list' => 'Profesores Ausentes',
-                 'horario-cambiar' => 'Cambiar horario Professr',
+                'horario-cambiar' => 'Cambiar horario Professr',
+                'titulo' => 'Entrevistas FCTs de :quien'
             
         ),
         'Menu' => array(
@@ -207,7 +208,7 @@ return array(
             'unauthorize' => 'No tramitar',
             'autorizar' => 'Tramitar todos expedientes',
             'link' => 'Adjuntar ficheros',
-            'titulo' => 'Ficheros adjuntos expediente :expediente',
+            'titulo' => 'Ficheros adjuntos expediente :quien',
             '2' => 'En tramite',
             '3' => 'Resueltos',
             '1' => 'Peniente de revisar',
@@ -327,6 +328,7 @@ return array(
             'proyecto' => 'Proyecto',
             'send' => 'Enviar Correo Inicial Alumnos',
             'default' => 'x Empresa',
+            'link' => 'Adjuntar ficheros',
         ),
         'Dual' => array(
             'index' => 'FP Dual',
@@ -421,9 +423,12 @@ return array(
             'email' => 'Enviar Correos Valoración Alumno',
             'pg0301' => "Entregada documentación",
             'default' => 'x Alumne',
+
+
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
+            'titulo' => "Anexos 5 :quien"
         ),
         'Fctcap' => array(
             'index' => 'Control Fct :quien',
