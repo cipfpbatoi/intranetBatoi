@@ -33,7 +33,7 @@ class AdviseTeacher
             ->get();
     }
 
-    private static function gruposAfectados($elemento, $idProfesor)
+    public static function gruposAfectados($elemento, $idProfesor)
     {
         if (!esMismoDia($elemento->desde, $elemento->hasta)) {
             return (Horario::distinct()

@@ -13,6 +13,7 @@ use Intranet\Entities\Expediente;
 use Intranet\Entities\Resultado;
 
 use Intranet\Jobs\SendEmail;
+use Intranet\Services\AdviseTeacher;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
@@ -158,7 +159,10 @@ class FaltaController extends IntranetController
     public function init($id)
     {
         $elemento = Falta::findOrFail($id);
-        //$this->avisaTutor($elemento);
+        if (esMayor($elemento->desde,Hoy('Y/m/d') ))
+        {
+            $this->avisaTutor($elemento);
+        }
         $stSrv = new StateService($elemento);
         if ($elemento->fichero) {
             $stSrv->putEstado(2);
@@ -175,7 +179,7 @@ class FaltaController extends IntranetController
     protected function avisaTutor($elemento)
     {
         $idEmisor = $elemento->idProfesor;
-        foreach ($this->gruposAfectados($elemento, $idEmisor)->toArray() as $grupos){
+        foreach (AdviseTeacher::gruposAfectados($elemento, $idEmisor)->toArray() as $grupos){
             foreach ($grupos as $item) {
                 $grupo = Grupo::find($item);
                 $correoTutor = $grupo->Tutor->Sustituye->email ?? $grupo->Tutor->email;
