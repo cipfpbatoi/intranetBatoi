@@ -1,21 +1,50 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Services;
 
 
 use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
+use Intranet\Entities\Profesor;
 
-// A revisar
+
 class AdviseTeacher
 {
+    protected $elemento;
+    protected $peopleToAdvise;
+    protected $emisor;
+    protected $name;
 
-    protected function notify($id)
-    {
-        $this->avisaProfesorat($this->class::findOrFail($id));
-        return back();
+
+    public function __construct($elemento,$peopleToAdvise=null){
+        $this->elemento = $elemento;
+        $this->emisor = $elemento->idProfesor;
+        $profesor = Profesor::find($elemento->idProfesor);
+        $this->name = $profesor->shortName;
+        if ($peopleToAdvise){
+            $this->peopleToAdvise = $peopleToAdvise;
+        } else {
+            if (count($grupos = self::gruposAfectados($this->elemento, $this->emisor)->toArray()) == 0) {
+               $this->peopleToAdvise = [];
+            } else {
+               $this->peopleToAdvise = self::profesoresAfectados($grupos, $this->emisor);
+            }
+        }
     }
 
+    public function avisa(){
+        $mensaje = "No estaré en el centre des de " . $this->elemento->desde . " fins " . $this->elemento->hasta;
+        foreach ($this->peopleToAdvise as $people){
+            avisa($people->idProfesor, $mensaje, '#', $this->name);
+        }
+    }
+
+    public static function exec($elemento){
+        $at = new AdviseTeacher($elemento);
+        $at->avisa();
+    }
+
+/**
     protected function avisaProfesorat($elemento, $mensaje = null, $idEmisor = null, $emisor = null)
     {
         $mensaje = $mensaje ? $mensaje : "No estaré en el centre des de " . $elemento->desde . " fins " . $elemento->hasta;
@@ -29,15 +58,16 @@ class AdviseTeacher
             avisa($profesor->idProfesor, $mensaje, '#', $emisor);
         }
     }
+*/
 
-    protected function profesoresAfectados($grupos,$emisor){
+    protected static function profesoresAfectados($grupos,$emisor){
         return Horario::distinct()
                 ->select('idProfesor')
                 ->whereIn('idGrupo', $grupos)
                 ->where('idProfesor', '<>', $emisor)
                 ->get();
     }
-    protected function gruposAfectados($elemento, $idProfesor)
+    protected static function gruposAfectados($elemento, $idProfesor)
     {
         if (!esMismoDia($elemento->desde, $elemento->hasta)) {
             return (Horario::distinct()
@@ -48,7 +78,7 @@ class AdviseTeacher
         }
 
         $dia_semana = nameDay($elemento->desde);
-        if (count($horas = $this->horasAfectadas($elemento))) {
+        if (count($horas = self::horasAfectadas($elemento))) {
             return (Horario::distinct()
                 ->select('idGrupo')
                 ->Profesor($idProfesor)
@@ -61,7 +91,7 @@ class AdviseTeacher
         return collect();
     }
 
-    protected function horasAfectadas($elemento)
+    protected static function horasAfectadas($elemento)
     {
         if (!isset($elemento->dia_completo)) {
             return Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta));
