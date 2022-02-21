@@ -29,7 +29,7 @@ use Styde\Html\Facades\Alert;
 class FaltaController extends IntranetController
 {
 
-    use traitImprimir, traitNotificar, traitAutorizar;
+    use traitImprimir, traitAutorizar;
 
     /**
      * @var string
@@ -158,7 +158,7 @@ class FaltaController extends IntranetController
     public function init($id)
     {
         $elemento = Falta::findOrFail($id);
-        $this->avisaTutor($elemento);
+        //$this->avisaTutor($elemento);
         $stSrv = new StateService($elemento);
         if ($elemento->fichero) {
             $stSrv->putEstado(2);

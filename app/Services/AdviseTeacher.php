@@ -7,7 +7,7 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
 
 // A revisar
-trait traitNotificar
+class AdviseTeacher
 {
 
     protected function notify($id)
