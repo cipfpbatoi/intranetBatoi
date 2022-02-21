@@ -2,12 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Alumno;
+
 use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
-use Jenssegers\Date\Date;
-
 
 // A revisar
 trait traitNotificar
