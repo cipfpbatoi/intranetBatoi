@@ -29,7 +29,7 @@ use Styde\Html\Facades\Alert;
 class FaltaController extends IntranetController
 {
 
-    use traitImprimir,traitAutorizar;
+    use traitImprimir, traitNotificar, traitAutorizar;
 
     /**
      * @var string
