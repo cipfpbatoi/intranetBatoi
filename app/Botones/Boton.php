@@ -1,7 +1,7 @@
 <?php
 
 namespace Intranet\Botones;
-
+use function existsTranslate;
 
 abstract class Boton
 {

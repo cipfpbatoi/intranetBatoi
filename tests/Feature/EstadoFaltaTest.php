@@ -3,7 +3,7 @@ namespace Tests\Feature;
 
 use Tests\IntegrationTestCase;
 use Intranet\Entities\Falta;
-use Illuminate\Support\Facades\Notification;
+
 
 class EstadoFaltaTest extends IntegrationTestCase
 {

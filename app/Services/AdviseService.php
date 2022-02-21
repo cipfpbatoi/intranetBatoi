@@ -1,8 +1,8 @@
 <?php
 
 namespace Intranet\Services;
+use Illuminate\Support\Facades\Session;
 use Intranet\Componentes\Mensaje;
-
 
 class AdviseService
 {
@@ -12,10 +12,12 @@ class AdviseService
     protected $link;
 
 
-    public static function exec($element,$message=null){
+    public static function exec($element,$message=null,$emisor=null){
         $service = new AdviseService($element,$message);
         $service->send();
     }
+
+
 
 
     public function __construct($element,$message=null){
@@ -27,7 +29,6 @@ class AdviseService
     private static function file(){
         return is_file(base_path().'/config/avisos.php')?'avisos.':'contacto.';
     }
-
 
 
     private function getAdvises(){

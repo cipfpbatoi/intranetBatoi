@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Services\AdviseTeacher;
 use Intranet\Services\CalendarService;
 use Intranet\Services\GestorService;
 use Intranet\Componentes\Pdf as PDF;
@@ -15,6 +16,11 @@ use Illuminate\Support\Facades\Response;
 trait traitImprimir
 {
 
+    protected function notify($id)
+    {
+        AdviseTeacher::exec($this->class::findOrFail($id));
+        return back();
+    }
     /**
      * @param $informe
      * @param $todos

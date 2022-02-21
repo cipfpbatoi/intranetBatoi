@@ -444,10 +444,7 @@ function usuarios($tipo,$field='email'){
 }
 
 function existsTranslate($text){
-    if (trans($text) != $text) {
-        return trans($text);
-    }
-    return null;
+    return (trans($text) != $text)?trans($text):null;
 }
 
 function firstWord($cadena){

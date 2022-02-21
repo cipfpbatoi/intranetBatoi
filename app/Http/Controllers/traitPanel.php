@@ -18,16 +18,13 @@ trait traitPanel{
      */
     public function index()
     {
-        $todos = isset($this->orden)?$this->search($this->orden):$this->search('desde');
-        
-        $this->crea_pestanas(config('modelos.'.$this->model.'.estados'),"profile.".strtolower($this->model));
+        $todos = $this->search();
+        $estados = config('modelos.'.$this->model.'.estados');
+        $this->crea_pestanas($estados,"profile.".strtolower($this->model));
         $this->iniBotones();
         Session::put('redirect','Panel'.$this->model.'Controller@index');
         return $this->grid($todos);
     }
-
-
-
 
     /**
      * @return mixed
@@ -35,20 +32,18 @@ trait traitPanel{
     protected function search()
     {
         $orden = $this->orden??'desde';
-        if (Session::get('completa')) {
-            return $this->class::where('estado', '>', '0')->orderBy($orden,'desc')->get();
-        }
-        return $this->class::where('estado', '>', '0')
-            ->where(function($q) use ($orden) {
-                $fecha = Date::now()->subDays(config('variables.diasNoCompleta'));
-                return $q->where('estado','!=',config('modelos.'.$this->model.'.resolve'))
-                    ->where('estado','!=',config('modelos.'.$this->model.'.completa'))
-                    ->orWhere($orden,'>',$fecha->toDateString());
-
-            })
-            ->orderBy($orden,'desc')
-            ->get();
+        return Session::get('completa')
+            ?$this->class::where('estado', '>', '0')->orderBy($orden,'desc')->get()
+            :$this->class::where('estado', '>', '0')
+                ->where(function($q) use ($orden) {
+                    $fecha = Date::now()->subDays(config('variables.diasNoCompleta'));
+                    return $q->where('estado','!=',config('modelos.'.$this->model.'.resolve'))
+                        ->where('estado','!=',config('modelos.'.$this->model.'.completa'))
+                        ->orWhere($orden,'>',$fecha->toDateString());
+                })->orderBy($orden,'desc')->get();
     }
+
+
 
 
     /**
@@ -71,9 +66,7 @@ trait traitPanel{
 
 
     protected function crea_pestanas($estados,$vista,$activa=null,$sustituye = null){
-        if (!$activa){
-            $activa = Session::get('pestana')?Session::get('pestana'):0;
-        }
+        $activa = $activa ?? Session::get('pestana') ?? 0;
         foreach ($estados as $key => $estado) {
             $sustituto = ($key == $sustituye)?1:null;
             $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,

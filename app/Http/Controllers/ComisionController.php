@@ -25,7 +25,6 @@ class ComisionController extends ModalController
 {
 
     use traitImprimir,  traitSCRUD,
-        traitNotificar,
         traitAutorizar;
 
 
@@ -188,8 +187,8 @@ class ComisionController extends ModalController
     public function detalle($id)
     {
         $comision = Comision::find($id);
-        $allFcts = hazArray(Fct::misFctsColaboracion()->esFct()->get(),'id','Centro');
-
+        $all = Fct::misFcts()->distinct()->esFct()->get();
+        $allFcts = hazArray($all,'id','Centro');
         return view('comision.detalle', compact('comision', 'allFcts'));
     }
 

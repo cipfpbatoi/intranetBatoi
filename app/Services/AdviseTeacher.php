@@ -1,46 +1,38 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Services;
 
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Alumno;
+use Intranet\Componentes\Mensaje;
 use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
-use Jenssegers\Date\Date;
 
+use function hora,esMismoDia,nameDay;
 
-// A revisar
-trait traitNotificar
+class AdviseTeacher
 {
-
-    protected function notify($id)
-    {
-        $this->avisaProfesorat($this->class::findOrFail($id));
-        return back();
-    }
-
-    protected function avisaProfesorat($elemento, $mensaje = null, $idEmisor = null, $emisor = null)
+    public static function exec($elemento, $mensaje = null, $idEmisor = null, $emisor = null)
     {
         $mensaje = $mensaje ? $mensaje : "No estaré en el centre des de " . $elemento->desde . " fins " . $elemento->hasta;
         $idEmisor = $idEmisor ? $idEmisor : $elemento->idProfesor;
 
-        if (count($grupos = $this->gruposAfectados($elemento, $idEmisor)->toArray()) == 0) {
+        if (count($grupos = self::gruposAfectados($elemento, $idEmisor)->toArray()) == 0) {
             return;
         }
-        
-        foreach ($this->profesoresAfectados($grupos, $idEmisor) as $profesor) {
-            avisa($profesor->idProfesor, $mensaje, '#', $emisor);
+
+        foreach (self::profesoresAfectados($grupos, $idEmisor) as $profesor) {
+            Mensaje::send($profesor->idProfesor, $mensaje,'#' , $emisor);
         }
     }
 
-    protected function profesoresAfectados($grupos,$emisor){
+    private static function profesoresAfectados($grupos,$emisor){
         return Horario::distinct()
-                ->select('idProfesor')
-                ->whereIn('idGrupo', $grupos)
-                ->where('idProfesor', '<>', $emisor)
-                ->get();
+            ->select('idProfesor')
+            ->whereIn('idGrupo', $grupos)
+            ->where('idProfesor', '<>', $emisor)
+            ->get();
     }
-    protected function gruposAfectados($elemento, $idProfesor)
+
+    private static function gruposAfectados($elemento, $idProfesor)
     {
         if (!esMismoDia($elemento->desde, $elemento->hasta)) {
             return (Horario::distinct()
@@ -51,7 +43,7 @@ trait traitNotificar
         }
 
         $dia_semana = nameDay($elemento->desde);
-        if (count($horas = $this->horasAfectadas($elemento))) {
+        if (count($horas = self::horasAfectadas($elemento))) {
             return (Horario::distinct()
                 ->select('idGrupo')
                 ->Profesor($idProfesor)
@@ -60,11 +52,11 @@ trait traitNotificar
                 ->whereIn('sesion_orden', $horas)
                 ->get());
         }
-        
+
         return collect();
     }
 
-    protected function horasAfectadas($elemento)
+    private static function horasAfectadas($elemento)
     {
         if (!isset($elemento->dia_completo)) {
             return Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta));
@@ -73,6 +65,6 @@ trait traitNotificar
             return Hora::horasAfectadas('07:00', '23:00');
         }
         return Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin);
-        
+
     }
-} 
+}

@@ -17,15 +17,14 @@ use Jenssegers\Date\Date;
 use DB;
 use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
-use Illuminate\Support\Facades\Log;
+use Intranet\Services\AdviseTeacher;
 
 
 class ActividadController extends ModalController
 {
 
     use traitAutorizar,  traitSCRUD,
-        traitImprimir,
-        traitNotificar;
+        traitImprimir;
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';
@@ -231,7 +230,7 @@ class ActividadController extends ModalController
         $mensaje = $this->hazMensaje($elemento = Actividad::findOrFail($id));
         
         foreach ($elemento->profesores as $profesor) {
-            $this->avisaProfesorat($elemento,  $mensaje, $profesor->dni,$profesor->shortName);
+            AdviseTeacher::exec($elemento,  $mensaje, $profesor->dni,$profesor->shortName);
         }
         return back();
     }

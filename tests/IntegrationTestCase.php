@@ -9,8 +9,5 @@ class IntegrationTestCase extends TestCase
 {
     use DatabaseTransactions;
     
-    
-    
-    
 }
 
