@@ -3,9 +3,12 @@
 namespace Intranet\Services;
 
 use Intranet\Componentes\Mensaje;
+use Intranet\Entities\Grupo;
 use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
 
+use Intranet\Jobs\SendEmail;
+use Styde\Html\Facades\Alert;
 use function hora, esMismoDia, nameDay;
 
 class AdviseTeacher
@@ -66,6 +69,23 @@ class AdviseTeacher
             return Hora::horasAfectadas('07:00', '23:00');
         }
         return Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin);
-
     }
+
+    public static function sendEmailTutor($elemento)
+    {
+        $idEmisor = $elemento->idProfesor;
+        foreach (self::gruposAfectados($elemento, $idEmisor)->toArray() as $grupos){
+            foreach ($grupos as $item) {
+                $grupo = Grupo::find($item);
+                $correoTutor = $grupo->Tutor->Sustituye->email ?? $grupo->Tutor->email;
+                $correoDireccion = 'faltes@cipfpbatoi.es';
+                $remitente =  ['nombre'=>'Caporalia','email'=>'faltes@cipfpbatoi.es'];
+
+                SendEmail::dispatch($correoTutor,$remitente, 'email.faltaProfesor', $elemento);
+                SendEmail::dispatch($correoDireccion, $remitente, 'email.faltaProfesor', $elemento);
+                Alert::info("Correos enviados a $item");
+            }
+        }
+    }
+
 }

@@ -161,7 +161,7 @@ class FaltaController extends IntranetController
         $elemento = Falta::findOrFail($id);
         if (esMayor($elemento->desde,Hoy('Y/m/d') ))
         {
-            $this->avisaTutor($elemento);
+            AdviseTeacher::sendEmailTutor($elemento);
         }
         $stSrv = new StateService($elemento);
         if ($elemento->fichero) {
@@ -169,28 +169,9 @@ class FaltaController extends IntranetController
         } else {
             $stSrv->putEstado(1);
         }
-
         return $this->redirect();
     }
-/**
-    Covid avisa soles al tutor
-    amb correu electrònic
-*/
-    protected function avisaTutor($elemento)
-    {
-        $idEmisor = $elemento->idProfesor;
-        foreach (AdviseTeacher::gruposAfectados($elemento, $idEmisor)->toArray() as $grupos){
-            foreach ($grupos as $item) {
-                $grupo = Grupo::find($item);
-                $correoTutor = $grupo->Tutor->Sustituye->email ?? $grupo->Tutor->email;
-                $correoDireccion = 'faltes@cipfpbatoi.es';
-                $remitente =  ['nombre'=>'Caporalia','email'=>'faltes@cipfpbatoi.es'];
-                SendEmail::dispatch($correoTutor,$remitente, 'email.faltaProfesor', $elemento);
-                SendEmail::dispatch($correoDireccion, $remitente, 'email.faltaProfesor', $elemento);
-                Alert::info("Correos enviados a $item");
-            }
-        }
-    }
+
 
     /**
      * @param $id
