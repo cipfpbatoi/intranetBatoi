@@ -21,7 +21,7 @@ use \DB;
 use Intranet\Botones\BotonImg;
 use Illuminate\Http\Request;
 use PDF;
-use Styde\Html\Facades\Alert;
+
 
 /**
  * Class FaltaController

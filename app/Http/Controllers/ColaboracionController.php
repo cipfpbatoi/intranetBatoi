@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Redirect;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
+use Styde\Html\Facades\Alert;
 
 /**
  * Class ColaboracionController
@@ -143,7 +144,12 @@ class ColaboracionController extends IntranetController
     public function destroy($id)
     {
         $empresa = Colaboracion::find($id)->Centro->Empresa;
-        parent::destroy($id);
+        try {
+            parent::destroy($id);
+        } catch (Exception $exception){
+            Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixa col·laboració d'anys anteriors.");
+        }
+
         Session::put('pestana',1);
         return $this->showEmpresa($empresa);
     }

@@ -2,10 +2,13 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
+use Intranet\Entities\Colaboracion;
 use Response;
 use Illuminate\Support\Facades\Session;
+use Styde\Html\Facades\Alert;
 
 /**
  * Class CentroController
@@ -60,8 +63,18 @@ class CentroController extends IntranetController
      */
     public function destroy($id)
     {
+        $centro = Centro::find($id);
         $empresa = Centro::find($id)->idEmpresa;
-        parent::destroy($id);
+        $misColaboraciones =Colaboracion::Micolaboracion($empresa)->count();
+        if ($centro->Colaboraciones->count() == $misColaboraciones){
+            try {
+                parent::destroy($id);
+            } catch (QueryException $exception){
+                Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixe centre d'anys anteriors.");
+            }
+        } else {
+            Alert::danger("Eixe centre te col·laboracions d'altres cicles. Esborra la col·laboració del teu cicle");
+        }
         Session::put('pestana',2);
         return $this->showEmpresa($empresa);
     }
