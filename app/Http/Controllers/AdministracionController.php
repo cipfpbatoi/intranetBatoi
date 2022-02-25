@@ -38,6 +38,23 @@ use Intranet\Entities\Fct;
 class AdministracionController extends Controller
 {
     const DIRECTORIO_GESTOR = 'gestor/Empresa/';
+
+/*
+    public function actualizaLang(){
+        $valencia = config('messages');
+        $angles = config('messagesAngles');
+        foreach ($valencia as $keyArray => $Array){
+            foreach ($Array as $key => $value){
+                if (!isset($angles[$keyArray][$key])){
+                    $angles[$keyArray][$key] = $value;
+                }
+            }
+        }
+        $fp = fopen('message.txt', 'w');
+        fwrite($fp, var_export($angles, true));
+        fclose($fp);
+    }
+*/
     /**
      * @return \Illuminate\Http\RedirectResponse
      */

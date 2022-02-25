@@ -298,7 +298,8 @@ return array(
             'inicioAlumno' => 'Documentación Alumno',
             'seguimiento' => "Seguimiento",
             'visitaEmpresa'=> "Concertar visita",
-            'citarAlumnos' => 'Citar Alumnos'
+            'citarAlumnos' => 'Citar Alumnos',
+            'instructor' => 'Instructores'
         ),
         'Fct' => array(
             'index' => 'FCT x Empresa',

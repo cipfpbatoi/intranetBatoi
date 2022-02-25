@@ -19,7 +19,7 @@ return array(
 	*/
 
 	
-        'Alumno' => array(
+    'Alumno' => array(
           'show' => "Dades de l'alumne",
           'edit' => "Modificació del perfil de l'Alumne", 
         ),
@@ -298,7 +298,8 @@ return array(
             'inicioAlumno' => 'Documentació Alumne',
             'seguimiento' => "Seguiment",
             'visitaEmpresa'=> "Concertar visita",
-            'citarAlumnos' => 'Citar Alumnes'
+            'citarAlumnos' => 'Citar Alumnes',
+            'instructor' => 'Instructores'
         ),
         'Fct' => array(
             'index' => 'FCT x Empresa',

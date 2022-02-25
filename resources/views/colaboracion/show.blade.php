@@ -8,16 +8,16 @@
     <h4>{{$elemento->Ciclo->ciclo}}</h4>
     <h4>@lang("validation.attributes.concierto") : {{$elemento->Centro->Empresa->concierto}}</h4>
     <ul class="list-unstyled user_data">
-        <li><i class="fa fa-map-marker user-profile-icon"></i> {{ $elemento->Centro->direccion }}, {{$elemento->Centro->localidad}}
+        <li><em class="fa fa-map-marker user-profile-icon"></em> {{ $elemento->Centro->direccion }}, {{$elemento->Centro->localidad}}
         </li>
         <li>
-            <i class="fa fa-user user-profile-icon"></i> {{ $elemento->contacto }}
+            <em class="fa fa-user user-profile-icon"></em> {{ $elemento->contacto }}
         </li>
         <li>
-            <i class="fa fa-phone user-profile-icon"></i> {{ $elemento->telefono }}
+            <em class="fa fa-phone user-profile-icon"></em> {{ $elemento->telefono }}
         </li>
         <li class="m-top-xs">
-            <i class="fa fa-envelope user-profile-icon"></i> {{ $elemento->email }}
+            <em class="fa fa-envelope user-profile-icon"></em> {{ $elemento->email }}
         </li>
     </ul>
     <br />
@@ -110,6 +110,8 @@
             </li>
             <li role="presentation" class="active"><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.fct")</a>
             </li>
+            <li role="presentation"><a href="#tab_content4" id="instructor-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.instructor")</a>
+            </li>
         </ul>
         <div id="myTabContent" class="tab-content">
 
@@ -137,6 +139,15 @@
 
                 <!-- start user projects -->
             @include('colaboracion.partials.fcts')
+
+            <!-- end user projects -->
+
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="instructor-tab">
+
+
+                <!-- start user projects -->
+            @include('colaboracion.partials.centro')
 
             <!-- end user projects -->
 

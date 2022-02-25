@@ -64,3 +64,4 @@ Route::post('/sendAvaluacio', ['as' => 'sendAvaluacio.store', 'uses' => 'SendAva
 Route::post('/getToken',['as' => 'sendAvaluacion.getToken','uses' => 'SendAvaluacioEmailController@getToken']);
 
 Route::get('/cleanCache',['as' => 'cleanCache','uses'=>'AdministracionController@cleanCache']);
+Route::get('/actualizaLang',['as' => 'actualizaLang','uses'=>'AdministracionController@actualizaLang']);
