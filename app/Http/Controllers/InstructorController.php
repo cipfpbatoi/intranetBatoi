@@ -110,12 +110,18 @@ class InstructorController extends IntranetController
     public function guarda(Request $request, $id, $centro)
     {
         parent::update($request, $id);
-        Session::put('pestana',2);
         return $this->showEmpresa(Centro::find($centro)->idEmpresa);
     }
 
     private function showEmpresa($id){
-        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+        $colaboracion = Session::get('colaboracion')??null;
+        if ($colaboracion){
+            Session::put('pestana',4);
+            return redirect()->action('ColaboracionController@show',['colaboracion'=> $colaboracion]);
+        } else {
+            Session::put('pestana',2);
+            return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+        }
     }
 
     /**
@@ -139,7 +145,6 @@ class InstructorController extends IntranetController
             $instructor = Instructor::find($request->dni);
             $instructor->Centros()->syncWithoutDetaching($centro);
         });
-        Session::put('pestana',2);
         return $this->showEmpresa(Centro::find($centro)->idEmpresa);
     }
 
@@ -159,7 +164,6 @@ class InstructorController extends IntranetController
             };
         }
 
-        Session::put('pestana',2);
         return $this->showEmpresa(Centro::find($centro)->idEmpresa);
     }
 
@@ -191,7 +195,6 @@ class InstructorController extends IntranetController
             $instructor->Centros()->detach($idCentro);
         }
 
-        Session::put('pestana',2);
         return $this->showEmpresa(Centro::find($idCentro)->idEmpresa);
     }
 

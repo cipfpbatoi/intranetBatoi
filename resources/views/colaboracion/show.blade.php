@@ -99,7 +99,6 @@
         @endif
     </ul>
     <!-- end of skills -->
-
 </div>
 <div class="col-md-9 col-sm-9 col-xs-12">
     <div class="" role="tabpanel" data-example-id="togglable-tabs">.
@@ -108,9 +107,9 @@
             </li>
             <li role="presentation"><a href="#tab_content2" id="centro-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.fctAl")</a>
             </li>
-            <li role="presentation" class="active"><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.fct")</a>
+            <li role="presentation" @if ($pestana == 3)class="active" @endif><a href="#tab_content3" id="fct-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.fct")</a>
             </li>
-            <li role="presentation"><a href="#tab_content4" id="instructor-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.instructor")</a>
+            <li role="presentation" @if ($pestana == 4)class="active" @endif><a href="#tab_content4" id="instructor-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.centro")</a>
             </li>
         </ul>
         <div id="myTabContent" class="tab-content">
@@ -134,7 +133,11 @@
                 <!-- end user projects -->
 
             </div>
-            <div role="tabpanel" class="tab-pane fade active in" id="tab_content3" aria-labelledby="fct-tab">
+            @if ($pestana == 3)
+                <div role="tabpanel" class="tab-pane fade active in" id="tab_content3" aria-labelledby="fct-tab">
+            @else
+                <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="fct-tab">
+            @endif
 
 
                 <!-- start user projects -->
@@ -143,7 +146,12 @@
             <!-- end user projects -->
 
             </div>
-            <div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="instructor-tab">
+            @if ($pestana == 4)
+                <div role="tabpanel" class="tab-pane fade active in" id="tab_content4" aria-labelledby="instructor-tab">
+            @else
+                <div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="instructor-tab">
+            @endif
+
 
 
                 <!-- start user projects -->

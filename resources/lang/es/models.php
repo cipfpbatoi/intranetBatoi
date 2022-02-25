@@ -299,7 +299,7 @@ return array(
             'seguimiento' => "Seguimiento",
             'visitaEmpresa'=> "Concertar visita",
             'citarAlumnos' => 'Citar Alumnos',
-            'instructor' => 'Instructores'
+            'centro' => 'Centro'
         ),
         'Fct' => array(
             'index' => 'FCT x Empresa',
