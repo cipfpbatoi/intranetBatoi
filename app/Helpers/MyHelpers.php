@@ -81,7 +81,7 @@ function fullDireccion()
 
 function cargo($cargo)
 {
-    return \Intranet\Entities\Profesor::find(config("contacto.$cargo"));
+    return \Intranet\Entities\Profesor::find(config(fileContactos().".$cargo"));
 }
 
 function signatura($document)
@@ -89,10 +89,11 @@ function signatura($document)
     foreach (config('signatures.llistats') as $key => $carrec) {
         if (array_search($document, $carrec) !== false) {
             return config("signatures.genere.$key")
-                    [Intranet\Entities\Profesor::find(config("contacto.$key"))->sexo];
+                    [Intranet\Entities\Profesor::find(config(fileContactos().".$key"))->sexo];
         }
     }
 }
+
 function imgSig($document)
 {
     foreach (config('signatures.llistats') as $key => $carrec) {
@@ -460,9 +461,14 @@ function loadImg($fixer){
  * @param $datos
  * @return mixed
  */
+
+function fileContactos(){
+    return is_file(base_path().'/config/avisos.php')?'avisos':'contacto';
+}
 function cargaDatosCertificado($datos,$date=null){
-    $secretario = Profesor::find(config('contacto.secretario'));
-    $director = Profesor::find(config('contacto.director'));
+    $file = fileContactos();
+    $secretario = Profesor::find(config($file.'.secretario'));
+    $director = Profesor::find(config($file.'.director'));
     $datos['fecha'] = FechaString($date,'ca');
     $datos['secretario']['titulo'] = $secretario->sexo == 'H'?'En':'Na';
     $datos['secretario']['articulo'] = $secretario->sexo == 'H'?'El':'La';
