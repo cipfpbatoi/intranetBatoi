@@ -19,7 +19,7 @@ class FaltaItacaController extends ApiBaseController
     public function potencial($dia, $idProfesor)
     {
 
-        if (Falta_profesor::haFichado($dia, $idProfesor)->count()) {
+        if (!config('variables.controlDiario') || Falta_profesor::haFichado($dia, $idProfesor)->count()) {
             $horas = Horario::Profesor($idProfesor)
                     ->Dia(nameDay($dia))
                     ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
