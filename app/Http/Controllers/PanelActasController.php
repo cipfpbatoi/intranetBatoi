@@ -88,7 +88,7 @@ class PanelActasController extends BaseController
         Alert::info("$correus enviats a Alumnes");
         $grupo->acta_pendiente = 0;
         $grupo->save();
-        AdviseService::avisa($grupo->tutor, "Ja pots passar a arreplegar l'acta del grup $grupo->nombre", "#");
+        AdviseService::exec($grupo->tutor, "Ja pots passar a arreplegar l'acta del grup $grupo->nombre", "#");
         return back();
     }
 
@@ -102,7 +102,7 @@ class PanelActasController extends BaseController
         }
         $grupo->acta_pendiente = 0;
         $grupo->save();
-        AdviseService::avisa($grupo->tutor, "S'han detectat errades en l'acta de FCT del grup $grupo->nombre. Ja pots corregir-les", "#");
+        AdviseService::exec($grupo->tutor, "S'han detectat errades en l'acta de FCT del grup $grupo->nombre. Ja pots corregir-les", "#");
         return back();
     }
 
