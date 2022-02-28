@@ -87,8 +87,6 @@ return [
         'fcts' => 1,
         'unique' => 0,
         'default' => 'Les pràctiques es desenvolupen amb normalitat',
-
-
     ],
     'citarAlumnos' => [
         'email' => [
@@ -98,6 +96,7 @@ return [
             'register' => false
         ],
         'modelo' => 'AlumnoFct',
+        'finder' => 'AlumnoEnFct',
         'view' => 'email.fct.student',
         'template' => 'email.fct.student',
         'fcts' => 1,
@@ -112,7 +111,6 @@ return [
         ],
         'modelo' => 'Fct',
         'view' => 'email.fct.confirm',
-
     ],
     'pg0301' => [
         'pdf' => [

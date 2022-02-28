@@ -12,7 +12,6 @@ class DocumentacionFCTController
         $documento = new DocumentoFct($documento);
         $finder = $documento->getFinder();
         $resource = $documento->getResource();
-
         $service = new DocumentService(new $finder($documento));
         return $resource::collection($service->load());
     }
