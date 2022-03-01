@@ -110,16 +110,20 @@ class NotificationController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('notification.read', [ 'where' => ['read_at', 'isNull','']]));
     }
 
+
     /**
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function show($id)
     {
-        $modelo = $this->model;
-        $elemento = $this->extractData(Notification::findOrFail($id));
-
-
+        try {
+            $modelo = $this->model;
+            $elemento = $this->extractData(Notification::findOrFail($id));
+        } catch (\Exception $exception){
+            Alert::danger('Notificació no trobada');
+            return back();
+        }
         return view($this->chooseView('show'), compact('elemento', 'modelo'));
     }
 
