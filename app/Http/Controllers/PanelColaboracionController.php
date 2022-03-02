@@ -12,10 +12,6 @@ use Intranet\Finders\RequestFinder;
 use Intranet\Services\DocumentService;
 use Illuminate\Http\Request;
 
-
-
-
-
 /**
  * Class PanelColaboracionController
  * @package Intranet\Http\Controllers
