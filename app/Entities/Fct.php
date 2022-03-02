@@ -134,6 +134,10 @@ class Fct extends Model
     {
         return $query->where('desde','<',Hoy());
     }
+    public function scopeNoAval($query)
+    {
+        return $query->where('correoInstructor',0);
+    }
    
 
    
