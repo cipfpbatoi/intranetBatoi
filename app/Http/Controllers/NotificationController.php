@@ -7,6 +7,7 @@ use Intranet\Botones\BotonImg;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
+use Styde\Html\Facades\Alert;
 
 /**
  * Class NotificationController
