@@ -102,7 +102,7 @@ class PanelActasController extends BaseController
         }
         $grupo->acta_pendiente = 0;
         $grupo->save();
-        AdviseService::exec($grupo->tutor, "S'han detectat errades en l'acta de FCT del grup $grupo->nombre. Ja pots corregir-les", "#");
+        AdviseService::exec($grupo->tutor, "S'han detectat errades en l'acta de FCT del grup $grupo->nombre. Ja pots corregir-les");
         return back();
     }
 

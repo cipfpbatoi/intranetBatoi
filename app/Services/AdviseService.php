@@ -12,7 +12,7 @@ class AdviseService
     protected $link;
 
 
-    public static function exec($element,$message=null,$emisor=null){
+    public static function exec($element,$message=null){
         $service = new AdviseService($element,$message);
         $service->send();
     }
@@ -44,11 +44,18 @@ class AdviseService
 
     private function addDescriptionToMessage()
     {
+        $description = '';
+        if (!$this->explanation && isset($this->estado)){
+            $description = getClase($this->element) . ' ' . primryKey($this->element) . ' ' . trans('models.' . getClase($this->element) . '.' . $this->element->estado);
+        }
         if (isset($this->element->descriptionField)) {
             $descripcion = $this->element->descriptionField;
-            return mb_substr(str_replace(array("\r\n", "\n", "\r"),' ',$this->element->$descripcion),0,50) . ". ";
+            $description =  mb_substr(str_replace(array("\r\n", "\n", "\r"),' ',$this->element->$descripcion),0,50) . ". ";
         }
-        return '';
+        if (isset($this->element->estado)){
+            $description .= blankTrans("models." . $this->element->estado . "." . getClase($this->element));
+        }
+        return $description;
     }
 
     private function advise($dnis){
@@ -63,9 +70,8 @@ class AdviseService
     }
 
     private function setExplanation($message){
-        $this->explanation = $message??$this->explanation = getClase($this->element) . ' ' . primryKey($this->element) . ' ' . trans('models.' . getClase($this->element) . '.' . $this->element->estado) . ": ";
+        $this->explanation = $message;
         $this->explanation .= $this->addDescriptionToMessage();
-        $this->explanation .= blankTrans("models." . $this->element->estado . "." . getClase($this->element));
     }
 
     private function setLink(){
