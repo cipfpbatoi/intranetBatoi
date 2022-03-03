@@ -1,11 +1,11 @@
-    @extends('layouts.pdf')
+@extends('layouts.pdf')
 @section('content')
     @include('pdf.fct.partials.cabecera')
     <br/>
     <table border="1" style="margin-bottom: 5px">
         <tr>
             <td style="text-align:left;width:23.283cm;padding-left: 5px;font-size: 0.8em"><strong>Tutor: </strong><span>{{AuthUser()->FullName}}</span></td>
-            <td style="text-align:left;width:23.2833cm;padding-left: 5px;font-size: 0.8em "><strong>Cicle: </strong><span>{{$todos->first()->Fct->Colaboracion->Ciclo->ciclo}}</span></td>
+            <td style="text-align:left;width:23.2833cm;padding-left: 5px;font-size: 0.8em "><strong>Cicle: </strong><span>{{$todos->first()->Fct->Colaboracion->Ciclo->ciclo??''}}</span></td>
         </tr>
     </table>
     <p><strong>SEGUIMENT MENSUAL</strong></p>
@@ -29,7 +29,7 @@
         </tr>
         @foreach ($todos as $alumno)
         
-        <tr><td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em " ><strong>{{ $alumno->Alumno->FullName }}</strong> ({{ $alumno->Fct->Colaboracion->Centro->nombre }}) </p></td>
+        <tr><td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em " ><strong>{{ $alumno->Alumno->FullName }}</strong> ({{ $alumno->Fct->Colaboracion->Centro->nombre }})</td>
             <td style="text-align:left;width:5.493cm; " ></td>
             <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
         </tr>
@@ -44,7 +44,7 @@
             <li>GRAU DE SATISFACCIÓ AMB LA FORMACIÓ REBUDA I LES PRÀCTIQUES REALITZADES A L'EMPRESA</li>
         </ol>
     </div>
-    <div style="float:right;width: 300px;height:60px"">
+    <div style="float:right;width: 300px;height:60px">
          <table border='1' style="width: 300px;height:60px"><tr><td valign='top' style="text-align: left;padding-left: 5px;font-size: 0.8em">Signatura del tutor: <br/> </td></tr></table>
     </div>
 @endsection
