@@ -3,23 +3,25 @@
 @include('pdf.partials.cabecera')
 <br/>
 <div class="container col-lg-12" >
-<table class="table table-bordered ">
+<table class="table table-bordered" style="width:100%">
+    <caption><h3>{{$datosInforme->Tipos()->vliteral}}</h3></caption>
     <tr>
-        <th><h3>{{$datosInforme->Tipos()->vliteral}}</h3></th>
+        <th scope="col"><h2>Equip docent del grup "{{$datosInforme->Xgrupo}}" - Curs {{Curso()}}</h2></th>
     </tr>
     <tr>
-        <th><h4>Equip docent del grup "{{$datosInforme->Xgrupo}}" - Curs {{Curso()}}</h4></th>
+        <td><h2>
+                @foreach ($datosInforme->profesores as $key => $profesor)
+                    @if ($profesor->pivot->asiste == 1)
+                        {{$profesor->nombre}} {{$profesor->apellido1}} {{$profesor->apellido2}},
+                    @endif
+                @endforeach
+            </h2>
+        </td>
     </tr>
 </table>
 </div>
 <div class="container col-lg-12" >
-    <p>Reunits els professors 
-    @foreach ($datosInforme->profesores as $key => $profesor)
-            @if ($profesor->pivot->asiste == 1)
-                {{$profesor->nombre}} {{$profesor->apellido1}} {{$profesor->apellido2}},
-            @endif
-        @endforeach   
-         membres de l'equip docent del grup "{{$datosInforme->Xgrupo}}" i havent analitzat les propostes presentades pels alumnes següents i que realitzaran en aquest curs i periode.
+    <p>Reunits els professors membres de l'equip docent del grup  i havent analitzat les propostes presentades pels alumnes següents i que realitzaran en aquest curs i periode.
     </p>
     <p>
         Queden aprovades i s'ha fet l'assignament de tutories individuals per a cadascuna d'elles, quedant:
@@ -46,10 +48,13 @@
         @endforeach    
     </ul>
     </div>
-    <div style="width:60%;float:right">
-        <p>TUTOR COL.LECTIU: {{$datosInforme->Responsable->nombre}}  {{$datosInforme->Responsable->apellido1}}  {{$datosInforme->Responsable->apellido2}}</p>
-        <br/><br/>
+    <div style="width:50%;float:left">
+        <p><strong>VIST I PLAU CAPORALIA D'ESTUDIS</strong></p>
+        <br/><br/><br/>
         <p>{{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme->hoy}}</p>
+    </div>
+    <div style="width:50%;float:right">
+        <p><strong>TUTOR COL.LECTIU: {{$datosInforme->Responsable->nombre}}  {{$datosInforme->Responsable->apellido1}}  {{$datosInforme->Responsable->apellido2}}</strong> </p>
     </div>
    
         
