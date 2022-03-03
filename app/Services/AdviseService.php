@@ -45,7 +45,7 @@ class AdviseService
     private function addDescriptionToMessage()
     {
         $description = '';
-        if (!$this->explanation && isset($this->estado)){
+        if (isset($this->element->estado)){
             $description = getClase($this->element) . ' ' . primryKey($this->element) . ' ' . trans('models.' . getClase($this->element) . '.' . $this->element->estado);
         }
         if (isset($this->element->descriptionField)) {
@@ -70,7 +70,7 @@ class AdviseService
     }
 
     private function setExplanation($message){
-        $this->explanation = $message;
+        $this->explanation = $message.". ";
         $this->explanation .= $this->addDescriptionToMessage();
     }
 
