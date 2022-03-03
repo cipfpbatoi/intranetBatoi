@@ -23,7 +23,6 @@
                 <div class="col-md-4 listActivity">
                     @foreach ($contactos as $contacto)
                         <small>
-                            {{fechaCurta($contacto->created_at)}}
                             @include('intranet.partials.profile.partials.icono')
                         </small>
                         <br/>
@@ -35,15 +34,15 @@
                     <p class="ratings">
                         {{strtoupper($elemento->Centro->localidad)}}<br/>
                     </p>
-                    <a href="/colaboracion/{{$elemento->id}}/show" class="btn-success btn btn-xs"><i class="fa fa-eye"></i>
+                    <a href="/colaboracion/{{$elemento->id}}/show" class="btn-success btn btn-xs"><em class="fa fa-eye"></em>
 
                     </a>
                     @if (count($alumnos))
-                        <i class="btn-success btn btn-xs">{{count($alumnos)}}</i>
+                        <em class="btn-success btn btn-xs">{{count($alumnos)}}</em>
                     @else
-                        <a href="/fct/{{$fct->id}}/delete" class="btn-success btn btn-xs"><i class="fa fa-trash"></i></a>
+                        <a href="/fct/{{$fct->id}}/delete" class="btn-success btn btn-xs"><em class="fa fa-trash"></em></a>
                     @endif
-                    <i class="fa fa-plus btn-success btn btn-xs" data-toggle="modal" data-target="#AddAlumno"></i>
+                    <em class="fa fa-plus btn-success btn btn-xs" data-toggle="modal" data-target="#AddAlumno"></em>
 
                 </div>
                 <div class="col-xs-12 col-sm-7 emphasis">

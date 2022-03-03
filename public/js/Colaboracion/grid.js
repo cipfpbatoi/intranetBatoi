@@ -10,6 +10,7 @@ var tipo;
 
 $(function() {
     var token = $("#_token").text();
+
     $("#tab_descartada").find(".refuse").hide();
     $("#tab_descartada").find(".informe").hide();
     $("#tab_descartada").find(".contacto").hide();
@@ -202,5 +203,40 @@ $(function() {
         locale: 'es',
         format: 'DD-MM-YYYY',
     });
+    $('.dragable').draggable({
+        container: 'document',
+        cursor: 'move',
+        opacity: 0.70,
+        zIndex:10000,
+        appendTo: ".fct",
+        revert: "invalid",
+        revertDuration: 200,
+        helper: this.id,
+    });
+    $('.fct').droppable( {
+        drop: handleDropEvent
+    } );
 
 })
+
+
+function handleDropEvent( event, ui ) {
+    var token = $("#_token").text();
+    var newFct = this.id;
+    var oldFct = ui.draggable.context.id;
+    //var element = ui.draggable.data( 'number' );
+    if (confirm('Vas a moure esta evidencia a una altra FCT')){
+        $.ajax({
+            method: "GET",
+            url: "/api/activity/"+oldFct+"/move/" + newFct ,
+            dataType: 'json',
+            data: {api_token: token}
+        }).then(function (result) {
+            alert('La sol·licitut ha estat completada');
+        }, function (result) {
+            alert("La sol·licitut no s'ha pogut completar: "+result.responseText);
+            location.reload();
+        });
+    }
+}
+

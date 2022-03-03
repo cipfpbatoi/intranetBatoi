@@ -187,16 +187,21 @@ class ComisionController extends ModalController
     public function detalle($id)
     {
         $comision = Comision::find($id);
-        $all = Fct::misFcts()->distinct()->noAval()->esFct()->get();
+        $all = Fct::misFcts()->distinct()->noAval()->esFct()->orderBy('id')->get();
         $allFcts = collect();
         foreach ($all as $fct){
             $allFcts[$fct->Colaboracion->idCentro] = $fct;
         }
-        $allCol = Fct::misFctsColaboracion()->distinct()->esFct()->get();
+
+        $allCol = Fct::misFctsColaboracion()->distinct()->noAval()->esFct()->orderBy('id')->get();
         foreach ($allCol as $fct){
-            $allFcts[$fct->Colaboracion->idCentro] = $fct;
+                // Mire que la id siga superior per a substituir
+            if (!isset($allFcts[$fct->Colaboracion->idCentro]) || $fct->id > $allFcts[$fct->Colaboracion->idCentro]->id ) {
+                $allFcts[$fct->Colaboracion->idCentro] = $fct;
+            }
         }
         $allFcts = hazArray($allFcts,'id','Centro');
+
         asort($allFcts);
         return view('comision.detalle', compact('comision', 'allFcts'));
     }

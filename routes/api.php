@@ -117,6 +117,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('getAttached/{modelo}/{id}','DropZoneController@getAttached');
     Route::get('removeAttached/{modelo}/{id}/{file}','DropZoneController@removeAttached');
 
+    Route::get('activity/{id}/move/{fct}','ActivityController@move');
 
 });
 

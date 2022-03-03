@@ -36,7 +36,7 @@
                     <td>Comentari</td>
                 </tr>
                 @php
-                    $contactFct = \Intranet\Entities\Activity::mail('Fct')->Id($grupo->id)->orderBy('created_at')->get();
+                    $contactFct = \Intranet\Entities\Activity::mail()->Modelo('Fct')->Id($grupo->id)->orderBy('created_at')->get();
                 @endphp
                 @foreach ($contactFct as $contact)
                     <tr>

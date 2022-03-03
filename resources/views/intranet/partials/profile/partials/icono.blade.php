@@ -1,15 +1,16 @@
 @if (firstWord($contacto->document)=='Recordatori')
-    <i class="fa fa-flag"></i>
+    {{fechaCurta($contacto->created_at)}} <em class="fa fa-flag"></em>
 @elseif (firstWord($contacto->document)=='Informació')
-    <i class="fa fa-lock"></i>
+    {{fechaCurta($contacto->created_at)}} <em class="fa fa-lock"></em>
 @elseif (firstWord($contacto->document)=='Revisió')
-    <i class="fa fa-check"></i>
+    {{fechaCurta($contacto->created_at)}} <em class="fa fa-check"></em>
 @else
-    <a href="#" class="small" id="{{$contacto->id}}">
-        @if ($contacto->action == 'email') <i class="fa fa-envelope"></i> @endif
-        @if ($contacto->action == 'visita') <i class="fa fa-car"></i> @endif
-        @if ($contacto->action == 'phone') <i class="fa fa-phone"></i> @endif
-        @if (isset($contacto->comentari))  <i class="fa fa-plus"></i> @endif
+    <a href="#" class="small @if ($contacto->action != 'phone') dragable @endif" id="{{$contacto->id}}">
+        {{fechaCurta($contacto->created_at)}}
+        @if ($contacto->action == 'email') <em class="fa fa-envelope"></em> @endif
+        @if ($contacto->action == 'visita') <em class="fa fa-car"></em> @endif
+        @if ($contacto->action == 'phone') <em class="fa fa-phone"></em> @endif
+        @if (isset($contacto->comentari))  <em class="fa fa-plus"></em> @endif
     </a>
 @endif
 
