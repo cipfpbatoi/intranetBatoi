@@ -57,7 +57,6 @@ mix.combine([
 
 mix.combine([
     vendors+'/jquery/dist/jquery.min.js',
-    vendors+'/jquery/ui/jquery-ui.min.js',
     vendors+'bootstrap/dist/js/bootstrap.min.js',
 //    vendors+'pnotify/dist/pnotify.js',
     vendors+'bootstrap-progressbar/bootstrap-progressbar.min.js',

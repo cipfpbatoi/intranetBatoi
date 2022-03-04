@@ -203,6 +203,39 @@ $(function() {
         locale: 'es',
         format: 'DD-MM-YYYY',
     });
+    Array.from(document.querySelectorAll('.dragable')).forEach((item)=>{
+        item.setAttribute('draggable','draggable');
+        item.addEventListener('dragstart',(event)=>{
+            //event.preventDefault();
+            event.dataTransfer.setData('text/plain',event.target.id);
+        });
+
+    });
+    Array.from(document.querySelectorAll('.fct')).forEach((item)=>{
+        item.addEventListener('dragover',(event)=>{
+            event.preventDefault();
+        });
+        item.addEventListener('drop',(event)=>{
+            event.preventDefault();
+            let id = event.dataTransfer.getData('text/plain');
+            let newFct = event.currentTarget;
+            var token = $("#_token").text();
+            if (confirm('Vas a moure esta evidencia a una altra FCT')){
+                $.ajax({
+                    method: "GET",
+                    url: "/api/activity/"+id+"/move/" + newFct.id ,
+                    dataType: 'json',
+                    data: {api_token: token}
+                }).then(function (result) {
+                    alert('La sol·licitut ha estat completada');
+                    newFct.querySelector('.listActivity').appendChild(document.getElementById(id).parentElement);
+                }, function (result) {
+                    alert("La sol·licitut no s'ha pogut completar: "+result.responseText);
+                });
+            }
+        });
+    });
+    /**
     $('.dragable').draggable({
         container: 'document',
         cursor: 'move',
@@ -216,10 +249,10 @@ $(function() {
     $('.fct').droppable( {
         drop: handleDropEvent
     } );
-
+    */
 })
 
-
+/**
 function handleDropEvent( event, ui ) {
     var token = $("#_token").text();
     var newFct = this.id;
@@ -239,4 +272,4 @@ function handleDropEvent( event, ui ) {
         });
     }
 }
-
+*/

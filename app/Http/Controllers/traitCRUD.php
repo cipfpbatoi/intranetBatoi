@@ -119,6 +119,7 @@ trait traitCRUD{
      */
     public function edit($id)
     {
+
         $formulario = new FormBuilder($this->class::findOrFail($id),$this->formFields);
         $modelo = $this->model;
         return view($this->chooseView('edit'), compact('formulario', 'modelo'));

@@ -63,7 +63,8 @@ class Profesor extends Authenticatable
         'departamento',
         'idioma',
         'mostrar',
-        'especialitat'
+        'especialitat',
+        'signatura'
     ];
     protected $casts = [
         'codigo' => 'integer',
@@ -84,6 +85,7 @@ class Profesor extends Authenticatable
         'departamento' => ['type' => 'select'],
         'idioma' => ['type' => 'select'],
         'mostrar' => ['type' => 'checkbox'],
+        'signatura' => ['type' => 'file'],
     ];
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
