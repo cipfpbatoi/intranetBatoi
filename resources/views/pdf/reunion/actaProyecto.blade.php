@@ -53,10 +53,6 @@
         <br/><br/><br/>
         <p>{{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme->hoy}}</p>
     </div>
-    <div style="width:50%;float:right">
-        <p><strong>TUTOR COL.LECTIU: {{$datosInforme->Responsable->nombre}}  {{$datosInforme->Responsable->apellido1}}  {{$datosInforme->Responsable->apellido2}}</strong> </p>
-    </div>
-   
-        
+    @include('pdf.reunion.partials.signatura')
 </div>
 @endsection

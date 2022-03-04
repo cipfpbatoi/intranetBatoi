@@ -26,9 +26,5 @@
     @if (isset($todos[6]))<p><strong>{{$todos[6]->descripcion}}:</strong> {{strip_tags($todos[6]->resumen)}}</p>@endif
     @if (isset($todos[7]))<p><strong>{{$todos[7]->descripcion}}:</strong> {{strip_tags($todos[7]->resumen)}}</p>@endif
 </div>
-<div class="container">
-    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-    <div style="width:55%;float:left">CREAT PER: {{$datosInforme->Responsable->fullName}}&nbsp;&nbsp;&nbsp;</div>
-    <div style="width:45%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{$datosInforme->hoy}}</div>
-</div>
+@include('pdf.reunion.partials.signatura')
 @endsection

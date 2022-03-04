@@ -144,6 +144,8 @@ function isProfesor()
 
 }
 
+
+
 /**
  * Mira si al usuario actual le esta permitido el  rol 
  *
