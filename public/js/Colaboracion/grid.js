@@ -227,7 +227,6 @@ $(function() {
                     dataType: 'json',
                     data: {api_token: token}
                 }).then(function (result) {
-                    alert('La sol·licitut ha estat completada');
                     newFct.querySelector('.listActivity').appendChild(document.getElementById(id).parentElement);
                 }, function (result) {
                     alert("La sol·licitut no s'ha pogut completar: "+result.responseText);
