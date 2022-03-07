@@ -8,7 +8,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^7.3|   ^8.0",
         "barryvdh/laravel-dompdf": "^0.8.6",
         "barryvdh/laravel-snappy": "^0.4.7",
         "doctrine/dbal": "^2.6",
@@ -29,6 +29,7 @@
         "mikehaertl/php-pdftk": "^0.8.1",
         "predis/predis": "^1.1",
         "simplesoftwareio/simple-qrcode": "~4",
+        "smalot/pdfparser": "^2.1",
         "styde/html": "~1.9"
     },
     "require-dev": {
