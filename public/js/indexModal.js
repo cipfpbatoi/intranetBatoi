@@ -100,5 +100,3 @@ jQuery(document).on('auxclick', '.fa-edit', function (e) {
     }
     return true;
 });
-
-

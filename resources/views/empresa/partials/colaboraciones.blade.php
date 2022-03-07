@@ -17,7 +17,8 @@
                         <a href='/colaboracion/{!!$colaboracion->id!!}/edit'><i class="fa fa-edit" title='Modificar col.laboració'></i></a> 
                         <a href="/colaboracion/{!!$colaboracion->id!!}/delete" class="delGrupo"><i class="fa fa-trash" title='Esborrar col.laboració'></i></a>
                     @endif
-                    @if ($misColaboraciones->where('idCentro',$colaboracion->idCentro)->where('idCiclo',$tutor->idCiclo)->count() == 0) <a href="/colaboracion/{!!$colaboracion->id!!}/copy" class="copGrupo"><i class="fa fa-copy"></i></a><small style="color: purple "> @lang('messages.buttons.copy')  {{$tutor->Ciclo->ciclo}} </small>@endif
+
+                    @if (count($misColaboraciones) && $misColaboraciones->where('idCentro',$colaboracion->idCentro)->where('idCiclo',$tutor->idCiclo)->count() == 0) <a href="/colaboracion/{!!$colaboracion->id!!}/copy" class="copGrupo"><i class="fa fa-copy"></i></a><small style="color: purple "> @lang('messages.buttons.copy')  {{$tutor->Ciclo->ciclo}} </small>@endif
                     <br/>
                     @if (count($colaboracion->votes))
                         <a href="/votes/{{$colaboracion->id}}/show">

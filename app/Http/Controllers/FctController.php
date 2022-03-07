@@ -133,8 +133,8 @@ class FctController extends IntranetController
 
     public static function preparePdf($fct,$fecha,$horas)
     {
-        $secretario = Profesor::find(config('contacto.secretario'));
-        $director = Profesor::find(config('contacto.director'));
+        $secretario = Profesor::find(config(fileContactos().'.secretario'));
+        $director = Profesor::find(config(fileContactos().'.director'));
         $dades = ['date' => FechaString($fecha,'ca'),
             'fecha' => FechaString($fecha,'es'),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',

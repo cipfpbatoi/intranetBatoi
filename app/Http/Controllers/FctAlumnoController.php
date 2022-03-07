@@ -117,7 +117,7 @@ class FctAlumnoController extends IntranetController
         $cicle = $grupo->Ciclo;
         $tutor = $grupo->Tutor;
         $cdept = $cicle->departament->Jefe;
-        $director = Profesor::find(config('contacto.director'));
+        $director = Profesor::find(config(fileContactos().'.director'));
         $dades = ['date' => FechaString($fct->hasta),
             'cicle' => $cicle,
             'tutor' => $tutor,
@@ -133,8 +133,8 @@ class FctAlumnoController extends IntranetController
 
     public static function preparePdf($id){
         $fct = AlumnoFct::findOrFail($id);
-        $secretario = Profesor::find(config('contacto.secretario'));
-        $director = Profesor::find(config('contacto.director'));
+        $secretario = Profesor::find(config(fileContactos().'.secretario'));
+        $director = Profesor::find(config(fileContactos().'.director'));
         $dades = ['date' => FechaString($fct->hasta),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
