@@ -1,12 +1,9 @@
 <?php
-
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
-use Intranet\Http\Controllers\AdministracionController;
+
 
 /**
  * Class ActualizacionController
@@ -15,6 +12,7 @@ use Intranet\Http\Controllers\AdministracionController;
 class ActualizacionController extends Controller{
 
     const FITXER_VERSION = 'version.txt';
+
     /**
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
