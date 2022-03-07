@@ -88,3 +88,15 @@ $(function () {
     }
 })
 
+jQuery(document).ready(function () {
+    //Disable part of page
+    jQuery(".fa-edit").on("contextmenu",function(e){
+        return false;
+    });
+});
+jQuery(document).on('auxclick', '.fa-edit', function (e) {
+    if (e.which === 2) { //middle Click
+        return false;
+    }
+    return true;
+});
