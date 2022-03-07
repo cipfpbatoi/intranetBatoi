@@ -171,9 +171,9 @@ use traitAutorizar,
         $cargo = 'Professorat';
         if (esRol($profesor->rol, config('roles.rol.direccion'))) {
             switch ($profesor->dni) {
-                case config(fileContactos().'director'): $cargo = 'Director';
+                case config(fileContactos().'.director'): $cargo = 'Director';
                     break;
-                case config(fileContactos().'secretario'): $cargo = 'Secretària';
+                case config(fileContactos().'.secretario'): $cargo = 'Secretària';
                     break;
                 case config(fileContactos().'vicedirector'): $cargo = 'ViceDirector';
                     break;
