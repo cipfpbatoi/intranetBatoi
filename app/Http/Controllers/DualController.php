@@ -28,7 +28,6 @@ class DualController extends ModalController
 {
     use traitImprimir;
 
-    const CONTACTO_DIRECTOR = 'contacto.director';
     const CONTACTO_NOMBRE = 'contacto.nombre';
     const CONTACTO_CODI = 'contacto.codi';
     const CONTACTO_POBLACION = 'contacto.poblacion';
@@ -163,8 +162,8 @@ class DualController extends ModalController
         $id = is_object($fct)?$fct->id:$fct;
         $fct = is_object($fct)?$fct:AlumnoFct::findOrFail($id);
         $informe = 'dual.'.$informe;
-        $secretario = Profesor::find(config('contacto.secretario'));
-        $director = Profesor::find(config(self::CONTACTO_DIRECTOR));
+        $secretario = Profesor::find(config(fileContactos().'secretario'));
+        $director = Profesor::find(config(fileContactos().'director'));
         $fechaDocument = $data??FechaPosterior($fct->hasta);
         $dades = ['date' => $fechaDocument,
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
@@ -527,7 +526,7 @@ class DualController extends ModalController
 
     private function makeArrayPdfAnexoXIII($fct,$data)
     {
-        $array[1] = Profesor::find(config('contacto.secretario'))->fullName;
+        $array[1] = Profesor::find(config(fileContactos().'secretario'))->fullName;
         $array[2] = config(self::CONTACTO_NOMBRE);
         $array[3] = config(self::CONTACTO_CODI);
         $array[4] = $fct->Alumno->fullName;
@@ -554,7 +553,7 @@ class DualController extends ModalController
         $array[29] = $fc1->format('F');
         $array[30] = $fc1->format('Y');
         $array[31] = $array[1];
-        $array[32] = Profesor::find(config(self::CONTACTO_DIRECTOR))->fullName;
+        $array[32] = Profesor::find(config(fileContactos().'director'))->fullName;
 
         $array[33] = $array[1];
         $array[34] = config(self::CONTACTO_NOMBRE);
@@ -583,7 +582,7 @@ class DualController extends ModalController
         $array[55] = $fc1->format('F');
         $array[56] = $fc1->format('Y');
         $array[57] = $array[1];
-        $array[58] = Profesor::find(config(self::CONTACTO_DIRECTOR))->fullName;
+        $array[58] = Profesor::find(config(fileContactos().'director'))->fullName;
 
         return $array;
     }
@@ -614,7 +613,7 @@ class DualController extends ModalController
         $array['Texto10'] = config(self::CONTACTO_PROVINCIA);
         $array['Texto11'] = config('contacto.postal');
         $array['Texto4'] = config('contacto.email');
-        $array['Texto12'] = Profesor::find(config(self::CONTACTO_DIRECTOR))->fullName;
+        $array['Texto12'] = Profesor::find(config(fileContactos().'director'))->fullName;
         $array['Grupo1'] = self::OPCIÓN_1;
         $array['Texto13'] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array['Texto14'] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
