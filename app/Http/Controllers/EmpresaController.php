@@ -42,7 +42,7 @@ class EmpresaController extends IntranetController
         $activa = Session::get('pestana') ? Session::get('pestana') : 2;
         $elemento = Empresa::findOrFail($id);
         $modelo = 'Empresa';
-        $misColaboraciones = Grupo::find(AuthUser()->GrupoTutoria)->Ciclo->Colaboraciones;
+        $misColaboraciones = Grupo::find(AuthUser()->GrupoTutoria)->Ciclo->Colaboraciones??collect();
         return view($this->chooseView('show'), compact('elemento', 'modelo','activa','misColaboraciones'));
     }
     

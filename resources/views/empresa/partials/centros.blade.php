@@ -3,7 +3,7 @@
     @foreach ($elemento->centros as $centro)
     <li style="clear: both">
         <div class="message_date" style="width:55%">
-            @if ($misColaboraciones->where('idCentro',$centro->id)->count())
+            @if (config('variables.altaInstructores') || $misColaboraciones->where('idCentro',$centro->id)->count())
                 <a href='/instructor/{!!$centro->id!!}/create'>Nou Instructor</a>
                 @foreach ($centro->instructores->sortBy('departamento')->groupBy('departamento') as $departament)
                     <div>
