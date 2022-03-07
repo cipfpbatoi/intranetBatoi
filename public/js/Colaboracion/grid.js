@@ -164,6 +164,19 @@ $(function() {
             });
         }
     });
+    $('.fa-minus').on("click", function(){
+        event.preventDefault();
+        event.stopPropagation();
+        var id=$(this).parents(".small").attr("id");
+        if (confirm('Vas a esborrar esta evidencia')) {
+            $.ajax({
+                method: "DELETE",
+                url: "/api/activity/" + id,
+                dataType: 'json',
+                data: {api_token: token}
+            }).then((result) => this.parentElement.remove());
+        };
+    });
     $('.fa-plus').on("click", function(){
         var id=$(this).parents(".profile_view").attr("id");
         var instructor = $("#idInstructor");
