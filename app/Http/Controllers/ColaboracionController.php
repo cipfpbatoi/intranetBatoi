@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Activity;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
@@ -166,8 +167,10 @@ class ColaboracionController extends IntranetController
         $elemento = Colaboracion::findOrFail($id);
         $contactCol = Activity::modelo('Colaboracion')->mail()->id($id)->orderBy('created_at')->get();
         $fcts = Fct::where('idColaboracion',$id)->where('asociacion',1)->get();
-        $contactFct = Activity::modelo('Fct')->mail()->ids(hazArray($fcts,'id','id'))->orderBy('created_at')->get();
-        $contactAl = Activity::modelo('AlumnoFct')->mail()->ids(hazArray($fcts,'id','id'))->orderBy('created_at')->get();
+        $allFct = hazArray($fcts,'id','id');
+        $alFct = hazArray(AlumnoFct::whereIn('idFct',$allFct)->get(),'id','id');
+        $contactFct = Activity::modelo('Fct')->mail()->ids($allFct)->orderBy('created_at')->get();
+        $contactAl = Activity::modelo('AlumnoFct')->mail()->ids($alFct)->orderBy('created_at')->get();
         return view($this->chooseView('show'), compact('elemento','contactCol','contactFct','contactAl','fcts','pestana'));
     }
     public function printAnexeIV($colaboracion){
