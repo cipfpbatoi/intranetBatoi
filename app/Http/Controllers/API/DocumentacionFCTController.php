@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers\API;
 
 use Intranet\Componentes\DocumentoFct;
+use Intranet\Entities\Fct;
 use Intranet\Services\DocumentService;
 
 

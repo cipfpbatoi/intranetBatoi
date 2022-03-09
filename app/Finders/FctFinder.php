@@ -7,7 +7,7 @@ use Styde\Html\Facades\Alert;
 class FctFinder extends Finder
 {
     public function exec(){
-        $fcts = Fct::MisFctsColaboracion($this->dni)->EsFct()->get();
+        $fcts = Fct::MisFcts($this->dni)->EsFct()->get();
         return $this->filter($fcts);
     }
 
