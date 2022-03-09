@@ -3,6 +3,7 @@ namespace Intranet\Services;
 use Intranet\Componentes\MyMail;
 use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
+use Styde\Html\Facades\Alert;
 
 class DocumentService
 {
@@ -38,14 +39,19 @@ class DocumentService
 
     private function mail(){
         $elemento = $this->elements->first();
-        if (!$this->document->email['editable']) {
-            $contenido['view'] = view($this->document->template, compact('elemento'));
-            $contenido['template'] = $this->document->template;
+        if ($elemento) {
+            if (!$this->document->email['editable']) {
+                $contenido['view'] = view($this->document->template, compact('elemento'));
+                $contenido['template'] = $this->document->template;
+            } else {
+                $contenido = view($this->document->template, compact('elemento'));
+            }
+            $mail = new MyMail($this->elements, $contenido, $this->document->email, null, $this->document->email['editable']);
+            return $mail->render('misColaboraciones');
         } else {
-            $contenido = view($this->document->template, compact('elemento'));
+            Alert::danger('No hi ha cap destinatari');
+            return back();
         }
-        $mail = new MyMail($this->elements, $contenido,$this->document->email,null,$this->document->email['editable'] );
-        return $mail->render('misColaboraciones');
     }
 
     private function print(){
