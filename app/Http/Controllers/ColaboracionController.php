@@ -167,7 +167,7 @@ class ColaboracionController extends IntranetController
         $contactCol = Activity::modelo('Colaboracion')->mail()->id($id)->orderBy('created_at')->get();
         $fcts = Fct::where('idColaboracion',$id)->where('asociacion',1)->get();
         $contactFct = Activity::modelo('Fct')->mail()->ids(hazArray($fcts,'id','id'))->orderBy('created_at')->get();
-        $contactAl = Activity::modelo('AlumnoFct')->mail()->ids(hazArray($fcts->FctAl(),'id','id'))->orderBy('created_at')->get();
+        $contactAl = Activity::modelo('AlumnoFct')->mail()->ids(hazArray($fcts->AlFct(),'id','id'))->orderBy('created_at')->get();
         return view($this->chooseView('show'), compact('elemento','contactCol','contactFct','contactAl','fcts','pestana'));
     }
     public function printAnexeIV($colaboracion){
