@@ -20,8 +20,8 @@ return array(
 
 	
     'Alumno' => array(
-          'show' => "Dades de l'alumne",
-          'edit' => "Modificació del perfil de l'Alumne", 
+          'show' => "Dades de l'alumna",
+          'edit' => "Modificació del perfil de l'Alumna",
         ),
 	'Comision' => array(
 		'create'=>'Sol·licitud autorització comissió Servei',
@@ -64,11 +64,11 @@ return array(
                 
              ),
         'Profesor' => array(
-                'edit' => 'Modificar Perfil Professor',
-                'show' => 'Dades Professor',
-                'index' => 'LListat Professors',
-                'list' => 'Professors Absents',
-                'horario-cambiar' => 'Canviar horari Professor',
+                'edit' => 'Modificar Perfil Professorat',
+                'show' => 'Dades Professorat',
+                'index' => 'LListat Professorat',
+                'list' => 'Professorat Absents',
+                'horario-cambiar' => 'Canviar horari Professorat',
                 'titulo' => 'Entrevistes FCTs de :quien'
         ),
         'Menu' => array(
@@ -79,16 +79,16 @@ return array(
         'Alumnogrupo' => array(
             'index' => 'Gestionar Grup :quien',
             'carnet' => 'Imprimeix Carnets de Grup',
-            'profile' => 'Plantilla Alumnes',
-            'show' => 'Llista Alumnes',
-            'edit' => 'Editar Perfil Alumne',
+            'profile' => 'Plantilla Alumnat',
+            'show' => 'Llista Alumnat',
+            'edit' => 'Editar Perfil Alumnat',
         ),
         'Inventario' => array(
             'espacios' => 'Vore Espais',
             'materiales' => 'Vore Materials'
         ),
         'Alumno_curso' => array(
-            'index' => 'Alumnes Curs',
+            'index' => 'Alumnat Curs',
         ),
         'Incidencia' => array(
             'index' => 'Gestionar incidències',
@@ -104,7 +104,7 @@ return array(
             'edit' => 'Modificar Activitat extraescolar',
             'detalle' => 'Detall activitat',
             'titulo' => 'Detall activitat :actividad',
-            'profesores' => 'Professors participants',
+            'profesores' => 'Professorat participant',
             'grupos' => 'Grups participants',
             'email' => 'Enviar per autoritzar',
             'value' => 'Valorar Activitat',
@@ -149,7 +149,7 @@ return array(
     
         'Grupo' => array(
             'index' => 'Grups',
-            'detalle' => 'Vore alumnes',
+            'detalle' => 'Vore alumnat',
             'edit' => 'Editar Grup',
             'pdf' => 'Imprimir Full de fotos',
             'asigna' => 'Asigna cicle Automàticament',
@@ -263,7 +263,7 @@ return array(
             'default' => 'Modifica Documentació Qualitat',
         ),
         'Proyecto' => array(
-            'create' => 'Pujar projecte alumne'
+            'create' => 'Pujar projecte alumne/a'
         ),
         'Empresa' => array(
             'index' => 'Llistat Empreses',
@@ -295,10 +295,10 @@ return array(
             'fct' => 'FCTs',
             'revision' => 'Revisió Documentació',
             'inicioEmpresa' => 'Recordatori inici',
-            'inicioAlumno' => 'Documentació Alumne',
+            'inicioAlumno' => 'Documentació Alumnat',
             'seguimiento' => "Seguiment",
             'visitaEmpresa'=> "Concertar visita",
-            'citarAlumnos' => 'Citar Alumnes',
+            'citarAlumnos' => 'Citar Alumnat',
             'centro' => 'Centre'
         ),
         'Fct' => array(
@@ -307,7 +307,7 @@ return array(
             'edit' => 'Editar Fct',
             'delete' => 'Esborrar Fct',
             'fin' => 'Finalitzar Fct',
-            'pdf' => 'Imprimir certificats Instructors',
+            'pdf' => 'Imprimir certificats Instructores',
             'mail' => 'Enviar email valoracio',
             'apte' => 'Qualificar Apto',
             'noApte' => 'Qualificar No Apte',
@@ -320,16 +320,16 @@ return array(
             'pr0301' => 'Imprimeix Full per Informar Alumnat',
             'pr0601' => 'Imprimeix PR06-01 (Entrega Certificat)',
             'pr0402' => 'Imprimeix Entrevista Alumnat',
-            'pr0401' => 'Imprimeix Entrevista Final Instructor',
+            'pr0401' => 'Imprimeix Entrevista Final Instructora',
             'pasqua' => 'Imprimeix Full Vacances',
             'all' => 'Vore tots',
             'only' => 'Vore actius',
             'list' => 'Acta Grupo :quien',
             'acta' => 'Demanar acta d\'avaluació',
             'insercio' => "Inserció laboral",
-            'alumno' => 'x Alumnes',
+            'alumno' => 'x Alumnat',
             'empresa' => 'x Empresa',
-            'send' => 'Enviar Correu Alumnes Inici',
+            'send' => 'Enviar Correu Alumnat Inici',
             'link' => 'Adjuntar fitxers',
             'default' => 'x Empresa',
 
@@ -353,7 +353,7 @@ return array(
             'reject' => 'Rebutjar Acta',
         ),
         'Falta_profesor' => array(
-            'index' => 'Panel Fitxaje'
+            'index' => 'Panell Fitxaje'
         ),
         'Tutoria' => array(
             'index' => 'Índex de Tutories :que',
@@ -405,16 +405,16 @@ return array(
             'cambiar' => "Canviar funcions horari",
         ),
         'Instructor' => array(
-          'index' => 'Consulta de instructors',
-           'edit' => 'Editar instructor',
-           'create' => 'Crear instructor',
-           'copy' => 'Copiar instructor'
+          'index' => 'Consulta de instructores',
+           'edit' => 'Editar instructora',
+           'create' => 'Crear instructora',
+           'copy' => 'Copiar instructora'
         ),
         'Infdepartamento' => array(
           'index' => 'Consulta informes de departament',
           'create' => 'Crear Informe departament',
           'edit' => 'Modificar informe departament',
-          'avisa' => 'Avisa Professors falta informe',  
+          'avisa' => 'Avisa Professorat falta informe',
           'pdf' => 'Vore Informe departament'
             
         ),
@@ -423,19 +423,19 @@ return array(
           
         ),
         'Alumnofct' => array(
-          'index' => 'Fct x Alumne',
+          'index' => 'Fct x Alumne/a',
           'convalidacion' => 'FCT Convalidada/Exempt',
           'create' => 'Nova Exempció',  
           'edit' => 'Modificar Dades Fct',
-          'pdf' => 'Imprimir certificat Alumne',
-          'email' => 'Enviar Correu Valoració Alumne',
+          'pdf' => 'Imprimir certificat Alumne/a',
+          'email' => 'Enviar Correu Valoració Alumne/a',
           'pg0301' => "Entregada documentació",
-            'default' => 'x Alumne',
-            'selecciona' => 'Alumno',
+            'default' => 'x Alumne/a',
+            'selecciona' => 'Alumno/a',
 
         ),
         'alumnoFct' => array(
-          'selecciona' => 'Alumne',
+          'selecciona' => 'Alumne/a',
 
 
         ),
@@ -487,9 +487,9 @@ return array(
             'Grupo' => 'Grup',
             'Falta' => 'Falta',
             'Actividad' => 'Activitat Extraescolar',
-            'Profesor' => 'Professor',
-            'AlumnoGrupo' => 'Alumnes del grup',
-            'Alumno' => 'Alumne',
+            'Profesor' => 'Professorat',
+            'AlumnoGrupo' => 'Alumnat del grup',
+            'Alumno' => 'Alumne/a',
             'Menu' => 'Menú general',
             'Programacion' => 'Programació',
             'Expediente' => 'Expedient',
@@ -509,14 +509,14 @@ return array(
             'OrdenTrabajo' => 'Ordre de Treball',
             'Ciclo' => 'Cicle',
             'Falta_itaca' => 'Justificar Birret',
-            'Instructor' => 'Instructor',
+            'Instructor' => 'Instructora',
             'Proyecto' => 'Projecte',
             'Evaluacion' => 'Avaluació',
             'Colaborador' => 'Col.laborador',
             'PPoll' => 'Plantilla Enquesta',
             'Poll' => 'Enquesta',
             'Option' => 'Pregunta',
-            'AlumnoResultado' => 'Avaluacio Alumne',
+            'AlumnoResultado' => 'Avaluacio Alumnat',
             'Lote' => 'Factura',
             'Articulo' => 'Article',
             'ArticuloLote' => 'Articles Factura',
@@ -533,7 +533,7 @@ return array(
             'Falta' => 'Has de justificar la falta en Caporalia',
         ),
         'accept' => array(
-            'Expediente' => "Baixa per inasistència de l'alumne :alumno initziada automàticament pel tutor :profesor",
+            'Expediente' => "Baixa per inasistència de l'alumne/a :alumno initziada automàticament pel tutor/a :profesor",
         ),
         
 );
