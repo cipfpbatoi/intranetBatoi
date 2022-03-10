@@ -2,18 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Colaboracion;
 use Illuminate\Support\Facades\Session;
-use Intranet\Finders\UniqueFinder;
-use Intranet\Componentes\DocumentoFct;
-use Intranet\Finders\RequestFinder;
-use Intranet\Services\DocumentService;
-use Illuminate\Http\Request;
-
-
-
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -55,12 +46,19 @@ class ColaboracionAlumnoController extends IntranetController
      * @return mixed
      */
     public function search(){
-        $tutor = AuthUser()->Grupo->first()->tutor;
-        $colaboracions = Colaboracion::with('propietario')->with('Centro')->MiColaboracion(null,$tutor)->get();
-        if (count($colaboracions)){
-            $this->titulo = ['quien' => $colaboracions->first()->Ciclo->literal];
+        $tutor = AuthUser()->Grupo->first()?AuthUser()->Grupo->first()->tutor:null;
+        if ($tutor) {
+            $colaboracions = Colaboracion::with('propietario')->with('Centro')->MiColaboracion(null, $tutor)->get();
+            if (count($colaboracions)) {
+                $this->titulo = ['quien' => $colaboracions->first()->Ciclo->literal];
+            }
+            return $colaboracions->sortBy('tutor')->sortBy('localidad');
         }
-        return $colaboracions->sortBy('tutor')->sortBy('localidad');
+        else {
+            Alert::danger('No hem trobat el teu tutor');
+            return collect();
+        }
+
     }
 
 
