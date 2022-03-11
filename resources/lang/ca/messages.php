@@ -170,7 +170,7 @@ return array(
         'checkFol' => 'Li correspon Certificat Fol',
         'gestor' => 'Gestor Documental',
         'contact' =>'Registrar contacte',
-
+        'final' => 'Comprimir i guardar',
     ),
     'menu' => array(
         'Link' => 'Enllaços externs',

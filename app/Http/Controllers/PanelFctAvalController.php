@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
+use Intranet\Entities\Adjunto;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
 use DB;
@@ -11,6 +12,7 @@ use Styde\Html\Facades\Alert;
 use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Profesor;
+use Intranet\Entities\Fct;
 
 /**
  * Class PanelFctAvalController
@@ -236,11 +238,16 @@ class PanelFctAvalController extends IntranetController
      */
     private function setQualityB(): void
     {
-        $find = Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'Qualitat')
+        $find = Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'FCT')
                                     ->where('curso', Curso())->first();
         if (!$find) {
-            $this->panel->setBoton('index', new BotonBasico("fct.upload.".AuthUser()->dni, ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
-            //$this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+            $documents = Adjunto::where('route',"profesor/".AuthUser()->dni)->count();
+            $fcts = Fct::misFcts()->where('correoInstructor',0)->count();
+            if ($documents || $fcts){
+                $this->panel->setBoton('index', new BotonBasico("fct.dropzone.".AuthUser()->dni, ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+            } else {
+                $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+            }
         }
         else {
             $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
@@ -283,8 +290,11 @@ class PanelFctAvalController extends IntranetController
         $registre = Profesor::findOrFail($id);
         $quien = $registre->fullName;
         $modelo = strtolower('Profesor');
-        $back = back()->getTargetUrl();
-        return view('dropzone.index',compact('modelo','id','quien','back'));
+        $botones = [
+            'volver' => back()->getTargetUrl(),
+            'final' => "/fct/$id/upload"
+        ];
+        return view('dropzone.index',compact('modelo','id','quien','botones'));
 
     }
 

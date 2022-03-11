@@ -14,7 +14,9 @@
         <input type='hidden' id="modelo" name="modelo" value="{{ $modelo }}">
         <input type="hidden" name="api_token" value="{{AuthUser()->api_token}}">
         <input id="submit" class="hidden" type="submit">
-        <a href="{{$back}}" class="btn btn-info" >@lang('messages.buttons.volver')</a>
+        @foreach ($botones as $text => $link)
+                <a href="{{$link}}" class="btn btn-info" >@lang("messages.buttons.$text")</a>
+        @endforeach
     </form>
 </div>
 

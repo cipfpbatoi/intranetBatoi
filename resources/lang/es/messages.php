@@ -164,6 +164,7 @@ return array(
         'checkFol' => 'Le corresponde Certificado Fol',
         'gestor' => 'Gestor Documental',
         'contact' =>'Registrar contacto',
+        'final' => 'Comprimir i guardar',
     ),
     'menu' => array(
         'Link' => 'Enlaces externos',

@@ -23,8 +23,8 @@ trait traitDropZone{
         $registre = $this->class::findOrFail($id);
         $quien = $registre->quien;
         $modelo = strtolower($this->model);
-        $back = back()->getTargetUrl();
-        return view('dropzone.index',compact('modelo','id','quien','back'));
+        $botones = ['volver' => back()->getTargetUrl()];
+        return view('dropzone.index',compact('modelo','id','quien','botones'));
     }
 
 }

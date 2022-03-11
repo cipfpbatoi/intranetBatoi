@@ -224,7 +224,7 @@ return array(
                 'centro' => 'Centre Treball',
                 'propietario' => 'Autora',
                 'supervisor' => 'Creadora',
-                'cliteral' => 'Descripció',
+                'cliteral' => 'Descripción',
                 'vliteral' => 'Descripció',
                 'tags' => 'Etiquetes',
                 'situacion' => 'Situació',
@@ -280,7 +280,8 @@ return array(
                 'valoracio' => 'Valoració Pedagògica',
                 'aspectes' => 'Aspectes Transversals',
                 'dades' =>  'Altres dades',
-                'recomanada' => 'Es recomanable per a el curs següent'
+                'recomanada' => 'Es recomanable per a el curs següent',
+
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

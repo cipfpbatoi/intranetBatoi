@@ -6,13 +6,18 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Intranet\Botones\BotonImg;
+use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
+use Intranet\Entities\Profesor;
 use Intranet\Entities\TipoDocumento;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Services\FormBuilder;
 use Intranet\Services\GestorService;
 use Illuminate\Support\Facades\Session;
+use Styde\Html\Facades\Alert;
+use function Symfony\Component\String\s;
+
 
 class DocumentoController extends IntranetController
 {
@@ -115,6 +120,51 @@ class DocumentoController extends IntranetController
         }
     }
     
+    public function qualitatUpload($id){
+        $profesor = Profesor::findOrFail($id);
+
+        $documents = Adjunto::where('route',"profesor/$id")->get();
+        $elemento = $this->createWithDefaultValues();
+        $elemento->tipoDocumento = 'FCT';
+        $elemento->idDocumento = null;
+        $grupo = Grupo::QTutor($id)->first();
+        $elemento->ciclo = $grupo->Ciclo->ciclo;
+        $elemento->grupo = $grupo->nombre;
+        $elemento->supervisor = $profesor->FullName;
+        $elemento->propietario = $elemento->supervisor;
+        $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor';
+        $elemento->descripcion = "Documentació FCT Cicle ".$grupo->Ciclo->ciclo;
+        $elemento->save();
+
+        $zip = new \ZipArchive();
+        $path = "gestor/".curso()."/FCT/".$elemento->id."_FCT.zip";
+        $elemento->fichero = $path;
+        $zip->open(storage_path('app/'.$path), \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $problem = false;
+        foreach ($documents as $document){
+            $file = public_path("storage/adjuntos/{$document->route}/{$document->name}");
+            if (file_exists($file)) {
+                $zip->addFile($file,$document->name);
+                $esborrar[$document->id] = $file;
+            } else {
+                $problem = true;
+                Alert::danger("Problemes per a guardar el fitxer: $file");
+            }
+        }
+        if (!$problem){
+            $zip->close();
+            $elemento->save();
+            foreach ($esborrar as $adjunto => $file){
+                Adjunto::destroy($adjunto);
+                unlink($file);
+            }
+            return redirect('/avalFct');
+        } else {
+            $elemento->delete();
+        }
+        return back();
+    }
+
     public function qualitat()
     {
         $elemento = $this->createWithDefaultValues();

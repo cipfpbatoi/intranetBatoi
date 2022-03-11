@@ -273,7 +273,8 @@ return array(
                 'valoracio' => 'Valoración Pedagógica',
                 'aspectes' => 'Aspectos Transversales',
                 'dades' =>  'Otros datos',
-                'recomanada' => 'Es recomendable para el curso siguiente'
+                'recomanada' => 'Es recomendable para el curso siguiente',
+
         ),
         'empty_option' => array(
             'default' => '-Selecciona-',

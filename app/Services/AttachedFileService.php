@@ -44,7 +44,8 @@ class AttachedFileService
             $attached->delete();
             return 1;
         }
-        return 0;
+        $attached->delete();
+        return 1;
     }
 
 }

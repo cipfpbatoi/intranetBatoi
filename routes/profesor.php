@@ -181,10 +181,11 @@ Route::get('/expedienteO', ['as' => 'expediente.orientacion', 'uses' => 'PanelEx
 Route::get('/procedimento',['as'=> 'procedimiento.all','uses'=>'PanelProcedimientoController@index']);
 Route::get('/procedimentoA',['as'=> 'procedimiento.acompanyant','uses'=>'PanelProcedimientoAcompanyantController@index']);
 
+// DROPZONE
 Route::post('/dropzone',['as' => 'dropzone.store', 'uses' => 'DropZoneController@storeAttached']);
 Route::get('/expediente/{expediente}/link', ['as' => 'expediente.link', 'uses' => 'ExpedienteController@link']);
 Route::get('/fct/{expediente}/link', ['as' => 'alumnofct.link', 'uses' => 'PanelFctAvalController@link']);
-Route::get('/fct/upload/{dni}', ['as' => 'fct.linkQuality', 'uses' => 'PanelFctAvalController@linkQuality']);
+Route::get('/fct/dropzone/{dni}', ['as' => 'fct.linkQuality', 'uses' => 'PanelFctAvalController@linkQuality']);
 
 
 Route::resource('/resultado', 'ResultadoController', ['except' => ['destroy','update', 'show']]);
@@ -256,6 +257,7 @@ Route::get('/fct/{document}/nuevoProyecto', ['as' => 'fct.nuevoProyecto', 'uses'
 Route::get('/fct/acta', ['as' => 'fct.acta', 'uses' => 'PanelFctAvalController@demanarActa']);
 Route::get('/fct/{fct}/proyecto', ['as' => 'proyecto.new', 'uses' => 'DocumentoController@project']);
 Route::post('/fct/{fct}/proyecto', ['as' => 'proyecto.create', 'uses' => 'DocumentoController@store']);
+Route::get('/fct/{dni}/upload', ['as' => 'qualitat.upload', 'uses' => 'DocumentoController@qualitatUpload']);
 Route::get('/fct/upload', ['as' => 'qualitat.new', 'uses' => 'DocumentoController@qualitat']);
 Route::post('/fct/upload', ['as' => 'qualitat.create', 'uses' => 'DocumentoController@store']);
 Route::put('/fct/upload', ['as' => 'qualitat.update', 'uses' => 'DocumentoController@update']);
