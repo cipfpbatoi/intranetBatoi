@@ -5,7 +5,7 @@
 @elseif (firstWord($contacto->document)=='Revisió')
     {{fechaCurta($contacto->created_at)}} <em class="fa fa-check"></em>
 @else
-    <a href="#" class="small @if ($contacto->action != 'phone') dragable @endif" id="{{$contacto->id}}">
+    <a href="#" class="small dragable" id="{{$contacto->id}}">
         @if (!isset($contacto->comentari)) <em class="fa fa-minus"></em> @endif
         {{fechaCurta($contacto->created_at)}}
         @if ($contacto->action == 'email') <em class="fa fa-envelope"></em> @endif
