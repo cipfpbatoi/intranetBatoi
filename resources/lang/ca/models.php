@@ -521,7 +521,8 @@ return array(
             'Lote' => 'Factura',
             'Articulo' => 'Article',
             'ArticuloLote' => 'Articles Factura',
-            'Incidencia' => 'Incidència'
+            'Incidencia' => 'Incidència',
+            'Fctcap' => 'Revisió FCT'
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

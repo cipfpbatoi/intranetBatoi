@@ -506,6 +506,7 @@ return array(
             'ArticuloLote' => 'Articulo de Factura',
             'Articulo' => 'Articulo',
             'Incidencia' => 'Incidencia',
+            'Fctcap' => 'Revisión FCT'
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

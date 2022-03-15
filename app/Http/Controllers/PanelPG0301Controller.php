@@ -18,7 +18,7 @@ class PanelPG0301Controller extends BaseController
     
     protected function iniBotones()
     {
-         Session::put('redirect', 'PanelPG0301Controller@indice');
+        Session::put('redirect', 'PanelPG0301Controller@indice');
     }
     
     protected function search(){

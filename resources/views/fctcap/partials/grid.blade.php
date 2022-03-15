@@ -12,7 +12,9 @@
             @endif
         </th>
         @endforeach
-        <th>@lang("validation.attributes.operaciones")</th>
+        <th>Documentació</th>
+        <th>An 2,3</th>
+        <th>An 5,6</th>
     </tr>
     </thead>
     <tfoot>

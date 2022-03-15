@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class AlterAlumnoFctsTable4 extends Migration {
+class AlterAlumnoFctsTable5 extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -14,7 +14,7 @@ class AlterAlumnoFctsTable4 extends Migration {
 	{
 		Schema::table('alumno_fcts', function(Blueprint $table)
 		{
-            $table->dropColumn('festiusEscolars');
+            $table->boolean('a56')->dafault(0);
         });
 	}
 
@@ -28,7 +28,7 @@ class AlterAlumnoFctsTable4 extends Migration {
 	{
 		Schema::table('alumno_fcts', function(Blueprint $table)
 		{
-            $table->boolean('festiusEscolars')->default(0);
+            $table->dropColumn('a56');
         });
 	}
 
