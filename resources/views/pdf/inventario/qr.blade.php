@@ -1,7 +1,7 @@
 @extends('layouts.pdf')
 @section('content')
     @php $material = $todos @endphp
-    <div class="visible-print text-center" style="float:right;width: 200px;height:225px">
+    <div class="visible-print text-center">
         @include('pdf.inventario.partials.fitxa')
     </div>
 @endsection

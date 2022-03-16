@@ -58,5 +58,8 @@ class Espacio extends Model
     public function getXDepartamentoAttribute(){
         return $this->Departamento->literal;
     }
+    public function Materiales(){
+        return $this->hasMany(Material::class,'espacio','aula')->where('inventariable',1);
+    }
 
 }

@@ -49,7 +49,7 @@ class InventarioController extends IntranetController
     }
 
     protected function qr($id){
-        return $this->hazPdf('pdf.inventario.qr', Inventario::findOrFail($id), [Date::now()->format('Y'), 'Alumne - Student'], 'portrait', [85.6, 53.98])->stream();
+        return $this->hazPdf('pdf.inventario.qr', Inventario::findOrFail($id), [Date::now()->format('Y'), 'Alumne - Student'], 'portrait', [70, 37])->stream();
     }
 
     public function edit($id){

@@ -203,10 +203,12 @@ class PanelListadoEntregasController extends BaseController
         $resultados = collect();
         foreach ($todos as $resultado){
             $modulo = $resultado->ModuloGrupo;
-            $curso = $modulo->Grupo->curso;
-            $tipoCiclo = $modulo->ModuloCiclo->Ciclo->tipo;
-            if (config("curso.trimestres.$tipoCiclo.$trimestre.$curso")==$resultado->evaluacion){
-                $resultados->add($resultado);
+            if ($modulo){
+                $curso = $modulo->Grupo->curso;
+                $tipoCiclo = $modulo->ModuloCiclo->Ciclo->tipo;
+                if (config("curso.trimestres.$tipoCiclo.$trimestre.$curso")==$resultado->evaluacion){
+                    $resultados->add($resultado);
+                }
             }
         }
         $resultados->sortBy('Modulo');

@@ -13,6 +13,8 @@ use Intranet\Http\Requests\EspacioRequest;
  */
 class EspacioController extends ModalController
 {
+    use traitImprimir;
+
     const DIRECCION = 'roles.rol.direccion';
     /**
      * @var string
@@ -64,5 +66,17 @@ class EspacioController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('material.detalle'));
         $this->panel->setBoton('grid', new BotonImg('espacio.edit', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid', new BotonImg('espacio.delete', ['roles' => config(self::DIRECCION)]));
+        $this->panel->setBoton('grid', new BotonImg('espacio.barcode', ['img'=>'fa-barcode','roles' => config(self::DIRECCION)]));
+
+    }
+
+    public function barcode($id){
+        $espacio = Espacio::findOrFail($id);
+        return $this->hazPdf('pdf.inventario.lote',$espacio->Materiales,'Hola','portrait','A4')->stream();
+    }
+
+    public function carnet($grupo)
+    {
+        return $this->hazPdf('pdf.carnet', $this->alumnos($grupo), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 }

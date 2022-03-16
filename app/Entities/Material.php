@@ -45,6 +45,10 @@ class Material extends Model
         return $this->belongsTo(Espacio::class, 'espacio', 'aula');
     }
 
+    public function LoteArticulo(){
+        return $this->belongsTo(ArticuloLote::class,'articulo_lote_id');
+    }
+
     public function getEstadoOptions()
     {
         return config('auxiliares.estadoMaterial');
