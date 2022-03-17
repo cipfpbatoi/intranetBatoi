@@ -125,6 +125,13 @@ trait traitCRUD{
         return view($this->chooseView('edit'), compact('formulario', 'modelo'));
     }
 
+    public function editdelete($id)
+    {
+        $formulario = new FormBuilder($this->class::findOrFail($id),$this->formFields);
+        $modelo = $this->model;
+        return view($this->chooseView('editdelete'), compact('formulario', 'modelo','id'));
+    }
+
     /*
      *  update (Request,$id) return redirect
      * guarda els valors del formulari

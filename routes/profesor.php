@@ -312,6 +312,7 @@ Route::get('/material/{material}/incidencia', ['as' => 'material.incidencia', 'u
 //RUTAS INVENTARIO
 Route::get('/inventario',['as' => 'inventario.index','uses' => 'InventarioController@index']);
 Route::get('/inventario/{material}/edit', ['as' => 'inventario.edit', 'uses' => 'InventarioController@edit']);
+Route::get('/inventario/{material}/delete', ['as' => 'inventario.delete', 'uses' => 'InventarioController@destroy']);
 Route::get('/inventario/{material}/qr', ['as' => 'inventario.qr', 'uses' => 'InventarioController@qr']);
 Route::put('/inventario/{material}/edit', ['as' => 'inventario.update', 'uses' => 'InventarioController@update']);
 
