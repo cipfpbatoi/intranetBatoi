@@ -8,12 +8,12 @@
             @endif
         <br/>
         {{ ucfirst(strtolower(substr($material->descripcion,0,22))) }}<br/>
-        @isset ($material->marca)
+        @if (($material->marca) && (strlen($material->marca)>0))
                 {{ucfirst(strtolower($material->marca))}}
                 @if (($material->modelo) && (strlen($material->modelo)>0))
                         ({{ucfirst(strtolower($material->modelo))}})
-                @endisset
+                @endif
                 <br/>
-        @endisset
+        @endif
         {{ ucfirst(strtolower(substr($material->proveedor?$material->proveedor:$material->LoteArticulo->Lote->proveedor,0,22))) }}
 </div>
