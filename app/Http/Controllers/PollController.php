@@ -138,9 +138,22 @@ class PollController extends IntranetController
         $option2 = $allVotes->GroupBy(['idOption2', 'option_id']);
         $this->initValues($votes,$options_numeric);
         $votes['all'] = $allVotes->GroupBy('option_id');
-
         $modelo::aggregate($votes,$option1,$option2);
 
+
+        return view('poll.allResolts',compact('votes','poll','options_numeric'));
+    }
+
+    public function lookAtNumberVotes($id){
+        $poll = Poll::find($id);
+        $modelo = $poll->modelo;
+        $options_numeric = $poll->Plantilla->options->where('scala', '>', 0);
+        $allVotes = Vote::allNumericVotes($id)->get();
+        $option1 = $allVotes->GroupBy(['idOption1', 'option_id']);
+        $option2 = $allVotes->GroupBy(['idOption2', 'option_id']);
+        $this->initValues($votes,$options_numeric);
+        $votes['all'] = $allVotes->GroupBy('option_id');
+        $modelo::count($votes,$option1,$option2);
 
         return view('poll.allResolts',compact('votes','poll','options_numeric'));
     }
