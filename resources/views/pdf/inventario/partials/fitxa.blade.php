@@ -10,7 +10,7 @@
         {{ ucfirst(strtolower(substr($material->descripcion,0,22))) }}<br/>
         @isset ($material->marca)
                 {{ucfirst(strtolower($material->marca))}}
-                @isset ($material->modelo)
+                @if (($material->modelo) && (strlen($material->modelo)>0))
                         ({{ucfirst(strtolower($material->modelo))}})
                 @endisset
                 <br/>
