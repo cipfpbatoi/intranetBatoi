@@ -42,8 +42,6 @@ return [
         'template' =>'email.fct.infoU',
         'fcts' => 1,
         'unique' => 1,
-
-
     ],
     'inicioAlumno' => [
         'email' => [

@@ -24,11 +24,13 @@ class ResultadoUpdateRequest extends FormRequest
     public function rules()
     {
         return [
+            'idModuloGrupo' => 'required',
+            'evaluacion' => 'required',
             'matriculados' => 'required|numeric|max:60',
-            'evaluados' => 'required|numeric|max:60',
-            'aprobados' => 'required|numeric|max:60',
+            'evaluados' => 'required|numeric|lte:matriculados',
+            'aprobados' => 'required|numeric|lte:evaluados',
             'udProg' => 'required|numeric|max:30',
-            'udImp' => 'required|numeric|max:30',
+            'udImp' => 'required|numeric|lte:udProg',
         ];
     }
 }
