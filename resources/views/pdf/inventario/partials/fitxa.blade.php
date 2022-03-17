@@ -15,5 +15,5 @@
                 @endisset
                 <br/>
         @endisset
-        {{ ucfirst(strtolower(substr($material->LoteArticulo->Lote->proveedor,0,22))) }}
+        {{ ucfirst(strtolower(substr($material->proveedor?$material->proveedor:$material->LoteArticulo->Lote->proveedor,0,22))) }}
 </div>
