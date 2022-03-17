@@ -72,7 +72,7 @@ class EspacioController extends ModalController
 
     public function barcode($id){
         $espacio = Espacio::findOrFail($id);
-        return $this->hazPdf('pdf.inventario.lote',$espacio->Materiales,'Hola','portrait','A4')->stream();
+        return $this->hazPdf('pdf.inventario.lote',$espacio->Materiales,'Hola','portrait',[210,297],5)->stream();
     }
 
     public function carnet($grupo)

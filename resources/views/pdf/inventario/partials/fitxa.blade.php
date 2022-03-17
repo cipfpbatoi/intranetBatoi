@@ -1,15 +1,19 @@
-<div style="float:right;width: 45%;margin:2%">
-{!! QrCode::size(120)->generate(env('APP_URL','http://intranet.cipfpbatoi.es').'/inventario/'.$material->id.'/edit'); !!}
+<div style="float:left; width: 3cm">
+{!! QrCode::size(115)->generate(env('APP_URL','http://intranet.cipfpbatoi.es').'/inventario/'.$material->id.'/edit'); !!}
 </div>
-<div style="float:left;width: 45%;margin:2%">
-    <p style="font-size: small">
-        @isset ($material->nserieprov)
-            <strong>Serie: {{ $material->nserieprov }}</strong><br/>
+<div style="float:left; width: 4.70cm; font-size: medium; margin-left: 0.3cm;text-align: left">
+        <strong>Id: {{ $material->id }}</strong>
+            @if (($material->nserieprov) && ($material->nserieprov != 'null' ))
+                ({{ $material->nserieprov }})
+            @endif
+        <br/>
+        {{ ucfirst(strtolower($material->descripcion)) }}<br/>
+        @isset ($material->marca)
+                {{ucfirst(strtolower($material->marca))}}
+                @isset ($material->modelo)
+                        ({{ucfirst(strtolower($material->modelo))}})
+                @endisset
+                <br/>
         @endisset
-        <strong>Id: {{ $material->id }}</strong><br/>
-        {{ $material->descripcion }}<br/>
-        @isset ($material->marca) <br/> {{$material->marca}} - {{$material->modelo}} @endisset
-        <br/> {{$material->LoteArticulo->Lote->proveedor }}
-        <br/>{{FechaString($material->LoteArticulo->Lote->fecha_alta)}}
-    </p>
+        {{ ucfirst(strtolower(substr($material->LoteArticulo->Lote->proveedor,0,22))) }}
 </div>
