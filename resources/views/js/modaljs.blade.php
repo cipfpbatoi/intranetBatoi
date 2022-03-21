@@ -15,4 +15,3 @@
 {{ HTML::script('/js/delete.js') }}
 {{ HTML::script('/js/indexModal.js') }}
 {{ Html::script("/js/datepicker.js") }}
-{{ Html::script("/js/barcode.js") }}
