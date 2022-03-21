@@ -119,7 +119,7 @@ class FctController extends IntranetController
         $fct = Fct::findOrFail($id);
         $instructor = $fct->Instructor;
         if (isset($instructor->surnames)) {
-            return self::preparePdf($fct,$fct->hasta,$fct->AlFct->first()->horas)->stream();
+            return self::preparePdf($fct,$fct->hasta,$fct->AlFct->max('horas'))->stream();
         } else {
             Alert::danger("Completa les dades de l'instructor");
             return back();
