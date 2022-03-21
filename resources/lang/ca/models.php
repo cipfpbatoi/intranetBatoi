@@ -313,6 +313,7 @@ return array(
             'noApte' => 'Qualificar No Apte',
             'noAval' => 'No Avaluat',
             'noProyecto' => 'No presenta Projecte',
+            'proyecto' => 'Pujar projecte',
             'nuevoProyecto' => 'Accedeix al Projecte',
             'nullProyecto' => 'Esborra projecte',
             'upload' => 'Zip Entrevistes',

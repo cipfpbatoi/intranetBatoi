@@ -28,9 +28,6 @@ const mesesCaduca=6;
                 <a href="#" class="ver">
                     <i class="fa fa-eye" title="Ver"></i>                
                 </a>
-                <a href="#" class="QR">
-                    <i class="fa fa-barcode" title="Codi QR"></i>                
-                </a>
     `;
     if (autorizado) {
         contenido+=`        
@@ -87,11 +84,6 @@ $(function () {
     // Botón INCIDENCIA
     $('#datamaterial').on('click', 'a.incidencia', function (event) {
         $(this).attr("href","/material/"+$(this).parent().siblings().first().text()+"/incidencia");
-    })
-
-    // Botón codi barres
-    $('#datamaterial').on('click', 'a.QR', function (event) {
-        $(this).attr("href","/inventario/"+$(this).parent().siblings().first().text()+"/qr");
     })
 
     // Botón VER
