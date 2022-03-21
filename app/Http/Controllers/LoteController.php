@@ -53,8 +53,8 @@ class LoteController extends ModalController
         $this->panel->setBoton('index', new BotonBasico('direccion.lote.create', ['text'=>'Nova Factura','roles' => [config('roles.rol.direccion'), config('roles.rol.administrador')]]));
     }
 
-    protected function print($id){
-        return $this->hazPdf('pdf.inventario.lote', Lote::findOrFail($id)->Materiales, [Date::now()->format('Y')], 'portrait','a4','1.9cm')->stream();
+    protected function print($id,$posicion=1){
+        return $this->hazPdf('pdf.inventario.lote', Lote::findOrFail($id)->Materiales, $posicion, 'portrait',[210,297],5)->stream();
     }
 
     protected function capture($lote){

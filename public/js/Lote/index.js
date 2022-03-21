@@ -62,9 +62,12 @@ var options = {};
             },
             { data:'fechaAlta'},
             { data: null, render: function (data){
-                return (data.estado == 1)?contenido+operaciones+inventariable:
-                    (data.estado == 2) ? contenido+editar+imprimir:
-                        (data.estado == 0) ? contenido+operaciones+capturar:  contenido+operaciones;
+                return  (data.estado == 1) ? contenido+operaciones+inventariable:
+                        (data.estado == 2) ? contenido+editar+
+                            `<a href="/direccion/lote/`+data.registre+`/print" class="QR">
+                                <i class="fa fa-barcode" title="Codi QR"></i>                
+                            </a>`:
+                        (data.estado == 0) ? contenido+operaciones+capturar:contenido+operaciones;
                 },
             },
         ],
@@ -129,11 +132,7 @@ $(function () {
             }
         })
 
-        $('#datatable').on('click', 'a.QR', function (event) {
-            var url = '/direccion/lote/'+$(this).parent().siblings().first().text()+'/print';
-            $(location).attr('href',url);
-        })
-
+        
         $('#datatable').on('click', 'a.capture', function (event) {
             var url = '/direccion/lote/'+$(this).parent().siblings().first().text()+'/capture';
             $(location).attr('href',url);

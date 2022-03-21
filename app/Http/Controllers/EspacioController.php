@@ -66,13 +66,13 @@ class EspacioController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('material.detalle'));
         $this->panel->setBoton('grid', new BotonImg('espacio.edit', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid', new BotonImg('espacio.delete', ['roles' => config(self::DIRECCION)]));
-        $this->panel->setBoton('grid', new BotonImg('espacio.barcode', ['img'=>'fa-barcode','roles' => config(self::DIRECCION)]));
+        $this->panel->setBoton('grid', new BotonImg('espacio.barcode', ['class'=>'QR','img'=>'fa-barcode','roles' => config(self::DIRECCION)]));
 
     }
 
-    public function barcode($id){
+    public function barcode($id,$posicion=1){
         $espacio = Espacio::findOrFail($id);
-        return $this->hazPdf('pdf.inventario.lote',$espacio->Materiales,'Hola','portrait',[210,297],5)->stream();
+        return $this->hazPdf('pdf.inventario.lote',$espacio->Materiales,$posicion,'portrait',[210,297],5)->stream();
     }
 
     public function carnet($grupo)

@@ -5,3 +5,4 @@
 {{ HTML::script('/js/grid.js') }}
 @endif
 {{ HTML::script('/js/delete.js') }}
+

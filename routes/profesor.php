@@ -333,7 +333,7 @@ Route::get('/incidencia/{incidencia}/notification', ['as' => 'incidencia.notific
 Route::resource('/espacio', 'EspacioController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/espacio/{espacio}/delete', ['as' => 'espacio.destroy', 'uses' => 'EspacioController@destroy']);
 Route::get('/espacio/verMateriales/{espacio}', 'EspacioController@getMateriales');
-Route::get('/espacio/{espacio}/barcode',['as' => 'espacio.barcode', 'uses'=> 'EspacioController@barcode']);
+Route::get('/espacio/{espacio}/barcode/{posicion?}',['as' => 'espacio.barcode', 'uses'=> 'EspacioController@barcode']);
 Route::put('/espacio/{espacio}/edit', ['as' => 'espacio.store', 'uses' => 'EspacioController@update']);
 Route::post('/espacio/create', ['as' => 'espacio.create', 'uses' => 'EspacioController@store']);
 
