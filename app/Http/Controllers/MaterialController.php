@@ -58,7 +58,11 @@ class MaterialController extends IntranetController
      */
     public function espacio($espacio)
     {
-        $todos = Material::where('espacio', $espacio)->get();
+        $todos = Material::where('espacio', $espacio)
+                ->where('inventariable',1)
+                ->where('estado','<',3)
+                ->whereNotNull('articulo_lote_id')
+                ->get();
         foreach ($todos as $uno) {
             $uno->Estado = $uno->getEstadoOptions()[$uno->estado];
         }
