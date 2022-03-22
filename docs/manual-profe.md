@@ -264,14 +264,19 @@ Una vegada fet un expedient el podem eliminar o editar però l'expedient **no es
 
 ### Activitats extraescolars
 Ací apareixen totes les activitats extraescolars en las que nosaltres participem. Podem veure-las en format llistat o mosaic:
+
 * Llistat
 ![Activitats extraescolars](./img/ajuda/12-actExtr-listado.png)
+
 * Mosaic
+
 ![Activitats extraescolars](./img/ajuda/12-actExtr-mosaico.png)
 
-Amb cada activitat hi ha vàries operacions que podem fer:
-* Detall activitat: permet afegir o eliminar professors i grups participants. Pot fer-lo qualsevol professor participant. També podem canviar el coordinador de l'activitat
+En cada activitat hi ha vàries operacions que podem fer:
+
+* Detall activitat: permet afegir o eliminar professors i grups participants. Pot fer-ho qualsevol professor participant. També podem canviar el coordinador de l'activitat
 ![Activitats extraescolars - detall](./img/ajuda/12-actExtr-detalle.png)
+
 * Modificar activitat: permet canviar les dades com el seu nom, las dates o els comentaris
 * Enviar per a autoritzar: s'envia a caporalia l'activitat per a que l'autoritzen
 * Avisar al profesorat (només si ja s'ha enviat per a autoritzar): genera una notificació per a tots els professors que participen en l'activitat i tots els que donen clase en els grups que participen per a que sàpien que els alumnes tenen eixa activitat.
@@ -280,12 +285,13 @@ Amb cada activitat hi ha vàries operacions que podem fer:
 
 #### Alta de nova activitat
 Els pasos a fer són:
-1. Polsar el botó **'Alta activitat'** i omplir els camps del formulari:
+
+1. Polsar el botó **'Alta activitat'** i omplir els camps del formulari, es pot indicar si es fora el centre, requereix transport, decripció, etc.:
 ![Alta activitat extraescolar](./img/ajuda/12-actExtr-alta.png)
 2. Polsar sobre **'Detall activitat'** per a indicar els professors i grups participants
 3. Polsar sobre **'Enviar l'activitat per a autoritzar'**. 
-4. Polsar sobre **'Imprimir autorització menors'** i imprimir les autoritzacions per als alumnes menors d'edat.
-5. És recomanable polsar sobre **'Avisar al profesorat'** per a que tots els compnays involucrats (per vinde o donar clase a eixos grups) sàpien que els alumnes tenen eixa activitat
+4. Polsar sobre **'Imprimir autorització menors'** i imprimir les autoritzacions per als alumnes menors d'edat (no apareix fins que s'envia per autoritzar)
+5. És recomanable polsar sobre **'Avisar al profesorat'** per a que tots els compnays involucrats (per vinde o donar clase a eixos grups) sàpiguen que els alumnes tenen eixa activitat
 
 Una activitat **NO ES POT REALITZAR** fins que no estiga autoritzada.
 
