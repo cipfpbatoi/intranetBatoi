@@ -326,7 +326,7 @@ No podem modificar ni anul·lar comisions cobrades ni pendents de cobrament.
 Polsem el botó 'Sol·licitud autorització comissió de servei' i omplim el formulari:
 ![Alta Comissió de servei](./img/ajuda/13-comissions-alta.png)
 
-Quan polsem el botó 'Aceptar' (es troba a la part inferior del formulari) es crea la nova comissió amb l'estat de 'No autoritada'. Ara podrem borrar-la, modificar-la o enviar-la per autoritzar.
+Quan polsem el botó 'Guardar' (es troba a la part inferior del formulari) es crea la nova comissió amb l'estat de 'No autoritada'. Ara podrem borrar-la, modificar-la o enviar-la per autoritzar.
 
 ### Notificació absències
 Aquesta aplicació ens permet informar a Caporalia de qualsevol absència i justificar-la.
