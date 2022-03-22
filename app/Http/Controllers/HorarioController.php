@@ -34,9 +34,14 @@ class HorarioController extends IntranetController
             $a=explode("-", $cambio->a);
 
             $horario = Horario::dia($de[1])->orden($de[0])->Profesor($dni)->first();
-            $horario->dia_semana = $a[1];
-            $horario->sesion_orden = $a[0];
-            $horario->save();
+            if ($horario){
+                $horario->dia_semana = $a[1];
+                $horario->sesion_orden = $a[0];
+                $horario->save();
+            } else {
+                Alert::info("Horari".$de[1].' '.$de[0]." del profesor $dni no trobat");
+            }
+
         }
     }
     private function saveCopy($dni,$data){
