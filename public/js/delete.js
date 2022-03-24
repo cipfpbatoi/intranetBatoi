@@ -11,4 +11,10 @@ $(function() {
 			event.preventDefault();
 		}
 	})
+	$(".confirm").on('click',function(event){
+		let info = $(this).text();
+		if (!confirm('Confirma que vols realitzar la següent operació: '+info)) {
+			event.preventDefault();
+		}
+	});
 })

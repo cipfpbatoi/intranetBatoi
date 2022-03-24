@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Botones\BotonConfirmacion;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Adjunto;
@@ -260,7 +261,7 @@ class PanelFctAvalController extends IntranetController
     private function setActaB(): void
     {
         if (Grupo::QTutor()->first() && !Grupo::QTutor()->first()->acta_pendiente ) {
-            $this->panel->setBoton('index', new BotonBasico("fct.acta", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+            $this->panel->setBoton('index', new BotonConfirmacion("fct.acta", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
         }
         else {
             Alert::message("L'acta pendent esta en procés", 'info');
