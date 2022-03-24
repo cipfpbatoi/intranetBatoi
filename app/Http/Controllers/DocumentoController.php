@@ -141,6 +141,7 @@ class DocumentoController extends IntranetController
         $elemento->fichero = $path;
         $zip->open(storage_path('app/'.$path), \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         $problem = false;
+        $esborrar = [];
         foreach ($documents as $document){
             $file = public_path("storage/adjuntos/{$document->route}/{$document->name}");
             if (file_exists($file)) {

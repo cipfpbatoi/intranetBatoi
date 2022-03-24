@@ -3,8 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Estadomaterial;
-use Intranet\Entities\Espacio;
 use Intranet\Events\ActivityReport;
 
 class Material extends Model
@@ -35,10 +33,6 @@ class Material extends Model
 
     protected $attributes = ['estado'=>1];
 
-    public function Estados()
-    {
-        return $this->belongsTo(EstadoMaterial::class, 'estado');
-    }
 
     public function Espacios()
     {
@@ -52,6 +46,10 @@ class Material extends Model
     public function getEstadoOptions()
     {
         return config('auxiliares.estadoMaterial');
+    }
+
+    public function getStateAttribute(){
+        return config('auxiliares.estadoMaterial')[$this->estado];
     }
 
     public function getEspacioOptions()

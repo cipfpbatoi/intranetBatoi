@@ -235,7 +235,10 @@ class ImportController extends Seeder
         ini_set('max_execution_time', 360);
         $this->run($request->file('fichero'), $request);
         ini_set('max_execution_time', 30);
-        $this->asignarTutores(false);
+
+        if ($request->primera == 'on') {
+            $this->asignarTutores();
+        }
 
         return view('seeder.store');
     }
@@ -244,16 +247,14 @@ class ImportController extends Seeder
      * @param bool $back
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function asignarTutores($back =  true)
+    public function asignarTutores()
     {
         foreach (Profesor::all() as $profesor) {
             $profesor->rol = $this->assignRole(Grupo::QTutor($profesor->dni)->first(),$profesor->rol);
             $profesor->save();
         }
         Alert:info('Tutors assignats');
-        if ($back) {
-            return back();
-        }
+
     }
 
     /**
@@ -321,24 +322,32 @@ class ImportController extends Seeder
     {
         switch ($clase) {
             case 'Alumno':
-
+                // ompli el camp baja de l'alumne
                 $this->alumnosBaja();
                 break;
-            case 'Profesor' : $this->profesoresBaja();
+            case 'Profesor' :
+                // desactiva el professor i li lleva el camp sustituye_a
+                $this->profesoresBaja();
                 break;
-            case 'Grupo' : $this->gruposBaja();
+            case 'Grupo' :
+                // posa el camp tutor a BAJA
+                $this->gruposBaja();
                 break;
             case 'AlumnoGrupo' :
+                // crea taula temoral
                 $this->duplicaTable('alumnos_grupos');
+                // buida la taula
                 $this->truncateTables('alumnos_grupos');
                 break;
             case 'Horario' :
+                // cerca la darrera actualizacio (camp plantilla de l'itaca)
                 if (isset(DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla)) {
                     $this->plantilla = DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla;
                 }
                 else {
                     $this->plantilla = 0;
                 }
+                // esborra la taula
                 if ($xml == 'horarios_grupo') {
                     $this->truncateTables('horarios');
                 }
@@ -355,19 +364,33 @@ class ImportController extends Seeder
     private function post($clase, $xml, $firstImport)
     {
         switch ($clase) {
-            case 'Profesor' : $this->noSustituye();
+            case 'Profesor' :
+                // esborra sustitucions que s'han quedat penjant
+                $this->noSustituye();
                 $this->asignaDepartamento();
                 break;
-            case 'Alumno': $this->bajaAlumnos();
+            case 'Alumno':
+                // esborra alumnos no incorporats
+                $this->bajaAlumnos();
                 break;
-            case 'Grupo' : if ($firstImport) { $this->bajaGrupos();  }
+            case 'Grupo' :
+                // esborra grups donats de baixa
+                if ($firstImport) {
+                    $this->bajaGrupos();
+                }
+                // si no te tutor ho indica
                 $this->removeTutor();
                 break;
-            case 'AlumnoGrupo' : $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
+            case 'AlumnoGrupo' :
+                // esborra buids
+                $this->eliminarRegistrosBlanco('alumnos_grupos', 'idGrupo');
+                // restaura grup i subgrup
                 $this->restauraCopia();
                 break;
             case 'Horario' : if ($xml == 'horarios_ocupaciones') {
+                    // elimina horaris passats
                     $this->eliminarHorarios();
+                    // crea taula moduls_cicles, moduls_grups i programacions
                     if ($firstImport) {
                         $this->crea_modulosCiclos();
                     }
@@ -793,6 +816,16 @@ class ImportController extends Seeder
     private function encuentra($clase, $clave)
     {
         return $clase::find($clave);
+    }
+
+    private function getEstadoFromJsonFile(){
+        foreach (Profesor::activo()->get() as $profesor){
+            if (Storage::disk('local')->exists('/horarios/'.$profesor->dni.'.json') && $fichero = Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json')) {
+                if (json_decode($fichero)->estado == 'Guardado') {
+                    session([$profesor->dni => 1]);
+                }
+            }
+        }
     }
 
     /**
