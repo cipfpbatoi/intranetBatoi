@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Inventario;
 use Intranet\Services\FormBuilder;
 use Jenssegers\Date\Date;
@@ -73,5 +74,18 @@ class InventarioController extends IntranetController
         }
     }
 
+    /**
+     * @param $espacio
+     * @return mixed
+     */
+    public function espacio($espacio)
+    {
+        $this->vista = ['index' => 'Espai'];
 
+        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
+        $this->iniPestanas();
+
+        return $this->grid($espacio);
+
+    }
 }

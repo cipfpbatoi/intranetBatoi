@@ -63,7 +63,7 @@ class EspacioController extends ModalController
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico('espacio.create', ['roles' => config(self::DIRECCION)]));
-        $this->panel->setBoton('grid', new BotonImg('material.detalle'));
+        $this->panel->setBoton('grid', new BotonImg('inventario.detalle'));
         $this->panel->setBoton('grid', new BotonImg('espacio.edit', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid', new BotonImg('espacio.delete', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid', new BotonImg('espacio.barcode', ['class'=>'QR','img'=>'fa-barcode','roles' => config(self::DIRECCION)]));

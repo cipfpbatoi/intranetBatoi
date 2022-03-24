@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Lote;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Botones\BotonImg;
@@ -52,22 +53,7 @@ class MaterialController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico('material.create', ['roles' => [config('roles.rol.direccion'), config('roles.rol.mantenimiento')]]));
     }
 
-    /**
-     * @param $espacio
-     * @return mixed
-     */
-    public function espacio($espacio)
-    {
-        $todos = Material::where('espacio', $espacio)
-                ->where('inventariable',1)
-                ->where('estado','<',3)
-                ->whereNotNull('articulo_lote_id')
-                ->get();
-        foreach ($todos as $uno) {
-            $uno->Estado = $uno->getEstadoOptions()[$uno->estado];
-        }
-        return $this->llist($todos, $this->panel);
-    }
+
 
     /**
      * @param $id

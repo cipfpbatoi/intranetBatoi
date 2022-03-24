@@ -1,5 +1,10 @@
 $(function(){
 	$('.editGrupo').on("click",editRow);
+	$('.delGrupo').on("click",function (){
+		if (!confirm('Vas a esborrar la linea: ')) {
+			event.preventDefault();
+		}
+	});
 	$('#error').hide();
 })
 
@@ -121,10 +126,14 @@ function editRow() {
 }
 
 function cancelEdit(ev) {
-	if (ev)
+	if (ev){
 		ev.preventDefault();
-	$('.editando').prev().show().end().remove();
+		if (confirm('Vas a descartar els canvis: ')) {
+			$('.editando').prev().show().end().remove();
+		}
+	}
 }
+
 function saveEdit(ev) {
         var token = $("#_token").text();
  	var datos={};
@@ -153,7 +162,7 @@ function saveEdit(ev) {
 					else
 						$anterior.html(options[$anterior.attr('name')][$(span).children().val()]);
 			});
-			cancelEdit();
+			$('.editando').prev().show().end().remove();
  		}
  		else {
  			if (options['error']) {

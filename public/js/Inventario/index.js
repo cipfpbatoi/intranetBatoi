@@ -40,7 +40,14 @@ const mesesCaduca=6;
     }
     var checkbox = "<div class='icheckbox_flat-green'><input type='checkbox' class='flat'></div>";
     var token = $("#_token").text();
+    var espai = $("#search").text();
     $("#datamaterial").DataTable( {
+        "searchCols": [
+            null,
+            null,
+            null,
+            { "search": espai }
+        ],
         ajax : {
             method: "GET",
             url: '/api/inventario',

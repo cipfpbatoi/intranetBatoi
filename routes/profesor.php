@@ -306,7 +306,7 @@ Route::resource('/material', 'MaterialController', ['except' => ['destroy', 'upd
 Route::get('/material/{material}/delete', ['as' => 'material.destroy', 'uses' => 'MaterialController@destroy']);
 Route::post('/material/create', ['as' => 'material.store', 'uses' => 'MaterialController@store']);
 Route::put('/material/{material}/edit', ['as' => 'material.update', 'uses' => 'MaterialController@update']);
-Route::get('/material/{espacio}/detalle', ['as' => 'material.espacio', 'uses' => 'MaterialController@espacio']);
+Route::get('/inventario/{espacio}/detalle', ['as' => 'material.espacio', 'uses' => 'InventarioController@espacio']);
 Route::get('/material/{material}/copy', ['as' => 'material.copy', 'uses' => 'MaterialController@copy']);
 Route::get('/material/{material}/incidencia', ['as' => 'material.incidencia', 'uses' => 'MaterialController@incidencia']);
 //RUTAS INVENTARIO
