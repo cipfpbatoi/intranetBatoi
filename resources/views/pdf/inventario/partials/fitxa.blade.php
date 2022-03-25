@@ -2,6 +2,7 @@
 {!! QrCode::size(115)->generate(env('APP_URL','http://intranet.cipfpbatoi.es').'/inventario/'.$material->id.'/edit'); !!}
 </div>
 <div style="float:left; width: 4.90cm; font-size: medium; margin-left: 0.3cm;text-align: left">
+        <strong>{{$material->espacio}}</strong><br/>
         <strong>Id: {{ $material->id }}</strong>
             @if (($material->nserieprov) && ($material->nserieprov != 'null' ))
                 ({{ $material->nserieprov }})
