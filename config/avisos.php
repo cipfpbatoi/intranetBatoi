@@ -8,4 +8,5 @@ return [
     'orientador' => ['021634142C','021669338A'],
     'comissioIC' => ['021652470V','020823669K'],
     'errores' => '021652470V',
+    'material' => '021652470V'
 ];

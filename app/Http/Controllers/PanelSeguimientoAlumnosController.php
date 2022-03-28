@@ -19,8 +19,6 @@ class PanelSeguimientoAlumnosController extends IntranetController
         $resultados = AlumnoResultado::where('idModuloGrupo',$resultado->idModuloGrupo)->get();
         $alumnes = $this->createWithDefaultValues(['idModuloGrupo'=>$resultado->idModuloGrupo])->getidAlumnoOptions();
         return view('seguimiento.index', compact('elemento',  'alumnes', 'resultados'));
-
-
     }
 
 

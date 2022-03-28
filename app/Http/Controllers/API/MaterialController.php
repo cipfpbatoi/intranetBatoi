@@ -51,7 +51,7 @@ class MaterialController extends ApiBaseController
         $material->unidades = $request->unidades;
         $material->save();
         $aviso = 'El material '.$material->descripcion. " ubicat a l'espai ".$material->espacio." ha canviat de ".$anterior.' a '.$material->unidades.' unitats: '.$request->explicacion.".";
-        avisa(config('contacto.avisos.material'),$aviso,'#','SISTEMA');
+        avisa(config('avisos.material'),$aviso,'#','SISTEMA');
         
         return $this->sendResponse(['updated' => json_encode($request)], 'OK');
     }
@@ -63,7 +63,7 @@ class MaterialController extends ApiBaseController
         $material->espacio = $request->ubicacion;
         $material->save();
         $aviso = 'El material '.$material->descripcion. " ubicat a l'espai ".$anterior." ha canviat a ".$material->espacio.': '.$request->explicacion.".";
-        avisa(config('contacto.avisos.material'),$aviso,'#','SISTEMA');
+        avisa(config('avisos.material'),$aviso,'#','SISTEMA');
         
         return $this->sendResponse(['updated' => json_encode($request)], 'OK');
     }
@@ -73,10 +73,11 @@ class MaterialController extends ApiBaseController
         $material = Material::findOrFail($request->id);
         $anterior = $material->getEstadoOptions()[$material->estado];
         $material->estado = $request->estado;
+        if ($material->estado == 3) $material->fechaBaja = Hoy();
         $material->save();
         $material->estado = $material->getEstadoOptions()[$material->estado];
         $aviso = 'El material '.$material->descripcion. " ubicat a l'espai ".$material->espacio." ha canviat de l'estat ".$anterior.' a '.$material->estado.': '.$request->explicacion.".";
-        avisa(config('contacto.avisos.material'),$aviso,'#','SISTEMA');
+        avisa(config('avisos.material'),$aviso,'#','SISTEMA');
         return $this->sendResponse(['updated' => json_encode($request)], 'OK');
     }
 
