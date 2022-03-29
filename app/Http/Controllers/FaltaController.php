@@ -14,6 +14,7 @@ use Intranet\Entities\Resultado;
 
 use Intranet\Jobs\SendEmail;
 use Intranet\Services\AdviseTeacher;
+use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
@@ -122,6 +123,9 @@ class FaltaController extends IntranetController
             if (UserisAllow(config('roles.rol.direccion'))) {
                 $this->init($id);
             } // si es direcció autoritza
+            else {
+                return ConfirmAndSend::render('Falta',$id,'route');
+            }
         }
         return $this->redirect();
     }

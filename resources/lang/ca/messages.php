@@ -292,7 +292,8 @@ return array(
         'Igualtat' => 'Igualtat i Convivència',
         'Comissio' => 'Membres de la comissió',
         'Procediment' => 'Inici Procediment',
-        'Acompanyant' => 'Procediments en curs'
+        'Acompanyant' => 'Procediments en curs',
+        'Materialbaja' => 'Material donat de baixa',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

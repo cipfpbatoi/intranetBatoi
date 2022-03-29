@@ -286,7 +286,8 @@ return array(
         'Igualtat' => 'Igualdad y Convivencia',
         'Comissio' => 'Miembros de la comisión',
         'Procediment' => 'Inicio Procedimiento',
-        'Acompanyant' => 'Procedimentos en curso'
+        'Acompanyant' => 'Procedimentos en curso',
+        'Materialbaja' => 'Material de baja',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
