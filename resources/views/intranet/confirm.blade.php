@@ -8,8 +8,8 @@
     @method('get')
     <span id="campos">
         <ul>
-        @foreach ($element->getFillable() as $key)
-                <li>@lang('validation.attributes.'.$key) : {{ $element->$key}}</li>
+        @foreach ($element->showConfirm() as $key => $value)
+                <li>@lang('validation.attributes.'.$key) : {{ $value }}</li>
         @endforeach
         </ul>
     </span>
@@ -24,7 +24,8 @@
             $("#dialogo").modal("show");
         });
         $('button.btn.btn-primary').on('click', function (event) {
-            location.href='/{{strtolower($model)}}/{{$id}}/init';
+            event.preventDefault();
+            location.href='/{{strtolower($model)}}/{{$id}}/init/';
         });
         $('button.btn.btn-default').on('click', function (event) {
             location.href='/{{strtolower($model)}}/';

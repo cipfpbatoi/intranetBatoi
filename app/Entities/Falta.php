@@ -61,6 +61,8 @@ class Falta extends Model
 
     protected $attributes = ['dia_completo' => 1,'baja' => 0,'estado' => 0];
 
+
+
     public function profesor()
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
@@ -115,5 +117,25 @@ class Falta extends Model
     public function getMotivoAttribute(){
         return config('auxiliares.motivoAusencia')[$this->motivos];
     }
-    
+
+    public function showConfirm(){
+        $falta = [
+            'profesor' => $this->Profesor->fullName,
+            'dia_completo' => $this->dia_completo?'SI':'NO',
+            'motivos' => config('auxiliares.motivoAusencia')[$this->motivos],
+            'observaciones' => $this->observaciones,
+            'fichero' => $this->fichero?'SI':'NO',
+            'desde' => $this->desde,
+        ];
+        if ($this->desde != $this->hasta){
+            $falta['hasta'] = $this->hasta;
+        }
+        if (!$this->dia_completo){
+            $falta['hora_ini'] = $this->hora_ini;
+            $falta['hora_fin'] = $this->hora_fin;
+        }
+
+        return $falta;
+    }
+
 }

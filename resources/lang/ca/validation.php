@@ -281,7 +281,7 @@ return array(
                 'aspectes' => 'Aspectes Transversals',
                 'dades' =>  'Altres dades',
                 'recomanada' => 'Es recomanable per a el curs següent',
-
+                'dia_completo' => 'Tot el dia',
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',
