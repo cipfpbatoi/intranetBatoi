@@ -58,7 +58,7 @@ class LoteController extends ModalController
     }
 
     protected function capture($lote){
-        $materiales = Material::whereNotNull('fechaultimoinventario')->get();
+        $materiales = Material::whereNotNull('fechaultimoinventario')->where('inventariable',0)->get();
         return view('lote.inventario',compact('lote','materiales'));
     }
 
