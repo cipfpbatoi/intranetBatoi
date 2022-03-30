@@ -124,7 +124,7 @@ class FaltaController extends IntranetController
                 $this->init($id);
             } // si es direcció autoritza
             else {
-                return ConfirmAndSend::render('Falta',$id,'route');
+                return ConfirmAndSend::render($this->model,$id);
             }
         }
         return $this->redirect();

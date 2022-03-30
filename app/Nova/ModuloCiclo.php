@@ -30,7 +30,7 @@ class ModuloCiclo extends Resource
      * @var array
      */
     public static $search = [
-        'id','Departamento','Ciclo'
+        'id','idCiclo','idDepartamento'
     ];
 
     /**
