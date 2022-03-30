@@ -28,7 +28,7 @@
         <td><input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") visita "></td>
     </form>
     </table>
-    <a href="/comision"  class="btn btn-success">@lang("messages.buttons.atras") </a>
+    <a href="/comision/{!!$comision->id!!}/end"  class="btn btn-success">@lang("messages.buttons.acabar") </a>
 </div>
 @endsection
 @section('scripts')

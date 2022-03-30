@@ -275,6 +275,7 @@ return array(
                 'dades' =>  'Otros datos',
                 'recomanada' => 'Es recomendable para el curso siguiente',
                 'dia_completo' => 'Todo el dia',
+                'visita' => 'Visita'
         ),
         'empty_option' => array(
             'default' => '-Selecciona-',

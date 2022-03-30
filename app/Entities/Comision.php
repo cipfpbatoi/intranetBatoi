@@ -144,4 +144,25 @@ class Comision extends Model
         return trim($descripcion, ',');
     }
 
+    public function showConfirm(){
+        $falta = [
+            'profesor' => $this->Profesor->fullName,
+            'desde' => $this->desde,
+            'hasta' => $this->hasta,
+            'servicio' => $this->servicio,
+            'kilometraje' => $this->kilometraje,
+        ];
+        if ($this->itinerario){
+            $falta['itinerario'] = $this->itinerario;
+        }
+
+        if (count($this->Fcts)){
+            foreach ($this->Fcts as  $fct){
+                $falta["visita"][$fct->pivot->hora_ini] = $fct->Centro;
+            }
+        }
+
+        return $falta;
+    }
+
 }

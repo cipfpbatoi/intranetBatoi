@@ -9,6 +9,7 @@ use Intranet\Componentes\DocumentoFct;
 use Intranet\Componentes\MyMail;
 use Intranet\Http\Requests\ComisionRequest;
 use Intranet\Services\CalendarService;
+use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\StateService;
 use \PDF;
 use Intranet\Entities\Comision;
@@ -45,15 +46,19 @@ class ComisionController extends ModalController
         $new->fillAll($request);
         if ($new->fct) {
             return $this->detalle($new->id);
-            //return redirect()->route('comision.detalle', ['comision' => $new->id]);
+        } else {
+            return ConfirmAndSend::render($this->model,$new->id);
         }
-        return $this->redirect();
     }
 
     public function update(ComisionRequest $request, $id)
     {
         Comision::findOrFail($id)->fillAll($request);
         return $this->redirect();
+    }
+
+    public function end($id){
+        return ConfirmAndSend::render($this->model,$id);
     }
 
 
@@ -137,7 +142,7 @@ class ComisionController extends ModalController
         $stSrv = new StateService($comision);
         $stSrv->putEstado($this->init);
 
-        return back();
+        return $this->redirect();
     }
 
 

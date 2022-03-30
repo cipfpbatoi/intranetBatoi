@@ -171,6 +171,7 @@ return array(
         'gestor' => 'Gestor Documental',
         'contact' =>'Registrar contacte',
         'final' => 'Comprimir i guardar',
+        'acabar' => 'Finalitzar'
     ),
     'menu' => array(
         'Link' => 'Enllaços externs',

@@ -282,6 +282,7 @@ return array(
                 'dades' =>  'Altres dades',
                 'recomanada' => 'Es recomanable per a el curs següent',
                 'dia_completo' => 'Tot el dia',
+                'visita' => 'Visita'
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

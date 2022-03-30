@@ -165,6 +165,7 @@ return array(
         'gestor' => 'Gestor Documental',
         'contact' =>'Registrar contacto',
         'final' => 'Comprimir i guardar',
+        'acabar' => 'Finalizar'
     ),
     'menu' => array(
         'Link' => 'Enlaces externos',

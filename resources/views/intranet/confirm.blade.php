@@ -4,12 +4,18 @@
 @endsection
 @section('content')
     <x-modal name="dialogo" title='Enviar dades a direccio'
-             message='Enviar {{$model}} a direcció' clase="{{$model}}">
+             message='Enviar {{$model}} a direcció' clase="{{$model}}" cancel="Guardar sense Enviar">
     @method('get')
     <span id="campos">
         <ul>
         @foreach ($element->showConfirm() as $key => $value)
-                <li>@lang('validation.attributes.'.$key) : {{ $value }}</li>
+                @if (is_array($value))
+                    @foreach ($value as $secondKey => $realValue)
+                        <li>@lang('validation.attributes.'.$key) {{$secondKey}}: {{ $realValue }}</li>
+                    @endforeach
+                @else
+                    <li>@lang('validation.attributes.'.$key) : {{ $value }}</li>
+                @endif
         @endforeach
         </ul>
     </span>

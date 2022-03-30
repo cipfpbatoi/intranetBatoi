@@ -100,6 +100,7 @@ Route::get('/comision/{comision}/cancel', ['as' => 'comision.cancel', 'uses' => 
 Route::get('/comision/{comision}/show', ['as' => 'comision.show', 'uses' => 'ComisionController@show']);
 Route::get('/comision/{comision}/pdf', ['as' => 'comision.pdf', 'uses' => 'ComisionController@pdf']);
 Route::get('/comision/{comision}/init', ['as' => 'comision.init', 'uses' => 'ComisionController@init']);
+Route::get('/comision/{comision}/end', ['as' => 'comision.end', 'uses' => 'ComisionController@end']);
 Route::get('/comision/{comision}/notification', ['as' => 'comision.notificar', 'uses' => 'ComisionController@notify']);
 Route::get('/comision/{comision}/unpaid', ['as' => 'comision.unpaid', 'uses' => 'ComisionController@unpaid']);
 Route::get('/comision/{comision}/detalle',['as' => 'comision.detalle', 'uses' => 'ComisionController@detalle']);

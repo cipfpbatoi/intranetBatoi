@@ -19,6 +19,7 @@ class Modal extends Component
     public $action;
     public $message;
     public $clase;
+    public $cancel;
 
     /**
      * Modal constructor.
@@ -29,13 +30,14 @@ class Modal extends Component
      * @param $message
      * @param $clase
      */
-    public function __construct(String $name,String $title,String $message,String $action ="#",String $clase='')
+    public function __construct(String $name,String $title,String $message,String $action ="#",String $clase='',$cancel='Cancelar')
     {
         $this->name = $name;
         $this->title = $title;
         $this->action = $action;
         $this->message = $message;
         $this->clase = $clase;
+        $this->cancel = $cancel;
     }
 
 
