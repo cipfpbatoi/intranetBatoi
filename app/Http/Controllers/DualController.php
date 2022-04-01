@@ -77,13 +77,17 @@ class DualController extends ModalController
     protected function iniBotones()
     {
         $user = AuthUser()->dni;
-        $ciclo = Grupo::where('tutorDual',AuthUser()->dni)->first()->ciclo;
-        if ($ciclo->CompleteDual){
-            $this->panel->setBoton('index',new BotonBasico('cicloDual.edit',['text'=>'Edita Paràmetres de Cicle','class' => 'btn-info']));
+        $grupo = Grupo::where('tutorDual',AuthUser()->dni)->first();
+        if ($grupo){
+            $ciclo = $grupo->ciclo;
+            if ($ciclo->CompleteDual){
+                $this->panel->setBoton('index',new BotonBasico('cicloDual.edit',['text'=>'Edita Paràmetres de Cicle','class' => 'btn-info']));
+            }
+            else {
+                $this->panel->setBoton('index',new BotonBasico('cicloDual.edit',['text'=>'Edita Paràmetres de Cicle','class' => 'btn-warning']));
+            }
         }
-        else {
-            $this->panel->setBoton('index',new BotonBasico('cicloDual.edit',['text'=>'Edita Paràmetres de Cicle','class' => 'btn-warning']));
-        }
+
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
         $this->panel->setBoton('grid', new BotonImg('dual.informe',['img'=>'fa-file-zip-o']));

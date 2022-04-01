@@ -1,10 +1,6 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Lote;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Material;
 use Intranet\Entities\Incidencia;

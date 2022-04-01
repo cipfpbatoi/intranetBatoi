@@ -47,7 +47,7 @@ class ComisionController extends ModalController
         if ($new->fct) {
             return $this->detalle($new->id);
         } else {
-            return ConfirmAndSend::render($this->model,$new->id);
+            return $this->confirm($new->id);
         }
     }
 
@@ -57,8 +57,13 @@ class ComisionController extends ModalController
         return $this->redirect();
     }
 
-    public function end($id){
-        return ConfirmAndSend::render($this->model,$id);
+    public function confirm($id){
+        $comision = Comision::findOrFail($id);
+        if ($comision->estado == 0) {
+            return ConfirmAndSend::render($this->model, $id,'Enviar a direcció i correus confirmació');
+        } else {
+            return $this->redirect();
+        }
     }
 
 

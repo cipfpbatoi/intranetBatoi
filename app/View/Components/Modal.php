@@ -6,7 +6,7 @@
  * Time: 09:54
  */
 
-namespace Intranet\Botones;
+namespace Intranet\View\Components;
 
 use Illuminate\View\Component;
 use function view;
@@ -20,6 +20,7 @@ class Modal extends Component
     public $message;
     public $clase;
     public $cancel;
+    public $dismiss;
 
     /**
      * Modal constructor.
@@ -30,7 +31,7 @@ class Modal extends Component
      * @param $message
      * @param $clase
      */
-    public function __construct(String $name,String $title,String $message,String $action ="#",String $clase='',$cancel='Cancelar')
+    public function __construct(String $name,String $title,String $message,String $action ="#",String $clase='',$cancel='Cancelar',$dismiss=true)
     {
         $this->name = $name;
         $this->title = $title;
@@ -38,12 +39,13 @@ class Modal extends Component
         $this->message = $message;
         $this->clase = $clase;
         $this->cancel = $cancel;
+        $this->dismiss = $dismiss;
     }
 
 
     public function render()
     {
-        return view('batoiModal.modal');
+        return view('components.modal');
     }
 
 

@@ -1,4 +1,3 @@
-
 <div class="gruposContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
     <h4 class="centrado" >@lang("models.Actividad.grupos")</h4><br>
     <table class="table table-striped table-condensed">

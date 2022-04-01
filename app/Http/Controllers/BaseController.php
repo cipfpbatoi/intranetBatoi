@@ -6,6 +6,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\Session;
+use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\FormBuilder;
 
 
@@ -76,8 +77,12 @@ abstract class BaseController extends Controller
         return $this->grid($this->search(),$this->modal);
     }
 
+    public function confirm($id){
+        return ConfirmAndSend::render($this->model,$id);
+    }
 
-    
+
+
     public function indice($search)
     {
         $this->search = $search;

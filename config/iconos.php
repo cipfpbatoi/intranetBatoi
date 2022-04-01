@@ -37,5 +37,6 @@ return [
         'orden' => 'fa-calendar',
         'open' => 'fa-toggle-on',
         'valoracion' => 'fa-file-pdf-o',
-        'link' => 'fa-paperclip'
+        'link' => 'fa-paperclip',
+        'confirm' => 'fa-envelope'
     ];

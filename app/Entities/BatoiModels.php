@@ -245,4 +245,8 @@ trait BatoiModels
         $this->email = $email;
         return $this->save();
     }
+
+    public function showConfirm(){
+        return $this->toArray();
+    }
 }

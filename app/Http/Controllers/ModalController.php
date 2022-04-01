@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\Panel;
+use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\FormBuilder;
 use Response;
 
@@ -85,6 +86,10 @@ abstract class ModalController extends Controller
             $todos = $todos->where('idProfesor', '=', AuthUser()->dni);
         }
         return $todos;
+    }
+
+    public function confirm($id){
+        return ConfirmAndSend::render($this->model,$id);
     }
 
 

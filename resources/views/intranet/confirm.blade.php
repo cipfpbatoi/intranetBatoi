@@ -1,28 +1,15 @@
 @extends('layouts.intranet')
 @section('css')
-<title>Confirmació {{$model}}</title>
+<title>{{$message}}</title>
 @endsection
 @section('content')
-    <x-modal name="dialogo" title='Enviar dades a direccio'
-             message='Enviar {{$model}} a direcció' clase="{{$model}}" cancel="Guardar sense Enviar">
-    @method('get')
-    <span id="campos">
-        <ul>
-        @foreach ($element->showConfirm() as $key => $value)
-                @if (is_array($value))
-                    @foreach ($value as $secondKey => $realValue)
-                        <li>@lang('validation.attributes.'.$key) {{$secondKey}}: {{ $realValue }}</li>
-                    @endforeach
-                @else
-                    <li>@lang('validation.attributes.'.$key) : {{ $value }}</li>
-                @endif
-        @endforeach
-        </ul>
-    </span>
+    <x-modal name="dialogo" title='{{$message}}'
+             message='SI'  cancel="NO" dismiss='0' >
+        @include('intranet.partials.components.showFields',['fields' => $element->showConfirm()])
     </x-modal>
 @endsection
 @section('titulo')
-    Confirmació {{$model}}
+    {{$message}}
 @endsection
 @section('scripts')
     <script>
@@ -31,10 +18,11 @@
         });
         $('button.btn.btn-primary').on('click', function (event) {
             event.preventDefault();
-            location.href='/{{strtolower($model)}}/{{$id}}/init/';
+            location.href= '{{ $route }}';
         });
         $('button.btn.btn-default').on('click', function (event) {
-            location.href='/{{strtolower($model)}}/';
+            event.preventDefault();
+            location.href= '{{ $back }}';
         });
     </script>
 @endsection
