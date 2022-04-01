@@ -158,7 +158,8 @@ class Comision extends Model
 
         if (count($this->Fcts)){
             foreach ($this->Fcts as  $fct){
-                $falta["visita"][$fct->pivot->hora_ini] = $fct->Centro;
+                $sobre = $fct->pivot->aviso?' <i class="fa fa-envelope"></i>':'';
+                $falta["visita"][$fct->pivot->hora_ini] = $fct->Centro.$sobre;
             }
         }
 
