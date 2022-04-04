@@ -335,7 +335,11 @@ No podem modificar ni anul·lar comisions cobrades ni pendents de cobrament.
 Polsem el botó 'Sol·licitud autorització comissió de servei' i omplim el formulari:
 ![Alta Comissió de servei](./img/ajuda/13-comissions-alta.png)
 
-Quan polsem el botó 'Guardar' (es troba a la part inferior del formulari) es crea la nova comissió amb l'estat de 'No autoritada'. Ara podrem borrar-la, modificar-la o enviar-la per autoritzar.
+Quan polsem el botó 'Guardar' (es troba a la part inferior del formulari) ens apareix un avís en el que se'ns informa si volem comunicar-ho formalment a Direcció i que s'envien els correus electrónics a les persones implicades. Si polsem que **SÍ** automàticament es comunicarà a direcció de la mateixa forma que si haguerem polsat la icona de Enviar/Tramitar (la icona del sobre). Si polsem que **NO** es guardarà com a un esborrany per a ser posteriorment modificat, pero no estarà tramitat de forma oficial a direcció. Posteriorment podria enviar-se polsant la icona de Enviar (icona del sobre).
+
+![Confirma enviar direcció](./img/ajuda/confirma-enviar-direccio.png)
+
+Ara, depenent de quina opció havem triat, podrem borrar-la, modificar-la o enviar-la per autoritzar.
 
 ### Notificació absències
 Aquesta aplicació ens permet informar a Caporalia de qualsevol absència i justificar-la.
@@ -361,9 +365,14 @@ El que em d'omplir en el formulari és:
 * Comentaris: qualsevol cosa que vulgam afegir. Si no hem especificat un motiu hem d'indicar-lo ací
 * Fitxer: per a adjuntar un fitxer escanejat com justificant (certificat d'assistència al metge o a alguna activitat, etc)
 
-![Absències registrades](./img/ajuda/13-ausencia.png)
+Quan polsem el botó 'Guardar' (es troba a la part inferior del formulari) ens apareix un avís en el que se'ns informa si volem comunicar-ho formalment a Direcció i que s'envien els correus electrónics a les persones implicades. Si polsem que **SÍ** automàticament es comunicarà a direcció de la mateixa forma que si haguerem polsat la icona de Enviar/Tramitar (la icona del sobre). Si polsem que **NO** es guardarà com a un esborrany per a ser posteriorment modificat, pero no estarà comunicat de forma oficial a direcció. Posteriorment podria enviar-se polsant la icona de Enviar (icona del sobre).
+
+![Comunicar absencia direccio](./img/ajuda/confirma-enviar-direccio2.png)
 
 Les absències donades d'alta es poden visualitzar en format de **Llistat** o **Mosaic** polsant en les pestanyes de dalt a la dreta. Una vegada donada d'alta una absència, el podem eliminar o editar però l'expedient **no es tramita fins que ho enviem a direcció** (icona del sobre). 
+
+![Absències registrades](./img/ajuda/13-ausencia.png)
+
 
 Amb les absències donades d'alta podem fer:
 
@@ -385,8 +394,7 @@ També tenim un botó per a obrir una nova incidència que li arribarà al respo
 * Instal·lacions: fontaneria, electricitat, fusteria, obra, estors, cristaleria, etc
 * Manteniment informàtic: qualsevol problema informàtic en les aules, el departament, etc
 * Intranet: qualsevol problema o error que trobem en la intranet del Centre
-* Gestió de queixes i sugerències: ací podem fer arribar qualsevol sugerència de millora o queixa
-* Incidències procés FCT: totes les incidències realacionades amb les FCT dels alumnes
+* Gestió de suggerimets, queixes i reclamacions: ací podem fer arribar qualsevol sugerència de millora o queixa
 
 Quan obrim una nova incidència hem d'indicar el seu tipus i a més:
 
@@ -396,7 +404,8 @@ Quan obrim una nova incidència hem d'indicar el seu tipus i a més:
 * Material: si hem triat espai ací ens apareixen tots els materials inventariats en eixe espai per a triar-lo. Si no està o no és algo inventariable ho deixarem en blanc i ho especificarem en l'apartat de '_descripció_'
 * Descripció: ací detallem la incidència que hem detectat
 * Prioritat: triem la prioritat que considerem més oportuna
-* Obcervacions
+* Observacions
+* Data de la incidència
 
 Aquesta incidència es crea amb estat de **'Pendent'**.
 
