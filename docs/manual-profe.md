@@ -416,7 +416,7 @@ Permet a qualsevol professor reservar un espai, com un aula d'informàtica o el 
 
 Al seleccionar l'espai i la data apareix a cada hora si l'espai està lliure o reservet i per qui.
 
-Per a reservar un espai seleccionen a la part inferior desde quina hora fins quan volem fer la reserva i polsem el botó 'Reservar'.
+Per a reservar un espai seleccionem al quadre **TICKET** per a aconseguir un "ticket" de reserva. Cal que emplenem desde quina hora fins quan volem fer la reserva i polsem el botó 'Reservar'.
 
 ![Reservar aula](./img/ajuda/14-reservar.png)
 
