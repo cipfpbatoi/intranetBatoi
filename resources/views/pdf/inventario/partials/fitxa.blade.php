@@ -11,10 +11,10 @@
         {{ ucfirst(strtolower(substr($material->descripcion,0,22))) }}<br/>
         @if (($material->marca) && (strlen($material->marca)>0))
                 {{ucfirst(strtolower($material->marca))}}
-                @if (($material->modelo) && (strlen($material->modelo)>0))
-                        ({{ucfirst(strtolower($material->modelo))}})
-                @endif
                 <br/>
+        @endif
+        @if (($material->modelo) && (strlen($material->modelo)>0))
+                ({{ucfirst(strtolower($material->modelo))}}) <br/>
         @endif
         {{ ucfirst(strtolower(substr($material->proveedor?$material->proveedor:($material->LoteArticulo?$material->LoteArticulo->Lote->proveedor:''),0,22))) }}
 </div>
