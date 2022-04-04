@@ -33,6 +33,7 @@ class MaterialController extends ApiBaseController
     }
 
 
+
     public function put(Request $request)
     {
         $material = Material::findOrFail($request->id);

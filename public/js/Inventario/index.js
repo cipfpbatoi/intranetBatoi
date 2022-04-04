@@ -88,10 +88,20 @@ const mesesCaduca=6;
         }
     });
 $(function () {
-    // Botón INCIDENCIA
-    $('#datamaterial').on('click', 'a.incidencia', function (event) {
-        $(this).attr("href","/material/"+$(this).parent().siblings().first().text()+"/incidencia");
-    })
+
+    $('#datamaterial tbody').on( 'click', 'tr', function () {
+        $(this).toggleClass('selected');
+    } );
+
+    $('#printCodeBar').on( 'click', function (event) {
+        event.preventDefault();
+        var list = $('#datamaterial').DataTable().rows('.selected');
+        var ids = list.data().map((row) => row.id );
+        $('#idList').val(ids.toArray());
+        $('#printCodeBars').submit();
+    });
+
+
 
     // Botón VER
     $('#datamaterial').on('click', 'a.ver', function (event) {
@@ -124,7 +134,12 @@ $(function () {
             $(".modal-footer").find("button[type=button]").text("Cerrar");
         });
 
-    })  
+    });
+
+    // Botón INCIDENCIA
+    $('#datamaterial').on('click', 'a.incidencia', function (event) {
+        $(this).attr("href","/material/"+$(this).parent().siblings().first().text()+"/incidencia");
+    });
 
     if (autorizado) {
         // Botón DELETE

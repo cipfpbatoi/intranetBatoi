@@ -1,8 +1,10 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Inventario;
+use Intranet\Entities\Material;
 use Intranet\Services\FormBuilder;
 use Jenssegers\Date\Date;
 
@@ -49,9 +51,16 @@ class InventarioController extends IntranetController
         // empty
     }
 
-    protected function qr($id){
-        return $this->hazPdf('pdf.inventario.qr', Inventario::findOrFail($id), [Date::now()->format('Y'), 'Alumne - Student'], 'portrait', [70, 37])->stream();
+    function barcode(Request $request){
+        $materiales = collect();
+        $ids = explode(',',$request->ids);
+        foreach ($ids as $id){
+            $materiales->add(Material::find($id));
+        }
+        return $this->hazPdf('pdf.inventario.lote',$materiales,$request->posicion,'portrait',[210,297],5)->stream();
+
     }
+
 
     public function edit($id){
         $material = Inventario::findOrFail($id);

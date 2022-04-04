@@ -85,4 +85,6 @@ class MaterialController extends IntranetController
         return redirect()->route('incidencia.edit', ['incidencium' => $incidencia->id]);
     }
 
+
+
 }

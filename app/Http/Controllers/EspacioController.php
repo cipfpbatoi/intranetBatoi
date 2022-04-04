@@ -75,8 +75,5 @@ class EspacioController extends ModalController
         return $this->hazPdf('pdf.inventario.lote',$espacio->Materiales,$posicion,'portrait',[210,297],5)->stream();
     }
 
-    public function carnet($grupo)
-    {
-        return $this->hazPdf('pdf.carnet', $this->alumnos($grupo), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
-    }
+
 }
