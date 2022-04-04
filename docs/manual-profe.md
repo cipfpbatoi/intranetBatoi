@@ -255,6 +255,7 @@ Ací tenim molts tràmits usuals com:
 Es vol utilitzar la intranet del Centre per a gestionar diferents expedients dels alumnes (convalidacions, baixes, ...). 
 
 Quan creem un nou expedient hem d'indicar l'alumne, el tipus d'expedient i una explicació. Els tipus que tenim actualment són:
+
 * Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Només es poden tindre en compte les faltes marcades en Ítaca.
 * Part d'amonestació: per a incoar un part d'amonestació a l'alumne
 
@@ -300,6 +301,7 @@ Aquest apartat ens permet gestionar totes les comisions per visites de FCT, viat
 ![Comissió de servei](./img/ajuda/13-comisions.png)
 
 A la part dreta del llistat tenim les operacions que podem fer amb cada comissió:
+
 * Borrar comissió (només per a les No autoritzades/Registrades): ens permet borrar la comissió
 * Anular comissió (només per a les registrades): no fem la comissió i ens permet anular-la.
 * Modificar comissió (només per a les No autoritzades): ens permet modificar-la
@@ -336,6 +338,7 @@ Si sabem prèviament que hem de faltar un dia, abans d'eixe dia entrem ací i po
 ![Alta absència](./img/ajuda/14-ausencia-alta.png)
 
 El que em d'omplir en el formulari és:
+
 * Dia Complet: Si l'ausència suposa no assitir al centre durant tota la jornada del dia. 
 * Data d'inici i de finalització: des de quin dia fins quin dia no hem anat a treballar
 * Hora inici i fi: només si no hem faltat el dia sencer omplim aquests camps indican des de quina hora fins quina hem faltat
@@ -353,12 +356,13 @@ El que em d'omplir en el formulari és:
 
 ![Absències registrades](./img/ajuda/13-ausencia.png)
 
-Les absències donades d'alta es poden visualitzar en format de Llistat o Mosaic polsant en les pestanyes de dalt a la dreta.
+Les absències donades d'alta es poden visualitzar en format de **Llistat** o **Mosaic** polsant en les pestanyes de dalt a la dreta. Una vegada donada d'alta una absència, el podem eliminar o editar però l'expedient **no es tramita fins que ho enviem a direcció** (icona del sobre). 
 
 Amb les absències donades d'alta podem fer:
+
 * Eborrar: Per a eliminar l'absència.
 * Modificació: per a canviar alguna cosa o adjuntar el justificant.
-* Enviar/Avisar a l'equip docent: s'enviarà un missatge a tots els companys en els quals compartim grup eixos dies per a que sàpiem que no estarem per si han de canviar alguna hora amb els alumnes. Els apareixerà com una nova notificació. També es comunica a l'eqwuip directiu per a que donen el vist i plau. Les absencies donades d'alta poden trobar-se en 3 estats.
+* Enviar/Avisar a l'equip docent: s'enviarà un missatge a tots els companys en els quals compartim grup eixos dies per a que sàpiem que no estarem per si han de canviar alguna hora amb els alumnes. Els apareixerà com una nova notificació. També es comunica a l'equip directiu per a que donen el vist i plau. Les absencies donades d'alta poden trobar-se en 3 estats.
   * No enviada/autoritzada: Mentre l'absencia no estiga Enviada apareixerà en este estat.
   * Enviada / en tràmit: si està enviada pero encara no està justificada mitjançant document o autoritzada.
   * Resolta: Quan l'equip directiu l'ha resolta i tramitat completament.
