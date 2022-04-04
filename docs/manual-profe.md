@@ -151,7 +151,7 @@ Ací trobem els projectes presentats pels alumnes del cicles de grau superior en
 
 
 ## Menú 'Docència'
-On fer les accions més habituals que fan els professors:
+On fer les accions més habituals que fa el professorat:
 
 ### Gestió de grups
 Ens mostra tots els nostres grups. El botó de 'Filtrar' de la part superior dreta ens permet buscar un grup concret.
@@ -160,13 +160,20 @@ Com qualsevol llistat de la intranet el podem ordenar per la columna desitjada p
 ![Grups](./img/ajuda/09-grupos.png)
 
 Les opcions que tenim per a qualsevol grup són:
-* Imprimir full de fotos: mostra el llistat d'alumnes del grup amb foto.
-* Horari del grup
-* Vore alumnes: ens apareix el llistat dels alumnes del grup amb una icona per a veure totes les dades de cada alumne. Si som el tutor del grup a més podem
-  * Veure les seues dades
+* Imprimir full de fotos: mostra el llistat de l'alumnat del grup amb foto.
+* Horari del grup.
+* Vore alumnat: apareix el llistat de l'alumnat del grup. El podem veure com a llistat o mosaic.  
+![GestGrupVeureAl](./img/ajuda/gestiog_vorealumnat.png)
+
+Amb l'opció llistat tenim la llista de l'alumnat del grup i amb el botó + podem veure algunes dades personals de l'alumnat.
+Amb l'opció mosaic apareixen les dades personals de l'alumnat en forma de fitxa. 
+
+Amb el perfil de tutor/a del grup, a més, podem:
+  * Veure les seues dades.
   * Modificar el seu perfil (la foto o el e-mail).
-  * Si hi ha curs o jornada disponible podem inscriure a l'alumne.
-  * Imprimir el seu carnet
+  * Si hi ha curs o jornada disponible podem inscriure a l'alumnat.
+  * Imprimir el seu carnet.
+
 * Mostra equip educatiu: podem veure tots els membres de l'equip educatiu (igual que els membres del departament) i tenim l'opció d'avisar a algú o a tots.
 
 ### Claustre
