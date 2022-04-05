@@ -95,8 +95,8 @@ const mesesCaduca=6;
     });
 $(function () {
 
-    $('#datamaterial tbody').on( 'click', 'tr', function () {
-        $(this).toggleClass('selected');
+    $('#datamaterial tbody').on( 'click', 'tr td:first-child', function () {
+        $(this).parent().toggleClass('selected');
     } );
 
     $('#printCodeBar').on( 'click', function (event) {
@@ -126,7 +126,7 @@ $(function () {
                 {id: "Marca", type: "span", val: result.data.marca},
                 {id: "Modelo", type: "span", val: result.data.modelo},
                 {id: "Procedencia", type: "span", val: PROCEDENCIAS[result.data.procedencia]},
-                {id: "Estado", type: "span", val: ESTADOS[result.data.estado]},
+                {id: "Estado", type: "span", val: result.data.estado},
                 {id: "Espacio", type: "span", val: result.data.espacio},
                 {id: "Unidades", type: "span", val: result.data.unidades},
                 {id: "Isbn", type: "span", val: result.data.ISBN},
