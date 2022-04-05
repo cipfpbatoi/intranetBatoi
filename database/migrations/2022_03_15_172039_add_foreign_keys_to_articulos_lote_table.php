@@ -14,7 +14,7 @@ class AddForeignKeysToArticulosLoteTable extends Migration {
 	{
 		Schema::table('articulos_lote', function(Blueprint $table)
 		{
-			$table->foreign('articulo_id')->references('id')->on('articulos')->onUpdate('CASCADE')->onDelete('CASCADE');
+			$table->foreign('articulo_id')->references('id')->on('articulos')->onUpdate('CASCADE')->onDelete('RESTRICT');
 			$table->foreign('lote_id')->references('registre')->on('lotes')->onUpdate('CASCADE')->onDelete('CASCADE');
 		});
 	}

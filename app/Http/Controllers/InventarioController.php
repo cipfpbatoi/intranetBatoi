@@ -27,7 +27,7 @@ class InventarioController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'descripcion', 'Estado', 'espacio'];
+    protected $gridFields = ['id','articulo', 'descripcion', 'Estado', 'espacio'];
     /**
      * @var array
      */
@@ -93,10 +93,8 @@ class InventarioController extends IntranetController
         if (Espacio::find($espacio)){
             $this->vista = ['index' => 'Espai'];
         } else {
-            $this->vista = ['index' => 'Article'];
+            $this->vista = ['index' => 'Articulo'];
         }
-
-
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniPestanas();
 

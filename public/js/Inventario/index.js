@@ -1,7 +1,6 @@
 'use strict';
 
 const PROCEDENCIAS=['Desconocida', 'Dotación', 'Compra', 'Donación'];
-const ESTADOS=['Desconocido', 'Ok', 'Reparándose', 'Baja'];
 const ADMINISTRADOR=11;
 const MANTENIMIENTO=7;
 const mesesCaduca=6;
@@ -43,9 +42,16 @@ const mesesCaduca=6;
     var espai = $("#search").text();
     var article = $("#article").text();
     $("#datamaterial").DataTable( {
+        "columnDefs":[
+            {
+                "targets" : [1],
+                "visible" : false,
+            }
+        ],
         "searchCols": [
             null,
             { "search": article},
+            null,
             null,
             { "search": espai }
         ],
@@ -59,10 +65,9 @@ const mesesCaduca=6;
         dataSrc : 'data',
         columns: [
             { data:'id'},
+            { data:'articulo'},
             { data:'descripcion'},
-            { data: null, render: function (data){
-                    return ESTADOS[data.estado];
-                }},
+            { data: 'estado'},
             { data:'espacio'},
             { data: null, defaultContent: contenido},
             { data: null ,

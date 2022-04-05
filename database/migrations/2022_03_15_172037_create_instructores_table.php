@@ -14,7 +14,7 @@ class CreateInstructoresTable extends Migration {
 	{
 		Schema::create('instructores', function(Blueprint $table)
 		{
-			$table->string('dni', 10)->primary();
+			$table->string('dni', 12)->primary();
 			$table->string('name', 60);
 			$table->string('email', 60)->nullable();
 			$table->string('telefono', 20)->nullable();

@@ -3,7 +3,7 @@
     <title>Espai {{$panel->getElemento()}}</title>
 @endsection
 @section('grid')
-    <div id="search">{{$panel->getElemento()}}</div>
+    <div class="hidden" id="search">{{$panel->getElemento()}}</div>
     @include('material.partials.grid')
 @endsection
 @section('titulo')

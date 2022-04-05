@@ -33,8 +33,7 @@ class ArticuloController extends ModalController
      */
     public function detalle($id)
     {
-        $article = Articulo::findOrFail($id);
-        return redirect()->route('material.espacio', ['espacio' => $article->descripcion]);
+        return redirect()->route('material.espacio', ['espacio' => $id]);
     }
 
     public function store(ArticuloRequest $request)

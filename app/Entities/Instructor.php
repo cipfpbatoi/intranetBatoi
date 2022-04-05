@@ -16,7 +16,7 @@ class Instructor extends Model
     protected $keyType = 'string';
     protected $fillable = ['dni', 'email', 'name','surnames','telefono','departamento'];
     protected $rules = [
-        'dni' => 'required|max:10',
+        'dni' => 'required|max:12',
         'name' => 'required|max:60',
         'surnames' => 'required|max:60',
         'email' => 'required|email|max:60',

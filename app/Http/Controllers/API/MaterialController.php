@@ -7,6 +7,7 @@ use Intranet\Entities\Material;
 use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
+use Intranet\Http\Resources\MaterialResource;
 use Jenssegers\Date\Date;
 
 class MaterialController extends ApiBaseController
@@ -25,7 +26,7 @@ class MaterialController extends ApiBaseController
                 ->where('estado','<',3)
                 ->whereNotNull('articulo_lote_id')
                 ->get();
-        return $this->sendResponse($data, 'OK');
+        return $this->sendResponse(MaterialResource::collection($data), 'OK');
     }
     function index(){
         $data = Material::where('inventariable',0)->get();
