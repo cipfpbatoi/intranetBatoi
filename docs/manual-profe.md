@@ -180,9 +180,9 @@ Amb el perfil de tutor/a del grup, a més, podem:
 
 ![Claustre](./img/ajuda/07-miDep.png)
 
-Podem veure a tots els professors del claustre i comprovar si estan ara o no en el Centre i on trobar-los (segons el seu horari). A la part superior tenim cada departament en una pestanya (per defecte ens apareix el nostre departament). A la part inferior trobem les icones:
+Podem veure a tot el professorat del claustre i comprovar si estan ara o no en el Centre i on trobar-los (segons el seu horari). A la part superior tenim cada departament en una pestanya (per defecte ens apareix el nostre departament). A la part inferior trobem les icones:
 * rellotge: en blau vol dir que està en el Centre i en roig que no.
-* horari: ens obri l'horari del professor per a saber quan i on trobar-lo.
+* horari: ens obri l'horari de cada professor/a per a saber quan i on es pot trobar.
 * avisar: per enviar-li una notificació per la Intranet (li apareixerà amb les seues notificacions).
 * botó blau: indica quin mòdul està impartint ara i en quin aula (o si està en casa). Si possem el punter damunt ens indica a quin grup li està impartint classe (o a quina hora ve si està en casa).
 
