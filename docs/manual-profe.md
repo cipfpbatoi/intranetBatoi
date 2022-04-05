@@ -180,18 +180,18 @@ Amb el perfil de tutor/a del grup, a més, podem:
 
 ![Claustre](./img/ajuda/07-miDep.png)
 
-Podem veure a tot el professorat del claustre i comprovar si estan ara o no en el Centre i on trobar-los (segons el seu horari). A la part superior tenim cada departament en una pestanya (per defecte ens apareix el nostre departament). A la part inferior trobem les icones:
-* rellotge: en blau vol dir que està en el Centre i en roig que no.
+Podem veure a tot el professorat del claustre i comprovar si estan ara o no en el Centre i on es poden trobar (segons el seu horari). A la part superior tenim cada departament en una pestanya (per defecte ens apareix el nostre departament). A la part inferior trobem les icones:
+* rellotge: en blau vol dir que s'està en el Centre i en roig que no.
 * horari: ens obri l'horari de cada professor/a per a saber quan i on es pot trobar.
 * avisar: per enviar-li una notificació per la Intranet (li apareixerà amb les seues notificacions).
-* botó blau: indica quin mòdul està impartint ara i en quin aula (o si està en casa). Si possem el punter damunt ens indica a quin grup li està impartint classe (o a quina hora ve si està en casa).
+* botó blau: indica quin mòdul s’està impartint ara i en quin aula, en el cas de ser una hora de docència. En altre cas, s’indica la tasca corresponent de l’horari.
 
 En el nostre usuari apareixen 2 botons més:
-* Carnet: per a imprimir el nostre carnet de l'institut (hem de imprimmir-ho en la impressora de carnets que hi ha en Caporalia)
-* Imprimir tarjetes de visita: obri un PDF amb targetes de visita que podem imprimir i retallar
+* Carnet: per a imprimir el nostre carnet de l'institut (hem de imprimir-ho en la impressora de carnets que hi ha en Caporalia).
+* Imprimir targetes de visita: obri un PDF amb targetes de visita que podem imprimir i retallar.
 
 ### Equip directiu
-Trobem la mateixa informació que en el [claustre](#claustre) però de l'equip directiu per a saber on trobar-los.
+Disposem de la mateixa informació que en el [claustre](#claustre) però de l'equip directiu per a saber on poden trobar-se.
 
 ### Guàrdia
 Ens permet signar les guàrdies del nostre horari i incloure comentaris:
@@ -210,7 +210,7 @@ Només es pot marcar des de l'ordinador de la Biblioteca o de la Sala de profess
 
 Seleccionem l'hora, marquem la casella 'Guàrdia feta' i polsem el botó **'Guardar'**.
 
-Si per algun motiu no ho hem fet (sens a oblidat marcar-la o no l'hem feta per algun motiu) seleccionem l'hora de la guàrdia, omplim el camp de '**Comentaris personals**' (els altes no estan dsponibles) i polsem el botó '**Guardar**'.
+Si per algun motiu no ho hem fet (se'ns ha oblidat marcar-la o no l'hem feta per algun motiu) seleccionem l'hora de la guàrdia, omplim el camp de '**Comentaris personals**' (els altres no estan dsponibles) i polsem el botó '**Guardar**'.
 
 ### Seguiments
 Des d'ací pujarem el seguiment de la nostra programació al final de cada avaluació:
