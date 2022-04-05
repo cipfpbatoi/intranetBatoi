@@ -3,6 +3,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Espacio;
 use Intranet\Entities\Inventario;
 use Intranet\Entities\Material;
 use Intranet\Services\FormBuilder;
@@ -89,12 +90,18 @@ class InventarioController extends IntranetController
      */
     public function espacio($espacio)
     {
-        $this->vista = ['index' => 'Espai'];
+        if (Espacio::find($espacio)){
+            $this->vista = ['index' => 'Espai'];
+        } else {
+            $this->vista = ['index' => 'Article'];
+        }
+
 
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniPestanas();
 
         return $this->grid($espacio);
-
     }
+
+
 }

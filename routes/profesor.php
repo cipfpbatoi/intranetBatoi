@@ -440,6 +440,7 @@ Route::resource('/articulo','ArticuloController', ['except' => ['show','destroy'
 Route::get('/articulo/{id}/show', ['as' => 'articulo.show', 'uses' => 'ArticuloController@show']);
 Route::get('/articulo/{id}/delete', ['as' => 'articulo.destroy', 'uses' => 'ArticuloController@destroy']);
 Route::put('/articulo/{id}/edit', ['as' => 'articulo.update', 'uses' => 'ArticuloController@update']);
+Route::get('/articulo/{id}/detalle', ['as' => 'articulo.detalle', 'uses' => 'ArticuloController@detalle']);
 
 Route::get('/task/{id}/check',['as'=>'task.check','uses'=>'TaskController@check']);
 Route::get('/ciclodual/edit',['as'=>'cicloDual.edit','uses'=>'CicloDualController@edit']);

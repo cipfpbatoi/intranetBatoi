@@ -41,10 +41,11 @@ const mesesCaduca=6;
     var checkbox = "<div class='icheckbox_flat-green'><input type='checkbox' class='flat'></div>";
     var token = $("#_token").text();
     var espai = $("#search").text();
+    var article = $("#article").text();
     $("#datamaterial").DataTable( {
         "searchCols": [
             null,
-            null,
+            { "search": article},
             null,
             { "search": espai }
         ],

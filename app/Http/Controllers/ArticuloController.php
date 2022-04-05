@@ -23,7 +23,18 @@ class ArticuloController extends ModalController
 
     protected function iniBotones()
     {
-        $this->panel->setBotonera(['create'],['show','edit','delete']);
+        $this->panel->setBotonera(['create'],['show','edit','delete','detalle']);
+    }
+
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function detalle($id)
+    {
+        $article = Articulo::findOrFail($id);
+        return redirect()->route('material.espacio', ['espacio' => $article->descripcion]);
     }
 
     public function store(ArticuloRequest $request)
