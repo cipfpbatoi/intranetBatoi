@@ -2,7 +2,7 @@
 
 const PROCEDENCIAS=['Desconocida', 'Dotación', 'Compra', 'Donación'];
 const ESTADOS=['Desconocido', 'Ok', 'Reparándose', 'Baja'];
-const ADMINISTRADOR=13;
+const ADMINISTRADOR=11;
 const MANTENIMIENTO=7;
 const mesesCaduca=6;
 
