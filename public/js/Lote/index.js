@@ -191,6 +191,7 @@ $(function () {
         $('#datatable').on('click', 'a.inventary', function (event) {
             var idLote = $(this).parent().siblings().first().text();
             var texto = 'Vas a inventariar el lot amb registre '+idLote+', amb els següents articles.\n';
+            var jefes = [];
             $.ajax({
                 context:this,
                 method: "GET",
@@ -201,26 +202,39 @@ $(function () {
                 $(result.data).each(function (  i, item) {
                     texto += item.unidades + ' de '+ item.descripcion+'\n';
                 });
-                if (confirm(texto)) {
-                    $.ajax({
-                        context: this,
-                        method: "PUT",
-                        url: "/api/lote/" + idLote +'/articulos',
-                        data: { api_token: token,
+                $.ajax({
+                    method: "GET",
+                    url: "/api/departamento",
+                    data: { api_token: token},
+                    dataType: "json",
+                }).then( function(result){
+                    if (result.success == true ){
+                        $(result.data.data).each(function (  i, item) {
+                            jefes[item.id] = item.name;
+                        });
+                    }
+                    let advise = prompt(texto)
+                    if (confirm(texto)) {
+                        $.ajax({
+                            context: this,
+                            method: "PUT",
+                            url: "/api/lote/" + idLote +'/articulos',
+                            data: { api_token: token,
                                 inventariar: true},
-                        dataType: "json",
-                    }).then(function (result) {
-                        if (result.success == true ){
-                            $(this).parent().parent().addClass('danger');
-                            $(this).parent().siblings('.estado').text("INVENTARIANT");
-                            $(this).parent().html(contenido);
-                        }
-                    }).fail(error=>console.log(error)) ;
-                }
+                            dataType: "json",
+                        }).then(function (result) {
+                            if (result.success == true ){
+                                $(this).parent().parent().addClass('danger');
+                                $(this).parent().siblings('.estado').text("INVENTARIANT");
+                                $(this).parent().html(contenido);
+                            }
+                        }).fail(error=>console.log(error)) ;
+                    }
+                });
+
             })
-
-
         })
+
         // DIALOGO ARTICLES
         $("#dialogo").on('change','#articulo_id',function () {
             if ($('#articulo_id').val() === 'new') {

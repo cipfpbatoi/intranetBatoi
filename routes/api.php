@@ -50,7 +50,8 @@ Route::group(['middleware' => 'auth:api'], function() {
     
     Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => ['edit', 'create']]);
     Route::get('faltaProfesor/horas/{condicion}','FaltaProfesorController@horas');
-    
+    Route::get('/departamento','DepartamentoController@index');
+
     Route::put('/material/cambiarUbicacion/', 'MaterialController@putUbicacion');
     Route::put('/material/cambiarEstado/', 'MaterialController@putEstado');
     Route::put('/material/cambiarUnidad/', 'MaterialController@putUnidades');
