@@ -16,7 +16,7 @@ class MaterialResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'articulo' => $this->LoteArticulo->Articulo->id,
+            'articulo' => $this->LoteArticulo->Articulo->descripcion,
             'descripcion' => $this->descripcion($this->descripcion,$this->modelo,$this->marca),
             'estado' => config('auxiliares.estadoMaterial')[$this->estado],
             'espacio' => $this->espacio,

@@ -1,14 +1,13 @@
 @extends('layouts.intranet')
-@php($article = \Intranet\Entities\Articulo::find($panel->getElemento())->descripcion)
 @section('css')
-    <title>Article {{$article}}</title>
+    <title>Article {{$panel->getElemento()}}</title>
 @endsection
 @section('grid')
     <div class="hidden" id="article">{{$panel->getElemento()}}</div>
     @include('material.partials.grid')
 @endsection
 @section('titulo')
-    Article {{$article}}
+    Article {{$panel->getElemento()}}
 @endsection
 @section('scripts')
 @include('js.tablesjs')
