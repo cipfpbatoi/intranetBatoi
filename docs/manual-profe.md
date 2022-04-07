@@ -203,27 +203,34 @@ Només podem signar les guàrdies del dia actual, encara que es pot modificar el
 Els camps que hi ha són:
 * Guàrdia feta: aquesta casella marcada indica que SÍ hem fet la guàrdia
 * Observacions: per a inclure qualsevol problema o qüestió que haja passat durant la nostra guàrdia
-* Comentari personal: per a indicar a caporalia qualsevol situació nostra (no de la guàrdia), com per exemple que no hem fet la guàrdia perquè estàvem atenent a uns pares
+* Comentari personal: per a indicar a caporalia qualsevol situació nostra (no de la guàrdia), com per exemple que no hem fet la guàrdia perquè estàvem atenent a uns pares.
+
+Trobem dos botons:
+
+![Botons Guàrdia](./img/ajuda/botonsguardia.png)
+
+El botó Control Personal l'utilitzarem per a veure les absències del dia.
+El botó Guardar l'utilitzarem per a guardar els canvis.
 
 #### Fer la guàrdia
-Només es pot marcar des de l'ordinador de la Biblioteca o de la Sala de professors, i dins de l'hora de la nostra guàrdia.
+Només es pot marcar des de l'ordinador de la Biblioteca o de la Sala del professorat, i dins de l'hora de la nostra guàrdia.
 
 Seleccionem l'hora, marquem la casella 'Guàrdia feta' i polsem el botó **'Guardar'**.
 
-Si per algun motiu no ho hem fet (se'ns ha oblidat marcar-la o no l'hem feta per algun motiu) seleccionem l'hora de la guàrdia, omplim el camp de '**Comentaris personals**' (els altres no estan dsponibles) i polsem el botó '**Guardar**'.
+Si per algun motiu no ho hem fet (se'ns ha oblidat marcar-la o no l'hem feta per algun motiu) seleccionem l'hora de la guàrdia, omplim el camp de '**Comentari personal**' (els altres no estaran disponibles) i polsem el botó '**Guardar**'.
 
 ### Seguiments
 Des d'ací pujarem el seguiment de la nostra programació al final de cada avaluació:
 
 ![Seguiments](./img/ajuda/10-seguiments.png)
 
-Per a pujar un nou seguiment polsem el botó 'Crea resultats per a un grup' de la part superior i introduïm les dades:
+Per a pujar un nou seguiment polsem el botó 'Crea resultats per un grup' de la part superior i introduïm les dades:
 * Grup, mòdul i avaluació
 * Alumnes matriculats, avaluats i aprovats
 * Unitats programades i impartides
 * Comentaris
 
-Les iconas de cada seguiment creat ens permeten esborrar-lo o modificar-lo.
+Les icones de cada seguiment creat ens permeten esborrar-lo o modificar-lo (Edita resultats).
 
 ### Programacions
 Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament).
