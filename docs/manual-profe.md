@@ -233,31 +233,27 @@ Per a pujar un nou seguiment polsem el botó 'Crea resultats per un grup' de la 
 Les icones de cada seguiment creat ens permeten esborrar-lo o modificar-lo (Edita resultats).
 
 ### Programacions
-Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ per què encara no l'hem enviat al Cap del departament).
+Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ perquè encara no l'hem enviat al Cap del departament).
 
 Les operacions que podem fer amb cadascuna són:
-* **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la en Google Drive
-* **Enviar** (icona del sobre): per a enviar la programació al nostre Cap de departament quan estiga acabada
-* **Omplir seguiment** (icona dels prismàtics): per a introduir al final del curs el seguiment de la programació i les **propostes de millora** per al proper curs. Al pricipi de curs apareix el seguiment de l'any anterior amb les propostes de millora que va fer el professor que va impartir aquest mòdul l'any anterior. Aquestes propostes hem d'incliure-les en la nostra programació d'enguany.
+* **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la en Google Drive.
+* **Enviar** (icona del sobre): per a enviar la programació al nostre Cap de departament quan estiga acabada.
+* **Omplir seguiment** (icona dels prismàtics): per a introduir al final del curs el seguiment de la programació i les **propostes de millora** per al proper curs. Al pricipi de curs apareix el seguiment de l'any anterior amb les propostes de millora que va fer el professor/a que va impartir aquest mòdul l'any anterior. Aquestes propostes hem d'incloure-les en la nostra programació d'enguany.
 
-Els estats pels que pasa una programació són:
-* '_No autoritzada/comunicada_': és el seu estat inicial i vol dir que encara no l'hem enviat al Cap del departament. En aquest estat modificarem la programació i a enviarem al Cap de departament
-* '_No autoritzada_': ja està enviada al Cap de departament per a que la revise. Si hi ha alguna cosa que canviar ens enviarà un email indicant-nos què i haurem de modificar-la i tornar a enviar-la.
-* '_Autoritzada_': quan la nostra programació està correcta en Cap de departament la marca com Autoritzada i ja no podem fer canvis en la mateixa
+Els estats pels que passa una programació són:
+* '_No autoritzada/comunicada_': és el seu estat inicial i vol dir que encara no l'hem enviat al Cap del departament. En aquest estat modificarem la programació i a enviarem al Cap de departament.
+* '_No autoritzada_': ja està enviada al Cap de departament per a que la revise. Si hi ha alguna cosa que canviar ens enviarà un email indicant-nos el què i haurem de modificar-la i tornar a enviar-la.
+* '_Autoritzada_': quan la nostra programació està correcta, el Cap del departament la marca com Autoritzada i ja no podem fer canvis en la mateixa.
 
-Totes les programacions esta al Google Drive i és allí on s'han de modificar. Podem accedir a la nostra programació per a editar-la des de la intranet (botó d'Enllaç) o des de casa (utilitzant un enllaç que ens han enviat al nostre email del Centre). Recordeu que NO HEM DE BAIXAR-NOS la programació per a modificar-la sinó que la modificarem directament en Google Drive.
+Totes les programacions estan al Google Drive i és allí on s'han de modificar. Podem accedir a la nostra programació per a editar-la amb el botó d'Enllaç explicat anteriorment o utilitzant l'enllaç que ens han enviat al nostre email del Centre. Recordeu que NO HEM DE BAIXAR-NOS la programació per a modificar-la sinó que la modificarem directament en Google Drive.
 
-El primer que farem en la nostra programació és canviar el nom del document. La primera vegada té com a nom un codi intern que canviarem per **Codi del cicle - Codi del mòdul - Nom del mòdul**, per exemple:
+Només hi ha una programació per mòdul i cile. Si un mateix mòdul s'imparteix en més d'un grup, la programació ha de ser la mateixa. L'enllaç és el mateix per a tot el professorat que l'imparteix. Si hi han alguns apartats que han de ser diferents en funció del grup, han d'especificar-se en un annex al final del document, indicant els apartats que són diferents i per a què grups.
 
-```
-SMX - 0222 - Sistemes Operatius Monolloc
-```
-
-Si un mateix mòdul es dona en més d'un grup la programació ha de ser la mateixa i per tant l'enllaç és el mateix per a tots els professors que la donen. Les posibles diferències entre els grups es posaran en annexos al final de la programació.
+Segons marca normativa i per a la millora contínua del procés d’ensenyament-aprenentatge, la programació ha d’incloure un apartat de propostes de millora tretes de l’avaluació de la  mateixa del curs anterior. Explicat anteriorment en icona dels prismàtics.
 
 Una vegada acabada la programació l'enviarem al nostre Cap de Departament polsant el botó de **Enviar** (icona del sobre).
 
-La programació queda en estat '_No autoritzada_'. Per a que el cap de departament no la pot veure per a revisar-la si no la enviem.
+La programació queda en estat '_No autoritzada_'. El Cap del departament no la pot veure per a revisar-la, si no la enviem.
 
 ### Tancament de curs
 Ací al final del curs ens apareixeran totes les tasques que hem de fer per a tancar el curs (introduir els resultats finals de cada mòdul, etc) per a asegurar-nos que no ens deixem res per fer.
