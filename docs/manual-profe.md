@@ -247,16 +247,16 @@ Els estats pels que passa una programació són:
 
 Totes les programacions estan al Google Drive i és allí on s'han de modificar. Podem accedir a la nostra programació per a editar-la amb el botó d'Enllaç explicat anteriorment o utilitzant l'enllaç que ens han enviat al nostre email del Centre. Recordeu que NO HEM DE BAIXAR-NOS la programació per a modificar-la sinó que la modificarem directament en Google Drive.
 
-Només hi ha una programació per mòdul i cile. Si un mateix mòdul s'imparteix en més d'un grup, la programació ha de ser la mateixa. L'enllaç és el mateix per a tot el professorat que l'imparteix. Si hi han alguns apartats que han de ser diferents en funció del grup, han d'especificar-se en un annex al final del document, indicant els apartats que són diferents i per a què grups.
+Només hi ha una programació per mòdul i cicle. Si un mateix mòdul s'imparteix en més d'un grup, la programació ha de ser la mateixa. L'enllaç és el mateix per a tot el professorat que l'imparteix. Si hi han alguns apartats que han de ser diferents en funció del grup, han d'especificar-se en un annex al final del document, indicant els apartats que són diferents i per a què grups.
 
 Segons marca normativa i per a la millora contínua del procés d’ensenyament-aprenentatge, la programació ha d’incloure un apartat de propostes de millora tretes de l’avaluació de la  mateixa del curs anterior. Explicat anteriorment en icona dels prismàtics.
 
-Una vegada acabada la programació l'enviarem al nostre Cap de Departament polsant el botó de **Enviar** (icona del sobre).
+Una vegada acabada la programació l'enviarem al nostre Cap del departament polsant el botó de **Enviar** (icona del sobre).
 
 La programació queda en estat '_No autoritzada_'. El Cap del departament no la pot veure per a revisar-la, si no la enviem.
 
 ### Tancament de curs
-Ací al final del curs ens apareixeran totes les tasques que hem de fer per a tancar el curs (introduir els resultats finals de cada mòdul, etc) per a asegurar-nos que no ens deixem res per fer.
+Ací al final del curs ens apareixeran totes les tasques que hem de fer per a tancar el curs (introduir els resultats finals de cada mòdul, etc) per a assegurar-nos que no ens deixem res per fer.
 
 ## Menú 'Tràmits'
 Ací tenim molts tràmits usuals com:
