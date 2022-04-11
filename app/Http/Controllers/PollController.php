@@ -13,7 +13,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
 
-class PollController extends IntranetController
+class   PollController extends IntranetController
 {
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
     protected $model = 'Poll';
@@ -45,6 +45,7 @@ class PollController extends IntranetController
         $poll = Poll::find($id);
         $modelo = $poll->modelo;
         $quests = $modelo::loadPoll($this->loadPreviousVotes($poll));
+
         if ($quests) {
             return view('poll.enquesta', compact('quests', 'poll'));
         }
@@ -144,19 +145,7 @@ class PollController extends IntranetController
         return view('poll.allResolts',compact('votes','poll','options_numeric'));
     }
 
-    public function lookAtNumberVotes($id){
-        $poll = Poll::find($id);
-        $modelo = $poll->modelo;
-        $options_numeric = $poll->Plantilla->options->where('scala', '>', 0);
-        $allVotes = Vote::allNumericVotes($id)->get();
-        $option1 = $allVotes->GroupBy(['idOption1', 'option_id']);
-        $option2 = $allVotes->GroupBy(['idOption2', 'option_id']);
-        $this->initValues($votes,$options_numeric);
-        $votes['all'] = $allVotes->GroupBy('option_id');
-        $modelo::count($votes,$option1,$option2);
 
-        return view('poll.allResolts',compact('votes','poll','options_numeric'));
-    }
 
     private function initValues(&$votes,$options){
         $grupos = Grupo::all();

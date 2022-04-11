@@ -12,7 +12,7 @@
                 <td>Tots</td>
                 @foreach ($votes['all'] as $optionVote)
                     @if ($optionVote->sum('value')>0)
-                        <td> {{round($optionVote->avg('value'),1)}} / {{$optionVote->count('value')}}</td>
+                        <td> {{round($optionVote->avg('value'),1)}} / {{$optionVote->groupBy('user_id')->count()}}</td>
                     @endif
                 @endforeach
             </tr>
@@ -33,7 +33,7 @@
                     <tr>
                         <td>{{\Intranet\Entities\Grupo::find($nameGroup)->nombre}}</td>
                         @foreach ($grupVotes as $optionVote)
-                            <td> {{round($optionVote->avg('value'),1)}} / {{$optionVote->count('value')}} </td>
+                            <td> {{round($optionVote->avg('value'),1)}} / {{$optionVote->groupBy('user_id')->count()}} </td>
                         @endforeach
                     </tr>
                 @endif
@@ -57,7 +57,7 @@
                 <tr>
                     <td>{{\Intranet\Entities\Ciclo::find($nameGroup)->literal}} </td>
                     @foreach ($grupVotes as $optionVote)
-                        <td> {{round($optionVote->avg('value'),1)}} / {{$optionVote->count('value')}} </td>
+                        <td> {{round($optionVote->avg('value'),1)}} / {{$optionVote->groupBy('user_id')->count()}} </td>
                     @endforeach
                 </tr>
                 @endif
@@ -79,7 +79,7 @@
                     <tr>
                         <td>{{\Intranet\Entities\Departamento::find($nameGroup)->literal}}</td>
                         @foreach ($grupVotes as $optionVote)
-                            <td> {{round($optionVote->avg('value'),1)}} / {{$optionVote->count('value')}} </td>
+                            <td> {{round($optionVote->avg('value'),1)}} / {{$optionVote->groupBy('user_id')->count()}} </td>
                         @endforeach
                     </tr>
                 @endif
