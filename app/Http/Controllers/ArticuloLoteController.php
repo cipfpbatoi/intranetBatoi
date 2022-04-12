@@ -2,6 +2,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\ArticuloLote;
+use Intranet\Entities\Lote;
 use Illuminate\Database\Eloquent\Builder;
 use Intranet\Botones\BotonImg;
 
@@ -29,8 +30,10 @@ class ArticuloLoteController extends IntranetController
 
     public function search()
     {
-        return ArticuloLote::whereHas('materiales', function (Builder $query) {
-            $query->where('espacio', 'like', 'INVENT');
+        $lotes = hazArray(Lote::where('departamento_id',AuthUser()->departamento)->orWhere('departamento_id',null)->get(),'registre','registre');
+        return ArticuloLote::whereHas('materiales', function (Builder $query) use ($lotes) {
+            $query->where('espacio', 'like', 'INVENT')
+            ->whereIn('lote_id',$lotes);
         })->get();
     }
 
