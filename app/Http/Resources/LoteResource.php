@@ -20,7 +20,8 @@ class LoteResource extends JsonResource
             'procedencia' => $this->procedencia,
             'proveedor' => $this->proveedor,
             'fechaAlta' => $this->fechaAlta,
-            'estado' => $this->estado
+            'estado' => $this->estado,
+            'departamento' => $this->departament,
         ];
     }
 }

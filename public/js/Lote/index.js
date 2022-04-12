@@ -39,10 +39,10 @@ var options = {};
         deferRender : true,
         dataSrc : 'data',
         rowId : 'registre',
-        order: [[ 4, "desc" ]],
+        order: [[ 5, "desc" ]],
         columnDefs: [
             {className: "estado", "targets": [ 4 ]} ,
-            {className: "operaciones", "targets": [ 6 ]} ,
+            {className: "operaciones", "targets": [ 7 ]} ,
         ],
         columns: [
             { data:'registre'},
@@ -61,6 +61,7 @@ var options = {};
                     },
             },
             { data:'fechaAlta'},
+            { data:'departamento'},
             { data: null, render: function (data){
                 return  (data.estado == 1) ? contenido+operaciones+inventariable:
                         (data.estado == 2) ? contenido+editar+
@@ -190,8 +191,7 @@ $(function () {
         // INVENTARIAR
         $('#datatable').on('click', 'a.inventary', function (event) {
             var idLote = $(this).parent().siblings().first().text();
-            var texto = 'Vas a inventariar el lot amb registre '+idLote+', amb els següents articles.\n';
-            var jefes = [];
+            var texto = 'Vas a inventariar el lot amb registre '+idLote+', amb els següents articles i avisar al cap de departament.\n';
             $.ajax({
                 context:this,
                 method: "GET",
@@ -202,38 +202,24 @@ $(function () {
                 $(result.data).each(function (  i, item) {
                     texto += item.unidades + ' de '+ item.descripcion+'\n';
                 });
-                $.ajax({
-                    method: "GET",
-                    url: "/api/departamento",
-                    data: { api_token: token},
-                    dataType: "json",
-                }).then( function(result){
-                    if (result.success == true ){
-                        $(result.data.data).each(function (  i, item) {
-                            jefes[item.id] = item.name;
-                        });
-                    }
-                    let advise = prompt(texto)
-                    if (confirm(texto)) {
-                        $.ajax({
-                            context: this,
-                            method: "PUT",
-                            url: "/api/lote/" + idLote +'/articulos',
-                            data: { api_token: token,
-                                inventariar: true},
-                            dataType: "json",
-                        }).then(function (result) {
-                            if (result.success == true ){
-                                $(this).parent().parent().addClass('danger');
-                                $(this).parent().siblings('.estado').text("INVENTARIANT");
-                                $(this).parent().html(contenido);
-                            }
-                        }).fail(error=>console.log(error)) ;
-                    }
-                });
-
-            })
-        })
+                if (confirm(texto)) {
+                    $.ajax({
+                        context: this,
+                        method: "PUT",
+                        url: "/api/lote/" + idLote +'/articulos',
+                        data: { api_token: token,
+                            inventariar: true},
+                        dataType: "json",
+                    }).then(function (result) {
+                        if (result.success == true ){
+                            $(this).parent().parent().addClass('danger');
+                            $(this).parent().siblings('.estado').text("INVENTARIANT");
+                            $(this).parent().html(contenido);
+                        }
+                    }).fail(error=>console.log(error)) ;
+                }
+            });
+        });
 
         // DIALOGO ARTICLES
         $("#dialogo").on('change','#articulo_id',function () {
