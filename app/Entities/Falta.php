@@ -68,6 +68,7 @@ class Falta extends Model
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
 
+
     public function getDesdeAttribute($entrada)
     {
         $fecha = new Date($entrada);

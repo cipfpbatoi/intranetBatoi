@@ -3,16 +3,13 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Articulo;
-use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Lote;
 use Intranet\Entities\Material;
-use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Http\Resources\LoteResource;
 use Intranet\Http\Resources\ArticuloLoteResource;
-use Jenssegers\Date\Date;
+
 
 class LoteController extends ApiBaseController
 {
@@ -40,6 +37,7 @@ class LoteController extends ApiBaseController
     {
         $lote = Lote::find($lote);
         if ($request->inventariar){
+            $texto = "Tens material pendent d'inventariar:";
             foreach ($lote->ArticuloLote as $articulo){
                 for ($i=0;$i<$articulo->unidades;$i++){
                     $material = new Material(
@@ -55,9 +53,13 @@ class LoteController extends ApiBaseController
                             'articulo_lote_id' => $articulo->id
                         ]
                     );
-                    $material->save();
+                    //$material->save();
                 }
+                $texto .= $articulo->descripcion.',';
             }
+            if ($lote->Departamento){
+                avisa($lote->Departamento->idProfesor,$texto,'/inventaria/','Secretaria');
+            };
         }
         return $this->sendResponse(['data' => $lote ], 'OK');
     }

@@ -30,8 +30,7 @@ class LoteController extends ModalController
      */
     protected $vista = 'lote.index';
 
-
-    protected $gridFields = [ 'registre', 'proveedor','factura','procedencia', 'estado','fechaAlta'];
+    protected $gridFields = [ 'registre', 'proveedor','factura','procedencia', 'estado','fechaAlta','departamento'];
 
 
 
