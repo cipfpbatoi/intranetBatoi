@@ -62,6 +62,8 @@ class Handler extends ExceptionHandler
         if ($exception instanceof AuthenticationException){
             return redirect()->guest('login');
         }
+
+
         return parent::render($request, $exception);
     }
 
