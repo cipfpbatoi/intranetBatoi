@@ -46,7 +46,7 @@
         <br/><br/><br/><br/><br/>
         <p>La direcció AUTORITZA el pagament dels serveis prestats</p>
         <div class="container col-lg-12">
-            <div style="width:50%;float:left">SIGNAT LA SECRETARIA:</div>
+            <div style="width:50%;float:left">SIGNAT @if (\Intranet\Entities\Profesor::find(config('avisos.secretario'))->sexo == 'H') EL SECRETARIO @else LA SECRETARIA @endif:</div>
             <div style="width:50%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{ $datosInforme }}</div>
         </div>
     </div>
