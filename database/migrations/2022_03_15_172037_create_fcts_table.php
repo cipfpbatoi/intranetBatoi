@@ -19,7 +19,7 @@ class CreateFctsTable extends Migration {
 			$table->boolean('asociacion');
 			$table->date('desde')->nullable();
 			$table->boolean('correoInstructor')->default(0);
-			$table->string('idInstructor', 10)->nullable()->index('instructor_fcts_idinstructor_foreign');
+			$table->string('idInstructor', 12)->nullable()->index('instructor_fcts_idinstructor_foreign');
 		});
 	}
 

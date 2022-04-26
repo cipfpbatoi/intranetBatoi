@@ -15,7 +15,7 @@ class CreateCentrosInstructoresTable extends Migration {
 		Schema::create('centros_instructores', function(Blueprint $table)
 		{
 			$table->integer('idCentro')->unsigned();
-			$table->string('idInstructor', 10)->index('centros_instructores_idinstructor_foreign');
+			$table->string('idInstructor', 12)->index('centros_instructores_idinstructor_foreign');
 			$table->primary(['idCentro','idInstructor']);
 		});
 	}

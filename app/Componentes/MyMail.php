@@ -46,6 +46,7 @@ class MyMail
         }
         else{
             $this->elements = $this->recoveryObjects($elements);
+
         }
         if (is_array($view)){
             $this->view = $view['view'];
@@ -69,11 +70,13 @@ class MyMail
             $toCompost = explode('(', $element);
             $id = $toCompost[0];
             $element = $this->class::find($id);
-            if (isset($toCompost[1]) && strpos(';',$toCompost[1])) {
+            if (isset($toCompost[1]) && strpos($toCompost[1],';')) {
                 $email = explode(';', $toCompost[1]);
                 $element->mail = $email[0];
                 $element->contact = $email[1];
+
             }
+            return $element;
         }
         return null;
     }
@@ -92,7 +95,6 @@ class MyMail
         $class = $this->class;
         $register = $this->register;
         $template = $this->template;
-
         return view('email.view',compact('to','from','subject','contenido','route','fromPerson','toPeople','class','register','editable','template'));
     }
 
