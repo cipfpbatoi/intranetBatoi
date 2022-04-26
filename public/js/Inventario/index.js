@@ -103,8 +103,12 @@ $(function () {
         event.preventDefault();
         var list = $('#datamaterial').DataTable().rows('.selected');
         var ids = list.data().map((row) => row.id );
-        $('#idList').val(ids.toArray());
-        $('#printCodeBars').submit();
+        if (ids.count()){
+            $('#idList').val(ids.toArray());
+            $('#printCodeBars').submit();
+        } else {
+            alert('Has de seleccionar primer les etiquetes polsant sobre la seua clau');
+        }
     });
 
 
