@@ -108,7 +108,6 @@ trait traitCRUD{
      */
     protected function realStore(Request $request, $id = null)
     {
-
         $elemento = $id ? $this->class::findOrFail($id) : new $this->class; //busca si hi ha
         $this->validateAll($request, $elemento);    // valida les dades
         return $elemento->fillAll($request);        // ompli i guarda

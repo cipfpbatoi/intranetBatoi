@@ -33,7 +33,7 @@ class PreventAction
         if (isset($model->idProfesor)) {
             return $model->idProfesor;
         }
-        if ($model->Creador() != null) {
+        if (method_exists($model,'Creador')) {
             return $model->Creador();
         }
     }

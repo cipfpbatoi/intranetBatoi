@@ -13,6 +13,7 @@ $(function () {
     })
     $("a.btn-primary.btn.txtButton").on("click", function () {
         event.preventDefault();
+        $('#id').val('');
         $('.form-horizontal')[0].reset();
         formModal.attr('action',jQuery(location).attr('href').replace(/#/,""));
         $('#metodo').val('POST');
