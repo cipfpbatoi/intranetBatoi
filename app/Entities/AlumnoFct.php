@@ -23,7 +23,7 @@ class AlumnoFct extends Model
         'id' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
-        'beca' => ['type' => 'text'],
+        'beca' => ['type' => 'hidden'],
     ];
     public $timestamps = false;
     protected $dispatchesEvents = [
