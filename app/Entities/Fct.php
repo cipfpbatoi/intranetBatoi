@@ -180,11 +180,7 @@ class Fct extends Model
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
-    public function getHastaAttribute($entrada)
-    {
-        $fecha = new Date($entrada);
-        return $fecha->format('d-m-Y');
-    }
+
     public function getDualAttribute()
     {
         return $this->asociacion == 3;
@@ -197,6 +193,7 @@ class Fct extends Model
     public function getCentroAttribute(){
         return isset($this->Colaboracion->Centro->nombre)?$this->Colaboracion->Centro->nombre:'Convalidada/Exent';
     }
+
     public function getPeriodeAttribute(){
         $inici = new Date($this->desde);
         $inici->format('Y-m-d');
@@ -207,6 +204,7 @@ class Fct extends Model
             return 2;
         }
     }
+
     public function getinTimeAttribute(){
         $hoy = Hoy('Y-m-d');
 

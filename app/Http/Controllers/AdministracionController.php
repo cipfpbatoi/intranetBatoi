@@ -250,15 +250,16 @@ class AdministracionController extends Controller
 
 
     public static function v2_04(){
-        $menu = new Menu([]);
-        $menu->nombre = 'importaemail';
-        $menu->url = '/importEmail';
-        $menu->rol = 11;
-        $menu->menu = 'general';
-        $menu->submenu = 'administracion';
-        $menu->activo = 1;
-        $menu->orden = 9;
-        $menu->save();
+
+        Alert::info('Version 2.04');
+
+    }
+
+    public static function v2_05(){
+        foreach (Fct::all() as $fct){
+            $fct->periodo = $fct->periode;
+            $fct->save();
+        }
     }
 
     public function importaAnexoI(){
