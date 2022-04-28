@@ -257,8 +257,10 @@ class AdministracionController extends Controller
 
     public static function v2_10(){
         foreach (Fct::all() as $fct){
-            $fct->periodo = $fct->periode;
-            $fct->save();
+            if ($fct->asociacion != 3){
+                $fct->periodo = $fct->periode;
+                $fct->save();
+            }
         }
     }
 
