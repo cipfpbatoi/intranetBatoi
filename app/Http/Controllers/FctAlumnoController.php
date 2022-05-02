@@ -2,10 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Support\Collection;
+
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
-use Intranet\Componentes\DocumentoFct;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Profesor;
@@ -13,7 +12,6 @@ use Intranet\Entities\FctConvalidacion;
 use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
-use Intranet\Finders\RequestFinder;
 use Intranet\Services\FormBuilder;
 
 class FctAlumnoController extends IntranetController
@@ -27,6 +25,7 @@ class FctAlumnoController extends IntranetController
     protected $profile = false;
     protected $titulo = [];
     protected $parametresVista = ['modal' => ['seleccion']];
+    protected $modal = true;
 
 
     public function search()

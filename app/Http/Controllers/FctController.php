@@ -160,21 +160,15 @@ class FctController extends IntranetController
         DB::transaction(function() use ($request){
             $idAlumno = $request['idAlumno'];
             $hasta = $request['hasta'];
-            $elementos = Fct::where('idColaboracion',$request->idColaboracion)
+            $fct = Fct::where('idColaboracion',$request->idColaboracion)
                     ->where('asociacion',$request->asociacion)
                     ->where('idInstructor',$request->idInstructor)
-                    ->get();
-            $id = null;
-            foreach ($elementos as $elemento){
-                    if ($elemento->Periode == PeriodePractiques($request->desde)){
-                        $id = $elemento->id;
-                        break;
-                    }
-                }
-            if (!$id){ 
+                    ->where('periode',$request->periode)
+                    ->first();
+
+            if (!$fct){
                 $elemento = new Fct();
                 $this->validateAll($request, $elemento);
-
                 $id = $elemento->fillAll($request);
             }
             try {
@@ -184,7 +178,7 @@ class FctController extends IntranetController
                Alert::danger("L'alumne $idAlumno ja té una Fct oberta amb eixa empresa ");
             }
 
-            return $id;
+            return $fct;
         });
         
         return $this->redirect();

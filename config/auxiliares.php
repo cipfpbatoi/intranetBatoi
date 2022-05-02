@@ -48,4 +48,5 @@ return [
         1 => "Només li queda la FCT",
         3 => "Encara no pot cursar la FCT"
     ],
+    'periodesFct' => [1=>'Sept-Gen',2=>'Març-Juny',3=>'Altres'],
 ];

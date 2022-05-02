@@ -4,7 +4,7 @@
 @endphp
 @foreach ($misElementos as $elemento)
     @php
-        $fcts = \Intranet\Entities\Fct::with('Instructor')->where('idColaboracion',$elemento->id)->where('asociacion',1)->orderBy('desde','desc')->get();
+        $fcts = \Intranet\Entities\Fct::with('Instructor')->where('idColaboracion',$elemento->id)->where('asociacion',1)->orderBy('periode','desc')->get();
         $colaboraciones = $elemento->Centro->Colaboraciones;
     @endphp
     @if (count($fcts))

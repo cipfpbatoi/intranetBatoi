@@ -9,26 +9,59 @@
                     </button>
                 </h4>    
             </div>
-            <form action='/fct/fctalumnoCreate' method='post'>
+            <form action='/fct/fctalumnoCreate' method='post' class="form-horizontal form-label-left">
                 <div class="modal-body">
                     @csrf
-                    @lang("validation.attributes.alumno") :
-                    <select name='idAlumno'>
-                        @foreach (hazArray(\Intranet\Entities\Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',['NameFull','horasFct'],'-') as $key => $alumno)
-                        <option value="{{ $key }}"> {{ $alumno }}</option>
-                        @endforeach 
-                    </select><br/>
+                    <div id="idAlumno" class="form-group">
+                        <label for="idAlumno" class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.alumno")</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select name='idAlumno' >
+                                @foreach (hazArray(\Intranet\Entities\Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',['NameFull','horasFct'],'-') as $key => $alumno)
+                                    <option value="{{ $key }}"> {{ $alumno }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                     <input type="hidden" name="idColaboracion" value="{{$elemento->id}}" />
                     <input type="hidden" name="asociacion" value="1" />
-                    @lang("validation.attributes.desde") : <input type='text' class="date" name='desde' value=''></input><br/>
-                    @lang("validation.attributes.hasta") :<input type='text' class="date" name='hasta' value=''></input><br/>
-                    @lang("validation.attributes.instructor") :
-                    <select name='idInstructor'>
-                        @foreach (hazArray($elemento->Centro->Instructores,'dni','nombre') as $dni => $nombre)
-                            <option value="{{ $dni }}"> {{ $nombre }}</option>
-                        @endforeach
-                    </select><br/>
-                    @lang("messages.generic.horas") :<input type='text' name='horas' value=''></input><br/><br/>
+                    <div id="desde" class="form-group">
+                        <label for="desde" class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.desde")</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type='text' class="date" name='desde' value={{Hoy()}} />
+                        </div>
+                    </div>
+                    <div id="hasta" class="form-group">
+                        <label for="hasta" class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.hasta")</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type='text' class="date" name='hasta' value='' />
+                        </div>
+                    </div>
+                    <div id="periode" class="form-group">
+                        <label for="periode" class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.periode")</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select name="periode">
+                                @foreach (config('auxiliares.periodesFct') as $key => $value)
+                                    <option value="{{$key}}">{{$value}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div id="instructor" class="form-group">
+                        <label for="instructor" class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.instructor")</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select name='idInstructor'>
+                                @foreach (hazArray($elemento->Centro->Instructores,'dni','nombre') as $dni => $nombre)
+                                    <option value="{{ $dni }}"> {{ $nombre }}</option>
+                                @endforeach
+                            </select><br/>
+                        </div>
+                    </div>
+                    <div id="horas" class="form-group">
+                        <label for="horas" class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.horas")</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type='text' name='horas' value=''/>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

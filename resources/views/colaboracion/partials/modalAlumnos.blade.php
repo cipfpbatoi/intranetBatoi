@@ -9,18 +9,37 @@
                     </button>
                 </h4>    
             </div>
-            <form id='formFct' action='' method='post'>
+            <form id='formFct' action='/fct/fctalumnoCreate' method='post' class="form-horizontal form-label-left">
                 <div class="modal-body">
                     @csrf
-                    @lang("validation.attributes.alumno") :
-                    <select name='idAlumno'>
-                        @foreach (hazArray(\Intranet\Entities\Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',['NameFull','horasFct'],'-') as $key => $alumno)
-                        <option value="{{ $key }}"> {{ $alumno }}</option>
-                        @endforeach 
-                    </select><br/>
-                    @lang("validation.attributes.desde") : <input type='text' class="date" name='desde' value='{{$fct->desde}}'></input><br/>
-                    @lang("validation.attributes.hasta") :<input type='text' class="date" name='hasta' value='{{$fct->hasta}}'></input><br/>
-                    @lang("messages.generic.horas") :<input type='text' name='horas' value='{{$fct->horas}}'></input><br/><br/>
+                    <div id="idAlumno" class="form-group">
+                        <label for="idAlumno" class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.alumno")</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select name='idAlumno' >
+                                @foreach (hazArray(\Intranet\Entities\Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',['NameFull','horasFct'],'-') as $key => $alumno)
+                                    <option value="{{ $key }}"> {{ $alumno }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div id="desde" class="form-group">
+                        <label for="desde" class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.desde")</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type='text' class="date" name='desde' value='{{$fct->desde}}' />
+                        </div>
+                    </div>
+                    <div id="hasta" class="form-group">
+                        <label for="hasta" class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.hasta")</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type='text' class="date" name='hasta' value='{{$fct->hasta}}' />
+                        </div>
+                    </div>
+                    <div id="horas" class="form-group">
+                        <label for="horas" class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.horas")</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type='text' name='horas' value=''/>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

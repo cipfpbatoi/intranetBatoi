@@ -20,15 +20,16 @@ class Fct extends Model
     public $timestamps = false;
 
     protected $fillable = ['idAlumno',
-        'idColaboracion','idInstructor' ,'desde', 'hasta',
+        'idColaboracion','idInstructor','periode' ,'desde', 'hasta',
         'horas','asociacion'
         ];
-    protected $notFillable = ['hasta','idAlumno','horas'];
+    protected $notFillable = ['desde','hasta','idAlumno','horas'];
 
     protected $rules = [
         'idAlumno' => 'sometimes|required',
         'idColaboracion' => 'sometimes|required',
         'idInstructor' => 'sometimes|required',
+        'periode' => 'required',
         'desde' => 'sometimes|required|date',
         'hasta' => 'sometimes|required|date',
     ];
@@ -37,6 +38,7 @@ class Fct extends Model
         'idColaboracion' => ['type' => 'select'],
         'idInstructor' => ['type' => 'select'],
         'asociacion' => ['type' => 'hidden'],
+        'periode' => ['type' => 'select'],
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
 
@@ -139,7 +141,9 @@ class Fct extends Model
         return $query->where('correoInstructor',0);
     }
    
-
+    public function getPeriodeOptions(){
+        return config('auxiliares.periodesFct');
+    }
    
     public function getIdColaboracionOptions(){
         $cicloC = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->get();
@@ -194,20 +198,10 @@ class Fct extends Model
         return isset($this->Colaboracion->Centro->nombre)?$this->Colaboracion->Centro->nombre:'Convalidada/Exent';
     }
 
-    public function getPeriodeAttribute(){
-        $inici = new Date($this->desde);
-        $inici->format('Y-m-d');
-        if ($inici <= config('curso.fct.2')['inici']) {
-            return 1;
-        }
-        else {
-            return 2;
-        }
-    }
+
 
     public function getinTimeAttribute(){
         $hoy = Hoy('Y-m-d');
-
         if ( $hoy > config('curso.fct.2')['inici'] ){
             return ($this->periode == 2);
         } else {
