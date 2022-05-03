@@ -112,7 +112,6 @@ class ComisionController extends ModalController
         foreach ($comision->Fcts as $fct){
             if ($fct->pivot->aviso){
                 $this->sendEmail($fct,$comision->desde);
-
             }
             Activity::record('visita', $fct, null, $comision->desde, 'Visita Empresa');
         }
