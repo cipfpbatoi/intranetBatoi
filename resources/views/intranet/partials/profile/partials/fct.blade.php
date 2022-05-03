@@ -6,7 +6,7 @@
     @endif
         <div id="{{$fct->id}}" class="col-sm-12 fct">
             <div class="left col-md-8 col-xs-12">
-                <h6>Periode {{$fct->periode}}</h6>
+                <h6>Periode <em>{{ config('auxiliares.periodesFct')[$fct->periode] ?? '??'}}</em></h6>
                 <h5>FCT {{$elemento->Centro->nombre}} <strong>({{$elemento->puestos}})</strong></h5>
                 <ul class="list-unstyled">
                     @if ($fct->Instructor)

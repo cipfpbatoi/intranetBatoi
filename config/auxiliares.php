@@ -20,7 +20,7 @@ return [
     'tipoEstudioC' => [1=>'Ciclo Formativo de Grado Medio','2'=>'Ciclo Formativo de Grado Superior','3'=>'Ciclo Formativo Básico','4'=>'Bachiller','5'=>'ESO','6'=>'Primaria'],
     'tipoTutoria' => [0=>'No assignada',1=>'Xarrades Programades',2=>'Convivència',3=>'Acadèmiques-Professionals',4=>'Temes transversals'],
     'veep' => [],
-    'estadoColaboracion' => [0=>'',1=>'??',2=>'Col·labora',3=>'No col·labora'],
+    'estadoColaboracion' => [ 0=>'' , 1=>'??', 2=>'Col·labora', 3=>'No col·labora', 4=>'Fct'],
     'incidenciasColaboracion' => [1=>'Envia correu contacte',2=>'Envia confirmació de dades',3=>"Envia documentació d'inici",4=>"Denegació pràctiques",5=>'Comentari Professor',6=>'Comentari Instructor',7=>'Telefònic'],
     'reunionesControlables' => [2=>1, 5=>1, 6=>0, 7=>4, 9=>1],
     'modelsAvailablePoll' => [1=>'--',
