@@ -26,6 +26,7 @@
         "laravel/tinker": "^2.4.1",
         "laravel/ui": "^2.0",
         "laravelcollective/html": "^6.0",
+        "livewire/livewire": "^2.10",
         "mikehaertl/php-pdftk": "^0.8.1",
         "predis/predis": "^1.1",
         "simplesoftwareio/simple-qrcode": "~4",
@@ -76,7 +77,8 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover"
+            "@php artisan package:discover",
+            "@php artisan vendor:publish --force --tag=livewire:assets --ansi"
         ]
     },
     "config": {
