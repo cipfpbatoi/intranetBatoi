@@ -47,7 +47,6 @@ class SendEmail implements ShouldQueue
     public function handle(Mailer $mailer)
     {
         $mailer->to($this->correo, 'Intranet')
-                ->replyTo('ignasi.gomis.mullor@gmail.com','Ignasi Gomis')
                 ->send(new Comunicado($this->remitente,$this->elemento, $this->vista,$this->attach));
         
         if (isset($this->remitente['id'])){
