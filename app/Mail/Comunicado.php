@@ -42,7 +42,7 @@ class Comunicado extends Mailable
         $nombre = $this->remitente['nombre'];
         $vista = $this->view($this->vista,['remitente'=>$this->remitente])
                         ->from($this->remitente['email'],$nombre)
-                        ->replyTo('ignasi.gomis.mullor@gmail.com','Ignasi Gomis')
+                        ->replyTo($this->remitente['email'],$nombre)
                         ->subject(trans("models.modelos." . $this->modelo));
         if (isset($this->attach))
             foreach ($this->attach as $index => $value){
