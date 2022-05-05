@@ -3,7 +3,7 @@
     @livewireStyles
 @endsection
 @section('content')
-    <livewire:showtasks >
+    @livewire('datatables', ['mod' => 'Profesor'])
 @endsection
 @section('scripts')
     @livewireScripts

@@ -9,7 +9,7 @@ class Fct extends ModelPoll
     public static function loadPoll($votes){
 
         $fcts = collect();
-        foreach (realFct::misFctsColaboracion()->haEmpezado()->esFct()->whereNotIn('id',$votes)->get() as $fct) {
+        foreach (realFct::misFctsColaboracion()->esFct()->whereNotIn('id',$votes)->get() as $fct) {
             $fcts->push(['option1'=>$fct]);
         }
         if (count($fcts)) return $fcts;
@@ -23,7 +23,7 @@ class Fct extends ModelPoll
     }
     public static function loadVotes($id)
     {
-        $fcts = hazArray(realFct::misFctsColaboracion()->haEmpezado()->esFct()->get(),'id');
+        $fcts = hazArray(realFct::misFctsColaboracion()->esFct()->get(),'id');
         $votes = Vote::getVotes($id,$fcts)->get();
         $classified = [];
         foreach ($votes as $vote){
@@ -52,7 +52,7 @@ class Fct extends ModelPoll
     }
 
     public static function has(){
-        return realFct::misFctsColaboracion()->haEmpezado()->esFct()->count();
+        return realFct::misFctsColaboracion()->esFct()->count();
     }
 
 

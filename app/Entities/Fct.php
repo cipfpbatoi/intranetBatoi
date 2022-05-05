@@ -132,10 +132,7 @@ class Fct extends Model
     {
         return $query->where('asociacion',3);
     }
-    public function scopeHaEmpezado($query)
-    {
-        return $query->where('desde','<',Hoy());
-    }
+
     public function scopeNoAval($query)
     {
         return $query->where('correoInstructor',0);
