@@ -30,6 +30,7 @@ class AlumnoFctResource extends JsonResource
             'pg0301' => $this->pg0301,
             'profesor' => $this->Alumno->Tutor[0]->dni,
             'alumno' => $this->quien,
+            'horas' => $this->horas
         ];
     }
 }
