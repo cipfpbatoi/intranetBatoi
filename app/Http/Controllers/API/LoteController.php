@@ -53,7 +53,7 @@ class LoteController extends ApiBaseController
                             'articulo_lote_id' => $articulo->id
                         ]
                     );
-                    //$material->save();
+                    $material->save();
                 }
                 $texto .= $articulo->descripcion.',';
             }
