@@ -196,7 +196,7 @@ class ComisionController extends ModalController
     public function detalle($id)
     {
         $comision = Comision::find($id);
-        $all = Fct::misFcts()->distinct()->noAval()->esFct()->orderBy('id')->get();
+        $all = Fct::misFcts()->distinct()->esFct()->orderBy('id')->get();
         $allFcts = collect();
         foreach ($all as $fct){
             $allFcts[$fct->Colaboracion->idCentro] = $fct;
