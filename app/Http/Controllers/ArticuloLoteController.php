@@ -13,6 +13,7 @@ use Intranet\Botones\BotonImg;
  */
 class ArticuloLoteController extends IntranetController
 {
+    use traitImprimir;
 
     /**
      * @var string
@@ -41,4 +42,6 @@ class ArticuloLoteController extends IntranetController
     {
         $this->panel->setBoton('grid', new BotonImg('articuloLote.show'));
     }
+
+
 }

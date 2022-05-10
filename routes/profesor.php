@@ -309,6 +309,7 @@ Route::put('/material/{material}/edit', ['as' => 'material.update', 'uses' => 'M
 Route::get('/inventario/{espacio}/detalle', ['as' => 'material.espacio', 'uses' => 'InventarioController@espacio']);
 Route::get('/material/{material}/copy', ['as' => 'material.copy', 'uses' => 'MaterialController@copy']);
 Route::get('/material/{material}/incidencia', ['as' => 'material.incidencia', 'uses' => 'MaterialController@incidencia']);
+Route::get('/lote',['as' => 'lote.index','uses'=>'PanelLoteController@index']);
 
 
 //RUTAS INVENTARIO
@@ -317,8 +318,10 @@ Route::get('/inventario/{material}/edit', ['as' => 'inventario.edit', 'uses' => 
 Route::get('/inventario/{material}/delete', ['as' => 'inventario.delete', 'uses' => 'InventarioController@destroy']);
 Route::put('/inventario/{material}/edit', ['as' => 'inventario.update', 'uses' => 'InventarioController@update']);
 Route::post('/inventario/barcode','InventarioController@barcode');
-
 Route::get('/inventaria',['as'=>'inventariar.index','uses'=>'ArticuloLoteController@index']);
+Route::get('/lote/{espacio}/barcode/{posicion?}',['as' => 'lote.barcode', 'uses'=> 'PanelLoteController@barcode']);
+
+
 
 
 

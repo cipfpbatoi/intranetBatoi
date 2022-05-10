@@ -67,6 +67,11 @@ class Lote extends Model
         return 0;
     }
 
+    public function getEstatAttribute()
+    {
+        return config('auxiliares.estadosLote')[$this->estado];
+    }
+
     public function getDepartamentAttribute(){
         return $this->Departamento?$this->Departamento->vliteral:'No assignat';
     }
