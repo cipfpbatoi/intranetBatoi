@@ -3,6 +3,7 @@
 namespace Intranet\Services;
 
 use Intranet\Entities\Adjunto;
+use Styde\Html\Facades\Alert;
 
 
 class AttachedFileService

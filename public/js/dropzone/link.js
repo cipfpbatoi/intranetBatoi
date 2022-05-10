@@ -1,7 +1,7 @@
 Dropzone.options.myDropzone = {
     autoProcessQueue: true,
     uploadMultiple: true,
-    maxFilezise: 10,
+    maxFilesize: 10,
     parallelUploads: 5,
     addRemoveLinks: true,
     timeout: 50000,
@@ -60,6 +60,9 @@ Dropzone.options.myDropzone = {
         this.on("maxfilesexceeded", function(file) {
             this.removeFile(file);
             alert("No pots pujar més de cinc fitxers");
+        });
+        this.on("error", function(file,message) {
+            alert(message);
         });
         this.on("success",
             myDropzone.processQueue.bind(myDropzone)
