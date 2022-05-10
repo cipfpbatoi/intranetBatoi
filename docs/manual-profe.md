@@ -113,10 +113,10 @@ Al polsar la icona es despleguen totes. Podem eliminar-les amb la icona de la pa
  
 Si no hem vist alguna notificació al acabar el día rebrem automàticament un email amb les notificacions de la intranet.
 
-## Menú Documentació
+## Menú 'Documentació'
 Des d'ací tenim accés a informació i documentació general del Centre.
 
-### Veure les Programacions
+### Programacions
 Ací trobem totes les programacions del Centre. Podem filtrar i ordenar pel criteri que vulguem (mòdul, cicle, departament, ...).
 
 ![Programacions](./img/ajuda/09-programacions.png)
@@ -209,8 +209,8 @@ Trobem dos botons:
 
 ![Botons Guàrdia](./img/ajuda/botonsguardia.png)
 
-El botó Control Personal l'utilitzarem per a veure les absències del dia.
-El botó Guardar l'utilitzarem per a guardar els canvis.
+El botó **Control Personal** l'utilitzarem per a veure les absències del personal del centre eixe dia (comissions de serveis, extraescolars, baixes...).
+El botó **Guardar** l'utilitzarem per a guardar els canvis.
 
 #### Fer la guàrdia
 Només es pot marcar des de l'ordinador de la Biblioteca o de la Sala del professorat, i dins de l'hora de la nostra guàrdia.
@@ -224,7 +224,7 @@ Des d'ací pujarem el seguiment de la nostra programació al final de cada avalu
 
 ![Seguiments](./img/ajuda/10-seguiments.png)
 
-Per a pujar un nou seguiment polsem el botó 'Crea resultats per un grup' de la part superior i introduïm les dades:
+Per a pujar un nou seguiment polsem el botó '**Crea resultats per un grup**' de la part superior i introduïm les dades:
 * Grup, mòdul i avaluació
 * Alumnes matriculats, avaluats i aprovats
 * Unitats programades i impartides
@@ -306,7 +306,7 @@ Els pasos a fer són:
 
 Una activitat **NO ES POT REALITZAR** fins que no estiga autoritzada.
 
-### Comisions de servei
+### Comissions de servei
 Aquest apartat ens permet gestionar totes les comisions per visites de FCT, viatges, etc.
 ![Comissió de servei](./img/ajuda/13-comisions.png)
 
@@ -451,25 +451,25 @@ Podem fer canvis totes les vegades que vulguem. Quan hem deixat l'horari com vol
 
 Podem continuar fent canvis fins que Caporalia accepte la nostra proposta. En eixe moment l'estat canvia a **'Aprovat'** i ja no podem fer més canvis. Encara que estiga aprovat, el nou horari no entra en vigor fins que ens ho indiquen des de Caporalia (normalment a Març).
 
-## Menú Enquestes
-Des d'ací podem accedir als resultats de les diferents enquestes pasades als nostres alumnes.
+## Menú 'Enquestes'
+Des d'ací podem accedir als resultats de les diferents enquestes passades al nostre alumnat.
 
 ![Enquestes](./img/ajuda/enquestes.png)
 
-En la taula tenim les enquestes que el tutor o direcció han pasat als nostres alumnes.
+En la taula tenim les enquestes que el/la tutor/a o direcció han passat al nostres alumnat.
 
-## Menú Actes/Convocatories
+## Menú 'Actes/Convocatories'
 Ací trobem informació sobre les reunions de tot tipus i els Grups de treball als que pertanyem.
 
 ### Gestió de reunions
-Ens apareixen totes les reunions a las que ens han convocat (Claustre, Departament, Equip docent, Grup de treball, ...) i podem veure l'acta de cadascuna d'elles des del botó 'Imprimir'.
+Ens apareixen totes les reunions a les que ens han convocat (Claustre, Departament, Equip docent, Grup de treball, ...) i podem veure l'acta de cadascuna d'elles des del botó 'Imprimir'.
 
 ![Gestió de reunions](./img/ajuda/15-reunio.png)
 
 ### Grups de treball
 Des d'ací podem veure els nostres grups de treball o crear un nou grup.
 
-## Menú Enllaços externs
+## Menú 'Enllaços externs'
 Des d'ací podem accedir ràpidament a:
 * Moodle: ens obri el Moodle del Centre. Si ens hem autenticat amb Google per a entrar a la intranet ara no tindrem que tornar-ho a fer
 * Correu: obri el nostre compte de Gmail del Centre (el ...@cipfpbatoi.es)
@@ -479,18 +479,18 @@ Des d'ací podem accedir ràpidament a:
 En aquest apartat veurem altres eines que ens proporcina la intranet.
 
 ### Taules amb informació
-El moltes pàgines tenim la informació ordenada en taules. En qualsevol d'elles podem fer:
+En moltes pàgines tenim la informació ordenada en taules. En qualsevol d'elles podem fer:
 
 ![Treballar amb taules de dades](./img/ajuda/30-taula.png)
 
-1. **Mostrar**: per defecte es modsren 25 registres per pàgina i des d'ací podem canviar-ho
+1. **Mostrar**: per defecte es mostren 25 registres per pàgina i des d'ací podem canviar-ho
 2. **Filtrar**: filtra la taula per la paraula/paraules que posem ací. Mostrará només els registres que contenen eixa paraula en qualsevol camp
 3. **Ordenar**: polsant sobre el títol d'una columna ordena la taula segons el valor d'eixa columna. Si tornem a polsar sobre la mateixa columna fa l'ordenació al revès.
 4. **Operacions**: ací apareixen diferentes icones amb totes les accions que podem fer amb eixe registre. Si deixem el punter del ratolí sobre qualsevol d'elles podem veure per a què serveix
 
-Baix de la taula podem veure quins registres estem veient ('Mostrant de 26 a 50 de 68') i pasar d'una pàgina a altra amb els botons d'**Anterior i Següent**.
+Baix de la taula podem veure quins registres estem veient ('Mostrant de 26 a 50 de 68') i passar d'una pàgina a una altra amb els botons d'**Anterior i Següent**.
 
-Moltes pàgines tenen a la part superio dreta 2 pestanyes per a poder veure la informació en forma de taula (**Llistat**) o de **Mosaic**.
+Moltes pàgines tenen a la part superior dreta 2 pestanyes per a poder veure la informació en forma de taula (**Llistat**) o de **Mosaic**.
 
 ### Editar perfil
 Des del botó de 'Editar perfil' podem canviar en nostre correu electrònic i la nostra foto.
