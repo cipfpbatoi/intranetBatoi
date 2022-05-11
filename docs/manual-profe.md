@@ -98,20 +98,20 @@ De totes formes el més senzill és marcar l'entrada i l'eixida des del nostre m
  
 Si no trobem eixe email podem fer que ens torne a arribar polsant l'icona del sobre que hi ha a la part inferior esquerra de la intranet (zona 3). 
  
-Per a no haber d'obrir el email cada vegada en el mòbil el més senzill és guardar la pàgina en el nostre mòbil: per a això, una vegada que hem obert la pàgina de fitxar en el navegador fem:
+Per a no haver d'obrir el email cada vegada en el mòbil el més senzill és guardar la pàgina en el nostre mòbil: per a això, una vegada que hem obert la pàgina de fitxar en el navegador fem:
  - en Android: cliquem en el **menú** (icona de 3 botons del cantó superior dret) i triem **Afegir a pantalla d'inici**
  - en IOS: des de la barra inferior polsem la icona de **Compartir** i triem **Afegir a pantalla d'inici**
  
  En els dos casos ens crea en el nostre escriptori del mòbil una icona anomenada **Fitxatge professorat** que ens permet fitxar només polsant-la.
 
 ### Notificacions
-En la zona 4 trobem una icona amb un sobre i el número de notificacions pendents que tenim. Aquestes notificacions són missatges d'altres usuaris de la intranet i tot tipus d'informacions automàtiques: si els alumnes se'n van a fer una activitat extraescolar, si hi ha una reunió de departament, si no hem fixat un dia, ...
+En la zona 4 trobem una icona amb un sobre i el número de notificacions pendents que tenim. Aquestes notificacions són missatges d'altres usuaris de la intranet i tot tipus d'informacions automàtiques: si l'alumnat se'n van a fer una activitat extraescolar, si hi ha una reunió de departament, si no hem fixat un dia, ...
 
 ![Notificacions](./img/ajuda/05-btnNotificacions.png)
 
 Al polsar la icona es despleguen totes. Podem eliminar-les amb la icona de la paperera.
  
-Si no hem vist alguna notificació al acabar el día rebrem automàticament un email amb les notificacions de la intranet.
+Si no hem vist alguna notificació al acabar el dia rebrem automàticament un email amb les notificacions de la intranet.
 
 ## Menú 'Documentació'
 Des d'ací tenim accés a informació i documentació general del Centre.
@@ -125,15 +125,15 @@ Per a veure la programació desitjada polsem el botó de la cadena que trobem a 
 
 ### Gestió de Centre
 Ací és on podem trobar documents generals del centre com:
-* Justificants d'assistència per als alumnes o per als pares
+* Justificants d'assistència per a l'alumnat o per als pares
 * Calendari escolar
 * Plànols del centre
 * ...
 
-Els diferents documents estan organitzats en pestanyes segons qui els ha d'utilitzar (Professor, Tutor, Cap de departament, …). A cada usuario només l'apareixeran les pestanyes referents al seu rol.
+Els diferents documents estan organitzats en pestanyes segons qui els ha d'utilitzar (Professorat, Tutor/a, Cap de departament, …). A cada usuari només l'apareixeran les pestanyes referents al seu rol.
 
 ### Informació de Centre
-Ací trobem la informació general del Centre amb els documents ordenats per pestanyes, com el Pla Funcional de Centre (PFC), el Pla d'atenció sanitària,  el Pla d'Emergències, el Reglament de Règim Intern (RRI), la PGA o els resums dels Consells Socials del Centre.
+Ací trobem la informació general del Centre amb els documents ordenats per pestanyes, Millora, Pla Funcional, Pla d'Atenció Sanitària, Pla d'Emergències, Reglament de Règim Intern (RRI), la PGA o els resums dels Consells Socials del Centre.
 
 ### Actes
 Ací trobem totes les actes ordenades per pestanyes:
@@ -145,7 +145,7 @@ Ací trobem totes les actes ordenades per pestanyes:
 ![Actes](./img/ajuda/acta.png)
 
 ### Projectes
-Ací trobem els projectes presentats pels alumnes del cicles de grau superior en el mòdul de 'Projecte' que els seus tutors han pujat a la intranet. 
+Ací trobem els projectes presentats per l'alumnat del cicles de grau superior en el mòdul de 'Projecte' que els seus tutors i tutores han pujat a la intranet. 
 
 ![Projectes](./img/ajuda/proyecto.png)
 
@@ -165,8 +165,8 @@ Les opcions que tenim per a qualsevol grup són:
 * Vore alumnat: apareix el llistat de l'alumnat del grup. El podem veure com a llistat o mosaic.  
 ![GestGrupVeureAl](./img/ajuda/gestiog_vorealumnat.png)
 
-Amb l'opció llistat tenim la llista de l'alumnat del grup i amb el botó + podem veure algunes dades personals de l'alumnat.
-Amb l'opció mosaic apareixen les dades personals de l'alumnat en forma de fitxa. 
+Amb l'opció **llistat** tenim la llista de l'alumnat del grup i amb el botó **+** podem veure algunes dades personals de l'alumnat.
+Amb l'opció **mosaic** apareixen les dades personals de l'alumnat en forma de fitxa. 
 
 Amb el perfil de tutor/a del grup, a més, podem:
   * Veure les seues dades.
@@ -174,7 +174,7 @@ Amb el perfil de tutor/a del grup, a més, podem:
   * Si hi ha curs o jornada disponible podem inscriure a l'alumnat.
   * Imprimir el seu carnet.
 
-* Mostra equip educatiu: podem veure tots els membres de l'equip educatiu (igual que els membres del departament) i tenim l'opció d'avisar a algú o a tots.
+* Mostra equip educatiu: podem veure a tots els membres de l'equip educatiu (igual que els membres del departament) i tenim l'opció d'avisar a algú o a tots.
 
 ### Claustre
 
@@ -187,11 +187,11 @@ Podem veure a tot el professorat del claustre i comprovar si estan ara o no en e
 * botó blau: indica quin mòdul s’està impartint ara i en quin aula, en el cas de ser una hora de docència. En altre cas, s’indica la tasca corresponent de l’horari.
 
 En el nostre usuari apareixen 2 botons més:
-* Carnet: per a imprimir el nostre carnet de l'institut (hem de imprimir-ho en la impressora de carnets que hi ha en Caporalia).
+* Carnet: per a imprimir el nostre carnet del Centre (hem de imprimir-ho en la impressora de carnets que hi ha en Caporalia).
 * Imprimir targetes de visita: obri un PDF amb targetes de visita que podem imprimir i retallar.
 
 ### Equip directiu
-Disposem de la mateixa informació que en el [claustre](#claustre) però de l'equip directiu per a saber on poden trobar-se.
+Disposem de la mateixa informació que en el [claustre](#claustre) però de l'equip directiu per a saber on es poden trobar.
 
 ### Guàrdia
 Ens permet signar les guàrdies del nostre horari i incloure comentaris:
@@ -209,7 +209,7 @@ Trobem dos botons:
 
 ![Botons Guàrdia](./img/ajuda/botonsguardia.png)
 
-El botó **Control Personal** l'utilitzarem per a veure les absències del personal del centre eixe dia (comissions de serveis, extraescolars, baixes...).
+El botó **Control Personal** l'utilitzarem per a veure les absències del personal del Centre eixe dia (comissions de serveis, extraescolars, baixes...).
 El botó **Guardar** l'utilitzarem per a guardar els canvis.
 
 #### Fer la guàrdia
@@ -233,7 +233,7 @@ Per a pujar un nou seguiment polsem el botó '**Crea resultats per un grup**' de
 Les icones de cada seguiment creat ens permeten esborrar-lo o modificar-lo (Edita resultats).
 
 ### Programacions
-Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ perquè encara no l'hem enviat al Cap del departament).
+Ací ens apareixen les programacions de tots els mòduls que impartim amb el seu estat (al principi serà _'No autoritzada/comunicada'_ perquè encara no l'hem enviat al/la Cap del departament).
 
 Les operacions que podem fer amb cadascuna són:
 * **Enllaç** (icona de la cadena): per a obrir la programació i modificar-la en Google Drive.
@@ -241,19 +241,19 @@ Les operacions que podem fer amb cadascuna són:
 * **Omplir seguiment** (icona dels prismàtics): per a introduir al final del curs el seguiment de la programació i les **propostes de millora** per al proper curs. Al pricipi de curs apareix el seguiment de l'any anterior amb les propostes de millora que va fer el professor/a que va impartir aquest mòdul l'any anterior. Aquestes propostes hem d'incloure-les en la nostra programació d'enguany.
 
 Els estats pels que passa una programació són:
-* '_No autoritzada/comunicada_': és el seu estat inicial i vol dir que encara no l'hem enviat al Cap del departament. En aquest estat modificarem la programació i a enviarem al Cap de departament.
-* '_No autoritzada_': ja està enviada al Cap de departament per a que la revise. Si hi ha alguna cosa que canviar ens enviarà un email indicant-nos el què i haurem de modificar-la i tornar a enviar-la.
-* '_Autoritzada_': quan la nostra programació està correcta, el Cap del departament la marca com Autoritzada i ja no podem fer canvis en la mateixa.
+* '_No autoritzada/comunicada_': és el seu estat inicial i vol dir que encara no l'hem enviat al/la Cap del departament. En aquest estat modificarem la programació i l'enviarem al/la Cap de departament.
+* '_No autoritzada_': ja està enviada al/la Cap de departament per a que la revise. Si hi ha alguna cosa que canviar ens enviarà un email indicant-nos què és el que haurem de modificar i després, haurem de tornar a enviar-la.
+* '_Autoritzada_': quan la nostra programació està correcta, el/la Cap del departament la marca com Autoritzada i ja no podem fer canvis en la mateixa.
 
 Totes les programacions estan al Google Drive i és allí on s'han de modificar. Podem accedir a la nostra programació per a editar-la amb el botó d'Enllaç explicat anteriorment o utilitzant l'enllaç que ens han enviat al nostre email del Centre. Recordeu que NO HEM DE BAIXAR-NOS la programació per a modificar-la sinó que la modificarem directament en Google Drive.
 
 Només hi ha una programació per mòdul i cicle. Si un mateix mòdul s'imparteix en més d'un grup, la programació ha de ser la mateixa. L'enllaç és el mateix per a tot el professorat que l'imparteix. Si hi han alguns apartats que han de ser diferents en funció del grup, han d'especificar-se en un annex al final del document, indicant els apartats que són diferents i per a què grups.
 
-Segons marca normativa i per a la millora contínua del procés d’ensenyament-aprenentatge, la programació ha d’incloure un apartat de propostes de millora tretes de l’avaluació de la  mateixa del curs anterior. Explicat anteriorment en icona dels prismàtics.
+Segons marca normativa i per a la millora contínua del procés d’ensenyament-aprenentatge, la programació ha d’incloure un apartat de propostes de millora tretes de l'avaluació de la  mateixa del curs anterior. Explicat anteriorment en icona dels prismàtics.
 
-Una vegada acabada la programació l'enviarem al nostre Cap del departament polsant el botó de **Enviar** (icona del sobre).
+Una vegada acabada la programació l'enviarem al/la nostre/a Cap del departament polsant el botó de **Enviar** (icona del sobre).
 
-La programació queda en estat '_No autoritzada_'. El Cap del departament no la pot veure per a revisar-la, si no la enviem.
+La programació queda en estat '_No autoritzada_'. El/la Cap del departament no la pot veure per a revisar-la, si no l'enviem.
 
 ### Tancament de curs
 Ací al final del curs ens apareixeran totes les tasques que hem de fer per a tancar el curs (introduir els resultats finals de cada mòdul, etc) per a assegurar-nos que no ens deixem res per fer.
@@ -456,7 +456,7 @@ Des d'ací podem accedir als resultats de les diferents enquestes passades al no
 
 ![Enquestes](./img/ajuda/enquestes.png)
 
-En la taula tenim les enquestes que el/la tutor/a o direcció han passat al nostres alumnat.
+En la taula tenim les enquestes que el/la tutor/a o direcció han passat al nostre alumnat.
 
 ## Menú 'Actes/Convocatories'
 Ací trobem informació sobre les reunions de tot tipus i els Grups de treball als que pertanyem.
@@ -476,7 +476,7 @@ Des d'ací podem accedir ràpidament a:
 * Itaca: ens porta a la pàgina d'Itaca. Ací sí que ens haurem d'autenticar
 
 ## Altres accions
-En aquest apartat veurem altres eines que ens proporcina la intranet.
+En aquest apartat veurem altres eines que ens proporciona la intranet.
 
 ### Taules amb informació
 En moltes pàgines tenim la informació ordenada en taules. En qualsevol d'elles podem fer:
@@ -485,7 +485,7 @@ En moltes pàgines tenim la informació ordenada en taules. En qualsevol d'elles
 
 1. **Mostrar**: per defecte es mostren 25 registres per pàgina i des d'ací podem canviar-ho
 2. **Filtrar**: filtra la taula per la paraula/paraules que posem ací. Mostrará només els registres que contenen eixa paraula en qualsevol camp
-3. **Ordenar**: polsant sobre el títol d'una columna ordena la taula segons el valor d'eixa columna. Si tornem a polsar sobre la mateixa columna fa l'ordenació al revès.
+3. **Ordenar**: polsant sobre el títol d'una columna ordena la taula segons el valor d'eixa columna. Si tornem a polsar sobre la mateixa columna fa l'ordenació a l'inrevès.
 4. **Operacions**: ací apareixen diferentes icones amb totes les accions que podem fer amb eixe registre. Si deixem el punter del ratolí sobre qualsevol d'elles podem veure per a què serveix
 
 Baix de la taula podem veure quins registres estem veient ('Mostrant de 26 a 50 de 68') i passar d'una pàgina a una altra amb els botons d'**Anterior i Següent**.
@@ -493,6 +493,6 @@ Baix de la taula podem veure quins registres estem veient ('Mostrant de 26 a 50 
 Moltes pàgines tenen a la part superior dreta 2 pestanyes per a poder veure la informació en forma de taula (**Llistat**) o de **Mosaic**.
 
 ### Editar perfil
-Des del botó de 'Editar perfil' podem canviar en nostre correu electrònic i la nostra foto.
+Des del botó de 'Editar perfil' podem canviar el nostre correu electrònic i la nostra foto.
 
 ![Editar perfil](./img/ajuda/08-perfil-modificar.png)
