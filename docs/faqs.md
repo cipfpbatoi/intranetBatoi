@@ -23,6 +23,9 @@ Ací trobem informació de còm fer coses concretes com:
 * FCT
   * [Com anyadir una empresa que no ha colaborat abans amb el centre](#com-anyadir-una-empresa-que-no-ha-colaborat-abans-amb-el-centre)
   * [Com crear una col.laboració amb el departament](#com-crear-una-nova-collaboració-amb-el-departament)
+  * [Com crear un nou instructor o un nou centre de treball](#com-crear-un-nou-instructor-o-un-nou-centre-de-treball)
+  * [Entrada prova 1](#entrada-nova-2)
+  
 
 
 ## Com Fitxar l'entrada o eixida del Centre
@@ -163,8 +166,22 @@ Una volta creada l'empresa amb éxit, podem accedir a la seua informació fent c
 ## Com crear una nova col.laboració amb el departament
 Pot ocorrer que tingam que crear una FCT amb una empresa que ja havia col.laborat amb el centre però amb un departament diferent. En este cas necessitarem crear una nova col.laboració amb eixa empresa.
 
-Per tal de crear la nova col.laboració buscarem l'empresa en el menú **'Pràctiques->Empreses'** i la seleccionarem pulsant sobre la icona **'+'** de la columna **'Operacions'**. Finalment en la pestanya **'Colaboració'** trobarem el botó **'Afegir Colaboració'**
+Per tal de crear la nova col.laboració buscarem l'empresa en el menú **'Pràctiques->Empreses'** i la seleccionarem pulsant sobre la icona **'+'** de la columna **'Operacions'**. Finalment en la pestanya **'Colaboració'** trobarem el botó **'Afegir Colaboració'**.
 
+La següent imatge mostra les dades necessaries. El camp **'Llocs'** fa referència al nombre d'alumnes que requerixen.
 
+![dades colaboracio](./img/ajuda/dades_colaboracio.PNG)
 
-Per poder crear una FCT amb una determinada empresa abans hem de dir-li al sistema que eixa empresa es una col.laboració amb el departament. Anem al menú **'Pràctiques->Empreses'** i en la columna **'Operacions'** seleccionem la icona **'+'** que ens permet veure la següent página:
+Es posible que amb la col.laboració siga necessari crear un nou instructor o tanmateix, un nou centre de treball.
+
+## Com crear un nou centre de treball o un nou instructor
+
+Per tal de crear un nou centre de treball, en la pestanya **'Centre de treball'** pulsem **'Afegir Centre de treball'** i s'ens obri el següent formulari:
+
+![nou centre treball](./img/ajuda/empresa_centre_treball.PNG)
+
+Una volta seleccionada l'empresa, en la pestanya **'Centre de treball'** pulsem sobre **'Nou instructor'** i s'ens obri el següent formulari:
+
+![nou instructor](./img/ajuda/empresa_nou_instructor.PNG)
+
+## Entrada nova 2
