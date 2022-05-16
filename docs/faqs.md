@@ -20,6 +20,10 @@ Ací trobem informació de còm fer coses concretes com:
   * [Imprimir el carnet dels alumnes](#com-imprimir-els-carnets-dels-alumnes)
 * Altres
   * [Fer l'inventari](#com-fer-linventari)
+* FCT
+  * [Com anyadir una empresa que no ha colaborat abans amb el centre](#com-anyadir-una-empresa-que-no-ha-colaborat-abans-amb-el-centre)
+  * [Com crear una col.laboració amb el departament](#com-crear-una-nova-collaboració-amb-el-departament)
+
 
 ## Com Fitxar l'entrada o eixida del Centre
 Al arribar al Centre hem de fitxar a la Intranet. Podem fer-ho de 3 formes diferents:
@@ -141,3 +145,26 @@ Els carnets s'han d'imprimr des de Caporalia d'Estudis on està la impressora de
 El responsable de manteniment de cada departament ha de fer al final de curs l'inventari de tots els materials del departament i les aules i tallers. 
 
 En el [manual d'inventari](./inventari.md) te tota al informació de com fer-ho.
+
+# FCT
+
+## Com anyadir una empresa que no ha colaborat abans amb el centre
+Per tal de donar d'alta una nova empresa anem al menú **'Pràctiques->Empreses'** per arribar al Llistat d'empreses. Per tal de crear l'empresa cal fer us del botó '**Crear Empresa**'. Ara sens obri el següent formulari amb les dades que son necesaries.
+
+![Crear empresa](./img/ajuda/fct_crear_empresa.png)
+
+Cal tenir en compte que el checkbox **'Copia anexe 1'** apareix per defecte marcat. Posiblement en el moment de la creació de l'empresa no tenim eixe document per tant, en eixe cas, cal desmarcar-lo.
+
+Una volta creada l'empresa amb éxit, podem accedir a la seua informació fent click sobre la icona **'+'** de la columna **'Operacions'** i veurem que s'ha creat un centre de treball i una col.laboració amb el nostre departament.
+
+![info empresa centre treball](./img/ajuda/info_empresa_centre_treball.png)
+![info empresa colaboracio](./img/ajuda/info_empresa_colaboracio.png)
+
+## Com crear una nova col.laboració amb el departament
+Pot ocorrer que tingam que crear una FCT amb una empresa que ja havia col.laborat amb el centre però amb un departament diferent. En este cas necessitarem crear una nova col.laboració amb eixa empresa.
+
+Per tal de crear la nova col.laboració buscarem l'empresa en el menú **'Pràctiques->Empreses'** i la seleccionarem pulsant sobre la icona **'+'** de la columna **'Operacions'**. Finalment en la pestanya **'Colaboració'** trobarem el botó **'Afegir Colaboració'**
+
+
+
+Per poder crear una FCT amb una determinada empresa abans hem de dir-li al sistema que eixa empresa es una col.laboració amb el departament. Anem al menú **'Pràctiques->Empreses'** i en la columna **'Operacions'** seleccionem la icona **'+'** que ens permet veure la següent página:
