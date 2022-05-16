@@ -23,6 +23,8 @@ Ací trobem informació de còm fer coses concretes com:
 * FCT
   * [Com anyadir una empresa que no ha colaborat abans amb el centre](#com-anyadir-una-empresa-que-no-ha-colaborat-abans-amb-el-centre)
   * [Com crear una col.laboració amb el departament](#com-crear-una-nova-collaboració-amb-el-departament)
+  * [ENTRADA PROVA 2](#entrada-nova-victor)
+  
 
 
 ## Com Fitxar l'entrada o eixida del Centre
@@ -168,3 +170,4 @@ Per tal de crear la nova col.laboració buscarem l'empresa en el menú **'Pràct
 
 
 Per poder crear una FCT amb una determinada empresa abans hem de dir-li al sistema que eixa empresa es una col.laboració amb el departament. Anem al menú **'Pràctiques->Empreses'** i en la columna **'Operacions'** seleccionem la icona **'+'** que ens permet veure la següent página:
+## Entrada nova victor
