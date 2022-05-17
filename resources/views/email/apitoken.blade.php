@@ -31,6 +31,9 @@ $programaciones = Intranet\Entities\Programacion::misProgramaciones($elemento->d
             <li>Enllaç per a connectar-se des de fora del centre:
                 <a href="{{config('contacto.host.externo')}}?api_token={{$elemento->api_token}}">{{config('contacto.host.externo')}}?api_token={{$elemento->api_token}}</a>
             </li>
+            <li>Enllaç per a obrir aules:
+                <a href="{{config('contacto.host.web')}}/api/aula?dni={{$elemento->dni}}&api_token={{$elemento->api_token}}">{{config('contacto.host.web')}}/api/aula?dni={{$elemento->dni}}&api_token={{$elemento->api_token}}</a>
+            </li>
         @endif
     </ul>
     <p></p>

@@ -7,6 +7,7 @@ use Intranet\Entities\Hora;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Profesor;
+use Intranet\Entities\Reserva;
 
 /**
  * Class ReservaController
@@ -40,4 +41,6 @@ class ReservaController extends IntranetController
 
         return view('reservas.reserva', compact('espacios', 'horas','profes'));
     }
+
+
 }

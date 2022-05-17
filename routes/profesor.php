@@ -450,6 +450,8 @@ Route::put('/ciclodual/edit',['as'=>'cicloDual.update','uses'=>'CicloDualControl
 
 Route::get('/autorizacion/{nia}/actividad/{id}',['as'=>'actividad.autorizacion','uses'=>'ActividadController@menorAuth']);
 
+
+
 /* Prova */
 Route::get('/ocr',['as'=>'ocr.index','uses'=>'OcrController@index']);
 Route::view('/tasks','tasks.index');

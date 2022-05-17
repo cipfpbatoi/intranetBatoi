@@ -19,4 +19,29 @@ class ReservaController extends ApiBaseController
         }
         return $this->sendResponse($data, 'OK');
     }
+
+    public function fichar(Request $datosProfesor)
+    {
+        $profesor = Profesor::find($datosProfesor->dni);
+        if ($datosProfesor->api_token === $profesor->api_token) {
+            $ultimo = Falta_profesor::fichar($profesor->dni);
+            return response()->view('ficha', compact('ultimo'), 200)->header('Content-type', 'text/html');
+        }
+        return $this->sendResponse(['updated' => false], 'Profesor no identificado');
+    }
+
+    public function abrir(Request $datosProfesor)
+    {
+        $profesor = Profesor::find($datosProfesor->dni);
+        if ($datosProfesor->api_token === $profesor->api_token){
+            $reserva = Reserva::where('idProfesor',$datosProfesor->dni)->where('dia',Hoy())->where('hora',hora())->first();
+            if ($reserva){
+                return $this->sendResponse(['updated'=>true,$reserva]);
+            } else {
+                return $this->sendResponse(['updated' => false], 'No tens cap reserva per ara');
+            }
+
+        }
+        return $this->sendResponse(['updated' => false], 'Profesor no identificado');
+    }
 }
