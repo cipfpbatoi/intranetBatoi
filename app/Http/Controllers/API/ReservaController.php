@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers\API;
 
 use Intranet\Entities\Reserva;
+use Intranet\Entities\Profesor;
 use Illuminate\Http\Request;
 
 class ReservaController extends ApiBaseController
