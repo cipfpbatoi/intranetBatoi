@@ -16,7 +16,7 @@
         "fedeisas/laravel-mail-css-inliner": "^4.0",
         "fideloper/proxy": "^4.0",
         "graham-campbell/markdown": "^13.1.1",
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "^7.4",
         "h4cc/wkhtmltopdf-amd64": "^0.12.4",
         "izi-dev/nova-conditional-field": "^2.1",
         "jenssegers/date": "^4.0.0@beta",

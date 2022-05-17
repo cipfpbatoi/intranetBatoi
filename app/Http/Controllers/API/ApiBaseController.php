@@ -135,7 +135,7 @@ class ApiBaseController extends Controller
         return $this->class::all($value);
     }
 
-    protected function sendResponse($result, $message)
+    protected function sendResponse($result, $message=null)
     {
         return response()->json(['success'=>true,'data'=>$result]);
     }
