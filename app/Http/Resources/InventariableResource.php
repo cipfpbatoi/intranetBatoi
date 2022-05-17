@@ -17,6 +17,8 @@ class InventariableResource extends JsonResource
         return [
             'id' => $this->id,
             'nserieprov' => $this->nserieprov??'',
+            'marca' => $this->marca??'',
+            'modelo' => $this->modelo??'',
             'espacio' => $this->espacio,
             'descripcion' => $this->descripcio,
 

@@ -63,6 +63,10 @@ const mesesCaduca=6;
         },
         deferRender : true,
         dataSrc : 'data',
+        dom: 'Bfrtip',
+        buttons: [
+            'print'
+        ],
         columns: [
             { data:'id'},
             { data:'articulo'},

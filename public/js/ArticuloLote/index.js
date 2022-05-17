@@ -44,13 +44,15 @@ function cargaMateriales(entorno,idArticulo){
         data: { api_token: token},
         dataType: "json",
     }).then(function (result) {
-        var html = '<table id="datamateriales" name="material" class="table table-striped"><thead><tr><th>Id</th><th>Numero Serie</th><th>Espai</th>';
+        var html = '<table id="datamateriales" name="material" class="table table-striped"><thead><tr><th>Id</th><th>Numero Serie</th><th>Marca</th><th>Modelo</th><th>Espai</th>';
         var descripcion = '';
         html += '<th>Operacions</th></tr></thead><tbody>';
         $(result.data).each(function (  i, item) {
             html += '<tr id="'+item.id+'"><td>'+item.id+'</span></td>'+
-                '<td><span class="input" name="nserieprov">'+ item.nserieprov+
-                '</span></td><td><span class="objselect" name="espacio">'+item.espacio+
+                '<td><span class="input" name="nserieprov">'+ item.nserieprov+'</span></td>' +
+                '<td><span class="input" name="marca">'+item.marca+'</span></td>' +
+                '<td><span class="input" name="modelo">'+item.modelo+'</span></td>' +
+                '<td><span class="objselect" name="espacio">'+item.espacio+
                 '</td><td><span class="botones">'+editar;
             descripcion = item.descripcion;
         });
