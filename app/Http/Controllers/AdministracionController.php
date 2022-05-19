@@ -7,8 +7,10 @@
 namespace Intranet\Http\Controllers;
 
 
+use Illuminate\Support\Facades\Http;
 use Intranet\Entities\Articulo;
 use Intranet\Entities\ArticuloLote;
+use Intranet\Entities\Espacio;
 use Intranet\Entities\Material;
 use Intranet\Entities\Lote;
 use Intranet\Entities\Documento;
@@ -29,6 +31,7 @@ use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Fct;
+use Illuminate\Http\Request;
 
 
 /**
@@ -369,6 +372,27 @@ class AdministracionController extends Controller
 
         }
         return false;
+    }
+
+    public function showDoor(){
+        $doors = Espacio::whereNotNull('dispositivo')->get();
+        return view('espai.show',compact('doors'));
+    }
+
+    public function closeDoor(Request $request){
+        if (esrol(AuthUser()->rol,config('roles.rol.administrador'))){
+            $link = str_replace('{dispositivo}',$request->dispositivo,config('variables.ipDomotica')).'/secure';
+            $response = Http::withBasicAuth('admin', 'Admin*HC3*Batoi22')->accept('application/json')->post($link,['args'=>[]]);
+            if ($response->successful()){
+                $missatge = 'Porta tancada';
+            } else {
+                $missatge = "No s'ha pogut tancar la porta: ".$response->status();
+            }
+        } else {
+            $missatge = 'Usuari no autoritzat';
+        }
+        $doors = Espacio::whereNotNull('dispositivo')->get();
+        return view('espai.show',compact('missatge','doors'));
     }
     
 }

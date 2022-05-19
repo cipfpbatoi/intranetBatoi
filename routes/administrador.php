@@ -65,3 +65,6 @@ Route::post('/getToken',['as' => 'sendAvaluacion.getToken','uses' => 'SendAvalua
 
 Route::get('/cleanCache',['as' => 'cleanCache','uses'=>'AdministracionController@cleanCache']);
 Route::get('/actualizaLang',['as' => 'actualizaLang','uses'=>'AdministracionController@actualizaLang']);
+
+Route::get('/close',['as' => 'show.door','uses' => 'AdministracionController@showDoor']);
+Route::post('/close',['as' => 'close.door','uses' => 'AdministracionController@closeDoor']);

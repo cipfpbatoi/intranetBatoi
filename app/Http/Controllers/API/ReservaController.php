@@ -23,14 +23,15 @@ class ReservaController extends ApiBaseController
         return $this->sendResponse($data, 'OK');
     }
 
-    public function abrir(Request $datosProfesor)
+
+    public function unsecure(Request $datosProfesor)
     {
         $profesor = Profesor::find($datosProfesor->dni);
         if ($datosProfesor->api_token === $profesor->api_token){
             $reserva = Reserva::where('idProfesor',$datosProfesor->dni)->where('dia',Hoy())->where('hora',sesion(hora()))->first();
             if ($reserva && $espacio=Espacio::find($reserva->idEspacio)){
                 if ($espacio->dispositivo){
-                    $link = str_replace('{dispositivo}',$espacio->dispositivo,config('variables.ipDomotica'));
+                    $link = str_replace('{dispositivo}',$espacio->dispositivo,config('variables.ipDomotica')).'/unsecure';
                     $response = Http::withBasicAuth('admin', 'Admin*HC3*Batoi22')->accept('application/json')->post($link,['args'=>[]]);
                     if ($response->successful()){
                         return $this->sendResponse('Porta oberta');
