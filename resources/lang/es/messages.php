@@ -288,7 +288,7 @@ return array(
         'Procediment' => 'Inicio Procedimiento',
         'Acompanyant' => 'Procedimentos en curso',
         'Materialbaja' => 'Material de baja',
-        'Secure' => 'Securitzar espai'
+        'Secure' => 'Asegurar espacio'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
