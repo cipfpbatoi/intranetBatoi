@@ -2,7 +2,7 @@
 @section('content')
     <div class="col-md-6 col-sm-6 col-xs-12">
         <div class="x_panel">
-            <form method="post" >
+            <form method="post" action="/secure">
                 @csrf
                 Selecciona dispositiu:
                 <select name="dispositivo">

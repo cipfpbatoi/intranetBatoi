@@ -47,7 +47,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('verficha', 'FicharController@entrefechas');
     Route::get('itaca/{dia}/{idProfesor}','FaltaItacaController@potencial');
     Route::post('itaca','FaltaItacaController@guarda');
-    Route::get('/aula','ReservaController@abrir');
+    Route::get('/aula','ReservaController@unsecure');
 
 
     Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => ['edit', 'create']]);

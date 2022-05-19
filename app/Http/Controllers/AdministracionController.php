@@ -379,7 +379,7 @@ class AdministracionController extends Controller
         return view('espai.show',compact('doors'));
     }
 
-    public function closeDoor(Request $request){
+    public function secure(Request $request){
         if (esrol(AuthUser()->rol,config('roles.rol.administrador'))){
             $link = str_replace('{dispositivo}',$request->dispositivo,config('variables.ipDomotica')).'/secure';
             $response = Http::withBasicAuth('admin', 'Admin*HC3*Batoi22')->accept('application/json')->post($link,['args'=>[]]);
