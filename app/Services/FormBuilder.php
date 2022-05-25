@@ -123,14 +123,19 @@ class FormBuilder
     public function fillDefaultOptionsFromModel()
     {
         $InputType = [];
+        $model = getClase($this->elemento);
         foreach ($this->fillable as $property) {
             $parametres = [];
             $inputTpe = $this->elemento->getInputType($property);
             $InputType[$property]['type'] = $this->aspect($parametres,$inputTpe['type'] ?? 'text');
+            $label = existsTranslate('models.'.$model.'.'.$property) ? trans('models.'.$model.'.'.$property):null;
             $ph = !strpos(trans('validation.attributes.' . $property), 'alidation.') ? trans('validation.attributes.' . $property) : ucwords($property);
 
             $parametres['id'] = $property . '_id';
             $parametres['ph'] = $ph;
+            if ($label) {
+                $parametres['label'] = $label;
+            }
             $parametres['class'] = 'col-md-7 col-xs-12 ' . $InputType[$property]['type'];
 
             $InputType[$property]['default'] = $inputTpe['default'] ?? null;

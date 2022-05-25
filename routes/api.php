@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
  */
 
 Route::resource('alumnofct', 'AlumnoFctController', ['except' => ['edit', 'create']]);
-Route::get('alumnoFct/{grupo}/grupo','AlumnoFctController@indice');
+Route::get('alumnofct/{grupo}/grupo','AlumnoFctController@indice');
 Route::get('/convenio','EmpresaController@indexConvenio');
 Route::get('miIp','IPController@miIP');
 Route::get('actividad/{actividad}/getFiles','ActividadController@getFiles');
@@ -74,7 +74,8 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('incidencia', 'IncidenciaController', ['except' => ['edit', 'create']]);
     Route::resource('tipoincidencia', 'TipoIncidenciaController', ['except' => ['edit', 'create']]);
     Route::resource('expediente', 'ExpedienteController', ['except' => ['edit', 'create']]);
-    Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => ['edit', 'create']]);    
+    Route::resource('solicitud', 'SolicitudController', ['except' => ['edit', 'create']]);
+    Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => ['edit', 'create']]);
     Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => ['edit', 'create']]);
     Route::resource('activity', 'ActivityController', ['except' => ['edit', 'create']]);
     Route::resource('curso', 'CursoController', ['except' => ['edit', 'create']]);

@@ -182,6 +182,10 @@ Route::get('/expedienteO', ['as' => 'expediente.orientacion', 'uses' => 'PanelEx
 Route::get('/procedimento',['as'=> 'procedimiento.all','uses'=>'PanelProcedimientoController@index']);
 Route::get('/procedimentoA',['as'=> 'procedimiento.acompanyant','uses'=>'PanelProcedimientoAcompanyantController@index']);
 
+
+Route::resource('/solicitud', 'SolicitudController', ['except' => ['destroy', 'update','show']]);
+
+
 // DROPZONE
 Route::get('/expediente/{expediente}/link', ['as' => 'expediente.link', 'uses' => 'ExpedienteController@link']);
 Route::get('/fct/{expediente}/link', ['as' => 'alumnofct.link', 'uses' => 'PanelFctAvalController@link']);

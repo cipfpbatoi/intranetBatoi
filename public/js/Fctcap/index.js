@@ -7,7 +7,7 @@ var avise = ' <a href="/profesor/mensaje" class="mensaje"><i class="fa fa-bell">
 $("#dataFct").DataTable( {
     ajax : {
         method: "GET",
-        url: '/api/alumnoFct/'+grupo+'/grupo',
+        url: '/api/alumnofct/'+grupo+'/grupo',
         data: { api_token: token},
     },
     deferRender : true,
@@ -69,7 +69,7 @@ $(function () {
         if (a56){
             $.ajax({
                 method: "PUT",
-                url: "/api/alumnoFct/"+idFct,
+                url: "/api/alumnofct/"+idFct,
                 data: {
                     id: idFct,
                     a56:  pg0301,
@@ -89,7 +89,7 @@ $(function () {
         } else {
             $.ajax({
                 method: "PUT",
-                url: "/api/alumnoFct/"+idFct,
+                url: "/api/alumnofct/"+idFct,
                 data: {
                     id: idFct,
                     pg0301:  pg0301,

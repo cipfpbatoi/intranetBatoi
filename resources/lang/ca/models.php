@@ -483,6 +483,17 @@ return array(
             'show' => 'Mostrar Article',
             'delete' => 'Esborrar Article'
         ),
+        'Solicitud' => array(
+            'index' => "Derivacions al departament d'Orientació",
+            'create' => "Qüestionari de derivació",
+            'edit' => 'Modificar qüestionari',
+            'idAlumno' => 'Alumne',
+            'text1' => 'Motiu de la sol·licitud',
+            'text2' => 'Aspectes afectats per la situació: (Curriculars, emocionals,personals,socials...)',
+            'text3' => "Altres dades i/o informació d'interés:",
+            'idOrientador' => "Orientador"
+
+        ),
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
             'Curso' => 'Curs',
@@ -523,7 +534,8 @@ return array(
             'Articulo' => 'Article',
             'ArticuloLote' => 'Articles Factura',
             'Incidencia' => 'Incidència',
-            'Fctcap' => 'Revisió FCT'
+            'Fctcap' => 'Revisió FCT',
+            'Solicitud' => "Derivació al departament d'orientació",
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

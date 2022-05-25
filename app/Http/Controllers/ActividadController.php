@@ -227,8 +227,9 @@ class ActividadController extends ModalController
 
     public function notify($id)
     {
+
         $mensaje = $this->hazMensaje($elemento = Actividad::findOrFail($id));
-        
+
         foreach ($elemento->profesores as $profesor) {
             AdviseTeacher::exec($elemento,  $mensaje, $profesor->dni,$profesor->shortName);
         }
