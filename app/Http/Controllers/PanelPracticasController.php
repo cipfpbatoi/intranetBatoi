@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\Ciclo;
 
 class PanelPracticasController extends BaseController
 {
@@ -19,7 +20,10 @@ class PanelPracticasController extends BaseController
         
     }
     protected function search(){
-        return Grupo::where('curso',2)->get();
+        $ciclos = hazArray(Ciclo::where('tipo',3)->get(),'id','id');
+        return Grupo::where('curso',2)
+            ->orWhereIn('idCiclo',$ciclos)
+            ->get();
     }
 
 }
