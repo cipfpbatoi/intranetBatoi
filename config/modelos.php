@@ -107,7 +107,17 @@ return [
         'avisos' => [],
         'resolve' => 2,
         'refuse' => 3
-    ]
+    ],
+    'Solicitud' => [
+        'modelo' => 'Solicitud',
+        'estados' => [  1 => 'pendiente',
+            2 => 'tramitada',
+            3 => 'resuelta'
+        ],
+        'avisos' => [ 'idProfesor' => [ 3 ],'idOrientador'=>[1]],
+        'resolve' => '3',
+        'refuse' => '0',
+    ],
     
 ];
 

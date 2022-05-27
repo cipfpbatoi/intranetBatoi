@@ -380,9 +380,11 @@ class AdministracionController extends Controller
     }
 
     public function secure(Request $request){
+        $user = env('USER_DOMOTICA');
+        $pass =  env('PASS_DOMOTICA');
         if (esrol(AuthUser()->rol,config('roles.rol.administrador'))){
             $link = str_replace('{dispositivo}',$request->dispositivo,config('variables.ipDomotica')).'/secure';
-            $response = Http::withBasicAuth('admin', 'Admin*HC3*Batoi22')->accept('application/json')->post($link,['args'=>[]]);
+            $response = Http::withBasicAuth($user, $pass)->accept('application/json')->post($link,['args'=>[]]);
             if ($response->successful()){
                 $missatge = 'Porta tancada';
             } else {

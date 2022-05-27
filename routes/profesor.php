@@ -177,13 +177,16 @@ Route::get('/expediente/{expediente}/pdf', ['as' => 'expediente.pdf', 'uses' => 
 Route::get('/expediente/{expediente}/notification', ['as' => 'expediente.notificar', 'uses' => 'ExpedienteController@notify']);
 Route::get('/expediente/{expediente}/init', ['as' => 'expediente.init', 'uses' => 'ExpedienteController@init']);
 Route::get('/expediente/{expediente}/active', ['as' => 'expediente.active', 'uses' => 'ExpedienteController@pasaOrientacion']);
-Route::get('/expedienteO', ['as' => 'expediente.orientacion', 'uses' => 'PanelExpedienteOrientacionController@index']);
+Route::get('/solicitudO', ['as' => 'solicitud.orientacion', 'uses' => 'PanelSolicitudOrientacionController@index']);
 
 Route::get('/procedimento',['as'=> 'procedimiento.all','uses'=>'PanelProcedimientoController@index']);
-Route::get('/procedimentoA',['as'=> 'procedimiento.acompanyant','uses'=>'PanelProcedimientoAcompanyantController@index']);
+Route::get('/procedimento',['as'=> 'procedimiento.acompanyant','uses'=>'PanelProcedimientoAcompanyantController@index']);
 
 
 Route::resource('/solicitud', 'SolicitudController', ['except' => ['destroy', 'update','show']]);
+Route::get('/solicitud/{expediente}/delete', ['as' => 'solicitud.destroy', 'uses' => 'SolicitudController@destroy']);
+Route::put('/solicitud/{expediente}/edit', ['as' => 'solicitud.update', 'uses' => 'SolicitudController@update']);
+Route::get('/solicitud/{expediente}/init', ['as' => 'solicitud.init', 'uses' => 'SolicitudController@init']);
 
 
 // DROPZONE
