@@ -17,7 +17,7 @@ class PanelSolicitudOrientacionController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nomAlum', 'fecha', 'motiu','Situacion'];
+    protected $gridFields = ['id', 'nomAlum', 'fecha', 'motiu','situacion'];
     /**
      * @var string
      */
@@ -37,16 +37,32 @@ class PanelSolicitudOrientacionController extends ModalController
      */
     protected function iniBotones()
     {
-        $this->panel->setBotonera([], ['show','link']);
+        $this->panel->setBotonera([], ['show']);
         $this->panel->setBoton('grid', new BotonImg('solicitud.active', ['where' => ['estado', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('solicitud.link', ['where' => ['estado', '>', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('solicitud.active', ['img'=>'fa-flag-o', 'where' => ['estado', '==', '2']]));
     }
 
     public function active($id)
     {
         $elemento = Solicitud::findOrFail($id);
-        $elemento->estado = 2;
-        $elemento->save();
+        if ($elemento->estado == 1){
+            $elemento->estado = 2;
+            $elemento->save();
+            avisa($elemento->idProfesor,"El departament d'orientació comença a tramitar la teua sol·licitud en nom de ".$elemento->Alumno->fullName,'#',$elemento->Orientador->fullName);
+        } else {
+            $elemento->estado = 3;
+            $elemento->save();
+            avisa($elemento->idProfesor,"El departament d'orientació ha finalitzat la teua sol·licitud en nom de ".$elemento->Alumno->fullName,'#',$elemento->Orientador->fullName);
+        }
         return back();
+    }
+
+
+
+    public function search()
+    {
+        return Solicitud::where('idOrientador',AuthUser()->dni)->where('estado','>',0)->get();
     }
 
     

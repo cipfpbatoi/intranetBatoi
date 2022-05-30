@@ -328,7 +328,6 @@ return array(
             'list' => 'Acta Grupo :quien',
             'acta' => 'Pedir acta de evaluación',
             'insercio' => "Inserción Laboral",
-            'proyecto' => 'Proyecto',
             'send' => 'Enviar Correo Inicial Alumnos',
             'default' => 'x Empresa',
             'link' => 'Adjuntar ficheros',
@@ -466,6 +465,20 @@ return array(
             'edit' => 'Editar Articulo',
             'show' => 'Mostrar Articulo',
             'delete' => 'Eliminar Articulo'
+        ),
+        'Solicitud' => array(
+            'index' => "Derivaciones al departamento de Orientación",
+            'create' => "Cuestionario de derivación",
+            'edit' => 'Modificar cuestionario',
+            'idAlumno' => 'Alumno',
+            'text1' => 'Motivo de la solicitud',
+            'text2' => 'Aspectos afectados por la situación: (Curriculares, emocionales,personales,sociales...)',
+            'text3' => "Otros datos i/o información d'interés:",
+            'idOrientador' => "Orientador",
+            '1' => 'Comunicada',
+            '2' => 'En proceso',
+            '3' => 'Resuelta',
+
         ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',

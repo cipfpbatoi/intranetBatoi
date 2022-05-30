@@ -199,6 +199,10 @@ class Alumno extends Authenticatable
         $hace18 = $hoy->subYears(18)->toDateString();
         return $this->fecha_nac > $hace18 ;
     }
+    public function getEdatAttribute(){
+        $nac = new Date($this->fecha_nac);
+        return $nac->age;
+    }
 
 
 }

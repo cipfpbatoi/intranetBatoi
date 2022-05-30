@@ -35,8 +35,7 @@
                 <div class="col-xs-12 bottom text-center">
                     <div class="col-xs-12 col-sm-6 emphasis">
                         <p class="ratings">
-                            @php($nac = new Jenssegers\Date\Date($alumno->fecha_nac))
-                            <a>{{ $nac->age }} {{ trans("validation.attributes.años") }}</a>
+                            <a>{{ $alumno->edat }} {{ trans("validation.attributes.años") }}</a>
                             @if ($alumno->repite == 0)
                                 <a href="#"><span class="fa fa-star-o"></span></a>
                             @else

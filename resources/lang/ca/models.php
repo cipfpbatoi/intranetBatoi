@@ -491,7 +491,10 @@ return array(
             'text1' => 'Motiu de la sol·licitud',
             'text2' => 'Aspectes afectats per la situació: (Curriculars, emocionals,personals,socials...)',
             'text3' => "Altres dades i/o informació d'interés:",
-            'idOrientador' => "Orientador"
+            'idOrientador' => "Orientador",
+            '1' => 'Comunicada',
+            '2' => 'En proces',
+            '3' => 'Resolta',
 
         ),
         'modelos' => array(

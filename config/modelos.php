@@ -51,7 +51,7 @@ return [
                         4 => 'comissio',
                         5 => 'tancada'
                         ],
-        'avisos' => [ 'idProfesor' => [0, 3, 5],'jefeEstudios'=>[1],'jefeEstudios'=>[4],'idAcompanyant'=>[5]],
+        'avisos' => [ 'idProfesor' => [0, 3, 5],'jefeEstudios'=>[1,4],'idAcompanyant'=>[5]],
         'resolve' => '3',
         'refuse' => '0',
         'print' => '3',
@@ -108,16 +108,5 @@ return [
         'resolve' => 2,
         'refuse' => 3
     ],
-    'Solicitud' => [
-        'modelo' => 'Solicitud',
-        'estados' => [  1 => 'pendiente',
-            2 => 'tramitada',
-            3 => 'resuelta'
-        ],
-        'avisos' => [ 'idProfesor' => [ 3 ],'idOrientador'=>[1]],
-        'resolve' => '3',
-        'refuse' => '0',
-    ],
-    
 ];
 

@@ -15,12 +15,14 @@ class SolicitudResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
             'Alumne' => $this->Alumno->fullName??'',
-            'Professor' => $this->Profesor->fullName??'',
-            'Motius' => $this->text1,
-            'Aspectes' => $this->text2??'',
-            'Altes' => $this->text3??'',
+            'Grupo' => $this->Alumno->Grupo->first()->nombre??'',
+            'Email' => $this->Alumno->email,
+            'Edat' => $this->Alumno->edat,
+            'Professor que fa la petició' => $this->Profesor->fullName??'',
+            'Motius de la sol·licitut' => $this->text1,
+            'Aspectes afectats per la situació' => $this->text2??'',
+            'Altres dades' => $this->text3??'',
             'Data' => $this->fecha,
             'Data Solució' => $this->fechaSolicion??'',
             'Orientador' => $this->Orientador->fullName??'',
