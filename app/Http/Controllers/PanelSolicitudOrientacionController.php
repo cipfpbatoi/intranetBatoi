@@ -2,22 +2,22 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Expediente;
-use Intranet\Entities\TipoExpediente;
 use Intranet\Botones\BotonImg;
+use Intranet\Entities\Solicitud;
 
 
 /**
  * Class PanelSolicitudOrientacionController
  * @package Intranet\Http\Controllers
  */
-class PanelSolicitudOrientacionController extends BaseController
+class PanelSolicitudOrientacionController extends ModalController
 {
+
 
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nomAlum', 'fecha', 'text1','Situacion'];
+    protected $gridFields = ['id', 'nomAlum', 'fecha', 'motiu','Situacion'];
     /**
      * @var string
      */
@@ -37,11 +37,17 @@ class PanelSolicitudOrientacionController extends BaseController
      */
     protected function iniBotones()
     {
-        $this->panel->setBotonera([], ['show']);
+        $this->panel->setBotonera([], ['show','link']);
         $this->panel->setBoton('grid', new BotonImg('solicitud.active', ['where' => ['estado', '==', '1']]));
     }
 
-
+    public function active($id)
+    {
+        $elemento = Solicitud::findOrFail($id);
+        $elemento->estado = 2;
+        $elemento->save();
+        return back();
+    }
 
     
 

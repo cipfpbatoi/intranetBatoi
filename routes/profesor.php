@@ -177,7 +177,7 @@ Route::get('/expediente/{expediente}/pdf', ['as' => 'expediente.pdf', 'uses' => 
 Route::get('/expediente/{expediente}/notification', ['as' => 'expediente.notificar', 'uses' => 'ExpedienteController@notify']);
 Route::get('/expediente/{expediente}/init', ['as' => 'expediente.init', 'uses' => 'ExpedienteController@init']);
 Route::get('/expediente/{expediente}/active', ['as' => 'expediente.active', 'uses' => 'ExpedienteController@pasaOrientacion']);
-Route::get('/solicitudO', ['as' => 'solicitud.orientacion', 'uses' => 'PanelSolicitudOrientacionController@index']);
+
 
 Route::get('/procedimento',['as'=> 'procedimiento.all','uses'=>'PanelProcedimientoController@index']);
 Route::get('/procedimento',['as'=> 'procedimiento.acompanyant','uses'=>'PanelProcedimientoAcompanyantController@index']);
@@ -187,9 +187,12 @@ Route::resource('/solicitud', 'SolicitudController', ['except' => ['destroy', 'u
 Route::get('/solicitud/{expediente}/delete', ['as' => 'solicitud.destroy', 'uses' => 'SolicitudController@destroy']);
 Route::put('/solicitud/{expediente}/edit', ['as' => 'solicitud.update', 'uses' => 'SolicitudController@update']);
 Route::get('/solicitud/{expediente}/init', ['as' => 'solicitud.init', 'uses' => 'SolicitudController@init']);
+Route::get('/solicitud/{expediente}/active', ['as' => 'solicitud.active', 'uses' => 'PanelSolicitudOrientacionController@active']);
+Route::get('/solicitudes', ['as' => 'solicitud.orientacion', 'uses' => 'PanelSolicitudOrientacionController@index']);
 
 
 // DROPZONE
+Route::get('/solicitud/{solicitud}/link', ['as' => 'solicitud.link', 'uses' => 'SolicitudController@link']);
 Route::get('/expediente/{expediente}/link', ['as' => 'expediente.link', 'uses' => 'ExpedienteController@link']);
 Route::get('/fct/{expediente}/link', ['as' => 'alumnofct.link', 'uses' => 'PanelFctAvalController@link']);
 Route::get('/fct/dropzone/{dni}', ['as' => 'fct.linkQuality', 'uses' => 'PanelFctAvalController@linkQuality']);

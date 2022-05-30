@@ -105,6 +105,9 @@ class ComisionController extends ModalController
         if (!$fct) {
             $comision->deleteInputType('fct');
         }
+        if (AuthUser()->dni == config('contacto.director')){
+            $comision->setInputType('idProfesor',["type" => "select"]);
+        }
         return $comision;
     }
 

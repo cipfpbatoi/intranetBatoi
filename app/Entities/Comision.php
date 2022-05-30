@@ -118,6 +118,11 @@ class Comision extends Model
         return config('auxiliares.estadoDocumento');
     }
 
+    public function getIdProfesorOptions()
+    {
+        return hazArray(Profesor::where('activo',1)->orderBy('apellido1')->orderBy('apellido2')->get(),'dni','nameFull');
+    }
+
     public function scopeDia($query, $dia)
     {
         $antes = $dia . " 23:59:59";

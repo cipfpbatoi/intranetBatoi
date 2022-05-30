@@ -7,7 +7,7 @@ Dropzone.options.myDropzone = {
     timeout: 50000,
     method: 'POST',
     url: '/api/attachFile',
-    acceptedFiles: 'application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    acceptedFiles: 'application/pdf,application/vnd.oasis.opendocument.text',
     previewsContainer: ".dropzone-previews",
     disablePreviews: true,
     dictRemoveFileConfirmation: "Vas a esborrar el fitxer",

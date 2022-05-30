@@ -61,8 +61,13 @@ class ApiResourceController extends Controller
         
     }
 
+    public function edit($id)
+    {
+        return $this->sendResponse($this->class::find($id));
+    }
 
-    protected function sendResponse($result, $message)
+
+    protected function sendResponse($result)
     {
         return response()->json(['success'=>true,'data'=>$result]);
     }

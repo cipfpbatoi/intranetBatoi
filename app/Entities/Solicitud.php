@@ -90,7 +90,9 @@ class Solicitud extends Model
         return isblankTrans('models.Solicitud.'.$this->estado) ? trans('messages.situations.'.$this->estado) : trans('models.Expediente.' . $this->estado);
     }
 
-    public fuction getM
+    public function getMotiuAttribute(){
+        return substr($this->text1,0,75);
+}
     public function getQuienAttribute(){
         return $this->nomAlumn;
     }

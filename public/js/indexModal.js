@@ -25,7 +25,7 @@ $(function () {
         $(this).parents('a').attr("data-toggle", "modal").attr("data-target", "#show").attr("href", "");
         $.ajax({
             method: "GET",
-            url: "/api/" + modelo + "/" + id,
+            url: "/api/" + modelo + "/" + id ,
             dataType: 'json',
             data: {api_token: token},
         }).then(function (res) {
@@ -47,7 +47,7 @@ $(function () {
             //.attr("href", "");
         $.ajax({
             method: "GET",
-            url: "/api/" + modelo + "/" + id,
+            url: "/api/" + modelo + "/" + id + "/edit",
             dataType: 'json',
             data: {api_token: token},
         }).then(function (res) {

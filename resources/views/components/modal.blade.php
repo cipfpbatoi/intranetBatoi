@@ -14,7 +14,9 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="submit" form="form{{ucwords($name)}}" class="btn btn-primary">{{$message}}</button>
+                @if (strlen($message))
+                    <button type="submit" form="form{{ucwords($name)}}" class="btn btn-primary">{{$message}}</button>
+                @endif
                 <button type="button" class="btn btn-default" data-dismiss="modal">{{$cancel}}</button>
             </div>
         </div>

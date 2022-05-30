@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
   |
  */
 
-Route::resource('alumnofct', 'AlumnoFctController', ['except' => ['edit', 'create']]);
+Route::resource('alumnofct', 'AlumnoFctController', ['except' => [ 'create']]);
 Route::get('alumnofct/{grupo}/grupo','AlumnoFctController@indice');
 Route::get('/convenio','EmpresaController@indexConvenio');
 Route::get('miIp','IPController@miIP');
@@ -23,22 +23,22 @@ Route::get('actividad/{actividad}/getFiles','ActividadController@getFiles');
 
 
 Route::group(['middleware' => 'auth:api'], function() {
-    Route::resource('dual', 'DualController', ['except' => ['edit', 'create']]);
+    Route::resource('dual', 'DualController', ['except' => [ 'create']]);
     Route::get('misAlumnosFct','AlumnoFctController@misAlumnos');
-    Route::resource('actividad', 'ActividadController', ['except' => ['edit', 'create']]);
-    Route::resource('programacion', 'ProgramacionController', ['except' => ['edit', 'create']]);
-    Route::resource('reunion', 'ReunionController', ['except' => ['edit', 'create']]);
-    Route::resource('falta', 'FaltaController', ['except' => ['edit', 'create']]);
-    Route::resource('documento', 'DocumentoController', ['except' => ['edit', 'create']]);
-    Route::resource('modulo_ciclo', 'Modulo_cicloController', ['except' => ['edit', 'create']]);
-    Route::resource('resultado', 'ResultadoController', ['except' => ['edit', 'create']]);
-    Route::resource('comision', 'ComisionController', ['except' => ['edit', 'create']]);
-    Route::resource('instructor', 'InstructorController', ['except' => ['edit', 'create']]);
+    Route::resource('actividad', 'ActividadController', ['except' => [ 'create']]);
+    Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']]);
+    Route::resource('reunion', 'ReunionController', ['except' => [ 'create']]);
+    Route::resource('falta', 'FaltaController', ['except' => [ 'create']]);
+    Route::resource('documento', 'DocumentoController', ['except' => [ 'create']]);
+    Route::resource('modulo_ciclo', 'Modulo_cicloController', ['except' => [ 'create']]);
+    Route::resource('resultado', 'ResultadoController', ['except' => [ 'create']]);
+    Route::resource('comision', 'ComisionController', ['except' => [ 'create']]);
+    Route::resource('instructor', 'InstructorController', ['except' => [ 'create']]);
     Route::get('autorizar/comision', 'ComisionController@autorizar');
     Route::get('notification/{id}', 'NotificationController@leer');
-    Route::resource('ppoll', 'PPollController', ['except' => ['edit', 'create']]);
+    Route::resource('ppoll', 'PPollController', ['except' => [ 'create']]);
 
-    Route::resource('profesor', 'ProfesorController', ['except' => ['edit', 'create']]);
+    Route::resource('profesor', 'ProfesorController', ['except' => [ 'create']]);
     Route::get('profesor/{dni}/rol', 'ProfesorController@rol');
     Route::get('profesor/rol/{rol}','ProfesorController@getRol');
     Route::get('ficha', 'ProfesorController@ficha');
@@ -50,7 +50,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/aula','ReservaController@unsecure');
 
 
-    Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => ['edit', 'create']]);
+    Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => [ 'create']]);
     Route::get('faltaProfesor/horas/{condicion}','FaltaProfesorController@horas');
     Route::get('/departamento','DepartamentoController@index');
 
@@ -59,32 +59,32 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::put('/material/cambiarUnidad/', 'MaterialController@putUnidades');
     Route::put('/material/cambiarInventario', 'MaterialController@putInventario');
     Route::get('/material/espacio/{espacio}', 'MaterialController@getMaterial');
-    Route::resource('material', 'MaterialController', ['except' => ['edit', 'create']]);
+    Route::resource('material', 'MaterialController', ['except' => [ 'create']]);
     Route::get('inventario','MaterialController@inventario');
 
-    Route::resource('espacio', 'EspacioController', ['except' => ['edit', 'create']]);
+    Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
     Route::resource('guardia', 'GuardiaController');
     Route::resource('reserva', 'ReservaController');
-    Route::resource('ordenreunion', 'OrdenReunionController', ['except' => ['edit', 'create']]);
-    Route::resource('colaboracion', 'ColaboracionController', ['except' => ['edit', 'create']]);
-    Route::resource('centro', 'CentroController', ['except' => ['edit', 'create']]);
-    Route::resource('GrupoTrabajo', 'GrupoTrabajoController', ['except' => ['edit', 'create']]);
-    Route::resource('Empresa', 'EmpresaController', ['except' => ['edit', 'create']]);
-    Route::resource('ordentrabajo', 'OrdenTrabajoController', ['except' => ['edit', 'create']]);
-    Route::resource('incidencia', 'IncidenciaController', ['except' => ['edit', 'create']]);
-    Route::resource('tipoincidencia', 'TipoIncidenciaController', ['except' => ['edit', 'create']]);
-    Route::resource('expediente', 'ExpedienteController', ['except' => ['edit', 'create']]);
-    Route::resource('solicitud', 'SolicitudController', ['except' => ['edit', 'create']]);
-    Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => ['edit', 'create']]);
-    Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => ['edit', 'create']]);
-    Route::resource('activity', 'ActivityController', ['except' => ['edit', 'create']]);
-    Route::resource('curso', 'CursoController', ['except' => ['edit', 'create']]);
+    Route::resource('ordenreunion', 'OrdenReunionController', ['except' => [ 'create']]);
+    Route::resource('colaboracion', 'ColaboracionController', ['except' => [ 'create']]);
+    Route::resource('centro', 'CentroController', ['except' => [ 'create']]);
+    Route::resource('GrupoTrabajo', 'GrupoTrabajoController', ['except' => [ 'create']]);
+    Route::resource('Empresa', 'EmpresaController', ['except' => [ 'create']]);
+    Route::resource('ordentrabajo', 'OrdenTrabajoController', ['except' => [ 'create']]);
+    Route::resource('incidencia', 'IncidenciaController', ['except' => [ 'create']]);
+    Route::resource('tipoincidencia', 'TipoIncidenciaController', ['except' => [ 'create']]);
+    Route::resource('expediente', 'ExpedienteController', ['except' => [ 'create']]);
+    Route::resource('solicitud', 'SolicitudController', ['except' => ['create']]);
+    Route::resource('tipoExpediente', 'TipoExpedienteController', ['except' => [ 'create']]);
+    Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => [ 'create']]);
+    Route::resource('activity', 'ActivityController', ['except' => [ 'create']]);
+    Route::resource('curso', 'CursoController', ['except' => [ 'create']]);
     Route::get('alumnoGrupoModulo/{dni}/{modulo}','AlumnoGrupoController@getModulo');
     
-    Route::resource('horario', 'HorarioController', ['except' => ['edit', 'create']]);
+    Route::resource('horario', 'HorarioController', ['except' => [ 'create']]);
     Route::get('horario/{idProfesor}/guardia','HorarioController@Guardia');
     Route::get('horariosDia/{fecha}','HorarioController@HorariosDia');
-    Route::resource('hora', 'HoraController', ['except' => ['edit', 'create']]);
+    Route::resource('hora', 'HoraController', ['except' => [ 'create']]);
     Route::put('/asistencia/cambiar', 'AsistenciaController@cambiar');
     Route::put('/reunion/{idReunion}/alumno/{idAlumno}','ReunionController@putAlumno');
 
@@ -110,7 +110,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/test/matricula/{token}','AlumnoReunionController@getTestMatricula');
     Route::post('/alumno/{dni}/foto','AlumnoController@putImage');
 
-    Route::resource('lote','LoteController',['except' => ['edit', 'create']]);
+    Route::resource('lote','LoteController',['except' => [ 'create']]);
     Route::get('lote/{id}/articulos','LoteController@getArticulos');
     Route::put('lote/{id}/articulos','LoteController@putArticulos');
     Route::resource('articuloLote','ArticuloLoteController');

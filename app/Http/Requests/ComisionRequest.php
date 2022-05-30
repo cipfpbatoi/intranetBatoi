@@ -23,7 +23,21 @@ class ComisionRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        if (AuthUser()->dni == config('contacto.director')){
+            return [
+                'servicio' => 'required',
+                'kilometraje' => 'required|integer',
+                'desde' => 'required|date|after:today',
+                'hasta' => 'required|date|after:desde',
+                'alojamiento' => 'required|numeric',
+                'comida' => 'required|numeric',
+                'gastos' => 'required|numeric',
+                'medio' => 'required|max:30',
+                'marca' => 'required|max:30',
+                'matricula' => 'required|max:10'
+            ];
+        } else {
+            return [
                 'servicio' => 'required',
                 'kilometraje' => 'required|integer',
                 'desde' => 'required|date|after:tomorrow',
@@ -35,5 +49,7 @@ class ComisionRequest extends FormRequest
                 'marca' => 'required|max:30',
                 'matricula' => 'required|max:10'
             ];
+        }
+
     }
 }
