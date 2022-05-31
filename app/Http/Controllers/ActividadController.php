@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Componentes\Mensaje;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\ActividadGrupo;
@@ -227,13 +228,25 @@ class ActividadController extends ModalController
 
     public function notify($id)
     {
+        $elemento = Actividad::findOrFail($id);
+        $coordinador = Profesor::find($elemento->Creador());
+        foreach ($elemento->grupos as $grupo){
+            $mensaje = $this->hazMensajeGrupo($elemento,$grupo);
+            foreach (Profesor::Grupo($grupo->codigo)->get() as $profesor){
+                Mensaje::send($profesor->dni, $mensaje, '#', $coordinador->shortName);
+            }
+        }
 
-        $mensaje = $this->hazMensaje($elemento = Actividad::findOrFail($id));
-
+        $mensaje = $this->hazMensaje($elemento);
         foreach ($elemento->profesores as $profesor) {
             AdviseTeacher::exec($elemento,  $mensaje, $profesor->dni,$profesor->shortName);
         }
         return back();
+    }
+
+    protected function hazMensajeGrupo($elemento,$grupo){
+        $mensaje = "El grup {$grupo->nombre} se'n van a l'activitat extraescolar:  {$elemento->name}.";
+        return $mensaje . 'Estarà fora des de ' . $elemento->desde . " fins " . $elemento->hasta;
     }
 
     protected function hazMensaje($elemento){

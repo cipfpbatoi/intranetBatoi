@@ -33,7 +33,6 @@ class Mensaje
         $emisor = self::emisor($emisor);
         $receptor = self::receptor($id);
         $fecha = FechaString();
-
         if ($emisor && $receptor) {
             $receptor->notify(new mensajePanel(
                 ['motiu' => $mensaje,
