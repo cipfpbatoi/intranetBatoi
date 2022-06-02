@@ -23,6 +23,7 @@ function Fecha($fecha)
     return $hoy->toDateString();
 }
 
+
 function FechaInglesa($fecha)
 {
     $hoy = new Date($fecha);

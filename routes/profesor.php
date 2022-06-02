@@ -462,6 +462,7 @@ Route::get('/autorizacion/{nia}/actividad/{id}',['as'=>'actividad.autorizacion',
 
 
 
+
 /* Prova */
 Route::get('/ocr',['as'=>'ocr.index','uses'=>'OcrController@index']);
 Route::view('/tasks','tasks.index');

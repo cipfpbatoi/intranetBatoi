@@ -59,11 +59,13 @@ function loadGuardias() {
 	    	let indexDia=(new Date(guardia.dia)).getDay();
 	    	let divProfe=$('#hora-'+guardia.hora).children().eq(indexDia)
 	    		.find("div[data-dni="+guardia.idProfesor+"]")
-	    	if (guardia.realizada) {
+	    	if (guardia.realizada === 1) {
 	    		divProfe.children()[0].className='label label-default';
 	    	} else if (guardia.observaciones || guardia.obs_personal) {
 	    		divProfe.children()[0].className='label label-warning';
-	    	}
+	    	} else {
+				divProfe.children()[0].className='label label-danger';
+			}
 	    	if (guardia.obs_personal) {
 	    		divProfe.append('<br><span>Nota: '+guardia.obs_personal+'</span>')
 	    	}
