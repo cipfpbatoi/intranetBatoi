@@ -42,9 +42,9 @@ class AnexosController extends Controller
 
     public function login(){
         $user = env('APLSEC_USER','intranet@cipfpbatoi.es');
-        $pass =  env('APLSEC_PASS','intr4n3t@B4t01');
+        $pass =  env('APLSEC_PASS','b4t01@1ntran3t2022');
         $link = env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/login_check');
-        $response = Http::asForm()->post($link,['username'=>$user,'password'=>$pass]);
+        $response = Http::post($link,['username'=>$user,'password'=>'b4t01@1ntran3t2022']);
         dd($response);
     }
     
