@@ -46,6 +46,7 @@ class AnexosController extends Controller
         $link = env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/login_check');
 
         $response = Http::withBasicAuth($user, $pass)->accept('application/json')->post($link,['args'=>[]]);
+        dd($response);
     }
     
 }
