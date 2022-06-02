@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 
 
 use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Client;
 use Intranet\Entities\Articulo;
 use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Espacio;
@@ -41,6 +42,7 @@ class AnexosController extends Controller
     const DIRECTORIO_GESTOR = 'gestor/Empresa/';
 
     public function login(){
+        $client = new Client();
         $user = env('APLSEC_USER','intranet@cipfpbatoi.es');
         $pass =  env('APLSEC_PASS','intr4n3t@B4t01');
         $link = env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/login_check');
