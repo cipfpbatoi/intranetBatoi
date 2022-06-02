@@ -5,7 +5,6 @@ namespace Intranet\Http\Controllers;
 
 
 use Illuminate\Support\Facades\Http;
-use GuzzleHttp\Client;
 use Intranet\Entities\Articulo;
 use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Espacio;
@@ -42,17 +41,10 @@ class AnexosController extends Controller
     const DIRECTORIO_GESTOR = 'gestor/Empresa/';
 
     public function login(){
-        $client = new Client();
         $user = env('APLSEC_USER','intranet@cipfpbatoi.es');
         $pass =  env('APLSEC_PASS','intr4n3t@B4t01');
         $link = env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/login_check');
-        $request = $client->createRequest('POST', $link);
-        $postBody = $request->getBody();
-        $postBody->setField('username', $user);
-        $postBody->setField('password', $pass);
-        $response = $client->send($request);
-        dd($response);
-        $response = Http::accept('application/json')->post($link,['body'=> $params]);
+        $response = Http::accept('application/json')->post($link,['username'=>$user,'password'=>$pass]);
         dd($response);
     }
     
