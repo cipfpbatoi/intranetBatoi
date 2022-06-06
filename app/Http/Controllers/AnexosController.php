@@ -37,18 +37,11 @@ use Illuminate\Http\Request;
  */
 class AnexosController extends Controller
 {
-    const DIRECTORIO_GESTOR = 'gestor/Empresa/';
-    private $user,$pass,$link,$token;
 
-
-    public function __construct(){
-        $this->user = env('APLSEC_USER','intranet@cipfpbatoi.es');
-        $this->pass =  env('APLSEC_PASS','intr4n3t@B4t01');
-        $this->link =  env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/');
-    }
+    public $token;
 
     public function index(){
-        $link = $this->link."application/2021/student/023907686Z/document/10";
+        $link = env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/')."application/2021/student/023907686Z/document/10";
         if ($this->login()){
             $response = Http::withToken($this->token)->attach('file',file_get_contents('/var/www/html/intranetBatoi/storage/app/public/adjuntos/al
 umnofctaval/1294/A5.pdf'))->post($link);
@@ -61,7 +54,9 @@ umnofctaval/1294/A5.pdf'))->post($link);
     }
 
     public function login(){
-        $link = $this->link."login_check";
+        $user = env('APLSEC_USER','intranet@cipfpbatoi.es');
+        $pass =  env('APLSEC_PASS','intr4n3t@B4t01');
+        $link = env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/')."login_check";
 
         $response = Http::post($link,['username'=>$this->user,'password'=>$this->pass]);
         if (isset($response['token']){
