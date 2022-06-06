@@ -463,6 +463,6 @@ Route::get('/autorizacion/{nia}/actividad/{id}',['as'=>'actividad.autorizacion',
 
 
 /* Prova */
-Route::get('/anexos',['as'=>'anexos.login','uses'=>'AnexosController@login']);
+Route::get('/anexos',['as'=>'anexos.login','uses'=>'AnexosController@index']);
 Route::get('/ocr',['as'=>'ocr.index','uses'=>'OcrController@index']);
 Route::view('/tasks','tasks.index');
