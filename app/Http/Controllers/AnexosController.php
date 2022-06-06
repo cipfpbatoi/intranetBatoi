@@ -60,7 +60,7 @@ umnofctaval/1294/A5.pdf'))->post($link);
         $link = env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/')."login_check";
 
         $response = Http::post($link,['username'=>$this->user,'password'=>$this->pass]);
-        if (isset($response['token']){
+        if (isset($response['token'])){
             $this->token = $response['token'];
             return 1;
         } else {
