@@ -129,6 +129,8 @@ class Alumno extends Authenticatable
         
     }
 
+
+
     public function getDepartamentoAttribute(){
         return $this->Grupo->first()->Ciclo->departamento??'99';
     }

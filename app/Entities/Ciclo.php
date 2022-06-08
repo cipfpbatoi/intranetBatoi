@@ -29,15 +29,28 @@ class Ciclo extends Model
         'dataSignaturaDual' => 'date'
     ];
 
+
+    public function Grupos()
+    {
+        return $this->hasMany(Grupo::class,'idCiclo','id');
+    }
     public function Departament()
     {
         return $this->belongsTo(Departamento::class, 'departamento', 'id');
     }
 
+
     public function colaboraciones()
     {
         return $this->hasMany(Colaboracion::class, 'idCiclo', 'id');
     }
+
+    public function fcts()
+    {
+        return $this->hasManyThrough(Fct::class,Colaboracion::Class,'idCiclo','idColaboracion');
+    }
+
+
     public function getTipoOptions()
     {
         return config('auxiliares.tipoEstudio');

@@ -4,7 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonImg;
+use Intranet\Entities\Ciclo;
 use Intranet\Entities\Horario;
+use Intranet\Entities\Profesor;
 use Intranet\Services\GestorService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Modulo_grupo;
@@ -19,6 +21,7 @@ use Intranet\Entities\Documento;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Date\Date;
+use Intranet\Entities\Poll\Vote;
 
 
 class PanelListadoEntregasController extends BaseController
@@ -199,6 +202,7 @@ class PanelListadoEntregasController extends BaseController
                 ->orderBy('desde')
                 ->get();
         $todos = Resultado::Departamento($dep)->with('ModuloGrupo')->get();
+        $profesores = hazArray(Profesor::where('departamento',$dep)->get(),'dni','dni');
 
         $resultados = collect();
         foreach ($todos as $resultado){
@@ -212,6 +216,7 @@ class PanelListadoEntregasController extends BaseController
             }
         }
         $resultados->sortBy('Modulo');
+
         /*$primero = Resultado::Departamento($dep)
                 ->TrimestreCurso($trimestre, 1)
                 ->get();
@@ -227,11 +232,56 @@ class PanelListadoEntregasController extends BaseController
             $programaciones = Programacion::Departamento(AuthUser()->departamento)
                     ->whereNotNull('propuestas')
                     ->get();
+            // matriculas
+            foreach (Ciclo::where('departamento',$dep)->get() as $ciclo){
+                foreach ($ciclo->Grupos as $grupo){
+                    if (isset($totales[$ciclo->ciclo]['matriculas'])){
+                        $totales[$ciclo->ciclo]['matriculas'] += count($grupo->Alumnos);
+                        $totales[$ciclo->ciclo]['fct'] += $grupo->AvalFct;
+                        $totales[$ciclo->ciclo]['insercio'] += $grupo->Colocados;
+                    } else {
+                        $totales[$ciclo->ciclo]['matriculas'] = count($grupo->Alumnos);
+                        $totales[$ciclo->ciclo]['fct'] = $grupo->AvalFct;
+                        $totales[$ciclo->ciclo]['insercio'] = $grupo->Colocados;
+                        $totales[$ciclo->ciclo]['votesAlFct'] = 0;
+                        $totales[$ciclo->ciclo]['sumAlFct'] = 0;
+                        $totales[$ciclo->ciclo]['votesTuFct'] = 0;
+                        $totales[$ciclo->ciclo]['sumTuFct'] = 0;
+                        $totales[$ciclo->ciclo]['votesSatis'] = 0;
+                        $totales[$ciclo->ciclo]['sumSatis'] = 0;
+                    }
+                }
+
+                $centres = array();
+                foreach ($ciclo->fcts as $fct){
+                    $centres[$fct->Colaboracion->idCentro] = 1;
+                    foreach (Vote::where('option_id',21)->where('idOption1',$fct->id)->get() as $vote)
+                    {
+                        $totales[$ciclo->ciclo]['votesAlFct'] += $vote->value;
+                        $totales[$ciclo->ciclo]['sumAlFct'] += 1;
+                    }
+                    foreach (Vote::where('option_id',26)->where('idOption1',$fct->id)->get() as $vote)
+                    {
+                        $totales[$ciclo->ciclo]['votesTuFct'] += $vote->value;
+                        $totales[$ciclo->ciclo]['sumTuFct'] += 1;
+                    }
+                }
+                $totales[$ciclo->ciclo]['centres'] = count($centres);
+            }
+
+            foreach (Vote::where('option_id',35)->whereIn('idOption2',$profesores)->get() as $vote)
+            {
+                $mg = Modulo_grupo::find($vote->idOption1);
+                $totales[$mg->ModuloCiclo->Ciclo->ciclo]['votesSatis'] += $vote->value;
+                $totales[$mg->ModuloCiclo->Ciclo->ciclo]['sumSatis'] += 1;
+            }
         } else {
             $programaciones = null;
         }
-        return $this->hazPdf('pdf.memoriaDepartament', $actividades, compact('resultados', 'observaciones', 'trimestre', 'proyectos', 'programaciones'));
+        $fecha = Hoy();
+        return $this->hazPdf('pdf.memoriaDepartament', $actividades, compact('resultados', 'observaciones', 'trimestre', 'proyectos', 'programaciones','fecha','totales'));
     }
+
     private function faltan()
     {
         $empty = 0;
