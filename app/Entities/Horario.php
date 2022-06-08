@@ -80,12 +80,17 @@ class Horario extends Model
 
     public function scopeGuardia($query)
     {
-        return $query->where('ocupacion', '3249454');
+        return $query->where('ocupacion', config('variables.ocupacionesGuardia.normal'));
     }
 
     public function scopeGuardiaBiblio($query)
     {
-        return $query->where('ocupacion', '149034734');
+        return $query->where('ocupacion', config('variables.ocupacionesGuardia.biblio'));
+    }
+
+    public function scopeGuardiaAll($query)
+    {
+        return $query->whereIn('ocupacion',config('variables.ocupacionesGuardia'));
     }
 
     public function scopeLectivos($query)

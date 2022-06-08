@@ -44,6 +44,7 @@ class GuardiaController extends IntranetController
         $horas = Hora::all();
         $dias  = array('L','M','X','J','V');
         $arrayG = array();
+
         foreach (Horario::Guardia()
                      ->orderBy('sesion_orden')
                      ->get() as $guardia){

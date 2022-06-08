@@ -10,6 +10,7 @@ use Intranet\Entities\Guardia;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Actividad_profesor;
 use Intranet\Entities\Falta;
+use Intranet\Entities\Profesor;
 
 class createDailyGuards extends Command
 {
@@ -43,9 +44,37 @@ class createDailyGuards extends Command
      *
      * @return mixed
      */
+
+
+    private function substitutoActual($dni){
+        do {
+            $substituto = Profesor::where('sustituye_a',$dni)->first();
+            if ($substituto){
+                $dni = $substituto->dni;
+            }
+        } while ($substituto && !$substituto->fecha_baja);
+        return $dni;
+    }
+
     public function handle()
     {
         if (config('variables.controlDiario')) {
+            $dia_semana = nameDay(Hoy());
+            foreach (Horario::GuardiaAll()
+                         ->Dia($dia_semana)
+                         ->get() as $horario){
+                $profesor = Profesor::find($horario->idProfesor);
+                if ($profesor->fecha_baja){
+                    $guardia['idProfesor'] = $this->substitutoActual($horario->idProfesor);
+                } else {
+                    $guardia['idProfesor'] = $horario->idProfesor;
+                }
+                $guardia['dia'] = Hoy();
+                $guardia['hora'] = $horario->sesion_orden;
+                $guardia['realizada'] = -1;
+                $guardia['observaciones'] = '';
+                $this->saveGuardia($guardia);
+            }
             $comisiones = Comision::Dia(Hoy())->get();
             foreach ($comisiones as $elemento) {
                 $this->creaGuardia($elemento, 'El professor està en comissió de servei autoritzada');
@@ -102,15 +131,20 @@ class createDailyGuards extends Command
 
     private function saveGuardia($dades)
     {
-        $yaEsta = Guardia::where('idProfesor', $dades['idProfesor'])
+        $guardia = Guardia::where('idProfesor', $dades['idProfesor'])
                 ->where('dia', $dades['dia'])
                 ->where('hora', $dades['hora'])
-                ->count();
-        if ($yaEsta == 0) {
+                ->first();
+        if (!$guardia) {
             $guardia = new Guardia();
             foreach ($dades as $key => $value)
                 $guardia->$key = $value;
             $guardia->save();
+        } else {
+            if ($dades['observaciones'] != ''){
+                $guardia->realizada = 0;
+                $guardia->observaciones = $dades['observaciones'];
+            }
         }
     }
 
