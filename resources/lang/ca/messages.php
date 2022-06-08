@@ -295,7 +295,9 @@ return array(
         'Procediment' => 'Inici Procediment',
         'Acompanyant' => 'Procediments en curs',
         'Materialbaja' => 'Material donat de baixa',
-        'Secure' => 'Securitzar espai'
+        'Secure' => 'Securitzar espai',
+        'Solicitud' => 'Remissió a Orientació',
+        'Solicitudes' => 'Sol·licituts'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

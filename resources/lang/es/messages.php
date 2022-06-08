@@ -288,7 +288,9 @@ return array(
         'Procediment' => 'Inicio Procedimiento',
         'Acompanyant' => 'Procedimentos en curso',
         'Materialbaja' => 'Material de baja',
-        'Secure' => 'Asegurar espacio'
+        'Secure' => 'Asegurar espacio',
+        'Solicitud' => 'Remisión a Orientación',
+        'Solicitudes' => 'Solicitudes'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
