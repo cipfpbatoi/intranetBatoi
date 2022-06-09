@@ -46,8 +46,6 @@ Route::post('/falta/pdf', ['as' => 'falta.pdf', 'uses' => 'MensualController@imp
 
 Route::get('/alumno/{alumno}/edit', ['as' => 'alumno.edit', 'uses' => 'AlumnoController@edit']);
 Route::get('/programacion/list', ['as' => 'programacion.list', 'uses' => 'PanelControlProgramacionController@index']);
-//Route::get('/guardia/control',['as' => 'guardia.control', 'uses' => 'GuardiaController@control']);
-//Route::get('/guardiaBiblio/control',['as' => 'guardiap.control', 'uses' => 'GuardiaController@controlBiblio']);
 Route::get('/fichar/control',['as' => 'fichar.control', 'uses' => 'FicharController@control']);
 Route::get('/fichar/controlDia',['as' => 'ficharDia.control', 'uses' => 'FicharController@controlDia']);
 Route::get('/fichar/list', ['as' => 'fichar.list', 'uses' => 'PanelPresenciaController@indice']);

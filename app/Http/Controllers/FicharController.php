@@ -99,44 +99,4 @@ class FicharController extends IntranetController
 
     }
 
-    public static function noHanFichado($dia)
-    {
-        $profesores = Profesor::select('dni')->Activo()->get();
-
-        // mira qui no ha fitxat
-        $noHanFichado = [];
-        foreach ($profesores as $profesor) {
-            if (Falta_profesor::haFichado($dia, $profesor->dni)->count() == 0)
-                if (Horario::Profesor($profesor->dni)->Dia(nameDay(new Date($dia)))->count() > 1)
-                    $noHanFichado[$profesor->dni] = $profesor->dni;
-        }
-
-
-        // comprova que no estigues d'activitat
-        $actividades = Actividad::Dia($dia)->where('fueraCentro','=',1)->get();
-        foreach ($actividades as $actividad) {
-            foreach ($actividad->profesores as $profesor) {
-                if (in_array($profesor->dni, $noHanFichado))
-                    unset($noHanFichado[$profesor->dni]);
-            }
-        }
-
-        // comprova que no està de comissió
-        $comisiones = Comision::Dia($dia)->get();
-        foreach ($comisiones as $comision) {
-            if (in_array($comision->idProfesor, $noHanFichado))
-                unset($noHanFichado[$comision->idProfesor]);
-        }
-
-        // compova que no tinga falta
-        $faltas = Falta::Dia($dia)->get();
-        foreach ($faltas as $falta) {
-            if (in_array($falta->idProfesor, $noHanFichado))
-                unset($noHanFichado[$falta->idProfesor]);
-        }
-
-        return $noHanFichado;
-    }
-
-
 }
