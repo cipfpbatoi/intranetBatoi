@@ -75,12 +75,7 @@ class InventarioController extends IntranetController
             $modelo =  $this->model;
             return view('intranet.edit',compact('formulario','modelo'));
         } else {
-            if ($material->LoteArticulo->Lote->proveedor == 'Inventario'){
-                return parent::editdelete($id);
-            } else {
-                return parent::edit($id);
-            }
-
+            return parent::edit($id);
         }
     }
 
