@@ -32,7 +32,6 @@ class GuardiaController extends IntranetController
     {
         Session::forget('redirect');
         $ip = getClientIpAddress();
-        if ($ip)
-        return view('guardias.guardia', ['horas'=> Hora::all()]);
+        if ($ip) return view('guardias.guardia', ['horas'=> Hora::all()]);
     }
 }

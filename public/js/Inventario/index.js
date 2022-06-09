@@ -16,9 +16,6 @@ const mesesCaduca=6;
         contenido+=            `<a href="#" class="delete">
                     <i class="fa fa-trash" title="Borrar"></i>
                 </a>
-                <a href="#" class="edit">
-                    <i class="fa fa-pencil" title="Editar"></i>
-                </a>
                 `;
     }
     contenido+=`            <a href="#" class="incidencia">
@@ -29,7 +26,10 @@ const mesesCaduca=6;
                 </a>
     `;
     if (autorizado) {
-        contenido+=`        
+        contenido+=` 
+                <a href="#" class="edit">
+                    <i class="fa fa-pencil" title="Editar"></i>
+                </a>       
                 <a href="#" class="ubicacion">
                     <i class="fa fa-map-marker" title="Cambiar ubicación"></i>                
                 </a>
