@@ -1,70 +1,34 @@
-# Documentació d'FCT
 
-Index de continguts:
-* [Objectius](#objectius)
-* [Temporalitzacio](#temporalització)
-* [Gestió de contactes](#gestió-de-contactes)
-* [FCTxAlumne](#fctxalumne)
-* 
----
-
-## Objectius
-
-L'objectiu del menú de Pràctiques és portar tot el procés, des del contacte amb l'empresa fins l'avaluació de l'alumnat, deixant les evidències necessàries i facilitant el seguiment per part del tutor.
-Cal a dir també que:
-
-* Hi ha una part de documentació que s'ha de fer amb el SAO, i no hi podem fugir.
-* Hi ha una evidència que es farà amb les comissions de servei.
-
-## Temporalització
-
-L'ordre dels passos a seguir és important en este procés i anem a ordenar-los supossant que les pràctiques comencen al periode ordinari.
-
-* Durant el curs poden arribar/fer contactes amb empreses que haurem de registrar, per tal de poder contactar després amb elles. Si no podem donar-li a una empresa un número de concert, podem registrar-la en el menú **Empreses Sense Concert**.
-* Quan arriba el temps de preparar les FCT haurem d'entrar en el menú de **Gestió de contactes** i allí haurem de:
-	* Assignar-nos les empreses amb les que volem contactar (pot ser una empresa no la volem contactar perquè no tenim alumnes de la zona o si ens dividim les empreses, li toque a un altre tutor)
-	* Quan ja tenim les empreses seleccionades, podem enviar un correu (massiu o individualitzat) a totes elles sol·licitant la seua col·laboració.
-	* El següent pas, és marcar amb un SI o amb un NO, les empreses que volen col.laborar (o NO).
-	* Quan tingam les empreses sel·leccionades, enviarem un correu a les empreses per tal que confirmen les seues dades.
-	* Ara és el moment de generar la **documentació** en el **SAO**, assignar **concert** a les empreses noves creant-les si és necessari i donar d'alta les **FCT's a la intranet**.
-	* Quan ja estiguen creades i falte poc per començar, se li pot enviar un correu de recordatori de les pràctiques, on va l'informació de l'alumne i del segur.
-	* Ara hi han dos correus més que es poden enviar (també de forma individual o massiva):
-		* El de seguiment per a que el tutor ens diga com va el procediment.
-		* El de concertar una visita per sol.licitar una visita a l'empresa.
-	* Quan creem una comissió de servei amb la creu d' FCT marcada, ens deixa marcar a les empreses i el horari en el que anirém i si volem enviar un missatge a l'empresa confirmant la visita, amb una entrada del calendar inclossa. A més quedarà evidència de la visita.
-	* Si tenim un contacte telefònic també el podem registrar amb la pestanya corresponent.
-	* Per últim també podem enviar un correu massiu als alumnes per a citar-los a l'institut a una hora determinada.
-* Per últim avaluarem als alumnes (amb projecte si escau) i demanarem l'acta d'avaluació a caporalia. Marcarem també si l'alumne s'ha quedat al centre de treball.
-
-## Gestió de contactes
-
-[Gestió de contactes](manual-fct-gestio-contactes.md)
-
-
-
-![contactes](/img/fct/01-gestion-contactes.png)
+Esta página mostra totes les empreses que han col.laborat amb el nostre cicle formatiu. 
 
 Tenim 3 pestanyes en la part superior:
 
 * **Pendents**. Ací estan les col·laboracions del cicle que encara no hem catalogat.
-* **Colabora**. Les col·laboracions que si van a acollir o estan acollint algun alumne enguany.
-* **Descartada**. Les que ens han dit que no volen col·laborar.
+* **Colabora**. Les col·laboracions que acolliran o estan acollint algun alumne enguany.
+* **Descartada**. Les empreses que ens han dit que no volen col·laborar.
 
-Per a passar una col·laboració d'una pestanya a una altra, primer ens les hem d'assignar (Si sóm l'unic tutor del cicle, ens les hauriem d'assignar totes, si no ens les hauriem de dividir amb els altres tutors per tal de no contactar tots).
+Per a passar una col·laboració d'una pestanya a una altra, primer ens les hem d'assignar (Si sóm l'unic tutor del cicle, ens les hauriem d'assignar totes, si no, ens les hauriem de dividir amb els altres tutors per tal de no contactar tots).
 ___
 **Truc** Si no volem col·laborar amb una empresa podem no assignar-nos-la.**
 ___
 
 Una vegada assignades, perden el botó groc d'assignar i passen a tindre els botons verd i roig de **SI** i **NO**, que podem pitjar per classificar-les.
-
-A la part de dalt ixen uns botons amb accions. Ixem més o meyns dependent de en quina part del procés estem. Eixos botons són col·lectius, s'apliquen a totes les col·laboracions que complixen amb els requeriments del botó en qüestió. 
-En comparació a cada col·laboració, l'ix el mateix botó que s'aplica de forma individual.
+ 
+Cada pestanya presenta, a la part de dalt, una serie de botons amb accions. Ixem més o meyns botons dependent de en quina part del procés estem. Eixos botons són col·lectius, s'apliquen a totes les col·laboracions que complixen amb els requeriments del botó en qüestió. 
 
 ___
 **Per què uns botons són blau oscur i altres blau clar?** El blau oscur indica un contacte mitjançant un correu que puc modificar abans d'enviar-lo. El blau clar, en canvi, enviarà els correus de forma automàtica a totes les col·laboracions que complisquen el requeriment.**
 ___
 
-**Sol·licitud de pràctiques**. Envia un correu a el contactes de les col·laboració de la pestaya de pendents amb el següent text, que puc modificar:
+## Pestanya **Pendents**
+
+Esta pestanya la fem servir en la fase de recerca de col.laboracions. El botó **Sol·licitud de pràctiques** envia un correu sol.licitant la col.laboració a les empreses. Al premer el botó ens apareix el llistat de colaboracions i podem seleccionar les colaboracions que desitgem:
+
+![solicitud](./img/ajuda/fct_solicitud_practiques.PNG)
+
+![llistat](./img/ajuda/fct_seleccio_elements.PNG)
+
+Una vegada feta la selecció podrem editar el cos del correu que per defecte es el següent:
 
 ~~~ 
  El meu nom és Ignasi Gomis Mullor i sóc el professor-tutor del Cicle Formatiu de Grau Superior Desenrotllament d'aplicacions web del Centre Integrat Formació Professional Batoi.
@@ -72,8 +36,15 @@ Les classes de segon curs acaben a principis de març, i després, els alumnes h
 Òbviament, abans de prendre la vostra decisió, parlaríem tot allò que fera falta i també podríeu entrevistar als alumnes candidats. En qualsevol cas, moltes gràcies per considerar la nostra sol·licitud.
 Salutacions cordials de Ignasi Gomis
 ~~~ 
-    
-**Revissió de documentació**. Envia un correu automàtic a tots els contacted de les col·laboracions de la pestanya de colabora amb el següent text:
+
+## Pestanya **Colabora**
+
+En esta pestanya els botons están ordenats en funció de cada fase en el proces de gestió de les FCT i els farem servir en aquest ordre:
+1. Abans de començar les FCT: **Revissió de documentació**
+2. Al inici de les FCT: **Recordatori d'inici** i **Documentació Alumnat**
+3. Una vegada que els alumnes están cursant el mòdul d'FCT farem servir els botons **Seguiment**, **Concertar visita** i **Citar alumnat** quan siga necessari.
+
+Una vegada que ja tenim empreses dispostes a col.laborar, es hora de comprovar que les seues dades son correctes. Per tal de dur a terme esta tasca fem servir el botó **Revissió de documentació** que envia un correu automàtic a tots els contactes de les col·laboracions de la pestanya de colabora amb el següent text:
 
 ~~~ 
 Hola Carlos Fabra,
@@ -98,8 +69,7 @@ Telèfon: __________________________________
 Salutacions cordials de Ignasi Gomis
 ~~~ 
   
-
-**Recordatori d'inici**. Envia un correu automàtic als contactes de les col·laboracions de la pestanya colabora amb el següent text:
+Al inici de les FCT, quan els alumnes estan a punt de començar, farem servir el botó **Recordatori d'inici** que envia un correu automàtic als contactes de les col·laboracions amb el següent text:
 
 ~~~ 
 Hola Joan Ferre Ferre,
@@ -118,6 +88,22 @@ Així com també informació relevant en cas d'accident laboral que trobaràs en
 Per qualsevol dubte em tens a la teua disposició
 Salutacions cordials de Ignasi Gomis
 ~~~ 
+
+L'us d'aquest botó d'inici es queda enregistrat en cada una de les fitxes de les empreses amb l'aparició de la següent icona:
+
+![bandera](./img/ajuda/bandera_inici.PNG)
+
+En aquest moment de les FCT hem de fer servir el botó **Documentació alumnat** que envía un correu a l'alumne/a en el que se li informa de la data d'inici de les FCT i de la asegurança. **L'enviament d'aquest correu no es veu reflectit a les fitxes de les empreses però sens envia també al nostre correu personal, així queda constància de que s'ha enviat**. La següent imatge mostra el contingut d'aquest correu:
+
+![documentacio](./img/ajuda/documentacio_fct_alumne.PNG)
+
+
+
+POR AQUÍ ME HE QUEDADO
+
+
+
+
 
 **Seguiment**. Envia un correu automàtic als instructors amb el següent text:
 
@@ -160,6 +146,3 @@ En la part inferior tinc totes les col·laboracions ordenades amb els botons que
 A més hi ha un botó amb un telèfon per registrar un contacte telefònico amb un instructor.
 
 Cada contacte queda registrat i ix en cada col·laboració per que el tutor veja si ja ha fet un contacte o no.
-
-## FCTXALUMNE
-
