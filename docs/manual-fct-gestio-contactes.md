@@ -37,6 +37,7 @@ Les classes de segon curs acaben a principis de març, i després, els alumnes h
 Salutacions cordials de Ignasi Gomis
 ~~~ 
 
+___
 ## Pestanya **Colabora**
 
 En esta pestanya els botons están ordenats en funció de cada fase en el proces de gestió de les FCT i els farem servir en aquest ordre:
@@ -98,14 +99,7 @@ En aquest moment de les FCT hem de fer servir el botó **Documentació alumnat**
 ![documentacio](./img/ajuda/documentacio_fct_alumne.PNG)
 
 
-
-POR AQUÍ ME HE QUEDADO
-
-
-
-
-
-**Seguiment**. Envia un correu automàtic als instructors amb el següent text:
+Una volta iniciada la FCT farem servir el botó **Seguiment** per tal d'enviar correus automàtics als instructors per tal de demanar-los informació. S'envía el següent text:
 
 ~~~ 
 Hola Emilio Sánchez,
@@ -119,7 +113,14 @@ Per qualsevol dubte em tens a la teua disposició
 Salutacions cordials de Ignasi Gomis
 ~~~
 
-**Concertar visita**. Envia un correu, que puc modificar, als instructors amb el següent text:
+L'enviament de cada correu queda registrat en la corresponent Fitxa del contacte amb un sobre. Inicialment aquesta icona apareix amb un **-** que indica que no hem aportat retroalimentació de la comunicació. Per tal d'aportar la retroalimentació, premem sobre la mateixa icona **-** i s'ens obri un formulari. Una vegada aportada la retroalimentació, la icona pasa a ser un **+** tal com es mostra en la següent imatge. 
+
+![correu_retro](./img/ajuda/correu_fct_retroalimentacio.png)
+
+Si necessitem editar o consultar la retroalimentació aportada podem premer la icona **+** de nou.
+
+
+Per tal de concertar una visita amb l'instructor fem servir el botó **Concertar visita** que envia el següent correu als instructors. Aques correu es pot modificar:
 
 ~~~
 El meu nom és Ignacio Pérez i sóc professor-tutor del Centre Integrat Formació Professional Batoi.
@@ -129,20 +130,23 @@ Ja em dius quan et vindria bé.
 Salutacions cordials de Ignacio Pérez
 ~~~
 
-**Citar alumnes**. Envia un correu als alumnes amb el següent text:
+**IMPORTANT:**
+L'enviament del correu **Concertar visita** no genera cap nova icona a la fitxa del contacte. En cas d'acordar una data per tal de fer la visita serà necessari tramitar una **comissió de servei** i es aquest tràmit el que genera la corresponent icona. El comportament d'aquesta icona es anàloga a la del sobre. Ens permet aportar una retroalimentació de la reunió:
+
+![visita_retroalimentacio](./img/ajuda/comissio_servei_fct_retroalimentacio.png)
+
+
+Durant el període d'FCT hem de citar als alumnes per a que acudisquen al centre, aço ho fem amb el botó **Citar alumnes** que envia un correu als alumnes amb el següent text:
 
 ~~~
 Et convoque el dia ___________________________ a les _______________ a l'Institut, per a fer el seguiment de les pràctiques de FCT. Recorda't d'emplenar i dur els annexos 4 signats per l'instructor. Si no pots assistir, comunica-me-ho per a tenir-ho en compte i concertar una cita un altre dia.
 Salutacions cordials de Ignacio Pérez
 ~~~
 
-En la part inferior tinc totes les col·laboracions ordenades amb els botons que es poden aplicar. Tenim les mateixes que les de dalt (s'identifiquen pel dibuix) a més del SI NO ?? i ASSIGNAR
+Per finalitzar, una vegada iniciada la FCT, en cada Fitxa de contacte trobem la icona del teléfon que ens permet registrar una conversació telefónica amb l'instructor:
 
-**SI**. L'empresa vol col·laborar.
-**NO**. L'empresa no vol col·laborar.
-**??**. No sé si vol col·laborar.
-**ASSIGNAR**. Assignar l'empresa al tutor per gestionar les col·laboracions.
+![telefon](./img/ajuda/telefon_fct.PNG)
 
-A més hi ha un botó amb un telèfon per registrar un contacte telefònico amb un instructor.
+Aquesta icona permet registrar una cridada de telèfon. El comportament es exactament el mateix que el de les icones del sobre i el vehícle, possibilitant el registre de informació de retroalimentació.
 
-Cada contacte queda registrat i ix en cada col·laboració per que el tutor veja si ja ha fet un contacte o no.
+![telefon_retro](./img/ajuda/telefon_retroalimentacio.png)
