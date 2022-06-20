@@ -183,5 +183,3 @@ Per tal de crear un nou centre de treball, en la pestanya **'Centre de treball'*
 Una volta seleccionada l'empresa, en la pestanya **'Centre de treball'** pulsem sobre **'Nou instructor'** i s'ens obri el següent formulari:
 
 ![nou instructor](./img/ajuda/empresa_nou_instructor.PNG)
-
-## Entrada nova 2
