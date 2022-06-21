@@ -143,13 +143,13 @@
         <table class="table">
             @foreach ($totales as $cicle => $totalXcicle)
                 <tr><th colspan="3">{{$cicle}}</th></tr>
-                <tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Alumnat Matriculat</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['matriculas'] }}</strong></td></tr>
-                <tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Grau de satisfacció amb el Professorat</td><td style="width: 15% ;text-align: left;font-size: medium"><strong>{{ $totalXcicle['sumSatis']?number_format($totalXcicle['votesSatis']/$totalXcicle['sumSatis'],1,','):0 }}</strong></td></tr>
-                <tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Alumnat en Pràtiques FCT</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['fct'] }}</strong></td></tr>
-                <tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Alumnat inserit laboralment</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['insercio'] }}</strong></td></tr>
-                <tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Grau de satisfacció de l'alumnat amb la empresa</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['sumAlFct']?number_format($totalXcicle['votesAlFct']/$totalXcicle['sumAlFct'],1,','):0 }}</strong></td></tr>
-                <tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Nombre d'empreses col·laboradores</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['centres'] }}</strong></td></tr>
-                <tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Grau de satisfacció del tutor amb la empresa</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['sumTuFct']?number_format($totalXcicle['votesTuFct']/$totalXcicle['sumTuFct'],1,','):0 }}</strong></td></tr>
+                @isset($totalXcicle['matriculas'])<tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Alumnat Matriculat</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['matriculas']??'-' }}</strong></td></tr>@endisset
+                @isset($totalXcicle['sumSatis'])<tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Grau de satisfacció amb el Professorat</td><td style="width: 15% ;text-align: left;font-size: medium"><strong>{{ number_format($totalXcicle['votesSatis']/$totalXcicle['sumSatis'],1,',')}}</strong></td></tr>@endisset
+                @isset($totalXcicle['fct'])<tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Alumnat en Pràtiques FCT</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['fct']??'-' }}</strong></td></tr>@endisset
+                @isset($totalXcicle['insercio'])<tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Alumnat inserit laboralment</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['insercio']??'-' }}</strong></td></tr>@endisset
+                @isset($totalXcicle['sumAlFct'])<tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Grau de satisfacció de l'alumnat amb la empresa</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ number_format($totalXcicle['votesAlFct']/$totalXcicle['sumAlFct'],1,',')}}</strong></td></tr>@endisset
+                @isset($totalXcicle['centres'])<tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Nombre d'empreses col·laboradores</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['centres']??'-' }}</strong></td></tr>@endisset
+                @isset($totalXcicle['sumTuFct'])<tr><td style="width: 3%;text-align: right">o</td><td style="width: 40%;text-align: left;font-size: medium">Grau de satisfacció del tutor amb la empresa</td><td style="width: 15%;text-align: left;font-size: medium "><strong>{{ $totalXcicle['sumTuFct']?number_format($totalXcicle['votesTuFct']/$totalXcicle['sumTuFct'],1,','):'-' }}</strong></td></tr>@endisset
             @endforeach
         </table>
     </div>
@@ -178,7 +178,7 @@
                     <td style="text-align: justify">{!!$programacion->propuestas!!}</td>
                 </tr>
             @endforeach
-        </table>    
+        </table>
     </div>
 @endisset
 @isset($datosInforme['proyectos'])
@@ -201,7 +201,7 @@
     </table>
     <table style="width: 95%" class="table">
         <tr><td style="text-align: justify;font-size: medium">{!!$datosInforme['observaciones']!!}</td></tr>
-    </table>    
+    </table>
 </div>
 @endsection
 

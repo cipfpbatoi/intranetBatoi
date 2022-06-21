@@ -193,6 +193,7 @@ class PanelListadoEntregasController extends BaseController
     }
     private function hazPdfInforme($observaciones, $trimestre, $proyectos = null)
     {
+
         $dep = AuthUser()->departamento;
         $fechas = config("curso.evaluaciones.$trimestre");
         $actividades = Actividad::Departamento($dep)
@@ -203,6 +204,7 @@ class PanelListadoEntregasController extends BaseController
                 ->get();
         $todos = Resultado::Departamento($dep)->with('ModuloGrupo')->get();
         $profesores = hazArray(Profesor::where('departamento',$dep)->get(),'dni','dni');
+        $totales = array();
 
         $resultados = collect();
         foreach ($todos as $resultado){
@@ -228,6 +230,7 @@ class PanelListadoEntregasController extends BaseController
         $resultados = $primero
                 ->concat($segundo)
                 ->sortBy('Modulo');*/
+
         if ($trimestre == 3) {
             $programaciones = Programacion::Departamento(AuthUser()->departamento)
                     ->whereNotNull('propuestas')
@@ -272,8 +275,14 @@ class PanelListadoEntregasController extends BaseController
             foreach (Vote::where('option_id',35)->whereIn('idOption2',$profesores)->get() as $vote)
             {
                 $mg = Modulo_grupo::find($vote->idOption1);
-                $totales[$mg->ModuloCiclo->Ciclo->ciclo]['votesSatis'] += $vote->value;
-                $totales[$mg->ModuloCiclo->Ciclo->ciclo]['sumSatis'] += 1;
+                if (isset( $totales[$mg->ModuloCiclo->Ciclo->ciclo]['votesSatis'])){
+                    $totales[$mg->ModuloCiclo->Ciclo->ciclo]['votesSatis'] += $vote->value;
+                    $totales[$mg->ModuloCiclo->Ciclo->ciclo]['sumSatis'] += 1;
+                } else {
+                    $totales[$mg->ModuloCiclo->Ciclo->ciclo]['votesSatis'] = $vote->value;
+                    $totales[$mg->ModuloCiclo->Ciclo->ciclo]['sumSatis'] = 1;
+                }
+
             }
         } else {
             $programaciones = null;
