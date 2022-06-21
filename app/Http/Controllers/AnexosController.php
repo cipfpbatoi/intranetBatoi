@@ -30,6 +30,7 @@ class AnexosController extends Controller
             $response = Http::withToken($this->token)
                 ->attach('file',file_get_contents('/var/www/html/intranetBatoi/storage/app/public/adjuntos/alumnofctaval/1294/A5.pdf'),'A5')
                 ->post($link);
+            dd($response);
         } else {
             dd('Sense connexió');
         }
