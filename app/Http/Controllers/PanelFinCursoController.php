@@ -138,7 +138,7 @@ class PanelFinCursoController extends BaseController
     }
 
     private static function lookAtQualitatUpload(&$avisos){
-        if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'FCT - Entrevistes')
+        if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'FCT')
             ->where('curso', Curso())->first()) {
             $avisos[self::SUCCESS][] = "Documentacio qualitat correcta";
         }
