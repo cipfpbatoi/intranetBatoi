@@ -220,7 +220,7 @@ class Grupo extends Model
         $aprob = 0;
         foreach ($todos as $alumno) {
             foreach ($alumno->Fcts as $fct){
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->calProyecto)) {
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && $fct->pivot->calProyecto > 0) {
                     $aprob++;
                 }
             }
@@ -235,7 +235,7 @@ class Grupo extends Model
         $aprob = 0;
         foreach ($todos as $alumno) {
             foreach ($alumno->Fcts as $fct){
-                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->calProyecto) && $fct->pivot->calificacion >= 5){
+                if (!$fct->dual && $fct->Colaboracion && $fct->Colaboracion->Ciclo == $this->Ciclo && isset($fct->pivot->calificacion) && $fct->pivot->calProyecto >= 5){
                     $aprob++;
                 }
             }
