@@ -17,6 +17,7 @@ class MatriculaAlumne extends Mailable
 
     public $aR;
     public $vista;
+    public $convocatoria;
 
 
 
@@ -25,10 +26,11 @@ class MatriculaAlumne extends Mailable
      *
      * @return void
      */
-    public function __construct($aR,$vista)
+    public function __construct($aR,$vista,$convocatoria=null)
     {
         $this->aR = $aR;
         $this->vista = $vista;
+        $this->convocatoria = $convocatoria??config('curso.convocatoria');
     }
 
     /**

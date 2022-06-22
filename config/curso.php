@@ -28,5 +28,6 @@ return [
     ],
     'certificatFol' => '2022-06-14',
     'enquestesAutomatiques' => 1,
-    'convocatoria' => 'wtr60qi92o4s'
+    'convocatoria' => 'wtr60qi92o4s',
+    'fitxerMatricula' => 'email.matricula'
 ];

@@ -2,8 +2,11 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoReunion;
+use Illuminate\Http\Request;
+use Intranet\Mail\MatriculaAlumne;
 
 class AlumnoReunionController extends ApiBaseController
 {
@@ -45,6 +48,32 @@ class AlumnoReunionController extends ApiBaseController
         }
         return $this->getDades($aR->idAlumno);
     }
+
+    public function sendMatricula(Request $request){
+
+        $alumne = Alumno::where('dni',$request->dni)->first();
+
+        if (!$alumne) {
+            return $this->sendError('DNI no vàlid');
+        }
+
+        $aR = AlumnoReunion::where('idAlumno',$alumne->nia)->first();
+
+        if (!$aR) {
+            return $this->sendError("Eixe alumne no te matricules pendents");
+        } else {
+            try {
+                Mail::to($request->email, 'Secretaria CIPFP Batoi')
+                    ->send(new MatriculaAlumne(
+                        $aR, config('curso.fitxerMatricula'),$request->convocatoria));
+                return $this->sendResponse('OK','Email enviat');
+            } catch (Swift_RfcComplianceException $e) {
+                return $this->sendError('Error enviant email');
+            }
+        }
+    }
+
+
 
     public function getTestMatricula($token){
         if ($token == '2Kpd5xIfNYfx3U7aTaRWPQZtmF9LFlP6dXR07DB88DdL28ZMfWXsYKWAC0TV') {

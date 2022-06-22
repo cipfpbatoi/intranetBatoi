@@ -6,7 +6,8 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Http;
 use DB;
-
+use Intranet\Entities\AlumnoFct;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -30,12 +31,52 @@ class AnexosController extends Controller
             $response = Http::withToken($this->token)
                 ->attach('file',file_get_contents('/var/www/html/intranetBatoi/storage/app/public/adjuntos/alumnofctaval/1294/A5.pdf'),'A5')
                 ->post($link);
-            dd($response);
+            if ($response->code == 200)
         } else {
-            dd('Sense connexió');
+            Alert::danger('No hi ha connexio');
         }
 
 
+    }
+
+    private function tipoDocument($title){
+        $tipos = ['A5'=>'A5','A6'=>'A6','AVI'=>'A6','AV'=>'A5','AN.VI'=>'A6','AN.V'=>'A5',
+            'ANEXO5'=>'A5','ANEXO6'=>'A6','ANNEXVI'=>'A6','ANNEXV'=>'A5'];
+
+        foreach ($tipos as $key => $tipo){
+            if (str_contains(strtoupper($title)),$key){
+                return $tipos[$key];
+            }
+        }
+        return null;
+    }
+
+    public function sendDocuments(){
+        foreach (AlumnoFct::where('a56',1)->get() as $fct){
+            foreach(Adjunto::where('route','alumnofctaval/'.$fct->id)->where('extension','pdf')->get() as $key => $adjunto){
+                $document[$key]['title'] = $this->tipoDocument($adjunto->title);
+                $document[$key]['file'] = $adjunto->route;
+                $document[$key]['name'] = $adjunto->name;
+                $document[$key]['size'] = $adjunto->size;
+                $tutor = $adjunto->owner;
+            }
+            if (count($document) == 2) {
+                if (isset($document[0]['title'])&&$document[1]['title']){
+                    $this->upload($document);
+                } else {
+                    if ($document[0]['size'] > $document[1]['size']){
+                        $document[0]['title'] = 'A5';
+                        $document[1]['title'] = 'A6';
+                    } else {
+                        $document[0]['title'] = 'A6';
+                        $document[1]['title'] = 'A5';
+                    }
+                    $this->upload($document)  ;
+                }
+            } else {
+                Alert::danger($fct->Alumno->fullName.' no te '.count($document).' documents');
+            }
+        }
     }
 
     public function login(){
