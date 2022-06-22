@@ -174,7 +174,7 @@ class Grupo extends Model
 
     public function getCalidadAttribute()
     {
-        return (Documento::where('tipoDocumento', 'Qualitat')->where('grupo', $this->nombre)->where('curso', Curso())->count()) ? 'O' : 'X';
+        return (Documento::where('tipoDocumento', 'FCT')->where('grupo', $this->nombre)->where('curso', Curso())->count()) ? 'O' : 'X';
     }
 
     public function getMatriculadosAttribute()
