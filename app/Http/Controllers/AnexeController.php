@@ -43,7 +43,7 @@ class AnexeController extends Controller
         if ($response['code'] == 200) {
             return 1;
         } else {
-            Alert::error("Error al subir el archivo $name de ".$document['dni'].". Error: ".$response['body']);
+            Alert::error("Error al subir el archivo $name de ".$document['dni'].":".$response['error']);
             return 0;
         }
     }
