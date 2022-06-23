@@ -58,8 +58,8 @@ class AnexeController extends Controller
             foreach ($documents as $document) {
                 $document['fct']->a56 = 2;
                 $document['fct']->save();
-                Alert::success("Archivos de ".$document['fct']->Alumno->shortName." subido correctamente");
             }
+            Alert::success("Archivos de ".$document['fct']->Alumno->shortName." subidos correctamente");
         }
     }
 
@@ -103,7 +103,7 @@ class AnexeController extends Controller
                     }
                 } else {
                     $profesor = Profesor::find($tutor);
-                    Mail::to($profesor->email, 'Intranet')
+                    Mail::to('igomis@cipfpbatoi.es', 'Intranet')
                         ->send(new Comunicado(['tutor'=>$profesor->shortName,'nombre'=>'Ignasi Gomis','email'=>'igomis@cipfpbatoi.es'],$fct,'email.a56'));
                     Alert::danger($fct->Alumno->fullName.' no te '.count($document).' documents');
                 }
