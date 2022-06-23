@@ -39,7 +39,8 @@ class AnexeController extends Controller
         $response = Http::withToken($this->token)
                 ->attach('file',file_get_contents($route),$name)
                 ->post($link);
-        if ($response->code == 200) {
+
+        if ($response['code'] == 200) {
             return 1;
         } else {
             Alert::error("Error al subir el archivo $name de ".$document['dni'].". Error: ".$response->body);
