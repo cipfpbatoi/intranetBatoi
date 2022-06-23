@@ -459,11 +459,11 @@ Route::get('/ciclodual/edit',['as'=>'cicloDual.edit','uses'=>'CicloDualControlle
 Route::put('/ciclodual/edit',['as'=>'cicloDual.update','uses'=>'CicloDualController@update']);
 
 Route::get('/autorizacion/{nia}/actividad/{id}',['as'=>'actividad.autorizacion','uses'=>'ActividadController@menorAuth']);
+Route::get('/anexeSend',['as'=>'anexe.send','uses'=>'AnexeController@sendDocuments']);
 
 
 
 
 /* Prova */
-Route::get('/anexos',['as'=>'anexos.login','uses'=>'AnexosController@index']);
 Route::get('/ocr',['as'=>'ocr.index','uses'=>'OcrController@index']);
 Route::view('/tasks','tasks.index');
