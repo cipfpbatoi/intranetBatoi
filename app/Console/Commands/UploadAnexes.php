@@ -1,34 +1,52 @@
 <?php
 
+namespace Intranet\Console\Commands;
 
-namespace Intranet\Http\Controllers;
-
-
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
-use DB;
-use Illuminate\Support\Facades\Mail;
+use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Profesor;
+use Intranet\Entities\Notification;
+use Illuminate\Support\Facades\Mail;
+use Intranet\Jobs\UploadFiles;
 use Intranet\Mail\Comunicado;
+use Intranet\Mail\ResumenDiario;
 use Styde\Html\Facades\Alert;
-use Intranet\Entities\Adjunto;
 
-
-/**
- * Class AdministracionController
- * @package Intranet\Http\Controllers
- */
-class AnexeController extends Controller
+class UploadAnexes extends Command
 {
+
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'upload:Anexe';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Pujar anexes V i VI';
+    protected $token;
     private $user,$pass,$link;
 
-
-    public function __construct(){
-       $this->user = env('APLSEC_USER','intranet@cipfpbatoi.es');
-       $this->pass =  env('APLSEC_PASS','intr4n3t@B4t01');
-       $this->link =  env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/');
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->user = env('APLSEC_USER','intranet@cipfpbatoi.es');
+        $this->pass =  env('APLSEC_PASS','intr4n3t@B4t01');
+        $this->link =  env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/');
+        parent::__construct();
     }
 
+    /**
     private function uploadFile($document){
 
         $curso = substr(curso(),0,4);
@@ -37,8 +55,8 @@ class AnexeController extends Controller
         $name = $document['title'] == 10 ? 'A5.pdf':'A6.pdf';
 
         $response = Http::withToken($this->token)
-                ->attach('file',file_get_contents($route),$name)
-                ->post($link);
+            ->attach('file',file_get_contents($route),$name)
+            ->post($link);
 
         if ($response['code'] == 200) {
             return 1;
@@ -62,6 +80,7 @@ class AnexeController extends Controller
             Alert::success("Archivos de ".$document['fct']->Alumno->shortName." subidos correctamente");
         }
     }
+     */
 
     private function tipoDocument($title){
         $tipos = ['A5'=>'10','A6'=>'11','AVI'=>'11','AV'=>'10','AN.VI'=>'11','AN.V'=>'10',
@@ -75,8 +94,13 @@ class AnexeController extends Controller
         return null;
     }
 
-
-    public function sendDocuments(){
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
         if ($this->login()){
             foreach (AlumnoFct::where('a56',1)->where('beca',0)->get() as $fct){
                 foreach(Adjunto::where('route','alumnofctaval/'.$fct->id)->where('extension','pdf')->get() as $key => $adjunto){
@@ -90,7 +114,7 @@ class AnexeController extends Controller
                 }
                 if (count($document) == 2) {
                     if (isset($document[0]['title'])&&$document[1]['title']){
-                        $this->upload($document);
+                        UploadFiles::dispatch($document,$this->token);
                     } else {
                         if ($document[0]['size'] > $document[1]['size']){
                             $document[0]['title'] = '10';
@@ -99,22 +123,21 @@ class AnexeController extends Controller
                             $document[0]['title'] = '11';
                             $document[1]['title'] = '10';
                         }
-                        $this->upload($document)  ;
+                        UploadFiles::dispatch($document,$this->token);
                     }
                 } else {
                     $profesor = Profesor::find($tutor);
                     Mail::to('igomis@cipfpbatoi.es', 'Intranet')
                         ->send(new Comunicado(['tutor'=>$profesor->shortName,'nombre'=>'Ignasi Gomis','email'=>'igomis@cipfpbatoi.es'],$fct,'email.a56'));
-                    Alert::danger($fct->Alumno->fullName.' no te '.count($document).' documents');
                 }
             }
         } else {
-            Alert::danger('No hi ha connexio');
+            echo 'No hi ha connexio';
         }
         return back();
     }
 
-    public function login(){
+    private function login(){
         $link = $this->link."login_check";
 
         $response = Http::post($link,['username'=>$this->user,'password'=>$this->pass]);
@@ -126,5 +149,5 @@ class AnexeController extends Controller
         }
 
     }
-    
+
 }

@@ -8,6 +8,7 @@ use Intranet\Console\Commands\SendDailyEmails;
 use Intranet\Console\Commands\createDailyGuards;
 use Intranet\Console\Commands\notifyDailyFaults;
 use Intranet\Console\Commands\SendFctEmails;
+use Intranet\Console\Commands\UploadAnexes;
 
 class Kernel extends ConsoleKernel
 {
@@ -21,7 +22,7 @@ class Kernel extends ConsoleKernel
         createDailyGuards::class,
         notifyDailyFaults::class,
         SendFctEmails::class,
-        
+        UploadAnexes::class,
     ];
 
     /**
