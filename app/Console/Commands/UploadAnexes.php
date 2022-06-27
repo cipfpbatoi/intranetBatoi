@@ -96,8 +96,8 @@ class UploadAnexes extends Command
                         $profesor = Profesor::find($tutor);
                         Mail::to('igomis@cipfpbatoi.es', 'Intranet')
                             ->send(new Comunicado([
-                                'tutor' => $profesor->shortName, 'nombre' => 'Ignasi Gomis',
-                                'email' => 'igomis@cipfpbatoi.es', 'document' => $document
+                                'tutor' => $profesor->shortName, 'nombre' => 'Ofelia Chafer',
+                                'email' => $profesor->email, 'document' => $document
                             ], $fct, 'email.a56'));
                     }
                 }
@@ -105,7 +105,6 @@ class UploadAnexes extends Command
         } else {
             echo 'No hi ha connexio';
         }
-        return back();
     }
 
     private function login(){
