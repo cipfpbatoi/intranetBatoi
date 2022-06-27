@@ -46,42 +46,6 @@ class UploadAnexes extends Command
         parent::__construct();
     }
 
-    /**
-    private function uploadFile($document){
-
-        $curso = substr(curso(),0,4);
-        $link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
-        $route = storage_path('app/public/adjuntos/'.$document['file'].'/'.$document['name']);
-        $name = $document['title'] == 10 ? 'A5.pdf':'A6.pdf';
-
-        $response = Http::withToken($this->token)
-            ->attach('file',file_get_contents($route),$name)
-            ->post($link);
-
-        if ($response['code'] == 200) {
-            return 1;
-        } else {
-            Alert::danger("Error al subir el archivo $name de ".$document['dni'].":".print_r($response['error']));
-            return 0;
-        }
-    }
-
-    private function upload($documents)
-    {
-        $success = 0;
-        foreach ($documents as $document) {
-            $success += $this->uploadFile($document);
-        }
-        if ($success == 2) {
-            foreach ($documents as $document) {
-                $document['fct']->a56 = 2;
-                $document['fct']->save();
-            }
-            Alert::success("Archivos de ".$document['fct']->Alumno->shortName." subidos correctamente");
-        }
-    }
-     */
-
     private function tipoDocument($title){
         $tipos = ['A5'=>'10','A6'=>'11','AVI'=>'11','AV'=>'10','AN.VI'=>'11','AN.V'=>'10',
             'ANEXO5'=>'10','ANEXO6'=>'11','ANNEXVI'=>'11','ANNEXV'=>'10'];
@@ -128,9 +92,8 @@ class UploadAnexes extends Command
                     }
                 } else {
                     $profesor = Profesor::find($tutor);
-                    print_r($document);
-                    //Mail::to('igomis@cipfpbatoi.es', 'Intranet')
-                    //    ->send(new Comunicado(['tutor'=>$profesor->shortName,'nombre'=>'Ignasi Gomis','email'=>'igomis@cipfpbatoi.es'],$fct,'email.a56'));
+                    Mail::to('igomis@cipfpbatoi.es', 'Intranet')
+                       ->send(new Comunicado(['tutor'=>$profesor->shortName,'nombre'=>'Ignasi Gomis','email'=>'igomis@cipfpbatoi.es'],$fct,'email.a56'));
                 }
             }
         } else {
