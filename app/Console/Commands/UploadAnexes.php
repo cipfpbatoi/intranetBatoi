@@ -68,6 +68,7 @@ class UploadAnexes extends Command
         if ($this->login()){
             foreach (AlumnoFct::where('a56',1)->where('beca',0)->get() as $fct){
                 $document = array();
+                $tutor = '';
                 foreach(Adjunto::where('route','alumnofctaval/'.$fct->id)->where('extension','pdf')->get() as $key => $adjunto){
                     $document[$key]['title'] = $this->tipoDocument($adjunto->title);
                     $document[$key]['file'] = $adjunto->route;
@@ -91,9 +92,14 @@ class UploadAnexes extends Command
                         UploadFiles::dispatch($document,$this->token);
                     }
                 } else {
-                    $profesor = Profesor::find($tutor);
-                    Mail::to('igomis@cipfpbatoi.es', 'Intranet')
-                       ->send(new Comunicado(['tutor'=>$profesor->shortName,'nombre'=>'Ignasi Gomis','email'=>'igomis@cipfpbatoi.es','document'=>$document],$fct,'email.a56'));
+                    if (count($document)) {
+                        $profesor = Profesor::find($tutor);
+                        Mail::to('igomis@cipfpbatoi.es', 'Intranet')
+                            ->send(new Comunicado([
+                                'tutor' => $profesor->shortName, 'nombre' => 'Ignasi Gomis',
+                                'email' => 'igomis@cipfpbatoi.es', 'document' => $document
+                            ], $fct, 'email.a56'));
+                    }
                 }
             }
         } else {
