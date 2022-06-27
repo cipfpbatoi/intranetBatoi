@@ -94,10 +94,10 @@ class UploadAnexes extends Command
                 } else {
                     if (count($document)) {
                         $profesor = Profesor::find($tutor);
-                        Mail::to('igomis@cipfpbatoi.es', 'Intranet')
+                        Mail::to($profesor->email, 'Intranet')
                             ->send(new Comunicado([
-                                'tutor' => $profesor->shortName, 'nombre' => 'Ofelia Chafer',
-                                'email' => $profesor->email, 'document' => $document
+                                'tutor' => $profesor->shortName, 'nombre' => 'Ignasi Gomis',
+                                'email' => 'igomis@cipfpbatoi.es', 'document' => $document
                             ], $fct, 'email.a56'));
                     }
                 }
