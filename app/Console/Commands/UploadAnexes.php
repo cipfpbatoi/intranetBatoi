@@ -103,6 +103,7 @@ class UploadAnexes extends Command
     {
         if ($this->login()){
             foreach (AlumnoFct::where('a56',1)->where('beca',0)->get() as $fct){
+                $document = array();
                 foreach(Adjunto::where('route','alumnofctaval/'.$fct->id)->where('extension','pdf')->get() as $key => $adjunto){
                     $document[$key]['title'] = $this->tipoDocument($adjunto->title);
                     $document[$key]['file'] = $adjunto->route;
