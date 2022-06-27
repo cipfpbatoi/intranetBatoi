@@ -8,6 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Intranet\Mail\Comunicado;
 
 
 class UploadFiles implements ShouldQueue
@@ -63,7 +65,11 @@ class UploadFiles implements ShouldQueue
         if ($response['code'] == 200) {
             return 1;
         } else {
-            echo "Error al subir el archivo $name de ".$document['dni'].":".print_r($response['error']);
+            Mail::to('igomis@cipfpbatoi.es', 'Intranet')
+                ->send(new Comunicado([
+                    'tutor' => $name, 'nombre' => 'Ignasi gomis',
+                    'email' => 'igomis@cipfpbatoi.es', 'document' => $document
+                ], $document['fct'], 'email.a56'));
             return 0;
         }
     }
