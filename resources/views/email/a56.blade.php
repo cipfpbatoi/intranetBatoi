@@ -12,6 +12,8 @@
     </div>
     <div>
             <p>Hola, {{$remitente['tutor']}}</p>
-            <p>Ha fallat la pujada dels arxius A5 i A6 a l'expedient de l'alumne perquè no hi ha 2 fitxers: {{ $elemento->Alumno->fullName }}</p>
+            <p>Ha fallat la pujada dels arxius A5 i A6 a l'expedient de l'alumne perquè no hi ha 2 fitxers: {{ $elemento->Alumno->fullName }} del la fct {{ $elemento->id }}</p>
+            <p>@php(print_r($remitente['document']));</p>
+            <p>Si us plau, contacteu amb l'administrador del sistema per solucionar el problema.</p>
     </div>
 @endsection
