@@ -25,9 +25,11 @@ class SecretariaService
             'email' => $user,
             'password' => $pass
         ]);
+        dd($response);
         if (isset($response['token'])){
             $this->token = $response['token'];
         } else {
+
             throw new \Exception('No hi ha connexió amb el servidor de matrícules');
         }
     }
