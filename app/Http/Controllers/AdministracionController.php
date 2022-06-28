@@ -160,6 +160,10 @@ class AdministracionController extends Controller
                 $alumno->save();
             }
         }
+        foreach (Grupo::all() as $grupo){
+            $grupo->fol = 0;
+            $grupo->save();
+        }
 
 
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
