@@ -2,8 +2,7 @@
 namespace Intranet\Services;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
-use Intranet\Mail\Comunicado;
+
 
 
 class SecretariaService
