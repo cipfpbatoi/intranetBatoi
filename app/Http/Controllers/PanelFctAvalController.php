@@ -330,6 +330,7 @@ class PanelFctAvalController extends IntranetController
     public function send($id){
         try {
             $this->SService = new SecretariaService();
+            $this->SService->login();
             $fct = AlumnoFct::findOrFail($id);
         } catch (\Exception $e) {
             Alert::danger($e->getMessage());

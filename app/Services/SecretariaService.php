@@ -8,24 +8,23 @@ use Intranet\Mail\Comunicado;
 
 class SecretariaService
 {
-    protected $link;
+    protected $link,$user,$pass;
     protected $token;
 
     public function __construct()
     {
         $this->link = env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/');
-        $this->login();
+        $this->user = env('APLSEC_USER','intranet@cipfpbatoi.es');
+        $this->pass =  env('APLSEC_PASS','intr4n3t@B4t01');
     }
 
 
-    private function login(){
-        $user = env('APLSEC_USER','intranet@cipfpbatoi.es');
-        $pass =  env('APLSEC_PASS','intr4n3t@B4t01');
+    public function login(){
         $response = Http::post($this->link.'login_check',[
-            'email' => $user,
-            'password' => $pass
+            'email' => $this->user,
+            'password' => $this->pass
         ]);
-        dd($response,$user,$pass);
+
         if (isset($response['token'])){
             $this->token = $response['token'];
         } else {
