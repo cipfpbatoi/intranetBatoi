@@ -113,14 +113,14 @@ Per qualsevol dubte em tens a la teua disposició
 Salutacions cordials de Ignasi Gomis
 ~~~
 
-L'enviament de cada correu queda registrat en la corresponent Fitxa del contacte amb un sobre. Inicialment aquesta icona apareix amb un **-** que indica que no hem aportat retroalimentació de la comunicació. Per tal d'aportar la retroalimentació, premem sobre la mateixa icona **-** i s'ens obri un formulari. Una vegada aportada la retroalimentació, la icona pasa a ser un **+** tal com es mostra en la següent imatge. 
+L'enviament de cada correu queda registrat en la corresponent Fitxa del contacte amb un sobre. Inicialment aquesta icona apareix amb un **-** que indica que no hem aportat retroalimentació de la comunicació. Per tal d'aportar la retroalimentació, premem sobre el text amb la data i s'ens obri un formulari. Una vegada aportada la retroalimentació, la icona pasa a ser un **+** tal com es mostra en la següent imatge. 
 
 ![correu_retro](./img/ajuda/correu_fct_retroalimentacio.png)
 
-Si necessitem editar o consultar la retroalimentació aportada podem premer la icona **+** de nou.
+Si necessitem editar o consultar la retroalimentació aportada podem premer de nou sobre la data.
 
 
-Per tal de concertar una visita amb l'instructor fem servir el botó **Concertar visita** que envia el següent correu als instructors. Aques correu es pot modificar:
+Per tal de concertar una visita amb l'instructor fem servir el botó **Concertar visita** que envia el següent correu als instructors. Aquest correu es pot modificar:
 
 ~~~
 El meu nom és Ignacio Pérez i sóc professor-tutor del Centre Integrat Formació Professional Batoi.

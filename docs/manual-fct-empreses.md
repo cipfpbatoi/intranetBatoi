@@ -14,9 +14,14 @@ Si premem la icona **+** de la dreta ens mostra totes les dades de l'empresa i e
 
 ___
 
+Des del punt de vista de la intranet, per a poder col.laborar amb una empresa en una FCT, es requerixen els següents elements:
+* Que la empresa estiga al llistat d'empreses col.laboradores del centre.
+* Que l'empresa siga una col.laboració del departament.
+* Que s'haja establit un instructor.
+* Que s'haja establit un centre de treball (Entenem per centre de treball una localització on l'empresa tinga activitat)
+
+
 A la página de [Preguntes frequents](faqs.md) pots consultar:
   * Com anyadir una empresa que no ha colaborat abans amb el centre.
   * Com crear una col.laboració amb el departament.
   * Com crear un nou instructor o un nou centre de treball.
-
-
