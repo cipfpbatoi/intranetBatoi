@@ -315,12 +315,24 @@ class PanelFctAvalController extends IntranetController
 
     }
 
+    private function tipoDocument($title){
+        $tipos = ['A5'=>'10','A6'=>'11','AVI'=>'11','AV'=>'10','AN.VI'=>'11','AN.V'=>'10',
+            'ANEXO5'=>'10','ANEXO6'=>'11','ANNEXVI'=>'11','ANNEXV'=>'10'];
+
+        foreach ($tipos as $key => $tipo){
+            if (str_contains(strtoupper($title),$key)){
+                return $tipos[$key];
+            }
+        }
+        return null;
+    }
+
     public function send($id){
         try {
             $this->SService = new SecretariaService();
             $fct = AlumnoFct::findOrFail($id);
         } catch (\Exception $e) {
-            Alert::danger('No hi ha connexió amb el servidor de matrícules');
+            Alert::danger($e->getMessage());
             return back();
         }
         foreach(Adjunto::where('route','alumnofctaval/'.$id)->where('extension','pdf')->get() as $key => $adjunto){
