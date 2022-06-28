@@ -16,18 +16,18 @@ class UploadFiles implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $files,$token,$link;
+    protected $files,$SService;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($files,$token)
+    public function __construct($files,$SService)
     {
         $this->files = $files;
-        $this->token = $token;
-        $this->link =  env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/');
+        $this->SService = $SService;
     }
+
 
     /**
      * Execute the job.
@@ -36,41 +36,7 @@ class UploadFiles implements ShouldQueue
      */
     public function handle()
     {
-        $success = 0;
-        foreach ($this->files as $document) {
-            $success += $this->uploadFile($document);
-        }
-        if ($success == 2) {
-            foreach ($this->files as $document) {
-                $document['fct']->a56 = 2;
-                $document['fct']->save();
-            }
-            echo "Archivos de ".$document['fct']->Alumno->shortName." subidos correctamente";
-        } else {
-            echo "Error al subir los archivos de ".$document['fct']->Alumno->shortName;
-        }
+        $this->SService->uploadA56($this->files);
     }
 
-    private function uploadFile($document){
-
-        $curso = substr(curso(),0,4);
-        $link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
-        $route = storage_path('app/public/adjuntos/'.$document['file'].'/'.$document['name']);
-        $name = $document['title'] == 10 ? 'A5.pdf':'A6.pdf';
-
-        $response = Http::withToken($this->token)
-            ->attach('file',file_get_contents($route),$name)
-            ->post($link);
-
-        if ($response['code'] == 200) {
-            return 1;
-        } else {
-            Mail::to('igomis@cipfpbatoi.es', 'Intranet')
-                ->send(new Comunicado([
-                    'tutor' => $name, 'nombre' => 'Ignasi gomis',
-                    'email' => 'igomis@cipfpbatoi.es', 'document' => $document
-                ], $document['fct'], 'email.a56'));
-            return 0;
-        }
-    }
 }

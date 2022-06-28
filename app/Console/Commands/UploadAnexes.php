@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Intranet\Jobs\UploadFiles;
 use Intranet\Mail\Comunicado;
 use Intranet\Mail\ResumenDiario;
+use Intranet\Services\SecretariaService;
 use Styde\Html\Facades\Alert;
 
 class UploadAnexes extends Command
@@ -30,8 +31,8 @@ class UploadAnexes extends Command
      * @var string
      */
     protected $description = 'Pujar anexes V i VI';
-    protected $token;
-    private $user,$pass,$link;
+    protected $SService;
+
 
     /**
      * Create a new command instance.
@@ -40,10 +41,13 @@ class UploadAnexes extends Command
      */
     public function __construct()
     {
-        $this->user = env('APLSEC_USER','intranet@cipfpbatoi.es');
-        $this->pass =  env('APLSEC_PASS','intr4n3t@B4t01');
-        $this->link =  env('APLSEC_LINK','https://matricula.cipfpbatoi.es/api/');
-        parent::__construct();
+        try {
+            $this->SService = new SecretariaService();
+            parent::__construct();
+        } catch (\Exception $e) {
+            echo 'No hi ha connexió amb el servidor de matrícules';
+            exit();
+        }
     }
 
     private function tipoDocument($title){
@@ -65,59 +69,44 @@ class UploadAnexes extends Command
      */
     public function handle()
     {
-        if ($this->login()){
-            foreach (AlumnoFct::where('a56',1)->where('beca',0)->get() as $fct){
-                $document = array();
-                $tutor = '';
-                foreach(Adjunto::where('route','alumnofctaval/'.$fct->id)->where('extension','pdf')->get() as $key => $adjunto){
-                    $document[$key]['title'] = $this->tipoDocument($adjunto->title);
-                    $document[$key]['file'] = $adjunto->route;
-                    $document[$key]['name'] = $adjunto->name;
-                    $document[$key]['size'] = $adjunto->size;
-                    $document[$key]['dni'] = $fct->Alumno->dni;
-                    $document[$key]['fct'] = $fct;
-                    $tutor = $adjunto->owner;
-                }
-                if (count($document) == 2) {
-                    if (isset($document[0]['title'])&&$document[1]['title']){
-                        UploadFiles::dispatch($document,$this->token);
-                    } else {
-                        if ($document[0]['size'] > $document[1]['size']){
-                            $document[0]['title'] = '10';
-                            $document[1]['title'] = '11';
-                        } else {
-                            $document[0]['title'] = '11';
-                            $document[1]['title'] = '10';
-                        }
-                        UploadFiles::dispatch($document,$this->token);
-                    }
+        foreach (AlumnoFct::where('a56',1)->where('beca',0)->get() as $fct){
+            $document = array();
+            $tutor = '';
+            foreach(Adjunto::where('route','alumnofctaval/'.$fct->id)->where('extension','pdf')->get() as $key => $adjunto){
+                $document[$key]['title'] = $this->tipoDocument($adjunto->title);
+                $document[$key]['file'] = $adjunto->route;
+                $document[$key]['name'] = $adjunto->name;
+                $document[$key]['size'] = $adjunto->size;
+                $document[$key]['dni'] = $fct->Alumno->dni;
+                $document[$key]['fct'] = $fct;
+                $tutor = $adjunto->owner;
+            }
+            if (count($document) == 2) {
+                if (isset($document[0]['title'])&&$document[1]['title']){
+                    UploadFiles::dispatch($document,$this->SService);
                 } else {
-                    if (count($document)) {
-                        $profesor = Profesor::find($tutor);
-                        Mail::to($profesor->email, 'Intranet')
-                            ->send(new Comunicado([
-                                'tutor' => $profesor->shortName, 'nombre' => 'Ignasi Gomis',
-                                'email' => 'igomis@cipfpbatoi.es', 'document' => $document
-                            ], $fct, 'email.a56'));
+                    if ($document[0]['size'] > $document[1]['size']){
+                        $document[0]['title'] = '10';
+                        $document[1]['title'] = '11';
+                    } else {
+                        $document[0]['title'] = '11';
+                        $document[1]['title'] = '10';
                     }
+                    UploadFiles::dispatch($document,$this->SService);
+                }
+            } else {
+                if (count($document)) {
+                    $profesor = Profesor::find($tutor);
+                    Mail::to($profesor->email, 'Intranet')
+                        ->send(new Comunicado([
+                            'tutor' => $profesor->shortName, 'nombre' => 'Ignasi Gomis',
+                            'email' => 'igomis@cipfpbatoi.es', 'document' => $document
+                        ], $fct, 'email.a56'));
                 }
             }
-        } else {
-            echo 'No hi ha connexio';
         }
     }
 
-    private function login(){
-        $link = $this->link."login_check";
 
-        $response = Http::post($link,['username'=>$this->user,'password'=>$this->pass]);
-        if (isset($response['token'])){
-            $this->token = $response['token'];
-            return 1;
-        } else {
-            return 0;
-        }
-
-    }
 
 }

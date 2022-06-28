@@ -20,7 +20,11 @@ $("#dataFct").DataTable( {
         { data:'hasta'},
         { data: null,
             render: function (data){
-                return ' <a href="/fct/'+data.id+'/link" class="imgButton"><i class="fa fa-paperclip"></i></a> ' + avise;
+                var ret =' <a href="/fct/'+data.id+'/link" class="imgButton"><i class="fa fa-paperclip"></i></a> ' + avise;
+                if ( data.a56 ===1 ){
+                    ret +=' <a href="/fct/'+data.id+'/sendAnexo" class="imgButton"><i class="fa fa-plane"></i></a> ';
+                }
+                return ret;
             }
         },
         { data: null ,

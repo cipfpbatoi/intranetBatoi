@@ -2,13 +2,18 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonConfirmacion;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Adjunto;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
 use DB;
+use Intranet\Jobs\UploadFiles;
+use Intranet\Mail\Comunicado;
+use Intranet\Services\SecretariaService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
@@ -310,4 +315,40 @@ class PanelFctAvalController extends IntranetController
 
     }
 
+    public function send($id){
+        try {
+            $this->SService = new SecretariaService();
+            $fct = AlumnoFct::findOrFail($id);
+        } catch (\Exception $e) {
+            Alert::danger('No hi ha connexió amb el servidor de matrícules');
+            return back();
+        }
+        foreach(Adjunto::where('route','alumnofctaval/'.$id)->where('extension','pdf')->get() as $key => $adjunto){
+            $document[$key]['title'] = $this->tipoDocument($adjunto->title);
+            $document[$key]['file'] = $adjunto->route;
+            $document[$key]['name'] = $adjunto->name;
+            $document[$key]['size'] = $adjunto->size;
+            $document[$key]['dni'] = $fct->Alumno->dni;
+            $document[$key]['fct'] = $fct;
+            $tutor = $adjunto->owner;
+        }
+        if (count($document) == 2) {
+            if (isset($document[0]['title'])&&$document[1]['title']){
+                $this->SService->uploadA56($document);
+            }
+           else {
+                if ($document[0]['size'] > $document[1]['size']){
+                    $document[0]['title'] = '10';
+                    $document[1]['title'] = '11';
+                } else {
+                    $document[0]['title'] = '11';
+                    $document[1]['title'] = '10';
+                }
+               $this->SService->uploadA56($document);
+            }
+        } else {
+            Alert::danger("Hi ha ".count($document)." documents");
+        }
+        return back();
+    }
 } 
