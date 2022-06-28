@@ -25,7 +25,7 @@ class SecretariaService
             'email' => $user,
             'password' => $pass
         ]);
-        dd($response);
+        dd($response,$user,$pass);
         if (isset($response['token'])){
             $this->token = $response['token'];
         } else {
