@@ -27,7 +27,6 @@ class SecretariaService
         if (isset($response['token'])){
             $this->token = $response['token'];
         } else {
-            dd($response);
             throw new \Exception('No hi ha connexió amb el servidor de matrícules');
         }
     }
