@@ -332,7 +332,6 @@ class PanelFctAvalController extends IntranetController
         try {
             $fct = AlumnoFct::findOrFail($id);
             $this->SService = new SecretariaService();
-            $this->SService->login();
         } catch (\Exception $e) {
             Alert::danger($e->getMessage());
             return back();
@@ -347,10 +346,7 @@ class PanelFctAvalController extends IntranetController
             $tutor = $adjunto->owner;
         }
         if (count($document) == 2) {
-            if (isset($document[0]['title'])&&$document[1]['title']){
-                $this->SService->uploadA56($document);
-            }
-           else {
+            if (!isset($document[0]['title'])|| !$document[1]['title']){
                 if ($document[0]['size'] > $document[1]['size']){
                     $document[0]['title'] = '10';
                     $document[1]['title'] = '11';
@@ -358,7 +354,11 @@ class PanelFctAvalController extends IntranetController
                     $document[0]['title'] = '11';
                     $document[1]['title'] = '10';
                 }
-               $this->SService->uploadA56($document);
+            }
+            try {
+                $this->SService->uploadA56($document);
+            } catch (\Exception $e) {
+                Alert::danger($e->getMessage());
             }
         } else {
             Alert::danger("Hi ha ".count($document)." documents");

@@ -57,8 +57,6 @@ class UploadAnexes extends Command
     {
         try {
             $this->SService = new SecretariaService();
-            $this->SService->login();
-
         } catch (\Exception $e) {
             echo 'No hi ha connexió amb el servidor de matrícules';
             exit();
