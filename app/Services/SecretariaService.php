@@ -43,8 +43,8 @@ class SecretariaService
     private function error($response){
         $ret = '';
         if (is_array($response)){
-            foreach ($response as $error){
-                $ret .= $error.',';
+            foreach ($response as $key => $error){
+                $ret .= $key.' :'.$error.',';
             }
         } else {
             $ret = $response;
@@ -65,8 +65,7 @@ class SecretariaService
         if ($response['code'] == 200) {
             return 1;
         } else {
-            dd($response);
-            throw new \Exception('No he pogut carregar el fitxer '.$document['name'].' de la fct '.$document['fct']->id.' al servidor de matrícules: '.$this->error($response['error']));
+            throw new \Exception('No he pogut carregar el fitxer '.$document['name'].' de la fct '.$document['fct']->id.'situat al fitxer'.$route.' al servidor de matrícules: '.$this->error($response['error']));
         }
     }
 
