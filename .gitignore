@@ -25,3 +25,4 @@ yarn-error.log
 composer.lock
 /nbproject/private/
 /public/img/pdf/
+/.DS_Store
