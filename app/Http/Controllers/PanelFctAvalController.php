@@ -328,6 +328,7 @@ class PanelFctAvalController extends IntranetController
     }
 
     public function send($id){
+        $document = array();
         try {
             $fct = AlumnoFct::findOrFail($id);
             $this->SService = new SecretariaService();
