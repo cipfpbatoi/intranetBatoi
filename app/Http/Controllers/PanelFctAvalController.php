@@ -357,6 +357,7 @@ class PanelFctAvalController extends IntranetController
             }
             try {
                 $this->SService->uploadA56($document);
+                Alert::success('Documentos enviados correctamente');
             } catch (\Exception $e) {
                 Alert::danger($e->getMessage());
             }
