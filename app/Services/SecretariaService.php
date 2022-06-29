@@ -57,7 +57,7 @@ class SecretariaService
         $curso = substr(curso(),0,4);
         $link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
         $route = storage_path('app/public/adjuntos/'.$document['file'].'/'.$document['name']);
-
+        dd(file_get_contents($route));
         $response = Http::withToken($this->token)
             ->attach('file',file_get_contents($route),$document['name'])
             ->post($link);
