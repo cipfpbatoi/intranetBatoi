@@ -58,49 +58,46 @@ class UploadAnexes extends Command
         try {
             $this->SService = new SecretariaService();
             $this->SService->login();
-            foreach (AlumnoFct::where('a56',1)->where('beca',0)->get() as $fct){
-                $document = array();
-                $tutor = '';
-                foreach(Adjunto::where('route','alumnofctaval/'.$fct->id)->where('extension','pdf')->get() as $key => $adjunto){
-                    $document[$key]['title'] = $this->tipoDocument($adjunto->title);
-                    $document[$key]['file'] = $adjunto->route;
-                    $document[$key]['name'] = $adjunto->name;
-                    $document[$key]['size'] = $adjunto->size;
-                    $document[$key]['dni'] = $fct->Alumno->dni;
-                    $document[$key]['fct'] = $fct;
-                    $tutor = $adjunto->owner;
-                }
-                if (count($document) == 2) {
-                    if (isset($document[0]['title'])&&$document[1]['title']){
-                        UploadFiles::dispatch($document,$this->SService);
-                    } else {
-                        if ($document[0]['size'] > $document[1]['size']){
-                            $document[0]['title'] = '10';
-                            $document[1]['title'] = '11';
-                        } else {
-                            $document[0]['title'] = '11';
-                            $document[1]['title'] = '10';
-                        }
-                        UploadFiles::dispatch($document,$this->SService);
-                    }
-                } else {
-                    if (count($document)) {
-                        $profesor = Profesor::find($tutor);
-                        Mail::to($profesor->email, 'Intranet')
-                            ->send(new Comunicado([
-                                'tutor' => $profesor->shortName, 'nombre' => 'Ignasi Gomis',
-                                'email' => 'igomis@cipfpbatoi.es', 'document' => $document
-                            ], $fct, 'email.a56'));
-                    }
-                }
-            }
+
         } catch (\Exception $e) {
             echo 'No hi ha connexió amb el servidor de matrícules';
             exit();
         }
-
+        foreach (AlumnoFct::where('a56',1)->where('beca',0)->get() as $fct){
+            $document = array();
+            $tutor = '';
+            foreach(Adjunto::where('route','alumnofctaval/'.$fct->id)->where('extension','pdf')->get() as $key => $adjunto){
+                $document[$key]['title'] = $this->tipoDocument($adjunto->title);
+                $document[$key]['file'] = $adjunto->route;
+                $document[$key]['name'] = $adjunto->name;
+                $document[$key]['size'] = $adjunto->size;
+                $document[$key]['dni'] = $fct->Alumno->dni;
+                $document[$key]['fct'] = $fct;
+                $tutor = $adjunto->owner;
+            }
+            if (count($document) == 2) {
+                if (isset($document[0]['title'])&&$document[1]['title']){
+                    UploadFiles::dispatch($document,$this->SService);
+                } else {
+                    if ($document[0]['size'] > $document[1]['size']){
+                        $document[0]['title'] = '10';
+                        $document[1]['title'] = '11';
+                    } else {
+                        $document[0]['title'] = '11';
+                        $document[1]['title'] = '10';
+                    }
+                    UploadFiles::dispatch($document,$this->SService);
+                }
+            } else {
+                if (count($document)) {
+                    $profesor = Profesor::find($tutor);
+                    Mail::to($profesor->email, 'Intranet')
+                        ->send(new Comunicado([
+                            'tutor' => $profesor->shortName, 'nombre' => 'Ignasi Gomis',
+                            'email' => 'igomis@cipfpbatoi.es', 'document' => $document
+                        ], $fct, 'email.a56'));
+                }
+            }
+        }
     }
-
-
-
 }
