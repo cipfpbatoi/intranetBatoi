@@ -40,6 +40,18 @@ class SecretariaService
         $files[0]['fct']->save();
     }
 
+    private function error($response){
+        $ret = '';
+        if (is_array($response)){
+            foreach ($response as $error){
+                $ret .= $error.',';
+            }
+        } else {
+            $ret = $response;
+        }
+        return $ret;
+    }
+
     private function uploadFile($document){
 
         $curso = substr(curso(),0,4);
@@ -54,8 +66,7 @@ class SecretariaService
         if ($response['code'] == 200) {
             return 1;
         } else {
-            dd($response);
-            throw new \Exception('No he pogut carregar el fitxer '.$document['name'].' de la fct '.$document['fct']->id.' al servidor de matrícules: '.print_r($response['error']));
+            throw new \Exception('No he pogut carregar el fitxer '.$document['name'].' de la fct '.$document['fct']->id.' al servidor de matrícules: '.$this->error($response['error']));
         }
     }
 
