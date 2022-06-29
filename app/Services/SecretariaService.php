@@ -44,7 +44,7 @@ class SecretariaService
         $ret = '';
         if (is_array($response)){
             foreach ($response as $key => $error){
-                $ret .= $key.' :'.$error.',';
+                $ret .= $key.': '.$error.',';
             }
         } else {
             $ret = $response;
@@ -57,7 +57,7 @@ class SecretariaService
         $curso = substr(curso(),0,4);
         $link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
         $route = storage_path('app/public/adjuntos/'.$document['file'].'/'.$document['name']);
-        dd(file_get_contents($route));
+
         $response = Http::withToken($this->token)
             ->attach('file',file_get_contents($route),$document['name'])
             ->post($link);
@@ -65,7 +65,7 @@ class SecretariaService
         if ($response['code'] == 200) {
             return 1;
         } else {
-            throw new \Exception('No he pogut carregar el fitxer '.$document['name'].' de la fct '.$document['fct']->id.'situat al fitxer'.$route.' al servidor de matrícules: '.$this->error($response['error']));
+            throw new \Exception('No he pogut carregar el fitxer '.$document['name'].' de la fct '.$document['fct']->id.' situat al fitxer: '.$document['name'].'al servidor de matrícules: '.$this->error($response['error']));
         }
     }
 
