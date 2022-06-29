@@ -7,6 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
+use Intranet\Mail\Comunicado;
 
 
 
@@ -34,7 +36,16 @@ class UploadFiles implements ShouldQueue
      */
     public function handle()
     {
-        $this->SService->uploadA56($this->files);
+        try {
+            $this->SService->uploadA56($this->files);
+        } catch (\Exception $e) {
+            Mail::to('igomis@cipfpbatoi.es', 'Intranet')
+                ->send(new Comunicado([
+                    'tutor' => $this->files['fct'], 'nombre' => 'Ignasi Gomis',
+                    'email' => 'igomis@cipfpbatoi.es', 'document' => $document
+                ], $fct, 'email.a56'));;
+        }
+
     }
 
 }
