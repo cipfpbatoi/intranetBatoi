@@ -33,15 +33,11 @@ class SecretariaService
     }
 
     public function uploadA56($files){
-        try {
-            foreach ($files as $document) {
-                $this->uploadFile($document);
-            }
-            $files[0]['fct']->a56 = 2;
-            $files[0]['fct']->save();
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage());
+        foreach ($files as $document) {
+            $this->uploadFile($document);
         }
+        $files[0]['fct']->a56 = 2;
+        $files[0]['fct']->save();
     }
 
     private function uploadFile($document){
