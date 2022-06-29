@@ -40,7 +40,7 @@ class SecretariaService
             $files[0]['fct']->a56 = 2;
             $files[0]['fct']->save();
         } catch (\Exception $e) {
-            echo $e->getMessage();
+            throw new \Exception($e->getMessage());
         }
     }
 
