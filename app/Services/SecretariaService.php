@@ -20,7 +20,7 @@ class SecretariaService
 
     public function login(){
         $response = Http::post($this->link.'login_check',[
-            'email' => $this->user,
+            'username' => $this->user,
             'password' => $this->pass
         ]);
 
