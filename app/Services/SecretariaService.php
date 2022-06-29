@@ -65,6 +65,7 @@ class SecretariaService
         if ($response['code'] == 200) {
             return 1;
         } else {
+            dd($response);
             throw new \Exception('No he pogut carregar el fitxer '.$document['name'].' de la fct '.$document['fct']->id.' al servidor de matrícules: '.$this->error($response['error']));
         }
     }
