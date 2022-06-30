@@ -15,8 +15,7 @@ use Intranet\Entities\TipoReunion;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Reunion;
-
-
+use function PHPUnit\Framework\isNull;
 
 
 /**
@@ -183,7 +182,7 @@ class PanelFinCursoController extends BaseController
         foreach ($alumnes as $alumne){
             $fctAval = AlumnoFctAval::esAval()->where('idAlumno',$alumne['idAlumno'])->orderBy('idAlumno')->first();
 
-            if ((!$fctAval->calificacion || $fctAval->actas < 2) && $fctAval->asociacion == 1){
+            if (( !isNull($fctAval->calificacion)  || $fctAval->actas < 2) && $fctAval->asociacion == 1){
                 $avisos[self::DANGER][] = "Fct de l'alumne ".$fctAval->Nombre.' no avaluada';
             }
 
