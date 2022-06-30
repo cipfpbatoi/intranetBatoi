@@ -41,7 +41,7 @@ class UploadFiles implements ShouldQueue
         } catch (\Exception $e) {
             Mail::to('igomis@cipfpbatoi.es', 'Intranet')
                 ->send(new Comunicado('igomis@cipfpbatoi.es'
-                , $this->files[0], 'email.a56error'));;
+                , $this->files[0], 'email.a56error'));
         }
 
     }
