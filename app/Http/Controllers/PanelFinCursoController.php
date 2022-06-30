@@ -154,10 +154,10 @@ class PanelFinCursoController extends BaseController
             if ($howManyNeeded){
                 $howManyAre = Reunion::Convocante()->Tipo($tipo)->Archivada()->count();
                 if ($howManyAre >= $howManyNeeded) {
-                    $avisos[self::SUCCESS][] = "Acta ".TipoReunion::find($tipo)->vliteral." Artxivada";
+                    $avisos[self::SUCCESS][] = "Acta ".TipoReunion::find($tipo)->vliteral." Arxivada";
                 }
                 else {
-                    $avisos[self::DANGER][] = "Falten Actes de ".TipoReunion::find($tipo)->vliteral." per artxivar";
+                    $avisos[self::DANGER][] = "Falten Actes de ".TipoReunion::find($tipo)->vliteral." per arxivar";
                 }
 
             }
