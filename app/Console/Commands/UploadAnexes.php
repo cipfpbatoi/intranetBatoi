@@ -74,9 +74,7 @@ class UploadAnexes extends Command
                 $tutor = $adjunto->owner;
             }
             if (count($document) == 2) {
-                if (isset($document[0]['title'])&&$document[1]['title']){
-                    UploadFiles::dispatch($document,$this->SService);
-                } else {
+                if (!isset($document[0]['title'])|| !$document[1]['title']){
                     if ($document[0]['size'] > $document[1]['size']){
                         $document[0]['title'] = '10';
                         $document[1]['title'] = '11';
@@ -84,8 +82,8 @@ class UploadAnexes extends Command
                         $document[0]['title'] = '11';
                         $document[1]['title'] = '10';
                     }
-                    UploadFiles::dispatch($document,$this->SService);
                 }
+                UploadFiles::dispatch($document,$this->SService);
             } else {
                 if (count($document)) {
                     $profesor = Profesor::find($tutor);
