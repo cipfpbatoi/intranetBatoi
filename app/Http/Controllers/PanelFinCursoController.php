@@ -138,14 +138,17 @@ class PanelFinCursoController extends BaseController
     }
 
     private static function lookAtQualitatUpload(&$avisos){
-        if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'FCT')
-            ->where('curso', Curso())->first()) {
-            $avisos[self::SUCCESS][] = "Documentacio qualitat correcta";
-        }
-        else {
-            $avisos[self::DANGER][] = "Falta pujar documentacio qualitat";
+        if (esRol(AuthUser()->rol,31)){
+            if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'FCT')
+                ->where('curso', Curso())->first()) {
+                $avisos[self::SUCCESS][] = "Documentació FCT correcta";
+            }
+            else {
+                $avisos[self::DANGER][] = "Falta pujar documentacio entrevistes FCT";
+            }
         }
     }
+
     private static function lookAtActasUpload(&$avisos){
         foreach ( config('auxiliares.reunionesControlables') as $tipo => $howManyNeeded) {
             if ($howManyNeeded){

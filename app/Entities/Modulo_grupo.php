@@ -7,6 +7,7 @@ use Intranet\Entities\Ciclo;
 use Intranet\Entities\Modulo;
 use Intranet\Events\ActivityReport;
 use Intranet\Entities\Profesor;
+use Styde\Html\Facades\Alert;
 
 class Modulo_grupo extends Model
 {
@@ -36,27 +37,35 @@ class Modulo_grupo extends Model
     public static function MisModulos($dni=null,$modulo=null)
     {
         $dni = $dni??AuthUser()->dni;
-        if ($modulo)
-            $modulos = Horario::select('modulo','idGrupo')
+        if ($modulo) {
+            $modulos = Horario::select('modulo', 'idGrupo')
                 ->Profesor($dni)
                 ->whereNotNull('idGrupo')
-                ->where('modulo',$modulo)
+                ->where('modulo', $modulo)
                 ->distinct()
                 ->get();
-        else
-            $modulos = Horario::select('modulo','idGrupo')
-                    ->Profesor($dni)
-                    ->whereNotNull('idGrupo')
-                    ->whereNotIn('modulo',config('constants.modulosNoLectivos'))
-                    ->distinct()
-                    ->get();
+        }
+        else {
+            $modulos = Horario::select('modulo', 'idGrupo')
+                ->Profesor($dni)
+                ->whereNotNull('idGrupo')
+                ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
+                ->distinct()
+                ->get();
+        }
         $todos = [];
         foreach ($modulos as $modulo){
             if ($mc = Modulo_ciclo::where('idModulo',$modulo->modulo)
-                    ->where('idCiclo',$modulo->Grupo->idCiclo)->first())
-            if ($mg = Modulo_grupo::where('idGrupo',$modulo->idGrupo)
-                    ->where('idModuloCiclo',$mc->id)->first() )
-            $todos[] = $mg ;
+                    ->where('idCiclo',$modulo->Grupo->idCiclo)->first()) {
+                if ($mg = Modulo_grupo::where('idGrupo', $modulo->idGrupo)
+                    ->where('idModuloCiclo', $mc->id)->first()) {
+                    {
+                        $todos[] = $mg;
+                    }
+                }
+            } else {
+                Alert::danger('No se encuentra el ciclo para el modulo ' . $modulo->modulo);
+            }
         }
        return $todos;
     }
