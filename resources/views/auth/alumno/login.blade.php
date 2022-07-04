@@ -43,9 +43,7 @@
                         </div>
                         <div class="col-xs-6">
                             <button type="submit" class="btn btn-primary  btn-block btn-flat">Entra</button>
-                            <a href='/password/reset' class="btn btn-success btn-block btn-flat">Canvia Password</a>
                         </div>
-                        <!--<a href="{{ url('/password/reset') }}">Olvidé mi password</a><br>-->
                         <div class="clearfix"></div>
                         <div class="separator">
                             <div class="clearfix"></div>

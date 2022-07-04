@@ -30,9 +30,26 @@ use AuthenticatesUsers;
      */
     protected $redirectTo = '/alumno/home';
 
+
+
     public function username()
     {
         return 'nia';
+    }
+
+    protected function credentials(Request $request)
+    {
+        // the value in the 'email' field in the request
+        $username = $request->get($this->username());
+
+        // check if the value is a validate email address and assign the field name accordingly
+        $field = filter_var($username, FILTER_VALIDATE_EMAIL) ? 'email' : $this->username();
+
+        // return the credentials to be used to attempt login
+        return [
+            $field => $request->get($this->username()),
+            'password' => $request->password,
+        ];
     }
 
     protected function guard()
