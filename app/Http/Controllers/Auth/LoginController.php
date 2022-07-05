@@ -2,10 +2,8 @@
 
 namespace Intranet\Http\Controllers\Auth;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+
 
 class LoginController extends Controller
 {
@@ -20,10 +18,10 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    protected $redirectTo = '/home';
 
-    
-    public function login(Request $request)
+
+    public function login()
     {
         if (isset(AuthUser()->codigo)){
             return redirect('/home');
@@ -36,9 +34,5 @@ class LoginController extends Controller
         }
         abort('401',"No estas autoritzat");
     }
-    public function externLogin(Request $request,$token)
-    {
-        session(['token'=>$token]);
-        return redirect("/social/google/$token");
-    }
+
 }

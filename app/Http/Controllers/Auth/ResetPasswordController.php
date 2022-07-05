@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers\Auth;
 
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Str;
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 
@@ -28,5 +30,19 @@ class ResetPasswordController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    protected function resetPassword($user, $password)
+    {
+        $this->setUserPassword($user, $password);
+
+        $user->setRememberToken(Str::random(60));
+        $user->changePassword = date('Y-m-d');
+        $user->save();
+
+
+        event(new PasswordReset($user));
+
+        $this->guard()->login($user);
     }
 }

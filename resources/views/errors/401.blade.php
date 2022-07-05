@@ -67,8 +67,7 @@
     <body>
         <div class="flex-center position-ref full-height">
             <div class="content">
-                <h1>{{ $exception->getMessage() }}</h1>
-
+                <h1>No estàs autoritzat</h1>
             </div>
         </div>
     </body>
