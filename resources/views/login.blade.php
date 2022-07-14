@@ -22,10 +22,12 @@
                     <div class="panel-body">
                         <a href="{{url('/alumno/login')}}" class="btn btn-lg waves-effect waves-light btn-block twitter">Alumno</a>
                     </div>
-                    <div class="panel-body">
-                        <p class="or-social">Or Use Social Login</p>
-                        <a href="{{url('social/google')}}" class="btn btn-lg waves-effect waves-light btn-block google">Google+</a>
-                    </div>
+                    @if (config('variables.authGoogle'))
+                        <div class="panel-body">
+                            <p class="or-social">Or Use Social Login</p>
+                            <a href="{{url('social/google')}}" class="btn btn-lg waves-effect waves-light btn-block google">Google+</a>
+                        </div>
+                    @endif
                     <div class="clearfix"></div>
                     <div class="separator">
                         <div class="clearfix"></div>
