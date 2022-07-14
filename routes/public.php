@@ -23,7 +23,7 @@ Route::get('password/reset/{token}', ['as' => 'password.reset','uses' =>'Auth\Re
 Route::post('password/reset','Auth\ResetPasswordController@reset');
 
 //Social Login
-Route::get('/profesor/login/{token}',['as' => 'login.token', 'uses' => 'Auth\ExternLoginController@showExternLoginForm']);
+Route::get('/login/{token}',['as' => 'login.token', 'uses' => 'Auth\ExternLoginController@showExternLoginForm']);
 Route::post('/profesor/extern/login',['as' => 'login.extern', 'uses' => 'Auth\ExternLoginController@login']);
 Route::get('social/google/{token?}', ['as' => 'social.google', 'uses' => 'Auth\Social\SocialController@getSocialAuth']);
 Route::get('social/callback/google', ['as' => 'social.callback.google', 'uses' => 'Auth\Social\SocialController@getSocialAuthCallback']);
