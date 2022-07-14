@@ -17,4 +17,5 @@ return [
     'actividadImg' => 1,
     'altaInstructores' => 1,
     'ipDomotica' => 'http://172.16.10.74/api/devices/{dispositivo}/action',
+    'googleAutentication' => false,
 ];
