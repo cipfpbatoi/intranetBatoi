@@ -86,7 +86,7 @@ class ImportController extends Seeder
             'create' => array(
                 'codigo' => 'crea_codigo_profesor,0',
                 'dni' => 'documento',
-                'email' => 'email,nombre,apellido1',
+                'email' => 'email,nombre,apellido1,apellido2',
                 'departamento' => '99',
                 'password' => 'cifrar,documento',
                 'api_token' => 'aleatorio,60'
@@ -184,9 +184,10 @@ class ImportController extends Seeder
      * @param $apellido
      * @return string
      */
-    public function email($nombre, $apellido)
+    public function email($nombre, $apellido1,$apellido2)
     {
-        return strtolower(substr($nombre, 0, 1) . $apellido . '@' . config('contacto.host.dominio'));
+        return strtolower(substr($nombre, 0, 1).".".$apellido1.$apellido2.'@edu.gva.es');
+        //return strtolower(substr($nombre, 0, 1) . $apellido . '@' . config('contacto.host.dominio'));
     }
 
     /**
