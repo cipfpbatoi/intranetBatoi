@@ -366,11 +366,11 @@ class AdministracionController extends Controller
         }
     }
 
-    public static function v2_11(){
-        Alert::info('Version 2.11');
+    public static function v2_20(){
+        Alert::info('Version 2.20');
         foreach (Profesor::all() as $profesor){
             $profesor->email = strtolower(substr($profesor->nombre, 0, 1).".".$profesor->apellido1.$profesor->apellido2.'@edu.gva.es');
-
+            $profesor->save();
         }
     }
 
