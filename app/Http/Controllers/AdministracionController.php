@@ -366,12 +366,25 @@ class AdministracionController extends Controller
         }
     }
 
-    public static function v2_20(){
-        Alert::info('Version 2.20');
+    public static function v2_22(){
+        Alert::info('Version 2.22');
         foreach (Profesor::all() as $profesor){
-            $profesor->email = strtolower(substr($profesor->nombre, 0, 1).".".$profesor->apellido1.$profesor->apellido2.'@edu.gva.es');
+            $profesor->email = substr(str_replace(' ','',strtolower(self::inicials($profesor->nombre).".".$profesor->apellido1.$profesor->apellido2)),0,16).'@edu.gva.es';
             $profesor->save();
         }
+    }
+
+    private static function inicials($nom){
+        $arrayText = explode(" ", $nom);
+
+        $acronym = "";
+
+        foreach ($arrayText as $word)   {
+            $arrayLetters = str_split($word, 1);
+            $acronym =  $acronym . $arrayLetters['0'];
+        }
+
+        return $acronym ;
     }
 
 
