@@ -13,7 +13,7 @@ function emailConselleria($nombre,$apellido1,$apellido2){
         $acronym =  $acronym . $arrayLetters['0'];
     }
 
-    return substr(str_replace('Ññ','n',str_replace(' ','',strtolower($acronym.".".$apellido1.$apellido2))),0,18).'@edu.gva.es';
+    return substr(str_replace('Ñ','n',str_replace(' ','',strtolower($acronym.".".$apellido1.$apellido2))),0,18).'@edu.gva.es';
 }
 
 

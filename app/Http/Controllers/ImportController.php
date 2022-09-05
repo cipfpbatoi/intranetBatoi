@@ -186,7 +186,7 @@ class ImportController extends Seeder
      */
     public function email($nombre, $apellido1,$apellido2)
     {
-        return strtolower(substr($nombre, 0, 1).".".$apellido1.$apellido2.'@edu.gva.es');
+        return emailConselleria($nombre, $apellido1,$apellido2);
         //return strtolower(substr($nombre, 0, 1) . $apellido . '@' . config('contacto.host.dominio'));
     }
 
