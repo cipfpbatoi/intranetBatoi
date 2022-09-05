@@ -7,7 +7,7 @@
   * [Control de presència](#control-de-presència)
   * [Notificacions](#notificacions)
 * [Menú 'Documentació'](#menú-documentació)
-  * [Programacions](#veure-les-programacions)
+  * [Programacions](#programacions)
   * [Gestió de Centre](#gestió-de-centre)
   * [Informació de Centre](#informació-de-centre)
   * [Actes](#actes)
