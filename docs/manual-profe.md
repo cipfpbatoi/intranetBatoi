@@ -71,7 +71,7 @@ La pàgina d'inici te vàries parts:
 4. Menú superior: ací tenim 3 parts
     1. Sobre: icona de [notificacions](#notificacions) amb els missatges de la intranet i d'altres usuaris (sobre el sobre apareix el número de misstages que tenim)
     2. Rellotge: icona de [control de presència](#control-de-presència). En blau indica que estem al centre
-    3. Desplegable amb el nostre nom: menú amb l'hora d'entrada i eixida del Centre i opcions per a [editar el nostre perfil](#editar--perfil) i tancar la sessió de la intranet (com el Logout de la part inferior esquerra)
+    3. Desplegable amb el nostre nom: menú amb l'hora d'entrada i eixida del Centre i opcions per a [editar el nostre perfil](#editar-perfil) i tancar la sessió de la intranet (com el Logout de la part inferior esquerra)
 5. Menú d'accions: amb 5 icones
     1. Amagar/mostrar la part central de la pàgina
     2. Tornar a la pàgina anterior
@@ -94,7 +94,7 @@ Quan iniciem sessió en la intranet es fitxa automàticament indicant que estem 
  
 De totes formes el més senzill és marcar l'entrada i l'eixida des del nostre mòbil quan estem connectats a la Wifi del Centre. Per a això només hem d'obrir l'enllaç que hi ha al email que ens han enviat des de Caporalia i s'obri una pàgina web en el navegador indicant que entrem al Centre (o eixim). 
  
-![fitxa](./img/fitxa.png)
+![fitxa](./img/ajuda/fitxa.png)
  
 Si no trobem eixe email podem fer que ens torne a arribar polsant l'icona del sobre que hi ha a la part inferior esquerra de la intranet (zona 3). 
  
