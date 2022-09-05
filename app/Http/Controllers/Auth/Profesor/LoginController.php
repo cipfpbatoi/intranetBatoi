@@ -7,6 +7,9 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Intranet\Entities\Profesor;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
+use function PHPUnit\Framework\isNull;
 
 class LoginController extends Controller
 {
@@ -70,8 +73,43 @@ use AuthenticatesUsers;
 
     public function plogin(Request $request)
     {
-        isset(Profesor::where('codigo',$request->codigo)->get()->first()->idioma)?session(['lang' => Profesor::where('codigo',$request->codigo)->get()->first()->idioma]):'ca';
-        return $this->login($request);
-        
+        $profesor = Profesor::where('codigo',$request->codigo)->get()->first();
+        if (isset($profesor) && !isset($profesor->changePassword)){
+            if ($profesor->dni ==  $request->password ) {
+                return view('auth/profesor/firstLogin', compact('profesor'));
+            } else {
+                return back()->withInput()->withErrors(['password' => "Has d'introduir el dni amb 0 davant i lletra majuscula"]);
+            }
+        } else {
+            isset($profesor->idioma)?session(['lang' => $profesor->idioma]):'ca';
+            return $this->login($request);
+        }
+    }
+
+    public function firstLogin(Request $request){
+
+        $validator = Validator::make($request->all(),[
+            'password' => ['required','confirmed',Password::min(8)
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+                ->uncompromised()]
+        ]);
+        if ($validator->fails())   //check all validations are fine, if not then redirect and show error messages
+        {
+            return back()->withInput()->withErrors($validator);
+        }
+        else
+        {
+            $profesor = Profesor::where('codigo',$request->codigo)->get()->first();
+            $profesor->email = $request->email;
+            $profesor->password = bcrypt(trim($request->password));
+            $profesor->changePassword = date('Y-m-d');
+            $profesor->save();
+            Auth::login($profesor);
+            session(['lang' => AuthUser()->idioma]);
+            return redirect('/home');
+        }
+
     }
 }
