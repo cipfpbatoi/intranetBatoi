@@ -14,13 +14,15 @@
             <div class="animate form login_form">
                 <section class="login_content">
                     <form method="post" action="{{ url('/profesor/firstLogin') }}">
-                        <h1>Canvi de contrasenya</h1>
+                        <h1>Primera Autenticació</h1>
+                        <h6>Revisa el teu correu corporatiu</h6>
                         {!! csrf_field() !!}
                         <input type="hidden" name="codigo" value="{{ $profesor->codigo }}" />
                         <div class="form-group has-feedback">
                             <input type="text" class="form-control" name="email" value="{{ $profesor->email }}" placeholder="Email">
                             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                         </div>
+                        <h6>Ha de tindre al meyns 8 caràcters, una majúscula, una minúscula i un número</h6>
                         <div class="form-group has-feedback{{ $errors->has('password') ? ' has-error' : '' }}">
                             <input type="password" class="form-control" placeholder="Password" name="password">
                             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
