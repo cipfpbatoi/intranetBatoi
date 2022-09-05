@@ -33,6 +33,7 @@ use Intranet\Entities\Fct;
 use Illuminate\Http\Request;
 
 
+
 /**
  * Class AdministracionController
  * @package Intranet\Http\Controllers
@@ -200,41 +201,7 @@ class AdministracionController extends Controller
         }
     }
 
-    /**
-     *
-     */
-    public static function v1_0()
-    {
-        Alert::info('Version 1.0');
-    }
 
-    /**
-     *
-     */
-    public static function v1_1()
-    {
-        Alert::info('Version 1.1');
-    }
-
-    /**
-     *
-     */
-    public static function v1_2()
-    {
-        Alert::info('Version 1.2');
-    }
-
-    /**
-     *
-     */
-    public static function v1_3_4()
-    {
-        Alert::info('Version 1.3.4');
-    }
-
-    public static function v2_0(){
-        Alert::info('Version 2.0');
-    }
     public static function v2_01(){
         // partxe per actualitzar professors sense token
 
@@ -261,14 +228,6 @@ class AdministracionController extends Controller
 
     }
 
-    public static function v2_10(){
-        foreach (Fct::all() as $fct){
-            if ($fct->asociacion != 3){
-                $fct->periodo = $fct->periode;
-                $fct->save();
-            }
-        }
-    }
 
     public function importaAnexoI(){
         $canvis = 0;
@@ -299,93 +258,17 @@ class AdministracionController extends Controller
     }
 
 
-    public static function v2_02()
-    {
-        Alert::info('Version 2.02');
-        return ;
-        $proyectos = Documento::where('tipoDocumento','Proyecto')->where('curso','2020-2021')->get();
-        $grupos = $proyectos->groupBy('supervisor');
-        foreach ($grupos as $grupo){
-            $dni = self::findProfesor($grupo->first()->supervisor);
-            if ($dni) {
-                foreach ($grupo as $proyecto) {
-                    $proyecto->ciclo = Grupo::QTutor($dni)->first()->Ciclo->ciclo ?? '';
-                    $proyecto->save();
-                }
-            } else {
-                Alert::danger('Profesor '.$grupo->first()->supervisor.' no trobat');
-            }
-        }
-    }
 
-    public static function v2_03()
-    {
-        Alert::info('Version 2.03');
-        return ;
-        $ordenadores = DB::table('ordenadores')->get();
 
-       DB::transaction(function () use ($ordenadores){
-           $lote = Lote::where('registre','2021-IMP')->first();
-           $registre = '2021-IMP';
-           if (!$lote){
-               $lote = new Lote(['registre'=>$registre,'procedencia'=>1,'proveedor'=>'Inventario']);
-               $lote->save();
-           }
-
-           $articulo = Articulo::where('descripcion','Ordenador Torre')->first();
-           $articulo_lote = new ArticuloLote(['lote_id'=>$registre,'articulo_id'=>$articulo->id,'unidades'=>0]);
-           $articulo_lote->save();
-           $quantitat = 0;
-           foreach ($ordenadores as $ordenador){
-               $material = new Material(['descripcion'=>'Ordenador Torre','procedencia'=>1,'estado'=>1,'espacio'=>$ordenador->aula,'unidades'=>1,'inventariable'=>1,'articulo_lote_id'=>$articulo_lote->id,'nserieprov'=>$ordenador->serie]);
-               $material->save();
-               $quantitat++;
-            }
-           $articulo_lote->unidades = $quantitat;
-           $articulo_lote->save();
-        });
-    }
-
-    public static function v2_05(){
-        Alert::info('Version 2.05');
-        foreach (Articulo::all() as $articulo){
-            $descripcion = ucwords(strtolower($articulo->descripcion));
-            $articulo->descripcion = $descripcion;
-            $articulo->save();
-        }
-    }
-
-    public static function v2_06(){
-        Alert::info('Version 2.06');
-        foreach (Profesor::where('activo',1)->get() as $profesor){
-            if (esRol($profesor->rol,13)){
-                $departamento = Departamento::find($profesor->departamento);
-                $departamento->idProfesor = $profesor->dni;
-                $departamento->save();
-            }
-        }
-    }
-
-    public static function v2_23(){
-        Alert::info('Version 2.23');
+    public static function v2_3(){
+        Alert::info('Version 2.3');
         foreach (Profesor::all() as $profesor){
-            $profesor->email = substr(str_replace(' ','',strtolower(self::inicials($profesor->nombre).".".$profesor->apellido1.$profesor->apellido2)),0,18).'@edu.gva.es';
+            $profesor->email = emailConselleria($profesor->nombre,$profesor->apellido1,$profesor->apellido2);
             $profesor->save();
         }
     }
 
-    private static function inicials($nom){
-        $arrayText = explode(" ", $nom);
 
-        $acronym = "";
-
-        foreach ($arrayText as $word)   {
-            $arrayLetters = str_split($word, 1);
-            $acronym =  $acronym . $arrayLetters['0'];
-        }
-
-        return $acronym ;
-    }
 
 
     private static function findProfesor($nombre){

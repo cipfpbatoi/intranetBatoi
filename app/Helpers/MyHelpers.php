@@ -3,6 +3,20 @@
 use Intranet\Entities\Profesor;
 use Jenssegers\Date\Date;
 
+
+function emailConselleria($nombre,$apellido1,$apellido2){
+    $arrayText = explode(" ", $nombre);
+    $acronym = "";
+
+    foreach ($arrayText as $word)   {
+        $arrayLetters = str_split($word, 1);
+        $acronym =  $acronym . $arrayLetters['0'];
+    }
+
+    return substr(str_replace('Ññ','n',str_replace(' ','',strtolower($acronym.".".$apellido1.$apellido2))),0,18).'@edu.gva.es';
+}
+
+
 /**
  * Devuelve la fecha de hoy para guardar en BD
  *
