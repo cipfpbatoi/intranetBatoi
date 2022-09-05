@@ -264,6 +264,8 @@ class AdministracionController extends Controller
         Alert::info('Version 2.3');
         foreach (Profesor::all() as $profesor){
             $profesor->email = emailConselleria($profesor->nombre,$profesor->apellido1,$profesor->apellido2);
+            $profesor->password = bcrypt(trim($profesor->dni));
+            $profesor->changePassword = NULL;
             $profesor->save();
         }
     }
