@@ -48,9 +48,11 @@ L'entrada a l'aplicació es realitza des de qualsevol dispositiu connectat a la 
 
 ![login](./img/ajuda/01-login.png)
 
-El més senzill és polsar el botó roig de 'Google' i serà ell qui ens autentifique demanant-nos el nostre compte d'email del Centre (si ja el tenim obert entrem directament).
+Polsem el botó blau de 'Professor' e introduïm l'usuari (el nostre codi de 4 números o el nostre compte d'email del Centre -_...@edu.gva.es_-) i la contrasenya (al principi el nostre DNI amb 0 davant, com apareix en Itaca, però és convenient canviar-ho).
 
-També podem polsar el botó blau de 'Professor' (recomanat si estem en un equip que no és el nostre i no volem autenticar-nos amb Google) e introduir l'usuari (el nostre codi de 4 números o el nostre compte d'email del Centre) i la contrasenya (al principi el nostre DNI amb 0 davant, com apareix en Itaca, però és convenient canviar-ho).
+![login professor](./img/ajuda/01-loginprofe.png)
+
+Si no recordem la contrasenya polsem el botó de '**Canvia Password**' i escrivim el nostre email (de _...@edu.gva.es_) per a rebre un correu amb un enllaç per a posar una nova contrasenya.
 
 Una vegada dins estarem en la pàgina d'inici des d'on tenim accés a totes les opcions.
 
