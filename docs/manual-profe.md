@@ -48,7 +48,7 @@ L'entrada a l'aplicació es realitza des de qualsevol dispositiu connectat a la 
 
 ![login](./img/ajuda/01-login.png)
 
-Polsem el botó blau de 'Professor' e introduïm l'usuari (el nostre codi de 4 números o el nostre compte d'email del Centre -_...@edu.gva.es_-) i la contrasenya (al principi el nostre DNI amb 0 davant, com apareix en Itaca, però és convenient canviar-ho).
+Polsem el botó blau de 'Professor' e introduïm l'usuari (el nostre codi de 4 números o el nostre compte d'email del Centre -_...@edu.gva.es_-) i la contrasenya (al principi el nostre DNI amb 0 davant i lletra en majúscula però és convenient canviar-ho).
 
 ![login professor](./img/ajuda/01-loginprofe.png)
 
@@ -66,22 +66,22 @@ La pàgina d'inici te vàries parts:
 1. Nom del Centre: des d'ací tornem a la pàgina d'inici des de qualsevol altra pàgina. A la seua dreta hi ha una icona que ens permet amagar o mostrar la barra lateral dels menús
 2. Menús: ens permeten realitzar qualsevol acció e la intranet. Els veurem en detall més avant
 3. Menú inferior: conté iconas per a 
-    1. Ajuda: obri una nova pestanya amb els manuals d'ajuda de la intranet i les FAQs d'ajuda
+    1. **Ajuda**: obri una nova pestanya amb els manuals d'ajuda de la intranet i les FAQs d'ajuda
     2. FullScreen: mostra la intranet a pantalla completa
-    3. Enviar-nos el codi de fitxatge. Aquesta icona ens torna a enviar al nostre compte de correu de Batoi un email amb l'enllaç per a fitxar des del mòbil, l'enllaç per a entrar a la intranet des de fora del Centre i el nostre codi de professor (per a loguejar-nos en la intranet, fer fotocòpies, etc)
+    3. **Enviar-nos el codi de fitxatge**. Aquesta icona ens torna a enviar al nostre compte de correu de Batoi un email amb l'enllaç per a fitxar des del mòbil, l'enllaç per a entrar a la intranet des de fora del Centre i el nostre codi de professor (per a loguejar-nos en la intranet, fer fotocòpies, etc)
     4. Logout: tancar la sessió en la intranet (però sense fitxar l'eixida del Centre)
 4. Menú superior: ací tenim 3 parts
-    1. Sobre: icona de [notificacions](#notificacions) amb els missatges de la intranet i d'altres usuaris (sobre el sobre apareix el número de misstages que tenim)
-    2. Rellotge: icona de [control de presència](#control-de-presència). En blau indica que estem al centre
-    3. Desplegable amb el nostre nom: menú amb l'hora d'entrada i eixida del Centre i opcions per a [editar el nostre perfil](#editar-perfil) i tancar la sessió de la intranet (com el Logout de la part inferior esquerra)
+    1. **Sobre**: icona de [notificacions](#notificacions) amb els missatges de la intranet i d'altres usuaris (sobre el sobre apareix el número de misstages que tenim)
+    2. Rellotge: icona de [control de presència](#control-de-presència). En blau indica que estem al centre i en roig que no estem
+    3. **Desplegable amb el nostre nom**: menú amb l'hora d'entrada i eixida del Centre i opcions per a [editar el nostre perfil](#editar-perfil) i tancar la sessió de la intranet (com el Logout de la part inferior esquerra)
 5. Menú d'accions: amb 5 icones
     1. Amagar/mostrar la part central de la pàgina
     2. Tornar a la pàgina anterior
     3. Canviar l'idioma
-    4. Mostrar l'ajuda (només en les pàgines que tenen ajuda) de la pàgina que estem veient 
+    4. **Mostrar l'ajuda** de la pàgina que estem veient (icona de l'interrogant, només en les pàgines que tenen ajuda)
     5. Tancar la part central de la pàgina
-6. Perfil: ací tenim les nostres dades i un botó per a '[Editar el nostre perfil](#editar-perfil)'.
-7. Resum: tenim algunes informacions útils de la intranet com:
+
+7. Pestanyes: resum d'algunes informacions útils de la intranet com:
     1. Properes activitats extraescolars: les prperes activitats que qualsevol departament va a realitzar pròximament
     2. Absències: professors que no van a estar en el Centre per algun motiu (comissió de servei, activitat extraescolar, malaltia, ...)
     3. Tasques pendents de fer en la intranet (lliurament de la programació, seguiments, avaluacions, ..)
