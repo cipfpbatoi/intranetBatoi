@@ -75,11 +75,9 @@ La pàgina d'inici te vàries parts:
     2. Rellotge: icona de [control de presència](#control-de-presència). En blau indica que estem al centre i en roig que no estem
     3. **Desplegable amb el nostre nom**: menú amb l'hora d'entrada i eixida del Centre i opcions per a [editar el nostre perfil](#editar-perfil) i tancar la sessió de la intranet (com el Logout de la part inferior esquerra)
 5. Menú d'accions: amb 5 icones
-    1. Amagar/mostrar la part central de la pàgina
     2. Tornar a la pàgina anterior
     3. Canviar l'idioma
     4. **Mostrar l'ajuda** de la pàgina que estem veient (icona de l'interrogant, només en les pàgines que tenen ajuda)
-    5. Tancar la part central de la pàgina
 6. Dades de l'usuari amb un botó pr a **editar el perfil**
 7. Pestanyes: resum d'algunes informacions útils de la intranet com:
     1. Properes activitats extraescolars: les prperes activitats que qualsevol departament va a realitzar pròximament
