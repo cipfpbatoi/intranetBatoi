@@ -80,14 +80,13 @@ La pàgina d'inici te vàries parts:
     3. Canviar l'idioma
     4. **Mostrar l'ajuda** de la pàgina que estem veient (icona de l'interrogant, només en les pàgines que tenen ajuda)
     5. Tancar la part central de la pàgina
-
+6. Dades de l'usuari amb un botó pr a **editar el perfil**
 7. Pestanyes: resum d'algunes informacions útils de la intranet com:
     1. Properes activitats extraescolars: les prperes activitats que qualsevol departament va a realitzar pròximament
     2. Absències: professors que no van a estar en el Centre per algun motiu (comissió de servei, activitat extraescolar, malaltia, ...)
     3. Tasques pendents de fer en la intranet (lliurament de la programació, seguiments, avaluacions, ..)
     4. Horari: el nostre horari
     5. Actes: les actes, que podem trobar també en el menú [Documentació → Actes](#actes)
-
 
 ### Control de presència
 Cada vegada que entrem o eixim del Centre hem de fitxar. Podem fer-ho des del nostre mòbil, des de l'ordinador que hi ha a l'entrada en Consergeria o des de la intranet. 
