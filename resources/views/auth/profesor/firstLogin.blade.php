@@ -22,7 +22,7 @@
                             <input type="text" class="form-control" name="email" value="{{ $profesor->email }}" placeholder="Email">
                             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                         </div>
-                        <h6>Ha de tindre al meyns 8 caràcters, una majúscula, una minúscula i un número</h6>
+                        <h6>Ha de tindre al meyns 8 caràcters, una majúscula, una minúscula i un número  </h6>
                         <div class="form-group has-feedback{{ $errors->has('password') ? ' has-error' : '' }}">
                             <input type="password" class="form-control" placeholder="Password" name="password">
                             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
