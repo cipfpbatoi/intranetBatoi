@@ -13,6 +13,7 @@ use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Intranet\Services\FormBuilder;
+use mikehaertl\pdftk\Pdf;
 
 class FctAlumnoController extends IntranetController
 {
@@ -105,11 +106,29 @@ class FctAlumnoController extends IntranetController
             return self::preparePdf($id)->stream();
         }
         if ($fct->asociacion == 2) {
-            return self::prepareExem($id)->stream();
+            return self::prepareExem($id)->execute();
         }
 
     }
 
+    public static function prepareExem($id)
+    {
+        $fct = AlumnoFct::findOrFail($id);
+        $alumno = $fct->Alumno;
+        /*$grupo = $fct->Alumno->Grupo->first();
+        $cicle = $grupo->Ciclo;
+        $tutor = $grupo->Tutor;
+        $cdept = $cicle->departament->Jefe;
+        $director = Profesor::find(config(fileContactos().'.director'));*/
+        $file = storage_path("tmp/exencion_$id.pdf");
+        $pdf = new Pdf('fdf/InformeExencionFCT.pdf');
+        $array[0] = $alumno->fullName;
+        $pdf->fillform($array)
+                ->saveAs($file);
+        return $pdf;
+
+    }
+    /*
     public static function prepareExem($id){
         $fct = AlumnoFct::findOrFail($id);
         $grupo = $fct->Alumno->Grupo->first();
@@ -129,6 +148,7 @@ class FctAlumnoController extends IntranetController
         ];
         return self::hazPdf($cicle->normativa=='LOE'?'pdf.fct.exempcio_loe':'pdf.fct.exempcio_logse', $fct, $dades);
     }
+    */
 
     public static function preparePdf($id){
         $fct = AlumnoFct::findOrFail($id);
