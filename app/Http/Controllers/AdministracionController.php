@@ -222,13 +222,6 @@ class AdministracionController extends Controller
     }
 
 
-    public static function v2_04(){
-
-        Alert::info('Version 2.04');
-
-    }
-
-
     public function importaAnexoI(){
         $canvis = 0;
         $nous = 0;
@@ -258,15 +251,11 @@ class AdministracionController extends Controller
     }
 
 
-
-
-    public static function v2_3(){
-        Alert::info('Version 2.3');
-        foreach (Profesor::all() as $profesor){
-            $profesor->email = emailConselleria($profesor->nombre,$profesor->apellido1,$profesor->apellido2);
-            $profesor->password = bcrypt(trim($profesor->dni));
-            $profesor->changePassword = NULL;
-            $profesor->save();
+    public static function v2_33(){
+        Alert::info('Version 2.33');
+        foreach (Profesor::whereNull('changePassword')->get() as $profesor){
+                $profesor->email = emailConselleria($profesor->nombre,$profesor->apellido1,$profesor->apellido2);
+                $profesor->save();
         }
     }
 
