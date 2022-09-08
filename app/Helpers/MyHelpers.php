@@ -20,9 +20,9 @@ function eliminar_tildes($cadena){
 
     //Codificamos la cadena en formato utf8 en caso de que nos de errores
 
-    $cadena = strtolower(utf8_encode(str_replace(
+    $cadena = strtolower(str_replace(
         ' ','',$cadena
-    )));
+    ));
 
     //Ahora reemplazamos las letras
     $cadena = str_replace(
