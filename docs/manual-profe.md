@@ -124,6 +124,7 @@ Per a veure la programació desitjada polsem el botó de la cadena que trobem a 
 
 ### Gestió de Centre
 Ací és on podem trobar documents generals del centre com:
+* Dossier del professorat
 * Justificants d'assistència per a l'alumnat o per als pares
 * Calendari escolar
 * Plànols del centre
@@ -464,6 +465,8 @@ Ací trobem informació sobre les reunions de tot tipus i els Grups de treball a
 Ens apareixen totes les reunions a les que ens han convocat (Claustre, Departament, Equip docent, Grup de treball, ...) i podem veure l'acta de cadascuna d'elles des del botó 'Imprimir'.
 
 ![Gestió de reunions](./img/ajuda/15-reunio.png)
+
+Per a vore com crear una nova reunió pots consultar-ho en el [Manual del tutor](../manual-tutor.html#nova-reunió).
 
 ### Grups de treball
 Des d'ací podem veure els nostres grups de treball o crear un nou grup.

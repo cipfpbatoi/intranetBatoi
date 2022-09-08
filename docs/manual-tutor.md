@@ -95,9 +95,11 @@ Una vegada creada la reunió ens apareix en el llistat de reunions, des d'on pod
 * esborrar: s'esborra l'acta
 
 ### Acta de la reunió
-Una vegada celebrada la reunió podem omplir l'acta de la mateixa. Per a això editem la reunió i des de la part de l''Ordre del dia' polsem en cada punt el botó d'Editar i ens apareix una zona on escriure el que s'ha parlat en la reunió sobre el punt en qüestió
+Una vegada celebrada la reunió podem omplir l'acta de la mateixa. Per a això editem la reunió i des de la part de l''Ordre del dia' polsem en cada punt el botó d'Editar (l'últim) i ens apareix una zona on escriure el que s'ha parlat en la reunió sobre el punt en qüestió.
 
 ![Acta reunió](img/tutor/05-omplir-acta-reunio.png)
+
+Quan acabes d'escriure en eixe recuadre és **MOLT IMPORTANT polsar la icona _V_** de la dreta per a guradar els canvis o **_X_** per a cancel·lar-los.
 
 Després d'omplir l'acta des del llistat de reunions podem tornar a avisar als participants o enviar l'acta. En aquest cas l'avís els indicarà que ja està l'acta disponible per a que la puguen veure.
 
