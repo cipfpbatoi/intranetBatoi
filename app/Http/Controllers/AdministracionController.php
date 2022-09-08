@@ -251,8 +251,8 @@ class AdministracionController extends Controller
     }
 
 
-    public static function v2_33(){
-        Alert::info('Version 2.33');
+    public static function v2_34(){
+        Alert::info('Version 2.34');
         foreach (Profesor::whereNull('changePassword')->get() as $profesor){
                 $profesor->email = emailConselleria($profesor->nombre,$profesor->apellido1,$profesor->apellido2);
                 $profesor->save();
