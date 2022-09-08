@@ -3,7 +3,7 @@
 return [
     
     'codigoGuardia' => '3249454',
-    'version' => ['v2_35'],
+    'version' => ['v2_36'],
     'modulosNoLectivos' => ['TU01CF','TU02CF'],
     'modulosSinProgramacion' => ['TU01CF','TU02CF'],
     //'pdf' => 'DomPdf',

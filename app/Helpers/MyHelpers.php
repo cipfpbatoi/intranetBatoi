@@ -13,16 +13,16 @@ function emailConselleria($nombre,$apellido1,$apellido2){
         $acronym =  $acronym . $arrayLetters['0'];
     }
 
-    return substr(eliminar_tildes($acronym.".".$apellido1.$apellido2),0,18).'@edu.gva.es';
+    return substr(strtolower(eliminar_tildes($acronym.".".$apellido1.$apellido2)),0,18).'@edu.gva.es';
 }
 
 function eliminar_tildes($cadena){
 
     //Codificamos la cadena en formato utf8 en caso de que nos de errores
 
-    $cadena = strtolower(str_replace(
+    $cadena = str_replace(
         ' ','',$cadena
-    ));
+    );
 
     //Ahora reemplazamos las letras
     $cadena = str_replace(
