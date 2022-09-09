@@ -17,7 +17,7 @@
                         <h1>Login Profesor</h1>
                         {!! csrf_field() !!}
                         <div class="form-group has-feedback {{ $errors->has('codigo') ? ' has-error' : '' }}">
-                            <input type="text" class="form-control" name="codigo" value="{{ old('codigo') }}" placeholder="Codigo">
+                            <input type="text" class="form-control" name="codigo" value="{{ old('codigo') }}" placeholder="Codi o email">
                             <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                             @if ($errors->has('codigo'))
                             <span class="help-block">

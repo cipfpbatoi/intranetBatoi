@@ -110,7 +110,7 @@ class AdministracionController extends Controller
     }
 
     private function esborrarProgramacions(){
-        Programacion::where('curso', '!=', Curso())->delete();
+        Programacion::where('curso', '!=', CursoAnterior())->delete();
     }
 
 
@@ -251,11 +251,15 @@ class AdministracionController extends Controller
     }
 
 
-    public static function v2_36(){
-        Alert::info('Version 2.36');
-        foreach (Profesor::whereNull('changePassword')->get() as $profesor){
-                $profesor->email = emailConselleria($profesor->nombre,$profesor->apellido1,$profesor->apellido2);
-                $profesor->save();
+    public static function v2_40(){
+        Alert::info('Version 2.40');
+        foreach (Programacion::where('curso',Curso())->get() as $prg){
+            if ($antigua = Programacion::where('idModuloCiclo', $prg->idModuloCiclo)->where('curso',CursoAnterior())->first()) {
+                $prg->criterios = $antigua->criterios;
+                $prg->metodologia = $antigua->metodologia;
+                $prg->propuestas = $antigua->propuestas;
+                $prg->save();
+            }
         }
     }
 

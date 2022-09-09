@@ -86,7 +86,7 @@ class ImportController extends Seeder
             'create' => array(
                 'codigo' => 'crea_codigo_profesor,0',
                 'dni' => 'documento',
-                'email' => 'email,nombre,apellido1,apellido2',
+                'email' => 'email2',
                 'departamento' => '99',
                 'password' => 'cifrar,documento',
                 'api_token' => 'aleatorio,60'
