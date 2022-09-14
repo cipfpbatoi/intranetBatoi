@@ -81,7 +81,15 @@ use AuthenticatesUsers;
                 return back()->withInput()->withErrors(['password' => "Has d'introduir el dni amb 0 davant i lletra majuscula"]);
             }
         } else {
-            isset($profesor->idioma)?session(['lang' => $profesor->idioma]):'ca';
+            if (!isset($profesor)){
+                $profesor = Profesor::where('email',$request->codigo)->get()->first();
+            }
+            if (isset($profesor->idioma)){
+                session(['lang' => $profesor->idioma]);
+            }else {
+                session(['lang' => 'ca']);
+            }
+
             return $this->login($request);
         }
     }
@@ -107,7 +115,7 @@ use AuthenticatesUsers;
             $profesor->changePassword = date('Y-m-d');
             $profesor->save();
             Auth::login($profesor);
-            session(['lang' => AuthUser()->idioma]);
+            session(['lang' => $profesor->idioma]);
             return redirect('/home');
         }
 
