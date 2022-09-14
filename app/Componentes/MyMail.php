@@ -70,6 +70,9 @@ class MyMail
             $toCompost = explode('(', $element);
             $id = $toCompost[0];
             $element = $this->class::find($id);
+            if (!isset($element)){
+                return null;
+            }
             if (isset($toCompost[1]) && strpos($toCompost[1],';')) {
                 $email = explode(';', $toCompost[1]);
                 $element->mail = $email[0];

@@ -75,7 +75,7 @@ class ReunionController extends IntranetController
 
     public function edit($id)
     {
-        $elemento = Reunion::find($id);
+        $elemento = Reunion::findOrFail($id);
         if ($elemento->fichero != '') {
             return parent::edit($id);
         }
@@ -160,7 +160,7 @@ class ReunionController extends IntranetController
 
     public function borrarOrden($reunion_id, $orden_id)
     {
-        OrdenReunion::find($orden_id)->delete();
+        OrdenReunion::findOrFail($orden_id)->delete();
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 

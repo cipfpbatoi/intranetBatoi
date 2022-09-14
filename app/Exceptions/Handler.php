@@ -50,7 +50,8 @@ class Handler extends ExceptionHandler
     {
         if ($exception->getMessage()!='The given data was invalid.'&&
                $exception->getMessage()!='Unauthenticated.'&&
-               $exception->getMessage()!='') {
+               $exception->getMessage()!='' &&
+               $exception->getMessage()!=) {
             Mensaje::send(config('avisos.errores'),$exception->getMessage().$exception->getTraceAsString());
         }
         if ($exception instanceof \PDOException){
