@@ -166,13 +166,13 @@ class FctController extends IntranetController
                     ->where('periode',$request->periode)
                     ->first();
 
-            if (!$fct){
-                $elemento = new Fct();
-                $this->validateAll($request, $elemento);
-                $id = $elemento->fillAll($request);
+            if (!$fct) {
+                $fct = new Fct();
+                $this->validateAll($request, $fct);
+                $fct->fillAll($request);
             }
             try {
-                $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($hasta),'horas'=>$request->horas]);
+                $fct->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($request->hasta),'horas'=>$request->horas]);
             } catch (\Exception $e)
             {
                Alert::danger("L'alumne $idAlumno ja té una Fct oberta amb eixa empresa ");
