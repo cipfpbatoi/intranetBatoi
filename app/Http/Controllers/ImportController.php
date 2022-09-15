@@ -14,11 +14,13 @@ use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Espacio;
 use DB;
 use Illuminate\Database\Seeder;
+use Monolog\Logger;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Ocupacion;
 use Illuminate\Support\Str;
+use Monolog\Handler\StreamHandler;
 
 /**
  * Class ImportController
@@ -30,6 +32,7 @@ class ImportController extends Seeder
      * @var
      */
     private $plantilla;
+    private $log;
     /**
      * @var array
      */
@@ -735,6 +738,8 @@ class ImportController extends Seeder
      */
     private function in($xmltable, $tabla)
     {
+        $this->log = new Logger('Import');
+        $this->log->pushHandler(new StreamHandler("logs/import.log", Logger::DEBUG));
         $guard = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::unguard';
         $pt = call_user_func($guard);
         $pasa = true;
@@ -749,7 +754,7 @@ class ImportController extends Seeder
             if ($pasa) {
                 $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
                 $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
-
+                $this->log->info("Processant $clase: $clave");
                 if ($pt = $this->encuentra($clase, $clave)) {   //Update
                     foreach ($tabla['update'] as $keybd => $keyxml) {
                         $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
