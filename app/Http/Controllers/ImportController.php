@@ -758,11 +758,8 @@ class ImportController extends Seeder
             if ($pasa) {
                 $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
                 $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
-                try {
+                if (!is_array($clave))
                     $this->log->info("Processant $clase: $clave");
-                }   catch (\ErrorException $e) {
-                    Alert::error($e->getMessage());
-                    continue;
                 }
                 if ($pt = $this->encuentra($clase, $clave)) {   //Update
                     foreach ($tabla['update'] as $keybd => $keyxml) {
