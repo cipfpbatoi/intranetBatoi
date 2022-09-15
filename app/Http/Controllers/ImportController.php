@@ -760,7 +760,7 @@ class ImportController extends Seeder
                 $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
                 try {
                     $this->log->info("Processant $clase: $clave");
-                }   catch (Exception $e) {
+                }   catch (\ErrorException $e) {
                     Alert::error($e->getMessage());
                     continue;
                 }
