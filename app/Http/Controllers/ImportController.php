@@ -738,6 +738,9 @@ class ImportController extends Seeder
      */
     private function in($xmltable, $tabla)
     {
+        if(Storage::exists('logs/import.log')) {
+            Storage::delete('logs/import.log');
+        }
         $this->log = new Logger('Import');
         $this->log->pushHandler(new StreamHandler(storage_path()."/logs/import.log", Logger::DEBUG));
         $guard = "\Intranet\Entities\\" . $tabla['nombreclase'] . '::unguard';
