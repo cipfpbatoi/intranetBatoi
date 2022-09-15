@@ -738,8 +738,9 @@ class ImportController extends Seeder
      */
     private function in($xmltable, $tabla)
     {
-        if(Storage::exists('logs/import.log')) {
-            Storage::delete('logs/import.log');
+        if(is_file(storage_path().'/logs/import.log'))
+        {
+            unlink(storage_path().'/logs/import.log');
         }
         $this->log = new Logger('Import');
         $this->log->pushHandler(new StreamHandler(storage_path()."/logs/import.log", Logger::DEBUG));
@@ -757,7 +758,12 @@ class ImportController extends Seeder
             if ($pasa) {
                 $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
                 $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
-                $this->log->info("Processant $clase: $clave");
+                try {
+                    $this->log->info("Processant $clase: $clave");
+                }   catch (Exception $e) {
+                    Alert::error($e->getMessage());
+                    continue;
+                }
                 if ($pt = $this->encuentra($clase, $clave)) {   //Update
                     foreach ($tabla['update'] as $keybd => $keyxml) {
                         $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
