@@ -758,7 +758,7 @@ class ImportController extends Seeder
             if ($pasa) {
                 $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
                 $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
-                if (!is_array($clave))
+                if (!is_array($clave)){
                     $this->log->info("Processant $clase: $clave");
                 }
                 if ($pt = $this->encuentra($clase, $clave)) {   //Update
