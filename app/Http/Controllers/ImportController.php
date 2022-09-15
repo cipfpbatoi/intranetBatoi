@@ -759,7 +759,12 @@ class ImportController extends Seeder
                     foreach ($tabla['update'] as $keybd => $keyxml) {
                         $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
                     }
-                    $pt->save();
+                    try {
+                        $pt->save();
+                    }  catch (\Illuminate\Database\QueryException $e) {
+                        Alert::error($e->getMessage());
+                        continue;
+                    }
                 } else {  //create
                     if (isset($arrayDatos)) {
                         //borra el array de carga cada vez que entro bucle
