@@ -7,6 +7,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\FctConvalidacion;
 use DB;
@@ -116,16 +117,21 @@ class FctAlumnoController extends IntranetController
         $fct = AlumnoFct::findOrFail($id);
         $alumno = $fct->Alumno;
         $tutor = AuthUser();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         /*$grupo = $fct->Alumno->Grupo->first();
         $cicle = $grupo->Ciclo;
         $tutor = $grupo->Tutor;
         $cdept = $cicle->departament->Jefe;
         $director = Profesor::find(config(fileContactos().'.director'));*/
+        if (file_exists(storage_path("tmp/exencion_$id.pdf"))) {
+            unlink(storage_path("tmp/exencion_$id.pdf"));
+        }
         $file = storage_path("tmp/exencion_$id.pdf");
+
         $pdf = new Pdf('fdf/InformeExencionFCT.pdf');
         $arr['untitled1'] = "$alumno->fullName - $alumno->nia - $alumno->telef1 - $alumno->email";
         $arr['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
-        $arr['untitled3'] = $fct->Fct->Colaboracion->Cilo->vliteral;
+        $arr['untitled3'] = $grupo->Ciclo->vliteral;
         $arr['untitled4'] = $tutor->fullName.' - '.$tutor->dni.' - '.$tutor->telef1.' - '.$tutor->email;
         $pdf->fillform($arr)
                 ->saveAs($file);
