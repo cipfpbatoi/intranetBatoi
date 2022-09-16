@@ -106,7 +106,7 @@ class FctAlumnoController extends IntranetController
             return self::preparePdf($id)->stream();
         }
         if ($fct->asociacion == 2) {
-            return self::prepareExem($id)->execute();
+            return response()->file(self::prepareExem(($id)));
         }
 
     }
@@ -125,7 +125,7 @@ class FctAlumnoController extends IntranetController
         $array[0] = $alumno->fullName;
         $pdf->fillform($array)
                 ->saveAs($file);
-        return $pdf;
+        return storage_path("tmp/exencion_$id.pdf");;
 
     }
     /*
