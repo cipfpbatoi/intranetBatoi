@@ -16,10 +16,10 @@
     <div style="border: black solid thin;padding:5px">
         <h5 style="text-align: center">DADES GENERALS FCT</h5>
         <ul style="list-style-type: square ; font-size: 13px">
-            <li>Has d'emplenar semanalment el teu diari de pràctiques (memòria) en el SAÓ que es troba a http://fct.edu.gva.es/. La correcta complimentació et servirà de memòria final de pràctiques de FCT.</li>
+            <li>Has d'emplenar semanalment el teu diari de pràctiques (memòria) en el SAÓ que es troba a <a href="http://fct.edu.gva.es/">http://fct.edu.gva.es/</a>. La correcta complimentació et servirà de memòria final de pràctiques de FCT.</li>
             <li>Una vegada al mes, ens reunirem tot el grup a l'institut per a comentar el desenvolupament de les pràctiques. L'assistència a estes reunions és obligatòria i conta en el comput total d'hores de les pràctiques. Us convocaré per correu electrònic amb antelació suficient.</li>
             <li>També farè visites al centre de les que informaré al teu instructor.</li>
-            <li>Tens una assegurança de responsabilitat civil i d'accident laboral. La informació la trobaràs en aquest enllaç</li>
+            <li>Tens una assegurança de responsabilitat civil i d'accident laboral. La informació la trobaràs en aquest <a href="https://ceice.gva.es/va/web/formacion-profesional/seguro">enllaç</a></li>
             <li>Les tasques a realitzar a l'empresa seran las que es deriven de l'Annex III, que et donaré i on s'especifica el teu horari i les dades de l'empresa i instructor</li>
         </ul>
         <table style="width:100px;height:100px;float:left;margin-bottom: 20px"></table>
