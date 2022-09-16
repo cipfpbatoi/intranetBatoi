@@ -18,12 +18,10 @@
     <p>Hola {{$elemento->Alumno->nombre}}. Com hem parlat en la reunió de preparació de les pràctiques de FCT
         t'envie recordatori de les coses que has de tindre en compte durant este periode:</p>
     <ul style="list-style-type: square ; font-size: 13px">
-        <li>Has d'emplenar <b>semanalment</b> l'Annex V en el SAÓ que es troba a <a href="http://fct.edu.gva.es/">http://fct.edu.gva.es/</a>.
-            La <b>correcta</b> complimentació et servirà de memòria final de pràctiques de FCT.</li>
-        <li>Una vegada al mes, ens reunirem tot el grup a l'institut per a comentar el desenvolupament de les pràctiques. M'hauràs de portar, signats per l'instructor, els annexos V fins a la setmana anterior a la reunió. L'assistència a estes reunions és obligatòria i conta en el comput total d'hores de les pràctiques.
-            Us convocaré per correu electrònic amb antelació suficient.</li>
+        <li>Has d'emplenar semanalment el teu diari de pràctiques (memòria) en el SAÓ que es troba a <a href="http://fct.edu.gva.es/">http://fct.edu.gva.es/</a>. La correcta complimentació et servirà de memòria final de pràctiques de FCT.</li>
+        <li>Una vegada al mes, ens reunirem tot el grup a l'institut per a comentar el desenvolupament de les pràctiques. L'assistència a estes reunions és obligatòria i conta en el comput total d'hores de les pràctiques. Us convocaré per correu electrònic amb antelació suficient.</li>
         <li>També farè visites al centre de les que informaré al teu instructor.</li>
-        <li>Tens una assegurança de responsabilitat civil i d'accident laboral. La informació la trobaràs en aquest <a href="http://www.ceice.gva.es/va/web/formacion-profesional/seguro">enllaç</a></li>
+        <li>Tens una assegurança de responsabilitat civil i d'accident laboral. La informació la trobaràs en aquest <a href="https://ceice.gva.es/va/web/formacion-profesional/seguro">enllaç</a></li>
         <li>Les tasques a realitzar a l'empresa seran las que es deriven de l'Annex III, que et donaré i on s'especifica el teu horari i les dades de l'empresa i instructor</li>
     </ul>
     <p>Les dades de la teua empresa son:</p>
