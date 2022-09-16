@@ -129,10 +129,17 @@ class FctAlumnoController extends IntranetController
         $file = storage_path("tmp/exencion_$id.pdf");
 
         $pdf = new Pdf('fdf/InformeExencionFCT.pdf');
-        $arr['untitled1'] = "$alumno->fullName - $alumno->nia - $alumno->telef1 - $alumno->email";
+        $arr['untitled1'] = "NIA: $alumno->nia - $alumno->fullName -".$alumno->telef1??$alumno->telef2." - $alumno->email";
         $arr['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
         $arr['untitled3'] = $grupo->Ciclo->vliteral;
-        $arr['untitled4'] = $tutor->fullName.' - '.$tutor->dni.' - '.$tutor->telef1.' - '.$tutor->email;
+        $arr['untitled4'] = $tutor->fullName.' - '.$tutor->dni.' - '.$tutor->telef1??$tutor->telef2.' - '.$tutor->email;
+        $arr['untitled18'] = config('contacto.poblacion');
+        $arr['untitled19'] = day(Hoy());
+        $arr['untitled20'] = month(Hoy());
+        $arr['untitled21'] = year(Hoy());
+
+        $arr['untitled23'] = $tutor->fullName;
+
         $pdf->fillform($arr)
                 ->saveAs($file);
         return storage_path("tmp/exencion_$id.pdf");;
