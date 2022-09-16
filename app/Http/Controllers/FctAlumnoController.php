@@ -136,9 +136,8 @@ class FctAlumnoController extends IntranetController
         $arr['untitled18'] = config('contacto.poblacion');
         $arr['untitled19'] = day(Hoy());
         $arr['untitled20'] = month(Hoy());
-        $arr['untitled21'] = year(Hoy());
-
-        $arr['untitled23'] = $tutor->fullName;
+        $arr['untitled21'] = substr(year(Hoy()),2,2);
+        $arr['untitled22'] = $tutor->fullName;
 
         $pdf->fillform($arr)
                 ->saveAs($file);
