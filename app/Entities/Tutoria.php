@@ -26,6 +26,7 @@ class Tutoria extends Model
     protected $rules = [
         'desde' => 'required|date',
         'hasta' => 'required|date',
+        'tipo' => 'required',
         'descripcion' => 'required',
         'grupos' => 'required',
         ];
