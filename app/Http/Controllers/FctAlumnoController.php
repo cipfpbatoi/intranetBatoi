@@ -118,6 +118,9 @@ class FctAlumnoController extends IntranetController
         $alumno = $fct->Alumno;
         $tutor = AuthUser();
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
+        $telefonoTutor = ($tutor->telef1 != '')?$tutor->telef1:$tutor->telef2;
+
         /*$grupo = $fct->Alumno->Grupo->first();
         $cicle = $grupo->Ciclo;
         $tutor = $grupo->Tutor;
@@ -129,10 +132,10 @@ class FctAlumnoController extends IntranetController
         $file = storage_path("tmp/exencion_$id.pdf");
 
         $pdf = new Pdf('fdf/InformeExencionFCT.pdf');
-        $arr['untitled1'] = "NIA: $alumno->nia - $alumno->fullName -".($alumno->telef1??$alumno->telef2)." - $alumno->email";
+        $arr['untitled1'] = "NIA: $alumno->nia - $alumno->fullName - $telefonoAlumne - $alumno->email";
         $arr['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
         $arr['untitled3'] = $grupo->Ciclo->vliteral;
-        $arr['untitled4'] = $tutor->fullName.' - '.$tutor->dni.' - '.($tutor->telef1??$tutor->telef2).' - '.$tutor->email;
+        $arr['untitled4'] = $tutor->fullName.' - '.$tutor->dni.' - '.$telefonoTutor.' - '.$tutor->email;
         $arr['untitled18'] = config('contacto.poblacion');
         $arr['untitled19'] = day(Hoy());
         $arr['untitled20'] = month(Hoy());
