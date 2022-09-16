@@ -16,11 +16,11 @@
     <div style="border: black solid thin;padding:5px">
         <h5 style="text-align: center">DADES GENERALS FCT</h5>
         <ul style="list-style-type: square ; font-size: 13px">
-            <li>Seguiment formació en Empresa. Explicar Annex V i com emplenar-lo al SAÓ (La correcta complimentació servirà de memòria final de l'alumne en l'FCT)</li>
-            <li>Periodicitat de les visites d'alumnes a professors-tutors. PR04-02</li>
-            <li>S'informa de com utilitzar el registre de queixes i suggerències (PG06-01), disponible al web del centre. Zona FCT. </li>
-            <li>Informació a l'alumne de l'assegurança de responsabilitat civil i en cas d'accident laboral. (http://www.ceice.gva.es/va/web/formacion-profesional/seguro)</li>
-            <li>L'alumne coneix les activitats a realitzar a l'empresa segons l'Annex III, on s'especifica el seu horari i les dades de l'empresa i instructor.</li>
+            <li>Has d'emplenar semanalment el teu diari de pràctiques (memòria) en el SAÓ que es troba a http://fct.edu.gva.es/. La correcta complimentació et servirà de memòria final de pràctiques de FCT.</li>
+            <li>Una vegada al mes, ens reunirem tot el grup a l'institut per a comentar el desenvolupament de les pràctiques. L'assistència a estes reunions és obligatòria i conta en el comput total d'hores de les pràctiques. Us convocaré per correu electrònic amb antelació suficient.</li>
+            <li>També farè visites al centre de les que informaré al teu instructor.</li>
+            <li>Tens una assegurança de responsabilitat civil i d'accident laboral. La informació la trobaràs en aquest enllaç</li>
+            <li>Les tasques a realitzar a l'empresa seran las que es deriven de l'Annex III, que et donaré i on s'especifica el teu horari i les dades de l'empresa i instructor</li>
         </ul>
         <table style="width:100px;height:100px;float:left;margin-bottom: 20px"></table>
         <table border='1' style="width:350px;height:100px;float:left;margin-bottom: 20px">
@@ -39,7 +39,7 @@
                 <td style="text-align:left;width:12.45cm;padding-left: 5px; "><strong>SIGNATURA ALUMNE/A</strong></td>
             </tr>
             @foreach ($todos as $alumno)
-            <tr style='height:40px'><td style="text-align:left;width:8.938cm;padding-left: 5px;font-size: 0.9em;" > {{ $alumno->Alumno->ShortName }} </p></td>
+            <tr style='height:40px'><td style="text-align:left;width:8.938cm;padding-left: 5px;font-size: 0.9em;" > {{ $alumno->Alumno->ShortName }} </td>
                 <td style="text-align:left;width:8.938cm;padding-left: 5px;font-size: 0.9em;">{{$alumno->Fct->Colaboracion->Centro->nombre}}</td>
                 <td style="text-align:left;width:0.838cm;padding-left: 5px;font-size: 0.9em;"></td>
                 <td style="text-align:left;width:4.49cm;font-size: 0.9em;text-align: center ">{{$alumno->desde}}</td>
