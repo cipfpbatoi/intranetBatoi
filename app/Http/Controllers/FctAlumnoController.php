@@ -135,7 +135,7 @@ class FctAlumnoController extends IntranetController
         $arr['untitled1'] = "NIA: $alumno->nia - $alumno->fullName - $telefonoAlumne - $alumno->email";
         $arr['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
         $arr['untitled3'] = $grupo->Ciclo->vliteral;
-        $arr['untitled4'] = $tutor->fullName.' - '.$tutor->dni.' - '.$telefonoTutor.' - '.$tutor->email;
+        $arr['untitled4'] = "DNI: $tutor->dni - ".$tutor->fullName.' - '.$telefonoTutor.' - '.$tutor->email;
         $arr['untitled18'] = config('contacto.poblacion');
         $arr['untitled19'] = day(Hoy());
         $arr['untitled20'] = month(Hoy());
