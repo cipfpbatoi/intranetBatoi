@@ -119,7 +119,7 @@ class FctAlumnoController extends IntranetController
         $tutor = AuthUser();
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
-        $telefonoTutor = ($tutor->telef1 != '')?$tutor->telef1:$tutor->telef2;
+        $telefonoTutor = ($tutor->movil1 != '')?$tutor->movil1:$tutor->movil2;
 
         /*$grupo = $fct->Alumno->Grupo->first();
         $cicle = $grupo->Ciclo;
