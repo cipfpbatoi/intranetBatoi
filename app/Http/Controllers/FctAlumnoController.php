@@ -115,6 +115,7 @@ class FctAlumnoController extends IntranetController
     {
         $fct = AlumnoFct::findOrFail($id);
         $alumno = $fct->Alumno;
+        $tutor = AuthUser();
         /*$grupo = $fct->Alumno->Grupo->first();
         $cicle = $grupo->Ciclo;
         $tutor = $grupo->Tutor;
@@ -122,8 +123,11 @@ class FctAlumnoController extends IntranetController
         $director = Profesor::find(config(fileContactos().'.director'));*/
         $file = storage_path("tmp/exencion_$id.pdf");
         $pdf = new Pdf('fdf/InformeExencionFCT.pdf');
-        $array[0] = $alumno->fullName;
-        $pdf->fillform($array)
+        $arr['untitled1'] = "$alumno->fullName - $alumno->nia - $alumno->telef1 - $alumno->email";
+        $arr['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
+        $arr['untitled3'] = $fct->Fct->Colaboracion->Cilo->vliteral;
+        $arr['untitled4'] = $tutor->fullName.' - '.$tutor->dni.' - '.$tutor->telef1.' - '.$tutor->email;
+        $pdf->fillform($arr)
                 ->saveAs($file);
         return storage_path("tmp/exencion_$id.pdf");;
 
