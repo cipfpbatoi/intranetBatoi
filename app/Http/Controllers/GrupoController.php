@@ -69,7 +69,6 @@ class GrupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('grupo.edit', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid',new BotonImg('equipo.grupo',['img' => 'fa-graduation-cap']));
 
-        $this->panel->setBoton('grid',new BotonImg('grupo.fse',['img' => 'fa-euro','where' => ['codigo', '==', AuthUser()->grupoTutoria]]));
         if (AuthUser()->xdepartamento == 'Fol' && date('Y-m-d') > config('curso.certificatFol')){
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>['fol','==', 0]]));
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>['fol','==', 1]]));
@@ -123,17 +122,18 @@ class GrupoController extends IntranetController
      */
     public function pdf($grupo)
     {
-        return $this->hazPdf('pdf.alumnos.fotoAlumnos',AlumnoGrupo::where('idGrupo',$grupo)->orderBy('subGrupo')->orderBy('posicion','desc')->get()->groupBy('subGrupo'), Grupo::find($grupo))->stream();
+        return $this->hazPdf('pdf.alumnos.fotoAlumnos',AlumnoGrupo::where('idGrupo',$grupo)->orderBy('subGrupo')->orderBy('posicion','desc')->OrderBy('apellido1')
+            ->OrderBy('apellido2')->get()->groupBy('subGrupo'), Grupo::find($grupo))->stream();
     }
 
     /**
      * @param $grupo
      * @return mixed
-     */
+
     public function fse($grupo)
     {
         return $this->hazPdf('pdf.reunion.actaFSE',$this->alumnos($grupo), Grupo::find($grupo) )->stream();
-    }
+    }*/
 
     /**
      * @param $grupo
@@ -141,7 +141,10 @@ class GrupoController extends IntranetController
      */
     public function carnet($grupo)
     {
-        return $this->hazPdf('pdf.carnet', $this->alumnos($grupo), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
+        return $this->hazPdf('pdf.carnet', Alumno::QGrupo($grupo)
+            ->OrderBy('apellido1')
+            ->OrderBy('apellido2')
+            ->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
     /**
@@ -195,19 +198,5 @@ class GrupoController extends IntranetController
         return back();
 
     }
-
-    /**
-     * @param $grupo
-     * @return mixed
-     */
-    private static function alumnos($grupo){
-        return Alumno::QGrupo($grupo)
-                ->OrderBy('apellido1')
-                ->OrderBy('apellido2')
-                ->get();
-    }
-    
-
-    
 
 }
