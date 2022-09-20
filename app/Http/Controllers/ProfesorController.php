@@ -3,8 +3,10 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Entities\Grupo;
 use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\Entities\Profesor;
+use Intranet\Entities\Alumno;
 use Illuminate\Support\Facades\Auth;
 use Jenssegers\Date\Date;
 use Illuminate\Support\Facades\Cache;
@@ -79,6 +81,15 @@ use traitAutorizar,
         }
         $this->iniProfileBotones();
         return $this->grid($todos);
+    }
+
+    public function fse()
+    {
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        if (isset($grupo)) {
+            $this->hazPdf('pdf.reunion.actaFSE', Alumno::misAlumnos()->OrderBy('apellido1')
+                ->OrderBy('apellido2')->get(), $grupo)->stream();
+        }
     }
 
 
