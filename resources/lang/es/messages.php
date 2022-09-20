@@ -290,7 +290,8 @@ return array(
         'Materialbaja' => 'Material de baja',
         'Secure' => 'Asegurar espacio',
         'Solicitud' => 'Remisión a Orientación',
-        'Solicitudes' => 'Solicitudes'
+        'Solicitudes' => 'Solicitudes',
+        'Fse' => 'Imprimir Acta FSE',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
