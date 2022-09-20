@@ -297,7 +297,8 @@ return array(
         'Materialbaja' => 'Material donat de baixa',
         'Secure' => 'Securitzar espai',
         'Solicitud' => 'Remissió a Orientació',
-        'Solicitudes' => 'Sol·licituts'
+        'Solicitudes' => 'Sol·licituts',
+        'Fse' => 'Imprimir Acta FSE',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
