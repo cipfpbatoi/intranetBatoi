@@ -9,7 +9,6 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Illuminate\Support\Facades\Auth;
 use Jenssegers\Date\Date;
-use Illuminate\Support\Facades\Cache;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Horario;
 use Intranet\Botones\BotonIcon;
@@ -87,9 +86,13 @@ use traitAutorizar,
     {
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         if (isset($grupo)) {
-            $this->hazPdf('pdf.reunion.actaFSE', Alumno::misAlumnos()->OrderBy('apellido1')
+            return $this->hazPdf('pdf.reunion.actaFSE', Alumno::misAlumnos()->OrderBy('apellido1')
                 ->OrderBy('apellido2')->get(), $grupo)->stream();
+        } else {
+            Alert::danger('No trobe el teu grup');
+            return back();
         }
+
     }
 
 
