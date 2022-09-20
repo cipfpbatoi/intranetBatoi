@@ -122,8 +122,7 @@ class GrupoController extends IntranetController
      */
     public function pdf($grupo)
     {
-        return $this->hazPdf('pdf.alumnos.fotoAlumnos',AlumnoGrupo::where('idGrupo',$grupo)->orderBy('subGrupo')->orderBy('posicion','desc')->OrderBy('apellido1')
-            ->OrderBy('apellido2')->get()->groupBy('subGrupo'), Grupo::find($grupo))->stream();
+        return $this->hazPdf('pdf.alumnos.fotoAlumnos',AlumnoGrupo::where('idGrupo',$grupo)->orderBy('subGrupo')->orderBy('posicion','desc')->get()->groupBy('subGrupo'), Grupo::find($grupo))->stream();
     }
 
     /**
