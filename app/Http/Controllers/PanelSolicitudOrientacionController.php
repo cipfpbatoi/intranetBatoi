@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Solicitud;
 
@@ -30,7 +31,7 @@ class PanelSolicitudOrientacionController extends ModalController
      * @var string
      */
     protected $orden = 'fecha';
-
+    protected $parametresVista = ['modal' => ['aviso']];
 
     /**
      *
@@ -40,7 +41,7 @@ class PanelSolicitudOrientacionController extends ModalController
         $this->panel->setBotonera([], ['show']);
         $this->panel->setBoton('grid', new BotonImg('solicitud.active', ['where' => ['estado', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('solicitud.link', ['where' => ['estado', '>', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('solicitud.active', ['img'=>'fa-flag-o', 'where' => ['estado', '==', '2']]));
+        $this->panel->setBoton('grid', new BotonImg('solicitud.resolve', ['class'=>'resolve','img'=>'fa-flag-o', 'where' => ['estado', '==', '2']]));
     }
 
     public function active($id)
@@ -50,10 +51,19 @@ class PanelSolicitudOrientacionController extends ModalController
             $elemento->estado = 2;
             $elemento->save();
             avisa($elemento->idProfesor,"El departament d'orientació comença a tramitar la teua sol·licitud en nom de ".$elemento->Alumno->fullName,'#',$elemento->Orientador->fullName);
-        } else {
+        }
+        return back();
+    }
+
+    public function resolve(Request $request,$id)
+    {
+        $elemento = Solicitud::findOrFail($id);
+        if ($elemento->estado == 2){
             $elemento->estado = 3;
+            $elemento->solucion = $request->explicacion;
+            $elemento->fechasolucion = Hoy();
             $elemento->save();
-            avisa($elemento->idProfesor,"El departament d'orientació ha finalitzat la teua sol·licitud en nom de ".$elemento->Alumno->fullName,'#',$elemento->Orientador->fullName);
+            avisa($elemento->idProfesor,"El departament d'orientació ha finalitzat la teua sol·licitud en nom de ".$elemento->Alumno->fullName." : ".$request->explicacion ,'#',$elemento->Orientador->fullName);
         }
         return back();
     }

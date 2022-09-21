@@ -24,9 +24,10 @@ class SolicitudResource extends JsonResource
             'Aspectes afectats per la situació' => $this->text2??'',
             'Altres dades' => $this->text3??'',
             'Data' => $this->fecha,
-            'Data Solució' => $this->fechaSolicion??'',
             'Orientador' => $this->Orientador->fullName??'',
             'Estat' => $this->situacion,
+            'Data Solució' => $this->fechaSolicion??'',
+            'Solució' => $this->solucion,
         ];
     }
 }

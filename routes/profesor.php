@@ -188,6 +188,7 @@ Route::get('/solicitud/{expediente}/delete', ['as' => 'solicitud.destroy', 'uses
 Route::put('/solicitud/{expediente}/edit', ['as' => 'solicitud.update', 'uses' => 'SolicitudController@update']);
 Route::get('/solicitud/{expediente}/init', ['as' => 'solicitud.init', 'uses' => 'SolicitudController@init']);
 Route::get('/solicitud/{expediente}/active', ['as' => 'solicitud.active', 'uses' => 'PanelSolicitudOrientacionController@active']);
+Route::post('/solicitud/{expediente}/resolve', ['as' => 'solicitud.resolve', 'uses' => 'PanelSolicitudOrientacionController@resolve']);
 Route::get('/solicitudes', ['as' => 'solicitud.orientacion', 'uses' => 'PanelSolicitudOrientacionController@index']);
 
 
