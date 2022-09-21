@@ -7,6 +7,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\FctConvalidacion;
 use DB;
@@ -106,7 +107,7 @@ class FctAlumnoController extends IntranetController
             return self::preparePdf($id)->stream();
         }
         if ($fct->asociacion == 2) {
-            return self::prepareExem($id)->execute();
+            return response()->file(self::prepareExem(($id)));
         }
 
     }
@@ -115,17 +116,35 @@ class FctAlumnoController extends IntranetController
     {
         $fct = AlumnoFct::findOrFail($id);
         $alumno = $fct->Alumno;
+        $tutor = AuthUser();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
+        $telefonoTutor = ($tutor->movil1 != '')?$tutor->movil1:$tutor->movil2;
+
         /*$grupo = $fct->Alumno->Grupo->first();
         $cicle = $grupo->Ciclo;
         $tutor = $grupo->Tutor;
         $cdept = $cicle->departament->Jefe;
         $director = Profesor::find(config(fileContactos().'.director'));*/
+        if (file_exists(storage_path("tmp/exencion_$id.pdf"))) {
+            unlink(storage_path("tmp/exencion_$id.pdf"));
+        }
         $file = storage_path("tmp/exencion_$id.pdf");
+
         $pdf = new Pdf('fdf/InformeExencionFCT.pdf');
-        $array[0] = $alumno->fullName;
-        $pdf->fillform($array)
+        $arr['untitled1'] = "NIA: $alumno->nia - $alumno->fullName - $telefonoAlumne - $alumno->email";
+        $arr['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
+        $arr['untitled3'] = $grupo->Ciclo->vliteral;
+        $arr['untitled4'] = "DNI: $tutor->dni - ".$tutor->fullName.' - '.$telefonoTutor.' - '.$tutor->email;
+        $arr['untitled18'] = config('contacto.poblacion');
+        $arr['untitled19'] = day(Hoy());
+        $arr['untitled20'] = month(Hoy());
+        $arr['untitled21'] = substr(year(Hoy()),2,2);
+        $arr['untitled22'] = $tutor->fullName;
+
+        $pdf->fillform($arr)
                 ->saveAs($file);
-        return $pdf;
+        return storage_path("tmp/exencion_$id.pdf");;
 
     }
     /*
