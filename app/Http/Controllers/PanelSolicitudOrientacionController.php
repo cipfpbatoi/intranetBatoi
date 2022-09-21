@@ -31,7 +31,7 @@ class PanelSolicitudOrientacionController extends ModalController
      * @var string
      */
     protected $orden = 'fecha';
-    protected $parametresVista = ['modal' => ['aviso']];
+    protected $parametresVista = ['modal' => ['resolve']];
 
     /**
      *

@@ -68,7 +68,8 @@ return array(
         'desde' => 'Desde',
         'hasta' => 'Hasta',
         'resum' => 'Resumen',
-        'tasks' => 'Tareas pendientes'
+        'tasks' => 'Tareas pendientes',
+        'explicacion' => 'Explicación'
     ),
     'buttons' => array(
         'confirmar' => 'Confirmar',
@@ -164,7 +165,8 @@ return array(
         'gestor' => 'Gestor Documental',
         'contact' =>'Registrar contacto',
         'final' => 'Comprimir i guardar',
-        'acabar' => 'Finalizar'
+        'acabar' => 'Finalizar',
+        'resolve' => 'Resolución'
     ),
     'menu' => array(
         'Link' => 'Enlaces externos',

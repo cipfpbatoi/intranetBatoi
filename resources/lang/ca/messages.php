@@ -71,8 +71,7 @@ return array(
         'hasta' => 'Fins',
         'resum' => 'Resum',
         'tasks' => 'Tasques pendents',
-
-
+        'explicacion' => 'Explicación'
      ),
     'buttons' => array(
         'confirmar' => 'Confirmar',
@@ -171,7 +170,8 @@ return array(
         'gestor' => 'Gestor Documental',
         'contact' =>'Registrar contacte',
         'final' => 'Comprimir i guardar',
-        'acabar' => 'Finalitzar'
+        'acabar' => 'Finalitzar',
+        'resolve' => 'Resolució'
     ),
     'menu' => array(
         'Link' => 'Enllaços externs',
