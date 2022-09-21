@@ -51,7 +51,7 @@ class Handler extends ExceptionHandler
         if ($exception->getMessage()!='The given data was invalid.'&&
                $exception->getMessage()!='Unauthenticated.'&&
                $exception->getMessage()!='' &&
-               substr($exception->getMessage(),0,4)!='CSRF') {
+               !strpos($exception->getMessage(),'SRF')) {
             Mensaje::send(config('avisos.errores'),$exception->getMessage().$exception->getTraceAsString());
         }
         if ($exception instanceof \PDOException){
