@@ -185,7 +185,7 @@ function cambiaHora() {
 				idGuardia=res.data[i].id;
 				$("#obs").val(res.data[i].observaciones);
 				$("#obs_per").val(res.data[i].obs_personal);
-				if (res.data[i].realizada)
+				if (res.data[i].realizada === 1)
 					$("#hecha").prop("checked","checked");
 				else
 					$("#hecha").prop("checked","");
