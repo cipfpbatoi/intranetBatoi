@@ -293,7 +293,7 @@ class Profesor extends Authenticatable
 
     public function getMiJefeAttribute()
     {
-        $todos = Profesor::where('departamento', $this->departamento)->get();
+        $todos = Profesor::where('departamento', $this->departamento)->where('activo',1)->get();
         foreach ($todos as $uno){
             if (esRol($uno->rol, config('roles.rol.jefe_dpto'))){
                 return $uno->dni;
