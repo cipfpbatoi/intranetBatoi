@@ -81,7 +81,7 @@ trait traitCRUD{
 
     public function create($default = [])
     {
-        $formulario = new FormBuilder($this->createWithDefaultValues(),$this->formFields);
+        $formulario = new FormBuilder($this->createWithDefaultValues($default),$this->formFields);
         $modelo = $this->model;
         return view($this->chooseView('create'), compact('formulario', 'modelo'));
     }
