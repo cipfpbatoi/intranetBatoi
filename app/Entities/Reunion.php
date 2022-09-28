@@ -242,4 +242,11 @@ class Reunion extends Model
         return $this->GrupoClase->isSemi;
     }
 
+    public function scopeNext($query)
+    {
+        $fec_hoy = time();
+        $ahora = date("Y-m-d", $fec_hoy);
+        return $query->where('fecha', '>', $ahora);
+    }
+
 }

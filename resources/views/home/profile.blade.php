@@ -40,7 +40,7 @@
             </li>
             <li role="presentation" class=""><a href="#tab_content4" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">@lang("messages.generic.timeTable")</a>
             </li>
-            <li role="presentation" class=""><a href="#tab_content5" role="tab" id="profile-tab3" data-toggle="tab" aria-expanded="false">@lang("messages.generic.actas")</a>
+            <li role="presentation" class=""><a href="#tab_content5" role="tab" id="profile-tab3" data-toggle="tab" aria-expanded="false">@lang("messages.generic.reuniones")</a>
             </li>
         </ul>
         <div id="myTabContent" class="tab-content">
@@ -63,7 +63,7 @@
                 @include('home.partials.horario.corto')
             </div>
             <div role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="profile-tab">
-                @include('home.partials.documents')
+                @include('home.partials.reuniones')
             </div>
         </div>
     </div>

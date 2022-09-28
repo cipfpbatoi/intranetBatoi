@@ -142,6 +142,14 @@ function year($fecha)
     return $fc1->year;
 }
 
+function hour($fecha)
+{
+    $idioma = Session::get('lang');
+    $fc1 = new Jenssegers\Date\Date($fecha);
+    Jenssegers\Date\Date::setlocale($idioma);
+    return $fc1->format('H:i');
+}
+
 /**
  * Devuelve el dia de la semana de una fecha
  * 

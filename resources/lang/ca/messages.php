@@ -67,6 +67,7 @@ return array(
         'simplifica' => 'Vore les últimes dades',
         'resempresa' => 'Inserció laboral',
         'faltas' => 'Absències',
+        'reuniones' => 'Reunions',
         'desde' => 'Des de',
         'hasta' => 'Fins',
         'resum' => 'Resum',

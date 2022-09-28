@@ -69,7 +69,9 @@ return array(
         'hasta' => 'Hasta',
         'resum' => 'Resumen',
         'tasks' => 'Tareas pendientes',
-        'explicacion' => 'Explicación'
+        'explicacion' => 'Explicación',
+        'faltas' => 'Ausencias',
+        'reuniones' => 'Reuniones',
     ),
     'buttons' => array(
         'confirmar' => 'Confirmar',

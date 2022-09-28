@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers\Auth;
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use Intranet\Entities\Actividad;
-use Intranet\Entities\Activity;
+use Intranet\Entities\Reunion;
 use Intranet\Entities\Falta;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Falta_profesor;
@@ -49,10 +49,8 @@ abstract class HomeController extends Controller
                 /*$activities = Activity::Profesor($usuario->dni)
                                 ->orderBy('updated_at', 'desc')
                                 ->take(15)->get();*/
-                $documents = Cache::remember('actas',now()->addDay(),function () {
-                    return Documento::where('curso', '=', Curso())->where('tipoDocumento', '=', 'Acta')
-                        ->where('grupo', '=', 'Claustro')->orWhere('grupo', '=', 'COCOPE')->get();
-                });
+                $reuniones = Reunion::next()->orderBy('fecha')->get();
+
 
                 $faltas = Falta::select('idProfesor','dia_completo','hora_ini','hora_fin')->with('profesor')->Dia(Hoy())->get();
                 
@@ -67,7 +65,7 @@ abstract class HomeController extends Controller
                 if (!estaDentro() && !Session::get('userChange')) {
                     Falta_profesor::fichar($usuario->dni);
                 }
-                return view('home.profile', compact('usuario', 'horario', 'actividades', 'tasks', 'documents','faltas','hoyActividades','comisiones'));
+                return view('home.profile', compact('usuario', 'horario', 'actividades', 'tasks', 'reuniones','faltas','hoyActividades','comisiones'));
             }
         } else {
             $usuario = AuthUser();
