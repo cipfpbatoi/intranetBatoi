@@ -22,7 +22,7 @@ class PanelControlProgramacionController extends BaseController
     /**
      * @var array
      */
-    protected $gridFields = ['id','Xciclo', 'Xmodulo', 'estado','Nombre', 'situacion'];
+    protected $gridFields = ['id','Xciclo', 'Xmodulo', 'estado', 'situacion'];
 
 
     /**
