@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Intranet\Services\FormBuilder;
 use mikehaertl\pdftk\Pdf;
 
+
 class FctAlumnoController extends IntranetController
 {
     use traitImprimir;
@@ -42,6 +43,7 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumnofct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '2']]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.auth',['img'=>'fa-file','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.link', ['where' => ['asociacion','==',1]]));
 
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
@@ -111,6 +113,46 @@ class FctAlumnoController extends IntranetController
             return response()->file(self::prepareExem(($id)));
         }
 
+    }
+
+    public function auth($id){
+        $fct = AlumnoFct::findOrFail($id);
+        $folder = storage_path("tmp/auth$id/");
+        $zip_file = storage_path("tmp/auth_".$fct->Alumno->dualName.".zip");
+        if (!file_exists($folder)) {
+            mkdir($folder, 0777, true);
+        }
+        $zip = new \ZipArchive();
+        $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        // Genere els tres documents
+        $zip->addFile($this->print9($fct),"9_Autoritzacio_direccio_situacions_excepcionals.pdf");
+        //$zip->addFile($this->print10($fct),"10_Conformitat_tutoria.pdf");
+        //$zip->addFile($this->print11($fct),"11_Conformitat_alumnat.pdf");
+
+        $zip->close();
+        $this->deleteDir($folder);
+
+        return response()->download($zip_file);
+    }
+
+    public function print9($fct){
+        $id = $fct->id;
+        $file = storage_path("tmp/auth$id/9.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/9_Autoritzacio_direccio_situacions_excepcionals.pdf');
+            $pdf->fillform($this->makeArrayPdf9($fct))
+                ->saveAs($file);
+        }
+        return $file;
+    }
+
+    private function makeArrayPdf9($fct){
+        $alumno = $fct->Alumno;
+        $tutor = AuthUser();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $array['untitled1'] = config('contacto.nombre').' '.config('contacto.codi') ;
+        $array['untitled2'] = $grupo->Ciclo->vliteral ;
+        return $array;
     }
 
     public static function prepareExem($id)

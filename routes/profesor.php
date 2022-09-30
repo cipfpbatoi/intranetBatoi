@@ -299,6 +299,8 @@ Route::get('/alumnofct/convalidacion',['as' => 'alumnofct.convalidacion', 'uses'
 Route::post('/alumnofct/convalidacion',['as' => 'alumnofct.convalidacion', 'uses' => 'FctAlumnoController@storeConvalidacion']);
 Route::get('/alumnofct/{id}/pdf', ['as' => 'alumnofct.pdf', 'uses' => 'FctAlumnoController@pdf']);
 Route::get('/alumnofct/{id}/show', ['as' => 'alumnofct.show', 'uses' => 'FctAlumnoController@show']);
+Route::get('/alumnofct/{id}/auth', ['as' => 'alumnofct.auth', 'uses' => 'FctAlumnoController@auth']);
+
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
