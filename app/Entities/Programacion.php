@@ -53,10 +53,6 @@ class Programacion extends Model
     {
         return $this->hasOneThrough(Modulo::class,Modulo_ciclo::class,'id','codigo','idModuloCiclo','idModulo');
     }
-    public function Profesor()
-    {
-        return $this->belongsTo(Profesor::class, 'profesor', 'dni');
-    }
 
     public function getidModuloCicloOptions()
     {
@@ -130,9 +126,7 @@ class Programacion extends Model
     public function getDescripcionAttribute(){
         return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Aciclo." - ".$this->ModuloCiclo->Xmodulo:'';
     }
-    public function getXnombreAttribute(){
-        return $this->Profesor->ShortName??'';
-    }
+
 
     public function getSituacionAttribute(){
         return isblankTrans('models.Comision.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Comision.' . $this->estado);

@@ -300,8 +300,9 @@ function checkItems($checkList)
     $potencia = 0;
     $roles = [];
     for ($i = strlen($binario) - 1; $i >= 0; $i--) {
-        if ($binario[$i] == '1')
+        if ($binario[$i] == '1') {
             $roles[] = 2 ** $potencia;
+        }
         $potencia++;
     }
     return $roles;
@@ -433,12 +434,15 @@ function avisa($id, $mensaje, $enlace = '#', $emisor = null)
         else {
             $quien = \Intranet\Entities\Profesor::find($id);
         }
-        if ($quien)
+        if ($quien) {
             $quien->notify(new \Intranet\Notifications\mensajePanel(
-                    ['motiu' => $mensaje,
-                'emissor' => $emisor,
-                'data' => $fecha,
-                'enlace' => $enlace]));
+                [
+                    'motiu' => $mensaje,
+                    'emissor' => $emisor,
+                    'data' => $fecha,
+                    'enlace' => $enlace
+                ]));
+        }
         else {
             AuthUser()->notify(new \Intranet\Notifications\mensajePanel(
                 ['motiu' => "No trobe usuari $id",
@@ -527,6 +531,8 @@ function loadImg($fixer){
 function fileContactos(){
     return is_file(base_path().'/config/avisos.php')?'avisos':'contacto';
 }
+
+
 function cargaDatosCertificado($datos,$date=null){
     $file = fileContactos();
     $secretario = Profesor::find(config($file.'.secretario'));
