@@ -178,10 +178,10 @@ class FctAlumnoController extends IntranetController
         $array['untitled4'] = Profesor::find(config('contacto.director'))->fullName ;
         $array['untitled8'] = $array['untitled4'];
         $array['untitled29'] = config('contacto.poblacion');
-        $array['untitled30'] = day(Hoy());
-        $array['untitled31'] = month(Hoy());
+        $array['untitled31'] = day(Hoy());
+        $array['untitled30'] = month(Hoy());
         $array['untitled32'] = substr(year(Hoy()),2,2);
-        $array['untitled34'] = $array['untitled4'];
+        $array['untitled33'] = $array['untitled4'];
         return $array;
     }
 
@@ -197,10 +197,10 @@ class FctAlumnoController extends IntranetController
         $array['untitled5'] = $tutor->fullName;
         $array['untitled6'] = $tutor->fullName;
         $array['untitled29'] = config('contacto.poblacion');
-        $array['untitled30'] = day(Hoy());
-        $array['untitled31'] = month(Hoy());
+        $array['untitled31'] = day(Hoy());
+        $array['untitled30'] = month(Hoy());
         $array['untitled32'] = substr(year(Hoy()),2,2);
-        $array['untitled34'] = $tutor->fullName;
+        $array['untitled33'] = $tutor->fullName;
         return $array;
     }
 
@@ -216,10 +216,10 @@ class FctAlumnoController extends IntranetController
         $array['untitled6'] = $alumno->fullName;
         $array['untitled7'] = $alumno->fullName;
         $array['untitled10'] = config('contacto.poblacion');
-        $array['untitled11'] = day(Hoy());
-        $array['untitled12'] = month(Hoy());
-        $array['untitled13'] = substr(year(Hoy()),2,2);
-        $array['untitled14'] = $alumno->fullName;
+        $array['untitled13'] = day(Hoy());
+        $array['untitled11'] = month(Hoy());
+        $array['untitled12'] = substr(year(Hoy()),2,2);
+        $array['untitled8'] = $alumno->fullName;
         return $array;
     }
 
