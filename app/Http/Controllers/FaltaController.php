@@ -213,7 +213,7 @@ class FaltaController extends IntranetController
      * @param Request $request
      * @return mixed
      */
-    public static function printReport(Request $request)
+    public static function printReport($request)
     {
         $desde = new Date($request->desde);
         $hasta = new Date($request->hasta);

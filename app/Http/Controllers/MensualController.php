@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\DesdeHastaRequest;
 
 
 class MensualController extends Controller
@@ -14,7 +14,7 @@ class MensualController extends Controller
         return view('falta.imprime');
     }
 
-    public function imprimir(Request $request)
+    public function imprimir(DesdeHastaRequest $request)
     {
         if ($request->llistat == 'faltas') {
             return FaltaController::printReport($request);
