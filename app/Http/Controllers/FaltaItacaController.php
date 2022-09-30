@@ -6,7 +6,7 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonIcon;
+use Intranet\Http\Requests\DesdeHastaRequest;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
@@ -29,7 +29,7 @@ class FaltaItacaController extends IntranetController
         return view('falta.itaca', compact('profesor','horarios', 'horas'));
     }
     
-    public static function printReport(Request $request)
+    public static function printReport(DesdeHastaRequest $request)
     {
         $elementos = self::findElements($request->desde,$request->hasta);
 
