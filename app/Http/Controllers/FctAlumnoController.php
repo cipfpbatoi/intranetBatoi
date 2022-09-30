@@ -126,8 +126,8 @@ class FctAlumnoController extends IntranetController
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         // Genere els tres documents
         $zip->addFile($this->print9($fct),"9_Autoritzacio_direccio_situacions_excepcionals.pdf");
-        //$zip->addFile($this->print10($fct),"10_Conformitat_tutoria.pdf");
-        //$zip->addFile($this->print11($fct),"11_Conformitat_alumnat.pdf");
+        $zip->addFile($this->print10($fct),"10_Conformitat_tutoria.pdf");
+        $zip->addFile($this->print11($fct),"11_Conformitat_alumnat.pdf");
 
         $zip->close();
         deleteDir($folder);
@@ -146,15 +146,82 @@ class FctAlumnoController extends IntranetController
         return $file;
     }
 
+    public function print10($fct){
+        $id = $fct->id;
+        $file = storage_path("tmp/auth$id/10.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/10_Conformitat_tutoria.pdf');
+            $pdf->fillform($this->makeArrayPdf10($fct))
+                ->saveAs($file);
+        }
+        return $file;
+    }
+
+    public function print11($fct){
+        $id = $fct->id;
+        $file = storage_path("tmp/auth$id/11.pdf");
+        if (!file_exists($file)) {
+            $pdf = new Pdf('fdf/11_Conformitat_alumnat.pdf');
+            $pdf->fillform($this->makeArrayPdf11($fct))
+                ->saveAs($file);
+        }
+        return $file;
+    }
+
     private function makeArrayPdf9($fct){
         $alumno = $fct->Alumno;
         $tutor = AuthUser();
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $array['untitled1'] = config('contacto.nombre').' '.config('contacto.codi') ;
         $array['untitled2'] = $grupo->Ciclo->vliteral ;
+        $array['untitled3'] = "$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni";
+        $array['untitled4'] = Profesor::find(config('contacto.director'))->fullName ;
+        $array['untitled8'] = $array['untitled4'];
+        $array['untitled29'] = config('contacto.poblacion');
+        $array['untitled30'] = day(Hoy());
+        $array['untitled31'] = month(Hoy());
+        $array['untitled32'] = substr(year(Hoy()),2,2);
+        $array['untitled34'] = $array['untitled4'];
         return $array;
     }
 
+    private function makeArrayPdf10($fct){
+        $alumno = $fct->Alumno;
+        $tutor = AuthUser();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $array['untitled1'] = "$tutor->fullName - DNI: $tutor->dni";
+        $array['untitled2'] = "$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni";
+        $array['untitled3'] = config('contacto.nombre').' '.config('contacto.codi') ;
+        $array['untitled4'] = $grupo->Ciclo->vliteral ;
+
+        $array['untitled5'] = $tutor->fullName;
+        $array['untitled6'] = $tutor->fullName;
+        $array['untitled29'] = config('contacto.poblacion');
+        $array['untitled30'] = day(Hoy());
+        $array['untitled31'] = month(Hoy());
+        $array['untitled32'] = substr(year(Hoy()),2,2);
+        $array['untitled34'] = $tutor->fullName;
+        return $array;
+    }
+
+    private function makeArrayPdf11($fct){
+        $alumno = $fct->Alumno;
+        $tutor = AuthUser();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $array['untitled2'] = "$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni";
+        $array['untitled3'] = config('contacto.nombre').' '.config('contacto.codi') ;
+        $array['untitled4'] = $grupo->Ciclo->vliteral ;
+        $array['untitled5'] = "$tutor->fullName - DNI: $tutor->dni";
+
+        $array['untitled6'] = $alumno->fullName;
+        $array['untitled7'] = $alumno->fullName;
+        $array['untitled10'] = config('contacto.poblacion');
+        $array['untitled11'] = day(Hoy());
+        $array['untitled12'] = month(Hoy());
+        $array['untitled13'] = substr(year(Hoy()),2,2);
+        $array['untitled14'] = $alumno->fullName;
+        return $array;
+    }
 
 
     public static function prepareExem($id)
