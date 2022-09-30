@@ -430,6 +430,7 @@ return array(
           'create' => 'Nova Exempció',  
           'edit' => 'Modificar Dades Fct',
           'pdf' => 'Imprimir certificat Alumne/a',
+          'auth' => 'Imprimir autoritzacions',
           'email' => 'Enviar Correu Valoració Alumne/a',
           'pg0301' => "Entregada documentació",
             'default' => 'x Alumne/a',

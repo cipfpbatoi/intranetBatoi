@@ -418,7 +418,7 @@ return array(
         'AlumnoFct' => array(
           'index' => 'Fct x Alumno',
           'convalidacion' => 'FCT Convalidada/Exento',
-
+            'auth' => 'Imprimir autoritzaciones',
             'create' => 'Nueva Exención',
             'edit' => 'Modificar Datos Fct',
             'pdf' => 'Imprimir certificados Alumno',
