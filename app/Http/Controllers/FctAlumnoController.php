@@ -130,7 +130,7 @@ class FctAlumnoController extends IntranetController
         //$zip->addFile($this->print11($fct),"11_Conformitat_alumnat.pdf");
 
         $zip->close();
-        $this->deleteDir($folder);
+        deleteDir($folder);
 
         return response()->download($zip_file);
     }
@@ -154,6 +154,8 @@ class FctAlumnoController extends IntranetController
         $array['untitled2'] = $grupo->Ciclo->vliteral ;
         return $array;
     }
+
+
 
     public static function prepareExem($id)
     {
