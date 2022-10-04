@@ -21,7 +21,7 @@ class GrupoTrabajo extends Model
         'objetivos',
     ];
     protected $rules = [
-        'literal' => 'required',
+        'literal' => 'required|max:40',
     ];
     protected $inputTypes = [
         'objetivos' => ['type' => 'textarea'],

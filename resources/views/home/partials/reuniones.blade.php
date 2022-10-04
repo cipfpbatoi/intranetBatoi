@@ -1,7 +1,8 @@
 <br/>
 <ul class="messages">
+    @foreach ($reuniones as $reunion)
     <li>
-        @foreach ($reuniones as $reunion)
+
             <img src="/img/actas.png" class="avatar" alt="Avatar">
             <div class="message_date">
                <h3 class="date text-info">{{day($reunion->fecha)}}</h3>
@@ -23,6 +24,7 @@
                 </p>
             </div>
         
-        @endforeach
+
     </li>
+    @endforeach
 </ul>
