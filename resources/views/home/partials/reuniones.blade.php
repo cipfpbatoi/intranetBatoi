@@ -9,9 +9,12 @@
             <p class="hour">{{hour($reunion->fecha)}}</p>
         </div>
         <div class="message_wrapper" style="float:right">
-            @foreach ($reunion->Profesores as $profesor)
-                <p style="font-size: xx-small">{{$profesor->shortName}}</p>
+            <br>Persones Convocades:</br>
+            <select name="Convocats">
+            @foreach ($reunion->Profesores->sortBy('cognoms') as $profesor)
+                <option>{{$profesor->shortName}}</option>
             @endforeach
+            </select>
         </div>
         <div class="message_wrapper">
             <h4 class="heading">{{$reunion->xgrupo}}  </h4>
