@@ -419,9 +419,9 @@ return array(
             'edit' => 'Edita Horario',
             'cambiar' => "Canviar funciones horario",
         ),
-        'AlumnoFct' => array(
-          'index' => 'Fct x Alumno',
-          'convalidacion' => 'FCT Convalidada/Exento',
+        'Alumnofct' => array(
+            'index' => 'Fct x Alumno',
+            'convalidacion' => 'FCT Convalidada/Exento',
             'auth' => 'Imprimir autoritzaciones',
             'create' => 'Nueva Exención',
             'edit' => 'Modificar Datos Fct',
