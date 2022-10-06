@@ -49,7 +49,7 @@ abstract class HomeController extends Controller
                 /*$activities = Activity::Profesor($usuario->dni)
                                 ->orderBy('updated_at', 'desc')
                                 ->take(15)->get();*/
-                $reuniones = Reunion::next()->orderBy('fecha')->get();
+                $reuniones = Reunion::with('profesores')->next()->orderBy('fecha')->get();
 
 
                 $faltas = Falta::select('idProfesor','dia_completo','hora_ini','hora_fin')->with('profesor')->Dia(Hoy())->get();
