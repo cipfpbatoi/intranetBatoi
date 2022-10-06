@@ -20,6 +20,8 @@ class GrupoController extends IntranetController
 {
 
     const DIRECCION ='roles.rol.direccion';
+    const TUTOR ='roles.rol.tutor';
+
 
     use traitImprimir;
 
@@ -65,7 +67,8 @@ class GrupoController extends IntranetController
     {
         $this->panel->setBotonera([], ['pdf', 'horario']);
         $this->panel->setBoton('grid', new BotonImg('grupo.detalle', ['img' => 'fa-group']));
-        $this->panel->setBoton('grid', new BotonImg('grupo.carnet', ['roles' => [config(self::DIRECCION), config('roles.rol.tutor')]]));
+        $this->panel->setBoton('grid', new BotonImg('grupo.carnet', ['roles' => config(self::DIRECCION)]));
+        $this->panel->setBoton('grid', new BotonImg('grupo.carnet', ['roles' => config(self::TUTOR),'where'=>['tutor','==',AuthUser()->dni]]));
         $this->panel->setBoton('grid', new BotonImg('grupo.edit', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid',new BotonImg('equipo.grupo',['img' => 'fa-graduation-cap']));
 
