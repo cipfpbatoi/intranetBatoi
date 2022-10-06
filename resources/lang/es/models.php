@@ -93,7 +93,11 @@ return array(
         ),
         'Incidencia' => array(
             'index' => 'Gestionar incidencias',
-            'create' => 'Incidencia'
+            'create' => 'Incidencia',
+            '3' => 'Resuelta',
+            '2' => 'En proceso',
+            '1' => 'Asignada',
+            '0' => 'No comunicada'
         ),
         'Actividad' => array(
             'index' => 'Gestionar Actividades extraescolares',

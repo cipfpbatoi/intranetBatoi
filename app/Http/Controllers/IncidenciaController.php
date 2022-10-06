@@ -25,7 +25,7 @@ class IncidenciaController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['Xestado', 'DesCurta', 'Xespacio', 'XResponsable', 'Xtipo', 'fecha'];
+    protected $gridFields = ['id','Xestado', 'DesCurta', 'Xespacio', 'XResponsable', 'Xtipo', 'fecha'];
     /**
      * @var string
      */
