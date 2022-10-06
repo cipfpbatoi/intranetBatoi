@@ -1,4 +1,6 @@
 <br/>
+
+
 <ul class="messages">
     @foreach ($reuniones as $reunion)
     <li>
@@ -11,8 +13,9 @@
         <div class="message_wrapper" style="float:right">
             <strong>Persones Convocades:</strong>
             <select name="Convocats">
-            @foreach ($reunion->Profesores->sortBy('cognoms') as $profesor)
-                <option>{{$profesor->shortName}}</option>
+            @foreach ($reunion->Profesores->sortBy(['apellido1','apellido2','nombre']) as $profesor)
+
+                <option>{{$profesor->nameFull}}</option>
             @endforeach
             </select>
         </div>
