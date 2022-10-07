@@ -18,7 +18,7 @@ $(".selecciona").on("click",function(event){
 });
 
 
-$( ".btn-primary" ).click(function() {
+$( ".submit" ).click(function() {
     event.preventDefault();
     $("#checkall").prop('checked',false);
     $( "#formSeleccion" ).submit();
