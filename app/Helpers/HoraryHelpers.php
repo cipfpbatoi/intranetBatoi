@@ -109,19 +109,16 @@ function estaInstituto($profesor, $dia, $hora)
 }
 
 function estaGuardia($idProfesor,$dia_semana,$sesion):bool{
-    return (Intranet\Entities\Horario::distinct()
-        ->Profesor($idProfesor)
-        ->Dia($dia_semana)
-        ->where('sesion_orden', $sesion)
-        ->where('ocupacion', config('constants.codigoGuardia'))
+
+    return (Intranet\Entities\Guardia::where('idProfesor',$idProfesor)
+        ->where('dia',$dia_semana)
+        ->where('hora', $sesion)
         ->first())?true:false;
 }
 
 function profesoresGuardia($dia_semana,$sesion){
-    $horarios = Intranet\Entities\Horario::distinct('dni')
-        ->Dia($dia_semana)
-        ->where('sesion_orden', $sesion)
-        ->where('ocupacion', config('constants.codigoGuardia'))
+    $horarios = Intranet\Entities\Guardia::where('dia',$dia_semana)
+        ->where('hora', $sesion)
         ->select('idProfesor')
         ->get();
     $profesores = array();
