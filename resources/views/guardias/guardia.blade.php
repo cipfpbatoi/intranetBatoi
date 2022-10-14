@@ -6,8 +6,18 @@
 @endsection
 @section('content')
 <div class="form_box">
-    
+
 </div>
+@if ($estoyGuardia)
+    <div id="profesores" style="float:right">
+        <strong>Profesors de guardia:</strong><br/>
+        <ul>
+            @foreach ($profesores as $profesor)
+                <li>{{$profesor->fullName}}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div class="form_box">
     <form class="form-horizontal form-label-left">
         <div class='form-group item'>
@@ -46,14 +56,19 @@
                     <textarea class="form-control col-md-7 col-xs-12" id="obs_per" name="obs_per" rows="4" cols="30" placeholder="Observaciones respecto a ti en la guardia"></textarea>
                 </div>
             </div>
-             <div class='form-group item'>
-                <a href="/guardia/control" class="btn btn-dark">Control Personal</a>
-                <input id="submit" class="btn btn-success" type="submit" value="Guardar">
-             </div>
+
+                 <div class='form-group item'>
+                     @if ($estoyGuardia)
+                        <a href="/guardia/control" class="btn btn-dark">Control Personal</a>
+                     @endif
+                    <input id="submit" class="btn btn-success" type="submit" value="Guardar">
+                 </div>
+
         </fieldset>
         <div class="errores"></div>
     </form>
 </div>
+
 @endsection
 @section('titulo')
 @lang("models.Guardia.edit")

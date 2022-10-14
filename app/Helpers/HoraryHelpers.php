@@ -1,6 +1,5 @@
 <?php
 
-
 // segun horari on està el professor
 
 function horarioAhora($dni)
@@ -22,7 +21,7 @@ function horarioAhora($dni)
         }
 
 
-        $horaActual = $horasDentro->where('sesion_orden',$hora)->first();
+        $horaActual = $horasDentro->where('sesion_orden', $hora)->first();
         if ($horaActual) {
             if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre) {
                 return ['momento' => $horaActual->Grupo->nombre, 'ahora' => $horaActual->Modulo->literal . ' (' . $horaActual->aula . ')'];
@@ -48,8 +47,7 @@ function coincideHorario($elemento, $sesion)
         }
         if (isset($elemento->hora_ini)) {
             $horas = Intranet\Entities\Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin);
-        }
-        else {
+        } else {
             $horas = Intranet\Entities\Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta));
         }
         if (isset($horas[0]) && $sesion >= $horas[0] && $sesion <= $horas[count($horas) - 1]) {
@@ -63,13 +61,12 @@ function coincideHorario($elemento, $sesion)
 
 /**
  * Mira si el profesor esta en el instituto
- * 
- * @param dni profesor
+ * @param profesor
  * @return boolean
  */
 function estaDentro($profesor = null)
 {
-    $ultimo = Intranet\Entities\Falta_profesor::Hoy($profesor ?? AuthUser()->dni )->get()->last();
+    $ultimo = Intranet\Entities\Falta_profesor::Hoy($profesor ?? AuthUser()->dni)->get()->last();
     if ($profesor == null) {
         session(['ultimoFichaje' => $ultimo]);
     }
@@ -105,8 +102,31 @@ function estaInstituto($profesor, $dia, $hora)
     $fichadas = Intranet\Entities\Falta_profesor::haFichado($dia, $profesor)->get();
     foreach ($fichadas as $ficha) {
         if ($ficha->salida && $hora >= $ficha->entrada && $hora < $ficha->salida) {
-            return TRUE;
+            return true;
         }
     }
-    return FALSE;
+    return false;
+}
+
+function estaGuardia($idProfesor,$dia_semana,$sesion):bool{
+    return (Intranet\Entities\Horario::distinct()
+        ->Profesor($idProfesor)
+        ->Dia($dia_semana)
+        ->where('sesion_orden', $sesion)
+        ->where('ocupacion', config('constants.codigoGuardia'))
+        ->first())?true:false;
+}
+
+function profesoresGuardia($dia_semana,$sesion){
+    $horarios = Intranet\Entities\Horario::distinct('dni')
+        ->Dia($dia_semana)
+        ->where('sesion_orden', $sesion)
+        ->where('ocupacion', config('constants.codigoGuardia'))
+        ->select('idProfesor')
+        ->get();
+    $profesores = array();
+    foreach ($horarios as $horario){
+        $profesores[] = \Intranet\Entities\Profesor::find($horario->idProfesor);
+    }
+    return $profesores;
 }

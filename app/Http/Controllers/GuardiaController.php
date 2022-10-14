@@ -33,7 +33,12 @@ class GuardiaController extends IntranetController
         Session::forget('redirect');
         $ip = getClientIpAddress();
         if ($ip) {
-            return view('guardias.guardia', ['horas' => Hora::all()]);
+            $sesion = sesion(hora());
+            $dia_semana = nameDay(Hoy());
+            $profesores = profesoresGuardia($dia_semana,$sesion);
+            $estoyGuardia = estaGuardia(AuthUser()->dni,$sesion,$dia_semana);
+            $horas = Hora::all();
+            return view('guardias.guardia',compact('profesores','estoyGuardia','horas'));
         }
     }
 }
