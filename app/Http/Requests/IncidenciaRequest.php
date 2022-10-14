@@ -28,6 +28,8 @@ class IncidenciaRequest extends FormRequest
                 'tipo' => 'required',
                 'idProfesor' => 'required',
                 'prioridad' => 'required',
+                'observaciones' => 'max:255',
+                'solucion' => 'max:255',
                 'fecha' => 'date',
             ];
     }
