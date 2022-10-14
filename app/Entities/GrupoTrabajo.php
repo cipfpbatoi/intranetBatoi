@@ -28,7 +28,7 @@ class GrupoTrabajo extends Model
     ];
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
-        //'updating' => PreventAction::class,
+        'updating' => PreventAction::class,
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
         'created' => GrupoCreated::class,
@@ -41,11 +41,11 @@ class GrupoTrabajo extends Model
 
     public function Creador()
     {
-        $creador = Miembro::where('idGrupoTrabajo', '=', $this->id)
+        return Miembro::where('idGrupoTrabajo', '=', $this->id)
                 ->where('coordinador', '=', 1)
                 ->get()
-                ->first();
-        return $creador;
+                ->first()
+                ->idProfesor;
     }
 
     public function scopeMisGruposTrabajo($query)

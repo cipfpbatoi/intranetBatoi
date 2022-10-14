@@ -7,14 +7,8 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\GrupoTrabajo;
 use Intranet\Entities\Miembro;
 use Response;
-use Exception;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
-use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\Session;
+
 
 /**
  * Class GrupoTrabajoController

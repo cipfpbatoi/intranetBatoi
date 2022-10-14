@@ -12,7 +12,16 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th style='width:2%'>N</th><th style='width:15%'>Activitat</th><th style='width:15%'>Descripció</th><th style='width:10%'>Objectius</th><th style='width:10%'>Desde</th><th style='width:10%'>Fins</th><th>Tipus</th><th style='width:10%'>Comentaris</th><th style='width:13%'>Profesors</th><th style='width:15%'>Grups</th>
+                <th style='width:2%'>N</th>
+                <th style='width:15%'>Activitat</th>
+                <th style='width:15%'>Descripció</th>
+                <th style='width:10%'>Objectius</th>
+                <th style='width:10%'>Desde</th>
+                <th style='width:10%'>Fins</th>
+                <th>Tipus</th>
+                <th style='width:10%'>Comentaris</th>
+                <th style='width:13%'>Profesors</th>
+                <th style='width:15%'>Grups</th>
             </tr>
         </thead>
         <tbody>
@@ -52,10 +61,8 @@
 <p>La direcció AUTORITZA les activitats extraescolars durant el/s die/s i hor/es indicats</p>
 <div class="container col-lg-12">
     <div style="width:50%;float:left">SIGNAT {{signatura('actividad')}}:</div>
-    <div style="width:50%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{ $datosInforme }}</div>
+    <div style="width:50%;float:right;text-align: right">
+        {{strtoupper(config('contacto.poblacion'))}} A {{ $datosInforme }}
+    </div>
 </div>
 @endsection
-
-
-
-

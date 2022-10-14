@@ -26,7 +26,8 @@ class PreventAction
     public $owner;
     public $autorizados;
 
-    private function creador($model){
+    private function creador($model)
+    {
         if (isset($model->dni)) {
             return $model->dni;
         }
@@ -41,11 +42,13 @@ class PreventAction
     public function __construct(Model $model)
     {
         $this->owner = $this->creador($model);
-
         switch (substr(get_class($model), 18)) {
-            case 'Incidencia' : $this->autorizados = [config('roles.rol.direccion'), config('roles.rol.mantenimiento')];break;
-            case 'TipoIncidencia' : $this->autorizados = [config('roles.rol.direccion'), config('roles.rol.mantenimiento')];break;
-            case 'Programacion' :  $this->autorizados = [ config('roles.rol.jefe_dpto')];break;
+            case 'Incidencia' :
+                $this->autorizados = [config('roles.rol.direccion'), config('roles.rol.mantenimiento')];break;
+            case 'TipoIncidencia' :
+                $this->autorizados = [config('roles.rol.direccion'), config('roles.rol.mantenimiento')];break;
+            case 'Programacion' :
+                $this->autorizados = [ config('roles.rol.jefe_dpto')];break;
             default : $this->autorizados = [config('roles.rol.direccion')]; break;
         }
     }
