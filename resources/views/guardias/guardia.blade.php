@@ -8,12 +8,12 @@
 <div class="form_box">
 
 </div>
-@if ($estoyGuardia)
+@if (\Intranet\Entities\Guardia::estoy())
     <div id="profesores" style="float:right">
         <strong>Profesors de guardia:</strong><br/>
         <ul>
-            @foreach ($profesores as $profesor)
-                <li>{{$profesor->fullName}}</li>
+            @foreach (\Intranet\Entities\Guardia::ahora() as $guardia)
+                <li>{{$guardia->Profesor->fullName}}</li>
             @endforeach
         </ul>
     </div>
@@ -58,7 +58,7 @@
             </div>
 
                  <div class='form-group item'>
-                     @if ($estoyGuardia)
+                     @if (\Intranet\Entities\Guardia::estoy())
                         <a href="/guardia/control" class="btn btn-dark">Control Personal</a>
                      @endif
                     <input id="submit" class="btn btn-success" type="submit" value="Guardar">

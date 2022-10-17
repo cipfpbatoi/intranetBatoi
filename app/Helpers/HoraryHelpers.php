@@ -117,13 +117,8 @@ function estaGuardia($idProfesor,$dia_semana,$sesion):bool{
 }
 
 function profesoresGuardia($dia_semana,$sesion){
-    $horarios = Intranet\Entities\Guardia::where('dia',$dia_semana)
+    return Intranet\Entities\Guardia::where('dia',$dia_semana)
         ->where('hora', $sesion)
         ->select('idProfesor')
         ->get();
-    $profesores = array();
-    foreach ($horarios as $horario){
-        $profesores[] = \Intranet\Entities\Profesor::find($horario->idProfesor);
-    }
-    return $profesores;
 }

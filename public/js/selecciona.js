@@ -17,11 +17,10 @@ $(".selecciona").on("click",function(event){
         });
 });
 
-
-$( ".submit" ).click(function() {
+$("#seleccion .submit").click(function() {
     event.preventDefault();
     $("#checkall").prop('checked',false);
-    $( "#formSeleccion" ).submit();
+    $("#formSeleccion" ).submit();
 });
 
 function pintaTablaSeleccion(newOptions){

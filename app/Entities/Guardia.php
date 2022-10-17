@@ -26,5 +26,22 @@ class Guardia extends Model
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
+
+    public static function ahora(){
+        $sesion = sesion(hora());
+        $dia_semana = Hoy();
+        return Guardia::where('dia',$dia_semana)
+            ->where('hora', $sesion)
+            ->get();
+    }
+    public static function estoy($idProfesor = null){
+        $idProfesor = $idProfesor??AuthUser()->dni;
+        $sesion = sesion(hora());
+        $dia_semana = Hoy();
+        return (Guardia::where('idProfesor',$idProfesor)
+            ->where('dia',$dia_semana)
+            ->where('hora', $sesion)
+            ->first())?true:false;
+    }
     
 }
