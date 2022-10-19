@@ -151,7 +151,7 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN', 'intranet.my'),
+    'domain' => env('SESSION_DOMAIN', 'intranet.cipfpbatoi.es'),
 
     /*
     |--------------------------------------------------------------------------

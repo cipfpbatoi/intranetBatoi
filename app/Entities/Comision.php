@@ -26,8 +26,6 @@ class Comision extends Model
         'marca',
         'matricula',
         'itinerario',
-        'otros',
-        
     ];
     protected $visible = [
         'idProfesor',
@@ -43,13 +41,11 @@ class Comision extends Model
         'marca',
         'matricula',
         'itinerario',
-        'otros',
-        
     ];
 
     protected $inputTypes = [
         'idProfesor' => ['type' => 'hidden'],
-        'otros' => ['type' => 'select'],
+        'medio' => ['type' => 'select'],
         'desde' => ['type' => 'datetime'],
         'hasta' => ['type' => 'datetime'],
         'fct' => ['type' => 'checkbox'],
@@ -68,6 +64,7 @@ class Comision extends Model
         'comida' => 0.00,
         'alojamiento' => 0.00,
         'kilometraje' => 0 ,
+        'medio' => 0
     ];
 
 
@@ -108,7 +105,7 @@ class Comision extends Model
         return $this->belongsToMany(Fct::class,'comision_fcts', 'idComision', 'idFct','id','id')->withPivot(['hora_ini','aviso']);
     }
 
-    public function getOtrosOptions()
+    public function getMedioOptions()
     {
         return config('auxiliares.tipoVehiculo');
     }
@@ -138,7 +135,7 @@ class Comision extends Model
         return isblankTrans('models.Comision.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Comision.' . $this->estado);
     }
     public function getTotalAttribute(){
-        return $this->comida + $this->gastos + $this->alojamiento + ($this->kilometraje * config('variables.precioKilometro'));
+        return $this->comida + $this->gastos + $this->alojamiento + ($this->kilometraje * config('variables.precioKilometro')[$this->medio]);
     }
 
     public function getDescripcionAttribute(){
@@ -147,6 +144,10 @@ class Comision extends Model
             $descripcion .= $fct->centro.",";
         }
         return trim($descripcion, ',');
+    }
+
+    public function getTipoVehiculoAttribute(){
+        return config('auxiliares.tipoVehiculo')[$this->medio];
     }
 
     public function showConfirm(){

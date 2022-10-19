@@ -10,6 +10,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Support\Facades\Http;
 use Intranet\Entities\Articulo;
 use Intranet\Entities\ArticuloLote;
+use Intranet\Entities\Comision;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Material;
 use Intranet\Entities\Lote;
@@ -20,8 +21,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
-use DB;
-use Intranet\Entities\Departamento;
+use Illuminate\Support\Facades\DB;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
@@ -198,6 +198,18 @@ class AdministracionController extends Controller
             if ($version > $version_antigua) {
                 AdministracionController::$version();
             }
+        }
+    }
+
+    public static function v2_50(){
+        Alert::info('Version 2.50');
+        foreach (Comision::all() as $comision){
+            if ($comision->medio > 0){
+                $comision->medio += 2;
+            } else {
+                $comision->medio = 0;
+            }
+            $comision->save();
         }
     }
 

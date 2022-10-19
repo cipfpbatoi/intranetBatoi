@@ -1,7 +1,7 @@
 @extends('layouts.pdf')
 @section('content')
 @include('pdf.partials.cabecera')
-@php $agrupados = $todos->groupBy('idProfesor') @endphp
+@php($agrupados = $todos->groupBy('idProfesor'))
 @foreach ($agrupados as $grupo)
     <div class='page'>
         <div class="container col-lg-12" >
@@ -15,7 +15,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>FUNCIONARI/A:</th><th>DNI</th><th>Itinerari</th><th>Exida</th><th>Tornada</th><th>Mitja de transport</th><th>Marca Vehicle</th><th>Matrícula</th><th>Concepte</th><th>Fct</th><th>Kilometraje</th><th>Total</th>
+                        <th>FUNCIONARI/A:</th><th>DNI</th><th>Itinerari</th><th>Exida</th><th>Tornada</th><th>Mitja de transport</th><th>Marca Vehicle</th><th>Matrícula</th><th>Concepte</th><th>Fct</th><th>Kilometraje</th><th>Alojamiento</th><th>Comida</th><th>Gastos</th><th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,12 +26,15 @@
                             <td>{{$elemento->itinerario}}</td>
                             <td>{{$elemento->desde }}</td>
                             <td>{{$elemento->hasta }}</td>
-                            <td>{{$elemento->medio }}</td>
+                            <td>{{$elemento->tipoVehiculo }}</td>
                             <td>{{$elemento->marca}}</td>
                             <td>{{$elemento->matricula}}</td>
                             <td>{{$elemento->descripcion}}€</td>
                             <td>{{$elemento->fct}}</td>
                             <td>{{$elemento->kilometraje }}</td>
+                            <td>{{$elemento->alojamiento }}</td>
+                            <td>{{$elemento->comida }}</td>
+                            <td>{{$elemento->gastos }}</td>
                             <td>{{$elemento->total }}€</td>
                         </tr>
                     @endforeach
@@ -46,7 +49,7 @@
         <br/><br/><br/><br/><br/>
         <p>La direcció AUTORITZA el pagament dels serveis prestats</p>
         <div class="container col-lg-12">
-            <div style="width:50%;float:left">SIGNAT @if (\Intranet\Entities\Profesor::find(config('avisos.secretario'))->sexo == 'H') EL SECRETARIO @else LA SECRETARIA @endif:</div>
+            <div style="width:50%;float:left">SIGNAT @if (\Intranet\Entities\Profesor::find(config('avisos.secretario'))->sexo == 'H') EL SECRETARI @else LA SECRETARIA @endif:</div>
             <div style="width:50%;float:right;text-align: right">{{strtoupper(config('contacto.poblacion'))}} A {{ $datosInforme }}</div>
         </div>
     </div>
