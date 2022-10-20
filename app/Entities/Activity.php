@@ -10,7 +10,7 @@ class Activity extends Model
     protected $fillable = ['comentari'];
 
 
-    public static function record($action, Model $model = null,$comentari = null,$fecha = null,$document=null)
+    public static function record($action, Model $model = null, $comentari = null, $fecha = null, $document=null)
     {
         $activity = new Activity();
         $activity->action = $action;
@@ -21,13 +21,16 @@ class Activity extends Model
         }
         $activity->comentari = $comentari;
         $activity->document = $document;
-        if ($fecha){
+        if ($fecha) {
             $activity->setCreatedAt(FechaInglesaLarga($fecha));
             $activity->setUpdatedAt(FechaInglesaLarga($fecha));
         }
 
         auth()->user()->Activity()->save($activity);
-        Alert::success(trans('models.modelos.' . substr($activity->model_class, 18)) . ' ' . trans("messages.generic.$action"));
+        Alert::success(
+            trans('models.modelos.' . substr($activity->model_class, 18)).' '.
+            trans("messages.generic.$action")
+        );
     }
 
     public function scopeProfesor($query, $profesor)
@@ -46,23 +49,29 @@ class Activity extends Model
         return $this->belongsTo(Profesor::class, 'author_id', 'dni');
     }
 
-    public function scopeModelo($query,$modelo){
-        return $query->where('model_class','Intranet\Entities\\'.$modelo);
+    public function scopeModelo($query, $modelo)
+    {
+        return $query->where('model_class', 'Intranet\Entities\\'.$modelo);
     }
 
     public function scopeMail($query)
     {
-        return $query->where('action','email')->orWhere('action','phone')->orWhere('action','visita')->orWhere('action','review');
+        return $query->where('action', 'email')
+            ->orWhere('action', 'phone')
+            ->orWhere('action', 'visita')
+            ->orWhere('action', 'review');
     }
-    public function scopeId($query,$id){
-        return $query->where('model_id',$id);
+    public function scopeId($query, $id)
+    {
+        return $query->where('model_id', $id);
     }
-    public function scopeIds($query,$ids){
-        return $query->whereIn('model_id',$ids);
+    public function scopeIds($query, $ids)
+    {
+        return $query->whereIn('model_id', $ids);
     }
-    public function scopeRelationId($query,$id){
+    public function scopeRelationId($query, $id)
+    {
         $colaboracion = Fct::find($id)->idColaboracion;
-        return $query->where('model_id',$id)->orWhere('model_id',$colaboracion);
+        return $query->where('model_id', $id)->orWhere('model_id', $colaboracion);
     }
-
 }

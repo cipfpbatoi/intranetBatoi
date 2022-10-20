@@ -7,10 +7,16 @@ use Intranet\Entities\Fct;
 
 class AlumnoFct extends ModelPoll
 {
-    public static function loadPoll($votes){
+    public static function loadPoll($votes)
+    {
         $alumno = AuthUser();
         $fcts = collect();
-        foreach ($alumno->fcts()->where('alumno_fcts.desde','<',Hoy())->esFct()->whereNotIn('fcts.id',$votes)->get() as $fct) {
+        $alumnos = $alumno->fcts()
+            ->where('alumno_fcts.desde', '<', Hoy())
+            ->esFct()
+            ->whereNotIn('fcts.id', $votes)
+            ->get();
+        foreach ($alumnos as $fct) {
             $fcts->push(['option1'=>$fct]);
         }
         if (count($fcts)) {
@@ -21,10 +27,10 @@ class AlumnoFct extends ModelPoll
 
     public static function loadVotes($id)
     {
-        $fcts = hazArray(Fct::misFcts()->get(),'id');
-        $votes = Vote::getVotes($id,$fcts)->get();
+        $fcts = hazArray(Fct::misFcts()->get(), 'id');
+        $votes = Vote::getVotes($id, $fcts)->get();
         $classified = [];
-        foreach ($votes as $vote){
+        foreach ($votes as $vote) {
             $classified[$vote->idOption1][$vote->option_id] = isset($vote->text)?$vote->text:$vote->value;
         }
         if (count($classified)) {
@@ -34,9 +40,9 @@ class AlumnoFct extends ModelPoll
     }
 
 
-    public static function aggregate(&$votes,$option1,$option2){
-
-        foreach ($option1 as $idFct => $vote){
+    public static function aggregate(&$votes, $option1, $option2)
+    {
+        foreach ($option1 as $idFct => $vote) {
                 $ciclo = Fct::find($idFct)->Colaboracion->Ciclo ?? null;
                 if ($ciclo) {
                     foreach ($vote as $key => $optionVotes) {
@@ -53,10 +59,12 @@ class AlumnoFct extends ModelPoll
     {
         return [];
     }
-    public static function vista(){
+    public static function vista()
+    {
         return 'Fct';
     }
-    public static function has(){
+    public static function has()
+    {
         return count(AuthUser()->fcts);
     }
 }

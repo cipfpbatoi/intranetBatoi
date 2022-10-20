@@ -27,16 +27,6 @@ class SendAvaluacioEmails extends Command
      */
     protected $description = 'Email Matricula Alumnat';
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
 
     private function generaToken()
     {
@@ -46,36 +36,30 @@ class SendAvaluacioEmails extends Command
     private function obtenToken($aR)
     {
         $grupo = $aR->Reunion->grupoClase;
-        if ($grupo->isSemi){
-            if ($aR->capacitats == self::PROMOCIONA) {
-                return $this->generaToken();
-            } else {
-                return false;
-            }
+        if ($grupo->isSemi) {
+            return ($aR->capacitats == self::PROMOCIONA)?$this->generaToken():false;
         }
-        if ($grupo->curso == '1') return $this->generaToken();
-        if ($aR->capacitats == self::NOPROMOCIONA)  return $this->generaToken();
-
+        if ($grupo->curso == '1' || $aR->capacitats == self::NOPROMOCIONA) {
+            return $this->generaToken();
+        }
         return false;
     }
-    private function sendMatricula($aR){
+    private function sendMatricula($aR)
+    {
         try {
             if ($token = $this->obtenToken($aR)) {
                 $aR->sent = 1;
                 $aR->token = $token;
                 Mail::to($aR->Alumno->email, 'Secretaria CIPFP Batoi')
-                    ->send(new MatriculaAlumne(
-                        $aR, config('curso.fitxerMatricula')));
-                avisa($aR->Reunion->idProfesor,
-                    'El correu per a la matrícula de  ' . $aR->Alumno->fullName . " ha estat enviat a l'adreça " . $aR->Alumno->email,
-                    '#', 'Servidor de correu');
+                    ->send(new MatriculaAlumne($aR, config('curso.fitxerMatricula')));
+                $mensaje = 'El correu per a la matrícula de  ' .$aR->Alumno->fullName ;
+                $mensaje .= " ha estat enviat a l'adreça " . $aR->Alumno->email;
+                avisa($aR->Reunion->idProfesor, $mensaje, '#', 'Servidor de correu');
                 $aR->save();
             }
-        }
-        catch (Swift_RfcComplianceException $e){
-            avisa('021652470V',
-                'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email,
-                '#','Servidor de correu');
+        } catch (Swift_RfcComplianceException $e) {
+            $mensaje = 'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email;
+            avisa('021652470V', $mensaje, '#', 'Servidor de correu');
         }
     }
     /**
@@ -85,8 +69,7 @@ class SendAvaluacioEmails extends Command
      */
     public function handle()
     {
-        foreach ( AlumnoReunion::with('Reunion')->where('sent',0)->get() as $aR)
-        {
+        foreach (AlumnoReunion::with('Reunion')->where('sent', 0)->get() as $aR) {
             $this->sendMatricula($aR);
         }
 

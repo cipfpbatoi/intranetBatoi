@@ -5,8 +5,8 @@ namespace Intranet\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Intranet\Console\Commands\SendDailyEmails;
-use Intranet\Console\Commands\createDailyGuards;
-use Intranet\Console\Commands\notifyDailyFaults;
+use Intranet\Console\Commands\CreateDailyGuards;
+use Intranet\Console\Commands\NotifyDailyFaults;
 use Intranet\Console\Commands\SendFctEmails;
 use Intranet\Console\Commands\UploadAnexes;
 
@@ -19,8 +19,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         SendDailyEmails::class,
-        createDailyGuards::class,
-        notifyDailyFaults::class,
+        CreateDailyGuards::class,
+        NotifyDailyFaults::class,
         SendFctEmails::class,
         UploadAnexes::class,
     ];
@@ -52,6 +52,6 @@ class Kernel extends ConsoleKernel
     {
         $this->load(__DIR__.'/Commands');
 
-        require base_path('routes/console.php');
+        require_once base_path('routes/console.php');
     }
 }

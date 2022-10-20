@@ -35,8 +35,8 @@ class SendFctEmails extends Command
      */
     public function handle()
     {
-        if (config('curso.enquestesAutomatiques')){
-            $alumnosAprobados = hazArray(AlumnoFctAval::aprobados()->get(),'idAlumno');
+        if (config('curso.enquestesAutomatiques')) {
+            $alumnosAprobados = hazArray(AlumnoFctAval::aprobados()->get(), 'idAlumno');
             $alumnosPendientes = AlumnoFctAval::pendienteNotificar($alumnosAprobados)->get();
 
 
@@ -48,11 +48,11 @@ class SendFctEmails extends Command
                     $alumno->correoAlumno = 1;
                     $alumno->save();
 
-                } catch (Swift_RfcComplianceException $e){
-
+                } catch (Swift_RfcComplianceException $e) {
+                    //nothing
                 }
 
-                if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)){
+                if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
                     try {
                         Mail::to($fct->Instructor->email, 'Intranet Batoi')->send(new AvalFct($fct, 'instructor'));
                         Mail::to($fct->Instructor->email, 'Secretaria CIPFP Batoi')
@@ -60,8 +60,8 @@ class SendFctEmails extends Command
 
                         $fct->correoInstructor = 1;
                         $fct->save();
-                    } catch (Swift_RfcComplianceException $e){
-
+                    } catch (Swift_RfcComplianceException $e) {
+                        // nothing
                     }
                 }
             }

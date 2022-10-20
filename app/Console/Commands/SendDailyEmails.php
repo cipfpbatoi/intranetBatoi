@@ -25,15 +25,6 @@ class SendDailyEmails extends Command
      */
     protected $description = 'Resumen mensajes del dia';
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * Execute the console command.
@@ -49,8 +40,9 @@ class SendDailyEmails extends Command
                     ->whereNull('read_at')
                     ->get();
             // hay que poner email
-            if ($notificaciones->count())
+            if ($notificaciones->count()) {
                 Mail::to($profesor->email, 'Intranet Batoi')->send(new ResumenDiario($notificaciones));
+            }
         }
     }
 

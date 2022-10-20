@@ -31,17 +31,18 @@ class UploadAnexes extends Command
      * @var string
      */
     protected $description = 'Pujar anexes V i VI';
-    protected $SService;
+    protected $sService;
 
 
 
 
-    private function tipoDocument($title){
+    private function tipoDocument($title)
+    {
         $tipos = ['A5'=>'10','A6'=>'11','AVI'=>'11','AV'=>'10','AN.VI'=>'11','AN.V'=>'10',
             'ANEXO5'=>'10','ANEXO6'=>'11','ANNEXVI'=>'11','ANNEXV'=>'10'];
 
-        foreach ($tipos as $key => $tipo){
-            if (str_contains(strtoupper($title),$key)){
+        foreach ($tipos as $key => $tipo) {
+            if (str_contains(strtoupper($title), $key)) {
                 return $tipos[$key];
             }
         }
@@ -56,34 +57,16 @@ class UploadAnexes extends Command
     public function handle()
     {
         try {
-            $this->SService = new SecretariaService();
+            $this->sService = new SecretariaService();
         } catch (\Exception $e) {
             echo 'No hi ha connexió amb el servidor de matrícules';
             exit();
         }
-        foreach (AlumnoFct::where('a56',1)->where('beca',0)->get() as $fct){
+        foreach (AlumnoFct::where('a56', 1)->where('beca', 0)->get() as $fct) {
             $document = array();
-            $tutor = '';
-            foreach(Adjunto::where('route','alumnofctaval/'.$fct->id)->where('extension','pdf')->get() as $key => $adjunto){
-                $document[$key]['title'] = $this->tipoDocument($adjunto->title);
-                $document[$key]['file'] = $adjunto->route;
-                $document[$key]['name'] = $adjunto->name;
-                $document[$key]['size'] = $adjunto->size;
-                $document[$key]['dni'] = $fct->Alumno->dni;
-                $document[$key]['fct'] = $fct;
-                $tutor = $adjunto->owner;
-            }
+            $tutor = $this->buscaDocuments($fct, $document);
             if (count($document) == 2) {
-                if (!isset($document[0]['title'])|| !$document[1]['title']){
-                    if ($document[0]['size'] > $document[1]['size']){
-                        $document[0]['title'] = '10';
-                        $document[1]['title'] = '11';
-                    } else {
-                        $document[0]['title'] = '11';
-                        $document[1]['title'] = '10';
-                    }
-                }
-                UploadFiles::dispatch($document,$this->SService);
+                $this->uploadFiles($document);
             } else {
                 if (count($document)) {
                     $profesor = Profesor::find($tutor);
@@ -95,5 +78,44 @@ class UploadAnexes extends Command
                 }
             }
         }
+    }
+
+    /**
+     * @param $fct
+     * @param  array  &$document
+     * @return string
+     */
+    private function buscaDocuments($fct, array &$document): string
+    {
+        $tutor = '';
+        $adjuntos = Adjunto::where('route', 'alumnofctaval/'.$fct->id)->where('extension', 'pdf')->get();
+        foreach ($adjuntos as $key => $adjunto) {
+            $document[$key]['title'] = $this->tipoDocument($adjunto->title);
+            $document[$key]['file'] = $adjunto->route;
+            $document[$key]['name'] = $adjunto->name;
+            $document[$key]['size'] = $adjunto->size;
+            $document[$key]['dni'] = $fct->Alumno->dni;
+            $document[$key]['fct'] = $fct;
+            $tutor = $adjunto->owner;
+        }
+        return $tutor;
+    }
+
+    /**
+     * @param  array  $document
+     * @return void
+     */
+    private function uploadFiles(array &$document): void
+    {
+        if (!isset($document[0]['title']) || !$document[1]['title']) {
+            if ($document[0]['size'] > $document[1]['size']) {
+                $document[0]['title'] = '10';
+                $document[1]['title'] = '11';
+            } else {
+                $document[0]['title'] = '11';
+                $document[1]['title'] = '10';
+            }
+        }
+        UploadFiles::dispatch($document, $this->sService);
     }
 }

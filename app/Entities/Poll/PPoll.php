@@ -35,10 +35,11 @@ class PPoll extends Model
      */
     public function options()
     {
-        return $this->hasMany(Option::class,'ppoll_id');
+        return $this->hasMany(Option::class, 'ppoll_id');
     }
 
-    public function getWhatOptions(){
+    public function getWhatOptions()
+    {
         return config('auxiliares.modelsAvailablePoll');
     }
 

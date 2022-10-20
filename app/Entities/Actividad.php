@@ -15,7 +15,22 @@ class Actividad extends Model
     use BatoiModels;
 
     protected $table = 'actividades';
-    protected $fillable = ['name', 'extraescolar','desde', 'hasta','fueraCentro', 'transport','objetivos', 'descripcion', 'comentarios','poll','desenvolupament','valoracio','aspectes','dades'];
+    protected $fillable = [
+        'name',
+        'extraescolar',
+        'desde',
+        'hasta',
+        'fueraCentro',
+        'transport',
+        'objetivos',
+        'descripcion',
+        'comentarios',
+        'poll',
+        'desenvolupament',
+        'valoracio',
+        'aspectes',
+        'dades'
+    ];
     protected $rules = [
         'name' => 'required|between:1,75',
         'desde' => 'required|date',
@@ -47,31 +62,46 @@ class Actividad extends Model
 
     public function grupos()
     {
-        return $this->belongsToMany(Grupo::class,'actividad_grupo', 'idActividad', 'idGrupo', 'id', 'codigo');
+        return $this->belongsToMany(Grupo::class, 'actividad_grupo', 'idActividad', 'idGrupo', 'id', 'codigo');
     }
 
     public function profesores()
     {
-        return $this->belongsToMany(Profesor::class,'actividad_profesor', 'idActividad', 'idProfesor', 'id', 'dni')->withPivot('coordinador');
+        return $this->belongsToMany(
+            Profesor::class,
+            'actividad_profesor',
+            'idActividad',
+            'idProfesor',
+            'id',
+            'dni'
+        )->withPivot('coordinador');
     }
 
-    public function menores(){
-        return $this->belongsToMany(Alumno::class,'autorizaciones', 'idActividad', 'idAlumno', 'id', 'nia')->withPivot('autorizado');
+    public function menores()
+    {
+        return $this->belongsToMany(
+            Alumno::class,
+            'autorizaciones',
+            'idActividad',
+            'idAlumno',
+            'id',
+            'nia'
+        )->withPivot('autorizado');
     }
     
 
     /**
-     * Devueld el id del Coordinador  
+     * Devueld el id del Coordinador
      * Se utiliza para poder editar o borrar
      * @return string dni
      */
     public function Creador()
     {
-        if (Actividad_profesor::select('idProfesor')
+        if (ActividadProfesor::select('idProfesor')
                         ->where('idActividad', $this->id)
                         ->where('coordinador', 1)
                         ->count()) {
-            return Actividad_profesor::select('idProfesor')
+            return ActividadProfesor::select('idProfesor')
                 ->where('idActividad', $this->id)
                 ->where('coordinador', 1)
                 ->first()
@@ -79,10 +109,10 @@ class Actividad extends Model
         }
         return null;
     }
-    public function scopeProfesor($query,$dni)
+    public function scopeProfesor($query, $dni)
     {
-        $actividades = Actividad_profesor::select('idActividad')->where('idProfesor',$dni)->get()->toArray();
-        return $query->whereIn('id',$actividades);
+        $actividades = ActividadProfesor::select('idActividad')->where('idProfesor', $dni)->get()->toArray();
+        return $query->whereIn('id', $actividades);
     }
 
     public function getDesdeAttribute($entrada)
@@ -99,14 +129,14 @@ class Actividad extends Model
 
     public function scopeNext($query)
     {
-        $fec_hoy = time();
-        $ahora = date("Y-m-d", $fec_hoy);
+        $today = time();
+        $ahora = date("Y-m-d", $today);
         return $query->where('desde', '>', $ahora);
     }
 
     public function scopeAuth($query)
     {
-        return $query->where('estado','>=', 2)->orWhere('extraescolar',0);
+        return $query->where('estado', '>=', 2)->orWhere('extraescolar', 0);
     }
 
     public function scopeDia($query, $dia)
@@ -125,7 +155,12 @@ class Actividad extends Model
 
     public function Tutor()
     {
-        return $this->belongsToMany(Profesor::class, 'actividad_profesor', 'idActividad', 'idProfesor')->wherePivot('coordinador', 1);
+        return $this->belongsToMany(
+            Profesor::class,
+            'actividad_profesor',
+            'idActividad',
+            'idProfesor'
+        )->wherePivot('coordinador', 1);
     }
     public function getcoordAttribute()
     {
@@ -136,7 +171,8 @@ class Actividad extends Model
         return trans('models.Actividad.' . $this->estado);
     }
 
-    public static function loadPoll(){
+    public static function loadPoll()
+    {
         $actividades = collect();
         foreach (AuthUser()->Grupo as $grupo) {
             foreach ($grupo->Actividades as $actividad) {
@@ -146,7 +182,8 @@ class Actividad extends Model
         return $actividades;
     }
 
-    public function getRecomendadaAttribute(){
+    public function getRecomendadaAttribute()
+    {
         return $this->recomanada?'Sí':'No';
     }
 

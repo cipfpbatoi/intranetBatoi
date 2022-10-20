@@ -33,52 +33,64 @@ class Poll extends Model
      */
     public function Plantilla()
     {
-        return $this->hasOne(PPoll::class,'id','idPPoll');
+        return $this->hasOne(PPoll::class, 'id', 'idPPoll');
     }
 
-    public function getStateAttribute(){
-        if (vigente($this->desde,$this->hasta)) return 'Activa';
+    public function getStateAttribute()
+    {
+        if (vigente($this->desde, $this->hasta)) {
+            return 'Activa';
+        }
         $fin = new Date($this->hasta);
-        if (Hoy()>$fin->format('Y-m-d')) return 'Finalizada';
+        if (Hoy()>$fin->format('Y-m-d')) {
+            return 'Finalizada';
+        }
         return 'No activa';
     }
 
-    public function getKeyUserAttribute(){
+    public function getKeyUserAttribute()
+    {
         $modelo = $this->modelo;
         return $modelo::keyInterviewed();
     }
-    public function getAnonymousAttribute(){
+    public function getAnonymousAttribute()
+    {
         return $this->Plantilla->anonymous??false;
     }
-    public function getQueAttribute(){
+    public function getQueAttribute()
+    {
         return $this->Plantilla->what??'';
     }
-    public function getRemainsAttribute(){
+    public function getRemainsAttribute()
+    {
         return $this->Plantilla->remains??null;
     }
-    public function getModeloAttribute(){
+    public function getModeloAttribute()
+    {
         return 'Intranet\\Entities\\Poll\\'.$this->Plantilla->what;
     }
-    public function getVistaAttribute(){
+    public function getVistaAttribute()
+    {
         $modelo = $this->modelo;
         return $modelo::vista();
     }
 
-    public function getIdPPollOptions(){
-        return hazArray(PPoll::all(),'id','title');
+    public function getIdPPollOptions()
+    {
+        return hazArray(PPoll::all(), 'id', 'title');
     }
 
     public function getDesdeAttribute($entrada)
     {
+        //desde
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
 
     public function getHastaAttribute($entrada)
     {
+        // hasta
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
-
-
 }

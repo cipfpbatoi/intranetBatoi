@@ -14,22 +14,26 @@ class VoteAnt extends Model
 
     public function Option()
     {
-        return $this->belongsTo(Option::class, 'option_id','id');
+        return $this->belongsTo(Option::class, 'option_id', 'id');
     }
-    public function Colaboracion(){
-        return $this->belongsTo(Colaboracion::class,'idColaboracion','id');
+    public function Colaboracion()
+    {
+        return $this->belongsTo(Colaboracion::class, 'idColaboracion', 'id');
     }
 
     public function getIsValueAttribute()
     {
         return $this->Option->scala;
     }
-    public function getQuestionAttribute(){
+    public function getQuestionAttribute()
+    {
         return $this->Option->question;
     }
     public function getAnswerAttribute()
     {
-        if ($this->isValue) return $this->value;
+        if ($this->isValue) {
+            return $this->value;
+        }
         return $this->text;
     }
 
