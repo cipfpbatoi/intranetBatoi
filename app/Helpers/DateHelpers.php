@@ -22,7 +22,10 @@ function Fecha($fecha)
     $hoy = new Date($fecha);
     return $hoy->toDateString();
 }
-
+function fechaSao($fecha){
+    $descp = explode('/',$fecha);
+    return $descp[2].'-'.$descp[1].'-'.$descp[0];
+}
 
 function FechaInglesa($fecha)
 {

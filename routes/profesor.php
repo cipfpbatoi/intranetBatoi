@@ -462,7 +462,13 @@ Route::get('/task/{id}/check',['as'=>'task.check','uses'=>'TaskController@check'
 Route::get('/ciclodual/edit',['as'=>'cicloDual.edit','uses'=>'CicloDualController@edit']);
 Route::put('/ciclodual/edit',['as'=>'cicloDual.update','uses'=>'CicloDualController@update']);
 
-Route::get('/autorizacion/{nia}/actividad/{id}',['as'=>'actividad.autorizacion','uses'=>'ActividadController@menorAuth']);
+Route::get(
+    '/autorizacion/{nia}/actividad/{id}',
+    ['as'=>'actividad.autorizacion', 'uses'=>'ActividadController@menorAuth']
+);
+
+Route::get('/sao/createFct', ['as'=>'sao.createFcts','uses'=>'SaoController@createFcts']);
+Route::get('/itaca/login', ['as'=>'itaca.login','uses'=>'ItacaController@login']);
 
 /* Prova */
 Route::get('/ocr',['as'=>'ocr.index','uses'=>'OcrController@index']);
