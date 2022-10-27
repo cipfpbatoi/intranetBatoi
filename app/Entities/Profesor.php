@@ -170,6 +170,11 @@ class Profesor extends Authenticatable
         return $query->where('activo', 1);
     }
 
+    public function scopeTutoresFCT($query){
+        $grupos = hazArray(Grupo::where('curso', 2)->get(), 'tutor','tutor');
+        return $query->Plantilla()->whereIn('dni', $grupos);
+    }
+
     public function scopeGrupo($query, $grupo)
     {
         $profesores = Horario::distinct()->select('idProfesor')->Grup($grupo)->get()->toArray();

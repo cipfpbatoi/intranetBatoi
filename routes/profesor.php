@@ -467,7 +467,8 @@ Route::get(
     ['as'=>'actividad.autorizacion', 'uses'=>'ActividadController@menorAuth']
 );
 
-Route::get('/sao/createFct', ['as'=>'sao.createFcts','uses'=>'SaoController@createFcts']);
+Route::get('/sao', ['as'=>'sao.index','uses'=>'SaoController@index']);
+Route::post('/sao/createFct', ['as'=>'sao.createFcts','uses'=>'SaoController@createFcts']);
 Route::get('/itaca/login', ['as'=>'itaca.login','uses'=>'ItacaController@login']);
 
 /* Prova */

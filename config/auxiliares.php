@@ -48,6 +48,6 @@ return [
         1 => "Només li queda la FCT",
         3 => "Encara no pot cursar la FCT"
     ],
-    'periodesFct' => [1=>'Sept-Gen',2=>'Març-Juny',3=>'Altres'],
+    'periodesFct' => [1=>'Sept-Des',2=>'Abril-Juny',3=>'Altres',4=>'Flexible'],
     'estadosLote' => [0=>'BUIDA',1=>'ALTA',2=> 'INVENTARIANT',3=>'FINALITZADA']
 ];

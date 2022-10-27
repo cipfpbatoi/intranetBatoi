@@ -25,7 +25,7 @@ class AlterAlumnoFctsTable1 extends Migration
      */
     public function down()
     {
-        Schema::table('fcts', function (Blueprint $table){
+        Schema::table('alumno_fcts', function (Blueprint $table){
             $table->dropColumn('idSao');
         });
     }

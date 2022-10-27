@@ -104,6 +104,7 @@ class Fct extends Model
 
         $alumnos = Alumno::select('nia')->misAlumnos($profesor,$dual)->get()->toArray();
         $alumnos_fct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno',$alumnos)->get()->toArray();
+
         return $query->whereIn('id',$alumnos_fct)->whereIn('idColaboracion',$colaboraciones);
     }
 
