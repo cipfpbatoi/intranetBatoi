@@ -13,8 +13,8 @@
             <div class="left col-xs-12">
                 <h5>{{substr($elemento->descripcion,0,140)}} @if (strlen($elemento->descripcion)>140) ... @endif </h5>
                 <ul class="list-unstyled">
-                    <li><i class="fa fa-automobile"></i> {{$elemento->medio}} - {{$elemento->kilometraje}} km.</li>
-                    <li><i class="fa fa-automobile"></i> {{ $elemento->marca}} {{$elemento->matricula}}</li>
+                    <li><i class="fa fa-automobile"></i> {{$elemento->tipoVehiculo}} - {{$elemento->kilometraje}} km.</li>
+                    @isset($elemento->marca)<li><i class="fa fa-automobile"></i> {{ $elemento->marca}} {{$elemento->matricula}}</li>@endisset
                     <li><i class="fa fa-money"></i> {{ $elemento->total }}</li>
                 </ul>
             </div>
@@ -22,10 +22,7 @@
         <div class="col-xs-12 bottom text-center">
             <div class="col-xs-12 col-sm-4 emphasis">
                 <p class="ratings">
-                    @if ($elemento->estado<2) <a href='#' class='btn btn-danger btn-xs' >
-                    @else <a href='#' class='btn btn-success btn-xs' >   
-                    @endif    
-                    {{ $elemento->situacion }}</a>
+                    <a href='#' class='btn {{$elemento->estado<2?'btn-danger':'btn-success'}} btn-xs'>{{ $elemento->situacion }}</a>
                 </p>
             </div>
             <div class="col-xs-12 col-sm-8 emphasis">

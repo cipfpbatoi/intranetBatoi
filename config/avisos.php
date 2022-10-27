@@ -1,12 +1,11 @@
 <?php
 return [
-    'secretario' => '020784763P',
-    'director' => '020823669K' ,
-    'vicedirector' => '021666224V',
-    'jefeEstudios' => '021657327K',
-    'jefeEstudios2' => '029071324Z',
-    'orientador' => ['021634142C','021669338A'],
-    'comissioIC' => ['021652470V','020823669K'],
-    'errores' => '021652470V',
-    'material' => '021652470V'
+      'secretario' => '048290231Y',
+      'director' => '020823669K' ,
+      'vicedirector' => '021666224V',
+      'jefeEstudios' => ['021657327K','029071324Z'],
+      'jefeEstudios2' => '029071324Z',
+      'orientador' => ['048293140V','073913314P'],
+      'errores' => '021652470V',
+      'material' => '048290231Y'
 ];

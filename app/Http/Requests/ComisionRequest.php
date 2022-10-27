@@ -23,33 +23,18 @@ class ComisionRequest extends FormRequest
      */
     public function rules()
     {
-        if (AuthUser()->dni == config('contacto.director')){
-            return [
-                'servicio' => 'required',
-                'kilometraje' => 'required|integer',
-                'desde' => 'required|date|after:today',
-                'hasta' => 'required|date|after:desde',
-                'alojamiento' => 'required|numeric',
-                'comida' => 'required|numeric',
-                'gastos' => 'required|numeric',
-                'medio' => 'required|max:30',
-                'marca' => 'required|max:30',
-                'matricula' => 'required|max:10'
-            ];
-        } else {
-            return [
-                'servicio' => 'required',
-                'kilometraje' => 'required|integer',
-                'desde' => 'required|date|after:tomorrow',
-                'hasta' => 'required|date|after:desde',
-                'alojamiento' => 'required|numeric',
-                'comida' => 'required|numeric',
-                'gastos' => 'required|numeric',
-                'medio' => 'required|max:30',
-                'marca' => 'required|max:30',
-                'matricula' => 'required|max:10'
-            ];
-        }
-
+        $dia = AuthUser()->dni == config('contacto.director')?'today':'tomorrow';
+        return [
+            'servicio' => 'required',
+            'kilometraje' => 'required|integer',
+            'desde' => "required|date|after:$dia",
+            'hasta' => 'required|date|after:desde',
+            'alojamiento' => 'required|numeric',
+            'comida' => 'required|numeric',
+            'gastos' => 'required|numeric',
+            'medio' => 'required|numeric',
+            'marca' => 'required_if:medio,0|required_if:medio,1|max:30',
+            'matricula' => 'required_if:medio,0|required_if:medio,1|max:10'
+        ];
     }
 }

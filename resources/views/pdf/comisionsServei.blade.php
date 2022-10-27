@@ -23,11 +23,11 @@
                 <td>{{$elemento->descripcion}}</td>
                 <td>{{$elemento->desde }}</td>
                 <td>{{$elemento->hasta }}</td>
-                <td>{{$elemento->medio }}</td>
+                <td>{{$elemento->tipoVehiculo }}</td>
                 <td>{{$elemento->marca}}</td>
                 <td>{{$elemento->matricula}}</td>
                 <td>{{$elemento->kilometraje }}</td>
-                <td>{{$elemento->comida + $elemento->gastos + $elemento->alojamiento}}€</td>
+                <td>{{$elemento->total}}€</td>
             </tr>
             @endforeach
         </tbody>
