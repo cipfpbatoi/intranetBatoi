@@ -68,3 +68,6 @@ Route::get('/actualizaLang',['as' => 'actualizaLang','uses'=>'AdministracionCont
 
 Route::get('/secure',['as' => 'show.door','uses' => 'AdministracionController@showDoor']);
 Route::post('/secure',['as' => 'secure.door','uses' => 'AdministracionController@secure']);
+
+Route::get('/centreDades','AdministracionController@centres_sense_dades');
+Route::get('/esborrarEmpresa','AdministracionController@esborrar_empreses_sense_colaboracio');

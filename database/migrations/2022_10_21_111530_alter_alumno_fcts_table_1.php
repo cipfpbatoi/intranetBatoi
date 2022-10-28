@@ -14,7 +14,7 @@ class AlterAlumnoFctsTable1 extends Migration
     public function up()
     {
         Schema::table('alumno_fcts', function (Blueprint $table){
-           $table->string('idSao', 8);
+           $table->string('idSao', 8)->nullable();
         });
     }
 

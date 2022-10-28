@@ -14,7 +14,7 @@ class AlterEmpresasTable extends Migration
     public function up()
     {
         Schema::table('empresas', function (Blueprint $table){
-           $table->string('idSao', 8);
+           $table->string('idSao', 8)->nullable();
         });
     }
 

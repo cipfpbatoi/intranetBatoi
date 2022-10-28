@@ -8,13 +8,8 @@ namespace Intranet\Http\Controllers;
 
 
 use Illuminate\Support\Facades\Http;
-use Intranet\Entities\Articulo;
-use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Espacio;
-use Intranet\Entities\Material;
-use Intranet\Entities\Lote;
-use Intranet\Entities\Documento;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Grupo;
@@ -31,6 +26,8 @@ use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Fct;
 use Illuminate\Http\Request;
+use Intranet\Entities\Centro;
+
 
 
 
@@ -273,6 +270,51 @@ class AdministracionController extends Controller
                 $prg->save();
             }
         }
+    }
+
+
+    public function esborrar_empreses_sense_colaboracio(){
+        foreach (Empresa::all() as $empresa){
+            $empresas[$empresa->id] = 0;
+            foreach ($empresa->centros as $centro){
+                $empresas[$empresa->id] += $centro->colaboraciones->count();
+            }
+        }
+        foreach ($empresas as $idEmpresa => $nuCol){
+            if ($nuCol === 0){
+                Empresa::destroy($idEmpresa);
+            }
+        }
+    }
+
+    public static function centres_sense_dades(){
+
+        foreach (Centros::all() as $centro) {
+            if (!$centro->colaboracion->count()) {
+                $colaboraciones[$centro->id] = 100;
+            }
+            if (!$centro->instructores->count()) {
+                $colaboraciones[$centro->id] = isset($colaboraciones[$centro->id])?110:10;
+            }
+            if ($centro->direccion == '') {
+                $colaboraciones[$centro->id] = isset($colaboraciones[$centro->id])?$colaboraciones[$centro->id]+1:1;
+            }
+        }
+
+        foreach ($colaboraciones as $key => $index){
+            $centro =  Centro::find($key);
+            echo "<br/>$centro->empresa->nombre: $centro->nombre => $index";
+        }
+
+        echo "<p><strong>Empreses amb centres amb la mateixa adreça</strong></p>";
+        foreach (
+            Centro::select('idEmpresa')
+                ->groupBy('idEmpresa','direccion')
+                ->havingRaw('COUNT(*) > 1')
+                ->get() as $item
+        ) {
+            echo "<br/>$item->idEmpresa: ".Empresa::find($item->idEmpresa)->nombre;
+        };
     }
 
 

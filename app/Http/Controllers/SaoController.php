@@ -97,8 +97,8 @@ class SaoController extends Controller
 
 
                             $instructor = $instructor??$this->altaInstructor($instructorDNI, $instructorName, $emailCentre,
-                                $telefonoCentre, $ciclo, $centro);
-
+                                $telefonoCentre, $ciclo);
+                            $centro->instructores()->syncWithoutDetaching($instructorDNI);
                             $colaboracion = Colaboracion::where('idCiclo', $ciclo->id)->where('idCentro',
                                 $centro->id)->first();
                             /*if (!$colaboracion) {
@@ -121,7 +121,7 @@ class SaoController extends Controller
                                 $fct = new Fct([
                                     'idColaboracion' => $colaboracion->id,
                                     'asociacion' => 1,
-                                    'idInstructor' => $instructor->dni,
+                                    'idInstructor' => $instructorDNI,
                                     'periode' => $periode
                                 ]);
                                 $fct->save();
@@ -164,8 +164,7 @@ class SaoController extends Controller
         string $instructorName,
         string $emailCentre,
         string $telefonoCentre,
-        $ciclo,
-        $centro
+        $ciclo
     ): Instructor {
 
         $instructor = new Instructor([
@@ -178,7 +177,6 @@ class SaoController extends Controller
             'departamento' => $ciclo->ciclo
         ]);
         $instructor->save();
-        $centro->instructores()->syncWithoutDetaching($instructor->dni);
         return $instructor;
     }
 
@@ -272,8 +270,8 @@ class SaoController extends Controller
             }
             foreach ($centros as $key => $centre){
                 $colaboracion = Colaboracion::where('idCentro',$key)->where('idCiclo',$idCiclo)->first();
-                if (!$colaboracion) $centre = 0;
-                Alert::danger(Centro::find($key)->nombre." => ".$centre.' Votes');
+                if (!$colaboracion) $centros[$key] = 0;
+                Alert::danger(Centro::find($key)->nombre." => ".$centre.' Votes '.$key);
             }
             if (count($centros)){
                 arsort($centros);
