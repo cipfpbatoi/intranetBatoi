@@ -289,11 +289,11 @@ class AdministracionController extends Controller
 
     public static function centres_sense_dades(){
 
-        foreach (Centros::all() as $centro) {
-            if (!$centro->colaboracion->count()) {
+        foreach (Centro::all() as $centro) {
+            if (!$centro->colaboracion) {
                 $colaboraciones[$centro->id] = 100;
             }
-            if (!$centro->instructores->count()) {
+            if (!$centro->instructores) {
                 $colaboraciones[$centro->id] = isset($colaboraciones[$centro->id])?110:10;
             }
             if ($centro->direccion == '') {
@@ -303,7 +303,7 @@ class AdministracionController extends Controller
 
         foreach ($colaboraciones as $key => $index){
             $centro =  Centro::find($key);
-            echo "<br/>$centro->empresa->nombre: $centro->nombre => $index";
+            echo "<br/>{$centro->empresa->nombre}: $centro->nombre => $index";
         }
 
         echo "<p><strong>Empreses amb centres amb la mateixa adreça</strong></p>";
