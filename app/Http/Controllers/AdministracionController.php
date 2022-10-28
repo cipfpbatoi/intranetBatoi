@@ -290,7 +290,7 @@ class AdministracionController extends Controller
     public static function centres_sense_dades(){
 
         foreach (Centro::all() as $centro) {
-            if (!$centro->colaboracion) {
+            if (!$centro->colaboraciones) {
                 $colaboraciones[$centro->id] = 100;
             }
             if (!$centro->instructores) {
