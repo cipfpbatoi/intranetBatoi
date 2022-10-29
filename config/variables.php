@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'controlDiario' => 0,
+    'controlDiario' => 1,
     'diasNoCompleta' => 45,
     'precioKilometro' => [0.19,0.078,0,0,0,0,0],
     'reservaAforo' => 1.2,
@@ -17,5 +17,5 @@ return [
     'actividadImg' => 1,
     'altaInstructores' => 1,
     'ipDomotica' => 'http://172.16.10.74/api/devices/{dispositivo}/action',
-    'authGoogle' => true,
+    'authGoogle' => false,
 ];

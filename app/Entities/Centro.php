@@ -12,11 +12,19 @@ class Centro extends Model
     use BatoiModels;
 
     protected $table = 'centros';
-    protected $fillable = ['idEmpresa', 'nombre','direccion', 'localidad','horarios', 'observaciones','idioma','codiPostal'];
+    protected $fillable = [
+        'idEmpresa',
+        'nombre',
+        'direccion',
+        'localidad',
+        'horarios',
+        'observaciones',
+        'idioma',
+        'codiPostal'];
     protected $rules = [
         'idEmpresa' => 'required',
         'nombre' => 'required',
-        'direccion' => 'required',
+        'direccion' => 'required|unique:centros,direccion',
         'localidad' => 'required',
     ];
     protected $inputTypes = [
@@ -34,8 +42,9 @@ class Centro extends Model
     {
         return $this->belongsTo(Empresa::class, 'idEmpresa', 'id');
     }
-    public function scopeEmpresa($query,$empresa){
-        return $query->where('idEmpresa',$empresa);
+    public function scopeEmpresa($query, $empresa)
+    {
+        return $query->where('idEmpresa', $empresa);
     }
     
     public function colaboraciones()
@@ -44,9 +53,10 @@ class Centro extends Model
     }
     public function instructores()
     {
-        return $this->belongsToMany(Instructor::class, 'centros_instructores', 'idCentro', 'idInstructor','id','dni');
+        return $this->belongsToMany(Instructor::class, 'centros_instructores', 'idCentro', 'idInstructor', 'id', 'dni');
     }
-    public function getIdiomaOptions(){
+    public function getIdiomaOptions()
+    {
         return config('auxiliares.idiomas');
     }
     

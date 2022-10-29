@@ -189,6 +189,7 @@ trait traitCRUD{
     {
         return $this->validate($this->manageCheckBox($request, $elemento), $elemento->getRules());
     }
+
     protected function manageCheckBox($request,$elemento){
         foreach ($elemento->getFillable() as $property) {
             if (isset($elemento->getInputType($property)['type']) && 
