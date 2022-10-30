@@ -34,7 +34,7 @@ Route::get('/actividadOrientacion', ['as' => 'actividad.orientacion', 'uses' => 
 Route::get('/actividadorientacion/create', ['as' => 'actividad.createOrientacion', 'uses' => 'PanelActividadOrientacionController@create']);
 Route::post('/actividadorientacion/create', ['as' => 'actividad.storeOrientacion', 'uses' => 'ActividadController@store']);
 Route::get('/actividad/{actividad}/value', ['as' => 'actividad.value', 'uses' => 'ActividadController@value']);
-Route::post('/actividad/valoracion',['as' => 'actividad.valoracion.post', 'uses' => 'ActividadController@valoracion']);
+Route::post('/actividad/valoracion', ['as' => 'actividad.valoracion.post', 'uses' => 'ActividadController@valoracion']);
 Route::get('/actividad/{actividad}/pdfVal', ['as' => 'actividad.pdfVal', 'uses' => 'ActividadController@printValue']);
 Route::get('/actividad/{actividad}/showVal', ['as' => 'actividad.showVal', 'uses' => 'ActividadController@showValue']);
 
@@ -103,9 +103,9 @@ Route::get('/comision/{comision}/init', ['as' => 'comision.init', 'uses' => 'Com
 Route::get('/comision/{comision}/confirm', ['as' => 'comision.confirm', 'uses' => 'ComisionController@confirm']);
 Route::get('/comision/{comision}/notification', ['as' => 'comision.notificar', 'uses' => 'ComisionController@notify']);
 Route::get('/comision/{comision}/unpaid', ['as' => 'comision.unpaid', 'uses' => 'ComisionController@unpaid']);
-Route::get('/comision/{comision}/detalle',['as' => 'comision.detalle', 'uses' => 'ComisionController@detalle']);
-Route::post('/comision/{comision}/createFct',['as' => 'comision.fct.create', 'uses' => 'ComisionController@createFct']);
-Route::get('/comision/{comision}/deleteFct/{fct}',['as' => 'comision.fct.delete', 'uses' => 'ComisionController@deleteFct']);
+Route::get('/comision/{comision}/detalle', ['as' => 'comision.detalle', 'uses' => 'ComisionController@detalle']);
+Route::post('/comision/{comision}/createFct', ['as' => 'comision.fct.create', 'uses' => 'ComisionController@createFct']);
+Route::get('/comision/{comision}/deleteFct/{fct}', ['as' => 'comision.fct.delete', 'uses' => 'ComisionController@deleteFct']);
 
 
 Route::get('/grupo', ['as' => 'grupo.index', 'uses' => 'GrupoController@index']);
@@ -468,6 +468,7 @@ Route::get(
 );
 
 Route::get('/sao', ['as'=>'sao.index','uses'=>'SaoController@index']);
+Route::get('/sao/create',['as'=>'sao.create','uses'=>'SaoController@create']);
 Route::post('/sao/createFct', ['as'=>'sao.createFcts','uses'=>'SaoController@createFcts']);
 Route::get('/itaca/login', ['as'=>'itaca.login','uses'=>'ItacaController@login']);
 

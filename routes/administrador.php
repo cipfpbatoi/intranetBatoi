@@ -36,16 +36,16 @@ Route::resource('/tipoincidencia', 'TipoIncidenciaController', ['except' => ['de
 Route::put('/tipoincidencia/{ciclo}/edit', ['as' => 'ciclo.update', 'uses' => 'TipoIncidenciaController@update']);
 Route::get('/tipoincidencia/{ciclo}/delete', ['as' => 'ciclo.destroy', 'uses' => 'TipoIncidenciaController@destroy']);
 //canvia d'usuari
-Route::get('/profesor/{idProfesor}/change',['as' =>'profesor.change','uses' => 'ProfesorController@change']);
-Route::get('/alumno/{idAlumne}/change',['as' =>'alumno.change','uses' => 'AlumnoController@change']);
+Route::get('/profesor/{idProfesor}/change', ['as' =>'profesor.change','uses' => 'ProfesorController@change']);
+Route::get('/alumno/{idAlumne}/change', ['as' =>'alumno.change','uses' => 'AlumnoController@change']);
 
 // esborra taules canvi de curs
-Route::get('/nuevoCurso',['as' => 'curso.nuevo.index', 'uses' => 'AdministracionController@nuevoCursoIndex']);
-Route::post('/nuevoCurso',['as' => 'curso.nuevo', 'uses' => 'AdministracionController@nuevoCurso']);
+Route::get('/nuevoCurso', ['as' => 'curso.nuevo.index', 'uses' => 'AdministracionController@nuevoCursoIndex']);
+Route::post('/nuevoCurso', ['as' => 'curso.nuevo', 'uses' => 'AdministracionController@nuevoCurso']);
 
 // modificar funcions en l'horari
 Route::resource('/horario', 'HorarioController', ['except' => ['destroy', 'update','create']]);
-Route::get('/horario/{profesor}/cambiar',['uses'=>'HorarioController@modificarHorario']);
+Route::get('/horario/{profesor}/cambiar', ['uses'=>'HorarioController@modificarHorario']);
 Route::put('/horario/{horario}/edit', ['as' => 'horario.update', 'uses' => 'HorarioController@update']);
 
 // manteniment taula modul_cicle
@@ -55,18 +55,17 @@ Route::put('/modulo_ciclo/{ciclo}/edit', ['as' => 'moduloCiclo.update', 'uses' =
 Route::get('/modulo_ciclo/{ciclo}/delete', ['as' => 'moduloCiclo.destroy', 'uses' => 'Modulo_cicloController@destroy']);
 
 // manteniment
-Route::get('/actualizacion','ActualizacionController@actualizacion');
-Route::get('/anexoI','AdministracionController@importaAnexoI');
-//Route::get('/tutores','ImportController@asignarTutores');
+Route::get('/actualizacion', 'ActualizacionController@actualizacion');
+Route::get('/anexoI', 'AdministracionController@importaAnexoI');
 
 Route::get('/sendAvaluacio', ['as' => 'sendAvaluacio.create', 'uses' => 'SendAvaluacioEmailController@create']);
 Route::post('/sendAvaluacio', ['as' => 'sendAvaluacio.store', 'uses' => 'SendAvaluacioEmailController@store']);
-Route::post('/getToken',['as' => 'sendAvaluacion.getToken','uses' => 'SendAvaluacioEmailController@getToken']);
+Route::post('/getToken', ['as' => 'sendAvaluacion.getToken','uses' => 'SendAvaluacioEmailController@getToken']);
 
-Route::get('/cleanCache',['as' => 'cleanCache','uses'=>'AdministracionController@cleanCache']);
-Route::get('/actualizaLang',['as' => 'actualizaLang','uses'=>'AdministracionController@actualizaLang']);
+Route::get('/cleanCache', ['as' => 'cleanCache','uses'=>'AdministracionController@cleanCache']);
+Route::get('/actualizaLang', ['as' => 'actualizaLang','uses'=>'AdministracionController@actualizaLang']);
 
-Route::get('/secure',['as' => 'show.door','uses' => 'AdministracionController@showDoor']);
-Route::post('/secure',['as' => 'secure.door','uses' => 'AdministracionController@secure']);
+Route::get('/secure', ['as' => 'show.door','uses' => 'AdministracionController@showDoor']);
+Route::post('/secure', ['as' => 'secure.door','uses' => 'AdministracionController@secure']);
 
-Route::get('/centreDades','AdministracionController@centres_sense_dades');
+Route::get('/consulta', 'AdministracionController@consulta');

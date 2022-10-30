@@ -192,7 +192,9 @@ function AuthUser()
 
 function apiAuthUser()
 {
-    return Intranet\Entities\Profesor::where('api_token',$_GET['api_token'])->get()->first();
+    return Intranet\Entities\Profesor::where('api_token', $_GET['api_token']??'')->get()
+        ->first();
+        //??Intranet\Entities\Profesor::find('021652470V');
 }
 
 function isProfesor()
@@ -230,7 +232,7 @@ function UserisAllow($role)
             }
         }
     }
-    else if ($usuario->rol % $role == 0) {
+    elseif ($usuario->rol % $role == 0) {
         return true;
     }
     return false;

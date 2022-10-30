@@ -8,14 +8,16 @@ use Intranet\Notifications\mensajePanel;
 
 class Mensaje
 {
-    private static function receptor($id){
+    private static function receptor($id)
+    {
         if (strlen($id) == 8) {
             return Alumno::find($id);
         }
         return Profesor::find($id);
     }
 
-    private static function emisor($emisor){
+    private static function emisor($emisor)
+    {
         if ($emisor) {
             return $emisor;
         }
@@ -28,7 +30,7 @@ class Mensaje
     }
 
 
-    static public function send($id, $mensaje, $enlace = '#', $emisor = null)
+    public static function send($id, $mensaje, $enlace = '#', $emisor = null)
     {
         $emisor = self::emisor($emisor);
         $receptor = self::receptor($id);

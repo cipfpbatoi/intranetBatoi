@@ -15,16 +15,18 @@
                     <input type='password' class="" id='password' name='password'/>
                 </div>
             </div>
-            <div class="form-group item">
-               <label class="control-label col-md-3 col-sm-3 col-xs-12">Profesor per a fer importació:</label>
-               <div class="col-md-6 col-sm-6 col-xs-12">
-                   <select class="select-box" name='profesor'>
-                       @foreach ($tutores as $tutor)
-                           <option value="{{$tutor->dni}}">{{$tutor->nameFull}}</option>
-                       @endforeach
-                   </select>
-               </div>
-            </div>
+            @isset($tutores)
+                <div class="form-group item">
+                   <label class="control-label col-md-3 col-sm-3 col-xs-12">Profesor per a fer importació:</label>
+                   <div class="col-md-6 col-sm-6 col-xs-12">
+                       <select class="select-box" name='profesor'>
+                           @foreach ($tutores as $tutor)
+                               <option value="{{$tutor->dni}}">{{$tutor->nameFull}}</option>
+                           @endforeach
+                       </select>
+                   </div>
+                </div>
+            @endisset
             <input type='submit' class='btn btn-success'value='Enviar'/>
         </form>
     </div>

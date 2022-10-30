@@ -21,6 +21,7 @@ use Intranet\Entities\Profesor;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Empresa;
 use Illuminate\Http\Request;
+use Exception;
 
 
 /**
@@ -35,6 +36,10 @@ class SaoController extends Controller
     public function index(){
         $tutores = Profesor::tutoresFCT()->orderBy('apellido1')->orderBy('apellido2')->get();
         return view('sao.index',compact('tutores'));
+    }
+
+    public function create(){
+        return view('sao.index');
     }
 
 
@@ -78,17 +83,19 @@ class SaoController extends Controller
 
                             $centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre, $telefonoCentre,
                                 $emailCentre, $ciclo->id, $instructor);
-                            if (!$centro) throw new \Exception("No trobat centre per a $nameCentre")
-                                // click detalls
-                                /*
+                            if (!$centro) throw new Exception("No trobat centre per a $nameCentre");
+
+                                /**
                                 $centro->horarios = $horari;
                                 $centro->telefono = $telefonoCentre;
                                 $centro->save();
                                 */
 
-                                $instructor = $instructor ?? $this->altaInstructor($instructorDNI, $instructorName,
-                                    $emailCentre,
-                                    $telefonoCentre, $ciclo);
+                                if (!$instructor) {
+                                    $this->altaInstructor($instructorDNI, $instructorName,
+                                        $emailCentre,
+                                        $telefonoCentre, $ciclo);
+                                }
                                 $centro->instructores()->syncWithoutDetaching($instructorDNI);
                                 $colaboracion = Colaboracion::where('idCiclo', $ciclo->id)->where('idCentro',
                                     $centro->id)->first();
@@ -130,17 +137,18 @@ class SaoController extends Controller
                                 }
                                 $fctAl->idSao = $idSao;
                                 $fctAl->save();
-                        } catch (\Exception $e){
+                                $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
+                        } catch (Exception $e){
                             Alert::danger($e->getMessage());
                         }
-                        $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 echo $e->getMessage();
             }
             $driver->close();
         }
+        return redirect(route('alumnofct.index'));
     }
 
     /**
@@ -225,7 +233,7 @@ class SaoController extends Controller
     {
         $enlace = $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"));
         $href = explode("'", $enlace->getAttribute('href'))[1];
-        $fctAl = AlumnoFct::where('idSao',$href);
+        $fctAl = AlumnoFct::where('idSao',$href)->get()->first();
         if ($fctAl) throw new \Exception("Fct del SAO $href ja donada d'alta");
         return $href;
     }
@@ -248,7 +256,6 @@ class SaoController extends Controller
     private function buscaCentro($nameEmpresa,$idEmpresa,$nameCentro,$telefonoCentre,$emailCentre,$idCiclo,$instructor){
         if ($emailCentre == '') $emailCentre='zz';
         $centro = Centro::where('nombre','like',$nameCentro)->first();
-        if ($centro) Alert::info("$centro->nombre per Nom");
         if (!$centro){
             $centros = array();
             if ($instructor) {

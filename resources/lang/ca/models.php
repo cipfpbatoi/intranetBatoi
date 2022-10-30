@@ -425,13 +425,12 @@ return array(
             
         ),
         'Modulo_grupo' => array(
-          'index' => 'Seguiments Modul departament', 
-          
+          'index' => 'Seguiments Modul departament',
         ),
         'Alumnofct' => array(
           'index' => 'Fct x Alumne/a',
           'convalidacion' => 'FCT Convalidada/Exempt',
-          'create' => 'Nova Exempció',  
+          'create' => 'Nova Exempció',
           'edit' => 'Modificar Dades Fct',
           'pdf' => 'Imprimir certificat Alumne/a',
           'auth' => 'Imprimir autoritzacions',
@@ -487,6 +486,11 @@ return array(
             'edit' => 'Editar Article',
             'show' => 'Mostrar Article',
             'delete' => 'Esborrar Article'
+        ),
+        'Sao' => array(
+            'create' => 'SAO:Baixa FCTs',
+            'check' => 'SAO:Comparador',
+            'sync' => 'SAO:Sincronitza',
         ),
         'Solicitud' => array(
             'index' => "Derivacions al departament d'Orientació",
@@ -556,7 +560,7 @@ return array(
             'Falta' => 'Has de justificar la falta en Caporalia',
         ),
         'accept' => array(
-            'Expediente' => "Baixa per inasistència de l'alumne/a :alumno initziada automàticament pel tutor/a :profesor",
+            'Expediente' => "Baixa per inasistència de :alumno iniciada per :profesor",
         ),
         
 );

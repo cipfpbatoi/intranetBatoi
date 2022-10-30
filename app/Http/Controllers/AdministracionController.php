@@ -17,6 +17,7 @@ use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
+use MongoDB\Driver\Exception\ExecutionTimeoutException;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +28,7 @@ use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Fct;
 use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
-
+use Intranet\Entities\Instructor;
 
 
 
@@ -273,38 +274,23 @@ class AdministracionController extends Controller
     }
 
 
-    public function esborrar_empreses_sense_colaboracio(){
-        foreach (Empresa::all() as $empresa){
-            $empresas[$empresa->id] = 0;
-            foreach ($empresa->centros as $centro){
-                $empresas[$empresa->id] += $centro->colaboraciones->count();
-            }
-        }
-        foreach ($empresas as $idEmpresa => $nuCol){
-            if ($nuCol === 0){
-                Empresa::destroy($idEmpresa);
+    public function consulta(){
+        $instructores = Instructor::all();
+        foreach ($instructores as $instructor){
+            try {
+                $instructor->dni = strtoupper(str_replace([' ','-'],'',$instructor->dni));
+                $instructor->save();
+            } catch (\Exception $e){
+                try {
+                    $instructor->delete();
+                } catch (\Exception $e){
+                    Alert::danger($e);
+                }
             }
         }
     }
 
-    public static function centres_sense_dades(){
-
-        foreach (Centro::all() as $centro) {
-            if (!$centro->colaboraciones) {
-                $colaboraciones[$centro->id] = 100;
-            }
-            if (!$centro->instructores) {
-                $colaboraciones[$centro->id] = isset($colaboraciones[$centro->id])?110:10;
-            }
-            if ($centro->direccion == '') {
-                $colaboraciones[$centro->id] = isset($colaboraciones[$centro->id])?$colaboraciones[$centro->id]+1:1;
-            }
-        }
-
-        foreach ($colaboraciones as $key => $index){
-            $centro =  Centro::find($key);
-            echo "<br/>{$centro->empresa->nombre}: $centro->nombre => $index";
-        }
+    public static function centres_amb_mateixa_adreça(){
 
         echo "<p><strong>Empreses amb centres amb la mateixa adreça</strong></p>";
         foreach (
