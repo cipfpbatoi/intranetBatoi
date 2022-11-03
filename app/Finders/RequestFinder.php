@@ -5,7 +5,8 @@ namespace Intranet\Finders;
 use Illuminate\Support\Collection;
 
 
-class RequestFinder extends Finder{
+class RequestFinder extends Finder
+{
 
     private $request;
 
@@ -19,10 +20,10 @@ class RequestFinder extends Finder{
     {
         $this->document = $document['document'];
         $this->request = $document['request'];
-
     }
 
-    public function exec(){
+    public function exec()
+    {
         $elementos = new Collection();
         $modelo = "Intranet\\Entities\\".$this->document->modelo;
         foreach ($this->request->toArray() as $item => $value){
@@ -32,6 +33,4 @@ class RequestFinder extends Finder{
         }
         return $elementos;
     }
-
 }
-

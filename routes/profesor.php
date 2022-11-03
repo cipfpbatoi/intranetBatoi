@@ -443,14 +443,14 @@ Route::post('/poll/create', ['as' => 'poll.store', 'uses' => 'PollController@sto
 Route::put('/poll/{id}/edit', ['as' => 'poll.update', 'uses' => 'PollController@update']);
 Route::get('/poll/{id}/show', ['as' => 'poll.resultShow', 'uses' => 'PollController@lookAtMyVotes']);
 Route::get('/poll/{id}/chart', ['as' => 'poll.result', 'uses' => 'PollController@lookAtAllVotes']);
-Route::get('/poll/{id}/delete',['as' => 'poll.delete', 'uses' => 'PollController@destroy']);
-Route::get('/votes/{colaboracion}/show',['as' => 'votes.colaboracion', 'uses'=> 'VotesController@showColaboracion']);
+Route::get('/poll/{id}/delete', ['as' => 'poll.delete', 'uses' => 'PollController@destroy']);
+Route::get('/votes/{colaboracion}/show', ['as' => 'votes.colaboracion', 'uses'=> 'VotesController@showColaboracion']);
 
-Route::get('/myPoll',['as' => 'mypoll.index', 'uses' => 'PanelPollResultController@index']);
-Route::post('/myMail','MyMailController@send');
-Route::get('/qualitat/documento',['as' => 'qualitat.docuentacio' ,'uses' => 'QualitatDocumentoController@index']);
+Route::get('/myPoll', ['as' => 'mypoll.index', 'uses' => 'PanelPollResultController@index']);
+Route::post('/myMail', 'MyMailController@send');
+Route::get('/qualitat/documento', ['as' => 'qualitat.docuentacio' ,'uses' => 'QualitatDocumentoController@index']);
 
-Route::get('fiCurs',['as'=>'fiCurs','uses'=>'PanelFinCursoController@index']);
+Route::get('fiCurs', ['as'=>'fiCurs','uses'=>'PanelFinCursoController@index']);
 
 Route::resource('/articulo','ArticuloController', ['except' => ['show','destroy']]);
 Route::get('/articulo/{id}/show', ['as' => 'articulo.show', 'uses' => 'ArticuloController@show']);
@@ -468,8 +468,10 @@ Route::get(
 );
 
 Route::get('/sao', ['as'=>'sao.index','uses'=>'SaoController@index']);
-Route::get('/sao/create',['as'=>'sao.create','uses'=>'SaoController@create']);
-Route::post('/sao/createFct', ['as'=>'sao.createFcts','uses'=>'SaoController@createFcts']);
+Route::post('/sao/download', ['as'=>'sao.download','uses'=>'SaoController@download']);
+Route::post('/sao/importa', ['as'=>'sao.importa','uses'=>'SaoController@importa']);
+Route::post('/sao/check', ['as'=>'sao.sync','uses'=>'SaoController@check']);
+Route::post('/sao/sync', ['as'=>'sao.sync','uses'=>'SaoController@sync']);
 Route::get('/itaca/login', ['as'=>'itaca.login','uses'=>'ItacaController@login']);
 
 /* Prova */

@@ -1,12 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * Profesor: igomis
- * Date: 2020-07-09
- * Time: 23:14
- */
 
 namespace Intranet\Componentes;
+
 use Barryvdh\DomPDF\Facade as DomPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf as SnappyPDF;
 use function config;

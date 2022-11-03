@@ -470,6 +470,11 @@ return array(
             'show' => 'Mostrar Articulo',
             'delete' => 'Eliminar Articulo'
         ),
+        'Sao' => array(
+            'download' => 'SAO:Baja FCTs',
+            'check' => 'SAO:Comparador',
+            'sync' => 'SAO:Sincroniza',
+        ),
         'Solicitud' => array(
             'index' => "Derivaciones al departamento de Orientación",
             'create' => "Cuestionario de derivación",

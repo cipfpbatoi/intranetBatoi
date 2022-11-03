@@ -82,17 +82,26 @@ class AlumnoFct extends Model
         $fcts = Fct::select('id')->Where('asociacion',2)->get()->toArray();
         return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
     }
-    public function scopeEsFct($query){
+
+    public function scopeEsFct($query)
+    {
         $fcts = Fct::select('id')->esFct()->get()->toArray();
         return $query->whereIn('idFct',$fcts);
     }
-    public function scopeEsAval($query){
+    public function scopeEsAval($query)
+    {
         $fcts = Fct::select('id')->esAval()->get()->toArray();
         return $query->whereIn('idFct',$fcts);
     }
-    public function scopeEsDual($query){
+    public function scopeEsDual($query)
+    {
         $fcts = Fct::select('id')->esDual()->get()->toArray();
         return $query->whereIn('idFct',$fcts);
+    }
+
+    public function scopeActiva($query)
+    {
+       return $query->whereNull('calificacion')->where('correoAlumno', 0)->where('horas', '>', 'realizadas');
     }
     
     public function getEmailAttribute(){
@@ -107,6 +116,22 @@ class AlumnoFct extends Model
     public function getFullNameAttribute(){
         return $this->Alumno->fullName;
     }
+    public function getHorasRealizadasAttribute()
+    {
+        return $this->realizadas.'/'.$this->horas.' '.$this->actualizacion;
+    }
+
+    public function getFinPracticasAttribute()
+    {
+        if ($this->horas_diarias){
+            $dias = (int)($this->horas-$this->realizadas)/$this->horas_diarias;
+            $semanas = floor($dias / 5);
+            $dias = $dias % 5;
+            return "{$semanas} Setmanes - {$dias} Dia";
+        }
+        return '??';
+    }
+
     public function getPeriodeAttribute(){
         return $this->Fct->periode;
     }

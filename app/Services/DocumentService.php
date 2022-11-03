@@ -1,5 +1,6 @@
 <?php
 namespace Intranet\Services;
+
 use Intranet\Componentes\MyMail;
 use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
@@ -20,15 +21,18 @@ class DocumentService
         $this->document = $finder->getDocument();
     }
 
-    public function __get($key){
+    public function __get($key)
+    {
         return $this->$key??($this->features[$key]??null);
     }
 
-    public function load(){
+    public function load()
+    {
        return $this->elements;
     }
 
-    public function render(){
+    public function render()
+    {
         if (isset($this->document->email)) {
             return $this->mail();
         } else {
@@ -37,7 +41,8 @@ class DocumentService
     }
 
 
-    private function mail(){
+    private function mail()
+    {
         $elemento = $this->elements->first();
         if ($elemento) {
             if (!$this->document->email['editable']) {
@@ -46,7 +51,13 @@ class DocumentService
             } else {
                 $contenido = view($this->document->template, compact('elemento'));
             }
-            $mail = new MyMail($this->elements, $contenido, $this->document->email, null, $this->document->email['editable']);
+            $mail = new MyMail(
+                $this->elements,
+                $contenido,
+                $this->document->email,
+                null,
+                $this->document->email['editable']
+            );
             return $mail->render('misColaboraciones');
         } else {
             Alert::danger('No hi ha cap destinatari');
@@ -54,12 +65,14 @@ class DocumentService
         }
     }
 
-    private function print(){
-        return Pdf::hazPdf($this->document->view, $this->elements,
-            $this->document->pdf, $this->document->pdf['orientacion'])->stream();
+    private function print()
+    {
+        return Pdf::hazPdf(
+            $this->document->view,
+            $this->elements,
+            $this->document->pdf,
+            $this->document->pdf['orientacion']
+        )->stream();
 
     }
-
-
-
 }

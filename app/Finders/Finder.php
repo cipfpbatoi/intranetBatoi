@@ -14,16 +14,21 @@ abstract class Finder {
         $this->document = $document;
     }
 
-    protected function existsActivity($id){
+    protected function existsActivity($id)
+    {
         if ($this->document->unique) {
             $modelo = "Intranet\\Entities\\".$this->document->modelo;
-            return Activity::where('model_class',$modelo)->where('model_id',$id)->where('document','=',$this->document->subject)->count();
+            return Activity::where('model_class',$modelo)
+                ->where('model_id',$id)
+                ->where('document','=',$this->document->subject)
+                ->count();
         } else {
             return 0;
         }
     }
 
-    public function getDocument(){
+    public function getDocument()
+    {
         return $this->document;
     }
 }

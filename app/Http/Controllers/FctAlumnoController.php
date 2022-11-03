@@ -29,10 +29,10 @@ class FctAlumnoController extends IntranetController
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';
     protected $model = 'AlumnoFct';
-    protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horas','periode'];
+    protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horasRealizadas','finPracticas','periode'];
     protected $profile = false;
     protected $titulo = [];
-    protected $parametresVista = ['modal' => ['seleccion']];
+    protected $parametresVista = ['modal' => ['seleccion','saoPassword']];
     protected $modal = true;
 
 
@@ -51,9 +51,9 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumnofct.auth',['img'=>'fa-file','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.link', ['where' => ['asociacion','==',1]]));
 
-        $this->panel->setBoton('index', new BotonBasico("sao.create",['class' => 'btn-success','roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("sao.check",['class' => 'btn-success','roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("sao.sync",['class' => 'btn-success','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("sao.download",['class' => 'btn-success download','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("sao.check",['class' => 'btn-success check','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("sao.sync",['class' => 'btn-success sync','roles' => config(self::ROLES_ROL_TUTOR)]));
 
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));

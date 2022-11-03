@@ -81,5 +81,5 @@ Route::get('/lote/{id}/print/{posicion?}',['as' => 'lote.print','uses' => 'LoteC
 Route::get('/lote/{id}/capture',['as' => 'lote.capture','uses' => 'LoteController@capture']);
 Route::post('/lote/{id}/capture',['as' => 'lote.capture','uses' => 'LoteController@postcapture']);
 
-Route::view('/guardia/control','guardias.control');
+Route::view('/guardia/control', 'guardias.control');
 

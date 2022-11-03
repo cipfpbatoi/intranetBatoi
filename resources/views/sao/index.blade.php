@@ -7,7 +7,7 @@
 @section('content')
 <div class='x-content'>
     <div class='form_box'>
-       <form method="POST" action='/sao/createFct' class='form-horizontal form-label-left'>
+       <form method="POST" action='/sao/{{$action}}' class='form-horizontal form-label-left'>
             {{ csrf_field() }}
             <div class="form-group item">
                 <label class="control-label col-md-3 col-sm-3 col-xs-12">El teu Password d'Itaca:</label>

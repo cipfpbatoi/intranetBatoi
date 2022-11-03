@@ -488,7 +488,7 @@ return array(
             'delete' => 'Esborrar Article'
         ),
         'Sao' => array(
-            'create' => 'SAO:Baixa FCTs',
+            'download' => 'SAO:Baixa FCTs',
             'check' => 'SAO:Comparador',
             'sync' => 'SAO:Sincronitza',
         ),

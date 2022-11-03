@@ -30,8 +30,12 @@
                                         <span class="label {{ $register->realizada==-1?'label-danger':($register->realizada?'label-default':'label-warning') }}">
                                             {{$register->Profesor->shortName}}
                                         </span>
-                                        @isset($register->observaciones) <small>{{$register->observaciones}}</small>@endisset
-                                        @isset($register->obs_personal) <small>{{$register->obs_personal}}</small>@endisset
+                                        @isset($register->observaciones)
+                                            <small>{{$register->observaciones}}</small>
+                                        @endisset
+                                        @isset($register->obs_personal)
+                                            <small>{{$register->obs_personal}}</small>
+                                        @endisset
                                         <br/>
                                     @endforeach
                                 @endisset

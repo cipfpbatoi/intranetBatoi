@@ -15,6 +15,8 @@ class AlterAlumnoFctsTable2 extends Migration
     {
         Schema::table('alumno_fcts', function (Blueprint $table) {
            $table->tinyInteger('realizadas')->default(0);
+           $table->tinyInteger('horas_diarias')->default(0);
+           $table->date('actualizacion')->nullable();
         });
     }
 
@@ -27,6 +29,8 @@ class AlterAlumnoFctsTable2 extends Migration
     {
         Schema::table('alumno_fcts', function (Blueprint $table) {
             $table->dropColumn('realizadas');
+            $table->dropColumn('horas_diarias');
+            $table->dropColumn('actualizacion');
         });
     }
 }
