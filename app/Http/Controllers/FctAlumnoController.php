@@ -233,21 +233,20 @@ class FctAlumnoController extends IntranetController
         $array['untitled8'] = $alumno->fullName;
         return $array;
     }
-/*
+
     public static function prepareA5($id){
         $fct = AlumnoFct::findOrFail($id);
         $alumno = $fct->Alumno;
         $tutor = AuthUser();
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
-        $telefonoTutor = ($tutor->movil1 != '')?$tutor->movil1:$tutor->movil2;
 
         if (file_exists(storage_path("tmp/A5_$id.pdf"))) {
             unlink(storage_path("tmp/A5_$id.pdf"));
         }
         $file = storage_path("tmp/A5_$id.pdf");
         $pdf = new Pdf('fdf/5_Informe_consecucio_competencies_tutor.pdf');
-        $arr['untitled1'] = $alumno->fullName." (NIA: $alumno->nia) - $alumno->dni"
+        $arr['untitled1'] = $alumno->fullName." (NIA: $alumno->nia) - $alumno->dni";
         $arr['untitled2'] = "Tel $telefonoAlumne - $alumno->email";
         $arr['untitled3'] = config('contacto.nombre').' '.config('contacto.codi');
         $arr['untitled4']  = "$tutor->fullName -$tutor->dni - Tel:* - $tutor->email";
@@ -257,7 +256,7 @@ class FctAlumnoController extends IntranetController
         $arr['untitled8'] = $fct->Fct->Instructor->fullName().' - '.$fct->Fct->Instructor->dni.' - '.$fct->Fct->Instructor->email;
     }
 
-*/
+
     public static function prepareExem($id)
     {
         $fct = AlumnoFct::findOrFail($id);
