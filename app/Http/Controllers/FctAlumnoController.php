@@ -50,7 +50,7 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '2']]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.auth',['img'=>'fa-file','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.link', ['where' => ['asociacion','==',1]]));
-        $this->panel->setBoton('grid', new BotonImg('alumnofct.a5',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.A5',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
 
         $this->panel->setBoton('index', new BotonBasico("sao.post",['class' => 'btn-success download','roles' => config(self::ROLES_ROL_TUTOR)]));
 
@@ -253,7 +253,11 @@ class FctAlumnoController extends IntranetController
         $arr['untitled5'] = $grupo->Ciclo->vliteral;
         $arr['untitled6'] = $fct->Fct->Colaboracion->Centro->Empresa->nombre." - ".$fct->Fct->Colaboracion->Centro->Empresa->cif;
         $arr['untitled7'] = $fct->Fct->Colaboracion->Centro->direccion.",".$fct->Fct->Colaboracion->Centro->localidad." - Tel:".$fct->Fct->Colaboracion->Centro->telefono." - ".$fct->Fct->Colaboracion->Centro->email;
-        $arr['untitled8'] = $fct->Fct->Instructor->fullName().' - '.$fct->Fct->Instructor->dni.' - '.$fct->Fct->Instructor->email;
+        $arr['untitled8'] = $fct->Fct->Instructor->nombre.' - '.$fct->Fct->Instructor->dni.' - '.$fct->Fct->Instructor->email;
+
+        $pdf->fillform($arr)
+            ->saveAs($file);
+        return storage_path("tmp/A5_$id.pdf");
     }
 
 
