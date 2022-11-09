@@ -289,7 +289,7 @@ class FctAlumnoController extends IntranetController
 
         $pdf->fillform($arr)
                 ->saveAs($file);
-        return storage_path("tmp/exencion_$id.pdf");;
+        return storage_path("tmp/exencion_$id.pdf");
 
     }
     
