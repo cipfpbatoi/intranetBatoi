@@ -233,7 +233,7 @@ class FctAlumnoController extends IntranetController
         $array['untitled8'] = $alumno->fullName;
         return $array;
     }
-
+/*
     public static function prepareA5($id){
         $fct = AlumnoFct::findOrFail($id);
         $alumno = $fct->Alumno;
@@ -257,7 +257,7 @@ class FctAlumnoController extends IntranetController
         $arr['untitled8'] = $fct->Fct->Instructor->fullName().' - '.$fct->Fct->Instructor->dni.' - '.$fct->Fct->Instructor->email;
     }
 
-
+*/
     public static function prepareExem($id)
     {
         $fct = AlumnoFct::findOrFail($id);
@@ -294,7 +294,7 @@ class FctAlumnoController extends IntranetController
 
     }
     
-
+/*
     public static function prepareExem($id){
         $fct = AlumnoFct::findOrFail($id);
         $grupo = $fct->Alumno->Grupo->first();
@@ -313,7 +313,7 @@ class FctAlumnoController extends IntranetController
             'director' => $director
         ];
         return self::hazPdf($cicle->normativa=='LOE'?'pdf.fct.exempcio_loe':'pdf.fct.exempcio_logse', $fct, $dades);
-    }
+    }*/
 
     public static function preparePdf($id){
         $fct = AlumnoFct::findOrFail($id);
