@@ -11,6 +11,15 @@ class Adjunto extends Model
 
     const CARPETA = "/app/public/adjuntos/";
 
+    protected $fillable = [
+        'name',
+        'owner',
+        'referencesTo',
+        'title',
+        'size',
+        'extension',
+        'route'
+    ];
     public function Profesor()
     {
         return $this->belongsTo(Profesor::class, 'owner', 'dni');

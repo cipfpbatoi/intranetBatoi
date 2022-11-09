@@ -50,7 +50,11 @@ Dropzone.options.myDropzone = {
             } else {
                 var a = document.createElement('a');
                 a.setAttribute('style','float:right');
-                a.setAttribute('href', '/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.name);
+                if (file.referencesTo) {
+                    a.setAttribute('href',file.referencesTo);
+                } else {
+                    a.setAttribute('href', '/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.name);
+                }
                 a.setAttribute('target', "_blank");
                 a.innerHTML = "<em class='fa fa-download'></em>";
                 file.previewTemplate.appendChild(a);

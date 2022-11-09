@@ -1,5 +1,8 @@
 <?php
 
+const NO_COMUNICADA = 'No comunicada';
+const EN_PROCESO = 'En proceso';
+const VER_MATERIALES = 'Ver Materiales';
 return array(
 
 	/*
@@ -21,7 +24,7 @@ return array(
 	
         'Alumno' => array(
           'show' => 'Datos del Alumno',
-          'edit' => 'Modificación Perfil Alumno'  
+          'edit' => 'Modificación Perfil Alumno'
         ),
 	'Comision' => array(
 		'create'=>'Solicitud autorización comisión Servicio',
@@ -86,7 +89,7 @@ return array(
         ),
         'Inventario' => array(
             'espacios' => 'Ver Espacios',
-            'materiales' => 'Ver Materiales'
+            'materiales' => VER_MATERIALES
         ),
         'Alumno_curso' => array(
             'index' => 'Alumnos Curso',
@@ -95,9 +98,9 @@ return array(
             'index' => 'Gestionar incidencias',
             'create' => 'Incidencia',
             '3' => 'Resuelta',
-            '2' => 'En proceso',
+            '2' => EN_PROCESO,
             '1' => 'Asignada',
-            '0' => 'No comunicada'
+            '0' => NO_COMUNICADA
         ),
         'Actividad' => array(
             'index' => 'Gestionar Actividades extraescolares',
@@ -133,9 +136,9 @@ return array(
             'edit' => 'Modificar TipoIncidencia',
             'notification' => 'Avisa Responsable',
             '3' => 'Resuelta',
-            '2' => 'En proceso',
+            '2' => EN_PROCESO,
             '1' => 'Asignada',
-            '0' => 'No comunicada'
+            '0' => NO_COMUNICADA
         ),
         'Material' => array(
             'index' => 'Gestionar Materiales',
@@ -149,7 +152,7 @@ return array(
             'create' => 'Crear Espacio',
             'delete' => 'Borrar Espacio',
             'edit' => 'Editar Espacio',
-            'detalle' => 'Ver Materiales'
+            'detalle' => VER_MATERIALES
         ),
         'Grupo' => array(
             'index' => 'Grupos',
@@ -396,7 +399,7 @@ return array(
             'index' => 'Sin marcaje Birret',
             'edit' => 'Editar Birret',
             'resolve' => 'Justificar',
-            '0' => 'No comunicada',
+            '0' => NO_COMUNICADA,
             '1' => 'Pendiente',
             '2' => 'Justificada',
             '3' => 'Rechazada'
@@ -408,10 +411,10 @@ return array(
            'copy' => 'Copiar instructor'
         ),
     '   Infdepartamento' => array(
-          'index' => 'Consulta informes de departamento',  
+          'index' => 'Consulta informes de departamento',
           'create' => 'Crear Informe departamento',
           'edit' => 'Modificar informe departamento',
-          'avisa' => 'Avisa Profesores falta informe',  
+          'avisa' => 'Avisa Profesores falta informe',
           'pdf' => 'Ver Informe departamento'
         ),
         'Horario' => array(
@@ -462,7 +465,7 @@ return array(
         ),
         'Articulolote' => array(
             'index' => 'Articulos pendientes de ubicar',
-            'show' => 'Ver Materiales'
+            'show' => VER_MATERIALES
         ),
         'Articulo' => array(
             'index' => 'Mostra Articulos',
@@ -471,9 +474,7 @@ return array(
             'delete' => 'Eliminar Articulo'
         ),
         'Sao' => array(
-            'download' => 'SAO:Baja FCTs',
-            'check' => 'SAO:Comparador',
-            'sync' => 'SAO:Sincroniza',
+            'post' => 'Conexión SAO',
         ),
         'Solicitud' => array(
             'index' => "Derivaciones al departamento de Orientación",
@@ -485,7 +486,7 @@ return array(
             'text3' => "Otros datos i/o información d'interés:",
             'idOrientador' => "Orientador",
             '1' => 'Comunicada',
-            '2' => 'En proceso',
+            '2' => EN_PROCESO,
             '3' => 'Resuelta',
 
         ),

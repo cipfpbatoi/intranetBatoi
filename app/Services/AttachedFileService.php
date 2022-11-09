@@ -6,9 +6,10 @@ use Intranet\Entities\Adjunto;
 
 class AttachedFileService
 {
-    private static function safeFile($file,$route,$dni,$title){
+    private static function safeFile($file, $route, $dni, $title)
+    {
         $nameFile = $file->getClientOriginalName();
-        $adjunto = Adjunto::findByName($route,$nameFile)->first();
+        $adjunto = Adjunto::findByName($route, $nameFile)->first();
         if (!$adjunto) {
             $attached = new Adjunto();
             $attached->route = $route;
@@ -26,18 +27,37 @@ class AttachedFileService
         return 0;
     }
 
+    public static function saveLink($nameFile, $referencesTo, $title, $extension, $route)
+    {
+        $adjunto = Adjunto::findByName($route, $nameFile)->first();
+        if (!$adjunto) {
+            $adjunto = new Adjunto([
+                'name' => $nameFile,
+                'owner' => AuthUser()->dni,
+                'referencesTo' => $referencesTo,
+                'title' => $title,
+                'extension' => $extension,
+                'size' => 1024,
+                'route' => $route
+            ]);
+            $adjunto->save();
+        }
+        return 0;
+    }
 
-    public static function save($files,$route,$dni=null,$title=null)
+
+    public static function save($files, $route, $dni=null, $title=null)
     {
         if (is_array($files)) {
             foreach ($files as $file) {
-                return self::safeFile($file,$route,$dni,$title);
+                return self::safeFile($file, $route, $dni, $title);
             }
         }
-        return self::safeFile($files,$route,$dni,$title);
+        return self::safeFile($files, $route, $dni, $title);
     }
 
-    public static function delete($attached){
+    public static function delete($attached)
+    {
         if (is_file($attached->path)) {
             unlink($attached->path);
             $attached->delete();
@@ -46,5 +66,4 @@ class AttachedFileService
         $attached->delete();
         return 1;
     }
-
 }

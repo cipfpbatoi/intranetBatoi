@@ -20,6 +20,9 @@ class DropZoneController extends ApiBaseController
             $data[$key]['extension'] = $attached->extension;
             $data[$key]['size'] = $attached->size;
             $data[$key]['accepted'] = true;
+            if (isset($attached->referencesTo)){
+                $data[$key]['referencesTo'] = $attached->referencesTo;
+            }
         }
         return $this->sendResponse($data, 'OK');
     }

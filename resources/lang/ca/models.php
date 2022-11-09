@@ -1,5 +1,8 @@
 <?php
 
+const VORE_MATERIALS = 'Vore Materials';
+const INCIDENCIA = 'Incidència';
+const NO_COMUNICADA = 'No comunicada';
 return array(
 
 	/*
@@ -85,18 +88,18 @@ return array(
         ),
         'Inventario' => array(
             'espacios' => 'Vore Espais',
-            'materiales' => 'Vore Materials'
+            'materiales' => VORE_MATERIALS
         ),
         'Alumno_curso' => array(
             'index' => 'Alumnat Curs',
         ),
         'Incidencia' => array(
             'index' => 'Gestionar incidències',
-            'create' => 'Incidència',
+            'create' => INCIDENCIA,
             '3' => 'Resolta',
             '2' => 'En procés',
             '1' => 'Assignada',
-            '0' => 'No comunicada'
+            '0' => NO_COMUNICADA
         ),
         'Actividad' => array(
             'index' => 'Gestionar Activitats extraescolars',
@@ -134,7 +137,7 @@ return array(
             '3' => 'Resolta',
             '2' => 'En procés',
             '1' => 'Assignada',
-            '0' => 'No comunicada'
+            '0' => NO_COMUNICADA
         ),
         'Material' => array(
             'index' => 'Gestionar Materials',
@@ -148,7 +151,7 @@ return array(
             'create' => 'Crear Espai',
             'delete' => 'Esborrar Espai',
             'edit' => 'Editar Espai',
-            'detalle' => 'Vore Materials'
+            'detalle' => VORE_MATERIALS
         ),
     
         'Grupo' => array(
@@ -400,7 +403,7 @@ return array(
             'index' => 'No marcatge Birret',
             'edit' => 'Editar Birret',
             'resolve' => 'Justificar',
-            '0' => 'No comunicada',
+            '0' => NO_COMUNICADA,
             '3' => 'Rebutjada',
             '1' => 'Pendent',
             '2' => 'Justificada',
@@ -479,7 +482,7 @@ return array(
         ),
         'Articulolote' => array(
             'index' => 'Articles pendents de ubicar',
-            'show' => 'Vore Materials'
+            'show' => VORE_MATERIALS
         ),
         'Articulo' => array(
             'index' => 'Mostra Articles',
@@ -488,9 +491,7 @@ return array(
             'delete' => 'Esborrar Article'
         ),
         'Sao' => array(
-            'download' => 'SAO:Baixa FCTs',
-            'check' => 'SAO:Comparador',
-            'sync' => 'SAO:Sincronitza',
+            'post' => 'Connexió SAO',
         ),
         'Solicitud' => array(
             'index' => "Derivacions al departament d'Orientació",
@@ -530,7 +531,7 @@ return array(
             'Tutoria' => 'Tutoria',
             'TutoriaGrupo' => 'FeedBack Tutoria',
             'Material' => 'Material',
-            'TipoIncidencia' => 'Incidència',
+            'TipoIncidencia' => INCIDENCIA,
             'OrdenTrabajo' => 'Ordre de Treball',
             'Ciclo' => 'Cicle',
             'Falta_itaca' => 'Justificar Birret',
@@ -545,7 +546,7 @@ return array(
             'Lote' => 'Factura',
             'Articulo' => 'Article',
             'ArticuloLote' => 'Articles Factura',
-            'Incidencia' => 'Incidència',
+            'Incidencia' => INCIDENCIA,
             'Fctcap' => 'Revisió FCT',
             'Solicitud' => "Derivació al departament d'orientació",
         ),

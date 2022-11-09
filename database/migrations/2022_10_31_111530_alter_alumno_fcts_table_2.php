@@ -14,7 +14,7 @@ class AlterAlumnoFctsTable2 extends Migration
     public function up()
     {
         Schema::table('alumno_fcts', function (Blueprint $table) {
-           $table->tinyInteger('realizadas')->default(0);
+           $table->smallInteger('realizadas')->default(0);
            $table->tinyInteger('horas_diarias')->default(0);
            $table->date('actualizacion')->nullable();
         });

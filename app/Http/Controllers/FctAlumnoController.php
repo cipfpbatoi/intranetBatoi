@@ -51,9 +51,7 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumnofct.auth',['img'=>'fa-file','where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.link', ['where' => ['asociacion','==',1]]));
 
-        $this->panel->setBoton('index', new BotonBasico("sao.download",['class' => 'btn-success download','roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("sao.check",['class' => 'btn-success check','roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("sao.sync",['class' => 'btn-success sync','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("sao.post",['class' => 'btn-success download','roles' => config(self::ROLES_ROL_TUTOR)]));
 
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));

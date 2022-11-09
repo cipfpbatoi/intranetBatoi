@@ -10,6 +10,7 @@ namespace Intranet\Http\Controllers;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Grupo;
@@ -18,6 +19,7 @@ use DB;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Instructor;
 use Intranet\Entities\Profesor;
+use Intranet\Services\AttachedFileService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Empresa;
 use Illuminate\Http\Request;
@@ -39,6 +41,47 @@ class SaoController extends Controller
         return view('sao.index',compact('tutores','action'));
     }
 
+    public function post(Request $request){
+        $accion = $request->accion;
+        return $this->$accion($request);
+    }
+
+    public function accion(Request $request,$accion){
+        return $this->$accion($request);
+    }
+
+    public function annexes(Request $request){
+        $dni = $request->profesor;
+        $driver = RemoteWebDriver::create($this::SERVER_URL, DesiredCapabilities::firefox());
+        try {
+            $this->login($driver, trim($request->password));
+            foreach (AlumnoFct::misFcts()->activa()->get() as $fct){
+                if ($fct->idSao){
+                    $driver->navigate()->to("https://foremp.edu.gva.es/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2");
+                    sleep(1);
+                    $name = trim($driver->findElement(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr:nth-child(2) td:nth-child(1)"))->getText());
+                    $onclick = $driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Descargar']"))->getAttribute('onclick');
+                    $cut1 = explode("'",$onclick);
+                    AttachedFileService::saveLink(
+                        $name,
+                        "https://foremp.edu.gva.es/".$cut1[1],
+                        'SAO:Annexe II i III',
+                        'zip',
+                        "alumnofctaval/$fct->id"
+                    );
+                    /*$cut1 = explode('=',$onclick);
+                    $fct->id_doc = trim($cut1[2],"')");
+                    $fct->save();*/
+                    $driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Cerrar']"))->click();
+                    sleep(1);
+                }
+            }
+        }catch (Exception $e){
+            Alert::danger($e);
+        }
+        $driver->close();
+        return back();
+    }
 
     public function sync(Request $request){
         $dni = $request->profesor;
@@ -181,8 +224,33 @@ class SaoController extends Controller
         return redirect(route('alumnofct.index'));
     }
 
+    private function descomposaClau($clau){
+        $keyDescomposada = explode('_',$clau);
+        $field = $keyDescomposada[2];
+        $idFct = $keyDescomposada[1];
+        $tipo = $keyDescomposada[0];
+        $modelo = ($tipo == 'centro')?
+            Fct::find($idFct)->Colaboracion->Centro:
+            Fct::find($idFct)->Colaboracion->Centro->Empresa;
+        return array($modelo,$field,$idFct,$tipo);
+
+    }
+
+    public function compara(Request $request){
+        $dades = session('dades');
+        $sao = array();
+        foreach ($request->request as $key => $value){
+            if ($value == 'sao'){
+                list($modelo,$field,$idFct,$tipo) = $this->descomposaClau($key);
+                $modelo->$field = $dades[$idFct][$tipo][$field]['sao'];
+                $modelo->save();
+            }
+        }
+        return redirect(route('alumnofct.index'));
+    }
+
     private function igual($intranet,$sao){
-        if (strtolower($intranet) == strtolower($sao)) return null;
+        if (trim(strtolower(eliminar_tildes($intranet))) == trim(strtolower(eliminar_tildes($sao)))) return null;
         return array('intranet'=>$intranet,'sao'=>$sao);
     }
 
@@ -223,12 +291,10 @@ class SaoController extends Controller
                     $dades[$fct->id]['centro']['localidad'] = $this->igual($centro->localidad,$detallesCentro->findElement(WebDriverBy::cssSelector("td:nth-child(3)"))->getText());
                     $dades[$fct->id]['centro']['telefono'] = $this->igual($centro->telefono,$detallesCentro->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
                     $dades[$fct->id]['centro']['email'] = $this->igual($centro->email,$detallesCentro->findElement(WebDriverBy::cssSelector("td:nth-child(6)"))->getText());
-
-
                     $dades[$fct->id]['centro']['horarios'] = $this->igual($centro->horarios,$driver->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody tr:nth-child(14) td:nth-child(2)"))->getText());
                     $driver->findElement(WebDriverBy::cssSelector("button.botonRegistro[value='Registrarse']"))->click();
                     sleep(1);
-                }
+                  }
             }
         } catch (Exception $e) {
             Alert::danger($e);
