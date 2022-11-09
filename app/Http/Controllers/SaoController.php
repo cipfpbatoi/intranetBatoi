@@ -315,6 +315,7 @@ class SaoController extends Controller
                     $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=34&idCT=$centro->idSao");
                     sleep(1);
                     $dades[$fct->id]['centro']['direccion'] = $this->igual($centro->direccion, $driver->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='direccion'"))->getAttribute('value'));
+                $dades[$fct->id]['centro']['codiPostal'] = $this->igual($centro->codiPostal, $driver->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='cp'"))->getAttribute('value'));
                   }
             }
         } catch (Exception $e) {

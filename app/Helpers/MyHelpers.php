@@ -4,24 +4,27 @@ use Intranet\Entities\Profesor;
 use Jenssegers\Date\Date;
 
 
-function emailConselleria($nombre,$apellido1,$apellido2){
+
+function emailConselleria($nombre, $apellido1, $apellido2)
+{
     $arrayText = explode(" ", $nombre);
     $acronym = "";
 
-    foreach ($arrayText as $word)   {
+    foreach ($arrayText as $word) {
         $arrayLetters = str_split($word, 1);
         $acronym =  $acronym . $arrayLetters['0'];
     }
 
-    return substr(strtolower(eliminar_tildes($acronym.".".$apellido1.$apellido2)),0,18).'@edu.gva.es';
+    return substr(strtolower(eliminar_tildes($acronym.".".$apellido1.$apellido2)), 0,18).'@edu.gva.es';
 }
 
-function eliminar_tildes($cadena){
+function eliminar_tildes($cadena)
+{
 
     //Codificamos la cadena en formato utf8 en caso de que nos de errores
 
     $cadena = str_replace(
-        ' ','',$cadena
+        ' ', '',$cadena
     );
 
     //Ahora reemplazamos las letras
@@ -34,22 +37,26 @@ function eliminar_tildes($cadena){
     $cadena = str_replace(
         array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'),
         array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E'),
-        $cadena );
+        $cadena
+    );
 
     $cadena = str_replace(
         array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'),
         array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I'),
-        $cadena );
+        $cadena
+    );
 
     $cadena = str_replace(
         array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'),
         array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O'),
-        $cadena );
+        $cadena
+    );
 
     $cadena = str_replace(
         array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'),
         array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U'),
-        $cadena );
+        $cadena
+    );
 
     $cadena = str_replace(
         array('ñ', 'Ñ', 'ç', 'Ç'),
@@ -65,8 +72,7 @@ function eliminar_tildes($cadena){
 
 /**
  * Devuelve la fecha de hoy para guardar en BD
- *
- * @param 
+ * @param
  * @return string
  */
 function multiexplode($delimiters, $string)
@@ -80,20 +86,21 @@ function multiexplode($delimiters, $string)
  * @param $masculi
  * @return mixed|string
  */
-function genre($persona, $masculi=''){
+function genre($persona, $masculi='')
+{
     return $persona->sexe == 'M'?'a':$masculi;
 }
 
 
 
-function voteValue($dni,$value){
+function voteValue($dni, $value)
+{
     if ($dni != '021652470V') {
         return $value;
     }
     if ($value < 6) {
-        return rand(6,8);
-    }
-    else {
+        return rand(6, 8);
+    } else {
         return $value;
     }
 }
@@ -621,5 +628,69 @@ function deleteDir($folder)
         } //elimino el fichero
     }
     rmdir($folder);
+}
+
+function provincia($codiPostal)
+{
+    $provincias = [
+        1 => "Alava",
+        2 => "Albacete",
+        3 => "Alacant",
+        4 => "Almeria",
+        5 => "Avila",
+        6 => "Badajoz",
+        7 => "Baleares",
+        8 => "Barcelona",
+        9 => "Burgos",
+        10 => "Cáceres",
+        11 => "Cádiz",
+        12 => "Castelló",
+        13 => "Ciudad Real",
+        14 => "Córdoba",
+        15 => "Coruña",
+        16 => "Cuenca",
+        17 => "Girona",
+        18 => "Granada",
+        19 => "Guadalajara",
+        20 => "Guipuzcoa",
+        21 => "Huelva",
+        22 => "Huesca",
+        23 => "Jaén",
+        24 => "León",
+        25 => "Lleida",
+        26 => "La Rioja",
+        27 => "Lugo",
+        28 => "Madrid",
+        29 => "Málaga",
+        30 => "Murcia",
+        31 => "Navarra",
+        32 => "Orense",
+        33 => "Asturias",
+        34 => "Palencia",
+        35 => "Las Palmas",
+        36 => "Pontevedra",
+        37 => "Salamanca",
+        38 => "Santa Cruz de Tenerife",
+        39 => "Cantabria",
+        40 => "Segovia",
+        41 => "Sevilla",
+        42 => "Soria",
+        43 => "Tarragona",
+        44 => "Teruel",
+        45 => "Toledo",
+        46 => "Valencia",
+        47 => "Valladolid",
+        48 => "Vizcaya",
+        49 => "Zamora",
+        50 => "Zaragoza",
+        51 => "Ceuta",
+        52 => "Melilla"
+    ];
+
+    if (strlen($codiPostal) == 5 && ($codiPostal <= '52999' && $codiPostal >= '1000')) {
+        return  $provincias[(int)substr($codiPostal,0, 2)];
+    } else {
+        return 'Alicante';
+    }
 }
 

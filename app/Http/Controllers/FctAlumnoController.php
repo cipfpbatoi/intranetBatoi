@@ -252,7 +252,7 @@ class FctAlumnoController extends IntranetController
         $arr['untitled4']  = "$tutor->fullName -$tutor->dni - Tel:* - $tutor->email";
         $arr['untitled5'] = $grupo->Ciclo->vliteral;
         $arr['untitled6'] = $fct->Fct->Colaboracion->Centro->Empresa->nombre." - ".$fct->Fct->Colaboracion->Centro->Empresa->cif;
-        $arr['untitled7'] = $fct->Fct->Colaboracion->Centro->direccion.",".$fct->Fct->Colaboracion->Centro->localidad." - Tel:".$fct->Fct->Colaboracion->Centro->telefono." - ".$fct->Fct->Colaboracion->Centro->email;
+        $arr['untitled7'] = $fct->Fct->Colaboracion->Centro->direccion.",".$fct->Fct->Colaboracion->Centro->localidad."(".$fct->Fct->Colaboracion->Centro->codiPostal." ".provincia($fct->Fct->Colaboracion->Centro->codiPostal).")- Tel:".$fct->Fct->Colaboracion->Centro->telefono." - ".$fct->Fct->Colaboracion->Centro->email;
         $arr['untitled8'] = $fct->Fct->Instructor->nombre.' - '.$fct->Fct->Instructor->dni.' - '.$fct->Fct->Instructor->email;
 
         $pdf->fillform($arr)
