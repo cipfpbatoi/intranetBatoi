@@ -257,6 +257,7 @@ class FctAlumnoController extends IntranetController
         $arr['untitled8'] = $fct->Fct->Instructor->fullName().' - '.$fct->Fct->Instructor->dni.' - '.$fct->Fct->Instructor->email;
     }
 
+
     public static function prepareExem($id)
     {
         $fct = AlumnoFct::findOrFail($id);
