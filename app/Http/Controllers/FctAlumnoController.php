@@ -251,7 +251,6 @@ class FctAlumnoController extends IntranetController
         ];
         return self::hazPdf($cicle->normativa=='LOE'?'pdf.fct.exempcio_loe':'pdf.fct.exempcio_logse', $fct, $dades);
     }
-    */
 
     public static function preparePdf($id){
         $fct = AlumnoFct::findOrFail($id);
