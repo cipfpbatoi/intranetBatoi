@@ -255,11 +255,11 @@ class FctAlumnoController extends IntranetController
         $arr['untitled4']  = "$tutor->fullName -$tutor->dni - Tel:* - $tutor->email";
         $arr['untitled5'] = $grupo->Ciclo->vliteral;
         $arr['untitled6'] = $empresa->nombre." - ".$empresa->cif;
-        $arr['untitled7'] = "$centro->direccion , $centro->localidad ( $centro->codiPostal ".provincia($centro->codiPostal).") - Tel: $centro->telefono - $centro->email";
+        $arr['untitled7'] = "$centro->direccion , $centro->localidad ($centro->codiPostal ".provincia($centro->codiPostal).") - Tel: $centro->telefono - $centro->email";
         $arr['untitled8'] = $instructor->nombre.' - '.$instructor->dni.' - '.$instructor->email;
         $arr['untitled9'] = $fct->horas.' h';
 
-        $pdf->fillform($arr)->saveAs($file);
+        $pdf->fillform($arr)->needAppearances()->saveAs($file);
 
         return storage_path("tmp/A5_$id.pdf");
     }
