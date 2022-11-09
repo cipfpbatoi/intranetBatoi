@@ -303,6 +303,7 @@ Route::post('/alumnofct/convalidacion', ['as' => 'alumnofct.convalidacion', 'use
 Route::get('/alumnofct/{id}/pdf', ['as' => 'alumnofct.pdf', 'uses' => 'FctAlumnoController@pdf']);
 Route::get('/alumnofct/{id}/show', ['as' => 'alumnofct.show', 'uses' => 'FctAlumnoController@show']);
 Route::get('/alumnofct/{id}/auth', ['as' => 'alumnofct.auth', 'uses' => 'FctAlumnoController@auth']);
+Route::get('/alumnofct/{id}/A5', ['as' => 'alumnofct.A5', 'uses' => 'FctAlumnoController@A5']);
 
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);

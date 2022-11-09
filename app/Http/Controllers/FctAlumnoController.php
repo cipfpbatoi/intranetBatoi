@@ -120,7 +120,10 @@ class FctAlumnoController extends IntranetController
         if ($fct->asociacion == 2) {
             return response()->file(self::prepareExem(($id)));
         }
+    }
 
+    public function A5($id){
+        return response()->file(self::prepareA5(($id)));
     }
 
     public function auth($id){
@@ -231,6 +234,65 @@ class FctAlumnoController extends IntranetController
         return $array;
     }
 
+    public static function prepareA5($id){
+        $fct = AlumnoFct::findOrFail($id);
+        $alumno = $fct->Alumno;
+        $tutor = AuthUser();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
+        $telefonoTutor = ($tutor->movil1 != '')?$tutor->movil1:$tutor->movil2;
+
+        if (file_exists(storage_path("tmp/A5_$id.pdf"))) {
+            unlink(storage_path("tmp/A5_$id.pdf"));
+        }
+        $file = storage_path("tmp/A5_$id.pdf");
+        $pdf = new Pdf('fdf/5_Informe_consecucio_competencies_tutor.pdf');
+        $arr['untitled1'] = $alumno->fullName." (NIA: $alumno->nia) - $alumno->dni"
+        $arr['untitled2'] = "Tel $telefonoAlumne - $alumno->email";
+        $arr['untitled3'] = config('contacto.nombre').' '.config('contacto.codi');
+        $arr['untitled4']  = "$tutor->fullName -$tutor->dni - Tel:* - $tutor->email";
+        $arr['untitled5'] = $grupo->Ciclo->vliteral;
+        $arr['untitled6'] = $fct->Fct->Colaboracion->Centro->Empresa->nombre." - ".$fct->Fct->Colaboracion->Centro->Empresa->cif;
+        $arr['untitled7'] = $fct->Fct->Colaboracion->Centro->direccion.",".$fct->Fct->Colaboracion->Centro->localidad." - Tel:".$fct->Fct->Colaboracion->Centro->telefono." - ".$fct->Fct->Colaboracion->Centro->email;
+        $arr['untitled8'] = $fct->Fct->Instructor->fullName().' - '.$fct->Fct->Instructor->dni.' - '.$fct->Fct->Instructor->email;
+    }
+
+    public static function prepareExem($id)
+    {
+        $fct = AlumnoFct::findOrFail($id);
+        $alumno = $fct->Alumno;
+        $tutor = AuthUser();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
+        $telefonoTutor = ($tutor->movil1 != '')?$tutor->movil1:$tutor->movil2;
+
+        /*$grupo = $fct->Alumno->Grupo->first();
+        $cicle = $grupo->Ciclo;
+        $tutor = $grupo->Tutor;
+        $cdept = $cicle->departament->Jefe;
+        $director = Profesor::find(config(fileContactos().'.director'));*/
+        if (file_exists(storage_path("tmp/exencion_$id.pdf"))) {
+            unlink(storage_path("tmp/exencion_$id.pdf"));
+        }
+        $file = storage_path("tmp/exencion_$id.pdf");
+
+        $pdf = new Pdf('fdf/InformeExencionFCT.pdf');
+        $arr['untitled1'] = "NIA: $alumno->nia - $alumno->fullName - $telefonoAlumne - $alumno->email";
+        $arr['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
+        $arr['untitled3'] = $grupo->Ciclo->vliteral;
+        $arr['untitled4'] = "DNI: $tutor->dni - ".$tutor->fullName.' - '.$telefonoTutor.' - '.$tutor->email;
+        $arr['untitled18'] = config('contacto.poblacion');
+        $arr['untitled19'] = day(Hoy());
+        $arr['untitled20'] = month(Hoy());
+        $arr['untitled21'] = substr(year(Hoy()),2,2);
+        $arr['untitled22'] = $tutor->fullName;
+
+        $pdf->fillform($arr)
+                ->saveAs($file);
+        return storage_path("tmp/exencion_$id.pdf");;
+
+    }
+    
 
     public static function prepareExem($id){
         $fct = AlumnoFct::findOrFail($id);
