@@ -1,8 +1,5 @@
 <?php
 
-const NO_COMUNICADA = 'No comunicada';
-const EN_PROCESO = 'En proceso';
-const VER_MATERIALES = 'Ver Materiales';
 return array(
 
 	/*
@@ -89,7 +86,7 @@ return array(
         ),
         'Inventario' => array(
             'espacios' => 'Ver Espacios',
-            'materiales' => VER_MATERIALES
+            'materiales' => 'Ver Materiales'
         ),
         'Alumno_curso' => array(
             'index' => 'Alumnos Curso',
@@ -98,9 +95,9 @@ return array(
             'index' => 'Gestionar incidencias',
             'create' => 'Incidencia',
             '3' => 'Resuelta',
-            '2' => EN_PROCESO,
+            '2' => 'En proceso',
             '1' => 'Asignada',
-            '0' => NO_COMUNICADA
+            '0' => 'No comunicada'
         ),
         'Actividad' => array(
             'index' => 'Gestionar Actividades extraescolares',
@@ -136,9 +133,9 @@ return array(
             'edit' => 'Modificar TipoIncidencia',
             'notification' => 'Avisa Responsable',
             '3' => 'Resuelta',
-            '2' => EN_PROCESO,
+            '2' => 'En proceso',
             '1' => 'Asignada',
-            '0' => NO_COMUNICADA
+            '0' => 'No comunicada'
         ),
         'Material' => array(
             'index' => 'Gestionar Materiales',
@@ -152,7 +149,7 @@ return array(
             'create' => 'Crear Espacio',
             'delete' => 'Borrar Espacio',
             'edit' => 'Editar Espacio',
-            'detalle' => VER_MATERIALES
+            'detalle' => 'Ver Materiales'
         ),
         'Grupo' => array(
             'index' => 'Grupos',
@@ -399,7 +396,7 @@ return array(
             'index' => 'Sin marcaje Birret',
             'edit' => 'Editar Birret',
             'resolve' => 'Justificar',
-            '0' => NO_COMUNICADA,
+            '0' => 'No comunicada',
             '1' => 'Pendiente',
             '2' => 'Justificada',
             '3' => 'Rechazada'
@@ -465,7 +462,7 @@ return array(
         ),
         'Articulolote' => array(
             'index' => 'Articulos pendientes de ubicar',
-            'show' => VER_MATERIALES
+            'show' => 'Ver Materiales'
         ),
         'Articulo' => array(
             'index' => 'Mostra Articulos',
@@ -486,7 +483,7 @@ return array(
             'text3' => "Otros datos i/o información d'interés:",
             'idOrientador' => "Orientador",
             '1' => 'Comunicada',
-            '2' => EN_PROCESO,
+            '2' => 'En proceso',
             '3' => 'Resuelta',
 
         ),

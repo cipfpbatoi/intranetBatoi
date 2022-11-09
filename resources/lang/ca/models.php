@@ -1,8 +1,9 @@
 <?php
 
-const VORE_MATERIALS = 'Vore Materials';
-const INCIDENCIA = 'Incidència';
-const NO_COMUNICADA = 'No comunicada';
+
+
+
+
 return array(
 
 	/*
@@ -88,18 +89,18 @@ return array(
         ),
         'Inventario' => array(
             'espacios' => 'Vore Espais',
-            'materiales' => VORE_MATERIALS
+            'materiales' => 'Vore Materials'
         ),
         'Alumno_curso' => array(
             'index' => 'Alumnat Curs',
         ),
         'Incidencia' => array(
             'index' => 'Gestionar incidències',
-            'create' => INCIDENCIA,
+            'create' => 'Incidència',
             '3' => 'Resolta',
             '2' => 'En procés',
             '1' => 'Assignada',
-            '0' => NO_COMUNICADA
+            '0' => 'No comunicada'
         ),
         'Actividad' => array(
             'index' => 'Gestionar Activitats extraescolars',
@@ -137,7 +138,7 @@ return array(
             '3' => 'Resolta',
             '2' => 'En procés',
             '1' => 'Assignada',
-            '0' => NO_COMUNICADA
+            '0' => 'No comunicada'
         ),
         'Material' => array(
             'index' => 'Gestionar Materials',
@@ -151,7 +152,7 @@ return array(
             'create' => 'Crear Espai',
             'delete' => 'Esborrar Espai',
             'edit' => 'Editar Espai',
-            'detalle' => VORE_MATERIALS
+            'detalle' => 'Vore Materials'
         ),
     
         'Grupo' => array(
@@ -403,7 +404,7 @@ return array(
             'index' => 'No marcatge Birret',
             'edit' => 'Editar Birret',
             'resolve' => 'Justificar',
-            '0' => NO_COMUNICADA,
+            '0' => 'No comunicada',
             '3' => 'Rebutjada',
             '1' => 'Pendent',
             '2' => 'Justificada',
@@ -482,7 +483,7 @@ return array(
         ),
         'Articulolote' => array(
             'index' => 'Articles pendents de ubicar',
-            'show' => VORE_MATERIALS
+            'show' => 'Vore Materials'
         ),
         'Articulo' => array(
             'index' => 'Mostra Articles',
@@ -531,7 +532,7 @@ return array(
             'Tutoria' => 'Tutoria',
             'TutoriaGrupo' => 'FeedBack Tutoria',
             'Material' => 'Material',
-            'TipoIncidencia' => INCIDENCIA,
+            'TipoIncidencia' => 'Incidència',
             'OrdenTrabajo' => 'Ordre de Treball',
             'Ciclo' => 'Cicle',
             'Falta_itaca' => 'Justificar Birret',
@@ -546,7 +547,7 @@ return array(
             'Lote' => 'Factura',
             'Articulo' => 'Article',
             'ArticuloLote' => 'Articles Factura',
-            'Incidencia' => INCIDENCIA,
+            'Incidencia' => 'Incidència',
             'Fctcap' => 'Revisió FCT',
             'Solicitud' => "Derivació al departament d'orientació",
         ),

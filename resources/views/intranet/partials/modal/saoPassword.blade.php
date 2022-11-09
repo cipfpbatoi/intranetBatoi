@@ -7,7 +7,6 @@
         <option value="check">Comparador Dades</option>
         <option value="sync">Sincronitza FCT's</option>
         <option value="annexes">Baixa Annexes</option>
-        <option value="print">Imprimeix Annexes V</option>
     </select>
     <br/>
     <label class="control-label" for="password">Introduir Password SAO:</label>

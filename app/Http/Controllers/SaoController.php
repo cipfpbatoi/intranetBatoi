@@ -149,7 +149,7 @@ class SaoController extends Controller
                             $dades[$index]['hores'] = explode('/',
                                 $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[1];
                             $instructor = Instructor::find($dades[$index]['centre']['instructorDNI']);
-
+                            $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
                             if ($centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre, $dades[$index]['centre']['telefon'],
                                 $dades[$index]['centre']['email'], $ciclo->id, $instructor)) {
                                 $dades[$index]['centre']['id'] = $centro->id;
@@ -157,9 +157,24 @@ class SaoController extends Controller
                                     $centro->id)->first()) {
                                     $dades[$index]['colaboracio']['id'] = $colaboracion->id;
                                     $dades[$index]['cicle'] = $ciclo;
+                                    if (!$centro->idSao) {
+                                        $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
+                                        sleep(1);
+                                        $table2 = $driver->findElements(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr"));
+                                        foreach ($table2 as $index2 => $trinside) {
+                                            if ($index2) {
+                                                $td = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText());
+                                                if ($td == $nameCentre) {
+                                                    //$dades[$index]['centro']['direccion'] = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
+                                                    $dades[$index]['centre']['idSao'] = substr($trinside->getAttribute('id'), 13);
+                                                }
+                                            }
+                                        }
+                                        $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=2&subop=0");
+                                        sleep(1);
+                                    }
                                 }
                             }
-                            $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
                         } catch (Exception $e){
                             unset($dades[$index]);
                             Alert::info($e->getMessage());
@@ -184,6 +199,10 @@ class SaoController extends Controller
         foreach ($request->request as $key => $value) {
             if ($value == 'on') {
                 $centro = Centro::find($dades[$key]['centre']['id']);
+                if (!$centro->idSao){
+                    $centro->idSao = $dades[$key]['centre']['idSao'];
+                    $centro->save();
+                }
                 if (!($instructor = Instructor::find($dades[$key]['centre']['instructorDNI']))) {
                     $this->altaInstructor(
                         $dades[$key]['centre']['instructorDNI'],
@@ -293,7 +312,9 @@ class SaoController extends Controller
                     $dades[$fct->id]['centro']['email'] = $this->igual($centro->email,$detallesCentro->findElement(WebDriverBy::cssSelector("td:nth-child(6)"))->getText());
                     $dades[$fct->id]['centro']['horarios'] = $this->igual($centro->horarios,$driver->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody tr:nth-child(14) td:nth-child(2)"))->getText());
                     $driver->findElement(WebDriverBy::cssSelector("button.botonRegistro[value='Registrarse']"))->click();
+                    $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=34&idCT=$centro->idSao");
                     sleep(1);
+                    $dades[$fct->id]['centro']['direccion'] = $this->igual($centro->direccion, $driver->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='direccion'"))->getAttribute('value'));
                   }
             }
         } catch (Exception $e) {
