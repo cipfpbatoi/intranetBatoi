@@ -240,6 +240,9 @@ class FctAlumnoController extends IntranetController
         $tutor = AuthUser();
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
+        $centro = $fct->Fct->Colaboracion->Centro;
+        $empresa = $centro->Empresa;
+        $instructor = $fct->Fct->instructor;
 
         if (file_exists(storage_path("tmp/A5_$id.pdf"))) {
             unlink(storage_path("tmp/A5_$id.pdf"));
@@ -251,12 +254,13 @@ class FctAlumnoController extends IntranetController
         $arr['untitled3'] = config('contacto.nombre').' '.config('contacto.codi');
         $arr['untitled4']  = "$tutor->fullName -$tutor->dni - Tel:* - $tutor->email";
         $arr['untitled5'] = $grupo->Ciclo->vliteral;
-        $arr['untitled6'] = $fct->Fct->Colaboracion->Centro->Empresa->nombre." - ".$fct->Fct->Colaboracion->Centro->Empresa->cif;
-        $arr['untitled7'] = $fct->Fct->Colaboracion->Centro->direccion.",".$fct->Fct->Colaboracion->Centro->localidad."(".$fct->Fct->Colaboracion->Centro->codiPostal." ".provincia($fct->Fct->Colaboracion->Centro->codiPostal).")- Tel:".$fct->Fct->Colaboracion->Centro->telefono." - ".$fct->Fct->Colaboracion->Centro->email;
-        $arr['untitled8'] = $fct->Fct->Instructor->nombre.' - '.$fct->Fct->Instructor->dni.' - '.$fct->Fct->Instructor->email;
+        $arr['untitled6'] = $empresa->nombre." - ".$empresa->cif;
+        $arr['untitled7'] = $centro->direccion.", ".$centro->localidad."(".$centro->codiPostal." ".provincia($centro->codiPostal).") - Tel:".$centro->telefono." - ".$centro->email;
+        $arr['untitled8'] = $instructor->nombre.' - '.$instructor->dni.' - '.$instructor->email;
+        $arr['untitled9'] = $fct->horas.' h';
 
-        $pdf->fillform($arr)
-            ->saveAs($file);
+        $pdf->fillform($arr)->saveAs($file);
+
         return storage_path("tmp/A5_$id.pdf");
     }
 
