@@ -258,6 +258,12 @@ class FctAlumnoController extends IntranetController
         $arr['untitled7'] = "$centro->direccion , $centro->localidad ($centro->codiPostal ".provincia($centro->codiPostal).") - Tel: $centro->telefono - $centro->email";
         $arr['untitled8'] = $instructor->nombre.' - '.$instructor->dni.' - '.$instructor->email;
         $arr['untitled9'] = $fct->horas.' h';
+        $arr['untitled13'] =  config('contacto.poblacion');
+        $arr['untitled14'] = day(Hoy());
+        $arr['untitled15'] = month(Hoy());
+        $arr['untitled16'] = substr(year(Hoy()),2,2);
+        $arr['untitled18'] = $tutor->fullName;
+
 
         $pdf->fillform($arr)->needAppearances()->saveAs($file);
 
