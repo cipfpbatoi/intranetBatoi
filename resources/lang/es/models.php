@@ -429,6 +429,8 @@ return array(
             'email' => 'Enviar Correos Valoración Alumno',
             'pg0301' => "Entregada documentación",
             'default' => 'x Alumne',
+            'selecciona' => 'Alumno/a',
+            'A5' => 'Informe valoratiu A5'
 
 
         ),

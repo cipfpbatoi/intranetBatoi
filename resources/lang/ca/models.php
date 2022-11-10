@@ -441,7 +441,8 @@ return array(
           'email' => 'Enviar Correu Valoració Alumne/a',
           'pg0301' => "Entregada documentació",
             'default' => 'x Alumne/a',
-            'selecciona' => 'Alumno/a',
+            'selecciona' => 'Alumne/a',
+            'A5' => 'Informe valoratiu A5'
 
         ),
         'alumnoFct' => array(
