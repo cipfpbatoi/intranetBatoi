@@ -8,7 +8,7 @@
                         @foreach($elemento->toArray()  as $key => $campo)
                             <li><p> {{ trans("validation.attributes.$key") }} : {{ $campo }}</p></li>
                         @endforeach
-                        <li><p>Roles : <span>{{ implode(',',NameRolesUser($elemento->rol)) }}</span></p></li>
+                        <li><p>Roles : <span>{{ implode(',',nameRolesUser($elemento->rol)) }}</span></p></li>
                     </ul>
                 </div>
             </div>

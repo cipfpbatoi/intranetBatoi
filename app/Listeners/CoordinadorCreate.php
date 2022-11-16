@@ -29,9 +29,9 @@ class CoordinadorCreate
      */
     public function handle(GrupoCreated $event)
     {
-        if (AuthUser()) {
+        if (authUser()) {
             $a = new Miembro;
-            $a->idProfesor = AuthUser()->dni;
+            $a->idProfesor = authUser()->dni;
             $a->idGrupoTrabajo = $event->grupo->id;
             $a->coordinador = true;
             $a->save();

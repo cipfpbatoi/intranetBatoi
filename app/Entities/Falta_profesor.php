@@ -38,7 +38,7 @@ class Falta_profesor extends Model
     public static function fichar($profesor = null)
     {
         if (isPrivateAddress(getClientIpAddress())) {
-            $ultimo = Falta_profesor::Hoy($profesor ?? AuthUser()->dni)
+            $ultimo = Falta_profesor::Hoy($profesor ?? authUser()->dni)
                 ->get()->last();
 
             if ($ultimo != null) {
@@ -53,7 +53,7 @@ class Falta_profesor extends Model
 
             if (($ultimo == null) || ($ultimo->salida != null)) {
                 $ultimo = new Falta_profesor;
-                $ultimo->idProfesor = $profesor ?? AuthUser()->dni;
+                $ultimo->idProfesor = $profesor ?? authUser()->dni;
                 $ultimo->dia = date("Y-m-d", time());
                 $ultimo->entrada = date("H:i:s", time());
                 $ultimo->save();

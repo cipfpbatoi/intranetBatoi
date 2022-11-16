@@ -16,16 +16,17 @@ class UploadFiles implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $files,$SService;
+    protected $files;
+    protected $sService;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($files,$SService)
+    public function __construct($files, $sService)
     {
         $this->files = $files;
-        $this->SService = $SService;
+        $this->sService = $sService;
     }
 
 
@@ -37,11 +38,14 @@ class UploadFiles implements ShouldQueue
     public function handle()
     {
         try {
-            $this->SService->uploadA56($this->files);
+            $this->sService->uploadA56($this->files);
         } catch (\Exception $e) {
             Mail::to('igomis@cipfpbatoi.es', 'Intranet')
-                ->send(new Comunicado('igomis@cipfpbatoi.es'
-                , $this->files[0], 'email.a56error'));
+                ->send(new Comunicado(
+                    'igomis@cipfpbatoi.es',
+                    $this->files[0],
+                    'email.a56error'
+                ));
         }
 
     }

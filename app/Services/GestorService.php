@@ -13,7 +13,8 @@ class GestorService
     private $link;
     private $isFile;
 
-    public function __construct($elemento=null,$documento=null){
+    public function __construct($elemento=null, $documento=null)
+    {
         $this->elemento = $elemento;
         $this->document = $documento??$this->findDocument();
         if ($this->document) {
@@ -31,12 +32,15 @@ class GestorService
         }
     }
 
-    private function findDocument(){
+    private function findDocument()
+    {
         if (isset($this->elemento)) {
             if ($this->elemento->idDocumento) {
                 return Documento::find($this->elemento->idDocumento);
             } else {
-                return isset($this->elemento->fichero) ? Documento::where('fichero', $this->elemento->fichero)->first() : null;
+                return isset($this->elemento->fichero)
+                    ? Documento::where('fichero', $this->elemento->fichero)->first()
+                    : null;
             }
         }
         return null;
@@ -44,25 +48,40 @@ class GestorService
 
     public function save($parametres = null)
     {
-        if (isset($this->document)){
-            if ($parametres){
+        if (isset($this->document)) {
+            if ($parametres) {
                 $this->update($parametres);
             }
-        }
-        else {
+        } else {
             $this->document = new Documento($parametres);
-            $this->document->curso = Curso();
-            $this->document->supervisor = $this->document->supervisor == '' ? AuthUser()->FullName : $this->document->supervisor;
-            if ($this->elemento) {
-                $this->document->idDocumento = $this->document->idDocumento == '' ? isset($this->elemento->id) ? $this->elemento->id : $this->elemento->$primaryKey : $this->document->tipoDocumento;
-                $this->document->propietario = $this->document->propietario == '' ? (isset($this->elemento->Profesor) ? $this->elemento->Profesor->FullName:'') : $this->document->propietario;
-                $this->document->fichero = $this->document->fichero == '' ? $this->elemento->fichero : $this->document->fichero;
-                $this->document->descripcion = $this->document->descripcion == '' ? 'Registre dia ' . Hoy('d-m-Y') : $this->document->descripcion;
+            $this->document->curso = curso();
+            if (empty($this->document->supervisor)) {
+                $this->document->supervisor = authUser()->FullName;
+            }
+            if (empty($this->document->descripcion)) {
+                $this->document->descripcion = 'Registre dia ' . hoy('d-m-Y');
+            }
+            if ($el = $this->elemento) {
+                if (empty($this->document->idDocumento)) {
+                    $primaryKey = $el->primaryKey??null;
+                    $this->document->idDocumento = $el->id ?? $el->$primaryKey ?? $this->document->tipoDocumento;
+                }
+                if (empty($this->document->propietario)) {
+                    $this->document->propietario = $el->Profesor->FullName ?? '';
+                }
+                if (empty($this->document->fichero)) {
+                    $this->document->fichero = $el->fichero;
+                }
             } else {
-                $this->document->propietario = $this->document->propietario == '' ? AuthUser()->FullName : $this->document->propietario;
-                $this->document->descripcion = $this->document->descripcion == '' ? 'Registre dia ' . Hoy('d-m-Y') : $this->document->descripcion;
-                $this->document->tags = $this->document->tags == '' ? 'listado llistat autorizacion autorizacio' : $this->document->tags;
-                $this->document->rol = $this->document->rol == '' ? '2' : $this->document->rol;
+                if (empty($this->document->propietario)) {
+                    $this->document->propietario = authUser()->FullName;
+                }
+                if (empty($this->document->tags)) {
+                    $this->document->tags = 'listado llistat autorizacion autorizacio';
+                }
+                if (empty($this->document->rol)) {
+                    $this->document->rol = 2;
+                }
             }
         }
         $this->document->save();
@@ -74,8 +93,8 @@ class GestorService
 
     public function render()
     {
-        if ($this->isAllowed()){
-            if ($this->isFile && file_exists($this->link)){
+        if ($this->isAllowed()) {
+            if ($this->isFile && file_exists($this->link)) {
                 return response()->file($this->link);
             }
             if ($this->isFile === false) {
@@ -101,21 +120,17 @@ class GestorService
         if (isset($this->elemento->fichero)) {
             $this->isFile = true;
             $this->link = storage_path('app/' . $this->elemento->fichero);
-        }
-        else {
+        } else {
             $this->isFile = false;
             $this->link = null;
         }
     }
 
-    private function isAllowed(){
-        if ($this->document){
-            if (in_array($this->document->rol, RolesUser(AuthUser()->rol))) {
-                return true;
-            }
+    private function isAllowed()
+    {
+        if ($this->document && !in_array($this->document->rol, rolesUser(authUser()->rol))) {
             return false;
         }
         return true;
     }
-
 }

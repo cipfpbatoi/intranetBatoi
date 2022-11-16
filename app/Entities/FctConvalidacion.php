@@ -27,7 +27,4 @@ class FctConvalidacion extends Fct
         'asociacion' => ['type' => 'hidden'],
     ];
     protected $attributes=['asociacion'=>2,'correoInstructor'=>1];
-    
-
-   
 }

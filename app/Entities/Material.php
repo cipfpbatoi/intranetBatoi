@@ -10,7 +10,20 @@ class Material extends Model
 
     protected $table = 'materiales';
     public $timestamps = false;
-    protected $fillable = ['nserieprov', 'descripcion', 'marca', 'modelo', 'ISBN', 'espacio', 'procedencia', 'proveedor','estado','unidades','inventariable','articulo_lote_id'];
+    protected $fillable = [
+        'nserieprov',
+        'descripcion',
+        'marca',
+        'modelo',
+        'ISBN',
+        'espacio',
+        'procedencia',
+        'proveedor',
+        'estado',
+        'unidades',
+        'inventariable',
+        'articulo_lote_id'
+    ];
 
     use BatoiModels;
 
@@ -39,8 +52,9 @@ class Material extends Model
         return $this->belongsTo(Espacio::class, 'espacio', 'aula');
     }
 
-    public function LoteArticulo(){
-        return $this->belongsTo(ArticuloLote::class,'articulo_lote_id');
+    public function LoteArticulo()
+    {
+        return $this->belongsTo(ArticuloLote::class, 'articulo_lote_id');
     }
 
 
@@ -49,7 +63,8 @@ class Material extends Model
         return config('auxiliares.estadoMaterial');
     }
 
-    public function getStateAttribute(){
+    public function getStateAttribute()
+    {
         return config('auxiliares.estadoMaterial')[$this->estado];
     }
 

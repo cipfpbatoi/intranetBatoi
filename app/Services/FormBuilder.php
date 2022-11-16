@@ -10,7 +10,7 @@ class FormBuilder
     private $fillable;
 
 
-    public function __construct($elemento,$formFields = null)
+    public function __construct($elemento, $formFields = null)
     {
         $this->elemento = $elemento;
         if ($formFields != null) {
@@ -45,7 +45,7 @@ class FormBuilder
         $elemento = $this->elemento;
         $default = $this->default;
         $fillable = $this->fillable;
-        return view('themes.bootstrap.form',compact('elemento','method','default','fillable'));
+        return view('themes.bootstrap.form', compact('elemento', 'method', 'default', 'fillable'));
     }
 
     public function modal()
@@ -53,7 +53,7 @@ class FormBuilder
         $elemento = $this->elemento;
         $default = $this->default;
         $fillable = $this->fillable;
-        return view('themes.bootstrap.formodal',compact('elemento','default','fillable'));
+        return view('themes.bootstrap.formodal', compact('elemento', 'default', 'fillable'));
     }
 
 
@@ -61,43 +61,47 @@ class FormBuilder
 
     private function fillDefaultOptionsToForm($formFields)
     {
-        $InputType = [];
+        $inputType = [];
         foreach ($formFields as $key => $properties) {
             $parametres = [];
-            $InputType[$key]['type'] = $this->aspect($parametres,$properties['type']??'text');
+            $inputType[$key]['type'] = $this->aspect($parametres, $properties['type']??'text');
 
             $parametres['id'] = $key . '_id';
             $parametres['ph'] = $this->translate($key);
-            $parametres['class'] = 'col-md-7 col-xs-12 ' . $InputType[$key]['type'];
+            $parametres['class'] = 'col-md-7 col-xs-12 ' . $inputType[$key]['type'];
 
-            $InputType[$key]['default'] = $properties['default'] ?? null;
+            $inputType[$key]['default'] = $properties['default'] ?? null;
 
 
-            if (isset($properties['disabled'])){
+            if (isset($properties['disabled'])) {
                 $parametres = array_merge($parametres, ['disabled' => 'disabled']);
             }
-            if (isset($properties['disableAll'])){
+            if (isset($properties['disableAll'])) {
                 $parametres = array_merge($parametres, ['disabled' => 'on']);
             }
-            if ($this->elemento->isRequired($key)){
+            if ($this->elemento->isRequired($key)) {
                 $parametres = array_merge($parametres, ['required']);
             }
-            if (isset($properties['inline'])){
+            if (isset($properties['inline'])) {
                 $parametres = array_merge($parametres, ['inline' => 'inline']);
             }
 
-            $InputType[$key]['params'] = $parametres;
+            $inputType[$key]['params'] = $parametres;
         }
-        return($InputType);
+        return($inputType);
 
     }
 
-    private function translate($key){
-        return !strpos(trans('validation.attributes.' . $key), 'alidation.') ? trans('validation.attributes.' . $key) : ucwords($key);
+    private function translate($key)
+    {
+        return !strpos(trans('validation.attributes.' . $key), 'alidation.')
+            ? trans('validation.attributes.' . $key)
+            : ucwords($key);
     }
 
-    private function aspect(&$parametres,$originalType){
-        switch ($originalType){
+    private function aspect(&$parametres, $originalType)
+    {
+        switch ($originalType) {
             case 'multiple' :
                 $finalType='select';
                 $parametres[] = 'multiple';
@@ -122,40 +126,42 @@ class FormBuilder
      */
     public function fillDefaultOptionsFromModel()
     {
-        $InputType = [];
+        $inputType = [];
         $model = getClase($this->elemento);
         foreach ($this->fillable as $property) {
             $parametres = [];
             $inputTpe = $this->elemento->getInputType($property);
-            $InputType[$property]['type'] = $this->aspect($parametres,$inputTpe['type'] ?? 'text');
+            $inputType[$property]['type'] = $this->aspect($parametres, $inputTpe['type'] ?? 'text');
             $label = existsTranslate('models.'.$model.'.'.$property) ? trans('models.'.$model.'.'.$property):null;
-            $ph = !strpos(trans('validation.attributes.' . $property), 'alidation.') ? trans('validation.attributes.' . $property) : ucwords($property);
+            $ph = !strpos(trans('validation.attributes.' . $property), 'alidation.')
+                ? trans('validation.attributes.' . $property)
+                : ucwords($property);
 
             $parametres['id'] = $property . '_id';
             $parametres['ph'] = $ph;
             if ($label) {
                 $parametres['label'] = $label;
             }
-            $parametres['class'] = 'col-md-7 col-xs-12 ' . $InputType[$property]['type'];
+            $parametres['class'] = 'col-md-7 col-xs-12 ' . $inputType[$property]['type'];
 
-            $InputType[$property]['default'] = $inputTpe['default'] ?? null;
+            $inputType[$property]['default'] = $inputTpe['default'] ?? null;
 
-            if (isset($inputTpe['disabled'])){
+            if (isset($inputTpe['disabled'])) {
                 $parametres = array_merge($parametres, ['disabled' => 'disabled']);
             }
-            if (isset($inputTpe['disableAll'])){
+            if (isset($inputTpe['disableAll'])) {
                 $parametres = array_merge($parametres, ['disabled' => 'on']);
             }
-            if ($this->elemento->isRequired($property)){
+            if ($this->elemento->isRequired($property)) {
                 $parametres = array_merge($parametres, ['required']);
             }
-            if (isset($inputTpe['inline'])){
+            if (isset($inputTpe['inline'])) {
                 $parametres = array_merge($parametres, ['inline' => 'inline']);
             }
 
-            $InputType[$property]['params'] = $parametres;
+            $inputType[$property]['params'] = $parametres;
         }
-        return($InputType);
+        return($inputType);
     }
 }
 

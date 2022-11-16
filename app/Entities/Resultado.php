@@ -63,18 +63,20 @@ class Resultado extends Model
         return $todos;
     }
 
-    public function scopeQGrupo($query,$grupo)
+    public function scopeQGrupo($query, $grupo)
     {
-        return $query->whereIn('idModuloGrupo',hazArray(Modulo_grupo::where('idGrupo',$grupo)->get(),'id','id'));
+        return $query->whereIn('idModuloGrupo', hazArray(Modulo_grupo::where('idGrupo', $grupo)->get(), 'id', 'id'));
     }
-    public function scopeDepartamento($query,$dep){
-        $profesores = Profesor::select('dni')->where('departamento',$dep)->get()->toarray();
-        return $query->whereIn('idProfesor',$profesores);
+    public function scopeDepartamento($query, $dep)
+    {
+        $profesores = Profesor::select('dni')->where('departamento', $dep)->get()->toarray();
+        return $query->whereIn('idProfesor', $profesores);
     }
-    public function scopeTrimestreCurso($query,$trimestre,$ciclo,$curso){
+    public function scopeTrimestreCurso($query, $trimestre, $ciclo, $curso)
+    {
         $evaluaciones = config("curso.trimestres.$ciclo.$trimestre");
-        return $query->where('evaluacion',$evaluaciones[$curso])
-                    ->whereIn('idModuloGrupo', hazArray(Modulo_grupo::Curso($curso)->get(),'id','id'));
+        return $query->where('evaluacion', $evaluaciones[$curso])
+                    ->whereIn('idModuloGrupo', hazArray(Modulo_grupo::Curso($curso)->get(), 'id', 'id'));
     }
     
     public function Grupo()
@@ -91,13 +93,16 @@ class Resultado extends Model
         return $this->belongsTo(Modulo_grupo::class, 'idModuloGrupo', 'id');
     }
     
-    public function getModuloAttribute(){
+    public function getModuloAttribute()
+    {
         return $this->ModuloGrupo->literal;
     }
-    public function getXEvaluacionAttribute(){
+    public function getXEvaluacionAttribute()
+    {
         return config("auxiliares.nombreEval.$this->evaluacion");
     }
-    public function getXProfesorAttribute(){
+    public function getXProfesorAttribute()
+    {
         return Profesor::find($this->idProfesor)->shortName;
     }
 

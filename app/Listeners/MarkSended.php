@@ -30,11 +30,13 @@ class MarkSended
      */
     public function handle(EmailSended $event)
     {
-        if ($event->modelo == 'Fct'){
-            if (Instructor::where('email',$event->correo)->get())
-                    $event->elemento->correoInstructor = 1;
-            if (Alumno::where('email',$event->correo)->get())
-                    $event->elemento->correoAlumno = 1;
+        if ($event->modelo == 'Fct') {
+            if (Instructor::where('email', $event->correo)->get()) {
+                $event->elemento->correoInstructor = 1;
+            }
+            if (Alumno::where('email', $event->correo)->get()) {
+                $event->elemento->correoAlumno = 1;
+            }
             $event->elemento->save();
         }
     }

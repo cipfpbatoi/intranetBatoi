@@ -332,7 +332,7 @@ class ImportTableSeeder extends Seeder
 
     private function alumnosBaja()
     {
-        $hoy = Hoy();
+        $hoy = hoy();
         DB::table('alumnos')->whereNull('baja')->update(['baja' => $hoy]);
     }
 

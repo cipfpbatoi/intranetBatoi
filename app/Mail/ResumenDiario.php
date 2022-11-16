@@ -34,7 +34,7 @@ class ResumenDiario extends Mailable
     public function build()
     {
         Log::notice('Enviat resum diari');
-        return $this->view('email.resumenDiario')->subject("Resumen dels missatges del dia " . Hoy() . " : ");
+        return $this->view('email.resumenDiario')->subject("Resumen dels missatges del dia " . hoy() . " : ");
     }
 
 }

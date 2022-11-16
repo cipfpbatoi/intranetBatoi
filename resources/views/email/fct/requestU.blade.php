@@ -12,7 +12,7 @@
     </ul>
     @if (!isset($elemento->Centro->Empresa->concierto))
         <ul>
-            <li>Representant legal:  ____________________________________________________</li>
+            <li>Representant legal: ____________________________________________________</li>
             <li>DNI Representant legal: _________________________________________________</li>
         </ul>
     @endif
@@ -38,4 +38,4 @@
         <li>Telèfon: __________________________________</li>
     </ul>
 </div>
-<div>Salutacions cordials de {{AuthUser()->shortName}}</div>
+<div>Salutacions cordials de {{authUser()->shortName}}</div>

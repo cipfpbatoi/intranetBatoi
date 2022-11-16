@@ -61,7 +61,7 @@ class Programacion extends Model
     public function getidModuloCicloOptions()
     {
         $horas = Horario::select()
-                ->Profesor(AuthUser()->dni)
+                ->Profesor(authUser()->dni)
                 ->whereNotNull('idGrupo')
                 ->whereNotIn('modulo',config('constants.modulosNoLectivos'))
                 ->distinct()
@@ -78,7 +78,7 @@ class Programacion extends Model
 
     public function scopeMisProgramaciones($query,$dni = null)
     {
-        $profesor = $dni??AuthUser()->dni;
+        $profesor = $dni??authUser()->dni;
         $horas = Horario::select('modulo','idGrupo')
                 ->distinct()
                 ->whereNotIn('modulo', config('constants.modulosSinProgramacion'))
@@ -95,14 +95,14 @@ class Programacion extends Model
         }
 
         return $query->whereIn('idModuloCiclo', $modulos)
-                ->where('curso',Curso());
+                ->where('curso',curso());
     }
 
     public function scopeDepartamento($query)
     {
         return $query->whereIn('idModuloCiclo', 
-                hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))
-                ->where('curso',Curso());
+                hazArray(Modulo_ciclo::where('idDepartamento', authUser()->departamento)->get(), 'id', 'id'))
+                ->where('curso',curso());
     }
     
     public function nomFichero()

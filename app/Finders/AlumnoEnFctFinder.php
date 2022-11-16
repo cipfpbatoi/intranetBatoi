@@ -17,7 +17,7 @@ class AlumnoEnFctFinder extends Finder
     private function filter(&$elements)
     {
         foreach ($elements as $element) {
-            $element->marked = (FechaInglesa($element->desde) <= Hoy() && FechaInglesa($element->hasta) >= Hoy());
+            $element->marked = (fechaInglesa($element->desde) <= hoy() && fechaInglesa($element->hasta) >= hoy());
         }
         return $elements;
     }

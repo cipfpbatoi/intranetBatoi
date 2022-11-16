@@ -1,16 +1,11 @@
 <?php
 
-/* clase : IntranetController
- * És la classe pare de tots els controladors amb el mètodes comuns a ells
- */
-
 namespace Intranet\Http\Controllers;
 
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
-use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Grupo;
@@ -41,16 +36,19 @@ class SaoController extends Controller
         return view('sao.index',compact('tutores','action'));
     }
 
-    public function post(Request $request){
+    public function post(Request $request)
+    {
         $accion = $request->accion;
         return $this->$accion($request);
     }
 
-    public function accion(Request $request,$accion){
+    public function accion(Request $request,$accion)
+    {
         return $this->$accion($request);
     }
 
-    public function annexes(Request $request){
+    public function annexes(Request $request)
+    {
         $dni = $request->profesor;
         $driver = RemoteWebDriver::create($this::SERVER_URL, DesiredCapabilities::firefox());
         try {
@@ -76,7 +74,7 @@ class SaoController extends Controller
                     sleep(1);
                 }
             }
-        }catch (Exception $e){
+        }catch (Exception $e) {
             Alert::danger($e);
         }
         $driver->close();
@@ -269,7 +267,7 @@ class SaoController extends Controller
     }
 
     private function igual($intranet,$sao){
-        if (trim(strtolower(eliminar_tildes($intranet))) == trim(strtolower(eliminar_tildes($sao)))) return null;
+        if (trim(strtolower(eliminarTildes($intranet))) == trim(strtolower(eliminarTildes($sao)))) return null;
         return array('intranet'=>$intranet,'sao'=>$sao);
     }
 

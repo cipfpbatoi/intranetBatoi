@@ -9,7 +9,7 @@ class RoleMiddleware
 
     public function handle($request, Closure $next, $role)
     {
-        if (UserisNameAllow($role) || isAdmin()) {
+        if (userIsNameAllow($role) || isAdmin()) {
             return $next($request);
         }
         else {

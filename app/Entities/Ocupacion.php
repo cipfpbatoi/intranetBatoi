@@ -25,5 +25,4 @@ class Ocupacion extends Model
     {
         return App::getLocale(session('lang')) == 'es' ? $this->nombre : $this->nom;
     }
-
 }

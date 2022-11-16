@@ -11,8 +11,7 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
 use DB;
-use Intranet\Jobs\UploadFiles;
-use Intranet\Mail\Comunicado;
+use Intranet\Exceptions\IntranetException;
 use Intranet\Services\SecretariaService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Documento;
@@ -332,7 +331,7 @@ class PanelFctAvalController extends IntranetController
         try {
             $fct = AlumnoFct::findOrFail($id);
             $this->SService = new SecretariaService();
-        } catch (\Exception $e) {
+        } catch (IntranetException $e) {
             Alert::danger($e->getMessage());
             return back();
         }
@@ -358,7 +357,7 @@ class PanelFctAvalController extends IntranetController
             try {
                 $this->SService->uploadA56($document);
                 Alert::success('Documentos enviados correctamente');
-            } catch (\Exception $e) {
+            } catch (IntranetException $e) {
                 Alert::danger($e->getMessage());
             }
         } else {

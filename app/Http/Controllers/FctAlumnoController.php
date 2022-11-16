@@ -215,7 +215,8 @@ class FctAlumnoController extends IntranetController
         return $array;
     }
 
-    private function makeArrayPdf11($fct){
+    private function makeArrayPdf11($fct)
+    {
         $alumno = $fct->Alumno;
         $tutor = AuthUser();
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();

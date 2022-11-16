@@ -18,14 +18,14 @@ class Task extends Model
 
     public function scopeMisTareas($query,$profesor=null)
     {
-        $profesor = Profesor::find($profesor) ?? AuthUser();
-        $rolesProfesor = RolesUser($profesor->rol);
+        $profesor = Profesor::find($profesor) ?? authUser();
+        $rolesProfesor = rolesUser($profesor->rol);
         return $query->whereIn('destinatario',$rolesProfesor)
             ->where('activa',1);
     }
 
     public function getmyDetailsAttribute(){
-        $teacher = $teacher?? AuthUser()->dni;
+        $teacher = $teacher?? authUser()->dni;
         return $this->profesores()->where('dni',$teacher)->first();
     }
 

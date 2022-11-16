@@ -1,54 +1,56 @@
 <?php
 
-function PeriodePractiques($fecha = null)
+function periodePractiques($fecha = null)
 {
-    $inici = $fecha ? new Date($fecha) : new Date(Hoy());
+    $inici = $fecha ? new Date($fecha) : new Date(hoy());
     $inici->format('Y-m-d');
     if ($inici <= config('curso.fct.2')['inici']) {
         return 1;
-    }
-    else {
+    } else {
         return 2;
     }
 }
 
-function fechaCurta($fecha){
+function fechaCurta($fecha)
+{
     $hoy = new Date($fecha);
     return $hoy->format("d/m");
 }
 
-function Fecha($fecha)
+function fecha($fecha)
 {
     $hoy = new Date($fecha);
     return $hoy->toDateString();
 }
-function fechaSao($fecha){
-    $descp = explode('/',$fecha);
+function fechaSao($fecha)
+{
+    $descp = explode('/', $fecha);
     return $descp[2].'-'.$descp[1].'-'.$descp[0];
 }
 
-function FechaInglesa($fecha)
+function fechaInglesa($fecha)
 {
     $hoy = new Date($fecha);
     return $hoy->format('Y-m-d');
 }
 
-function FechaInglesaLarga($fecha)
+function fechaInglesaLarga($fecha)
 {
     $hoy = new Date($fecha);
     return $hoy->format('Y-m-d H:i:s');
 }
 
-function buildFecha($fecha,$hora)
+function buildFecha($fecha, $hora)
 {
     $date = new Date($fecha);
     $str = $date->format('Y-m-d');
     return new DateTime($str." ".$hora.":00");
 
 }
-function FechaString($fecha = null, $idioma = null)
+function fechaString($fecha = null, $idioma = null)
 {
-    $fc1 = ($fecha == null) ? new Jenssegers\Date\Date() : (is_string($fecha) ? New Jenssegers\Date\Date($fecha) : $fecha);
+    $fecha = is_string($fecha) ? new Jenssegers\Date\Date($fecha) : $fecha;
+    $fc1 = $fecha ?? new Jenssegers\Date\Date();
     if (!isset($idioma)) {
         $idioma = Session::get('lang');
     }
@@ -58,29 +60,30 @@ function FechaString($fecha = null, $idioma = null)
             ' de ' . $fc1->format('Y');
 }
 
-function Hoy($format = null)
+function hoy($format = null)
 {
     $fecha = new Date();
     return $format ? $fecha->format($format) : $fecha->toDateString();
 }
 
-function Ayer()
+function ayer()
 {
     $fecha = new Date();
     $fecha->subDay(1);
     return $fecha->toDateString();
 }
 
-function Manana()
+function manana()
 {
     $fecha = new Date();
     $fecha->addDay(1);
     return $fecha;
 }
 
-function FechaPosterior($fecha1, $fecha2 = null)
+function fechaPosterior($fecha1, $fecha2 = null)
 {
-    $fecha2 = is_null($fecha2) ? new Date() : (is_string($fecha2) ? new Date($fecha2) : $fecha2);
+    $fecha2 = is_string($fecha2) ? new Date($fecha2) : $fecha2;
+    $fecha2 = $fecha2 ?? new Date();
     $fecha1 = is_string($fecha1) ? new Date($fecha1) : $fecha1;
     return $fecha1 > $fecha2 ? $fecha1 : $fecha2;
 }
@@ -88,10 +91,10 @@ function FechaPosterior($fecha1, $fecha2 = null)
 
 function haVencido($fecha)
 {
-    return Hoy() >= Fecha($fecha) ? true : false;
+    return hoy() >= fecha($fecha) ? true : false;
 }
 
-function vigente($fecha1,$fecha2)
+function vigente($fecha1, $fecha2)
 {
     return haVencido($fecha1)&&!haVencido($fecha2);
 }
@@ -114,7 +117,7 @@ function esMayor($ini, $fin)
 
 /**
  * Devuelve el dia de una fecha
- * 
+ *
  * @param fecha
  * @return integer
  */
@@ -126,7 +129,7 @@ function day($fecha)
 
 /**
  * Devuelve el mes en letra de una fecha
- * 
+ *
  * @param fecha
  * @return string
  */
@@ -155,7 +158,7 @@ function hour($fecha)
 
 /**
  * Devuelve el dia de la semana de una fecha
- * 
+ *
  * @param fecha
  * @return char
  */
@@ -167,7 +170,7 @@ function nameDay($fecha)
 
 /**
  * Devuelve la hora de una fecha
- * 
+ *
  * @param fecha
  * @return string
  */
@@ -180,7 +183,7 @@ function hora($fecha = null)
 function sesion($hora)
 {
     return
-        Illuminate\Support\Facades\Cache::remember('HoraSes',now()->addMinutes(1),function() use($hora){
+        Illuminate\Support\Facades\Cache::remember('HoraSes', now()->addMinutes(1), function () use ($hora) {
             $now = \Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first();
             return isset($now->codigo) ? $now->codigo : 0;
         });
@@ -188,7 +191,7 @@ function sesion($hora)
 
 /**
  * Resta dos hora
- * 
+ *
  * @param horaini horafin
  * @return hora
  */
@@ -215,7 +218,7 @@ function restarHoras($horaini, $horafin)
 
 /**
  * Suma dos horas
- * 
+ *
  * @param horaini horafin
  * @return hora
  */
@@ -243,11 +246,11 @@ function sumarHoras($horaini, $horafin)
 
 /**
  * Calcula hora en numero
- * 
+ *
  * @param hora
  * @return integer
  */
-function Horas($hora)
+function horas($hora)
 {
     $horai = substr($hora, 0, 2);
     $mini = substr($hora, 3, 2);

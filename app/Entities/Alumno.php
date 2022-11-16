@@ -79,7 +79,14 @@ class Alumno extends Authenticatable
 
     public function Fcts()
     {
-        return $this->belongsToMany(Fct::class,'alumno_fcts', 'idAlumno', 'idFct','nia','id')->withPivot(['calificacion','calProyecto','actas','insercion']);
+        return $this->belongsToMany(
+            Fct::class,
+            'alumno_fcts',
+            'idAlumno',
+            'idFct',
+            'nia',
+            'id'
+        )->withPivot(['calificacion','calProyecto','actas','insercion']);
     }
     public function AlumnoFct()
     {
@@ -93,13 +100,13 @@ class Alumno extends Authenticatable
     
     public function Provincia()
     {
-        return $this->belongsTo(Provincia::class, 'provincia','id');
+        return $this->belongsTo(Provincia::class, 'provincia', 'id');
     }
 
 
     public function Municipio()
     {
-        return $this->belongsTo(Municipio::class,'municipio','cod_municipio')->where('provincias_id',$this->provincia);
+        return $this->belongsTo(Municipio::class, 'municipio', 'cod_municipio')->where('provincias_id', $this->provincia);
     }
 
     public function scopeQGrupo($query, $grupo)
@@ -121,25 +128,27 @@ class Alumno extends Authenticatable
     }
     public function scopeMisAlumnos($query,$profesor=null,$dual=false)
     {
-        $profesor = $profesor ?? AuthUser()->dni;
+        $profesor = $profesor ?? authUser()->dni;
         $gruposC = Grupo::select('codigo')->QTutor($profesor,$dual)->get();
         $grupos = $gruposC->count()>0?$gruposC->toarray():[];
-        $alumnos = hazArray(AlumnoGrupo::select('idAlumno')->whereIn('idGrupo',$grupos)->get(),'idAlumno','idAlumno');
-        return $query->whereIn('nia',$alumnos);
+        $alumnos = hazArray(AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupos)->get(), 'idAlumno','idAlumno');
+        return $query->whereIn('nia', $alumnos);
         
     }
 
 
 
-    public function getDepartamentoAttribute(){
+    public function getDepartamentoAttribute()
+    {
         return $this->Grupo->first()->Ciclo->departamento??'99';
     }
     
-    public function getTutorAttribute(){
+    public function getTutorAttribute()
+    {
         if ($this->Grupo->count() == 0) {
             return [];
         }
-        foreach ($this->Grupo as $grupo){
+        foreach ($this->Grupo as $grupo) {
             $tutor[] = $grupo->Tutor;
         }
         return $tutor;
@@ -151,11 +160,11 @@ class Alumno extends Authenticatable
     }
     public function getFullNameAttribute()
     {
-        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2,'UTF-8'));
+        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2, 'UTF-8'));
     }
     public function getShortNameAttribute()
     {
-        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1,'UTF-8'));
+        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1, 'UTF-8'));
     }
     public function getNameFullAttribute()
     {
@@ -172,7 +181,7 @@ class Alumno extends Authenticatable
     public function getHorasFctAttribute()
     {
         $horas = 0;
-        foreach ($this->AlumnoFct as $fct){
+        foreach ($this->AlumnoFct as $fct) {
             $horas += $fct->horas;
         }
         return $horas;
@@ -182,26 +191,31 @@ class Alumno extends Authenticatable
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
-    public function getContactoAttribute(){
+    public function getContactoAttribute()
+    {
         return $this->getFullNameAttribute();
     }
-    public function getIdAttribute(){
+    public function getIdAttribute()
+    {
         return $this->nia;
     }
-    public function saveContact($contacto,$email)
+    public function saveContact($contacto, $email)
     {
         $this->email = $email;
         $this->save();
     }
-    public function getPoblacionAttribute(){
+    public function getPoblacionAttribute()
+    {
         return $this->Municipio->municipio??'NO TROBAT';
     }
-    public function getesMenorAttribute(){
+    public function getesMenorAttribute()
+    {
         $hoy = new Date();
         $hace18 = $hoy->subYears(18)->toDateString();
         return $this->fecha_nac > $hace18 ;
     }
-    public function getEdatAttribute(){
+    public function getEdatAttribute()
+    {
         $nac = new Date($this->fecha_nac);
         return $nac->age;
     }

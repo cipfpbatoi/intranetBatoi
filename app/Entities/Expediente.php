@@ -40,8 +40,9 @@ class Expediente extends Model
 
 
     
-    public function tipoExpediente(){
-        return $this->belongsTo(TipoExpediente::class,'tipo','id');
+    public function tipoExpediente()
+    {
+        return $this->belongsTo(TipoExpediente::class, 'tipo', 'id');
     }
     
     public function getfechaAttribute($entrada)
@@ -58,19 +59,19 @@ class Expediente extends Model
 
     public function getTipoOptions()
     {
-        return hazArrayRole(TipoExpediente::all(),'id','titulo');
+        return hazArray(TipoExpediente::all(), 'id', 'titulo');
     }
     
-    public function getIdModuloOptions(){
-        return hazArray(Modulo::MisModulos()->Lectivos()->get(),'codigo', 'vliteral');
+    public function getIdModuloOptions()
+    {
+        return hazArray(Modulo::MisModulos()->Lectivos()->get(), 'codigo', 'vliteral');
     }
 
     public function getIdAlumnoOptions()
     {
         $misAlumnos = [];
         $migrupos = Grupo::MisGrupos()->get();
-        foreach ($migrupos as $migrupo)
-        {
+        foreach ($migrupos as $migrupo) {
             if (isset($migrupo->codigo)) {
                 $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->codigo)->get();
 
@@ -100,32 +101,43 @@ class Expediente extends Model
     {
         return $this->belongsTo(Modulo::class, 'idModulo', 'codigo');
     }
-    public function getNomAlumAttribute(){
+    public function getNomAlumAttribute()
+    {
         return $this->Alumno->FullName;
     }
-    public function getSituacionAttribute(){
-        return isblankTrans('models.Expediente.'.$this->estado) ? trans('messages.situations.'.$this->estado) : trans('models.Expediente.' . $this->estado);
+    public function getSituacionAttribute()
+    {
+        return isblankTrans('models.Expediente.'.$this->estado)
+            ? trans('messages.situations.'.$this->estado)
+            : trans('models.Expediente.' . $this->estado);
     }
-    public function getXtipoAttribute(){
+    public function getXtipoAttribute()
+    {
         return $this->tipoExpediente->titulo;
     }
-    public function getXmoduloAttribute(){
+    public function getXmoduloAttribute()
+    {
         return $this->Modulo->literal??'';
     }
-    public function getShortAttribute(){
-        return substr($this->explicacion,0,40);
+    public function getShortAttribute()
+    {
+        return substr($this->explicacion, 0, 40);
     }
-    public function getEsInformeAttribute(){
+    public function getEsInformeAttribute()
+    {
         return $this->tipoExpediente->informe;
     }
-    public function getQuienAttribute(){
+    public function getQuienAttribute()
+    {
         return $this->nomAlumn;
     }
-    public function scopeListos($query){
-        return $query->where('estado',2);
+    public function scopeListos($query)
+    {
+        return $query->where('estado', 2);
     }
 
-    public function getAnnexoAttribute(){
+    public function getAnnexoAttribute()
+    {
         return $this->tipoExpediente->orientacion;
     }
 

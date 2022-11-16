@@ -237,7 +237,7 @@ class Profesor extends Authenticatable
 
     public function getXrolAttribute()
     {
-        return implode(',', NameRolesUser($this->rol));
+        return implode(',', nameRolesUser($this->rol));
     }
 
     public function getXdepartamentoAttribute()
@@ -308,7 +308,7 @@ class Profesor extends Authenticatable
 
     public function getQualitatFile(){
         $find = Documento::where('idProfesor', $this->dni)->where('tipoDocumento','Qualitat')
-                ->where('curso',Curso())->first();
+                ->where('curso',curso())->first();
         if ($find) {
             return $find->fichero;
         }
@@ -317,7 +317,7 @@ class Profesor extends Authenticatable
         }
     }
     public function getGrupoTutoriaAttribute(){
-        $miGrupo = Grupo::where('tutor', '=', AuthUser()->dni)->get();
+        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->get();
         return isset($miGrupo->first()->codigo) ? $miGrupo->first()->codigo : '';
     }
 

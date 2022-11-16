@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Activity;
 use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
-use function AuthUser,collect,view;
+use function authUser,collect,view;
 
 
 class MyMail
@@ -38,8 +38,8 @@ class MyMail
     public function __construct($elements=null,$view=null,$features=[],$attach=null,$editable=null)
     {
         $this->features = $features;
-        $this->from = !isset($this->features['from'])?AuthUser()->email:$this->from;
-        $this->fromPerson = !isset($this->features['fromPerson'])?AuthUser()->FullName:$this->fromPerson;
+        $this->from = !isset($this->features['from'])?authUser()->email:$this->from;
+        $this->fromPerson = !isset($this->features['fromPerson'])?authUser()->FullName:$this->fromPerson;
         if (is_object($elements)){
             $this->elements = $elements;
             $this->class = get_class($this->elements->first());

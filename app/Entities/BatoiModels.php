@@ -153,7 +153,7 @@ trait BatoiModels
     }
 
     private function getDirectory($clase){
-        return '/gestor/' . Curso() . '/' . $clase;
+        return '/gestor/' . curso() . '/' . $clase;
     }
 
     private function getFileName($extension,$clase)

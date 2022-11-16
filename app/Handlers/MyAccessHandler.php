@@ -105,7 +105,7 @@ class MyAccessHandler implements AccessHandler
         }
         $allow = false;
         foreach ($allowed as $role) {
-            if (UserisAllow($role))
+            if (userIsAllow($role))
                 $allow = true;
         }
         return $allow;

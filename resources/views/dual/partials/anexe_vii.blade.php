@@ -67,7 +67,7 @@
     </div>
     <div style="position:absolute;left:687.80px;top:260.40px" class="cls_009">
         <span class="cls_009">TUTOR O TUTORA  FP DUAL</span><br/>
-        <span class="cls_004"> {{AuthUser()->FullName}}</span>
+        <span class="cls_004"> {{authUser()->FullName}}</span>
     </div>
     <div style="position:absolute;left:54.70px;top:296.10px" class="cls_009">
         <span class="cls_009">EMPRESA</span><br/>
@@ -75,11 +75,15 @@
     </div>
     <div style="position:absolute;left:549.90px;top:296.10px" class="cls_009">
         <span class="cls_009">INSTRUCTOR O INSTRUCTORA</span><br/>
-        <span class="cls_004">@if ($todos->Dual->Instructor) {{$todos->Dual->Instructor->Nombre }} @endif</span>
+        <span class="cls_004">@if ($todos->Dual->Instructor)
+                {{$todos->Dual->Instructor->Nombre }}
+            @endif</span>
     </div>
     <div style="position:absolute;left:1030.60px;top:296.10px" class="cls_009">
         <span class="cls_009">NIF</span><br/>
-        <span class="cls_004">@if ($todos->Dual->Instructor) {{$todos->Dual->Instructor->dni }} @endif</span>
+        <span class="cls_004">@if ($todos->Dual->Instructor)
+                {{$todos->Dual->Instructor->dni }}
+            @endif</span>
     </div>
     <div style="position:absolute;left:54.70px;top:338.20px" class="cls_006">
         <span class="cls_006">B</span>
@@ -139,16 +143,18 @@
         <span class="cls_013">Vº Bº del tutor o tutora de FP Dual</span>
     </div>
     <div style="position:absolute;left:180.70px;top:774.20px" class="cls_013">
-        <span class="cls_004">@if ($todos->Dual->Instructor) {{$todos->Dual->Instructor->Nombre }} @endif</span><br/>
-        
+        <span class="cls_004">@if ($todos->Dual->Instructor)
+                {{$todos->Dual->Instructor->Nombre }}
+            @endif</span><br/>
+
     </div>
     <div style="position:absolute;left:130.70px;top:784.20px" class="cls_013">
-        
+
         <span class="cls_013">Firma:__________________________________________</span>
     </div>
     <div style="position:absolute;left:850.70px;top:774.20px" class="cls_013">
-        <span class="cls_004"> {{AuthUser()->FullName}}</span><br/>
-        
+        <span class="cls_004"> {{authUser()->FullName}}</span><br/>
+
     </div>
     <div style="position:absolute;left:800.10px;top:784.20px" class="cls_013">
         <span class="cls_013">Firma:_________________________________________</span>

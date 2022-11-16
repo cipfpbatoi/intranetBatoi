@@ -2,14 +2,17 @@
 
 $(function () {
     $("#contacto_id").change(function () {
-        var contacto = $('#contacto_id').val();
+        let contacto = $('#contacto_id').val();
         if ($('#instructor_id').val() === '') {
             $('#instructor_id').empty().val(contacto);
         }
     });
+    $("button.btn-sm.btn-danger").click(function () {
+
+    })
     $("#fusionar").click(function () {
-        var fusionar = [];
-        var token = $("#_token").text();
+        let fusionar = [];
+        let token = $("#_token").text();
         $('input:checkbox').each(function () {
             if (this.checked)
                 fusionar.push($(this).val());
@@ -27,7 +30,6 @@ $(function () {
         }, function (error) {
             showMessage(["Error " + error.status + ": " + error.statusText, "error"], 'error');
         });
-        //alert ('fusionar'+fusionar);
     });
 });
 

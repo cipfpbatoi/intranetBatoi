@@ -42,7 +42,7 @@ class Poll extends Model
             return 'Activa';
         }
         $fin = new Date($this->hasta);
-        if (Hoy()>$fin->format('Y-m-d')) {
+        if (hoy()>$fin->format('Y-m-d')) {
             return 'Finalizada';
         }
         return 'No activa';

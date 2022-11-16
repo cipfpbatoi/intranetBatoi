@@ -42,7 +42,7 @@ class Modulo extends Model
     
     public function scopeMisModulos($query, $profesor = null)
     {
-        $profesor = $profesor ?? AuthUser();
+        $profesor = $profesor ?? authUser();
         $modulos = Horario::select('modulo')
                 ->Profesor($profesor->dni)
                 ->whereNotNull('idGrupo')

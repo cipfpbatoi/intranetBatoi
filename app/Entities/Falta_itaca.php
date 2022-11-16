@@ -26,19 +26,24 @@ class Falta_itaca extends Model
         return $this->belongsTo(Grupo::class, 'idGrupo', 'codigo');
     }
     
-    public function getNombreAttribute(){
+    public function getNombreAttribute()
+    {
         return $this->Profesor->nameFull;
     }
-    public function getHorasAttribute(){
+    public function getHorasAttribute()
+    {
         return $this->Hora->hora_ini.' - '.$this->Hora->hora_fin;
     }
-    public function getXGrupoAttribute(){
+    public function getXGrupoAttribute()
+    {
         return $this->Grupo->nombre;
     }
-    public function getFichajeAttribute(){
+    public function getFichajeAttribute()
+    {
         return $this->enCentro?'SI':'NO';
     }
-    public function getXestadoAttribute(){
+    public function getXestadoAttribute()
+    {
         return trans('models.Falta_itaca.'.$this->estado);
     }
     public function getDiaAttribute($entrada)
@@ -52,14 +57,14 @@ class Falta_itaca extends Model
         
         $elemento = static::findOrFail($id);
         $dia = new Date($elemento->dia);
-        $elementos = static::where('idProfesor',$elemento->idProfesor)
-                ->where('dia',$dia->format('Y-m-d'))
+        $elementos = static::where('idProfesor', $elemento->idProfesor)
+                ->where('dia', $dia->format('Y-m-d'))
                 ->get();
-        foreach ($elementos as $element){
+        foreach ($elementos as $element) {
             $element->estado = $estado;
             $element->save();
         }
-        AdviseService::exec($element,$mensaje);
+        AdviseService::exec($element, $mensaje);
 
         return ($element->estado);
     }

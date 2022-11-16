@@ -68,7 +68,7 @@ abstract class Boton
     // utilitza la funcio html que esta definida en les filles
     public function show($elemento = null)
     {
-        if (UserisAllow($this->roles)) {
+        if (userIsAllow($this->roles)) {
             if ($elemento == null)
                 echo $this->html();
             else if (isset($elemento))

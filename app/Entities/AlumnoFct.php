@@ -45,7 +45,7 @@ class AlumnoFct extends Model
 
     public function scopeMisFcts($query,$profesor=null)
     {
-        $profesor = $profesor?$profesor:AuthUser()->dni;
+        $profesor = $profesor?$profesor:authUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
 
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
@@ -66,7 +66,7 @@ class AlumnoFct extends Model
     
     public function scopeMisDual($query,$profesor=null)
     {
-        $profesor = $profesor?$profesor:AuthUser()->dni;
+        $profesor = $profesor?$profesor:authUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor,true)->get()->toArray();
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor,true)->first()->idCiclo??null;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
@@ -77,7 +77,7 @@ class AlumnoFct extends Model
     
     public function scopeMisConvalidados($query,$profesor=null)
     {
-        $profesor = $profesor?$profesor:AuthUser()->dni;
+        $profesor = $profesor?$profesor:authUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
         $fcts = Fct::select('id')->Where('asociacion',2)->get()->toArray();
         return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);

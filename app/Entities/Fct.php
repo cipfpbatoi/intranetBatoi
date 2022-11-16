@@ -97,7 +97,7 @@ class Fct extends Model
     
     public function scopeMisFcts($query,$profesor=null,$dual=false)
     {
-        $profesor = $profesor??AuthUser()->dni;
+        $profesor = $profesor??authUser()->dni;
         $cicloC =  Grupo::QTutor($profesor,$dual)->first()->idCiclo??null;
 
         $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
@@ -111,7 +111,7 @@ class Fct extends Model
 
     public function scopeMisFctsColaboracion($query,$profesor=null)
     {
-        $dni = $profesor??AuthUser()->dni;
+        $dni = $profesor??authUser()->dni;
         $colaboraciones = hazArray(Colaboracion::where('tutor',$dni)->get(),'id','id');
         return $query->whereIn('idColaboracion',$colaboraciones);
     }
@@ -144,7 +144,7 @@ class Fct extends Model
     }
    
     public function getIdColaboracionOptions(){
-        $cicloC = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->get();
+        $cicloC = Grupo::select('idCiclo')->QTutor(authUser()->dni)->get();
         $ciclo = $cicloC->count()>0?$cicloC->first()->idCiclo:'';
         $colaboraciones = Colaboracion::where('idCiclo',$ciclo)->get();
         $todos = [];
@@ -199,7 +199,7 @@ class Fct extends Model
 
 
     public function getinTimeAttribute(){
-        $hoy = Hoy('Y-m-d');
+        $hoy = hoy('Y-m-d');
         if ( $hoy > config('curso.fct.2')['inici'] ){
             return ($this->periode == 2);
         } else {
@@ -213,7 +213,7 @@ class Fct extends Model
     public function getQuantsAttribute(){
        $quants = 0;
         foreach ($this->Alumnos as $alumno){
-            if (in_array(AuthUser(),$alumno->tutor)) {
+            if (in_array(authUser(),$alumno->tutor)) {
                 $quants++;
             }
         } 
@@ -229,7 +229,7 @@ class Fct extends Model
     public function getLalumnesAttribute(){
         $alumnes = '';
         foreach ($this->Alumnos as $alumno){
-            if (in_array(AuthUser(),$alumno->tutor)) {
+            if (in_array(authUser(),$alumno->tutor)) {
                 $alumnes .= $alumno->ShortName . ', ';
             }
         } 

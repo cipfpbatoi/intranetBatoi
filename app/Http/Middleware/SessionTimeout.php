@@ -31,9 +31,9 @@ class SessionTimeout {
         elseif(time() - $this->session->get('lastActivityTime') > $this->timeout){
             $this->session->forget('lastActivityTime');
             $cookie = cookie('intend', $isLoggedIn ? url()->current() : 'dashboard');
-            $usuario = AuthUser();
+            $usuario = authUser();
             if ($usuario == null) return redirect('/login');
-            if (isset(AuthUser()->codigo)){
+            if (isset(authUser()->codigo)){
                 Auth::guard('profesor')->logout();
             }
             else {

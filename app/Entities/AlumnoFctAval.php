@@ -62,7 +62,7 @@ class AlumnoFctAval extends AlumnoFct
      
      public function scopeMisFcts($query,$profesor=NULL)
      {
-        $profesor = $profesor?$profesor:AuthUser()->dni;
+        $profesor = $profesor?$profesor:authUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
         if (count($alumnos)){
             $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;

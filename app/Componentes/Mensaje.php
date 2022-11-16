@@ -21,8 +21,8 @@ class Mensaje
         if ($emisor) {
             return $emisor;
         }
-        if (AuthUser()) {
-            return AuthUser()->shortName;
+        if (authUser()) {
+            return authUser()->shortName;
         }
         if (apiAuthUser()) {
             return apiAuthUser()->shortName;
@@ -34,7 +34,7 @@ class Mensaje
     {
         $emisor = self::emisor($emisor);
         $receptor = self::receptor($id);
-        $fecha = FechaString();
+        $fecha = fechaString();
         if ($emisor && $receptor) {
             $receptor->notify(new mensajePanel(
                 ['motiu' => $mensaje,
@@ -42,7 +42,7 @@ class Mensaje
                     'data' => $fecha,
                     'enlace' => $enlace]));
         } else {
-            AuthUser()->notify(new mensajePanel(
+            authUser()->notify(new mensajePanel(
                 ['motiu' => "No trobe usuari $id",
                     'emissor' => $emisor,
                     'data' => $fecha,

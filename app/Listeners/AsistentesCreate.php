@@ -29,12 +29,15 @@ class AsistentesCreate
      */
 
 
-    private function queAlumnes($reunion){
+    private function queAlumnes($reunion)
+    {
         $grupo = $reunion->GrupoClase;
 
         if ($reunion->extraOrdinaria) {
             if ($grupo->curso == 2) {
-                return $grupo->Alumnos->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(), 'idAlumno'));
+                return $grupo
+                    ->Alumnos
+                    ->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(), 'idAlumno'));
             } else {
                 return $grupo->Alumnos;
             }
@@ -44,45 +47,68 @@ class AsistentesCreate
 
     private function assignaAlumnes($reunion)
     {
-        //$capacitat = $reunion->avaluacioFinal?0:3;
-
-        foreach ($this->queAlumnes($reunion) as $alumno)
-            $reunion->alumnos()->attach($alumno->nia,['capacitats'=>3]);
+        foreach ($this->queAlumnes($reunion) as $alumno) {
+            $reunion->alumnos()->attach($alumno->nia, ['capacitats' => 3]);
+        }
     }
 
 
     public function handle(ReunionCreated $event)
     {
-        if (AuthUser()) {
+        if (authUser()) {
             $reunion = $event->reunion;
             $tipo = $reunion->Tipos();
-            if ($tipo->colectivo == 'Departamento') {
-                $profesores = Profesor::Activo()->where('departamento', '=', AuthUser()->departamento)->get();
+            switch ($tipo->colectivo) {
+                case 'Departamento' :
+                    $profesores = Profesor::Activo()->where('departamento', '=', authUser()->departamento)->get();
+                    break;
+                case 'Profesor' :
+                    $profesores = Profesor::Activo()->get();
+                    break;
+                case 'GrupoTrabajo':
+                    $profesores = Profesor::GrupoT($reunion->grupo)->get();
+                    break;
+                case 'Grupo':
+                    $profesores = Profesor::Grupo($reunion->GrupoClase->codigo)->get();
+                    $this->assignaAlumnes($reunion);
+                    break;
+                case 'Jefe' :
+                    $profesores = $this->esJefe();
+                    break;
+                default:
+                    $profesores = [];
             }
-            if ($tipo->colectivo == 'Profesor') {
-                $profesores = Profesor::Activo()->get();
+            $this->asignaProfeReunion($profesores, $reunion);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    private function esJefe(): array
+    {
+        $profesores = [];
+        foreach (Profesor::Activo()->get() as $profesor) {
+            if ($profesor->rol % config('roles.rol.jefe_dpto') == 0 ||
+                $profesor->rol % config('roles.rol.direccion') == 0) {
+                $profesores[] = $profesor;
             }
-            if ($tipo->colectivo == 'GrupoTrabajo') {
-                $profesores = Profesor::GrupoT($reunion->grupo)->get();
-            }
-            if ($tipo->colectivo == 'Grupo') {
-                $profesores = Profesor::Grupo($reunion->GrupoClase->codigo)->get();
-                $this->assignaAlumnes($reunion);
-            }
-            if ($tipo->colectivo == '') {
-                $profesores = [];
-            }
-            if ($tipo->colectivo == 'Jefe'){
-                $todos = Profesor::Activo()->get();
-                $profesores = [];
-                foreach ($todos as $uno){
-                    if ($uno->rol % config('roles.rol.jefe_dpto') == 0 || $uno->rol % config('roles.rol.direccion')== 0) 
-                        $profesores[] = $uno;
-                }
-            }
-            foreach ($profesores as $profe) {
-                if ($profe->Sustituye) $reunion->profesores()->attach($profe->Sustituye->dni,['asiste'=>true]);
-                else $reunion->profesores()->attach($profe->dni,['asiste'=>true]);
+        }
+        return $profesores;
+    }
+
+    /**
+     * @param  array  $profesores
+     * @param  Reunion  $reunion
+     * @return void
+     */
+    private function asignaProfeReunion($profesores, Reunion $reunion): void
+    {
+        foreach ($profesores as $profe) {
+            if ($profe->Sustituye) {
+                $reunion->profesores()->attach($profe->Sustituye->dni, ['asiste' => true]);
+            } else {
+                $reunion->profesores()->attach($profe->dni, ['asiste' => true]);
             }
         }
     }

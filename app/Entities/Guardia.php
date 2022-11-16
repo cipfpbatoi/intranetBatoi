@@ -29,15 +29,15 @@ class Guardia extends Model
 
     public static function ahora(){
         $sesion = sesion(hora());
-        $dia_semana = Hoy();
+        $dia_semana = hoy();
         return Guardia::where('dia',$dia_semana)
             ->where('hora', $sesion)
             ->get();
     }
     public static function estoy($idProfesor = null){
-        $idProfesor = $idProfesor??AuthUser()->dni;
+        $idProfesor = $idProfesor??authUser()->dni;
         $sesion = sesion(hora());
-        $dia_semana = Hoy();
+        $dia_semana = hoy();
         return (Guardia::where('idProfesor',$idProfesor)
             ->where('dia',$dia_semana)
             ->where('hora', $sesion)

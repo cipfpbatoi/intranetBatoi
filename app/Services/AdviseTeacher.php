@@ -15,8 +15,8 @@ class AdviseTeacher
 {
     public static function exec($elemento, $mensaje = null, $idEmisor = null, $emisor = null)
     {
-        $mensaje = $mensaje ? $mensaje : "No estaré en el centre des de " . $elemento->desde . " fins " . $elemento->hasta;
-        $idEmisor = $idEmisor ? $idEmisor : $elemento->idProfesor;
+        $mensaje = $mensaje ?? "No estaré en el centre des de " . $elemento->desde . " fins " . $elemento->hasta;
+        $idEmisor = $idEmisor ??  $elemento->idProfesor;
 
         if (count($grupos = self::gruposAfectados($elemento, $idEmisor)->toArray()) == 0) {
             return;
@@ -46,12 +46,12 @@ class AdviseTeacher
                 ->get());
         }
 
-        $dia_semana = nameDay($elemento->desde);
+        $diaSemana = nameDay($elemento->desde);
         if (count($horas = self::horasAfectadas($elemento))) {
             return (Horario::distinct()
                 ->select('idGrupo')
                 ->Profesor($idProfesor)
-                ->Dia($dia_semana)
+                ->Dia($diaSemana)
                 ->whereNotNull('idGrupo')
                 ->whereIn('sesion_orden', $horas)
                 ->get());
@@ -74,18 +74,17 @@ class AdviseTeacher
     public static function sendEmailTutor($elemento)
     {
         $idEmisor = $elemento->idProfesor;
-        foreach (self::gruposAfectados($elemento, $idEmisor)->toArray() as $grupos){
+        foreach (self::gruposAfectados($elemento, $idEmisor)->toArray() as $grupos) {
             foreach ($grupos as $item) {
                 $grupo = Grupo::find($item);
                 $correoTutor = $grupo->Tutor->Sustituye->email ?? $grupo->Tutor->email;
                 $correoDireccion = 'faltes@cipfpbatoi.es';
                 $remitente =  ['nombre'=>'Caporalia','email'=>'faltes@cipfpbatoi.es'];
 
-                SendEmail::dispatch($correoTutor,$remitente, 'email.faltaProfesor', $elemento);
+                SendEmail::dispatch($correoTutor, $remitente, 'email.faltaProfesor', $elemento);
                 SendEmail::dispatch($correoDireccion, $remitente, 'email.faltaProfesor', $elemento);
                 Alert::info("Correos enviados a $item");
             }
         }
     }
-
 }

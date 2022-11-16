@@ -10,7 +10,7 @@ abstract class Finder {
 
     public function __construct($document)
     {
-        $this->dni = AuthUser()->dni??apiAuthUser()->dni;
+        $this->dni = authUser()->dni??apiAuthUser()->dni;
         $this->document = $document;
     }
 

@@ -29,7 +29,7 @@ class SendEmail implements ShouldQueue
     protected $remitente;
 
     
-    public function __construct($correo,$remitente,$vista,$elemento,$attach=null)
+    public function __construct($correo, $remitente, $vista, $elemento, $attach=null)
     {
         $this->correo = $correo;
         $this->remitente = $remitente;
@@ -47,11 +47,16 @@ class SendEmail implements ShouldQueue
     public function handle(Mailer $mailer)
     {
         $mailer->to($this->correo, 'Intranet')
-                ->send(new Comunicado($this->remitente,$this->elemento, $this->vista,$this->attach));
+                ->send(new Comunicado($this->remitente, $this->elemento, $this->vista, $this->attach));
         
-        if (isset($this->remitente['id'])){
-            avisa($this->remitente['id'], 'El correu adreçat a '.$this->correo.' ha sigut enviat','#','SERVIDOR DE CORRREU');
-            event(new EmailSended($this->elemento,$this->correo));
+        if (isset($this->remitente['id'])) {
+            avisa(
+                $this->remitente['id'],
+                'El correu adreçat a '.$this->correo.' ha sigut enviat',
+                '#',
+                'SERVIDOR DE CORRREU'
+            );
+            event(new EmailSended($this->elemento, $this->correo));
         }
     }
 }

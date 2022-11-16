@@ -41,7 +41,7 @@ class PrintReportService
         if ($this->elements->Count()) {
             $pdf = Pdf::hazPdf($this->document->getView(), $this->elements, null, $this->document->orientation);
             $nom = $this->document->modelo . new Date() . '.pdf';
-            $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
+            $nomComplet = 'gestor/' . curso() . '/informes/' . $nom;
             $gestor = new GestorService();
             $doc = $gestor->save([
                 'fichero' => $nomComplet,

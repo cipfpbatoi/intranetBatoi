@@ -25,7 +25,7 @@ class TipoReunion
     {
         $todos = [];
         foreach (config('tablas.tipoReunion') as $a) {
-            if ($superUsuari || UserisAllow($a['rol']))
+            if ($superUsuari || userIsAllow($a['rol']))
                 if (!isset($a['ocultar']))
                     if (isset($colectivo)){
                         if ($a['colectivo']==$colectivo) $todos[$a['index']] = self::literal($a);}

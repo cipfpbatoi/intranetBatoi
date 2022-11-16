@@ -62,27 +62,26 @@ class Colaboracion extends Model
     }
     public function votes()
     {
-        return $this->hasMany(VoteAnt::class,'idColaboracion','id');
+        return $this->hasMany(VoteAnt::class, 'idColaboracion', 'id');
     }
 
     public function scopeCiclo($query, $ciclo)
     {
-        return $query->where('idCiclo',$ciclo);
+        return $query->where('idCiclo', $ciclo);
     }
-    public function scopeEmpresa($query,$empresa)
+    public function scopeEmpresa($query, $empresa)
     {
         $centros = Centro::select('id')->Empresa($empresa)->get()->toarray();
-        return $query->whereIn('idCentro',$centros);
+        return $query->whereIn('idCentro', $centros);
     }
-    public function scopeMiColaboracion($query, $empresa=null,$dni=null)
+    public function scopeMiColaboracion($query, $empresa=null, $dni=null)
     {
-        $dni = $dni??AuthUser()->dni;
+        $dni = $dni??authUser()->dni;
         $cicloC = Grupo::select('idCiclo')->QTutor($dni)->get();
         $ciclo = $cicloC->count()>0?$cicloC->toarray():[];
         if ($empresa) {
             return $query->whereIn('idCiclo', $ciclo)->Empresa($empresa);
-        }
-        else {
+        } else {
             return $query->whereIn('idCiclo', $ciclo);
         }
     }

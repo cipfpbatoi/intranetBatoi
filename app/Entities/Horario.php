@@ -100,7 +100,7 @@ class Horario extends Model
 
     public function scopePrimera($query, $profesor, $date = null)
     {
-        $dia = isset($date) ? nameDay($date) : nameDay(Hoy());
+        $dia = isset($date) ? nameDay($date) : nameDay(hoy());
         return $query->Profesor($profesor)->Dia($dia);
     }
 

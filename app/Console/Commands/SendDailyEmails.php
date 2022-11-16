@@ -36,7 +36,7 @@ class SendDailyEmails extends Command
         $todos = Profesor::all();
         foreach ($todos as $profesor) {
             $notificaciones = Notification::where('notifiable_id', $profesor->dni)
-                    ->whereDate('created_at', Hoy())
+                    ->whereDate('created_at', hoy())
                     ->whereNull('read_at')
                     ->get();
             // hay que poner email

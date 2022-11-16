@@ -33,7 +33,7 @@ class AttachedFileService
         if (!$adjunto) {
             $adjunto = new Adjunto([
                 'name' => $nameFile,
-                'owner' => AuthUser()->dni,
+                'owner' => authUser()->dni,
                 'referencesTo' => $referencesTo,
                 'title' => $title,
                 'extension' => $extension,

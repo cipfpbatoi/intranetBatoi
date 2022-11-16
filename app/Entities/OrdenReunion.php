@@ -21,7 +21,8 @@ class OrdenReunion extends Model
         'descripcion' => 'required|max:120',
     ];
 
-    public function Reunion(){
-        return $this->belongsTo(Reunion::class,'idReunion','id');
+    public function Reunion()
+    {
+        return $this->belongsTo(Reunion::class, 'idReunion', 'id');
     }
 }

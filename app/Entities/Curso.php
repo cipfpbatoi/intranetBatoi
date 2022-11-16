@@ -60,7 +60,7 @@ class Curso extends Model
     public function Registrado()
     {
         return AlumnoCurso::where('idCurso', $this->id)
-                        ->where('idAlumno', AuthUser()->nia)
+                        ->where('idAlumno', authUser()->nia)
                         ->count();
     }
 

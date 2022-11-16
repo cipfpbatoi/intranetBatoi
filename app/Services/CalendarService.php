@@ -27,20 +27,26 @@ class CalendarService
             $fin = new DateTime($elemento->fecha);
             $fin->add(new \DateInterval("PT1H"));
         }
-        return self::render($ini,$fin,ucfirst(getClase($elemento))." : ". $elemento->$descripcion,$elemento->$objetivos,config('contacto.nombre'));
+        return self::render(
+            $ini,
+            $fin,
+            ucfirst(getClase($elemento))." : ". $elemento->$descripcion,
+            $elemento->$objetivos,
+            config('contacto.nombre')
+        );
 
     }
 
-    public static function render($ini,$fin,$descripcion,$objetivos,$location){
+    public static function render($ini, $fin, $descripcion, $objetivos, $location)
+    {
         $vCalendar = new Calendar('intranet.cipfpbatoi.es');
         $vEvent = new Event();
         $vEvent->setDtStart($ini)
             ->setDtEnd($fin)
             ->setLocation($location)
-            ->setSummary( $descripcion)
+            ->setSummary($descripcion)
             ->setDescription($objetivos);
         $vCalendar->addComponent($vEvent);
         return $vCalendar;
     }
-
 }

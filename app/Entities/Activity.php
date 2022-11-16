@@ -22,8 +22,8 @@ class Activity extends Model
         $activity->comentari = $comentari;
         $activity->document = $document;
         if ($fecha) {
-            $activity->setCreatedAt(FechaInglesaLarga($fecha));
-            $activity->setUpdatedAt(FechaInglesaLarga($fecha));
+            $activity->setCreatedAt(fechaInglesaLarga($fecha));
+            $activity->setUpdatedAt(fechaInglesaLarga($fecha));
         }
 
         auth()->user()->Activity()->save($activity);
@@ -52,6 +52,11 @@ class Activity extends Model
     public function scopeModelo($query, $modelo)
     {
         return $query->where('model_class', 'Intranet\Entities\\'.$modelo);
+    }
+
+    public function scopeNotUpdate($query)
+    {
+        return $query->whereNotIn('action', ['update', 'create', 'delete']);
     }
 
     public function scopeMail($query)

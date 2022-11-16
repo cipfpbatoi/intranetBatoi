@@ -20,19 +20,23 @@ class Notification extends Model
         'read_at',
     ];
 
-    public function getMotivoAttribute(){
+    public function getMotivoAttribute()
+    {
         $json = json_decode($this->data, true);
-        return substr($json['motiu'],0,80);
+        return substr($json['motiu'], 0, 80);
     }
-    public function getEmisorAttribute(){
+    public function getEmisorAttribute()
+    {
         $json = json_decode($this->data, true);
         return $json['emissor'];
     }
-    public function getFechaAttribute(){
+    public function getFechaAttribute()
+    {
         $json = json_decode($this->data, true);
         return $json['data'];
     }
-    public function getLeidoAttribute(){
+    public function getLeidoAttribute()
+    {
         return is_null($this->read_at)?0:1;
     }
 }

@@ -26,7 +26,8 @@ class BlockAction
      * @return void
      */
 
-    private function usuario(){
+    private function usuario()
+    {
         if (auth('profesor')->user()) {
             return auth()->user()->dni;
         }
@@ -38,8 +39,8 @@ class BlockAction
 
     public function handle(PreventAction $event)
     {
-        if ($event->owner){
-            if (!UserisAllow($event->autorizados)) {
+        if ($event->owner) {
+            if (!userIsAllow($event->autorizados)) {
                 if (! ($usuario = $this->usuario())) {
                     Alert::danger(trans('messages.generic.notAllowed'));
                     return false;
@@ -49,9 +50,7 @@ class BlockAction
                     return false;
                 }
             }
-        }
-        else 
-        {
+        } else {
             Alert::danger(trans('messages.generic.notAllowed'));
             return false;
         }

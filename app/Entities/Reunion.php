@@ -73,54 +73,58 @@ class Reunion extends Model
     }
     public function alumnos()
     {
-        return $this->belongsToMany(Alumno::class, 'alumno_reuniones', 'idReunion', 'idAlumno')->withPivot('capacitats');
+        return $this->belongsToMany(
+            Alumno::class,
+            'alumno_reuniones',
+            'idReunion',
+            'idAlumno'
+        )->withPivot('capacitats');
     }
     public function noPromocionan()
     {
         return $this->belongsToMany(Alumno::class, 'alumno_reuniones', 'idReunion', 'idAlumno')->withPivot('capacitats')
-            ->wherePivot('capacitats',3);
+            ->wherePivot('capacitats', 3);
     }
     public function Departament()
     {
-        return $this->hasOneThrough(Departamento::class,Profesor::class,'dni','id','idProfesor','departamento');
+        return $this->hasOneThrough(Departamento::class, Profesor::class, 'dni', 'id', 'idProfesor', 'departamento');
     }
 
 
     public function scopeMisReuniones($query)
     {
         $reuniones = Asistencia::select('idReunion')
-                ->where('idProfesor', '=', AuthUser()->dni)
-                ->orWhere('idProfesor','=',AuthUser()->sustituye_a)
+                ->where('idProfesor', '=', authUser()->dni)
+                ->orWhere('idProfesor', '=', authUser()->sustituye_a)
                 ->get()
                 ->toarray();
-        return $query->whereIn('id', $reuniones)->orWhere('idProfesor',AuthUser()->dni);
+        return $query->whereIn('id', $reuniones)->orWhere('idProfesor', authUser()->dni);
     }
-    public function scopeConvocante($query,$dni=null)
+    public function scopeConvocante($query, $dni=null)
     {
-        $dni = $dni??AuthUser()->dni;
+        $dni = $dni??authUser()->dni;
         $sustituye = Profesor::find($dni)->sustituye_a??null;
-        return $query->where('idProfesor',$dni)->orWhere('idProfesor',$sustituye);
+        return $query->where('idProfesor', $dni)->orWhere('idProfesor', $sustituye);
     }
-    public function scopeTipo($query,$tipo)
+    public function scopeTipo($query, $tipo)
     {
-        return $query->where('tipo',$tipo);
+        return $query->where('tipo', $tipo);
     }
-    public function scopeNumero($query,$numero)
+    public function scopeNumero($query, $numero)
     {
         if ($numero > 0) {
             return $query->where('numero', $numero);
-        }
-        else {
+        } else {
             return $query;
         }
     }
     public function scopeArchivada($query)
     {
-        return $query->where('archivada',1);
+        return $query->where('archivada', 1);
     }
-    public function scopeActaFinal($query,$tutor)
+    public function scopeActaFinal($query, $tutor)
     {
-        return $query->where('tipo',7)->where('numero',34)->where('idProfesor',$tutor);
+        return $query->where('tipo', 7)->where('numero', 34)->where('idProfesor', $tutor);
     }
 
     public function getTipoOptions()
@@ -137,8 +141,7 @@ class Reunion extends Model
     {
         if (isset($this->tipo)) {
             return $this->Tipos()->numeracion;
-        }
-        else {
+        } else {
             return config('auxiliares.numeracion');
         }
     }
@@ -148,13 +151,16 @@ class Reunion extends Model
         return hazArray(GrupoTrabajo::MisGruposTrabajo()->get(), 'id', 'literal');
     }
 
-    public function getDepartamentoAttribute(){
+    public function getDepartamentoAttribute()
+    {
         return $this->Departament->literal;
     }
-    public function getAvaluacioAttribute(){
+    public function getAvaluacioAttribute()
+    {
         return $this->numero-20;
     }
-    public function getModificableAttribute(){
+    public function getModificableAttribute()
+    {
         return $this->Tipos()->modificable;
     }
 
@@ -196,56 +202,70 @@ class Reunion extends Model
             return ($this->Grupos->literal);
         }
         $colectivo =$this->Tipos()->colectivo;
-        if ($colectivo == 'Profesor') {
-            return 'Claustro';
-        }
-        if ($colectivo == 'Jefe') {
-            return 'COCOPE';
-        }
         $profesor = Profesor::where('dni', '=', $this->idProfesor)->get()->first();
-        if ($colectivo == 'Departamento') {
-            return (Departamento::where('id', '=', $profesor->departamento)->get()->first()->cliteral);
+        $grupo = '';
+        switch ($colectivo) {
+            case 'Profesor':
+                $grupo='Claustro';
+                break;
+            case 'Jefe':
+                $grupo='COCOPE';
+                break;
+            case 'Departamento':
+                $grupo = Departamento::where('id', '=', $profesor->departamento)->get()->first()->cliteral;
+                break;
+            case 'Grupo':
+                $grupo = Grupo::QTutor($profesor->dni)->count() ? Grupo::QTutor($profesor->dni)->first()->nombre : '';
+                break;
+            default:
+                $grupo = '';
         }
-        if ($colectivo == 'Grupo') {
-            return Grupo::QTutor($profesor->dni)->count() ? Grupo::QTutor($profesor->dni)->first()->nombre : '';
-        }
-    }
-    public function getCicloAttribute()
-    {
-        return Grupo::QTutor($this->idProfesor)->count()?Grupo::QTutor($this->idProfesor)->first()->Ciclo->ciclo:'';   
+        return $grupo;
     }
 
-    public function getXtipoAttribute(){
+    public function getCicloAttribute()
+    {
+        return Grupo::QTutor($this->idProfesor)->count()?Grupo::QTutor($this->idProfesor)->first()->Ciclo->ciclo:'';
+    }
+
+    public function getXtipoAttribute()
+    {
         $tr = $this->Tipos();
         return App::getLocale(session('lang')) == 'es'?$tr->cliteral:$tr->vliteral;
     }
-    public function getXnumeroAttribute(){
+    public function getXnumeroAttribute()
+    {
         return config("auxiliares.numeracion.$this->numero");
     }
-    public function getAvaluacioFinalAttribute(){
-        return ($this->tipo == 7 && $this->numero == 34 );
+    public function getAvaluacioFinalAttribute()
+    {
+        return ($this->tipo == 7 && $this->numero == 34);
     }
-    public function getExtraOrdinariaAttribute(){
+    public function getExtraOrdinariaAttribute()
+    {
         return ($this->tipo == 7 && $this->numero == 35);
     }
-    public function getGrupoClaseAttribute(){
+    public function getGrupoClaseAttribute()
+    {
         return $this->Tipos()->colectivo == 'Grupo'?Grupo::QTutor($this->idProfesor)->first():null;
 
     }
-    public function getInformeAttribute(){
+    public function getInformeAttribute()
+    {
         if ($this->extraOrdinaria) {
             return true;
         }
         return false;
     }
-    public function getIsSemiAttribute(){
+    public function getIsSemiAttribute()
+    {
         return $this->GrupoClase->isSemi;
     }
 
     public function scopeNext($query)
     {
-        $fec_hoy = time();
-        $ahora = date("Y-m-d", $fec_hoy);
+        $fecHoy = time();
+        $ahora = date("Y-m-d", $fecHoy);
         return $query->where('fecha', '>', $ahora);
     }
 

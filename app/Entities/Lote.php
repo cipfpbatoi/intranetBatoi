@@ -23,11 +23,13 @@ class Lote extends Model
         'departamento_id' => ['type' => 'select']
     ];
 
-    public function ArticuloLote(){
-        return $this->hasMany(ArticuloLote::class,'lote_id','registre');
+    public function ArticuloLote()
+    {
+        return $this->hasMany(ArticuloLote::class, 'lote_id', 'registre');
     }
 
-    public function Departamento(){
+    public function Departamento()
+    {
         return $this->belongsTo(Departamento::class);
     }
 
@@ -38,26 +40,38 @@ class Lote extends Model
 
     public function getDepartamentoIdOptions()
     {
-        return hazArray(Departamento::where('didactico',1)->whereNotNull('idProfesor')->get(),'id','vliteral');
+        return hazArray(Departamento::where('didactico', 1)->whereNotNull('idProfesor')->get(), 'id', 'vliteral');
     }
 
-    public function Materiales(){
-        return $this->hasManyThrough(Material::class,ArticuloLote::class, 'lote_id','articulo_lote_id','registre','id');
+    public function Materiales()
+    {
+        return $this->hasManyThrough(
+            Material::class,
+            ArticuloLote::class,
+            'lote_id',
+            'articulo_lote_id',
+            'registre',
+            'id'
+        );
     }
     public function colaboraciones()
     {
-        return $this->hasManyThrough(Colaboracion::class, Centro::class,'idEmpresa','idCentro','id');
+        return $this->hasManyThrough(Colaboracion::class, Centro::class, 'idEmpresa', 'idCentro', 'id');
     }
 
 
-    public function getOrigenAttribute(){
-        return $this->procedencia?config('auxiliares.procedenciaMaterial')[$this->procedencia]:config('auxiliares.procedenciaMaterial')[0];
+    public function getOrigenAttribute()
+    {
+        return $this->procedencia?
+            config('auxiliares.procedenciaMaterial')[$this->procedencia]:
+            config('auxiliares.procedenciaMaterial')[0];
     }
 
-    public function getEstadoAttribute(){
+    public function getEstadoAttribute()
+    {
         if ($this->articuloLote()->count()) {
             if ($this->materiales()->count()) {
-              if ($this->materiales()->where('espacio','INVENT')->count()) {
+              if ($this->materiales()->where('espacio', 'INVENT')->count()) {
                   return 2;
               }
               return 3;
@@ -72,7 +86,8 @@ class Lote extends Model
         return config('auxiliares.estadosLote')[$this->estado];
     }
 
-    public function getDepartamentAttribute(){
+    public function getDepartamentAttribute()
+    {
         return $this->Departamento?$this->Departamento->vliteral:'No assignat';
     }
 

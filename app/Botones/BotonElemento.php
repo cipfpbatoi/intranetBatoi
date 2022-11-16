@@ -55,13 +55,13 @@ abstract class BotonElemento extends Boton
     private function avalCondition($elemento, $op, $valor)
     {
         if ($op == 'anterior') {
-            $elemento = Fecha($elemento);
-            $valor = Fecha($valor);
+            $elemento = fecha($elemento);
+            $valor = fecha($valor);
             $op = "<=";
         }
         if ($op == 'posterior') {
-            $elemento = Fecha($elemento);
-            $valor = Fecha($valor);
+            $elemento = fecha($elemento);
+            $valor = fecha($valor);
             $op = ">";
         }
         if ($op == 'in') {

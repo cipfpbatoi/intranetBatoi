@@ -15,17 +15,15 @@ function emailConselleria($nombre, $apellido1, $apellido2)
         $acronym =  $acronym . $arrayLetters['0'];
     }
 
-    return substr(strtolower(eliminar_tildes($acronym.".".$apellido1.$apellido2)), 0,18).'@edu.gva.es';
+    return substr(strtolower(eliminarTildes($acronym.".".$apellido1.$apellido2)), 0, 18).'@edu.gva.es';
 }
 
-function eliminar_tildes($cadena)
+function eliminarTildes($cadena)
 {
 
     //Codificamos la cadena en formato utf8 en caso de que nos de errores
 
-    $cadena = str_replace(
-        ' ', '',$cadena
-    );
+    $cadena = str_replace(' ', '', $cadena);
 
     //Ahora reemplazamos las letras
     $cadena = str_replace(
@@ -116,7 +114,7 @@ function evaluacion()
     return $eval;
 }
 
-function Curso()
+function curso()
 {
     $hoy = new Date();
     $ano = $hoy->format('Y');
@@ -125,7 +123,7 @@ function Curso()
     return $curso . '-' . ($curso + 1);
 
 }
-function CursoAnterior()
+function cursoAnterior()
 {
     $hoy = new Date();
     $ano = $hoy->format('Y');
@@ -138,7 +136,7 @@ function CursoAnterior()
 /**
  * Devuelve la direccion completa
  *
- * @param 
+ * @param
  * @return string
  */
 function fullDireccion()
@@ -171,20 +169,20 @@ function imgSig($document)
 }
 
 /**
- * Mira si al usuario actual le esta permitido el nombre de rol 
+ * Mira si al usuario actual le esta permitido el nombre de rol
  *
  * @param string $role
  * @return bool
  */
-function UserisNameAllow($role)
+function userIsNameAllow($role)
 {
     $jerarquia = config('roles.rol');
-    return UserisAllow($jerarquia[$role]);
+    return userIsAllow($jerarquia[$role]);
 }
 
 
 
-function AuthUser()
+function authUser()
 {
     $usuario = null;
     if (auth('profesor')->user()) {
@@ -216,31 +214,36 @@ function isProfesor()
 
 
 /**
- * Mira si al usuario actual le esta permitido el  rol 
+ * Mira si al usuario actual le esta permitido el  rol
  *
  * @param integer $role
  * @return bool
  */
-function UserisAllow($role)
+function userIsAllow($role)
 {
-    $usuario = null;
-    if ($role == null) {
-        return true;
-    }
-    $usuario = auth('profesor')->user()?auth()->user():auth('alumno')->user();
-
-    if ($usuario == null) {
-        return false;
+    $usuario = auth('profesor')->user()??auth('alumno')->user();
+    if (!$role || !$usuario) {
+        return $role?false:true;
     }
     if (is_array($role)) {
-        foreach ($role as $item) {
-            if ($usuario->rol % $item == 0) {
-                return true;
-            }
-        }
+        return roleIsInArray($role, $usuario);
+    } else {
+        return ($usuario->rol % $role == 0);
     }
-    elseif ($usuario->rol % $role == 0) {
-        return true;
+
+}
+
+/**
+ * @param  array  $role
+ * @param  \Illuminate\Contracts\Auth\Authenticatable  $usuario
+ * @return bool
+ */
+function roleIsInArray(array $role, \Illuminate\Contracts\Auth\Authenticatable $usuario): bool
+{
+    foreach ($role as $item) {
+        if ($usuario->rol % $item == 0) {
+            return true;
+        }
     }
     return false;
 }
@@ -251,7 +254,7 @@ function UserisAllow($role)
  * @param $roleUsuario
  * @return Array
  */
-function NameRolesUser($rolUsuario)
+function nameRolesUser($rolUsuario)
 {
     $jerarquia = config('roles.rol');
 
@@ -273,7 +276,7 @@ function NameRolesUser($rolUsuario)
  * @param usuario $role
  * @return Array
  */
-function RolesUser($rolUsuario)
+function rolesUser($rolUsuario)
 {
     $jerarquia = config('roles.rol');
 
@@ -287,12 +290,13 @@ function RolesUser($rolUsuario)
 
 function esRol($rolUsuario, $rol)
 {
-    $roles = RolesUser($rolUsuario);
+    $roles = rolesUser($rolUsuario);
     return (in_array($rol, $roles))?true:false;
 }
 
-function isAdmin(){
-    return Auth::user()?esRol(Auth::user()->rol,11):false;
+function isAdmin()
+{
+    return Auth::user()?esRol(Auth::user()->rol, 11):false;
 }
 
 
@@ -323,7 +327,7 @@ function checkItems($checkList)
  * @param array $role
  * @return integer
  */
-function Rol($roles)
+function rol($roles)
 {
     $rol = 1;
     foreach ($roles as $role) {
@@ -359,60 +363,38 @@ function valorReal($elemento, $string)
     }
 }
 
+
+
 function hazArray($elementos, $campo1, $campo2=null, $separador = ' ')
 {
     $todos = [];
-    $campo2 = $campo2?$campo2:$campo1;
     foreach ($elementos as $elemento) {
         if ($elemento) {
-            if (is_string($campo1)) {
-                $val = valorReal($elemento, $campo1);
-            } else {
-                $val = '';
-                foreach ($campo1 as $sub) {
-                    $val .= valorReal($elemento, $sub) . $separador;
-                }
-            }
-            if (is_string($campo2)) {
-                $res = valorReal($elemento, $campo2);
-            } else {
-                $res = '';
-                foreach ($campo2 as $sub) {
-                    $res .= valorReal($elemento, $sub) . $separador;
-                }
-            }
+            $val = extrauValor($campo1, $elemento, $separador);
+            $res = $campo2 ? extrauValor($campo2, $elemento, $separador) : $val;
             $todos[$val] = $res;
         }
     }
     return $todos;
 }
 
-function hazArrayRole($elementos, $campo1, $campo2=null, $separador = ' ')
+/**
+ * @param $campo1
+ * @param $elemento
+ * @param $separador
+ * @return array
+ */
+function extrauValor($campo1, $elemento, $separador)
 {
-    $todos = [];
-    $campo2 = $campo2?$campo2:$campo1;
-    foreach ($elementos as $elemento) {
-        if ($elemento && UserisAllow($elemento->rol)) {
-            if (is_string($campo1)) {
-                $val = valorReal($elemento, $campo1);
-            } else {
-                $val = '';
-                foreach ($campo1 as $sub) {
-                    $val .= valorReal($elemento, $sub) . $separador;
-                }
-            }
-            if (is_string($campo2)) {
-                $res = valorReal($elemento, $campo2);
-            } else {
-                $res = '';
-                foreach ($campo2 as $sub) {
-                    $res .= valorReal($elemento, $sub) . $separador;
-                }
-            }
-            $todos[$val] = $res;
+    if (is_string($campo1)) {
+        $val = valorReal($elemento, $campo1);
+    } else {
+        $val = '';
+        foreach ($campo1 as $sub) {
+            $val .= valorReal($elemento, $sub).$separador;
         }
     }
-    return $todos;
+    return $val;
 }
 
 function getClase($elemento)
@@ -433,14 +415,13 @@ function literal()
 
 function avisa($id, $mensaje, $enlace = '#', $emisor = null)
 {
-    if ($emisor || isset(AuthUser()->dni)) {
-        $emisor = ($emisor == null) ? AuthUser()->shortName : $emisor;
-        $fecha = FechaString();
+    if ($emisor || isset(authUser()->dni)) {
+        $emisor = ($emisor == null) ? authUser()->shortName : $emisor;
+        $fecha = fechaString();
 
         if (strlen($id) == 8) {
             $quien = \Intranet\Entities\Alumno::find($id);
-        }
-        else {
+        } else {
             $quien = \Intranet\Entities\Profesor::find($id);
         }
         if ($quien) {
@@ -451,9 +432,8 @@ function avisa($id, $mensaje, $enlace = '#', $emisor = null)
                     'data' => $fecha,
                     'enlace' => $enlace
                 ]));
-        }
-        else {
-            AuthUser()->notify(new \Intranet\Notifications\mensajePanel(
+        } else {
+            authUser()->notify(new \Intranet\Notifications\mensajePanel(
                 ['motiu' => "No trobe usuari $id",
                     'emissor' => $emisor,
                     'data' => $fecha,
@@ -488,17 +468,18 @@ function mdFind($file, $link)
     return substr($desde, 0, strpos($desde, '###'));
 }
 
-function exists_help($url)
+function existsHelp($url)
 {
     if ($menu = Intranet\Entities\Menu::where('url', $url)->first()) {
         return $menu->ajuda;
     }
 }
 
-function inRol($roles){
+function inRol($roles)
+{
     $array['roles'][] = config('roles.rol.administrador');
-    if (is_array($roles)){
-        foreach ($roles as $rol){
+    if (is_array($roles)) {
+        foreach ($roles as $rol) {
             $array['roles'][] = config('roles.rol.'.$rol);
         }
         return $array;
@@ -508,10 +489,11 @@ function inRol($roles){
 
 }
 
-function usuarios($tipo,$field='email'){
+function usuarios($tipo, $field='email')
+{
     $usuarios = [];
-    foreach (Intranet\Entities\Profesor::Activo()->get() as $profesor){
-        if ($profesor->rol % config('roles.rol.'.$tipo) == 0){
+    foreach (Intranet\Entities\Profesor::Activo()->get() as $profesor) {
+        if ($profesor->rol % config('roles.rol.'.$tipo) == 0) {
             $usuarios[] = $profesor->$field;
         }
     }
@@ -519,16 +501,19 @@ function usuarios($tipo,$field='email'){
     return $usuarios;
 }
 
-function existsTranslate($text){
+function existsTranslate($text)
+{
     return (trans($text) != $text)?trans($text):null;
 }
 
-function firstWord($cadena){
-    $parte = explode(" ",$cadena);
+function firstWord($cadena)
+{
+    $parte = explode(" ", $cadena);
     return $parte[0];
 }
 
-function loadImg($fixer){
+function loadImg($fixer)
+{
     echo "<img src='/img/pdf/$fixer' />";
 }
 
@@ -537,16 +522,18 @@ function loadImg($fixer){
  * @return mixed
  */
 
-function fileContactos(){
+function fileContactos()
+{
     return is_file(base_path().'/config/avisos.php')?'avisos':'contacto';
 }
 
 
-function cargaDatosCertificado($datos,$date=null){
+function cargaDatosCertificado($datos, $date=null)
+{
     $file = fileContactos();
     $secretario = Profesor::find(config($file.'.secretario'));
     $director = Profesor::find(config($file.'.director'));
-    $datos['fecha'] = FechaString($date,'ca');
+    $datos['fecha'] = fechaString($date, 'ca');
     $datos['secretario']['titulo'] = $secretario->sexo == 'H'?'En':'Na';
     $datos['secretario']['articulo'] = $secretario->sexo == 'H'?'El':'La';
     $datos['secretario']['genero'] = $secretario->sexo == 'H'?'secretari':'secretària';
@@ -590,9 +577,9 @@ function isPrivateAddress($ip):bool
         '127.0.0.0|127.255.255.255'
     );
     $longIpAddress = ip2long($ip);
-    if ($longIpAddress != -1){
-        foreach ($privateAddressRange as $privateAddress){
-            list($start,$end) = explode("|",$privateAddress);
+    if ($longIpAddress != -1) {
+        foreach ($privateAddressRange as $privateAddress) {
+            list($start,$end) = explode("|", $privateAddress);
             if ($longIpAddress >= ip2long($start) && $longIpAddress <= ip2long($end)) {
                 return true;
             }
@@ -601,7 +588,7 @@ function isPrivateAddress($ip):bool
     return false;
 }
 
-function mb_ucfirst($string)
+function mbUcfirst($string)
 {
     $strlen = mb_strlen($string);
     $firstChar = mb_substr($string, 0, 1);
@@ -609,14 +596,14 @@ function mb_ucfirst($string)
     return mb_strtoupper($firstChar) . $then;
 }
 
-function nomAmbTitol($sexe,$nom){
+function nomAmbTitol($sexe, $nom)
+{
     if ($sexe == 'H') {
-        $consideracio = preg_match('/^[aeiouàèáéíòóúh]{1}.*/i',$nom)?"n'":"en ";
+        $consideracio = preg_match('/^[aeiouàèáéíòóúh].*/i', $nom)?"n'":"en ";
+    } else {
+        $consideracio = preg_match('/^[aeiouàèáéíòóúh].*/i', $nom)?"n'":"na ";
     }
-    else {
-        $consideracio = preg_match('/^[aeiouàèáéíòóúh]{1}.*/i',$nom)?"n'":"na ";
-    }
-    return $consideracio.mb_ucfirst($nom);
+    return $consideracio.mbUcfirst($nom);
 }
 
 function deleteDir($folder)
@@ -688,7 +675,7 @@ function provincia($codiPostal)
     ];
 
     if (strlen($codiPostal) == 5 && ($codiPostal <= '52999' && $codiPostal >= '1000')) {
-        return  $provincias[(int)substr($codiPostal,0, 2)];
+        return  $provincias[(int)substr($codiPostal, 0, 2)];
     } else {
         return 'Alicante';
     }

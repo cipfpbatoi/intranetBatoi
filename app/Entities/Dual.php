@@ -31,12 +31,12 @@ class Dual extends Fct
     
 
     public function getIdAlumnoOptions(){
-        return hazArray(Alumno::misAlumnos(AuthUser()->dni,true)->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',
+        return hazArray(Alumno::misAlumnos(authUser()->dni,true)->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',
                 ['nameFull']);
     }
     
     public function getIdColaboracionOptions(){
-        $cicloC = Grupo::select('idCiclo')->QTutor(AuthUser()->dni,true)->get();
+        $cicloC = Grupo::select('idCiclo')->QTutor(authUser()->dni,true)->get();
         $ciclo = $cicloC->count()>0?$cicloC->first()->idCiclo:'';
         $colaboraciones = Colaboracion::where('idCiclo',$ciclo)->get();
         $todos = [];

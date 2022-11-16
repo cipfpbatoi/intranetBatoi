@@ -50,7 +50,7 @@ class GrupoTrabajo extends Model
 
     public function scopeMisGruposTrabajo($query)
     {
-        $grupos = Miembro::select('idGrupoTrabajo')->where('idProfesor', '=', AuthUser()->dni)->get()->toarray();
+        $grupos = Miembro::select('idGrupoTrabajo')->where('idProfesor', '=', authUser()->dni)->get()->toarray();
         return $query->whereIn('id', $grupos);
     }
 

@@ -44,7 +44,7 @@ class Vote extends Model
         return hazArray(Poll::find($id)->Plantilla->options->where('scala','>',0),'id');
     }
     public function scopeMyVotes($query,$id,$modulo){
-        return $query->where('idOption2', AuthUser()->dni)->whereIn('option_id',$this->optionsPoll($id))
+        return $query->where('idOption2', authUser()->dni)->whereIn('option_id',$this->optionsPoll($id))
             ->where('idOption1',$modulo);
     }
     public function scopeGetVotes($query,$poll,$option1,$option2=null){

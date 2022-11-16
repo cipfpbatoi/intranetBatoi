@@ -31,9 +31,9 @@ class FctDelete
      */
     public function handle(FctAlDeleted $event)
     {
-        if (AuthUser()) {
+        if (authUser()) {
             $fct= Fct::findOrFail($event->fct->id);
-            if ($fct->Alumnos->Count() == 1){
+            if ($fct->Alumnos->Count() == 1) {
                 $fct->delete();
             }
         }

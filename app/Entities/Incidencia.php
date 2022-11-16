@@ -7,7 +7,7 @@ use Intranet\Services\AdviseService;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
-use function AuthUser;
+use function authUser;
 
 class Incidencia extends Model
 {
@@ -119,9 +119,9 @@ class Incidencia extends Model
         $elemento = Incidencia::findOrFail($id);
         $mensaje = "T'han assignat una incidència: ".$elemento->descripcion;
         if ($elemento->estado < $estado) {
-            $elemento->responsable = $estado > 1 ? AuthUser()->dni : $elemento->Tipos->idProfesor;
+            $elemento->responsable = $estado > 1 ? authUser()->dni : $elemento->Tipos->idProfesor;
         } else {
-            $elemento->responsable = $estado > 1 ? AuthUser()->dni : '';
+            $elemento->responsable = $estado > 1 ? authUser()->dni : '';
         }
 
         $elemento->estado = $estado;

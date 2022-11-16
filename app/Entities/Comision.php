@@ -68,19 +68,20 @@ class Comision extends Model
     ];
 
 
-    public function Creador(){
+    public function Creador()
+    {
         return $this->dni;
     }
 
     public function scopeActual($query)
     {
-        return $query->where('idProfesor', '=', AuthUser()->dni);
+        return $query->where('idProfesor', '=', authUser()->dni);
     }
 
     public function scopeNext($query)
     {
-        $fec_hoy = time();
-        $ahora = date("Y-m-d H:i:s", $fec_hoy);
+        $fecHoy = time();
+        $ahora = date("Y-m-d H:i:s", $fecHoy);
         return $query->where('desde', '>', $ahora);
     }
 
@@ -102,7 +103,8 @@ class Comision extends Model
     }
     public function Fcts()
     {
-        return $this->belongsToMany(Fct::class,'comision_fcts', 'idComision', 'idFct','id','id')->withPivot(['hora_ini','aviso']);
+        return $this->belongsToMany(Fct::class, 'comision_fcts', 'idComision', 'idFct', 'id', 'id')
+            ->withPivot(['hora_ini','aviso']);
     }
 
     public function getMedioOptions()
@@ -117,7 +119,11 @@ class Comision extends Model
 
     public function getIdProfesorOptions()
     {
-        return hazArray(Profesor::where('activo',1)->orderBy('apellido1')->orderBy('apellido2')->get(),'dni','nameFull');
+        return hazArray(
+            Profesor::where('activo', 1)->orderBy('apellido1')->orderBy('apellido2')->get(),
+            'dni',
+            'nameFull'
+        );
     }
 
     public function scopeDia($query, $dia)
@@ -128,29 +134,40 @@ class Comision extends Model
                         ->where('hasta', '>=', $despues)
                         ->where('estado', '>=', 0);
     }
-    public function getnombreAttribute(){
+    public function getnombreAttribute()
+    {
         return $this->Profesor->ShortName;
     }
-    public function getsituacionAttribute(){
-        return isblankTrans('models.Comision.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Comision.' . $this->estado);
+    public function getsituacionAttribute()
+    {
+        return isblankTrans('models.Comision.' . $this->estado)
+            ? trans('messages.situations.' . $this->estado)
+            : trans('models.Comision.' . $this->estado);
     }
-    public function getTotalAttribute(){
-        return $this->comida + $this->gastos + $this->alojamiento + ($this->kilometraje * config('variables.precioKilometro')[$this->medio]);
+    public function getTotalAttribute()
+    {
+        return $this->comida
+            + $this->gastos
+            + $this->alojamiento
+            + ($this->kilometraje * config('variables.precioKilometro')[$this->medio]);
     }
 
-    public function getDescripcionAttribute(){
+    public function getDescripcionAttribute()
+    {
         $descripcion = $this->servicio." ";
-        foreach ($this->Fcts as $fct){
+        foreach ($this->Fcts as $fct) {
             $descripcion .= $fct->centro.",";
         }
         return trim($descripcion, ',');
     }
 
-    public function getTipoVehiculoAttribute(){
+    public function getTipoVehiculoAttribute()
+    {
         return config('auxiliares.tipoVehiculo')[$this->medio];
     }
 
-    public function showConfirm(){
+    public function showConfirm()
+    {
         $falta = [
             'profesor' => $this->Profesor->fullName,
             'desde' => $this->desde,
@@ -158,12 +175,12 @@ class Comision extends Model
             'servicio' => $this->servicio,
             'kilometraje' => $this->kilometraje,
         ];
-        if ($this->itinerario){
+        if ($this->itinerario) {
             $falta['itinerario'] = $this->itinerario;
         }
 
-        if (count($this->Fcts)){
-            foreach ($this->Fcts as  $fct){
+        if (count($this->Fcts)) {
+            foreach ($this->Fcts as $fct) {
                 $sobre = $fct->pivot->aviso?' <i class="fa fa-envelope"></i>':'';
                 $falta["visita"][$fct->pivot->hora_ini] = $fct->Centro.$sobre;
             }

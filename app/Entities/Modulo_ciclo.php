@@ -98,7 +98,7 @@ class Modulo_ciclo extends Model
     
     public function scopeMisModulos($query, $profesor = null)
     {
-        $profesor = $profesor ? $profesor : AuthUser();
+        $profesor = $profesor ? $profesor : authUser();
         $modulos = Modulo_ciclo::select('id')
                 ->distinct()
                 ->misModulos($profesor)

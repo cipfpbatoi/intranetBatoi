@@ -164,7 +164,7 @@ class Actividad extends Model
     }
     public function getcoordAttribute()
     {
-        return ($this->Creador() === AuthUser()->dni)?1:0;
+        return ($this->Creador() === authUser()->dni)?1:0;
     }
     public function getsituacionAttribute()
     {
@@ -174,7 +174,7 @@ class Actividad extends Model
     public static function loadPoll()
     {
         $actividades = collect();
-        foreach (AuthUser()->Grupo as $grupo) {
+        foreach (authUser()->Grupo as $grupo) {
             foreach ($grupo->Actividades as $actividad) {
                 $actividades->push(['option1' => $actividad]);
             }

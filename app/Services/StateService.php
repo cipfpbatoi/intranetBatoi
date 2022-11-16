@@ -58,7 +58,7 @@ class StateService
 
     public function resolve($mensaje = null)
     {
-        return $this->putEstado($this->statesElement['resolve'], $mensaje, Hoy());
+        return $this->putEstado($this->statesElement['resolve'], $mensaje, hoy());
     }
 
     public function refuse($mensaje = null)
@@ -69,7 +69,7 @@ class StateService
     public function _print()
     {
         if ( $this->statesElement['print'] == $this->statesElement['resolve']) {
-            return $this->putEstado($this->statesElement['print'], '', Hoy());
+            return $this->putEstado($this->statesElement['print'], '', hoy());
         }  else {
             return $this->putEstado($this->statesElement['print']);
         }

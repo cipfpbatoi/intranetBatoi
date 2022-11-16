@@ -7,10 +7,10 @@ class TipoDocumento
     
     public static function allPestana()
     {
-        if (esRol(AuthUser()->rol,config('roles.rol.qualitat'))) return ['Millora'=>trans('messages.buttons.Millora')];
+        if (esRol(authUser()->rol,config('roles.rol.qualitat'))) return ['Millora'=>trans('messages.buttons.Millora')];
         $todos = [];
         foreach (config('tablas.tipoDocumento') as $a) {
-            if (UserisAllow($a['rol'])&& $a['pestana'])
+            if (userIsAllow($a['rol'])&& $a['pestana'])
                 $todos[$a['index']] = trans('messages.buttons.'.$a['index']);
         }
         return $todos;
@@ -19,7 +19,7 @@ class TipoDocumento
     {
         $todos = [];
         foreach (config('tablas.tipoDocumento') as $a) {
-            if (UserisAllow($a['rol'])&& $a['pestana'])
+            if (userIsAllow($a['rol'])&& $a['pestana'])
                 $todos[] = $a['index'];
         }
         return $todos;
@@ -29,7 +29,7 @@ class TipoDocumento
     {
         $todos = [];
         foreach (config('tablas.tipoDocumento') as $a) {
-            if (UserisAllow($a['rol'])&& $a['grupo']==$grupo)
+            if (userIsAllow($a['rol'])&& $a['grupo']==$grupo)
                 $todos[$a['index']] = $a['rol'];
         }
         return $todos;
@@ -45,7 +45,7 @@ class TipoDocumento
     {
         $todos = [];
         foreach (config('tablas.tipoDocumento') as $a) {
-            if (UserisAllow($a['rol'])&& $a['grupo']==$grupo)
+            if (userIsAllow($a['rol'])&& $a['grupo']==$grupo)
                 $todos[$a['index']] = $a['index'];
         }
         return $todos;

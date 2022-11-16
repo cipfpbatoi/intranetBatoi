@@ -98,7 +98,7 @@ class Grupo extends Model
 
     public function scopeQTutor($query, $profesor = null, $dual = false)
     {
-        $profesor = $profesor ?? AuthUser()->dni;
+        $profesor = $profesor ?? authUser()->dni;
         $sustituido = Profesor::findOrFail($profesor)->sustituye_a;
         $searchField = $dual?'tutorDual':'tutor';
         return ($sustituido != ' ')?
@@ -108,7 +108,7 @@ class Grupo extends Model
 
     public function scopeMisGrupos($query, $profesor = null)
     {
-        $profesor = $profesor ?? AuthUser();
+        $profesor = $profesor ?? authUser();
         $grupos = Horario::select('idGrupo')
                 ->Profesor($profesor->dni)
                 ->whereNotNull('idGrupo')
@@ -174,7 +174,7 @@ class Grupo extends Model
 
     public function getCalidadAttribute()
     {
-        return (Documento::where('tipoDocumento', 'FCT')->where('grupo', $this->nombre)->where('curso', Curso())->count()) ? 'O' : 'X';
+        return (Documento::where('tipoDocumento', 'FCT')->where('grupo', $this->nombre)->where('curso', curso())->count()) ? 'O' : 'X';
     }
 
     public function getMatriculadosAttribute()

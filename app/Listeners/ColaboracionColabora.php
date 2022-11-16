@@ -31,7 +31,7 @@ class ColaboracionColabora
      */
     public function handle(FctCreated $event)
     {
-        if (AuthUser()) {
+        if (authUser()) {
             $fct= Fct::findOrFail($event->fct->id);
             if ($colaboracion = $fct->Colaboracion) {
                 $colaboracion->estado = 2;

@@ -77,8 +77,7 @@ class Falta extends Model
 
     public function getHastaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
-        return $fecha->format('d-m-Y');
+        return $this->getDesdeAttribute($entrada);
     }
 
     public function getHorainiAttribute($salida)
@@ -89,8 +88,7 @@ class Falta extends Model
 
     public function getHorafinAttribute($salida)
     {
-        $fecha = new Date($salida);
-        return $fecha->format('H:i');
+        return $this->getHorainiAttribute($salida);
     }
 
     public static function getMotivosOptions()
@@ -99,7 +97,11 @@ class Falta extends Model
     }
     public function getIdProfesorOptions()
     {
-        return hazArray(Profesor::orderBy('apellido1')->orderBy('apellido2')->orderBy('nombre')->Activo()->get(), 'dni', ['apellido1','apellido2','nombre']);
+        return hazArray(
+            Profesor::orderBy('apellido1')->orderBy('apellido2')->orderBy('nombre')->Activo()->get(),
+            'dni',
+            ['apellido1','apellido2','nombre']
+        );
     }
 
     public function scopeDia($query, $dia)
@@ -109,17 +111,23 @@ class Falta extends Model
                         ->where('estado', '>=', 0);
     }
     
-    public function getNombreAttribute(){
+    public function getNombreAttribute()
+    {
         return $this->Profesor->FullName;
     }
-    public function getSituacionAttribute(){
-        return isblankTrans('models.Falta.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Falta.' . $this->estado);
+    public function getSituacionAttribute()
+    {
+        return isblankTrans('models.Falta.' . $this->estado) ?
+            trans('messages.situations.' . $this->estado) :
+            trans('models.Falta.' . $this->estado);
     }
-    public function getMotivoAttribute(){
+    public function getMotivoAttribute()
+    {
         return config('auxiliares.motivoAusencia')[$this->motivos];
     }
 
-    public function showConfirm(){
+    public function showConfirm()
+    {
         $falta = [
             'profesor' => $this->Profesor->fullName,
             'dia_completo' => $this->dia_completo?'SI':'NO',
@@ -128,10 +136,10 @@ class Falta extends Model
             'fichero' => $this->fichero?'SI':'NO',
             'desde' => $this->desde,
         ];
-        if ($this->desde != $this->hasta){
+        if ($this->desde != $this->hasta) {
             $falta['hasta'] = $this->hasta;
         }
-        if (!$this->dia_completo){
+        if (!$this->dia_completo) {
             $falta['hora_ini'] = $this->hora_ini;
             $falta['hora_fin'] = $this->hora_fin;
         }

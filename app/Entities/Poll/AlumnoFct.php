@@ -9,10 +9,10 @@ class AlumnoFct extends ModelPoll
 {
     public static function loadPoll($votes)
     {
-        $alumno = AuthUser();
+        $alumno = authUser();
         $fcts = collect();
         $alumnos = $alumno->fcts()
-            ->where('alumno_fcts.desde', '<', Hoy())
+            ->where('alumno_fcts.desde', '<', hoy())
             ->esFct()
             ->whereNotIn('fcts.id', $votes)
             ->get();
@@ -65,6 +65,6 @@ class AlumnoFct extends ModelPoll
     }
     public static function has()
     {
-        return count(AuthUser()->fcts);
+        return count(authUser()->fcts);
     }
 }

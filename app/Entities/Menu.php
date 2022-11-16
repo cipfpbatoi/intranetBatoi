@@ -41,7 +41,7 @@ class Menu extends Model
     }
 
     public static function make($nom, $array = false){
-        $menu = Cache::remember('menu'.$nom.AuthUser()->dni,now()->addDay(),function () use ($nom){
+        $menu = Cache::remember('menu'.$nom.authUser()->dni,now()->addDay(),function () use ($nom){
            return self::build($nom);
         });
         if ($array) return $menu;
@@ -52,7 +52,7 @@ class Menu extends Model
     {
         $submenus = Menu::where([['menu', '=', $nom], ['submenu', '=', ''],['activo', '=', 1]]);
         if (!isAdmin()) {
-            $submenus = $submenus->whereIn('rol', RolesUser(AuthUser()->rol));
+            $submenus = $submenus->whereIn('rol', rolesUser(authUser()->rol));
         } else {
             $submenus = $submenus->where('rol','<>',5);
         }
@@ -76,7 +76,7 @@ class Menu extends Model
     
     public function getXrolAttribute()
     {
-        return implode(',', NameRolesUser($this->rol));
+        return implode(',', nameRolesUser($this->rol));
     }
     public function getXactivoAttribute()
     {

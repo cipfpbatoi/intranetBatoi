@@ -29,14 +29,15 @@ class RegisterActivity
      */
     public function handle(ActivityReport $event)
     {
-        if (AuthUser()) {
-            if (!$event->model->exists)
+        if (authUser()) {
+            if (!$event->model->exists) {
                 $mensaje = 'delete';
-            else {
-                if ($event->model->wasRecentlyCreated)
+            } else {
+                if ($event->model->wasRecentlyCreated) {
                     $mensaje = 'create';
-                else
+                } else {
                     $mensaje = 'update';
+                }
             }
             Activity::record($mensaje, $event->model);
         }

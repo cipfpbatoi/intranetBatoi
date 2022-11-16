@@ -30,11 +30,13 @@ class ResponsableCreate
      */
     public function handle(ActividadCreated $event)
     {
-        if (AuthUser()) {
+        if (authUser()) {
             $actividad = Actividad::findOrFail($event->actividad->id);
-            $actividad->profesores()->attach(AuthUser()->dni,['coordinador' => 1]);
+            $actividad->profesores()->attach(authUser()->dni, ['coordinador' => 1]);
             $grupo = Grupo::QTutor()->first();
-            if ($grupo) $actividad->grupos()->attach($grupo->codigo);
+            if ($grupo) {
+                $actividad->grupos()->attach($grupo->codigo);
+            }
         }
     }
 

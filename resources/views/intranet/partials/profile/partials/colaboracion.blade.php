@@ -10,7 +10,10 @@
                         @if (isset($colaboraciones))
                             @foreach ($colaboraciones as $colaboracion)
                                 @if ($colaboracion->Propietario)
-                                    <li class="nombre" style="background-color:@if ($colaboracion->estado == 2) lightblue @endif @if ($colaboracion->estado == 3) coral @endif ">{{$colaboracion->Xciclo}} - {{ $colaboracion->Propietario->shortName }}</li>
+                                    <li class="nombre" style="background-color:@if ($colaboracion->estado == 2) lightblue @endif
+                                        @if ($colaboracion->estado == 3) coral @endif ">
+                                        {{$colaboracion->Xciclo}} - {{ $colaboracion->Propietario->shortName }}
+                                    </li>
                                 @endif
                             @endforeach
                         @endif
@@ -33,10 +36,12 @@
                         {{$elemento->localidad}}<br/>
                     </p>
                     @if ($elemento->estado < 3)
-                    <a href="/colaboracion/{{$elemento->id}}/show" class="btn-success btn btn-xs"><i class="fa fa-eye"></i></a>
+                    <a href="/colaboracion/{{$elemento->id}}/show" class="btn-success btn btn-xs">
+                        <i class="fa fa-eye"></i>
+                    </a>
                     @endif
                     @if ($elemento->estado == 2)
-                    <i class="fa fa-plus btn-success btn btn-xs" data-toggle="modal" data-target="#AddAlumno"></i>
+                    <em class="fa fa-plus btn-success btn btn-xs" data-toggle="modal" data-target="#AddAlumno"></em>
                     @endif
                 </div>
                 <div class="col-xs-12 col-sm-8 emphasis">

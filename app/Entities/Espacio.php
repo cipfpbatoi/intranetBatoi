@@ -43,7 +43,7 @@ class Espacio extends Model
 
     public function getIdDepartamentoOptions()
     {
-        return hazArray(Departamento::all(),'id', 'literal');
+        return hazArray(Departamento::all(), 'id', 'literal');
     }
 
     public function getGMatiOptions()
@@ -53,13 +53,15 @@ class Espacio extends Model
 
     public function getGVespradaOptions()
     {
-        return hazArray(Grupo::all(), 'codigo', 'nombre');
+        return $this->getGMatiOptions();
     }
-    public function getXDepartamentoAttribute(){
+    public function getXDepartamentoAttribute()
+    {
         return $this->Departamento->literal;
     }
-    public function Materiales(){
-        return $this->hasMany(Material::class,'espacio','aula')->where('inventariable',1);
+    public function Materiales()
+    {
+        return $this->hasMany(Material::class, 'espacio', 'aula')->where('inventariable', 1);
     }
 
 }

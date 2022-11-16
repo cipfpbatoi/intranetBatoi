@@ -6,7 +6,7 @@ use Barryvdh\DomPDF\Facade as DomPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf as SnappyPDF;
 use function config;
 use function env;
-use function FechaString;
+use function fechaString;
 
 
 class Pdf
@@ -36,7 +36,7 @@ class Pdf
                                      $margin_top= 15)
     {
         $pie = self::pie($informe);
-        $datosInforme = $datosInforme==null?FechaString(null,'ca'):$datosInforme;
+        $datosInforme = $datosInforme==null?fechaString(null,'ca'):$datosInforme;
         if (is_string($dimensiones)) {
             return(SnappyPDF::loadView($informe, compact('todos', 'datosInforme'))
                 ->setPaper($dimensiones)
@@ -59,7 +59,7 @@ class Pdf
 
     protected static function hazDomPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones )
     {
-        $datosInforme = $datosInforme==null?FechaString(null,'ca'):$datosInforme;
+        $datosInforme = $datosInforme==null?fechaString(null,'ca'):$datosInforme;
         if (is_string($dimensiones)) {
             return(DomPDF::loadView($informe, compact('todos', 'datosInforme'))
                 ->setPaper($dimensiones,$orientacion));
