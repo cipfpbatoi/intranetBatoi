@@ -7,7 +7,7 @@ use Intranet\Componentes\Mensaje;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\ActividadGrupo;
-use Intranet\Entities\Actividad_profesor;
+use Intranet\Entities\ActividadProfesor;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Response;
@@ -202,10 +202,10 @@ class ActividadController extends ModalController
             return back();
         }
         $actividad->profesores()->detach($profesor_id);
-        if (!Actividad_profesor::where('idActividad', '=', $actividad_id)
+        if (!ActividadProfesor::where('idActividad', '=', $actividad_id)
                         ->where('coordinador', '=', '1')
                         ->count()) {
-            $nuevo_coord = Actividad_profesor::where('idActividad', '=', $actividad_id)
+            $nuevo_coord = ActividadProfesor::where('idActividad', '=', $actividad_id)
                     ->where('coordinador', '=', '0')
                     ->first();
             $actividad->profesores()->updateExistingPivot($nuevo_coord->idProfesor, ['coordinador' => 1]);
@@ -216,7 +216,7 @@ class ActividadController extends ModalController
     public function coordinador($actividad_id, $profesor_id)
     {
         $actividad = Actividad::find($actividad_id);
-        $coordActual = Actividad_profesor::where('idActividad', '=', $actividad_id)
+        $coordActual = ActividadProfesor::where('idActividad', '=', $actividad_id)
                 ->where('coordinador', '=', '1')
                 ->first();
         if ($coordActual){
@@ -337,7 +337,4 @@ class ActividadController extends ModalController
         $actividad->menores()->updateExistingPivot($nia,['autorizado' => $autorizado]);
         return view('extraescolares.autorizados',compact('actividad'));
     }
-
-
-
 }
