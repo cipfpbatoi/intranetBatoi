@@ -4,20 +4,11 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Falta_profesor;
-use Illuminate\Support\Facades\Auth;
-use Jenssegers\Date\Date;
 use \DB;
-use Illuminate\Support\Facades\Redirect;
 use Intranet\Entities\Profesor;
-use Intranet\Entities\Actividad;
-use Intranet\Entities\Actividad_profesor;
-use Intranet\Entities\Comision;
-use Intranet\Entities\Falta;
 use Intranet\Entities\Horario;
-use Intranet\Botones\Panel;
 use Styde\Html\Facades\Alert;
-use Styde\Html;
-use Intranet\Botones\BotonImg;
+
 
 class FicharController extends IntranetController
 {
@@ -94,9 +85,7 @@ class FicharController extends IntranetController
         if (isset($horario->first()->desde)) {
             return $horario->first()->desde . " - " . $horario->last()->hasta;
         }
-
         return '';
-
     }
 
 }

@@ -104,6 +104,10 @@ class Colaboracion extends Model
     {
         return $this->Centro->localidad?strtoupper($this->Centro->localidad):'Desconeguda';
     }
+    public function getHorariAttribute()
+    {
+        return $this->Centro->horarios;
+    }
 
 
 }
