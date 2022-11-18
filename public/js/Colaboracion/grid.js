@@ -47,7 +47,7 @@ $(function() {
             method: "GET",
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/refuse",
             data: { api_token: token}
-        }).then(function (result) {
+        }).then(function () {
             boton.hide();
             boton.siblings(".resolve").show();
             boton.siblings(".unauthorize").show();
@@ -64,7 +64,7 @@ $(function() {
             method: "GET",
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/unauthorize",
             data: { api_token: token}
-        }).then(function (result) {
+        }).then(function () {
             boton.hide();
             if (boton.siblings(".switch").length == 0){
                 boton.siblings(".contacto").show();
@@ -120,7 +120,7 @@ $(function() {
             }
         }).then(function (result) {
             $("#dialogo").find("#explicacion").val(result.data.comentari);
-        }, function (result) {
+        }, function () {
             console.log("Error al buscarr");
         });
         $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
@@ -136,14 +136,14 @@ $(function() {
                     api_token: token,
                     explicacion: this.explicacion.value
                 }
-            }).then(function (result) {
+            }).then(function () {
                 texto = list.html();
                 day = new Date;
                 month = day.getMonth() + 1;
                 texto = list.html() + "<small>Telèfon- " + day.getDate() + "/" + month + "</small><br/>";
                 list.html(texto);
                 $("#dialogo").modal('hide');
-            }, function (result) {
+            }, function () {
                 console.log("Només es pot un per dia");
                 $("#dialogo").modal('hide');
             });
@@ -156,9 +156,9 @@ $(function() {
                     api_token: token,
                     comentari: this.explicacion.value
                 }
-            }).then(function (result) {
+            }).then(function () {
                 $("#dialogo").modal('hide');
-            }, function (result) {
+            }, function () {
                 console.log("Error al modificar");
                 $("#dialogo").modal('hide');
             });
@@ -174,8 +174,8 @@ $(function() {
                 url: "/api/activity/" + id,
                 dataType: 'json',
                 data: {api_token: token}
-            }).then((result) => this.parentElement.remove());
-        };
+            }).then(() => this.parentElement.remove());
+        }
     });
     $('.fa-plus').on("click", function(){
         var id=$(this).parents(".profile_view").attr("id");
@@ -194,7 +194,7 @@ $(function() {
                                 .attr("value", value.dni).text(value.name+' '+value.surnames));
                         });
 
-            }, function (result) {
+            }, function () {
                 console.log("La solicitud no se ha podido completar.");
             });
 
@@ -239,7 +239,7 @@ $(function() {
                     url: "/api/activity/"+id+"/move/" + newFct.id ,
                     dataType: 'json',
                     data: {api_token: token}
-                }).then(function (result) {
+                }).then(function () {
                     newFct.querySelector('.listActivity').appendChild(document.getElementById(id).parentElement);
                 }, function (result) {
                     alert("La sol·licitut no s'ha pogut completar: "+result.responseText);
@@ -248,3 +248,14 @@ $(function() {
         });
     });
 })
+
+$('#datatable').DataTable( {
+    language: {
+        url: '/json/cattable.json',
+    },
+    deferRender: true,
+    responsive: true,
+    columnDefs: [
+        { responsivePriority: 1, targets: -1},
+    ]
+});

@@ -103,7 +103,7 @@ class ColaboracionController extends IntranetController
     public function search(){
         $this->titulo = ['quien' => AuthUser()->Departamento->literal ];
         $ciclos = Ciclo::select('id')->where('departamento', AuthUser()->departamento)->get()->toArray();
-        $colaboraciones = Colaboracion::whereIn('idCiclo',$ciclos)->get();
+        $colaboraciones = Colaboracion::whereIn('idCiclo',$ciclos)->with('Centro')->get();
         return $colaboraciones->filter(function ($colaboracion){
             return $colaboracion->Centro->Empresa->concierto;
         });
