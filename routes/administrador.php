@@ -69,3 +69,4 @@ Route::get('/secure', ['as' => 'show.door','uses' => 'AdministracionController@s
 Route::post('/secure', ['as' => 'secure.door','uses' => 'AdministracionController@secure']);
 
 Route::get('/consulta', 'AdministracionController@consulta');
+Route::post('centro/{id}/empresa/create', 'CentroController@empresaCreateCentro');

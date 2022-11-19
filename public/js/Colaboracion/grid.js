@@ -29,12 +29,12 @@ $(function() {
             method: "GET",
             url: "/api/colaboracion/" + colaboracion.attr('id') + "/resolve",
             data: { api_token: token}
-        }).then(function (result) {
+        }).then(function () {
             boton.hide();
             boton.siblings(".unauthorize").show();
             boton.siblings(".refuse").show();
             boton.siblings(".contacto").hide();
-            if (boton.siblings(".switch").length == 0) boton.siblings(".informe").show();
+            if (boton.siblings(".switch").length === 0) boton.siblings(".informe").show();
 
             $("#tab_colabora").append(colaboracion.parent());
         });
@@ -66,7 +66,7 @@ $(function() {
             data: { api_token: token}
         }).then(function () {
             boton.hide();
-            if (boton.siblings(".switch").length == 0){
+            if (boton.siblings(".switch").length === 0){
                 boton.siblings(".contacto").show();
                 boton.siblings(".resolve").show();
                 boton.siblings(".refuse").show();
@@ -86,15 +86,15 @@ $(function() {
         }).then(function (result) {
             boton.hide();
             boton.siblings(".estado").show();
-            if (boton.parents(".profile_details").parent().attr("id") == 'tab_pendiente' ){
+            if (boton.parents(".profile_details").parent().attr("id") === 'tab_pendiente' ){
                 boton.siblings(".contacto").show();
                 boton.siblings(".unauthorize").hide();
             }
-            if (boton.parents(".profile_details").parent().attr("id") == 'tab_colabora' ){
+            if (boton.parents(".profile_details").parent().attr("id") === 'tab_colabora' ){
                 boton.siblings(".informe").show();
                 boton.siblings(".resolve").hide();
             }
-            if (boton.parents(".profile_details").parent().attr("id") == 'tab_descartada' ){
+            if (boton.parents(".profile_details").parent().attr("id") === 'tab_descartada' ){
                 boton.siblings(".refuse").hide();
                 boton.siblings(".unauthorize").hide();
             }
@@ -128,7 +128,7 @@ $(function() {
     });
     $("#formDialogo").on("submit", function(){
         event.preventDefault();
-        if (tipo == 'telefonico') {
+        if (tipo === 'telefonico') {
             $.ajax({
                 method: "POST",
                 url: "/api/colaboracion/" + id + "/telefonico",
@@ -148,7 +148,7 @@ $(function() {
                 $("#dialogo").modal('hide');
             });
         }
-        if (tipo == 'seguimiento'){
+        if (tipo === 'seguimiento'){
             $.ajax({
                 method: "PUT",
                 url: "/api/activity/" + id ,

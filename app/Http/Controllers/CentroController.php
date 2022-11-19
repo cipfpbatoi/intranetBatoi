@@ -6,6 +6,8 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
+use Intranet\Entities\Empresa;
+use Intranet\Http\Requests\EmpresaCentroRequest;
 use Response;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
@@ -77,6 +79,23 @@ class CentroController extends IntranetController
         }
         Session::put('pestana',2);
         return $this->showEmpresa($empresa);
+    }
+
+    public function empresaCreateCentro(EmpresaCentroRequest $request,$id){
+        $centro = Centro::findOrFail($id);
+        $empresa = new Empresa([
+            'cif' => $request->cif,
+            'concierto' => $request->concierto,
+            'nombre' => $centro->nombre,
+            'email' => $request->email,
+            'direccion' => $centro->direccion,
+            'localidad' => $centro->localidad,
+            'telefono' => $request->telefono,
+        ]);
+        $empresa->save();
+        $centro->idEmpresa = $empresa->id;
+        $centro->save();
+        return $this->showEmpresa($empresa->id);
     }
     
 

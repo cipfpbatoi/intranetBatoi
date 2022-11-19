@@ -45,8 +45,10 @@
                 @endif
                 <h4>
                     @if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
-                        <input type="button" id="{{$centro->id}}" class="btn btn-sm btn-danger" value="Crear Empresa" />
-                        <small style="color: purple "> Fussionar:</small>
+                        <button type="button" class="btn btn-sm btn-info" onclick="editar({{$centro->id}})" >
+                            @lang("messages.generic.anadir") @lang("models.modelos.Empresa")
+                        </button>
+                        <small style="color: purple"> Fussionar:</small>
                         <input type="checkbox" value='{!!$centro->id!!}' />
                     @endif
                 </h4>
@@ -59,7 +61,7 @@
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddCenter">
         @lang("messages.generic.anadir") @lang("models.modelos.Centro")
     </button>
-    @if  (userIsAllow(config('roles.rol.administrador')))
+    @if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
         <button type="button" class="btn btn-primary" id='fusionar'>
             Fussionar
         </button>
@@ -67,3 +69,6 @@
 </div>
 @include('empresa.partials.modalCentro')
 @include('layouts.partials.error')
+@if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
+    @include('empresa.partials.modalEmpresa')
+@endif

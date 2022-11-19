@@ -8,22 +8,27 @@
         <h4>CIF : {{$elemento->cif}}</h4>
         <h4>@lang("validation.attributes.concierto") : {{$elemento->concierto}}</h4>
         <ul class="list-unstyled user_data">
-            <li><i class="fa fa-map-marker user-profile-icon"></i> {{ $elemento->direccion }}, {{$elemento->localidad}}
+            <li>
+                <em class="fa fa-map-marker user-profile-icon"></em>
+                {{ $elemento->direccion }}, {{$elemento->localidad}}
             </li>
             <li>
-                <i class="fa fa-phone user-profile-icon"></i> {{ $elemento->telefono }}
+                <em class="fa fa-phone user-profile-icon"></em>
+                {{ $elemento->telefono }}
             </li>
             <li class="m-top-xs">
-                <i class="fa fa-envelope user-profile-icon"></i> {{ $elemento->email }}
+                <em class="fa fa-envelope user-profile-icon"></em>
+                {{ $elemento->email }}
             </li>
         </ul>
-        <a href="/empresa/{{$elemento->id}}/edit" class="btn btn-success"><i
-                    class="fa fa-edit m-right-xs"></i>Editar</a>
+        <a href="/empresa/{{$elemento->id}}/edit" class="btn btn-success">
+            <em class="fa fa-edit m-right-xs"></em>Editar</a>
         @if (esRol(authUser()->rol,config('roles.rol.direccion')))
-            <a href="/empresa/{{$elemento->id}}/delete" id='Borrar' class="btn btn-danger"><i
-                        class="fa fa-delete m-right-xs"></i>Esborrar</a>
+            <a href="/empresa/{{$elemento->id}}/delete" id='Borrar' class="btn btn-danger">
+                <em class="fa fa-delete m-right-xs"></em>Esborrar</a>
         @endif
-        <a href="/empresa" class="btn btn-success"><i class="fa fa-arrow-left m-right-xs"></i>Volver</a>
+        <a href="/empresa" class="btn btn-success">
+            <em class="fa fa-arrow-left m-right-xs"></em>Volver</a>
         <br/>
 
         <!-- start skills -->
@@ -108,14 +113,20 @@
     <div class="col-md-9 col-sm-9 col-xs-12">
         <div class="" role="tabpanel" data-example-id="togglable-tabs">
             <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-                <li role="presentation" @if ($activa == 1) class="active" @endif><a href="#tab_content1" role="tab"
-                                                                                    id="colaboracion-tab"
-                                                                                    data-toggle="tab"
-                                                                                    aria-expanded="false">@lang("models.modelos.Colaboracion")</a>
+                <li role="presentation" @if ($activa == 1) class="active" @endif>
+                    <a href="#tab_content1" role="tab"
+                        id="colaboracion-tab"
+                        data-toggle="tab"
+                        aria-expanded="false">
+                        @lang("models.modelos.Colaboracion")
+                    </a>
                 </li>
-                <li role="presentation" @if ($activa == 2) class="active" @endif><a href="#tab_content2" id="centro-tab"
-                                                                                    role="tab" data-toggle="tab"
-                                                                                    aria-expanded="true">@lang("models.modelos.Centro")</a>
+                <li role="presentation" @if ($activa == 2) class="active" @endif>
+                    <a href="#tab_content2" id="centro-tab"
+                        role="tab" data-toggle="tab"
+                        aria-expanded="true">
+                        @lang("models.modelos.Centro")
+                    </a>
                 </li>
             </ul>
             <div id="myTabContent" class="tab-content">
@@ -151,9 +162,9 @@
                     </div>
             </div>
             @endsection
-            @section('titulo')
-                @lang("messages.menu.Empresa"): {{$elemento->nombre}}
-@endsection
+    @section('titulo')
+        @lang("messages.menu.Empresa"): {{$elemento->nombre}}
+    @endsection
 @section('scripts')
     {{ Html::script('/js/Empresa/detalle.js') }}
     {{ Html::script('/js/Empresa/delete.js') }}
