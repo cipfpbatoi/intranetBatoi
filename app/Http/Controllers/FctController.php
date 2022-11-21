@@ -172,7 +172,7 @@ class FctController extends IntranetController
                 $fct->fillAll($request);
             }
             try {
-                $fct->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($request->hasta),'horas'=>$request->horas]);
+                $fct->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa($request->desde),'hasta'=>FechaInglesa($request->hasta),'horas'=>$request->horas,'autorizacion'=>$request->autorizacion]);
             } catch (\Exception $e)
             {
                Alert::danger("L'alumne $idAlumno ja té una Fct oberta amb eixa empresa ");

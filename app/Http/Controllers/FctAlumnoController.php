@@ -45,12 +45,11 @@ class FctAlumnoController extends IntranetController
     {
         $this->panel->setBoton('grid', new BotonImg('alumnofct.delete'));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.edit',['where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('alumnofct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.pdf',['where'=>['asociacion', '==', '2']]));
-        $this->panel->setBoton('grid', new BotonImg('alumnofct.auth',['img'=>'fa-file','where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.auth',['img'=>'fa-file-zip-o','where'=>['autorizacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.link', ['where' => ['asociacion','==',1]]));
-        $this->panel->setBoton('grid', new BotonImg('alumnofct.A5',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.A5',['img'=>'fa-hand-o-up','where'=>['asociacion', '==', '1']]));
 
         $this->panel->setBoton('index', new BotonBasico("sao.post",['class' => 'btn-success download','roles' => config(self::ROLES_ROL_TUTOR)]));
 

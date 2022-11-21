@@ -21,9 +21,9 @@ class Fct extends Model
 
     protected $fillable = ['idAlumno',
         'idColaboracion','idInstructor','periode' ,'desde', 'hasta',
-        'horas','asociacion'
+        'horas','asociacion','autorizacion'
         ];
-    protected $notFillable = ['desde','hasta','idAlumno','horas'];
+    protected $notFillable = ['desde','hasta','idAlumno','horas','autorizacion'];
 
     protected $rules = [
         'idAlumno' => 'sometimes|required',
@@ -41,6 +41,7 @@ class Fct extends Model
         'periode' => ['type' => 'select'],
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
+        'autorizacion' => ['type'=>'checkbox']
 
         
     ];

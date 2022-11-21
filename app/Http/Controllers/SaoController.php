@@ -139,13 +139,13 @@ class SaoController extends Controller
                             $dadesInstructor = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(12)"));
                             $dades[$index]['centre']['instructorName'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
                             $dades[$index]['centre']['instructorDNI'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
-
                             list($dades[$index]['periode'],$dades[$index]['desde'],$dades[$index]['hasta']) = $this->getPeriode($detalles);
+                            $dades[$index]['autorizacion'] = ($detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(15) td:nth-child(4)"))->getText() == 'No requiere autorización')?0:1;
 
                             $dadesHores = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(14)"));
                             //$horari = $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
                             $dades[$index]['hores'] = explode('/',
-                                $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[1];
+                            $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[1];
                             $instructor = Instructor::find($dades[$index]['centre']['instructorDNI']);
                             $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
                             if ($centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre, $dades[$index]['centre']['telefon'],
@@ -230,6 +230,7 @@ class SaoController extends Controller
                         'horas' => $dades[$key]['hores'],
                         'desde' => fechaSao($dades[$key]['desde']),
                         'hasta' => fechaSao($dades[$key]['hasta']),
+                        'autorizacion' => $dades[$key]['autorizacion']
                     ]);
                     $fctAl->idFct = $fct->id;
                     $fctAl->idAlumno =  $dades[$key]['nia'];
