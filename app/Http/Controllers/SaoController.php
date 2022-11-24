@@ -27,9 +27,13 @@ use Exception;
  */
 class SaoController extends Controller
 {
-    const SERVER_URL = 'http://192.168.56.1:4444';
+    protected $server_url;
     const WEB = 'https://foremp.edu.gva.es/index.php';
 
+    public function __construct(){
+        $this->server_url = env('SELENIUM','http://192.168.56.1:4444');
+        return parent::__construct();
+    }
     public function index(){
         $tutores = Profesor::tutoresFCT()->orderBy('apellido1')->orderBy('apellido2')->get();
         $action = 'download';
@@ -50,7 +54,7 @@ class SaoController extends Controller
     public function annexes(Request $request)
     {
         $dni = $request->profesor;
-        $driver = RemoteWebDriver::create($this::SERVER_URL, DesiredCapabilities::firefox());
+        $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
         try {
             $this->login($driver, trim($request->password));
             foreach (AlumnoFct::misFcts()->activa()->get() as $fct){
@@ -83,7 +87,7 @@ class SaoController extends Controller
 
     public function sync(Request $request){
         $dni = $request->profesor;
-        $driver = RemoteWebDriver::create($this::SERVER_URL, DesiredCapabilities::firefox());
+        $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
         try {
             $this->login($driver, trim($request->password));
             foreach (AlumnoFct::misFcts()->activa()->get() as $fct){
@@ -113,7 +117,7 @@ class SaoController extends Controller
         $dni = $request->profesor??AuthUser()->dni;
         $grupo = Grupo::where('tutor',$dni)->first();
         if ($ciclo = $grupo->Ciclo)  {
-            $driver = RemoteWebDriver::create($this::SERVER_URL, DesiredCapabilities::firefox());
+            $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
             try {
                 $this->login($driver, trim($request->password));
                 if ($dni != AuthUser()->dni) {
@@ -275,7 +279,7 @@ class SaoController extends Controller
     public function check(Request $request)
     {
         $dni = $request->profesor;
-        $driver = RemoteWebDriver::create($this::SERVER_URL, DesiredCapabilities::firefox());
+        $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
         try {
             $this->login($driver, trim($request->password));
             $dades = array();
