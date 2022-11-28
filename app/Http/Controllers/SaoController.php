@@ -14,6 +14,7 @@ use DB;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Instructor;
 use Intranet\Entities\Profesor;
+use Intranet\Exceptions\IntranetException;
 use Intranet\Services\AttachedFileService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Empresa;
@@ -379,6 +380,10 @@ class SaoController extends Controller
             ->click();
         $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
         sleep(1);
+        $name = $driver->findElement(WebDriverBy::cssSelector('.botonform'))->getAttribute('name');
+        if ($name === 'login'){
+            throw new IntranetException('Password no vàlid. Has de ficarl el del SAO');
+        }
     }
 
     /**
