@@ -193,8 +193,8 @@ class SaoController extends Controller
             }
             $driver->close();
         }
-        session(compact('dades'));
         if (count($dades)){
+            session(compact('dades'));
             return view('sao.importa',compact('dades'));
         } else {
             return redirect(route('alumnofct.index'));
