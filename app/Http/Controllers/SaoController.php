@@ -216,7 +216,7 @@ class SaoController extends Controller
                 }
                 $centro->instructores()->syncWithoutDetaching($instructor->dni);
                 $fct = Fct::where('idColaboracion', $dades[$key]['colaboracio']['id'])
-                    ->where('periode', $dades[$key]['periode'])
+                    //->where('periode', $dades[$key]['periode'])
                     ->where('idInstructor', $instructor->dni)
                     ->first();
                 if (!$fct) {
