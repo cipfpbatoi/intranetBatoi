@@ -428,7 +428,12 @@ class SaoController extends Controller
     {
         $dadesPeriode = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(13)"));
         $periodo = $dadesPeriode->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
-        $periode = (substr($periodo, 0, 4) == 'Sept') ? 1 : 2;
+        switch (substr($periodo, 0, 4)){
+            case 'Sept' : $periode = 1; break;
+            case 'Ordi' : $periode = 2; break;
+            case 'Extr' : $periode = 3; break;
+            default: $periode = 4;
+        }
         $dates = explode('-', $dadesPeriode->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
         $desde = trim($dates[0]);
         $hasta = trim($dates[1]);
