@@ -117,7 +117,8 @@ class SaoController extends Controller
     public function download(Request $request){
         $dni = $request->profesor??AuthUser()->dni;
         $grupo = Grupo::where('tutor',$dni)->first();
-        if ($ciclo = $grupo->Ciclo)  {
+        $dades = array();
+        if ($ciclo = $grupo->Ciclo) {
             $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
             try {
                 $this->login($driver, trim($request->password));
@@ -125,7 +126,6 @@ class SaoController extends Controller
                     $this->findIndexUser($driver, $dni);
                 }
                 $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
-                $dades = array();
                 foreach ($table as $index => $tr) {
                     if ($index) {
                         try {
@@ -144,16 +144,17 @@ class SaoController extends Controller
                             $dadesInstructor = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(12)"));
                             $dades[$index]['centre']['instructorName'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
                             $dades[$index]['centre']['instructorDNI'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
-                            list($dades[$index]['periode'],$dades[$index]['desde'],$dades[$index]['hasta']) = $this->getPeriode($detalles);
-                            $dades[$index]['autorizacion'] = ($detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(15) td:nth-child(4)"))->getText() == 'No requiere autorización')?0:1;
+                            list($dades[$index]['periode'], $dades[$index]['desde'], $dades[$index]['hasta']) = $this->getPeriode($detalles);
+                            $dades[$index]['autorizacion'] = ($detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(15) td:nth-child(4)"))->getText() == 'No requiere autorización') ? 0 : 1;
 
                             $dadesHores = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(14)"));
                             //$horari = $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
                             $dades[$index]['hores'] = explode('/',
-                            $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[1];
+                                $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[1];
                             $instructor = Instructor::find($dades[$index]['centre']['instructorDNI']);
                             $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
-                            if ($centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre, $dades[$index]['centre']['telefon'],
+                            if ($centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre,
+                                $dades[$index]['centre']['telefon'],
                                 $dades[$index]['centre']['email'], $ciclo->id, $instructor)) {
                                 $dades[$index]['centre']['id'] = $centro->id;
                                 if ($colaboracion = Colaboracion::where('idCiclo', $ciclo->id)->where('idCentro',
@@ -169,7 +170,8 @@ class SaoController extends Controller
                                                 $td = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText());
                                                 if ($td == $nameCentre) {
                                                     //$dades[$index]['centro']['direccion'] = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
-                                                    $dades[$index]['centre']['idSao'] = substr($trinside->getAttribute('id'), 13);
+                                                    $dades[$index]['centre']['idSao'] = substr($trinside->getAttribute('id'),
+                                                        13);
                                                 }
                                             }
                                         }
@@ -178,13 +180,15 @@ class SaoController extends Controller
                                     }
                                 }
                             }
-                        } catch (Exception $e){
+                        } catch (Exception $e) {
                             unset($dades[$index]);
                             Alert::info($e->getMessage());
                         }
                     }
                 }
-            } catch (Exception $e) {
+            }catch (IntranetException $e){
+                Alert::warning($e->getMessage());
+            }catch (Exception $e) {
                 echo $e->getMessage();
             }
             $driver->close();
