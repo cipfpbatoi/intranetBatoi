@@ -36,7 +36,8 @@ class FDFPrepareService
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $alumnes = '';
         foreach ($elements as $element) {
-            $alumnes .= $element->Alumno->fullName.' \n';
+            $alumnes .= $element->Alumno->fullName.'
+';
         }
         $array['untitled1'] = $nomTutor.' - '.$dni;
         $array['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
