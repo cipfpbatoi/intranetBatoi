@@ -44,7 +44,7 @@ class FDFPrepareService
         $array['untitled3'] = $grupo->Ciclo->vliteral.' - '.$grupo->Ciclo->ciclo ;
         $array['untitled4'] = $nomTutor;
         $array['untitled6'] = $nomTutor;
-        $array['untitled28'] = $alumnes.$nomTutor;
+        $array['untitled28'] = $alumnes;
         $array['untitled29'] = config('contacto.poblacion');
         $array['untitled30'] = day(Hoy());
         $array['untitled31'] = month(Hoy());
