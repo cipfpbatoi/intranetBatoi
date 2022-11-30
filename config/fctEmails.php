@@ -139,10 +139,12 @@ return [
     'pasqua' => [
         'pdf' => [
             'nombre' => 'FCT VACANCES',
-            'orientacion' => 'portrait'
+            'orientacion' => 'portrait',
+            'fdf' => 'Conformitat_tutoria_per_a_grups.pdf',
+            'method' => 'fullVacances',
         ],
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoEnFct',
-        'view' => 'pdf.fct.fullVacances',
+
     ]
 ];

@@ -5,6 +5,7 @@ use Intranet\Componentes\MyMail;
 use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
 use Styde\Html\Facades\Alert;
+use Intranet\Services\FDFPrepareService;
 
 class DocumentService
 {
@@ -67,12 +68,17 @@ class DocumentService
 
     private function print()
     {
-        return Pdf::hazPdf(
-            $this->document->view,
-            $this->elements,
-            $this->document->pdf,
-            $this->document->pdf['orientacion']
-        )->stream();
+        if (isset($this->document->view)) {
+            return Pdf::hazPdf(
+                $this->document->view,
+                $this->elements,
+                $this->document->pdf,
+                $this->document->pdf['orientacion']
+            )->stream();
+        } else {
+            return response()->file(FDFPrepareService::exec($this->document->pdf, $this->elements));
+        }
+
 
     }
 }

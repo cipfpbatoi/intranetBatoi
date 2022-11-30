@@ -58,21 +58,22 @@ class PrintReportService
         }
     }
 
-    private function linking($doc){
+    private function linking($doc)
+    {
         foreach ($this->elements as $element) {
             $element->idDocumento = $doc;
             $element->save();
         }
     }
 
-    private function changeState(){
+    private function changeState()
+    {
         if (is_string($this->finalState)) {
             $accion = $this->finalState;
             foreach ($this->elements as $elements) {
                 $this->$accion($elements->id, false);
             }
-        }
-        else {
+        } else {
             foreach ($this->elements as $element) {
                 $this->class::putEstado($element->id, $this->finalState);
             }
