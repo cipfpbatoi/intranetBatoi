@@ -13,11 +13,13 @@ class FDFPrepareService
         $fdf = $pdf['fdf'];
         $method = $pdf['method'];
         $file = storage_path("tmp/$id/$fdf");
+        $array = self::$method($elements);
         if (!file_exists($file)) {
             $pdf = new Pdf("fdf/$fdf");
             $pdf->fillform(self::$method($elements))
                 ->saveAs($file);
         }
+        dd($pdf,$file,$array);
         return $file;
     }
 
