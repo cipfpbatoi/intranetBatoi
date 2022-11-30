@@ -4,6 +4,7 @@ namespace Intranet\Services;
 
 use mikehaertl\pdftk\Pdf;
 use Intranet\Entities\Grupo;
+use Exception;
 
 class FDFPrepareService
 {
@@ -15,11 +16,16 @@ class FDFPrepareService
         $file = storage_path("tmp/$id/$fdf");
         $array = self::$method($elements);
         if (!file_exists($file)) {
-            $pdf = new Pdf("fdf/$fdf");
-            $pdf->fillform(self::$method($elements))
-                ->saveAs($file);
+            try {
+                $pdf = new Pdf("fdf/$fdf");
+                $pdf->fillform(self::$method($elements))
+                    ->saveAs($file);
+            } catch (Exception $e) {
+                dd($e->getMessage(), $pdf, $file, $array);
+            }
+
         }
-        dd($pdf,$file,$array);
+
         return $file;
     }
 
