@@ -10,8 +10,8 @@ class FDFPrepareService
     public static function exec($pdf, $elements)
     {
         $id = authUser()->id;
-        $fdf = $pdf->fdf;
-        $method = $pdf->method;
+        $fdf = $pdf['fdf'];
+        $method = $pdf['method'];
         $file = storage_path("tmp/$id/$fdf");
         if (!file_exists($file)) {
             $pdf = new Pdf("fdf/$fdf");
@@ -27,11 +27,11 @@ class FDFPrepareService
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $alumnes = '';
         foreach ($elements as $element) {
-            $alumnes .= $element->Alumno->fullName().'\n';
+            $alumnes .= $element->Alumno->fullName.'\n';
         }
         $array['untitled1'] = $nomTutor.' - '.authUser()->dni;
         $array['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
-        $array['untitled3'] = $grupo->Ciclo->vliteral - $grupo->Ciclo->ciclo ;
+        $array['untitled3'] = $grupo->Ciclo->vliteral.' - '.$grupo->Ciclo->ciclo ;
         $array['untitled4'] = $nomTutor;
         $array['untitled6'] = $nomTutor;
         $array['unitiled26'] = $alumnes;
