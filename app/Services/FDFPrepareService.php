@@ -13,7 +13,7 @@ class FDFPrepareService
         $id = authUser()->id;
         $fdf = $pdf['fdf'];
         $method = $pdf['method'];
-        $file = storage_path("tmp/$id/$fdf");
+        $file = storage_path("tmp/{$id}_{$fdf}");
         $array = self::$method($elements);
         if (!file_exists($file)) {
             try {
