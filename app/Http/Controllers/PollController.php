@@ -19,10 +19,6 @@ class   PollController extends IntranetController
     protected $model = 'Poll';
     protected $gridFields = [ 'id','title','state'];
 
-
-
-
-
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico("poll.create",inRol('qualitat')));
@@ -32,7 +28,8 @@ class   PollController extends IntranetController
         $this->panel->setBoton('grid',new BotonImg('poll.show',['img' =>'fa-eye']));
     }
 
-    private function userKey($poll){
+    private function userKey($poll):String
+    {
         $key = $poll->keyUser;
         if ($poll->anonymous) {
             return hash('md5', AuthUser()->$key);
@@ -163,13 +160,4 @@ class   PollController extends IntranetController
             }
         }
     }
-
-
-
-
-
-
-    
-
-    
 }
