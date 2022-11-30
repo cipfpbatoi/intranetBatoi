@@ -32,21 +32,26 @@ class FDFPrepareService
     public static function fullVacances($elements): array
     {
         $nomTutor = AuthUser()->fullName;
+        $dni = AuthUser()->dni;
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $alumnes = '';
         foreach ($elements as $element) {
             $alumnes .= $element->Alumno->fullName;
         }
-        $array['untitled1'] = $nomTutor.' - '.authUser()->dni;
+        $array['untitled1'] = $nomTutor.' - '.$dni;
         $array['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
         $array['untitled3'] = $grupo->Ciclo->vliteral.' - '.$grupo->Ciclo->ciclo ;
         $array['untitled4'] = $nomTutor;
         $array['untitled6'] = $nomTutor;
+        $array['unitiled26'] = $alumnes.'-';
         $array['unitiled28'] = $alumnes;
         $array['untitled29'] = config('contacto.poblacion');
         $array['untitled30'] = day(Hoy());
         $array['untitled31'] = month(Hoy());
         $array['untitled32'] = substr(year(Hoy()), 2, 2);
+        if (file_exists("/storage/signatures/$dni")) {
+            $array['untitled33'] = "<img src='/storage/signatures/$dni'>";
+        }
         $array['untitled34'] = $nomTutor;
         return $array;
     }
