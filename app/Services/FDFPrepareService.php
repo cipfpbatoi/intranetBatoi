@@ -18,7 +18,7 @@ class FDFPrepareService
         if (!file_exists($file)) {
             try {
                 $pdf = new Pdf("fdf/$fdf");
-                $pdf->fillform(self::$method($elements))
+                $pdf->fillform($array)
                     ->saveAs($file);
             } catch (Exception $e) {
                 dd($e->getMessage(), $pdf, $file, $array);
@@ -29,7 +29,7 @@ class FDFPrepareService
         return $file;
     }
 
-    public static function fullVacances($elements)
+    public static function fullVacances($elements): array
     {
         $nomTutor = AuthUser()->fullName;
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
@@ -42,11 +42,11 @@ class FDFPrepareService
         $array['untitled3'] = $grupo->Ciclo->vliteral.' - '.$grupo->Ciclo->ciclo ;
         $array['untitled4'] = $nomTutor;
         $array['untitled6'] = $nomTutor;
-        $array['unitiled26'] = $alumnes;
-        $array['untitled27'] = config('contacto.poblacion');
-        $array['untitled28'] = day(Hoy());
-        $array['untitled29'] = month(Hoy());
-        $array['untitled30'] = substr(year(Hoy()), 2, 2);
+        $array['unitiled28'] = $alumnes;
+        $array['untitled29'] = config('contacto.poblacion');
+        $array['untitled30'] = day(Hoy());
+        $array['untitled31'] = month(Hoy());
+        $array['untitled32'] = substr(year(Hoy()), 2, 2);
         $array['untitled34'] = $nomTutor;
         return $array;
     }
