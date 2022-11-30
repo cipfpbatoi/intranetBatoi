@@ -41,7 +41,7 @@ class FDFPrepareService
         }
         $array['untitled1'] = $nomTutor.' - '.$dni;
         $array['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
-        $array['untitled3'] = $grupo->Ciclo->vliteral.' - '.$grupo->Ciclo->ciclo ;
+        $array['untitled3'] = $grupo->curso.' '.$grupo->Ciclo->vliteral.' - '.$grupo->Ciclo->ciclo ;
         $array['untitled4'] = $nomTutor;
         $array['untitled6'] = $nomTutor;
         $array['untitled28'] = $alumnes;
