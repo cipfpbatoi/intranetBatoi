@@ -15,7 +15,6 @@ class FDFPrepareService
         $method = $pdf['method'];
         $file = storage_path("tmp/{$id}_{$fdf}");
         $array = self::$method($elements);
-        dd($array);
         if (!file_exists($file)) {
             try {
                 $pdf = new Pdf("fdf/$fdf");
