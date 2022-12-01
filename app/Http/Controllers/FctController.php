@@ -118,7 +118,7 @@ class FctController extends IntranetController
     public function certificat($id){
         $pdf['fdf'] = '13_Certificado_persona_instructora.pdf';
         $pdf['method'] = 'certInstructor';
-        FDFPrepareService::exec($pdf,Fct::findOrFail($id));
+        return FDFPrepareService::exec($pdf,Fct::findOrFail($id));
     }
 
     /*
