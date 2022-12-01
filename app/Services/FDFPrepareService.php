@@ -21,7 +21,6 @@ class FDFPrepareService
                 $pdf = new Pdf("fdf/$fdf");
 
                 $pdf->fillform($array)
-                    ->replacementFont('/fonts/PlayfairDisplayBoldItalic-rgx7y.ttf')
                     ->saveAs($file);
             } catch (Exception $e) {
                 dd($e->getMessage(), $pdf, $file, $array);
