@@ -8,6 +8,7 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
+use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\BotonBasico;
@@ -114,6 +115,13 @@ class FctController extends IntranetController
         
     }
 
+    public function certificat($id){
+        $pdf['fdf'] = '13_Certificado_persona_instructora.pdf';
+        $pdf['method'] = 'certInstructor';
+        FDFPrepareService::exec($pdf,Fct::findOrFail($id));
+    }
+
+    /*
     public function certificat($id)
     {
         $fct = Fct::findOrFail($id);
@@ -125,7 +133,7 @@ class FctController extends IntranetController
             return back();
         }
 
-    }
+    }*/
 
     public static function preparePdf($fct,$fecha,$horas)
     {
