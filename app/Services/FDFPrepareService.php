@@ -63,14 +63,14 @@ class FDFPrepareService
         $array['untitled3'] = config('contacto.nombre');
         $array['untitled15'] =  $array['untitled3'];
         $array['untitled5'] = config('contacto.codi');
-        $array['untitled18'] =  $array['untitled5'];
-        $array['untitled6'] = $fct->Instructor->fullName;
-        $array['untitled19'] =  $array['untitled6'];
-        $array['untitled7'] = $fct->Instructor->dni;
-        $array['untitled20'] =  $array['untitled7'];
-        $array['untitled9'] = $fct->Colaboracion->Ciclo->vliteral;
+        $array['untitled17'] =  $array['untitled5'];
+        $array['untitled6'] = $fct->Instructor->contacto;
+        $array['untitled18'] =  $array['untitled6'];
+        $array['untitled8'] = $fct->Instructor->dni;
+        $array['untitled20'] =  $array['untitled8'];
+        $array['untitled10'] = $fct->Colaboracion->Ciclo->vliteral;
         $array['untitled22'] =  $fct->Colaboracion->Ciclo->cliteral;
-        $array['untitled11'] = curso();
+        $array['untitled12'] = curso();
         $array['untitled24'] =  curso();
         $array['untitled25'] = $fct->Colaboracion->Centro->Empresa->nombre;
         $alumnes = $fct->Alumnos->count();
@@ -81,8 +81,8 @@ class FDFPrepareService
         $array['untitled29'] = day(Hoy());
         $array['untitled30'] = month(Hoy());
         $array['untitled31'] = substr(year(Hoy()), 2, 2);
-        $array['untitled34'] = $director->fullName;
-        $array['untitled35'] = $array['untitled1'];
+        $array['untitled32'] = $director->fullName;
+        $array['untitled34'] = $array['untitled1'];
         return $array;
     }
 }
