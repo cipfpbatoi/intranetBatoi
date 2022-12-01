@@ -94,7 +94,7 @@ class SaoController extends Controller
             foreach (AlumnoFct::misFcts()->activa()->get() as $fct){
                 if ($fct->idSao){
                     $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=11&idFct=$fct->idSao");
-                    sleep(0.7);
+                    sleep(1);
                     $detalles = $driver->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody"));
                     $dadesHores = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(14)"));
                     $horari = $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
