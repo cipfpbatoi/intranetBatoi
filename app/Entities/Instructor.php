@@ -39,16 +39,23 @@ class Instructor extends Model
     
     public function Centros()
     {
-        return $this->belongsToMany(Centro::class,'centros_instructores', 'idInstructor', 'idCentro', 'dni','id');
+        return $this->belongsToMany(Centro::class, 'centros_instructores', 'idInstructor', 'idCentro', 'dni', 'id');
     }
     public function Fcts()
     {
-        return $this->belongsToMany(Fct::class,'instructor_fcts', 'idInstructor', 'idFct', 'dni','id')->withPivot('horas');
+        return $this->belongsToMany(
+            Fct::class,
+            'instructor_fcts',
+            'idInstructor',
+            'idFct',
+            'dni',
+            'id'
+        )->withPivot('horas');
     }
     public function getXcentrosAttribute()
     {
         $centros = '';
-        foreach ($this->Centros as $centro){
+        foreach ($this->Centros as $centro) {
             $centros .= '- '.$centro->nombre.' -';
         }
         return $centros;
@@ -64,14 +71,17 @@ class Instructor extends Model
     public function getTutoresFctAttribute()
     {
         $tutors = [];
-        foreach ($this->Fcts as $fct){
-            $dni = isset($fct->Alumno->Grupo->first()->Tutor->dni)?$fct->Alumno->Grupo->first()->Tutor->dni: authUser()->dni;
+        foreach ($this->Fcts as $fct) {
+            $dni = isset($fct->Alumno->Grupo->first()->Tutor->dni)?
+                $fct->Alumno->Grupo->first()->Tutor->dni:
+                authUser()->dni;
             if (!in_array($dni, $tutors)
-                &&(authUser()->dni != $dni))
-                    $tutors[] = $dni;
+                &&(authUser()->dni != $dni)) {
+                $tutors[] = $dni;
+            }
         }
         $todos = '';
-        foreach ($tutors as $tutor){
+        foreach ($tutors as $tutor) {
             $todos .= '- '.Profesor::find($tutor)->ShortName.' -';
         }
         return $todos;
@@ -79,11 +89,11 @@ class Instructor extends Model
     
     public function getNombreAttribute()
     {
-        return ucwords(mb_strtolower($this->name . ' ' . $this->surnames,'UTF-8'));
+        return ucwords(mb_strtolower($this->name . ' ' . $this->surnames, 'UTF-8'));
     }
     public function getContactoAttribute()
     {
-        return ucwords(mb_strtolower($this->name . ' ' . $this->surnames,'UTF-8'));
+        return $this->getNombreAttribute();
     }
     public function getIdAttribute()
     {
