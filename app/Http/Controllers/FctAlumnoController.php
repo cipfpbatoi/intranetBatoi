@@ -3,8 +3,6 @@
 namespace Intranet\Http\Controllers;
 
 
-use Facebook\WebDriver\WebDriver;
-use Illuminate\Support\Facades\Http;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\AlumnoFct;
@@ -17,9 +15,6 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Intranet\Services\FormBuilder;
 use mikehaertl\pdftk\Pdf;
-use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
-use Facebook\WebDriver\WebDriverBy;
 
 
 class FctAlumnoController extends IntranetController
