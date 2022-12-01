@@ -61,9 +61,9 @@ class FDFPrepareService
         $director = Profesor::find(config(fileContactos().'.director'));
         $array['untitled1'] = $secretario->fullName;
         $array['untitled2'] =  $array['untitled1'];
-        $array['untitled5'] = config(fileContactos().'.nombre');
+        $array['untitled5'] = config('contacto.nombre');
         $array['untitled6'] =  $array['untitled5'];
-        $array['untitled7'] = config(fileContactos().'.codi');
+        $array['untitled7'] = config('contacto.codi');
         $array['untitled8'] =  $array['untitled7'];
         $array['untitled9'] = $fct->Instructor->fullName;
         $array['untitled10'] =  $array['untitled9'];
@@ -83,8 +83,7 @@ class FDFPrepareService
         $array['untitled26'] = month(Hoy());
         $array['untitled27'] = substr(year(Hoy()), 2, 2);
         $array['untitled28'] = $director->fullName;
-        $array['untitled28'] = $array['untitled1'];
-
-        dd($array);
+        $array['untitled29'] = $array['untitled1'];
+        return $array;
     }
 }
