@@ -21,6 +21,30 @@ class FDFPrepareService
                 $pdf = new Pdf("fdf/$fdf");
 
                 $pdf->fillform($array)
+                    ->needAppearances()
+                    ->saveAs($file);
+            } catch (Exception $e) {
+                dd($e->getMessage(), $pdf, $file, $array);
+            }
+
+        }
+
+        return $file;
+    }
+
+    public static function savePdf($pdf, $elements)
+    {
+        $id = authUser()->id;
+        $fdf = $pdf['fdf'];
+        $method = $pdf['method'];
+        $file = storage_path("tmp/{$id}_{$fdf}");
+        $array = self::$method($elements);
+        if (!file_exists($file)) {
+            try {
+                $pdf = new Pdf("fdf/$fdf");
+
+                $pdf->fillform($array)
+                    ->flatten()
                     ->saveAs($file);
             } catch (Exception $e) {
                 dd($e->getMessage(), $pdf, $file, $array);
