@@ -20,7 +20,6 @@ class FDFPrepareService
             try {
                 $pdf = new Pdf("fdf/$fdf");
                 $pdf->fillform($array)
-                    ->updateInfo()
                     ->saveAs($file);
             } catch (Exception $e) {
                 dd($e->getMessage(), $pdf, $file, $array);
