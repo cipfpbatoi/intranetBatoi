@@ -39,6 +39,9 @@ class FDFPrepareService
         $tmpFile = storage_path("tmp/tmp_{$id}_{$fdf}");
         $file = storage_path("tmp/{$id}_{$fdf}");
         $array = self::$method($elements);
+        if (file_exists($file)) {
+            unlink($file);
+        }
         if (!file_exists($file)) {
             try {
                 $tmp = new Pdf("fdf/$fdf");
@@ -46,9 +49,7 @@ class FDFPrepareService
                     ->flatten()
                     ->saveAs($tmpFile);
                 $tmp = new Pdf($tmpFile);
-                if (file_exists($file)) {
-                    unlink($file);
-                }
+
                 $tmp->stamp("fdf/stamp.pdf")
                     ->saveAs($file);
                 unlink($tmpFile);
