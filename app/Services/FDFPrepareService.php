@@ -43,7 +43,7 @@ class FDFPrepareService
                 $pdf = new Pdf("fdf/$fdf");
                 $pdf->fillform($array)
                     ->flatten()
-                    ->stamp("fdf/stamp.pdf")
+                    ->background("fdf/stamp.pdf")
 
                     ->saveAs($file);
             } catch (Exception $e) {
