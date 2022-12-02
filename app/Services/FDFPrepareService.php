@@ -40,10 +40,7 @@ class FDFPrepareService
         $array = self::$method($elements);
         if (!file_exists($file)) {
             try {
-                $pdf = new Pdf("fdf/$fdf", [
-                    'locale' => 'POSIX',
-                    'procEnv' => ['LANG' => 'POSIX'],
-                ]);
+                $pdf = new Pdf("fdf/$fdf");
                 $pdf->fillform($array)
                     ->flatten()
                     ->saveAs($file);
