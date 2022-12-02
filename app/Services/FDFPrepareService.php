@@ -48,6 +48,7 @@ class FDFPrepareService
                 $tmp = new Pdf($tmp_file);
                 $tmp->stamp("fdf/stamp.pdf")
                     ->saveAs($file);
+                unlink($tmp_file);
             } catch (Exception $e) {
                 dd($e->getMessage(), $pdf, $file, $array);
             }
