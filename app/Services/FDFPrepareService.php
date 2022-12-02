@@ -41,7 +41,6 @@ class FDFPrepareService
         if (!file_exists($file)) {
             try {
                 $pdf = new Pdf("fdf/$fdf");
-
                 $pdf->fillform($array)
                     ->flatten()
                     ->saveAs($file);
