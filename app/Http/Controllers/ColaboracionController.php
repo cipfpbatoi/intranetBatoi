@@ -38,7 +38,7 @@ class ColaboracionController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['empresa','localidad','Xestado','Xciclo','puestos','contacto','email','telefono','horari'];
+    protected $gridFields = ['short','Xciclo','puestos','Xestado','localidad','contacto','email','telefono','horari'];
     /**
      * @var array
      */

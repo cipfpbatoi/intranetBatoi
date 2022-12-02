@@ -86,10 +86,13 @@ class Colaboracion extends Model
         }
     }
 
-
     public function getEmpresaAttribute()
     {
         return $this->Centro->nombre;
+    }
+    public function getShortAttribute()
+    {
+        return substr($this->Centro->nombre, 0,50);
     }
     public function getXCicloAttribute()
     {
