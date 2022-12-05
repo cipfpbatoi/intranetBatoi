@@ -77,9 +77,10 @@ class FDFPrepareService
         $array['untitled4'] = $nomTutor;
         $array['untitled6'] = $nomTutor;
         $array['untitled8'] = 'Sí';
-        $array['untitled10'] = 'Sí';
-        $array['untitled18'] = 'Sí';
-        $array['untitled20'] = 'Sí';
+        $array['untitled9'] = 'Si';
+        $array['untitled10'] = 'On';
+        $array['untitled18'] = true;
+        $array['untitled20'] = 'Yes';
         $array['untitled28'] = $alumnes;
         $array['untitled29'] = config('contacto.poblacion');
         $array['untitled30'] = day(Hoy());
