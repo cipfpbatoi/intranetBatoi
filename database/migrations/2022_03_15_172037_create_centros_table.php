@@ -25,7 +25,7 @@ class CreateCentrosTable extends Migration {
 			$table->text('observaciones', 65535)->nullable();
 			$table->timestamps();
 			$table->string('nombre', 100);
-			$table->string('horarios', 100)->nullable();
+			$table->string('horarios', 200)->nullable();
 			$table->string('idioma', 2)->nullable();
 			$table->string('codiPostal', 5)->nullable();
 		});
