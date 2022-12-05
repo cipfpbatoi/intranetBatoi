@@ -45,11 +45,17 @@ abstract class ModalController extends Controller
 
     }
 
-    protected function grid(){
+    protected function grid()
+    {
+        if (is_array($this->vista)) {
+            $vista = $this->vista['index'] ??'intranet.indexModal';
+        } else {
+            $vista = $this->vista ??'intranet.indexModal';;
+        }
         return $this->panel->render(
             $this->search(),
             $this->titulo,
-            $this->vista ?? 'intranet.indexModal',
+            $vista ,
             new FormBuilder($this->createWithDefaultValues(),$this->formFields));
     }
 

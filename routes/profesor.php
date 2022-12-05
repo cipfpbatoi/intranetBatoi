@@ -215,10 +215,10 @@ Route::put('/empresa/{empresa}/edit', ['as' => 'empresa.update', 'uses' => 'Empr
 Route::get('/empresa/pdf', ['as' => 'empresa.pdf', 'uses' => 'EmpresaController@listado']);
 Route::get('/empresa/{empresa}/detalle', ['as' => 'empresa.detalle', 'uses' => 'EmpresaController@show']);
 Route::get('/empresa/{empresa}/document', ['as' => 'empresa.document', 'uses' => 'EmpresaController@document']);
-Route::get('/colaboracion', ['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/empresaSC', ['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCController@index']);
 
 
+Route::get('/colaboracion', ['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/misColaboraciones', ['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
 Route::get('/https://youtu.be/KZeQUUnlz7wonfct/{id}/{documento}', ['as' => 'PanelColaboracion.colaboracion', 'uses' => 'PanelColaboracionController@showMailById']);
 Route::post('/documentacionFCT/{documento}', 'PanelColaboracionController@showMailByRequest');
@@ -231,14 +231,23 @@ Route::put('/centro/{centro}/edit', ['as' => 'centro.update', 'uses' => 'CentroC
 Route::post('/centro/create', ['as' => 'centro.store', 'uses' => 'CentroController@store']);
 
 
-Route::resource('/colaboracion', 'ColaboracionController', ['except' => ['destroy', 'update', 'show']]);
+Route::resource('/colaboracion', 'ColaboracionController', ['except' => ['destroy', 'update', 'show','edit']]);
 Route::post('/empresa/create', ['as' => 'empresa.store', 'uses' => 'EmpresaController@store']);
-Route::get('/colaboracion/{colaboracion}/delete', ['as' => 'colaboracion.destroy', 'uses' => 'ColaboracionController@destroy']);
 Route::get('/colaboracion/{colaboracion}/show', ['as' => 'colaboracion.show', 'uses' => 'ColaboracionController@show']);
-Route::put('/colaboracion/{colaboracion}/edit', ['as' => 'colaboracion.update', 'uses' => 'ColaboracionController@update']);
-Route::get('/colaboracion/{colaboracion}/copy', ['as' => 'colaboracion.copy', 'uses' => 'ColaboracionController@copy']);
-Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'ColaboracionController@store']);
 Route::get('/colaboracion/{colaboracion}/print', 'ColaboracionController@print');
+Route::put(
+    '/colaboracion/{colaboracion}/edit',
+    [
+        'as' => 'colaboracion.update',
+        'uses' => 'ColaboracionController@update'
+    ]
+);
+
+
+Route::get('/colaboracion/{colaboracion}/edit', ['as' => 'colaboracion.edit', 'uses' => 'PanelColaboracionController@edit']);
+Route::get('/colaboracion/{colaboracion}/copy', ['as' => 'colaboracion.copy', 'uses' => 'PanelColaboracionController@copy']);
+Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'PanelColaboracionController@store']);
+Route::get('/colaboracion/{colaboracion}/delete', ['as' => 'colaboracion.destroy', 'uses' => 'PanelColaboracionController@destroy']);
 
 
 Route::resource('/fct', 'FctController', ['except' => ['destroy', 'update', 'show']]);
@@ -427,8 +436,8 @@ Route::put(
 );
 Route::get(
     '/programacion/{programacion}/seguimiento',
-    ['as' => 'programacion.seguimiento', 'uses' => 'ProgramacionController@seguimiento'])
-;
+    ['as' => 'programacion.seguimiento', 'uses' => 'ProgramacionController@seguimiento']
+);
 Route::get('/itaca', ['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
 
 

@@ -12,6 +12,7 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
+use Intranet\Livewire\Showenterprise;
 use Response;
 use Exception;
 use Illuminate\Support\Facades\Redirect;
@@ -154,6 +155,5 @@ class EmpresaController extends IntranetController
         Alert::danger(trans("messages.generic.nodocument"));
         return back();
     }
-
 
 }

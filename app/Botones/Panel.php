@@ -12,10 +12,10 @@ class Panel
     private $pestanas;  // pestanyes
     private $titulo;    // titol
     private $elementos; // elements
-    private $data = [];      // array de més dades 
+    private $data = []; // array de més dades
     public $items = [];
     
-    public function __construct($modelo, $rejilla = null, $vista = null,$creaPestana=true,$include=[])
+    public function __construct($modelo, $rejilla = null, $vista = null, $creaPestana=true, $include=[])
     {
         $this->model = $modelo;
         $this->botones['index'] = [];
@@ -23,20 +23,21 @@ class Panel
         $this->botones['profile'] = [];
         $this->botones['infile'] = [];
         if ($creaPestana) {
-            $this->setPestana('grid', true, $vista, null, $rejilla,null,$include);
+            $this->setPestana('grid', true, $vista, null, $rejilla, null, $include);
         }
         
     }
 
 
-    public function render($todos,$titulo,$vista,$formulario=null){
+    public function render($todos, $titulo, $vista, $formulario=null)
+    {
         if (!$this->countPestana()) {
             return redirect()->route('home');
         }
 
         $panel = $this->feedPanel($todos, $titulo);
 
-        return view($vista,compact('panel','formulario'));
+        return view($vista, compact('panel', 'formulario'));
 
     }
 
@@ -44,20 +45,17 @@ class Panel
     public function setBotonera($index = [], $grid = [], $profile = [])
     {
         if ($index != []) {
-            foreach ($index as $btn)
-            {
+            foreach ($index as $btn) {
                 $this->botones['index'][] = new BotonBasico("$this->model.$btn");
             }
         }
         if ($grid != []) {
-            foreach ($grid as $btn)
-            {
+            foreach ($grid as $btn) {
                 $this->botones['grid'][] = new BotonImg($this->model . "." . $btn);
             }
         }
         if ($profile != []) {
-            foreach ($profile as $btn)
-            {
+            foreach ($profile as $btn) {
                 $this->botones['profile'][] = new BotonIcon("$this->model.$btn");
             }
         }
@@ -69,7 +67,7 @@ class Panel
         $this->botones[$tipo][] = $boton;
     }
 
-    // ageix boto comú a grid i profile    
+    // ageix boto comú a grid i profile
     public function setBothBoton($href, $atributos = [], $relative = false)
     {
         $this->botones['grid'][] = new BotonImg($href, $atributos, $relative);
@@ -78,20 +76,42 @@ class Panel
 
     // afeguix pestana
     // sustituye canvia la primera pestana per l'actual
-    public function setPestana($nombre, $activo = false, $vista = null, $filtro = null, $rejilla = null, $sustituye = null,$include=[])
+    public function setPestana(
+        $nombre,
+        $activo = false,
+        $vista = null,
+        $filtro = null,
+        $rejilla = null,
+        $sustituye = null,
+        $include=[]
+    )
     {
         if ($activo) {
             $this->desactivaAll();
         }
         if ($sustituye) {
-            $this->pestanas[0] = new Pestana($nombre, $activo, $this->getView($nombre, $vista), $filtro, $rejilla,$include);
-        }
-        else {
-            $this->pestanas[] = new Pestana($nombre, $activo, $this->getView($nombre, $vista), $filtro, $rejilla,$include);
+            $this->pestanas[0] = new Pestana(
+                $nombre,
+                $activo,
+                $this->getView($nombre, $vista),
+                $filtro,
+                $rejilla,
+                $include
+            );
+        } else {
+            $this->pestanas[] = new Pestana(
+                $nombre,
+                $activo,
+                $this->getView($nombre, $vista),
+                $filtro,
+                $rejilla,
+                $include
+            );
         }
     }
 
-    public function countPestana(){
+    public function countPestana()
+    {
         return count($this->pestanas);
     }
 
@@ -104,8 +124,7 @@ class Panel
     private function desactivaAll()
     {
         if ($this->pestanas) {
-            foreach ($this->pestanas as $pestana)
-            {
+            foreach ($this->pestanas as $pestana) {
                 $pestana->setActiva(false);
             }
         }
@@ -133,8 +152,12 @@ class Panel
 
     public function getBotones($tipo = null)
     {
-        return $tipo == null ? $this->botones : ((isset($this->botones[$tipo]))?$this->botones[$tipo]:[]);
+        if (isset($tipo)) {
+            return (isset($this->botones[$tipo]))?$this->botones[$tipo]:[];
+        }
+        return $this->botones;
     }
+
     public function countBotones($tipo)
     {
         return count($this->botones[$tipo]);
@@ -145,11 +168,12 @@ class Panel
         return trans("models." . ucwords(strtolower($this->getModel())) . ".$que", $this->titulo);
     }
 
-    function setElementos($elementos)
+    public function setElementos($elementos)
     {
         $this->elementos = $elementos;
     }
-    function getElemento()
+
+    public function getElemento()
     {
         return $this->elementos;
     }
@@ -159,7 +183,7 @@ class Panel
     public function getElementos($pestana)
     {
         $elementos = $this->elementos;
-        if ($filtro = $pestana->getFiltro()){
+        if ($filtro = $pestana->getFiltro()) {
             for ($i = 0; $i < count($filtro); $i = $i + 2) {
                 $elementos = $elementos->where($filtro[$i], '=', $filtro[$i+1]);
             }
@@ -173,8 +197,7 @@ class Panel
         foreach ($this->pestanas as $pestana) {
             if ($pestana->getNombre() == $nombre) {
                 $pestana->setActiva(true);
-            }
-            else {
+            } else {
                 $pestana->setActiva(false);
             }
         }
@@ -186,8 +209,8 @@ class Panel
             return 'intranet.partials.' . $nombre . "." . strtolower($this->model);
         }
 
-        if (substr($vista,0,1)=='.') {
-            return substr($vista,1);
+        if (substr($vista, 0, 1)=='.') {
+            return substr($vista, 1);
         }
         return 'intranet.partials.' . $vista;
     }

@@ -16,7 +16,8 @@ class Controlguardia extends Component
     public $lastDay;
 
 
-    public function mount(){
+    public function mount()
+    {
         $this->horas = Hora::all();
         $this->dias  = array('L','M','X','J','V');
         $this->firstDay = new Date('last monday');
@@ -24,12 +25,14 @@ class Controlguardia extends Component
         $this->lastDay->addDays(5);
     }
 
-    public function weekBefore(){
+    public function weekBefore()
+    {
         $this->firstDay->subDays(7);
         $this->lastDay->subDays(7);
     }
 
-    public function weekAfter(){
+    public function weekAfter()
+    {
         $this->firstDay->addDays(7);
         $this->lastDay->addDays(7);
     }
@@ -37,12 +40,12 @@ class Controlguardia extends Component
     public function render()
     {
         $registers = array();
-        $guardies =  Guardia::where('dia','>=',$this->firstDay->format('Y-m-d'))->
-        where('dia','<=',$this->lastDay->format('Y-m-d'))->get();
-        foreach ($guardies as $guarda){
+        $guardies =  Guardia::where('dia', '>=', $this->firstDay->format('Y-m-d'))->
+        where('dia', '<=', $this->lastDay->format('Y-m-d'))->get();
+        foreach ($guardies as $guarda) {
             $registers[$guarda->hora][nameDay($guarda->dia)][] = $guarda;
         }
-        return view('livewire.guardias',compact('registers'));
+        return view('livewire.guardias', compact('registers'));
     }
 
 

@@ -2,15 +2,20 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonBasico;
+use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Grupo;
 use Intranet\Finders\UniqueFinder;
 use Intranet\Componentes\DocumentoFct;
 use Intranet\Finders\RequestFinder;
 use Intranet\Services\DocumentService;
 use Illuminate\Http\Request;
+use Styde\Html\Facades\Alert;
 
 /**
  * Class PanelColaboracionController
@@ -101,6 +106,79 @@ class PanelColaboracionController extends IntranetController
         $parametres = array('request' => $request,'document'=>$documento);
         $service = new DocumentService(new RequestFinder($parametres));
         return $service->render();
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+
+    public function update(Request $request, $id)
+    {
+        parent::update($request, $id);
+        $empresa = Centro::find($request->idCentro)->idEmpresa;
+        Session::put('pestana',1);
+        return $this->showEmpresa($empresa);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(Request $request)
+    {
+        parent::store($request);
+        $empresa = Centro::find($request->idCentro)->idEmpresa;
+        Session::put('pestana',1);
+        return $this->showEmpresa($empresa);
+    }
+
+    private function showEmpresa($id){
+        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+    }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function copy($id)
+    {
+        $profesor = AuthUser()->dni;
+        $elemento = Colaboracion::find($id);
+        Session::put('pestana',1);
+        $copia = New Colaboracion();
+        $copia->fill($elemento->toArray());
+        $copia->idCiclo = Grupo::QTutor($profesor)->get()->count() > 0 ? Grupo::QTutor($profesor)->first()->idCiclo : Grupo::QTutor($profesor,true)->first()->idCiclo;
+        $copia->tutor = AuthUser()->FullName;
+
+        // para no generar más de uno por ciclo
+        $validator = Validator::make($copia->toArray(),$copia->getRules());
+        if ($validator->fails()){
+            return Redirect::back()->withInput()->withErrors($validator);
+        }
+
+
+        $copia->save();
+        return back();
+
+    }
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy($id)
+    {
+        $empresa = Colaboracion::find($id)->Centro->Empresa;
+        try {
+            parent::destroy($id);
+        } catch (Exception $exception){
+            Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixa col·laboració d'anys anteriors.");
+        }
+
+        Session::put('pestana',1);
+        return $this->showEmpresa($empresa);
     }
 
 

@@ -8,23 +8,21 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Ciclo;
 use Jenssegers\Date\Date;
 use mikehaertl\pdftk\Pdf;
 use Response;
 use Exception;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Redirect;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
+use Intranet\Http\Requests\ColaboracionRequest;
 
 /**
  * Class ColaboracionController
  * @package Intranet\Http\Controllers
  */
-class ColaboracionController extends IntranetController
+class ColaboracionController extends ModalController
 {
     use traitAutorizar;
     /**
@@ -44,34 +42,7 @@ class ColaboracionController extends IntranetController
      */
     protected $titulo = [];
     protected $profile = false;
-    protected $vista = ['show'=>'colaboracion'];
 
-
-    /**
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function copy($id)
-    {
-        $profesor = AuthUser()->dni;
-        $elemento = Colaboracion::find($id);
-        Session::put('pestana',1);
-        $copia = New Colaboracion();
-        $copia->fill($elemento->toArray());
-        $copia->idCiclo = Grupo::QTutor($profesor)->get()->count() > 0 ? Grupo::QTutor($profesor)->first()->idCiclo : Grupo::QTutor($profesor,true)->first()->idCiclo;
-        $copia->tutor = AuthUser()->FullName;
-        
-            // para no generar más de uno por ciclo
-        $validator = Validator::make($copia->toArray(),$copia->getRules());
-        if ($validator->fails()){
-            return Redirect::back()->withInput()->withErrors($validator);
-        }
-
-
-        $copia->save();
-        return back();
-
-    }
 
     /**
      * @param Request $request
@@ -93,8 +64,8 @@ class ColaboracionController extends IntranetController
      */
     public function iniBotones()
     {
-        $this->panel->setBoton('grid', new BotonImg('colaboracion.show',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
-        
+        $this->panel->setBoton('grid', new BotonImg('colaboracion.show',['img'=>'fa-eye-slash','roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
+        $this->panel->setBoton('grid', new BotonImg('colaboracion.edit',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
     }
 
     /**
@@ -109,11 +80,17 @@ class ColaboracionController extends IntranetController
         });
     }
 
+    public function update(ColaboracionRequest $request, $id)
+    {
+        Colaboracion::findOrFail($id)->fillAll($request);
+        return $this->redirect();
+    }
+
     /**
      * @param Request $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
-     */
+
     public function update(Request $request, $id)
     {
         parent::update($request, $id);
@@ -121,39 +98,10 @@ class ColaboracionController extends IntranetController
         Session::put('pestana',1);
         return $this->showEmpresa($empresa);
     }
-
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
-    {
-        parent::store($request);
-        $empresa = Centro::find($request->idCentro)->idEmpresa;
-        Session::put('pestana',1);
-        return $this->showEmpresa($empresa);
-    }
 
-    private function showEmpresa($id){
-        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
-    }
 
-    /**
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function destroy($id)
-    {
-        $empresa = Colaboracion::find($id)->Centro->Empresa;
-        try {
-            parent::destroy($id);
-        } catch (Exception $exception){
-            Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixa col·laboració d'anys anteriors.");
-        }
 
-        Session::put('pestana',1);
-        return $this->showEmpresa($empresa);
-    }
 
     /**
      * @param $id
@@ -171,8 +119,9 @@ class ColaboracionController extends IntranetController
         $alFct = hazArray(AlumnoFct::whereIn('idFct',$allFct)->get(),'id','id');
         $contactFct = Activity::modelo('Fct')->mail()->ids($allFct)->orderBy('created_at')->get();
         $contactAl = Activity::modelo('AlumnoFct')->mail()->ids($alFct)->orderBy('created_at')->get();
-        return view($this->chooseView('show'), compact('elemento','contactCol','contactFct','contactAl','fcts','pestana'));
+        return view('colaboracion.show', compact('elemento','contactCol','contactFct','contactAl','fcts','pestana'));
     }
+
     public function printAnexeIV($colaboracion){
         $file = storage_path("tmp/dual$colaboracion->id/ANEXO_IV.pdf");
         if (!file_exists($file)) {

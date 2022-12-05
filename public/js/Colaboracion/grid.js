@@ -248,28 +248,3 @@ $(function() {
         });
     });
 })
-/*
-$('#datatable').DataTable( {
-    language: {
-        url: '/json/cattable.json',
-    },
-    deferRender: true,
-    responsive: true,
-    columnDefs: [
-        { responsivePriority: 10001, targets: -1},
-        { responsivePriority: 2, targets: 3},
-        { responsivePriority: 3, targets: 2},
-    ]
-});
-*/
-$('#datable').DataTable( {
-    scrollY:        300,
-    scrollX:        true,
-    scrollCollapse: true,
-    paging:         false,
-    responsive:     false,
-    deferender:     false,
-    fixedColumns:   {
-        left: 1,
-    },
-} );

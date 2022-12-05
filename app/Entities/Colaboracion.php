@@ -22,8 +22,8 @@ class Colaboracion extends Model
         'telefono' => 'max:20'
     ];
     protected $inputTypes = [
-        'idCentro' => ['disabled' => 'disabled'],
-        'idCiclo' => ['disabled' => 'disabled'],
+        'idCentro' => ['type' => 'hidden'],
+        'idCiclo' => ['type' => 'hidden'],
         'telefono' => ['type'=>'number'],
         'email' => ['type'=>'email'],
         'tutor' => ['type'=>'hidden'],
@@ -92,7 +92,7 @@ class Colaboracion extends Model
     }
     public function getShortAttribute()
     {
-        return substr($this->Centro->nombre, 0,50);
+        return substr($this->Centro->nombre, 0, 50);
     }
     public function getXCicloAttribute()
     {
