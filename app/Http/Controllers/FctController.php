@@ -34,7 +34,7 @@ class FctController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['Centro','periode','Contacto','Lalumnes','Nalumnes'];
+    protected $gridFields = ['Centro','Contacto','Lalumnes','Nalumnes'];
     /**
      * @var
      */
@@ -171,7 +171,6 @@ class FctController extends IntranetController
             $fct = Fct::where('idColaboracion',$request->idColaboracion)
                     ->where('asociacion',$request->asociacion)
                     ->where('idInstructor',$request->idInstructor)
-                    ->where('periode',$request->periode)
                     ->first();
 
             if (!$fct) {

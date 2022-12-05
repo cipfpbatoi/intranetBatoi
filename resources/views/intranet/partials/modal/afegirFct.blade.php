@@ -8,7 +8,12 @@
                class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.alumno")</label>
         <div class="col-md-6 col-sm-6 col-xs-12">
             <select name='idAlumno'>
-                @foreach (hazArray(\Intranet\Entities\Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',['NameFull','horasFct'],'-') as $key => $alumno)
+                @foreach (hazArray(
+    \Intranet\Entities\Alumno::misAlumnos()->orderBy('apellido1')->orderBy('apellido2')->get(),
+    'nia',
+    ['NameFull','horasFct'],
+    '-')
+     as $key => $alumno)
                     <option value="{{ $key }}"> {{ $alumno }}</option>
                 @endforeach
             </select>
@@ -26,17 +31,6 @@
                class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.hasta")</label>
         <div class="col-md-6 col-sm-6 col-xs-12">
             <input type='text' class="date" name='hasta' value=''/>
-        </div>
-    </div>
-    <div id="periode" class="form-group">
-        <label for="periode"
-               class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.periode")</label>
-        <div class="col-md-6 col-sm-6 col-xs-12">
-            <select name="periode">
-                @foreach (config('auxiliares.periodesFct') as $key => $value)
-                    <option value="{{$key}}">{{$value}}</option>
-                @endforeach
-            </select>
         </div>
     </div>
     <div id="instructor" class="form-group">

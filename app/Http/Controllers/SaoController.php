@@ -144,7 +144,7 @@ class SaoController extends Controller
                             $dadesInstructor = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(12)"));
                             $dades[$index]['centre']['instructorName'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
                             $dades[$index]['centre']['instructorDNI'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
-                            list($dades[$index]['periode'], $dades[$index]['desde'], $dades[$index]['hasta']) = $this->getPeriode($detalles);
+                            list( $dades[$index]['desde'], $dades[$index]['hasta']) = $this->getPeriode($detalles);
                             $dades[$index]['autorizacion'] = ($detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(15) td:nth-child(4)"))->getText() == 'No requiere autorización') ? 0 : 1;
 
                             $dadesHores = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(14)"));
@@ -221,7 +221,7 @@ class SaoController extends Controller
                 }
                 $centro->instructores()->syncWithoutDetaching($instructor->dni);
                 $fct = Fct::where('idColaboracion', $dades[$key]['colaboracio']['id'])
-                    //->where('periode', $dades[$key]['periode'])
+
                     ->where('idInstructor', $instructor->dni)
                     ->first();
                 if (!$fct) {
@@ -229,7 +229,6 @@ class SaoController extends Controller
                         'idColaboracion' => $dades[$key]['colaboracio']['id'],
                         'asociacion' => 1,
                         'idInstructor' => $instructor->dni,
-                        'periode' => $dades[$key]['periode']
                     ]);
                     $fct->save();
                 }
@@ -436,17 +435,10 @@ class SaoController extends Controller
     private function getPeriode(\Facebook\WebDriver\Remote\RemoteWebElement $detalles): array
     {
         $dadesPeriode = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(13)"));
-        $periodo = $dadesPeriode->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
-        switch (substr($periodo, 0, 4)){
-            case 'Sept' : $periode = 1; break;
-            case 'Ordi' : $periode = 2; break;
-            case 'Extr' : $periode = 3; break;
-            default: $periode = 4;
-        }
         $dates = explode('-', $dadesPeriode->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
         $desde = trim($dates[0]);
         $hasta = trim($dates[1]);
-        return array($periode, $desde, $hasta);
+        return array($desde, $hasta);
     }
 
     private function buscaCentro($nameEmpresa,$idEmpresa,$nameCentro,$telefonoCentre,$emailCentre,$idCiclo,$instructor){

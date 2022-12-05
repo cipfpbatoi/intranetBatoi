@@ -24,7 +24,7 @@ class FctAlumnoController extends IntranetController
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';
     protected $model = 'AlumnoFct';
-    protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horasRealizadas','finPracticas','periode'];
+    protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horasRealizadas','finPracticas'];
     protected $profile = false;
     protected $titulo = [];
     protected $parametresVista = ['modal' => ['seleccion','saoPassword']];
@@ -79,13 +79,8 @@ class FctAlumnoController extends IntranetController
             $elementos = FctConvalidacion::where('idColaboracion',$request->idColaboracion)
                     ->where('asociacion',$request->asociacion)
                     ->get();
-            $id = null;
-            foreach ($elementos as $elemento){
-                    if ($elemento->Periode == PeriodePractiques(Hoy())){
-                        $id = $elemento->id;
-                        break;
-                    }
-                }
+            $id = $elementos->first()->id??null;
+
             if (!$id){ 
                 $elemento = new FctConvalidacion();
                 $this->validateAll($request, $elemento);

@@ -40,7 +40,7 @@ class PanelFctAvalController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['Nombre', 'Qualificacio', 'Projecte', 'periode','hasta'];
+    protected $gridFields = ['Nombre', 'Qualificacio', 'Projecte', 'hasta'];
     /**
      * @var bool
      */

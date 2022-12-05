@@ -39,17 +39,6 @@
                             <input type='text' class="date" name='hasta' value=''/>
                         </div>
                     </div>
-                    <div id="periode" class="form-group">
-                        <label for="periode"
-                               class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.periode")</label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <select name="periode">
-                                @foreach (config('auxiliares.periodesFct') as $key => $value)
-                                    <option value="{{$key}}">{{$value}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
                     <div id="instructor" class="form-group">
                         <label for="instructor"
                                class="control-label col-md-3 col-sm-3 col-xs-12"> @lang("validation.attributes.instructor")</label>
