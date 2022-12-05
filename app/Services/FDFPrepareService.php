@@ -16,11 +16,14 @@ class FDFPrepareService
         $method = $pdf['method'];
         $file = storage_path("tmp/{$id}_{$fdf}");
         $array = self::$method($elements);
+        if (file_exists($file)) {
+            unlink($file);
+        }
         if (!file_exists($file)) {
             try {
                 $pdf = new Pdf("fdf/$fdf");
-
                 $pdf->fillform($array)
+                    ->flatten()
                     ->saveAs($file);
             } catch (Exception $e) {
                 dd($e->getMessage(), $pdf, $file, $array);
@@ -31,7 +34,7 @@ class FDFPrepareService
         return $file;
     }
 
-    public static function savePdf($pdf, $elements)
+    public static function stampPDF($pdf, $elements, $stamp)
     {
         $id = authUser()->id;
         $fdf = $pdf['fdf'];
@@ -50,7 +53,7 @@ class FDFPrepareService
                     ->saveAs($tmpFile);
                 $tmp = new Pdf($tmpFile);
 
-                $tmp->stamp("fdf/stamp.pdf")
+                $tmp->stamp("fdf/$stamp")
                     ->saveAs($file);
                 unlink($tmpFile);
             } catch (Exception $e) {
