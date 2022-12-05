@@ -76,10 +76,10 @@ class FDFPrepareService
         $array['untitled3'] = $grupo->curso.' '.$grupo->Ciclo->vliteral.' - '.$grupo->Ciclo->ciclo ;
         $array['untitled4'] = $nomTutor;
         $array['untitled6'] = $nomTutor;
-        $array['untitled8'] = 'on';
-        $array['untitled10'] = 'on';
-        $array['untitled18'] = 'on';
-        $array['untitled20'] = 'on';
+        $array['untitled8'] = 'Sí';
+        $array['untitled10'] = 'Sí';
+        $array['untitled18'] = 'Sí';
+        $array['untitled20'] = 'Sí';
         $array['untitled28'] = $alumnes;
         $array['untitled29'] = config('contacto.poblacion');
         $array['untitled30'] = day(Hoy());
