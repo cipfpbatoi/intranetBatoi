@@ -8,6 +8,7 @@ namespace Intranet\Http\Controllers;
 
 
 use Illuminate\Support\Facades\Http;
+use Intranet\Entities\Activity;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Empresa;
@@ -199,6 +200,37 @@ class AdministracionController extends Controller
         }
     }
 
+    public function consulta(){
+        $grupos = Fct::where('asociacion',1)->get()->groupBy('idInstructor','idColaboracion');
+        foreach ($grupos as $grupo){
+            if (count($grupo) > 1) {
+                $first = $grupo->first();
+                $cFct = 0;
+                $eFct = 0;
+                foreach ($grupo as $fct){
+                    if ($first->id != $fct->id &&
+                        $first->idColaboracion === $fct->idColaboracion &&
+                        $first->idInstructor === $fct->idInstructor
+                    ){
+                        foreach ($fct->AlFct as $fctAl) {
+                            $fctAl->idFct = $first->id;
+                            $fctAl->save();
+                            $cFct++;
+                        }
+                        foreach (Activity::where('model_class','Intranet\Entities\Fct')
+                        ->where('model_id',$fct->id)->get() as $activitat){
+                            $activitat->model_id = $first->id;
+                            $activitat->save();
+                            $eFct++;
+                        }
+                        Alert::info("$fct->id canviada a $first->id: $cFct ($eFct)");
+                        $fct->delete();
+                    }
+                }
+            }
+        }
+    }
+
     public static function v2_50(){
         Alert::info('Version 2.50');
         foreach (Comision::all() as $comision){
@@ -273,7 +305,7 @@ class AdministracionController extends Controller
         }
     }
 
-
+/*
     public function consulta(){
         $instructores = Instructor::all();
         foreach ($instructores as $instructor){
@@ -289,7 +321,7 @@ class AdministracionController extends Controller
             }
         }
     }
-
+*/
     public static function centres_amb_mateixa_adreça(){
 
         echo "<p><strong>Empreses amb centres amb la mateixa adreça</strong></p>";
