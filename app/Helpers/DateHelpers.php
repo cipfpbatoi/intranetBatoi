@@ -141,6 +141,12 @@ function month($fecha)
     return $fc1->format('F');
 }
 
+function mes($fecha)
+{
+    $fc1 = new Jenssegers\Date\Date($fecha);
+    return $fc1->month;
+}
+
 
 function year($fecha)
 {
