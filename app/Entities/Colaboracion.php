@@ -13,7 +13,15 @@ class Colaboracion extends Model
     use BatoiModels;
 
     protected $table = 'colaboraciones';
-    protected $fillable = ['idCentro', 'idCiclo', 'contacto', 'telefono','email', 'puestos','tutor'];
+    protected $fillable = [
+        'idCentro',
+        'idCiclo',
+        'contacto',
+        'telefono',
+        'email',
+        'puestos',
+        'estado',
+        'tutor'];
     protected $rules = [
         'idCentro' => 'required|composite_unique:colaboraciones,idCentro,idCiclo',
         'idCiclo' => 'required',
@@ -28,7 +36,7 @@ class Colaboracion extends Model
         'email' => ['type'=>'email'],
         'tutor' => ['type'=>'hidden'],
     ];
-    public $timestamps = false;
+
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
@@ -110,6 +118,19 @@ class Colaboracion extends Model
     public function getHorariAttribute()
     {
         return $this->Centro->horarios;
+    }
+
+    public function getEstadoOptions()
+    {
+        return config('auxiliares.estadoColaboracion');
+    }
+    public function getProfesorAttribute()
+    {
+        return $this->Propietario->fullName??'';
+    }
+    public function getUltimoAttribute()
+    {
+        return $this->updated_at;
     }
 
 

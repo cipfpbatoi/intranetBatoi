@@ -60,6 +60,4 @@ class ColaboracionController extends ApiBaseController
         return $this->sendResponse($activity,'OK');
     }
 
-
-
 }

@@ -47,7 +47,7 @@ return [
         3=>'Acadèmiques-Professionals',
         4=>'Temes transversals'],
     'veep' => [],
-    'estadoColaboracion' => [ 0=>'' , 1=>'??', 2=>'Col·labora', 3=>'No col·labora'],
+    'estadoColaboracion' => [  1=>'No sé', 2=>'Col·labora', 3=>'No col·labora'],
     'incidenciasColaboracion' => [
         1=>'Envia correu contacte',
         2=>'Envia confirmació de dades',

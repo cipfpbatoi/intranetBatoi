@@ -307,7 +307,7 @@ return array(
             'seguimiento' => "Seguiment",
             'visitaEmpresa'=> "Concertar visita",
             'citarAlumnos' => 'Citar Alumnat',
-            'centro' => 'Centre'
+            'centro' => 'Centre',
         ),
         'Fct' => array(
             'index' => 'FCT x Empresa',

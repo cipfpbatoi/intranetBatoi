@@ -36,12 +36,21 @@ class ColaboracionController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['short','Xciclo','puestos','Xestado','localidad','contacto','email','telefono','horari'];
+    protected $gridFields = ['short','Xciclo','puestos','Xestado','localidad','contacto','email','telefono','horari','profesor','ultimo'];
     /**
      * @var array
      */
     protected $titulo = [];
     protected $profile = false;
+    protected $formFields= [
+        'idCentro' => ['type' => 'hidden'],
+        'idCiclo' => ['type' => 'hidden'],
+        'contacto' => ['type' => 'text'],
+        'telefono' => ['type'=>'number'],
+        'email' => ['type'=>'email'],
+        'puestos' => ['type' => 'text'],
+        'estado' => ['type' => 'select']
+    ];
 
 
     /**
@@ -82,7 +91,10 @@ class ColaboracionController extends ModalController
 
     public function update(ColaboracionRequest $request, $id)
     {
-        Colaboracion::findOrFail($id)->fillAll($request);
+        $colaboracion = Colaboracion::findOrFail($id);
+        $colaboracion->fillAll($request);
+        $colaboracion->tutor = authUser()->dni;
+        $colaboracion->save();
         return $this->redirect();
     }
 

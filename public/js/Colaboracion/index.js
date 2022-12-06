@@ -1,8 +1,12 @@
 'use strict';
 
 $('#datatable').DataTable( {
-    scrollY:        "400px",
-    scrollX:        true,
-    scrollCollapse: true,
-    paging:         false,
-} );
+    language: {
+        url: '/json/cattable.json',
+    },
+    deferRender: true,
+    responsive: true,
+    columnDefs: [
+        { responsivePriority: 1, targets: -1},
+    ]
+});
