@@ -20,7 +20,6 @@ class Colaboracion extends Model
         'telefono',
         'email',
         'puestos',
-        'estado',
         'tutor'];
     protected $rules = [
         'idCentro' => 'required|composite_unique:colaboraciones,idCentro,idCiclo',
@@ -44,6 +43,7 @@ class Colaboracion extends Model
 
     protected $attributes = [
         'puestos' => 1,
+        'estado' => 1
      ];
 
 

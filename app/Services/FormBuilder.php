@@ -13,6 +13,7 @@ class FormBuilder
     public function __construct($elemento, $formFields = null)
     {
         $this->elemento = $elemento;
+
         if ($formFields != null) {
             $this->default = $this->fillDefaultOptionsToForm($formFields);
             $this->fillable = array_keys($formFields);

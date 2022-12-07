@@ -27,7 +27,8 @@ class ColaboracionRequest extends FormRequest
             'contacto' => 'required',
             'telefono' => 'required',
             'email' => "required|email",
-            'puestos' => 'required|numeric'
+            'puestos' => 'required|numeric',
+            'estado' => 'required'
         ];
     }
 }

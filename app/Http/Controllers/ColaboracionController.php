@@ -94,6 +94,7 @@ class ColaboracionController extends ModalController
         $colaboracion = Colaboracion::findOrFail($id);
         $colaboracion->fillAll($request);
         $colaboracion->tutor = authUser()->dni;
+        $colaboracion->estado = $request->estado;
         $colaboracion->save();
         return $this->redirect();
     }
