@@ -16,7 +16,7 @@ class SelectFctResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'texto' => $this->Instructor->nombre.'('.$this->Colaboracion->Centro->nombre.') Periode: '.config('auxiliares.periodesFct')[$this->periode],
+            'texto' => $this->Instructor->nombre.'('.$this->Colaboracion->Centro->nombre.')',
             'marked' => $this->marked
         ];
     }
