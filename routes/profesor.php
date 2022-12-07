@@ -441,7 +441,7 @@ Route::get(
     '/programacion/{programacion}/seguimiento',
     ['as' => 'programacion.seguimiento', 'uses' => 'ProgramacionController@seguimiento']
 );
-//Route::get('/itaca', ['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
+Route::get('/itaca', ['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
 
 
 Route::get('/profesor/backChange', ['as' =>'profesor.backChange','uses' => 'ProfesorController@backChange']);
@@ -503,7 +503,7 @@ Route::get(
 Route::get('/sao', ['as'=>'sao.index','uses'=>'SaoController@index']);
 Route::post('/sao', ['as'=>'sao.post','uses'=>'SaoController@post']);
 Route::post('/sao/{accio}', ['as'=>'sao.post','uses'=>'SaoController@accion']);
-Route::get('/itaca/login', ['as'=>'itaca.login','uses'=>'ItacaController@login']);
+//Route::get('/itaca/login', ['as'=>'itaca.login','uses'=>'ItacaController@login']);
 
 /* Prova */
 Route::get('/ocr', ['as'=>'ocr.index','uses'=>'OcrController@index']);
