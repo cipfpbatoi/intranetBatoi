@@ -62,16 +62,21 @@ class SaoController extends Controller
                 if ($fct->idSao){
                     $driver->navigate()->to("https://foremp.edu.gva.es/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2");
                     sleep(1);
-                    $name = trim($driver->findElement(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr:nth-child(2) td:nth-child(1)"))->getText());
-                    $onclick = $driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Descargar']"))->getAttribute('onclick');
-                    $cut1 = explode("'",$onclick);
-                    AttachedFileService::saveLink(
-                        $name,
-                        "https://foremp.edu.gva.es/".$cut1[1],
-                        'SAO:Annexe II i III',
-                        'zip',
-                        "alumnofctaval/$fct->id"
-                    );
+                    try {
+                        $name = trim($driver->findElement(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr:nth-child(2) td:nth-child(1)"))->getText());
+                        $onclick = $driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Descargar']"))->getAttribute('onclick');
+                        $cut1 = explode("'",$onclick);
+                        AttachedFileService::saveLink(
+                            $name,
+                            "https://foremp.edu.gva.es/".$cut1[1],
+                            'SAO:Annexe II i III',
+                            'zip',
+                            "alumnofctaval/$fct->id"
+                        );
+                    } catch (Exception $e){
+                        Alert::info("Annexe de ".$fct->Colaboracion->Centro->name." no trobada");
+                    }
+
                     /*$cut1 = explode('=',$onclick);
                     $fct->id_doc = trim($cut1[2],"')");
                     $fct->save();*/
@@ -178,9 +183,11 @@ class SaoController extends Controller
                                         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=2&subop=0");
                                         sleep(1);
                                     }
+                                } else {
+                                    Alert::danger("No trobe col·laboració del centre $nameCentre amb el teu cicle");
                                 }
                             } else {
-                                Alert::danger("Centro $nameEmpresa no trobat. Revisa la col·laboració.");
+                                Alert::danger("Centro $nameCentre no trobat. Revisa la col·laboració.");
                             }
                         } catch (Exception $e) {
                             unset($dades[$index]);
@@ -324,7 +331,7 @@ class SaoController extends Controller
                     $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=34&idCT=$centro->idSao");
                     sleep(1);
                     $dades[$fct->id]['centro']['direccion'] = $this->igual($centro->direccion, $driver->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='direccion'"))->getAttribute('value'));
-                $dades[$fct->id]['centro']['codiPostal'] = $this->igual($centro->codiPostal, $driver->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='cp'"))->getAttribute('value'));
+                    $dades[$fct->id]['centro']['codiPostal'] = $this->igual($centro->codiPostal, $driver->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='cp'"))->getAttribute('value'));
                   }
             }
         } catch (Exception $e) {
