@@ -220,7 +220,10 @@ Route::get('/empresaSC', ['as'=>'empresaSC.index','uses'=>'PanelEmpresaSCControl
 
 Route::get('/colaboracion', ['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/misColaboraciones', ['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
-Route::get('/https://youtu.be/KZeQUUnlz7wonfct/{id}/{documento}', ['as' => 'PanelColaboracion.colaboracion', 'uses' => 'PanelColaboracionController@showMailById']);
+Route::get(
+    '/documentacionFCT/{id}/{documento}',
+    ['as' => 'PanelColaboracion.colaboracion', 'uses' => 'PanelColaboracionController@showMailById']
+);
 Route::post('/documentacionFCT/{documento}', 'PanelColaboracionController@showMailByRequest');
 
 
