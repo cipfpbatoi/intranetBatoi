@@ -61,7 +61,7 @@ class SaoController extends Controller
             foreach (AlumnoFct::misFcts()->activa()->get() as $fct){
                 if ($fct->idSao){
                     $driver->navigate()->to("https://foremp.edu.gva.es/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2");
-                    sleep(0.7);
+                    sleep(1);
                     $name = trim($driver->findElement(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr:nth-child(2) td:nth-child(1)"))->getText());
                     $onclick = $driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Descargar']"))->getAttribute('onclick');
                     $cut1 = explode("'",$onclick);
@@ -76,7 +76,7 @@ class SaoController extends Controller
                     $fct->id_doc = trim($cut1[2],"')");
                     $fct->save();*/
                     $driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Cerrar']"))->click();
-                    sleep(0.7);
+                    sleep(1);
                 }
             }
         }catch (Exception $e) {
@@ -134,7 +134,7 @@ class SaoController extends Controller
                             list($nameEmpresa, $idEmpresa) = $this->getEmpresa($tr);
                             $dades[$index]['idSao'] = $this->getIdSao($tr);
                             $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"))->click();
-                            sleep(0.7);
+                            sleep(1);
                             $detalles = $driver->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody"));
                             $dadesCentre = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(7)"));
                             $nameCentre = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
@@ -163,7 +163,7 @@ class SaoController extends Controller
                                     $dades[$index]['cicle'] = $ciclo;
                                     if (!$centro->idSao) {
                                         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
-                                        sleep(0.7);
+                                        sleep(1);
                                         $table2 = $driver->findElements(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr"));
                                         foreach ($table2 as $index2 => $trinside) {
                                             if ($index2) {
@@ -176,7 +176,7 @@ class SaoController extends Controller
                                             }
                                         }
                                         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=2&subop=0");
-                                        sleep(0.7);
+                                        sleep(1);
                                     }
                                 }
                             } else {
@@ -295,7 +295,7 @@ class SaoController extends Controller
                 $empresa = $centro->Empresa;
                 if (!isset($dades[$fct->id]['empresa']['idEmpresa'])){
                     $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=10&idFct=$fctAl->idSao");
-                    sleep(0.7);
+                    sleep(1);
                     $dades[$fct->id]['nameEmpresa'] = $empresa->nombre;
                     $dades[$fct->id]['nameCentro'] = $centro->nombre;
                     $dades[$fct->id]['empresa']['idEmpresa'] = $driver->findElement(WebDriverBy::cssSelector('#empresaFCT'))->getAttribute('value');
@@ -322,7 +322,7 @@ class SaoController extends Controller
                     $dades[$fct->id]['centro']['horarios'] = $this->igual($centro->horarios,$driver->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody tr:nth-child(14) td:nth-child(2)"))->getText());
                     $driver->findElement(WebDriverBy::cssSelector("button.botonRegistro[value='Registrarse']"))->click();
                     $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=34&idCT=$centro->idSao");
-                    sleep(0.7);
+                    sleep(1);
                     $dades[$fct->id]['centro']['direccion'] = $this->igual($centro->direccion, $driver->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='direccion'"))->getAttribute('value'));
                 $dades[$fct->id]['centro']['codiPostal'] = $this->igual($centro->codiPostal, $driver->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='cp'"))->getAttribute('value'));
                   }
@@ -384,7 +384,7 @@ class SaoController extends Controller
         $driver->findElement(WebDriverBy::cssSelector('.botonform'))
             ->click();
         $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
-        sleep(0.7);
+        sleep(1);
         $name = $driver->findElement(WebDriverBy::cssSelector('.botonform'))->getAttribute('name');
         if ($name === 'login'){
             throw new IntranetException('Password no vàlid. Has de ficarl el del SAO');
@@ -510,17 +510,17 @@ class SaoController extends Controller
     {
         $botones = $driver->findElements(WebDriverBy::cssSelector("#botonesFiltroFCT button.botonSelec"));
         $botones[1]->click();
-        sleep(0.7);
+        sleep(1);
         do {
             $tablaTutores = $driver->findElement(WebDriverBy::cssSelector("table.tablaSelEmpresas tbody"));
             $find = $this->findProfesor($dni, $tablaTutores);
             if (!$find) {
                 $driver->findElement(WebDriverBy::cssSelector("a[title='Página Siguiente']"))->click();
-                sleep(0.7);
+                sleep(1);
             }
         } while (!$find);
         $find->click();
-        sleep(0.7);
+        sleep(1);
     }
 
     private function consultaDiario(RemoteWebDriver $driver,\Facebook\WebDriver\Remote\RemoteWebElement $contenido){
@@ -537,7 +537,7 @@ class SaoController extends Controller
         if ($find) return array($hores,$dia);
         else{
             $driver->findElement(WebDriverBy::cssSelector("p.celdaInfoAlumno a:nth-child(1)"))->click();
-            sleep(0.7);
+            sleep(1);
             return $this->consultaDiario($driver,$driver->findElement(WebDriverBy::cssSelector("#contenido")));
         }
     }
