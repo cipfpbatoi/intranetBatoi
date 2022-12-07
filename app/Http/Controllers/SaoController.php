@@ -74,7 +74,7 @@ class SaoController extends Controller
                             "alumnofctaval/$fct->id"
                         );
                     } catch (Exception $e){
-                        Alert::info("Annexe de ".$fct->Colaboracion->Centro->name." no trobada");
+                        Alert::info("Annexes de ".$fct->Alumno->fullName." no trobats");
                     }
 
                     /*$cut1 = explode('=',$onclick);
