@@ -441,7 +441,7 @@ Route::get(
     '/programacion/{programacion}/seguimiento',
     ['as' => 'programacion.seguimiento', 'uses' => 'ProgramacionController@seguimiento']
 );
-Route::get('/itaca', ['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
+//Route::get('/itaca', ['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@index']);
 
 
 Route::get('/profesor/backChange', ['as' =>'profesor.backChange','uses' => 'ProfesorController@backChange']);
