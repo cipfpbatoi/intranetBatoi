@@ -179,6 +179,8 @@ class SaoController extends Controller
                                         sleep(0.7);
                                     }
                                 }
+                            } else {
+                                Alert::danger("Centro $nameEmpresa no trobat. Revisa la col·laboració.");
                             }
                         } catch (Exception $e) {
                             unset($dades[$index]);
