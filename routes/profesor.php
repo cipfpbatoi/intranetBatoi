@@ -506,5 +506,5 @@ Route::post('/sao/{accio}', ['as'=>'sao.post','uses'=>'SaoController@accion']);
 //Route::get('/itaca/login', ['as'=>'itaca.login','uses'=>'ItacaController@login']);
 
 /* Prova */
-Route::get('/ocr', ['as'=>'ocr.index','uses'=>'OcrController@index']);
-Route::view('/tasks', 'tasks.index');
+//Route::get('/ocr', ['as'=>'ocr.index','uses'=>'OcrController@index']);
+//Route::view('/tasks', 'tasks.index');
