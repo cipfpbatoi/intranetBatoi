@@ -78,7 +78,5 @@ class DocumentService
         } else {
             return response()->file(FDFPrepareService::exec($this->document->pdf, $this->elements));
         }
-
-
     }
 }

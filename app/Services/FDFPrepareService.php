@@ -9,19 +9,22 @@ use Exception;
 
 class FDFPrepareService
 {
+    const RESOURCE = 'Intranet\\Http\\Resources\\';
+
     public static function exec($pdf, $elements, $stamp=null)
     {
-        $id = authUser()->id;
+        $resource= self::RESOURCE.$pdf['resource'];
+        $id = str_shuffle('abcdeft12');
         $fdf = $pdf['fdf'];
-        $method = $pdf['method'];
+        $nameFile = storage_path("tmp/{$id}_{$fdf}");
         $flatten = $pdf['flatten']??true;
         $pdf = new Pdf("fdf/".$fdf);
-        $array = self::$method($elements);
-        $pdf->fillForm($array);
+        $pdf->fillForm($resource::toArray($elements));
+
         if ($flatten) {
             $pdf->flatten();
         }
-        $nameFile = storage_path("tmp/{$id}_{$fdf}");
+
         if (file_exists($nameFile)) {
             unlink($nameFile);
         }
@@ -33,7 +36,7 @@ class FDFPrepareService
             }
             return $nameFile;
         }  catch (Exception $e) {
-                dd($e->getMessage(), $pdf, $nameFile, $array);
+                dd($e->getMessage(), $pdf, $nameFile);
         }
     }
 

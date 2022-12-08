@@ -13,6 +13,7 @@ use Intranet\Entities\FctConvalidacion;
 use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use Intranet\Http\Resources\AlumnoFctResource;
 use Intranet\Services\FormBuilder;
 use mikehaertl\pdftk\Pdf;
 
