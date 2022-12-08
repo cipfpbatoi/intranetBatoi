@@ -21,7 +21,7 @@ class FDFPrepareService
         if ($flatten) {
             $pdf->flatten();
         }
-        $nameFile = storage_path("tmp/{$id}_{$fdf}");
+        $nameFile = storage_path("tmp/{$id}_{$fdf}.pdf");
         if (file_exists($nameFile)) {
             unlink($nameFile);
         }
