@@ -9,59 +9,42 @@ use Exception;
 
 class FDFPrepareService
 {
-    public static function exec($pdf, $elements)
+    public static function exec($pdf, $elements, $stamp=null)
     {
         $id = authUser()->id;
-        $fdf = $pdf['fdf'];
+        $fdf = "fdf/".$pdf['fdf'];
         $method = $pdf['method'];
-        $file = storage_path("tmp/{$id}_{$fdf}");
+        $flatten = $pdf['flatten']??true;
+        $pdf = new Pdf($fdf);
         $array = self::$method($elements);
-        if (file_exists($file)) {
-            unlink($file);
+        $pdf->fillForm($array);
+        if ($flatten) {
+            $pdf->flatten();
         }
-        if (!file_exists($file)) {
-            try {
-                $pdf = new Pdf("fdf/$fdf");
-                $pdf->fillform($array)
-                    ->flatten()
-                    ->saveAs($file);
-            } catch (Exception $e) {
-                dd($e->getMessage(), $pdf, $file, $array);
+        $nameFile = storage_path("tmp/{$id}_{$fdf}");
+        if (file_exists($nameFile)) {
+            unlink($nameFile);
+        }
+        try {
+            if ($stamp) {
+                self::stampPDF($pdf, $nameFile, $stamp);
+            } else {
+                $pdf->saveAs($nameFile);
             }
-
+            return $nameFile;
+        }  catch (Exception $e) {
+                dd($e->getMessage(), $pdf, $nameFile, $array);
         }
-
-        return $file;
     }
 
-    public static function stampPDF($pdf, $elements, $stamp)
+    private static function stampPDF($pdf, $nameFile, $stamp)
     {
-        $id = authUser()->id;
-        $fdf = $pdf['fdf'];
-        $method = $pdf['method'];
-        $tmpFile = storage_path("tmp/tmp_{$id}_{$fdf}");
-        $file = storage_path("tmp/{$id}_{$fdf}");
-        $array = self::$method($elements);
-        if (file_exists($file)) {
-            unlink($file);
-        }
-        if (!file_exists($file)) {
-            try {
-                $tmp = new Pdf("fdf/$fdf");
-                $tmp->fillform($array)
-                    ->flatten()
-                    ->saveAs($tmpFile);
-                $tmp = new Pdf($tmpFile);
-
-                $tmp->stamp("fdf/$stamp")
-                    ->saveAs($file);
-                unlink($tmpFile);
-            } catch (Exception $e) {
-                dd($e->getMessage(), $pdf, $file, $array);
-            }
-
-        }
-        return $file;
+        $tmpFileName = storage_path("tmp/".str_shuffle('abcdef12').'.pdf');
+        $pdf->saveAs($tmpFileName);
+        $tmp = new Pdf($tmpFileName);
+        $tmp->stamp("fdf/$stamp")
+            ->saveAs($nameFile);
+        unlink($tmpFileName);
     }
 
     public static function fullVacances($elements): array

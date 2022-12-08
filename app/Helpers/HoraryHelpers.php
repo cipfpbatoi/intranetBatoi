@@ -24,7 +24,9 @@ function horarioAhora($dni)
         $horaActual = $horasDentro->where('sesion_orden', $hora)->first();
         if ($horaActual) {
             if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre) {
-                return ['momento' => $horaActual->Grupo->nombre, 'ahora' => $horaActual->Modulo->literal . ' (' . $horaActual->aula . ')'];
+                return [
+                    'momento' => $horaActual->Grupo->nombre,
+                    'ahora' => $horaActual->Modulo->literal . ' (' . $horaActual->aula . ')'];
             }
             if ($horaActual->ocupacion != null && isset($horaActual->Ocupacion->nombre)) {
                 return ['momento' => '', 'ahora' => $horaActual->Ocupacion->literal];
@@ -45,18 +47,27 @@ function coincideHorario($elemento, $sesion)
         if (isset($elemento->dia_completo)) {
             return true;
         }
-        if (isset($elemento->hora_ini)) {
-            $horas = Intranet\Entities\Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin);
-        } else {
-            $horas = Intranet\Entities\Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta));
-        }
-        if (isset($horas[0]) && $sesion >= $horas[0] && $sesion <= $horas[count($horas) - 1]) {
-            return true;
-        }
+        $horas = getHorasAfectas($elemento);
+        return (isset($horas[0]) && $sesion >= $horas[0] && $sesion <= $horas[count($horas) - 1])?
+            true:false;
     } else {
         return true;
     }
-    return false;
+
+}
+
+/**
+ * @param $elemento
+ * @return array
+ */
+function getHorasAfectas($elemento): array
+{
+    if (isset($elemento->hora_ini)) {
+        $horas = Intranet\Entities\Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin);
+    } else {
+        $horas = Intranet\Entities\Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta));
+    }
+    return $horas;
 }
 
 /**
@@ -93,7 +104,7 @@ function Salida()
 
 /**
  * Mira si el profesor estaba en una hora concreta en el instituto
- * 
+ *
  * @param dni profesor
  * @return boolean
  */
@@ -108,16 +119,18 @@ function estaInstituto($profesor, $dia, $hora)
     return false;
 }
 
-function estaGuardia($idProfesor,$dia_semana,$sesion):bool{
+function estaGuardia($idProfesor, $diaSemana, $sesion):bool
+{
 
-    return (Intranet\Entities\Guardia::where('idProfesor',$idProfesor)
-        ->where('dia',$dia_semana)
+    return (Intranet\Entities\Guardia::where('idProfesor', $idProfesor)
+        ->where('dia', $diaSemana)
         ->where('hora', $sesion)
         ->first())?true:false;
 }
 
-function profesoresGuardia($dia_semana,$sesion){
-    return Intranet\Entities\Guardia::where('dia',$dia_semana)
+function profesoresGuardia($diaSemana, $sesion)
+{
+    return Intranet\Entities\Guardia::where('dia', $diaSemana)
         ->where('hora', $sesion)
         ->select('idProfesor')
         ->get();

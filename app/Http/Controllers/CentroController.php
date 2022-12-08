@@ -68,14 +68,18 @@ class CentroController extends IntranetController
         $centro = Centro::find($id);
         $empresa = Centro::find($id)->idEmpresa;
         $misColaboraciones =Colaboracion::Micolaboracion($empresa)->count();
-        if ($centro->Colaboraciones->count() == $misColaboraciones){
-            try {
-                parent::destroy($id);
-            } catch (QueryException $exception){
-                Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixe centre d'anys anteriors.");
-            }
+        if (rolesUser(config('roles.rol.administrador'))) {
+            parent::destroy($id);
         } else {
-            Alert::danger("Eixe centre te col·laboracions d'altres cicles. Esborra la col·laboració del teu cicle");
+            if ($centro->Colaboraciones->count() == $misColaboraciones){
+                try {
+                    parent::destroy($id);
+                } catch (QueryException $exception){
+                    Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixe centre d'anys anteriors.");
+                }
+            } else {
+                Alert::danger("Eixe centre te col·laboracions d'altres cicles. Esborra la col·laboració del teu cicle");
+            }
         }
         Session::put('pestana',2);
         return $this->showEmpresa($empresa);
@@ -83,6 +87,12 @@ class CentroController extends IntranetController
 
     public function empresaCreateCentro(EmpresaCentroRequest $request,$id){
         $centro = Centro::findOrFail($id);
+        $empresaAnt = $centro->Empresa;
+        if ($empresaAnt->concierto == $request->concierto) {
+            $empresaAnt->concierto = null;
+            $empresaAnt->save();
+        }
+
         $empresa = new Empresa([
             'cif' => $request->cif,
             'concierto' => $request->concierto,

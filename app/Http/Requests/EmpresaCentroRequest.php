@@ -25,7 +25,8 @@ class EmpresaCentroRequest extends FormRequest
     {
         return [
             'cif' => 'required|alpha_num|unique:empresas,id',
-            'concierto' => 'required|unique:empresas,concierto',
+            //'concierto' => 'required|unique:empresas,concierto',
+            'concierto' => 'required',
             'email' => 'required|email',
             'telefono' => 'required|max:20',
         ];
