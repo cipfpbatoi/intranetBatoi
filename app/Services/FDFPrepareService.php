@@ -50,43 +50,6 @@ class FDFPrepareService
         unlink($tmpFileName);
     }
 
-    public static function fullVacances($elements): array
-    {
-        $nomTutor = AuthUser()->fullName;
-        $dni = AuthUser()->dni;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
-        $alumnes = '';
-        $mes = mes(Hoy());
-
-        foreach ($elements as $element) {
-            $alumnes .= $element->Alumno->fullName.'
-';
-        }
-        $array['untitled1'] = $nomTutor.' - '.$dni;
-        $array['untitled2'] = config('contacto.nombre').' '.config('contacto.codi') ;
-        $array['untitled3'] = $grupo->curso.' '.$grupo->Ciclo->vliteral.' - '.$grupo->Ciclo->ciclo ;
-        $array['untitled4'] = $nomTutor;
-        $array['untitled6'] = $nomTutor;
-        $array['untitled8'] = 'Yes';
-        $array['untitled17'] = 'Yes';
-        if ($mes <=4) {
-            $array['untitled11'] = 'Yes';
-            $array['untitled20'] = 'Yes';
-        } elseif ($mes<=8) {
-            $array['untitled12'] = 'Yes';
-            $array['untitled21'] = 'Yes';
-        } else {
-            $array['untitled10'] = 'Yes';
-            $array['untitled19'] = 'Yes';
-        }
-        $array['untitled28'] = $alumnes;
-        $array['untitled29'] = config('contacto.poblacion');
-        $array['untitled30'] = day(Hoy());
-        $array['untitled31'] = month(Hoy());
-        $array['untitled32'] = substr(year(Hoy()), 2, 2);
-        $array['untitled34'] = $nomTutor;
-        return $array;
-    }
 
     public static function certInstructor($fct): array
     {

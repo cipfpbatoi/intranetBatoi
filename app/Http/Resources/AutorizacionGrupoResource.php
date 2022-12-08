@@ -37,6 +37,7 @@ class AutorizacionGrupoResource extends ArrayResource
             'untitled30' => day(Hoy()),
             'untitled31' => month(Hoy()),
             'untitled32' => substr(year(Hoy()), 2, 2),
+            'untitled33' => '',
             'untitled34' => $nomTutor,
             'untitled11' => ($mes<=4)?'Yes':'No',
             'untitled20' => ($mes<=4)?'Yes':'No',
