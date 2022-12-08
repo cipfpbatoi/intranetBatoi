@@ -12,16 +12,16 @@ class FDFPrepareService
     public static function exec($pdf, $elements, $stamp=null)
     {
         $id = authUser()->id;
-        $fdf = "fdf/".$pdf['fdf'];
+        $fdf = $pdf['fdf'];
         $method = $pdf['method'];
         $flatten = $pdf['flatten']??true;
-        $pdf = new Pdf($fdf);
+        $pdf = new Pdf("fdf/".$fdf);
         $array = self::$method($elements);
         $pdf->fillForm($array);
         if ($flatten) {
             $pdf->flatten();
         }
-        $nameFile = storage_path("tmp/{$id}_{$fdf}.pdf");
+        $nameFile = storage_path("tmp/{$id}_{$fdf}");
         if (file_exists($nameFile)) {
             unlink($nameFile);
         }
