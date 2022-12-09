@@ -6,6 +6,14 @@ use Intranet\Entities\Profesor;
 
 class CertificatInstructorResource extends PrintResource
 {
+    public function __construct($elements)
+    {
+        $this->elements = $elements;
+        $this->file = '13_Certificado_persona_instructora.pdf';
+        $this->flatten = true;
+        $this->stamp = 'signatura_DS.pdf';
+    }
+
     /**
      * Transform the resource into an array.
      *

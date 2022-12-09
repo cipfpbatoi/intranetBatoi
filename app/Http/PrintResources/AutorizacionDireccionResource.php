@@ -7,6 +7,13 @@ use Intranet\Entities\Profesor;
 
 class AutorizacionDireccionResource extends PrintResource
 {
+
+    public function __construct($elements)
+    {
+        $this->elements = $elements;
+        $this->file = '9_Autoritzacio_direccio_situacions_excepcionals.pdf';
+        $this->flatten = false;
+    }
     /**
      * Transform the resource into an array.
      *

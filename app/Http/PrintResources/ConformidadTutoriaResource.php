@@ -7,8 +7,11 @@ use Intranet\Entities\Profesor;
 
 class ConformidadTutoriaResource extends PrintResource
 {
-    public function __construct()
+    public function __construct($elements)
     {
+        $this->elements = $elements;
+        $this->file = '10_Conformitat_tutoria.pdf';
+        $this->flatten = false;
     }
 
 
@@ -34,7 +37,7 @@ class ConformidadTutoriaResource extends PrintResource
         'untitled29' => config('contacto.poblacion'),
         'untitled31' => day(Hoy()),
         'untitled30' => month(Hoy()),
-        'untitled32' => substr(year(Hoy()),2,2),
+        'untitled32' => substr(year(Hoy()), 2,2),
         'untitled33' => $tutor->fullName,
         ];
     }

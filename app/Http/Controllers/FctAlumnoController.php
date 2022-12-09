@@ -14,6 +14,7 @@ use Intranet\Entities\FctConvalidacion;
 use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use Intranet\Http\PrintResources\A5Resource;
 use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
 use Intranet\Http\PrintResources\PrintResource;
@@ -119,7 +120,7 @@ class FctAlumnoController extends IntranetController
     }
 
     public function A5($id){
-        return response()->file(self::prepareA5(($id)));
+        return FDFPrepareService::exec(new A5Resource(AlumnoFct::find($id)));
     }
 
     public function auth($id){
@@ -133,23 +134,11 @@ class FctAlumnoController extends IntranetController
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         // Genere els tres documents
         $zip->addFile(
-            FDFPrepareService::exec(
-                new AutorizacionDireccionResource(
-                    $fct,
-                    '9_Autoritzacio_direccio_situacions_excepcionals.pdf',
-                    false
-                )
-            ),
+            FDFPrepareService::exec(new AutorizacionDireccionResource($fct)),
             '9_Autoritzacio_direccio_situacions_excepcionals.pdf'
         );
         $zip->addFile(
-            FDFPrepareService::exec(
-                new ConformidadTutoriaResource(
-                    $fct,
-                    '10_Conformitat_tutoria.pdf',
-                    false
-                )
-            ),
+            FDFPrepareService::exec(new ConformidadTutoriaResource($fct)),
             '10_Conformitat_tutoria.pdf'
         );
         $zip->addFile(
@@ -160,132 +149,6 @@ class FctAlumnoController extends IntranetController
         deleteDir($folder);
 
         return response()->download($zip_file);
-    }
-
-    public function print9($fct){
-        $id = $fct->id;
-        $file = storage_path("tmp/auth$id/9.pdf");
-        if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/9_Autoritzacio_direccio_situacions_excepcionals.pdf');
-            $pdf->fillform($this->makeArrayPdf9($fct))
-                ->saveAs($file);
-        }
-        return $file;
-    }
-
-    public function print10($fct){
-        $id = $fct->id;
-        $file = storage_path("tmp/auth$id/10.pdf");
-        if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/10_Conformitat_tutoria.pdf');
-            $pdf->fillform($this->makeArrayPdf10($fct))
-                ->saveAs($file);
-        }
-        return $file;
-    }
-
-    public function print11($fct){
-        $id = $fct->id;
-        $file = storage_path("tmp/auth$id/11.pdf");
-        if (!file_exists($file)) {
-            $pdf = new Pdf('fdf/11_Conformitat_alumnat.pdf');
-            $pdf->fillform($this->makeArrayPdf11($fct))
-                ->saveAs($file);
-        }
-        return $file;
-    }
-
-    private function makeArrayPdf9($fct)
-    {
-        $alumno = $fct->Alumno;
-        $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
-        $array['untitled1'] = config('contacto.nombre').' '.config('contacto.codi') ;
-        $array['untitled2'] = $grupo->Ciclo->vliteral ;
-        $array['untitled3'] = "$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni";
-        $array['untitled4'] = Profesor::find(config('contacto.director'))->fullName ;
-        $array['untitled8'] = $array['untitled4'];
-        $array['untitled29'] = config('contacto.poblacion');
-        $array['untitled31'] = day(Hoy());
-        $array['untitled30'] = month(Hoy());
-        $array['untitled32'] = substr(year(Hoy()),2,2);
-        $array['untitled33'] = $array['untitled4'];
-        return $array;
-    }
-
-    private function makeArrayPdf10($fct){
-        $alumno = $fct->Alumno;
-        $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
-        $array['untitled1'] = "$tutor->fullName - DNI: $tutor->dni";
-        $array['untitled2'] = "$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni";
-        $array['untitled3'] = config('contacto.nombre').' '.config('contacto.codi') ;
-        $array['untitled4'] = $grupo->Ciclo->vliteral ;
-
-        $array['untitled5'] = $tutor->fullName;
-        $array['untitled6'] = $tutor->fullName;
-        $array['untitled29'] = config('contacto.poblacion');
-        $array['untitled31'] = day(Hoy());
-        $array['untitled30'] = month(Hoy());
-        $array['untitled32'] = substr(year(Hoy()),2,2);
-        $array['untitled33'] = $tutor->fullName;
-        return $array;
-    }
-
-    private function makeArrayPdf11($fct)
-    {
-        $alumno = $fct->Alumno;
-        $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
-        $array['untitled2'] = "$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni";
-        $array['untitled3'] = config('contacto.nombre').' '.config('contacto.codi') ;
-        $array['untitled4'] = $grupo->Ciclo->vliteral ;
-        $array['untitled5'] = "$tutor->fullName - DNI: $tutor->dni";
-
-        $array['untitled6'] = $alumno->fullName;
-        $array['untitled7'] = $alumno->fullName;
-        $array['untitled10'] = config('contacto.poblacion');
-        $array['untitled13'] = day(Hoy());
-        $array['untitled11'] = month(Hoy());
-        $array['untitled12'] = substr(year(Hoy()),2,2);
-        $array['untitled8'] = $alumno->fullName;
-        return $array;
-    }
-
-    public static function prepareA5($id){
-        $fct = AlumnoFct::findOrFail($id);
-        $alumno = $fct->Alumno;
-        $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
-        $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
-        $centro = $fct->Fct->Colaboracion->Centro;
-        $empresa = $centro->Empresa;
-        $instructor = $fct->Fct->instructor;
-
-        if (file_exists(storage_path("tmp/A5_$id.pdf"))) {
-            unlink(storage_path("tmp/A5_$id.pdf"));
-        }
-        $file = storage_path("tmp/A5_$id.pdf");
-        $pdf = new Pdf('fdf/5_Informe_consecucio_competencies_tutor.pdf');
-        $arr['untitled1'] = $alumno->fullName." (NIA: $alumno->nia) - $alumno->dni";
-        $arr['untitled2'] = "Tel $telefonoAlumne - $alumno->email";
-        $arr['untitled3'] = config('contacto.nombre').' '.config('contacto.codi');
-        $arr['untitled4']  = "$tutor->fullName -$tutor->dni - Tel:* - $tutor->email";
-        $arr['untitled5'] = $grupo->Ciclo->vliteral;
-        $arr['untitled6'] = $empresa->nombre." - ".$empresa->cif;
-        $arr['untitled7'] = "$centro->direccion , $centro->localidad ($centro->codiPostal ".provincia($centro->codiPostal).") - Tel: $centro->telefono - $centro->email";
-        $arr['untitled8'] = $instructor->nombre.' - '.$instructor->dni.' - '.$instructor->email;
-        $arr['untitled9'] = $fct->horas.' h';
-        $arr['untitled13'] =  config('contacto.poblacion');
-        $arr['untitled14'] = day(Hoy());
-        $arr['untitled15'] = month(Hoy());
-        $arr['untitled16'] = substr(year(Hoy()),2,2);
-        $arr['untitled18'] = $tutor->fullName;
-
-
-        $pdf->fillform($arr)->needAppearances()->saveAs($file);
-
-        return storage_path("tmp/A5_$id.pdf");
     }
 
 
@@ -324,27 +187,7 @@ class FctAlumnoController extends IntranetController
         return storage_path("tmp/exencion_$id.pdf");
 
     }
-    
-/*
-    public static function prepareExem($id){
-        $fct = AlumnoFct::findOrFail($id);
-        $grupo = $fct->Alumno->Grupo->first();
-        $cicle = $grupo->Ciclo;
-        $tutor = $grupo->Tutor;
-        $cdept = $cicle->departament->Jefe;
-        $director = Profesor::find(config(fileContactos().'.director'));
-        $dades = ['date' => FechaString($fct->hasta),
-            'cicle' => $cicle,
-            'tutor' => $tutor,
-            'cdept' => $cdept,
-            'modulos' => $grupo->Modulos,
-            'centro' => config('contacto.nombre'),
-            'poblacion' => config('contacto.poblacion'),
-            'provincia' => config('contacto.provincia'),
-            'director' => $director
-        ];
-        return self::hazPdf($cicle->normativa=='LOE'?'pdf.fct.exempcio_loe':'pdf.fct.exempcio_logse', $fct, $dades);
-    }*/
+
 
     public static function preparePdf($id){
         $fct = AlumnoFct::findOrFail($id);
