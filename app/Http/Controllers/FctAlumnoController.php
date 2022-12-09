@@ -14,11 +14,14 @@ use Intranet\Entities\FctConvalidacion;
 use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
+use Intranet\Http\PrintResources\ConformidadTutoriaResource;
 use Intranet\Http\PrintResources\PrintResource;
 use Intranet\Http\Resources\AlumnoFctResource;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use mikehaertl\pdftk\Pdf;
+use Intranet\Http\PrintResources\AutorizacionDireccionResource;
 
 
 class FctAlumnoController extends IntranetController
@@ -129,16 +132,33 @@ class FctAlumnoController extends IntranetController
         $zip = new \ZipArchive();
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         // Genere els tres documents
-        $pdf['fdf'] = '9_Autoritzacio_direccio_situacions_excepcionals.pdf';
-        $pdf['resource'] = 'AutorizacionDireccionResource';
-        $zip->addFile(FDFPrepareService::exec(PrintResource::build($pdf,$fct)));
-        $pdf['fdf'] = '10_Conformitat_tutoria.pdf';
-        $pdf['resource'] = 'ConformidadTutoriaResource';
-        $zip->addFile(FDFPrepareService::exec(PrintResource::build($pdf,$fct)));
-        $pdf['fdf'] = '11_Conformitat_alumnat.pdf';
-        $pdf['resource'] = 'ConformidadAlumnadoResource';
-        $zip->addFile(FDFPrepareService::exec(PrintResource::build($pdf,$fct)));
-
+        $zip->addFile(
+            FDFPrepareService::exec(
+                new AutorizacionDireccionResource(
+                    $fct,
+                    '9_Autoritzacio_direccio_situacions_excepcionals.pdf',
+                    false
+                )
+            )
+        );
+        $zip->addFile(
+            FDFPrepareService::exec(
+                new ConformidadTutoriaResource(
+                    $fct,
+                    '10_Conformitat_tutoria.pdf',
+                    false
+                )
+            )
+        );
+        $zip->addFile(
+            FDFPrepareService::exec(
+                new ConformidadAlumnadoResource(
+                    $fct,
+                    '11_Conformitat_alumnat.pdf',
+                    false
+                )
+            )
+        );
         $zip->close();
         deleteDir($folder);
 
