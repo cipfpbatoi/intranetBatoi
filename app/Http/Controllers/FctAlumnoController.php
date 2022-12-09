@@ -153,13 +153,7 @@ class FctAlumnoController extends IntranetController
             '10_Conformitat_tutoria.pdf'
         );
         $zip->addFile(
-            FDFPrepareService::exec(
-                new ConformidadAlumnadoResource(
-                    $fct,
-                    '11_Conformitat_alumnat.pdf',
-                    false
-                )
-            ),
+            FDFPrepareService::exec(new ConformidadAlumnadoResource($fct)),
             '11_Conformitat_alumnat.pdf'
         );
         $zip->close();

@@ -18,7 +18,7 @@ abstract class PrintResource
         return new $resource($elements, $pdf['fdf'], $flatten, $stamp);
     }
 
-    public function __construct($elements, $file, $flatten=true, $stamp=null)
+    public function __construct($elements, $file=null, $flatten=true, $stamp=null)
     {
         $this->elements = $elements;
         $this->file = $file;

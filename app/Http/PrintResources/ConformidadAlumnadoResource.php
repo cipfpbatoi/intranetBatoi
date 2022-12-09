@@ -3,10 +3,16 @@
 namespace Intranet\Http\PrintResources;
 
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
 
 class ConformidadAlumnadoResource extends PrintResource
 {
+    public function __construct($elements)
+    {
+        $this->elements = $elements;
+        $this->file = '11_Conformitat_alumnat.pdf';
+        $this->flatten = false;
+    }
+
     /**
      * Transform the resource into an array.
      *

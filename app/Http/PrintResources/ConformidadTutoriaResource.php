@@ -7,6 +7,11 @@ use Intranet\Entities\Profesor;
 
 class ConformidadTutoriaResource extends PrintResource
 {
+    public function __construct()
+    {
+    }
+
+
     /**
      * Transform the resource into an array.
      *
