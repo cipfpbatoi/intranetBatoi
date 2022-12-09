@@ -117,7 +117,7 @@ class FctAlumnoController extends IntranetController
     }
 
     public function A5($id){
-        return FDFPrepareService::exec(new A5Resource(AlumnoFct::find($id)));
+        return response()->file(FDFPrepareService::exec(new A5Resource(AlumnoFct::find($id))));
     }
 
     public function auth($id){
