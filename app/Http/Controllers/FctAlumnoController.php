@@ -139,7 +139,8 @@ class FctAlumnoController extends IntranetController
                     '9_Autoritzacio_direccio_situacions_excepcionals.pdf',
                     false
                 )
-            )
+            ),
+            '9_Autoritzacio_direccio_situacions_excepcionals.pdf'
         );
         $zip->addFile(
             FDFPrepareService::exec(
@@ -148,7 +149,8 @@ class FctAlumnoController extends IntranetController
                     '10_Conformitat_tutoria.pdf',
                     false
                 )
-            )
+            ),
+            '10_Conformitat_tutoria.pdf'
         );
         $zip->addFile(
             FDFPrepareService::exec(
@@ -157,7 +159,8 @@ class FctAlumnoController extends IntranetController
                     '11_Conformitat_alumnat.pdf',
                     false
                 )
-            )
+            ),
+            '11_Conformitat_alumnat.pdf'
         );
         $zip->close();
         deleteDir($folder);
