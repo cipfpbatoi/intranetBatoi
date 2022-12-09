@@ -5,7 +5,7 @@ namespace Intranet\Http\PrintResources;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 
-class ConformidadAlumnoResource extends PrintResource
+class ConformidadAlumnodoResource extends PrintResource
 {
     /**
      * Transform the resource into an array.
