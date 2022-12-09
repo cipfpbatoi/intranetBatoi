@@ -2,10 +2,9 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\AlumnoFct;
+
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
-use mikehaertl\pdftk\Pdf;
+
 
 class A5Resource extends PrintResource
 {
@@ -24,7 +23,7 @@ class A5Resource extends PrintResource
      */
     public function toArray()
     {
-        $alumno = $this->stamp->Alumno;
+        $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
