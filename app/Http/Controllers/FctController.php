@@ -8,6 +8,7 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
+use Intranet\Http\Resources\PrintResource;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
@@ -118,7 +119,8 @@ class FctController extends IntranetController
     public function certificat($id){
         $pdf['fdf'] = '13_Certificado_persona_instructora.pdf';
         $pdf['resource'] = 'CertificatInstructorResource';
-        return response()->file(FDFPrepareService::exec($pdf,Fct::findOrFail($id),'signatura_DS.pdf'));
+        $pdf['stamp'] = 'signatura_DS.pdf';
+        return response()->file(FDFPrepareService::exec(PrintResource::build($pdf,Fct::findOrFail($id))));
     }
 
     /*

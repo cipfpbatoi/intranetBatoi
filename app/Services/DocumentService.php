@@ -4,6 +4,7 @@ namespace Intranet\Services;
 use Intranet\Componentes\MyMail;
 use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
+use Intranet\Http\Resources\PrintResource;
 use Styde\Html\Facades\Alert;
 use Intranet\Services\FDFPrepareService;
 
@@ -76,7 +77,8 @@ class DocumentService
                 $this->document->pdf['orientacion']
             )->stream();
         } else {
-            return response()->file(FDFPrepareService::exec($this->document->pdf, $this->elements));
+            $resource = PrintResource::build($this->document->pdf, $this->elements);
+            return response()->file(FDFPrepareService::exec($resource));
         }
     }
 }

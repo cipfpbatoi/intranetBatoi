@@ -4,7 +4,7 @@ namespace Intranet\Http\Resources;
 
 use Intranet\Entities\Grupo;
 
-class AutorizacionGrupoResource extends ArrayResource
+class AutorizacionGrupoResource extends PrintResource
 {
     /**
      * Transform the resource into an array.
@@ -12,7 +12,7 @@ class AutorizacionGrupoResource extends ArrayResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public static function toArray($elements)
+    public function toArray()
     {
         $nomTutor = AuthUser()->fullName;
         $dni = AuthUser()->dni;
@@ -20,7 +20,7 @@ class AutorizacionGrupoResource extends ArrayResource
         $alumnes = '';
         $mes = mes(Hoy());
 
-        foreach ($elements as $element) {
+        foreach ($this->getElements() as $element) {
             $alumnes .= $element->Alumno->fullName.'
 ';
         }

@@ -4,7 +4,7 @@ namespace Intranet\Http\Resources;
 
 use Intranet\Entities\Profesor;
 
-class CertificatInstructorResource extends ArrayResource
+class CertificatInstructorResource extends PrintResource
 {
     /**
      * Transform the resource into an array.
@@ -12,7 +12,7 @@ class CertificatInstructorResource extends ArrayResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public static function toArray($elements)
+    public function toArray()
     {
         $secretario = Profesor::find(config(fileContactos().'.secretario'));
         $director = Profesor::find(config(fileContactos().'.director'));
@@ -23,17 +23,17 @@ class CertificatInstructorResource extends ArrayResource
             'untitled15' => config('contacto.nombre'),
             'untitled5' => config('contacto.codi'),
             'untitled17' => config('contacto.codi'),
-            'untitled6' => $elements->Instructor->contacto,
-            'untitled18' => $elements->Instructor->contacto,
-            'untitled8' => $elements->Instructor->dni,
-            'untitled20' => $elements->Instructor->dni,
-            'untitled10' => $elements->Colaboracion->Ciclo->vliteral,
-            'untitled22' =>  $elements->Colaboracion->Ciclo->cliteral,
+            'untitled6' => $this->getElements()->Instructor->contacto,
+            'untitled18' => $this->getElements()->Instructor->contacto,
+            'untitled8' => $this->getElements()->Instructor->dni,
+            'untitled20' => $this->getElements()->Instructor->dni,
+            'untitled10' => $this->getElements()->Colaboracion->Ciclo->vliteral,
+            'untitled22' =>  $this->getElements()->Colaboracion->Ciclo->cliteral,
             'untitled12' => curso(),
             'untitled24' =>  curso(),
-            'untitled25' => $elements->Colaboracion->Centro->Empresa->nombre,
-            'untitled26' => $elements->Alumnos->count(),
-            'untitled27' => max(800, $elements->AlFct->sum('horas')),
+            'untitled25' => $this->getElements()->Colaboracion->Centro->Empresa->nombre,
+            'untitled26' => $this->getElements()->Alumnos->count(),
+            'untitled27' => min(800, $this->getElements()->AlFct->sum('horas')),
             'untitled28' => config('contacto.poblacion'),
             'untitled29' => day(Hoy()),
             'untitled30' => month(Hoy()),

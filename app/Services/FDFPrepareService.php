@@ -2,26 +2,20 @@
 
 namespace Intranet\Services;
 
-use Intranet\Entities\Profesor;
+use Intranet\Http\Resources\PrintResource;
 use mikehaertl\pdftk\Pdf;
-use Intranet\Entities\Grupo;
 use Exception;
 
 class FDFPrepareService
 {
-    const RESOURCE = 'Intranet\\Http\\Resources\\';
-
-    public static function exec($pdf, $elements, $stamp=null)
+    public static function exec(PrintResource $resource)
     {
-        $resource= self::RESOURCE.$pdf['resource'];
         $id = str_shuffle('abcdeft12');
-        $fdf = $pdf['fdf'];
-        $nameFile = storage_path("tmp/{$id}_{$fdf}");
-        $flatten = $pdf['flatten']??true;
-        $pdf = new Pdf("fdf/".$fdf);
-        $pdf->fillForm($resource::toArray($elements));
+        $nameFile = storage_path("tmp/{$id}_{$resource->getFile()}");
+        $pdf = new Pdf("fdf/".$resource->getFile());
+        $pdf->fillForm($resource->toArray());
 
-        if ($flatten) {
+        if ($resource->getFlatten()) {
             $pdf->flatten();
         }
 
@@ -29,8 +23,8 @@ class FDFPrepareService
             unlink($nameFile);
         }
         try {
-            if ($stamp) {
-                self::stampPDF($pdf, $nameFile, $stamp);
+            if ($resource->getStamp()) {
+                self::stampPDF($pdf, $nameFile, $resource->getStamp());
             } else {
                 $pdf->saveAs($nameFile);
             }
@@ -49,7 +43,4 @@ class FDFPrepareService
             ->saveAs($nameFile);
         unlink($tmpFileName);
     }
-
-
-
 }
