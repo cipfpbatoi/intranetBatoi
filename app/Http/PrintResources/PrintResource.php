@@ -1,10 +1,10 @@
 <?php
 
-namespace Intranet\Http\Resources;
+namespace Intranet\Http\PrintResources;
 
 abstract class PrintResource
 {
-    const RESOURCE = 'Intranet\\Http\\Resources\\';
+    const RESOURCE = 'Intranet\\Http\\PrintResources\\';
     protected $elements;
     protected $file;
     protected $stamp;

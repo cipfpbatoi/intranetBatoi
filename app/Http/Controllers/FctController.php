@@ -8,7 +8,7 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
-use Intranet\Http\Resources\PrintResource;
+use Intranet\Http\PrintResources\PrintResource;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;

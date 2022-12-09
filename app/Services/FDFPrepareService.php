@@ -2,7 +2,7 @@
 
 namespace Intranet\Services;
 
-use Intranet\Http\Resources\PrintResource;
+use Intranet\Http\PrintResources\PrintResource;
 use mikehaertl\pdftk\Pdf;
 use Exception;
 

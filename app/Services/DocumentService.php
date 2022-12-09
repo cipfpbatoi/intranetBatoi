@@ -4,7 +4,7 @@ namespace Intranet\Services;
 use Intranet\Componentes\MyMail;
 use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
-use Intranet\Http\Resources\PrintResource;
+use Intranet\Http\PrintResources\PrintResource;
 use Styde\Html\Facades\Alert;
 use Intranet\Services\FDFPrepareService;
 

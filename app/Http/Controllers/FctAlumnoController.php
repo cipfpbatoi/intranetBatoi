@@ -7,13 +7,16 @@ use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\FctConvalidacion;
 use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use Intranet\Http\PrintResources\PrintResource;
 use Intranet\Http\Resources\AlumnoFctResource;
+use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use mikehaertl\pdftk\Pdf;
 
@@ -126,9 +129,15 @@ class FctAlumnoController extends IntranetController
         $zip = new \ZipArchive();
         $zip->open($zip_file, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         // Genere els tres documents
-        $zip->addFile($this->print9($fct),"9_Autoritzacio_direccio_situacions_excepcionals.pdf");
-        $zip->addFile($this->print10($fct),"10_Conformitat_tutoria.pdf");
-        $zip->addFile($this->print11($fct),"11_Conformitat_alumnat.pdf");
+        $pdf['fdf'] = '9_Autoritzacio_direccio_situacions_excepcionals.pdf';
+        $pdf['resource'] = 'AutorizacionDireccionResource';
+        $zip->addFile(FDFPrepareService::exec(PrintResource::build($pdf,$fct)));
+        $pdf['fdf'] = '10_Conformitat_tutoria.pdf';
+        $pdf['resource'] = 'ConformidadTutoriaResource';
+        $zip->addFile(FDFPrepareService::exec(PrintResource::build($pdf,$fct)));
+        $pdf['fdf'] = '11_Conformitat_alumnat.pdf';
+        $pdf['resource'] = 'ConformidadAlumnadoResource';
+        $zip->addFile(FDFPrepareService::exec(PrintResource::build($pdf,$fct)));
 
         $zip->close();
         deleteDir($folder);

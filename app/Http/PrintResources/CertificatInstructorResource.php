@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Http\Resources;
+namespace Intranet\Http\PrintResources;
 
 use Intranet\Entities\Profesor;
 
