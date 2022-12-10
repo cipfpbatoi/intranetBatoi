@@ -77,7 +77,7 @@ class DocumentService
                 $this->document->pdf['orientacion']
             )->stream();
         } else {
-            $resource = PrintResource::build($this->document->pdf, $this->elements);
+            $resource = PrintResource::build($this->document->resource, $this->elements);
             return response()->file(FDFPrepareService::exec($resource));
         }
     }

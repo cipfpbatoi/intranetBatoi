@@ -6,6 +6,12 @@ use Intranet\Entities\Grupo;
 
 class AutorizacionGrupoResource extends PrintResource
 {
+    public function __construct($elements)
+    {
+        $this->elements = $elements;
+        $this->file = 'Conformitat_tutoria_per_a_grups.pdf';
+    }
+
     /**
      * Transform the resource into an array.
      *

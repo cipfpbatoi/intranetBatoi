@@ -137,14 +137,8 @@ return [
         'view' => 'pdf.fct.seguimentAlumnes',
     ],
     'pasqua' => [
-        'pdf' => [
-            'nombre' => 'FCT VACANCES',
-            'orientacion' => 'portrait',
-            'fdf' => 'Conformitat_tutoria_per_a_grups.pdf',
-            'resource' => 'AutorizacionGrupoResource',
-        ],
+        'resource' => 'AutorizacionGrupoResource',
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoEnFct',
-
     ]
 ];

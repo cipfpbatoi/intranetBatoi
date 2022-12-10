@@ -10,12 +10,10 @@ abstract class PrintResource
     protected $stamp;
     protected $flatten;
 
-    public static function build($pdf, $elements)
+    public static function build($source, $elements)
     {
-        $resource= self::RESOURCE.$pdf['resource'];
-        $stamp = $pdf['stamp']??null;
-        $flatten = $pdf['flatten']??true;
-        return new $resource($elements, $pdf['fdf'], $flatten, $stamp);
+        $resource= self::RESOURCE.$source;
+        return new $resource($elements);
     }
 
     public function __construct($elements, $file=null, $flatten=true, $stamp=null)
