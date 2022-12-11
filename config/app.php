@@ -156,7 +156,7 @@ return [
         Jenssegers\Date\DateServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
-        GrahamCampbell\Markdown\MarkdownServiceProvider::class,
+        //GrahamCampbell\Markdown\MarkdownServiceProvider::class,
         
         
         /*
@@ -165,7 +165,7 @@ return [
         Intranet\Providers\AppServiceProvider::class,
         Intranet\Providers\AuthServiceProvider::class,
         Intranet\Providers\EventServiceProvider::class,
-        Intranet\Providers\NovaServiceProvider::class,
+        //Intranet\Providers\NovaServiceProvider::class,
         Intranet\Providers\RouteServiceProvider::class,
         Intranet\Providers\HelperServiceProvider::class,
         Intranet\Providers\HtmlServiceProvider::class,
