@@ -83,16 +83,17 @@ class FctAlumnoController extends IntranetController
             $elementos = FctConvalidacion::where('idColaboracion',$request->idColaboracion)
                     ->where('asociacion',$request->asociacion)
                     ->get();
-            $id = $elementos->first()->id??null;
+            $elemento = $elementos->first()??null;
 
-            if (!$id){ 
+            if (!$elemento){
                 $elemento = new FctConvalidacion();
                 $this->validateAll($request, $elemento);
-                $id = $elemento->fillAll($request);
-            } 
+                $elemento->fillAll($request);
+            }
+
             $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa(Hoy()),'horas'=>$request->horas,'calificacion' => 2,'correoAlumno'=>1]);
 
-            return $id;
+            return $elemento->id;
         });
         
         return $this->redirect();
