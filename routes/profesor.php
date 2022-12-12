@@ -247,7 +247,11 @@ Route::put(
 );
 
 
-Route::get('/colaboracion/{colaboracion}/edit', ['as' => 'colaboracion.edit', 'uses' => 'PanelColaboracionController@edit']);
+Route::get('/colaboracion/{colaboracion}/edit', [
+        'as' => 'colaboracion.edit',
+        'uses' => 'PanelColaboracionController@edit'
+    ]
+);
 Route::get('/colaboracion/{colaboracion}/copy', ['as' => 'colaboracion.copy', 'uses' => 'PanelColaboracionController@copy']);
 Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'PanelColaboracionController@store']);
 Route::get('/colaboracion/{colaboracion}/delete', ['as' => 'colaboracion.destroy', 'uses' => 'PanelColaboracionController@destroy']);
