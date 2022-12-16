@@ -2,7 +2,11 @@
         <div id="{{$elemento->id}}" class="well profile_view">
             <div class="col-sm-12">
                 <div class="left col-md-8 col-xs-12">
-                    <h5>Col.laboracio {{$elemento->Centro->nombre}} <strong>({{$elemento->puestos}})</strong></h5>
+                    <h5>
+                        {{$elemento->Centro->Empresa->concierto??''}}
+                        Col.laboracio {{$elemento->Centro->nombre}}
+                        <strong>({{$elemento->puestos}})</strong>
+                    </h5>
                     <ul class="list-unstyled">
                         <li>{{$elemento->contacto}}</li>
                         <li>{{$elemento->telefono}}</li>
