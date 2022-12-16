@@ -70,8 +70,19 @@ class Empresa extends Model
         return $query->where('fecha_nac', '>', $hace18);
     }
 
-    private function getDirectory($clase){
+    private function getDirectory($clase)
+    {
         return '/gestor/' . $clase;
+    }
+
+    public function getConveniNouAttribute()
+    {
+        $file = storage_path('app/' . $this->fichero);
+        if (!$this->fichero || !file_exists($file)) {
+            return false;
+        } else {
+            return  date("Y-m-d", filemtime($file)) > "2022-08-31";
+        }
     }
 
     private function getFileName($extension,$clase)

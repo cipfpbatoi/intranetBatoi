@@ -3,7 +3,11 @@
             <div class="col-sm-12">
                 <div class="left col-md-8 col-xs-12">
                     <h5>
-                        {{$elemento->Centro->Empresa->concierto??''}}
+                        @if ($elemento->Centro->Empresa->conveniNou)
+                            <strong>{{$elemento->Centro->Empresa->concierto??''}}</strong>
+                        @else
+                            {{$elemento->Centro->Empresa->concierto??''}}
+                        @endif
                         Col.laboracio {{$elemento->Centro->nombre}}
                         <strong>({{$elemento->puestos}})</strong>
                     </h5>
