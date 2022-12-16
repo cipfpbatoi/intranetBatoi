@@ -4,7 +4,7 @@
                 <div class="left col-md-8 col-xs-12">
                     <h5>
                         @if ($elemento->Centro->Empresa->conveniNou)
-                            <strong>{{$elemento->Centro->Empresa->concierto??''}}</strong>
+                            <strong>{{$elemento->Centro->Empresa->concierto??''}}!!</strong>
                         @else
                             {{$elemento->Centro->Empresa->concierto??''}}
                         @endif
