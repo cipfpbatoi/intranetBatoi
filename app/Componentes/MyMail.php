@@ -58,14 +58,16 @@ class MyMail
         $this->editable = $editable;
     }
 
-    private function recoveryObjects($elements){
+    private function recoveryObjects($elements)
+    {
         $objects = collect();
-        foreach ( explode(',',$elements) as $element){
+        foreach ( explode(',', $elements) as $element){
             $objects->push($this->recoveryObject($element));
         }
         return $objects;
     }
-    private function recoveryObject($element){
+    private function recoveryObject($element)
+    {
         if ($element != '') {
             $toCompost = explode('(', $element);
             $id = $toCompost[0];
@@ -87,7 +89,8 @@ class MyMail
 
 
 
-    public function render($route){
+    public function render($route)
+    {
         $to  = $this->getReceivers($this->elements);
         $editable = (count($this->elements) > 1)?$this->editable:true;
         $from = $this->from;
@@ -98,10 +101,25 @@ class MyMail
         $class = $this->class;
         $register = $this->register;
         $template = $this->template;
-        return view('email.view',compact('to','from','subject','contenido','route','fromPerson','toPeople','class','register','editable','template'));
+        return view('email.view',
+            compact(
+                'to',
+                'from',
+                'subject',
+                'contenido',
+                'route',
+                'fromPerson',
+                'toPeople',
+                'class',
+                'register',
+                'editable',
+                'template'
+            )
+        );
     }
 
-    public function send($fecha=null){
+    public function send($fecha=null)
+    {
         if (is_iterable($this->elements)) {
             foreach ($this->elements as $elemento) {
                 $this->sendMail($elemento, $fecha);
@@ -112,7 +130,8 @@ class MyMail
         }
     }
 
-    private function sendMail($elemento,$fecha){
+    private function sendMail($elemento, $fecha)
+    {
         if (isset($elemento->contacto)) {
             $mail = $elemento->mail??$elemento->email;
             $contacto = $elemento->contact??$elemento->contacto;
