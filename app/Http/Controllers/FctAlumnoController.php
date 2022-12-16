@@ -207,5 +207,6 @@ class FctAlumnoController extends IntranetController
                 'email.fct.advise',
                 $fct
             ));
+        return back();
     }
 } 

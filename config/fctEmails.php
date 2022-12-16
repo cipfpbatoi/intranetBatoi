@@ -137,7 +137,7 @@ return [
         'view' => 'pdf.fct.seguimentAlumnes',
     ],
     'pasqua' => [
-        'resource' => 'AutorizacionGrupoResource',
+        'printResource' => 'AutorizacionGrupoResource',
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoEnFct',
     ]
