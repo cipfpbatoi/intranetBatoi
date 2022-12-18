@@ -33,7 +33,7 @@ class FctAlumnoController extends IntranetController
     protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horasRealizadas','finPracticas'];
     protected $profile = false;
     protected $titulo = [];
-    protected $parametresVista = ['modal' => ['seleccion','saoPassword']];
+    protected $parametresVista = ['modal' => ['seleccion','saoPassword','loading']];
     protected $modal = true;
 
 

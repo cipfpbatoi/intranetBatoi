@@ -64,7 +64,7 @@ class Alumno extends Authenticatable
 
     public function Curso()
     {
-        return $this->belongsToMany(Curso::class, 'alumnos_cursos', 'idAlumno','idCurso','nia','id')
+        return $this->belongsToMany(Curso::class, 'alumnos_cursos', 'idAlumno', 'idCurso', 'nia', 'id')
                 ->withPivot(['registrado','finalizado']);
     }
     public function Colaboracion()
@@ -90,12 +90,24 @@ class Alumno extends Authenticatable
     }
     public function AlumnoFct()
     {
-        return $this->HasMany(AlumnoFct::class,'idAlumno' ,'nia');
+        return $this->HasMany(AlumnoFct::class, 'idAlumno', 'nia');
+    }
+
+    public function FctsColaboracion($colaboracion)
+    {
+        return $this->belongsToMany(
+            Fct::class,
+            'alumno_fcts',
+            'idAlumno',
+            'idFct',
+            'nia',
+            'id'
+        )->where('idColaboracion', $colaboracion);
     }
 
     public function AlumnoResultado()
     {
-        return $this->HasMany(AlumnoResultado::class,'idAlumno' ,'nia');
+        return $this->HasMany(AlumnoResultado::class, 'idAlumno', 'nia');
     }
     
     public function Provincia()
@@ -106,19 +118,24 @@ class Alumno extends Authenticatable
 
     public function Municipio()
     {
-        return $this->belongsTo(Municipio::class, 'municipio', 'cod_municipio')->where('provincias_id', $this->provincia);
+        return $this->belongsTo(
+            Municipio::class,
+            'municipio',
+            'cod_municipio'
+        )->where('provincias_id', $this->provincia);
     }
 
     public function scopeQGrupo($query, $grupo)
     {
         if (is_string($grupo)) {
             $alumnos = AlumnoGrupo::select('idAlumno')->where('idGrupo', '=', $grupo)->get()->toarray();
-        }
-        else {
+        } else {
             $alumnos = AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupo)->get()->toarray();
         }
         return $query->whereIn('nia', $alumnos);
     }
+
+
 
     public function scopeMenor($query, $fecha = null)
     {
@@ -126,12 +143,12 @@ class Alumno extends Authenticatable
         $hace18 = $hoy->subYears(18)->toDateString();
         return $query->where('fecha_nac', '>', $hace18);
     }
-    public function scopeMisAlumnos($query,$profesor=null,$dual=false)
+    public function scopeMisAlumnos($query, $profesor=null, $dual=false)
     {
         $profesor = $profesor ?? authUser()->dni;
-        $gruposC = Grupo::select('codigo')->QTutor($profesor,$dual)->get();
+        $gruposC = Grupo::select('codigo')->QTutor($profesor, $dual)->get();
         $grupos = $gruposC->count()>0?$gruposC->toarray():[];
-        $alumnos = hazArray(AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupos)->get(), 'idAlumno','idAlumno');
+        $alumnos = hazArray(AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupos)->get(), 'idAlumno', 'idAlumno');
         return $query->whereIn('nia', $alumnos);
         
     }
@@ -168,7 +185,7 @@ class Alumno extends Authenticatable
     }
     public function getNameFullAttribute()
     {
-        return ucwords(mb_strtolower($this->apellido1 . ' ' . $this->apellido2.' , '.$this->nombre,'UTF-8'));
+        return ucwords(mb_strtolower($this->apellido1 . ' ' . $this->apellido2.' , '.$this->nombre, 'UTF-8'));
     }
     public function getDualNameAttribute()
     {
