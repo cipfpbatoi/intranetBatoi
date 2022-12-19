@@ -24,7 +24,8 @@ class EmpresaResource extends JsonResource
             'email' => $this->email,
             'cif' => $this->cif,
             'actividad' => $this->actividad,
-            'conveni' => $this->conveniNou
+            'conveni' => $this->conveniNou,
+            'fichero' => $this->fichero
         ];
     }
 }
