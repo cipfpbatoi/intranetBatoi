@@ -1,0 +1,43 @@
+{
+    "name": "igomis/laravel-html",
+    "description": "Fork from Styde. Build form fields, menus, alert messages and other view components quickly",
+    "license": "MIT",
+    "authors": [{
+        "name": "Duilio Palacios",
+        "email": "admin@styde.net"
+    }],
+    "require": {
+        "php": "^8.0",
+        "laravelcollective/html": "^6.0",
+        "illuminate/translation": "^9.0"
+    },
+    "require-dev": {
+        "phpspec/phpspec": "~7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Styde\\Html\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Styde\\Html\\HtmlServiceProvider"
+            ],
+            "aliases": {
+                "Field": "Styde\\Html\\Facades\\Field",
+                "Alert": "Styde\\Html\\Facades\\Alert",
+                "Menu": "Styde\\Html\\Facades\\Menu",
+                "Form": "Collective\\Html\\FormFacade",
+                "Html": "Collective\\Html\\HtmlFacade"
+            },
+            "dont-discover": [
+                "laravelcollective/html"
+            ]
+        }
+    }
+}
