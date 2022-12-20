@@ -8,20 +8,9 @@ use Intranet\Entities\Empresa;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Fct;
-use Intranet\Entities\Ciclo;
-use Intranet\Entities\Poll\Poll;
-use Intranet\Entities\Poll\Vote;
-use Intranet\Livewire\Showenterprise;
 use Response;
-use Exception;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
 use Styde\Html\Facades\Alert;
-use Intranet\Botones\Panel;
 use Illuminate\Support\Facades\Input;
 
 class EmpresaController extends IntranetController

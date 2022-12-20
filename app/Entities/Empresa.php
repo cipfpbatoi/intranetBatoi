@@ -52,15 +52,15 @@ class Empresa extends Model
     }
     public function colaboraciones()
     {
-        return $this->hasManyThrough(Colaboracion::class, Centro::class,'idEmpresa','idCentro','id');
+        return $this->hasManyThrough(Colaboracion::class, Centro::class, 'idEmpresa', 'idCentro', 'id');
     }
     
-    public function scopeCiclo($query,$tutor)
+    public function scopeCiclo($query, $tutor)
     {
         $ciclo = Grupo::QTutor($tutor)->first()->idCiclo;
         $centros = Colaboracion::select('idCentro')->Ciclo($ciclo)->get()->toArray();
-        $empreses = Centro::select('idEmpresa')->distinct()->whereIn('id',$centros)->get()->toArray();
-        return $query->whereIn('id',$empreses);
+        $empreses = Centro::select('idEmpresa')->distinct()->whereIn('id', $centros)->get()->toArray();
+        return $query->whereIn('id', $empreses);
     }
 
     public function scopeMenor($query, $fecha = null)
@@ -70,15 +70,21 @@ class Empresa extends Model
         return $query->where('fecha_nac', '>', $hace18);
     }
 
-    private function getDirectory($clase){
-        return '/gestor/' . $clase;
+
+    public function getConveniNouAttribute()
+    {
+        $file = storage_path('app/' . $this->fichero);
+        if (!$this->fichero || !file_exists($file)) {
+            return false;
+        } else {
+            return  date("Y-m-d", filemtime($file)) > "2022-08-31";
+        }
     }
 
-    private function getFileName($extension,$clase)
+
+
+    public function getCiclesAttribute()
     {
-        return $this->cif.'.'.$extension;
-    }
-    public function getCiclesAttribute(){
         $cicles = '';
         foreach ($this->centros as $centro) {
             foreach ($centro->colaboraciones as $colaboracion) {

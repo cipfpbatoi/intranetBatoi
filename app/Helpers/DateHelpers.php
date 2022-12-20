@@ -73,6 +73,13 @@ function ayer()
     return $fecha->toDateString();
 }
 
+function hace($days)
+{
+    $fecha = new Date();
+    $fecha->subDay($days);
+    return $fecha->format('Y-m-d');
+}
+
 function manana()
 {
     $fecha = new Date();

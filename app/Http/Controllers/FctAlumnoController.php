@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 
+use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\AlumnoFct;
@@ -15,6 +16,7 @@ use Illuminate\Http\Request;
 use Intranet\Http\PrintResources\A5Resource;
 use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
+use Intranet\Mail\DocumentRequest;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Intranet\Http\PrintResources\AutorizacionDireccionResource;
@@ -31,7 +33,7 @@ class FctAlumnoController extends IntranetController
     protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horasRealizadas','finPracticas'];
     protected $profile = false;
     protected $titulo = [];
-    protected $parametresVista = ['modal' => ['seleccion','saoPassword']];
+    protected $parametresVista = ['modal' => ['seleccion','saoPassword','loading']];
     protected $modal = true;
 
 
@@ -49,7 +51,7 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumnofct.auth',['img'=>'fa-file-zip-o','where'=>['autorizacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.link', ['where' => ['asociacion','==',1]]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.A5',['img'=>'fa-hand-o-up','where'=>['asociacion', '==', '1']]));
-
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.email',['img'=>'fa-envelope','where'=>['asociacion','==',1,'actualizacion', '<', hace(7) ]]));
         $this->panel->setBoton('index', new BotonBasico("sao.post",['class' => 'btn-success download','roles' => config(self::ROLES_ROL_TUTOR)]));
 
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
@@ -83,16 +85,17 @@ class FctAlumnoController extends IntranetController
             $elementos = FctConvalidacion::where('idColaboracion',$request->idColaboracion)
                     ->where('asociacion',$request->asociacion)
                     ->get();
-            $id = $elementos->first()->id??null;
+            $elemento = $elementos->first()??null;
 
-            if (!$id){ 
+            if (!$elemento){
                 $elemento = new FctConvalidacion();
                 $this->validateAll($request, $elemento);
-                $id = $elemento->fillAll($request);
-            } 
+                $elemento->fillAll($request);
+            }
+
             $elemento->Alumnos()->attach($idAlumno,['desde'=> FechaInglesa(Hoy()),'horas'=>$request->horas,'calificacion' => 2,'correoAlumno'=>1]);
 
-            return $id;
+            return $elemento->id;
         });
         
         return $this->redirect();
@@ -190,4 +193,20 @@ class FctAlumnoController extends IntranetController
        return redirect()->action('PanelPG0301Controller@indice',['id' => $fct->Grup]);
     }
 
+    public function email($id){
+        $fct = AlumnoFct::findOrFail($id);
+        $alumno = $fct->Alumno;
+        Mail::to($alumno->email)
+            ->bcc(authUser()->email)
+            ->send(new DocumentRequest(
+                [
+                    'from' => authUser()->email,
+                    'fromPerson' =>authUser()->fullName,
+                    'subject' =>'Diari de FCT'
+                ],
+                'email.fct.advise',
+                $fct
+            ));
+        return back();
+    }
 } 

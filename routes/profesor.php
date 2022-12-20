@@ -247,7 +247,11 @@ Route::put(
 );
 
 
-Route::get('/colaboracion/{colaboracion}/edit', ['as' => 'colaboracion.edit', 'uses' => 'PanelColaboracionController@edit']);
+Route::get('/colaboracion/{colaboracion}/edit', [
+        'as' => 'colaboracion.edit',
+        'uses' => 'PanelColaboracionController@edit'
+    ]
+);
 Route::get('/colaboracion/{colaboracion}/copy', ['as' => 'colaboracion.copy', 'uses' => 'PanelColaboracionController@copy']);
 Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'PanelColaboracionController@store']);
 Route::get('/colaboracion/{colaboracion}/delete', ['as' => 'colaboracion.destroy', 'uses' => 'PanelColaboracionController@destroy']);
@@ -316,6 +320,7 @@ Route::get('/alumnofct/{id}/pdf', ['as' => 'alumnofct.pdf', 'uses' => 'FctAlumno
 Route::get('/alumnofct/{id}/show', ['as' => 'alumnofct.show', 'uses' => 'FctAlumnoController@show']);
 Route::get('/alumnofct/{id}/auth', ['as' => 'alumnofct.auth', 'uses' => 'FctAlumnoController@auth']);
 Route::get('/alumnofct/{id}/A5', ['as' => 'alumnofct.A5', 'uses' => 'FctAlumnoController@A5']);
+Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
 
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy','show']]);

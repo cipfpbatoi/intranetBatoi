@@ -6,6 +6,7 @@ namespace Intranet\Http\Controllers;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Grupo;
@@ -32,7 +33,9 @@ class SaoController extends Controller
     const WEB = 'https://foremp.edu.gva.es/index.php';
 
     public function __construct(){
-        $this->server_url = env('SELENIUM','http://172.16.9.10:4444');
+        $this->server_url = env('SELENIUM_URL','http://172.16.9.10:4444');
+        //$this->server_url = env('SELENIUM_URL','http://192.168.56.1:4444');
+
         return parent::__construct();
     }
     public function index(){
@@ -52,12 +55,23 @@ class SaoController extends Controller
         return $this->$accion($request);
     }
 
+    private function alertSuccess(array $alumnes,$message='Sincronitzades Fcts: ') {
+        if (count($alumnes)) {
+            $tots = '';
+            foreach ($alumnes as $alumne) {
+                $tots .= $alumne.', ';
+            }
+            Alert::info($message.$tots);
+        }
+    }
+
     public function annexes(Request $request)
     {
         $dni = $request->profesor;
         $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
         try {
             $this->login($driver, trim($request->password));
+            $alumnes = [];
             foreach (AlumnoFct::misFcts()->activa()->get() as $fct){
                 if ($fct->idSao){
                     $driver->navigate()->to("https://foremp.edu.gva.es/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2");
@@ -73,6 +87,7 @@ class SaoController extends Controller
                             'zip',
                             "alumnofctaval/$fct->id"
                         );
+                        $alumnes[] = $fct->Alumno->shortName;
                     } catch (Exception $e){
                         Alert::info("Annexes de ".$fct->Alumno->fullName." no trobats");
                     }
@@ -84,6 +99,7 @@ class SaoController extends Controller
                     sleep(1);
                 }
             }
+            $this->alertSuccess($alumnes,'Annexes Baixats: ');
         }catch (Exception $e) {
             Alert::danger($e);
         }
@@ -96,6 +112,7 @@ class SaoController extends Controller
         $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
         try {
             $this->login($driver, trim($request->password));
+            $alumnes = [];
             foreach (AlumnoFct::misFcts()->activa()->get() as $fct){
                 if ($fct->idSao){
                     $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=11&idFct=$fct->idSao");
@@ -105,13 +122,17 @@ class SaoController extends Controller
                     $horari = $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
                     $horas = explode('/',
                     $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[0];
-                    $fct->realizadas = $horas;
-                    list($diarias,$ultima) = $this->consultaDiario($driver,$driver->findElement(WebDriverBy::cssSelector("#contenido")));
-                    $fct->horas_diarias = $diarias;
-                    $fct->actualizacion = fechaSao(substr($ultima,2,10));
-                    $fct->save();
+                    if ($fct->realizadas != $horas) {
+                        $fct->realizadas = $horas;
+                        list($diarias,$ultima) = $this->consultaDiario($driver,$driver->findElement(WebDriverBy::cssSelector("#contenido")));
+                        $fct->horas_diarias = $diarias;
+                        $fct->actualizacion = fechaSao(substr($ultima,2,10));
+                        $fct->save();
+                        $alumnes[] = $fct->Alumno->shortName;
+                    }
                 }
             }
+            $this->alertSuccess($alumnes);
         } catch (Exception $e){
             Alert::danger($e);
         }
@@ -161,6 +182,7 @@ class SaoController extends Controller
                             if ($centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre,
                                 $dades[$index]['centre']['telefon'],
                                 $dades[$index]['centre']['email'], $ciclo->id, $instructor)) {
+
                                 $dades[$index]['centre']['id'] = $centro->id;
                                 if ($colaboracion = Colaboracion::where('idCiclo', $ciclo->id)->where('idCentro',
                                     $centro->id)->first()) {
@@ -187,7 +209,8 @@ class SaoController extends Controller
                                     Alert::danger("No trobe col·laboració del centre $nameCentre amb el teu cicle");
                                 }
                             } else {
-                                Alert::danger("Centro $nameCentre no trobat. Revisa la col·laboració.");
+                                $alumno = Alumno::find($dades[$index]['nia']);
+                                Alert::danger("Centro $nameCentre  per alumne $alumno->shorName no trobat. Revisa la col·laboració. Afegix instructor al centre de treball. Revisa el seus dni");
                             }
                         } catch (Exception $e) {
                             unset($dades[$index]);

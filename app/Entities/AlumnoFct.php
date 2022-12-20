@@ -44,60 +44,67 @@ class AlumnoFct extends Model
         return $this->belongsTo(Dual::class, 'idFct', 'id');
     }
 
-    public function scopeMisFcts($query,$profesor=null)
+    public function scopeMisFcts($query, $profesor=null)
     {
         $profesor = $profesor?$profesor:authUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
 
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
-        $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
+        $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
 
-        $fcts = Fct::select('id')->whereIn('idColaboracion',$colaboraciones)->where('asociacion',1)->get()->toArray();
-        return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
+        $fcts = Fct::select('id')->whereIn('idColaboracion', $colaboraciones)->where('asociacion', 1)->get()->toArray();
+        return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
     }
 
-    public function scopeMisProyectos($query,$profesor=null)
+    public function scopeMisProyectos($query, $profesor=null)
     {
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
-        $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
-        $fcts = Fct::select('id')->whereIn('idColaboracion',$colaboraciones)->orWhere('asociacion',2)->get()->toArray();
-        return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts)->esAval()->whereNull('calProyecto');
+        $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
+        $fcts = Fct::select('id')
+            ->whereIn('idColaboracion', $colaboraciones)
+            ->orWhere('asociacion', 2)
+            ->get()
+            ->toArray();
+        return $query->whereIn('idAlumno', $alumnos)
+            ->whereIn('idFct', $fcts)
+            ->esAval()
+            ->whereNull('calProyecto');
     }
     
-    public function scopeMisDual($query,$profesor=null)
+    public function scopeMisDual($query, $profesor=null)
     {
         $profesor = $profesor?$profesor:authUser()->dni;
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor,true)->get()->toArray();
-        $cicloC = Grupo::select('idCiclo')->QTutor($profesor,true)->first()->idCiclo??null;
-        $colaboraciones = Colaboracion::select('id')->where('idCiclo',$cicloC)->get()->toArray();
-        $fcts = Fct::select('id')->whereIn('idColaboracion',$colaboraciones)
-                ->where('asociacion',3)->get()->toArray();
-        return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
+        $alumnos = Alumno::select('nia')->misAlumnos($profesor, true)->get()->toArray();
+        $cicloC = Grupo::select('idCiclo')->QTutor($profesor, true)->first()->idCiclo??null;
+        $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
+        $fcts = Fct::select('id')->whereIn('idColaboracion', $colaboraciones)
+                ->where('asociacion', 3)->get()->toArray();
+        return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
     }
     
-    public function scopeMisConvalidados($query,$profesor=null)
+    public function scopeMisConvalidados($query, $profesor=null)
     {
         $profesor = $profesor?$profesor:authUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
-        $fcts = Fct::select('id')->Where('asociacion',2)->get()->toArray();
-        return $query->whereIn('idAlumno',$alumnos)->whereIn('idFct',$fcts);
+        $fcts = Fct::select('id')->Where('asociacion', 2)->get()->toArray();
+        return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
     }
 
     public function scopeEsFct($query)
     {
         $fcts = Fct::select('id')->esFct()->get()->toArray();
-        return $query->whereIn('idFct',$fcts);
+        return $query->whereIn('idFct', $fcts);
     }
     public function scopeEsAval($query)
     {
         $fcts = Fct::select('id')->esAval()->get()->toArray();
-        return $query->whereIn('idFct',$fcts);
+        return $query->whereIn('idFct', $fcts);
     }
     public function scopeEsDual($query)
     {
         $fcts = Fct::select('id')->esDual()->get()->toArray();
-        return $query->whereIn('idFct',$fcts);
+        return $query->whereIn('idFct', $fcts);
     }
 
     public function scopeActiva($query)
@@ -105,16 +112,20 @@ class AlumnoFct extends Model
        return $query->whereNull('calificacion')->where('correoAlumno', 0)->where('horas', '>', 'realizadas');
     }
     
-    public function getEmailAttribute(){
+    public function getEmailAttribute()
+    {
         return $this->Alumno->email;
     }
-    public function getContactoAttribute(){
+    public function getContactoAttribute()
+    {
         return $this->Alumno->NameFull;
     }
-    public function getNombreAttribute(){
+    public function getNombreAttribute()
+    {
         return $this->getContactoAttribute();
     }
-    public function getFullNameAttribute(){
+    public function getFullNameAttribute()
+    {
         return $this->Alumno->fullName;
     }
     public function getHorasRealizadasAttribute()
@@ -124,7 +135,7 @@ class AlumnoFct extends Model
 
     public function getFinPracticasAttribute()
     {
-        if ($this->horas_diarias){
+        if ($this->horas_diarias) {
             $dias = (int)($this->horas-$this->realizadas)/$this->horas_diarias;
             $semanas = floor($dias / 5);
             $dias = $dias % 5;
@@ -133,11 +144,17 @@ class AlumnoFct extends Model
         return '??';
     }
 
-    public function getPeriodeAttribute(){
+    public function getPeriodeAttribute()
+    {
         return $this->Fct->periode;
     }
-    public function getQualificacioAttribute(){
-        return isset($this->calificacion)?($this->calificacion?($this->calificacion==2?'Convalidat/Exempt': 'Apte' ): 'No Apte' ): 'No Avaluat';
+    public function getQualificacioAttribute()
+    {
+        return isset($this->calificacion)?
+            ($this->calificacion?
+                ($this->calificacion==2?'Convalidat/Exempt': 'Apte')
+                : 'No Apte')
+            : 'No Avaluat';
 
         /* return match($this->calificacion){
              0 => 'No Apte',
@@ -147,8 +164,11 @@ class AlumnoFct extends Model
          };*/
     }
 
-    public function getProjecteAttribute(){
-        return isset($this->calProyecto) ? ($this->calProyecto == 0 ? 'No presenta' : $this->calProyecto) : 'No Avaluat';
+    public function getProjecteAttribute()
+    {
+        return isset($this->calProyecto)?
+            ($this->calProyecto == 0 ? 'No presenta' : $this->calProyecto)
+            : 'No Avaluat';
        /* return match($this->calProyecto){
             0 =>  'No presenta' ,
             null => 'No Avaluat',
@@ -156,13 +176,16 @@ class AlumnoFct extends Model
         };*/
 
     }
-    public function getAsociacionAttribute(){
+    public function getAsociacionAttribute()
+    {
         return $this->Fct->asociacion;
     }
-    public function getCentroAttribute(){
+    public function getCentroAttribute()
+    {
         return $this->Fct->Centro;
     }
-    public function getInstructorAttribute(){
+    public function getInstructorAttribute()
+    {
         return $this->Fct->XInstructor;
     }
     
@@ -184,13 +207,14 @@ class AlumnoFct extends Model
         }
         return null;
     }
-    public function scopeGrupo($query,$grupo)
+    public function scopeGrupo($query, $grupo)
     {
         $alumnos = Alumno::select('nia')->QGrupo($grupo->codigo)->get()->toArray();
-        return $query->whereIn('idAlumno',$alumnos);
+        return $query->whereIn('idAlumno', $alumnos);
     }
 
-    public function getQuienAttribute(){
+    public function getQuienAttribute()
+    {
         return $this->fullName;
     }
 }

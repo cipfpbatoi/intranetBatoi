@@ -9,5 +9,6 @@ $(function () {
         event.preventDefault();
         $('#password').modal('hide');
         $("#formPassword" ).submit();
+        $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
     });
 });
