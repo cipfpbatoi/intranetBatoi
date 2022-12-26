@@ -9,6 +9,7 @@ use Intranet\Events\ActivityReport;
 use Intranet\Events\FctCreated;
 use Illuminate\Support\Arr;
 
+
 class Fct extends Model
 {
     use BatoiModels;
@@ -67,17 +68,17 @@ class Fct extends Model
     {
         return $this->belongsTo(Instructor::class, 'idInstructor', 'dni');
     }
+
+
     public function Colaboradores()
     {
-        return $this->belongsToMany(
-            Instructor::class,
-            'colaboradores',
+        return $this->hasMany(
+            Colaborador::class,
             'idFct',
-            'idInstructor',
-            'id',
-            'dni'
-        )->withPivot('horas');
+            'id'
+        );
     }
+
     public function Alumnos()
     {
         return $this->belongsToMany(

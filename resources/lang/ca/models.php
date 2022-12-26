@@ -308,11 +308,13 @@ return array(
             'visitaEmpresa'=> "Concertar visita",
             'citarAlumnos' => 'Citar Alumnat',
             'centro' => 'Centre',
+            'colaboradores' => 'Col·laboradors'
         ),
         'Fct' => array(
             'index' => 'FCT x Empresa',
             'create' => 'Nova Fct',
-            'edit' => 'Editar Fct',
+            'edit' => 'Canviar instructor',
+            'show' => 'Detalls Fct',
             'delete' => 'Esborrar Fct',
             'fin' => 'Finalitzar Fct',
             'pdf' => 'Imprimir certificats Instructores',
@@ -326,12 +328,11 @@ return array(
             'nullProyecto' => 'Esborra projecte',
             'upload' => 'Zip Entrevistes',
             'dropzone' => 'Guardar Entrevistes',
-            'pg0301' => 'Imprimeix Full Control Servei',
-            'pr0301' => 'Imprimeix Full per Informar Alumnat',
-            'pr0601' => 'Imprimeix PR06-01 (Entrega Certificat)',
-            'pr0402' => 'Imprimeix Entrevista Alumnat',
-            'pr0401' => 'Imprimeix Entrevista Final Instructora',
-            'pasqua' => 'Imprimeix Full Vacances',
+            'pg0301' => 'Full Control Servei',
+            'pr0402' => 'Entrevista Alumnat',
+            'pr0401' => 'Entrevista Final Instructora',
+            'pasqua' => 'Full Vacances',
+            'print' => 'Informes',
             'all' => 'Vore tots',
             'only' => 'Vore actius',
             'list' => 'Acta Grupo :quien',
@@ -434,21 +435,20 @@ return array(
         'Alumnofct' => array(
           'index' => 'Fct x Alumne/a',
           'convalidacion' => 'FCT Convalidada/Exempt',
-          'create' => 'Nova Exempció',
+
           'edit' => 'Modificar Dades Fct',
           'pdf' => 'Imprimir certificat Alumne/a',
           'auth' => 'Imprimir autoritzacions',
-          'email' => 'Enviar Correu Valoració Alumne/a',
+          'email' => 'Enviar avis emplenar diari',
           'pg0301' => "Entregada documentació",
             'default' => 'x Alumne/a',
             'selecciona' => 'Alumne/a',
-            'A5' => 'Informe valoratiu A5'
-
+            'A5' => 'Informe valoratiu A5',
+            'delete' => 'Esborra fct'
         ),
-        'alumnoFct' => array(
-          'selecciona' => 'Alumne/a',
-
-
+        'AlumnoFct' => array(
+            'selecciona' => 'Alumne/a',
+            'create' => 'Nova Exempció',
         ),
         'Alumnofctaval' => array(
             'index' => 'Avaluació FCT i projecte',

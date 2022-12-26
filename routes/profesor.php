@@ -273,10 +273,9 @@ Route::put('/fct/{id}/edit', ['as' => 'fct.update', 'uses' => 'FctController@upd
 Route::get('/fct/create/{colaboracio}', ['as' => 'fct.create2', 'uses' => 'FctController@create']);
 Route::post('/fct/create', ['as' => 'fct.store', 'uses' => 'FctController@store']);
 Route::post('/fct/pass', ['as' => 'fct.pass', 'uses' => 'FctController@store']);
-Route::post('/fct/{id}/pdf', ['as' => 'fct.pdf', 'uses' => 'FctController@pdf']);
 Route::get('/fct/{id}/pdf', ['as' => 'fct.pdf', 'uses' => 'FctController@certificat']);
-Route::get('/fct/{document}/print', ['as' => 'fct.print', 'uses' => 'FctController@document']);
-Route::post('/fct/{document}/print', ['as'=>'fct.print.post','uses'=> 'FctController@documentPost']);
+Route::get('/fct/{id}/colaboradorPdf', ['as' => 'fct.pdf', 'uses' => 'FctController@certificatColaboradores']);
+
 
 Route::get('/avalFct', ['as' => 'aval.fct', 'uses' => 'PanelFctAvalController@index']);
 Route::get('/fct/{document}/apte', ['as' => 'fct.apte', 'uses' => 'PanelFctAvalController@apte']);

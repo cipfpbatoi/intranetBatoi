@@ -33,7 +33,7 @@ class FctAlumnoController extends IntranetController
     protected $gridFields = ['Nombre', 'Centro','Instructor','desde','hasta','horasRealizadas','finPracticas'];
     protected $profile = false;
     protected $titulo = [];
-    protected $parametresVista = ['modal' => ['seleccion','saoPassword','loading']];
+    protected $parametresVista = ['modal' => ['extended','saoPassword','loading']];
     protected $modal = true;
 
 
@@ -51,16 +51,12 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumnofct.auth',['img'=>'fa-file-zip-o','where'=>['autorizacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.link', ['where' => ['asociacion','==',1]]));
         $this->panel->setBoton('grid', new BotonImg('alumnofct.A5',['img'=>'fa-hand-o-up','where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('alumnofct.email',['img'=>'fa-envelope','where'=>['asociacion','==',1,'actualizacion', '<', hace(7) ]]));
+        $this->panel->setBoton('grid', new BotonImg('alumnofct.email',['img'=>'fa-envelope','where'=>['asociacion','==',1,'actualizacion', '<', hace(7),'desde','anterior',hace(7) ]]));
         $this->panel->setBoton('index', new BotonBasico("sao.post",['class' => 'btn-success download','roles' => config(self::ROLES_ROL_TUTOR)]));
-
+        $this->panel->setBoton('index', new BotonBasico("fct.print",['class'=>'btn-warning selecciona','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("fct", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
-        $this->panel->setBoton('index', new BotonBasico("fct.pg0301.print",['class'=>'btn-warning selecciona','roles' => config(self::ROLES_ROL_TUTOR),'data-url'=>'/api/documentacionFCT/pg0301']));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0401.print",['class'=>'btn-warning selecciona' ,'roles' => config(self::ROLES_ROL_TUTOR),'data-url'=>'/api/documentacionFCT/pr0401']));
-        $this->panel->setBoton('index', new BotonBasico("fct.pr0402.print",['class'=>'btn-warning selecciona' , 'roles' => config(self::ROLES_ROL_TUTOR),'data-url'=>'/api/documentacionFCT/pr0402']));
-        $this->panel->setBoton('index', new BotonBasico("fct.pasqua.print",['class' => 'selecciona btn-warning','data-url'=> "/api/documentacionFCT/pasqua",'roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info convalidacion','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("fct", ['class' => 'btn-link','roles' => config(self::ROLES_ROL_TUTOR)]));
         Session::put('redirect', 'FctAlumnoController@index');
 
     }

@@ -1,7 +1,12 @@
 <ul class="messages colaboracion">
     @foreach ($fcts as $fct)
-        <a href="/fct/{{$fct->id}}/show"><em class="fa fa-eye"></em> {{$fct->Instructor->id}} - {{$fct->Instructor->Nombre}} - {{$fct->Instructor->email}}</a>
-        <em id='{{$fct->id}}' class="fa fa-plus" data-toggle="modal" data-target="#AddAlumno"> @lang("messages.generic.anadir") @lang("models.modelos.Alumno")</em>
+        <em class="fa fa-credit-card"></em> {{$fct->Instructor->id}}
+        <em class="fa fa-user user-profile-icon"></em> {{$fct->Instructor->Nombre}}
+        <em class="fa fa-envelope"></em> {{$fct->Instructor->email}}
+        <em class="fa fa-phone"></em> {{$fct->Instructor->telefono}}
+        <em id='{{$fct->id}}' class="fa fa-plus" data-toggle="modal" data-target="#AddAlumno">
+            @lang("messages.generic.anadir") @lang("models.modelos.Alumno")
+        </em>
         @foreach ($fct->Alumnos as $alumno)
             <li>
                 <div class="message_wrapper">

@@ -15,6 +15,7 @@ use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Poll\Poll;
+use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
@@ -199,7 +200,7 @@ class AdministracionController extends Controller
             }
         }
     }
-
+/*
     public function consulta(){
         $grupos = Fct::where('asociacion',1)->get()->groupBy('idInstructor','idColaboracion');
         foreach ($grupos as $grupo){
@@ -230,7 +231,7 @@ class AdministracionController extends Controller
             }
         }
     }
-
+*/
     public static function v2_50(){
         Alert::info('Version 2.50');
         foreach (Comision::all() as $comision){
@@ -370,5 +371,26 @@ class AdministracionController extends Controller
         $doors = Espacio::whereNotNull('dispositivo')->get();
         return view('espai.show',compact('missatge','doors'));
     }
-    
+
+    public function consulta(){
+        $plantilla = hazArray(PPoll::where('remains',true)->get(),'id');
+        $polls = hazArray(Poll::whereIn('idPPoll',$plantilla)->get(),'id');
+        $curso = cursoAnterior();
+        foreach (Vote::whereIn('idPoll',$polls)->get() as $vote){
+            if ($fct = Fct::find($vote->idOption1)){
+                try {
+                        $newVote = new VoteAnt([
+                            'option_id' => $vote->option_id,
+                            'idColaboracion' => $fct->idColaboracion,
+                            'value' => $vote->value,
+                            'text' => $vote->text,
+                            'curs' => $curso
+                        ]);
+                        $newVote->save();
+                } catch (\Exception $e){
+                    Alert::info($fct->idColaboracion.' No TROBADA');
+                }
+            }
+        }
+    }
 }

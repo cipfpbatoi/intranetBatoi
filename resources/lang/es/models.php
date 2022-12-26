@@ -304,11 +304,13 @@ return array(
             'visitaEmpresa'=> "Concertar visita",
             'citarAlumnos' => 'Citar Alumnos',
             'centro' => 'Centro',
+            'colaboradores' => 'Colaboradores'
         ),
         'Fct' => array(
             'index' => 'FCT x Empresa',
             'create' => 'Nueva Fct',
-            'edit' => 'Editar Fct',
+            'edit' => 'Cambiar Instructor',
+            'show' => 'Detalles Fct',
             'delete' => 'Borrar Fct',
             'fin' => 'Finalizar Fct',
             'pdf' => 'Imprimir certificados',
@@ -323,12 +325,11 @@ return array(
             'upload' => 'Zip Entrevistas',
             'dropzone' => 'Guardar Entrevistas',
             'convalidacion' => 'FCT Convalidada/Exento',
-            'pg0301' => 'Imprime Hoja Control Servicio',
-            'pr0301' => 'Imprime Hoja para Informar Alumnado)',
-            'pr0601' => 'Imprime PR06-01 (Entrega Certificado)',
-            'pr0402' => 'Imprime Entrevista Alumnado',
-            'pr0401' => 'Imprime Entrevista Final Instructor',
-            'pasqua' => 'Imprime Hoja Vacaciones',
+            'pg0301' => 'Hoja Control Servicio',
+            'pr0402' => 'Entrevista Alumnado',
+            'pr0401' => 'Entrevista Final Instructor',
+            'pasqua' => 'Hoja Vacaciones',
+            'print' => 'Informes',
             'list' => 'Acta Grupo :quien',
             'acta' => 'Pedir acta de evaluación',
             'insercio' => "Inserción Laboral",
@@ -426,13 +427,17 @@ return array(
             'create' => 'Nueva Exención',
             'edit' => 'Modificar Datos Fct',
             'pdf' => 'Imprimir certificados Alumno',
-            'email' => 'Enviar Correos Valoración Alumno',
+            'email' => 'Enviar aviso rellenar diario',
             'pg0301' => "Entregada documentación",
             'default' => 'x Alumne',
             'selecciona' => 'Alumno/a',
-            'A5' => 'Informe valoratiu A5'
+            'A5' => 'Informe valoratiu A5',
+            'delete' => 'Borra fct'
 
-
+        ),
+        'AlumnoFct' => array(
+            'selecciona' => 'Alumno/a',
+            'create' => 'Nueva Exención',
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',

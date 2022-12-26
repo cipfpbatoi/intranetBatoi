@@ -5,41 +5,34 @@
         @foreach ($fct->Colaboradores->sortBy('surnames') as $instructor)
             <li>
                 <div class="message_date">
-                    <h4 class="text-info"><i class="fa fa-calendar-times-o user-profile-icon"></i> Certifica:
-                        @if ($fct->Colaboradores->count() > 1 || $instructor->pivot->horas != $fct->horas)
+                    <h4 class="text-info"><em class="fa fa-calendar-times-o user-profile-icon"></em> Certifica:
+                        @if ($fct->Colaboradores->count() > 1 || $instructor->horas != $fct->horas)
                             @php $horas = true; @endphp
-                            <input id='{{$instructor->dni}}' name='{{$instructor->dni}}'
-                                   value="{{$instructor->pivot->horas}}">
+                            <input id='{{$instructor->idInstructor}}' name='{{$instructor->idInstructor}}'
+                                   value="{{$instructor->horas}}">
                         @else
-                            {{$instructor->pivot->horas}}
+                            {{$instructor->horas}}
                         @endif
                         hores
                     </h4>
-                    @if ($instructor->departamento)
-                        <h4 class="text-info">{{$instructor->departamento}}</h4>
-                    @endif
                 </div>
                 <div class="message_wrapper">
-                    @if ($fct->Colaboradores->count() > 1)
-                        <h4 class="text-info"><a href='/fct/{!!$fct->id!!}/{!!$instructor->dni!!}/instructorDelete'><i
-                                        class="fa fa-trash"></i></a>
-                            @endif
-                            <acronym title='{{$instructor->email}} ({{$instructor->telefono}})'><i
-                                        class="fa fa-user user-profile-icon"></i> {{$instructor->nombre}}
-                                ({{$instructor->dni}})</acronym></h4>
-                        <h4><i class="fa fa-phone user-profile-icon"></i> {{$instructor->telefono}} <i
-                                    class="fa fa-envelope user-profile-icon"></i> {{$instructor->email}}</h4>
+                    <h4 class="text-info">
+                        <a href='/fct/{!!$fct->id!!}/{!!$instructor->idInstructor!!}/instructorDelete'>
+                            <em class="fa fa-trash"></em>
+                        </a>
+                        <em class="fa fa-user user-profile-icon"></em> {{$instructor->name}}
+                                ({{$instructor->idInstructor}})
+                    </h4>
                 </div>
             </li>
         @endforeach
     </ul>
     @if(userIsAllow(config('roles.rol.tutor')))
         <div class="message_wrapper">
-            @if ($fct->Colaboracion->Centro->Instructores->count() - $instructores->count()  > 1)
-                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#AddInstructor">
+            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#AddInstructor">
                     @lang("messages.generic.anadir") @lang("models.modelos.Colaborador")
-                </button>
-            @endif
+            </button>
             @if ($horas)
                 <input type='submit' class="btn btn-secondary"
                        value="@lang('messages.generic.modificar') @lang('validation.attributes.horas')"/>

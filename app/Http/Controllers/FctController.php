@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
+use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
 use Intranet\Botones\BotonImg;
@@ -13,6 +14,7 @@ use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
 use Intranet\Botones\BotonBasico;
+use Intranet\Componentes\Pdf;
 
 
 
@@ -85,7 +87,7 @@ class FctController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion','==','1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('fct.pdf',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('index', new BotonBasico("alumnofct", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('index', new BotonBasico("alumnofct", ['class' => 'btn-link','roles' => config(self::ROLES_ROL_TUTOR)]));
         Session::put('redirect', 'FctController@index');
     }
 
@@ -98,60 +100,28 @@ class FctController extends IntranetController
         return Fct::misFcts()->esFct()->get();
     }
 
-
-    /**
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function pdf($id,Request $request)
+    public function certificat($id)
     {
-        $fct = Fct::findOrFail($id);
-        $instructor = $fct->Instructor;
-        if (isset($instructor->surnames)) {
-            return self::preparePdf($fct,$request->fecha,$request->horas)->stream();
-        } else {
-            Alert::danger("Completa les dades de l'instructor");
-            return back();   
-        }
-        
-    }
-
-    public function certificat($id){
         return response()->file(FDFPrepareService::exec(
             new CertificatInstructorResource(Fct::findOrFail($id))));
     }
 
-    /*
-    public function certificat($id)
+    public static function certificatColaboradores($id)
     {
         $fct = Fct::findOrFail($id);
-        $instructor = $fct->Instructor;
-        if (isset($instructor->surnames)) {
-            return self::preparePdf($fct,$fct->hasta,$fct->AlFct->max('horas'))->stream();
-        } else {
-            Alert::danger("Completa les dades de l'instructor");
-            return back();
-        }
-
-    }*/
-
-    public static function preparePdf($fct,$fecha,$horas)
-    {
         $secretario = Profesor::find(config(fileContactos().'.secretario'));
         $director = Profesor::find(config(fileContactos().'.director'));
-        $dades = ['date' => FechaString($fecha,'ca'),
-            'fecha' => FechaString($fecha,'es'),
+        $dades = ['date' => FechaString(hoy(),'ca'),
+            'fecha' => FechaString(hoy(),'es'),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
             'centro' => config('contacto.nombre'),
             'poblacion' => config('contacto.poblacion'),
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName,
-            'instructor' => $fct->Instructor,
-            'horas' => $horas
         ];
 
-        return self::hazPdf('pdf.fct.certificatInstructor', $fct, $dades);
+        return Pdf::hazPdf('pdf.fct.certificatColaborador', $fct, $dades);
     }
 
 
@@ -255,8 +225,13 @@ class FctController extends IntranetController
      * @return \Illuminate\Http\RedirectResponse
      */
     public function nouInstructor($idFct, Request $request){
+        $colaborador = new Colaborador([
+            'idInstructor'=>$request->idInstructor,
+            'name'=>$request->name,
+            'horas'=> $request->horas
+        ]);
        $fct = Fct::find($idFct);
-       $fct->Colaboradores()->attach($request->idInstructor,['horas'=>$request->horas]); 
+       $fct->Colaboradores()->save($colaborador);
        return back();
     }
 
@@ -266,8 +241,7 @@ class FctController extends IntranetController
      * @return \Illuminate\Http\RedirectResponse
      */
     public function deleteInstructor($idFct, $idInstructor){
-       $fct = Fct::find($idFct);
-       $fct->Colaboradores()->detach($idInstructor); 
+       Colaborador::where('idFct',$idFct)->where('idInstructor',$idInstructor)->delete();
        return back();
     }
 
@@ -290,7 +264,7 @@ class FctController extends IntranetController
     public function modificaHoras($idFct, Request $request){
         $fct = Fct::find($idFct);
         foreach ($request->except('_token') as $dni => $horas){
-            $fct->Colaboradores()->updateExistingPivot($dni, ['horas'=>$horas]);
+            $fct->Colaboradores()->where('idInstructor',$dni)->update(['horas'=>$horas]);
         }
         return back();
     }
