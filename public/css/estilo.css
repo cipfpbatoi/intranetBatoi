@@ -152,6 +152,7 @@ card-big-shadow {
 	font-size: 14px;
 	margin-bottom: 0px;
 }
+
 .card-big-shadow:before {
 	background-image: url("http://static.tumblr.com/i21wc39/coTmrkw40/shadow.png");
 	background-position: center bottom;
