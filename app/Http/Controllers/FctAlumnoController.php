@@ -6,8 +6,11 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
+use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\Documento;
+use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\FctConvalidacion;
 use DB;
@@ -56,9 +59,31 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("fct.print",['class'=>'btn-warning selecciona','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("fct.create", ['class' => 'btn-info','roles' => config(self::ROLES_ROL_TUTOR)]));
         $this->panel->setBoton('index', new BotonBasico("alumnofct.convalidacion", ['class' => 'btn-info convalidacion','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->setQualityB();
         $this->panel->setBoton('index', new BotonBasico("fct", ['class' => 'btn-link','roles' => config(self::ROLES_ROL_TUTOR)]));
         Session::put('redirect', 'FctAlumnoController@index');
 
+    }
+
+    /**
+     *
+     */
+    private function setQualityB(): void
+    {
+        $find = Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'FCT')
+            ->where('curso', Curso())->first();
+        if (!$find) {
+            $documents = Adjunto::where('route',"profesor/".AuthUser()->dni)->count();
+            $fcts = Fct::misFcts()->where('correoInstructor',0)->count();
+            if ($documents || $fcts){
+                $this->panel->setBoton('index', new BotonBasico("fct.dropzone.".AuthUser()->dni, ['class' => 'btn-warning', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+            } else {
+                $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-warning', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+            }
+        }
+        else {
+            $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-warning', 'roles' => config(self::ROLES_ROL_TUTOR)]));
+        }
     }
         //
 

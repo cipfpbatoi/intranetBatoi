@@ -326,8 +326,8 @@ return array(
             'proyecto' => 'Pujar projecte',
             'nuevoProyecto' => 'Accedeix al Projecte',
             'nullProyecto' => 'Esborra projecte',
-            'upload' => 'Zip Entrevistes',
-            'dropzone' => 'Guardar Entrevistes',
+            'upload' => 'Zip Informes',
+            'dropzone' => 'Guardar Informes',
             'pg0301' => 'Full Control Servei',
             'pr0402' => 'Entrevista Alumnat',
             'pr0401' => 'Entrevista Final Instructora',
@@ -435,7 +435,6 @@ return array(
         'Alumnofct' => array(
           'index' => 'Fct x Alumne/a',
           'convalidacion' => 'FCT Convalidada/Exempt',
-
           'edit' => 'Modificar Dades Fct',
           'pdf' => 'Imprimir certificat Alumne/a',
           'auth' => 'Imprimir autoritzacions',

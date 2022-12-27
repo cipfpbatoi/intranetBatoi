@@ -2,10 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Support\Facades\Mail;
+
 use Intranet\Botones\BotonConfirmacion;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Grupo;
@@ -17,7 +16,7 @@ use Styde\Html\Facades\Alert;
 use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Profesor;
-use Intranet\Entities\Fct;
+
 
 /**
  * Class PanelFctAvalController
@@ -68,7 +67,6 @@ class PanelFctAvalController extends IntranetController
     {
         Session::put('redirect', 'PanelFctAvalController@index');
         $this->panel->setPestana('Resum', false, 'profile.resumenfct');
-        $this->setQualityB();
         $this->setActaB();
         $this->panel->setBoton('grid', new BotonImg('fct.apte', ['img' => 'fa-hand-o-up', 'where' => ['calificacion', '!=', '1', 'actas', '==', 0, 'asociacion', '==', 1]]));
         $this->panel->setBoton('grid', new BotonImg('fct.noApte', ['img' => 'fa-hand-o-down', 'where' => ['calProyecto', '<', '5', 'calificacion', '!=', '0', 'actas', '==', 0, 'asociacion', '==', 1]]));
@@ -240,26 +238,7 @@ class PanelFctAvalController extends IntranetController
         return $found;
     }
 
-    /**
-     *
-     */
-    private function setQualityB(): void
-    {
-        $find = Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'FCT')
-                                    ->where('curso', Curso())->first();
-        if (!$find) {
-            $documents = Adjunto::where('route',"profesor/".AuthUser()->dni)->count();
-            $fcts = Fct::misFcts()->where('correoInstructor',0)->count();
-            if ($documents || $fcts){
-                $this->panel->setBoton('index', new BotonBasico("fct.dropzone.".AuthUser()->dni, ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
-            } else {
-                $this->panel->setBoton('index', new BotonBasico("fct.upload", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
-            }
-        }
-        else {
-            $this->panel->setBoton('index', new BotonBasico("documento.$find->id.edit", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]));
-        }
-    }
+
 
     /**
      *
