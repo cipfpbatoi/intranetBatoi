@@ -74,7 +74,7 @@ class ColaboracionController extends ModalController
     public function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('colaboracion.show',['img'=>'fa-eye-slash','roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
-        $this->panel->setBoton('grid', new BotonImg('colaboracion.edit',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
+        $this->panel->setBoton('grid', new BotonImg('colaboracion.edit',['roles' => [config('roles.rol.practicas')]]));
     }
 
     /**
