@@ -1,24 +1,25 @@
     <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
         <div id="{{$elemento->id}}" class="well profile_view">
-            <div class="col-sm-12">
+            <div class="col-sm-12 ">
                 <div class="left col-md-8 col-xs-12">
-                    <h5>
+                    <h5 class="bg-blue-sky">
                         @if ($elemento->Centro->Empresa->conveniNou)
                             <strong>{{$elemento->Centro->Empresa->concierto??''}}!!</strong>
                         @else
-                            {{$elemento->Centro->Empresa->concierto??''}}
+                            {{$elemento->Centro->Empresa->concierto??''}}.
                         @endif
-                        Col.laboracio {{$elemento->Centro->nombre}}
-                        <strong>({{$elemento->puestos}})</strong>
+                        COL {{$elemento->Centro->nombre}}
                     </h5>
                     <ul class="list-unstyled">
+                        <li>Llocs: {{$elemento->puestos}}</li>
                         <li>{{$elemento->contacto}}</li>
                         <li>{{$elemento->telefono}}</li>
                         <li>{{$elemento->email}}</li>
                         @if (isset($colaboraciones))
                             @foreach ($colaboraciones as $colaboracion)
                                 @if ($colaboracion->Propietario)
-                                    <li class="nombre" style="background-color:@if ($colaboracion->estado == 2) lightblue @endif
+                                    <li class="nombre"
+                                        style="background-color:@if ($colaboracion->estado == 2) lightblue @endif
                                         @if ($colaboracion->estado == 3) coral @endif ">
                                         {{$colaboracion->Xciclo}} - {{ $colaboracion->Propietario->shortName }}
                                     </li>
