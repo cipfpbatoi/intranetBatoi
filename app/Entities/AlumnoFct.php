@@ -64,6 +64,7 @@ class AlumnoFct extends Model
         $fcts = Fct::select('id')
             ->whereIn('idColaboracion', $colaboraciones)
             ->orWhere('asociacion', 2)
+            ->orWhere('asociacion', 3)
             ->get()
             ->toArray();
         return $query->whereIn('idAlumno', $alumnos)
@@ -79,7 +80,7 @@ class AlumnoFct extends Model
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor, true)->first()->idCiclo??null;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
         $fcts = Fct::select('id')->whereIn('idColaboracion', $colaboraciones)
-                ->where('asociacion', 3)->get()->toArray();
+                ->where('asociacion', 4)->get()->toArray();
         return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
     }
     

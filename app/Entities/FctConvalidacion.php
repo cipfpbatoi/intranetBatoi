@@ -26,5 +26,5 @@ class FctConvalidacion extends Fct
         'idAlumno' => ['type' => 'select'],
         'asociacion' => ['type' => 'hidden'],
     ];
-    protected $attributes=['asociacion'=>2,'correoInstructor'=>1];
+    protected $attributes=['asociacion'=>3,'correoInstructor'=>1];
 }

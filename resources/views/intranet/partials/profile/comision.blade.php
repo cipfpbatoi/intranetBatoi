@@ -1,35 +1,36 @@
 @foreach ($panel->getElementos($pestana) as $elemento)
-<div class="col-md-4 col-sm-4 col-xs-12 profile_details">
-    <div id="{{$elemento->id}}" class="well profile_view">
-        <div  class="col-sm-12">
-            <h4 class="brief">
-                @if (esMismoDia($elemento->desde,$elemento->hasta))
-                <i class="fa fa-calendar"></i> {{$elemento->desde}} - {{ substr($elemento->desde,11) }} 
-                @else
-                <i class="fa fa-calendar"></i> {{$elemento->desde}} - <i class="fa fa-calendar"></i> {{$elemento->hasta}}
-                @endif
-            </h4>
-            <h6>@if ($elemento->fct) <strong> FCT</strong> @endif {{$elemento->Profesor->nombre}} {{$elemento->Profesor->apellido1}}</h6>
-            <div class="left col-xs-12">
-                <h5>{{substr($elemento->descripcion,0,140)}} @if (strlen($elemento->descripcion)>140) ... @endif </h5>
-                <ul class="list-unstyled">
-                    <li><i class="fa fa-automobile"></i> {{$elemento->tipoVehiculo}} - {{$elemento->kilometraje}} km.</li>
-                    @isset($elemento->marca)<li><i class="fa fa-automobile"></i> {{ $elemento->marca}} {{$elemento->matricula}}</li>@endisset
-                    <li><i class="fa fa-money"></i> {{ $elemento->total }}</li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-xs-12 bottom text-center">
-            <div class="col-xs-12 col-sm-4 emphasis">
-                <p class="ratings">
-                    <a href='#' class='btn {{$elemento->estado<2?'btn-danger':'btn-success'}} btn-xs'>{{ $elemento->situacion }}</a>
-                </p>
-            </div>
-            <div class="col-xs-12 col-sm-8 emphasis">
-                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
-            </div>
-        </div>
-    </div>
-</div>
+    <x-label
+        id="{{$elemento->id}}"
+        cab1="{{$elemento->desde}}"
+        cab2="{{  esMismoDia($elemento->desde,$elemento->hasta)?
+                substr($elemento->hasta,11):
+                $elemento->hasta }}"
+        title="{{($elemento->fct)?'FCT':''}}
+            {{$elemento->Profesor->nombre.' '.$elemento->Profesor->apellido1}}"
+        subtitle="{{$elemento->descripcion}}">
+        <ul>
+            <li>
+                <em class="fa fa-automobile"></em> {{$elemento->tipoVehiculo}} - {{$elemento->kilometraje}} km.
+            </li>
+            @isset($elemento->marca)
+                <li>
+                    <em class="fa fa-automobile"></em> {{ $elemento->marca}} {{$elemento->matricula}}
+                </li>
+            @endisset
+            <li>
+                <em class="fa fa-money"></em> {{ $elemento->total }}
+            </li>
+        </ul>
+        <x-slot name="rattings">
+            <a href='#' class='btn {{$elemento->estado<2?'btn-danger':'btn-success'}} btn-xs'>
+                {{ $elemento->situacion }}
+            </a>
+        </x-slot>
+        <x-slot name="botones">
+            @foreach($panel->getBotones('profile') as $button)
+                {{ $button->show($elemento) }}
+            @endforeach
+        </x-slot>
+    </x-label>
 @endforeach
 

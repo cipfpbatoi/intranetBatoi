@@ -3,15 +3,16 @@
         <div class="well profile_view">
             <div  class="col-sm-12">
                 <h4 class="brief">
-                    <i class="fa fa-calendar"></i>{{id}} {{*salida}} - <span v-if="entrada">{{ *entrada }}</span> 
+                    <em class="fa fa-calendar"></em>
+                    {{id}} {{*salida}} - <span v-if="entrada">{{ *entrada }}</span>
                 </h4>
                 <h6>{{*idProfesor}}</h6>
                 <div class="left col-xs-12">
                     <h5>{{*servicio}} </h5>
                     <ul class="list-unstyled">
-                        <li><i class="fa fa-automobile"></i> {{*medio}} - {{*kilometraje}} km.</li>
-                        <li><i class="fa fa-automobile"></i> {{*marca}} {{*matricula}}</li>
-                        <li><i class="fa fa-money"></i> {{alojamiento + comida + gastos }}</li>
+                        <li><em class="fa fa-automobile"></em> {{*medio}} - {{*kilometraje}} km.</li>
+                        <li><em class="fa fa-automobile"></em> {{*marca}} {{*matricula}}</li>
+                        <li><em class="fa fa-money"></em> {{alojamiento + comida + gastos }}</li>
                     </ul>
                 </div>
             </div>

@@ -129,8 +129,8 @@ class Fct extends Model
 
         $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
 
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor,$dual)->get()->toArray();
-        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno',   $alumnos)->get()->toArray();
+        $alumnos = Alumno::select('nia')->misAlumnos($profesor, $dual)->get()->toArray();
+        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno', $alumnos)->get()->toArray();
 
         return $query->whereIn('id', $alumnosFct)->whereIn('idColaboracion', $colaboraciones);
     }
@@ -145,6 +145,11 @@ class Fct extends Model
 
     public function scopeEsExempt($query)
     {
+        return $query->where('asociacion', '=', 3);
+    }
+
+    public function scopeEsErasmus($query)
+    {
         return $query->where('asociacion', '=', 2);
     }
     
@@ -154,11 +159,11 @@ class Fct extends Model
     }
     public function scopeEsAval($query)
     {
-        return $query->where('asociacion', '<', 3);
+        return $query->where('asociacion', '<', 4);
     }
     public function scopeEsDual($query)
     {
-        return $query->where('asociacion', 3);
+        return $query->where('asociacion', 4);
     }
 
     public function scopeNoAval($query)
@@ -228,7 +233,8 @@ class Fct extends Model
     
     public function getCentroAttribute()
     {
-        return isset($this->Colaboracion->Centro->nombre)?$this->Colaboracion->Centro->nombre:'Convalidada/Exent';
+        return isset($this->Colaboracion->Centro->nombre)?$this->Colaboracion->Centro->nombre:
+            (($this->asociacion==2)?'Erasmus':'Convalidada/Exent');
     }
 
 

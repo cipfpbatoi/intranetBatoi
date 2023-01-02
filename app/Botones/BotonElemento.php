@@ -1,6 +1,7 @@
 <?php
 
 namespace Intranet\Botones;
+
 use Illuminate\Support\Facades\Storage;
 
 abstract class BotonElemento extends Boton
@@ -8,34 +9,42 @@ abstract class BotonElemento extends Boton
 
     public function show($elemento = null, $key = null)
     {
-        if ($this->isVisible($elemento))
+        if ($this->isVisible($elemento)) {
             return parent::show($elemento, $key);
+        }
     }
 
     private function isVisible($elemento)
     {
-        if ($this->where != '')
-            return $this->avalAndConditions($this->extractConditions($elemento,'where'));
-
-        if ($this->orWhere != '')
-            return $this->avalOrConditions($this->extractConditions($elemento,'orWhere'));
+        if ($this->where != '') {
+            return $this->avalAndConditions($this->extractConditions($elemento, 'where'));
+        }
+        if ($this->orWhere != '') {
+            return $this->avalOrConditions($this->extractConditions($elemento, 'orWhere'));
+        }
 
         return true;
     }
 
-    private function extractConditions($elemento,$condicio){
+    private function extractConditions($elemento, $condicio)
+    {
         $condiciones = [];
 
         for ($i = 0; $i < count($this->$condicio); $i = $i + 3) {
 
             $campo = $this->$condicio[$i];
-            $condiciones[] = $this->avalCondition($elemento->$campo, $this->$condicio[$i + 1], $this->$condicio[$i + 2]);
+            $condiciones[] = $this->avalCondition(
+                $elemento->$campo,
+                $this->$condicio[$i + 1],
+                $this->$condicio[$i + 2]
+            );
         }
 
         return $condiciones;
     }
 
-    private function avalAndConditions($conditions){
+    private function avalAndConditions($conditions)
+    {
         $result = true;
         foreach ($conditions as $condition) {
             $result = $result && $condition;
@@ -43,7 +52,8 @@ abstract class BotonElemento extends Boton
         return $result;
     }
 
-    private function avalOrConditions($conditions){
+    private function avalOrConditions($conditions)
+    {
         $result = true;
         foreach ($conditions as $condition) {
             $result = $result || $condition;
@@ -67,15 +77,16 @@ abstract class BotonElemento extends Boton
         if ($op == 'in') {
             return (in_array($elemento, $valor));
         }
-        if ($op == 'isNNull'){
+        if ($op == 'isNNull') {
            return (!is_null($elemento));
         }
-        if ($op == 'isNull')
+        if ($op == 'isNull') {
             return (is_null($elemento));
-        if ($op == 'existe'){
+        }
+        if ($op == 'existe') {
             return Storage::disk('local')->exists(str_replace('$', $elemento, $valor));
         }
-        if ($op == 'noExiste'){
+        if ($op == 'noExiste') {
             return !Storage::disk('local')->exists(str_replace('$', $elemento, $valor));
         }
         $condicion = "return('$elemento' $op '$valor');";

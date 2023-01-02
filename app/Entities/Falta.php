@@ -91,6 +91,15 @@ class Falta extends Model
         return $this->getHorainiAttribute($salida);
     }
 
+    public function getDesdeHoraAttribute()
+    {
+        if (!$this->horaIni) {
+            return $this->desde;
+        }
+        return $this->desde.substr($this->horaini, 0, 5);
+    }
+
+
     public static function getMotivosOptions()
     {
         return config('auxiliares.motivoAusencia');

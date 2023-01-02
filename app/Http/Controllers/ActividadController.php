@@ -4,12 +4,14 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Componentes\Mensaje;
+use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\ActividadProfesor;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
+use Intranet\Services\CalendarService;
 use Response;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
@@ -24,8 +26,7 @@ use Intranet\Services\AdviseTeacher;
 class ActividadController extends ModalController
 {
 
-    use traitAutorizar,  traitSCRUD,
-        traitImprimir;
+    use traitAutorizar,  traitSCRUD;
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';
@@ -147,7 +148,7 @@ class ActividadController extends ModalController
     public function printValue($id){
         $elemento = $this->class::findOrFail($id);
         $informe = 'pdf.valoracionActividad';
-        $pdf = $this->hazPdf($informe, $elemento, null);
+        $pdf = PDF::hazPdf($informe, $elemento, null);
         return $pdf->stream();
     }
 
@@ -278,7 +279,7 @@ class ActividadController extends ModalController
             }
         }
         if ($todos->count()){
-            $pdf = $this->hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait');
+            $pdf = PDF::hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait');
             return $pdf->stream();
         }
         Alert::info('No hi han menors');
@@ -324,7 +325,10 @@ class ActividadController extends ModalController
 
     public function i_c_s($id)
     {
-        return $this->ics($id, 'name', 'descripcion');
+        $elemento = $this->class::findOrFail($id);
+        $vCalendar = CalendarService::build($elemento,'name','descripcion');
+        return Response::view('ics', compact('vCalendar'))->header('Content-Type', 'text/calendar');
+
     }
 
     public function menorAuth($nia,$id){

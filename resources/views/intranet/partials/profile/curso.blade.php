@@ -18,9 +18,9 @@
                 <ul class="list-unstyled">
                     @if (strlen($elemento->profesorado))
                         <li><em class="fa fa-group"></em> {{$elemento->profesorado}}</li>
-                    @endif 
+                    @endif
                     @if (strlen($elemento->comentarios))
-                    <li><em class="fa fa-text-width"></em> {{ $elemento->comentarios}} </li>
+                        <li><em class="fa fa-text-width"></em> {{ $elemento->comentarios}} </li>
                     @endif
                 </ul>
             </div>
@@ -28,13 +28,20 @@
         <div class="col-xs-12 bottom text-center">
             <div class="col-xs-12 col-sm-4 emphasis">
                 <p class="ratings">
-                    @if ($elemento->aforo == 0) <a href='#' class='btn btn-success btn-xs' > {{ trans('messages.buttons.disponible') }}  </a>
-                    @else  
-                        @if ($elemento->aforo > $elemento->NAlumnos) <a href='#' class='btn btn-success btn-xs' > {{ trans('messages.buttons.disponible') }}  </a>
-                        @else <a href='#' class='btn btn-danger btn-xs' > {{ trans('messages.buttons.nodisponible') }} </a>
+                    @if ($elemento->aforo == 0)
+                        <a href='#' class='btn btn-success btn-xs' >{{ trans('messages.buttons.disponible') }}</a>
+                    @else
+                        @if ($elemento->aforo > $elemento->NAlumnos)
+                            <a href='#' class='btn btn-success btn-xs'>{{ trans('messages.buttons.disponible') }}</a>
+                        @else
+                            <a href='#' class='btn btn-danger btn-xs'>{{ trans('messages.buttons.nodisponible') }}</a>
                         @endif
-                    @endif   
-                    @if ($elemento->Registrado()) <a href='#' class='btn btn-success btn-xs' > {{ trans('messages.buttons.registered') }}  </a> @endif
+                    @endif
+                    @if ($elemento->Registrado())
+                        <a href='#' class='btn btn-success btn-xs' >
+                            {{ trans('messages.buttons.registered') }}
+                        </a>
+                    @endif
                 </p>
             </div>
             <div class="col-xs-12 col-sm-8 emphasis">

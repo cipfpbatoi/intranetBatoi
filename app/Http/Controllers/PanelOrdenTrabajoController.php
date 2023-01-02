@@ -6,9 +6,6 @@ use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonPost;
 use Intranet\Entities\Incidencia;
-use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
-
 
 class PanelOrdenTrabajoController extends BaseController
 {
