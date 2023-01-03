@@ -33,7 +33,7 @@
                 @foreach ($contactos as $contacto)
                     <small>
                         {{fechaCurta($contacto->created_at)}}
-                        {{ $contacto }}
+                        {{ $contacto->render() }}
                     </small>
                     <br/>
                 @endforeach

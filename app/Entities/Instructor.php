@@ -41,17 +41,8 @@ class Instructor extends Model
     {
         return $this->belongsToMany(Centro::class, 'centros_instructores', 'idInstructor', 'idCentro', 'dni', 'id');
     }
-    public function Fcts()
-    {
-        return $this->belongsToMany(
-            Fct::class,
-            'instructor_fcts',
-            'idInstructor',
-            'idFct',
-            'dni',
-            'id'
-        )->withPivot('horas');
-    }
+
+
     public function getXcentrosAttribute()
     {
         $centros = '';

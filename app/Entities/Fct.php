@@ -69,6 +69,11 @@ class Fct extends Model
         return $this->belongsTo(Instructor::class, 'idInstructor', 'dni');
     }
 
+    public function Erasmus()
+    {
+        return $this->belongsTo(Erasmus::class, 'idInstructor', 'idSao');
+    }
+
 
     public function Colaboradores()
     {
@@ -284,11 +289,13 @@ class Fct extends Model
 
     public function getXinstructorAttribute()
     {
-        if (isset($this->Instructor->nombre)) {
-            return $this->Instructor->nombre;
+        if ($this->model == 'Instructor') {
+            return $this->Instructor->nombre??'';
+        } else {
+            return $this->Erasmus->name??'';
         }
-        return '';
     }
+
     public function saveContact($contacto, $email)
     {
         $instructor = $this->Instructor;

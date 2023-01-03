@@ -19,7 +19,7 @@
             <div class="col-md-4 listActivity">
                 @foreach ($contactos as $contacto)
                     <small>
-                       {!! $contacto !!}
+                       {!! $contacto->render() !!}
                     </small>
                     <br/>
                 @endforeach

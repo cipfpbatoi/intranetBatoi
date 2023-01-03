@@ -80,7 +80,7 @@ class Activity extends Model
         return $query->where('model_id', $id)->orWhere('model_id', $colaboracion);
     }
 
-    public function __toString()
+    public function render()
     {
         $fecha = fechaCurta($this->created_at);
         switch (firstWord($this->document)) {

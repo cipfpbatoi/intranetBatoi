@@ -6,6 +6,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
+use Intranet\Componentes\Pdf;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
@@ -184,7 +185,7 @@ class FctAlumnoController extends IntranetController
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName
         ];
-        return self::hazPdf('pdf.fct.certificatsFCT', [$fct], $dades);
+        return Pdf::hazPdf('pdf.fct.certificatsFCT', [$fct], $dades);
     }
 
     /**

@@ -8,6 +8,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Centro;
+use Intranet\Entities\Erasmus;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Fct;
 use DB;
@@ -162,10 +163,12 @@ class SaoController extends Controller
                             sleep(1);
                             $detalles = $driver->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody"));
                             $dadesCentre = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(7)"));
+                            $dades[$index]['centre']['localidad'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
                             $nameCentre = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
                             $dadesCentre = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(8)"));
                             $dades[$index]['centre']['telefon'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
                             $dades[$index]['centre']['email'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
+                            //$dades[$index]['centre']['name'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
                             $dadesInstructor = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(12)"));
                             $dades[$index]['centre']['instructorName'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
                             $dades[$index]['centre']['instructorDNI'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
@@ -212,6 +215,8 @@ class SaoController extends Controller
                                     $alumno = Alumno::find($dades[$index]['nia']);
                                     Alert::danger("Centro $nameCentre  per alumne $alumno->shorName no trobat. Revisa la col·laboració. Afegix instructor al centre de treball. Revisa el seus dni");
                                 }
+                            } else {
+                                $dades[$index]['centre']['name'] = $nameEmpresa;
                             }
                         } catch (Exception $e) {
                             unset($dades[$index]);
@@ -227,6 +232,7 @@ class SaoController extends Controller
             $driver->close();
         }
         if (count($dades)){
+            //dd($dades);
             session(compact('dades'));
             return view('sao.importa',compact('dades'));
         } else {
@@ -281,12 +287,20 @@ class SaoController extends Controller
                 } else {
                     $fct = Fct::whereNull('idColaboracion')->where('asociacion',4)->first();
                     if (!$fct){
+                        $erasmus = new Erasmus();
+                        $erasmus->idSao = $dades[$key]['idSao'];
+                        $erasmus->name = $dades[$key]['centre']['name'];
+                        $erasmus->email = $dades[$key]['centre']['email'];
+                        $erasmus->telefon = $dades[$key]['centre']['telefon'];
+                        $erasmus->localidad = $dades[$key]['centre']['localidad'];
+                        $erasmus->save();
                         $fct = new Fct([
                             'idColaboracion' => null,
                             'asociacion' => 2,
-                            'idInstructor' => null,
-                            'correoInstructor' => 1
+                            'idInstructor' => $dades[$key]['idSao'],
                         ]);
+                        $fct->correoInstructor = 1;
+                        $fct->model = 'Erasmus';
                         $fct->save();
                     }
                     $fctAl = AlumnoFct::where('idFct', $fct->id)->where('idAlumno', $dades[$key]['nia'])->first();
@@ -345,7 +359,7 @@ class SaoController extends Controller
         try {
             $this->login($driver, trim($request->password));
             $dades = array();
-            foreach (AlumnoFct::misFcts()->activa()->whereNotNull('idSao')->get() as $fctAl) {
+            foreach (AlumnoFct::misFcts()->whereNotNull('idSao')->get() as $fctAl) {
                 $fct = $fctAl->Fct;
                 $centro = $fct->Colaboracion->Centro;
                 $empresa = $centro->Empresa;
@@ -418,7 +432,7 @@ class SaoController extends Controller
                 strlen($instructorName)),
             'email' => $emailCentre,
             'telefono' => $telefonoCentre,
-            'departamento' => $ciclo->ciclo
+            'departamento' => isset($ciclo->ciclo)?$ciclo->ciclo:$ciclo
         ]);
         $instructor->save();
         return $instructor;
