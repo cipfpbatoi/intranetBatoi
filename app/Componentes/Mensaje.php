@@ -42,11 +42,15 @@ class Mensaje
                     'data' => $fecha,
                     'enlace' => $enlace]));
         } else {
-            authUser()->notify(new mensajePanel(
-                ['motiu' => "No trobe usuari $id",
-                    'emissor' => $emisor,
-                    'data' => $fecha,
-                    'enlace' => $enlace]));
+            if ($user = Profesor::find($emisor)) {
+                $user->notify(new mensajePanel(
+                    [
+                        'motiu' => "No trobe usuari $id",
+                        'emissor' => $emisor,
+                        'data' => $fecha,
+                        'enlace' => $enlace
+                    ]));
+            }
         }
     }
 }
