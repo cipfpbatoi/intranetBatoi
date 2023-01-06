@@ -3,9 +3,9 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Entities\Alumno;
 use Jenssegers\Date\Date;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Alumno;
 
 class AlumnoFctAval extends AlumnoFct
 {
@@ -72,6 +72,33 @@ class AlumnoFctAval extends AlumnoFct
                 ->orWhere('asociacion', 3)
                 ->get()
                 ->toArray();
+            return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
+        }
+        return $query->whereIn('idAlumno', $alumnos);
+    }
+
+    public function scopeRealFcts($query, $profesor= null)
+    {
+        $profesor = $profesor?$profesor:authUser()->dni;
+        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
+        if (count($alumnos)) {
+            $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
+            $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
+            $fcts = Fct::select('id')->whereIn('idColaboracion', $colaboraciones)
+                ->orWhere('asociacion', 2)
+                ->get()
+                ->toArray();
+            return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
+        }
+        return $query->whereIn('idAlumno', $alumnos);
+    }
+
+    public function scopeMisErasmus($query, $profesor= null)
+    {
+        $profesor = $profesor?$profesor:authUser()->dni;
+        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
+        if (count($alumnos)) {
+            $fcts = Fct::select('id')->where('asociacion', 2)->get()->toArray();
             return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
         }
         return $query->whereIn('idAlumno', $alumnos);

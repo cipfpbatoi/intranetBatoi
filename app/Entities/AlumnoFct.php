@@ -44,6 +44,7 @@ class AlumnoFct extends Model
         return $this->belongsTo(Dual::class, 'idFct', 'id');
     }
 
+
     public function scopeMisFcts($query, $profesor=null)
     {
         $profesor = $profesor?$profesor:authUser()->dni;

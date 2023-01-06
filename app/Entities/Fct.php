@@ -238,13 +238,11 @@ class Fct extends Model
     
     public function getCentroAttribute()
     {
-        return isset($this->Colaboracion->Centro->nombre)?$this->Colaboracion->Centro->nombre:
-            (($this->asociacion==2)?'Erasmus':'Convalidada/Exent');
+        if (isset($this->Colaboracion->Centro->nombre)) {
+            return $this->Colaboracion->Centro->nombre;
+        }
+        return ($this->asociacion==2)?'Erasmus':'Convalidada/Exent';
     }
-
-
-
-
 
     public function getCicloAttribute()
     {

@@ -7,6 +7,7 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Erasmus;
 use Intranet\Entities\Grupo;
@@ -72,7 +73,7 @@ class SaoController extends Controller
         try {
             $this->login($driver, trim($request->password));
             $alumnes = [];
-            foreach (AlumnoFct::misFcts()->activa()->get() as $fct){
+            foreach (AlumnoFctAval::realFcts()->activa()->get() as $fct){
                 if ($fct->idSao){
                     $driver->navigate()->to("https://foremp.edu.gva.es/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2");
                     sleep(1);
@@ -99,6 +100,7 @@ class SaoController extends Controller
                     sleep(1);
                 }
             }
+
             $this->alertSuccess($alumnes,'Annexes Baixats: ');
         }catch (Exception $e) {
             Alert::danger($e);
@@ -113,7 +115,7 @@ class SaoController extends Controller
         try {
             $this->login($driver, trim($request->password));
             $alumnes = [];
-            foreach (AlumnoFct::misFcts()->activa()->get() as $fct){
+            foreach (AlumnoFctAval::realFcts()->activa()->get() as $fct){
                 if ($fct->idSao){
                     $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=11&idFct=$fct->idSao");
                     sleep(1);
@@ -285,15 +287,18 @@ class SaoController extends Controller
                     $fctAl->idSao = $dades[$key]['idSao'];
                     $fctAl->save();
                 } else {
-                    $fct = Fct::whereNull('idColaboracion')->where('asociacion',4)->first();
+                    $fct = Fct::whereNull('idColaboracion')->where('asociacion',2)->first();
                     if (!$fct){
-                        $erasmus = new Erasmus();
-                        $erasmus->idSao = $dades[$key]['idSao'];
-                        $erasmus->name = $dades[$key]['centre']['name'];
-                        $erasmus->email = $dades[$key]['centre']['email'];
-                        $erasmus->telefon = $dades[$key]['centre']['telefon'];
-                        $erasmus->localidad = $dades[$key]['centre']['localidad'];
-                        $erasmus->save();
+                        $erasmus = Erasmus::find($dades[$key]['idSao']);
+                        if (!$erasmus) {
+                            $erasmus = new Erasmus();
+                            $erasmus->idSao = $dades[$key]['idSao'];
+                            $erasmus->name = $dades[$key]['centre']['name'];
+                            $erasmus->email = $dades[$key]['centre']['email'];
+                            $erasmus->telefon = $dades[$key]['centre']['telefon'];
+                            $erasmus->localidad = $dades[$key]['centre']['localidad'];
+                            $erasmus->save();
+                        }
                         $fct = new Fct([
                             'idColaboracion' => null,
                             'asociacion' => 2,
@@ -396,6 +401,17 @@ class SaoController extends Controller
                     $dades[$fct->id]['centro']['direccion'] = $this->igual($centro->direccion, $driver->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='direccion'"))->getAttribute('value'));
                     $dades[$fct->id]['centro']['codiPostal'] = $this->igual($centro->codiPostal, $driver->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='cp'"))->getAttribute('value'));
                   }
+            }
+            foreach(AlumnoFctAval::misErasmus()->get() as $fctAl){
+                $erasmus = Erasmus::where('idSao',$fctAl->idSao)->whereNull('direccio')->first();
+                if ($erasmus) {
+                    $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=10&idFct=$fctAl->idSao");
+                    sleep(1);
+                    $dadesEmpresa = $driver->findElement(WebDriverBy::cssSelector("td#celdaDatosEmpresa table.infoCentroBD tbody"));
+                    $detallesEmpresa = $dadesEmpresa->findElement(WebDriverBy::cssSelector("tr:nth-child(2)"));
+                    $erasmus->direccio = $detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(3)"))->getText();
+                    $erasmus->save();
+                }
             }
         } catch (Exception $e) {
             Alert::danger($e);

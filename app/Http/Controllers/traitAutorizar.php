@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Componentes\Pdf;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
@@ -134,7 +135,7 @@ trait traitAutorizar
         $inicial =  $inicial ?? config('modelos.' . getClass($this->class) . '.print') - 1;
         $todos = $this->class::where('estado', '=', $inicial)->get();
         if ($todos->Count()) {
-            $pdf = $this->hazPdf("pdf.$modelo", $todos,null,$orientacion);
+            $pdf = Pdf::hazPdf("pdf.$modelo", $todos,null,$orientacion);
             $nom = $this->model . new Date() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
             $tags = config("modelos.$this->model.documento");

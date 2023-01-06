@@ -12,7 +12,7 @@ class Erasmus extends Model
     use BatoiModels;
 
     protected $table = 'erasmus';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'idSao';
     protected $keyType = 'string';
     protected $fillable = ['id', 'email', 'name','direccion','telefono','poblacion'];
 
