@@ -82,58 +82,11 @@ class ActividadController extends ModalController
         $actividad->aspectes = $request->aspectes;
         $actividad->recomanada = isset($request->recomanada)?1:0;
         $actividad->estado = 4;
-        try {
-            $countMockFiles = $this->mockFilesProcess($request,$actividad);
-        } catch (\Exception $e){
-            $countMockFiles = 0;
-        }
 
-
-
-        if ($request->hasFile('file')){
-            $path = storage_path().'/app/public/Extraescolars/';
-            $files = $request->file('file');
-
-
-            foreach ($files as $key => $file) {
-                $imagekey = 'image'.($countMockFiles+1+$key);
-                $fileName = 'Act'.$request->idActividad.$imagekey.'.'.$file->getClientOriginalExtension();
-                $file->move($path, $fileName);
-                $actividad->$imagekey = $fileName;
-            }
-        }
         $actividad->save();
         return back();
     }
 
-
-    private function mockFilesProcess($request,&$actividad){
-        $path = storage_path().'/app/public/Extraescolars/';
-        $remains = 0;
-        for ($i = 1; $i<4; $i++){
-            $imagekey = 'image'. $i;
-            if ($request->$imagekey != "") {
-                $remains++;
-                if ($actividad->$imagekey != $request->$imagekey)
-                {
-                    $deleteFileName = $path.$actividad->$imagekey;
-                    if (file_exists($deleteFileName)){
-                        unlink($deleteFileName);
-                    }
-                    $substituteFileName = $path.$request->$imagekey;
-
-                    rename($substituteFileName,$deleteFileName);
-                }
-            } else {
-                $deleteFileName = $path.$actividad->$imagekey;
-                if ($actividad->$imagekey && file_exists($deleteFileName)){
-                    unlink($deleteFileName);
-                }
-                $actividad->$imagekey = null;
-            }
-        }
-        return $remains;
-    }
 
     public function showValue($id){
         $Actividad = Actividad::find($id);

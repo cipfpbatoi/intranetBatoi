@@ -16,6 +16,4 @@
                @lang("models.modelos.Actividad") ">
         <a href="/actividad" class="btn btn-info" >@lang('messages.buttons.volver')</a>
     </form>
-
 </div>
-
