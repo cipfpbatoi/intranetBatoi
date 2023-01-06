@@ -1,6 +1,6 @@
 <div class="valueContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
     <form method="POST"  enctype="multipart/form-data"
-          action="/actividad/valoracion/">
+          action="{{route('actividad.valoracion.post')}}">
         @csrf
         <div class="container">
                 {!! Field::textarea('desenvolupament',$Actividad->desenvolupament) !!}
