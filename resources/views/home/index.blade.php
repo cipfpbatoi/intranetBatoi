@@ -17,7 +17,7 @@
                     </a>
                 </div>
             </div>
-        @endforeach 
+        @endforeach
     @endsection
     @section('titulo')
         PANEL DE CONTROL

@@ -1,38 +1,23 @@
 <br/>
-
-
 <ul class="messages">
     @foreach ($reuniones as $reunion)
-    <li>
-        <img src="/img/actas.png" class="avatar" alt="Avatar">
-        <div class="message_date">
-           <h3 class="date text-info">{{day($reunion->fecha)}}</h3>
-            <p class="month">{{month($reunion->fecha)}}</p>
-            <p class="hour">{{hour($reunion->fecha)}}</p>
-        </div>
-        <div class="message_wrapper" style="float:right">
-            <strong>Persones Convocades:</strong>
-            <select name="Convocats">
-            @foreach ($reunion->Profesores->sortBy(['apellido1','apellido2','nombre']) as $profesor)
-
-                <option>{{$profesor->nameFull}}</option>
-            @endforeach
-            </select>
-        </div>
-        <div class="message_wrapper">
-            <h4 class="heading">{{$reunion->xgrupo}}  </h4>
-            <blockquote class="message"></blockquote>
-            <br />
+        <x-llist image="actas.png" date="{{$reunion->fecha}}">
+            <h4 class="heading" style="float:left">{{$reunion->xgrupo}}</h4>
+            <blockquote class="message" style="float: right">
+                <strong>Persones Convocades:</strong>
+                <select>
+                    @foreach ($reunion->Profesores->sortBy(['apellido1','apellido2','nombre']) as $profesor)
+                        <option>{{$profesor->nameFull}}</option>
+                    @endforeach
+                </select>
+            </blockquote>
+            <br /><br/>
             <p class="url">
+                <span class="fs1 text-info" aria-hidden="true" data-icon=""></span>
+                {{$reunion->Espacio->descripcion}}.
                 <span class="fs1 text-info" aria-hidden="true" data-icon=""></span>
                 {{$reunion->descripcion}}
             </p>
-            <p class="url">
-                <span class="fs1 text-info" aria-hidden="true" data-icon=""></span>
-                {{$reunion->Espacio->descripcion}}
-            </p>
-        </div>
-
-    </li>
+        </x-llist>
     @endforeach
 </ul>

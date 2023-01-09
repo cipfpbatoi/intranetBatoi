@@ -14,19 +14,22 @@
         <h3>{{$usuario->nombre}} {{$usuario->apellido1}}</h3>
 
         <ul class="list-unstyled user_data">
-            <li><i class="fa fa-map-marker user-profile-icon"></i> {{ $usuario->domicilio }}
+            <li>
+                <em class="fa fa-map-marker user-profile-icon"></em> {{ $usuario->domicilio }}
             </li>
 
             <li>
-                <i class="fa fa-briefcase user-profile-icon"></i> {{ $usuario->Departamento->cliteral }}
+                <em class="fa fa-briefcase user-profile-icon"></em> {{ $usuario->Departamento->cliteral }}
             </li>
 
             <li class="m-top-xs">
-                <i class="fa fa-envelope user-profile-icon"></i> {{ $usuario->email }}
+                <em class="fa fa-envelope user-profile-icon"></em> {{ $usuario->email }}
             </li>
         </ul>
         <h6>{!!  implode('<br/>',nameRolesUser(authUser()->rol))  !!} </h6>
-        <a href="/perfil" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>@lang("messages.menu.Perfil")</a>
+        <a href="/perfil" class="btn btn-success">
+            <em class="fa fa-edit m-right-xs"></em>@lang("messages.menu.Perfil")
+        </a>
         <br/>
     </div>
     <div class="col-md-9 col-sm-9 col-xs-12">

@@ -16,11 +16,12 @@
                                     $elemento->Profesor->entrada.' - '.$elemento->Profesor->salida:
                                     'No ha fixat';
                         @endphp
-                        <x-date
+                        <x-label
                                 id="{{$elemento->id}}"
                                 cab1="{{$elemento->desdeHora}}"
                                 cab2="{{$elemento->horaini??$elemento->hasta??''}}"
                                 title="{{$elemento->Profesor->shortName}}"
+                                view="date"
                                 inside="{{$clock}}"
                                 subtitle="{{$elemento->motivo.' '.$elemento->observaciones}}" >
                             <x-slot name="rattings">
@@ -46,7 +47,7 @@
                                     {{ $button->show($elemento) }}
                                 @endforeach
                             </x-slot>
-                        </x-date>
+                        </x-label>
                     @endforeach
                 </div>
             </div>
