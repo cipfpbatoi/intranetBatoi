@@ -10,8 +10,10 @@
                 @endphp
                 <x-note name="{{day($elemento->created_at)}} {{month($elemento->created_at)}}"
                         color="{{array('blue','green','yellow','brown','purple','orange')[rand(0,5)]}}"
-                        title="{{$elemento->curso}}" message="{!! $elemento->descripcion !!}" linkEdit="{{$edit}}"
-                        linkShow="{{$direccion?$enlace:'#'}}"
+                        title="{{$elemento->curso}}"
+                        message="{!! $elemento->descripcion !!}"
+                        linkEdit="{{$direccion?$edit:'#'}}"
+                        linkShow="{{$enlace}}"
                 ></x-note>
             @endforeach
         </div>
