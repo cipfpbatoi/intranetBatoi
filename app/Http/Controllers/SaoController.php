@@ -111,23 +111,23 @@ class SaoController extends Controller
 
     public function getGerente(){
         $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
-        try {
-            $this->login($driver, 'eiclmp5a');
-            foreach (Empresa::all() as $empresa) {
-                $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=4&subop=0&cif=$empresa->cif");
-                sleep(1);
-                $driver->findElement(WebDriverBy::cssSelector("a[title='Modificar']"))->click();
-                sleep(1);
-                $tabla = $driver->findElement(WebDriverBy::cssSelector("table.formRegAlumno tbody"));
-                $nif = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='dni_resp']"))->getAttribute('value');
-                $nom = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='nom_resp']"))->getAttribute('value');
-                $ap1 = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='ap1_resp']"))->getAttribute('value');
-                $ap2 = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='ap2_resp']"))->getAttribute('value');
-                $empresa->gerente = $nif.' '.$nom.' '.$ap1.' '.$ap2;
-                $empresa->save();
+        $this->login($driver, 'eiclmp5a');
+        foreach (Empresa::all() as $empresa) {
+            try {
+            $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=4&subop=0&cif=$empresa->cif");
+            sleep(1);
+            $driver->findElement(WebDriverBy::cssSelector("a[title='Modificar']"))->click();
+            sleep(1);
+            $tabla = $driver->findElement(WebDriverBy::cssSelector("table.formRegAlumno tbody"));
+            $nif = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='dni_resp']"))->getAttribute('value');
+            $nom = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='nom_resp']"))->getAttribute('value');
+            $ap1 = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='ap1_resp']"))->getAttribute('value');
+            $ap2 = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='ap2_resp']"))->getAttribute('value');
+            $empresa->gerente = $nif.' '.$nom.' '.$ap1.' '.$ap2;
+            $empresa->save();
+            } catch (Exception $e){
+                Alert::danger($e);
             }
-        } catch (Exception $e){
-            Alert::danger($e);
         }
         $driver->close();
         return back();
