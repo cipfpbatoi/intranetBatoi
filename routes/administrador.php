@@ -68,5 +68,5 @@ Route::get('/actualizaLang', ['as' => 'actualizaLang','uses'=>'AdministracionCon
 Route::get('/secure', ['as' => 'show.door','uses' => 'AdministracionController@showDoor']);
 Route::post('/secure', ['as' => 'secure.door','uses' => 'AdministracionController@secure']);
 
-Route::get('/consulta', 'AdministracionController@consulta');
+Route::get('/consulta', 'SaoController@getGerente');
 Route::post('centro/{id}/empresa/create', 'CentroController@empresaCreateCentro');
