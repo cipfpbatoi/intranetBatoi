@@ -17,12 +17,14 @@
                 </ul>
             </div>
             <div class="col-md-4 listActivity">
-                @foreach ($contactos as $contacto)
-                    <small>
-                       {!! $contacto->render() !!}
-                    </small>
-                    <br/>
-                @endforeach
+                @if (esRol(authUser()->rol,2))
+                    @foreach ($contactos as $contacto)
+                        <small>
+                           {!! $contacto->render() !!}
+                        </small>
+                        <br/>
+                    @endforeach
+                @endif
             </div>
         </div>
         <div class="col-xs-12 bottom text-center">
