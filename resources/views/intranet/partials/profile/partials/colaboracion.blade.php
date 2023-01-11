@@ -30,7 +30,7 @@
 
             </div>
             <div class="col-md-4 listActivity">
-                @if (esRol(authUser()->rol,2))
+                @isset (authUser()->departamento)
                     @foreach ($contactos as $contacto)
                         <small>
                             {{fechaCurta($contacto->created_at)}}
@@ -38,7 +38,7 @@
                         </small>
                         <br/>
                     @endforeach
-                @endif
+                @endisset
             </div>
         </div>
         <div class="col-xs-12 bottom text-center">

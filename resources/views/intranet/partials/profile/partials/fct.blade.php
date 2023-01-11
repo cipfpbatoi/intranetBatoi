@@ -17,14 +17,14 @@
                 </ul>
             </div>
             <div class="col-md-4 listActivity">
-                @if (esRol(authUser()->rol,2))
+                @isset (authUser()->departamento)
                     @foreach ($contactos as $contacto)
                         <small>
                            {!! $contacto->render() !!}
                         </small>
                         <br/>
                     @endforeach
-                @endif
+                @endisset
             </div>
         </div>
         <div class="col-xs-12 bottom text-center">
