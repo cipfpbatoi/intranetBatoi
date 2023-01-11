@@ -34,8 +34,8 @@ class SaoController extends Controller
     const WEB = 'https://foremp.edu.gva.es/index.php';
 
     public function __construct(){
-        $this->server_url = env('SELENIUM_URL','http://172.16.9.10:4444');
-        //$this->server_url = env('SELENIUM_URL','http://192.168.56.1:4444');
+        //$this->server_url = env('SELENIUM_URL','http://172.16.9.10:4444');
+        $this->server_url = env('SELENIUM_URL','http://192.168.56.1:4444');
 
         return parent::__construct();
     }
@@ -114,6 +114,7 @@ class SaoController extends Controller
         try {
             $this->login($driver, 'eiclmp5a');
             foreach (Empresa::all() as $empresa) {
+
                 $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=4&subop=0&cif=$empresa->cif");
                 sleep(1);
                 $driver->findElement(WebDriverBy::cssSelector("a[title='Modificar']"))->click();
@@ -129,8 +130,8 @@ class SaoController extends Controller
             }
         } catch (Exception $e){
             Alert::danger($e);
+            $driver->close();
         }
-        $driver->close();
         return back();
     }
 

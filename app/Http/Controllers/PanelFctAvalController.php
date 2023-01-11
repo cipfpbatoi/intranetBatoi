@@ -268,11 +268,11 @@ class PanelFctAvalController extends IntranetController
                 'where' => ['calProyecto', '>=', '0', 'actas', '<', 2,'calificacion', '==', '1']]));
             // Convalidats
             $this->panel->setBoton('grid', new BotonImg('fct.proyecto', ['img' => 'fa-file', 'roles' => config(self::ROLES_ROL_TUTOR),
-                'where' => ['calProyecto', '<', '1', 'actas', '<', 2,'asociacion', '==', '2']]));
+                'where' => ['calProyecto', '<', '1', 'actas', '<', 2,'asociacion', '==', '3']]));
             $this->panel->setBoton('grid', new BotonImg('fct.noProyecto', ['img' => 'fa-toggle-off', 'roles' => config(self::ROLES_ROL_TUTOR),
-                'where' => ['calProyecto', '<', '0', 'actas', '<', 2,'asociacion', '==', '2']]));
+                'where' => ['calProyecto', '<', '0', 'actas', '<', 2,'asociacion', '==', '3']]));
             $this->panel->setBoton('grid', new BotonImg('fct.nullProyecto', ['img' => 'fa-minus-circle', 'roles' => config(self::ROLES_ROL_TUTOR),
-                'where' => ['calProyecto', '>=', '0', 'actas', '<', 2,'asociacion', '==', '2']]));
+                'where' => ['calProyecto', '>=', '0', 'actas', '<', 2,'asociacion', '==', '3']]));
 
             $this->panel->setBoton('grid', new BotonImg('fct.nuevoProyecto', ['img' => 'fa-toggle-on', 'roles' => config(self::ROLES_ROL_TUTOR),
                 'where' => ['calProyecto', '<', '5', 'calProyecto', '>=', 0, 'actas', '==', 2]]));

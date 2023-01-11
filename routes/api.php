@@ -41,11 +41,11 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('profesor/rol/{rol}','ProfesorController@getRol');
     Route::get('ficha', 'ProfesorController@ficha');
     Route::get('doficha', 'FicharController@fichar');
-    Route::get('ipGuardia','FicharController@ip');
+    Route::get('ipGuardia', 'FicharController@ip');
     Route::get('verficha', 'FicharController@entrefechas');
-    Route::get('itaca/{dia}/{idProfesor}','FaltaItacaController@potencial');
-    Route::post('itaca','FaltaItacaController@guarda');
-    Route::get('/aula','ReservaController@unsecure');
+    Route::get('itaca/{dia}/{idProfesor}', 'FaltaItacaController@potencial');
+    Route::post('itaca', 'FaltaItacaController@guarda');
+    Route::get('/aula', 'ReservaController@unsecure');
 
 
     Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => [ 'create']]);
