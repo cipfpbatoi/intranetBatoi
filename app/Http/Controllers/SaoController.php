@@ -120,7 +120,9 @@ class SaoController extends Controller
                     try {
                         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=4&subop=0&cif=$empresa->cif");
                         sleep(1);
-                        $driver->findElement(WebDriverBy::cssSelector("a[title='Modificar']"))->click();
+                        $link = $driver->findElement(WebDriverBy::cssSelector("a[title='Modificar']"))->getAttribute('href');
+                        sleep(1);
+                        $driver->navigate()->to("https://foremp.edu.gva.es/$link");
                         sleep(1);
                         $tabla = $driver->findElement(WebDriverBy::cssSelector("table.formRegAlumno tbody"));
                         $nif = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='dni_resp']"))->getAttribute('value');
