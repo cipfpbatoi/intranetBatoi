@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -113,27 +114,32 @@ class SaoController extends Controller
         $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
         try {
             $this->login($driver, 'eiclmp5a');
-            foreach (Colaboracion::miColaboracion()->get() as $colaboracion) {
-                if ($empresa = $colaboracion->Centro->Empresa) {
-                    $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=4&subop=0&cif=$empresa->cif");
-                    sleep(1);
-                    $driver->findElement(WebDriverBy::cssSelector("a[title='Modificar']"))->click();
-                    sleep(1);
-                    $tabla = $driver->findElement(WebDriverBy::cssSelector("table.formRegAlumno tbody"));
-                    $nif = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='dni_resp']"))->getAttribute('value');
-                    $nom = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='nom_resp']"))->getAttribute('value');
-                    $ap1 = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='ap1_resp']"))->getAttribute('value');
-                    $ap2 = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='ap2_resp']"))->getAttribute('value');
-                    $empresa->gerente = $nif.' '.$nom.' '.$ap1.' '.$ap2;
-                    $empresa->save();
-                    Alert::info("Empresa $empresa->cif actualitzada");
+            foreach (Empresa::all() as $empresa) {
+                //$empresa = $colaboracion->Centro->Empresa;
+                if ($empresa  && $empresa->gerente=='') {
+                    try {
+                        $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=4&subop=0&cif=$empresa->cif");
+                        sleep(1);
+                        $driver->findElement(WebDriverBy::cssSelector("a[title='Modificar']"))->click();
+                        sleep(1);
+                        $tabla = $driver->findElement(WebDriverBy::cssSelector("table.formRegAlumno tbody"));
+                        $nif = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='dni_resp']"))->getAttribute('value');
+                        $nom = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='nom_resp']"))->getAttribute('value');
+                        $ap1 = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='ap1_resp']"))->getAttribute('value');
+                        $ap2 = $tabla->findElement(WebDriverBy::cssSelector("input.campoAlumno[name='ap2_resp']"))->getAttribute('value');
+                        $empresa->gerente = $nif.' '.$nom.' '.$ap1.' '.$ap2;
+                        $empresa->save();
+                        Alert::info("Empresa $empresa->cif actualitzada");
+                    } catch (NoSuchElementException $e) {
+                        Alert::info($empresa->cif.' Failed');
+                    }
                 }
             }
         } catch (Exception $e){
             Alert::danger($e);
-            $driver->close();
         }
-        return back();
+        $driver->close();
+        return redirect(route('home.profesor'));
     }
 
     public function sync(Request $request){
@@ -170,6 +176,7 @@ class SaoController extends Controller
     }
 
     public function download(Request $request){
+
         $dni = $request->profesor??AuthUser()->dni;
         $grupo = Grupo::where('tutor',$dni)->first();
         $dades = array();
@@ -185,67 +192,74 @@ class SaoController extends Controller
                     if ($index) {
                         try {
                             //dades de la linea
-                            $dades[$index]['nia'] = $this->getAlumno($tr);
-                            list($nameEmpresa, $idEmpresa) = $this->getEmpresa($tr);
-                            $dades[$index]['idSao'] = $this->getIdSao($tr);
-                            $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"))->click();
-                            sleep(1);
-                            $detalles = $driver->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody"));
-                            $dadesCentre = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(7)"));
-                            $dades[$index]['centre']['localidad'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
-                            $nameCentre = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
-                            $dadesCentre = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(8)"));
-                            $dades[$index]['centre']['telefon'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
-                            $dades[$index]['centre']['email'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
-                            //$dades[$index]['centre']['name'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
-                            $dadesInstructor = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(12)"));
-                            $dades[$index]['centre']['instructorName'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
-                            $dades[$index]['centre']['instructorDNI'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
-                            list($dades[$index]['desde'], $dades[$index]['hasta']) = $this->getPeriode($detalles);
-                            $dades[$index]['autorizacion'] = ($detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(15) td:nth-child(4)"))->getText() == 'No requiere autorización') ? 0 : 1;
-                            $dades[$index]['erasmus'] = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(2)"))->getText();
-                            $dadesHores = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(14)"));
-                            //$horari = $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
-                            $dades[$index]['hores'] = explode('/',
-                                $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[1];
-                            $instructor = Instructor::find($dades[$index]['centre']['instructorDNI']);
-                            $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
-                            if ($dades[$index]['erasmus'] == 'No') {
-                                if ($centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre,
-                                    $dades[$index]['centre']['telefon'],
-                                    $dades[$index]['centre']['email'], $ciclo->id, $instructor)) {
+                            $alumne = $this->getAlumno($tr);
+                            list($desde, $hasta) = $this->getPeriode($tr);
+                            if ($hasta >= Hoy()) {
+                                $dades[$index]['nia'] = $alumne;
+                                list($nameEmpresa, $idEmpresa) = $this->getEmpresa($tr);
+                                $dades[$index]['idSao'] = $this->getIdSao($tr);
+                                $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"))->click();
+                                sleep(1);
+                                $detalles = $driver->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody"));
+                                $dadesCentre = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(7)"));
+                                $dades[$index]['centre']['localidad'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
+                                $nameCentre = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
+                                $dadesCentre = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(8)"));
+                                $dades[$index]['centre']['telefon'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
+                                $dades[$index]['centre']['email'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
+                                //$dades[$index]['centre']['name'] = $dadesCentre->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
+                                $dadesInstructor = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(12)"));
+                                $dades[$index]['centre']['instructorName'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
+                                $dades[$index]['centre']['instructorDNI'] = $dadesInstructor->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
+                                $dades[$index]['desde'] = $desde;
+                                $dades[$index]['hasta'] = $hasta;
+                                $dades[$index]['autorizacion'] = ($detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(15) td:nth-child(4)"))->getText() == 'No requiere autorización') ? 0 : 1;
+                                $dades[$index]['erasmus'] = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(2)"))->getText();
+                                $dadesHores = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(14)"));
+                                //$horari = $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
+                                $dades[$index]['hores'] = explode('/',
+                                    $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[1];
+                                $instructor = Instructor::find($dades[$index]['centre']['instructorDNI']);
+                                $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
+                                if ($dades[$index]['erasmus'] == 'No') {
+                                    if ($centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre,
+                                        $dades[$index]['centre']['telefon'],
+                                        $dades[$index]['centre']['email'], $ciclo->id, $instructor)) {
 
-                                    $dades[$index]['centre']['id'] = $centro->id;
-                                    if ($colaboracion = Colaboracion::where('idCiclo', $ciclo->id)->where('idCentro',
-                                        $centro->id)->first()) {
-                                        $dades[$index]['colaboracio']['id'] = $colaboracion->id;
-                                        $dades[$index]['cicle'] = $ciclo;
-                                        if (!$centro->idSao) {
-                                            $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
-                                            sleep(1);
-                                            $table2 = $driver->findElements(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr"));
-                                            foreach ($table2 as $index2 => $trinside) {
-                                                if ($index2) {
-                                                    $td = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText());
-                                                    if ($td == $nameCentre) {
-                                                        //$dades[$index]['centro']['direccion'] = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
-                                                        $dades[$index]['centre']['idSao'] = substr($trinside->getAttribute('id'),
-                                                            13);
+                                        $dades[$index]['centre']['id'] = $centro->id;
+                                        if ($colaboracion = Colaboracion::where('idCiclo', $ciclo->id)->where('idCentro',
+                                            $centro->id)->first()) {
+                                            $dades[$index]['colaboracio']['id'] = $colaboracion->id;
+                                            $dades[$index]['cicle'] = $ciclo;
+                                            if (!$centro->idSao) {
+                                                $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
+                                                sleep(1);
+                                                $table2 = $driver->findElements(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr"));
+                                                foreach ($table2 as $index2 => $trinside) {
+                                                    if ($index2) {
+                                                        $td = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText());
+                                                        if ($td == $nameCentre) {
+                                                            //$dades[$index]['centro']['direccion'] = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
+                                                            $dades[$index]['centre']['idSao'] = substr($trinside->getAttribute('id'),
+                                                                13);
+                                                        }
                                                     }
                                                 }
+                                                $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=2&subop=0");
+                                                sleep(1);
                                             }
-                                            $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=2&subop=0");
-                                            sleep(1);
+                                        } else {
+                                            Alert::danger("No trobe col·laboració del centre $nameCentre amb el teu cicle");
                                         }
                                     } else {
-                                        Alert::danger("No trobe col·laboració del centre $nameCentre amb el teu cicle");
+                                        $alumno = Alumno::find($dades[$index]['nia']);
+                                        Alert::danger("Centro $nameCentre  per alumne $alumno->shorName no trobat. Revisa la col·laboració. Afegix instructor al centre de treball. Revisa el seus dni");
                                     }
                                 } else {
-                                    $alumno = Alumno::find($dades[$index]['nia']);
-                                    Alert::danger("Centro $nameCentre  per alumne $alumno->shorName no trobat. Revisa la col·laboració. Afegix instructor al centre de treball. Revisa el seus dni");
+                                    $dades[$index]['centre']['name'] = $nameEmpresa;
                                 }
                             } else {
-                                $dades[$index]['centre']['name'] = $nameEmpresa;
+                                Alert::info("Fct $alumne finalitzada");
                             }
                         } catch (Exception $e) {
                             unset($dades[$index]);
@@ -516,6 +530,8 @@ class SaoController extends Controller
         return $nia;
     }
 
+
+
     /**
      * @param  \Facebook\WebDriver\Remote\RemoteWebElement  $tr
      * @return array
@@ -547,14 +563,24 @@ class SaoController extends Controller
      * @param  \Facebook\WebDriver\Remote\RemoteWebElement  $detalles
      * @return array
      */
-    private function getPeriode(\Facebook\WebDriver\Remote\RemoteWebElement $detalles): array
+
+    private function getPeriode(\Facebook\WebDriver\Remote\RemoteWebElement $tr): array
+    {
+        $dadesPeriode = $tr->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
+        $dates = explode('-',$dadesPeriode);
+        $desde = fechaInglesaCurta(trim($dates[0]),'/');
+        $hasta = fechaInglesaCurta(trim($dates[1]),'/');
+        return array($desde, $hasta);
+    }
+
+    /*private function getPeriode(\Facebook\WebDriver\Remote\RemoteWebElement $detalles): array
     {
         $dadesPeriode = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(13)"));
         $dates = explode('-', $dadesPeriode->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
         $desde = trim($dates[0]);
         $hasta = trim($dates[1]);
         return array($desde, $hasta);
-    }
+    }*/
 
     private function buscaCentro($nameEmpresa,$idEmpresa,$nameCentro,$telefonoCentre,$emailCentre,$idCiclo,$instructor){
         if ($emailCentre == '') $emailCentre='zz';
