@@ -460,8 +460,8 @@ class SaoController extends Controller
             Alert::danger($e);
         }
         $driver->close();
-        session(compact('dades'));
         if (count($dades)){
+            session(compact('dades'));
             return view('sao.compara',compact('dades'));
         } else {
             return redirect(route('alumnofct.index'));
