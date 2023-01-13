@@ -225,9 +225,10 @@ class SaoController extends Controller
                                 $dadesHores = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(14)"));
                                 //$horari = $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText();
                                 $dades[$index]['hores'] = explode('/',
-                                    $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[1];
+                                $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[1];
                                 $instructor = Instructor::find($dades[$index]['centre']['instructorDNI']);
                                 $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
+                                sleep(1);
                                 if ($dades[$index]['erasmus'] == 'No') {
                                     if ($centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre,
                                         $dades[$index]['centre']['telefon'],
