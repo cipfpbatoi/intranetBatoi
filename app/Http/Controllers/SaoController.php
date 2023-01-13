@@ -404,9 +404,9 @@ class SaoController extends Controller
     {
         $dni = $request->profesor;
         $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
+        $dades = array();
         try {
             $this->login($driver, trim($request->password));
-            $dades = array();
             foreach (AlumnoFct::misFcts()->whereNotNull('idSao')->get() as $fctAl) {
                 $fct = $fctAl->Fct;
                 $centro = $fct->Colaboracion->Centro;
