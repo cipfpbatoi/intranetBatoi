@@ -35,8 +35,8 @@ class SaoController extends Controller
     const WEB = 'https://foremp.edu.gva.es/index.php';
 
     public function __construct(){
-        $this->server_url = env('SELENIUM_URL','http://172.16.9.10:4444');
-        //$this->server_url = env('SELENIUM_URL','http://192.168.56.1:4444');
+        //$this->server_url = env('SELENIUM_URL','http://172.16.9.10:4444');
+        $this->server_url = env('SELENIUM_URL','http://192.168.56.1:4444');
 
         return parent::__construct();
     }
@@ -200,6 +200,7 @@ class SaoController extends Controller
                                 $dades[$index]['nia'] = $alumne;
                                 list($nameEmpresa, $idEmpresa) = $this->getEmpresa($tr);
                                 $dades[$index]['idSao'] = $this->getIdSao($tr);
+                                $dades[$index]['idEmpresa'] = $idEmpresa;
                                 $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"))->click();
                                 sleep(1);
                                 $detalles = $driver->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody"));
@@ -233,23 +234,7 @@ class SaoController extends Controller
                                             $centro->id)->first()) {
                                             $dades[$index]['colaboracio']['id'] = $colaboracion->id;
                                             $dades[$index]['cicle'] = $ciclo;
-                                            if (!$centro->idSao) {
-                                                $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
-                                                sleep(1);
-                                                $table2 = $driver->findElements(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr"));
-                                                foreach ($table2 as $index2 => $trinside) {
-                                                    if ($index2) {
-                                                        $td = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText());
-                                                        if ($td == $nameCentre) {
-                                                            //$dades[$index]['centro']['direccion'] = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
-                                                            $dades[$index]['centre']['idSao'] = substr($trinside->getAttribute('id'),
-                                                                13);
-                                                        }
-                                                    }
-                                                }
-                                                $driver->navigate()->to("https://foremp.edu.gva.es/index.php?op=2&subop=0");
-                                                sleep(1);
-                                            }
+                                            $dades[$index]['centre']['idSao'] = $centro->idSao;
                                         } else {
                                             Alert::danger("No trobe col·laboració del centre $nameCentre amb el teu cicle");
                                         }
@@ -274,13 +259,30 @@ class SaoController extends Controller
             }catch (Exception $e) {
                 echo $e->getMessage();
             }
-            $driver->close();
         }
         if (count($dades)){
-            //dd($dades);
+            foreach ($dades as $dada) {
+                if (!$dada['centre']['idSao']) {
+                    $idEmpresa = $dada['idEmpresa'];
+                    $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
+                    sleep(1);
+                    $table2 = $driver->findElements(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr"));
+                    foreach ($table2 as $index2 => $trinside) {
+                        if ($index2) {
+                            $td = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText());
+                            if ($td == $nameCentre) {
+                                //$dades[$index]['centro']['direccion'] = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
+                                $dada['centre']['idSao'] = substr($trinside->getAttribute('id'), 13);
+                            }
+                        }
+                    }
+                }
+            }
+            $driver->close();
             session(compact('dades'));
             return view('sao.importa',compact('dades'));
         } else {
+            $driver->close();
             return redirect(route('alumnofct.index'));
         }
     }
@@ -296,7 +298,7 @@ class SaoController extends Controller
                         $centro->save();
                     }
                     if (!($instructor = Instructor::find($dades[$key]['centre']['instructorDNI']))) {
-                        $this->altaInstructor(
+                        $instructor = $this->altaInstructor(
                             $dades[$key]['centre']['instructorDNI'],
                             $dades[$key]['centre']['instructorName'],
                             $dades[$key]['centre']['email'],
@@ -320,8 +322,8 @@ class SaoController extends Controller
                     if (!$fctAl) {
                         $fctAl = new AlumnoFct([
                             'horas' => $dades[$key]['hores'],
-                            'desde' => fechaSao($dades[$key]['desde']),
-                            'hasta' => fechaSao($dades[$key]['hasta']),
+                            'desde' => $dades[$key]['desde'],
+                            'hasta' => $dades[$key]['hasta'],
                             'autorizacion' => $dades[$key]['autorizacion']
                         ]);
                         $fctAl->idFct = $fct->id;
@@ -355,8 +357,8 @@ class SaoController extends Controller
                     if (!$fctAl) {
                         $fctAl = new AlumnoFct([
                             'horas' => $dades[$key]['hores'],
-                            'desde' => fechaSao($dades[$key]['desde']),
-                            'hasta' => fechaSao($dades[$key]['hasta']),
+                            'desde' => $dades[$key]['desde'],
+                            'hasta' => $dades[$key]['hasta'],
                             'autorizacion' => $dades[$key]['autorizacion']
                         ]);
                         $fctAl->idFct = $fct->id;
