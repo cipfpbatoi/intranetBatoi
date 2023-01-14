@@ -35,8 +35,8 @@ class SaoController extends Controller
     const WEB = 'https://foremp.edu.gva.es/index.php';
 
     public function __construct(){
-        $this->server_url = env('SELENIUM_URL','http://172.16.9.10:4444');
-        //$this->server_url = env('SELENIUM_URL','http://192.168.56.1:4444');
+        //$this->server_url = env('SELENIUM_URL','http://172.16.9.10:4444');
+        $this->server_url = env('SELENIUM_URL','http://192.168.56.1:4444');
 
         return parent::__construct();
     }
@@ -228,7 +228,7 @@ class SaoController extends Controller
                                 $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText())[1];
                                 $instructor = Instructor::find($dades[$index]['centre']['instructorDNI']);
                                 $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
-                                sleep(1);
+                                sleep(0.5);
                                 if ($dades[$index]['erasmus'] == 'No') {
                                     if ($centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre,
                                         $dades[$index]['centre']['telefon'],

@@ -1,6 +1,4 @@
 <?php
-
-
 return [
         'delete' => 'fa-eraser',
         'edit' => 'fa-edit',
@@ -38,5 +36,6 @@ return [
         'open' => 'fa-toggle-on',
         'valoracion' => 'fa-file-pdf-o',
         'link' => 'fa-paperclip',
-        'confirm' => 'fa-envelope'
+        'confirm' => 'fa-envelope',
+        'archive' => 'fa-archive'
     ];
