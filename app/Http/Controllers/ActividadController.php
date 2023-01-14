@@ -12,6 +12,7 @@ use Intranet\Entities\ActividadProfesor;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Intranet\Services\CalendarService;
+use Intranet\Services\GestorService;
 use Response;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
@@ -293,5 +294,11 @@ class ActividadController extends ModalController
         }
         $actividad->menores()->updateExistingPivot($nia,['autorizado' => $autorizado]);
         return view('extraescolares.autorizados',compact('actividad'));
+    }
+
+    public function gestor($id)
+    {
+        $gestor = new GestorService(Actividad::findOrFail($id));
+        return $gestor->render();
     }
 }
