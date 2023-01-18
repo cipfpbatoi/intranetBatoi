@@ -308,7 +308,7 @@ return array(
             'visitaEmpresa'=> "Concertar visita",
             'citarAlumnos' => 'Citar Alumnat',
             'centro' => 'Centre',
-            'colaboradores' => 'Col·laboradors'
+            'colaboradores' => 'Col·laboradors',
         ),
         'Fct' => array(
             'index' => 'FCT x Empresa',

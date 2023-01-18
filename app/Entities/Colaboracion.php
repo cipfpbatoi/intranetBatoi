@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Events\ActivityReport;
+use Intranet\Providers\AuthServiceProvider;
 
 
 class Colaboracion extends Model
@@ -131,6 +132,25 @@ class Colaboracion extends Model
     public function getUltimoAttribute()
     {
         return $this->updated_at;
+    }
+
+    public function getSituationAttribute()
+    {
+        foreach ($this->fcts->where('asociacion', 1) as $fct) {
+            if (count($fct->Alumnos)) {
+                return 4;
+            }
+        }
+
+        if ($this->tutor != authUser()->dni) {
+            return 1;
+        }
+        if ($this->estado == 1 || $this->estado == 3) {
+            return 2;
+        }
+
+        return 3;
+
     }
 
 

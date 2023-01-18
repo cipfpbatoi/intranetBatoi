@@ -2,7 +2,7 @@
    <div id="{{$elemento->id}}" class="well profile_view">
         <div id="{{$fct->id}}" class="col-sm-12 fct">
             <div class="left col-md-9 col-xs-12">
-                <h5 class="bg-red">
+                <h5>
                     {{$elemento->Centro->nombre}} <strong>({{$elemento->puestos}})</strong>
                 </h5>
                 <ul class="list-unstyled">

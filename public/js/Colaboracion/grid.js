@@ -11,16 +11,8 @@ var tipo;
 $(function() {
     var token = $("#_token").text();
 
-    $("#tab_descartada").find(".refuse").hide();
-    $("#tab_descartada").find(".informe").hide();
-    $("#tab_descartada").find(".contacto").hide();
-    $("#tab_descartada").find(".switch").siblings().hide();
-    $('#tab_pendiente').find(".unauthorize").hide();
-    $('#tab_pendiente').find(".switch").siblings().hide();
-    $("#tab_pendiente").find(".informe").hide();
     $("#tab_colabora").find(".resolve").hide();
-    $("#tab_colabora").find(".switch").siblings().hide();
-    $("#tab_colabora").find(".contacto").hide();
+    $('#tab_pendiente').find(".unauthorize").hide();
     $(".resolve").on("click", function(event){
         event.preventDefault();
         var colaboracion = $(this).parents(".well");
@@ -33,10 +25,10 @@ $(function() {
             boton.hide();
             boton.siblings(".unauthorize").show();
             boton.siblings(".refuse").show();
-            boton.siblings(".contacto").hide();
-            if (boton.siblings(".switch").length === 0) boton.siblings(".informe").show();
-
-            $("#tab_colabora").append(colaboracion.parent());
+            colaboracion.attr('style','border-color: #1abb9c;border-width: medium');
+            if (boton.parents(".profile_details").parent().attr("id") !== 'tab_colabora' ) {
+                $("#tab_colabora").append(colaboracion.parent());
+            }
         });
     });
     $(".refuse").on("click", function(){
@@ -51,9 +43,10 @@ $(function() {
             boton.hide();
             boton.siblings(".resolve").show();
             boton.siblings(".unauthorize").show();
-            boton.siblings(".informe").hide();
-            boton.siblings(".contacto").hide();
-            $("#tab_descartada").append(colaboracion.parent());
+            colaboracion.attr('style','border-color: #90111a;border-width: medium');
+            if (boton.parents(".profile_details").parent().attr("id") !== 'tab_pendiente' ) {
+                $("#tab_pendiente").append(colaboracion.parent());
+            }
         });
     });
     $(".unauthorize").on("click", function(){
@@ -67,12 +60,13 @@ $(function() {
         }).then(function () {
             boton.hide();
             if (boton.siblings(".switch").length === 0){
-                boton.siblings(".contacto").show();
                 boton.siblings(".resolve").show();
                 boton.siblings(".refuse").show();
             }
-            boton.siblings(".informe").hide();
-            $("#tab_pendiente").append(colaboracion.parent());
+            colaboracion.attr('style','border-color: #00aeef;border-width: medium');
+            if (boton.parents(".profile_details").parent().attr("id") !== 'tab_pendiente' ) {
+                $("#tab_pendiente").append(colaboracion.parent());
+            }
         });
     });
     $(".switch").on("click", function(){
@@ -85,21 +79,13 @@ $(function() {
             data: { api_token: token}
         }).then(function (result) {
             boton.hide();
-            boton.siblings(".estado").show();
-            if (boton.parents(".profile_details").parent().attr("id") === 'tab_pendiente' ){
-                boton.siblings(".contacto").show();
-                boton.siblings(".unauthorize").hide();
-            }
-            if (boton.parents(".profile_details").parent().attr("id") === 'tab_colabora' ){
-                boton.siblings(".informe").show();
-                boton.siblings(".resolve").hide();
-            }
-            if (boton.parents(".profile_details").parent().attr("id") === 'tab_descartada' ){
-                boton.siblings(".refuse").hide();
-                boton.siblings(".unauthorize").hide();
-            }
-
+            boton.siblings(".resolve").show();
+            boton.siblings(".refuse").show();
+            colaboracion.attr('style','border-color: #00aeef;border-width: medium');
             colaboracion.find(".nombre").text(result.data.nombre+' '+result.data.apellido1+' '+result.data.apellido2);
+
+            $("#tab_pendiente").append(colaboracion.parent());
+
         });
     });
     $(".telefonico").on("click",function(event){

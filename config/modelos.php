@@ -100,9 +100,10 @@ return [
     'Colaboracion' => [
         'modelo' => 'Colaboracion',
         'estados' => [
-            1 => 'pendiente',
-            2 => 'colabora',
-            3 => 'descartada',
+            1 => 'resta',
+            2 => 'pendiente',
+            3 => 'colabora',
+            4 => 'fcts',
         ],
         'avisos' => [],
         'resolve' => 2,
