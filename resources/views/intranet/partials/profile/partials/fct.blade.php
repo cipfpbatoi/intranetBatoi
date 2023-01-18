@@ -1,8 +1,10 @@
 <div class="col-md-4 col-sm-4 col-xs-12 profile_details" >
    <div id="{{$elemento->id}}" class="well profile_view">
         <div id="{{$fct->id}}" class="col-sm-12 fct">
-            <div class="left col-md-8 col-xs-12">
-                <h5>FCT {{$elemento->Centro->nombre}} <strong>({{$elemento->puestos}})</strong></h5>
+            <div class="left col-md-9 col-xs-12">
+                <h5 class="bg-red">
+                    {{$elemento->Centro->nombre}} <strong>({{$elemento->puestos}})</strong>
+                </h5>
                 <ul class="list-unstyled">
                     @if ($fct->Instructor)
                         <li>{{$fct->Instructor->nombre}}</li>
@@ -16,7 +18,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-md-4 listActivity">
+            <div class="col-md-3 listActivity">
                 @isset (authUser()->departamento)
                     @foreach ($contactos as $contacto)
                         <small>

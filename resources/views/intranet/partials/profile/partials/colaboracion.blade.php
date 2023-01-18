@@ -1,26 +1,34 @@
 <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
     <div id="{{$elemento->id}}" class="well profile_view">
         <div class="col-sm-12 ">
-            <div class="left col-md-8 col-xs-12">
+            <div class="left col-md-9 col-xs-12">
                 <h5 class="bg-blue-sky">
-                    @if ($elemento->Centro->Empresa->conveniNou)
-                        <strong>{{$elemento->Centro->Empresa->concierto??''}}!!</strong>
-                    @else
-                        {{$elemento->Centro->Empresa->concierto??''}}.
-                    @endif
-                    COL {{$elemento->Centro->nombre}}
+                     {{$elemento->Centro->nombre}}
                 </h5>
                 <ul class="list-unstyled">
-                    <li>Llocs: {{$elemento->puestos}}</li>
-                    <li>{{$elemento->contacto}}</li>
-                    <li>{{$elemento->telefono}}</li>
-                    <li>{{$elemento->email}}</li>
+                    <li>Conveni: <strong>
+                            {{$elemento->Centro->Empresa->concierto}}
+                            @if ($elemento->Centro->Empresa->conveniNou)
+                                <em class="fa fa-hand-o-up"></em>
+                            @else
+                                <em class="fa fa-hand-o-down"></em>
+                            @endif
+                        </strong>
+                    </li>
+                    <li><em class="fa fa-group"></em> {{$elemento->puestos}} lloc(s) de treball</li>
+                    <li><em class="fa fa-user"></em> {{$elemento->contacto}}</li>
+                    <li><em class="fa fa-phone"></em> {{$elemento->telefono}}</li>
+                    <li><em class="fa fa-envelope"></em> {{$elemento->email}}</li>
                     @if (isset($colaboraciones))
                         @foreach ($colaboraciones as $colaboracion)
                             @if ($colaboracion->Propietario)
+
                                 <li class="nombre"
-                                    style="background-color:@if ($colaboracion->estado == 2) lightblue @endif
-                                    @if ($colaboracion->estado == 3) coral @endif ">
+                                    style="border:30px;
+                                    background-color:@if ($colaboracion->estado == 2) lightblue @endif
+                                    @if ($colaboracion->estado == 3) coral @endif"
+                                >
+                                    <em class="fa fa-institution"></em>
                                     {{$colaboracion->Xciclo}} - {{ $colaboracion->Propietario->shortName }}
                                 </li>
                             @endif
@@ -29,11 +37,10 @@
                 </ul>
 
             </div>
-            <div class="col-md-4 listActivity">
+            <div class="col-md-3 listActivity">
                 @isset (authUser()->departamento)
                     @foreach ($contactos as $contacto)
                         <small>
-                            {{fechaCurta($contacto->created_at)}}
                             {{ $contacto->render() }}
                         </small>
                         <br/>
