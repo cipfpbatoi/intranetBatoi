@@ -17,7 +17,7 @@
         </colgroup>
         <tr>
             <td colspan='8' style="text-align:left;font-weight: bold;font-size: 1.1em">Tutor i
-                cicle: {{authUser()->FullName}} - {{ $todos->first()->Fct->Colaboracion->Ciclo->ciclo}}</td>
+                cicle: {{authUser()->FullName}} - {{ $todos->first()->Fct->Colaboracion->Ciclo->ciclo ?? ''}}</td>
         </tr>
         <tr>
             <td style="text-align:left;font-weight: bold;font-size: 0.8em ">ALUMNE I EMPRESA</td>
