@@ -16,6 +16,7 @@ use Intranet\Finders\RequestFinder;
 use Intranet\Services\DocumentService;
 use Illuminate\Http\Request;
 use Styde\Html\Facades\Alert;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class PanelColaboracionController
@@ -80,11 +81,11 @@ class PanelColaboracionController extends IntranetController
      * @return mixed
      */
     public function search(){
-        $colaboracions = Colaboracion::with('propietario')->with('Centro')->MiColaboracion()->get();
+        $colaboracions = Colaboracion::with('propietario')->with('Centro')->with('Centro.Empresa')->MiColaboracion()->get();
         if (count($colaboracions)){
             $this->titulo = ['quien' => $colaboracions->first()->Ciclo->literal];
         }
-        return $colaboracions->sortBy('tutor')->sortBy('localidad');
+        return $colaboracions->sortBy('tutor')->sortBy('empresa');
     }
 
     /**
