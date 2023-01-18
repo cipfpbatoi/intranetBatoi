@@ -65,12 +65,13 @@ trait traitPanel{
     }
 
 
-    protected function crea_pestanas($estados,$vista,$activa=null,$sustituye = null){
+    protected function crea_pestanas($estados, $vista, $activa=null, $sustituye = null)
+    {
         $activa = $activa ?? Session::get('pestana') ?? 0;
         foreach ($estados as $key => $estado) {
             $sustituto = ($key == $sustituye)?1:null;
             $this->panel->setPestana($estado, $key == $activa ? true : false, $vista,
-                ['estado',$key],null,$sustituto,$this->parametresVista);
+                ['estado',$key], null, $sustituto, $this->parametresVista);
         }
     }
 }

@@ -51,9 +51,9 @@ class PanelColaboracionController extends IntranetController
     {
         $todos = $this->search();
 
-        $this->crea_pestanas(config('modelos.'.$this->model.'.estados'),"profile.".strtolower($this->model),2,1);
+        $this->crea_pestanas(config('modelos.'.$this->model.'.estados'), "profile.".strtolower($this->model), 2, 1);
         $this->iniBotones();
-        Session::put('redirect','PanelColaboracionController@index');
+        Session::put('redirect', 'PanelColaboracionController@index');
         return $this->grid($todos);
     }
 
@@ -62,9 +62,32 @@ class PanelColaboracionController extends IntranetController
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('profile',new BotonIcon('colaboracion.switch', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-warning switch','icon'=>'fa-user','where' => ['tutor', '<>', AuthUser()->dni]]));
-        $this->panel->setBoton('nofct',new BotonIcon('colaboracion.unauthorize', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary unauthorize estado']));
-        $this->panel->setBoton('nofct',new BotonIcon('colaboracion.resolve', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-success resolve estado']));
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                'colaboracion.switch',
+                [
+                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'class'=>'btn-warning switch',
+                    'icon'=>'fa-user',
+                    'where' => ['tutor', '<>', AuthUser()->dni]
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'nofct',
+            new BotonIcon(
+                'colaboracion.unauthorize',
+                ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary unauthorize estado']
+            )
+        );
+        $this->panel->setBoton(
+            'nofct',
+            new BotonIcon(
+                'colaboracion.resolve',
+                ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-success resolve estado']
+            )
+        );
         $this->panel->setBoton('nofct',new BotonIcon('colaboracion.refuse', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-danger refuse estado']));
         $this->panel->setBoton('fct',new BotonIcon('fct.telefonico', ['roles' => config(self::ROLES_ROL_PRACTICAS),'class'=>'btn-primary informe telefonico','text'=>'','title'=>'Contacte telefònic','icon'=>'fa-phone']));
         $this->panel->setBoton('pendiente', new BotonBasico("colaboracion.contacto",['class'=>'btn-primary selecciona','icon' => 'fa fa-bell-o','data-url'=>'/api/documentacionFCT/contacto']));
@@ -80,9 +103,10 @@ class PanelColaboracionController extends IntranetController
     /**
      * @return mixed
      */
-    public function search(){
+    public function search()
+    {
         $colaboracions = Colaboracion::with('propietario')->with('Centro')->with('Centro.Empresa')->MiColaboracion()->get();
-        if (count($colaboracions)){
+        if (count($colaboracions)) {
             $this->titulo = ['quien' => $colaboracions->first()->Ciclo->literal];
         }
         return $colaboracions->sortBy('tutor')->sortBy('empresa');
@@ -93,7 +117,8 @@ class PanelColaboracionController extends IntranetController
      */
 
 
-    public function showMailbyId($id,$documento){
+    public function showMailbyId($id,$documento)
+    {
         $document = new DocumentoFct($documento);
         $parametres = array('id' => $id,'document'=>$document);
         $service = new DocumentService(new UniqueFinder($parametres));
@@ -102,7 +127,8 @@ class PanelColaboracionController extends IntranetController
     }
 
 
-    protected function showMailbyRequest(Request $request,$documento){
+    protected function showMailbyRequest(Request $request,$documento)
+    {
         $documento = new DocumentoFct($documento);
         $parametres = array('request' => $request,'document'=>$documento);
         $service = new DocumentService(new RequestFinder($parametres));
@@ -119,7 +145,7 @@ class PanelColaboracionController extends IntranetController
     {
         parent::update($request, $id);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
-        Session::put('pestana',1);
+        Session::put('pestana', 1);
         return $this->showEmpresa($empresa);
     }
 
@@ -131,11 +157,12 @@ class PanelColaboracionController extends IntranetController
     {
         parent::store($request);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
-        Session::put('pestana',1);
+        Session::put('pestana', 1);
         return $this->showEmpresa($empresa);
     }
 
-    private function showEmpresa($id){
+    private function showEmpresa($id)
+    {
         return redirect()->action('EmpresaController@show', ['empresa' => $id]);
     }
 
@@ -147,10 +174,10 @@ class PanelColaboracionController extends IntranetController
     {
         $profesor = AuthUser()->dni;
         $elemento = Colaboracion::find($id);
-        Session::put('pestana',1);
-        $copia = New Colaboracion();
+        Session::put('pestana', 1);
+        $copia = new Colaboracion();
         $copia->fill($elemento->toArray());
-        $copia->idCiclo = Grupo::QTutor($profesor)->get()->count() > 0 ? Grupo::QTutor($profesor)->first()->idCiclo : Grupo::QTutor($profesor,true)->first()->idCiclo;
+        $copia->idCiclo = Grupo::QTutor($profesor)->get()->count() > 0 ? Grupo::QTutor($profesor)->first()->idCiclo : Grupo::QTutor($profesor, true)->first()->idCiclo;
         $copia->tutor = AuthUser()->FullName;
 
         // para no generar más de uno por ciclo
@@ -178,7 +205,7 @@ class PanelColaboracionController extends IntranetController
             Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixa col·laboració d'anys anteriors.");
         }
 
-        Session::put('pestana',1);
+        Session::put('pestana', 1);
         return $this->showEmpresa($empresa);
     }
 

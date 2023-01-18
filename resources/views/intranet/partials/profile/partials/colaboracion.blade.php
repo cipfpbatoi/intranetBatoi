@@ -1,6 +1,10 @@
 <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
-    <div id="{{$elemento->id}}" class="well profile_view">
-        <div class="col-sm-12 ">
+    <div id="{{$elemento->id}}" class="well profile_view"
+         @if ($elemento->estado == 3) style='border-color: #90111a;border-width: medium' @endif
+         @if ($elemento->estado == 2) style='border-color: #1abb9c;border-width: medium' @endif
+         @if (!empty($elemento->tutor)) style='border-color: #00aeef;border-width: medium' @endif
+    >
+        <div class="col-sm-12">
             <div class="left col-md-9 col-xs-12">
                 <h5 class="bg-blue-sky">
                      {{$elemento->Centro->nombre}}

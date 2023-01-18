@@ -3,10 +3,10 @@
 return [
     'Falta' => [
         'modelo' => 'Falta',
-        'estados' => [  1 => 'nojustify', 
-                        2 => 'withjustify', 
-                        3 => 'autorizada', 
-                        4 => 'resuelta', 
+        'estados' => [  1 => 'nojustify',
+                        2 => 'withjustify',
+                        3 => 'autorizada',
+                        4 => 'resuelta',
                         5 => 'larga'],
         'avisos' => ['idProfesor' => [ 0, 1 , 2 , 3],'jefeEstudios' => [1,2]],
         'resolve' => '3',
@@ -18,8 +18,8 @@ return [
     ],
     'Actividad' => [
         'modelo' => 'Actividad',
-        'estados' => [  1 => 'pendiente', 
-                        2 => 'autorizada', 
+        'estados' => [  1 => 'pendiente',
+                        2 => 'autorizada',
                         3 => 'impresa'],
         'avisos' => ['Creador' => [ 0, 3],'vicedirector'=>[1]],
         'resolve' => '3',
@@ -30,8 +30,8 @@ return [
     ],
     'Comision' => [
         'modelo' => 'Comision',
-        'estados' => [  1 => 'pendiente', 
-                        2 => 'autorizada', 
+        'estados' => [  1 => 'pendiente',
+                        2 => 'autorizada',
                         3 => 'registrada',
                         4 => 'unpaid',
                         5 => 'cobrada'],
@@ -45,8 +45,8 @@ return [
     ],
     'Expediente' => [
         'modelo' => 'Expediente',
-        'estados' => [  1 => 'pendiente', 
-                        2 => 'tramitada', 
+        'estados' => [  1 => 'pendiente',
+                        2 => 'tramitada',
                         3 => 'resuelta',
                         4 => 'comissio',
                         5 => 'tancada'
@@ -59,8 +59,8 @@ return [
     ],
     'Programacion' => [
         'modelo' => 'Programacion',
-        'estados' => [  1 => 'pendiente', 
-                        2 => 'checkeada', 
+        'estados' => [  1 => 'pendiente',
+                        2 => 'checkeada',
                         3 => 'aprobada'],
         'avisos' => ['idProfesor'=>[ 0,2,3],'jefeDepartamento' => [1]],
         'resolve' => '3',
@@ -68,8 +68,8 @@ return [
     ],
     'Incidencia' => [
         'modelo' => 'Incidencia',
-        'estados' => [  1 => 'pendiente', 
-                        2 => 'proceso', 
+        'estados' => [  1 => 'pendiente',
+                        2 => 'proceso',
                         3 => 'resuelta'],
         'avisos' => [ 'idProfesor' => [0, 3], 'responsable' => [1] ],
         'resolve' => '3',
