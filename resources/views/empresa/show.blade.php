@@ -6,14 +6,20 @@
     <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
         <h3>{{$elemento->nombre}}</h3>
         <h4>CIF : {{$elemento->cif}}</h4>
-        <h4>@lang("validation.attributes.concierto") : {{$elemento->concierto}}</h4>
+        <h4>
+            @lang("validation.attributes.concierto") : {{$elemento->concierto}}
+            @if (!empty($elemento->fichero))
+                <a href="/empresa/{{$elemento->id}}/document"><em class="fa fa-eye"></em></a>
+            @endif
+        </h4>
         @if (!empty($elemento->fichero))
-            <embed
-                    type="application/pdf"
-                    src="/empresa/{{$elemento->id}}/document#toolbar=0&navpanes=0&scrollbar=0"
-                    width="100%"
-                    height="150px"
-            />
+                <embed
+                        type="application/pdf"
+                        src="/empresa/{{$elemento->id}}/document#toolbar=0&navpanes=0&scrollbar=0"
+                        width="100%"
+                        height="150px"
+                />
+
         @endif
         <ul class="list-unstyled user_data">
             <li>
