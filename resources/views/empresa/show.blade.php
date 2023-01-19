@@ -7,6 +7,14 @@
         <h3>{{$elemento->nombre}}</h3>
         <h4>CIF : {{$elemento->cif}}</h4>
         <h4>@lang("validation.attributes.concierto") : {{$elemento->concierto}}</h4>
+        @isset ($elemento->fichero)
+            <embed
+                    type="application/pdf"
+                    src="/empresa/{{$elemento->id}}/document#toolbar=0&navpanes=0&scrollbar=0"
+                    width="100%"
+                    height="150px"
+            />
+        @endisset
         <ul class="list-unstyled user_data">
             <li>
                 <em class="fa fa-map-marker user-profile-icon"></em>
@@ -32,6 +40,7 @@
         <br/>
 
         <!-- start skills -->
+
         <h4>@lang("messages.generic.options")</h4>
         <ul class="list-unstyled user_data">
             <li>
@@ -128,13 +137,6 @@
                         @lang("models.modelos.Centro")
                     </a>
                 </li>
-                <li role="presentation" @if ($activa == 3) class="active" @endif>
-                    <a href="#tab_content3" id="pdf-tab"
-                       role="tab" data-toggle="tab"
-                       aria-expanded="true">
-                        Conveni
-                    </a>
-                </li>
             </ul>
             <div id="myTabContent" class="tab-content">
                 @if ($activa == 2)
@@ -161,20 +163,6 @@
 
                     </div>
 
-                @if ($activa == 3)
-                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content3" aria-labelledby="pdf-tab">
-                @else
-                    <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="pdf-tab">
-                @endif
-                    @isset ($elemento->fichero)
-                        <embed
-                                type="application/pdf"
-                                src="/empresa/{{$elemento->id}}/document"
-                                width="100%"
-                                height="600px"
-                        />
-                    @endisset
-                    </div>
                 </div>
             </div>
         </div>
