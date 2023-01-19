@@ -17,7 +17,7 @@ class Documento extends Model
         , 'ciclo', 'grupo', 'detalle','enlace', 'fichero', 'tags'];
     protected $rules = [
         'tipoDocumento' => 'required',
-        'descripcion' => 'required',
+        'descripcion' => 'required|max:200',
         'fichero' => 'sometimes|mimes:pdf,zip,odt,docx',
     ];
     protected $inputTypes = [
@@ -66,12 +66,12 @@ class Documento extends Model
 
     public function getSituacionAttribute()
     {
-        if ($this->link){
+        if ($this->link) {
             if ($this->exist) {
                 return 'All';
             }
             return 'Linked';
-        }     
+        }
         if ($this->exist) {
             return 'NoLink';
         }
@@ -82,42 +82,7 @@ class Documento extends Model
     {
         return (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero)));
     }
-/**
-    public static function crea($elemento, $parametres = null)
-    {
-        if (isset($elemento->fichero) && $doc = Documento::where('fichero', $elemento->fichero)->first()) {
-            $doc->llena($parametres);
-        } else {
-            $doc = new Documento();
-            $doc->llena($parametres);
-            $doc->curso = Curso();
-            $doc->supervisor = $doc->supervisor == '' ? AuthUser()->FullName : $doc->supervisor;
-            //$doc->tipoDocumento = $doc->tipoDocumento == '' ? $this->model : $doc->tipoDocumento;
-            if ($elemento) {
-                $doc->idDocumento = $doc->idDocumento == '' ? isset($elemento->id) ? $elemento->id : $elemento->$primaryKey : $doc->tipoDocumento;
-                $doc->propietario = $doc->propietario == '' ? (isset($elemento->Profesor) ? $elemento->Profesor->FullName:'') : $doc->propietario;
-                $doc->fichero = $doc->fichero == '' ? $elemento->fichero : $doc->fichero;
-                $doc->descripcion = $doc->descripcion == '' ? 'Registre dia ' . Hoy('d-m-Y') : $doc->descripcion;
-            } else {
-                $doc->propietario = $doc->propietario == '' ? AuthUser()->FullName : $doc->propietario;
-                $doc->descripcion = $doc->descripcion == '' ? 'Registre dia ' . Hoy('d-m-Y') : $doc->descripcion;
-                $doc->tags = $doc->tags == '' ? 'listado llistat autorizacion autorizacio' : $doc->tags;
-                $doc->rol = $doc->rol == '' ? '2' : $doc->rol;
-            }
-        }
-        $doc->save();
-        return $doc->id;
-    }
 
-    protected function llena($parametres)
-    {
-        if (isset($parametres)) {
-            foreach ($parametres as $key => $valor) {
-                $this->$key = $valor;
-            }
-        }
-    }
-*/
 
     public function deleteDoc()
     {
