@@ -128,43 +128,60 @@
                         @lang("models.modelos.Centro")
                     </a>
                 </li>
+                <li role="presentation" @if ($activa == 3) class="active" @endif>
+                    <a href="#tab_content3" id="pdf-tab"
+                       role="tab" data-toggle="tab"
+                       aria-expanded="true">
+                        Conveni
+                    </a>
+                </li>
             </ul>
             <div id="myTabContent" class="tab-content">
                 @if ($activa == 2)
                     <div role="tabpanel" class="tab-pane fade active in" id="tab_content2" aria-labelledby="centro-tab">
-                        @else
-                            <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="centro-tab">
-                                @endif
-
-
-                                <!-- start recent activity -->
-                                @include('empresa.partials.centros')
-
-                                <!-- end recent activity -->
-
-                            </div>
-                            @if ($activa == 1)
-                                <div role="tabpanel" class="tab-pane fade active in" id="tab_content1"
-                                     aria-labelledby="centro-tab">
-                                    @else
-                                        <div role="tabpanel" class="tab-pane fade" id="tab_content1"
-                                             aria-labelledby="colaboracion-tab">
-                                            @endif
-
-                                            <!-- start user projects -->
-                                            @include('empresa.partials.colaboraciones')
-
-                                            <!-- end user projects -->
-
-                                        </div>
-
-                                </div>
+                @else
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="centro-tab">
+                @endif
+                    <!-- start recent activity -->
+                    @include('empresa.partials.centros')
+                    <!-- end recent activity -->
                     </div>
+                @if ($activa == 1)
+                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content1"
+                         aria-labelledby="centro-tab">
+                @else
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content1"
+                         aria-labelledby="colaboracion-tab">
+                @endif
+
+                    <!-- start user projects -->
+                    @include('empresa.partials.colaboraciones')
+
+                    <!-- end user projects -->
+
+                    </div>
+
+                @if ($activa == 3)
+                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content3" aria-labelledby="pdf-tab">
+                @else
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="pdf-tab">
+                @endif
+                    @isset ($elemento->fichero)
+                        <embed
+                                type="application/pdf"
+                                src="/empresa/{{$elemento->id}}/document"
+                                width="100%"
+                                height="600px"
+                        />
+                    @endisset
+                    </div>
+                </div>
             </div>
-            @endsection
-    @section('titulo')
-        @lang("messages.menu.Empresa"): {{$elemento->nombre}}
-    @endsection
+        </div>
+@endsection
+@section('titulo')
+    @lang("messages.menu.Empresa"): {{$elemento->nombre}}
+@endsection
 @section('scripts')
     {{ Html::script('/js/Empresa/detalle.js') }}
     {{ Html::script('/js/Empresa/delete.js') }}
