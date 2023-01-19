@@ -7,14 +7,14 @@
         <h3>{{$elemento->nombre}}</h3>
         <h4>CIF : {{$elemento->cif}}</h4>
         <h4>@lang("validation.attributes.concierto") : {{$elemento->concierto}}</h4>
-        @isset ($elemento->fichero)
+        @if (!empty($elemento->fichero))
             <embed
                     type="application/pdf"
                     src="/empresa/{{$elemento->id}}/document#toolbar=0&navpanes=0&scrollbar=0"
                     width="100%"
                     height="150px"
             />
-        @endisset
+        @endif
         <ul class="list-unstyled user_data">
             <li>
                 <em class="fa fa-map-marker user-profile-icon"></em>
