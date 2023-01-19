@@ -21,9 +21,32 @@ ___
 **Per què uns botons són blau oscur i altres blau clar?** El blau oscur indica un contacte mitjançant un correu que puc modificar abans d'enviar-lo. El blau clar, en canvi, no podré modificar el contingut del correu, encara que si seleccionar a qui li l'envie**
 ___
 
+## Que signifiqun tots el que hi ha en una col·laboració.
+
+Per ordre a l'esquerra apareix:
+
+* Nom centre treball (ordenats alfabèticament)
+  * Número de conveni i si està actualitzat (ditet)
+  * Número de llocs de treball
+  * Persona de contacte
+  * Telèfon de contacte
+  * Email de contacte
+  * Cicles del departament que compartixen centre de treball:
+    * En color blau si ja han dit que col·laboren 
+    * En color roig si no
+  * Població del centre de treball
+  * Botons per a :
+    * Vore + informació
+    * Crear un fct
+    * Passar entre pestanyes.
+
+
+
+
 ## Pestanya **Pendents de contestar**
 
 Esta pestanya la fem servir en la fase de recerca de col.laboracions. El botó **Sol·licitud de pràctiques** envia un correu sol.licitant la col.laboració a les empreses. Al premer el botó ens apareix el llistat de colaboracions i podem seleccionar les colaboracions que desitgem:
+Un cuadrat de color roig significa que l'empresa no vol col·laborar enguany.
 
 ![solicitud](./img/ajuda/fct_solicitud_practiques.PNG)
 
