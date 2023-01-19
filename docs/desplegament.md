@@ -3,6 +3,7 @@ Instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versi�
 
 ## Instal·lar el software
 Els paquets a instal·lar són:
+
 * **apache2**
 * **mysql-server** o **mariadb-server** (recorda que després hem d'executar el comando **`mysql_secure_installation`** que configura l'usuari root). NOTA: ara la validació dels usuaris la fa el sistema (el _plugin_ 'auth_socket' o 'unix_socket'). Per a configurar un usuari amb privilegis consulta [StackOverflow](https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-user-rootlocalhost) o qualsevol altra pàgina en internet. En resum, executem:
 ```bash
