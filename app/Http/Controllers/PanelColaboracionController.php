@@ -31,7 +31,9 @@ class PanelColaboracionController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['Empresa','concierto','Localidad','puestos','Xestado','contacto', 'telefono','email'];
+    protected $gridFields = [
+        'Empresa', 'concierto', 'Localidad', 'puestos', 'Xestado', 'contacto', 'telefono', 'email'
+    ];
     /**
      * @var string
      */
@@ -41,7 +43,7 @@ class PanelColaboracionController extends IntranetController
      */
     protected $model = 'Colaboracion';
 
-    protected $parametresVista = ['modal' => ['contacto','afegirFct','seleccion']];
+    protected $parametresVista = ['modal' => ['contacto', 'afegirFct', 'seleccion']];
 
 
     /**
@@ -74,8 +76,8 @@ class PanelColaboracionController extends IntranetController
                 'colaboracion.switch',
                 [
                     'roles' => config(self::ROLES_ROL_PRACTICAS),
-                    'class'=>'btn-warning switch',
-                    'icon'=>'fa-user',
+                    'class' => 'btn-warning switch',
+                    'icon' => 'fa-user',
                     'where' => ['tutor', '<>', AuthUser()->dni]
                 ]
             )
@@ -86,8 +88,8 @@ class PanelColaboracionController extends IntranetController
                 'colaboracion.unauthorize',
                 [
                     'roles' => config(self::ROLES_ROL_PRACTICAS),
-                    'class'=>'btn-primary unauthorize estado',
-                    'where' => ['tutor', '==', AuthUser()->dni,'estado','!=','1']
+                    'class' => 'btn-primary unauthorize estado',
+                    'where' => ['tutor', '==', AuthUser()->dni, 'estado', '!=', '1']
                 ]
             )
         );
@@ -97,8 +99,8 @@ class PanelColaboracionController extends IntranetController
                 'colaboracion.resolve',
                 [
                     'roles' => config(self::ROLES_ROL_PRACTICAS),
-                    'class'=>'btn-success resolve estado',
-                    'where' => ['tutor', '==', AuthUser()->dni,'estado','!=','2']
+                    'class' => 'btn-success resolve estado',
+                    'where' => ['tutor', '==', AuthUser()->dni, 'estado', '!=', '2']
                 ]
             )
         );
@@ -108,8 +110,8 @@ class PanelColaboracionController extends IntranetController
                 'colaboracion.refuse',
                 [
                     'roles' => config(self::ROLES_ROL_PRACTICAS),
-                    'class'=>'btn-danger refuse estado',
-                    'where' => ['tutor', '==', AuthUser()->dni,'estado','!=','3']
+                    'class' => 'btn-danger refuse estado',
+                    'where' => ['tutor', '==', AuthUser()->dni, 'estado', '!=', '3']
                 ]
             )
         );
@@ -119,10 +121,10 @@ class PanelColaboracionController extends IntranetController
                 'colaboracion.book',
                 [
                     'roles' => config(self::ROLES_ROL_PRACTICAS),
-                    'class'=>'btn-primary informe book',
-                    'text'=>'',
-                    'title'=>'Contacte previ',
-                    'icon'=>'fa-book'
+                    'class' => 'btn-primary informe book',
+                    'text' => '',
+                    'title' => 'Contacte previ',
+                    'icon' => 'fa-book'
                 ]
             )
         );
@@ -132,20 +134,90 @@ class PanelColaboracionController extends IntranetController
                 'fct.telefonico',
                 [
                     'roles' => config(self::ROLES_ROL_PRACTICAS),
-                    'class'=>'btn-primary informe telefonico',
-                    'text'=>'',
-                    'title'=>'Contacte telefònic',
-                    'icon'=>'fa-phone'
+                    'class' => 'btn-primary informe telefonico',
+                    'text' => '',
+                    'title' => 'Contacte telefònic',
+                    'icon' => 'fa-phone'
                 ]
             )
         );
-        $this->panel->setBoton('pendiente', new BotonBasico("colaboracion.contacto",['class'=>'btn-primary selecciona','icon' => 'fa fa-bell-o','data-url'=>'/api/documentacionFCT/contacto']));
-        $this->panel->setBoton('colabora', new BotonBasico("colaboracion.revision",['class'=>'btn-primary selecciona','icon' => 'fa fa-check','data-url'=>'/api/documentacionFCT/revision']));
-        $this->panel->setBoton('fcts', new BotonBasico("colaboracion.inicioEmpresa",['class'=>'btn-primary selecciona','icon' => 'fa fa-flag-o','data-url'=>'/api/documentacionFCT/inicioEmpresa']));
-        $this->panel->setBoton('fcts', new BotonBasico("colaboracion.inicioAlumno",['class'=>'btn-primary selecciona','icon' => 'fa fa-unlock','data-url'=>'/api/documentacionFCT/inicioAlumno']));
-        $this->panel->setBoton('fcts', new BotonBasico("colaboracion.seguimiento",['class'=>'btn-primary selecciona','icon' => 'fa fa-envelope','data-url'=>'/api/documentacionFCT/seguimiento']));
-        $this->panel->setBoton('fcts', new BotonBasico("colaboracion.visitaEmpresa",['class'=>'btn-info selecciona','icon' => 'fa fa-bullhorn','data-url'=>'/api/documentacionFCT/visitaEmpresa']));
-        $this->panel->setBoton('fcts', new BotonBasico("colaboracion.citarAlumnos",['class'=>'btn-info selecciona','icon' => 'fa fa-bullhorn','data-url'=>'/api/documentacionFCT/citarAlumnos']));
+        $this->panel->setBoton(
+            'pendiente',
+            new BotonBasico(
+                "colaboracion.contacto",
+                [
+                    'class' => 'btn-primary selecciona',
+                    'icon' => 'fa fa-bell-o',
+                    'data-url' => '/api/documentacionFCT/contacto'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'colabora',
+            new BotonBasico(
+                "colaboracion.revision",
+                [
+                    'class' => 'btn-primary selecciona',
+                    'icon' => 'fa fa-check',
+                    'data-url' => '/api/documentacionFCT/revision'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'fcts',
+            new BotonBasico(
+                "colaboracion.inicioEmpresa",
+                [
+                    'class' => 'btn-primary selecciona',
+                    'icon' => 'fa fa-flag-o',
+                    'data-url' => '/api/documentacionFCT/inicioEmpresa'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'fcts',
+            new BotonBasico(
+                "colaboracion.inicioAlumno",
+                [
+                    'class' => 'btn-primary selecciona',
+                    'icon' => 'fa fa-unlock',
+                    'data-url' => '/api/documentacionFCT/inicioAlumno'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'fcts',
+            new BotonBasico(
+                "colaboracion.seguimiento",
+                [
+                    'class' => 'btn-primary selecciona',
+                    'icon' => 'fa fa-envelope',
+                    'data-url' => '/api/documentacionFCT/seguimiento'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'fcts',
+            new BotonBasico(
+                "colaboracion.visitaEmpresa",
+                [
+                    'class' => 'btn-info selecciona',
+                    'icon' => 'fa fa-bullhorn',
+                    'data-url' => '/api/documentacionFCT/visitaEmpresa'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'fcts',
+            new BotonBasico(
+                "colaboracion.citarAlumnos",
+                [
+                    'class' => 'btn-info selecciona',
+                    'icon' => 'fa fa-bullhorn',
+                    'data-url' => '/api/documentacionFCT/citarAlumnos'
+                ]
+            )
+        );
 
     }
 
@@ -154,7 +226,11 @@ class PanelColaboracionController extends IntranetController
      */
     public function search()
     {
-        $colaboracions = Colaboracion::with('propietario')->with('Centro')->with('Centro.Empresa')->MiColaboracion()->get();
+        $colaboracions = Colaboracion::with('propietario')
+            ->with('Centro')
+            ->with('Centro.Empresa')
+            ->MiColaboracion()
+            ->get();
         if (count($colaboracions)) {
             $this->titulo = ['quien' => $colaboracions->first()->Ciclo->literal];
         }
@@ -166,26 +242,26 @@ class PanelColaboracionController extends IntranetController
      */
 
 
-    public function showMailbyId($id,$documento)
+    public function showMailbyId($id, $documento)
     {
         $document = new DocumentoFct($documento);
-        $parametres = array('id' => $id,'document'=>$document);
+        $parametres = array('id' => $id, 'document' => $document);
         $service = new DocumentService(new UniqueFinder($parametres));
 
         return $service->render();
     }
 
 
-    protected function showMailbyRequest(Request $request,$documento)
+    protected function showMailbyRequest(Request $request, $documento)
     {
         $documento = new DocumentoFct($documento);
-        $parametres = array('request' => $request,'document'=>$documento);
+        $parametres = array('request' => $request, 'document' => $documento);
         $service = new DocumentService(new RequestFinder($parametres));
         return $service->render();
     }
 
     /**
-     * @param Request $request
+     * @param  Request  $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -199,7 +275,7 @@ class PanelColaboracionController extends IntranetController
     }
 
     /**
-     * @param Request $request
+     * @param  Request  $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
@@ -226,12 +302,14 @@ class PanelColaboracionController extends IntranetController
         Session::put('pestana', 1);
         $copia = new Colaboracion();
         $copia->fill($elemento->toArray());
-        $copia->idCiclo = Grupo::QTutor($profesor)->get()->count() > 0 ? Grupo::QTutor($profesor)->first()->idCiclo : Grupo::QTutor($profesor, true)->first()->idCiclo;
+        $copia->idCiclo = Grupo::QTutor($profesor)->get()->count() > 0
+            ? Grupo::QTutor($profesor)->first()->idCiclo
+            : Grupo::QTutor($profesor, true)->first()->idCiclo;
         $copia->tutor = AuthUser()->FullName;
 
         // para no generar más de uno por ciclo
-        $validator = Validator::make($copia->toArray(),$copia->getRules());
-        if ($validator->fails()){
+        $validator = Validator::make($copia->toArray(), $copia->getRules());
+        if ($validator->fails()) {
             return Redirect::back()->withInput()->withErrors($validator);
         }
 
@@ -250,7 +328,7 @@ class PanelColaboracionController extends IntranetController
         $empresa = Colaboracion::find($id)->Centro->Empresa;
         try {
             parent::destroy($id);
-        } catch (Exception $exception){
+        } catch (Exception $exception) {
             Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixa col·laboració d'anys anteriors.");
         }
 

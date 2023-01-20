@@ -452,8 +452,11 @@ class PanelFctAvalController extends IntranetController
         $quien = $registre->fullName;
         $modelo = strtolower('Profesor');
         $botones = [
-            'volver' => back()->getTargetUrl(),
-            'final' => "/fct/$id/upload"
+            'volver' => ['link' => back()->getTargetUrl()],
+            'final' => [
+                'link' =>"/fct/$id/upload",
+                'message' => "Este procediment l'has de fer quan tingues tota la documentacion de totes les FCT completes. Una vegada fet no es pot tornar arrere."
+                ]
         ];
         return view('dropzone.index', compact('modelo', 'id', 'quien', 'botones'));
 

@@ -6,7 +6,7 @@ return [
             'subject' => "Sol·licitud Pràctiques de FCT",
             'toPeople' => 'A/A de Recursos Humans',
             'editable' => true,
-            'register' => false
+            'register' => true
         ],
         'modelo' => 'Colaboracion',
         'view' => 'email.fct.contact',

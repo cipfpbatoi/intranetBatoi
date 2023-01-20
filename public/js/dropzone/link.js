@@ -91,6 +91,14 @@ Dropzone.options.myDropzone = {
     },
 };
 
-
+$(function () {
+    $('.message').on("click", function(event){
+        event.preventDefault();
+        let message = $(this).parent().attr('title');
+        if (confirm(message)) {
+            location.href = $(this).attr('href');
+        }
+    });
+});
 
 

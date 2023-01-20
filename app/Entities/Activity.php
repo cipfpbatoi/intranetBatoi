@@ -88,6 +88,7 @@ class Activity extends Model
             case 'Recordatori':$class='flag';break;
             case 'Informació':$class='lock';break;
             case 'Revisió':$class='check';break;
+            case 'Sol·licitud':$class='bell';break;
             default: $class=null;
         }
         switch ($this->action) {

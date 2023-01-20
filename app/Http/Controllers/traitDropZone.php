@@ -7,10 +7,11 @@ use Response;
 
 trait traitDropZone{
 
-    protected function deleteAttached($id){
+    protected function deleteAttached($id)
+    {
         $path = strtolower($this->model)."/$id";
         $attached = Adjunto::getByPath($path)->get();
-        foreach ($attached as $attach){
+        foreach ($attached as $attach) {
             AttachedFileService::delete($attach);
             $directory = $attach->directory;
         }
@@ -19,12 +20,17 @@ trait traitDropZone{
         }
     }
 
-    public function link($id){
+    public function link($id)
+    {
         $registre = $this->class::findOrFail($id);
         $quien = $registre->quien;
         $modelo = strtolower($this->model);
-        $botones = ['volver' => back()->getTargetUrl()];
-        return view('dropzone.index',compact('modelo','id','quien','botones'));
+        $botones = [
+            'volver' => ['link' => back()->getTargetUrl()]
+        ];
+        return view('dropzone.index', compact('modelo', 'id','quien','botones'));
     }
 
 }
+
+
