@@ -26,11 +26,12 @@ class Activity extends Model
             $activity->setUpdatedAt(fechaInglesaLarga($fecha));
         }
 
-        auth()->user()->Activity()->save($activity);
+        $ac = auth()->user()->Activity()->save($activity);
         Alert::success(
             trans('models.modelos.' . substr($activity->model_class, 18)).' '.
             trans("messages.generic.$action")
         );
+        return $ac;
     }
 
     public function scopeProfesor($query, $profesor)
@@ -93,6 +94,7 @@ class Activity extends Model
             case 'email' : $action='envelope';break;
             case 'visita' : $action='car';break;
             case 'phone' : $action='phone';break;
+            case 'book' : $action='book';break;
             default: $action = null;
         }
         $id = $this->id;

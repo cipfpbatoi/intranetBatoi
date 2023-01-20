@@ -100,6 +100,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/colaboracion/{colaboracion}/unauthorize','ColaboracionController@unauthorize');
     Route::get('/colaboracion/{colaboracion}/switch','ColaboracionController@switch');
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
+    Route::post('/colaboracion/{colaboracion}/book', 'ColaboracionController@book');
 
     Route::get('/documentacionFCT/{documento}','DocumentacionFCTController@exec');
 
