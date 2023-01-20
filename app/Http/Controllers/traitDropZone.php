@@ -5,8 +5,8 @@ use Intranet\Entities\Adjunto;
 use Intranet\Services\AttachedFileService;
 use Response;
 
-trait traitDropZone{
-
+trait traitDropZone
+{
     protected function deleteAttached($id)
     {
         $path = strtolower($this->model)."/$id";
@@ -28,7 +28,7 @@ trait traitDropZone{
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()]
         ];
-        return view('dropzone.index', compact('modelo', 'id','quien','botones'));
+        return view('dropzone.index', compact('modelo', 'id', 'quien', 'botones'));
     }
 
 }
