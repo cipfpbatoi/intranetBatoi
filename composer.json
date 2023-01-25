@@ -29,6 +29,7 @@
         "livewire/livewire": "^2.10",
         "mikehaertl/php-pdftk": "^0.8.1",
         "php-webdriver/webdriver": "^1.13",
+        "phpoffice/phpspreadsheet": "^1.26",
         "predis/predis": "^1.1",
         "simplesoftwareio/simple-qrcode": "~4",
         "smalot/pdfparser": "^2.1",

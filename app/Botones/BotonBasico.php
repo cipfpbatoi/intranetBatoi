@@ -15,6 +15,7 @@ class BotonBasico extends Boton
             'href' => $this->href(),
             'class' => $this->clase(),
             'data' => $this->data(),
+            'id' => $this->id(),
             'icon' => $this->icon,
             'text' => $this->text
         ]);

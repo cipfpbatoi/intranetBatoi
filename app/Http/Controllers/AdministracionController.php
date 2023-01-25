@@ -19,6 +19,7 @@ use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
+use Intranet\Services\ExcelService;
 use MongoDB\Driver\Exception\ExecutionTimeoutException;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
@@ -200,38 +201,11 @@ class AdministracionController extends Controller
             }
         }
     }
-/*
+
     public function consulta(){
-        $grupos = Fct::where('asociacion',1)->get()->groupBy('idInstructor','idColaboracion');
-        foreach ($grupos as $grupo){
-            if (count($grupo) > 1) {
-                $first = $grupo->first();
-                $cFct = 0;
-                $eFct = 0;
-                foreach ($grupo as $fct){
-                    if ($first->id != $fct->id &&
-                        $first->idColaboracion === $fct->idColaboracion &&
-                        $first->idInstructor === $fct->idInstructor
-                    ){
-                        foreach ($fct->AlFct as $fctAl) {
-                            $fctAl->idFct = $first->id;
-                            $fctAl->save();
-                            $cFct++;
-                        }
-                        foreach (Activity::where('model_class','Intranet\Entities\Fct')
-                        ->where('model_id',$fct->id)->get() as $activitat){
-                            $activitat->model_id = $first->id;
-                            $activitat->save();
-                            $eFct++;
-                        }
-                        Alert::info("$fct->id canviada a $first->id: $cFct ($eFct)");
-                        $fct->delete();
-                    }
-                }
-            }
-        }
+        ExcelService::read('https://gvaedu-my.sharepoint.com/:x:/r/personal/m_gargallocalduch_edu_gva_es/_layouts/15/Doc.aspx?sourcedoc=%7BE30CFEB8-4F55-4338-96EA-9DCA5274EFDF%7D&file=Annex%20I.%20Relaci%C3%B3%20empreses%20signades.xlsx&action=default&mobileredirect=true');
     }
-*/
+
     public static function v2_50(){
         Alert::info('Version 2.50');
         foreach (Comision::all() as $comision){
@@ -372,7 +346,7 @@ class AdministracionController extends Controller
         return view('espai.show',compact('missatge','doors'));
     }
 
-    public function consulta(){
+    /*public function consulta(){
         $plantilla = hazArray(PPoll::where('remains',true)->get(),'id');
         $polls = hazArray(Poll::whereIn('idPPoll',$plantilla)->get(),'id');
         $curso = cursoAnterior();
@@ -392,5 +366,5 @@ class AdministracionController extends Controller
                 }
             }
         }
-    }
+    }*/
 }
