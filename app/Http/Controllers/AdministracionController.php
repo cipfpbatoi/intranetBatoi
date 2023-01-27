@@ -203,7 +203,9 @@ class AdministracionController extends Controller
     }
 
     public function consulta(){
-        ExcelService::read('https://gvaedu-my.sharepoint.com/:x:/r/personal/m_gargallocalduch_edu_gva_es/_layouts/15/Doc.aspx?sourcedoc=%7BE30CFEB8-4F55-4338-96EA-9DCA5274EFDF%7D&file=Annex%20I.%20Relaci%C3%B3%20empreses%20signades.xlsx&action=default&mobileredirect=true');
+        $fulla = new ExcelService(public_path('/AnnexeI.xlsx'));
+        $sheet = $fulla->render();
+        dd($sheet->getCell('A14'),$sheet->getCell('B14'));
     }
 
     public static function v2_50(){

@@ -219,4 +219,10 @@ class AlumnoFct extends Model
     {
         return $this->fullName;
     }
+
+
+    public function getClassAttribute()
+    {
+        return (fechaInglesa($this->hasta) < Hoy('Y-m-d'))?'bg-red':'';
+    }
 }

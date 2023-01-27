@@ -16,27 +16,24 @@ class ExcelService
      * @param $spreadsheet
      * @param $cells
      */
-    public function __construct($file,  $cells)
+    public function __construct($inputFileName)
     {
-        $this->file = $file;
-        $this->spreadsheet = new Spreadsheet();
-        $this->cells = $cells;
-    }
-
-    public static function read($inputFileName)
-    {
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-        dd($spreadsheet);
+        $this->file = $inputFileName;
+        if (file_exists($inputFileName)) {
+            $this->spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+        } else {
+            $this->spreadsheet = new Spreadsheet();
+        }
     }
 
     public function render()
     {
-        $sheet = $this->spreadsheet->getActiveSheet();
-        foreach ($this->cells as $cell => $value) {
+        return $this->spreadsheet->getActiveSheet();
+        /*foreach ($this->cells as $cell => $value) {
             $sheet->setCellValue($cell, $value);
         }
         $writer = new Xlsx($this->spreadsheet);
-        $writer->save($this->file.'.xlsx');
+        $writer->save($this->file.'.xlsx');*/
     }
 
 

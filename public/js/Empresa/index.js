@@ -37,7 +37,7 @@ const TABLA ='Empresa';
         columns: COLUMNS,
         rowId : ID,
         responsive: true,
-        rowCallback: function (row,data){
+        rowCallback: function (row, data){
             if (data.conveni) {
                 $(row).addClass('bg-green')
             }
