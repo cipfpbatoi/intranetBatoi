@@ -52,7 +52,7 @@ class FctAlumnoController extends IntranetController
             'grid',
             new BotonImg('alumnofct.delete',
                 ['where' => [
-                    'hasta','posterior',hoy()
+                    'hasta','posterior',hace(1),
                 ]]
             )
         );

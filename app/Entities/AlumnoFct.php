@@ -223,6 +223,7 @@ class AlumnoFct extends Model
 
     public function getClassAttribute()
     {
-        return (fechaInglesa($this->hasta) <= Hoy('Y-m-d'))?'bg-red':'';
+        return ($this->asociacion === 3) ? 'bg-purple':
+            ((fechaInglesa($this->hasta) <= Hoy('Y-m-d')) ?'bg-blue-sky':'');
     }
 }
