@@ -37,15 +37,22 @@ class ColaboracionAlumnoController extends IntranetController
     {
         $todos = $this->search();
 
-        $this->crea_pestanas(config('modelos.'.$this->model.'.estados'),"profile.".strtolower($this->model),2,1);
-        Session::put('redirect','ColaboracionAlumnoController@index');
+        $this->crea_pestanas(
+            config('modelos.'.$this->model.'.estados'),
+            "profile.".strtolower($this->model),
+            3,
+            1,
+            'situation'
+        );
+        Session::put('redirect', 'ColaboracionAlumnoController@index');
         return $this->grid($todos);
     }
 
     /**
      * @return mixed
      */
-    public function search(){
+    public function search()
+    {
         $tutor = AuthUser()->Grupo->first()?AuthUser()->Grupo->first()->tutor:null;
         if ($tutor) {
             $colaboracions = Colaboracion::with('propietario')->with('Centro')->MiColaboracion(null, $tutor)->get();
@@ -53,8 +60,7 @@ class ColaboracionAlumnoController extends IntranetController
                 $this->titulo = ['quien' => $colaboracions->first()->Ciclo->literal];
             }
             return $colaboracions->sortBy('tutor')->sortBy('localidad');
-        }
-        else {
+        } else {
             Alert::danger('No hem trobat el teu tutor');
             return collect();
         }

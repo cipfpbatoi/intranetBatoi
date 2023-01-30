@@ -134,6 +134,13 @@ class Colaboracion extends Model
         return $this->updated_at;
     }
 
+    private function dniTutor(){
+
+        return isset(authUser()->nia)?
+            authUser()->tutor[0]->dni:
+            authUser()->dni;
+    }
+
     public function getSituationAttribute()
     {
         foreach ($this->fcts->where('asociacion', 1) as $fct) {
@@ -141,15 +148,17 @@ class Colaboracion extends Model
                 return 4;
             }
         }
-
-        if ($this->tutor != authUser()->dni) {
+        if ($this->tutor != $this->dniTutor()) {
             return 1;
         }
         if ($this->estado == 1 || $this->estado == 3) {
             return 2;
         }
+        if ($this->estado == 2) {
+            return 3;
+        }
+        return 1;
 
-        return 3;
 
     }
 
