@@ -29,7 +29,7 @@ use Intranet\Http\PrintResources\ExempcioResource;
 
 class FctAlumnoController extends IntranetController
 {
-    use traitImprimir;
+    use traitImprimir,traitDropZone;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';
@@ -50,7 +50,8 @@ class FctAlumnoController extends IntranetController
     {
         $this->panel->setBoton(
             'grid',
-            new BotonImg('alumnofct.delete',
+            new BotonImg(
+                'alumnofct.delete',
                 ['where' => [
                     'hasta','posterior',hace(1),
                 ]]

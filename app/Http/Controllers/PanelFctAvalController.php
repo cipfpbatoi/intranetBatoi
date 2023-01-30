@@ -133,11 +133,12 @@ class PanelFctAvalController extends IntranetController
             new BotonImg('fct.insercio', ['img' => 'fa-check-square-o', 'roles' => config(self::ROLES_ROL_TUTOR),
             'where' => ['insercion', '==', '1','asociacion','==',1,'calificacion', '==', '1']]
             ));
+        /*
         $this->panel->setBoton(
             'grid',
             new BotonImg('fct.link', ['where' => ['calificacion','>=',1,'asociacion','==',1]]
             ));
-
+        */
 
     }
 
@@ -455,7 +456,9 @@ class PanelFctAvalController extends IntranetController
             'volver' => ['link' => back()->getTargetUrl()],
             'final' => [
                 'link' =>"/fct/$id/upload",
-                'message' => "Este procediment l'has de fer quan tingues tota la documentacion de totes les FCT completes. Una vegada fet no es pot tornar arrere."
+                'message' => "Este procediment l'has de fer quan tingues tota
+                     la documentació de totes les FCT completes.
+                      Una vegada fet no es pot tornar arrere."
                 ]
         ];
         return view('dropzone.index', compact('modelo', 'id', 'quien', 'botones'));

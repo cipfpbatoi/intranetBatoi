@@ -25,6 +25,7 @@ trait traitDropZone
         $registre = $this->class::findOrFail($id);
         $quien = $registre->quien;
         $modelo = strtolower($this->model);
+        //dd($modelo);
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()]
         ];
