@@ -267,9 +267,9 @@ class SaoController extends Controller
                 echo $e->getMessage();
             }
         }
-        if (count($dades)){
+        if (count($dades)) {
             foreach ($dades as $dada) {
-                if (!$dada['centre']['idSao']) {
+                if (!isset($dada['centre']['idSao'])) {
                     $idEmpresa = $dada['idEmpresa'];
                     $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
                     sleep(1);
@@ -286,7 +286,7 @@ class SaoController extends Controller
             }
             $driver->close();
             session(compact('dades'));
-            return view('sao.importa',compact('dades'));
+            return view('sao.importa', compact('dades'));
         } else {
             $driver->close();
             return redirect(route('alumnofct.index'));
