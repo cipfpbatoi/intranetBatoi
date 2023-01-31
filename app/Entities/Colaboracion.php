@@ -134,8 +134,8 @@ class Colaboracion extends Model
         return $this->updated_at;
     }
 
-    private function dniTutor(){
-
+    private function dniTutor()
+    {
         return isset(authUser()->nia)?
             authUser()->tutor[0]->dni:
             authUser()->dni;
@@ -158,8 +158,6 @@ class Colaboracion extends Model
             return 3;
         }
         return 1;
-
-
     }
 
 

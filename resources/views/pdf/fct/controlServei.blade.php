@@ -29,7 +29,7 @@
             <td style="text-align:center;font-weight: bold;font-size: 0.8em">SIGNATURA TUTOR</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">SIGNATURA CAP PRÀCTIQUES</td>
         </tr>
-        @foreach ($todos as $fct)
+        @foreach ($todos??[] as $fct)
             <tr style="height: 50px">
                 <td style="text-align:left;font-size: 0.9em ">
                     {{ $fct->Fct->Colaboracion->Centro->nombre }} ({{ $fct->Alumno->fullName }})
