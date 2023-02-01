@@ -82,9 +82,15 @@ class SaoController extends Controller
                     $driver->navigate()->to("https://foremp.edu.gva.es/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2");
                     sleep(1);
                     try {
-                        $name = trim($driver->findElement(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr:nth-child(2) td:nth-child(1)"))->getText());
-                        $onclick = $driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Descargar']"))->getAttribute('onclick');
-                        $cut1 = explode("'",$onclick);
+                        $name = trim(
+                            $driver->findElement(
+                                WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr:nth-child(2) td:nth-child(1)")
+                            )->getText()
+                        );
+                        $onclick = $driver->findElement(
+                            WebDriverBy::cssSelector(".botonSelec[value='Descargar']")
+                        )->getAttribute('onclick');
+                        $cut1 = explode("'", $onclick);
                         AttachedFileService::saveLink(
                             $name,
                             "https://foremp.edu.gva.es/".$cut1[1],
@@ -413,7 +419,9 @@ class SaoController extends Controller
 
     private function igual($intranet, $sao)
     {
-        if (trim(strtolower(eliminarTildes($intranet))) == trim(strtolower(eliminarTildes($sao)))) return null;
+        if (trim(strtolower(eliminarTildes($intranet))) == trim(strtolower(eliminarTildes($sao)))) {
+            return null;
+        }
         return array('intranet'=>$intranet,'sao'=>$sao);
     }
 
@@ -727,7 +735,7 @@ class SaoController extends Controller
         } else{
             $driver->findElement(WebDriverBy::cssSelector("p.celdaInfoAlumno a:nth-child(1)"))->click();
             sleep(1);
-            return $this->consultaDiario($driver,$driver->findElement(WebDriverBy::cssSelector("#contenido")));
+            return $this->consultaDiario($driver, $driver->findElement(WebDriverBy::cssSelector("#contenido")));
         }
     }
 }
