@@ -35,13 +35,15 @@ class SaoController extends Controller
     protected $server_url;
     const WEB = 'https://foremp.edu.gva.es/index.php';
 
-    public function __construct(){
-        $this->server_url = env('SELENIUM_URL','http://172.16.9.10:4444');
+    public function __construct()
+    {
+        $this->server_url = env('SELENIUM_URL', 'http://172.16.9.10:4444');
         //$this->server_url = env('SELENIUM_URL','http://192.168.56.1:4444');
 
         return parent::__construct();
     }
-    public function index(){
+    public function index()
+    {
         $tutores = Profesor::tutoresFCT()->orderBy('apellido1')->orderBy('apellido2')->get();
         $action = 'download';
         return view('sao.index',compact('tutores','action'));
