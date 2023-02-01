@@ -248,9 +248,11 @@ class SaoController extends Controller
                                             $dades[$index]['centre']['idSao'] = $centro->idSao;
                                         } else {
                                             Alert::danger("No trobe col·laboració del centre $nameCentre amb el teu cicle");
+                                            unset($dades[$index]);
                                         }
                                     } else {
                                         $alumno = Alumno::find($dades[$index]['nia']);
+                                        unset($dades[$index]);
                                         Alert::danger("Centro $nameCentre  per alumne $alumno->shorName no trobat. Revisa la col·laboració. Afegix instructor al centre de treball. Revisa el seus dni");
                                     }
                                 } else {
@@ -344,7 +346,7 @@ class SaoController extends Controller
                     $fctAl->idSao = $dades[$key]['idSao'];
                     $fctAl->save();
                 } else {
-                    $fct = Fct::whereNull('idColaboracion')->where('asociacion',2)->first();
+                    $fct = Fct::whereNull('idColaboracion')->where('asociacion', 2)->first();
                     if (!$fct){
                         $erasmus = Erasmus::find($dades[$key]['idSao']);
                         if (!$erasmus) {
