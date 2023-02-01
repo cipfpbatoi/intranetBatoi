@@ -85,7 +85,7 @@ class Profesor extends ModelPoll
                 if (isset($option2[$profesor->dni])) {
                     foreach ($option2[$profesor->dni] as $key => $optionVotes) {
                         foreach ($optionVotes as $optionVote) {
-                            $votes[$key]->push($optionVote);
+                            $votes['departamento'][$departamento->id][$key]->push($optionVote);
                         }
                     }
                 }
