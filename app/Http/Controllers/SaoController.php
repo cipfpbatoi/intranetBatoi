@@ -145,7 +145,8 @@ class SaoController extends Controller
         return redirect(route('home.profesor'));
     }
 
-    public function sync(Request $request){
+    public function sync(Request $request)
+    {
         $dni = $request->profesor;
         $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
         try {
@@ -182,7 +183,8 @@ class SaoController extends Controller
         return back();
     }
 
-    public function download(Request $request){
+    public function download(Request $request)
+    {
 
         $dni = $request->profesor??AuthUser()->dni;
         $grupo = Grupo::where('tutor',$dni)->first();
@@ -293,7 +295,8 @@ class SaoController extends Controller
         }
     }
 
-    public function importa(Request $request){
+    public function importa(Request $request)
+    {
         $dades = session('dades');
         foreach ($request->request as $key => $value) {
             if ($value == 'on') {
@@ -312,15 +315,16 @@ class SaoController extends Controller
                             $dades[$key]['cicle']
                         );
                     }
-                    $centro->instructores()->syncWithoutDetaching($instructor->dni);
+                    $dni = ($instructor->dni==0)?$dades[$key]['centre']['instructorDNI']:$instructor->dni;
+                    $centro->instructores()->syncWithoutDetaching($dni);
                     $fct = Fct::where('idColaboracion', $dades[$key]['colaboracio']['id'])
-                        ->where('idInstructor', $instructor->dni)
+                        ->where('idInstructor', $dni)
                         ->first();
                     if (!$fct) {
                         $fct = new Fct([
                             'idColaboracion' => $dades[$key]['colaboracio']['id'],
                             'asociacion' => 1,
-                            'idInstructor' => $instructor->dni,
+                            'idInstructor' => $dni,
                         ]);
                         $fct->save();
                     }
@@ -526,8 +530,11 @@ class SaoController extends Controller
         $instructor = new Instructor([
             'dni' => $instructorDNI,
             'name' => explode(' ', $instructorName)[0],
-            'surnames' => substr($instructorName, strlen(explode(' ', $instructorName)[0]),
-                strlen($instructorName)),
+            'surnames' => substr(
+                $instructorName,
+                strlen(explode(' ', $instructorName)[0]),
+                strlen($instructorName)
+            ),
             'email' => $emailCentre,
             'telefono' => $telefonoCentre,
             'departamento' => isset($ciclo->ciclo)?$ciclo->ciclo:$ciclo
