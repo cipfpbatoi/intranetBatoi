@@ -44,7 +44,7 @@ class Profesor extends ModelPoll
     public static function aggregate(&$votes, $option1, $option2)
     {
         self::aggregateGrupo($option1, $votes);
-        //self::aggregateDepartamento($option2, $votes);
+        self::aggregateDepartamento($option2, $votes);
     }
 
     public static function has()
@@ -85,7 +85,9 @@ class Profesor extends ModelPoll
                 if (isset($option2[$profesor->dni])) {
                     foreach ($option2[$profesor->dni] as $key => $optionVotes) {
                         foreach ($optionVotes as $optionVote) {
-                            $votes[$key]->push($optionVote);
+                            if (isset($votes[$key])) {
+                                $votes[$key]->push($optionVote);
+                            }
                         }
                     }
                 }
