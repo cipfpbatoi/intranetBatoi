@@ -32,13 +32,15 @@ use Exception;
 class SaoController extends Controller
 {
     const TD_NTH_CHILD_2 = "td:nth-child(2)";
+    const TR_NTH_CHILD_2 = "tr:nth-child(2)";
+    const TD_NTH_CHILD_3 = "td:nth-child(3)";
     protected $server_url;
     const WEB = 'https://foremp.edu.gva.es/index.php';
 
     public function __construct()
     {
         $this->server_url = env('SELENIUM_URL', 'http://172.16.9.10:4444');
-        //$this->server_url = env('SELENIUM_URL','http://192.168.56.1:4444');
+        //$this->server_url = env('SELENIUM_URL', 'http://192.168.56.1:4444');
 
         return parent::__construct();
     }
@@ -46,7 +48,7 @@ class SaoController extends Controller
     {
         $tutores = Profesor::tutoresFCT()->orderBy('apellido1')->orderBy('apellido2')->get();
         $action = 'download';
-        return view('sao.index', compact('tutores','action'));
+        return view('sao.index', compact('tutores', 'action'));
     }
 
     public function post(Request $request)
@@ -72,13 +74,12 @@ class SaoController extends Controller
 
     public function annexes(Request $request)
     {
-        $dni = $request->profesor;
         $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
         try {
             $this->login($driver, trim($request->password));
             $alumnes = [];
             foreach (AlumnoFctAval::realFcts()->activa()->get() as $fct){
-                if ($fct->idSao){
+                if ($fct->idSao) {
                     $driver->navigate()->to("https://foremp.edu.gva.es/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2");
                     sleep(1);
                     try {
@@ -99,7 +100,7 @@ class SaoController extends Controller
                             "alumnofctaval/$fct->id"
                         );
                         $alumnes[] = $fct->Alumno->shortName;
-                    } catch (Exception $e){
+                    } catch (Exception $e) {
                         Alert::info("Annexes de ".$fct->Alumno->fullName." no trobats");
                     }
 
@@ -241,9 +242,15 @@ class SaoController extends Controller
                                 $driver->findElement(WebDriverBy::cssSelector("button.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-text-only"))->click();
                                 sleep(0.5);
                                 if ($dades[$index]['erasmus'] == 'No') {
-                                    if ($centro = $this->buscaCentro($nameEmpresa, $idEmpresa, $nameCentre,
+                                    if ($centro = $this->buscaCentro(
+                                        $nameEmpresa,
+                                        $idEmpresa,
+                                        $nameCentre,
                                         $dades[$index]['centre']['telefon'],
-                                        $dades[$index]['centre']['email'], $ciclo->id, $instructor)) {
+                                        $dades[$index]['centre']['email'],
+                                        $ciclo->id,
+                                        $instructor
+                                    )) {
 
                                         $dades[$index]['centre']['id'] = $centro->id;
                                         if ($colaboracion = Colaboracion::where('idCiclo', $ciclo->id)
@@ -273,7 +280,7 @@ class SaoController extends Controller
                         }
                     }
                 }
-            }catch (IntranetException $e){
+            }catch (IntranetException $e) {
                 Alert::warning($e->getMessage());
             }catch (Exception $e) {
                 echo $e->getMessage();
@@ -353,7 +360,7 @@ class SaoController extends Controller
                     $fctAl->save();
                 } else {
                     $fct = Fct::whereNull('idColaboracion')->where('asociacion', 2)->first();
-                    if (!$fct){
+                    if (!$fct) {
                         $erasmus = Erasmus::find($dades[$key]['idSao']);
                         if (!$erasmus) {
                             $erasmus = new Erasmus();
@@ -392,8 +399,9 @@ class SaoController extends Controller
         return redirect(route('alumnofct.index'));
     }
 
-    private function descomposaClau($clau){
-        $keyDescomposada = explode('_',$clau);
+    private function descomposaClau($clau)
+    {
+        $keyDescomposada = explode('_', $clau);
         $field = $keyDescomposada[2];
         $idFct = $keyDescomposada[1];
         $tipo = $keyDescomposada[0];
@@ -404,11 +412,11 @@ class SaoController extends Controller
 
     }
 
-    public function compara(Request $request){
+    public function compara(Request $request)
+    {
         $dades = session('dades');
-        $sao = array();
-        foreach ($request->request as $key => $value){
-            if ($value == 'sao'){
+        foreach ($request->request as $key => $value) {
+            if ($value == 'sao') {
                 list($modelo,$field,$idFct,$tipo) = $this->descomposaClau($key);
                 $modelo->$field = $dades[$idFct][$tipo][$field]['sao'];
                 $modelo->save();
@@ -427,7 +435,6 @@ class SaoController extends Controller
 
     public function check(Request $request)
     {
-        $dni = $request->profesor;
         $driver = RemoteWebDriver::create($this->server_url, DesiredCapabilities::firefox());
         $dades = array();
         try {
@@ -437,35 +444,60 @@ class SaoController extends Controller
                     $fct = $fctAl->Fct;
                     $centro = $fct->Colaboracion->Centro;
                     $empresa = $centro->Empresa;
-                    if (!isset($dades[$fct->id]['empresa']['idEmpresa'])){
+                    if (!isset($dades[$fct->id]['empresa']['idEmpresa'])) {
                         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=10&idFct=$fctAl->idSao");
                         sleep(1);
                         $dades[$fct->id]['nameEmpresa'] = $empresa->nombre;
                         $dades[$fct->id]['nameCentro'] = $centro->nombre;
-                        $dades[$fct->id]['empresa']['idEmpresa'] = $driver->findElement(WebDriverBy::cssSelector('#empresaFCT'))->getAttribute('value');
-                        $dades[$fct->id]['empresa']['concierto'] = $this->igual($empresa->concierto,$driver->findElement(WebDriverBy::cssSelector('#numConciertoEmp'))->getAttribute('value'));
+                        $dades[$fct->id]['empresa']['idEmpresa'] =
+                            $driver->findElement(WebDriverBy::cssSelector('#empresaFCT'))
+                                ->getAttribute('value');
+                        $dades[$fct->id]['empresa']['concierto'] =
+                            $this->igual(
+                                $empresa->concierto,
+                                $driver->findElement(WebDriverBy::cssSelector('#numConciertoEmp'))
+                                    ->getAttribute('value'));
 
-                        $dadesEmpresa = $driver->findElement(WebDriverBy::cssSelector("td#celdaDatosEmpresa table.infoCentroBD tbody"));
-                        $detallesEmpresa = $dadesEmpresa->findElement(WebDriverBy::cssSelector("tr:nth-child(2)"));
-                        $dades[$fct->id]['empresa']['cif'] = $this->igual($empresa->cif,$detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(1)"))->getText());
-                        $dades[$fct->id]['empresa']['nombre'] = $this->igual($empresa->nombre,$detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText());
-                        $dades[$fct->id]['empresa']['direccion'] = $this->igual($empresa->direccion,$detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(3)"))->getText());
-                        $dades[$fct->id]['empresa']['localidad'] = $this->igual($empresa->localidad,$detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
+                        $dadesEmpresa = $driver
+                            ->findElement(WebDriverBy::cssSelector("td#celdaDatosEmpresa table.infoCentroBD tbody"));
+                        $detallesEmpresa = $dadesEmpresa->findElement(WebDriverBy::cssSelector(self::TR_NTH_CHILD_2));
+                        $dades[$fct->id]['empresa']['cif'] = $this->igual(
+                            $empresa->cif,
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(1)"))->getText());
+                        $dades[$fct->id]['empresa']['nombre'] = $this->igual(
+                            $empresa->nombre,
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText());
+                        $dades[$fct->id]['empresa']['direccion'] = $this->igual(
+                            $empresa->direccion,
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))->getText());
+                        $dades[$fct->id]['empresa']['localidad'] = $this->igual(
+                            $empresa->localidad,
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
                         $detallesEmpresa = $dadesEmpresa->findElement(WebDriverBy::cssSelector("tr:nth-child(4)"));
-                        $dades[$fct->id]['empresa']['telefono'] = $this->igual($empresa->telefono,$detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(1)"))->getText());
-                        $dades[$fct->id]['empresa']['gerente'] = $this->igual($empresa->gerente,$detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText());
-                        $dades[$fct->id]['empresa']['actividad'] = $this->igual($empresa->actividad,$detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(3)"))->getText());
-                        $dades[$fct->id]['empresa']['email'] = $this->igual($empresa->email,$detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
+                        $dades[$fct->id]['empresa']['telefono'] = $this->igual(
+                            $empresa->telefono,
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(1)"))->getText());
+                        $dades[$fct->id]['empresa']['gerente'] = $this->igual(
+                            $empresa->gerente,
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText());
+                        $dades[$fct->id]['empresa']['actividad'] = $this->igual(
+                            $empresa->actividad,
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))->getText());
+                        $dades[$fct->id]['empresa']['email'] = $this->igual(
+                            $empresa->email,
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText());
 
-                        $dadesCentro = $driver->findElement(WebDriverBy::cssSelector("td#celdaDatosCT table.infoCentroBD tbody"));
-                        $detallesCentro = $dadesCentro->findElement(WebDriverBy::cssSelector("tr:nth-child(2)"));
+                        $dadesCentro = $driver->findElement(
+                            WebDriverBy::cssSelector("td#celdaDatosCT table.infoCentroBD tbody")
+                        );
+                        $detallesCentro = $dadesCentro->findElement(WebDriverBy::cssSelector(self::TR_NTH_CHILD_2));
                         $dades[$fct->id]['centro']['nombre'] = $this->igual(
                             $centro->nombre,
                             $detallesCentro->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText()
                         );
                         $dades[$fct->id]['centro']['localidad'] = $this->igual(
                             $centro->localidad,
-                            $detallesCentro->findElement(WebDriverBy::cssSelector("td:nth-child(3)"))->getText()
+                            $detallesCentro->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))->getText()
                         );
                         $dades[$fct->id]['centro']['telefono'] = $this->igual(
                             $centro->telefono,
@@ -477,9 +509,14 @@ class SaoController extends Controller
                         );
                         $dades[$fct->id]['centro']['horarios'] = $this->igual(
                             $centro->horarios,
-                            $driver->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody tr:nth-child(14) td:nth-child(2)"))->getText()
+                            $driver->findElement(
+                                WebDriverBy
+                                    ::cssSelector("table.tablaDetallesFCT tbody tr:nth-child(14) td:nth-child(2)")
+                            )->getText()
                         );
-                        $driver->findElement(WebDriverBy::cssSelector("button.botonRegistro[value='Registrarse']"))->click();
+                        $driver->findElement(
+                            WebDriverBy::cssSelector("button.botonRegistro[value='Registrarse']")
+                        )->click();
                         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=34&idCT=$centro->idSao");
                         sleep(1);
                         $dades[$fct->id]['centro']['direccion'] = $this->igual(
@@ -495,19 +532,23 @@ class SaoController extends Controller
                             )->getAttribute('value')
                         );
                     }
-                } catch (NoSuchElementException $e){
+                } catch (NoSuchElementException $e) {
 
                 }
 
             }
-            foreach(AlumnoFctAval::misErasmus()->get() as $fctAl){
-                $erasmus = Erasmus::where('idSao',$fctAl->idSao)->whereNull('direccio')->first();
+            foreach (AlumnoFctAval::misErasmus()->get() as $fctAl) {
+                $erasmus = Erasmus::where('idSao', $fctAl->idSao)->whereNull('direccio')->first();
                 if ($erasmus) {
                     $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=10&idFct=$fctAl->idSao");
                     sleep(1);
-                    $dadesEmpresa = $driver->findElement(WebDriverBy::cssSelector("td#celdaDatosEmpresa table.infoCentroBD tbody"));
-                    $detallesEmpresa = $dadesEmpresa->findElement(WebDriverBy::cssSelector("tr:nth-child(2)"));
-                    $erasmus->direccio = $detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(3)"))->getText();
+                    $dadesEmpresa = $driver->findElement(
+                        WebDriverBy::cssSelector("td#celdaDatosEmpresa table.infoCentroBD tbody")
+                    );
+                    $detallesEmpresa = $dadesEmpresa->findElement(WebDriverBy::cssSelector(self::TR_NTH_CHILD_2));
+                    $erasmus->direccio = $detallesEmpresa
+                        ->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))
+                        ->getText();
                     $erasmus->save();
                 }
             }
@@ -515,13 +556,12 @@ class SaoController extends Controller
             Alert::danger($e);
         }
         $driver->close();
-        if (count($dades)){
+        if (count($dades)) {
             session(compact('dades'));
-            return view('sao.compara',compact('dades'));
+            return view('sao.compara', compact('dades'));
         } else {
             return redirect(route('alumnofct.index'));
         }
-        return back();
     }
     /**
      * @param  string  $instructorDNI
@@ -560,7 +600,7 @@ class SaoController extends Controller
      * @return void
      * @throws \Facebook\WebDriver\Exception\UnknownErrorException
      */
-    private function login(RemoteWebDriver $driver,$password): void
+    private function login(RemoteWebDriver $driver, $password): void
     {
         $driver->get($this::WEB);
         $dni = substr(AuthUser()->dni, -9);
@@ -573,7 +613,7 @@ class SaoController extends Controller
         $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
         sleep(1);
         $name = $driver->findElement(WebDriverBy::cssSelector('.botonform'))->getAttribute('name');
-        if ($name === 'login'){
+        if ($name === 'login') {
             throw new IntranetException('Password no vàlid. Has de ficarl el del SAO');
         }
     }
@@ -613,7 +653,7 @@ class SaoController extends Controller
     {
         $enlace = $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"));
         $href = explode("'", $enlace->getAttribute('href'))[1];
-        $fctAl = AlumnoFct::where('idSao',$href)->get()->first();
+        $fctAl = AlumnoFct::where('idSao', $href)->get()->first();
         if ($fctAl) {
             throw new \Exception("Fct del SAO $href ja donada d'alta");
         }
@@ -628,40 +668,55 @@ class SaoController extends Controller
     private function getPeriode(\Facebook\WebDriver\Remote\RemoteWebElement $tr): array
     {
         $dadesPeriode = $tr->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
-        $dates = explode('-',$dadesPeriode);
-        $desde = fechaInglesaCurta(trim($dates[0]),'/');
-        $hasta = fechaInglesaCurta(trim($dates[1]),'/');
+        $dates = explode('-', $dadesPeriode);
+        $desde = fechaInglesaCurta(trim($dates[0]), '/');
+        $hasta = fechaInglesaCurta(trim($dates[1]), '/');
         return array($desde, $hasta);
     }
 
 
-    private function buscaCentro($nameEmpresa,$idEmpresa,$nameCentro,$telefonoCentre,$emailCentre,$idCiclo,$instructor){
+    private function buscaCentro(
+        $nameEmpresa,
+        $idEmpresa,
+        $nameCentro,
+        $telefonoCentre,
+        $emailCentre,
+        $idCiclo,
+        $instructor
+    )
+    {
         if ($emailCentre == '') {
             $emailCentre = 'zz';
         }
-        $centro = Centro::where('nombre','like',$nameCentro)->first();
-        if (!$centro){
+        $centro = Centro::where('nombre', 'like', $nameCentro)->first();
+
+        if (!$centro) {
             $centros = array();
             if ($instructor) {
                 foreach ($instructor->centros as $centre) {
-                    $centros[$centre->id] = 1;
+                    $centros[$centre->id] = 2;
                 }
             }
-            foreach (Colaboracion::where('telefono','like',$telefonoCentre)->orWhere('email',$emailCentre)->get() as $colaboracion){
-                $centros[$colaboracion->idCentro] = isset($centros[$colaboracion->idCentro])?$centros[$colaboracion->idCentro]+1:1;
+            foreach (Colaboracion::miColaboracion()
+                         ->where('telefono', 'like', $telefonoCentre)
+                         ->get() as $colaboracion) {
+                $centros[$colaboracion->idCentro] =
+                    isset($centros[$colaboracion->idCentro])?
+                        $centros[$colaboracion->idCentro]+1:
+                        1;
             }
-            foreach (Centro::where('email',$emailCentre)->get() as $centre){
+            foreach (Centro::where('email', $emailCentre)->get() as $centre) {
                 $centros[$centre->id] = isset($centros[$centre->id])?$centros[$centre->id]+1:1;
             }
-            foreach ($centros as $key => $centre){
-                $colaboracion = Colaboracion::where('idCentro',$key)->where('idCiclo',$idCiclo)->first();
+            foreach ($centros as $key => $centre) {
+                $colaboracion = Colaboracion::where('idCentro', $key)->where('idCiclo', $idCiclo)->first();
                 if (!$colaboracion) {
                     $centros[$key] = 0;
                 }
             }
-            if (count($centros)){
+            if (count($centros)) {
                 arsort($centros);
-                if (current($centros) > 0){
+                if (current($centros) > 0) {
                     $centre = key($centros);
                     $centro = Centro::find($centre);
                 } else {
@@ -671,9 +726,10 @@ class SaoController extends Controller
                 return null;
             }
         }
-        $empresa = Empresa::where('idSao',$idEmpresa)->first();
-        if (!$empresa){
-            $empresa = Empresa::where('nombre',$nameEmpresa)->first()??($centro?$centro->Empresa:null);
+
+        $empresa = Empresa::where('idSao', $idEmpresa)->first();
+        if (!$empresa) {
+            $empresa = Empresa::where('nombre', $nameEmpresa)->first()??($centro?$centro->Empresa:null);
             if ($empresa) {
                 $empresa->idSao = $idEmpresa;
                 $empresa->save();
@@ -682,11 +738,12 @@ class SaoController extends Controller
         return $centro;
     }
 
-    private function findProfesor($dni,$tableTutores){
+    private function findProfesor($dni, $tableTutores)
+    {
         $find = null;
         $tutores = $tableTutores->findElements(WebDriverBy::cssSelector("tr"));
-        foreach ($tutores as $index => $tutor){
-            if ($index > 0){
+        foreach ($tutores as $index => $tutor) {
+            if ($index > 0) {
                 $dniTabla = trim($tutor->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText());
                 if ($dniTabla == $dni) {
                     $find = $tutor;
@@ -719,20 +776,25 @@ class SaoController extends Controller
         sleep(1);
     }
 
-    private function consultaDiario(RemoteWebDriver $driver,\Facebook\WebDriver\Remote\RemoteWebElement $contenido){
+    private function consultaDiario(RemoteWebDriver $driver, \Facebook\WebDriver\Remote\RemoteWebElement $contenido)
+    {
         $find = false;
         $i=4;
         do {
             $a = $contenido->findElements(WebDriverBy::cssSelector("#texto_cont p.diasDelDiario a"));
-            $hores = trim($contenido->findElement(WebDriverBy::cssSelector("div#diario$i table.tablaDiario tbody tr:nth-child(2) td.celda1:nth-child(4)"))->getText());
+            $hores = trim(
+                $contenido->findElement(
+                        WebDriverBy::
+                        cssSelector("div#diario$i table.tablaDiario tbody tr:nth-child(2) td.celda1:nth-child(4)")
+                    )->getText());
             if ($hores > 0) {
                 $find = true;
-                $dia = explode(',',$a[$i]->getAttribute('href'))[2];
+                $dia = explode(',', $a[$i]->getAttribute('href'))[2];
             }
         } while (!$find && $i-- >0);
         if ($find) {
             return array($hores, $dia);
-        } else{
+        } else {
             $driver->findElement(WebDriverBy::cssSelector("p.celdaInfoAlumno a:nth-child(1)"))->click();
             sleep(1);
             return $this->consultaDiario($driver, $driver->findElement(WebDriverBy::cssSelector("#contenido")));
