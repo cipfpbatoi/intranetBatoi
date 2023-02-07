@@ -133,13 +133,6 @@ class PanelFctAvalController extends IntranetController
             new BotonImg('fct.insercio', ['img' => 'fa-check-square-o', 'roles' => config(self::ROLES_ROL_TUTOR),
             'where' => ['insercion', '==', '1','asociacion','==',1,'calificacion', '==', '1']]
             ));
-        /*
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg('fct.link', ['where' => ['calificacion','>=',1,'asociacion','==',1]]
-            ));
-        */
-
     }
 
 
@@ -467,8 +460,8 @@ class PanelFctAvalController extends IntranetController
 
     private function tipoDocument($title)
     {
-        $tipos = ['A5'=>'10','A6'=>'11','AVI'=>'11','AV'=>'10','AN.VI'=>'11','AN.V'=>'10',
-            'ANEXO5'=>'10','ANEXO6'=>'11','ANNEXVI'=>'11','ANNEXV'=>'10'];
+        $tipos = ['A5'=>'10','AV'=>'10','AN.V'=>'10',
+            'ANEXO5'=>'10','ANNEXV'=>'10'];
 
         foreach ($tipos as $key => $tipo) {
             if (str_contains(strtoupper($title), $key)) {
@@ -488,33 +481,28 @@ class PanelFctAvalController extends IntranetController
             Alert::danger($e->getMessage());
             return back();
         }
-        foreach (Adjunto::where('route', 'alumnofctaval/'.$id)->where('extension', 'pdf')->get() as $key => $adjunto) {
-            $document[$key]['title'] = $this->tipoDocument($adjunto->title);
-            $document[$key]['file'] = $adjunto->route;
-            $document[$key]['name'] = $adjunto->name;
-            $document[$key]['size'] = $adjunto->size;
-            $document[$key]['dni'] = $fct->Alumno->dni;
-            $document[$key]['fct'] = $fct;
+        $adjunto = Adjunto::where('route', 'alumnofctaval/'.$id)
+                     ->where('extension', 'pdf')
+                     ->orderBy('created_at', 'desc')
+                     ->get()
+                     ->first();
+
+        $document['title'] = 10;
+        $document['file'] = $adjunto->route;
+        $document['name'] = $adjunto->name;
+        $document['size'] = $adjunto->size;
+        $document['dni'] = $fct->Alumno->dni;
+        $document['fct'] = $fct;
+
+        try {
+            $this->SService->uploadFile($document);
+            $fct->a56 = 2;
+            $fct->save();
+            Alert::success('Document enviat correctament');
+        } catch (IntranetException $e) {
+            Alert::danger($e->getMessage());
         }
-        if (count($document) == 2) {
-            if (!isset($document[0]['title'])|| !$document[1]['title']) {
-                if ($document[0]['size'] > $document[1]['size']) {
-                    $document[0]['title'] = '10';
-                    $document[1]['title'] = '11';
-                } else {
-                    $document[0]['title'] = '11';
-                    $document[1]['title'] = '10';
-                }
-            }
-            try {
-                $this->SService->uploadA56($document);
-                Alert::success('Documentos enviados correctamente');
-            } catch (IntranetException $e) {
-                Alert::danger($e->getMessage());
-            }
-        } else {
-            Alert::danger("Hi ha ".count($document)." documents");
-        }
+
         return back();
     }
 }
