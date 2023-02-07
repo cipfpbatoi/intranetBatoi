@@ -7,7 +7,9 @@
         <label class="control-label" for="idCiclo">Cicle</label>
         <select id='idCiclo' name='idCiclo' class="form-control">
                 @foreach ($ciclos as $ciclo)
-                    <option value='{{ $ciclo->id }}'>{!! $ciclo->ciclo !!}</option>
+                    <option value='{{ $ciclo->id }}' {{ old("idCiclo") == $ciclo->id ? "selected":""}}>
+                        {!! $ciclo->ciclo !!}
+                    </option>
                 @endforeach
         </select>
     </div>
@@ -15,7 +17,8 @@
         <label class="control-label" for="idCentro">Centre</label>
         <select id='idCentro' name='idCentro' class="form-control">
             @foreach ($elemento->centros as $centro)
-                <option value='{{ $centro->id }}'>{!! $centro->nombre !!} ({!! $centro->direccion !!})
+                <option value='{{ $centro->id }}' {{ old("idCentro") == $centro->id ? "selected":""}}>
+                    {!! $centro->nombre !!} ({!! $centro->direccion !!})
                 </option>
             @endforeach
         </select>
