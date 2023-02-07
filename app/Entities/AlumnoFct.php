@@ -124,7 +124,7 @@ class AlumnoFct extends Model
     }
     public function getNombreAttribute()
     {
-        return $this->getContactoAttribute();
+        return $this->Alumno->ShortName;
     }
     public function getFullNameAttribute()
     {
@@ -188,7 +188,7 @@ class AlumnoFct extends Model
     }
     public function getInstructorAttribute()
     {
-        return substr($this->Fct->XInstructor, 0, 25);
+        return substr($this->Fct->XInstructor, 0, 30);
     }
     
     public function getDesdeAttribute($entrada)
