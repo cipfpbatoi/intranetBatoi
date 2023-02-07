@@ -34,7 +34,7 @@ class FctAlumnoController extends IntranetController
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';
     protected $model = 'AlumnoFct';
-    protected $gridFields = ['Nombre', 'Centro', 'Instructor', 'desde', 'hasta', 'horasRealizadas', 'finPracticas'];
+    protected $gridFields = ['Nombre', 'Centro', 'Instructor', 'desde',  'horasRealizadas','hasta', 'finPracticas'];
     protected $profile = false;
     protected $titulo = [];
     protected $parametresVista = ['modal' => ['extended', 'saoPassword', 'loading']];
