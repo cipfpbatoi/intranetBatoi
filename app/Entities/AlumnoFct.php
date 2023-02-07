@@ -184,11 +184,11 @@ class AlumnoFct extends Model
     }
     public function getCentroAttribute()
     {
-        return $this->Fct->Centro;
+        return substr($this->Fct->Centro, 0, 30);
     }
     public function getInstructorAttribute()
     {
-        return $this->Fct->XInstructor;
+        return substr($this->Fct->XInstructor, 0, 25);
     }
     
     public function getDesdeAttribute($entrada)

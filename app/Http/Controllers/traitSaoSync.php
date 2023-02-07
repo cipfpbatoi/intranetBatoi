@@ -50,7 +50,7 @@ trait traitSaoSync
                         }
                     }
                 } catch (NoSuchElementException $e) {
-                    Alert::warning('No trobada informació '.$fct->Alumno->shortName());
+                    Alert::warning('No trobada informació '.$fct->Alumno->shortName);
                 }
             }
             $this->alertSuccess($alumnes);
