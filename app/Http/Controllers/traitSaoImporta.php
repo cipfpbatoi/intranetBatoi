@@ -9,6 +9,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Centro;
+use Intranet\Entities\Ciclo;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Erasmus;
 use Intranet\Entities\Fct;
@@ -243,7 +244,7 @@ trait traitSaoImporta
                 if ($dades[$key]['erasmus'] == 'No') {
                     $centro = $this->getCentro($dades[$key]);
                     $idColaboracion = $this->getColaboracion($dades[$key], $ciclo, $centro->id);
-                    $dni = $this->getDni($centro, $dades[$key]);
+                    $dni = $this->getDni($centro, $dades[$key], $ciclo);
                     $fct = $this->getFct($dni, $idColaboracion);
                     $this->saveFctAl($fct, $dades[$key]);
                 } else {
@@ -473,7 +474,7 @@ trait traitSaoImporta
      * @param $dades
      * @return mixed
      */
-    private function getDni($centro, $dades)
+    private function getDni($centro, $dades, $ciclo)
     {
         if (!$centro->idSao) {
             $centro->idSao = $dades['centre']['idSao'];
@@ -485,7 +486,7 @@ trait traitSaoImporta
                 $dades['centre']['instructorName'],
                 $dades['centre']['email'],
                 $dades['centre']['telefon'],
-                $dades['cicle']
+                Ciclo::find($ciclo)
             );
         }
         $dni = ($instructor->dni == 0) ? $dades['centre']['instructorDNI'] : $instructor->dni;
