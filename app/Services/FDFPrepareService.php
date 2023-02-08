@@ -53,7 +53,6 @@ class FDFPrepareService
             $pdf->addFile($file);
         }
         $pdf->saveAs($tmpFileName);
-        dd($pdf);
         return "tmp/$nameFile.pdf";
     }
 }
