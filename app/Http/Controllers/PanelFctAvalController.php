@@ -507,8 +507,7 @@ class PanelFctAvalController extends IntranetController
                 $files[$key] = storage_path('app/public/adjuntos/'.$adjuntos[$key]->route.'/'.$adjuntos[$key]->name);
                 $size += $adjuntos[$key]->size;
             }
-            FDFPrepareService::joinPDFs($files, $document['dni']);
-            $document['route'] = 'tmp/'.$document['dni'].'.pdf';
+            $document['route'] = FDFPrepareService::joinPDFs($files, $document['dni']);
             $document['name'] = $document['dni'].'.pdf';
             $document['size'] = $size;
         }
