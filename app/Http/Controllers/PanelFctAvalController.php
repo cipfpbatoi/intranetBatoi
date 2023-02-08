@@ -11,6 +11,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
 use DB;
 use Intranet\Exceptions\IntranetException;
+use Intranet\Services\FDFPrepareService;
 use Intranet\Services\SecretariaService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Documento;
@@ -475,28 +476,50 @@ class PanelFctAvalController extends IntranetController
     {
         $document = array();
         try {
-            $fct = AlumnoFct::findOrFail($id);
             $this->SService = new SecretariaService();
         } catch (IntranetException $e) {
             Alert::danger($e->getMessage());
             return back();
         }
-        $adjunto = Adjunto::where('route', 'alumnofctaval/'.$id)
-                     ->where('extension', 'pdf')
-                     ->orderBy('created_at', 'desc')
-                     ->get()
-                     ->first();
+        $fct = AlumnoFct::findOrFail($id); //cerque el que toca
         $document['title'] = 10;
-        $document['file'] = $adjunto->route;
-        $document['name'] = $adjunto->name;
-        $document['size'] = $adjunto->size;
         $document['dni'] = $fct->Alumno->dni;
-        $document['fct'] = $fct;
+        $document['alumne'] = trim($fct->Alumno->shortName);
+
+
+        $fcts = AlumnoFct::where('idAlumno', $fct->idAlumno)->where('a56', '>', 0)->get(); //mira tots els de l'alumne
+
+        foreach ($fcts as $key => $fct) {  // cerque els adjunts
+            $adjuntos[$key] = Adjunto::where('route', 'alumnofctaval/'.$fct->id)
+                ->where('extension', 'pdf')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->first();
+        }
+
+        if (count($adjuntos) == 1) { // si soles hi ha un
+            $document['route'] = 'app/public/adjuntos/'.$adjuntos[0]->route.'/'.$adjuntos[0]->name;
+            $document['name'] = $adjuntos[0]->name;
+            $document['size'] = $adjuntos[0]->size;
+        } else {
+            $size = 0;
+            foreach ($adjuntos as $key => $adjunto) {
+                $files[$key] = storage_path('app/public/adjuntos/'.$adjuntos[$key]->route.'/'.$adjuntos[$key]->name);
+                $size += $adjunto[$key]->size;
+            }
+            FDFPrepareService::joinPDFs($files, $document['dni']);
+            $document['route'] = 'tmp/'.$document['dni'].'.pdf';
+            $document['name'] = $document['dni'].'.pdf';
+            $document['size'] = $size;
+        }
 
         try {
+
             $this->SService->uploadFile($document);
-            $fct->a56 = 2;
-            $fct->save();
+            foreach ($fcts as $fct) {
+                $fct->a56 = 2;
+                $fct->save();
+            }
             Alert::success('Document enviat correctament');
         } catch (IntranetException $e) {
             Alert::danger($e->getMessage());

@@ -52,7 +52,7 @@ class SecretariaService
     {
         $curso = substr(curso(), 0, 4);
         $link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
-        $route = storage_path('app/public/adjuntos/'.$document['file'].'/'.$document['name']);
+        $route = storage_path($document['route']);
 
         $response = Http::withToken($this->token)
             ->attach('file', file_get_contents($route), $document['name'])
@@ -62,8 +62,8 @@ class SecretariaService
             return 1;
         } else {
             throw new IntranetException(
-                'No he pogut carregar el fitxer '.$document['name'].' de la fct '.
-                $document['fct']->id.' situat al fitxer: '.$route.'al servidor de matrícules: '.
+                "No he pogut carregar el fitxer ".$document['name']." de la fct de l'alumne".
+                $document['alumne'].' situat al fitxer: '.$route.' al servidor de matrícules: '.
                 $this->error($response['error'])
             );
         }

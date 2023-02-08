@@ -21,7 +21,7 @@ $("#dataFct").DataTable( {
         { data: null,
             render: function (data){
                 var ret =' <a href="/fct/'+data.id+'/link" class="imgButton"><i class="fa fa-paperclip"></i></a> ' + avise;
-                if ( data.a56 ===1 ){
+                if ( data.a56 === 1 ){
                     ret +=' <a href="/fct/'+data.id+'/sendAnexo" class="imgButton"><i class="fa fa-plane"></i></a> ';
                 }
                 return ret;
@@ -45,7 +45,6 @@ $("#dataFct").DataTable( {
                     } else{
                         return ' <input type="checkbox" disabled checked class="editor-active a56">';
                     }
-
                 }
                 else {
                     if (data.pg0301) {
@@ -53,7 +52,6 @@ $("#dataFct").DataTable( {
                     } else{
                         return ' <input type="checkbox" disabled class="editor-active a56">';
                     }
-
                 }
             }
         },

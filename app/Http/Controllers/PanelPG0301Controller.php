@@ -21,11 +21,11 @@ class PanelPG0301Controller extends BaseController
         Session::put('redirect', 'PanelPG0301Controller@indice');
     }
     
-    protected function search(){
+    protected function search()
+    {
         $grupo = Grupo::findOrFail($this->search);
         $this->titulo = ['quien' => $grupo->nombre ];
         return $grupo->codigo;
-        
     }
     
     

@@ -44,4 +44,15 @@ class FDFPrepareService
             ->saveAs($nameFile);
         unlink($tmpFileName);
     }
+
+    public static function joinPDFs($pdfs, $nameFile)
+    {
+        $tmpFileName = storage_path("tmp/$nameFile.pdf");
+        $pdf = new Pdf();
+        foreach ($pdfs as $file) {
+            $pdf->addFile($file);
+        }
+        $pdf->saveAs($tmpFileName);
+        return $tmpFileName;
+    }
 }
