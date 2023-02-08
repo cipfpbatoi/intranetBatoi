@@ -486,7 +486,6 @@ class PanelFctAvalController extends IntranetController
                      ->orderBy('created_at', 'desc')
                      ->get()
                      ->first();
-
         $document['title'] = 10;
         $document['file'] = $adjunto->route;
         $document['name'] = $adjunto->name;
