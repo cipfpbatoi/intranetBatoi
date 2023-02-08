@@ -459,28 +459,11 @@ class PanelFctAvalController extends IntranetController
 
     }
 
-    private function tipoDocument($title)
-    {
-        $tipos = ['A5'=>'10','AV'=>'10','AN.V'=>'10',
-            'ANEXO5'=>'10','ANNEXV'=>'10'];
-
-        foreach ($tipos as $key => $tipo) {
-            if (str_contains(strtoupper($title), $key)) {
-                return $tipos[$key];
-            }
-        }
-        return null;
-    }
 
     public function send($id)
     {
         $document = array();
-        try {
-            $this->SService = new SecretariaService();
-        } catch (IntranetException $e) {
-            Alert::danger($e->getMessage());
-            return back();
-        }
+
         $fct = AlumnoFct::findOrFail($id); //cerque el que toca
         $document['title'] = 10;
         $document['dni'] = $fct->Alumno->dni;
@@ -498,13 +481,21 @@ class PanelFctAvalController extends IntranetController
         }
 
         if (count($adjuntos) == 1) { // si soles hi ha un
-            $document['route'] = 'app/public/adjuntos/'.$adjuntos[0]->route.'/'.$adjuntos[0]->name;
-            $document['name'] = $adjuntos[0]->name;
+            $document['route'] =
+                'app/public/adjuntos/'.
+                $adjuntos[0]->route.'/'.
+                $adjuntos[0]->title.'.'.$adjuntos[0]->extension;
+            $document['name'] = $adjuntos[0]->title.'.'.$adjuntos[0]->extension;
             $document['size'] = $adjuntos[0]->size;
         } else {
             $size = 0;
             foreach ($adjuntos as $key => $adjunto) {
-                $files[$key] = storage_path('app/public/adjuntos/'.$adjuntos[$key]->route.'/'.$adjuntos[$key]->name);
+                $files[$key] =
+                    storage_path(
+                        'app/public/adjuntos/'.
+                        $adjuntos[$key]->route.'/'.
+                        $adjuntos[$key]->title.'.'.$adjuntos[$key]->extension
+                    );
                 $size += $adjuntos[$key]->size;
             }
             $document['route'] = FDFPrepareService::joinPDFs($files, $document['dni']);
@@ -512,9 +503,10 @@ class PanelFctAvalController extends IntranetController
             $document['size'] = $size;
         }
 
-        try {
 
-            $this->SService->uploadFile($document);
+        try {
+            $sService = new SecretariaService();
+            $sService->uploadFile($document);
             foreach ($fcts as $fct) {
                 $fct->a56 = 2;
                 $fct->save();

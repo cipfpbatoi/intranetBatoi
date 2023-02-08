@@ -162,7 +162,7 @@ class DocumentoController extends IntranetController
         $problem = false;
         $esborrar = [];
         foreach ($documents as $document) {
-            $file = public_path("storage/adjuntos/{$document->route}/{$document->name}");
+            $file = public_path("storage/adjuntos/{$document->route}/{$document->title}.{$document->extension}");
             if (file_exists($file)) {
                 $zip->addFile($file, $document->name);
                 $esborrar[$document->id] = $file;
@@ -178,7 +178,7 @@ class DocumentoController extends IntranetController
                 Adjunto::destroy($adjunto);
                 unlink($file);
             }
-            return redirect('/avalFct');
+            return redirect('/alumnofct');
         } else {
             $elemento->delete();
         }

@@ -62,8 +62,6 @@ function eliminarTildes($cadena)
         $cadena
     );
 
-
-
     return $cadena;
 }
 
@@ -153,7 +151,6 @@ function signatura($document)
 {
     foreach (config('signatures.llistats') as $key => $carrec) {
         if (array_search($document, $carrec) !== false) {
-            //dd(config(fileContactos().".$key"));
             return config("signatures.genere.$key")
                     [Intranet\Entities\Profesor::find(config(fileContactos().".$key"))->sexo];
         }
