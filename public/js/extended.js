@@ -35,7 +35,7 @@ $("#informe").change(function () {
 
 $("#seleccion .submit").click(function() {
     event.preventDefault();
-    //$("#checkall").prop('checked',false);
+    $("#checkall").prop('checked',false);
     $("#formSeleccion" ).submit();
 });
 
