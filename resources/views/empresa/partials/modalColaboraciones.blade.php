@@ -6,9 +6,12 @@
     <div class="form-group row">
         <label class="control-label" for="idCiclo">Cicle</label>
         <select id='idCiclo' name='idCiclo' class="form-control">
-                @foreach ($ciclos as $ciclo)
-                    <option value='{{ $ciclo->id }}' {{ old("idCiclo") == $ciclo->id ? "selected":""}}>
-                        {!! $ciclo->ciclo !!}
+                @foreach ($ciclos as $cicle)
+                    <option
+                            value='{{ $cicle->id }}'
+                            {{ old("idCiclo") == $cicle->id  ? "selected" : ($cicle->id == $ciclo ? 'selected' :  '')}}
+                    >
+                        {!! $cicle->ciclo !!}
                     </option>
                 @endforeach
         </select>
