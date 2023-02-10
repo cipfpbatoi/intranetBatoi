@@ -128,6 +128,7 @@ $(function () {
        }
     });
     $("#fusionar").click(function () {
+        event.preventDefault();
         let fusionar = [];
         let token = $("#_token").text();
         $('input:checkbox').each(function () {
@@ -145,7 +146,7 @@ $(function () {
         }).then(function () {
             location.reload();
         }, function (error) {
-            showMessage(["Error " + error.status + ": " + error.statusText, "error"], 'error');
+            console.log(["Error " + error.status + ": " + error.statusText, "error"], 'error');
         });
     });
 });

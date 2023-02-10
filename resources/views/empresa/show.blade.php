@@ -145,6 +145,13 @@
                             <em class="fa fa-plus-square-o"></em>
                         </a>
                     </li>
+                    @if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
+                    <li>
+                        <a href="#" id='fusionar'>
+                            <em class="fa fa-save"></em>
+                        </a>
+                    </li>
+                    @endif
                 </ul>
                 <div class="clearfix"></div>
             </div>
@@ -197,13 +204,16 @@
                                             </a>
                                         @endif
                                     </li>
+                                    @if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
                                     <li>
-                                        @if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
                                             <a onclick="editar({{$centro->id}})" >
                                                 <em class="fa fa-birthday-cake"></em>
                                             </a>
-                                        @endif
                                     </li>
+                                    <li>
+                                        <input type="checkbox" value='{!!$centro->id!!}' />
+                                    </li>
+                                    @endif
                                 </ul>
                                 <div class="clearfix"></div>
                             </div>
