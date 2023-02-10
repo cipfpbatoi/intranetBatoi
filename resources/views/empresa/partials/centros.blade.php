@@ -76,8 +76,3 @@
         </div>
     </div>
 @endforeach
-
-
-@if  (userIsAllow(config('roles.rol.administrador')))
-    @include('empresa.partials.modalEmpresa')
-@endif

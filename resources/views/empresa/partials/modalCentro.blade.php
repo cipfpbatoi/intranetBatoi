@@ -1,6 +1,10 @@
 <!-- Modal Nou -->
-<x-modal name="AddCenter" title='Afegir Centre Treball' action="/centro/create"
-         message='{{ trans("messages.buttons.confirmar")}}'>
+<x-modal
+        name="AddCenter"
+        title='Afegir Centre Treball'
+        action="/centro/create"
+        message='{{ trans("messages.buttons.confirmar")}}'
+>
     <input type="hidden" id="idCentro" value="" />
     <div class="form-group item has-feedback row">
         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="nombre">

@@ -1,7 +1,11 @@
 <!-- Modal -->
 @php($ciclos = \Intranet\Entities\Ciclo::where('departamento',authUser()->departamento)->get())
-<x-modal name="AddColaboration" title='Afegir Colaboració' action="/colaboracion/create"
-         message='{{ trans("messages.buttons.confirmar")}}'>
+<x-modal
+        name="AddColaboration"
+        title='Afegir Colaboració'
+        action="/colaboracion/create"
+        message='{{ trans("messages.buttons.confirmar")}}'
+>
     <input type="hidden" id="id" value="" />
     <div class="form-group row">
         <label class="control-label" for="idCiclo">Cicle</label>

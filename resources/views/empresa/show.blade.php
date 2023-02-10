@@ -197,6 +197,13 @@
                                             </a>
                                         @endif
                                     </li>
+                                    <li>
+                                        @if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
+                                            <a onclick="editar({{$centro->id}})" >
+                                                <em class="fa fa-birthday-cake"></em>
+                                            </a>
+                                        @endif
+                                    </li>
                                 </ul>
                                 <div class="clearfix"></div>
                             </div>
@@ -212,6 +219,7 @@
     </div>
     @include('empresa.partials.modalCentro')
     @include('empresa.partials.modalColaboraciones')
+    @include('empresa.partials.modalEmpresa')
 @endsection
 @section('titulo')
     @lang("messages.menu.Empresa"): {{$elemento->nombre}}

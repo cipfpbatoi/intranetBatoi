@@ -152,7 +152,7 @@ $(function () {
 
 
 function editar(id) {
-    $('#formEnterprise').attr('action','/centro/'+id+'/empresa/create');
+    $('#formAddEnterprise').attr('action','/centro/'+id+'/empresa/create');
     $('#AddEnterprise').modal({ show: true });
 
 }
