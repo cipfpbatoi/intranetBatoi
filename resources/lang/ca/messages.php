@@ -76,6 +76,7 @@ return array(
      ),
     'buttons' => array(
         'confirmar' => 'Confirmar',
+
         'edit' => 'Editar',
         'delete' => 'Esborrar',
         'pdf' => 'Imprimir',

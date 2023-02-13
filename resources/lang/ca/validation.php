@@ -284,7 +284,8 @@ return array(
                 'dia_completo' => 'Tot el dia',
                 'visita' => 'Visita',
                 'alumno' => 'Alumnat',
-                'periode' => 'Periode'
+                'periode' => 'Periode',
+                'sendCorreo' => 'Enviats Correus',
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',
