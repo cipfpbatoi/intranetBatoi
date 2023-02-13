@@ -294,6 +294,11 @@ class Fct extends Model
         }
     }
 
+    public function getSendCorreoAttribute()
+    {
+        return $this->correoInstructor?'Enviat':'Pendent';
+    }
+
     public function saveContact($contacto, $email)
     {
         $instructor = $this->Instructor;

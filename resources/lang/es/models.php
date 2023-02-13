@@ -314,6 +314,7 @@ return array(
             'delete' => 'Borrar Fct',
             'fin' => 'Finalizar Fct',
             'pdf' => 'Imprimir certificados',
+            'colaboradorPdf' => 'Imprimir Certificados Colaboradores',
             'mail' => 'Enviar emails feedback',
             'apte' => 'Calificar Apto',
             'noApte' => 'Calificar No Apto',
