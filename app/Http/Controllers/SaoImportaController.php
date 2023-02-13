@@ -23,7 +23,7 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-trait traitSaoImporta
+class SaoImportaController extends SaoController
 {
     private function buscaCentro($dada, $empresa)
     {
@@ -181,7 +181,7 @@ trait traitSaoImporta
         return $dada;
     }
 
-    public function download(Request $request)
+    public function index($password)
     {
         $dni = $request->profesor ?? AuthUser()->dni;
         $grupo = Grupo::where('tutor', $dni)->first();
@@ -194,7 +194,7 @@ trait traitSaoImporta
         } else {
             $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
             try {
-                $this->login($driver, trim($request->password));
+                $this->login($driver, $password);
                 if ($dni != AuthUser()->dni) {
                     $this->findIndexUser($driver, $dni);
                 }

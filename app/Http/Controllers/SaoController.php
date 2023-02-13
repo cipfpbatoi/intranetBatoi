@@ -6,7 +6,6 @@ namespace Intranet\Http\Controllers;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use DB;
-use Intranet\Entities\Profesor;
 use Intranet\Exceptions\IntranetException;
 use Styde\Html\Facades\Alert;
 use Illuminate\Http\Request;
@@ -18,7 +17,7 @@ use Illuminate\Http\Request;
  */
 class SaoController extends Controller
 {
-    use traitSaoAnnexes,traitSaoSync,traitSaoImporta,traitSaoCompara;
+
 
     const TD_NTH_CHILD_2 = "td:nth-child(2)";
     const TR_NTH_CHILD_2 = "tr:nth-child(2)";
@@ -29,28 +28,13 @@ class SaoController extends Controller
 
     public function __construct()
     {
-        $this->serverUrl = env('SELENIUM_URL', 'http://172.16.9.10:4444');
-        //$this->serverUrl = env('SELENIUM_URL', 'http://192.168.56.1:4444');
+        //$this->serverUrl = env('SELENIUM_URL', 'http://172.16.9.10:4444');
+        $this->serverUrl = env('SELENIUM_URL', 'http://192.168.56.1:4444');
 
         return parent::__construct();
     }
-    public function index()
-    {
-        $tutores = Profesor::tutoresFCT()->orderBy('apellido1')->orderBy('apellido2')->get();
-        $action = 'download';
-        return view('sao.index', compact('tutores', 'action'));
-    }
 
-    public function post(Request $request)
-    {
-        $accion = $request->accion;
-        return $this->$accion($request);
-    }
 
-    public function accion(Request $request, $accion)
-    {
-        return $this->$accion($request);
-    }
 
     protected function alertSuccess(array $alumnes, $message='Sincronitzades Fcts: ')
     {
@@ -69,7 +53,7 @@ class SaoController extends Controller
      * @return void
      * @throws \Facebook\WebDriver\Exception\UnknownErrorException
      */
-    private function login(RemoteWebDriver $driver, $password): void
+    protected function login(RemoteWebDriver $driver, $password): void
     {
         $driver->get($this::WEB);
         $dni = substr(AuthUser()->dni, -9);

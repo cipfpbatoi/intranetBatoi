@@ -16,14 +16,14 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-trait traitSaoSync
+class SaoSyncController extends SaoController
 {
 
-    public function sync(Request $request)
+    public function index($password)
     {
         $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
         try {
-            $this->login($driver, trim($request->password));
+            $this->login($driver, trim($password));
             $alumnes = [];
             foreach (AlumnoFctAval::realFcts()->activa()->get() as $fct) {
                 try {

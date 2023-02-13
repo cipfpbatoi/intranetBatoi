@@ -19,7 +19,7 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-trait traitSaoCompara
+class SaoComparaController extends SaoController
 {
 
     public function compara(Request $request)
@@ -46,12 +46,12 @@ trait traitSaoCompara
         return array('intranet'=>$intranet,'sao'=>$sao);
     }
 
-    public function check(Request $request)
+    public function index($password)
     {
         $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
         $dades = array();
         try {
-            $this->login($driver, trim($request->password));
+            $this->login($driver, trim($password));
             foreach (AlumnoFct::misFcts()->whereNotNull('idSao')->get() as $fctAl) {
                 try {
                     $fct = $fctAl->Fct;

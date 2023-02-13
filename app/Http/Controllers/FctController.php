@@ -84,10 +84,38 @@ class FctController extends IntranetController
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('grid', new BotonImg('fct.edit',['where'=>['asociacion','==','1']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.show',['where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.pdf',['img'=>'fa-file-pdf-o','where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton('index', new BotonBasico("alumnofct", ['class' => 'btn-link','roles' => config(self::ROLES_ROL_TUTOR)]));
+        $this->panel->setBoton('grid', new BotonImg('fct.edit', ['where'=>['asociacion','==','1']]));
+        $this->panel->setBoton('grid', new BotonImg('fct.show', ['where'=>['asociacion', '==', '1']]));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.pdf',
+                [
+                    'img'=>'fa-file-pdf-o',
+                    'where'=>['asociacion', '==', '1']
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'fct.colaboradorPdf',
+                [
+                    'img'=>'fa-file-pdf-o',
+                    'where'=>['asociacion', '==', '1']
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "alumnofct",
+                [
+                    'class' => 'btn-link',
+                    'roles' => config(self::ROLES_ROL_TUTOR)
+                ]
+            )
+        );
         Session::put('redirect', 'FctController@index');
     }
 
@@ -111,8 +139,8 @@ class FctController extends IntranetController
         $fct = Fct::findOrFail($id);
         $secretario = Profesor::find(config(fileContactos().'.secretario'));
         $director = Profesor::find(config(fileContactos().'.director'));
-        $dades = ['date' => FechaString(hoy(),'ca'),
-            'fecha' => FechaString(hoy(),'es'),
+        $dades = ['date' => FechaString(hoy(), 'ca'),
+            'fecha' => FechaString(hoy(), 'es'),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
             'secretario' => $secretario->FullName,
             'centro' => config('contacto.nombre'),
@@ -120,8 +148,7 @@ class FctController extends IntranetController
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName,
         ];
-
-        return Pdf::hazPdf('pdf.fct.certificatColaborador', $fct, $dades);
+        return Pdf::hazPdf('pdf.fct.certificatColaborador', $fct, $dades)->stream();
     }
 
 
