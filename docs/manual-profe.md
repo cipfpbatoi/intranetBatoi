@@ -445,7 +445,7 @@ Per començar hem de polsar el botó '**Iniciar procediment**' i a partir d'eixe
  
 NOTA: no s'ha de posar cap hora en les hores del pati o migdia
 
-Podem fer canvis totes les vegades que vulguem. Quan hem deixat l'horari com volem i hem omplit el quadre de **"_Observacions_"** que tenim baix de l'horari indicant a quina activitat dedicarem cadascuna de les hores alliberades haurem de premer el botó de **_Guardar canvis i enviar_**. L'estat canvia a **'Pendent'**. 
+Podem fer canvis totes les vegades que vulguem fins que el nou horari siga aprovat per _Caporalia_. Recorda omplir el quadre de **"_Observacions_"** que tenim baix de l'horari indicant a quina activitat dedicarem cadascuna de les hores alliberades. Per a que es guarden els canvis haurem de premer el botó de **_Guardar canvis i enviar_**. L'estat canvia a **'Pendent'**. 
 
 ![Canviar-horari](./img/ajuda/cambiarHorarioDown.png)
 
