@@ -11,7 +11,6 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Erasmus;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Empresa;
@@ -215,7 +214,7 @@ class SaoImportaController extends SaoController
                         try {
                             $dades[$index] = $this->extractFromEdit($dada, $driver);
                             $empresa = Empresa::where('cif', $dades[$index]['cif'])->first();
-                            if ($dades[$index]['erasmus'] == 'No' && $empresa) { //Si no es erasmus i hi ha empresa
+                            if ($empresa) { //Si hi ha empresa
                                 $dades[$index]['centre']['id'] = $this->buscaCentro($dades[$index], $empresa);
                             }
                         } catch (Exception $e) {
@@ -241,36 +240,11 @@ class SaoImportaController extends SaoController
         $ciclo = $request->ciclo;
         foreach ($request->request as $key => $value) {
             if ($value == 'on') {
-                if ($dades[$key]['erasmus'] == 'No') {
-                    $centro = $this->getCentro($dades[$key]);
-                    $idColaboracion = $this->getColaboracion($dades[$key], $ciclo, $centro->id);
-                    $dni = $this->getDni($centro, $dades[$key], $ciclo);
-                    $fct = $this->getFct($dni, $idColaboracion);
-                    $this->saveFctAl($fct, $dades[$key]);
-                } else {
-                    $fct = Fct::whereNull('idColaboracion')->where('asociacion', 2)->first();
-                    if (!$fct) {
-                        $erasmus = Erasmus::find($dades[$key]['idSao']);
-                        if (!$erasmus) {
-                            $erasmus = new Erasmus();
-                            $erasmus->idSao = $dades[$key]['idSao'];
-                            $erasmus->name = $dades[$key]['centre']['name'];
-                            $erasmus->email = $dades[$key]['centre']['email'];
-                            $erasmus->telefon = $dades[$key]['centre']['telefon'];
-                            $erasmus->localidad = $dades[$key]['centre']['localidad'];
-                            $erasmus->save();
-                        }
-                        $fct = new Fct([
-                            'idColaboracion' => null,
-                            'asociacion' => 2,
-                            'idInstructor' => $dades[$key]['idSao'],
-                        ]);
-                        $fct->correoInstructor = 1;
-                        $fct->model = 'Erasmus';
-                        $fct->save();
-                    }
-                    $this->saveFctAl($fct, $dades[$key]);
-                }
+                $centro = $this->getCentro($dades[$key]);
+                $idColaboracion = $this->getColaboracion($dades[$key], $ciclo, $centro->id);
+                $dni = $this->getDni($centro, $dades[$key], $ciclo);
+                $fct = $this->getFct($dni, $idColaboracion);
+                $this->saveFctAl($fct, $dades[$key]);
             }
         }
         return redirect(route('alumnofct.index'));
@@ -293,6 +267,7 @@ class SaoImportaController extends SaoController
                     'email' => $dades['centre']['email'],
                     'localidad' => $dades['centre']['localidad'],
                     'telefono' => $dades['centre']['telefon'],
+                    'erasmus' => ($dades['erasmus']=='No')?0:1,
                     'observaciones' => 'Empresa creada automàticament',
                     'sao' => 1,
                     'direccion' => ''

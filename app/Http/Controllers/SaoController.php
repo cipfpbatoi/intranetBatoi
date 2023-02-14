@@ -8,7 +8,6 @@ use Facebook\WebDriver\WebDriverBy;
 use DB;
 use Intranet\Exceptions\IntranetException;
 use Styde\Html\Facades\Alert;
-use Illuminate\Http\Request;
 
 
 /**
