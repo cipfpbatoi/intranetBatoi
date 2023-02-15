@@ -12,8 +12,9 @@ use function fechaString;
 class Pdf
 {
 
-    private static function pie($informe){
-        $rutaDesglosada = explode('.',$informe);
+    private static function pie($informe)
+    {
+        $rutaDesglosada = explode('.', $informe);
         $document = end($rutaDesglosada);
         $pie = config('footers.'.$document);
         if (isset($pie)){
@@ -48,7 +49,7 @@ class Pdf
         $datosInforme = null,
         $orientacion = 'portrait',
         $dimensiones = 'a4',
-        $margin_top = 15
+        $marginTop = 15
     )
     {
         $pie = self::pie($informe);
@@ -59,7 +60,7 @@ class Pdf
                 compact('todos', 'datosInforme')
                 )->setPaper($dimensiones)
                 ->setOrientation($orientacion)
-                ->setOption('margin-top', $margin_top)
+                ->setOption('margin-top', $marginTop)
                 ->setOption('footer-line', true)
                 ->setOption('footer-right', $pie)
                 ->setOption('enable-external-links', true));

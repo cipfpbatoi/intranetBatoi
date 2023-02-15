@@ -59,11 +59,14 @@ class ItacaController extends Controller
         $this->driver->get('https://docent.edu.gva.es/md-front/www/#moduldocent/centres');
         sleep(3);
         $this->driver->get('https://docent.edu.gva.es/md-front/www/#centre/03012165/horari');
-        sleep(5);
-        //$name = $driver->findElement(WebDriverBy::cssSelector('.botonform'))->getAttribute('name');
-        //if ($name === 'login') {
-        //    throw new IntranetException('Password no vàlid. Has de ficarl el del SAO');
-        //}
+        sleep(3);
+        $ul = $this->driver->findElement(
+                WebDriverBy::cssSelector('ul.icm-horari-dies li.imc-horari-dia:nth-child(1)')
+            );
+        $data = $ul->findElement(WebDriverBy::cssSelector('h2.imc-dia'))->getAttribute('data-data');
+        var_dump($data);
+
+
         $this->driver->close();
     }
 

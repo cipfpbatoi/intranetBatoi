@@ -509,11 +509,14 @@ Route::get('/sao/sync/{password}', ['as'=>'sao.sync', 'uses'=>'SaoSyncController
 Route::get('/sao/compara/{password}', ['as'=>'sao.compara', 'uses'=>'SaoComparaController@index']);
 Route::get('/sao/importa/{password}', ['as'=>'sao.importa', 'uses'=>'SaoImportaController@index']);
 Route::get('/sao/annexes/{password}', ['as'=>'sao.annexes', 'uses'=>'SaoAnnexesController@index']);
+Route::get('/sao/a2/{password}', ['as'=>'sao.a2', 'uses'=>'SaoA2Controller@index']);
 Route::post('/sao/importa', ['as' => 'sao.post.importa', 'uses' => 'SaoImportaController@importa']);
 Route::post('/sao/compara', ['as' => 'sao.post.compara', 'uses' => 'SaoComparaController@compara']);
 
 Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@login']);
 
 /* Prova */
+Route::get('/signatura',['as'=>'signatura','uses'=>SignaturaController::class]);
+
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
