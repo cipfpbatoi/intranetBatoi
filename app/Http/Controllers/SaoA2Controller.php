@@ -18,19 +18,18 @@ class SaoA2Controller extends SaoController
 {
 
 
-    public function download_file_from_fcts($driver)
+    public function download_file_from_fcts($password)
     {
         $fctAl = AlumnoFct::misFcts()->activa()->first();
 
         foreach (AlumnoFct::misFcts()->activa()->get() as $fctAl) {
             try {
+                $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
+                $this->login($driver, $password);
                 $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=2&centro=59&idFct=$fctAl->idSao");
                 sleep(1);
-                $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
-                sleep(1);
+                $driver->close();
             } catch (Exception $exception) {
-                $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
-                sleep(1);
                 Alert::info($exception->getMessage());
             }
         }
@@ -45,14 +44,10 @@ class SaoA2Controller extends SaoController
             Alert::danger('No eres tutor');
             return redirect(route('alumnofct.index'));
         } else {
-            $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
             try {
-                $this->login($driver, $password);
-                $this->download_file_from_fcts($driver);
-                $driver->close();
+                $this->download_file_from_fcts($password);
             } catch (Exception $e) {
                 Alert::warning($e->getMessage());
-                $driver->close();
                 return redirect(route('alumnofct.index'));
             }
         }
