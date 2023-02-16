@@ -182,7 +182,7 @@ class SaoImportaController extends SaoController
 
     public function index($password)
     {
-        $dni = $request->profesor ?? AuthUser()->dni;
+        $dni = AuthUser()->dni;
         $grupo = Grupo::where('tutor', $dni)->first();
         $ciclo = $grupo->idCiclo??null;
         $dades = array();
@@ -194,9 +194,6 @@ class SaoImportaController extends SaoController
             $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
             try {
                 $this->login($driver, $password);
-                if ($dni != AuthUser()->dni) {
-                    $this->findIndexUser($driver, $dni);
-                }
                 $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
                 foreach ($table as $index => $tr) {
                     if ($index) { //el primer és el titol i no cal iterar-lo
@@ -371,32 +368,6 @@ class SaoImportaController extends SaoController
     }
 
 
-
-
-    /**
-     * @param  RemoteWebDriver  $driver
-     * @param $dni
-     * @return void
-     * @throws \Facebook\WebDriver\Exception\UnknownErrorException
-     */
-    private function findIndexUser(RemoteWebDriver $driver, $dni): void
-    {
-        $botones = $driver->findElements(WebDriverBy::cssSelector("#botonesFiltroFCT button.botonSelec"));
-        $botones[1]->click();
-        sleep(1);
-        do {
-            $tablaTutores = $driver->findElement(WebDriverBy::cssSelector("table.tablaSelEmpresas tbody"));
-            $find = $this->findProfesor($dni, $tablaTutores);
-            if (!$find) {
-                $driver->findElement(WebDriverBy::cssSelector("a[title='Página Siguiente']"))->click();
-                sleep(1);
-            }
-        } while (!$find);
-        $find->click();
-        sleep(1);
-    }
-
-
     /**
      * @param  string  $instructorDNI
      * @param  string  $instructorName
@@ -429,20 +400,6 @@ class SaoImportaController extends SaoController
         return $instructor;
     }
 
-    private function findProfesor($dni, $tableTutores)
-    {
-        $find = null;
-        $tutores = $tableTutores->findElements(WebDriverBy::cssSelector("tr"));
-        foreach ($tutores as $index => $tutor) {
-            if ($index > 0) {
-                $dniTabla = trim($tutor->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText());
-                if ($dniTabla == $dni) {
-                    $find = $tutor;
-                }
-            }
-        }
-        return $find;
-    }
 
     /**
      * @param $centro
