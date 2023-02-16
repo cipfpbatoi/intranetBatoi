@@ -26,6 +26,7 @@ class SaoA2Controller extends SaoController
             try {
                 $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
                 $this->login($driver, $password);
+                sleep(1);
                 $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=2&centro=59&idFct=$fctAl->idSao");
                 sleep(1);
                 $driver->close();
