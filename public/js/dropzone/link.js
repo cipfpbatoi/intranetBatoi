@@ -59,10 +59,6 @@ Dropzone.options.myDropzone = {
                 a.setAttribute('target', "_blank");
                 a.innerHTML = "<em class='fa fa-download'></em>";
                 file.previewTemplate.appendChild(a);
-                if (!file.file) {
-                    location.reload();
-                }
-
             }
         });
         this.on("maxfilesexceeded", function(file) {
