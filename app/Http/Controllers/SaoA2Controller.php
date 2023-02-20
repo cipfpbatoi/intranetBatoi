@@ -19,43 +19,6 @@ use Styde\Html\Facades\Alert;
 class SaoA2Controller extends SaoController
 {
 
-    private function closeWindows(RemoteWebDriver $driver, $window) {
-        var_dump($driver->getWindowHandles());
-
-        return $driver;
-    }
-
-    public function download_file_from_fcts(RemoteWebDriver $driver)
-    {
-        //$fctAl = AlumnoFct::misFcts()->activa()->first();
-
-
-        foreach (AlumnoFct::misFcts()->activa()->get() as $fctAl) {
-            try {
-                $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=3&centro=59&idFct=$fctAl->idSao");
-
-                /*
-                dd( $driver->getWindowHandles());
-
-                $windowsHandles =;
-                var_dump($windowsHandles);
-                foreach ($windowsHandles as $windowHandle) {
-                    if ($window != $windowHandle) {
-                        $driver->switchTo()->window($windowHandle);
-                        $driver->close();
-                        var_dump('Tancada finestra '.$windowHandle);
-                    }
-                }
-                $driver->switchTo()->window($window);
-                sleep(1);*/
-            } catch (\Throwable $exception) {
-                $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
-                sleep(1);
-                Alert::info($exception->getMessage());
-            }
-        }
-    }
-
     public function index($password)
     {
         $grupo = Grupo::where('tutor', AuthUser()->dni)->first();

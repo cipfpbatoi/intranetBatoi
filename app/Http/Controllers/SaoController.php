@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 
+use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use DB;
@@ -22,13 +23,21 @@ class SaoController extends Controller
     const TR_NTH_CHILD_2 = "tr:nth-child(2)";
     const TD_NTH_CHILD_3 = "td:nth-child(3)";
     const TD_NTH_CHILD_4 = "td:nth-child(4)";
-    protected $serverUrl;
     const WEB = 'https://foremp.edu.gva.es/index.php';
+
+    protected $serverUrl;
+    protected $driver;
 
     public function __construct()
     {
         $this->serverUrl = env('SELENIUM_URL', 'http://172.16.9.10:4444');
+        /*
+        try {
+            $this->driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
+        } catch (\Exception $exception) {
 
+        }
+        */
         return parent::__construct();
     }
 

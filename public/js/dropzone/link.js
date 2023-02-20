@@ -48,17 +48,22 @@ Dropzone.options.myDropzone = {
                 this.removeFile(file);
                 return;
             } else {
+                myDropzone.processQueue();
                 var a = document.createElement('a');
                 a.setAttribute('style','float:right');
                 if (file.referencesTo) {
                     a.setAttribute('href',file.referencesTo);
                 } else {
-                    a.setAttribute('href', '/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.name);
+                    if (!file.file) {
+                        location.reload();
+                    } else {
+                        a.setAttribute('href', '/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.file);
+                    }
                 }
                 a.setAttribute('target', "_blank");
                 a.innerHTML = "<em class='fa fa-download'></em>";
                 file.previewTemplate.appendChild(a);
-                myDropzone.processQueue();
+
             }
         });
         this.on("maxfilesexceeded", function(file) {
@@ -101,4 +106,14 @@ $(function () {
     });
 });
 
-
+function reload(modelo, expediente, filename){
+    $.ajax({
+        url: '/api/getNameAttached/' + modelo + '/' + expediente + '/' + filename,
+        type: 'GET',
+        dataType: 'json',
+        data: {api_token: $("#_token").text()},
+        success: function (data) {
+            return data.data
+        }
+    });
+}

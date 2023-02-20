@@ -18,6 +18,7 @@ class DropZoneController extends ApiBaseController
         $data = [];
         foreach ($files as $key => $attached) {
             $data[$key]['name'] = $attached->name;
+            $data[$key]['file'] = "$attached->title.$attached->extension";
             $data[$key]['extension'] = $attached->extension;
             $data[$key]['size'] = $attached->size;
             $data[$key]['accepted'] = true;
@@ -26,6 +27,14 @@ class DropZoneController extends ApiBaseController
             }
         }
         return $this->sendResponse($data, 'OK');
+    }
+
+    public function getNameAttached($modelo, $id, $name)
+    {
+        $path = "$modelo/$id";
+        $file = Adjunto::getByPath($path)->where('name', $name)->first();
+        return $this->sendResponse($file->file, 'OK');
+
     }
 
     public function removeAttached($modelo, $id, $file)
@@ -55,5 +64,7 @@ class DropZoneController extends ApiBaseController
             return $this->sendFail("No s'ha pogut completar l'operacio");
         }
     }
+
+
 
 }

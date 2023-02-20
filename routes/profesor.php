@@ -516,7 +516,7 @@ Route::post('/sao/compara', ['as' => 'sao.post.compara', 'uses' => 'SaoComparaCo
 Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@login']);
 
 /* Prova */
-Route::get('/signatura',['as'=>'signatura','uses'=>SignaturaController::class]);
+Route::get('/signatura', ['as'=>'signatura','uses'=>SignaturaController::class]);
 
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');

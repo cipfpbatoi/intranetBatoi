@@ -117,9 +117,10 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('articulo','ArticuloController');
     Route::get('articuloLote/{id}/materiales','ArticuloLoteController@getMateriales');
 
-    Route::post('attachFile','DropZoneController@attachFile');
-    Route::get('getAttached/{modelo}/{id}','DropZoneController@getAttached');
-    Route::get('removeAttached/{modelo}/{id}/{file}','DropZoneController@removeAttached');
+    Route::post('attachFile', 'DropZoneController@attachFile');
+    Route::get('getAttached/{modelo}/{id}', 'DropZoneController@getAttached');
+    Route::get('getNameAttached/{modelo}/{id}/{filename}', 'DropZoneController@getNameAttached');
+    Route::get('removeAttached/{modelo}/{id}/{file}', 'DropZoneController@removeAttached');
 
     Route::get('activity/{id}/move/{fct}','ActivityController@move');
 
