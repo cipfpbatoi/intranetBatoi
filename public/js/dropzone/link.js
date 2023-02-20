@@ -54,15 +54,14 @@ Dropzone.options.myDropzone = {
                 if (file.referencesTo) {
                     a.setAttribute('href',file.referencesTo);
                 } else {
-                    if (!file.file) {
-                        location.reload();
-                    } else {
-                        a.setAttribute('href', '/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.file);
-                    }
+                    a.setAttribute('href', '/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.file);
                 }
                 a.setAttribute('target', "_blank");
                 a.innerHTML = "<em class='fa fa-download'></em>";
                 file.previewTemplate.appendChild(a);
+                if (!file.file) {
+                    location.reload();
+                }
 
             }
         });
