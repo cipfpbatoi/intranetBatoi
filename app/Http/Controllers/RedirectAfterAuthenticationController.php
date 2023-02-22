@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\PasswordRequest;
 
 
 class RedirectAfterAuthenticationController extends Controller
@@ -12,7 +12,7 @@ class RedirectAfterAuthenticationController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function __invoke(Request $request)
+    public function __invoke(PasswordRequest $request)
     {
         return redirect()->route($request->accion, ['password' => $request->password]);
     }

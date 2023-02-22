@@ -100,15 +100,3 @@ $(function () {
         }
     });
 });
-
-function reload(modelo, expediente, filename){
-    $.ajax({
-        url: '/api/getNameAttached/' + modelo + '/' + expediente + '/' + filename,
-        type: 'GET',
-        dataType: 'json',
-        data: {api_token: $("#_token").text()},
-        success: function (data) {
-            return data.data
-        }
-    });
-}
