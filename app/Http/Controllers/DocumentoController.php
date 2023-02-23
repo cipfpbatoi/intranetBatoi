@@ -277,6 +277,16 @@ class DocumentoController extends IntranetController
         return $this->redirect();
     }
 
+    public function readFile($name)
+    {
+        $adjunto = Adjunto::where('name', $name)->first();
+        if ($adjunto) {
+            return redirect("/storage/adjuntos/".$adjunto->route."/".$adjunto->title.".".$adjunto->extension);
+        } else {
+            return back();
+        }
+    }
+
     
 
 }
