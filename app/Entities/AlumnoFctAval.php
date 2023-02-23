@@ -45,7 +45,8 @@ class AlumnoFctAval extends AlumnoFct
      }
      public function scopePendienteNotificar($query, array $alumnos)
      {
-         return $query->whereIn('idAlumno', $alumnos)->where('correoAlumno', false);
+         return $query->whereIn('idAlumno', $alumnos)
+             ->where('correoAlumno', false);
      }
      public function scopeCalificados($query)
      {
@@ -102,6 +103,15 @@ class AlumnoFctAval extends AlumnoFct
             return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
         }
         return $query->whereIn('idAlumno', $alumnos);
+    }
+
+    public function getHorasTotalAttribute()
+    {
+        return $this->correoAlumno ?
+            $this->horas :
+            AlumnoFctAval::where('idAlumno', $this->idAlumno)
+            ->where('correoAlumno', 0)
+            ->sum('horas');
     }
  
 }
