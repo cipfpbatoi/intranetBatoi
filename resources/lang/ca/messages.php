@@ -304,6 +304,7 @@ return array(
         'Solicitud' => 'Remissió a Orientació',
         'Solicitudes' => 'Sol·licituts',
         'Fse' => 'Imprimir Acta FSE',
+        'Erasmus' => 'Empreses Erasmus'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
