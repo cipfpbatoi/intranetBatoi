@@ -51,10 +51,6 @@ class EmpresaController extends IntranetController
 
         $id = $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]));
 
-        if ($request->europa) {
-            $this->getConcert($id);
-        }
-
         $idCentro = $this->createCenter($id, $request);
         if (isset(Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo)) {
             $this->createColaboration($idCentro, $request);
@@ -63,13 +59,7 @@ class EmpresaController extends IntranetController
         return redirect()->action('EmpresaController@show', ['empresa' => $id]);
     }
 
-    private function getConcert($id)
-    {
-        $max = Empresa::where('concierto', '<', 11111)->max('concierto');
-        $empresa = Empresa::find($id);
-        $empresa->concierto = $max+1;
-        $empresa->save();
-    }
+
 
     private function createCenter($id, $request)
     {
@@ -108,22 +98,20 @@ class EmpresaController extends IntranetController
     public function update(Request $request, $id)
     {
         $elemento = Empresa::find($this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]), $id));
-        if ($elemento->europa) {
-            $this->getConcert($elemento->id);
-        }
-        $touched = FALSE;
+
+        $touched = false;
         foreach ($elemento->centros as $centro) {
             if ($centro->direccion == '') {
                 $centro->direccion = $elemento->direccion;
-                $touched = TRUE;
+                $touched = true;
             }
             if ($centro->localidad == '') {
                 $centro->localidad = $elemento->localidad;
-                $touched = TRUE;
+                $touched = true;
             }
             if ($centro->nombre == '') {
                 $centro->nombre = $elemento->nombre;
-                $touched = TRUE;
+                $touched = true;
             }
         }
         if ($touched) {

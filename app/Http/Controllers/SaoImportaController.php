@@ -264,7 +264,7 @@ class SaoImportaController extends SaoController
                     'email' => $dades['centre']['email'],
                     'localidad' => $dades['centre']['localidad'],
                     'telefono' => $dades['centre']['telefon'],
-                    'erasmus' => ($dades['erasmus']=='No')?0:1,
+                    'europa' => ($dades['erasmus']=='No')?0:1,
                     'observaciones' => 'Empresa creada automàticament',
                     'sao' => 1,
                     'direccion' => ''
