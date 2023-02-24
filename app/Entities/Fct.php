@@ -227,13 +227,17 @@ class Fct extends Model
         return $fecha->format('d-m-Y');
     }
 
+    public function getErasmusAttribute()
+    {
+        return $this->Colaboracion->Centro->Empresa->europa;
+    }
     public function getDualAttribute()
     {
-        return $this->asociacion == 3;
+        return $this->asociacion == 4;
     }
     public function getExentoAttribute()
     {
-        return $this->asociacion == 2;
+        return $this->asociacion == 3;
     }
     
     public function getCentroAttribute()
