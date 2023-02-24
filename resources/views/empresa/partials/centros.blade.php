@@ -1,74 +1,78 @@
-@php $centros = $elemento->centros->count() @endphp
-<ul class="messages centro">
-    @foreach ($elemento->centros as $centro)
-        <li style="clear: both">
-            <div class="message_date" style="width:55%">
-                @if (config('variables.altaInstructores') || $misColaboraciones->where('idCentro',$centro->id)->count())
-                    <a href='/instructor/{!!$centro->id!!}/create'>Nou Instructor</a>
-                    @foreach ($centro->instructores->sortBy('departamento')->groupBy('departamento') as $departament)
-                        <div>
-                            <h6>{{$departament->first()->departamento}}</h6>
-                            @foreach($departament->sortBy('surnames') as $instructor)
-                                <h4 class="text-info">
-                                    @if ($centros > 1)
-                                        <a href='/instructor/{!!$instructor->dni!!}/copy/{!!$centro->id!!}'><em
-                                                    class="fa fa-copy"></em></a>
-                                    @endif
-                                    <a href='/instructor/{!!$instructor->dni!!}/edit/{!!$centro->id!!}'><em
-                                                class="fa fa-edit"></em></a>
-                                    <a href="/instructor/{!!$instructor->dni!!}/delete/{!!$centro->id!!}"
-                                       class="delGrupo instructor"><em class="fa fa-trash"></em></a>
-                                    <abbr title='{{$instructor->email}} ({{$instructor->telefono}})'><em
-                                                class="fa fa-user user-profile-icon"></em><span
-                                                class='nombre'> {{$instructor->nombre}}</span>({{$instructor->dni}}
-                                        )</abbr>
-                                </h4>
-                            @endforeach
-                            <hr/>
-                        </div>
-                    @endforeach
-                @endif
-            </div>
-            <div class="message_wrapper" style="width:45%">
-                <h4>
-                    <span class="info">{{$centro->nombre}}</span>
-                    <a href="/centro/{!!$centro->id!!}/delete" class="delGrupo"><em class="fa fa-trash"></em></a> <a
-                            href="/centro/{{$centro->id}}/edit"><em class="fa fa-edit"></em></a>
-                </h4>
-                <h4>{{$centro->direccion}}, {{$centro->localidad}} <em class="fa fa-map-marker user-profile-icon"></em>
-                </h4>
-                @if ($centro->horarios)
-                    <h4><em class="fa fa-clock-o user-profile-icon"></em> {{$centro->horarios}}</h4>
-                @endif
-                @if ($centro->observaciones)
-                    <blockquote class="message">{{$centro->observaciones}}</blockquote>
-                @endif
-                <h4>
-                    @if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
-                        <button type="button" class="btn btn-sm btn-info" onclick="editar({{$centro->id}})" >
-                            @lang("messages.generic.anadir") @lang("models.modelos.Empresa")
-                        </button>
-                        <small style="color: purple"> Fussionar:</small>
-                        <input type="checkbox" value='{!!$centro->id!!}' />
-                    @endif
-                </h4>
-            </div>
-        </li>
-    @endforeach
+@include('empresa.partials.instructores')
+<ul class="nav navbar-right panel_toolbox">
+    <li>
+        <a class="addCol panel-heading collapsed"
+           href="{{$centro->id}}"
+           data-toggle="modal"
+           data-target="#AddColaboration"
+        >
+            <em class="fa fa-plus-square-o"> Nova Col·laboració</em>
+        </a>
+    </li>
 </ul>
-<div class="message_wrapper">
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddCenter">
-        @lang("messages.generic.anadir") @lang("models.modelos.Centro")
-    </button>
-    @if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
-        <button type="button" class="btn btn-primary" id='fusionar'>
-            Fussionar
-        </button>
-    @endif
-</div>
-@include('empresa.partials.modalCentro')
-@include('layouts.partials.error')
-@if  (userIsAllow(config('roles.rol.administrador')) && ($centros>1))
-    @include('empresa.partials.modalEmpresa')
-@endif
+<h2><em class="fa fa-graduation-cap"></em> Col·laboracions</h2>
+@foreach ($centro->Colaboraciones as $colaboracion)
+    <div class="accordion"  id="accordion{{$colaboracion->id}}" role="tablist" aria-multiselectable="true">
+        <div class="panel">
+            <ul class="nav navbar-right panel_toolbox">
+                @if ($misColaboraciones->contains($colaboracion->id))
+                    <li>
+                        <a href="/colaboracion/{!!$colaboracion->id!!}/delete">
+                            <em class="fa fa-trash"></em>
+                        </a>
+                    </li>
+                @endif
+                @if ( $cicloEsDepartamento =
+                    \Intranet\Entities\Ciclo::where('departamento',authUser()->departamento)
+                        ->where('id',$colaboracion->idCiclo)
+                        ->count()
+                )
+                    <li>
+                        <a class='editar' id="{{$colaboracion->id}}" href="/colaboracion/{!!$colaboracion->id!!}/edit">
+                            <em class="fa fa-edit"></em>
+                        </a>
+                    </li>
+                @endif
+                @if (!$existeColaboracion)
+                    <li>
+                        <a href="/colaboracion/{!!$colaboracion->id!!}/copy" class="copGrupo">
+                            <em class="fa fa-copy">Duplicar</em>
+                        </a>
+                    </li>
+                @endif
+            </ul>
+            <a class="panel-heading collapsed"
+               role="tab"
+               id="headingOne{{$colaboracion->id}}"
+               data-toggle="collapse"
+               data-parent="#accordion{{$colaboracion->id}}"
+               href="#collapseOne{{$colaboracion->id}}"
+               aria-expanded="true"
+               aria-controls="collapseOne"
+            >
+                @if ($colaboracion->idCiclo == $ciclo)
+                    <h4 class="panel-title">
+                        {{ $colaboracion->ciclo->ciclo }}
+                        <em class="fa fa-group user-profile-icon"></em> {{$colaboracion->puestos}}
+                    </h4>
+                @else
+                    <h4 style="color:darkgrey" class="panel-title" >
+                        {{ strtolower($colaboracion->ciclo->ciclo) }}
+                        <em class="fa fa-group user-profile-icon"></em> {{$colaboracion->puestos}}
+                    </h4>
+                @endif
+            </a>
+            <div id="collapseOne{{$colaboracion->id}}"
+                 class="panel-collapse collapse"
+                 role="tabpanel"
+                 aria-labelledby="headingOne"
+            >
+                <div class="panel-body">
+                    <em class="fa fa-user user-profile-icon"></em> {!! $colaboracion->contacto !!}
+                    <em class="fa fa-phone user-profile-icon"></em> {{$colaboracion->telefono}}
+                    <em class="fa fa-envelope user-profile-icon"></em> {{$colaboracion->email}}
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach

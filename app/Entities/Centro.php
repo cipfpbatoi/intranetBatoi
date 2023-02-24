@@ -24,7 +24,7 @@ class Centro extends Model
     protected $rules = [
         'idEmpresa' => 'required',
         'nombre' => 'required',
-        'direccion' => 'required|unique:centros,direccion',
+        'direccion' => 'required',
         'localidad' => 'required',
     ];
     protected $inputTypes = [

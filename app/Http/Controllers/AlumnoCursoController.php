@@ -2,21 +2,17 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use DB;
+use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Curso;
 use Intranet\Botones\BotonImg;
-use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Alumno;
 use Styde\Html\Facades\Alert;
 
 class AlumnoCursoController extends IntranetController
 {
-
-    use traitImprimir;
 
     protected $model = 'AlumnoCurso';
     protected $gridFields = ['idAlumno', 'nombre', 'finalizado', 'registrado'];
@@ -54,7 +50,7 @@ class AlumnoCursoController extends IntranetController
         $actual = AlumnoCurso::where('id', $id)->first();
         $curso = Curso::find($actual->first()->idCurso);
         if (haVencido($curso->fecha_fin)) {
-            return self::hazPdf('pdf.alumnos.manipulador', $actual, $curso)->stream();
+            return PDF::hazPdf('pdf.alumnos.manipulador', $actual, $curso)->stream();
         }
         else {
             return back();

@@ -14,12 +14,13 @@ class AttachedFileService
             $attached = new Adjunto();
             $attached->route = $route;
             $attached->name = $nameFile;
-            $attached->title = $title ?? pathinfo($file->getClientOriginalName())['filename'];
+            $attached->title = $title ?? str_shuffle('abcdefgh123456');
             $attached->extension = pathinfo($file->getClientOriginalName())['extension'];
             $attached->size = $file->getSize();
             $attached->owner = $dni;
 
-            if ($file->move($attached->directory, $nameFile)) {
+
+            if ($file->move($attached->directory, $attached->title.'.'.$attached->extension)) {
                 $attached->save();
                 return 1;
             }

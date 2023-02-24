@@ -37,7 +37,7 @@ const TABLA ='Empresa';
         columns: COLUMNS,
         rowId : ID,
         responsive: true,
-        rowCallback: function (row,data){
+        rowCallback: function (row, data){
             if (data.conveni) {
                 $(row).addClass('bg-green')
             }
@@ -48,10 +48,7 @@ const TABLA ='Empresa';
                 targets: COLUMNS.length-1,
                 "render": function ( data,autorizado ) {
                         if (autorizado){
-                            if (data.fichero)
-                                return  `<a href="#" class="shown"><i class="fa fa-plus" title="Mostrar"></i></a> <a href="#" class="document"><i class="fa fa-eye" title="Anexe I"></i></a>`;
-                            else
-                                return  `<a href="#" class="shown"><i class="fa fa-plus" title="Mostrar"></i></a>`;
+                            return  `<a href="#" class="shown"><i class="fa fa-plus" title="Mostrar"></i></a>`;
                         }
                 }
             },

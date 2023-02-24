@@ -14,8 +14,8 @@ use Illuminate\Http\Request;
  */
 
 Route::resource('alumnofct', 'AlumnoFctController', ['except' => [ 'create']]);
-Route::get('alumnofct/{grupo}/grupo','AlumnoFctController@indice');
-Route::get('/convenio','EmpresaController@indexConvenio');
+Route::get('alumnofct/{grupo}/grupo', 'AlumnoFctController@indice');
+Route::get('/convenio', 'EmpresaController@indexConvenio');
 Route::get('miIp', 'IPController@miIP');
 Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 
@@ -41,11 +41,11 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('profesor/rol/{rol}','ProfesorController@getRol');
     Route::get('ficha', 'ProfesorController@ficha');
     Route::get('doficha', 'FicharController@fichar');
-    Route::get('ipGuardia','FicharController@ip');
+    Route::get('ipGuardia', 'FicharController@ip');
     Route::get('verficha', 'FicharController@entrefechas');
-    Route::get('itaca/{dia}/{idProfesor}','FaltaItacaController@potencial');
-    Route::post('itaca','FaltaItacaController@guarda');
-    Route::get('/aula','ReservaController@unsecure');
+    Route::get('itaca/{dia}/{idProfesor}', 'FaltaItacaController@potencial');
+    Route::post('itaca', 'FaltaItacaController@guarda');
+    Route::get('/aula', 'ReservaController@unsecure');
 
 
     Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => [ 'create']]);
@@ -100,6 +100,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/colaboracion/{colaboracion}/unauthorize','ColaboracionController@unauthorize');
     Route::get('/colaboracion/{colaboracion}/switch','ColaboracionController@switch');
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
+    Route::post('/colaboracion/{colaboracion}/book', 'ColaboracionController@book');
 
     Route::get('/documentacionFCT/{documento}','DocumentacionFCTController@exec');
 
@@ -116,9 +117,10 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('articulo','ArticuloController');
     Route::get('articuloLote/{id}/materiales','ArticuloLoteController@getMateriales');
 
-    Route::post('attachFile','DropZoneController@attachFile');
-    Route::get('getAttached/{modelo}/{id}','DropZoneController@getAttached');
-    Route::get('removeAttached/{modelo}/{id}/{file}','DropZoneController@removeAttached');
+    Route::post('attachFile', 'DropZoneController@attachFile');
+    Route::get('getAttached/{modelo}/{id}', 'DropZoneController@getAttached');
+    Route::get('getNameAttached/{modelo}/{id}/{filename}', 'DropZoneController@getNameAttached');
+    Route::get('removeAttached/{modelo}/{id}/{file}', 'DropZoneController@removeAttached');
 
     Route::get('activity/{id}/move/{fct}','ActivityController@move');
 

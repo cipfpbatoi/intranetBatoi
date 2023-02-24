@@ -41,27 +41,6 @@
             <strong>Es recomana per al curs següent?</strong><br/>{{$Actividad->recomendada}}</br>
         </div>
     </div>
-    <div class="container">
-        <h2 style="text-decoration: underline">Imatges</h2>
-        @if ($Actividad->image1)
-            <div  style="display: inline-block;width: 45%">
-                <img src="/storage/Extraescolars/{{$Actividad->image1}}"/>
-                Imatge1
-            </div>
-        @endif
-        @if ($Actividad->image2)
-            <div style="display: inline-block;width: 45%;float: right">
-                <img src="/storage/Extraescolars/{{$Actividad->image2}}" />
-                Imatge2
-            </div>
-        @endif
-        @if ($Actividad->image3)
-            <div  style="display: inline-block;width: 45%">
-                <img src="/storage/Extraescolars/{{$Actividad->image3}}" />
-                Imatge3
-            </div>
-        @endif
-    </div>
     <br />
 <a href="/actividad" class="btn btn-info" >@lang('messages.buttons.volver')</a>
 @endsection

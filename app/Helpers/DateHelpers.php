@@ -28,6 +28,12 @@ function fechaSao($fecha)
     return $descp[2].'-'.$descp[1].'-'.$descp[0];
 }
 
+function fechaInglesaCurta($fecha, $separator='-')
+{
+    $date = explode($separator, $fecha);
+    return '20'.$date[2].'-'.$date[1].'-'.$date[0];
+}
+
 function fechaInglesa($fecha)
 {
     $hoy = new Date($fecha);

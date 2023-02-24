@@ -44,6 +44,7 @@ class AlumnoFct extends Model
         return $this->belongsTo(Dual::class, 'idFct', 'id');
     }
 
+
     public function scopeMisFcts($query, $profesor=null)
     {
         $profesor = $profesor?$profesor:authUser()->dni;
@@ -64,6 +65,7 @@ class AlumnoFct extends Model
         $fcts = Fct::select('id')
             ->whereIn('idColaboracion', $colaboraciones)
             ->orWhere('asociacion', 2)
+            ->orWhere('asociacion', 3)
             ->get()
             ->toArray();
         return $query->whereIn('idAlumno', $alumnos)
@@ -79,7 +81,7 @@ class AlumnoFct extends Model
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor, true)->first()->idCiclo??null;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
         $fcts = Fct::select('id')->whereIn('idColaboracion', $colaboraciones)
-                ->where('asociacion', 3)->get()->toArray();
+                ->where('asociacion', 4)->get()->toArray();
         return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
     }
     
@@ -122,7 +124,7 @@ class AlumnoFct extends Model
     }
     public function getNombreAttribute()
     {
-        return $this->getContactoAttribute();
+        return $this->Alumno->ShortName;
     }
     public function getFullNameAttribute()
     {
@@ -182,11 +184,11 @@ class AlumnoFct extends Model
     }
     public function getCentroAttribute()
     {
-        return $this->Fct->Centro;
+        return substr($this->Fct->Centro, 0, 30);
     }
     public function getInstructorAttribute()
     {
-        return $this->Fct->XInstructor;
+        return substr($this->Fct->XInstructor, 0, 30);
     }
     
     public function getDesdeAttribute($entrada)
@@ -216,5 +218,12 @@ class AlumnoFct extends Model
     public function getQuienAttribute()
     {
         return $this->fullName;
+    }
+
+
+    public function getClassAttribute()
+    {
+        return ($this->asociacion === 3) ? 'bg-purple':
+            ((fechaInglesa($this->hasta) <= Hoy('Y-m-d')) ?'bg-blue-sky':'');
     }
 }

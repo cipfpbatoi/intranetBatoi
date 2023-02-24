@@ -52,7 +52,6 @@ class Actividad extends Model
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
         'updating' => PreventAction::class,
-        'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
         'created' => ActividadCreated::class,
     ];

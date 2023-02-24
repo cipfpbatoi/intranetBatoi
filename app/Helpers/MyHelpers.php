@@ -62,8 +62,6 @@ function eliminarTildes($cadena)
         $cadena
     );
 
-
-
     return $cadena;
 }
 

@@ -3,8 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
+use Intranet\Componentes\Pdf as PDF;
 use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\Botones\BotonIcon;
 use Jenssegers\Date\Date;
@@ -18,9 +17,6 @@ use Intranet\Entities\Profesor;
  */
 class AlumnoController extends PerfilController
 {
-
-    use traitImprimir;
-
     /**
      * @var string
      */
@@ -48,7 +44,7 @@ class AlumnoController extends PerfilController
      */
     public function carnet($alumno)
     {
-        return $this->hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
+        return PDF::hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
     public function checkFol($id)

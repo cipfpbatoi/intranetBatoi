@@ -275,7 +275,10 @@ return array(
                 'dades' =>  'Otros datos',
                 'recomanada' => 'Es recomendable para el curso siguiente',
                 'dia_completo' => 'Todo el dia',
-                'visita' => 'Visita'
+                'visita' => 'Visita',
+                'alumno' => 'Alumnado',
+                'periode' => 'Periodo',
+                'sendCorreo' => 'Enviats Correus',
         ),
         'empty_option' => array(
             'default' => '-Selecciona-',

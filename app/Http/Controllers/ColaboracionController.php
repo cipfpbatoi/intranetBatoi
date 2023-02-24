@@ -36,7 +36,19 @@ class ColaboracionController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['short','Xciclo','puestos','Xestado','localidad','contacto','email','telefono','horari','profesor','ultimo'];
+    protected $gridFields = [
+        'short',
+        'Xciclo',
+        'puestos',
+        'Xestado',
+        'localidad',
+        'contacto',
+        'email',
+        'telefono',
+        'horari',
+        'profesor',
+        'ultimo'
+    ];
     /**
      * @var array
      */
@@ -62,7 +74,7 @@ class ColaboracionController extends ModalController
     {
         $elemento = $id ? Colaboracion::findOrFail($id) : new Colaboracion(); //busca si hi ha
         if ($id) {
-            $elemento->setRule('idCentro',$elemento->getRule('idCentro').','.$id);
+            $elemento->setRule('idCentro', $elemento->getRule('idCentro').','.$id);
         }
         $this->validateAll($request, $elemento);    // valida les dades
         return $elemento->fillAll($request);        // ompli i guarda
@@ -73,18 +85,35 @@ class ColaboracionController extends ModalController
      */
     public function iniBotones()
     {
-        $this->panel->setBoton('grid', new BotonImg('colaboracion.show',['img'=>'fa-eye-slash','roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
-        $this->panel->setBoton('grid', new BotonImg('colaboracion.edit',['roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]]));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'colaboracion.show',
+                [
+                    'img'=>'fa-eye-slash',
+                    'roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]
+                ]
+        ));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'colaboracion.edit',
+                [
+                    'roles' => [config('roles.rol.practicas')]
+                ]
+            )
+        );
     }
 
     /**
      * @return mixed
      */
-    public function search(){
+    public function search()
+    {
         $this->titulo = ['quien' => AuthUser()->Departamento->literal ];
         $ciclos = Ciclo::select('id')->where('departamento', AuthUser()->departamento)->get()->toArray();
-        $colaboraciones = Colaboracion::whereIn('idCiclo',$ciclos)->with('Centro')->get();
-        return $colaboraciones->filter(function ($colaboracion){
+        $colaboraciones = Colaboracion::whereIn('idCiclo', $ciclos)->with('Centro')->get();
+        return $colaboraciones->filter(function ($colaboracion) {
             return $colaboracion->Centro->Empresa->concierto;
         });
     }

@@ -13,7 +13,7 @@ class Pestana
     private $include;
     
 
-    public function __construct($nombre, $activa = false, $vista = null, $filtro = [], $rejilla = null ,$include=[])
+    public function __construct($nombre, $activa = false, $vista = null, $filtro = [], $rejilla = null, $include=[])
     {
         $this->nombre = $nombre;
         $this->activa = $activa;
@@ -23,48 +23,52 @@ class Pestana
         $this->include = $include;
     }
 
-    function setVista($vista){
+    public function setVista($vista)
+    {
         $this->vista = $vista;
     }
-    function getVista()
+
+    public function getVista()
     {
         return $this->vista;
     }
 
-    function getNombre()
+    public function getNombre()
     {
         return $this->nombre;
     }
 
-    function getActiva()
+    public function getActiva()
     {
         return $this->activa ? 'active' : '';
     }
     
-    function getInclude($index)
+    public function getInclude($index)
     {
         return isset($this->include[$index])?$this->include[$index]:[];
     }
 
-    function setInclude($include)
+    public function setInclude($include)
     {
         $this->include = $include;
     }
-    function setActiva($activa)
+
+    public function setActiva($activa)
     {
         $this->activa = $activa;
     }
 
-    function getFiltro()
+    public function getFiltro()
     {
         return $this->filtro == null ? [] : $this->filtro;
     }
 
-    function getRejilla()
+    public function getRejilla()
     {
         return $this->rejilla;
     }
-    function setRejilla($grid)
+
+    public function setRejilla($grid)
     {
         $this->rejilla = $grid;
     }

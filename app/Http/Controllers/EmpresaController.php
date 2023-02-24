@@ -33,45 +33,36 @@ class EmpresaController extends IntranetController
         $elemento = Empresa::findOrFail($id);
         $modelo = 'Empresa';
         $misColaboraciones = Grupo::find(AuthUser()->GrupoTutoria)->Ciclo->Colaboraciones??collect();
-        return view($this->chooseView('show'), compact('elemento', 'modelo','activa','misColaboraciones'));
+        return view($this->chooseView('show'), compact('elemento', 'modelo', 'activa', 'misColaboraciones'));
     }
     
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico("empresa.create",['roles' => config('roles.rol.practicas')]));
+        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config('roles.rol.practicas')]));
      }
 
     public function store(Request $request)
     {
         $dades = $request->except('cif');
         $dades['cif'] = strtoupper($request->cif);
-        if (Empresa::where('cif',strtoupper($request->cif))->count()) {
+        if (Empresa::where('cif', strtoupper($request->cif))->count()) {
             return back()->withInput($request->all())->withErrors('CIF duplicado');
         }
 
         $id = $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]));
 
-        if ($request->europa)  {
-            $this->getConcert($id);
-        }
-
-        $idCentro = $this->createCenter($id,$request);
-        if (isset(Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo))
-        {
-            $this->createColaboration($idCentro,$request);
+        $idCentro = $this->createCenter($id, $request);
+        if (isset(Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo)) {
+            $this->createColaboration($idCentro, $request);
         }
 
         return redirect()->action('EmpresaController@show', ['empresa' => $id]);
     }
 
-    private function getConcert($id){
-        $max = Empresa::where('concierto','<', 11111)->max('concierto');
-        $empresa = Empresa::find($id);
-        $empresa->concierto = $max+1;
-        $empresa->save();
-    }
 
-    private function createCenter($id,$request){
+
+    private function createCenter($id, $request)
+    {
         $centro = new Centro();
         $centro->idEmpresa = $id;
         $centro->direccion = $request->direccion;
@@ -80,7 +71,8 @@ class EmpresaController extends IntranetController
         $centro->save();
         return $centro->id;
     }
-    private function createColaboration($id,$request){
+    private function createColaboration($id, $request)
+    {
         $colaboracion = new Colaboracion();
         $colaboracion->idCentro = $id;
         $colaboracion->telefono = $request->telefono;
@@ -96,7 +88,7 @@ class EmpresaController extends IntranetController
     {
         $elemento = $id ? Empresa::findOrFail($id) : new Empresa(); //busca si hi ha
         if ($id) {
-            $elemento->setRule('concierto',$elemento->getRule('concierto').','.$id);
+            $elemento->setRule('concierto', $elemento->getRule('concierto').','.$id);
         }
         $this->validateAll($request, $elemento);    // valida les dades
 
@@ -105,23 +97,21 @@ class EmpresaController extends IntranetController
     
     public function update(Request $request, $id)
     {
-        $elemento = Empresa::find($this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]),$id));
-        if ($elemento->europa) {
-            $this->getConcert($elemento->id);
-        }
-        $touched = FALSE;
-        foreach ($elemento->centros as $centro){
+        $elemento = Empresa::find($this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]), $id));
+
+        $touched = false;
+        foreach ($elemento->centros as $centro) {
             if ($centro->direccion == '') {
                 $centro->direccion = $elemento->direccion;
-                $touched = TRUE;
+                $touched = true;
             }
-            if ($centro->localidad == ''){
+            if ($centro->localidad == '') {
                 $centro->localidad = $elemento->localidad;
-                $touched = TRUE;
+                $touched = true;
             }
-            if ($centro->nombre == ''){
+            if ($centro->nombre == '') {
                 $centro->nombre = $elemento->nombre;
-                $touched = TRUE;
+                $touched = true;
             }
         }
         if ($touched) {

@@ -11,46 +11,60 @@ use Intranet\Services\AttachedFileService;
 
 class DropZoneController extends ApiBaseController
 {
-    public function getAttached($modelo,$id){
+    public function getAttached($modelo, $id)
+    {
         $path = "$modelo/$id";
         $files = Adjunto::getByPath($path)->get();
         $data = [];
-        foreach ($files as $key => $attached){
+        foreach ($files as $key => $attached) {
             $data[$key]['name'] = $attached->name;
+            $data[$key]['file'] = "$attached->title.$attached->extension";
             $data[$key]['extension'] = $attached->extension;
             $data[$key]['size'] = $attached->size;
             $data[$key]['accepted'] = true;
-            if (isset($attached->referencesTo)){
+            if (isset($attached->referencesTo)) {
                 $data[$key]['referencesTo'] = $attached->referencesTo;
             }
         }
         return $this->sendResponse($data, 'OK');
     }
 
-    public function removeAttached($modelo,$id,$file){
+    public function getNameAttached($modelo, $id, $name)
+    {
+        $path = "$modelo/$id";
+        $file = Adjunto::getByPath($path)->where('name', $name)->first();
+        return $this->sendResponse($file->file, 'OK');
+
+    }
+
+    public function removeAttached($modelo, $id, $file)
+    {
         $user = apiAuthUser();
         $path = "$modelo/$id";
-        $adjunto = Adjunto::findByName($path,$file)->first();
-        if ($adjunto->owner != $user->dni){
+        $adjunto = Adjunto::findByName($path, $file)->first();
+        if ($adjunto->owner != $user->dni) {
             return $this->sendFail("Sense permisos, no ets el propietari");
         }
         if ($adjunto) {
-            if (AttachedFileService::delete($adjunto)){
-                return $this->sendResponse([],'OK');
+            if (AttachedFileService::delete($adjunto)) {
+                return $this->sendResponse([], 'OK');
             }
             return $this->sendFail("Error a l'esborrar");
         }
         return $this->sendFail("No s'ha trobat el document");
     }
 
-    public function attachFile(Request $request){
+    public function attachFile(Request $request)
+    {
         $user = $this->ApiUser($request);
         $path = "$request->modelo/$request->id";
-        if (AttachedFileService::save($request->file('file'),$path,$user->dni)) {
-            return $this->sendResponse(['data'=>'OK'],'OK');
+        if (AttachedFileService::save($request->file('file'), $path, $user->dni)) {
+            return $this->sendResponse(['data'=>'OK'], 'OK');
         } else {
             return $this->sendFail("No s'ha pogut completar l'operacio");
         }
     }
+
+
 
 }

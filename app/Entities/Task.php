@@ -13,36 +13,57 @@ class Task extends Model
 
     public function Profesores()
     {
-        return $this->belongsToMany(Profesor::class, 'tasks_profesores','id_task','id_profesor','id','dni')->withPivot('check','valid')->withTimestamps();
+        return $this->belongsToMany(
+            Profesor::class,
+            'tasks_profesores',
+            'id_task',
+            'id_profesor',
+            'id',
+            'dni'
+        )->withPivot('check', 'valid')->withTimestamps();
     }
 
-    public function scopeMisTareas($query,$profesor=null)
+    public function scopeMisTareas($query, $profesor=null)
     {
         $profesor = Profesor::find($profesor) ?? authUser();
         $rolesProfesor = rolesUser($profesor->rol);
-        return $query->whereIn('destinatario',$rolesProfesor)
-            ->where('activa',1);
+        return $query->whereIn('destinatario', $rolesProfesor)
+            ->where('activa', 1);
     }
 
-    public function getmyDetailsAttribute(){
+    public function getmyDetailsAttribute()
+    {
         $teacher = $teacher?? authUser()->dni;
-        return $this->profesores()->where('dni',$teacher)->first();
+        return $this->profesores()->where('dni', $teacher)->first();
     }
 
-    public function getValidAttribute(){
+    public function getValidAttribute()
+    {
         $taskTeacher = $this->myDetails;
         if (!$taskTeacher) {
             return 0;
-        }
-        elseif ($taskTeacher->pivot->valid) {
+        } elseif ($taskTeacher->pivot->valid) {
             return  1;
-        }
-        else {
+        } else {
             return $this->informativa;
         }
     }
 
+    public function getLinkAttribute()
+    {
+        return $this->fichero?'/storage/'.$this->fichero:$this->enlace;
+    }
 
-
-
+    public function getImageAttribute()
+    {
+        if ($this->vencimiento <= hoy()) {
+            return 'warning.png';
+        } else {
+            if ($this->informativa) {
+                return 'informacion.jpeg';
+            } else {
+                return 'task.png';
+            }
+        }
+    }
 }

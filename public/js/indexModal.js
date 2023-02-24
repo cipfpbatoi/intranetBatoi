@@ -85,7 +85,13 @@ $(function () {
            var href = formModal.attr('action')+'/'+$('#id').val()+'/edit';
            formModal.attr('action',href);
         }
-        $('#create').modal('show');
+        let cur_modal = localStorage.getItem("cur_modal");
+        if (!cur_modal) {
+            cur_modal = '#create';
+        } else {
+            localStorage.removeItem("curl_modal");
+        }
+        $(cur_modal).modal('show');
     }
     //  Barcode
     $('#datatable').on('click', 'a.QR', function (event) {

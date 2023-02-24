@@ -16,7 +16,11 @@
         <input type="hidden" name="api_token" value="{{authUser()->api_token}}">
         <input id="submit" class="hidden" type="submit">
         @foreach ($botones as $text => $link)
-            <a href="{{$link}}" class="btn btn-info">@lang("messages.buttons.$text")</a>
+            <acronym id='acronym' title="{{$link['message']??''}}">
+                <a href="{{$link['link']}}" class="btn btn-info @isset($link['message']) message @endisset">
+                    @lang("messages.buttons.$text")
+                </a>
+            </acronym>
         @endforeach
     </form>
 </div>

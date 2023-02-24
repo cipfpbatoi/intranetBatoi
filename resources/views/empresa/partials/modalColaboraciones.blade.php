@@ -1,13 +1,22 @@
 <!-- Modal -->
 @php($ciclos = \Intranet\Entities\Ciclo::where('departamento',authUser()->departamento)->get())
-<x-modal name="AddColaboration" title='Afegir Colaboració' action="/colaboracion/create"
-         message='{{ trans("messages.buttons.confirmar")}}'>
+<x-modal
+        name="AddColaboration"
+        title='Afegir Colaboració'
+        action="/colaboracion/create"
+        message='{{ trans("messages.buttons.confirmar")}}'
+>
     <input type="hidden" id="id" value="" />
     <div class="form-group row">
         <label class="control-label" for="idCiclo">Cicle</label>
         <select id='idCiclo' name='idCiclo' class="form-control">
-                @foreach ($ciclos as $ciclo)
-                    <option value='{{ $ciclo->id }}'>{!! $ciclo->ciclo !!}</option>
+                @foreach ($ciclos as $cicle)
+                    <option
+                            value='{{ $cicle->id }}'
+                            {{ old("idCiclo") == $cicle->id  ? "selected" : ($cicle->id == $ciclo ? 'selected' :  '')}}
+                    >
+                        {!! $cicle->ciclo !!}
+                    </option>
                 @endforeach
         </select>
     </div>
@@ -15,7 +24,8 @@
         <label class="control-label" for="idCentro">Centre</label>
         <select id='idCentro' name='idCentro' class="form-control">
             @foreach ($elemento->centros as $centro)
-                <option value='{{ $centro->id }}'>{!! $centro->nombre !!} ({!! $centro->direccion !!})
+                <option value='{{ $centro->id }}' {{ old("idCentro") == $centro->id ? "selected":""}}>
+                    {!! $centro->nombre !!} ({!! $centro->direccion !!})
                 </option>
             @endforeach
         </select>

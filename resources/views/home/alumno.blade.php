@@ -13,27 +13,31 @@
         <h3>{{$usuario->nombre}} {{$usuario->apellido1}}</h3>
 
         <ul class="list-unstyled user_data">
-            <li><i class="fa fa-map-marker user-profile-icon"></i> {{ $usuario->domicilio }}
+            <li><em class="fa fa-map-marker user-profile-icon"></em> {{ $usuario->domicilio }}
             </li>
 
             <li class="m-top-xs">
-                <i class="fa fa-envelope user-profile-icon"></i> {{ $usuario->email }}
+                <em class="fa fa-envelope user-profile-icon"></em> {{ $usuario->email }}
             </li>
         </ul>
 
-        <a href="/alumno/perfil" class="btn btn-success"><i
-                    class="fa fa-edit m-right-xs"></i>@lang("messages.menu.Perfil")</a>
+        <a href="/alumno/perfil" class="btn btn-success">
+            <em class="fa fa-edit m-right-xs"></em>@lang("messages.menu.Perfil")
+        </a>
         <br/>
     </div>
     <div class="col-md-9 col-sm-9 col-xs-12">
         <div class="" role="tabpanel" data-example-id="togglable-tabs">
             <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-                <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab"
-                                                          data-toggle="tab"
-                                                          aria-expanded="true">@lang("messages.generic.nextActivities")</a>
+                <li role="presentation" class="active">
+                    <a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">
+                        @lang("messages.generic.nextActivities")
+                    </a>
                 </li>
-                <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab2" data-toggle="tab"
-                                                    aria-expanded="false">@lang("messages.generic.timeTable")</a>
+                <li role="presentation" class="">
+                    <a href="#tab_content2" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">
+                        @lang("messages.generic.timeTable")
+                    </a>
                 </li>
             </ul>
             <div id="myTabContent" class="tab-content">

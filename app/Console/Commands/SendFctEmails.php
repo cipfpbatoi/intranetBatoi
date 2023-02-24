@@ -8,6 +8,7 @@ use Intranet\Mail\CertificatAlumneFct;
 use Intranet\Mail\CertificatInstructorFct;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\AvalFct;
+use Intranet\Nova\Profesor;
 use Swift_RfcComplianceException;
 
 class SendFctEmails extends Command
@@ -42,6 +43,8 @@ class SendFctEmails extends Command
 
             foreach ($alumnosPendientes as $alumno) {
                 $fct = $alumno->Fct;
+                $tutor = Profesor::find($fct->Colaboracion->tutor);
+
                 try {
                     Mail::to($alumno->Alumno->email, '')
                         ->send(new CertificatAlumneFct($alumno));
@@ -54,9 +57,13 @@ class SendFctEmails extends Command
 
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
                     try {
-                        Mail::to($fct->Instructor->email, 'Intranet Batoi')->send(new AvalFct($fct, 'instructor'));
+                        Mail::to($fct->Instructor->email, 'Intranet Batoi')
+                            ->send(new AvalFct($fct, 'instructor'));
                         Mail::to($fct->Instructor->email, 'Secretaria CIPFP Batoi')
                             ->send(new CertificatInstructorFct($fct));
+                        if ($tutor) {
+                            Mail::to($tutor->email, 'Intranet CIFP Batoi')->send(new CertificatInstructorFct($fct));
+                        }
 
                         $fct->correoInstructor = 1;
                         $fct->save();
@@ -67,6 +74,4 @@ class SendFctEmails extends Command
             }
         }
     }
-
-
 }

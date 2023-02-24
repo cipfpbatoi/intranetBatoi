@@ -111,6 +111,8 @@
             </li>
             <li role="presentation" @if ($pestana == 4)class="active" @endif><a href="#tab_content4" id="instructor-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.centro")</a>
             </li>
+            <li role="presentation" @if ($pestana == 5)class="active" @endif><a href="#tab_content5" id="colaborador-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.Colaboracion.colaboradores")</a>
+            </li>
         </ul>
         <div id="myTabContent" class="tab-content">
 
@@ -160,7 +162,20 @@
             <!-- end user projects -->
 
             </div>
+            @if ($pestana == 4)
+                <div role="tabpanel" class="tab-pane fade active in" id="tab_content5" aria-labelledby="colaborador-tab">
+            @else
+                <div role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="colaborador-tab">
+            @endif
 
+
+
+                            <!-- start user projects -->
+                            @include('colaboracion.partials.colaboradores')
+
+                            <!-- end user projects -->
+
+                </div>
         </div>
     </div>
 </div>

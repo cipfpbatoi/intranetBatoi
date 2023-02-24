@@ -11,13 +11,13 @@ class BotonBasico extends Boton
     //pinta el boto
     protected function html($key = null)
     {
-        return "<a " . $this->href() . $this->clase() . $this->id() .$this->data() .">".$this->hasIcon().' '.$this->text."</a>";
+        return view('partials.botonBasico', [
+            'href' => $this->href(),
+            'class' => $this->clase(),
+            'data' => $this->data(),
+            'id' => $this->id(),
+            'icon' => $this->icon,
+            'text' => $this->text
+        ]);
     }
-
-    private function hasIcon(){
-        if (isset($this->atributos['icon']))  return "<i class='".$this->atributos['icon']."'></i>";
-
-        return '';
-    }
-
 }

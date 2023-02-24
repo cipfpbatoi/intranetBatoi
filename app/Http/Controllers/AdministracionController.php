@@ -15,9 +15,12 @@ use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Poll\Poll;
+use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
+use Intranet\Services\ExcelService;
+use MongoDB\Driver\Exception\ExecutionTimeoutException;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +31,7 @@ use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Fct;
 use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
+use Intranet\Entities\Instructor;
 
 
 
@@ -199,34 +203,9 @@ class AdministracionController extends Controller
     }
 
     public function consulta(){
-        $grupos = Fct::where('asociacion',1)->get()->groupBy('idInstructor','idColaboracion');
-        foreach ($grupos as $grupo){
-            if (count($grupo) > 1) {
-                $first = $grupo->first();
-                $cFct = 0;
-                $eFct = 0;
-                foreach ($grupo as $fct){
-                    if ($first->id != $fct->id &&
-                        $first->idColaboracion === $fct->idColaboracion &&
-                        $first->idInstructor === $fct->idInstructor
-                    ){
-                        foreach ($fct->AlFct as $fctAl) {
-                            $fctAl->idFct = $first->id;
-                            $fctAl->save();
-                            $cFct++;
-                        }
-                        foreach (Activity::where('model_class','Intranet\Entities\Fct')
-                        ->where('model_id',$fct->id)->get() as $activitat){
-                            $activitat->model_id = $first->id;
-                            $activitat->save();
-                            $eFct++;
-                        }
-                        Alert::info("$fct->id canviada a $first->id: $cFct ($eFct)");
-                        $fct->delete();
-                    }
-                }
-            }
-        }
+        $fulla = new ExcelService(public_path('/AnnexeI.xlsx'));
+        $sheet = $fulla->render();
+        dd($sheet->getCell('A14'),$sheet->getCell('B14'));
     }
 
     public static function v2_50(){
@@ -368,5 +347,26 @@ class AdministracionController extends Controller
         $doors = Espacio::whereNotNull('dispositivo')->get();
         return view('espai.show',compact('missatge','doors'));
     }
-    
+
+    /*public function consulta(){
+        $plantilla = hazArray(PPoll::where('remains',true)->get(),'id');
+        $polls = hazArray(Poll::whereIn('idPPoll',$plantilla)->get(),'id');
+        $curso = cursoAnterior();
+        foreach (Vote::whereIn('idPoll',$polls)->get() as $vote){
+            if ($fct = Fct::find($vote->idOption1)){
+                try {
+                        $newVote = new VoteAnt([
+                            'option_id' => $vote->option_id,
+                            'idColaboracion' => $fct->idColaboracion,
+                            'value' => $vote->value,
+                            'text' => $vote->text,
+                            'curs' => $curso
+                        ]);
+                        $newVote->save();
+                } catch (\Exception $e){
+                    Alert::info($fct->idColaboracion.' No TROBADA');
+                }
+            }
+        }
+    }*/
 }

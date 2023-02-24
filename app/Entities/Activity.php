@@ -26,11 +26,12 @@ class Activity extends Model
             $activity->setUpdatedAt(fechaInglesaLarga($fecha));
         }
 
-        auth()->user()->Activity()->save($activity);
+        $ac = auth()->user()->Activity()->save($activity);
         Alert::success(
             trans('models.modelos.' . substr($activity->model_class, 18)).' '.
             trans("messages.generic.$action")
         );
+        return $ac;
     }
 
     public function scopeProfesor($query, $profesor)
@@ -78,5 +79,27 @@ class Activity extends Model
     {
         $colaboracion = Fct::find($id)->idColaboracion;
         return $query->where('model_id', $id)->orWhere('model_id', $colaboracion);
+    }
+
+    public function render()
+    {
+        $fecha = fechaCurta($this->created_at);
+        switch (firstWord($this->document)) {
+            case 'Recordatori':$class='flag';break;
+            case 'Informació':$class='lock';break;
+            case 'Revisió':$class='check';break;
+            case 'Sol·licitud':$class='bell';break;
+            default: $class=null;
+        }
+        switch ($this->action) {
+            case 'email' : $action='envelope';break;
+            case 'visita' : $action='car';break;
+            case 'phone' : $action='phone';break;
+            case 'book' : $action='book';break;
+            default: $action = null;
+        }
+        $id = $this->id;
+        $comentari = $this->comentari;
+        return view('partials.activity', compact('class', 'id', 'action', 'class', 'fecha', 'comentari'));
     }
 }

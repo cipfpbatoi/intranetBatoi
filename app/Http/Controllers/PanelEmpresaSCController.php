@@ -37,7 +37,8 @@ class PanelEmpresaSCController extends BaseController
     /**
      * @return mixed
      */
-    public function search(){
+    public function search()
+    {
         return Empresa::whereNull('concierto')->get();
     }
 
@@ -46,8 +47,26 @@ class PanelEmpresaSCController extends BaseController
      */
     protected function iniBotones()
     {
-       $this->panel->setBoton('index', new BotonBasico("empresa.create",['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]));
-       $this->panel->setBoton('grid', new BotonImg('empresa.detalle',['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]));
-       $this->panel->setBoton('grid', new BotonImg('empresa.delete',['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]));
+       $this->panel->setBoton(
+           'index',
+           new BotonBasico(
+               "empresa.create",
+               ['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]
+           )
+       );
+       $this->panel->setBoton(
+           'grid',
+           new BotonImg(
+               'empresa.detalle',
+               ['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]
+           )
+       );
+       $this->panel->setBoton(
+           'grid',
+           new BotonImg(
+               'empresa.delete',
+               ['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]
+           )
+       );
     }
 }

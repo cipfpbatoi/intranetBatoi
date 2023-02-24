@@ -103,7 +103,10 @@ return array(
         'justify' => 'Justificar',
         'unauthorize' => 'Desautorizar',
         'refuse' => 'Rechazar',
-        'pendiente' => 'Pendientes',
+        'pendiente' => 'Pendientes Contestación',
+        'resta' => 'No asignadas',
+        'colabora' => 'Colaboran',
+        'fcts' => 'en FCT',
         'autorizada' => 'Autorizadas',
         'nojustify' => 'Sin justificante',
         'withjustify' => 'Con justificante',
@@ -296,6 +299,7 @@ return array(
         'Solicitud' => 'Remisión a Orientación',
         'Solicitudes' => 'Solicitudes',
         'Fse' => 'Imprimir Acta FSE',
+        'Erasmus' => 'Empresas Erasmus'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

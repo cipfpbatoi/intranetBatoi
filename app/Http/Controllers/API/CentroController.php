@@ -17,8 +17,8 @@ class CentroController extends ApiBaseController
     public function fusionar(Request $request)
     {
 
-        if (count($request->fusion) > 1) {
-            DB::transaction(function() use ($request) {
+        if (isset($request->fusion) && count($request->fusion) > 1) {
+            DB::transaction(function () use ($request) {
                 $centroQ = Centro::findOrFail($request->fusion[0]);
                 foreach ($request->fusion as $codiCentre) {
                     if ($codiCentre != $centroQ->id) {
@@ -98,12 +98,6 @@ class CentroController extends ApiBaseController
         }
         if ($colaboracionQ->telefono == '') {
             $colaboracionQ->telefono = $colaboracion->telefono;
-        }
-        if ($colaboracionQ->instructor == '') {
-            $colaboracionQ->instructor = $colaboracion->instructor;
-        }
-        if ($colaboracionQ->dni == '') {
-            $colaboracionQ->dni = $colaboracion->dni;
         }
         if ($colaboracionQ->email == '') {
             $colaboracionQ->email = $colaboracion->email;

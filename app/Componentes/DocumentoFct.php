@@ -22,7 +22,7 @@ class DocumentoFct
         return isset($this->features[$key]);
     }
 
-    public function __set($key,$value)
+    public function __set($key, $value)
     {
         $this->features['email'][$key] = $value;
     }

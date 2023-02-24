@@ -23,8 +23,8 @@
                             Dades empresa {{$fct['nameEmpresa']}}
                         </td>
                     </tr>
-                    @php($idSao = $fct['empresa']['idEmpresa'])
-                    @foreach($fct['empresa'] as $field => $value)
+                    @php($idSao = $fct['empresa']['idEmpresa']??'Sense IdEMpresa')
+                    @foreach($fct['empresa']??[] as $field => $value)
                         @if (is_array($value))
                             <tr>
                                 <td><strong>{{ucfirst($field)}}</strong>: </td>
@@ -52,7 +52,7 @@
                             Dades centre treball {{$fct['nameCentro']}}
                         </td>
                     </tr>
-                    @foreach($fct['centro'] as $field => $value)
+                    @foreach($fct['centro']??[] as $field => $value)
                         @if (is_array($value))
                             <tr>
                                 <td><strong>{{ucfirst($field)}}</strong>: </td>

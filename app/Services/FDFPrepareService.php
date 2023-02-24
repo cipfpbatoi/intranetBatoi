@@ -12,9 +12,8 @@ class FDFPrepareService
     {
         $id = str_shuffle('abcdeft12');
         $nameFile = storage_path("tmp/{$id}_{$resource->getFile()}");
-        $pdf = new Pdf("fdf/".$resource->getFile());
+        $pdf = new Pdf(public_path("fdf/".$resource->getFile()));
         $pdf->fillForm($resource->toArray());
-
         if ($resource->getFlatten()) {
             $pdf->flatten();
         }
@@ -27,6 +26,7 @@ class FDFPrepareService
                 self::stampPDF($pdf, $nameFile, $resource->getStamp());
             } else {
                 $pdf->saveAs($nameFile);
+
             }
             return $nameFile;
         }  catch (Exception $e) {
@@ -36,11 +36,23 @@ class FDFPrepareService
 
     private static function stampPDF($pdf, $nameFile, $stamp)
     {
+
         $tmpFileName = storage_path("tmp/".str_shuffle('abcdef12').'.pdf');
         $pdf->saveAs($tmpFileName);
         $tmp = new Pdf($tmpFileName);
-        $tmp->stamp("fdf/$stamp")
+        $tmp->stamp(public_path("fdf/$stamp"))
             ->saveAs($nameFile);
         unlink($tmpFileName);
+    }
+
+    public static function joinPDFs($pdfs, $nameFile)
+    {
+        $tmpFileName = storage_path("tmp/$nameFile.pdf");
+        $pdf = new Pdf();
+        foreach ($pdfs as $file) {
+            $pdf->addFile($file);
+        }
+        $pdf->saveAs($tmpFileName);
+        return "tmp/$nameFile.pdf";
     }
 }

@@ -5,9 +5,12 @@ namespace Intranet\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Intranet\Componentes\Pdf;
+use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FctController;
 use Illuminate\Support\Facades\Log;
-
+use Intranet\Http\PrintResources\CertificatInstructorResource;
+use Intranet\Services\FDFPrepareService;
 
 
 class CertificatInstructorFct extends Mailable
@@ -35,18 +38,40 @@ class CertificatInstructorFct extends Mailable
     */
     public function build()
     {
-        $id = $this->fct->id;
-        if (file_exists(storage_path("tmp/certificatIFct_$id.pdf")))
-            unlink(storage_path("tmp/certificatIFct_$id.pdf"));
-        $pdf = FctController::preparePdf($this->fct,hoy(),$this->fct->Colaboracion->Ciclo->horasFct);
-        $pdf->save(storage_path("tmp/certificatIFct_$id.pdf"));
+        $pdf = FDFPrepareService::exec(
+            new CertificatInstructorResource($this->fct));
+        $view = $this->view("email.fct.certificadoInstructor")
+            ->attach($pdf, ['as'=>'certificadoInstructor.pdf','mime' => 'application/pdf']);
+        if (count($this->fct->Colaboradores)) {
+            $id = $this->fct->id;
+            if (file_exists(storage_path("tmp/certificatIFct_$id.pdf"))) {
+                unlink(storage_path("tmp/certificatIFct_$id.pdf"));
+            }
+            $pdf = $this->certificatColaboradors();
+            $pdf->save(storage_path("tmp/certificatIFct_$id.pdf"));
+            $view = $view->attach(
+                storage_path("tmp/certificatIFct_$id.pdf"),
+                ['as' => 'certificadoColaboradores.pdf', 'mime' => 'application/pdf']
+            );
+        }
         Log::notice("Enviat correu certificat ".$this->fct->Instructor->nombre);
-        return $this->view("email.fct.certificadoInstructor")->attach(storage_path("tmp/certificatIFct_$id.pdf"),['as'=>'certificatFCT.pdf','mime' => 'application/pdf']);
+        return $view;
     }
 
+    public function certificatColaboradors()
+    {
+        $secretario = Profesor::find(config(fileContactos().'.secretario'));
+        $director = Profesor::find(config(fileContactos().'.director'));
+        $dades = ['date' => FechaString(hoy(), 'ca'),
+            'fecha' => FechaString(hoy(), 'es'),
+            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
+            'secretario' => $secretario->FullName,
+            'centro' => config('contacto.nombre'),
+            'poblacion' => config('contacto.poblacion'),
+            'provincia' => config('contacto.provincia'),
+            'director' => $director->FullName,
+        ];
 
-
-
-
-
+        return Pdf::hazPdf('pdf.fct.certificatColaborador', $this->fct, $dades);
+    }
 }

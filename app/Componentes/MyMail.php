@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Intranet\Componentes;
 
 use Illuminate\Support\Facades\Mail;
@@ -25,7 +24,7 @@ class MyMail
         return $this->$key??($this->features[$key]??null);
     }
 
-    public function __set($key,$value)
+    public function __set($key, $value)
     {
         if (isset($this->$key)) {
             $this->$key = $value;
@@ -35,20 +34,18 @@ class MyMail
 
     }
 
-    public function __construct($elements=null,$view=null,$features=[],$attach=null,$editable=null)
+    public function __construct($elements=null, $view=null, $features=[], $attach=null, $editable=null)
     {
         $this->features = $features;
         $this->from = !isset($this->features['from'])?authUser()->email:$this->from;
         $this->fromPerson = !isset($this->features['fromPerson'])?authUser()->FullName:$this->fromPerson;
-        if (is_object($elements)){
+        if (is_object($elements)) {
             $this->elements = $elements;
             $this->class = get_class($this->elements->first());
-        }
-        else{
+        } else {
             $this->elements = $this->recoveryObjects($elements);
-
         }
-        if (is_array($view)){
+        if (is_array($view)) {
             $this->view = $view['view'];
             $this->template = $view['template'];
         } else {
@@ -61,7 +58,7 @@ class MyMail
     private function recoveryObjects($elements)
     {
         $objects = collect();
-        foreach ( explode(',', $elements) as $element){
+        foreach (explode(',', $elements) as $element) {
             $objects->push($this->recoveryObject($element));
         }
         return $objects;
@@ -72,10 +69,10 @@ class MyMail
             $toCompost = explode('(', $element);
             $id = $toCompost[0];
             $element = $this->class::find($id);
-            if (!isset($element)){
+            if (!isset($element)) {
                 return null;
             }
-            if (isset($toCompost[1]) && strpos($toCompost[1],';')) {
+            if (isset($toCompost[1]) && strpos($toCompost[1], ';')) {
                 $email = explode(';', $toCompost[1]);
                 $element->mail = $email[0];
                 $element->contact = $email[1];
@@ -101,7 +98,8 @@ class MyMail
         $class = $this->class;
         $register = $this->register;
         $template = $this->template;
-        return view('email.view',
+        return view(
+            'email.view',
             compact(
                 'to',
                 'from',
@@ -124,8 +122,7 @@ class MyMail
             foreach ($this->elements as $elemento) {
                 $this->sendMail($elemento, $fecha);
             }
-        }
-        else {
+        } else {
             $this->sendMail($this->elements, $fecha);
         }
     }
@@ -135,7 +132,7 @@ class MyMail
         if (isset($elemento->contacto)) {
             $mail = $elemento->mail??$elemento->email;
             $contacto = $elemento->contact??$elemento->contacto;
-            if (filter_var($mail,FILTER_VALIDATE_EMAIL)) {
+            if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {
                 Mail::to($mail, $contacto)
                     ->bcc($this->from)
                     ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attach));
@@ -143,8 +140,7 @@ class MyMail
                 if ($this->register) {
                     Activity::record('email', $elemento, null, $fecha, $this->subject);
                 }
-            }
-            else {
+            } else {
                 Alert::danger("No s'ha pogut enviar correu a $contacto. Comprova email");
             }
         } else {
@@ -154,22 +150,25 @@ class MyMail
         }
     }
 
-    private function chooseView(){
+    private function chooseView()
+    {
         if (strlen($this->view)> 50) {
             return 'email.standard';
         }
         return $this->view;
     }
 
-    private function getReceivers($elementos){
+    private function getReceivers($elementos)
+    {
         $to = '';
-        foreach ($elementos as $elemento){
+        foreach ($elementos as $elemento) {
             $to .= $this->getReceiver($elemento).',';
         }
         return $to;
     }
 
-    private function getReceiver($elemento){
+    private function getReceiver($elemento)
+    {
         return $elemento->id.'('.$elemento->email.';'.$elemento->contacto.')';
     }
 
@@ -180,7 +179,4 @@ class MyMail
     {
         return $this->elements;
     }
-
-
-
 }

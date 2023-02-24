@@ -27,23 +27,31 @@ class Dual extends Fct
         'hasta' => 'sometimes|required|date',
         'beca' => 'numeric'
     ];
-    protected $attributes = ['asociacion'=>3,'correoInstructor'=>1];
+    protected $attributes = ['asociacion'=>4,'correoInstructor'=>1];
     
 
-    public function getIdAlumnoOptions(){
-        return hazArray(Alumno::misAlumnos(authUser()->dni,true)->orderBy('apellido1')->orderBy('apellido2')->get(),'nia',
-                ['nameFull']);
+    public function getIdAlumnoOptions()
+    {
+        return hazArray(
+            Alumno::misAlumnos(authUser()->dni, true)
+                ->orderBy('apellido1')
+                ->orderBy('apellido2')
+                ->get(),
+            'nia',
+            ['nameFull']
+        );
     }
     
-    public function getIdColaboracionOptions(){
-        $cicloC = Grupo::select('idCiclo')->QTutor(authUser()->dni,true)->get();
+    public function getIdColaboracionOptions()
+    {
+        $cicloC = Grupo::select('idCiclo')->QTutor(authUser()->dni, true)->get();
         $ciclo = $cicloC->count()>0?$cicloC->first()->idCiclo:'';
-        $colaboraciones = Colaboracion::where('idCiclo',$ciclo)->get();
+        $colaboraciones = Colaboracion::where('idCiclo', $ciclo)->get();
         $todos = [];
         
-        foreach ($colaboraciones as $colaboracion){
+        foreach ($colaboraciones as $colaboracion) {
             $todos[$colaboracion->id] = $colaboracion->Centro->nombre;
-            if ($colaboracion->Centro->direccion){
+            if ($colaboracion->Centro->direccion) {
                 $todos[$colaboracion->id].=' ('.$colaboracion->Centro->direccion.')';
             }
         }

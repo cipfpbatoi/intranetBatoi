@@ -13,8 +13,6 @@ use Intranet\Botones\BotonImg;
  */
 class ArticuloLoteController extends IntranetController
 {
-    use traitImprimir;
-
     /**
      * @var string
      */

@@ -6,6 +6,7 @@ $(function () {
         $(this).attr("data-toggle", "modal").attr("data-target", "#password").attr("href", "");
     });
     $("#password .submit").click(function() {
+        localStorage.setItem("cur_modal", '#password');
         event.preventDefault();
         $('#password').modal('hide');
         $("#formPassword" ).submit();

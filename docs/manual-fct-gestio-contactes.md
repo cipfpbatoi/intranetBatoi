@@ -1,13 +1,14 @@
 
 Esta página mostra totes les empreses que han col.laborat amb el nostre cicle formatiu. 
 
-Tenim 3 pestanyes en la part superior:
+Tenim 4 pestanyes en la part superior:
 
-* **Pendents**. Ací estan les col·laboracions del cicle que encara no hem catalogat.
-* **Colabora**. Les col·laboracions que acolliran o estan acollint algun alumne enguany.
-* **Descartada**. Les empreses que ens han dit que no volen col·laborar.
++ **No assignades**. Ací estan les col·laboracions del cicle que encara no hem catalogat. Al principi estan totes.
+* **Pendents de Contestar**. Ens les hem assignades però encara no sabem si col·laboraran.
+* **Col·laboren**. Les col·laboracions que poden acollir algun alumne enguany.
+* **en FCT**. Les empreses amb FCT activa.
 
-Per a passar una col·laboració d'una pestanya a una altra, primer ens les hem d'assignar (Si sóm l'unic tutor del cicle, ens les hauriem d'assignar totes, si no, ens les hauriem de dividir amb els altres tutors per tal de no contactar tots).
+Per a passar una col·laboració de la primera pestanya a la segon ens l'hem d'assignar (Si sóm l'unic tutor del cicle, ens les hauriem d'assignar aquelles que considerem, si no, ens les hauriem de dividir amb els altres tutors per tal de no contactar tots).
 ___
 **Truc** Si no volem col·laborar amb una empresa podem no assignar-nos-la.**
 ___
@@ -17,12 +18,35 @@ Una vegada assignades, perden el botó groc d'assignar i passen a tindre els bot
 Cada pestanya presenta, a la part de dalt, una serie de botons amb accions. Ixem més o meyns botons dependent de en quina part del procés estem. Eixos botons són col·lectius, s'apliquen a totes les col·laboracions que complixen amb els requeriments del botó en qüestió. 
 
 ___
-**Per què uns botons són blau oscur i altres blau clar?** El blau oscur indica un contacte mitjançant un correu que puc modificar abans d'enviar-lo. El blau clar, en canvi, enviarà els correus de forma automàtica a totes les col·laboracions que complisquen el requeriment.**
+**Per què uns botons són blau oscur i altres blau clar?** El blau oscur indica un contacte mitjançant un correu que puc modificar abans d'enviar-lo. El blau clar, en canvi, no podré modificar el contingut del correu, encara que si seleccionar a qui li l'envie**
 ___
 
-## Pestanya **Pendents**
+## Que signifiqun tots el que hi ha en una col·laboració.
+
+Per ordre a l'esquerra apareix:
+
+* Nom centre treball (ordenats alfabèticament)
+  * Número de conveni i si està actualitzat (ditet)
+  * Número de llocs de treball
+  * Persona de contacte
+  * Telèfon de contacte
+  * Email de contacte
+  * Cicles del departament que compartixen centre de treball:
+    * En color blau si ja han dit que col·laboren 
+    * En color roig si no
+  * Població del centre de treball
+  * Botons per a :
+    * Vore + informació
+    * Crear un fct
+    * Passar entre pestanyes.
+
+
+
+
+## Pestanya **Pendents de contestar**
 
 Esta pestanya la fem servir en la fase de recerca de col.laboracions. El botó **Sol·licitud de pràctiques** envia un correu sol.licitant la col.laboració a les empreses. Al premer el botó ens apareix el llistat de colaboracions i podem seleccionar les colaboracions que desitgem:
+Un cuadrat de color roig significa que l'empresa no vol col·laborar enguany.
 
 ![solicitud](./img/ajuda/fct_solicitud_practiques.PNG)
 
@@ -38,12 +62,10 @@ Salutacions cordials de Ignasi Gomis
 ~~~ 
 
 ___
-## Pestanya **Colabora**
+## Pestanya **Col·laboren**
 
-En esta pestanya els botons están ordenats en funció de cada fase en el proces de gestió de les FCT i els farem servir en aquest ordre:
-1. Abans de començar les FCT: **Revissió de documentació**
-2. Al inici de les FCT: **Recordatori d'inici** i **Documentació Alumnat**
-3. Una vegada que els alumnes están cursant el mòdul d'FCT farem servir els botons **Seguiment**, **Concertar visita** i **Citar alumnat** quan siga necessari.
+Ja ens han mostrat la seua voluntat de col·laborar, però encara no hem emplenat la documentació.
+Tenim el botó de  **Revissió de documentació**: 
 
 Una vegada que ja tenim empreses dispostes a col.laborar, es hora de comprovar que les seues dades son correctes. Per tal de dur a terme esta tasca fem servir el botó **Revissió de documentació** que envia un correu automàtic a tots els contactes de les col·laboracions de la pestanya de colabora amb el següent text:
 
@@ -69,6 +91,18 @@ DNI : _____________________________________
 Telèfon: __________________________________
 Salutacions cordials de Ignasi Gomis
 ~~~ 
+
+Conforme anem creant fct, les col·laboracion aniran passant a la pestanya de FCT's.
+
+___
+## Pestanya **en Fcts**
+
+En esta pestanya els botons están ordenats en funció de cada fase en el proces de gestió de les FCT i els farem servir en aquest ordre:
+
+2. Al inici de les FCT: **Recordatori d'inici** i **Documentació Alumnat**
+3. Una vegada que els alumnes están cursant el mòdul d'FCT farem servir els botons **Seguiment**, **Concertar visita** i **Citar alumnat** quan siga necessari.
+
+
   
 Al inici de les FCT, quan els alumnes estan a punt de començar, farem servir el botó **Recordatori d'inici** que envia un correu automàtic als contactes de les col·laboracions amb el següent text:
 

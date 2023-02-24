@@ -12,18 +12,15 @@
             <form method="POST" class="agua" action="/fct/{{$fct->id}}/instructorCreate">
                 <div class="modal-body">
                     {{ csrf_field() }}
-                    <select name='idInstructor' class="form-control">
-                        @foreach ($fct->Colaboracion->Centro->Instructores->whereNotIn('dni',$instructores)->sortBy('surnames') as $instructor)
-                            <option value='{{ $instructor->dni }}'>{{ $instructor->surnames }},{!! $instructor->name !!} </option>
-                        @endforeach
-                    </select>
+                    <input type="text" name='idInstructor'  value="{{ old('idInstructor') }}" class="form-control" placeholder="DNI" />
+                    <input type="text" name='name'  value="{{ old('name') }}" class="form-control" placeholder="Nom" />
                     <input type="text"  name="horas" placeholder="@lang("validation.attributes.horas")" value="{{ old('horas') }}" class="form-control" />
                  </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") @lang("models.modelos.Colaborador") ">
                 </div>
-            </form>    
+            </form>
         </div>
     </div>
 </div>

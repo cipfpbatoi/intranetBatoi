@@ -3,7 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateEmpresasTable extends Migration {
+class CreateEmpresasTable extends Migration
+{
 
 	/**
 	 * Run the migrations.
@@ -12,13 +13,13 @@ class CreateEmpresasTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('empresas', function(Blueprint $table)
+		Schema::create('empresas', function (Blueprint $table)
 		{
 			$table->increments('id');
 			$table->string('cif', 20)->nullable()->unique();
 			$table->integer('concierto')->nullable();
 			$table->string('nombre', 100);
-			$table->string('email', 60)->nullable();
+			$table->string('email', 150)->nullable();
 			$table->string('direccion', 100);
 			$table->string('localidad', 30);
 			$table->string('telefono', 20);

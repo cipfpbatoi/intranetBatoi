@@ -1,24 +1,15 @@
 <?php
 
-/* clase : IntranetController
- * És la classe pare de tots els controladors amb el mètodes comuns a ells
- */
-
 namespace Intranet\Http\Controllers;
 
 
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
-use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Centro;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Fct;
 use DB;
-use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Instructor;
-use function PHPUnit\Framework\throwException;
+use Intranet\Exceptions\IntranetException;
 use Styde\Html\Facades\Alert;
+use Illuminate\Http\Request;
 
 
 /**
@@ -27,30 +18,57 @@ use Styde\Html\Facades\Alert;
  */
 class ItacaController extends Controller
 {
-    const SERVER_URL = 'http://192.168.56.1:4444';
-    const WEB = 'https://acces.edu.gva.es/sso/login.xhtml?callbackUrl=https://acces.edu.gva.es/escriptori/';
-    const WEB_AFTER_LOGIN = 'https://docent.edu.gva.es/md-front/www/#moduldocent/centres';
 
-    public function login(){
-        $driver = RemoteWebDriver::create($this::SERVER_URL, DesiredCapabilities::firefox());
-        try {
-            $driver->get($this::WEB);
-            $dni = substr(AuthUser()->dni,-9);
-            $password = 'EICLMP5_a';
-            $driver->findElement(WebDriverBy::name("form1:j_username")) // find usuario
-            ->sendKeys($dni);
-            $driver->findElement(WebDriverBy::name('form1:j_password'))
-                ->sendKeys($password);
-            $driver->findElement(WebDriverBy::name("form1:j_id39"))
-                ->click();
-            sleep(1);
-            $driver->get($this::WEB_AFTER_LOGIN);
-            sleep(2);
-        } catch (\Exception $e){
-            echo $e->getMessage();
-        }
-        $driver->close();
+    protected $serverUrl;
+    protected $driver;
+    const WEB = 'https://acces.edu.gva.es/sso/login.xhtml';
+
+    public function __construct()
+    {
+        //$this->serverUrl = env('SELENIUM_URL', 'http://172.16.9.10:4444');
+        $this->serverUrl = env('SELENIUM_URL', 'http://192.168.56.1:4444');
+        $this->driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
+
+        return parent::__construct();
     }
+
+
+    public function post(Request $request)
+    {
+        $accion = $request->accion;
+        return redirect()->route('sao.'.$accion, ['password' => $request->password]);
+    }
+
+
+    /**
+     * @param  RemoteWebDriver  $driver
+     * @return void
+     * @throws \Facebook\WebDriver\Exception\UnknownErrorException
+     */
+    public function login($password='eiclmp5_A'): void
+    {
+        $this->driver->get($this::WEB);
+        $dni = substr(AuthUser()->dni, -9);
+        $this->driver->findElement(WebDriverBy::id('form1:j_username')) // find usuario
+        ->sendKeys($dni);
+        $this->driver->findElement(WebDriverBy::id('form1:j_password'))
+            ->sendKeys($password);
+        $this->driver->findElement(WebDriverBy::name('form1:j_id47'))
+            ->click();
+        sleep(1);
+        $this->driver->get('https://docent.edu.gva.es/md-front/www/#moduldocent/centres');
+        sleep(3);
+        $this->driver->get('https://docent.edu.gva.es/md-front/www/#centre/03012165/horari');
+        sleep(3);
+        $ul = $this->driver->findElement(
+                WebDriverBy::cssSelector('ul.icm-horari-dies li.imc-horari-dia:nth-child(1)')
+            );
+        $data = $ul->findElement(WebDriverBy::cssSelector('h2.imc-dia'))->getAttribute('data-data');
+        var_dump($data);
+
+
+        $this->driver->close();
+    }
+
+
 }
-
-

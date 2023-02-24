@@ -6,7 +6,7 @@
         <tr>
             <td style="text-align:left;width:23.283cm;padding-left: 5px;font-size: 0.8em">
                 <strong>Tutor: </strong><span>{{authUser()->FullName}}</span></td>
-            <td style="text-align:left;width:23.2833cm;padding-left: 5px;font-size: 0.8em ">
+            <td style="text-align:left;width:23.2833cm;padding-left: 5px;font-size: 0.8em">
                 <strong>Cicle: </strong><span>{{$todos->first()->Fct->Colaboracion->Ciclo->ciclo??''}}</span></td>
         </tr>
     </table>
@@ -59,25 +59,28 @@
             <td>2</td>
             <td>3</td>
         </tr>
-        @foreach ($todos as $alumno)
-            <tr>
-                <td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em ">
-                    <strong>{{ $alumno->Alumno->FullName }}</strong> ({{ $alumno->Fct->Colaboracion->Centro->nombre }})
-                </td>
-                <td style="text-align:left;width:5.493cm; "></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+        @foreach ($todos??[] as $alumno)
+            @isset ($alumno)
+                <tr>
+                    <td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em ">
+                        <strong>{{ $alumno->Alumno->FullName }}</strong>
+                        ({{ $alumno->Fct->Colaboracion->Centro->nombre }})
+                    </td>
+                    <td style="text-align:left;width:5.493cm; "></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            @endisset
         @endforeach
     </table>
     <br/>

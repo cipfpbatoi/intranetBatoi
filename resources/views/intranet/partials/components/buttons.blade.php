@@ -1,9 +1,9 @@
-@foreach ($panel->getBotones($tipo) as $button)
+@foreach ($panel->getBotones($tipo) as $index => $button)
     @if (!empty($button))
-        @if (isset($elemento))
+        @isset($elemento)
             {{ $button->show($elemento) }}
         @else
             {{ $button->show() }}
-        @endif
+        @endisset
     @endif
 @endforeach

@@ -17,7 +17,7 @@
         </colgroup>
         <tr>
             <td colspan='8' style="text-align:left;font-weight: bold;font-size: 1.1em">Tutor i
-                cicle: {{authUser()->FullName}} - {{ $todos->first()->Fct->Colaboracion->Ciclo->ciclo}}</td>
+                cicle: {{authUser()->FullName}} - {{ $todos->first()->Fct->Colaboracion->Ciclo->ciclo ?? ''}}</td>
         </tr>
         <tr>
             <td style="text-align:left;font-weight: bold;font-size: 0.8em ">ALUMNE I EMPRESA</td>
@@ -29,19 +29,21 @@
             <td style="text-align:center;font-weight: bold;font-size: 0.8em">SIGNATURA TUTOR</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">SIGNATURA CAP PRÀCTIQUES</td>
         </tr>
-        @foreach ($todos as $fct)
-            <tr style="height: 50px">
-                <td style="text-align:left;font-size: 0.9em ">
-                    {{ $fct->Fct->Colaboracion->Centro->nombre }} ({{ $fct->Alumno->fullName }})
-                </td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
+        @foreach ($todos??[] as $fct)
+            @isset($fct->Fct)
+                <tr style="height: 50px">
+                    <td style="text-align:left;font-size: 0.9em ">
+                            {{ $fct->Fct->Colaboracion->Centro->nombre??'' }} ({{ $fct->Alumno->fullName??'' }})
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            @endisset
         @endforeach
         <tr>
             <td colspan="8" style="text-align:left;font-size: 12px;">

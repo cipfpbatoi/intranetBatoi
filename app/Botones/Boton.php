@@ -1,6 +1,7 @@
 <?php
 
 namespace Intranet\Botones;
+
 use function existsTranslate;
 
 abstract class Boton
@@ -10,35 +11,33 @@ abstract class Boton
     protected $href;
     protected $text;
     protected $postUrl; // final de la ruta
-    protected $atributos = []; 
+    protected $atributos = [];
     protected $defaultClase;   //clase que s'aplica si no es passa classe
     protected $permanetClase; //clase que s'aplica sempre
     protected $relative; // false ruta absoluta || true ruta relativa || prefijo
-   
-    /*
-     * __construct(
-     * $href = modelo.accion
-     * $atributos 
-     *      text => texto boton
-     *      clase => clase boton
-     *      id => clau per formar el id   
-     *      where => condicio per mostrar el boto (sols en el descendents de BotonElemento 
-     * $relative => false ruta absoluta || true ruta relativa || prefijo
-     * $postUrl => final de la ruta
-     */
 
-    private function translateText(){
-        if (isset($this->atributos['text'])) return $this->translateExistingText();
-        if ($text = existsTranslate("models." . ucwords($this->modelo) . "." . $this->postUrl)) return $text;
-        if ($text = existsTranslate("models." . ucwords($this->modelo) . "." . $this->accion)) return $text;
-        if ($text = existsTranslate("models." . ucwords($this->modelo) . ".default")) return $text;
-
+    private function translateText()
+    {
+        if (isset($this->atributos['text'])) {
+            return $this->translateExistingText();
+        }
+        if ($text = existsTranslate("models." . ucwords($this->modelo) . "." . $this->postUrl)) {
+            return $text;
+        }
+        if ($text = existsTranslate("models." . ucwords($this->modelo) . "." . $this->accion)) {
+            return $text;
+        }
+        if ($text = existsTranslate("models." . ucwords($this->modelo) . ".default")) {
+            return $text;
+        }
         return trans("messages.buttons.$this->accion");
     }
 
-    private function translateExistingText(){
-        if ($text = existsTranslate("models." . ucwords($this->modelo) . "." .$this->atributos['text'])) return($text);
-
+    private function translateExistingText()
+    {
+        if ($text = existsTranslate("models." . ucwords($this->modelo) . "." .$this->atributos['text'])) {
+            return ($text);
+        }
         return $this->atributos['text'];
     }
 
@@ -59,7 +58,9 @@ abstract class Boton
 
     public function __get($name)
     {
-        if (array_key_exists($name, $this->atributos)) return ($this->atributos[$name]);
+        if (array_key_exists($name, $this->atributos)) {
+            return ($this->atributos[$name]);
+        }
 
         return null;
     }
@@ -69,14 +70,15 @@ abstract class Boton
     public function show($elemento = null)
     {
         if (userIsAllow($this->roles)) {
-            if ($elemento == null)
+            if ($elemento == null) {
                 echo $this->html();
-            else if (isset($elemento))
+            } elseif (isset($elemento)) {
                 echo $this->html($elemento->getKey());
+            }
         }
     }
     
-    protected abstract function html($key = null);
+    abstract protected function html($key = null);
 
     protected function split()
     {
@@ -84,31 +86,35 @@ abstract class Boton
             $a = explode(".", $this->href);
             $this->modelo = $a[0];
             $this->accion = isset($a[1])?$a[1]:'';
-            if (isset($a[2])) $this->postUrl = $a[2];
+            if (isset($a[2])) {
+                $this->postUrl = $a[2];
+            }
         }
     }
 
     // torna clase del boton en format html
-    protected function clase()
+    protected function clase(): string
     {
         $clase = $this->class != '' ? $this->class : $this->defaultClase;
-        return " class='$clase " . $this->permanentClase . "'";
+        return $clase.' '.$this->permanentClase;
     }
 
     // torna id del boto en format html
-    protected function id($key = null)
+    protected function id($key = null): string
     {
-        if ($key == null) return $this->id != '' ? " id='" . $this->id . "'" : '';
-        return $this->id != '' ? " id='" . $this->id . $key . "'" : '';
+        if ($key == null) {
+            return $this->id ?? '';
+        }
+        return $this->id != '' ? $this->id . $key : '';
 
     }
 
     // torna data del boto en format html
-    protected function data()
+    protected function data(): string
     {
         $cadena = "";
-        foreach ($this->atributos as $key => $value){
-            if (substr($key,0,5)=='data-'){
+        foreach ($this->atributos as $key => $value) {
+            if (substr($key, 0, 5)=='data-') {
                 $cadena = " ".$key."='".$value."'";
             }
         }
@@ -116,10 +122,12 @@ abstract class Boton
     }
 
     // forma el text de l'enllaç amb la clau ($key)
-    protected function href($key = null)
+    protected function href($key = null): string
     {
-        if ($this->href == '#') return '#';
-        return $this->getAdress($key,$this->getPrefix(),$this->getPostfix());
+        if ($this->href == '#') {
+            return '#';
+        }
+        return $this->getAdress($key, $this->getPrefix(), $this->getPostfix());
     }
 
     /**
@@ -127,7 +135,9 @@ abstract class Boton
      */
     private function getPrefix(): string
     {
-        if ($this->relative === true) return '';
+        if ($this->relative === true) {
+            return '';
+        }
 
         return is_bool($this->relative)?config('app.url').'/':config('app.url').'/'.$this->relative.'/';
 
@@ -135,15 +145,14 @@ abstract class Boton
 
     private function getPostfix():string
     {
-        if (isset($this->postUrl)) return "/".$this->postUrl."'";
-        return "'";
+        return (isset($this->postUrl))?"/".$this->postUrl:"";
     }
 
-    private function getAdress($key,$prefix,$close):string
+    private function getAdress($key, $prefix, $close):string
     {
         return $key == null
-            ? "href='" . $prefix . strtolower($this->modelo) . "/" . $this->accion . $close
-            : "href='" . $prefix . strtolower($this->modelo) . "/" . $key . "/" . $this->accion . $close;
+            ? $prefix . strtolower($this->modelo) . "/" . $this->accion . $close
+            : $prefix . strtolower($this->modelo) . "/" . $key . "/" . $this->accion . $close;
     }
 
 }

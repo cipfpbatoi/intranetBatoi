@@ -52,7 +52,15 @@ class PanelListadoEntregasController extends BaseController
             }
             else
             {
-                $this->panel->setBoton('index',new BotonBasico('Infdepartamento.create',['roles' => config(self::ROLES_ROL_JEFE_DPTO),'id'=>'generar']));
+                $this->panel->setBoton('index',
+                    new BotonBasico(
+                        'Infdepartamento.create',
+                        [
+                            'roles' => config(self::ROLES_ROL_JEFE_DPTO),
+                            'id'=>'generar'
+                        ]
+                    )
+                );
             }
         }
         else {

@@ -8,6 +8,7 @@
         <li>Adreça: {{$elemento->Centro->direccion}}</li>
         <li>Poble: {{$elemento->Centro->localidad}}</li>
         <li>Email-Empresa : {{$elemento->centro->email}}</li>
+        <li>Dades Gerent : {{$elemento->Centro->Empresa->gerente }}</li>
         <li>Horari Pràctiques: {{$elemento->Centro->horarios}}</li>
     </ul>
     @if (!isset($elemento->Centro->Empresa->concierto))

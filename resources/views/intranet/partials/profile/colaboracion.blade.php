@@ -7,6 +7,7 @@
         $fcts = \Intranet\Entities\Fct::with('Instructor')
         ->where('idColaboracion',$elemento->id)
         ->where('asociacion',1)
+
         ->get();
         $colaboraciones = $elemento->Centro->Colaboraciones;
     @endphp

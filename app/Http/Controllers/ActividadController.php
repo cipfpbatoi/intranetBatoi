@@ -4,12 +4,15 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Componentes\Mensaje;
+use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\ActividadProfesor;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
+use Intranet\Services\CalendarService;
+use Intranet\Services\GestorService;
 use Response;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
@@ -24,8 +27,7 @@ use Intranet\Services\AdviseTeacher;
 class ActividadController extends ModalController
 {
 
-    use traitAutorizar,  traitSCRUD,
-        traitImprimir;
+    use traitAutorizar,  traitSCRUD;
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';
@@ -81,58 +83,11 @@ class ActividadController extends ModalController
         $actividad->aspectes = $request->aspectes;
         $actividad->recomanada = isset($request->recomanada)?1:0;
         $actividad->estado = 4;
-        try {
-            $countMockFiles = $this->mockFilesProcess($request,$actividad);
-        } catch (\Exception $e){
-            $countMockFiles = 0;
-        }
 
-
-
-        if ($request->hasFile('file')){
-            $path = storage_path().'/app/public/Extraescolars/';
-            $files = $request->file('file');
-
-
-            foreach ($files as $key => $file) {
-                $imagekey = 'image'.($countMockFiles+1+$key);
-                $fileName = 'Act'.$request->idActividad.$imagekey.'.'.$file->getClientOriginalExtension();
-                $file->move($path, $fileName);
-                $actividad->$imagekey = $fileName;
-            }
-        }
         $actividad->save();
         return back();
     }
 
-
-    private function mockFilesProcess($request,&$actividad){
-        $path = storage_path().'/app/public/Extraescolars/';
-        $remains = 0;
-        for ($i = 1; $i<4; $i++){
-            $imagekey = 'image'. $i;
-            if ($request->$imagekey != "") {
-                $remains++;
-                if ($actividad->$imagekey != $request->$imagekey)
-                {
-                    $deleteFileName = $path.$actividad->$imagekey;
-                    if (file_exists($deleteFileName)){
-                        unlink($deleteFileName);
-                    }
-                    $substituteFileName = $path.$request->$imagekey;
-
-                    rename($substituteFileName,$deleteFileName);
-                }
-            } else {
-                $deleteFileName = $path.$actividad->$imagekey;
-                if ($actividad->$imagekey && file_exists($deleteFileName)){
-                    unlink($deleteFileName);
-                }
-                $actividad->$imagekey = null;
-            }
-        }
-        return $remains;
-    }
 
     public function showValue($id){
         $Actividad = Actividad::find($id);
@@ -147,7 +102,7 @@ class ActividadController extends ModalController
     public function printValue($id){
         $elemento = $this->class::findOrFail($id);
         $informe = 'pdf.valoracionActividad';
-        $pdf = $this->hazPdf($informe, $elemento, null);
+        $pdf = PDF::hazPdf($informe, $elemento, null);
         return $pdf->stream();
     }
 
@@ -278,7 +233,7 @@ class ActividadController extends ModalController
             }
         }
         if ($todos->count()){
-            $pdf = $this->hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait');
+            $pdf = PDF::hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait');
             return $pdf->stream();
         }
         Alert::info('No hi han menors');
@@ -324,7 +279,10 @@ class ActividadController extends ModalController
 
     public function i_c_s($id)
     {
-        return $this->ics($id, 'name', 'descripcion');
+        $elemento = $this->class::findOrFail($id);
+        $vCalendar = CalendarService::build($elemento,'name','descripcion');
+        return Response::view('ics', compact('vCalendar'))->header('Content-Type', 'text/calendar');
+
     }
 
     public function menorAuth($nia,$id){
@@ -336,5 +294,11 @@ class ActividadController extends ModalController
         }
         $actividad->menores()->updateExistingPivot($nia,['autorizado' => $autorizado]);
         return view('extraescolares.autorizados',compact('actividad'));
+    }
+
+    public function gestor($id)
+    {
+        $gestor = new GestorService(Actividad::findOrFail($id));
+        return $gestor->render();
     }
 }

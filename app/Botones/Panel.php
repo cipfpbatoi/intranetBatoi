@@ -239,5 +239,4 @@ class Panel
         $this->setTitulo($titulo);
         return $this;
     }
-
 }

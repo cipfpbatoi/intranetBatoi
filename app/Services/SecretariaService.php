@@ -35,15 +35,6 @@ class SecretariaService
         }
     }
 
-    public function uploadA56($files)
-    {
-        foreach ($files as $document) {
-            $this->uploadFile($document);
-        }
-        $files[0]['fct']->a56 = 2;
-        $files[0]['fct']->save();
-    }
-
     private function error($response)
     {
         $ret = '';
@@ -57,11 +48,11 @@ class SecretariaService
         return $ret;
     }
 
-    private function uploadFile($document)
+    public function uploadFile($document)
     {
         $curso = substr(curso(), 0, 4);
         $link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
-        $route = storage_path('app/public/adjuntos/'.$document['file'].'/'.$document['name']);
+        $route = storage_path($document['route']);
 
         $response = Http::withToken($this->token)
             ->attach('file', file_get_contents($route), $document['name'])
@@ -71,10 +62,10 @@ class SecretariaService
             return 1;
         } else {
             throw new IntranetException(
-                'No he pogut carregar el fitxer '.$document['name'].' de la fct '.
-                $document['fct']->id.' situat al fitxer: '.$route.'al servidor de matrícules: '.
-                $this->error($response['error']
-            ));
+                "No he pogut carregar el fitxer ".$document['name']." de la fct de l'alumne".
+                $document['alumne'].' situat al fitxer: '.$route.' al servidor de matrícules: '.
+                $this->error($response['error'])
+            );
         }
     }
 }

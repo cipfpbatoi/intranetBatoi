@@ -48,17 +48,21 @@ Dropzone.options.myDropzone = {
                 this.removeFile(file);
                 return;
             } else {
+                myDropzone.processQueue();
                 var a = document.createElement('a');
                 a.setAttribute('style','float:right');
                 if (file.referencesTo) {
                     a.setAttribute('href',file.referencesTo);
                 } else {
-                    a.setAttribute('href', '/storage/adjuntos/'+modelo+'/'+expediente+'/'+file.name);
+                    if (file.file) {
+                        a.setAttribute('href', '/storage/adjuntos/' + modelo + '/' + expediente + '/' + file.file);
+                    } else {
+                        a.setAttribute('href', '/readFileByName/' + file.name);
+                    }
                 }
                 a.setAttribute('target', "_blank");
                 a.innerHTML = "<em class='fa fa-download'></em>";
                 file.previewTemplate.appendChild(a);
-                myDropzone.processQueue();
             }
         });
         this.on("maxfilesexceeded", function(file) {
@@ -91,6 +95,12 @@ Dropzone.options.myDropzone = {
     },
 };
 
-
-
-
+$(function () {
+    $('.message').on("click", function(event){
+        event.preventDefault();
+        let message = $(this).parent().attr('title');
+        if (confirm(message)) {
+            location.href = $(this).attr('href');
+        }
+    });
+});

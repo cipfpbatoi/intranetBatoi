@@ -76,6 +76,7 @@ return array(
      ),
     'buttons' => array(
         'confirmar' => 'Confirmar',
+
         'edit' => 'Editar',
         'delete' => 'Esborrar',
         'pdf' => 'Imprimir',
@@ -106,7 +107,10 @@ return array(
         'justify' => 'Justificar',
         'unauthorize' => 'Desautoritzar',
         'refuse' => 'Rebutjar',
-        'pendiente' => 'Pendents',
+        'pendiente' => 'Pendents de Contestar',
+        'resta' => 'No assignades',
+        'colabora' => 'Col·laboren',
+        'fcts' => 'en FCT',
         'autorizada' => 'Autoritzades',
         'impresa' => 'Impreses',
         'registrada' => 'Registrades',
@@ -300,6 +304,7 @@ return array(
         'Solicitud' => 'Remissió a Orientació',
         'Solicitudes' => 'Sol·licituts',
         'Fse' => 'Imprimir Acta FSE',
+        'Erasmus' => 'Empreses Erasmus'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

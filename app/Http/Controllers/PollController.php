@@ -21,11 +21,17 @@ class   PollController extends IntranetController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico("poll.create",inRol('qualitat')));
-        $this->panel->setBoton('grid', new BotonImg('poll.edit',inRol('qualitat')));
-        $this->panel->setBoton('grid', new BotonImg('poll.delete',inRol('qualitat')));
-        $this->panel->setBoton('grid',new BotonImg('poll.chart',array_merge(['img' => 'fa-bar-chart'],inRol('qualitat'))));
-        $this->panel->setBoton('grid',new BotonImg('poll.show',['img' =>'fa-eye']));
+        $this->panel->setBoton('index', new BotonBasico("poll.create", inRol('qualitat')));
+        $this->panel->setBoton('grid', new BotonImg('poll.edit', inRol('qualitat')));
+        $this->panel->setBoton('grid', new BotonImg('poll.delete', inRol('qualitat')));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'poll.chart',
+                array_merge(['img' => 'fa-bar-chart'], inRol('qualitat'))
+            )
+        );
+        $this->panel->setBoton('grid', new BotonImg('poll.show', ['img' =>'fa-eye']));
     }
 
     private function userKey($poll):String
@@ -38,7 +44,8 @@ class   PollController extends IntranetController
     }
 
 
-    protected function preparaEnquesta($id){
+    protected function preparaEnquesta($id)
+    {
         $poll = Poll::find($id);
         $modelo = $poll->modelo;
         $quests = $modelo::loadPoll($this->loadPreviousVotes($poll));
@@ -52,28 +59,32 @@ class   PollController extends IntranetController
         return redirect('home');
     }
 
-    private function loadPreviousVotes($poll){
-        return hazArray(Vote::where('user_id','=', $this->userKey($poll))
-            ->where('idPoll', $poll->id)
-            ->get(),'idOption1','idOption1');
+    private function loadPreviousVotes($poll)
+    {
+        return hazArray(
+            Vote::where('user_id', '=', $this->userKey($poll))->where('idPoll', $poll->id)->get(),
+            'idOption1',
+            'idOption1'
+        );
     }
 
-    protected function guardaEnquesta(Request $request,$id){
-
+    protected function guardaEnquesta(Request $request, $id)
+    {
         $poll = Poll::find($id);
         $modelo = $poll->modelo;
         $quests = $modelo::loadPoll($this->loadPreviousVotes($poll));
 
-        foreach ($poll->Plantilla->options as $question => $option){
+        foreach ($poll->Plantilla->options as $question => $option) {
             $i=0;
-            foreach ($quests as $quest) {
+            foreach ($quests??[] as $quest) {
                 if (isset($quest['option2'])) {
-                    foreach ($quest['option2'] as $profesores)
+                    foreach ($quest['option2']??[] as $profesores) {
                         foreach ($profesores as $dni) {
                             $i++;
-                            $field = 'option' . ($question + 1) . '_' . $i;
+                            $field = 'option'.($question + 1).'_'.$i;
                             $this->guardaVoto($poll, $option, $quest['option1']->id, $dni, $request->$field);
                         }
+                    }
                 } else {
 
                     $field = 'option' . ($question + 1) . '_' . $quest['option1']->id;
@@ -85,9 +96,9 @@ class   PollController extends IntranetController
         return redirect('home');
     }
 
-    private function guardaVoto($poll,$option,$option1,$option2,$value){
-
-        if ($value != '' && $value != '0'){
+    private function guardaVoto($poll, $option, $option1, $option2, $value)
+    {
+        if ($value != '' && $value != '0') {
             $vote = new Vote();
             $vote->idPoll = $poll->id;
             $vote->user_id = $poll->anonymous ? hash('md5', AuthUser()->id) : AuthUser()->id;
@@ -96,8 +107,7 @@ class   PollController extends IntranetController
             $vote->idOption2 = $option2;
             if ($option->scala == 0) {
                 $vote->text = $value;
-            }
-            else {
+            } else {
                 $vote->value = voteValue($option2, $value);
             }
             $vote->save();
@@ -116,8 +126,17 @@ class   PollController extends IntranetController
             $options_numeric = $poll->Plantilla->options->where('scala', '>', 0);
             $options_text = $poll->Plantilla->options->where('scala', '=', 0);
             $options = $poll->Plantilla->options;
-            return view('poll.show', compact('myVotes', 'poll', 'options_numeric',
-                'options_text', 'myGroupsVotes','options'));
+            return view(
+                'poll.show',
+                compact(
+                    'myVotes',
+                    'poll',
+                    'options_numeric',
+                    'options_text',
+                    'myGroupsVotes',
+                    'options'
+                )
+            );
         }
         Alert::info("L'enquesta no ha estat realitzada encara");
         return back();
@@ -134,21 +153,22 @@ class   PollController extends IntranetController
         $allVotes = Vote::allNumericVotes($id)->get();
         $option1 = $allVotes->GroupBy(['idOption1', 'option_id']);
         $option2 = $allVotes->GroupBy(['idOption2', 'option_id']);
-        $this->initValues($votes,$options_numeric);
+        $this->initValues($votes, $options_numeric);
         $votes['all'] = $allVotes->GroupBy('option_id');
-        $modelo::aggregate($votes,$option1,$option2);
+        $modelo::aggregate($votes, $option1, $option2);
 
 
-        return view('poll.allResolts',compact('votes','poll','options_numeric'));
+        return view('poll.allResolts', compact('votes', 'poll', 'options_numeric'));
     }
 
 
 
-    private function initValues(&$votes,$options){
+    private function initValues(&$votes, $options)
+    {
         $grupos = Grupo::all();
         $ciclos = Ciclo::all();
         $departamentos = Departamento::all();
-        foreach ($options as $value){
+        foreach ($options as $value) {
             foreach ($grupos as $grupo) {
                 $votes['grup'][$grupo->codigo][$value->id] = collect();
             }

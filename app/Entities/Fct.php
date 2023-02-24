@@ -9,6 +9,7 @@ use Intranet\Events\ActivityReport;
 use Intranet\Events\FctCreated;
 use Illuminate\Support\Arr;
 
+
 class Fct extends Model
 {
     use BatoiModels;
@@ -67,17 +68,22 @@ class Fct extends Model
     {
         return $this->belongsTo(Instructor::class, 'idInstructor', 'dni');
     }
+
+    public function Erasmus()
+    {
+        return $this->belongsTo(Erasmus::class, 'idInstructor', 'idSao');
+    }
+
+
     public function Colaboradores()
     {
-        return $this->belongsToMany(
-            Instructor::class,
-            'colaboradores',
+        return $this->hasMany(
+            Colaborador::class,
             'idFct',
-            'idInstructor',
-            'id',
-            'dni'
-        )->withPivot('horas');
+            'id'
+        );
     }
+
     public function Alumnos()
     {
         return $this->belongsToMany(
@@ -128,8 +134,8 @@ class Fct extends Model
 
         $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
 
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor,$dual)->get()->toArray();
-        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno',   $alumnos)->get()->toArray();
+        $alumnos = Alumno::select('nia')->misAlumnos($profesor, $dual)->get()->toArray();
+        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno', $alumnos)->get()->toArray();
 
         return $query->whereIn('id', $alumnosFct)->whereIn('idColaboracion', $colaboraciones);
     }
@@ -144,6 +150,11 @@ class Fct extends Model
 
     public function scopeEsExempt($query)
     {
+        return $query->where('asociacion', '=', 3);
+    }
+
+    public function scopeEsErasmus($query)
+    {
         return $query->where('asociacion', '=', 2);
     }
     
@@ -153,11 +164,11 @@ class Fct extends Model
     }
     public function scopeEsAval($query)
     {
-        return $query->where('asociacion', '<', 3);
+        return $query->where('asociacion', '<', 4);
     }
     public function scopeEsDual($query)
     {
-        return $query->where('asociacion', 3);
+        return $query->where('asociacion', 4);
     }
 
     public function scopeNoAval($query)
@@ -227,12 +238,11 @@ class Fct extends Model
     
     public function getCentroAttribute()
     {
-        return isset($this->Colaboracion->Centro->nombre)?$this->Colaboracion->Centro->nombre:'Convalidada/Exent';
+        if (isset($this->Colaboracion->Centro->nombre)) {
+            return $this->Colaboracion->Centro->nombre;
+        }
+        return ($this->asociacion==2)?'Erasmus':'Convalidada/Exent';
     }
-
-
-
-
 
     public function getCicloAttribute()
     {
@@ -277,11 +287,18 @@ class Fct extends Model
 
     public function getXinstructorAttribute()
     {
-        if (isset($this->Instructor->nombre)) {
-            return $this->Instructor->nombre;
+        if ($this->model == 'Instructor') {
+            return $this->Instructor->nombre??'';
+        } else {
+            return $this->Erasmus->name??'';
         }
-        return '';
     }
+
+    public function getSendCorreoAttribute()
+    {
+        return $this->correoInstructor?'Enviat':'Pendent';
+    }
+
     public function saveContact($contacto, $email)
     {
         $instructor = $this->Instructor;
