@@ -319,6 +319,7 @@ Route::get('/alumnofct/{id}/pdf', ['as' => 'alumnofct.pdf', 'uses' => 'FctAlumno
 Route::get('/alumnofct/{id}/show', ['as' => 'alumnofct.show', 'uses' => 'FctAlumnoController@show']);
 Route::get('/alumnofct/{id}/auth', ['as' => 'alumnofct.auth', 'uses' => 'FctAlumnoController@auth']);
 Route::get('/alumnofct/{id}/A5', ['as' => 'alumnofct.A5', 'uses' => 'FctAlumnoController@A5']);
+Route::get('/alumnofct/{id}/A1', ['as' => 'alumnofct.A1', 'uses' => 'FctAlumnoController@A1']);
 Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
 
 

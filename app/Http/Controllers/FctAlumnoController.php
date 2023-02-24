@@ -17,6 +17,7 @@ use Intranet\Entities\FctConvalidacion;
 use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use Intranet\Http\PrintResources\A1ENResource;
 use Intranet\Http\PrintResources\A5Resource;
 use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
@@ -100,6 +101,13 @@ class FctAlumnoController extends IntranetController
             new BotonImg(
                 'alumnofct.A5',
                 ['img' => 'fa-hand-o-up', 'where' => ['asociacion', '==', '1']]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumnofct.A1',
+                ['img' => 'fa-file-zip-o', 'where' => ['asociacion', '==', '2']]
             )
         );
         $this->panel->setBoton(
@@ -264,6 +272,11 @@ class FctAlumnoController extends IntranetController
     public function A5($id)
     {
         return response()->file(FDFPrepareService::exec(new A5Resource(AlumnoFct::find($id))));
+    }
+
+    public function A1($id)
+    {
+        return response()->file(FDFPrepareService::exec(new A1ENResource(AlumnoFct::find($id))));
     }
 
     public function auth($id)
