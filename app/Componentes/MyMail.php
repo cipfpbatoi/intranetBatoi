@@ -47,7 +47,7 @@ class MyMail
             $this->elements = $this->recoveryObjects($elements);
 
         }
-        if (is_array($view)){
+        if (is_array($view)) {
             $this->view = $view['view'];
             $this->template = $view['template'];
         } else {
@@ -60,7 +60,7 @@ class MyMail
     private function recoveryObjects($elements)
     {
         $objects = collect();
-        foreach ( explode(',', $elements) as $element){
+        foreach (explode(',', $elements) as $element) {
             $objects->push($this->recoveryObject($element));
         }
         return $objects;
@@ -135,7 +135,7 @@ class MyMail
             $mail = $elemento->mail??$elemento->email;
             $contacto = $elemento->contact??$elemento->contacto;
             if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-                Mail::to($mail, $contacto)
+                Mail::to($mail)
                     ->bcc($this->from)
                     ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attach));
                 Alert::info('Enviat correus ' . $this->subject . ' a ' . $contacto);
@@ -181,7 +181,4 @@ class MyMail
     {
         return $this->elements;
     }
-
-
-
 }
