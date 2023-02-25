@@ -51,8 +51,10 @@ RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
 COPY start-container /usr/local/bin/start-container
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY php.ini /etc/php/8.2/cli/conf.d/99-sail.ini
-COPY wkhtmltox_0.12.6.1-2.jammy_amd64.deb /home/sail
-RUN apt-get update && apt-get install -y /home/sail/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
+COPY wkhtmltox_0.12.6.1-2.jammy_amd64.deb /home/sail/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
+
+RUN apt-get update && apt-get install -y libxrender1 libjpeg-dev xfonts-75dpi xfonts-base libpq-dev libffi-dev fontconfig libfontconfig libxtst6 xz-utils
+RUN dpkg -i /home/sail/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
 
 RUN chmod +x /usr/local/bin/start-container
 

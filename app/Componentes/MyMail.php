@@ -25,7 +25,7 @@ class MyMail
         return $this->$key??($this->features[$key]??null);
     }
 
-    public function __set($key,$value)
+    public function __set($key, $value)
     {
         if (isset($this->$key)) {
             $this->$key = $value;
@@ -35,16 +35,15 @@ class MyMail
 
     }
 
-    public function __construct($elements=null,$view=null,$features=[],$attach=null,$editable=null)
+    public function __construct($elements=null, $view=null, $features=[], $attach=null, $editable=null)
     {
         $this->features = $features;
         $this->from = !isset($this->features['from'])?authUser()->email:$this->from;
         $this->fromPerson = !isset($this->features['fromPerson'])?authUser()->FullName:$this->fromPerson;
-        if (is_object($elements)){
+        if (is_object($elements)) {
             $this->elements = $elements;
             $this->class = get_class($this->elements->first());
-        }
-        else{
+        } else {
             $this->elements = $this->recoveryObjects($elements);
 
         }
@@ -101,7 +100,8 @@ class MyMail
         $class = $this->class;
         $register = $this->register;
         $template = $this->template;
-        return view('email.view',
+        return view(
+            'email.view',
             compact(
                 'to',
                 'from',
@@ -124,8 +124,7 @@ class MyMail
             foreach ($this->elements as $elemento) {
                 $this->sendMail($elemento, $fecha);
             }
-        }
-        else {
+        } else {
             $this->sendMail($this->elements, $fecha);
         }
     }
@@ -135,7 +134,7 @@ class MyMail
         if (isset($elemento->contacto)) {
             $mail = $elemento->mail??$elemento->email;
             $contacto = $elemento->contact??$elemento->contacto;
-            if (filter_var($mail,FILTER_VALIDATE_EMAIL)) {
+            if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {
                 Mail::to($mail, $contacto)
                     ->bcc($this->from)
                     ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attach));
@@ -143,8 +142,7 @@ class MyMail
                 if ($this->register) {
                     Activity::record('email', $elemento, null, $fecha, $this->subject);
                 }
-            }
-            else {
+            } else {
                 Alert::danger("No s'ha pogut enviar correu a $contacto. Comprova email");
             }
         } else {
@@ -154,22 +152,25 @@ class MyMail
         }
     }
 
-    private function chooseView(){
+    private function chooseView()
+    {
         if (strlen($this->view)> 50) {
             return 'email.standard';
         }
         return $this->view;
     }
 
-    private function getReceivers($elementos){
+    private function getReceivers($elementos)
+    {
         $to = '';
-        foreach ($elementos as $elemento){
+        foreach ($elementos as $elemento) {
             $to .= $this->getReceiver($elemento).',';
         }
         return $to;
     }
 
-    private function getReceiver($elemento){
+    private function getReceiver($elemento)
+    {
         return $elemento->id.'('.$elemento->email.';'.$elemento->contacto.')';
     }
 
