@@ -17,7 +17,6 @@ class FDFPrepareService
         if ($resource->getFlatten()) {
             $pdf->flatten();
         }
-
         if (file_exists($nameFile)) {
             unlink($nameFile);
         }
@@ -25,8 +24,7 @@ class FDFPrepareService
             if ($resource->getStamp()) {
                 self::stampPDF($pdf, $nameFile, $resource->getStamp());
             } else {
-                $pdf->saveAs($nameFile);
-
+                $pdf->dropXfa()->dropXmp()->needAppearances()->saveAs($nameFile);
             }
             return $nameFile;
         }  catch (Exception $e) {

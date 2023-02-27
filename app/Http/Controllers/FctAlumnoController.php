@@ -18,6 +18,8 @@ use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Intranet\Http\PrintResources\A1ENResource;
+use Intranet\Http\PrintResources\A2ENResource;
+use Intranet\Http\PrintResources\A3ENResource;
 use Intranet\Http\PrintResources\A5Resource;
 use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
@@ -26,6 +28,7 @@ use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Intranet\Http\PrintResources\AutorizacionDireccionResource;
 use Intranet\Http\PrintResources\ExempcioResource;
+use mikehaertl\pdftk\Pdf as pdftk;
 
 
 class FctAlumnoController extends IntranetController
@@ -276,7 +279,19 @@ class FctAlumnoController extends IntranetController
 
     public function A1($id)
     {
-        return response()->file(FDFPrepareService::exec(new A1ENResource(AlumnoFct::find($id))));
+
+        $fct = AlumnoFct::find($id);
+        $nameFile = storage_path("tmp/AN_EN{$fct->Alumno->shorName}.zip");
+        if (file_exists($nameFile)) {
+            unlink($nameFile);
+        }
+        $zip = new \ZipArchive();
+        $zip->open($nameFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $zip->addFile(FDFPrepareService::exec(new A1ENResource(AlumnoFct::find($id))), 'AIEN.pdf');
+        $zip->addFile(FDFPrepareService::exec(new A2ENResource(AlumnoFct::find($id))), 'AIIEN.pdf');
+        $zip->addFile(FDFPrepareService::exec(new A3ENResource(AlumnoFct::find($id))), 'AIIIEN.pdf');
+        $zip->close();
+        return response()->download($nameFile);
     }
 
     public function auth($id)

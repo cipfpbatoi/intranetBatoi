@@ -12,7 +12,7 @@ class A1ENResource extends PrintResource
     {
         $this->elements = $elements;
         $this->file = 'AnexoIEN.pdf';
-        $this->flatten = true;
+        $this->flatten = false;
     }
     /**
      * Transform the resource into an array.
@@ -30,13 +30,13 @@ class A1ENResource extends PrintResource
             'Text2' => year(Hoy()),
             'Text3' => $empresa->concierto,
             'Text4' => day(Hoy()),
-            'Text5' => month(Hoy()),
+            'Text5' => mes(Hoy()),
             'Text6' => substr(year(Hoy()), 2, 2),
             'Text7' => $director->fullName.' - '.$director->dni,
             'Text8' => config('contacto.nombre').' - '.config('contacto.codi'),
             'Text9' =>
                 config('contacto.direccion').'('.
-                config('contacto.localidad').') - '.
+                config('contacto.poblacion').') - '.
                 config('contacto.email').' - '.
                 config('contacto.telefono'),
             'Text10' => $empresa->gerente,
@@ -44,12 +44,12 @@ class A1ENResource extends PrintResource
             'Text12' => $empresa->direccion.'('.$empresa->localidad.') - '.$empresa->email.' - '.$empresa->telefono,
             'Text13' => $empresa->email,
             'Text14' => $empresa->email,
-            'Text15' => config('contacto.localidad'),
+            'Text15' => config('contacto.poblacion'),
             'Text16' => day(Hoy()),
-            'Text17' => month(Hoy()),
+            'Text17' => mes(Hoy()),
             'Text18' => substr(year(Hoy()), 2, 2),
             'Text20' => $director->fullName,
-            'Text22' => $director->gerente,
+            'Text22' => $empresa->gerente,
         ];
     }
 }
