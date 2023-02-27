@@ -107,7 +107,7 @@ class FctAlumnoController extends IntranetController
             'grid',
             new BotonImg(
                 'alumnofct.A1',
-                ['img' => 'fa-file-zip-o', 'where' => ['erasmus', '==', '1']]
+                ['img' => 'fa-file-zip-o', 'where' => ['asociacion', '==', '1']]
             )
         );
         $this->panel->setBoton(
