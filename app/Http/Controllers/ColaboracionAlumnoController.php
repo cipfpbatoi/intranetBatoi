@@ -27,7 +27,6 @@ class ColaboracionAlumnoController extends IntranetController
      */
     protected $model = 'Colaboracion';
 
-    //protected $parametresVista = ['modal' => ['contacto','afegirFct','seleccion']];
 
 
     /**
@@ -40,7 +39,7 @@ class ColaboracionAlumnoController extends IntranetController
         $this->crea_pestanas(
             config('modelos.'.$this->model.'.estados'),
             "profile.".strtolower($this->model),
-            4,
+            3,
             1,
             'situation'
         );

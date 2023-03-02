@@ -56,7 +56,7 @@ class PanelColaboracionController extends IntranetController
         $this->crea_pestanas(
             config('modelos.'.$this->model.'.estados'),
             "profile.".strtolower($this->model),
-            3,
+            4,
             1,
             'situation'
         );
@@ -329,7 +329,8 @@ class PanelColaboracionController extends IntranetController
         try {
             parent::destroy($id);
         } catch (Exception $exception) {
-            Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixa col·laboració d'anys anteriors.");
+            Alert::danger("No es pot esborrar perquè hi ha valoracions
+             fetes per a eixa col·laboració d'anys anteriors.");
         }
 
         Session::put('pestana', 1);
