@@ -143,7 +143,7 @@ class Colaboracion extends Model
 
     public function getSituationAttribute()
     {
-        foreach ($this->fcts->where('asociacion', 1) as $fct) {
+        foreach ($this->fcts->where('asociacion', '<', 3) as $fct) {
             if (count($fct->Alumnos)) {
                 return 4;
             }
