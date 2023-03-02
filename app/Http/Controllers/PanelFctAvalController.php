@@ -80,7 +80,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calificacion', '!=', '1',
                         'actas', '==', 0,
-                        'asociacion', '==', 1
+                        'asociacion', '<', 3
                     ]
                 ]
             ));
@@ -93,7 +93,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '5',
                         'calificacion', '!=', '0',
-                        'actas', '==', 0, 'asociacion', '==', 1
+                        'actas', '==', 0, 'asociacion', '<', 3
                     ]
                 ]
             ));
@@ -106,7 +106,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '5',
                         'calificacion', '!=', null,
-                        'actas', '==', 0, 'asociacion', '==', 1
+                        'actas', '==', 0, 'asociacion', '<', 3
                     ]
                 ]
             ));
@@ -119,7 +119,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '1',
                         'calificacion', '==', 0,
-                        'actas', '>', 0, 'asociacion', '==', 1
+                        'actas', '>', 0, 'asociacion', '<', 3
                     ]
                 ]
             ));
@@ -127,12 +127,12 @@ class PanelFctAvalController extends IntranetController
         $this->panel->setBoton(
             'grid',
             new BotonImg('fct.insercio', ['img' => 'fa-square-o', 'roles' => config(self::ROLES_ROL_TUTOR),
-            'where' => ['insercion', '==', '0','asociacion','==',1,'calificacion', '==', '1']]
+            'where' => ['insercion', '==', '0','asociacion','<',3,'calificacion', '==', '1']]
             ));
         $this->panel->setBoton(
             'grid',
             new BotonImg('fct.insercio', ['img' => 'fa-check-square-o', 'roles' => config(self::ROLES_ROL_TUTOR),
-            'where' => ['insercion', '==', '1','asociacion','==',1,'calificacion', '==', '1']]
+            'where' => ['insercion', '==', '1','asociacion','<',3,'calificacion', '==', '1']]
             ));
     }
 

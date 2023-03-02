@@ -69,10 +69,6 @@ class Fct extends Model
         return $this->belongsTo(Instructor::class, 'idInstructor', 'dni');
     }
 
-    public function Erasmus()
-    {
-        return $this->belongsTo(Erasmus::class, 'idInstructor', 'idSao');
-    }
 
 
     public function Colaboradores()
@@ -160,7 +156,7 @@ class Fct extends Model
     
     public function scopeEsFct($query)
     {
-        return $query->where('asociacion', '<', 2);
+        return $query->where('asociacion', '<', 3);
     }
     public function scopeEsAval($query)
     {
@@ -244,8 +240,9 @@ class Fct extends Model
     {
         if (isset($this->Colaboracion->Centro->nombre)) {
             return $this->Colaboracion->Centro->nombre;
+        } else {
+            return 'Convalidada/Exent';
         }
-        return ($this->asociacion==2)?'Erasmus':'Convalidada/Exent';
     }
 
     public function getCicloAttribute()
@@ -291,11 +288,7 @@ class Fct extends Model
 
     public function getXinstructorAttribute()
     {
-        if ($this->model == 'Instructor') {
-            return $this->Instructor->nombre??'';
-        } else {
-            return $this->Erasmus->name??'';
-        }
+        return $this->Instructor->nombre??'';
     }
 
     public function getSendCorreoAttribute()

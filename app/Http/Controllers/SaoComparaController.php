@@ -10,7 +10,6 @@ use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
-use Intranet\Entities\Erasmus;
 use Intranet\Entities\Fct;
 use Styde\Html\Facades\Alert;
 
@@ -150,6 +149,7 @@ class SaoComparaController extends SaoController
                 }
 
             }
+            /*
             foreach (AlumnoFctAval::misErasmus()->get() as $fctAl) {
                 $erasmus = Erasmus::where('idSao', $fctAl->idSao)->whereNull('direccio')->first();
                 if ($erasmus) {
@@ -165,6 +165,7 @@ class SaoComparaController extends SaoController
                     $erasmus->save();
                 }
             }
+            */
         } catch (Exception $e) {
             Alert::danger($e);
         }

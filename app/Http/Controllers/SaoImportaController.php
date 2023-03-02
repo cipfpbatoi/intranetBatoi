@@ -240,7 +240,7 @@ class SaoImportaController extends SaoController
                 $centro = $this->getCentro($dades[$key]);
                 $idColaboracion = $this->getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = $this->getDni($centro, $dades[$key], $ciclo);
-                $fct = $this->getFct($dni, $idColaboracion);
+                $fct = $this->getFct($dni, $idColaboracion, $dades[$key]['erasmus']);
                 $this->saveFctAl($fct, $dades[$key]);
             }
         }
@@ -432,16 +432,17 @@ class SaoImportaController extends SaoController
      * @param $idColaboracion
      * @return Fct
      */
-    private function getFct($dni, $idColaboracion): Fct
+    private function getFct($dni, $idColaboracion, $erasmus): Fct
     {
+        $asociacion = $erasmus == 'No' ? 1 : 2;
         $fct = Fct::where('idColaboracion', $idColaboracion)
             ->where('idInstructor', $dni)
-            ->where('asociacion', 1)
+            ->where('asociacion', $asociacion)
             ->first();
         if (!$fct) {
             $fct = new Fct([
                 'idColaboracion' => $idColaboracion,
-                'asociacion' => 1,
+                'asociacion' => $asociacion,
                 'idInstructor' => $dni,
             ]);
             $fct->save();
