@@ -10,6 +10,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
+use Intranet\Http\Requests\ColaboradorRequest;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
@@ -269,7 +270,7 @@ class FctController extends IntranetController
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function nouInstructor($idFct, Request $request)
+    public function nouInstructor($idFct, ColaboradorRequest $request)
     {
         $colaborador = new Colaborador([
             'idInstructor'=>$request->idInstructor,
