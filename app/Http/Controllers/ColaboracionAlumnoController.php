@@ -40,7 +40,7 @@ class ColaboracionAlumnoController extends IntranetController
         $this->crea_pestanas(
             config('modelos.'.$this->model.'.estados'),
             "profile.".strtolower($this->model),
-            3,
+            4,
             1,
             'situation'
         );
