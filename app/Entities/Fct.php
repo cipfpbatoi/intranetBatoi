@@ -296,6 +296,11 @@ class Fct extends Model
         return $this->correoInstructor?'Enviat':'Pendent';
     }
 
+    public function getSaoAnnexesAttribute()
+    {
+        return Adjunto::where('size', 1024)->where('route', 'alumnofctaval/'.$this->id)->count();
+    }
+
     public function saveContact($contacto, $email)
     {
         $instructor = $this->Instructor;

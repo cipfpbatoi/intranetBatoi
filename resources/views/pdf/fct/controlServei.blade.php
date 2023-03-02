@@ -35,12 +35,12 @@
                     <td style="text-align:left;font-size: 0.9em ">
                             {{ $fct->Fct->Colaboracion->Centro->nombre??'' }} ({{ $fct->Alumno->fullName??'' }})
                     </td>
+                    <td>{{ $fct->Fct->Colaboracion->Centro->Empresa->conveniNou?'X':'' }}</td>
+                    <td>{{ $fct->Fct->saoAnnexes?'X':'' }}</td>
+                    <td>{{ $fct->Fct->saoAnnexes?'X':'' }}</td>
                     <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ hoy('d-m-Y') }}</td>
+                    <td>{!!  Intranet\Services\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.25) !!}</td>
                     <td></td>
                 </tr>
             @endisset
