@@ -223,6 +223,12 @@ class AlumnoFct extends Model
         return $this->fullName;
     }
 
+    public function getSaoAnnexesAttribute()
+    {
+        return Adjunto::where('size', 1024)->where('route', 'alumnofctaval/'.$this->id)->count();
+    }
+
+
 
     public function getClassAttribute()
     {
