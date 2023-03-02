@@ -16,9 +16,9 @@ $(function () {
             }
         });
     } else {
-        $('#concierto_id').hide();
-        $('#europa_id').hide();
-        $('#sao_id').hide();
+        $('#concierto_id').prop('disabled', true);
+        $('#europa_id').prop('disabled', true);
+        $('#sao_id').prop('disabled', true);
     }
 
 });
