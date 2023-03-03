@@ -57,9 +57,12 @@ class SaoAnnexesController extends SaoController
                         } catch (Exception $e) {
                             Alert::info("Annexes de ".$fct->Alumno->fullName." no trobats");
                         }
-
-                        $driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Cerrar']"))->click();
-                        sleep(1);
+                        try {
+                            $driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Cerrar']"))->click();
+                            sleep(1);
+                        } catch (Exception $e) {
+                            Alert::info("Fct de ".$fct->Alumno->fullName." no trobada. Esborra-la de la intranet");
+                        }
                     } else {
                         Alert::info("Annexes de ".$fct->Alumno->fullName." ja descarregats");
                     }
