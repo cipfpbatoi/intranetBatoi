@@ -40,8 +40,8 @@ class NotificationController extends IntranetController
     {
         $userKey = AuthUser()->primaryKey;
         return Notification::where('notifiable_id', "=", AuthUser()->$userKey)
-                ->orderBy('created_at','desc')
-                ->get();  
+                ->orderBy('created_at', 'desc')
+                ->get();
     }
 
     /**
@@ -51,7 +51,7 @@ class NotificationController extends IntranetController
     public function read($id)
     {
         $notification = Notification::find($id);
-        $notification->read_at = New Date('now');
+        $notification->read_at = new Date('now');
         $notification->save();
         return back();
     }
@@ -64,8 +64,7 @@ class NotificationController extends IntranetController
         $userKey = AuthUser()->primaryKey;
         if ($userKey == 'dni') {
             $user = Profesor::find(AuthUser()->$userKey);
-        }
-        else {
+        } else {
             $user = Alumno::find(AuthUser()->$userKey);
         }
         $user->unreadNotifications->markAsRead();
@@ -81,8 +80,7 @@ class NotificationController extends IntranetController
         $userKey = AuthUser()->primaryKey;
         if ($userKey == 'dni') {
             $user = Profesor::find(AuthUser()->$userKey);
-        }
-        else {
+        } else {
             $user = Alumno::find(AuthUser()->$userKey);
         }
         $user->notifications()->delete();
@@ -96,7 +94,7 @@ class NotificationController extends IntranetController
      */
     public function destroy($id)
     {
-        if ($borrar = Notification::find($id)){
+        if ($borrar = Notification::find($id)) {
             $borrar->delete();
         }
         return back();
@@ -114,14 +112,13 @@ class NotificationController extends IntranetController
 
     /**
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function show($id)
     {
         try {
             $modelo = $this->model;
             $elemento = $this->extractData(Notification::findOrFail($id));
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             Alert::danger('Notificació no trobada');
             return back();
         }
@@ -132,12 +129,13 @@ class NotificationController extends IntranetController
      * @param $notification
      * @return mixed
      */
-    private function extractData($notification){
-        foreach (explode(',',trim($notification->data,'{}')) as $trozo){
-            if (strpos($trozo,'":"')){
-                $ele = explode('":"',$trozo);
-                $ind = trim($ele[0],'"');
-                $notification->$ind=trim($ele[1],'"');
+    private function extractData($notification)
+    {
+        foreach (explode(',', trim($notification->data, '{}')) as $trozo) {
+            if (strpos($trozo, '":"')) {
+                $ele = explode('":"', $trozo);
+                $ind = trim($ele[0], '"');
+                $notification->$ind=trim($ele[1], '"');
             }
         }
         return $notification;
