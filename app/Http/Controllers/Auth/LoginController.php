@@ -23,16 +23,16 @@ class LoginController extends Controller
 
     public function login()
     {
-        if (isset(AuthUser()->codigo)){
+        if (isset(AuthUser()->codigo)) {
             return redirect('/home');
         }
-        if (isset(AuthUser()->nia)){
+        if (isset(AuthUser()->nia)) {
             return redirect('/alumno/home');
         }
-        if (isPrivateAddress(getClientIpAddress())){
+        if (isPrivateAddress(getClientIpAddress())) {
             return view('login');
         }
-        abort('401',"No estas autoritzat");
+        abort('401', "No estas autoritzat");
     }
 
 }

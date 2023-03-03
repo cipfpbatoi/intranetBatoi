@@ -1,9 +1,8 @@
 <?php
-
 namespace Intranet\Http\Controllers\Auth;
 
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Intranet\Entities\Profesor;
@@ -22,6 +21,7 @@ class ExternLoginController extends Controller
     */
 
     use AuthenticatesUsers;
+
     protected $redirectTo = '/home';
 
     public function username()
@@ -29,12 +29,21 @@ class ExternLoginController extends Controller
         return 'api_token';
     }
 
+    protected function authenticated(Request $request, $user)
+    {
+        if (isset($user->idioma)) {
+            session(['lang' => $user->idioma]);
+        } else {
+            session(['lang' => 'ca']);
+        }
+    }
+
     public function showExternLoginForm($token)
     {
-        $professor = Profesor::where('api_token',$token)->first();
-        if ($professor && $professor->changePassword){
-            return view('auth/profesor/externLogin',compact('professor'));
-        } else{
+        $professor = Profesor::where('api_token', $token)->first();
+        if ($professor && $professor->changePassword) {
+            return view('auth/profesor/externLogin', compact('professor'));
+        } else {
             return view('errors.401');
         }
     }

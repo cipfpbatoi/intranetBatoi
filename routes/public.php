@@ -20,12 +20,18 @@ Route::post('/alumno/login', ['as' => 'alumno.postlogin', 'uses' => 'Auth\Alumno
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
 Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
 Route::get('password/reset/{token}', ['as' => 'password.reset','uses' =>'Auth\ResetPasswordController@showResetForm']);
-Route::post('password/reset','Auth\ResetPasswordController@reset');
-Route::post('/profesor/firstLogin',['as' => 'profesor.firstLogin', 'uses' => 'Auth\Profesor\LoginController@firstLogin']);
+Route::post('password/reset', 'Auth\ResetPasswordController@reset');
+Route::post(
+    '/profesor/firstLogin',
+    ['as' => 'profesor.firstLogin', 'uses' => 'Auth\Profesor\LoginController@firstLogin']
+);
 
 //Social Login
-Route::get('/login/{token}',['as' => 'login.token', 'uses' => 'Auth\ExternLoginController@showExternLoginForm']);
-Route::post('/profesor/extern/login',['as' => 'login.extern', 'uses' => 'Auth\ExternLoginController@login']);
+Route::get('/login/{token}', ['as' => 'login.token', 'uses' => 'Auth\ExternLoginController@showExternLoginForm']);
+Route::post('/profesor/extern/login', ['as' => 'login.extern', 'uses' => 'Auth\ExternLoginController@login']);
 Route::get('social/google/{token?}', ['as' => 'social.google', 'uses' => 'Auth\Social\SocialController@getSocialAuth']);
-Route::get('social/callback/google', ['as' => 'social.callback.google', 'uses' => 'Auth\Social\SocialController@getSocialAuthCallback']);
+Route::get(
+    'social/callback/google',
+    ['as' => 'social.callback.google', 'uses' => 'Auth\Social\SocialController@getSocialAuthCallback']
+);
 Route::get('lang/{lang}', ['as' => 'lang.choose', 'uses' => 'AdministracionController@lang']);
