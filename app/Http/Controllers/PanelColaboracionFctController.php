@@ -22,12 +22,18 @@ use Illuminate\Support\Facades\DB;
  * Class PanelColaboracionController
  * @package Intranet\Http\Controllers
  */
-class PanelColaboracionController extends IntranetController
+class PanelColaboracionFctController extends IntranetController
 {
     use traitPanel;
 
     const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
     const FCT_EMAILS_REQUEST = 'fctEmails.request';
+    /**
+     * @var array
+     */
+    protected $gridFields = [
+        'Empresa', 'concierto', 'Localidad', 'puestos', 'Xestado', 'contacto', 'telefono', 'email'
+    ];
     /**
      * @var string
      */
@@ -37,7 +43,7 @@ class PanelColaboracionController extends IntranetController
      */
     protected $model = 'Colaboracion';
 
-    protected $parametresVista = ['modal' => ['contacto',  'seleccion']];
+    protected $parametresVista = ['modal' => ['contacto', 'afegirFct', 'seleccion']];
 
 
     /**
@@ -123,6 +129,19 @@ class PanelColaboracionController extends IntranetController
             )
         );
         $this->panel->setBoton(
+            'fct',
+            new BotonIcon(
+                'fct.telefonico',
+                [
+                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'class' => 'btn-primary informe telefonico',
+                    'text' => '',
+                    'title' => 'Contacte telefònic',
+                    'icon' => 'fa-phone'
+                ]
+            )
+        );
+        $this->panel->setBoton(
             'pendiente',
             new BotonBasico(
                 "colaboracion.contacto",
@@ -144,6 +163,62 @@ class PanelColaboracionController extends IntranetController
                 ]
             )
         );
+        $this->panel->setBoton(
+            'fcts',
+            new BotonBasico(
+                "colaboracion.inicioEmpresa",
+                [
+                    'class' => 'btn-primary selecciona',
+                    'icon' => 'fa fa-flag-o',
+                    'data-url' => '/api/documentacionFCT/inicioEmpresa'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'fcts',
+            new BotonBasico(
+                "colaboracion.inicioAlumno",
+                [
+                    'class' => 'btn-primary selecciona',
+                    'icon' => 'fa fa-unlock',
+                    'data-url' => '/api/documentacionFCT/inicioAlumno'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'fcts',
+            new BotonBasico(
+                "colaboracion.seguimiento",
+                [
+                    'class' => 'btn-primary selecciona',
+                    'icon' => 'fa fa-envelope',
+                    'data-url' => '/api/documentacionFCT/seguimiento'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'fcts',
+            new BotonBasico(
+                "colaboracion.visitaEmpresa",
+                [
+                    'class' => 'btn-info selecciona',
+                    'icon' => 'fa fa-bullhorn',
+                    'data-url' => '/api/documentacionFCT/visitaEmpresa'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'fcts',
+            new BotonBasico(
+                "colaboracion.citarAlumnos",
+                [
+                    'class' => 'btn-info selecciona',
+                    'icon' => 'fa fa-bullhorn',
+                    'data-url' => '/api/documentacionFCT/citarAlumnos'
+                ]
+            )
+        );
+
     }
 
     /**

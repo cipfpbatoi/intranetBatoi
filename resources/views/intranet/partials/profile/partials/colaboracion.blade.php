@@ -70,9 +70,6 @@
                         <i class="fa fa-eye"></i>
                     </a>
                     @endif
-                    @if ($elemento->estado == 2)
-                    <em class="fa fa-plus btn-success btn btn-xs" data-toggle="modal" data-target="#AddAlumno"></em>
-                    @endif
                 @endisset
             </div>
             <div class="col-xs-12 col-sm-8 emphasis">

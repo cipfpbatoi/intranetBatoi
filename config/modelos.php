@@ -103,7 +103,6 @@ return [
             1 => 'resta',
             2 => 'pendiente',
             3 => 'colabora',
-            4 => 'fcts',
         ],
         'avisos' => [],
         'resolve' => 2,
