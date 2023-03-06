@@ -194,18 +194,16 @@ class SaoImportaController extends SaoController
             $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
             try {
                 $this->login($driver, $password);
-                $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
-                foreach ($table as $index => $tr) {
-                    if ($index) { //el primer és el titol i no cal iterar-lo
-                        try {
-                            //dades de la linea
-                            $this->extractFromModal($dades, $index, $tr, $driver);
-                        } catch (Exception $e) {
-                            unset($dades[$index]);
-                            Alert::info($e->getMessage());
-                        }
-                    }
+                try {
+                    $this->extractPage($driver, $dades);
+                    $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
+                    sleep(1);
+                    $this->extractPage($driver, $dades);
+                } catch (Exception $e) {
+                    //No hi ha més pàgines
                 }
+
+
                 if (count($dades)) {
                     foreach ($dades as $index => $dada) {
                         try {
@@ -470,6 +468,27 @@ class SaoImportaController extends SaoController
         }
         $fctAl->idSao = $dades['idSao'];
         $fctAl->save();
+    }
+
+    /**
+     * @param  RemoteWebDriver  $driver
+     * @param  array  $dades
+     * @return array
+     */
+    private function extractPage(RemoteWebDriver $driver, array &$dades)
+    {
+        $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
+        foreach ($table as $index => $tr) {
+            if ($index) { //el primer és el titol i no cal iterar-lo
+                try {
+                    //dades de la linea
+                    $this->extractFromModal($dades, $index, $tr, $driver);
+                } catch (Exception $e) {
+                    unset($dades[$index]);
+                    Alert::info($e->getMessage());
+                }
+            }
+        }
     }
 
 }
