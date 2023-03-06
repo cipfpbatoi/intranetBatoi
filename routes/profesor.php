@@ -257,7 +257,8 @@ Route::post('/colaboracion/create', ['as' => 'colaboracion.store', 'uses' => 'Pa
 Route::get('/colaboracion/{colaboracion}/delete', ['as' => 'colaboracion.destroy', 'uses' => 'PanelColaboracionController@destroy']);
 
 
-Route::resource('/fct', 'FctController', ['except' => ['destroy', 'update', 'show']]);
+Route::resource('/fct', 'FctController', ['except' => ['destroy', 'update', 'show','index']]);
+Route::get('/fct', ['as' => 'fct.index', 'uses' => 'PanelFctController@index']);
 Route::get('/fct/{id}/{alumno}/alumnoDelete', ['as' => 'fct.alumno.delete', 'uses' => 'FctController@alumnoDelete']);
 Route::post('/fct/{id}/alumnoCreate', ['as' => 'fct.alumno.create', 'uses' => 'FctController@nouAlumno']);
 Route::post('/fct/fctalumnoCreate', ['as' => 'fct.alumno.fct.create', 'uses' => 'FctController@nouFctAlumno']);
@@ -309,7 +310,7 @@ Route::post('/dual/{id}/informe', ['as' => 'dual.firma', 'uses' => 'DualControll
 Route::get('/dual/anexeVI', ['as'=>'dual.anexevi', 'uses'=>'DualController@printAnexeVI']);
 Route::get('/dual/anexeXIV', ['as'=>'dual.anexexiv', 'uses'=>'DualController@printAnexeXIV']);
 
-
+Route::get('/contacto', ['as' => 'contacto', 'uses' => 'ContactoController@index']);
 Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
 Route::put('/alumnofct/{id}/edit', ['as' => 'alumnofct.update', 'uses' => 'FctAlumnoController@update']);
 Route::get('/alumnofct/{id}/delete', ['as' => 'alumnofct.destroy', 'uses' => 'FctAlumnoController@destroy']);

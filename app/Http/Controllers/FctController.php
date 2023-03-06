@@ -7,14 +7,12 @@ use DB;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
-use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
 use Intranet\Http\Requests\ColaboradorRequest;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
-use Intranet\Botones\BotonBasico;
 use Intranet\Componentes\Pdf;
 
 
@@ -25,7 +23,10 @@ use Intranet\Componentes\Pdf;
  */
 class FctController extends IntranetController
 {
+
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
+    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
+
 
     /**
      * @var string
@@ -79,55 +80,6 @@ class FctController extends IntranetController
         return $this->redirect();
     }
 
-
-    /**
-     *
-     */
-    protected function iniBotones()
-    {
-        $this->panel->setBoton('grid', new BotonImg('fct.edit', ['where'=>['asociacion','==','1']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.show', ['where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'fct.pdf',
-                [
-                    'img'=>'fa-file-pdf-o',
-                    'where'=>['asociacion', '==', '1']
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'fct.colaboradorPdf',
-                [
-                    'img'=>'fa-file-text',
-                    'where'=>['asociacion', '==', '1']
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'index',
-            new BotonBasico(
-                "alumnofct",
-                [
-                    'class' => 'btn-link',
-                    'roles' => config(self::ROLES_ROL_TUTOR)
-                ]
-            )
-        );
-        Session::put('redirect', 'FctController@index');
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function search()
-    {
-        return Fct::misFcts()->esFct()->get();
-    }
 
     public function certificat($id)
     {

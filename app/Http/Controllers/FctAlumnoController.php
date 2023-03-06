@@ -52,16 +52,8 @@ class FctAlumnoController extends IntranetController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.delete',
-                ['where' => [
-                    'hasta','posterior',hace(1),
-                ]]
-            )
-        );
-        $this->panel->setBoton(
+
+        /*$this->panel->setBoton(
             'grid',
             new BotonImg(
                 'alumnofct.edit',
@@ -70,12 +62,12 @@ class FctAlumnoController extends IntranetController
                     'hasta','posterior',hoy()
                 ]]
             )
-        );
+        );*/
         $this->panel->setBoton(
             'grid',
             new BotonImg(
                 'alumnofct.pdf',
-                ['where' => ['asociacion', '<', '3']]
+                ['where' => ['asociacion', '<', '3', 'hasta','anterior',dentro(15)]]
             )
         );
         $this->panel->setBoton(
@@ -89,7 +81,7 @@ class FctAlumnoController extends IntranetController
             'grid',
             new BotonImg(
                 'alumnofct.auth',
-                ['img' => 'fa-file-zip-o', 'where' => ['autorizacion', '==', '1']]
+                ['img' => 'fa-file-zip-o', 'where' => ['autorizacion', '==', '1','desde','posterior',hoy()]]
             )
         );
         $this->panel->setBoton(
@@ -103,14 +95,14 @@ class FctAlumnoController extends IntranetController
             'grid',
             new BotonImg(
                 'alumnofct.A5',
-                ['img' => 'fa-hand-o-up', 'where' => ['asociacion', '==', '1']]
+                ['img' => 'fa-hand-o-up', 'where' => ['asociacion', '==', '1', 'hasta','anterior',dentro(15)]]
             )
         );
         $this->panel->setBoton(
             'grid',
             new BotonImg(
                 'alumnofct.A1',
-                ['img' => 'fa-file-zip-o', 'where' => ['asociacion', '==', '2']]
+                ['img' => 'fa-file-zip-o', 'where' => ['asociacion', '==', '2','desde','posterior',hoy()]]
             )
         );
         $this->panel->setBoton(
@@ -121,12 +113,21 @@ class FctAlumnoController extends IntranetController
                     'img' => 'fa-envelope',
                     'where' =>
                         [
-                            'asociacion', '==', 1,
+                            'asociacion', '<', 3,
                             'actualizacion', '<', hace(7),
                             'desde', 'anterior', hace(7),
                             'hasta','posterior',hoy()
                         ]
                 ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumnofct.delete',
+                ['where' => [
+                    'hasta','posterior',hace(1),
+                ]]
             )
         );
         $this->panel->setBoton(

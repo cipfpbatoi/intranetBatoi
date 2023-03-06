@@ -86,6 +86,13 @@ function hace($days)
     return $fecha->format('Y-m-d');
 }
 
+function dentro($days)
+{
+    $fecha = new Date();
+    $fecha->addDay($days);
+    return $fecha->format('Y-m-d');
+}
+
 function manana()
 {
     $fecha = new Date();

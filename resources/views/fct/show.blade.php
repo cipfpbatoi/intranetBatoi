@@ -42,9 +42,7 @@
     <div class="" role="tabpanel" data-example-id="togglable-tabs">
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
             <li role="presentation" @if ($activa == 1 ) class="active" @endif><a href="#tab_content1" role="tab" id="alumno-tab" data-toggle="tab" aria-expanded="false">@lang("models.modelos.Alumno")</a></li>
-            @if ($fct->Colaboracion->Centro->Instructores->count() > 1)
             <li role="presentation" @if ($activa == 2) class="active" @endif><a href="#tab_content2" id="colaborador-tab" role="tab" data-toggle="tab" aria-expanded="true">@lang("models.modelos.Colaborador")</a></li>
-            @endif
         </ul>
         <div id="myTabContent" class="tab-content">
             @if ($activa == 1)
@@ -54,15 +52,13 @@
             @endif        
                 @include('fct.partials.alumnos')
                 </div>
-            @if ($fct->Colaboracion->Centro->Instructores->count() > 1)
-                @if ($activa == 2)
-                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content2" aria-labelledby="colaborador-tab">
-                @else    
-                    <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="colaborador-tab">
-                @endif 
-                    @include('fct.partials.colaboradores')
-                    </div>
+            @if ($activa == 2)
+                <div role="tabpanel" class="tab-pane fade active in" id="tab_content2" aria-labelledby="colaborador-tab">
+            @else
+                <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="colaborador-tab">
             @endif
+                @include('fct.partials.colaboradores')
+                </div>
             </div>
         </div>
     </div>

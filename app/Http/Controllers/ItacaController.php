@@ -68,11 +68,9 @@ class ItacaController extends Controller
             $inici = $ul->findElement(WebDriverBy::cssSelector('ul.imc-horari-sessions'));
             $dies = $inici->findElements(WebDriverBy::cssSelector('li'));
             foreach ($dies as $dia) {
-                //$materia = $dia->getAttribute('data-materia');
                 $grupsid = $dia->getAttribute('data-grupsid');
                 $horari = $dia->getAttribute('data-horari');
                 $sessio = $dia->getAttribute('data-sessio');
-                //$materiesid = $dia->getAttribute('data-materiesid');
                 $desde = $dia->getAttribute('data-desde');
                 $link = "https://docent.edu.gva.es/md-front/www/#centre/03012165/grup/{$grupsid},/tasques/diaries/perSessio/sessio/{$sessio};{$horari},;{$data};{$desde}/desdeHorari";
                 dd($link);
