@@ -69,6 +69,12 @@ class Fct extends Model
         return $this->belongsTo(Instructor::class, 'idInstructor', 'dni');
     }
 
+    public function Contactos()
+    {
+        return $this->hasMany(Activity::class, 'model_id', 'id')->mail()->where('model_class', 'Intranet\Entities\Fct');
+    }
+
+
 
 
     public function Colaboradores()

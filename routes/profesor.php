@@ -220,11 +220,12 @@ Route::get('/empresaEr', ['as'=>'empresaEr.index', 'uses'=>'PanelErasmusControll
 
 Route::get('/colaboracion', ['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/misColaboraciones', ['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
+
 Route::get(
     '/documentacionFCT/{id}/{documento}',
-    ['as' => 'PanelColaboracion.colaboracion', 'uses' => 'PanelColaboracionController@showMailById']
+    ['as' => 'PanelColaboracion.colaboracion', 'uses' => 'FctMailController@showMailById']
 );
-Route::post('/documentacionFCT/{documento}', 'PanelColaboracionController@showMailByRequest');
+Route::post('/documentacionFCT/{documento}', 'FctMailController@showMailByRequest');
 
 
 
@@ -245,8 +246,6 @@ Route::put(
         'uses' => 'ColaboracionController@update'
     ]
 );
-
-
 Route::get('/colaboracion/{colaboracion}/edit', [
         'as' => 'colaboracion.edit',
         'uses' => 'PanelColaboracionController@edit'

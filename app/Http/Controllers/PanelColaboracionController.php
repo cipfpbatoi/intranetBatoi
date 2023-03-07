@@ -162,28 +162,7 @@ class PanelColaboracionController extends IntranetController
         return $colaboracions->sortBy('tutor')->sortBy('empresa');
     }
 
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
 
-
-    public function showMailbyId($id, $documento)
-    {
-        $document = new DocumentoFct($documento);
-        $parametres = array('id' => $id, 'document' => $document);
-        $service = new DocumentService(new UniqueFinder($parametres));
-
-        return $service->render();
-    }
-
-
-    protected function showMailbyRequest(Request $request, $documento)
-    {
-        $documento = new DocumentoFct($documento);
-        $parametres = array('request' => $request, 'document' => $documento);
-        $service = new DocumentService(new RequestFinder($parametres));
-        return $service->render();
-    }
 
     /**
      * @param  Request  $request

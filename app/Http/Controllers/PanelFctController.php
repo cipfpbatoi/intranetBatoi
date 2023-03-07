@@ -34,7 +34,7 @@ class PanelFctController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['Centro','Contacto','Lalumnes','Nalumnes','sendCorreo'];
+    protected $gridFields = [];
     /**
      * @var
      */
@@ -127,6 +127,17 @@ class PanelFctController extends IntranetController
         $this->panel->setBoton(
             'index',
             new BotonBasico(
+                "comision.create",
+                [
+                    'class' => 'btn-primary',
+                    'text'=> 'Comissió Servei',
+                    'icon' => 'fa fa-car',
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
                 "colaboracion.visitaEmpresa",
                 [
                     'class' => 'btn-info selecciona',
@@ -146,32 +157,13 @@ class PanelFctController extends IntranetController
                 ]
             )
         );
-        $this->panel->setBothBoton(
-            'fct.pdf',
-                [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
-                    'class' => '',
-                    'text' => 'Cert.Inst.',
-                    'title' => 'Certificat Instructor',
-                    'icon' => 'fa-file-pdf-o'
-                ]
-        );
-        $this->panel->setBothBoton(
-            'fct.colaborador',
-            [
-                'roles' => config(self::ROLES_ROL_PRACTICAS),
-                'class' => '',
-                'text' => 'Cert.Col.',
-                'title' => 'Certificat Col·laboradors',
-                'icon' => 'fa-file-text'
-            ]
-        );
         $this->panel->setBoton(
             'index',
             new BotonBasico(
                 "alumnofct",
                 [
-                    'class' => 'btn-link',
+                    'class' => 'btn-dark',
+                    'text' => 'Llistat',
                     'roles' => config(self::ROLES_ROL_TUTOR)
                 ]
             )

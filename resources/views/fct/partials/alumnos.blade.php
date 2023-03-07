@@ -33,12 +33,4 @@
             </li>
         @endif
     @endforeach
-    @include('fct.partials.modalAlumnos')
 </ul>
-<div class="message_wrapper">
-    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#AddAlumno">
-        @lang("messages.generic.anadir") @lang("models.modelos.Alumno")
-    </button>
-</div>
-
-

@@ -64,13 +64,6 @@
                 <p class="ratings">
                     {{$elemento->localidad}}<br/>
                 </p>
-                @isset (authUser()->emailItaca)
-                    @if ($elemento->estado < 3)
-                    <a href="/colaboracion/{{$elemento->id}}/show" class="btn-success btn btn-xs">
-                        <i class="fa fa-eye"></i>
-                    </a>
-                    @endif
-                @endisset
             </div>
             <div class="col-xs-12 col-sm-8 emphasis">
                 @isset (authUser()->emailItaca)

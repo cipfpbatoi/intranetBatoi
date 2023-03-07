@@ -130,6 +130,23 @@ class FctAlumnoController extends IntranetController
                 ]]
             )
         );
+
+
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "fct.create",
+                ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]
+            )
+        );
+
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "alumnofct.convalidacion",
+                ['class' => 'btn-info convalidacion', 'roles' => config(self::ROLES_ROL_TUTOR)]
+            )
+        );
         $this->panel->setBoton(
             'index',
             new BotonBasico(
@@ -144,26 +161,16 @@ class FctAlumnoController extends IntranetController
                 ['class' => 'btn-warning selecciona', 'roles' => config(self::ROLES_ROL_TUTOR)]
             )
         );
-        $this->panel->setBoton(
-            'index',
-            new BotonBasico(
-                "fct.create",
-                ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]
-            )
-        );
-        $this->panel->setBoton(
-            'index',
-            new BotonBasico(
-                "alumnofct.convalidacion",
-                ['class' => 'btn-info convalidacion', 'roles' => config(self::ROLES_ROL_TUTOR)]
-            )
-        );
         $this->setQualityB();
         $this->panel->setBoton(
             'index',
             new BotonBasico(
                 "fct",
-                ['class' => 'btn-link', 'roles' => config(self::ROLES_ROL_TUTOR)]
+                [
+                    'class' => 'btn-dark',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                    'text' => 'Contactes'
+                ]
             )
         );
         Session::put('redirect', 'FctAlumnoController@index');

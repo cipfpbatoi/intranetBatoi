@@ -44,6 +44,13 @@ class AlumnoFct extends Model
         return $this->belongsTo(Dual::class, 'idFct', 'id');
     }
 
+    public function Contactos()
+    {
+        return $this->hasMany(Activity::class, 'model_id', 'id')
+            ->mail()
+            ->where('model_class', 'Intranet\Entities\AlumnoFct');
+    }
+
 
     public function scopeMisFcts($query, $profesor=null)
     {

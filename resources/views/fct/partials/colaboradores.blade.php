@@ -1,4 +1,4 @@
-@php $horas = false;   @endphp
+    @php $horas = false;   @endphp
 <form action='/fct/{!!$fct->id!!}/modificaHoras' method='post'>
     @csrf
     <ul class="messages fct">

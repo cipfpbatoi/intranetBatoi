@@ -231,6 +231,7 @@ class FctController extends IntranetController
         ]);
        $fct = Fct::find($idFct);
        $fct->Colaboradores()->save($colaborador);
+       Session::put('pestana', 5);
        return back();
     }
 
@@ -242,6 +243,7 @@ class FctController extends IntranetController
     public function deleteInstructor($idFct, $idInstructor)
     {
        Colaborador::where('idFct', $idFct)->where('idInstructor', $idInstructor)->delete();
+       Session::put('pestana', 5);
        return back();
     }
 
