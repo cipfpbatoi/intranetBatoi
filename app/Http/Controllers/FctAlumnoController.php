@@ -136,7 +136,7 @@ class FctAlumnoController extends IntranetController
             new BotonBasico(
                 "fct",
                 [
-                    'class' => 'btn-dar',
+                    'class' => 'btn-dark',
                     'roles' => config(self::ROLES_ROL_TUTOR),
                     'text' => 'Contactes'
                 ]
