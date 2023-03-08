@@ -438,11 +438,13 @@ class SaoImportaController extends SaoController
             ->where('asociacion', $asociacion)
             ->first();
         if (!$fct) {
+            $col = Colaboracion::find($idColaboracion);
             $fct = new Fct([
                 'idColaboracion' => $idColaboracion,
                 'asociacion' => $asociacion,
                 'idInstructor' => $dni,
             ]);
+            $fct->cotutor = $col->Propietario?$col->tutor:null;
             $fct->save();
         }
         return $fct;

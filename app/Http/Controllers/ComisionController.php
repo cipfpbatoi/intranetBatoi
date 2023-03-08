@@ -191,7 +191,8 @@ class ComisionController extends ModalController
     /**
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function autorizar(){
+    public function autorizar()
+    {
         $this->makeAll(Comision::where('estado','1')->get(),2 );
         return back();
     }
@@ -199,21 +200,12 @@ class ComisionController extends ModalController
     public function detalle($id)
     {
         $comision = Comision::find($id);
-        $all = Fct::misFcts()->distinct()->esFct()->orderBy('id')->get();
+        $all = Fct::esFct()->misFcts()->orWhere('cotutor',authUser()->dni)->distinct()->orderBy('id')->get();
         $allFcts = collect();
         foreach ($all as $fct){
             $allFcts[$fct->Colaboracion->idCentro] = $fct;
         }
-
-        $allCol = Fct::misFctsColaboracion()->distinct()->noAval()->esFct()->orderBy('id')->get();
-        foreach ($allCol as $fct){
-                // Mire que la id siga superior per a substituir
-            if (!isset($allFcts[$fct->Colaboracion->idCentro]) || $fct->id > $allFcts[$fct->Colaboracion->idCentro]->id ) {
-                $allFcts[$fct->Colaboracion->idCentro] = $fct;
-            }
-        }
-        $allFcts = hazArray($allFcts,'id','Centro');
-
+        $allFcts = hazArray($allFcts, 'id', 'Centro');
         asort($allFcts);
         return view('comision.detalle', compact('comision', 'allFcts'));
     }
@@ -222,11 +214,12 @@ class ComisionController extends ModalController
     {
         $comision = Comision::find($comision_id);
         $aviso = isset($request->aviso)?1:0;
-        $comision->fcts()->syncWithoutDetaching([$request->idFct => ['hora_ini' => $request->hora_ini ,'aviso' => $aviso]]);
+        $comision->fcts()
+            ->syncWithoutDetaching([$request->idFct => ['hora_ini' => $request->hora_ini ,'aviso' => $aviso]]);
         return $this->detalle($comision_id);
     }
 
-    public function deleteFct($comision_id,$fct_id)
+    public function deleteFct($comision_id, $fct_id)
     {
         $comision = Comision::find($comision_id);
         $comision->fcts()->detach($fct_id);

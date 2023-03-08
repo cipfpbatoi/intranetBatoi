@@ -266,6 +266,7 @@ Route::get(
     '/fct/{id}/{dni}/instructorDelete',
     ['as'=>'fct.instructor.delete', 'uses'=>'FctController@deleteInstructor']
 );
+Route::get('/fct/{id}/cotutor', ['as'=>'fct.cotutor', 'uses'=>'FctController@cotutor']);
 Route::post('/fct/{id}/modificaHoras', ['as'=>'fct.modificarHoras', 'uses'=>'FctController@modificaHoras']);
 Route::get('/fct/{id}/delete', ['as' => 'fct.destroy', 'uses' => 'FctController@destroy']);
 Route::get('/fct/{id}/show', ['as' => 'fct.show', 'uses' => 'FctController@show']);

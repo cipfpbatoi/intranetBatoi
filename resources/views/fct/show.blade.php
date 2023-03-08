@@ -44,6 +44,7 @@
     @if ($fct->Colaboracion->Centro->Empresa->conveniNou)
         <em class="fa fa-file-pdf-o"> A1</em>
     @endif
+    Cotutor : {{$fct->Cotutor->fullName??'No hay cotutor'}} <a href="{{ route('fct.cotutor',$fct->id) }}" class="fa fa-user">Change</a>
     <br />
     <a href="{{ route('fct.pdf',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Inst.</a>
     <a href="{{ route('fct.colaborador',$fct->id) }}" class="fa fa-file-text" target="_blank"> Cert.Col.</a>
@@ -112,5 +113,6 @@ FCT : {{$fct->Colaboracion->Centro->nombre}} - {{$fct->Colaboracion->Ciclo->cicl
 @endsection
 @section('scripts')
 {{ Html::script("/js/datepicker.js") }}
+{{ Html::script("/js/fct/show.js") }}
 @endsection
 

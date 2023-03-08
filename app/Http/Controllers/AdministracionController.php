@@ -210,9 +210,12 @@ class AdministracionController extends Controller
     {
         $fcts = Fct::all();
         foreach ($fcts as $fct) {
-            if ($fct->Colaboracion && $fct->Colaboracion->Centro->Empresa->europa == 1 && $fct->asociacion == 1) {
-                $fct->asociacion = 2;
-                $fct->save();
+            if ($fct->Colaboracion && $fct->Colaboracion->tutor && $fct->asociacion < 3) {
+                $cotutor = Profesor::find($fct->Colaboracion->tutor);
+                if ($cotutor) {
+                    $fct->cotutor = $cotutor->dni;
+                    $fct->save();
+                }
             }
         }
     }

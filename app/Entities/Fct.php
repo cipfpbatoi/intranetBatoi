@@ -77,6 +77,8 @@ class Fct extends Model
 
 
 
+
+
     public function Colaboradores()
     {
         return $this->hasMany(
@@ -115,6 +117,10 @@ class Fct extends Model
     {
         return $this->hasMany(Vote::class, 'idOption1');
     }
+    public function cotutor()
+    {
+        return $this->belongsTo(Profesor::class, 'cotutor', 'dni');
+    }
     
     public function scopeCentro($query, $centro)
     {
@@ -141,6 +147,8 @@ class Fct extends Model
 
         return $query->whereIn('id', $alumnosFct)->whereIn('idColaboracion', $colaboraciones);
     }
+
+
 
 
     public function scopeMisFctsColaboracion($query, $profesor=null)
