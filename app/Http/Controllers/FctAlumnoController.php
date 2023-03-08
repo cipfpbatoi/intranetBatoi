@@ -52,22 +52,11 @@ class FctAlumnoController extends IntranetController
 
     protected function iniBotones()
     {
-
-        /*$this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.edit',
-                ['where' => [
-                    'asociacion', '==', '1',
-                    'hasta','posterior',hoy()
-                ]]
-            )
-        );*/
         $this->panel->setBoton(
             'grid',
             new BotonImg(
-                'alumnofct.pdf',
-                ['where' => ['asociacion', '<', '3', 'hasta','anterior',dentro(15)]]
+                'alumnofct.show',
+                ['img' => 'fa-plus', 'where' => ['asociacion', '<', '3'],'text'=>'Vore més']
             )
         );
         $this->panel->setBoton(
@@ -80,29 +69,8 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton(
             'grid',
             new BotonImg(
-                'alumnofct.auth',
-                ['img' => 'fa-file-zip-o', 'where' => ['autorizacion', '==', '1','desde','posterior',hoy()]]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
                 'fct.link',
                 ['where' => ['asociacion', '<', 3]]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.A5',
-                ['img' => 'fa-hand-o-up', 'where' => ['asociacion', '==', '1', 'hasta','anterior',dentro(15)]]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.A1',
-                ['img' => 'fa-file-zip-o', 'where' => ['asociacion', '==', '2','desde','posterior',hoy()]]
             )
         );
         $this->panel->setBoton(
@@ -127,6 +95,7 @@ class FctAlumnoController extends IntranetController
                 'alumnofct.delete',
                 ['where' => [
                     'hasta','posterior',hace(1),
+                    'realizadas','==',0
                 ]]
             )
         );
@@ -167,7 +136,7 @@ class FctAlumnoController extends IntranetController
             new BotonBasico(
                 "fct",
                 [
-                    'class' => 'btn-dark',
+                    'class' => 'btn-dar',
                     'roles' => config(self::ROLES_ROL_TUTOR),
                     'text' => 'Contactes'
                 ]

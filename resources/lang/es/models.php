@@ -307,7 +307,7 @@ return array(
             'colaboradores' => 'Colaboradores'
         ),
         'Fct' => array(
-            'index' => 'FCT x Empresa',
+            'index' => 'Contactos',
             'create' => 'Nueva Fct',
             'edit' => 'Cambiar Instructor',
             'show' => 'Detalles Fct',

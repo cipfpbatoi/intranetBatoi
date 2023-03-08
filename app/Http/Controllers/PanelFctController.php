@@ -8,7 +8,6 @@ use Intranet\Entities\Fct;
 use Intranet\Botones\BotonIcon;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonImg;
 
 
 
@@ -62,11 +61,11 @@ class PanelFctController extends IntranetController
     {
         $todos = $this->search();
         $this->crea_pestanas(
-            [ 0 => 'Contactes' ],
+            [ 0 => 'Actius', 1 => 'Finalizats'],
             "profile.fct",
             0,
             0,
-           'correoInstructor'
+            'correoInstructor'
         );
         $this->iniBotones();
         Session::put('redirect', 'PanelFctController@index');
@@ -176,7 +175,8 @@ class PanelFctController extends IntranetController
      */
     public function search()
     {
-        return Fct::misFcts()->esFct()->get();
+        $fcts= Fct::misFcts()->esFct()->get();
+        return $fcts->sortBy('centro');
     }
 
 

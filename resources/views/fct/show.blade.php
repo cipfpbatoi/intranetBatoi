@@ -10,48 +10,50 @@
         </a>
     </h3>
     <h5>ID : {{$fct->id}}</h5>
-    <h5><i class="fa fa-calendar-o user-profile-icon"></i> {{$fct->desde}} </h5>
     @if ($fct->asociacion == 3)
         <h5>DUAL</h5>
     @endif
-    <h5>Instructor: {{$fct->Instructor->nombre}} ({{$fct->Instructor->dni}})</h5>
-    <h5><i class="fa fa-envelope user-profile-icon"></i> {{ $fct->Instructor->email }}</h5>
+    <h5><i class="fa fa-user"></i> {{$fct->Instructor->nombre}}</h5>
+    <h5><i class="fa fa-credit-card"></i> {{$fct->Instructor->dni}}</h5>
+    <h5><i class="fa fa-envelope"></i> {{ $fct->Instructor->email }}</h5>
     @if ($fct->Instructor->telefono != '')
-        <h5><i class="fa fa-phone user-profile-icon"></i> {{ $fct->Instructor->telefono}}</h5>
+        <h5><i class="fa fa-phone"></i> {{ $fct->Instructor->telefono}}</h5>
     @endif
     <hr/>
     <h5>CIF : {{$fct->Colaboracion->Centro->Empresa->cif}}</h5>
     <h5>@lang("validation.attributes.concierto") : {{$fct->Colaboracion->Centro->Empresa->concierto}}</h5>
     <ul class="list-unstyled user_data">
         <li>
-            <i class="fa fa-map-marker user-profile-icon"></i>
+            <i class="fa fa-map-marker"></i>
             {{ $fct->Colaboracion->Centro->direccion }}, {{$fct->Colaboracion->Centro->localidad}}
         </li>
-        @if ($fct->Instructor->telefono != $fct->Colaboracion->telefono)
         <li>
-            <i class="fa fa-phone user-profile-icon"></i> {{ $fct->Colaboracion->telefono }}
+            <i class="fa fa-user"></i> {{ $fct->Colaboracion->contacto }}
         </li>
+        @if ($fct->Instructor->telefono != $fct->Colaboracion->telefono)
+            <li>
+                <i class="fa fa-phone"></i> {{ $fct->Colaboracion->telefono }}
+            </li>
         @endif
         @if ($fct->Instructor->email != $fct->Colaboracion->email)
-        <li class="m-top-xs">
-            <i class="fa fa-envelope user-profile-icon"></i> {{ $fct->Colaboracion->email }}
-        </li>
+            <li class="m-top-xs">
+                <i class="fa fa-envelope"></i> {{ $fct->Colaboracion->email }}
+            </li>
         @endif
     </ul>
-    @if ($fct->asociacion == 3)
-        <a href="/dual/{{$fct->id}}/edit" class="btn btn-success"><i class="fa fa-edit m-right-xs"></i>Editar</a>
-        <a href="/dual" class="btn btn-success"><i class="fa fa-arrow-left m-right-xs"></i>Volver</a>
+    @if ($fct->Colaboracion->Centro->Empresa->conveniNou)
+        <em class="fa fa-file-pdf-o"> A1</em>
     @endif
     <br />
-    <a href="{{ route('fct.pdf',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank">Cert.Inst.</a>
-    <a href="{{ route('fct.colaborador',$fct->id) }}" class="fa fa-file-text" target="_blank">Cert.Col.</a>
+    <a href="{{ route('fct.pdf',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Inst.</a>
+    <a href="{{ route('fct.colaborador',$fct->id) }}" class="fa fa-file-text" target="_blank"> Cert.Col.</a>
 </div>
 <div class="col-md-9 col-sm-9 col-xs-12">
     <div class="" role="tabpanel" data-example-id="togglable-tabs">
         <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
             <li role="presentation" @if ($activa == 1 ) class="active" @endif>
                 <a href="#tab_content1" role="tab" id="alumno-tab" data-toggle="tab" aria-expanded="false">
-                    @lang("models.modelos.Alumno")
+                    @lang("validation.attributes.alumno")
                 </a>
             </li>
             <li role="presentation" @if ($activa == 2 ) class="active" @endif>

@@ -311,7 +311,7 @@ return array(
             'colaboradores' => 'Col·laboradors',
         ),
         'Fct' => array(
-            'index' => 'FCT x Empresa',
+            'index' => 'Contactes',
             'create' => 'Nova Fct',
             'edit' => 'Canviar instructor',
             'show' => 'Detalls Fct',

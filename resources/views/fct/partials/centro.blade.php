@@ -23,6 +23,7 @@
             </ul>
         </h5>
     </div>
-    <a href="/instructor/{{$fct->Colaboracion->Centro->id}}/create"><em class="fa fa-plus"></em> @lang("messages.generic.anadir") @lang("models.modelos.Instructor")</a>
-
+    <a href="/instructor/{{$fct->Colaboracion->Centro->id}}/create">
+        <em class="fa fa-plus"></em> @lang("messages.generic.anadir") @lang("models.modelos.Instructor")
+    </a>
 </ul>
