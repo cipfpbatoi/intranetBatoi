@@ -149,16 +149,8 @@ class ColaboracionController extends ModalController
 
     public function show($id)
     {
-        Session::put('colaboracion',$id);
-        $pestana = Session::get('pestana',3);
         $elemento = Colaboracion::findOrFail($id);
-        $contactCol = Activity::modelo('Colaboracion')->mail()->id($id)->orderBy('created_at')->get();
-        $fcts = Fct::where('idColaboracion',$id)->where('asociacion',1)->get();
-        $allFct = hazArray($fcts,'id','id');
-        $alFct = hazArray(AlumnoFct::whereIn('idFct',$allFct)->get(),'id','id');
-        $contactFct = Activity::modelo('Fct')->mail()->ids($allFct)->orderBy('created_at')->get();
-        $contactAl = Activity::modelo('AlumnoFct')->mail()->ids($alFct)->orderBy('created_at')->get();
-        return view('colaboracion.show', compact('elemento','contactCol','contactFct','contactAl','fcts','pestana'));
+        return redirect(route('empresa.detalle',$elemento->Centro->idEmpresa));
     }
 
     public function printAnexeIV($colaboracion)
