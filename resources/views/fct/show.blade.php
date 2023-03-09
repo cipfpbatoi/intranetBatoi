@@ -41,13 +41,17 @@
             </li>
         @endif
     </ul>
+    <hr/>
+        Cotutor : {{$fct->Cotutor->fullName??'No hay cotutor'}}
+        <a href="{{ route('fct.cotutor',$fct->id) }}" class="fa fa-user">Change</a>
+    <hr/>
     @if ($fct->Colaboracion->Centro->Empresa->conveniNou)
-        <em class="fa fa-file-pdf-o"> A1</em>
+        <em class="fa fa-file-pdf-o"> A1</em><br />
     @endif
-    Cotutor : {{$fct->Cotutor->fullName??'No hay cotutor'}} <a href="{{ route('fct.cotutor',$fct->id) }}" class="fa fa-user">Change</a>
-    <br />
     <a href="{{ route('fct.pdf',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Inst.</a>
-    <a href="{{ route('fct.colaborador',$fct->id) }}" class="fa fa-file-text" target="_blank"> Cert.Col.</a>
+    @if ($fct->Colaboradores->count() > 0)
+        <a href="{{ route('fct.colaborador',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Col.</a>
+    @endif
 </div>
 <div class="col-md-9 col-sm-9 col-xs-12">
     <div class="" role="tabpanel" data-example-id="togglable-tabs">
