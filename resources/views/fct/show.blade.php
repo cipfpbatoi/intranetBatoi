@@ -42,9 +42,23 @@
         @endif
     </ul>
     <hr/>
+    @if ($fct->Colaboracion->Ciclo->TutoresFct->count() > 1)
         Cotutor : {{$fct->Cotutor->fullName??'No hay cotutor'}}
-        <a href="{{ route('fct.cotutor',$fct->id) }}" class="fa fa-user">Change</a>
-    <hr/>
+        <form action="{{route('fct.cotutor',$fct->id)}}" method="post">
+            @csrf
+            <select name="cotutor" id="cotutor">
+                <option value="0">No hay cotutor</option>
+                @foreach ($fct->Colaboracion->Ciclo->TutoresFct as $tutor)
+                    <option value="{{$tutor->dni}}" {{($fct->cotutor==$tutor->dni)?'selected':''}}>
+                        {{$tutor->fullName}}
+                    </option>
+                @endforeach
+            </select>
+            <input type="submit" value="Canvia" class="fa fa-user">
+        </form>
+        <hr/>
+    @endif
+
     @if ($fct->Colaboracion->Centro->Empresa->conveniNou)
         <em class="fa fa-file-pdf-o"> A1</em><br />
     @endif

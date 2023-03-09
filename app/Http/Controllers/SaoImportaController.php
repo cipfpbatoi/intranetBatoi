@@ -435,6 +435,7 @@ class SaoImportaController extends SaoController
         $asociacion = $erasmus == 'No' ? 1 : 2;
         $fct = Fct::where('idColaboracion', $idColaboracion)
             ->where('idInstructor', $dni)
+            ->where('correoInstructor', 0)
             ->where('asociacion', $asociacion)
             ->first();
         if (!$fct) {

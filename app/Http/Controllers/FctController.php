@@ -274,11 +274,11 @@ class FctController extends IntranetController
         return back();
     }
 
-    public function cotutor($idFct)
+    public function cotutor(Request $request, $idFct)
     {
         $fct = Fct::find($idFct);
         if ($fct) {
-            $fct->cotutor = authUser()->dni;
+            $fct->cotutor = $request->cotutor;
             $fct->save();
         }
         return back();

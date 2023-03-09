@@ -75,10 +75,6 @@ class Fct extends Model
     }
 
 
-
-
-
-
     public function Colaboradores()
     {
         return $this->hasMany(
