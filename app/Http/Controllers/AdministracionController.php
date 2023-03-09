@@ -208,16 +208,20 @@ class AdministracionController extends Controller
 
     public function consulta()
     {
-        $fcts = Fct::all();
+        $fcts = Fct::where('asociacion', '<', 3)->where('correoInstructor', 1)->get();
         foreach ($fcts as $fct) {
-            if ($fct->Colaboracion && $fct->Colaboracion->tutor && $fct->asociacion < 3) {
-                $cotutor = Profesor::find($fct->Colaboracion->tutor);
-                if ($cotutor) {
-                    $fct->cotutor = $cotutor->dni;
-                    $fct->save();
+            $fin = false;
+            foreach ($fct->alFct as $fctAl) {
+                if (fechaInglesa($fctAl->hasta) > Hoy('Y-m-d')) {
+                    $fin = true;
                 }
             }
+            if ($fin) {
+                $fct->correoInstructor = 0;
+                $fct->save();
+            }
         }
+
     }
 
     public static function v2_50()
