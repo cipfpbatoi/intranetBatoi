@@ -476,6 +476,10 @@ class SaoImportaController
             $fctAl->idFct = $fct->id;
             $fctAl->idAlumno = $dades['nia'];
         }
+        $fctAl->desde = $dades['desde'];
+        $fctAl->hasta = $dades['hasta'];
+        $fctAl->horas = $dades['hores'];
+        $fctAl->autorizacion = $dades['autorizacion'];
         $fctAl->idSao = $dades['idSao'];
         $fctAl->save();
     }
