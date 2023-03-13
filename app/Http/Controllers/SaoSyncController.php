@@ -21,13 +21,6 @@ class SaoSyncController
     public function index($password)
     {
         try {
-            dd(AlumnoFctAval::whereNotNull('idSao')
-                ->where('horas', '>', 'realizadas')
-                ->noHaAcabado()
-                ->where('beca', 0)
-                ->haEmpezado()
-                ->activa()
-                ->get());
             $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
             $alumnes = [];
             foreach (AlumnoFctAval::realFcts()->haEmpezado()->where('beca', 0)->activa()->get() as $fct) {
