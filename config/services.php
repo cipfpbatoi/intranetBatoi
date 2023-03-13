@@ -35,9 +35,15 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
     'google' => [
-        'client_id' => env('GOOGLE_ID','722193940751-ae76pbqg2fr7rb95r6bh139sdc6cl8a8.apps.googleusercontent.com'),
-        'client_secret' => env('GOOGLE_SECRET','QU20APPRUWBlDlp839bI3P98'),
-        'redirect' => env('GOOGLE_REDIRECT',config('contacto.host.web').'/social/callback/google'),
+        'client_id' => env('GOOGLE_ID', '722193940751-ae76pbqg2fr7rb95r6bh139sdc6cl8a8.apps.googleusercontent.com'),
+        'client_secret' => env('GOOGLE_SECRET', 'QU20APPRUWBlDlp839bI3P98'),
+        'redirect' => env('GOOGLE_REDIRECT', config('contacto.host.web').'/social/callback/google'),
     ],
+    'selenium' => [
+        'url' => env('SELENIUM_URL', 'http://172.16.9.10:4444'),
+        'SAO' => env('SELENIUM_URL_SAO', 'https://foremp.edu.gva.es/index.php'),
+        'SAO_USER' => env('SELENIUM_USER_SAO', '21668389C'),
+        'SAO_PASS' => env('SELENIUM_PASS_SAO', '21668389C'),
+    ]
 
 ];

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Fct;
+use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 
 
@@ -18,8 +19,12 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-class SaoComparaController extends SaoController
+class SaoComparaController
 {
+    const TD_NTH_CHILD_2 = "td:nth-child(2)";
+    const TR_NTH_CHILD_2 = "tr:nth-child(2)";
+    const TD_NTH_CHILD_3 = "td:nth-child(3)";
+    const TD_NTH_CHILD_4 = "td:nth-child(4)";
 
     public function compara(Request $request)
     {
@@ -47,10 +52,10 @@ class SaoComparaController extends SaoController
 
     public function index($password)
     {
-        $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
+
         $dades = array();
         try {
-            $this->login($driver, trim($password));
+            $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
             foreach (AlumnoFct::misFcts()->whereNotNull('idSao')->get() as $fctAl) {
                 try {
                     $fct = $fctAl->Fct;
@@ -149,23 +154,6 @@ class SaoComparaController extends SaoController
                 }
 
             }
-            /*
-            foreach (AlumnoFctAval::misErasmus()->get() as $fctAl) {
-                $erasmus = Erasmus::where('idSao', $fctAl->idSao)->whereNull('direccio')->first();
-                if ($erasmus) {
-                    $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=10&idFct=$fctAl->idSao");
-                    sleep(1);
-                    $dadesEmpresa = $driver->findElement(
-                        WebDriverBy::cssSelector("td#celdaDatosEmpresa table.infoCentroBD tbody")
-                    );
-                    $detallesEmpresa = $dadesEmpresa->findElement(WebDriverBy::cssSelector(self::TR_NTH_CHILD_2));
-                    $erasmus->direccio = $detallesEmpresa
-                        ->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))
-                        ->getText();
-                    $erasmus->save();
-                }
-            }
-            */
         } catch (Exception $e) {
             Alert::danger($e);
         }

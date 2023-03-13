@@ -3,7 +3,6 @@
 namespace Intranet\Http\Controllers;
 
 use Exception;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Http\Request;
@@ -15,6 +14,7 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Instructor;
+use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 
 
@@ -22,8 +22,13 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-class SaoImportaController extends SaoController
+class SaoImportaController
 {
+    const TD_NTH_CHILD_2 = "td:nth-child(2)";
+    const TR_NTH_CHILD_2 = "tr:nth-child(2)";
+    const TD_NTH_CHILD_3 = "td:nth-child(3)";
+    const TD_NTH_CHILD_4 = "td:nth-child(4)";
+
     private function buscaCentro($dada, $empresa)
     {
         $idEmpresa = $empresa->id;
@@ -191,9 +196,9 @@ class SaoImportaController extends SaoController
             Alert::danger('No eres tutor');
             return redirect(route('alumnofct.index'));
         } else {
-            $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
+
             try {
-                $this->login($driver, $password);
+                $driver = SeleniumService::loginSAO($dni, $password);
                 try {
                     $this->extractPage($driver, $dades);
                     $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
@@ -222,7 +227,9 @@ class SaoImportaController extends SaoController
                 return view('sao.importa', compact('dades', 'ciclo'));
             } catch (Exception $e) {
                 Alert::warning($e->getMessage());
-                $driver->close();
+                if (isset($driver)) {
+                    $driver->close();
+                }
                 return redirect(route('alumnofct.index'));
             }
         }

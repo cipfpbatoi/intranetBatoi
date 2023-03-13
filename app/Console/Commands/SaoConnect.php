@@ -1,36 +1,60 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Console\Commands;
 
-use Exception;
+use Doctrine\DBAL\Query\QueryException;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
-use Intranet\Services\SeleniumService;
+use Illuminate\Console\Command;
 use Intranet\Entities\AlumnoFctAval;
-use Styde\Html\Facades\Alert;
+use Intranet\Exceptions\IntranetException;
+use Intranet\Services\SeleniumService;
 
 
-/**
- * Class AdministracionController
- * @package Intranet\Http\Controllers
- */
-class SaoSyncController
+class SaoConnect extends Command
 {
 
-    public function index($password)
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'sao:connect';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Connecta SAO per sincronitzar les dades';
+
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+
+
+
+    public function handle()
     {
+        $envia = config('contacto.avisos.errores')??'021652470V';
         try {
-            dd(AlumnoFctAval::whereNotNull('idSao')
-                ->where('horas', '>', 'realizadas')
-                ->noHaAcabado()
-                ->where('beca', 0)
-                ->haEmpezado()
-                ->activa()
-                ->get());
-            $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
+            $driver = SeleniumService::loginSAO(
+                config('services.selenium.SAO_USER'),
+                config('services.selenium.SAO_PASS')
+            );
             $alumnes = [];
-            foreach (AlumnoFctAval::realFcts()->haEmpezado()->where('beca', 0)->activa()->get() as $fct) {
+
+            foreach (AlumnoFctAval::whereNotNull('idSao')
+                         ->where('horas', '>', 'realizadas')
+                         ->noHaAcabado()
+                         ->where('beca', 0)
+                         ->haEmpezado()
+                         ->activa()
+                         ->get() as $fct) {
                 try {
                     if ($fct->idSao) {
                         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=11&idFct=$fct->idSao");
@@ -42,28 +66,38 @@ class SaoSyncController
                             $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText()
                         )[0];
                         if ($fct->realizadas != $horas) {
-                            $fct->realizadas = $horas;
+                            $fct->realizadas = (int) $horas;
                             list($diarias,$ultima) =
                                 $this->consultaDiario(
                                     $driver,
                                     $driver->findElement(WebDriverBy::cssSelector("#contenido"))
                                 );
-                            $fct->horas_diarias = $diarias;
+                            $fct->horas_diarias = (float)$diarias;
                             $fct->actualizacion = fechaSao(substr($ultima, 2, 10));
                             $fct->save();
-                            $alumnes[] = $fct->Alumno->shortName;
+                            $alumnes[] = $fct;
                         }
                     }
                 } catch (NoSuchElementException $e) {
-                    Alert::warning('No trobada informació '.$fct->Alumno->shortName);
+                    avisa(
+                        $fct->Fct->cotutor??$envia,
+                        'No trobada informació en el SAO de '.$fct->Alumno->shortName,
+                        '#',
+                        'SAO'
+                    );
+                } catch (QueryException $e) {
+                    avisa($envia, $e->getMessage(), '#', 'SAO');
                 }
             }
-            $this->alertSuccess($alumnes);
-        } catch (Exception $e) {
-            Alert::danger($e);
+            foreach ($alumnes as $alumne) {
+                avisa($alumne->fct->cotutor??$envia, "Actualitzades hores de {$alumne->Alumno->fullName}", '#', 'SAO');
+            }
+        } catch (IntranetException $e) {
+            avisa($envia, $e->getMessage(), '#', 'SAO');
         }
-        $driver->close();
-        return back();
+        if (isset($driver)) {
+            $driver->close();
+        }
     }
 
     private function consultaDiario(RemoteWebDriver $driver, \Facebook\WebDriver\Remote\RemoteWebElement $contenido)
@@ -88,17 +122,6 @@ class SaoSyncController
             $driver->findElement(WebDriverBy::cssSelector("p.celdaInfoAlumno a:nth-child(1)"))->click();
             sleep(1);
             return $this->consultaDiario($driver, $driver->findElement(WebDriverBy::cssSelector("#contenido")));
-        }
-    }
-
-    protected function alertSuccess(array $alumnes, $message='Sincronitzades Fcts: ')
-    {
-        if (count($alumnes)) {
-            $tots = '';
-            foreach ($alumnes as $alumne) {
-                $tots .= $alumne.', ';
-            }
-            Alert::info($message.$tots);
         }
     }
 

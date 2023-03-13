@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Services\AttachedFileService;
+use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 
 
@@ -17,14 +18,14 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-class SaoAnnexesController extends SaoController
+class SaoAnnexesController
 {
+
 
     public function index($password)
     {
-        $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
         try {
-            $this->login($driver, trim($password));
+            $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
             $alumnes = [];
             foreach (AlumnoFctAval::realFcts()->activa()->get() as $fct) {
                 $find = Adjunto::where('size', 1024)->where('route', 'alumnofctaval/'.$fct->id)->count();
@@ -74,6 +75,17 @@ class SaoAnnexesController extends SaoController
         }
         $driver->close();
         return back();
+    }
+
+    protected function alertSuccess(array $alumnes, $message='Sincronitzades Fcts: ')
+    {
+        if (count($alumnes)) {
+            $tots = '';
+            foreach ($alumnes as $alumne) {
+                $tots .= $alumne.', ';
+            }
+            Alert::info($message.$tots);
+        }
     }
 
 }

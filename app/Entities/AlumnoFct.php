@@ -123,6 +123,16 @@ class AlumnoFct extends Model
     {
        return $query->whereNull('calificacion')->where('correoAlumno', 0)->where('horas', '>', 'realizadas');
     }
+
+    public function scopeHaEmpezado($query)
+    {
+        return $query->where('desde', '<', Hoy('Y-m-d'));
+    }
+
+    public function scopeNoHaAcabado($query)
+    {
+        return $query->where('hasta', '>', Hoy('Y-m-d'));
+    }
     
     public function getEmailAttribute()
     {
