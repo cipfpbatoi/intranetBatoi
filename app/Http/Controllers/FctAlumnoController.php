@@ -89,6 +89,7 @@ class FctAlumnoController extends IntranetController
                 ]
             )
         );
+
         $this->panel->setBoton(
             'grid',
             new BotonImg(
@@ -97,6 +98,20 @@ class FctAlumnoController extends IntranetController
                     'hasta','posterior',hace(1),
                     'realizadas','==',0
                 ]]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumnofct.unlink',
+                [
+                    'img' => 'fa-unlink',
+                    'where' =>
+                        [
+                            'asociacion', '<', 3,
+                            'idSao', '!=', null,
+                        ]
+                ]
             )
         );
 
@@ -199,6 +214,14 @@ class FctAlumnoController extends IntranetController
         );
         $modelo = $this->model;
         return view($this->chooseView('create'), compact('formulario', 'modelo'));
+    }
+
+    public function unlink($id)
+    {
+        $elemento = AlumnoFct::find($id);
+        $elemento->idSao = null;
+        $elemento->save();
+        return redirect()->back();
     }
 
     public function storeConvalidacion(Request $request)

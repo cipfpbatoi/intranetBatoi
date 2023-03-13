@@ -433,7 +433,8 @@ return array(
             'default' => 'x Alumne',
             'selecciona' => 'Alumno/a',
             'A5' => 'Informe valoratiu A5',
-            'delete' => 'Borra fct'
+            'delete' => 'Borra fct',
+            'unlink' => 'Borra conexión con el SAO',
 
         ),
         'AlumnoFct' => array(

@@ -322,6 +322,7 @@ Route::get('/alumnofct/{id}/auth', ['as' => 'alumnofct.auth', 'uses' => 'FctAlum
 Route::get('/alumnofct/{id}/A5', ['as' => 'alumnofct.A5', 'uses' => 'FctAlumnoController@A5']);
 Route::get('/alumnofct/{id}/A1', ['as' => 'alumnofct.A1', 'uses' => 'FctAlumnoController@A1']);
 Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
+Route::get('/alumnofct/{id}/unlink', ['as' => 'alumnofct.unlink', 'uses' => 'FctAlumnoController@unlink']);
 
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy', 'show']]);
