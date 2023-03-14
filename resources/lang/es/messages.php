@@ -191,7 +191,7 @@ return array(
         'Empresas' => 'Empresas',
         'Menu' => 'Mantenimiento menu general',
         'Administracion' => 'Administración',
-        'Departamento' => 'Claustro',
+        'Claustro' => 'Claustro',
         'Direccion' => 'Equipo directivo',
         'Authcomision' => 'Autorizar Comisiones',
         'Usuario' => 'Actividad Usuario',

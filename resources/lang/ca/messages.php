@@ -196,7 +196,7 @@ return array(
         'Profesor' => 'Dades Profesorat',
         'Menu' => 'Manteniment menú general',
         'Administracion' => 'Administració',
-        'Departamento' => 'Claustre',
+        'Claustro' => 'Claustre',
         'Direccion' => 'Equip directiu',
         'Authcomision' => 'Autoritzar Comisions',
         'Usuario' => 'Activitat Usuari',
