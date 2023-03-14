@@ -22,7 +22,7 @@ Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('dual', 'DualController', ['except' => [ 'create']]);
-    Route::get('misAlumnosFct','AlumnoFctController@misAlumnos');
+    Route::get('misAlumnosFct', 'AlumnoFctController@misAlumnos');
     Route::resource('actividad', 'ActividadController', ['except' => [ 'create']]);
     Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']]);
     Route::resource('reunion', 'ReunionController', ['except' => [ 'create']]);
@@ -38,7 +38,7 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     Route::resource('profesor', 'ProfesorController', ['except' => [ 'create']]);
     Route::get('profesor/{dni}/rol', 'ProfesorController@rol');
-    Route::get('profesor/rol/{rol}','ProfesorController@getRol');
+    Route::get('profesor/rol/{rol}', 'ProfesorController@getRol');
     Route::get('ficha', 'ProfesorController@ficha');
     Route::get('doficha', 'FicharController@fichar');
     Route::get('ipGuardia', 'FicharController@ip');
@@ -49,8 +49,8 @@ Route::group(['middleware' => 'auth:api'], function() {
 
 
     Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => [ 'create']]);
-    Route::get('faltaProfesor/horas/{condicion}','FaltaProfesorController@horas');
-    Route::get('/departamento','DepartamentoController@index');
+    Route::get('faltaProfesor/horas/{condicion}', 'FaltaProfesorController@horas');
+    //Route::get('/departamento', 'DepartamentoController@index');
 
     Route::put('/material/cambiarUbicacion/', 'MaterialController@putUbicacion');
     Route::put('/material/cambiarEstado/', 'MaterialController@putEstado');
@@ -58,10 +58,11 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::put('/material/cambiarInventario', 'MaterialController@putInventario');
     Route::get('/material/espacio/{espacio}', 'MaterialController@getMaterial');
     Route::resource('material', 'MaterialController', ['except' => [ 'create']]);
-    Route::get('inventario','MaterialController@inventario');
+    Route::get('inventario', 'MaterialController@inventario');
 
     Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
     Route::resource('guardia', 'GuardiaController');
+    Route::resource('departamento', 'DepartamentoController');
     Route::resource('reserva', 'ReservaController');
     Route::resource('ordenreunion', 'OrdenReunionController', ['except' => [ 'create']]);
     Route::resource('colaboracion', 'ColaboracionController', ['except' => [ 'create']]);
@@ -77,52 +78,52 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('alumnogrupo', 'AlumnoGrupoController', ['except' => [ 'create']]);
     Route::resource('activity', 'ActivityController', ['except' => [ 'create']]);
     Route::resource('curso', 'CursoController', ['except' => [ 'create']]);
-    Route::get('alumnoGrupoModulo/{dni}/{modulo}','AlumnoGrupoController@getModulo');
+    Route::resource('ciclo', 'CicloController', ['except' => [ 'create']]);
+    Route::get('alumnoGrupoModulo/{dni}/{modulo}', 'AlumnoGrupoController@getModulo');
     
     Route::resource('horario', 'HorarioController', ['except' => [ 'create']]);
-    Route::get('horario/{idProfesor}/guardia','HorarioController@Guardia');
-    Route::get('horariosDia/{fecha}','HorarioController@HorariosDia');
+    Route::get('horario/{idProfesor}/guardia', 'HorarioController@Guardia');
+    Route::get('horariosDia/{fecha}', 'HorarioController@HorariosDia');
     Route::resource('hora', 'HoraController', ['except' => [ 'create']]);
     Route::put('/asistencia/cambiar', 'AsistenciaController@cambiar');
-    Route::put('/reunion/{idReunion}/alumno/{idAlumno}','ReunionController@putAlumno');
+    Route::put('/reunion/{idReunion}/alumno/{idAlumno}', 'ReunionController@putAlumno');
 
     Route::get('/tiporeunion/{id}', 'TipoReunionController@show');
     Route::get('/modulo/{id}', 'ModuloController@show');
-    Route::get('/ciclo/{id}', 'CicloController@show');
     
-    Route::get('horarioChange/{dni}','HorarioController@getChange');
-    Route::post('horarioChange/{dni}','HorarioController@Change');
+    Route::get('horarioChange/{dni}', 'HorarioController@getChange');
+    Route::post('horarioChange/{dni}', 'HorarioController@Change');
    
-    Route::post('/centro/fusionar','CentroController@fusionar');
-    Route::get('colaboracion/instructores/{id}','ColaboracionController@instructores');
-    Route::get('/colaboracion/{colaboracion}/resolve','ColaboracionController@resolve');
-    Route::get('/colaboracion/{colaboracion}/refuse','ColaboracionController@refuse');
-    Route::get('/colaboracion/{colaboracion}/unauthorize','ColaboracionController@unauthorize');
-    Route::get('/colaboracion/{colaboracion}/switch','ColaboracionController@switch');
+    Route::post('/centro/fusionar', 'CentroController@fusionar');
+    Route::get('colaboracion/instructores/{id}', 'ColaboracionController@instructores');
+    Route::get('/colaboracion/{colaboracion}/resolve', 'ColaboracionController@resolve');
+    Route::get('/colaboracion/{colaboracion}/refuse', 'ColaboracionController@refuse');
+    Route::get('/colaboracion/{colaboracion}/unauthorize', 'ColaboracionController@unauthorize');
+    Route::get('/colaboracion/{colaboracion}/switch', 'ColaboracionController@switch');
     Route::post('/colaboracion/{colaboracion}/telefonico', 'ColaboracionController@telefon');
     Route::post('/colaboracion/{colaboracion}/book', 'ColaboracionController@book');
 
-    Route::get('/documentacionFCT/{documento}','DocumentacionFCTController@exec');
+    Route::get('/documentacionFCT/{documento}', 'DocumentacionFCTController@exec');
 
-    Route::resource('alumnoresultado','AlumnoResultadoContoller');
-    Route::get('/matricula/{token}','AlumnoReunionController@getDadesMatricula');
-    Route::get('/test/matricula/{token}','AlumnoReunionController@getTestMatricula');
-    Route::post('/alumno/{dni}/foto','AlumnoController@putImage');
-    Route::post('/matricula/send','AlumnoReunionController@sendMatricula');
+    Route::resource('alumnoresultado', 'AlumnoResultadoContoller');
+    Route::get('/matricula/{token}', 'AlumnoReunionController@getDadesMatricula');
+    Route::get('/test/matricula/{token}', 'AlumnoReunionController@getTestMatricula');
+    Route::post('/alumno/{dni}/foto', 'AlumnoController@putImage');
+    Route::post('/matricula/send', 'AlumnoReunionController@sendMatricula');
 
-    Route::resource('lote','LoteController',['except' => [ 'create']]);
-    Route::get('lote/{id}/articulos','LoteController@getArticulos');
-    Route::put('lote/{id}/articulos','LoteController@putArticulos');
-    Route::resource('articuloLote','ArticuloLoteController');
-    Route::resource('articulo','ArticuloController');
-    Route::get('articuloLote/{id}/materiales','ArticuloLoteController@getMateriales');
+    Route::resource('lote', 'LoteController',['except' => [ 'create']]);
+    Route::get('lote/{id}/articulos', 'LoteController@getArticulos');
+    Route::put('lote/{id}/articulos', 'LoteController@putArticulos');
+    Route::resource('articuloLote', 'ArticuloLoteController');
+    Route::resource('articulo', 'ArticuloController');
+    Route::get('articuloLote/{id}/materiales', 'ArticuloLoteController@getMateriales');
 
     Route::post('attachFile', 'DropZoneController@attachFile');
     Route::get('getAttached/{modelo}/{id}', 'DropZoneController@getAttached');
     Route::get('getNameAttached/{modelo}/{id}/{filename}', 'DropZoneController@getNameAttached');
     Route::get('removeAttached/{modelo}/{id}/{file}', 'DropZoneController@removeAttached');
 
-    Route::get('activity/{id}/move/{fct}','ActivityController@move');
+    Route::get('activity/{id}/move/{fct}', 'ActivityController@move');
 
 
 

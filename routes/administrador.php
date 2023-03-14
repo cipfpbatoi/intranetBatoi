@@ -26,10 +26,14 @@ Route::get('/modulo/asigna', ['as' => 'modulo.asigna', 'uses' => 'ModuloControll
 //enviament d'apitokens massiu
 Route::get('/apiToken', ['as' => 'profesor.apiToken', 'uses' => 'AdministracionController@allApiToken']);
 
-//manteniment taula cicle
+//manteniment taula cicle i departaments
 Route::resource('/ciclo', 'CicloController', ['except' => ['destroy', 'update', 'show']]);
 Route::put('/ciclo/{ciclo}/edit', ['as' => 'ciclo.update', 'uses' => 'CicloController@update']);
 Route::get('/ciclo/{ciclo}/delete', ['as' => 'ciclo.destroy', 'uses' => 'CicloController@destroy']);
+
+Route::resource('/departamento', 'DepartamentoController', ['except' => ['destroy', 'update', 'edit']]);
+Route::put('/departamento/{departamento}/edit', ['as' => 'departamento.update', 'uses' => 'DepartamentoController@update']);
+Route::get('/departamento/{departamento}/delete', ['as' => 'departamento.destroy', 'uses' => 'DepartamentoController@destroy']);
 
 //manteniment taula tipo incidencias
 Route::resource('/tipoincidencia', 'TipoIncidenciaController', ['except' => ['destroy', 'update', 'show']]);

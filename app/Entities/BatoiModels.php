@@ -197,10 +197,10 @@ trait BatoiModels
      */
     public function fillAll(Request $request)
     {
-        $fillable = $this->notFillable?array_diff($this->fillable,$this->notFillable):$this->fillable;
+        $fillable = $this->notFillable?array_diff($this->fillable, $this->notFillable):$this->fillable;
         foreach ($fillable as $key)  {
             $value = $request->$key;
-            $this->$key = $this->fillField($key,$value);
+            $this->$key = $this->fillField($key, $value);
         }
 
         $this->save();

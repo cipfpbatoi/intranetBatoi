@@ -134,9 +134,7 @@ Route::get('/alumno/{alumno}/carnet', ['as' => 'alumno.carnet', 'uses' => 'Alumn
 Route::get('/alumno/{alumno}/baja', ['as' => 'alumno.baja', 'uses' => 'AlumnoController@baja']);
 Route::get('/alumno/{alumno}/checkFol', ['as' => 'alumno.checkFol', 'uses' => 'AlumnoController@checkFol']);
 
-
-
-Route::get('/departamento', ['as' => 'departamento.index', 'uses' => 'ProfesorController@departamento']);
+Route::get('/departamentos', ['as' => 'departamentos.index', 'uses' => 'ProfesorController@departamento']);
 Route::get('/equipo/{grupo}/grupo', ['as' => 'equipo.grupo', 'uses' => 'ProfesorController@equipo']);
 Route::get('/equipoDirectivo', ['as' => 'equipodirectivo.index', 'uses' => 'ProfesorController@equipoDirectivo']);
 Route::get('/comissio', ['as'=> 'comissio.index', 'uses'=>'ProfesorController@comissio']);
