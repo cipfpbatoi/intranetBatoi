@@ -69,9 +69,9 @@ class Fct extends Model
         return $this->belongsTo(Instructor::class, 'idInstructor', 'dni');
     }
 
-    public function Erasmus()
+    public function Contactos()
     {
-        return $this->belongsTo(Erasmus::class, 'idInstructor', 'idSao');
+        return $this->hasMany(Activity::class, 'model_id', 'id')->mail()->where('model_class', 'Intranet\Entities\Fct');
     }
 
 
@@ -113,6 +113,10 @@ class Fct extends Model
     {
         return $this->hasMany(Vote::class, 'idOption1');
     }
+    public function cotutor()
+    {
+        return $this->belongsTo(Profesor::class, 'cotutor', 'dni');
+    }
     
     public function scopeCentro($query, $centro)
     {
@@ -141,6 +145,8 @@ class Fct extends Model
     }
 
 
+
+
     public function scopeMisFctsColaboracion($query, $profesor=null)
     {
         $dni = $profesor??authUser()->dni;
@@ -160,7 +166,7 @@ class Fct extends Model
     
     public function scopeEsFct($query)
     {
-        return $query->where('asociacion', '<', 2);
+        return $query->where('asociacion', '<', 3);
     }
     public function scopeEsAval($query)
     {
@@ -227,21 +233,26 @@ class Fct extends Model
         return $fecha->format('d-m-Y');
     }
 
+    public function getErasmusAttribute()
+    {
+        return $this->Colaboracion->Centro->Empresa->europa;
+    }
     public function getDualAttribute()
     {
-        return $this->asociacion == 3;
+        return $this->asociacion == 4;
     }
     public function getExentoAttribute()
     {
-        return $this->asociacion == 2;
+        return $this->asociacion == 3;
     }
     
     public function getCentroAttribute()
     {
         if (isset($this->Colaboracion->Centro->nombre)) {
             return $this->Colaboracion->Centro->nombre;
+        } else {
+            return 'Convalidada/Exent';
         }
-        return ($this->asociacion==2)?'Erasmus':'Convalidada/Exent';
     }
 
     public function getCicloAttribute()
@@ -287,17 +298,14 @@ class Fct extends Model
 
     public function getXinstructorAttribute()
     {
-        if ($this->model == 'Instructor') {
-            return $this->Instructor->nombre??'';
-        } else {
-            return $this->Erasmus->name??'';
-        }
+        return $this->Instructor->nombre??'';
     }
 
     public function getSendCorreoAttribute()
     {
         return $this->correoInstructor?'Enviat':'Pendent';
     }
+
 
     public function saveContact($contacto, $email)
     {

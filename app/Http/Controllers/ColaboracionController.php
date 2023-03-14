@@ -6,16 +6,13 @@ use Illuminate\Http\Request;
 use Intranet\Entities\Activity;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
-use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Ciclo;
 use Jenssegers\Date\Date;
 use mikehaertl\pdftk\Pdf;
 use Response;
-use Exception;
 use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
-use Styde\Html\Facades\Alert;
 use Intranet\Http\Requests\ColaboracionRequest;
 
 /**
@@ -152,19 +149,12 @@ class ColaboracionController extends ModalController
 
     public function show($id)
     {
-        Session::put('colaboracion',$id);
-        $pestana = Session::get('pestana',3);
         $elemento = Colaboracion::findOrFail($id);
-        $contactCol = Activity::modelo('Colaboracion')->mail()->id($id)->orderBy('created_at')->get();
-        $fcts = Fct::where('idColaboracion',$id)->where('asociacion',1)->get();
-        $allFct = hazArray($fcts,'id','id');
-        $alFct = hazArray(AlumnoFct::whereIn('idFct',$allFct)->get(),'id','id');
-        $contactFct = Activity::modelo('Fct')->mail()->ids($allFct)->orderBy('created_at')->get();
-        $contactAl = Activity::modelo('AlumnoFct')->mail()->ids($alFct)->orderBy('created_at')->get();
-        return view('colaboracion.show', compact('elemento','contactCol','contactFct','contactAl','fcts','pestana'));
+        return redirect(route('empresa.detalle',$elemento->Centro->idEmpresa));
     }
 
-    public function printAnexeIV($colaboracion){
+    public function printAnexeIV($colaboracion)
+    {
         $file = storage_path("tmp/dual$colaboracion->id/ANEXO_IV.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/ANEXO_IV.pdf');
@@ -173,7 +163,8 @@ class ColaboracionController extends ModalController
         return $file;
     }
 
-    public function printConveni($colaboracion){
+    public function printConveni($colaboracion)
+    {
         $file = storage_path("tmp/dual$colaboracion->id/Conveni.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/Conveni.pdf');
@@ -184,7 +175,8 @@ class ColaboracionController extends ModalController
         return $file;
     }
 
-    protected function makeArrayPdfAnexoIV($colaboracion){
+    protected function makeArrayPdfAnexoIV($colaboracion)
+    {
         $array[1] = $colaboracion->Centro->Empresa->nombre;
         $array[2] = $colaboracion->Centro->Empresa->cif;
         $array[3] = $colaboracion->Centro->Empresa->direccion;
@@ -203,8 +195,7 @@ class ColaboracionController extends ModalController
         $array[16] = $colaboracion->Ciclo->vliteral;
         if ($colaboracion->Ciclo->tipo == 1) {
             $array[17] = 'Sí';
-        }
-        else {
+        } else {
             $array[19] = 'Sí';
         }
         $array[18] = 'Sí';
@@ -229,7 +220,8 @@ class ColaboracionController extends ModalController
 
 
 
-    protected function makeArrayPdfConveni($colaboracion){
+    protected function makeArrayPdfConveni($colaboracion)
+    {
         $array[1] = $colaboracion->Centro->Empresa->nombre;
         if ($colaboracion->Ciclo->tipo == 1) {
             $array['CORRESPONENT AL CICLE FORMATIU 1'] = 'GRAU MITJA';
@@ -256,7 +248,8 @@ class ColaboracionController extends ModalController
         return $array;
     }
 
-    protected function print($idColaboracion){
+    protected function print($idColaboracion)
+    {
         $colaboracion = Colaboracion::find($idColaboracion);
         $folder = storage_path("tmp/dual$idColaboracion/");
         $carpeta_autor = $colaboracion->Centro->Empresa->nombre."/010_FaseAutoritzacioConveni/";

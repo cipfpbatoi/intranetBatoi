@@ -14,10 +14,12 @@ use Intranet\Entities\Profesor;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Requests\DualRequest;
 use mikehaertl\pdftk\Pdf;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Fct;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -179,10 +181,9 @@ class DualController extends ModalController
             'director' => $director->FullName
         ];
 
-
         $orientacion = substr($informe,5,5)==='anexe'?'landscape':'portrait';
         $pdf = $this->hazPdf($informe, $fct,$dades,$orientacion,'a4',10);
-        if ($stream){
+        if ($stream) {
             return $pdf->stream();
         } else {
             $file = storage_path("tmp/dual$id/$informe".'.pdf');
@@ -194,12 +195,8 @@ class DualController extends ModalController
     }
 
 
-
-
-
-
-
-    protected function getGestor($doc,$ciclo){
+    protected function getGestor($doc, $ciclo)
+    {
         $documento = Documento::where('tags',"$doc,$ciclo")->where('tipoDocumento','Dual')->first();
         if ($documento) {
             return storage_path('app/' . $documento->fichero);
@@ -208,7 +205,8 @@ class DualController extends ModalController
 
 
 
-    private function chooseAction($fct,$document,&$zip,$data){
+    private function chooseAction($fct, $document, &$zip, $data)
+    {
         $ciclo = $fct->Fct->Colaboracion->Ciclo->acronim;
         $carpeta_autor = $fct->Fct->Centro."/010_FaseAutoritzacioConveni/";
         $carpeta_firma = $fct->Fct->Centro."/020_FaseFirmaConveni_".$fct->Alumno->dualName."/";
@@ -274,7 +272,7 @@ class DualController extends ModalController
     }
 
 
-    public function certificado($fct,$date)
+    public function certificado($fct, $date)
     {
         $grupo = $fct->Alumno->Grupo->first();
         $id = $fct->id;
@@ -323,7 +321,8 @@ class DualController extends ModalController
         return response()->download($zip_file);
     }
 
-    public function printAnexeXII($fct,$data){
+    public function printAnexeXII($fct, $data)
+    {
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/anexo_xii.pdf");
         if (!file_exists($file)) {
@@ -334,12 +333,13 @@ class DualController extends ModalController
         return $file;
     }
 
-    public function printAnexeIV($fct,$data){
+    public function printAnexeIV($fct, $data)
+    {
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/anexo_iv.pdf");
         if (!file_exists($file)) {
             $pdf = new Pdf('fdf/ANEXO_IV.pdf');
-            $pdf->fillform($this->makeArrayPdfAnexoIV($fct,$data))
+            $pdf->fillform($this->makeArrayPdfAnexoIV($fct, $data))
                 ->saveAs($file);
         }
         return $file;
@@ -388,7 +388,8 @@ class DualController extends ModalController
         return $array;
     }
 
-    public function printConveni($fct,$data){
+    public function printConveni($fct, $data)
+    {
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/conveni.pdf");
         if (!file_exists($file)) {
@@ -677,7 +678,8 @@ class DualController extends ModalController
         return $array;
     }
 
-    public function printAnexeVII($fct,$data,$num=''){
+    public function printAnexeVII($fct,$data,$num='')
+    {
         $id = $fct->id;
         $file = storage_path("tmp/dual$id/anexo_vii".$num.".pdf");
         if (!file_exists($file)) {
@@ -736,10 +738,17 @@ class DualController extends ModalController
         return $array;
     }
 
-    public function printAnexeVI(){
-        $pdf = new Pdf('fdf/ANEXO_VI.pdf');
-        $pdf->fillform($this->makeArrayPdfAnexoVI())
-            ->send('dualVI'.AuthUser()->dni.'.pdf');
+    public function printAnexeVI()
+    {
+        try {
+            $pdf = new Pdf('fdf/ANEXO_VI.pdf');
+            $pdf->fillform($this->makeArrayPdfAnexoVI())
+                ->send('dualVI'.AuthUser()->dni.'.pdf');
+        } catch (IntranetException $e){
+            Alert::warning($e->getMessage());
+            return back();
+        }
+
     }
 
 
@@ -752,6 +761,9 @@ class DualController extends ModalController
     {
         $empresas = Fct::misFcts(null, true)->esDual()->count();
         $duales = AlumnoFct::misDual()->orderBy('idAlumno')->get();
+        if (count($duales) == 0) {
+            throw new IntranetException('No trobe cap alumne en dual');
+        }
         $primero = $duales->first();
         $grupo = $primero->Alumno->Grupo->first();
         $ciclo = $primero->Fct->Colaboracion->Ciclo;
@@ -863,11 +875,16 @@ class DualController extends ModalController
     }
 
 
-    public function printAnexeXIV(){
-        $pdf = new Pdf('fdf/ANEXO_XIV.pdf');
-        //dd($pdf->getDataFields());
-        $pdf->fillform($this->makeArrayPdfAnexoXIV())
-            ->send('dualXIV'.AuthUser()->dni.'.pdf');
+    public function printAnexeXIV()
+    {
+        try {
+            $pdf = new Pdf('fdf/ANEXO_XIV.pdf');
+            $pdf->fillform($this->makeArrayPdfAnexoXIV())
+                ->send('dualXIV'.AuthUser()->dni.'.pdf');
+        } catch (IntranetException $e) {
+            Alert::warning($e->getMessage());
+            return back();
+        }
     }
 
     /**
@@ -878,6 +895,9 @@ class DualController extends ModalController
     {
         $empresas = Fct::misFcts(null, true)->esDual()->count();
         $duales = AlumnoFct::misDual()->orderBy('idAlumno')->get();
+        if (count($duales) == 0) {
+            throw new IntranetException('No trobe cap alumne en dual');
+        }
         $primero = $duales->first();
         $grupo = $primero->Alumno->Grupo->first();
         $ciclo = $primero->Fct->Colaboracion->Ciclo;
@@ -926,9 +946,6 @@ class DualController extends ModalController
         $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_LLOC[0]"] = config('contacto.poblacion');
         $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_DIA[0]"] = $fc1->format('d');
         $array["form1[0].Pagina1[1].Interior[0].seccion\.c[0].C_ANY[0]"] = $fc1->format('Y');
-        //dd($array);
         return $array;
     }
-
-
-} 
+}

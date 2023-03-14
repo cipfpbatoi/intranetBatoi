@@ -29,12 +29,6 @@ class PanelColaboracionController extends IntranetController
     const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
     const FCT_EMAILS_REQUEST = 'fctEmails.request';
     /**
-     * @var array
-     */
-    protected $gridFields = [
-        'Empresa', 'concierto', 'Localidad', 'puestos', 'Xestado', 'contacto', 'telefono', 'email'
-    ];
-    /**
      * @var string
      */
     protected $perfil = 'profesor';
@@ -43,7 +37,7 @@ class PanelColaboracionController extends IntranetController
      */
     protected $model = 'Colaboracion';
 
-    protected $parametresVista = ['modal' => ['contacto', 'afegirFct', 'seleccion']];
+    protected $parametresVista = ['modal' => ['contacto',  'seleccion']];
 
 
     /**
@@ -129,19 +123,6 @@ class PanelColaboracionController extends IntranetController
             )
         );
         $this->panel->setBoton(
-            'fct',
-            new BotonIcon(
-                'fct.telefonico',
-                [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
-                    'class' => 'btn-primary informe telefonico',
-                    'text' => '',
-                    'title' => 'Contacte telefònic',
-                    'icon' => 'fa-phone'
-                ]
-            )
-        );
-        $this->panel->setBoton(
             'pendiente',
             new BotonBasico(
                 "colaboracion.contacto",
@@ -163,62 +144,6 @@ class PanelColaboracionController extends IntranetController
                 ]
             )
         );
-        $this->panel->setBoton(
-            'fcts',
-            new BotonBasico(
-                "colaboracion.inicioEmpresa",
-                [
-                    'class' => 'btn-primary selecciona',
-                    'icon' => 'fa fa-flag-o',
-                    'data-url' => '/api/documentacionFCT/inicioEmpresa'
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'fcts',
-            new BotonBasico(
-                "colaboracion.inicioAlumno",
-                [
-                    'class' => 'btn-primary selecciona',
-                    'icon' => 'fa fa-unlock',
-                    'data-url' => '/api/documentacionFCT/inicioAlumno'
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'fcts',
-            new BotonBasico(
-                "colaboracion.seguimiento",
-                [
-                    'class' => 'btn-primary selecciona',
-                    'icon' => 'fa fa-envelope',
-                    'data-url' => '/api/documentacionFCT/seguimiento'
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'fcts',
-            new BotonBasico(
-                "colaboracion.visitaEmpresa",
-                [
-                    'class' => 'btn-info selecciona',
-                    'icon' => 'fa fa-bullhorn',
-                    'data-url' => '/api/documentacionFCT/visitaEmpresa'
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'fcts',
-            new BotonBasico(
-                "colaboracion.citarAlumnos",
-                [
-                    'class' => 'btn-info selecciona',
-                    'icon' => 'fa fa-bullhorn',
-                    'data-url' => '/api/documentacionFCT/citarAlumnos'
-                ]
-            )
-        );
-
     }
 
     /**
@@ -237,28 +162,7 @@ class PanelColaboracionController extends IntranetController
         return $colaboracions->sortBy('tutor')->sortBy('empresa');
     }
 
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
 
-
-    public function showMailbyId($id, $documento)
-    {
-        $document = new DocumentoFct($documento);
-        $parametres = array('id' => $id, 'document' => $document);
-        $service = new DocumentService(new UniqueFinder($parametres));
-
-        return $service->render();
-    }
-
-
-    protected function showMailbyRequest(Request $request, $documento)
-    {
-        $documento = new DocumentoFct($documento);
-        $parametres = array('request' => $request, 'document' => $documento);
-        $service = new DocumentService(new RequestFinder($parametres));
-        return $service->render();
-    }
 
     /**
      * @param  Request  $request
@@ -329,7 +233,8 @@ class PanelColaboracionController extends IntranetController
         try {
             parent::destroy($id);
         } catch (Exception $exception) {
-            Alert::danger("No es pot esborrar perquè hi ha valoracions fetes per a eixa col·laboració d'anys anteriors.");
+            Alert::danger("No es pot esborrar perquè hi ha valoracions
+             fetes per a eixa col·laboració d'anys anteriors.");
         }
 
         Session::put('pestana', 1);

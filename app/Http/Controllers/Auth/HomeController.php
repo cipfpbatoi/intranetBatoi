@@ -27,7 +27,7 @@ abstract class HomeController extends Controller
 
     public function __construct()
     {
-        $this->middleware($this->guard);  
+        $this->middleware($this->guard);
         
     }
 
@@ -37,35 +37,51 @@ abstract class HomeController extends Controller
             $usuario = AuthUser();
             if ($usuario->dni == '12345678A') {
                 return redirect('/fichar');
-            }
-            else {
-                $horario = Cache::remember('horario'.$usuario->dni,now()->addDay(), function () use ($usuario) {
+            } else {
+                $horario = Cache::remember('horario'.$usuario->dni, now()->addDay(), function () use ($usuario) {
                     return Horario::HorarioSemanal($usuario->dni);
                 });
-                $actividades =  Cache::remember('actividades',now()->addHour(),function(){
-                    return Actividad::next()->with(['profesores','grupos','Tutor'])->auth()->orderby('desde','asc')->take(10)->get();
+                $actividades =  Cache::remember('actividades', now()->addHour(), function () {
+                    return Actividad::next()
+                        ->with(['profesores','grupos','Tutor'])
+                        ->auth()
+                        ->orderby('desde', 'asc')
+                        ->take(10)
+                        ->get();
                 });
                 $tasks = Task::misTareas()->orderBy('vencimiento')->get();
-                /*$activities = Activity::Profesor($usuario->dni)
-                                ->orderBy('updated_at', 'desc')
-                                ->take(15)->get();*/
                 $reuniones = Reunion::with('profesores')->next()->orderBy('fecha')->get();
 
 
-                $faltas = Falta::select('idProfesor','dia_completo','hora_ini','hora_fin')->with('profesor')->Dia(Hoy())->get();
+                $faltas = Falta::select('idProfesor', 'dia_completo', 'hora_ini', 'hora_fin')
+                    ->with('profesor')
+                    ->Dia(Hoy())
+                    ->get();
                 
                 $hoyActividades = Actividad::Dia(Hoy())
-                    ->where('estado','>',1)
+                    ->where('estado', '>', 1)
                     ->where('fueraCentro', '=', 1)
                     ->get();
-                $comisiones = Cache::remember('comisionesHui',now()->addHours(6),function(){
+                $comisiones = Cache::remember('comisionesHui', now()->addHours(6), function () {
                    return(Comision::with('profesor')->Dia(Hoy())->get());
                 });
 
                 if (!estaDentro() && !Session::get('userChange')) {
                     Falta_profesor::fichar($usuario->dni);
                 }
-                return view('home.profile', compact('usuario', 'horario', 'actividades', 'tasks', 'reuniones','faltas','hoyActividades','comisiones'));
+                return view(
+                    'home.profile',
+                    compact(
+                        'usuario',
+                        'horario',
+                        'actividades',
+                        'tasks',
+                        'reuniones',
+                        'faltas',
+                        'hoyActividades',
+                        'comisiones'
+                    )
+                );
             }
         } else {
             $usuario = AuthUser();

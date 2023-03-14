@@ -110,13 +110,15 @@ class AdministracionController extends Controller
         return view('nuevo.curso');
     }
 
-    private function esborrarProgramacions(){
+    private function esborrarProgramacions()
+    {
         Programacion::where('curso', '!=', CursoAnterior())->delete();
     }
 
 
 
-    private function esborrarEnquestes(){
+    private function esborrarEnquestes()
+    {
         foreach (Poll::all() as $poll){
             if (!$poll->remains){
                 $poll->delete();
@@ -125,9 +127,10 @@ class AdministracionController extends Controller
     }
 
 
-    private function ferVotsPermanents(){
+    private function ferVotsPermanents()
+    {
         foreach (Vote::all() as $vote){
-            if ($fct = Fct::find($vote->idOption1)){
+            if ($fct = Fct::find($vote->idOption1)) {
                 $newVote = new VoteAnt([
                     'option_id' => $vote->option_id,
                     'idColaboracion' => $fct->idColaboracion,
@@ -147,9 +150,9 @@ class AdministracionController extends Controller
     {
 
 
-        Colaboracion::where('tutor','!=','')->update(['tutor'=>'']);
-        Colaboracion::where('estado','>',1)->update(['estado' => 1]);
-        Fct::where('asociacion','!=',3)->delete();
+        Colaboracion::where('tutor', '!=','')->update(['tutor'=>'']);
+        Colaboracion::where('estado', '>',1)->update(['estado' => 1]);
+        Fct::where('asociacion', '!=',3)->delete();
         Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
 
         $this->esborrarEnquestes();
@@ -170,7 +173,8 @@ class AdministracionController extends Controller
 
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
             'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
-            'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos','polls','autorizaciones'];
+            'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos',
+            'polls','autorizaciones'];
         foreach ($tables as $tabla) {
             DB::table($tabla)->delete();
         }
@@ -202,13 +206,26 @@ class AdministracionController extends Controller
         }
     }
 
-    public function consulta(){
-        $fulla = new ExcelService(public_path('/AnnexeI.xlsx'));
-        $sheet = $fulla->render();
-        dd($sheet->getCell('A14'),$sheet->getCell('B14'));
+    public function consulta()
+    {
+        $fcts = Fct::where('asociacion', '<', 3)->where('correoInstructor', 1)->get();
+        foreach ($fcts as $fct) {
+            $fin = false;
+            foreach ($fct->alFct as $fctAl) {
+                if (fechaInglesa($fctAl->hasta) > Hoy('Y-m-d')) {
+                    $fin = true;
+                }
+            }
+            if ($fin) {
+                $fct->correoInstructor = 0;
+                $fct->save();
+            }
+        }
+
     }
 
-    public static function v2_50(){
+    public static function v2_50()
+    {
         Alert::info('Version 2.50');
         foreach (Comision::all() as $comision){
             if ($comision->medio > 0){
@@ -226,33 +243,25 @@ class AdministracionController extends Controller
 
         Alert::info('Version 2.01');
 
-        /*
-        $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
-        $profesores = Profesor::where('api_token','')->get();
-
-        foreach ($profesores as $profesor){
-            $profesor->api_token = Str::random(60);
-            $profesor->save();
-            dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
-
-        }
-         */
 
     }
 
 
-    public function importaAnexoI(){
+    public function importaAnexoI()
+    {
         $canvis = 0;
         $nous = 0;
         $malament = 0;
-        foreach (Empresa::all() as $elemento){
-            if (isset($elemento->fichero)&&strpos($elemento->fichero,'2018-2019')&&(file_exists(storage_path('/app/'.$elemento->fichero)))){
+        foreach (Empresa::all() as $elemento) {
+            if (isset($elemento->fichero) &&
+                strpos($elemento->fichero, '2018-2019') &&
+                (file_exists(storage_path('/app/'.$elemento->fichero)))
+            ) {
                 Storage::put(self::DIRECTORIO_GESTOR.$elemento->cif.'.pdf',Storage::get($elemento->fichero));
                 $elemento->fichero = self::DIRECTORIO_GESTOR.$elemento->cif.'.pdf';
                 $elemento->save();
                 $canvis++;
-            }
-            else {
+            } else {
                 if (file_exists(storage_path('app/'.self::DIRECTORIO_GESTOR . $elemento->cif.'.pdf'))) {
                     $elemento->fichero = self::DIRECTORIO_GESTOR . $elemento->cif.'.pdf';
                     $elemento->save();
@@ -270,37 +279,9 @@ class AdministracionController extends Controller
     }
 
 
-    public static function v2_40(){
-        Alert::info('Version 2.40');
-        foreach (Programacion::where('curso',Curso())->get() as $prg){
-            if ($antigua = Programacion::where('idModuloCiclo', $prg->idModuloCiclo)->where('curso',CursoAnterior())->first()) {
-                $prg->criterios = $antigua->criterios;
-                $prg->metodologia = $antigua->metodologia;
-                $prg->propuestas = $antigua->propuestas;
-                $prg->save();
-            }
-        }
-    }
 
-/*
-    public function consulta(){
-        $instructores = Instructor::all();
-        foreach ($instructores as $instructor){
-            try {
-                $instructor->dni = strtoupper(str_replace([' ','-'],'',$instructor->dni));
-                $instructor->save();
-            } catch (\Exception $e){
-                try {
-                    $instructor->delete();
-                } catch (\Exception $e){
-                    Alert::danger($e);
-                }
-            }
-        }
-    }
-*/
-    public static function centres_amb_mateixa_adreça(){
-
+    public static function centres_amb_mateixa_adreça()
+    {
         echo "<p><strong>Empreses amb centres amb la mateixa adreça</strong></p>";
         foreach (
             Centro::select('idEmpresa')
@@ -325,12 +306,14 @@ class AdministracionController extends Controller
         return false;
     }
 
-    public function showDoor(){
+    public function showDoor()
+    {
         $doors = Espacio::whereNotNull('dispositivo')->get();
         return view('espai.show',compact('doors'));
     }
 
-    public function secure(Request $request){
+    public function secure(Request $request)
+    {
         $user = env('USER_DOMOTICA');
         $pass =  env('PASS_DOMOTICA');
         if (esrol(AuthUser()->rol,config('roles.rol.administrador'))){

@@ -41,29 +41,46 @@ class PanelSolicitudOrientacionController extends ModalController
         $this->panel->setBotonera([], ['show']);
         $this->panel->setBoton('grid', new BotonImg('solicitud.active', ['where' => ['estado', '==', '1']]));
         $this->panel->setBoton('grid', new BotonImg('solicitud.link', ['where' => ['estado', '>', '1']]));
-        $this->panel->setBoton('grid', new BotonImg('solicitud.resolve', ['class'=>'resolve','img'=>'fa-flag-o', 'where' => ['estado', '==', '2']]));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'solicitud.resolve',
+                ['class'=>'resolve','img'=>'fa-flag-o', 'where' => ['estado', '==', '2']]
+            )
+        );
     }
 
     public function active($id)
     {
         $elemento = Solicitud::findOrFail($id);
-        if ($elemento->estado == 1){
+        if ($elemento->estado == 1) {
             $elemento->estado = 2;
             $elemento->save();
-            avisa($elemento->idProfesor,"El departament d'orientació comença a tramitar la teua sol·licitud en nom de ".$elemento->Alumno->fullName,'#',$elemento->Orientador->fullName);
+            avisa(
+                $elemento->idProfesor,
+                "El departament d'orientació comença a tramitar la teua sol·licitud en nom de ".$elemento->Alumno->fullName,
+                '#',
+                $elemento->Orientador->fullName
+            );
         }
         return back();
     }
 
-    public function resolve(Request $request,$id)
+    public function resolve(Request $request, $id)
     {
         $elemento = Solicitud::findOrFail($id);
-        if ($elemento->estado == 2){
+        if ($elemento->estado == 2) {
             $elemento->estado = 3;
             $elemento->solucion = $request->explicacion;
             $elemento->fechasolucion = Hoy();
             $elemento->save();
-            avisa($elemento->idProfesor,"El departament d'orientació ha finalitzat la teua sol·licitud en nom de ".$elemento->Alumno->fullName." : ".$request->explicacion ,'#',$elemento->Orientador->fullName);
+            avisa(
+                $elemento->idProfesor,
+                "El departament d'orientació ha finalitzat la teua sol·licitud en nom de ".
+                $elemento->Alumno->fullName." : ".$request->explicacion,
+                '#',
+                $elemento->Orientador->fullName
+            );
         }
         return back();
     }
@@ -72,7 +89,7 @@ class PanelSolicitudOrientacionController extends ModalController
 
     public function search()
     {
-        return Solicitud::where('idOrientador',AuthUser()->dni)->where('estado','>',0)->get();
+        return Solicitud::where('idOrientador', AuthUser()->dni)->where('estado', '>', 0)->get();
     }
 
     

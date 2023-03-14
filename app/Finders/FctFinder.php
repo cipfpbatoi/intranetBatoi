@@ -6,15 +6,17 @@ use Styde\Html\Facades\Alert;
 
 class FctFinder extends Finder
 {
-    public function exec(){
-        $fcts = Fct::MisFcts($this->dni)->EsFct()->get();
+    public function exec()
+    {
+        $fcts = Fct::MisFcts($this->dni)->orWhere('cotutor', $this->dni)->EsFct()->get();
         return $this->filter($fcts);
     }
 
-    private function filter(&$elements){
-        foreach ($elements as $element){
-            $fechaUltimaFct = $element->AlFct()->orderBy('hasta','desc')->first()->hasta;
-            if (fechaInglesa($fechaUltimaFct) < hoy()){
+    private function filter(&$elements)
+    {
+        foreach ($elements as $element) {
+            $fechaUltimaFct = $element->AlFct()->orderBy('hasta', 'desc')->first()->hasta;
+            if (fechaInglesa($fechaUltimaFct) < hoy()) {
                 $element->marked = false;
             } else {
                 $element->marked = !$this->existsActivity($element->id)?true:false;

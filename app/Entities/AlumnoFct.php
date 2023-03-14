@@ -44,6 +44,13 @@ class AlumnoFct extends Model
         return $this->belongsTo(Dual::class, 'idFct', 'id');
     }
 
+    public function Contactos()
+    {
+        return $this->hasMany(Activity::class, 'model_id', 'id')
+            ->mail()
+            ->where('model_class', 'Intranet\Entities\AlumnoFct');
+    }
+
 
     public function scopeMisFcts($query, $profesor=null)
     {
@@ -53,7 +60,11 @@ class AlumnoFct extends Model
         $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
 
-        $fcts = Fct::select('id')->whereIn('idColaboracion', $colaboraciones)->where('asociacion', 1)->get()->toArray();
+        $fcts = Fct::select('id')
+            ->whereIn('idColaboracion', $colaboraciones)
+            ->where('asociacion', '<', 3)
+            ->get()
+            ->toArray();
         return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
     }
 
@@ -64,7 +75,6 @@ class AlumnoFct extends Model
         $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
         $fcts = Fct::select('id')
             ->whereIn('idColaboracion', $colaboraciones)
-            ->orWhere('asociacion', 2)
             ->orWhere('asociacion', 3)
             ->get()
             ->toArray();
@@ -89,7 +99,7 @@ class AlumnoFct extends Model
     {
         $profesor = $profesor?$profesor:authUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
-        $fcts = Fct::select('id')->Where('asociacion', 2)->get()->toArray();
+        $fcts = Fct::select('id')->Where('asociacion', 3)->get()->toArray();
         return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
     }
 
@@ -112,6 +122,16 @@ class AlumnoFct extends Model
     public function scopeActiva($query)
     {
        return $query->whereNull('calificacion')->where('correoAlumno', 0)->where('horas', '>', 'realizadas');
+    }
+
+    public function scopeHaEmpezado($query)
+    {
+        return $query->where('desde', '<', Hoy('Y-m-d'));
+    }
+
+    public function scopeNoHaAcabado($query)
+    {
+        return $query->where('hasta', '>', Hoy('Y-m-d'));
     }
     
     public function getEmailAttribute()
@@ -219,6 +239,12 @@ class AlumnoFct extends Model
     {
         return $this->fullName;
     }
+
+    public function getSaoAnnexesAttribute()
+    {
+        return Adjunto::where('size', 1024)->where('route', 'alumnofctaval/'.$this->id)->count();
+    }
+
 
 
     public function getClassAttribute()

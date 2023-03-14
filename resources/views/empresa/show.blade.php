@@ -137,7 +137,7 @@
                 <ul class="nav navbar-right panel_toolbox">
                     <li>
                         <a class="collapse-link">
-                            <em class="fa fa-chevron-up"></em>
+                            <i class="fa fa-chevron-up"></i>
                         </a>
                     </li>
                     <li>
@@ -185,12 +185,10 @@
                                             <small>{{$centro->observaciones}}</small>
                                         @endif
                                     </div>
-
-
                                 </h2>
                                 <ul class="nav navbar-right panel_toolbox">
                                     <li>
-                                        <a class="collapse-link"><em class="fa fa-chevron-up"></em></a>
+                                        <a class="collapse-link"><i class="fa fa-chevron-down"></i></a>
                                     </li>
                                     <li>
                                         <a class="centro" id="{{$centro->id}}" href="/centro/{{$centro->id}}/edit">

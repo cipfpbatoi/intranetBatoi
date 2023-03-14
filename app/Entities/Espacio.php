@@ -7,7 +7,6 @@ use Intranet\Events\ActivityReport;
 
 class Espacio extends Model
 {
-
     protected $table = 'espacios';
     public $timestamps = false;
     protected $primaryKey = 'aula';

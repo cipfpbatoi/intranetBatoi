@@ -4,10 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use Exception;
 use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
-use Illuminate\Http\Request;
+use Intranet\Services\SeleniumService;
 use Intranet\Entities\AlumnoFctAval;
 use Styde\Html\Facades\Alert;
 
@@ -16,16 +15,15 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-class SaoSyncController extends SaoController
+class SaoSyncController
 {
 
     public function index($password)
     {
-        $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
         try {
-            $this->login($driver, trim($password));
+            $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
             $alumnes = [];
-            foreach (AlumnoFctAval::realFcts()->activa()->get() as $fct) {
+            foreach (AlumnoFctAval::realFcts()->haEmpezado()->where('beca', 0)->activa()->get() as $fct) {
                 try {
                     if ($fct->idSao) {
                         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=11&idFct=$fct->idSao");
@@ -83,6 +81,17 @@ class SaoSyncController extends SaoController
             $driver->findElement(WebDriverBy::cssSelector("p.celdaInfoAlumno a:nth-child(1)"))->click();
             sleep(1);
             return $this->consultaDiario($driver, $driver->findElement(WebDriverBy::cssSelector("#contenido")));
+        }
+    }
+
+    protected function alertSuccess(array $alumnes, $message='Sincronitzades Fcts: ')
+    {
+        if (count($alumnes)) {
+            $tots = '';
+            foreach ($alumnes as $alumne) {
+                $tots .= $alumne.', ';
+            }
+            Alert::info($message.$tots);
         }
     }
 

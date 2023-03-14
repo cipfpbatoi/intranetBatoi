@@ -59,7 +59,7 @@ class DocumentService
                 null,
                 $this->document->email['editable']
             );
-            return $mail->render('misColaboraciones');
+            return $mail->render($this->document->route??'misColaboraciones');
         } else {
             Alert::danger('No hi ha cap destinatari');
             return back();

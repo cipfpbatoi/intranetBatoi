@@ -3,27 +3,6 @@
     $otros =  $panel->getElementos($pestana)->where('tutor','!=',authUser()->dni);
 @endphp
 @foreach ($misElementos as $elemento)
-    @php
-        $fcts = \Intranet\Entities\Fct::with('Instructor')
-        ->where('idColaboracion',$elemento->id)
-        ->where('asociacion',1)
-
-        ->get();
-        $colaboraciones = $elemento->Centro->Colaboraciones;
-    @endphp
-    @if (count($fcts))
-        @foreach ($fcts as $fct)
-            @php
-                $contactos = \Intranet\Entities\Activity::mail()
-                ->Modelo('Fct')
-                ->id($fct->id)
-                ->orderBy('created_at')
-                ->get();
-                $alumnos = $fct->Alumnos;
-            @endphp
-            @include('intranet.partials.profile.partials.fct')
-        @endforeach
-    @else
         @php
             $contactos = \Intranet\Entities\Activity::modelo('Colaboracion')
             ->id($elemento->id)
@@ -32,35 +11,13 @@
             ->get();
         @endphp
         @include ('intranet.partials.profile.partials.colaboracion')
-    @endif
 @endforeach
 @foreach ($otros as $elemento)
     @php
-        $fcts = \Intranet\Entities\Fct::with('Instructor')
-        ->where('idColaboracion',$elemento->id)
-        ->where('asociacion',1)
+        $contactos = \Intranet\Entities\Activity::modelo('Colaboracion')
+        ->id($elemento->id)
+        ->orderBy('created_at')
         ->get();
-        $colaboraciones = null;
     @endphp
-    @if (count($fcts))
-        @foreach ($fcts as $fct)
-            @php
-                $contactos = \Intranet\Entities\Activity::mail()
-                ->Modelo('Fct')
-                ->id($fct->id)
-                ->orderBy('created_at')
-                ->get();
-                $alumnos = $fct->Alumnos;
-            @endphp
-            @include('intranet.partials.profile.partials.fct')
-        @endforeach
-    @else
-        @php
-            $contactos = \Intranet\Entities\Activity::modelo('Colaboracion')
-            ->id($elemento->id)
-            ->orderBy('created_at')
-            ->get();
-        @endphp
-        @include ('intranet.partials.profile.partials.colaboracion')
-    @endif
+    @include ('intranet.partials.profile.partials.colaboracion')
 @endforeach

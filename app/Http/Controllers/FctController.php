@@ -7,13 +7,12 @@ use DB;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
-use Intranet\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
+use Intranet\Http\Requests\ColaboradorRequest;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
-use Intranet\Botones\BotonBasico;
 use Intranet\Componentes\Pdf;
 
 
@@ -24,7 +23,10 @@ use Intranet\Componentes\Pdf;
  */
 class FctController extends IntranetController
 {
+
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
+    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
+
 
     /**
      * @var string
@@ -78,55 +80,6 @@ class FctController extends IntranetController
         return $this->redirect();
     }
 
-
-    /**
-     *
-     */
-    protected function iniBotones()
-    {
-        $this->panel->setBoton('grid', new BotonImg('fct.edit', ['where'=>['asociacion','==','1']]));
-        $this->panel->setBoton('grid', new BotonImg('fct.show', ['where'=>['asociacion', '==', '1']]));
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'fct.pdf',
-                [
-                    'img'=>'fa-file-pdf-o',
-                    'where'=>['asociacion', '==', '1']
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'fct.colaboradorPdf',
-                [
-                    'img'=>'fa-file-text',
-                    'where'=>['asociacion', '==', '1']
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'index',
-            new BotonBasico(
-                "alumnofct",
-                [
-                    'class' => 'btn-link',
-                    'roles' => config(self::ROLES_ROL_TUTOR)
-                ]
-            )
-        );
-        Session::put('redirect', 'FctController@index');
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function search()
-    {
-        return Fct::misFcts()->esFct()->get();
-    }
 
     public function certificat($id)
     {
@@ -201,6 +154,7 @@ class FctController extends IntranetController
     public function show($id)
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 1;
+        Session::put('pestana', 1);
         $fct = Fct::findOrFail($id);
         $instructores = $fct->Colaboradores->pluck('dni');
         return view($this->chooseView('show'), compact('fct', 'activa', 'instructores'));
@@ -269,7 +223,7 @@ class FctController extends IntranetController
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function nouInstructor($idFct, Request $request)
+    public function nouInstructor($idFct, ColaboradorRequest $request)
     {
         $colaborador = new Colaborador([
             'idInstructor'=>$request->idInstructor,
@@ -278,6 +232,7 @@ class FctController extends IntranetController
         ]);
        $fct = Fct::find($idFct);
        $fct->Colaboradores()->save($colaborador);
+       Session::put('pestana', 5);
        return back();
     }
 
@@ -289,6 +244,7 @@ class FctController extends IntranetController
     public function deleteInstructor($idFct, $idInstructor)
     {
        Colaborador::where('idFct', $idFct)->where('idInstructor', $idInstructor)->delete();
+       Session::put('pestana', 5);
        return back();
     }
 
@@ -317,6 +273,17 @@ class FctController extends IntranetController
         }
         return back();
     }
+
+    public function cotutor(Request $request, $idFct)
+    {
+        $fct = Fct::find($idFct);
+        if ($fct) {
+            $fct->cotutor = $request->cotutor;
+            $fct->save();
+        }
+        return back();
+    }
+
 
 
 }

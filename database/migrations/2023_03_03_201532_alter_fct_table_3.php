@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AlterFctTable2 extends Migration
+class AlterFctTable3 extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,8 @@ class AlterFctTable2 extends Migration
     {
         Schema::table('fcts', function (Blueprint $table)
         {
-           $table->string('model', 50)->default('Instructor');
+           $table->string('cotutor', 10)->nullable();
+           $table->foreign('cotutor')->references('dni')->on('profesores')->onDelete('restrict')->onUpdate('cascade');
         });
     }
 
@@ -28,7 +29,7 @@ class AlterFctTable2 extends Migration
     {
         Schema::table('fcts', function (Blueprint $table)
         {
-            $table->dropColumn('model');
+            $table->dropColumn('fcts');
         });
     }
 }

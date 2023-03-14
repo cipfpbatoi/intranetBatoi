@@ -42,16 +42,16 @@ class DropZoneController extends ApiBaseController
         $user = apiAuthUser();
         $path = "$modelo/$id";
         $adjunto = Adjunto::findByName($path, $file)->first();
+        if (!$adjunto) {
+            return $this->sendFail("No s'ha trobat el document");
+        }
         if ($adjunto->owner != $user->dni) {
             return $this->sendFail("Sense permisos, no ets el propietari");
         }
-        if ($adjunto) {
-            if (AttachedFileService::delete($adjunto)) {
-                return $this->sendResponse([], 'OK');
-            }
-            return $this->sendFail("Error a l'esborrar");
+        if (AttachedFileService::delete($adjunto)) {
+            return $this->sendResponse([], 'OK');
         }
-        return $this->sendFail("No s'ha trobat el document");
+        return $this->sendFail("Error a l'esborrar");
     }
 
     public function attachFile(Request $request)

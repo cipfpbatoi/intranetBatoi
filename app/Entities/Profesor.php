@@ -19,12 +19,12 @@ class Profesor extends Authenticatable
      * $fillable -> Aquellos que son actualizables en masa. Se utiliza para construir
      *              los edit y create
      * $rules   -> Para comprobar los devuelto. Se utiliza para marcar los requeridos
-     * $inputTypes -> Tipo de input para los formularios de crear y editar. 
+     * $inputTypes -> Tipo de input para los formularios de crear y editar.
      *                Si no se indica nada se muestran como tetx
      * Notifiable -> Para que se le puedan mandar mensajes
      * BatoiModels -> Imprescindible si se trata con campos de fecha
      * getcampoAttribute -> Para que devuelva la fecha en un formato dado
-     * 
+     *
      */
 
     public $primaryKey = 'dni';
@@ -157,8 +157,8 @@ class Profesor extends Authenticatable
     {
         $all = Profesor::Activo()->get();
         $data = [];
-        foreach ($all as $profesor){
-            if ($profesor->rol % $rol == 0){
+        foreach ($all as $profesor) {
+            if ($profesor->rol % $rol == 0) {
                 $data[$profesor->dni]=$profesor->fullName;
             }
         }
@@ -170,8 +170,9 @@ class Profesor extends Authenticatable
         return $query->where('activo', 1);
     }
 
-    public function scopeTutoresFCT($query){
-        $grupos = hazArray(Grupo::where('curso', 2)->get(), 'tutor','tutor');
+    public function scopeTutoresFCT($query)
+    {
+        $grupos = hazArray(Grupo::where('curso', 2)->get(), 'tutor', 'tutor');
         return $query->Plantilla()->whereIn('dni', $grupos);
     }
 
@@ -182,7 +183,11 @@ class Profesor extends Authenticatable
     }
     public function scopeGrupoT($query, $grupoT)
     {
-        $profesores = Miembro::distinct()->select('idProfesor')->where('idGrupoTrabajo', '=', $grupoT)->get()->toArray();
+        $profesores = Miembro::distinct()
+            ->select('idProfesor')
+            ->where('idGrupoTrabajo', '=', $grupoT)
+            ->get()
+            ->toArray();
         return $query->whereIn('dni', $profesores)->Activo();
     }
 
@@ -265,16 +270,16 @@ class Profesor extends Authenticatable
     
     public function getFullNameAttribute()
     {
-        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2,'UTF-8'));
+        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2, 'UTF-8'));
     }
     public function getNameFullAttribute()
     {
-        return ucwords(mb_strtolower($this->apellido1 . ' ' . $this->apellido2.', '.$this->nombre ,'UTF-8'));
+        return ucwords(mb_strtolower($this->apellido1 . ' ' . $this->apellido2.', '.$this->nombre, 'UTF-8'));
     }
 
     public function getShortNameAttribute()
     {
-       return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1 ,'UTF-8'));
+       return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1, 'UTF-8'));
     }
 
     public function getAhoraAttribute()
@@ -283,7 +288,7 @@ class Profesor extends Authenticatable
         $dia = config("auxiliares.diaSemana." . now()->format('w'));
         $horaActual = $this->Horari->where('dia_semana', $dia)->where('sesion_orden', $sesion)->first();
         if ($horaActual) {
-            if ($horaActual->ocupacion != null && isset($horaActual->Ocupacion->nombre)){
+            if ($horaActual->ocupacion != null && isset($horaActual->Ocupacion->nombre)) {
                 return $horaActual->Ocupacion->nombre;
             }
             if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre) {
@@ -298,27 +303,34 @@ class Profesor extends Authenticatable
 
     public function getMiJefeAttribute()
     {
-        $todos = Profesor::where('departamento', $this->departamento)->where('activo',1)->get();
-        foreach ($todos as $uno){
-            if (esRol($uno->rol, config('roles.rol.jefe_dpto'))){
+        $todos = Profesor::where('departamento', $this->departamento)->where('activo', 1)->get();
+        foreach ($todos as $uno) {
+            if (esRol($uno->rol, config('roles.rol.jefe_dpto'))) {
                 return $uno->dni;
             }
         }
     }
 
-    public function getQualitatFile(){
-        $find = Documento::where('idProfesor', $this->dni)->where('tipoDocumento','Qualitat')
-                ->where('curso',curso())->first();
+    public function getQualitatFile()
+    {
+        $find = Documento::where('idProfesor', $this->dni)->where('tipoDocumento', 'Qualitat')
+                ->where('curso', curso())->first();
         if ($find) {
             return $find->fichero;
-        }
-        else {
+        } else {
             return false;
         }
     }
-    public function getGrupoTutoriaAttribute(){
+
+    public function getGrupoTutoriaAttribute()
+    {
         $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->get();
-        return isset($miGrupo->first()->codigo) ? $miGrupo->first()->codigo : '';
+        if (isset($miGrupo->first()->codigo)) {
+            return $miGrupo->first()->codigo;
+        } else {
+            $miGrupo = Grupo::where('tutorDual', '=', authUser()->dni)->get();
+            return isset($miGrupo->first()->codigo) ? $miGrupo->first()->codigo : '';
+        }
     }
 
 }

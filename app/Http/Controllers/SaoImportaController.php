@@ -3,7 +3,6 @@
 namespace Intranet\Http\Controllers;
 
 use Exception;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Http\Request;
@@ -15,6 +14,7 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Instructor;
+use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 
 
@@ -22,8 +22,13 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-class SaoImportaController extends SaoController
+class SaoImportaController
 {
+    const TD_NTH_CHILD_2 = "td:nth-child(2)";
+    const TR_NTH_CHILD_2 = "tr:nth-child(2)";
+    const TD_NTH_CHILD_3 = "td:nth-child(3)";
+    const TD_NTH_CHILD_4 = "td:nth-child(4)";
+
     private function buscaCentro($dada, $empresa)
     {
         $idEmpresa = $empresa->id;
@@ -191,21 +196,19 @@ class SaoImportaController extends SaoController
             Alert::danger('No eres tutor');
             return redirect(route('alumnofct.index'));
         } else {
-            $driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
+
             try {
-                $this->login($driver, $password);
-                $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
-                foreach ($table as $index => $tr) {
-                    if ($index) { //el primer és el titol i no cal iterar-lo
-                        try {
-                            //dades de la linea
-                            $this->extractFromModal($dades, $index, $tr, $driver);
-                        } catch (Exception $e) {
-                            unset($dades[$index]);
-                            Alert::info($e->getMessage());
-                        }
-                    }
+                $driver = SeleniumService::loginSAO($dni, $password);
+                try {
+                    $this->extractPage($driver, $dades);
+                    $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
+                    sleep(1);
+                    $this->extractPage($driver, $dades);
+                } catch (Exception $e) {
+                    //No hi ha més pàgines
                 }
+
+
                 if (count($dades)) {
                     foreach ($dades as $index => $dada) {
                         try {
@@ -224,7 +227,9 @@ class SaoImportaController extends SaoController
                 return view('sao.importa', compact('dades', 'ciclo'));
             } catch (Exception $e) {
                 Alert::warning($e->getMessage());
-                $driver->close();
+                if (isset($driver)) {
+                    $driver->close();
+                }
                 return redirect(route('alumnofct.index'));
             }
         }
@@ -240,7 +245,7 @@ class SaoImportaController extends SaoController
                 $centro = $this->getCentro($dades[$key]);
                 $idColaboracion = $this->getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = $this->getDni($centro, $dades[$key], $ciclo);
-                $fct = $this->getFct($dni, $idColaboracion);
+                $fct = $this->getFct($dni, $idColaboracion, $dades[$key]['erasmus']);
                 $this->saveFctAl($fct, $dades[$key]);
             }
         }
@@ -432,18 +437,22 @@ class SaoImportaController extends SaoController
      * @param $idColaboracion
      * @return Fct
      */
-    private function getFct($dni, $idColaboracion): Fct
+    private function getFct($dni, $idColaboracion, $erasmus): Fct
     {
+        $asociacion = $erasmus == 'No' ? 1 : 2;
         $fct = Fct::where('idColaboracion', $idColaboracion)
             ->where('idInstructor', $dni)
-            ->where('asociacion', 1)
+            ->where('correoInstructor', 0)
+            ->where('asociacion', $asociacion)
             ->first();
         if (!$fct) {
+            $col = Colaboracion::find($idColaboracion);
             $fct = new Fct([
                 'idColaboracion' => $idColaboracion,
-                'asociacion' => 1,
+                'asociacion' => $asociacion,
                 'idInstructor' => $dni,
             ]);
+            $fct->cotutor = $col->Propietario?$col->tutor:null;
             $fct->save();
         }
         return $fct;
@@ -467,8 +476,33 @@ class SaoImportaController extends SaoController
             $fctAl->idFct = $fct->id;
             $fctAl->idAlumno = $dades['nia'];
         }
+        $fctAl->desde = $dades['desde'];
+        $fctAl->hasta = $dades['hasta'];
+        $fctAl->horas = $dades['hores'];
+        $fctAl->autorizacion = $dades['autorizacion'];
         $fctAl->idSao = $dades['idSao'];
         $fctAl->save();
+    }
+
+    /**
+     * @param  RemoteWebDriver  $driver
+     * @param  array  $dades
+     * @return array
+     */
+    private function extractPage(RemoteWebDriver $driver, array &$dades)
+    {
+        $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
+        foreach ($table as $index => $tr) {
+            if ($index) { //el primer és el titol i no cal iterar-lo
+                try {
+                    //dades de la linea
+                    $this->extractFromModal($dades, $index, $tr, $driver);
+                } catch (Exception $e) {
+                    unset($dades[$index]);
+                    Alert::info($e->getMessage());
+                }
+            }
+        }
     }
 
 }

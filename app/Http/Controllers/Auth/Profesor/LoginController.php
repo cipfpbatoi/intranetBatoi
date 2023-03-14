@@ -60,7 +60,7 @@ use AuthenticatesUsers;
 
     public function logout()
     {
-        if (isPrivateAddress(getClientIpAddress())){
+        if (isPrivateAddress(getClientIpAddress())) {
             Auth::guard('profesor')->logout();
             Session()->flush();
             return redirect('/login');
@@ -73,18 +73,20 @@ use AuthenticatesUsers;
 
     public function plogin(Request $request)
     {
-        $profesor = Profesor::where('codigo',$request->codigo)->get()->first();
-        if (isset($profesor) && !isset($profesor->changePassword)){
-            if ($profesor->dni ==  $request->password ) {
+        $profesor = Profesor::where('codigo', $request->codigo)->get()->first();
+        if (isset($profesor) && !isset($profesor->changePassword)) {
+            if ($profesor->dni ==  $request->password) {
                 return view('auth/profesor/firstLogin', compact('profesor'));
             } else {
-                return back()->withInput()->withErrors(['password' => "Has d'introduir el dni amb 0 davant i lletra majuscula"]);
+                return back()
+                    ->withInput()
+                    ->withErrors(['password' => "Has d'introduir el dni amb 0 davant i lletra majuscula"]);
             }
         } else {
-            if (!isset($profesor)){
-                $profesor = Profesor::where('email',$request->codigo)->get()->first();
+            if (!isset($profesor)) {
+                $profesor = Profesor::where('email', $request->codigo)->get()->first();
             }
-            if (isset($profesor->idioma)){
+            if (isset($profesor->idioma)) {
                 session(['lang' => $profesor->idioma]);
             }else {
                 session(['lang' => 'ca']);
@@ -94,22 +96,22 @@ use AuthenticatesUsers;
         }
     }
 
-    public function firstLogin(Request $request){
-
-        $validator = Validator::make($request->all(),[
-            'password' => ['required','confirmed',Password::min(8)
-                ->mixedCase()
-                ->letters()
-                ->numbers()
-                ->uncompromised()]
-        ]);
-        if ($validator->fails())   //check all validations are fine, if not then redirect and show error messages
-        {
+    public function firstLogin(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'password' => [
+                    'required',
+                    'confirmed',
+                    Password::min(8)->mixedCase()->letters()->numbers()->uncompromised()
+                ]
+            ]
+        );
+        if ($validator->fails()) {
             return back()->withInput()->withErrors($validator);
-        }
-        else
-        {
-            $profesor = Profesor::where('codigo',$request->codigo)->get()->first();
+        } else {
+            $profesor = Profesor::where('codigo', $request->codigo)->get()->first();
             $profesor->email = $request->email;
             $profesor->password = bcrypt(trim($request->password));
             $profesor->changePassword = date('Y-m-d');

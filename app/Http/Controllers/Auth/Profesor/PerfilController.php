@@ -23,8 +23,7 @@ class PerfilController extends Perfil
         $new = $this->class::find(Auth::user('profesor')->dni);
         if (isset($request->mostrar)) {
             $new->mostrar = $request->mostrar;
-        }
-        else {
+        } else {
             $new->mostrar = 0;
         }
         

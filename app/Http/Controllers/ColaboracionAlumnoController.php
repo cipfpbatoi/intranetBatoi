@@ -27,7 +27,6 @@ class ColaboracionAlumnoController extends IntranetController
      */
     protected $model = 'Colaboracion';
 
-    //protected $parametresVista = ['modal' => ['contacto','afegirFct','seleccion']];
 
 
     /**

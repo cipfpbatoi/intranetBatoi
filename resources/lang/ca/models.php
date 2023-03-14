@@ -311,7 +311,7 @@ return array(
             'colaboradores' => 'Col·laboradors',
         ),
         'Fct' => array(
-            'index' => 'FCT x Empresa',
+            'index' => 'Contactes',
             'create' => 'Nova Fct',
             'edit' => 'Canviar instructor',
             'show' => 'Detalls Fct',
@@ -444,7 +444,8 @@ return array(
             'default' => 'x Alumne/a',
             'selecciona' => 'Alumne/a',
             'A5' => 'Informe valoratiu A5',
-            'delete' => 'Esborra fct'
+            'delete' => 'Esborra fct',
+            'unlink' => 'Esborra connexiò amb el SAO',
         ),
         'AlumnoFct' => array(
             'selecciona' => 'Alumne/a',

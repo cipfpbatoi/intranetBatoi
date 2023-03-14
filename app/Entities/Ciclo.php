@@ -32,11 +32,16 @@ class Ciclo extends Model
 
     public function Grupos()
     {
-        return $this->hasMany(Grupo::class,'idCiclo','id');
+        return $this->hasMany(Grupo::class, 'idCiclo','id');
     }
     public function Departament()
     {
         return $this->belongsTo(Departamento::class, 'departamento', 'id');
+    }
+
+    public function TutoresFct()
+    {
+        return $this->hasManyThrough(Profesor::class,Grupo::Class,'idCiclo','dni','id','tutor')->where('curso',2);
     }
 
 
