@@ -1,5 +1,10 @@
 <!-- Modal -->
-<div class="modal fade" id="AddInstructor" tabindex="-1" role="dialog" aria-labelledby="AddInstructorTitle" aria-hidden="true">
+<div class="modal fade"
+     id="AddInstructor"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="AddInstructorTitle"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,6 +17,7 @@
             <form method="POST" class="agua" action="/fct/{{$fct->id}}/instructorCreate">
                 <div class="modal-body">
                     {{ csrf_field() }}
+                    <input type="hidden" name="idFct" value="{{$fct->id}}">
                     <input type="text"
                            name='idInstructor'
                            value="{{ old('idInstructor') }}"
