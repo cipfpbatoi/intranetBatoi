@@ -3,10 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Exception;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
-use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
-use Illuminate\Http\Request;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Services\AttachedFileService;

@@ -28,13 +28,13 @@ class AttachedFileService
         return 0;
     }
 
-    public static function saveLink($nameFile, $referencesTo, $title, $extension, $route)
+    public static function saveLink($nameFile, $referencesTo, $title, $extension, $route, $dni=null)
     {
         $adjunto = Adjunto::findByName($route, $nameFile)->first();
         if (!$adjunto) {
             $adjunto = new Adjunto([
                 'name' => $nameFile,
-                'owner' => authUser()->dni,
+                'owner' => $dni??authUser()->dni,
                 'referencesTo' => $referencesTo,
                 'title' => $title,
                 'extension' => $extension,

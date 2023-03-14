@@ -18,7 +18,9 @@ class ColaboracionController extends ApiBaseController
     public function instructores($id)
     {
         $colaboracion = Colaboracion::find($id);
-        $data = $colaboracion->Centro->instructores->sortBy('surnames');
+        $data = isset($colaboracion->Centro)
+            ?$colaboracion->Centro->instructores->sortBy('surnames')
+            :[];
         return $this->sendResponse($data, 'OK');
     }
 

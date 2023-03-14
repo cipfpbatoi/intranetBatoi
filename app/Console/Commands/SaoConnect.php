@@ -49,7 +49,6 @@ class SaoConnect extends Command
             $alumnes = [];
 
             foreach (AlumnoFctAval::whereNotNull('idSao')
-                         ->where('horas', '>', 'realizadas')
                          ->noHaAcabado()
                          ->where('beca', 0)
                          ->haEmpezado()

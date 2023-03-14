@@ -4,6 +4,7 @@ namespace Intranet\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Intranet\Console\Commands\SaoAnnexes;
 use Intranet\Console\Commands\SaoConnect;
 use Intranet\Console\Commands\SendDailyEmails;
 use Intranet\Console\Commands\CreateDailyGuards;
@@ -24,7 +25,8 @@ class Kernel extends ConsoleKernel
         NotifyDailyFaults::class,
         SendFctEmails::class,
         UploadAnexes::class,
-        SaoConnect::class
+        SaoConnect::class,
+        SaoAnnexes::class
     ];
 
     /**
@@ -45,6 +47,8 @@ class Kernel extends ConsoleKernel
                 ->dailyAt('07:30');
         $schedule->command('sao:connect')
             ->dailyAt('21:00');
+        $schedule->command('sao:annexes')
+            ->dailyAt('21:30');
     }
 
     /**

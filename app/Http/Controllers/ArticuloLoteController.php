@@ -29,10 +29,14 @@ class ArticuloLoteController extends IntranetController
 
     public function search()
     {
-        $lotes = hazArray(Lote::where('departamento_id',AuthUser()->departamento)->orWhere('departamento_id',null)->get(),'registre','registre');
+        $lotes = hazArray(
+            Lote::where('departamento_id', AuthUser()->departamento)->orWhere('departamento_id', null)->get(),
+            'registre',
+            'registre'
+        );
         return ArticuloLote::whereHas('materiales', function (Builder $query) use ($lotes) {
             $query->where('espacio', 'like', 'INVENT')
-            ->whereIn('lote_id',$lotes);
+            ->whereIn('lote_id', $lotes);
         })->get();
     }
 
