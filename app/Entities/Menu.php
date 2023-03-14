@@ -34,17 +34,21 @@ class Menu extends Model
 
     private static function tipoUrl($url)
     {
-        if (strpos($url, 'ttp::'))
+        if (strpos($url, 'ttp::')) {
             return 'full-url';
-        else
+        } else {
             return 'url';
+        }
     }
 
-    public static function make($nom, $array = false){
-        $menu = Cache::remember('menu'.$nom.authUser()->dni,now()->addDay(),function () use ($nom){
+    public static function make($nom, $array = false)
+    {
+        $menu = Cache::remember('menu'.$nom.authUser()->dni, now()->addDay(),function () use ($nom) {
            return self::build($nom);
         });
-        if ($array) return $menu;
+        if ($array) {
+            return $menu;
+        }
         return StydeMenu::make($menu);
     }
 
@@ -54,7 +58,7 @@ class Menu extends Model
         if (!isAdmin()) {
             $submenus = $submenus->whereIn('rol', rolesUser(authUser()->rol));
         } else {
-            $submenus = $submenus->where('rol','<>',5);
+            $submenus = $submenus->where('rol', '<>', 5);
         }
         $submenus = $submenus->orderby('orden')->get();
         foreach ($submenus as $sitem) {
@@ -64,11 +68,21 @@ class Menu extends Model
                         ->get();
                 $menu[$sitem->nombre]['class'] = $sitem->class;
                 foreach ($items as $item) {
-                    $menu[$sitem->nombre]['submenu'][$item->nombre] = array(self::tipoUrl($item->url) => $item->url, 
-                        'img' => $item->img, 'roles' => $item->rol,'secure'=>true);
+                    $menu[$sitem->nombre]['submenu'][$item->nombre] =
+                        array(
+                            self::tipoUrl($item->url) => $item->url,
+                            'img' => $item->img,
+                            'roles' => $item->rol,
+                            'secure'=> env('APP_DEBUG')?true:false
+                        );
                 }
             } else {
-                $menu[$sitem->nombre] = array(self::tipoUrl($sitem->url) => $sitem->url, 'class' => $sitem->class,'secure'=>true);
+                $menu[$sitem->nombre] =
+                    array(
+                        self::tipoUrl($sitem->url) => $sitem->url,
+                        'class' => $sitem->class,
+                        'secure'=> env('APP_DEBUG')?true:false
+                    );
             }
         }
         return $menu;
@@ -82,11 +96,16 @@ class Menu extends Model
     {
         return trans('messages.states.' . $this->activo);
     }
-    public function getCategoriaAttribute(){
-        if ($this->submenu == '') return $this->menu.' ('.str_pad($this->orden,2,'0',STR_PAD_LEFT).')'; 
-        else return $this->menu.'-'.$this->submenu.' ('.str_pad($this->orden,2,'0',STR_PAD_LEFT).')';
+    public function getCategoriaAttribute()
+    {
+        if ($this->submenu == '') {
+            return $this->menu.' ('.str_pad($this->orden, 2, '0', STR_PAD_LEFT).')';
+        } else {
+            return $this->menu.'-'.$this->submenu.' ('.str_pad($this->orden, 2, '0', STR_PAD_LEFT).')';
+        }
     }
-    public function getDescripcionAttribute(){
+    public function getDescripcionAttribute()
+    {
         return trans("messages.menu.".ucwords($this->nombre));
     }
 
