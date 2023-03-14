@@ -24,7 +24,7 @@ class ColaboradorRequest extends FormRequest
     public function rules()
     {
         return [
-            'idInstructor' => 'required|composite_unique:idInstructor,idFct',
+            'idInstructor' => 'required|composite_unique:colaboradores,idInstructor,idFct',
             'name' => 'required',
             'horas' => 'required|numeric',
         ];
