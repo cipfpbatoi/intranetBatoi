@@ -24,7 +24,12 @@ class SaoAnnexesController
         try {
             $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
             $alumnes = [];
-            foreach (AlumnoFctAval::realFcts()->whereNotNull('idSao')->activa()->where('pg0301', 0)->get() as $fct) {
+            foreach (AlumnoFctAval::realFcts()
+                         ->where('beca', 0)
+                         ->whereNotNull('idSao')
+                         ->activa()
+                         ->where('pg0301', 0)
+                         ->get() as $fct) {
                 $find = Adjunto::where('size', 1024)->where('route', 'alumnofctaval/'.$fct->id)->count();
                 if ($fct->idSao) {
                     if (!$find) {
