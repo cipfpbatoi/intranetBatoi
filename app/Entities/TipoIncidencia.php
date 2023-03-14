@@ -21,18 +21,6 @@ class TipoIncidencia extends Model
         'idProfesor',
         'tipus'];
 
-    protected $inputTypes = [
-        'idProfesor' => ['type' => 'select'],
-        'tipus' => ['type' => 'select']
-    ];
-
-    protected $rules = [
-        'id' => 'required:numeric',
-        'nombre' => 'required',
-        'nom' => 'required',
-        'idProfesor' => 'required',
-        'tipus' => 'required',
-    ];
 
     public function getLiteralAttribute()
     {
@@ -51,23 +39,26 @@ class TipoIncidencia extends Model
 
     public function getIdProfesorOptions()
     {
-        return hazArray($this->Rol(config('roles.rol.mantenimiento')),'dni','fullName');
+        return hazArray($this->Rol(config('roles.rol.mantenimiento')), 'dni', 'fullName');
     }
 
-    public function getTipusOptions(){
+    public function getTipusOptions()
+    {
         return config('auxiliares.tipoIncidencia');
     }
 
-    public function Rol($rol){
+    public function Rol($rol)
+    {
         $profesores = collect();
-        foreach (Profesor::where('activo',1)->get() as $profe) {
+        foreach (Profesor::where('activo', 1)->get() as $profe) {
             if ($profe->rol % $rol == 0) {
                 $profesores->push($profe);
             }
         }
         return $profesores;
     }
-    public function getProfesorAttribute(){
+    public function getProfesorAttribute()
+    {
         return $this->Responsable->fullName??'';
     }
 

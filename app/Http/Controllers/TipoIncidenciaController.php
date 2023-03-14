@@ -2,53 +2,66 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use DB;
+
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonBasico;
-use Jenssegers\Date\Date;
-use \PDF;
-use Intranet\Entities\Comision;
-use Intranet\Http\Controllers\BaseController;
-use Intranet\Botones\Panel;
+use Intranet\Entities\TipoIncidencia;
+use Intranet\Http\Requests\TipoIncidenciaRequest;
+
 
 /**
  * Class ComisionController
  * @package Intranet\Http\Controllers
  */
-class TipoIncidenciaController extends IntranetController
+class TipoIncidenciaController extends ModalController
 {
-
+    const ADMINISTRADOR = 'roles.rol.administrador';
 
     /**
      * @var array
      */
     protected $gridFields = ['id', 'nombre', 'nom','profesor','tipo'];
-    /**
-     * @var string
-     */
-    protected $perfil = 'profesor';
+    protected $formFields = [
+        'id' => ['type' => 'text'],
+        'nombre' => ['type' => 'text'],
+        'nom' => ['type' => 'text'],
+        'idProfesor' => ['type' => 'select'],
+        'tipus' => ['type' => 'select']
+    ];
     /**
      * @var string
      */
     protected $model = 'TipoIncidencia';
-    /**
-     * @var bool
-     */
-    protected $modal = true;
 
     /**
      *
      */
     protected function iniBotones()
-     {
-         $this->panel->setBotonera(['create'],['delete','edit']);
-     }
+    {
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico('tipoincidencia.create', ['roles' => config(self::ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('tipoincidencia.show', ['roles' => config(self::ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('tipoincidencia.edit', ['roles' => config(self::ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('tipoincidencia.delete', ['roles' => config(self::ADMINISTRADOR)]));
+    }
 
-    protected function search(){
+    protected function search()
+    {
         return $this->class::all();
+    }
+
+    public function store(TipoIncidenciaRequest $request)
+    {
+        $new = new TipoIncidencia();
+        $new->fillAll($request);
+        return $this->redirect();
+    }
+
+    public function update(TipoIncidenciaRequest $request, $id)
+    {
+        TipoIncidencia::findOrFail($id)->fillAll($request);
+        return $this->redirect();
     }
 
 }

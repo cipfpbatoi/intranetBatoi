@@ -21,7 +21,7 @@ class Departamento extends Model
     }
     public function Modulo()
     {
-        return $this->belongstoMany(Modulo::class, 'modulo_ciclos', 'idDepartamento','idModulo');
+        return $this->belongstoMany(Modulo::class, 'modulo_ciclos', 'idDepartamento', 'idModulo');
     }
     public function Jefe()
     {
@@ -35,7 +35,7 @@ class Departamento extends Model
 
     public function getidProfesorOptions()
     {
-        return hazArray(Profesor::all(), 'dni', 'fullName');
+        return hazArray(Profesor::orderBy('departamento')->orderBy('apellido1')->all(), 'dni', 'fullName');
     }
 
 }
