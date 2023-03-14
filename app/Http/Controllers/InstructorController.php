@@ -62,12 +62,12 @@ class InstructorController extends IntranetController
     public function search()
     {
         $instructores = [];
-        foreach (Fct::misFcts()->get() as $fct){
-            foreach ($fct->Colaboradores as $instructor){
+        foreach (Fct::misFcts()->get() as $fct) {
+            foreach ($fct->Colaboradores as $instructor) {
                 $instructores[] = $instructor->dni;
             }
-        }    
-        return Instructor::whereIn('dni',$instructores)->get();
+        }
+        return Instructor::whereIn('dni', $instructores)->get();
     }
 
     /**
@@ -113,13 +113,14 @@ class InstructorController extends IntranetController
         return $this->showEmpresa(Centro::find($centro)->idEmpresa);
     }
 
-    private function showEmpresa($id){
+    private function showEmpresa($id)
+    {
         $colaboracion = Session::get('colaboracion')??null;
-        if ($colaboracion){
-            Session::put('pestana',4);
-            return redirect()->action('ColaboracionController@show',['colaboracion'=> $colaboracion]);
+        if ($colaboracion) {
+            Session::put('pestana', 4);
+            return redirect()->action('ColaboracionController@show', ['colaboracion'=> $colaboracion]);
         } else {
-            Session::put('pestana',2);
+            Session::put('pestana', 2);
             return redirect()->action('EmpresaController@show', ['empresa' => $id]);
         }
     }
@@ -131,13 +132,13 @@ class InstructorController extends IntranetController
      */
     public function almacena(Request $request, $centro)
     {
-        DB::transaction(function() use ($request,$centro) {
+        DB::transaction(function () use ($request,$centro) {
             $instructor = Instructor::find($request->dni);
-            if (!$instructor){
+            if (!$instructor) {
                 if (!$request->dni) {
-                     $max = Instructor::where('dni','>', 'EU0000000')->where('dni','<','EU9999999')->max('dni');
+                     $max = Instructor::where('dni', '>', 'EU0000000')->where('dni', '<', 'EU9999999')->max('dni');
                      $max = (int) substr($max, 2) +1;
-                     $dni = 'EU'.str_pad($max, 7,'0', STR_PAD_LEFT);
+                     $dni = 'EU'.str_pad($max, 7, '0', STR_PAD_LEFT);
                      $request->merge(['dni' => $dni]);
                 }
                 parent::store($request);
@@ -161,7 +162,7 @@ class InstructorController extends IntranetController
             try {
                 parent::destroy($id);
             } catch (\Exception $e) {
-            };
+            }
         }
 
         return $this->showEmpresa(Centro::find($centro)->idEmpresa);
@@ -176,9 +177,9 @@ class InstructorController extends IntranetController
     {
         $instructor = Instructor::findOrFail($id);
         $centro = Centro::findOrFail($idCentro);
-        $posibles = hazArray($centro->Empresa->centros,'id',['nombre','direccion'],'-');
+        $posibles = hazArray($centro->Empresa->centros, 'id', ['nombre', 'direccion'], '-');
 
-        return view('instructor.copy',compact('instructor','posibles','centro'));
+        return view('instructor.copy', compact('instructor', 'posibles', 'centro'));
     }
 
     /**
@@ -205,13 +206,13 @@ class InstructorController extends IntranetController
     public function pdf($id)
     {
         $instructor = Instructor::findOrFail($id);
-        if ($instructor->surnames != ''){
+        if ($instructor->surnames != '') {
             $fcts = $instructor->Fcts;
-            $fecha = $this->ultima_fecha($fcts);
+            $fecha = $this->ultimaFecha($fcts);
             $secretario = Profesor::find(config(fileContactos().'.secretario'));
             $director = Profesor::find(config(fileContactos().'.director'));
-            $dades = ['date' => FechaString($fecha,'ca'),
-                'fecha' => FechaString($fecha,'es'),
+            $dades = ['date' => FechaString($fecha, 'ca'),
+                'fecha' => FechaString($fecha, 'es'),
                 'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
                 'secretario' => $secretario->FullName,
                 'centro' => config('contacto.nombre'),
@@ -222,11 +223,9 @@ class InstructorController extends IntranetController
             ];
             if ($fcts->count()==1) {
                 $pdf = $this->hazPdf('pdf.fct.instructor', $fcts->first(), $dades);
-            }
-            else
-            {
+            } else {
                 $centros = [];
-                foreach ($fcts as $fct){
+                foreach ($fcts as $fct) {
                     if (!in_array($fct->Colaboracion->idCentro, $centros)) {
                         $centros[] = $fct->Colaboracion->idCentro;
                     }
@@ -245,10 +244,10 @@ class InstructorController extends IntranetController
      * @param $fcts
      * @return \Date|Date|null
      */
-    private function ultima_fecha($fcts)
+    private function ultimaFecha($fcts)
     {
         $posterior = new Date();
-        foreach ($fcts as $fct){
+        foreach ($fcts as $fct) {
             $posterior = FechaPosterior($fct->hasta, $posterior);
         }
         return $posterior;
