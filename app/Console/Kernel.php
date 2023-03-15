@@ -46,9 +46,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('fct:Daily')
                 ->dailyAt('07:30');
         $schedule->command('sao:connect')
-            ->dailyAt('21:00');
+            ->dailyAt('23:00');
         $schedule->command('sao:annexes')
-            ->dailyAt('21:30');
+            ->dailyAt('07:00');
     }
 
     /**
