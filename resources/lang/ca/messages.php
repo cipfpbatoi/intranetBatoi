@@ -130,7 +130,7 @@ return array(
         'checkeada' => 'Comprobades',
         'aprobada' => 'Aprobades',
         'ciclo' => 'Cicle',
-        'departamento' => 'Departament',
+        'Departamento' => 'Departament',
         'baja' => 'Anul.lar Matricula',
         'tramitada' => 'Tramitats',
         'disponible' => 'Disponible',
@@ -305,7 +305,8 @@ return array(
         'Solicitud' => 'Remissió a Orientació',
         'Solicitudes' => 'Sol·licituts',
         'Fse' => 'Imprimir Acta FSE',
-        'Erasmus' => 'Empreses Erasmus'
+        'Erasmus' => 'Empreses Erasmus',
+        'Task' => 'Tasques',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

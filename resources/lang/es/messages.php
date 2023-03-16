@@ -125,7 +125,7 @@ return array(
         'checkeada' => 'Comprobadas',
         'aprobada' => 'Aprobadas',
         'ciclo' => 'Ciclo',
-        'departamento' => 'Departamento',
+        'Departamento' => 'Departamento',
         'baja' => 'Anular Matricula',
         'tramitada' => 'Tramitados',
         'disponible' => 'Disponible',
@@ -300,7 +300,8 @@ return array(
         'Solicitud' => 'Remisión a Orientación',
         'Solicitudes' => 'Solicitudes',
         'Fse' => 'Imprimir Acta FSE',
-        'Erasmus' => 'Empresas Erasmus'
+        'Erasmus' => 'Empresas Erasmus',
+        'Task' => 'Tareas',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
