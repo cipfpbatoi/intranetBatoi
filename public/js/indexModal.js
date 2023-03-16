@@ -10,6 +10,7 @@ $(function (modelo,formModal) {
         }
     })
     $("a.btn-primary.btn.txtButton").on("click", function () {
+        var formModal = $('.modal form');
         event.preventDefault();
         $('#id').val('');
         $('.form-horizontal')[0].reset();
