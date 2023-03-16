@@ -140,8 +140,9 @@ trait BatoiModels
     /**
      * @param Request $request
      */
-    public function fillFile($file){
-        if (!$file->isValid()){
+    public function fillFile($file)
+    {
+        if (!$file->isValid()) {
             Alert::danger(trans('messages.generic.invalidFormat'));
             return ;
         }
@@ -152,14 +153,15 @@ trait BatoiModels
         
     }
 
-    private function getDirectory($clase){
+    private function getDirectory($clase)
+    {
         return '/gestor/' . curso() . '/' . $clase;
     }
 
-    private function getFileName($extension,$clase)
+    private function getFileName($extension, $clase)
     {
         $nombre = isset($this->id)?$this->id.'_':'';
-        if (isset($this->fileField)){
+        if (isset($this->fileField)) {
             $field = $this->fileField;
             $nombre .= $this->$field.'_';
         }
@@ -171,7 +173,8 @@ trait BatoiModels
      * @param $value
      * @return mixed|string|null
      */
-    private function fillField($key, $value){
+    private function fillField($key, $value)
+    {
         $type = $this->inputTypes[$key]['type']??null;
         if ($type == 'date') {
             return (new Date($value))->format('Y-m-d');

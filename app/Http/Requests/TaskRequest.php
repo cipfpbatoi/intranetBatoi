@@ -24,8 +24,9 @@ class TaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'tipo' => 'required',
-            'departamento' => 'required'
+            'descripcion' => 'required|max:100',
+            'vencimiento' => 'required|date',
+            'destinatario' => 'required|numeric'
         ];
     }
 }

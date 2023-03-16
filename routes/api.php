@@ -79,6 +79,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('activity', 'ActivityController', ['except' => [ 'create']]);
     Route::resource('curso', 'CursoController', ['except' => [ 'create']]);
     Route::resource('ciclo', 'CicloController', ['except' => [ 'create']]);
+    Route::resource('task', 'TaskController', ['except' => [ 'create']]);
     Route::get('alumnoGrupoModulo/{dni}/{modulo}', 'AlumnoGrupoController@getModulo');
     
     Route::resource('horario', 'HorarioController', ['except' => [ 'create']]);

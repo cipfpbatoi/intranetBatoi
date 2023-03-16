@@ -2,26 +2,72 @@
 
 namespace Intranet\Http\Controllers;
 
-use DB;
-use ImportTableSeeder;
+
+use Intranet\Botones\BotonBasico;
+use Intranet\Botones\BotonImg;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Task;
-use Intranet\Entities\TipoReunion;
+
+use Intranet\Http\Requests\TaskRequest;
 
 
 /**
  * Class ImportController
  * @package Intranet\Http\Controllers
  */
-class TaskController extends Controller
+class TaskController extends ModalController
 {
     private $tarea;
     const ACTA_DELEGADO = 5;
     const ACTA_AVAL = 7;
     const ACTA_FSE = 9;
+    const ADMINISTRADOR = 'roles.rol.administrador';
+
+    /**
+     * @var string
+     */
+    protected $model = 'Task';
+    /**
+     * @var array
+     */
+    protected $gridFields = [ 'id','descripcion','vencimiento','destino','activa','accio'];
+
+    protected $formFields= [
+        'descripcion' => ['type' => 'text'],
+        'vencimiento' => ['type' => 'date'],
+        'fichero' => ['type' => 'file'],
+        'enlace' => ['type' => 'text'],
+        'destinatario' => ['type' => 'select'],
+        'informativa' => ['type' => 'checkbox'],
+        'activa' => ['type' => 'checkbox'],
+        'action' => ['type' => 'select'],
+    ];
+
+    protected function iniBotones()
+    {
+        $this->panel->setBoton('index', new BotonBasico('task.create', ['roles' => config(self::ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('task.show', ['roles' => config(self::ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('task.edit', ['roles' => config(self::ADMINISTRADOR)]));
+        $this->panel->setBoton('grid', new BotonImg('task.delete', ['roles' => config(self::ADMINISTRADOR)]));
+    }
+
+
+
+    public function store(TaskRequest $request)
+    {
+        $new = new Task();
+        $new->fillAll($request);
+        return $this->redirect();
+    }
+
+    public function update(TaskRequest $request, $id)
+    {
+        Task::findOrFail($id)->fillAll($request);
+        return $this->redirect();
+    }
 
     public function check($id)
     {

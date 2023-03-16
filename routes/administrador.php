@@ -26,7 +26,7 @@ Route::get('/modulo/asigna', ['as' => 'modulo.asigna', 'uses' => 'ModuloControll
 //enviament d'apitokens massiu
 Route::get('/apiToken', ['as' => 'profesor.apiToken', 'uses' => 'AdministracionController@allApiToken']);
 
-//manteniment taula cicle i departaments
+//manteniment taula cicle , departaments i tasquest
 Route::resource('/ciclo', 'CicloController', ['except' => ['destroy', 'update', 'show']]);
 Route::put('/ciclo/{ciclo}/edit', ['as' => 'ciclo.update', 'uses' => 'CicloController@update']);
 Route::get('/ciclo/{ciclo}/delete', ['as' => 'ciclo.destroy', 'uses' => 'CicloController@destroy']);
@@ -34,6 +34,11 @@ Route::get('/ciclo/{ciclo}/delete', ['as' => 'ciclo.destroy', 'uses' => 'CicloCo
 Route::resource('/departamento', 'DepartamentoController', ['except' => ['destroy', 'update', 'edit']]);
 Route::put('/departamento/{departamento}/edit', ['as' => 'departamento.update', 'uses' => 'DepartamentoController@update']);
 Route::get('/departamento/{departamento}/delete', ['as' => 'departamento.destroy', 'uses' => 'DepartamentoController@destroy']);
+
+Route::resource('/task', 'TaskController', ['except' => ['destroy', 'update', 'edit']]);
+Route::put('/task/{task}/edit', ['as' => 'task.update', 'uses' => 'TaskController@update']);
+Route::get('/task/{task}/delete', ['as' => 'task.destroy', 'uses' => 'TaskController@destroy']);
+
 
 //manteniment taula tipo incidencias
 Route::resource('/tipoincidencia', 'TipoIncidenciaController', ['except' => ['destroy', 'update', 'show']]);
