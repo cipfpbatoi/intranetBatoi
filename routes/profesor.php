@@ -513,8 +513,8 @@ Route::get('/sao/a2/{password}', ['as'=>'sao.a2', 'uses'=>'SaoA2Controller@index
 Route::post('/sao/importa', ['as' => 'sao.post.importa', 'uses' => 'SaoImportaController@importa']);
 Route::post('/sao/compara', ['as' => 'sao.post.compara', 'uses' => 'SaoComparaController@compara']);
 
-Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@login']);
-Route::get('/readFileByName/{name}',['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);
+//Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@login']);
+Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);
 /* Prova */
 Route::get('/signatura', ['as'=>'signatura','uses'=>SignaturaController::class]);
 
