@@ -2,7 +2,7 @@
 var modelo = $("#datatable").attr('name').toLowerCase();
 var formModal = $('.modal form');
 var token = $("#_token").text();
-$(function (modelo,formModal) {
+$(function () {
     $('#create').on('hidden.bs.modal', function () {
         var id=$(this).find('#id').val();
         if (id) {
