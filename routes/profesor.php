@@ -308,7 +308,6 @@ Route::post('/dual/{id}/informe', ['as' => 'dual.firma', 'uses' => 'DualControll
 Route::get('/dual/anexeVI', ['as'=>'dual.anexevi', 'uses'=>'DualController@printAnexeVI']);
 Route::get('/dual/anexeXIV', ['as'=>'dual.anexexiv', 'uses'=>'DualController@printAnexeXIV']);
 
-Route::get('/contacto', ['as' => 'contacto', 'uses' => 'ContactoController@index']);
 Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
 Route::put('/alumnofct/{id}/edit', ['as' => 'alumnofct.update', 'uses' => 'FctAlumnoController@update']);
 Route::get('/alumnofct/{id}/delete', ['as' => 'alumnofct.destroy', 'uses' => 'FctAlumnoController@destroy']);
