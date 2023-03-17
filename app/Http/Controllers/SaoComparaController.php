@@ -4,12 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use Exception;
 use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
-use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Fct;
 use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
