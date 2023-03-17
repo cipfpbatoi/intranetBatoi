@@ -7,9 +7,13 @@ use Illuminate\Support\Facades\App;
 
 class Departamento extends Model
 {
+    use BatoiModels;
 
     public $primaryKey = 'id';
     public $timestamps = false;
+    protected $fillable = [
+        'id', 'cliteral', 'vliteral', 'idProfesor','depcurt', 'didactico' ];
+    protected $inputTypes = [ 'didactico' => ['type' => 'checkbox'] ];
 
     public function Profesor()
     {
@@ -17,16 +21,21 @@ class Departamento extends Model
     }
     public function Modulo()
     {
-        return $this->belongstoMany(Modulo::class,'modulo_ciclos','idDepartamento','idModulo');
+        return $this->belongstoMany(Modulo::class, 'modulo_ciclos', 'idDepartamento', 'idModulo');
     }
     public function Jefe()
     {
-        return $this->belongsTo(Profesor::class,'idProfesor','dni');
+        return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
     
     public function getLiteralAttribute()
     {
         return App::getLocale(session('lang')) == 'es' ? $this->cliteral : $this->vliteral;
+    }
+
+    public function getidProfesorOptions()
+    {
+        return hazArray(Profesor::orderBy('departamento')->orderBy('apellido1')->all(), 'dni', 'fullName');
     }
 
 }

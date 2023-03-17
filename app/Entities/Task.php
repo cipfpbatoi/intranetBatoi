@@ -3,13 +3,28 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Jenssegers\Date\Date;
 
 
 class Task extends Model
 {
-    protected $casts = [
-        'vencimiento' => 'date'
+    use BatoiModels;
+    protected $fillable = [
+        'descripcion',
+        'vencimiento',
+        'destinatario',
+        'informativa',
+        'fichero',
+        'enlace',
+        'action',
+        'activa'
     ];
+    protected $inputTypes = [
+        'informativa' => ['type' => 'checkbox'],
+        'activa' => ['type' => 'checkbox'],
+        'vencimiento' => ['type' => 'date'],
+    ];
+
 
     public function Profesores()
     {
@@ -54,6 +69,14 @@ class Task extends Model
         return $this->fichero?'/storage/'.$this->fichero:$this->enlace;
     }
 
+    public function getVencimientoAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
+    }
+
+
+
     public function getImageAttribute()
     {
         if ($this->vencimiento <= hoy()) {
@@ -66,4 +89,26 @@ class Task extends Model
             }
         }
     }
+
+    public function getDestinoAttribute()
+    {
+        return config('roles.lor')[$this->destinatario];
+    }
+
+    public function getDestinatarioOptions()
+    {
+        return config('roles.lor');
+    }
+
+    public function getActionOptions()
+    {
+        return config('roles.actions');
+    }
+
+    public function getAccioAttribute()
+    {
+        return $this->action?config('roles.actions')[$this->action]:'';
+    }
+
+
 }

@@ -14,9 +14,8 @@ class DepartamentoController extends ApiBaseController
 
     public function index()
     {
-        $data = $this->class::where('didactico',1)->whereNotNull('idProfesor')->get();
-        return $this->sendResponse(['data' => JDepartamentoResource::collection($data)],'OK');
-
+        $data = $this->class::where('didactico', 1)->whereNotNull('idProfesor')->get();
+        return $this->sendResponse(['data' => JDepartamentoResource::collection($data)], 'OK');
     }
 
 }

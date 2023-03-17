@@ -26,7 +26,7 @@ abstract class ModalController extends Controller
     public function __construct()
     {
         parent::__construct();
-        $this->panel = new Panel($this->model, $this->gridFields,'grid.standard',true,$this->parametresVista);
+        $this->panel = new Panel($this->model, $this->gridFields, 'grid.standard', true, $this->parametresVista);
 
     }
 
@@ -50,13 +50,13 @@ abstract class ModalController extends Controller
         if (is_array($this->vista)) {
             $vista = $this->vista['index'] ??'intranet.indexModal';
         } else {
-            $vista = $this->vista ??'intranet.indexModal';;
+            $vista = $this->vista ??'intranet.indexModal';
         }
         return $this->panel->render(
             $this->search(),
             $this->titulo,
             $vista ,
-            new FormBuilder($this->createWithDefaultValues(),$this->formFields));
+            new FormBuilder($this->createWithDefaultValues(), $this->formFields));
     }
 
 
@@ -73,10 +73,10 @@ abstract class ModalController extends Controller
     public function destroy($id)
     {
         if ($elemento = $this->class::findOrFail($id)) {
-            if ($elemento->fichero && method_exists($this,'borrarFichero')) {
+            if ($elemento->fichero && method_exists($this, 'borrarFichero')) {
                 $this->borrarFichero($elemento->fichero);
             }
-            if (method_exists($this,'deleteAttached')){
+            if (method_exists($this, 'deleteAttached')) {
                 $this->deleteAttached($id);
             }
             $elemento->delete();
@@ -85,7 +85,8 @@ abstract class ModalController extends Controller
     }
 
 
-    protected function search(){
+    protected function search()
+    {
         $todos =  $this->class::all(); // carrega totes les dades de un model
         if (isset($todos->first()->idProfesor)) // Si existe profesor en el model limite la cerca a les seues
         {
@@ -102,9 +103,13 @@ abstract class ModalController extends Controller
     /*
      * Inicialitza el botons del grid
      */
-    protected function iniBotones(){}
+    protected function iniBotones()
+    {
 
-    protected function iniPestanas(){
+    }
+
+    protected function iniPestanas()
+    {
         // Pestana per al profile
         if ($this->profile && view()->exists('intranet.partials.profile.'.strtolower($this->model))) {
             $this->panel->setPestana('profile', false, null, null, null, null, $this->parametresVista);

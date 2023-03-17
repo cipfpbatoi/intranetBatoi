@@ -20,20 +20,20 @@
     <div class="container">
         <h5 style="text-align: center">DADES GENERALS FCT</h5>
         <p>Hola {{$elemento->Alumno->nombre}}. Com hem parlat en la reunió de preparació de les pràctiques de FCT
-            t'envie recordatori de les coses que has de tindre en compte durant este periode:</p>
+            t'envie recordatori de les coses que has de tindre en compte durant este període:</p>
         <ul style="list-style-type: square ; font-size: 13px">
-            <li>Has d'emplenar semanalment el teu diari de pràctiques (memòria) en el SAÓ que es troba a <a
-                        href="http://fct.edu.gva.es/">http://fct.edu.gva.es/</a>. La correcta complimentació et servirà
-                de memòria final de pràctiques de FCT.
+            <li>Has d'emplenar setmanalment el teu diari de pràctiques en el SAÓ que es troba a <a
+                        href="http://fct.edu.gva.es/">http://fct.edu.gva.es/</a>.
+                El seu correct ompliment et servirà per recordar millor les teues pràctiques de FCT.
             </li>
             <li>Una vegada al mes, ens reunirem tot el grup a l'institut per a comentar el desenvolupament de les
-                pràctiques. L'assistència a estes reunions és obligatòria i conta en el comput total d'hores de les
-                pràctiques. Us convocaré per correu electrònic amb antelació suficient.
+                pràctiques. L'assistència a estes reunions és obligatòria i compta en el còmput total d'hores de les
+                pràctiques. Et convocaré per correu electrònic amb antelació suficient.
             </li>
-            <li>També farè visites al centre de les que informaré al teu instructor.</li>
+            <li>També faré visites al centre de les quals informaré el teu instructor.</li>
             <li>Tens una assegurança de responsabilitat civil i d'accident laboral. La informació la trobaràs en aquest
                 <a href="https://ceice.gva.es/va/web/formacion-profesional/seguro">enllaç</a></li>
-            <li>Les tasques a realitzar a l'empresa seran las que es deriven de l'Annex III, que et donaré i on
+            <li>Les tasques a realitzar a l'empresa seran les que es deriven de l'Annex III, que et donaré i on
                 s'especifica el teu horari i les dades de l'empresa i instructor
             </li>
         </ul>

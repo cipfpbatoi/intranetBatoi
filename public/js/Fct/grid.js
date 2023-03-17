@@ -8,6 +8,7 @@ var day;
 var month;
 var tipo;
 
+
 $(function() {
     var token = $("#_token").text();
 
@@ -142,7 +143,8 @@ $(function() {
             let id = event.dataTransfer.getData('text/plain');
             let newFct = event.currentTarget;
             var token = $("#_token").text();
-            var nodeCopy = document.getElementById(id).parentElement.cloneNode(true);
+            const node = document.getElementById(id).parentElement;
+            const nodeCopy = node.cloneNode(true);
             if (confirm('Vas a copiar esta evidencia a una altra FCT')){
                 $.ajax({
                     method: "GET",
@@ -151,7 +153,10 @@ $(function() {
                     data: {api_token: token}
                 }).then(function (result) {
                     nodeCopy.firstElementChild.id = result.data.id;
+                    nodeCopy.firstElementChild.firstElementChild.classList.remove('fa-plus');
+                    nodeCopy.firstElementChild.firstElementChild.classList.add('fa-minus');
                     newFct.querySelector('.listActivity').appendChild(nodeCopy);
+                    location.reload();
                 }, function (result) {
                     alert("La sol·licitut no s'ha pogut completar: "+result.responseText);
                 });

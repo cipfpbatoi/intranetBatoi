@@ -57,7 +57,8 @@ class ComisionController extends ModalController
         return $this->redirect();
     }
 
-    public function confirm($id){
+    public function confirm($id)
+    {
         $comision = Comision::findOrFail($id);
         if ($comision->estado == 0) {
             return ConfirmAndSend::render($this->model, $id,'Enviar a direcció i correus confirmació');
@@ -84,7 +85,8 @@ class ComisionController extends ModalController
     }
 
 
-    protected function createWithDefaultValues( $default=[]){
+    protected function createWithDefaultValues($default=[])
+    {
         $manana = new Date('tomorrow');
         $manana->addHours(8);
         if (Fct::misFcts()->count()){
@@ -105,8 +107,8 @@ class ComisionController extends ModalController
         if (!$fct) {
             $comision->deleteInputType('fct');
         }
-        if (AuthUser()->dni == config('contacto.director')){
-            $comision->setInputType('idProfesor',["type" => "select"]);
+        if (AuthUser()->dni == config('contacto.director')) {
+            $comision->setInputType('idProfesor', ["type" => "select"]);
         }
         return $comision;
     }
@@ -121,23 +123,31 @@ class ComisionController extends ModalController
 
     }
 
-    private function sendEmail($elemento,$fecha)
+    private function sendEmail($elemento, $fecha)
     {
         if (file_exists(storage_path("tmp/visita_$elemento->id.ics"))){
             unlink(storage_path("tmp/visita_$elemento->id.ics"));
         }
 
-        $ini = buildFecha($fecha,$elemento->pivot->hora_ini);
-        $fin = buildFecha($fecha,$elemento->pivot->hora_ini);
+        $ini = buildFecha($fecha, $elemento->pivot->hora_ini);
+        $fin = buildFecha($fecha, $elemento->pivot->hora_ini);
         $fin->add(new \DateInterval("PT30M"));
 
-        file_put_contents(storage_path("tmp/visita_$elemento->id.ics"), CalendarService::render($ini,$fin,'Visita del Tutor CIPFPBatoi','Seguimiento Fct',$elemento->Centro)->render());
+        file_put_contents(
+            storage_path("tmp/visita_$elemento->id.ics"),
+            CalendarService::render(
+                $ini,
+                $fin,
+                'Visita del Tutor CIPFPBatoi',
+                'Seguimiento Fct',
+                $elemento->Centro
+            )->render());
         $attach = [ "tmp/visita_$elemento->id.ics" => 'text/calendar'];
         $documento = new DocumentoFct('visitaComision');
         $documento->fecha = $fecha;
 
 
-        $mail = new MyMail($elemento,$documento->view,$documento->email,$attach,'visita');
+        $mail = new MyMail($elemento, $documento->view, $documento->email, $attach,'visita');
         $mail->send($fecha);
 
     }
