@@ -16,7 +16,7 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-class SaoA2Controller extends SaoController
+class SaoA2Controller extends Controller
 {
 
     public function index($password)
