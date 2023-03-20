@@ -7,6 +7,7 @@
         <option value="sao.compara">Compara Dades de Centre i Empreses</option>
         <option value="sao.sync">Sincronitza hores realitzades per l'alumnat</option>
         <option value="sao.annexes">Baixa Annexes signats per a l'Intranet</option>
+        <option value="sao.signa">Signa Annexes per a l'Intranet (Pruebas No fuciona)</option>
         <option value="sao.a2">Baixa Annexes A2 per a signar (Pruebas No funciona)</option>
     </select>
     <br/>

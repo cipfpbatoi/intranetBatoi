@@ -16,4 +16,15 @@ class SignaturaService
             return $notFound;
         }
     }
+
+    public static function exists($dni)
+    {
+        return file_exists(storage_path().'/app/public/signatures/'.$dni.'.png');
+    }
+
+    public static function getFile($dni)
+    {
+        return "/Users/igomis/code/intranetBatoi/storage/app/public/signatures/$dni.png";
+        //return storage_path().'/app/public/signatures/'.$dni.'.png';
+    }
 }

@@ -510,6 +510,7 @@ Route::get('/sao/compara/{password}', ['as'=>'sao.compara', 'uses'=>'SaoComparaC
 Route::get('/sao/importa/{password}', ['as'=>'sao.importa', 'uses'=>'SaoImportaController@index']);
 Route::get('/sao/annexes/{password}', ['as'=>'sao.annexes', 'uses'=>'SaoAnnexesController@index']);
 Route::get('/sao/a2/{password}', ['as'=>'sao.a2', 'uses'=>'SaoA2Controller@index']);
+Route::get('/sao/signa/{password}', ['as'=>'sao.signa', 'uses'=>'SaoSignaturaController@index']);
 Route::post('/sao/importa', ['as' => 'sao.post.importa', 'uses' => 'SaoImportaController@importa']);
 Route::post('/sao/compara', ['as' => 'sao.post.compara', 'uses' => 'SaoComparaController@compara']);
 

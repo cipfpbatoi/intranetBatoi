@@ -55,7 +55,9 @@ class SaoSyncController
         } catch (Exception $e) {
             Alert::danger($e);
         }
-        $driver->close();
+        if (isset($driver)) {
+            $driver->close();
+        }
         return back();
     }
 

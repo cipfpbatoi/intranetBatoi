@@ -4,6 +4,8 @@ namespace Intranet\Services;
 
 
 
+use Facebook\WebDriver\Firefox\FirefoxOptions;
+use Facebook\WebDriver\Firefox\FirefoxProfile;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -20,7 +22,19 @@ class SeleniumService
     public static function loginSAO($dni, $password): RemoteWebDriver
     {
         try {
-            $driver = RemoteWebDriver::create(config('services.selenium.url'), DesiredCapabilities::firefox());
+            /*
+            if ($options) {
+                $desiredCapabilities = DesiredCapabilities::firefox();
+                $firefoxOptions = new FirefoxOptions();
+                $profile = $firefoxOptions->setProfile(new FirefoxProfile());
+                $profile->setPreference('dom.webnotifications.enabled', false);
+                $desiredCapabilities->setCapability(FirefoxOptions::CAPABILITY, $profile);
+                var_dump($desiredCapabilities);
+            } else {
+
+            }*/
+            $desiredCapabilities = DesiredCapabilities::firefox();
+            $driver = RemoteWebDriver::create(config('services.selenium.url'), $desiredCapabilities);
         } catch (\Exception $e) {
             throw new IntranetException('No s\'ha pogut connectar al servidor de Selenium');
         }
