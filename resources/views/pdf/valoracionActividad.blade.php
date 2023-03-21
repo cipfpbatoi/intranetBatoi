@@ -14,7 +14,8 @@
     <div style="display: inline-block;width: 45%">
         <strong>Nom de l'activitat:</strong><br/>{{$todos->name}}<br/>
         <strong>Professor Responsable:</strong><br/>{{$profesor->fullName}}<br/>
-        <strong>Departament:</strong><br/>{{$profesor->Departamento->vliteral}}<br/>
+        <strong>Departament:</strong><br/>
+        {{$profesor->Departamento?$profesor->Departamento->vliteral:'Desconegut'}}<br/>
     </div>
     <div style="display: inline-block;width: 45%;float: right">
         <strong>Data de l'activitat:</strong><br/>{{$todos->desde}}<br/>
@@ -24,7 +25,7 @@
         @endforeach
         <strong>Cicle:</strong><br/>
         @foreach ($todos->grupos as $grupo)
-            {{$grupo->Ciclo->vliteral}}<br/>
+            {{$grupo->Ciclo?$grupo->Ciclo->vliteral:'Desconegut'}}<br/>
         @endforeach
     </div>
     <h2 style="text-decoration: underline ">Valoració de l'activitat</h2>
