@@ -11,5 +11,18 @@ return [
         'vicedirector' => ['H' => 'EL SOTA-DIRECTOR','M' =>'LA SOTA-DIRECTORA'],
         'secretario' => ['H' => 'EL SECRETARI' , 'M' =>'LA SECRETÀRIA'],
         'jefeEstudios' => ['H' => "EL CAP D'ESTUDIS",'M' =>"LA CAP D'ESTUDIS"],
-    ]   
+    ],
+    'files' => [
+        'A2' => [
+            'owner' => [
+                'x' => 50 ,
+                'y' => 240,
+            ]],
+        'A3' => [
+            'owner' => [
+                'x' => 50 ,
+                'y' => 240,
+            ]
+        ]
+    ]
 ];

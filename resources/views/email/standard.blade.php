@@ -11,7 +11,6 @@
         </table>
     </div>
     <div>
-            <p>Hola, {{$elemento->contacto}}</p>
-            {!! $mail->view !!}
+            {!!  Illuminate\Support\Facades\Blade::render(replaceCachitos($mail->view), ['elemento' => $elemento])  !!}
     </div>
 @endsection

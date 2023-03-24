@@ -9,6 +9,8 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Grupo;
+use Intranet\Services\DigitalSignatureService;
+use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 
 
@@ -24,32 +26,32 @@ class SaoA2Controller extends Controller
         $grupo = Grupo::where('tutor', AuthUser()->dni)->first();
         $ciclo = $grupo->idCiclo??null;
 
-        $profile = new FirefoxProfile();
-        $caps = DesiredCapabilities::firefox();
-
-        $profile->setPreference('browser.download.folderList', 2);
-        $profile->setPreference('browser.download.dir', __DIR__.'/Downloads');
-        $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
-        $profile->setPreference('pdfjs.enabledCache.state', false);
-        $profile->setPreference('modifyheaders.headers.count', 1);
-        $profile->setPreference("modifyheaders.headers.action0", "Add");
-        $profile->setPreference("modifyheaders.headers.name0", "Content-Disposition"); # Set here the name of the header
-        $profile->setPreference("modifyheaders.headers.value0", "inline"); # Set here the value of the header
-        $profile->setPreference("modifyheaders.headers.enabled0", true);
-        $profile->setPreference("modifyheaders.config.active", true);
-        $profile->setPreference("modifyheaders.config.alwaysOn", true);
-        $caps->setCapability('firefox_profile', $profile);
-
-
         if (!$ciclo) {
             Alert::danger('No eres tutor');
             return redirect(route('alumnofct.index'));
         } else {
-            $driver = RemoteWebDriver::create($this->serverUrl, $caps);
+            $profile = new FirefoxProfile();
+            $profile->setPreference('browser.download.folderList', 2);
+            $profile->setPreference('browser.download.dir', '/Users/igomis/code/intranetBatoi/storage/tmp');
+            $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
+            $profile->setPreference('pdfjs.enabledCache.state', false);
+            $profile->setPreference('modifyheaders.headers.count', 1);
+            $profile->setPreference("modifyheaders.headers.action0", "Add");
+                # Set here the name of the header
+            $profile->setPreference("modifyheaders.headers.name0", "Content-Disposition");
+                # Set here the value of the header
+            $profile->setPreference("modifyheaders.headers.value0", "inline");
+            $profile->setPreference("modifyheaders.headers.enabled0", true);
+            $profile->setPreference("modifyheaders.config.active", true);
+            $profile->setPreference("modifyheaders.config.alwaysOn", true);
+
+            $caps = DesiredCapabilities::firefox();
+            $caps->setCapability('firefox_profile', $profile);
+            $driver = SeleniumService::loginSAO(AuthUser()->dni, $password, $caps);
             $driver->manage()->timeouts()->pageLoadTimeout(2);
             try {
-                $this->login($driver, $password);
-                $this->download_file_from_fcts($driver);
+                $this->download_file_from_fcts($driver, 2);
+                $this->download_file_from_fcts($driver, 3);
                 $driver->close();
             } catch (Exception $e) {
                 Alert::warning($e->getMessage());
@@ -57,6 +59,39 @@ class SaoA2Controller extends Controller
             }
         }
         return redirect(route('alumnofct.index'));
+    }
+
+    public function download_file_from_fcts(RemoteWebDriver $driver, $anexe)
+    {
+        $copyDirectory = storage_path('app/annexes/');
+        $tmpDirectory = storage_path('tmp/');
+        foreach (AlumnoFct::misFcts()->activa()->get() as $fctAl) {
+            try {
+                $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc={$anexe}&centro=59&idFct=$fctAl->idSao");
+            } catch (\Throwable $exception) {
+                if (file_exists($tmpDirectory."A{$anexe}.pdf")) {
+                    DigitalSignatureService::sign(
+                        $tmpDirectory."A{$anexe}.pdf",
+                        $copyDirectory."A{$anexe}_$fctAl->idSao.pdf",
+                        config('signatures.files.A{$anexe}.owner.x'),
+                        config('signatures.files.A{$anexe}.owner.y'),
+                    );
+                    unlink($tmpDirectory."A{$anexe}.pdf");
+                    /*if (rename(
+                        $tmpDirectory."A{$anexe}.pdf",
+                        $copyDirectory."A{$anexe}_$fctAl->idSao.pdf"
+                    )) {
+                        Alert::success("Descarregat el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");
+                    } else {
+                        Alert::warning("No s'ha pogut moure el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");
+                    }*/
+                } else {
+                    Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");
+                }
+                $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
+                sleep(1);
+            }
+        }
     }
 
 }

@@ -3,4 +3,3 @@
         <li> {{$alumno->fullName}} </li>
     @endforeach
 </ul>
-

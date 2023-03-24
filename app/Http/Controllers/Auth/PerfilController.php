@@ -54,7 +54,20 @@ abstract class PerfilController extends IntranetController
                     );
                 Alert::info('Signatura guardada amb exit');
             } else {
-                Alert::info('Formato no valido');
+                Alert::info('Format no vàlid');
+            }
+        }
+        if ($request->hasFile('peu')) {
+            if ($request->file('peu')->isValid()) {
+                $request->file('peu')
+                    ->storeAs(
+                        'peus',
+                        AuthUser()->dni.'.'.$request->file('peu')->getClientOriginalExtension(),
+                        'public'
+                    );
+                Alert::info('Peu guardat amb exit');
+            } else {
+                Alert::info('Format no vàlid');
             }
         }
         if ($request->rol) {

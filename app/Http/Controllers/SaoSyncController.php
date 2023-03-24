@@ -35,13 +35,13 @@ class SaoSyncController
                             $dadesHores->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText()
                         )[0];
                         if ($fct->realizadas != $horas) {
-                            $fct->realizadas = $horas;
+                            $fct->realizadas = (int) $horas;
                             list($diarias,$ultima) =
                                 $this->consultaDiario(
                                     $driver,
                                     $driver->findElement(WebDriverBy::cssSelector("#contenido"))
                                 );
-                            $fct->horas_diarias = $diarias;
+                            $fct->horas_diarias = (float)$diarias;
                             $fct->actualizacion = fechaSao(substr($ultima, 2, 10));
                             $fct->save();
                             $alumnes[] = $fct->Alumno->shortName;

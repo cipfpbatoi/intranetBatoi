@@ -1,0 +1,1 @@
+{{$elemento->contacto}}

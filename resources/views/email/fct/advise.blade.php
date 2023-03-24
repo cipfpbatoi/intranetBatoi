@@ -1,3 +1,4 @@
+Hola, {{$elemento->alumno->nombre}}
 <div style="text-align: justify">He comprovat que no omplis el teu diari des del dia {{ $elemento->actualizacion }}.
     L'omplir este diari és una obligació més de les teues pràctiques i
     a mi m'és molt útil per a vore la teua evolució dins de l'empresa.

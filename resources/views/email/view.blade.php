@@ -37,9 +37,11 @@
             @endif
         </div>
 
+
     <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#area">
         <div class="btn-group">
-            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+            <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>
+                &nbsp<b class="caret"></b></a>
             <ul class="dropdown-menu">
                 <li>
                     <a data-edit="fontSize 5">
@@ -74,10 +76,18 @@
         </div>
 
         <div class="btn-group">
-            <a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a>
-            <a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a>
-            <a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></a>
-            <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
+            <a class="btn" data-edit="justifyleft" title="Align Left (Ctrl/Cmd+L)">
+                <i class="fa fa-align-left"></i>
+            </a>
+            <a class="btn" data-edit="justifycenter" title="Center (Ctrl/Cmd+E)">
+                <i class="fa fa-align-center"></i>
+            </a>
+            <a class="btn" data-edit="justifyright" title="Align Right (Ctrl/Cmd+R)">
+                <i class="fa fa-align-right"></i>
+            </a>
+            <a class="btn" data-edit="justifyfull" title="Justify (Ctrl/Cmd+J)">
+                <i class="fa fa-align-justify"></i>
+            </a>
         </div>
 
         <div class="btn-group">

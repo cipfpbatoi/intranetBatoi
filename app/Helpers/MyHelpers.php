@@ -679,3 +679,16 @@ function provincia($codiPostal)
     }
 }
 
+function replaceCachitos($view)
+{
+    $pos1 = strpos($view, '[');
+    $pos2 = strpos($view, ']');
+    if ($pos1 === false || $pos2 === false) {
+        return $view;
+    }
+    $codiAInterpretrar = substr($view, $pos1 + 1, $pos2 - $pos1 - 1);
+    $codi = "@include('email.fct.cachitos." . $codiAInterpretrar . "')";
+    $view = str_replace('[' . $codiAInterpretrar . ']', $codi, $view);
+    return replaceCachitos($view);
+}
+

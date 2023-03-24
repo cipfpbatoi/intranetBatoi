@@ -36,12 +36,11 @@ return [
         'email' => [
             'subject' => "Recordatori inici de pràctiques",
             'toPeople' => 'Instructor',
-            'editable' => false,
+            'editable' => true,
             'register' => true
         ],
         'modelo' => 'Fct',
-        'view' => 'email.fct.info',
-        'template' =>'email.fct.infoU',
+        'template' =>'email.fct.info',
         'route' => 'fct',
         'fcts' => 1,
         'unique' => 1,
@@ -66,12 +65,11 @@ return [
         'email' => [
             'subject' => "Seguiment Pràctiques de FCT",
             'toPeople' => 'Instructor',
-            'editable' => false,
+            'editable' => true,
             'register' => true
         ],
         'modelo' => 'Fct',
-        'view' => 'email.fct.follow',
-        'template' =>  'email.fct.followU',
+        'template' =>  'email.fct.follow',
         'route' => 'fct',
         'fcts' => 1,
         'unique' => 0,

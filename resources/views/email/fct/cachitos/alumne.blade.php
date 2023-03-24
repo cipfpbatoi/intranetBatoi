@@ -1,0 +1,2 @@
+<strong>{{$alumno->fullName}}</strong>
+
