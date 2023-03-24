@@ -10,6 +10,6 @@
 </div>
 <div>Per qualsevol dubte em tens a la teua disposició</div>
 <div>Salutacions cordials de {{authUser()->shortName}}</div>
-
+[peu]
 
 

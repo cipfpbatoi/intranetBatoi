@@ -51,7 +51,7 @@ class SaoA2Controller extends Controller
             $driver->manage()->timeouts()->pageLoadTimeout(2);
             try {
                 $this->download_file_from_fcts($driver, 2);
-                $this->download_file_from_fcts($driver, 3);
+                //$this->download_file_from_fcts($driver, 3);
                 $driver->close();
             } catch (Exception $e) {
                 Alert::warning($e->getMessage());

@@ -17,6 +17,18 @@ class SignaturaService
         }
     }
 
+    public static function peu($dni)
+    {
+        if (file_exists(storage_path().'/app/public/peus/'.$dni.'.png')) {
+            $ruta = public_path('/storage/peus/'.$dni.'.png');
+            $img_base64 = base64_encode(file_get_contents($ruta));
+            return "<img alt='' style='width:440px;heigth:220px' src=".'"data:image/png;base64,'
+                .$img_base64.'"  />';
+        } else {
+            return '';
+        }
+    }
+
     public static function exists($dni)
     {
         return file_exists(storage_path().'/app/public/signatures/'.$dni.'.png');

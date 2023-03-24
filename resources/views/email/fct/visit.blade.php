@@ -5,3 +5,4 @@
 <div>Els horaris que em vendrien bé són:</div>
 <div>Ja em dius quan et vindria bé.</div>
 <div>Salutacions cordials de {{authUser()->shortName}}</div>
+[peu]
