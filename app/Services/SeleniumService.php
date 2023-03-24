@@ -19,21 +19,10 @@ class SeleniumService
      * @return RemoteWebDriver
      * @throws IntranetException
      */
-    public static function loginSAO($dni, $password): RemoteWebDriver
+    public static function loginSAO($dni, $password, $desiredCapabilities=null): RemoteWebDriver
     {
         try {
-            /*
-            if ($options) {
-                $desiredCapabilities = DesiredCapabilities::firefox();
-                $firefoxOptions = new FirefoxOptions();
-                $profile = $firefoxOptions->setProfile(new FirefoxProfile());
-                $profile->setPreference('dom.webnotifications.enabled', false);
-                $desiredCapabilities->setCapability(FirefoxOptions::CAPABILITY, $profile);
-                var_dump($desiredCapabilities);
-            } else {
-
-            }*/
-            $desiredCapabilities = DesiredCapabilities::firefox();
+            $desiredCapabilities = $desiredCapabilities??DesiredCapabilities::firefox();
             $driver = RemoteWebDriver::create(config('services.selenium.url'), $desiredCapabilities);
         } catch (\Exception $e) {
             throw new IntranetException('No s\'ha pogut connectar al servidor de Selenium');
