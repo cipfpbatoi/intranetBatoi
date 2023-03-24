@@ -58,7 +58,7 @@ class DepartamentoController extends ModalController
 
     protected function search()
     {
-        return  $this->class::all(); // carrega totes les dades de un model
+        return  Departamento::all(); // carrega totes les dades de un model
     }
 
 }
