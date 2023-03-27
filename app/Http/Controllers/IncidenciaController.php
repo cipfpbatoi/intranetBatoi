@@ -42,7 +42,8 @@ class IncidenciaController extends ModalController
     ];
 
 
-    protected function search(){
+    protected function search()
+    {
         return Incidencia::with('Tipos')
             ->with('Responsables')
             ->with('Creador')
@@ -56,8 +57,8 @@ class IncidenciaController extends ModalController
     protected function generarOrden($id)
     {
         $incidencia = Incidencia::findOrFail($id);
-        $orden = OrdenTrabajo::where('tipo',$incidencia->tipo)
-                ->where('estado',0)
+        $orden = OrdenTrabajo::where('tipo', $incidencia->tipo)
+                ->where('estado', 0)
                 ->where('idProfesor', AuthUser()->dni)
                 ->get()
                 ->first();
@@ -71,19 +72,21 @@ class IncidenciaController extends ModalController
         if ($incidencia->estado == 1) {
             return $this->accept($id);
         }
-        Session::put('pestana',$incidencia->estado);
+        Session::put('pestana', $incidencia->estado);
         return back();
     }
 
     /**
      * @param $incidencia
      */
-    protected function generateOrder(Incidencia $incidencia):OrdenTrabajo{
+    protected function generateOrder(Incidencia $incidencia):OrdenTrabajo
+    {
         $orden = new OrdenTrabajo();
         $orden->idProfesor = AuthUser()->dni;
         $orden->estado = 0;
         $orden->tipo = $incidencia->tipo;
-        $orden->descripcion = 'Ordre oberta el dia '.Hoy().' pel profesor '.AuthUser()->FullName.' relativa a '.$incidencia->Tipos->literal;
+        $orden->descripcion =
+            'Ordre oberta el dia '.Hoy().' pel profesor '.AuthUser()->FullName.' relativa a '.$incidencia->Tipos->literal;
         $orden->save();
         return $orden;
     }
@@ -108,7 +111,8 @@ class IncidenciaController extends ModalController
     public function edit($id)
     {
         $elemento = Incidencia::findOrFail($id);
-        $formulario = new FormBuilder($elemento,[
+        $formulario = new FormBuilder($elemento,
+            [
             'espacio' => ['disabled' => 'disabled'],
             'material' => ['disabled' => 'disabled'],
             'descripcion' => ['type' => 'textarea'],
@@ -117,9 +121,10 @@ class IncidenciaController extends ModalController
             'prioridad' => ['type' => 'select'],
             'observaciones' => ['type' => 'text'],
             'fecha' => ['type' => 'date']
-        ]);
+            ]
+        );
         $modelo = $this->model;
-        return view('intranet.edit', compact('formulario',  'modelo'));
+        return view('intranet.edit', compact('formulario',   'modelo'));
     }
 
 
@@ -127,7 +132,7 @@ class IncidenciaController extends ModalController
     {
         $new = new Incidencia();
         $new->fillAll($request);
-        Incidencia::putEstado($new->id,$this->init);
+        Incidencia::putEstado($new->id, $this->init);
         return $this->redirect();
     }
 
@@ -141,7 +146,7 @@ class IncidenciaController extends ModalController
         $elemento =  Incidencia::findOrFail($id);
         $tipo = $elemento->tipo;
         $elemento->fillAll($request);
-        if ($elemento->tipo != $tipo){
+        if ($elemento->tipo != $tipo) {
             $elemento->responsable =  $elemento->Tipos->idProfesor;
             $explicacion = "T'han assignat una incidència: " . $elemento->descripcion;
             $enlace = "/incidencia/" . $elemento->id . "/edit";

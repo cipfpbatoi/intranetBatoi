@@ -14,7 +14,16 @@ class Incidencia extends Model
 
     protected $table = 'incidencias';
     public $timestamps = false;
-    protected $fillable = ['tipo','espacio', 'material', 'descripcion', 'idProfesor',  'prioridad', 'observaciones','fecha'];
+    protected $fillable = [
+        'tipo',
+        'espacio',
+        'material',
+        'descripcion',
+        'idProfesor',
+        'prioridad',
+        'observaciones',
+        'fecha'
+    ];
     protected $descriptionField = 'descripcion';
 
     use BatoiModels;
@@ -95,7 +104,8 @@ class Incidencia extends Model
         return $this->Creador->ShortName;
     }
 
-    public function getXespacioAttribute(){
+    public function getXespacioAttribute()
+    {
         return $this->Espacios->descripcion ?? '';
     }
 
@@ -126,12 +136,13 @@ class Incidencia extends Model
 
         $elemento->estado = $estado;
         $elemento->save();
-        AdviseService::exec($elemento,$mensaje);
+        AdviseService::exec($elemento, $mensaje);
 
         return ($elemento->estado);
     }
 
-    public function getSubTipoAttribute(){
+    public function getSubTipoAttribute()
+    {
         return config('auxiliares.tipoIncidencia')[$this->Tipos->tipus];
     }
 
