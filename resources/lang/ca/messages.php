@@ -307,6 +307,7 @@ return array(
         'Fse' => 'Imprimir Acta FSE',
         'Erasmus' => 'Empreses Erasmus',
         'Task' => 'Tasques',
+        'Files' => "Fitxers personals",
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
