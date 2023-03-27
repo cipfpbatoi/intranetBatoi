@@ -13,23 +13,23 @@ const mesesCaduca=6;
      // Código para pintar los botones de la datatable
     var contenido="";
     if (admin) {
-        contenido+=            `<a href="#" class="delete">
+        contenido+=            `
+                <a href="#" class="edit">
+                    <i class="fa fa-pencil" title="Editar"></i>
+                </a> 
+                <a href="#" class="delete">
                     <i class="fa fa-trash" title="Borrar"></i>
                 </a>
                 `;
     }
-    contenido+=`            <a href="#" class="incidencia">
-                    <i class="fa fa-wrench" title="Crear incidencia"></i>                
-                </a>
+    contenido+=`
                 <a href="#" class="ver">
                     <i class="fa fa-eye" title="Ver"></i>                
                 </a>
     `;
     if (autorizado) {
         contenido+=` 
-                <a href="#" class="edit">
-                    <i class="fa fa-pencil" title="Editar"></i>
-                </a>       
+                     
                 <a href="#" class="ubicacion">
                     <i class="fa fa-map-marker" title="Cambiar ubicación"></i>                
                 </a>
