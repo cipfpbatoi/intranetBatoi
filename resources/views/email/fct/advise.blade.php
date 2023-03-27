@@ -5,4 +5,4 @@ Hola, {{$elemento->alumno->nombre}}
     a mi m'és molt útil per a vore la teua evolució dins de l'empresa.
     Si tens problemes d'accès a la plataforma no dubtes en possar-te en contacte amb mi. Gràcies per endavant.
 </div>
-<div>Salutacions cordials de {{authUser()->shortName}}</div>
+<div>Salutacions cordials.</div>

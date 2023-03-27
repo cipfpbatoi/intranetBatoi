@@ -9,6 +9,8 @@ Route::get('/logout', ['as' => 'logout', 'uses' => 'Auth\Profesor\LoginControlle
 
 Route::get('/perfil', ['as' => 'perfil.edit', 'uses' => 'Auth\Profesor\PerfilController@editar']);
 Route::put('/perfil', ['as' => 'perfil.update', 'uses' => 'Auth\Profesor\PerfilController@update']);
+Route::get('/files', ['as' => 'files.edit', 'uses' => 'Auth\Profesor\PerfilController@files']);
+Route::put('/files', ['as' => 'files.update', 'uses' => 'Auth\Profesor\PerfilController@updateFiles']);
 
 
 Route::resource('/actividad', 'ActividadController', ['except' => ['show', 'destroy']]);

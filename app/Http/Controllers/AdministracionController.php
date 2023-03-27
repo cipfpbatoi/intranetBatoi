@@ -206,23 +206,6 @@ class AdministracionController extends Controller
         }
     }
 
-    public function consulta()
-    {
-        $fcts = Fct::where('asociacion', '<', 3)->where('correoInstructor', 1)->get();
-        foreach ($fcts as $fct) {
-            $fin = false;
-            foreach ($fct->alFct as $fctAl) {
-                if (fechaInglesa($fctAl->hasta) > Hoy('Y-m-d')) {
-                    $fin = true;
-                }
-            }
-            if ($fin) {
-                $fct->correoInstructor = 0;
-                $fct->save();
-            }
-        }
-
-    }
 
     public static function v2_50()
     {

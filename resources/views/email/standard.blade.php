@@ -1,16 +1,7 @@
 @extends('layouts.email')
 @section('body')
-    <div>
-        <table style='text-align: center;border:#000 solid 1'>
-            <tr>
-                <th>{{$mail->toPeople}}</th>
-            </tr>
-            <tr>
-                <td><strong>De {{$mail->fromPerson}} del {{config('contacto.nombre')}} </strong></td>
-            </tr>
-        </table>
-    </div>
-    <div>
+    <div style="width: 800px; text-align: justify; font-size: larger">
+        <p><strong>De {{$mail->fromPerson}} del {{config('contacto.nombre')}} </strong></p>
         {!!  Illuminate\Support\Facades\Blade::render(replaceCachitos($mail->view), ['elemento' => $elemento])  !!}
     </div>
 @endsection

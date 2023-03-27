@@ -68,9 +68,12 @@ return array(
                 'show' => 'Datos Profesor',
                 'index' => 'Listado Profesores',
                 'list' => 'Profesores Ausentes',
-                'horario-cambiar' => 'Cambiar horario Professr',
-                'titulo' => 'Entrevistas FCTs de :quien'
-            
+                'horario-cambiar' => 'Cambiar horario Profesor',
+                'titulo' => 'Entrevistas FCTs de :quien',
+
+        ),
+        'profesor' => array(
+            'files' => "Ficheros del usuario",
         ),
         'Menu' => array(
                 'index' => 'Elementos del menú',

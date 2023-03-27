@@ -1,15 +1,13 @@
 <p>Hola, [contacte]</p>
-<div>T'escric per conèixer de primera ma com van les pràctiques FCT dels alumnes:
+<p>T'escric per conèixer de primera ma com van les pràctiques FCT dels alumnes:</p>
     [llistaAlumnes]
-</div>
-<div>Si tot està correcte et tornaria a contactar en aproximadament 15 dies per a fer una visita al centre de treball.
-</div>
-<div>Aprofite per recordar-te les meues dades per si necessites possar-te amb contacte amb mi:<br/>
-    Tutor: {{authUser()->fullName}} {{authUser()->email}} <br/>
-    Telèfon centre: {{ config('contacto.telefono') }} <br/>
-</div>
-<div>Per qualsevol dubte em tens a la teua disposició</div>
-<div>Salutacions cordials de {{authUser()->shortName}}</div>
+<p>Si tot està correcte et tornaria a contactar en aproximadament <strong>15 dies</strong> per a fer una <strong>visita</strong> al centre de treball.</p>
+<p>Aprofite per recordar-te les meues dades per si necessites possar-te amb contacte amb mi:</p>
+<ul style="list-style-type: none; font-weight: bolder">
+    <li>{{authUser()->email}}</li>
+    <li>{{ config('contacto.telefono') }}</li>
+</ul>
+<p>Per qualsevol dubte em tens a la teua disposició. Salutacions cordials.</p>
 [peu]
 
 

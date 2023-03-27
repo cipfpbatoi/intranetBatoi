@@ -7,10 +7,8 @@
 </table>
 <div>
     <table style=" border:#000 solid 1;">
-
         <tr><td><strong>Del departament de </strong>Qualitat</td></tr>
         <tr><td>{{ config('contacto.nombre')}}</td></tr>
-
     </table>
 </div>
 <div class="container" >
