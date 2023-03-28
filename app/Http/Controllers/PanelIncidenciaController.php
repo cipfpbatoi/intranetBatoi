@@ -14,7 +14,7 @@ class   PanelIncidenciaController extends BaseController
     protected $perfil = 'profesor';
     protected $model = 'Incidencia';
     protected $gridFields = ['Xestado', 'DesCurta', 'espacio', 'XCreador',
-        'XResponsable', 'Xtipo', 'fecha','observaciones','fechasolucion'];
+        'XResponsable', 'Xtipo', 'fecha','observaciones','fechasolucion','solucion'];
     protected $orden = 'fecha';
     protected $parametresVista = ['modal' => ['explicacion','aviso']];
     

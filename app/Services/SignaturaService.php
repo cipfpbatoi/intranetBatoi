@@ -27,9 +27,9 @@ class SignaturaService
         $name = $profesor->fileName.'.png';
         if (file_exists(storage_path().'/app/public/peus/'.$name)) {
             $ruta = public_path('/storage/peus/'.$name);
-            $img_base64 = base64_encode(file_get_contents($ruta));
+            $imgBase64 = chunk_split(base64_encode(file_get_contents($ruta)));
             return "<img alt='' style='max-witdh:75%;display:block;margin:auto' src=".'"data:image/png;base64,'
-                .$img_base64.'"  />';
+                .$imgBase64.'"  />';
         } else {
             return '';
         }

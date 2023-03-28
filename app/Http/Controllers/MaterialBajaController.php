@@ -20,19 +20,20 @@ class MaterialBajaController extends IntranetController
     /**
      * @var string
      */
-    protected $model = 'Material';
+    protected $model = 'MaterialBaja';
 
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'descripcion', 'espacio','fechabaja'];
+    protected $gridFields = ['id', 'descripcion', 'espacio','fechabaja',];
     /**
      * @var array
      */
 
 
 
-    public function search(){
-        return Material::where('inventariable',1)->where('estado',3)->get();
+    public function search()
+    {
+        return Material::where('inventariable', 1)->where('estado', 3)->get();
     }
 }

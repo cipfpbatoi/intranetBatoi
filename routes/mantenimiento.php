@@ -18,4 +18,4 @@ Route::get('/ordentrabajo/{orden}/pdf', ['as' => 'orden.pdf', 'uses' => 'OrdenTr
 Route::get('/ordentrabajo/{orden}/resolve', ['as' => 'orden.resolve', 'uses' => 'OrdenTrabajoController@resolve']);
 Route::get('/ordentrabajo/{orden}/open', ['as' => 'orden.open', 'uses' => 'OrdenTrabajoController@open']);
 
-Route::get('materialBaja',['as' => 'material.baja', 'uses' => 'MaterialBajaController@index']);
+Route::get('materialBaja', ['as' => 'material.baja', 'uses' => 'MaterialBajaController@index']);

@@ -11,7 +11,8 @@ use Jenssegers\Date\Date;
  * Trait traitPanel
  * @package Intranet\Http\Controllers
  */
-trait traitPanel{
+trait traitPanel
+{
 
     /**
      * @return mixed
@@ -20,9 +21,9 @@ trait traitPanel{
     {
         $todos = $this->search();
         $estados = config('modelos.'.$this->model.'.estados');
-        $this->crea_pestanas($estados,"profile.".strtolower($this->model));
+        $this->crea_pestanas($estados, "profile.".strtolower($this->model));
         $this->iniBotones();
-        Session::put('redirect','Panel'.$this->model.'Controller@index');
+        Session::put('redirect', 'Panel'.$this->model.'Controller@index');
         return $this->grid($todos);
     }
 
