@@ -31,7 +31,7 @@ abstract class BaseController extends Controller
     {
         parent::__construct();
         $this->panel = new Panel($this->model, $this->gridFields,
-                isset($this->vista['grid'])?'grid.'.$this->vista['grid']:'grid.standard',true,$this->parametresVista);
+                isset($this->vista['grid'])?'grid.'.$this->vista['grid']:'grid.standard', true,$this->parametresVista);
         
     }
     //seleciona vista para metodo, por defecto intranet
@@ -51,15 +51,16 @@ abstract class BaseController extends Controller
     }
     
     
-    protected function grid($todos,$modal=false)
+    protected function grid($todos, $modal=false)
     {
         if ($modal) {
-            return $this->panel->render($todos, $this->titulo, $this->chooseView('indexModal'), new FormBuilder($this->createWithDefaultValues(),$this->formFields));
+            return $this->panel->render($todos, $this->titulo, $this->chooseView('indexModal'), new FormBuilder($this->createWithDefaultValues(), $this->formFields));
         }
-        return $this->panel->render($todos,$this->titulo,$this->chooseView('index'));
+        return $this->panel->render($todos, $this->titulo, $this->chooseView('index'));
     }
 
-    protected function parametres(){
+    protected function parametres()
+    {
         return [];
     }
     /*  
@@ -74,11 +75,12 @@ abstract class BaseController extends Controller
         $this->iniBotones();
         $this->iniPestanas();
 
-        return $this->grid($this->search(),$this->modal);
+        return $this->grid($this->search(), $this->modal);
     }
 
-    public function confirm($id){
-        return ConfirmAndSend::render($this->model,$id);
+    public function confirm($id)
+    {
+        return ConfirmAndSend::render($this->model, $id);
     }
 
 
@@ -89,10 +91,11 @@ abstract class BaseController extends Controller
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
         $this->iniPestanas();
-        return $this->grid($this->search(),$this->modal);
+        return $this->grid($this->search(), $this->modal);
     }
     
-    protected function search(){
+    protected function search()
+    {
         $todos =  $this->class::all(); // carrega totes les dades de un model
         if (isset($todos->first()->idProfesor)) // Si existe profesor en el model limite la cerca a les seues
         {
@@ -113,14 +116,12 @@ abstract class BaseController extends Controller
     /*
      * Inicialitza el botons del grid
      */
-    protected function iniBotones(){}
-    protected function iniPestanas($parametres = null){
+    protected function iniBotones()
+    {}
+    protected function iniPestanas($parametres = null)
+    {
         if (view()->exists('intranet.partials.profile.'.strtolower($this->model))&&$this->profile) {
             $this->panel->setPestana('profile', false, null, null, null, null, $this->parametresVista);
         }
     }
-
-    
-
-    
 }

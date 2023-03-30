@@ -193,9 +193,12 @@ function authUser()
     return $usuario;
 }
 
-function apiAuthUser()
+function apiAuthUser($token=null)
 {
-    return Intranet\Entities\Profesor::where('api_token', $_GET['api_token']??'')->get()
+    if ($token==null) {
+        $token = $_GET['api_token'];
+    }
+    return Intranet\Entities\Profesor::where('api_token', $token)->get()
         ->first();
         //??Intranet\Entities\Profesor::find('021652470V');
 }

@@ -201,7 +201,7 @@ $(function () {
                         api_token: token,
                     },
                 }).then(function (res) {
-                    $inputEspacioTabla.text($("#espacios").val());
+                    $inputEspacioTabla.text(res.data.updated);
                     console.log(res)
                 }, function (res) {
                     console.log(res)
@@ -230,10 +230,9 @@ $(function () {
             var estadoMaterial = $inputEstadoMaterial.text();
 
             let dlgControls=[
-                {id: "Estado", type: "select"},
                 {id: "Explicacion", type: "textarea"},
             ];
-            $(".modal-title").text("Cambiar unidades");
+            $(".modal-title").text("Donar de Baixa");
             $(".modal-body").html(htmlDialog(dlgControls));
             $(".modal-footer").find("button[type=button]").text("Cancelar");
             $(".modal-footer").find("button[type=submit]").show().one("click", function() {
@@ -242,13 +241,13 @@ $(function () {
                     url: "/api/material/cambiarEstado",
                     data: {
                         id: idMaterial, 
-                        estado: $("#estado").val(), 
+                        estado: 3,
                         estado_antes: estadoMaterial, 
                         explicacion: $("#explicacion").val(),
                         api_token: token,
                     },
                 }).then(function (res) {
-                    $inputEstadoMaterial.text($("#estado").val());
+                    $inputEstadoMaterial.text(res.data.updated);
                     console.log(res)
                 }, function (res) {
                     console.log(res)

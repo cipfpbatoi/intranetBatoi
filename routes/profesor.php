@@ -12,6 +12,10 @@ Route::put('/perfil', ['as' => 'perfil.update', 'uses' => 'Auth\Profesor\PerfilC
 Route::get('/files', ['as' => 'files.edit', 'uses' => 'Auth\Profesor\PerfilController@files']);
 Route::put('/files', ['as' => 'files.update', 'uses' => 'Auth\Profesor\PerfilController@updateFiles']);
 
+Route::get('/materialbaja/{id}/delete', ['as' => 'material.delete', 'uses' => 'MaterialBajaController@delete']);
+Route::get('/materialbaja/{id}/resolve', ['as' => 'materialBaja.resolve', 'uses' => 'MaterialModController@resolve']);
+Route::get('/materialbaja/{id}/refuse', ['as' => 'materialBaja.refuse', 'uses' => 'MaterialModController@refuse']);
+
 
 Route::resource('/actividad', 'ActividadController', ['except' => ['show', 'destroy']]);
 Route::get('/actividad/{actividad}/delete', ['as' => 'actividad.destroy', 'uses' => 'ActividadController@destroy']);

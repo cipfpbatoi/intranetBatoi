@@ -310,13 +310,11 @@ class AdministracionController extends Controller
     public function consulta()
     {
         foreach (Material::where('inventariable', 1)->where('estado', 3)->get() as $material) {
-            $materialBaja = new MaterialBaja(['idMaterial' => $material->id, 'motivo' => 'Desconocida','estado' => 0 ]);
-            if ($material->fechabaja < '2022-12-31') {
-                $materialBaja->estado = 1;
-            } else {
-                $material->estado = 1;
-                $material->save();
-            }
+            $materialBaja = new MaterialBaja(
+                ['idMaterial' => $material->id, 'motivo' => 'Desconegut','estado' => 0 ]
+            );
+            $material->estado = 1;
+            $material->save();
             $materialBaja->save();
         }
     }

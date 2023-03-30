@@ -15,8 +15,11 @@ class CreateMaterialesBajaTable extends Migration
 	{
 		Schema::create('materiales_baja', function (Blueprint $table)
 		{
-            $table->integer('idMaterial')->unsigned()->index('materiales_foreign')->primary();
+            $table->id();
+            $table->integer('idMaterial')->unsigned()->index('materiales_foreign');
             $table->string('idProfesor', 10)->collation('utf8_unicode_ci')->nullable();
+            $table->tinyInteger('tipo')->nullable()->default(0);
+            $table->string('nuevoEstado', 10)->nullable();
             $table->string('motivo', 200)->nullable();
             $table->tinyInteger('estado')->nullable()->default(0);
             $table->timestamps();

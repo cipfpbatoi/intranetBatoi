@@ -66,9 +66,9 @@ class ApiBaseController extends Controller
         return $this->sendResponse($this->class::find($id));
     }
 
-    public function show($cadena,$send=true)
+    public function show($cadena, $send=true)
     {
-        if (!strpos($cadena, '=')&&!strpos($cadena, '>')&&!strpos($cadena, '<')&&!strpos($cadena, ']')&&!strpos($cadena, '[')) {
+        if (!strpos($cadena, '=') && !strpos($cadena, '>')&&!strpos($cadena, '<')&&!strpos($cadena, ']')&&!strpos($cadena, '[')) {
             $data = $this->class::find($cadena);
         }
         else {

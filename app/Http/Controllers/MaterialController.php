@@ -81,7 +81,7 @@ class MaterialController extends IntranetController
             'idProfesor' => AuthUser()->dni,
             'fecha' => Hoy()]);
         $incidencia->save();
-        Incidencia::putEstado($incidencia->id,1);
+        Incidencia::putEstado($incidencia->id, 1);
         return redirect()->route('incidencia.edit', ['incidencium' => $incidencia->id]);
     }
 

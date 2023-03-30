@@ -48,11 +48,13 @@ class InventarioController extends IntranetController
     ];
 
 
-    public function search(){
+    public function search()
+    {
         // empty
     }
 
-    function barcode(Request $request){
+    function barcode(Request $request)
+    {
         $materiales = collect();
         $ids = explode(',',$request->ids);
         foreach ($ids as $id){
@@ -63,7 +65,8 @@ class InventarioController extends IntranetController
     }
 
 
-    public function edit($id){
+    public function edit($id)
+    {
         $material = Inventario::findOrFail($id);
         if ($material->espacio == 'INVENT'){
             $formulario = new FormBuilder($material,[
@@ -85,7 +88,7 @@ class InventarioController extends IntranetController
      */
     public function espacio($espacio)
     {
-        if (Espacio::find($espacio)){
+        if (Espacio::find($espacio)) {
             $this->vista = ['index' => 'Espai'];
         } else {
             $this->vista = ['index' => 'Articulo'];

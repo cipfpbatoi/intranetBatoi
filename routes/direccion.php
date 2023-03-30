@@ -72,14 +72,16 @@ Route::post('/horarios/cambiar',['as' => 'horarios.cambiar', 'uses' => 'HorarioC
 
 Route::get('/documento',['as'=> 'documentosP.index','uses' => 'PanelDocumentoController@index']);
 
-Route::get('/myMail','MyMailController@create');
-Route::post('/myMail','MyMailController@store');
+Route::get('/myMail', 'MyMailController@create');
+Route::post('/myMail', 'MyMailController@store');
 
-Route::resource('/lote','LoteController', ['except' => ['destroy', 'update','show']]);
-Route::post('/lote/create',['as' => 'lote.store','uses'=> 'LoteController@store']);
-Route::get('/lote/{id}/print/{posicion?}',['as' => 'lote.print','uses' => 'LoteController@print']);
-Route::get('/lote/{id}/capture',['as' => 'lote.capture','uses' => 'LoteController@capture']);
-Route::post('/lote/{id}/capture',['as' => 'lote.capture','uses' => 'LoteController@postcapture']);
+Route::resource('/lote', 'LoteController', ['except' => ['destroy', 'update','show']]);
+Route::post('/lote/create', ['as' => 'lote.store','uses'=> 'LoteController@store']);
+Route::get('/lote/{id}/print/{posicion?}', ['as' => 'lote.print','uses' => 'LoteController@print']);
+Route::get('/lote/{id}/capture', ['as' => 'lote.capture','uses' => 'LoteController@capture']);
+Route::post('/lote/{id}/capture', ['as' => 'lote.capture','uses' => 'LoteController@postcapture']);
+
+Route::get('/materialBaja', ['as' => 'materialBaja.direccion.index','uses' => 'MaterialModController@index']);
 
 Route::view('/guardia/control', 'guardias.control');
 

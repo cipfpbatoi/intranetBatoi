@@ -336,4 +336,10 @@ class Profesor extends Authenticatable
 
     }
 
+    public function getSubstitutAttribute()
+    {
+        $substitut = $this->Sustituye??null;
+        return isset($substitut->fullName)?$substitut->fullName:'';
+    }
+
 }
