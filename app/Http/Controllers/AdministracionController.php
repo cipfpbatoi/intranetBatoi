@@ -309,7 +309,6 @@ class AdministracionController extends Controller
 
     public function consulta()
     {
-        /*
         foreach (Material::where('inventariable', 1)->where('estado', 3)->get() as $material) {
             $materialBaja = new MaterialBaja(
                 ['idMaterial' => $material->id, 'motivo' => 'Desconegut','estado' => 0 ]
@@ -317,13 +316,7 @@ class AdministracionController extends Controller
             $material->estado = 1;
             $material->save();
             $materialBaja->save();
-        }*/
-        foreach (MaterialBaja::all() as $materialBaja) {
-            $material = Material::find($materialBaja->idMaterial);
-            if ($material->estado == 1) {
-                $material->estado = 3;
-                $material->save();
-            }
         }
+        return back();
     }
 }
