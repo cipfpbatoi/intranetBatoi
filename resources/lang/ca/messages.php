@@ -308,6 +308,7 @@ return array(
         'Erasmus' => 'Empreses Erasmus',
         'Task' => 'Tasques',
         'Files' => "Fitxers personals",
+        'PropuestaBaja' => 'Canvis proposats Inventari',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

@@ -92,7 +92,11 @@ return array(
         ),
         'Inventario' => array(
             'espacios' => 'Vore Espais',
-            'materiales' => 'Vore Materials'
+            'materiales' => 'Vore Materials',
+            'index' => 'Gestionar Inventari',
+        ),
+        'Materialbaja' => array(
+            'index' => 'Gestionar Moviments',
         ),
         'Alumno_curso' => array(
             'index' => 'Alumnat Curs',

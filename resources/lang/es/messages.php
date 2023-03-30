@@ -303,6 +303,7 @@ return array(
         'Erasmus' => 'Empresas Erasmus',
         'Task' => 'Tareas',
         'Files' => "Ficheros personales",
+        'PropuestaBaja' => 'Cambios Propuestos Inventario',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

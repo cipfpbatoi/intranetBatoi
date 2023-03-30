@@ -89,7 +89,11 @@ return array(
         ),
         'Inventario' => array(
             'espacios' => 'Ver Espacios',
-            'materiales' => 'Ver Materiales'
+            'materiales' => 'Ver Materiales',
+            'index' => 'Gestionar Inventario',
+        ),
+        'Materialbaja' => array(
+            'index' => 'Gestionar Movimientos',
         ),
         'Alumno_curso' => array(
             'index' => 'Alumnos Curso',
