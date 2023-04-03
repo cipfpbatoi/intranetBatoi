@@ -36,7 +36,14 @@ class MaterialBajaController extends ModalController
 
     public function search()
     {
-        return MaterialBaja::where('estado', 1)->where('tipo', 0)->get();
+        if (esRol(authUser()->rol, config(self::ROLES_ROL_DIRECCION))) {
+            return MaterialBaja::where('estado', 1)->where('tipo', 0)->get();
+        } else {
+            return MaterialBaja::whereHas('material.espacios', function ($query) {
+                    $query->where('idDepartamento', AuthUser()->departamento);
+            })->where('estado', 1)->where('tipo', 0)->where('idProfesor', AuthUser()->dni)->get();
+        }
+
     }
 
     public function iniBotones()
@@ -45,17 +52,6 @@ class MaterialBajaController extends ModalController
             'grid',
             new BotonImg('materialBaja.show')
         );
-        /*
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'materialBaja.active',
-                [
-                    'roles' => config(self::ROLES_ROL_DIRECCION),
-                    'where' => ['estado','==',0]
-                ]
-            )
-        );*/
         $this->panel->setBoton(
             'grid',
             new BotonImg(

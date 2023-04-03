@@ -61,30 +61,26 @@ class SaoA2Controller extends Controller
         return redirect(route('alumnofct.index'));
     }
 
-    public function download_file_from_fcts(RemoteWebDriver $driver, $anexe)
+    public function download_file_from_fcts(RemoteWebDriver $driver, $anexe, $password = 'EICLMP5_a')
     {
         $copyDirectory = storage_path('app/annexes/');
         $tmpDirectory = storage_path('tmp/');
+        $files = DigitalSignatureService::getFilesNameCertificate(authUser());
+        DigitalSignatureService::decryptCertificate($files['crypt'], $files['decrypt'], $password);
         foreach (AlumnoFct::misFcts()->activa()->get() as $fctAl) {
             try {
                 $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc={$anexe}&centro=59&idFct=$fctAl->idSao");
             } catch (\Throwable $exception) {
                 if (file_exists($tmpDirectory."A{$anexe}.pdf")) {
+
                     DigitalSignatureService::sign(
                         $tmpDirectory."A{$anexe}.pdf",
                         $copyDirectory."A{$anexe}_$fctAl->idSao.pdf",
-                        config('signatures.files.A{$anexe}.owner.x'),
-                        config('signatures.files.A{$anexe}.owner.y'),
+                        config("signatures.files.A{$anexe}.owner.x"),
+                        config("signatures.files.A{$anexe}.owner.y"),
+                        $files['decrypt'],
                     );
                     unlink($tmpDirectory."A{$anexe}.pdf");
-                    /*if (rename(
-                        $tmpDirectory."A{$anexe}.pdf",
-                        $copyDirectory."A{$anexe}_$fctAl->idSao.pdf"
-                    )) {
-                        Alert::success("Descarregat el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");
-                    } else {
-                        Alert::warning("No s'ha pogut moure el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");
-                    }*/
                 } else {
                     Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");
                 }
@@ -92,6 +88,6 @@ class SaoA2Controller extends Controller
                 sleep(1);
             }
         }
+        unlink($files['decrypt']);
     }
-
 }

@@ -13,8 +13,9 @@ use Jenssegers\Date\Date;
 
 class MaterialController extends ApiBaseController
 {
-
+    const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
     protected $model = 'Material';
+
 
     function getMaterial($espacio)
     {
@@ -23,11 +24,21 @@ class MaterialController extends ApiBaseController
 
     function inventario()
     {
-        $data = Material::where('inventariable', 1)
+        if (esRol(apiAuthUser($_GET['api_token'])->rol, config(self::ROLES_ROL_DIRECCION))) {
+            $data = Material::where('inventariable', 1)
+                    ->where('espacio', '<>', 'INVENT')
+                    ->where('estado', '<', 3)
+                    ->whereNotNull('articulo_lote_id')
+                    ->get();
+        } else {
+            $data = Material::whereHas('espacios', function ($query) {
+                $query->where('idDepartamento', apiAuthUser($_GET['api_token'])->departamento);
+            })->where('inventariable', 1)
                 ->where('espacio', '<>', 'INVENT')
                 ->where('estado', '<', 3)
                 ->whereNotNull('articulo_lote_id')
                 ->get();
+        }
         return $this->sendResponse(MaterialResource::collection($data), 'OK');
     }
 
@@ -36,8 +47,6 @@ class MaterialController extends ApiBaseController
         $data = Material::where('inventariable', 0)->get();
         return $this->sendResponse($data, 'OK');
     }
-
-
 
     public function put(Request $request)
     {

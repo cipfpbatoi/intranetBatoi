@@ -21,11 +21,15 @@
             <td>
                 <img style="max-width: 50%" src="{{'/storage/peus/'.$profesor->fileName.'.png'}}" alt="peu" />
             </td>
-            <td></td>
+            <td>
+                @if(file_exists(storage_path('app/certificats/'.$profesor->fileName.'.tmp')))
+                   <img src="/img/certificat_digital.png" alt="digital carregat" />
+                @endif
+            </td>
             <td></td>
         </tr>
         <tr>
-            <form method="post" action="{{route('files.update')}}" enctype="multipart/form-data">
+            <form id="formulari" method="post" action="{{route('files.update')}}" enctype="multipart/form-data">
                 {{csrf_field()}}
                 @method('PUT')
                 <td>
@@ -38,7 +42,9 @@
                     <input type="file" name="peu" />
                 </td>
                 <td>
-                    <input type="file" name="certificat_digital" />
+                    <input id='certificat' type="file" name="certificat_digital" />
+                    <label for="password">Login usuari:</label>
+                    <input type="password" id="password" name="password" />
                 </td>
                 <td>
                     <input type="submit" value="Enviar" />
@@ -59,6 +65,7 @@
         </tr>
     </table>
 @endsection
+
 @section('titulo')
     {{trans("models.profesor.files")}}
 @endsection
