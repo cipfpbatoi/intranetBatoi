@@ -16,6 +16,7 @@ class EspacioController extends ModalController
     use traitImprimir;
 
     const DIRECCION = 'roles.rol.direccion';
+
     /**
      * @var string
      */
@@ -34,6 +35,14 @@ class EspacioController extends ModalController
         'reservable' => ['type' => 'checkbox'],
     ];
 
+    public function search()
+    {
+        if (esRol(authUser()->rol, config(self::DIRECCION))) {
+            return Espacio::all();
+        } else {
+            return Espacio::where('idDepartamento', AuthUser()->departamento)->get();
+        }
+    }
 
     public function store(EspacioRequest $request)
     {
@@ -44,7 +53,7 @@ class EspacioController extends ModalController
 
     public function update(EspacioRequest $request, $id)
     {
-        $espacio = Espacio::findOrFail($id)->fillAll($request);
+        Espacio::findOrFail($id)->fillAll($request);
         return $this->redirect();
     }
 
@@ -66,13 +75,27 @@ class EspacioController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('inventario.detalle'));
         $this->panel->setBoton('grid', new BotonImg('espacio.edit', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid', new BotonImg('espacio.delete', ['roles' => config(self::DIRECCION)]));
-        $this->panel->setBoton('grid', new BotonImg('espacio.barcode', ['class'=>'QR','img'=>'fa-barcode','roles' => config(self::DIRECCION)]));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'espacio.barcode',
+                ['class'=>'QR','img'=>'fa-barcode','roles' => config(self::DIRECCION)]
+            )
+        );
 
     }
 
-    public function barcode($id,$posicion=1){
+    public function barcode($id, $posicion=1)
+    {
         $espacio = Espacio::findOrFail($id);
-        return $this->hazPdf('pdf.inventario.lote',$espacio->Materiales,$posicion,'portrait',[210,297],5)->stream();
+        return $this->hazPdf(
+            'pdf.inventario.lote',
+            $espacio->Materiales,
+            $posicion,
+            'portrait',
+            [210, 297],
+            5
+        )->stream();
     }
 
 
