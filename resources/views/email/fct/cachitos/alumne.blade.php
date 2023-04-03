@@ -1,2 +1,2 @@
-<strong>{{$elemento->Alumno->fullName}}</strong>
+<strong>{{$elemento->Alumno?$elemento->Alumno->fullName:'---------------'}}</strong>
 
