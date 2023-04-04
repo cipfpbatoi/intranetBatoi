@@ -13,6 +13,8 @@ document.getElementById('formulari').addEventListener('submit', function(e) {
             alert('El fitxer no és un certificat digital');
             return;
         }
+    } else {
+        this.submit();
     }
 });
 

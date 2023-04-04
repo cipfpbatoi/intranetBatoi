@@ -3,7 +3,6 @@
 namespace Intranet\Http\Controllers;
 
 use Exception;
-use Facebook\WebDriver\Firefox\FirefoxDriver;
 use Facebook\WebDriver\Firefox\FirefoxProfile;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -50,8 +49,11 @@ class SaoA2Controller extends Controller
             $driver = SeleniumService::loginSAO(AuthUser()->dni, $password, $caps);
             $driver->manage()->timeouts()->pageLoadTimeout(2);
             try {
-                $this->download_file_from_fcts($driver, 2);
-                //$this->download_file_from_fcts($driver, 3);
+                $nameFile = AuthUser()->fileName;
+                $file = DigitalSignatureService::decryptCertificate($nameFile, 'EICLMP5_a');
+                $this->download_file_from_fcts($driver, 2, $file);
+                $this->download_file_from_fcts($driver, 3, $file);
+                unlink($file);
                 $driver->close();
             } catch (Exception $e) {
                 Alert::warning($e->getMessage());
@@ -61,26 +63,28 @@ class SaoA2Controller extends Controller
         return redirect(route('alumnofct.index'));
     }
 
-    public function download_file_from_fcts(RemoteWebDriver $driver, $anexe, $password = 'EICLMP5_a')
+    public function download_file_from_fcts(RemoteWebDriver $driver, $anexe, $certFile, $passCert = 'EICLMP5_a')
     {
         $copyDirectory = storage_path('app/annexes/');
         $tmpDirectory = storage_path('tmp/');
-        $files = DigitalSignatureService::getFilesNameCertificate(authUser());
-        DigitalSignatureService::decryptCertificate($files['crypt'], $files['decrypt'], $password);
         foreach (AlumnoFct::misFcts()->activa()->get() as $fctAl) {
             try {
                 $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc={$anexe}&centro=59&idFct=$fctAl->idSao");
             } catch (\Throwable $exception) {
-                if (file_exists($tmpDirectory."A{$anexe}.pdf")) {
-
+                $tmpFile = $tmpDirectory."A{$anexe}.pdf";
+                $saveFile = $copyDirectory."A{$anexe}_$fctAl->idSao.pdf";
+                $x = config("signatures.files.A{$anexe}.owner.x");
+                $y = config("signatures.files.A{$anexe}.owner.y");
+                if (file_exists($tmpFile)) {
                     DigitalSignatureService::sign(
-                        $tmpDirectory."A{$anexe}.pdf",
-                        $copyDirectory."A{$anexe}_$fctAl->idSao.pdf",
-                        config("signatures.files.A{$anexe}.owner.x"),
-                        config("signatures.files.A{$anexe}.owner.y"),
-                        $files['decrypt'],
+                        $tmpFile,
+                        $saveFile,
+                        $x,
+                        $y,
+                        $certFile,
+                        $passCert
                     );
-                    unlink($tmpDirectory."A{$anexe}.pdf");
+                    unlink($tmpFile);
                 } else {
                     Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");
                 }
@@ -88,6 +92,5 @@ class SaoA2Controller extends Controller
                 sleep(1);
             }
         }
-        unlink($files['decrypt']);
     }
 }

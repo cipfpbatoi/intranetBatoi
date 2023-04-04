@@ -1,2 +1,1 @@
-<strong>{{$elemento->Alumno?$elemento->Alumno->fullName:'---------------'}}</strong>
-
+<strong>{{$elemento->Alumno?$elemento->Alumno->fullName:$elemento->Alumnos->first()->fullName}}</strong>

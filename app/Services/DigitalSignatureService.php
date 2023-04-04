@@ -3,7 +3,6 @@
 namespace Intranet\Services;
 
 use Illuminate\Encryption\Encrypter;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\File;
 use LSNepomuceno\LaravelA1PdfSign\ManageCert;
 use LSNepomuceno\LaravelA1PdfSign\SealImage;
@@ -22,30 +21,37 @@ class DigitalSignatureService
         return $cert;
     }
 
-    public static function cryptCertificate($certificat, $file, $password)
+    public static function cryptCertificate($certificat, $fileName, $password)
     {
-        $customKey = substr('base64:'.$password.config('app.key'), 0, 32);
-        $encrypter = new Encrypter($customKey, config('app.cipher'));
+        $file = self::getFileNameCrypt($fileName);
+        $encrypter = self::getEncrypter($password);
         $content = $encrypter->encryptString(base64_encode(file_get_contents($certificat)));
         file_put_contents($file, $content);
     }
 
 
-    public static function decryptCertificate($file, $certificat, $password)
+
+    public static function decryptCertificate($fileName, $password)
     {
-        $customKey = substr('base64:'.$password.config('app.key'), 0, 32);
-        $encrypter = new Encrypter($customKey, config('app.cipher'));
-        $fileContent = file_get_contents($file);
+        $cryptfile = self::getFileNameCrypt($fileName);
+        $decryptfile = self::getFileNameDeCrypt($fileName);
+        $encrypter = self::getEncrypter($password);
+        $fileContent = file_get_contents($cryptfile);
         $cert = base64_decode($encrypter->decryptString($fileContent));
-        File::put($certificat, $cert);
+        File::put($decryptfile, $cert);
+        return $decryptfile;
     }
 
-    public static function getFilesNameCertificate($profesor)
+
+
+    public static function getFileNameCrypt($fileName)
     {
-       return [
-           'crypt' => storage_path('app/certificats/'.$profesor->fileName.'.tmp'),
-           'decrypt' => storage_path('app/certificats/'.$profesor->fileName.'.pfx')
-       ];
+       return  storage_path('app/certificats/'.$fileName.'.tmp');
+    }
+
+    public static function getFileNameDeCrypt($fileName)
+    {
+        return storage_path('app/certificats/'.$fileName.'.pfx');
     }
 
 
@@ -61,7 +67,7 @@ class DigitalSignatureService
         $coordx,
         $coordy,
         $filecrt,
-        $passCert='EICLMP5_a'
+        $passCert
     )
     {
         try {
@@ -82,5 +88,15 @@ class DigitalSignatureService
         } catch (\Throwable $th) {
             Alert::danger($th->getMessage().' '.$th->getLine().' '.$th->getFile());
         }
+    }
+
+    /**
+     * @param $password
+     * @return Encrypter
+     */
+    private static function getEncrypter($password): Encrypter
+    {
+        $customKey = substr('base64:'.$password.config('app.key'), 0, 32);
+        return new Encrypter($customKey, config('app.cipher'));
     }
 }

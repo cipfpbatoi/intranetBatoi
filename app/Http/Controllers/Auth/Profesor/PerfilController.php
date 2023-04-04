@@ -2,10 +2,8 @@
 
 namespace Intranet\Http\Controllers\Auth\Profesor;
 
-use Illuminate\Encryption\Encrypter;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
@@ -13,8 +11,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\PerfilFilesRequest;
 use Intranet\Services\DigitalSignatureService;
 use Styde\Html\Facades\Alert;
-use Defuse\Crypto\Crypto;
-use Defuse\Crypto\Key;
+
 
 class PerfilController extends Perfil
 {
@@ -72,9 +69,11 @@ class PerfilController extends Perfil
         if ($request->hasFile('certificat_digital')) {
             if ($request->file('certificat_digital')->isValid()) {
                 if (Hash::check($request->password, $new->password)) {
+                    $cert = $request->file('certificat_digital')->getRealPath();
+                    $nameFile = $new->fileName;
                     DigitalSignatureService::cryptCertificate(
-                        $request->file('certificat_digital')->getRealPath(),
-                        storage_path('app/certificats/'.$new->fileName.'.tmp'),
+                        $cert,
+                        $nameFile,
                         $request->password
                     );
                     Alert::info('Certificat guardat amb exit');
