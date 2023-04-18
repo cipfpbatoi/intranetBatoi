@@ -17,12 +17,10 @@ class Signatura extends Model
         'idProfesor',
         'idSao',
         'sendTo',
-        'from',
     ];
 
     public function Fct()
     {
         return $this->belongsTo(AlumnoFct::class, 'idSao', 'idSao');
     }
-    
 }

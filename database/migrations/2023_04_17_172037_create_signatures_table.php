@@ -20,7 +20,6 @@ class CreateMaterialesBajaTable extends Migration
             $table->string('idProfesor', 10)->collation('utf8_unicode_ci');
             $table->string('idSao', 8)->collation('utf8_unicode_ci');
             $table->string('sendTo', 60);
-            $table->string('from', 60);
             $table->boolean('signed')->default(0);
             $table->timestamps();
             $table->foreign('idProfesor')
