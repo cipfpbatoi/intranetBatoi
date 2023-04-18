@@ -69,8 +69,9 @@ class Resultado extends Model
     }
     public function scopeDepartamento($query, $dep)
     {
-        $profesores = Profesor::select('dni')->where('departamento', $dep)->get()->toarray();
-        return $query->whereIn('idProfesor', $profesores);
+        $modulos = Modulo_ciclo::select('id')->where('idDepartamento', $dep)->get()->toArray();
+        $modulosGrupos = Modulo_grupo::select('id')->whereIn('idModuloCiclo', $modulos)->get()->toArray();
+        return $query->whereIn('idModuloGrupo', $modulosGrupos);
     }
     public function scopeTrimestreCurso($query, $trimestre, $ciclo, $curso)
     {

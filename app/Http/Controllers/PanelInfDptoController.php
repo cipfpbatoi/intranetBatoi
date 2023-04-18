@@ -1,6 +1,7 @@
 <?php
 
 namespace Intranet\Http\Controllers;
+
 use Intranet\Entities\Reunion;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\Panel;
@@ -19,8 +20,10 @@ class PanelInfDptoController extends BaseController
     {
         return Reunion::Tipo(10)->with('Departament')->get();
     }
-    protected function iniPestanas($parametres = null){
-        $this->panel->setPestana('profile', true,null,null,null,true);
+
+    protected function iniPestanas($parametres = null)
+    {
+        $this->panel->setPestana('profile', true, null, null, null, true);
     }
 
 }
