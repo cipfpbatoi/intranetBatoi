@@ -511,14 +511,8 @@ Route::get(
 );
 
 Route::post('/externalAuth', RedirectAfterAuthenticationController::class);
-Route::get('/sao/sync/{password}', ['as'=>'sao.sync', 'uses'=>'SaoSyncController@index']);
-Route::get('/sao/compara/{password}', ['as'=>'sao.compara', 'uses'=>'SaoComparaController@index']);
-Route::get('/sao/importa/{password}', ['as'=>'sao.importa', 'uses'=>'SaoImportaController@index']);
-Route::get('/sao/annexes/{password}', ['as'=>'sao.annexes', 'uses'=>'SaoAnnexesController@index']);
-Route::get('/sao/a2/{password}', ['as'=>'sao.a2', 'uses'=>'SaoA2Controller@index']);
-Route::get('/sao/signa/{password}', ['as'=>'sao.signa', 'uses'=>'SaoSignaturaController@index']);
-Route::post('/sao/importa', ['as' => 'sao.post.importa', 'uses' => 'SaoImportaController@importa']);
-Route::post('/sao/compara', ['as' => 'sao.post.compara', 'uses' => 'SaoComparaController@compara']);
+Route::post('/sao/importa', [Intranet\Sao\Importa::class,'importa']);
+Route::post('/sao/compara', [Intranet\Sao\Compara::class,'compara']);
 
 //Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@login']);
 Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);

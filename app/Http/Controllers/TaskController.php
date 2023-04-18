@@ -77,7 +77,7 @@ class TaskController extends ModalController
             $this->tarea->Profesores()->detach(AuthUser()->dni);
         } else {
             $funcion = $this->tarea->action;
-            if ($funcion){
+            if ($funcion) {
                 $valid = $this->$funcion();
             } else {
                 $valid = 0;
@@ -141,7 +141,7 @@ class TaskController extends ModalController
     private function InfDept()
     {
         if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'Acta')
-                ->where('curso', Curso())->where('descripcion','Informe Trimestral')->count()>=evaluacion()) {
+                ->where('curso', Curso())->where('descripcion', 'Informe Trimestral')->count()>=evaluacion()) {
             return 1;
         }
         return 0;

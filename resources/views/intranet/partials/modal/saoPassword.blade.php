@@ -3,15 +3,20 @@
          message='Selecciona'>
     <label class="control-label" for="accion">Operació a realitzar:</label>
     <select class="form-control" name="accion" id="accion">
-        <option value="sao.importa">Baixa FCT's a Intranet</option>
-        <option value="sao.compara">Compara Dades de Centre i Empreses</option>
-        <option value="sao.sync">Sincronitza hores realitzades per l'alumnat</option>
-        <option value="sao.annexes">Baixa Annexes signats per a l'Intranet</option>
-        <option value="sao.signa">Signa Annexes per a l'Intranet (Pruebas No fuciona)</option>
-        <option value="sao.a2">Baixa Annexes A2 per a signar (Pruebas No funciona)</option>
+        @foreach (config('auxiliares.sao') as $key => $value)
+            <option value="{{ $key }}">{{ $value }}</option>
+        @endforeach
     </select>
     <br/>
     <label class="control-label" for="password">Introduir Password SAO:</label>
     <input type="password" id="password" name="password" class="form-control"/>
+    @if(file_exists(storage_path('app/certificats/'.authUser()->fileName.'.tmp')))
+        <div id="decrypt" hidden>
+            <label class="control-label" for="password">Introduir Password Intranet:</label>
+            <input type="password" id="decrypt" name="decrypt" class="form-control"/>
+            <label class="control-label" for="password">Introduir Password Certificat:</label>
+            <input type="password" id="cert" name="cert" class="form-control"/>
+        </div>
+    @endif
     @include('layouts.partials.error')
 </x-modal>

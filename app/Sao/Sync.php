@@ -1,12 +1,11 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Sao;
 
 use Exception;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
-use Intranet\Services\SeleniumService;
 use Intranet\Entities\AlumnoFctAval;
 use Styde\Html\Facades\Alert;
 
@@ -15,13 +14,12 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-class SaoSyncController
+class Sync
 {
 
-    public function index($password)
+    public static function index($driver)
     {
         try {
-            $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
             $alumnes = [];
             foreach (AlumnoFctAval::realFcts()->haEmpezado()->where('beca', 0)->activa()->get() as $fct) {
                 try {
@@ -37,7 +35,7 @@ class SaoSyncController
                         if ($fct->realizadas != $horas) {
                             $fct->realizadas = (int) $horas;
                             list($diarias,$ultima) =
-                                $this->consultaDiario(
+                                self::consultaDiario(
                                     $driver,
                                     $driver->findElement(WebDriverBy::cssSelector("#contenido"))
                                 );
@@ -51,7 +49,7 @@ class SaoSyncController
                     Alert::warning('No trobada informació '.$fct->Alumno->shortName);
                 }
             }
-            $this->alertSuccess($alumnes);
+            arrayAlert($alumnes);
         } catch (Exception $e) {
             Alert::danger($e);
         }
@@ -61,7 +59,7 @@ class SaoSyncController
         return back();
     }
 
-    private function consultaDiario(RemoteWebDriver $driver, \Facebook\WebDriver\Remote\RemoteWebElement $contenido)
+    private static function consultaDiario(RemoteWebDriver $driver, \Facebook\WebDriver\Remote\RemoteWebElement $contenido)
     {
         $find = false;
         $i=4;
@@ -82,19 +80,10 @@ class SaoSyncController
         } else {
             $driver->findElement(WebDriverBy::cssSelector("p.celdaInfoAlumno a:nth-child(1)"))->click();
             sleep(1);
-            return $this->consultaDiario($driver, $driver->findElement(WebDriverBy::cssSelector("#contenido")));
+            return self::consultaDiario($driver, $driver->findElement(WebDriverBy::cssSelector("#contenido")));
         }
     }
 
-    protected function alertSuccess(array $alumnes, $message='Sincronitzades Fcts: ')
-    {
-        if (count($alumnes)) {
-            $tots = '';
-            foreach ($alumnes as $alumne) {
-                $tots .= $alumne.', ';
-            }
-            Alert::info($message.$tots);
-        }
-    }
+
 
 }

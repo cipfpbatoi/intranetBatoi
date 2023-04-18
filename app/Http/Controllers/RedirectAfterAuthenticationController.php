@@ -3,6 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Requests\PasswordRequest;
+use Intranet\Services\SeleniumService;
+use Styde\Html\Facades\Alert;
 
 
 class RedirectAfterAuthenticationController extends Controller
@@ -14,6 +16,19 @@ class RedirectAfterAuthenticationController extends Controller
      */
     public function __invoke(PasswordRequest $request)
     {
-        return redirect()->route($request->accion, ['password' => $request->password]);
+        $class = 'Intranet\Sao\\'. ucfirst($request->accion);
+        if (method_exists($class, 'setFireFoxCapabilities')) {
+            $caps = $class::setFireFoxCapabilities();
+        }
+        try {
+            $driver = SeleniumService::loginSAO(AuthUser()->dni, $request->password, $caps??null);
+            return $class::index($driver, $request->toArray());
+        } catch (\Throwable $exception) {
+            Alert::info($exception->getMessage());
+            if (isset($driver)) {
+                $driver->close();
+            }
+            return back();
+        }
     }
 }

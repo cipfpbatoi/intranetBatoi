@@ -1,13 +1,12 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Sao;
 
 use Exception;
 use Facebook\WebDriver\WebDriverBy;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Services\AttachedFileService;
-use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 
 
@@ -15,14 +14,13 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-class SaoAnnexesController
+class Annexes
 {
 
 
-    public function index($password)
+    public static function index($driver)
     {
         try {
-            $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
             $alumnes = [];
             foreach (AlumnoFctAval::realFcts()
                          ->where('beca', 0)
@@ -71,7 +69,7 @@ class SaoAnnexesController
                     }
                 }
             }
-            $this->alertSuccess($alumnes, 'Annexes Baixats: ');
+            arrayAlert($alumnes, 'Annexes Baixats: ');
         } catch (Exception $e) {
             Alert::danger($e);
         }
@@ -79,7 +77,7 @@ class SaoAnnexesController
         return back();
     }
 
-    protected function alertSuccess(array $alumnes, $message='Sincronitzades Fcts: ')
+    protected static function alertSuccess(array $alumnes, $message='Sincronitzades Fcts: ')
     {
         if (count($alumnes)) {
             $tots = '';

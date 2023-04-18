@@ -1,24 +1,25 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Sao;
 
 use Exception;
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Remote\LocalFileDetector;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use Intranet\Http\Controllers\AlumnoFct;
 use Intranet\Services\SeleniumService;
 use Intranet\Services\SignaturaService;
 use Styde\Html\Facades\Alert;
-use Facebook\WebDriver\Remote\RemoteWebElement;
 
 
 /**
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-class SaoSignaturaController
+class Signatura
 {
 
     private function closeWindows(RemoteWebDriver $driver, $window)

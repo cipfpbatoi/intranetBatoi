@@ -51,6 +51,11 @@ class AlumnoFct extends Model
             ->where('model_class', 'Intranet\Entities\AlumnoFct');
     }
 
+    public function Signatures()
+    {
+        return $this->hasMany(Signatura::class,'idSao','idSao');
+    }
+
 
     public function scopeMisFcts($query, $profesor=null)
     {

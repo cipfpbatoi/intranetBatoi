@@ -5,6 +5,14 @@ $(function () {
         event.preventDefault();
         $(this).attr("data-toggle", "modal").attr("data-target", "#password").attr("href", "");
     });
+    $("#accion").on("change", function (event) {
+        event.preventDefault();
+        if ($(this).val() === 'a2') {
+            $("#decrypt").show();
+        } else {
+            $("#decrypt").hide();
+        }
+    });
     $("#password .submit").click(function() {
         localStorage.setItem("cur_modal", '#password');
         event.preventDefault();

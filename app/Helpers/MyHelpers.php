@@ -695,3 +695,13 @@ function replaceCachitos($view)
     return replaceCachitos($view);
 }
 
+function arrayAlert(array $avisos, $title='Fcts Sincronitzades', $action='success')
+{
+    if (count($avisos)) {
+        $tots = '';
+        foreach ($avisos as $avis) {
+            $tots .= $avis.', ';
+        }
+        \Styde\Html\Facades\Alert::$action($title.$tots);
+    }
+}
