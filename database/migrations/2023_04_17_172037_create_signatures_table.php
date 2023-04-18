@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateMaterialesBajaTable extends Migration
+class CreateSignaturesTable extends Migration
 {
 
 	/**
@@ -13,12 +13,16 @@ class CreateMaterialesBajaTable extends Migration
 	 */
 	public function up()
 	{
+        Schema::table('alumno_fcts', function (Blueprint $table) {
+            $table->string('idSao')->index()->change();
+        });
+
 		Schema::create('signatures', function (Blueprint $table)
 		{
             $table->id();
             $table->string('tipus', 2);
             $table->string('idProfesor', 10)->collation('utf8_unicode_ci');
-            $table->string('idSao', 8)->collation('utf8_unicode_ci');
+            $table->string('idSao', 8)->collation('utf8mb4_unicode_ci');
             $table->string('sendTo', 60);
             $table->boolean('signed')->default(0);
             $table->timestamps();
@@ -33,6 +37,8 @@ class CreateMaterialesBajaTable extends Migration
                 ->onUpdate('CASCADE')
                 ->onDelete('CASCADE');
         });
+
+
 	}
 
 
