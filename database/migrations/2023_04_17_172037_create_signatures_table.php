@@ -14,7 +14,7 @@ class CreateSignaturesTable extends Migration
 	public function up()
 	{
         Schema::table('alumno_fcts', function (Blueprint $table) {
-            $table->string('idSao')->index()->change();
+           $table->string('idSao')->index()->change();
         });
 
 		Schema::create('signatures', function (Blueprint $table)
@@ -23,7 +23,7 @@ class CreateSignaturesTable extends Migration
             $table->string('tipus', 2);
             $table->string('idProfesor', 10)->collation('utf8_unicode_ci');
             $table->string('idSao', 8)->collation('utf8mb4_unicode_ci');
-            $table->string('sendTo', 60);
+            $table->boolean('sendTo')->default(0);
             $table->boolean('signed')->default(0);
             $table->timestamps();
             $table->foreign('idProfesor')
@@ -38,7 +38,6 @@ class CreateSignaturesTable extends Migration
                 ->onDelete('CASCADE');
         });
 
-
 	}
 
 
@@ -50,6 +49,10 @@ class CreateSignaturesTable extends Migration
 	public function down()
 	{
 		Schema::drop('signatures');
+
+        Schema::table('alumno_fcts', function (Blueprint $table) {
+            $table->dropIndex('alumno_fcts_idsao_index');
+        });
 	}
 
 }

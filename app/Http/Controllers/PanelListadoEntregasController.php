@@ -41,7 +41,8 @@ class PanelListadoEntregasController extends BaseController
                 hazArray(Horario::distinct()->get(), 'modulo')
             )->where(
                 'idDepartamento',
-                AuthUser()->departamento)->get(),
+                AuthUser()->departamento
+            )->get(),
             'id'
         );
 

@@ -1,15 +1,11 @@
 'use strict';
 
 $(function () {
-    $(".download").on("click", function (event) {
-        event.preventDefault();
-        $(this).attr("data-toggle", "modal").attr("data-target", "#password").attr("href", "");
-    });
     $(".signatura").on("click", function (event) {
         event.preventDefault();
         $(this).attr("data-toggle", "modal").attr("data-target", "#signatura").attr("href", "");
         var token = $("#_token").text();
-        var url = "/api/signatura";
+        var url = "/api/signatura/director";
         $.ajax({
             method: "GET",
             url: url,
@@ -29,19 +25,6 @@ $(function () {
         $("#formSeleccion" ).submit();
     });
 
-
-    $("#password .submit").click(function() {
-        localStorage.setItem("cur_modal", '#password');
-        event.preventDefault();
-        $('#password').modal('hide');
-        $("#formPassword" ).submit();
-        $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
-    });
-    $('.fa-unlink').on("click", function(){
-        if (!confirm("Vas a deslligar la FCT del SAO. L'hauràs de tornar a importar. Estas segur?")) {
-            event.preventDefault();
-        }
-    });
 });
 
 
@@ -69,4 +52,16 @@ function pintaTablaSignatura(newOptions){
     }
     $el.append($("<tr><td>-------------------------------</td></tr>"))
     $el.append($("<tr><td><div id='divCheckAll'><input type='checkbox' name='checkall' id='checkall' onClick='check_uncheck_checkbox(this.checked);'"+checked+"/>Check All</div></td></tr>"));
+}
+
+function check_uncheck_checkbox(isChecked) {
+    if(isChecked) {
+        $('input.elements').each(function() {
+            this.checked = true;
+        });
+    } else {
+        $('input.elements').each(function() {
+            this.checked = false;
+        });
+    }
 }

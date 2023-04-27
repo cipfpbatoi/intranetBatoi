@@ -18,9 +18,9 @@ abstract class Finder {
     {
         if ($this->document->unique) {
             $modelo = "Intranet\\Entities\\".$this->document->modelo;
-            return Activity::where('model_class',$modelo)
-                ->where('model_id',$id)
-                ->where('document','=',$this->document->subject)
+            return Activity::where('model_class', $modelo)
+                ->where('model_id', $id)
+                ->where('document', '=', $this->document->subject)
                 ->count();
         } else {
             return 0;

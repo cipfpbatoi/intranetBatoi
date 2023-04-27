@@ -503,6 +503,9 @@ return array(
         'Sao' => array(
             'post' => 'Connexió SAO',
         ),
+        'Signatura' => array(
+            'post' => 'Signatura Annexes',
+        ),
         'Solicitud' => array(
             'index' => "Derivacions al departament d'Orientació",
             'create' => "Qüestionari de derivació",

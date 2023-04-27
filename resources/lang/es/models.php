@@ -489,6 +489,9 @@ return array(
         'Sao' => array(
             'post' => 'Conexión SAO',
         ),
+        'Signatura' => array(
+            'post' => 'Firma Anexos',
+        ),
         'Solicitud' => array(
             'index' => "Derivaciones al departamento de Orientación",
             'create' => "Cuestionario de derivación",

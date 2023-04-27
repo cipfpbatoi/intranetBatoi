@@ -109,8 +109,6 @@ return [
         'compara' => 'Compara Dades de Centre i Empreses',
         'sync' => 'Sincronitza hores realitzades per l\'alumnat',
         'annexes' => 'Baixa Annexes signats per a l\'Intranet',
-        'signa' => 'Signa Annexes per a l\'Intranet (Pruebas No fuciona)',
-        'a2' => 'Baixa Annexes A2 per a signar (Pruebas No funciona)'
     ]
 ];
 

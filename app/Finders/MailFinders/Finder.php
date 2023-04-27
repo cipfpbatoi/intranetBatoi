@@ -5,7 +5,8 @@ abstract class Finder{
 
     protected $elements;
 
-    public function getElements(){
+    public function getElements()
+    {
         return $this->elements;
     }
 }

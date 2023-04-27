@@ -8,6 +8,7 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Intranet\Services\DigitalSignatureService;
 use Intranet\Entities\AlumnoFct;
 use Styde\Html\Facades\Alert;
+use Intranet\Entities\Signatura as Firma;
 
 
 /**
@@ -42,17 +43,19 @@ class A2
 
     public static function index($driver, $request)
     {
-        extract($request);
 
         $driver->manage()->timeouts()->pageLoadTimeout(2);
+        $fcts = array_keys($request, 'on');
+        $decrypt = $request['decrypt']??null;
+        $cert = $request['cert']??null;
+        $sendTo = isset($request['sendTo'])?true:false;
 
         if (isset($decrypt)) {
             $nameFile = AuthUser()->fileName;
             $file = DigitalSignatureService::decryptCertificate($nameFile, $decrypt);
         }
 
-        self::download_file_from_fcts($driver, 2, $file ?? null, $cert ?? null);
-        //$this->download_file_from_fcts($driver, 3, $file);
+        self::download_files_from_fcts($driver, $fcts, $file ?? null, $cert, $sendTo);
 
         if ($file) {
             unlink($file);
@@ -61,37 +64,58 @@ class A2
         return back();
     }
 
-    public static function download_file_from_fcts(RemoteWebDriver $driver, $anexe, $certFile, $passCert)
+
+    public static function download_files_from_fcts(RemoteWebDriver $driver, $fcts, $certFile, $passCert, $sendTo)
     {
-        $copyDirectory = storage_path('app/annexes/');
         $tmpDirectory = storage_path('tmp/');
-        foreach (AlumnoFct::misFcts()->activa()->get() as $fctAl) {
-            try {
-                $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc={$anexe}&centro=59&idFct=$fctAl->idSao");
-            } catch (\Throwable $exception) {
-                $tmpFile = $tmpDirectory."A{$anexe}.pdf";
-                $saveFile = $copyDirectory."A{$anexe}_$fctAl->idSao.pdf";
-                if (file_exists($tmpFile)) {
-                    if ($certFile && $passCert) {
-                        $x = config("signatures.files.A{$anexe}.owner.x");
-                        $y = config("signatures.files.A{$anexe}.owner.y");
-                        DigitalSignatureService::sign(
-                            $tmpFile,
-                            $saveFile,
-                            $x,
-                            $y,
-                            $certFile,
-                            $passCert
-                        );
-                    } else {
+        foreach ($fcts as $fct) {
+                // Anexe 1
+            $fctAl = AlumnoFct::find($fct);
+            if (! $fctAl->Fct->Colaboracion->Centro->Empresa->ConveniNou) {
+                try {
+                    $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
+                    $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=101&centro=59&ct=$idSao");
+                } catch (\Throwable $exception) {
+                    $tmpFile = $tmpDirectory."A1.pdf";
+                    $saveFile = $fctAl->routeFile('1');
+                    if (file_exists($tmpFile)) {
                         copy($tmpFile, $saveFile);
                     }
+                    Firma::saveIfNotExists(1, $fctAl->idSao, $sendTo);
                     unlink($tmpFile);
-                } else {
-                    Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");
                 }
                 $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
                 sleep(1);
+            }
+            for ($anexe = 2; $anexe <=3; $anexe++) {    // Anexe II
+                try {
+                    $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc={$anexe}&centro=59&idFct=$fctAl->idSao");
+                } catch (\Throwable $exception) {
+                    $tmpFile = $tmpDirectory."A{$anexe}.pdf";
+                    $saveFile = $fctAl->routeFile($anexe);
+                    if (file_exists($tmpFile)) {
+                        if ($certFile && $passCert) {
+                            $x = config("signatures.files.A{$anexe}.owner.x");
+                            $y = config("signatures.files.A{$anexe}.owner.y");
+                            DigitalSignatureService::sign(
+                                $tmpFile,
+                                $saveFile,
+                                $x,
+                                $y,
+                                $certFile,
+                                $passCert
+                            );
+                        } else {
+                            copy($tmpFile, $saveFile);
+                        }
+                        Firma::saveIfNotExists($anexe, $fctAl->idSao, $sendTo);
+                        unlink($tmpFile);
+                    } else {
+                        Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");
+                    }
+                    $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
+                    sleep(1);
+                }
             }
         }
     }

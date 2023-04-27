@@ -3,9 +3,6 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Reunion;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\Panel;
-use Illuminate\Support\Facades\Session;
 
 class PanelInfDptoController extends BaseController
 {
