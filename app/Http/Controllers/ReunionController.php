@@ -275,7 +275,7 @@ class ReunionController extends IntranetController
 
     public function deleteFile(Request $request,$id)
     {
-        if ($request->pass == date('mdy')){
+        if ($request->pass == date('mdy')) {
             $elemento = $this->class::find($id);
             $document = Documento::where('tipoDocumento','Acta')->where('curso',Curso())->where('idDocumento',$elemento->id)->first();
             if ($elemento->fichero != '' && $document) {
