@@ -1,18 +1,13 @@
-@extends('layouts.email')
-@section('body')
-    <table style='text-align: center'>
-        <tr>
-            <th></th>
-        </tr>
-    </table>
-    <div>
-        <table style=" border:#000 solid 1;">
-            <tr>
-                <td><strong>De {{authUser()->shortName}} del {{config('contacto.nombre')}} </strong></td>
-            </tr>
-        </table>
-    </div>
-    <div class="container">
-        @include('email.fct.followU')
-    </div>
-@endsection
+<p>Hola, [contacte]</p>
+<p>T'escric per conèixer de primera ma com van les pràctiques FCT dels alumnes:</p>
+    [llistaAlumnes]
+<p>Si tot està correcte et tornaria a contactar en aproximadament <strong>15 dies</strong> per a fer una <strong>visita</strong> al centre de treball.</p>
+<p>Aprofite per recordar-te les meues dades per si necessites possar-te amb contacte amb mi:</p>
+<ul style="list-style-type: none; font-weight: bolder">
+    <li>{{authUser()->email}}</li>
+    <li>{{ config('contacto.telefono') }}</li>
+</ul>
+<p>Per qualsevol dubte em tens a la teua disposició. Salutacions cordials.</p>
+[peu]
+
+

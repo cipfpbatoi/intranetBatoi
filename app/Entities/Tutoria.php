@@ -62,13 +62,16 @@ class Tutoria extends Model
     {
         return config('auxiliares.tipoTutoria');
     }
-    protected function getXobligatoriaAttribute(){
+    protected function getXobligatoriaAttribute()
+    {
         return $this->obligatoria ? 'X' : '-';
     }
-    protected function getGrupoAttribute(){
+    protected function getGrupoAttribute()
+    {
         return config('auxiliares.grupoTutoria')[$this->grupos];
     }
-    protected function getTiposAttribute(){
+    protected function getTiposAttribute()
+    {
         return config('auxiliares.tipoTutoria')[$this->tipo];
     }
     

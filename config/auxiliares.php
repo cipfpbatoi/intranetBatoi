@@ -103,5 +103,12 @@ return [
         3 => "Encara no pot cursar la FCT"
     ],
     'periodesFct' => [1=>'Sept-Des',2=>'Abril-Juny',3=>'Altres',4=>'Flexible'],
-    'estadosLote' => [0=>'BUIDA',1=>'ALTA',2=> 'INVENTARIANT',3=>'FINALITZADA']
+    'estadosLote' => [0=>'BUIDA',1=>'ALTA',2=> 'INVENTARIANT',3=>'FINALITZADA'],
+    'sao' => [
+        'importa' => 'Baixa FCT\'s a Intranet',
+        'compara' => 'Compara Dades de Centre i Empreses',
+        'sync' => 'Sincronitza hores realitzades per l\'alumnat',
+        'annexes' => 'Baixa Annexes signats per a l\'Intranet',
+    ]
 ];
+

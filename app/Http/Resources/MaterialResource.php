@@ -17,13 +17,14 @@ class MaterialResource extends JsonResource
         return [
             'id' => $this->id,
             'articulo' => $this->LoteArticulo->Articulo->descripcion,
-            'descripcion' => $this->descripcion($this->descripcion,$this->modelo,$this->marca),
+            'descripcion' => $this->descripcion($this->descripcion, $this->modelo, $this->marca),
             'estado' => config('auxiliares.estadoMaterial')[$this->estado],
             'espacio' => $this->espacio,
         ];
     }
 
-    private function descripcion($des,$mod,$mar){
+    private function descripcion($des, $mod, $mar)
+    {
         $descripcion = $des;
         if (isset($mod)){
             $descripcion .= " ($mod)";

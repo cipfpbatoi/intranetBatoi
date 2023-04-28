@@ -73,7 +73,10 @@ return array(
                 'index' => 'LListat Professorat',
                 'list' => 'Professorat Absents',
                 'horario-cambiar' => 'Canviar horari Professorat',
-                'titulo' => 'Entrevistes FCTs de :quien'
+                'titulo' => 'Entrevistes FCTs de :quien',
+        ),
+        'profesor' => array(
+            'files' => "Fitxers de l'usuari",
         ),
         'Menu' => array(
                 'index' => 'Elements del menú',
@@ -89,7 +92,11 @@ return array(
         ),
         'Inventario' => array(
             'espacios' => 'Vore Espais',
-            'materiales' => 'Vore Materials'
+            'materiales' => 'Vore Materials',
+            'index' => 'Gestionar Inventari',
+        ),
+        'Materialbaja' => array(
+            'index' => 'Gestionar Moviments',
         ),
         'Alumno_curso' => array(
             'index' => 'Alumnat Curs',
@@ -495,6 +502,9 @@ return array(
         ),
         'Sao' => array(
             'post' => 'Connexió SAO',
+        ),
+        'Signatura' => array(
+            'post' => 'Signatura Annexes',
         ),
         'Solicitud' => array(
             'index' => "Derivacions al departament d'Orientació",

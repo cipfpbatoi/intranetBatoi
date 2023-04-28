@@ -28,7 +28,6 @@ use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Intranet\Http\PrintResources\AutorizacionDireccionResource;
 use Intranet\Http\PrintResources\ExempcioResource;
-use mikehaertl\pdftk\Pdf as pdftk;
 
 
 class FctAlumnoController extends IntranetController
@@ -41,7 +40,7 @@ class FctAlumnoController extends IntranetController
     protected $gridFields = ['Nombre', 'Centro', 'Instructor', 'desde',  'horasRealizadas','hasta', 'finPracticas'];
     protected $profile = false;
     protected $titulo = [];
-    protected $parametresVista = ['modal' => ['extended', 'saoPassword', 'loading']];
+    protected $parametresVista = ['modal' => ['extended', 'saoPassword', 'loading','signatura']];
     protected $modal = true;
 
 
@@ -114,7 +113,48 @@ class FctAlumnoController extends IntranetController
                 ]
             )
         );
-
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumnofct.A2',
+                [
+                    'text' => 'A2',
+                    'where' =>
+                        [
+                            'A2', '!=', null,
+                            'idSao', '!=', null,
+                        ]
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumnofct.A1',
+                [
+                    'text' => 'A1',
+                    'where' =>
+                        [
+                            'A1', '!=', null,
+                            'idSao', '!=', null,
+                        ]
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumnofct.A3',
+                [
+                    'text' => 'A3',
+                    'where' =>
+                        [
+                            'A3', '!=', null,
+                            'idSao', '!=', null,
+                        ]
+                ]
+            )
+        );
 
         $this->panel->setBoton(
             'index',
@@ -136,6 +176,13 @@ class FctAlumnoController extends IntranetController
             new BotonBasico(
                 "sao.post",
                 ['class' => 'btn-success download', 'roles' => config(self::ROLES_ROL_TUTOR)]
+            )
+        );
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "signatura.post",
+                ['class' => 'btn-success signatura', 'roles' => config(self::ROLES_ROL_TUTOR)]
             )
         );
         $this->panel->setBoton(
@@ -272,12 +319,18 @@ class FctAlumnoController extends IntranetController
         }
     }
 
-    public function A5($id)
+    public function Signatura($id, $num)
+    {
+        $fct = AlumnoFct::findOrFail($id);
+        return response()->file($fct->routeFile($num));
+    }
+
+    public function Valoratiu($id)
     {
         return response()->file(FDFPrepareService::exec(new A5Resource(AlumnoFct::find($id))));
     }
 
-    public function A1($id)
+    public function AEng($id)
     {
 
         $fct = AlumnoFct::find($id);

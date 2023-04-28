@@ -24,8 +24,8 @@ class EspacioRequest extends FormRequest
     public function rules()
     {
         return [
-            'aula' => 'required',
-            'descripcion' => 'required',
+            'aula' => 'required|max:10',
+            'descripcion' => 'required|max:100',
             'idDepartamento' => 'required',
         ];
     }

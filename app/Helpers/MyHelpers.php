@@ -193,9 +193,12 @@ function authUser()
     return $usuario;
 }
 
-function apiAuthUser()
+function apiAuthUser($token=null)
 {
-    return Intranet\Entities\Profesor::where('api_token', $_GET['api_token']??'')->get()
+    if ($token==null) {
+        $token = $_GET['api_token'];
+    }
+    return Intranet\Entities\Profesor::where('api_token', $token)->get()
         ->first();
         //??Intranet\Entities\Profesor::find('021652470V');
 }
@@ -679,3 +682,26 @@ function provincia($codiPostal)
     }
 }
 
+function replaceCachitos($view)
+{
+    $pos1 = strpos($view, '[');
+    $pos2 = strpos($view, ']');
+    if ($pos1 === false || $pos2 === false) {
+        return $view;
+    }
+    $codiAInterpretrar = substr($view, $pos1 + 1, $pos2 - $pos1 - 1);
+    $codi = "@include('email.fct.cachitos." . $codiAInterpretrar . "')";
+    $view = str_replace('[' . $codiAInterpretrar . ']', $codi, $view);
+    return replaceCachitos($view);
+}
+
+function arrayAlert(array $avisos, $title='Fcts Sincronitzades', $action='success')
+{
+    if (count($avisos)) {
+        $tots = '';
+        foreach ($avisos as $avis) {
+            $tots .= $avis.', ';
+        }
+        \Styde\Html\Facades\Alert::$action($title.$tots);
+    }
+}

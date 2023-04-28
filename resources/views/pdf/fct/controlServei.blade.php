@@ -24,7 +24,7 @@
             <td style="text-align:center;font-weight: bold;font-size: 0.8em">I</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">II</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em">III</td>
-            <td style="text-align:center;font-weight: bold;font-size: 0.8em ">IV</td>
+            <td style="text-align:center;font-weight: bold;font-size: 0.8em ">Delinqüents</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">DATA</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em">SIGNATURA TUTOR</td>
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">SIGNATURA CAP PRÀCTIQUES</td>
@@ -40,7 +40,9 @@
                     <td>{{ $fct->saoAnnexes?'X':'' }}</td>
                     <td></td>
                     <td>{{ hoy('d-m-Y') }}</td>
-                    <td>{!!  Intranet\Services\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.25) !!}</td>
+                    <td>
+                        {!!  Intranet\Services\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.25) !!}
+                    </td>
                     <td></td>
                 </tr>
             @endisset
@@ -48,23 +50,19 @@
         <tr>
             <td colspan="8" style="text-align:left;font-size: 12px;">
                 <br/><br/>
-                <p>1.- Es lliurarà al/a la cap de departament de pràctiques la següent documentació:<br/>
+                <p>1.- Es lliurarà al/a la cap de departament de pràctiques la següent documentació:</p>
                 <ul>
                     <li>1 original del C. Educatiu, Annex I (si és col·laboradora per primera vegada).</li>
                     <li>1 original de l'Annex II (Centre Educatiu).</li>
                     <li>1 original de l'Annex III (Centre Educatiu).</li>
-                    <li>1 original de l'Annex VII (Si escau).</li>
-                    <li>1 original permís de realització d'FCT en període de vacances de Nadal (si escau)</li>
-                    <li>1 original permís de realització d'FCT en període de vacances de Pasqües (si escau)</li>
-                    <li>Annex Declaració responsable de l'empresa de que el personal compta amb acreditació negativa del
-                        registre central de delinqüents sexuals (si van alumnes menors d'edat)
+                    <li>
+                        Annex Declaració responsable de l'empresa de que el personal compta amb acreditació negativa
+                        del registre central de delinqüents sexuals (si van alumnes menors de 16 anys)
                     </li>
                 </ul>
-                </p>
                 <p style="text-align:left;font-weight: bold">IMPORTANT: El termini màxim de lliurament de la
-                    documentació(també s'haurà d'ajuntar al SAO) al Departament d'FCT serà d'un MÀXIM DE 10 DIES HÀBILS
+                    documentació(també s'haurà d'ajuntar al SAO) al Departament d'FCT serà d'un MÀXIM DE 15 DIES HÀBILS
                     abans que l'alumne inicie les pràctiques d'FCT.</p>
-
             </td>
         </tr>
     </table>

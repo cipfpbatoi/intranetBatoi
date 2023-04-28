@@ -8,8 +8,10 @@ use Intranet\Mail\CertificatAlumneFct;
 use Intranet\Mail\CertificatInstructorFct;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\AvalFct;
-use Intranet\Nova\Profesor;
+use Intranet\Entities\Profesor;
+use Styde\Html\Facades\Alert;
 use Swift_RfcComplianceException;
+use Swift_TransportException;
 
 class SendFctEmails extends Command
 {
@@ -40,19 +42,18 @@ class SendFctEmails extends Command
             $alumnosAprobados = hazArray(AlumnoFctAval::aprobados()->get(), 'idAlumno');
             $alumnosPendientes = AlumnoFctAval::pendienteNotificar($alumnosAprobados)->get();
 
-
             foreach ($alumnosPendientes as $alumno) {
                 $fct = $alumno->Fct;
                 $tutor = Profesor::find($fct->Colaboracion->tutor);
 
                 try {
-                    Mail::to($alumno->Alumno->email, '')
-                        ->send(new CertificatAlumneFct($alumno));
+                    Mail::to($alumno->Alumno->email)->send(new CertificatAlumneFct($alumno));
                     $alumno->correoAlumno = 1;
                     $alumno->save();
-
                 } catch (Swift_RfcComplianceException $e) {
-                    //nothing
+                    //
+                } catch (Swift_TransportException $e) {
+                    dd($alumno->Alumno->email);
                 }
 
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
@@ -64,11 +65,12 @@ class SendFctEmails extends Command
                         if ($tutor) {
                             Mail::to($tutor->email, 'Intranet CIFP Batoi')->send(new CertificatInstructorFct($fct));
                         }
-
                         $fct->correoInstructor = 1;
                         $fct->save();
                     } catch (Swift_RfcComplianceException $e) {
-                        // nothing
+
+                    } catch (Swift_TransportException $e) {
+
                     }
                 }
             }

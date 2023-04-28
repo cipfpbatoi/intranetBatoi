@@ -258,14 +258,15 @@ class FaltaController extends IntranetController
     /**
      * @param $idProfesor
      */
-    private static function tramitaAltaProfesor($idProfesor){
+    private static function tramitaAltaProfesor($idProfesor)
+    {
         DB::transaction(function() use ($idProfesor) {
             $profesor = Profesor::find($idProfesor);
             $profesor->fecha_baja = null;
-            $profesor->save();
             if ($profesor->Sustituye) {
-                self::changeWithSubstitute($profesor,$profesor->Sustituye);
+                self::changeWithSubstitute($profesor, $profesor->Sustituye);
             }
+            $profesor->save();
         });
     }
 
@@ -273,23 +274,23 @@ class FaltaController extends IntranetController
      * @param $profesorAlta
      * @param $sustituto
      */
-    private static function changeWithSubstitute($profesorAlta, $sustituto){
-
+    private static function changeWithSubstitute($profesorAlta, $sustituto)
+    {
             //canvi d'horari
             if (Horario::profesor($profesorAlta->dni)->count()==0) {
-                Horario::where('idProfesor',$sustituto->dni)->update(['idProfesor'=> $profesorAlta->dni]);
+                Horario::where('idProfesor', $sustituto->dni)->update(['idProfesor'=> $profesorAlta->dni]);
             } else {
-                Horario::where('idProfesor',$sustituto->dni)->delete();
+                Horario::where('idProfesor', $sustituto->dni)->delete();
             }
 
             // asistència a reunions
-            foreach (Asistencia::where('idProfesor',$sustituto->dni)->get() as $asistencia){
-                self::markAssistenceMeetings($profesorAlta->dni,$asistencia);
+            foreach (Asistencia::where('idProfesor', $sustituto->dni)->get() as $asistencia) {
+                self::markAssistenceMeetings($profesorAlta->dni, $asistencia);
             }
             // tota la feina del substitut pasa al subtituit
-            Reunion::where('idProfesor',$sustituto->dni)->update(['idProfesor'=>$profesorAlta->dni]);
-            Grupo::where('tutor',$sustituto->dni)->update(['tutor'=>$profesorAlta->dni]);
-            Programacion::where('profesor',$sustituto->dni)->update(['profesor' => $profesorAlta->dni]);
+            Reunion::where('idProfesor', $sustituto->dni)->update(['idProfesor'=>$profesorAlta->dni]);
+            Grupo::where('tutor', $sustituto->dni)->update(['tutor'=>$profesorAlta->dni]);
+            Programacion::where('profesor', $sustituto->dni)->update(['profesor' => $profesorAlta->dni]);
             Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
             Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
 

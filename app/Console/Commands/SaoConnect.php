@@ -80,7 +80,7 @@ class SaoConnect extends Command
                 } catch (NoSuchElementException $e) {
                     avisa(
                         $fct->Fct->cotutor??$envia,
-                        'No trobada informació en el SAO de '.$fct->Alumno->shortName,
+                        'No trobada informació en el SAO de '.$fct->Alumno->shortName.' :'.$e->getMessage(),
                         '#',
                         'SAO'
                     );

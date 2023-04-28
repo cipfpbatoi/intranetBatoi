@@ -40,7 +40,8 @@ class AlumnoFctController extends ApiBaseController
         return $this->sendResponse(['updated' => true], 'OK');
     }
 
-    public function show($id,$send=true){
+    public function show($id, $send=true)
+    {
         $registro = AlumnoFct::findOrFail($id);
         return $this->sendResponse(new AlumnoFctResource($registro), 'OK');
     }

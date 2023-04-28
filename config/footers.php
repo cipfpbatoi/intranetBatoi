@@ -13,7 +13,7 @@ return
     'actaProyecto' => ['codi' => 'F14.PC02', 'edicio' => '00'],
     'actaDefensa' => ['codi' => 'F15.PC02' ,'edicio' => '00'],
     'comisionsServei' => ['codi' => 'F2.PC04' , 'edicio' => '00'],
-    'controlServei' => ['codi' => 'F4.PC04', 'edicio' => '00'],
+    'controlServei' => ['codi' => 'F4.PC04', 'edicio' => '01'],
     'seguimentInstructor' => ['codi' => 'F5.PC04' ,'edicio' => '00'],
     'seguimentAlumnes' => ['codi' => 'F6.PC04' ,'edicio' => '00'],
     'fullVacances' => ['codi' => 'F7.PC04' ,'edicio' => '00'],

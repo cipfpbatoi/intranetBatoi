@@ -11,7 +11,6 @@ use function authUser,collect,view;
 
 class MyMail
 {
-
     private $elements;
     private $features;
     private $view;
@@ -152,10 +151,11 @@ class MyMail
 
     private function chooseView()
     {
-        if (strlen($this->view)> 50) {
-            return 'email.standard';
+        if (strlen($this->view)< 50) {
+            $viewPath = view($this->view)->getPath();
+            $this->view = file_get_contents($viewPath);
         }
-        return $this->view;
+        return 'email.standard';
     }
 
     private function getReceivers($elementos)

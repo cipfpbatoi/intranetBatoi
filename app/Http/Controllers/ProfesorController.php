@@ -37,7 +37,7 @@ use traitAutorizar,
     const PROFILE_PROFESOR = 'profile.profesor';
     protected $model = 'Profesor';
     protected $vista = ['show' => 'perfil', 'edit' => 'perfil'];
-    protected $gridFields = ['Xdepartamento', 'FullName', 'Xrol','fecha_baja'];
+    protected $gridFields = ['Xdepartamento', 'FullName', 'Xrol','fecha_baja','Substitut'];
     protected $perfil = 'profesor';
     protected $parametresVista = ['modal' => ['detalle','aviso']];
 
@@ -48,11 +48,6 @@ use traitAutorizar,
                 ->with('Departamento')
                 ->Plantilla()
                 ->get();
-        /**
-        $departamentos = Departamento::where('didactico',1)->get();
-        foreach ($departamentos as $departamento) {
-            $this->panel->setPestana($departamento->depcurt, false, 'profile.profesor', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
-        }*/
         $this->iniBotones();
         return $this->grid($todos);
     }
@@ -86,8 +81,11 @@ use traitAutorizar,
     {
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         if (isset($grupo)) {
-            return $this->hazPdf('pdf.reunion.actaFSE', Alumno::misAlumnos()->OrderBy('apellido1')
-                ->OrderBy('apellido2')->get(), $grupo)->stream();
+            return $this->hazPdf(
+                'pdf.reunion.actaFSE',
+                Alumno::misAlumnos()->OrderBy('apellido1')->OrderBy('apellido2')->get(),
+                $grupo
+            )->stream();
         } else {
             Alert::danger('No trobe el teu grup');
             return back();
@@ -110,14 +108,34 @@ use traitAutorizar,
 
     public function rol($rol)
     {
-        $this->panel->setPestana(config("roles.lor.$rol"), true, self::PROFILE_PROFESOR, null, null, 1,$this->parametresVista);
-        $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
-        $this->panel->setBoton('profile', new BotonIcon('profesor.horario', ['icon' => 'fa-user', 'class' => 'btn-success']));
+        $this->panel->setPestana(
+            config("roles.lor.$rol"),
+            true,
+            self::PROFILE_PROFESOR,
+            null,
+            null,
+            1,
+            $this->parametresVista
+        );
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                'profesor.mensaje',
+                ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']
+            )
+        );
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                'profesor.horario',
+                ['icon' => 'fa-user', 'class' => 'btn-success']
+            )
+        );
         $todos = Profesor::Activo()
             ->orderBy('apellido1', 'asc')
             ->orderBy('apellido2', 'asc')
             ->get();
-        return $todos->filter(function($item) use ($rol){
+        return $todos->filter(function ($item) use ($rol) {
             if (esRol($item->rol, $rol)) {
                 return $item;
             }

@@ -59,12 +59,10 @@ class Profesor extends Authenticatable
         'apellido1',
         'apellido2',
         'email',
-        'foto',
         'departamento',
         'idioma',
         'mostrar',
         'especialitat',
-        'signatura'
     ];
     protected $casts = [
         'codigo' => 'integer',
@@ -80,12 +78,10 @@ class Profesor extends Authenticatable
         'nombre' => ['disabled' => 'disabled'],
         'apellido1' => ['disabled' => 'disabled'],
         'apellido2' => ['disabled' => 'disabled'],
-        'foto' => ['type' => 'file'],
         'email' => ['type' => 'email'],
         'departamento' => ['type' => 'select'],
         'idioma' => ['type' => 'select'],
         'mostrar' => ['type' => 'checkbox'],
-        'signatura' => ['type' => 'file'],
     ];
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
@@ -331,6 +327,19 @@ class Profesor extends Authenticatable
             $miGrupo = Grupo::where('tutorDual', '=', authUser()->dni)->get();
             return isset($miGrupo->first()->codigo) ? $miGrupo->first()->codigo : '';
         }
+    }
+
+    public function getFileNameAttribute()
+    {
+        $pos1 = strpos($this->foto, '.');
+        return substr($this->foto, 6, $pos1-6);
+
+    }
+
+    public function getSubstitutAttribute()
+    {
+        $substitut = $this->Sustituye??null;
+        return isset($substitut->fullName)?$substitut->fullName:'';
     }
 
 }

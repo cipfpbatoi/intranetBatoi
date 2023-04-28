@@ -39,12 +39,13 @@ class SignaturaController extends Controller
             $pdf = new SignaturePdf(
                 'Signatures/A1_ibermatic.pdf',
                 $cert,
-                SignaturePdf::MODE_DOWNLOAD);
+                SignaturePdf::MODE_DOWNLOAD
+            );
             return $pdf
-                ->setImage($imagePath,50,240)
+                ->setImage($imagePath, 50, 240)
                 ->setFileName('A2.pdf')
                 ->setInfo(
-                    'Ignasi Gomis Mullo',
+                    'Ignasi Gomis Mullor',
                     'CIP FP Batoi'
                 )
                 ->signature();

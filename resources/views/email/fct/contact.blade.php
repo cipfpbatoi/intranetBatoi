@@ -17,3 +17,4 @@
     En qualsevol cas, moltes gràcies per considerar la nostra sol·licitud.
 </div>
 <div>Salutacions cordials de {{authUser()->shortName}}</div>
+[peu]

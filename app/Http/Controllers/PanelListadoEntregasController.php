@@ -35,8 +35,17 @@ class PanelListadoEntregasController extends BaseController
 
     public function search()
     {
-        $modulos = hazArray(Modulo_ciclo::whereIn('idModulo',hazArray(Horario::distinct()->get(),'modulo'))
-            ->where('idDepartamento',AuthUser()->departamento)->get(),'id');
+        $modulos = hazArray(
+            Modulo_ciclo::whereIn(
+                'idModulo',
+                hazArray(Horario::distinct()->get(), 'modulo')
+            )->where(
+                'idDepartamento',
+                AuthUser()->departamento
+            )->get(),
+            'id'
+        );
+
         return Modulo_grupo::with('Grupo')
             ->with('resultados')
             ->with('ModuloCiclo')
@@ -68,9 +77,9 @@ class PanelListadoEntregasController extends BaseController
         }
         if ($reunion = $this->existeInforme())
         {
-            $this->panel->setBoton('index',new BotonBasico('Infdepartamento.pdf.'.$reunion->id,['roles' => config(self::ROLES_ROL_JEFE_DPTO)]));
+            $this->panel->setBoton('index', new BotonBasico('Infdepartamento.pdf.'.$reunion->id,['roles' => config(self::ROLES_ROL_JEFE_DPTO)]));
         }
-        $this->panel->setBoton('grid',new BotonImg('Infdepartamento.aviso',['img' => 'fa-bell','where' => ['seguimiento','!=',1],'roles' => config(self::ROLES_ROL_JEFE_DPTO)]));
+        $this->panel->setBoton('grid', new BotonImg('Infdepartamento.aviso', ['img' => 'fa-bell', 'where' => ['seguimiento', '!=', 1], 'roles' => config(self::ROLES_ROL_JEFE_DPTO)]));
     }
     
     
@@ -168,7 +177,8 @@ class PanelListadoEntregasController extends BaseController
         return back();
     }
     
-    public function avisaTodos(){
+    public function avisaTodos()
+    {
         foreach (Modulo_grupo::whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get() as $modulo)
         {
             if ($modulo->seguimiento == 0) {
@@ -181,7 +191,7 @@ class PanelListadoEntregasController extends BaseController
     public function avisaFaltaEntrega($id)
     {
         $modulo = Modulo_grupo::find($id);
-        foreach ($modulo->profesores() as $profesor){
+        foreach ($modulo->profesores() as $profesor) {
                 $texto = "Et falta per omplir el seguiment de l'avaluacio '" .
                         "' del mòdul '$modulo->Xmodulo' del Grup '$modulo->Xgrupo'";
                 avisa($profesor['idProfesor'], $texto);
@@ -197,7 +207,11 @@ class PanelListadoEntregasController extends BaseController
     
     public static function existeInforme()
     {
-        return Reunion::Select('id', 'numero')->Tipo(10)->where('numero',evaluacion() +19)->Convocante(AuthUser()->dni)->first();
+        return Reunion::Select('id', 'numero')
+            ->Tipo(10)
+            ->where('numero', evaluacion() +19)
+            ->Convocante(AuthUser()->dni)
+            ->first();
     }
     private function hazPdfInforme($observaciones, $trimestre, $proyectos = null)
     {
@@ -211,42 +225,34 @@ class PanelListadoEntregasController extends BaseController
                 ->orderBy('desde')
                 ->get();
         $todos = Resultado::Departamento($dep)->with('ModuloGrupo')->get();
-        $profesores = hazArray(Profesor::where('departamento',$dep)->get(),'dni','dni');
+        $profesores = hazArray(
+            Profesor::where('departamento', $dep)->get(),
+            'dni',
+            'dni'
+        );
         $totales = array();
 
         $resultados = collect();
-        foreach ($todos as $resultado){
+        foreach ($todos as $resultado) {
             $modulo = $resultado->ModuloGrupo;
-            if ($modulo){
+            if ($modulo) {
                 $curso = $modulo->Grupo->curso;
                 $tipoCiclo = $modulo->ModuloCiclo->Ciclo->tipo;
-                if (config("curso.trimestres.$tipoCiclo.$trimestre.$curso")==$resultado->evaluacion){
+                if (config("curso.trimestres.$tipoCiclo.$trimestre.$curso") == $resultado->evaluacion) {
                     $resultados->add($resultado);
                 }
             }
         }
         $resultados->sortBy('Modulo');
 
-        /*$primero = Resultado::Departamento($dep)
-                ->TrimestreCurso($trimestre, 1)
-                ->get();
-        $segundo = Resultado::Departamento($dep)
-                ->TrimestreCurso($trimestre, 2)
-                ->get();
-
-        dd($trimestre);
-        $resultados = $primero
-                ->concat($segundo)
-                ->sortBy('Modulo');*/
-
         if ($trimestre == 3) {
             $programaciones = Programacion::Departamento(AuthUser()->departamento)
                     ->whereNotNull('propuestas')
                     ->get();
             // matriculas
-            foreach (Ciclo::where('departamento',$dep)->get() as $ciclo){
-                foreach ($ciclo->Grupos as $grupo){
-                    if (isset($totales[$ciclo->ciclo]['matriculas'])){
+            foreach (Ciclo::where('departamento', $dep)->get() as $ciclo) {
+                foreach ($ciclo->Grupos as $grupo) {
+                    if (isset($totales[$ciclo->ciclo]['matriculas'])) {
                         $totales[$ciclo->ciclo]['matriculas'] += count($grupo->Alumnos);
                         $totales[$ciclo->ciclo]['fct'] += $grupo->AvalFct;
                         $totales[$ciclo->ciclo]['insercio'] += $grupo->Colocados;
@@ -264,15 +270,13 @@ class PanelListadoEntregasController extends BaseController
                 }
 
                 $centres = array();
-                foreach ($ciclo->fcts as $fct){
+                foreach ($ciclo->fcts as $fct) {
                     $centres[$fct->Colaboracion->idCentro] = 1;
-                    foreach (Vote::where('option_id',21)->where('idOption1',$fct->id)->get() as $vote)
-                    {
+                    foreach (Vote::where('option_id', 21)->where('idOption1', $fct->id)->get() as $vote) {
                         $totales[$ciclo->ciclo]['votesAlFct'] += $vote->value;
                         $totales[$ciclo->ciclo]['sumAlFct'] += 1;
                     }
-                    foreach (Vote::where('option_id',26)->where('idOption1',$fct->id)->get() as $vote)
-                    {
+                    foreach (Vote::where('option_id',26)->where('idOption1', $fct->id)->get() as $vote) {
                         $totales[$ciclo->ciclo]['votesTuFct'] += $vote->value;
                         $totales[$ciclo->ciclo]['sumTuFct'] += 1;
                     }
@@ -280,10 +284,9 @@ class PanelListadoEntregasController extends BaseController
                 $totales[$ciclo->ciclo]['centres'] = count($centres);
             }
 
-            foreach (Vote::where('option_id',35)->whereIn('idOption2',$profesores)->get() as $vote)
-            {
+            foreach (Vote::where('option_id', 35)->whereIn('idOption2', $profesores)->get() as $vote) {
                 $mg = Modulo_grupo::find($vote->idOption1);
-                if (isset( $totales[$mg->ModuloCiclo->Ciclo->ciclo]['votesSatis'])){
+                if (isset($totales[$mg->ModuloCiclo->Ciclo->ciclo]['votesSatis'])) {
                     $totales[$mg->ModuloCiclo->Ciclo->ciclo]['votesSatis'] += $vote->value;
                     $totales[$mg->ModuloCiclo->Ciclo->ciclo]['sumSatis'] += 1;
                 } else {
@@ -296,22 +299,36 @@ class PanelListadoEntregasController extends BaseController
             $programaciones = null;
         }
         $fecha = Hoy();
-        return $this->hazPdf('pdf.memoriaDepartament', $actividades, compact('resultados', 'observaciones', 'trimestre', 'proyectos', 'programaciones','fecha','totales'));
+        return $this->hazPdf(
+            'pdf.memoriaDepartament',
+            $actividades,
+            compact(
+                'resultados',
+                'observaciones',
+                'trimestre',
+                'proyectos',
+                'programaciones',
+                'fecha',
+                'totales'
+            )
+        );
     }
 
     private function faltan()
     {
         $empty = 0;
-        foreach (Modulo_grupo::whereIn('idModuloCiclo', hazArray(Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(), 'id', 'id'))->get() as $modulo)
-        {
+        foreach (Modulo_grupo::whereIn(
+            'idModuloCiclo',
+            hazArray(
+                Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(),
+                'id',
+                'id'
+            )
+        )->get() as $modulo) {
             if ($modulo->seguimiento == 0) {
                 $empty++;
             }
         }
         return $empty;
     }
-    
-    
-    
-    
 }

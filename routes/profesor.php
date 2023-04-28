@@ -9,6 +9,12 @@ Route::get('/logout', ['as' => 'logout', 'uses' => 'Auth\Profesor\LoginControlle
 
 Route::get('/perfil', ['as' => 'perfil.edit', 'uses' => 'Auth\Profesor\PerfilController@editar']);
 Route::put('/perfil', ['as' => 'perfil.update', 'uses' => 'Auth\Profesor\PerfilController@update']);
+Route::get('/files', ['as' => 'files.edit', 'uses' => 'Auth\Profesor\PerfilController@files']);
+Route::put('/files', ['as' => 'files.update', 'uses' => 'Auth\Profesor\PerfilController@updateFiles']);
+
+Route::get('/materialbaja/{id}/delete', ['as' => 'material.delete', 'uses' => 'MaterialBajaController@delete']);
+Route::get('/materialbaja/{id}/resolve', ['as' => 'materialBaja.resolve', 'uses' => 'MaterialModController@resolve']);
+Route::get('/materialbaja/{id}/refuse', ['as' => 'materialBaja.refuse', 'uses' => 'MaterialModController@refuse']);
 
 
 Route::resource('/actividad', 'ActividadController', ['except' => ['show', 'destroy']]);
@@ -316,11 +322,11 @@ Route::post('/alumnofct/convalidacion', ['as' => 'alumnofct.convalidacion', 'use
 Route::get('/alumnofct/{id}/pdf', ['as' => 'alumnofct.pdf', 'uses' => 'FctAlumnoController@pdf']);
 Route::get('/alumnofct/{id}/show', ['as' => 'alumnofct.show', 'uses' => 'FctAlumnoController@show']);
 Route::get('/alumnofct/{id}/auth', ['as' => 'alumnofct.auth', 'uses' => 'FctAlumnoController@auth']);
-Route::get('/alumnofct/{id}/A5', ['as' => 'alumnofct.A5', 'uses' => 'FctAlumnoController@A5']);
-Route::get('/alumnofct/{id}/A1', ['as' => 'alumnofct.A1', 'uses' => 'FctAlumnoController@A1']);
+Route::get('/alumnofct/{id}/Valoratiu', ['as' => 'alumnofct.Valoratiu', 'uses' => 'FctAlumnoController@Valoratiu']);
+Route::get('/alumnofct/{id}/AEng', ['as' => 'alumnofct.AEng', 'uses' => 'FctAlumnoController@AEng']);
 Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
 Route::get('/alumnofct/{id}/unlink', ['as' => 'alumnofct.unlink', 'uses' => 'FctAlumnoController@unlink']);
-
+Route::get('/alumnofct/{id}/A{num}',['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num','[1-3]');
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy', 'show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
@@ -505,13 +511,9 @@ Route::get(
 );
 
 Route::post('/externalAuth', RedirectAfterAuthenticationController::class);
-Route::get('/sao/sync/{password}', ['as'=>'sao.sync', 'uses'=>'SaoSyncController@index']);
-Route::get('/sao/compara/{password}', ['as'=>'sao.compara', 'uses'=>'SaoComparaController@index']);
-Route::get('/sao/importa/{password}', ['as'=>'sao.importa', 'uses'=>'SaoImportaController@index']);
-Route::get('/sao/annexes/{password}', ['as'=>'sao.annexes', 'uses'=>'SaoAnnexesController@index']);
-Route::get('/sao/a2/{password}', ['as'=>'sao.a2', 'uses'=>'SaoA2Controller@index']);
-Route::post('/sao/importa', ['as' => 'sao.post.importa', 'uses' => 'SaoImportaController@importa']);
-Route::post('/sao/compara', ['as' => 'sao.post.compara', 'uses' => 'SaoComparaController@compara']);
+Route::post('/sao/importa', [Intranet\Sao\Importa::class,'importa']);
+Route::post('/sao/compara', [Intranet\Sao\Compara::class,'compara']);
+
 
 //Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@login']);
 Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);

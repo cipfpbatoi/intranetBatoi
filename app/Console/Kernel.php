@@ -45,8 +45,8 @@ class Kernel extends ConsoleKernel
                 ->dailyAt('07:00');
         $schedule->command('fct:Daily')
                 ->dailyAt('06:50');
-        $schedule->command('sao:connect')
-            ->weeklyOn([2,5], '21:00');
+        $schedule->command('sao:connect')->weekly()->fridays()->at('7:00');
+        $schedule->command('sao:connect')->weekly()->tuesdays()->at('7:00');
         $schedule->command('sao:annexes')
             ->weeklyOn(1, '6:30');
     }

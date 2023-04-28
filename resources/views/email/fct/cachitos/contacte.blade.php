@@ -1,0 +1,1 @@
+<strong>{{$elemento->contacto}}</strong>

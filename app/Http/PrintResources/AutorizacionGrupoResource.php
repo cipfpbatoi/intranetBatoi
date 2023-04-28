@@ -26,7 +26,7 @@ class AutorizacionGrupoResource extends PrintResource
         $alumnes = '';
         $mes = mes(Hoy());
 
-        foreach ($this->getElements() as $element) {
+        foreach ($this->getElements()??[] as $element) {
             $alumnes .= $element->Alumno->fullName.'
 ';
         }

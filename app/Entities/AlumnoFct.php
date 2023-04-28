@@ -51,6 +51,11 @@ class AlumnoFct extends Model
             ->where('model_class', 'Intranet\Entities\AlumnoFct');
     }
 
+    public function Signatures()
+    {
+        return $this->hasMany(Signatura::class, 'idSao', 'idSao');
+    }
+
 
     public function scopeMisFcts($query, $profesor=null)
     {
@@ -245,6 +250,25 @@ class AlumnoFct extends Model
         return Adjunto::where('size', 1024)->where('route', 'alumnofctaval/'.$this->id)->count();
     }
 
+    public function getA2Attribute()
+    {
+        return Signatura::where('idSao', $this->idSao)->where('tipus', 'A2')->where('signed', true)->get()->first();
+    }
+
+    public function getA1Attribute()
+    {
+        return Signatura::where('idSao', $this->idSao)->where('tipus', 'A1')->where('signed', true)->get()->first();
+    }
+
+    public function getA3Attribute()
+    {
+        return Signatura::where('idSao', $this->idSao)->where('tipus', 'A3')->get()->first();
+    }
+
+    public function routeFile($anexe)
+    {
+        return storage_path('app/annexes/')."A{$anexe}_{$this->idSao}.pdf";
+    }
 
 
     public function getClassAttribute()

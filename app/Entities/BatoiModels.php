@@ -52,9 +52,10 @@ trait BatoiModels
     /**
      * @param $id
      */
-    public function deleteInputType($id){
+    public function deleteInputType($id)
+    {
         unset($this->inputTypes[$id]);
-        foreach ($this->fillable as $key => $item){
+        foreach ($this->fillable as $key => $item) {
             if ($item == $id) {
                 unset($this->fillable[$key]);
             }
@@ -67,10 +68,9 @@ trait BatoiModels
      */
     public function addFillable($field, $first=false)
     {
-        if ($first){
+        if ($first) {
             array_unshift($this->fillable, $field);
-        }
-        else {
+        } else {
             $ultimo = array_pop($this->fillable);
             $this->fillable[] = $field;
             $this->fillable[] = $ultimo;
@@ -105,7 +105,8 @@ trait BatoiModels
         return isset($this->inputTypes[$campo]) ? $this->inputTypes[$campo] : ['type' => 'text'];
     }
 
-    public function getInputTypes(){
+    public function getInputTypes()
+    {
         return $this->inputTypes;
     }
 
@@ -147,8 +148,10 @@ trait BatoiModels
             return ;
         }
         $clase = getClase($this) == 'Documento'?$this->tipoDocumento:getClase($this);
-        $this->fichero = $file->storeAs($this->getDirectory($clase)
-            ,$this->getFileName($file->getClientOriginalExtension(),$clase));
+        $this->fichero = $file->storeAs(
+            $this->getDirectory($clase),
+            $this->getFileName($file->getClientOriginalExtension(), $clase)
+        );
         $this->save();
         
     }
@@ -188,7 +191,7 @@ trait BatoiModels
         if ($type == 'file') {
             return $value = $this->$key;
         }
-        if ($type == 'checkbox'){
+        if ($type == 'checkbox') {
             return $value == null?0:1;
         }
         return $value;
@@ -201,7 +204,7 @@ trait BatoiModels
     public function fillAll(Request $request)
     {
         $fillable = $this->notFillable?array_diff($this->fillable, $this->notFillable):$this->fillable;
-        foreach ($fillable as $key)  {
+        foreach ($fillable as $key) {
             $value = $request->$key;
             $this->$key = $this->fillField($key, $value);
         }
@@ -243,13 +246,15 @@ trait BatoiModels
         return false;
     }
 
-    public function saveContact($contacto,$email){
+    public function saveContact($contacto, $email)
+    {
         $this->contacto = $contacto;
         $this->email = $email;
         return $this->save();
     }
 
-    public function showConfirm(){
+    public function showConfirm()
+    {
         return $this->toArray();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Sao;
 
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -10,11 +10,10 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Colaboracion;
+use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Empresa;
 use Intranet\Entities\Instructor;
-use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 
 
@@ -22,14 +21,14 @@ use Styde\Html\Facades\Alert;
  * Class AdministracionController
  * @package Intranet\Http\Controllers
  */
-class SaoImportaController
+class Importa
 {
     const TD_NTH_CHILD_2 = "td:nth-child(2)";
     const TR_NTH_CHILD_2 = "tr:nth-child(2)";
     const TD_NTH_CHILD_3 = "td:nth-child(3)";
     const TD_NTH_CHILD_4 = "td:nth-child(4)";
 
-    private function buscaCentro($dada, $empresa)
+    private static function buscaCentro($dada, $empresa)
     {
         $idEmpresa = $empresa->id;
         $nameCentro = $dada['centre']['name'];
@@ -81,14 +80,14 @@ class SaoImportaController
 
     }
 
-    private function extractFromModal(&$dades, $index, $tr, $driver)
+    private static function extractFromModal(&$dades, $index, $tr, $driver)
     {
-        list($desde, $hasta) = $this->getPeriode($tr);
-        $alumne = $this->getAlumno($tr);
+        list($desde, $hasta) = self::getPeriode($tr);
+        $alumne = self::getAlumno($tr);
         if ($hasta >= Hoy()) {
             $dades[$index]['nia'] = $alumne;
-            list($nameEmpresa, $idEmpresa) = $this->getEmpresa($tr);
-            $dades[$index]['idSao'] = $this->getIdSao($tr);
+            list($nameEmpresa, $idEmpresa) = self::getEmpresa($tr);
+            $dades[$index]['idSao'] = self::getIdSao($tr);
             $dades[$index]['idEmpresa'] = $idEmpresa;
             $dades[$index]['nameEmpresa'] = $nameEmpresa;
             $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"))->click();
@@ -160,7 +159,7 @@ class SaoImportaController
      * @return mixed
      * @throws \Facebook\WebDriver\Exception\UnknownErrorException
      */
-    private function extractFromEdit($dada, RemoteWebDriver $driver)
+    private static function extractFromEdit($dada, RemoteWebDriver $driver)
     {
         $idEmpresa = $dada['idEmpresa'];
         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
@@ -185,54 +184,38 @@ class SaoImportaController
         return $dada;
     }
 
-    public function index($password)
+    public static function index($driver)
     {
-        $dni = AuthUser()->dni;
-        $grupo = Grupo::where('tutor', $dni)->first();
+        $grupo = Grupo::where('tutor', AuthUser()->dni)->first();
         $ciclo = $grupo->idCiclo??null;
         $dades = array();
 
-        if (!$ciclo) {
-            Alert::danger('No eres tutor');
-            return redirect(route('alumnofct.index'));
-        } else {
+        try {
+            self::extractPage($driver, $dades);
+            $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
+            sleep(1);
+            self::extractPage($driver, $dades);
+        } catch (Exception $e) {
+            //No hi ha més pàgines
+        }
 
-            try {
-                $driver = SeleniumService::loginSAO($dni, $password);
+
+        if (count($dades)) {
+            foreach ($dades as $index => $dada) {
                 try {
-                    $this->extractPage($driver, $dades);
-                    $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
-                    sleep(1);
-                    $this->extractPage($driver, $dades);
-                } catch (Exception $e) {
-                    //No hi ha més pàgines
-                }
-
-
-                if (count($dades)) {
-                    foreach ($dades as $index => $dada) {
-                        try {
-                            $dades[$index] = $this->extractFromEdit($dada, $driver);
-                            $empresa = Empresa::where('cif', $dades[$index]['cif'])->first();
-                            if ($empresa) { //Si hi ha empresa
-                                $dades[$index]['centre']['id'] = $this->buscaCentro($dades[$index], $empresa);
-                            }
-                        } catch (Exception $e) {
-                            Alert::info($e->getMessage());
-                        }
+                    $dades[$index] = self::extractFromEdit($dada, $driver);
+                    $empresa = Empresa::where('cif', $dades[$index]['cif'])->first();
+                    if ($empresa) { //Si hi ha empresa
+                        $dades[$index]['centre']['id'] = self::buscaCentro($dades[$index], $empresa);
                     }
+                } catch (Exception $e) {
+                    Alert::info($e->getMessage());
                 }
-                $driver->close();
-                session(compact('dades'));
-                return view('sao.importa', compact('dades', 'ciclo'));
-            } catch (Exception $e) {
-                Alert::warning($e->getMessage());
-                if (isset($driver)) {
-                    $driver->close();
-                }
-                return redirect(route('alumnofct.index'));
             }
         }
+        $driver->close();
+        session(compact('dades'));
+        return view('sao.importa', compact('dades', 'ciclo'));
     }
 
 
@@ -242,17 +225,17 @@ class SaoImportaController
         $ciclo = $request->ciclo;
         foreach ($request->request as $key => $value) {
             if ($value == 'on') {
-                $centro = $this->getCentro($dades[$key]);
-                $idColaboracion = $this->getColaboracion($dades[$key], $ciclo, $centro->id);
-                $dni = $this->getDni($centro, $dades[$key], $ciclo);
-                $fct = $this->getFct($dni, $idColaboracion, $dades[$key]['erasmus']);
-                $this->saveFctAl($fct, $dades[$key]);
+                $centro = self::getCentro($dades[$key]);
+                $idColaboracion = self::getColaboracion($dades[$key], $ciclo, $centro->id);
+                $dni = self::getDni($centro, $dades[$key], $ciclo);
+                $fct = self::getFct($dni, $idColaboracion, $dades[$key]['erasmus']);
+                self::saveFctAl($fct, $dades[$key]);
             }
         }
         return redirect(route('alumnofct.index'));
     }
 
-    private function getCentro($dades)
+    private static function getCentro($dades)
     {
         $idCentro = $dades['centre']['id']??null;
 
@@ -293,7 +276,7 @@ class SaoImportaController
         return $centro;
     }
 
-    private function getColaboracion($dada, $idCiclo, $idCentro)
+    private static function getColaboracion($dada, $idCiclo, $idCentro)
     {
         if (!$colaboracion = Colaboracion::where('idCiclo', $idCiclo)
             ->where('idCentro', $idCentro)
@@ -320,7 +303,7 @@ class SaoImportaController
      * @param  \Facebook\WebDriver\Remote\RemoteWebElement  $tr
      * @return string
      */
-    private function getAlumno(\Facebook\WebDriver\Remote\RemoteWebElement $tr): string
+    private static function getAlumno(\Facebook\WebDriver\Remote\RemoteWebElement $tr): string
     {
         $alumne = $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles del alumno/a']"))->getAttribute('href');
         $href = explode('&', $alumne)[1];
@@ -333,7 +316,7 @@ class SaoImportaController
      * @param  \Facebook\WebDriver\Remote\RemoteWebElement  $tr
      * @return array
      */
-    private function getEmpresa(\Facebook\WebDriver\Remote\RemoteWebElement $tr): array
+    private static function getEmpresa(\Facebook\WebDriver\Remote\RemoteWebElement $tr): array
     {
         $empresa = $tr->findElement(WebDriverBy::cssSelector("a[title^='Detalles de l']"));
         $id = $empresa->getAttribute('href');
@@ -347,7 +330,7 @@ class SaoImportaController
      * @param  \Facebook\WebDriver\Remote\RemoteWebElement  $tr
      * @return mixed|string
      */
-    private function getIdSao(\Facebook\WebDriver\Remote\RemoteWebElement $tr)
+    private static function getIdSao(\Facebook\WebDriver\Remote\RemoteWebElement $tr)
     {
         $enlace = $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"));
         $href = explode("'", $enlace->getAttribute('href'))[1];
@@ -363,7 +346,7 @@ class SaoImportaController
      * @return array
      */
 
-    private function getPeriode(\Facebook\WebDriver\Remote\RemoteWebElement $tr): array
+    private static function getPeriode(\Facebook\WebDriver\Remote\RemoteWebElement $tr): array
     {
         $dadesPeriode = $tr->findElement(WebDriverBy::cssSelector("td:nth-child(4)"))->getText();
         $dates = explode('-', $dadesPeriode);
@@ -381,7 +364,7 @@ class SaoImportaController
      * @param $ciclo
      * @return Instructor
      */
-    private function altaInstructor(
+    private static function altaInstructor(
         string $instructorDNI,
         string $instructorName,
         string $emailCentre,
@@ -411,14 +394,14 @@ class SaoImportaController
      * @param $dades
      * @return mixed
      */
-    private function getDni($centro, $dades, $ciclo)
+    private static function getDni($centro, $dades, $ciclo)
     {
         if (!$centro->idSao) {
             $centro->idSao = $dades['centre']['idSao'];
             $centro->save();
         }
         if (!($instructor = Instructor::find($dades['centre']['instructorDNI']))) {
-            $instructor = $this->altaInstructor(
+            $instructor = self::altaInstructor(
                 $dades['centre']['instructorDNI'],
                 $dades['centre']['instructorName'],
                 $dades['centre']['email'],
@@ -437,7 +420,7 @@ class SaoImportaController
      * @param $idColaboracion
      * @return Fct
      */
-    private function getFct($dni, $idColaboracion, $erasmus): Fct
+    private static function getFct($dni, $idColaboracion, $erasmus): Fct
     {
         $asociacion = $erasmus == 'No' ? 1 : 2;
         $fct = Fct::where('idColaboracion', $idColaboracion)
@@ -463,7 +446,7 @@ class SaoImportaController
      * @param $dades
      * @return AlumnoFct
      */
-    private function saveFctAl(Fct $fct, $dades)
+    private static function saveFctAl(Fct $fct, $dades)
     {
         $fctAl = AlumnoFct::where('idFct', $fct->id)->where('idAlumno', $dades['nia'])->first();
         if (!$fctAl) {
@@ -489,14 +472,14 @@ class SaoImportaController
      * @param  array  $dades
      * @return array
      */
-    private function extractPage(RemoteWebDriver $driver, array &$dades)
+    private static function extractPage(RemoteWebDriver $driver, array &$dades)
     {
         $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
         foreach ($table as $index => $tr) {
             if ($index) { //el primer és el titol i no cal iterar-lo
                 try {
                     //dades de la linea
-                    $this->extractFromModal($dades, $index, $tr, $driver);
+                    self::extractFromModal($dades, $index, $tr, $driver);
                 } catch (Exception $e) {
                     unset($dades[$index]);
                     Alert::info($e->getMessage());
