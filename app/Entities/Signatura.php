@@ -25,10 +25,10 @@ class Signatura extends Model
 
     public function Teacher()
     {
-        return $this->belongsTo(Profesor::class, 'idProfesor','dni');
+        return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
 
-    public static function saveIfNotExists($anexe, $idSao, $sendTo=true)
+    public static function saveIfNotExists($anexe, $idSao)
     {
         $anexo = 'A'.$anexe;
         $sig = Signatura::where('tipus', $anexo)->where('idSao', $idSao)->get()->first();
@@ -37,13 +37,13 @@ class Signatura extends Model
                 'tipus' => $anexo,
                 'idProfesor' => authUser()->dni,
                 'idSao' => $idSao,
-                'sendTo' => $sendTo,
+                'sendTo' => false,
                 'signed' => $anexo === 'A3' ? true : false
             ]);
             $sig->save();
         } else {
             $sig->signed = $anexo === 'A3' ? true : false;
-            $sig->sendTo = $sendTo;
+            $sig->sendTo = false;
             $sig->save();
         }
         return $sig;
@@ -57,5 +57,10 @@ class Signatura extends Model
     public function getAlumneAttribute()
     {
         return $this->Fct->Alumno->shortName;
+    }
+
+    public function getRouteFileAttribute()
+    {
+        return storage_path('app/annexes/')."{$this->tipus}_{$this->idSao}.pdf";
     }
 }
