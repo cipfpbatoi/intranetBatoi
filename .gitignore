@@ -19,7 +19,6 @@ yarn-error.log
 /config/services.php
 /config/mail.php
 /config/modelos.php
-/config/tablas.php
 /config/avisos.php
 /public/img/pdf
 composer.lock
