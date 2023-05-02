@@ -60,7 +60,7 @@ class A2
         if ($file) {
             unlink($file);
         }
-        $driver->close();
+        $driver->quit();
         return back();
     }
 

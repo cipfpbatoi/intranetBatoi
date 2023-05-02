@@ -116,7 +116,7 @@ class SaoAnnexes extends Command
                 avisa($envia, $e->getMessage(), '#', 'SAO');
         }
         if (isset($driver)) {
-            $driver->close();
+            $driver->quit();
         }
     }
 }

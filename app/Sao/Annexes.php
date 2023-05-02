@@ -73,7 +73,7 @@ class Annexes
         } catch (Exception $e) {
             Alert::danger($e);
         }
-        $driver->close();
+        $driver->quit();
         return back();
     }
 
