@@ -196,10 +196,10 @@ function authUser()
 function apiAuthUser($token=null)
 {
     if ($token==null) {
-        $token = $_GET['api_token'];
+        $token = $_GET['api_token']??null;
     }
     return Intranet\Entities\Profesor::where('api_token', $token)->get()
-        ->first();
+        ->first()??null;
         //??Intranet\Entities\Profesor::find('021652470V');
 }
 
