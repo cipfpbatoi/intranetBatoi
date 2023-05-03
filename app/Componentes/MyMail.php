@@ -50,7 +50,7 @@ class MyMail
         } else {
             $this->view = $view;
         }
-        $this->attach =$attach;
+        $this->attach = $attach??session()->get('attach')??null;
         $this->editable = $editable;
     }
 
@@ -97,6 +97,9 @@ class MyMail
         $class = $this->class;
         $register = $this->register;
         $template = $this->template;
+        if ($this->attach) {
+            session()->put('attach', $this->attach);
+        }
         return view(
             'email.view',
             compact(
@@ -110,7 +113,7 @@ class MyMail
                 'class',
                 'register',
                 'editable',
-                'template'
+                'template',
             )
         );
     }

@@ -16,7 +16,7 @@ class SignaturaDireccionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'texto' => $this->tipus.' '.$this->profesor.' '.$this->alumne,
+            'texto' => $this->tipus.' -> '.$this->centre.' de '.$this->profesor. ' per '.$this->alumne,
             'marked' => 1
         ];
     }

@@ -21,7 +21,7 @@ class PanelSignaturaController extends BaseController
     /**
      * @var array
      */
-    protected $gridFields = [ 'tipus', 'profesor', 'alumne','created_at'];
+    protected $gridFields = [ 'profesor', 'centre', 'tipus',  'alumne',  'created_at'];
     /**
      * @var string
      */

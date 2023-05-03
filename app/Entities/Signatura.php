@@ -15,7 +15,7 @@ class Signatura extends Model
         'idProfesor',
         'idSao',
         'sendTo',
-
+        'signed'
     ];
 
     public function Fct()
@@ -38,11 +38,11 @@ class Signatura extends Model
                 'idProfesor' => authUser()->dni,
                 'idSao' => $idSao,
                 'sendTo' => false,
-                'signed' => $anexo === 'A3' ? true : false
+                'signed' => ($anexo == 'A3') ? 1 : 0
             ]);
             $sig->save();
         } else {
-            $sig->signed = $anexo === 'A3' ? true : false;
+            $sig->signed = ($anexo == 'A3') ? 1 : 0;
             $sig->sendTo = false;
             $sig->save();
         }
@@ -59,8 +59,17 @@ class Signatura extends Model
         return $this->Fct->Alumno->shortName;
     }
 
+    public function getCentreAttribute()
+    {
+        return $this->Fct->Fct->Colaboracion->Centro->nombre;
+    }
+
     public function getRouteFileAttribute()
     {
         return storage_path('app/annexes/')."{$this->tipus}_{$this->idSao}.pdf";
     }
+     public function getSimpleRouteFileAttribute()
+     {
+         return 'app/annexes/'."{$this->tipus}_{$this->idSao}.pdf";
+     }
 }

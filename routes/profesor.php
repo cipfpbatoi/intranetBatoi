@@ -327,6 +327,7 @@ Route::get('/alumnofct/{id}/AEng', ['as' => 'alumnofct.AEng', 'uses' => 'FctAlum
 Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
 Route::get('/alumnofct/{id}/unlink', ['as' => 'alumnofct.unlink', 'uses' => 'FctAlumnoController@unlink']);
 Route::get('/alumnofct/{id}/A{num}',['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num','[1-3]');
+Route::get('/alumnofct/{id}/send', ['as' => 'alumnofct.send', 'uses' => 'FctAlumnoController@send']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy', 'show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
@@ -517,8 +518,7 @@ Route::post('/sao/compara', [Intranet\Sao\Compara::class,'compara']);
 
 //Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@login']);
 Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);
-/* Prova */
-Route::get('/signatura', ['as'=>'signatura','uses'=>SignaturaController::class]);
+
 
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
