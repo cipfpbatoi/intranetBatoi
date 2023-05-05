@@ -8,6 +8,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Console\Command;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\Signatura;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Services\AttachedFileService;
 use Intranet\Services\SeleniumService;
@@ -82,6 +83,11 @@ class SaoAnnexes extends Command
                                 "alumnofctaval/$fct->id",
                                 $fct->Alumno->tutor[0]->dni
                             );
+                            // esborrar fitxers de signatura
+                            foreach (Signatura::where('idSao', $fct->idSao)->get() as $signatura) {
+                                $signatura->deleteFile();
+                                $signatura->delete();
+                            }
                             $alumnes[] = $fct->Alumno;
                         } catch (Exception $e) {
                             // No trobats els annexes no es fa res

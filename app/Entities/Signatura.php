@@ -28,6 +28,13 @@ class Signatura extends Model
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
 
+    public function deleteFile()
+    {
+        if (file_exists($this->routeFile)) {
+            unlink($this->routeFile);
+        }
+    }
+
     public static function saveIfNotExists($anexe, $idSao)
     {
         $anexo = 'A'.$anexe;
@@ -72,4 +79,13 @@ class Signatura extends Model
      {
          return 'app/annexes/'."{$this->tipus}_{$this->idSao}.pdf";
      }
+
+    public function getEmailAttribute()
+    {
+        return $this->Fct->Fct->Colaboracion->email;
+    }
+    public function getContactoAttribute()
+    {
+        return $this->Fct->Fct->Colaboracion->contacto;
+    }
 }

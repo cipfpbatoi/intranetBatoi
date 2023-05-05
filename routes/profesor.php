@@ -491,7 +491,8 @@ Route::get('/poll/{id}/delete', ['as' => 'poll.delete', 'uses' => 'PollControlle
 Route::get('/votes/{colaboracion}/show', ['as' => 'votes.colaboracion', 'uses'=> 'VotesController@showColaboracion']);
 
 Route::get('/myPoll', ['as' => 'mypoll.index', 'uses' => 'PanelPollResultController@index']);
-Route::post('/myMail', 'MyMailController@send');
+Route::post('/myMail', ['as'=> 'myMail.send', 'uses' => 'MyMailController@send']);
+//Route::post('/myMail/annexes', ['as' => 'myMail.sendAnnexes', 'uses' => 'MyMailController@sendAnnexes']);
 Route::get('/qualitat/documento', ['as' => 'qualitat.docuentacio' ,'uses' => 'QualitatDocumentoController@index']);
 
 Route::get('fiCurs', ['as'=>'fiCurs', 'uses'=>'PanelFinCursoController@index']);

@@ -20,18 +20,17 @@ class MyMailController extends Controller
     
     public function send(Request $request)
     {
-        if ($request->hasFile('file') && $request->file('file')->isValid()){
+        if ($request->hasFile('file') && $request->file('file')->isValid()) {
             $ext = $request->file('file')->getClientOriginalExtension();
             $mime = $request->file('file')->getMimeType();
             $nom = "AdjuntCorreu.".$ext;
             $request->file('file')->move(storage_path('tmp/'), $nom);
             $fitxer = 'tmp/'.$nom;
             $attach = [$fitxer => $mime];
-        }
-        else {
+        } else {
             $attach = null;
         }
-        if (strlen($request->contenido) < 50 && $request->editable == true) {
+        if (strlen($request->contenido) < 50 && $request->editable) {
             Alert::danger('El contingut ha de ser més de 50 caracters');
         } else {
             $mail = new MyMail($request->to, $request->contenido, $request->toArray(), $attach);
@@ -47,7 +46,7 @@ class MyMailController extends Controller
         $stringFinder = 'Intranet\\Finders\\MailFinders\\'.$request->collect.'Finder';
         $finder = new $stringFinder();
 
-        $mail = new MyMail($finder->getElements(),null,[],null,true);
+        $mail = new MyMail($finder->getElements(), null, [], null, true);
         return $mail->render('\\');
     }
     

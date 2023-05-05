@@ -75,7 +75,6 @@ class MyMail
                 $email = explode(';', $toCompost[1]);
                 $element->mail = $email[0];
                 $element->contact = $email[1];
-
             }
             return $element;
         }
@@ -97,6 +96,7 @@ class MyMail
         $class = $this->class;
         $register = $this->register;
         $template = $this->template;
+        $action = $this->action??'myMail.send';
         if ($this->attach) {
             session()->put('attach', $this->attach);
         }
@@ -114,6 +114,7 @@ class MyMail
                 'register',
                 'editable',
                 'template',
+                'action'
             )
         );
     }
@@ -127,6 +128,7 @@ class MyMail
         } else {
             $this->sendMail($this->elements, $fecha);
         }
+        session()->forget('attach');
     }
 
     private function sendMail($elemento, $fecha)

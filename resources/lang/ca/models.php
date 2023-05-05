@@ -351,7 +351,9 @@ return array(
             'send' => 'Enviar Correu Alumnat Inici',
             'link' => 'Adjuntar fitxers',
             'default' => 'x Empresa',
-
+            'an1' => 'Imprimir annexes I',
+            'an2' => 'Imprimir annexes II',
+            'an3' => 'Imprimir annexes III',
         ),
         'Dual' => array(
             'index' => 'FP Dual',

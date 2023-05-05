@@ -3,7 +3,7 @@
 return [
     'controlDiario' => 1,
     'diasNoCompleta' => 45,
-    'precioKilometro' => [0.19,0.078,0,0,0,0,0],
+        'precioKilometro' => [0.19,0.078,0,0,0,0,0],
     'reservaAforo' => 1.2,
     'comisionFCTexterna' => 1,
     'httpFCTexterna' => 'http://www.fpxativa.es/admin',

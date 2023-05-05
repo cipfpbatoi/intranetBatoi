@@ -344,6 +344,9 @@ return array(
             'send' => 'Enviar Correo Inicial Alumnos',
             'default' => 'x Empresa',
             'link' => 'Adjuntar ficheros',
+            'an1' => 'Imprimir anexos I',
+            'an2' => 'Imprimir anexos II',
+            'an3' => 'Imprimir anexos III',
         ),
         'Dual' => array(
             'index' => 'FP Dual',

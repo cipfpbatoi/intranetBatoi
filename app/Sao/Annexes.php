@@ -8,6 +8,7 @@ use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Services\AttachedFileService;
 use Styde\Html\Facades\Alert;
+use Intranet\Entities\Signatura;
 
 
 /**
@@ -54,6 +55,11 @@ class Annexes
                                 'zip',
                                 "alumnofctaval/$fct->id"
                             );
+                            // esborrar fitxers de signatura
+                            foreach (Signatura::where('idSao', $fct->idSao)->get() as $signatura) {
+                                $signatura->deleteFile();
+                                $signatura->delete();
+                            }
                             $alumnes[] = $fct->Alumno->shortName;
                         } catch (Exception $e) {
                             Alert::info("Annexes de ".$fct->Alumno->fullName." no trobats");
