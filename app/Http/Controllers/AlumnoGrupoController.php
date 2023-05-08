@@ -23,9 +23,10 @@ class AlumnoGrupoController extends IntranetController
     protected $modal = true;
 
 
-    public function search(){
+    public function search()
+    {
         $this->titulo = ['quien' => $this->search];
-        return AlumnoGrupo::where('idGrupo',$this->search)->get();
+        return AlumnoGrupo::where('idGrupo', $this->search)->get();
     }
 
     /*
@@ -51,9 +52,8 @@ class AlumnoGrupoController extends IntranetController
 
     public function updateModal(Request $request, $grupo, $alumno)
     {
-        $elemento = AlumnoGrupo::where('idAlumno',$alumno)->where('idGrupo',$grupo)->first(); //busca si hi ha
+        $elemento = AlumnoGrupo::where('idAlumno', $alumno)->where('idGrupo', $grupo)->first(); //busca si hi ha
         $this->validateAll($request, $elemento);    // valida les dades
-
         $elemento->fillAll($request);        // ompli i guarda
         return $this->redirect();
     }
@@ -61,7 +61,7 @@ class AlumnoGrupoController extends IntranetController
     protected function realStore(Request $request, $id = null)
     {
         $grupoTutoria = AuthUser()->grupoTutoria;
-        $elemento = AlumnoGrupo::where('idAlumno',$id)->where('idGrupo',$grupoTutoria)->first(); //busca si hi ha
+        $elemento = AlumnoGrupo::where('idAlumno', $id)->where('idGrupo', $grupoTutoria)->first(); //busca si hi ha
         $this->validateAll($request, $elemento);    // valida les dades
 
         return $elemento->fillAll($request);        // ompli i guarda
