@@ -102,7 +102,6 @@ class FctAlumnoController extends IntranetController
                     'text' => 'A1',
                     'where' =>
                         [
-                            'saoAnnexes', '!=', true,
                             'A1', '!=', null,
                             'idSao', '!=', null,
                         ]
@@ -117,7 +116,6 @@ class FctAlumnoController extends IntranetController
                     'text' => 'A2',
                     'where' =>
                         [
-                            'saoAnnexes', '!=', true,
                             'A2', '!=', null,
                             'idSao', '!=', null,
                         ]
@@ -133,7 +131,6 @@ class FctAlumnoController extends IntranetController
                     'text' => 'A3',
                     'where' =>
                         [
-                            'saoAnnexes', '!=', true,
                             'A3', '!=', null,
                             'idSao', '!=', null,
                         ]
