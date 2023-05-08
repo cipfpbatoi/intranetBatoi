@@ -36,8 +36,6 @@
                 {!! Form::textarea('contenido',$contenido, ['id'=>'content','class' => 'form-control','style'=>'display:none']) !!}
             @endif
         </div>
-
-
     <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#area">
         <div class="btn-group">
             <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>

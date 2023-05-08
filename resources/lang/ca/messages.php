@@ -309,6 +309,7 @@ return array(
         'Task' => 'Tasques',
         'Files' => "Fitxers personals",
         'Propuestabaja' => 'Canvis proposats Inventari',
+        'Signatures' => 'Signatures Pendents',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

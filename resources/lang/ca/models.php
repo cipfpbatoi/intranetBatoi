@@ -507,6 +507,7 @@ return array(
         ),
         'Signatura' => array(
             'post' => 'Signatura Annexes',
+            'index' => 'Llistat signatures pendents'
         ),
         'Solicitud' => array(
             'index' => "Derivacions al departament d'Orientació",

@@ -494,6 +494,7 @@ return array(
         ),
         'Signatura' => array(
             'post' => 'Firma Anexos',
+            'index' => 'Lista de Firmas pendientes',
         ),
         'Solicitud' => array(
             'index' => "Derivaciones al departamento de Orientación",
