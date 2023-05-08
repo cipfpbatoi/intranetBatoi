@@ -4,6 +4,7 @@ namespace Intranet\Services;
 
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\File;
+use Intranet\Componentes\signImage;
 use LSNepomuceno\LaravelA1PdfSign\ManageCert;
 use LSNepomuceno\LaravelA1PdfSign\SealImage;
 use LSNepomuceno\LaravelA1PdfSign\SignaturePdf;
@@ -72,7 +73,7 @@ class DigitalSignatureService
     {
         try {
             $cert = self::readCertificat($filecrt, $passCert);
-            $image = SealImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, true, 'd/m/Y');
+            $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
             $imagePath = a1TempDir(true, '.png');
             File::put($imagePath, $image);
 

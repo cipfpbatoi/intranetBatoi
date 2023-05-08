@@ -100,7 +100,6 @@ return [
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoEnFct',
         'route' => 'fct',
-        'view' => 'email.fct.student',
         'template' => 'email.fct.student',
         'fcts' => 1,
         'unique' => 0,
@@ -149,5 +148,20 @@ return [
         'modelo' => 'AlumnoFct',
         'route' => 'alumnofct',
         'finder' => 'AlumnoEnFct',
-    ]
+    ],
+    'A1' => [
+        'modelo' => 'Signatura',
+        'route' => 'alumnofct',
+        'finder' => 'A1',
+    ],
+    'A2' => [
+        'modelo' => 'Signatura',
+        'route' => 'alumnofct',
+        'finder' => 'A2',
+    ],
+    'A3' => [
+        'modelo' => 'Signatura',
+        'route' => 'alumnofct',
+        'finder' => 'A3',
+    ],
 ];

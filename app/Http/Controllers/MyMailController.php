@@ -20,7 +20,7 @@ class MyMailController extends Controller
     
     public function send(Request $request)
     {
-        if ($request->hasFile('file') && $request->file('file')->isValid()){
+        if ($request->hasFile('file') && $request->file('file')->isValid()) {
             $ext = $request->file('file')->getClientOriginalExtension();
             $mime = $request->file('file')->getMimeType();
             $nom = "AdjuntCorreu.".$ext;

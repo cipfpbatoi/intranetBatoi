@@ -15,7 +15,7 @@ class Signatura extends Model
         'idProfesor',
         'idSao',
         'sendTo',
-
+        'signed'
     ];
 
     public function Fct()
@@ -25,10 +25,17 @@ class Signatura extends Model
 
     public function Teacher()
     {
-        return $this->belongsTo(Profesor::class, 'idProfesor','dni');
+        return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
 
-    public static function saveIfNotExists($anexe, $idSao, $sendTo=true)
+    public function deleteFile()
+    {
+        if (file_exists($this->routeFile)) {
+            unlink($this->routeFile);
+        }
+    }
+
+    public static function saveIfNotExists($anexe, $idSao)
     {
         $anexo = 'A'.$anexe;
         $sig = Signatura::where('tipus', $anexo)->where('idSao', $idSao)->get()->first();
@@ -37,13 +44,13 @@ class Signatura extends Model
                 'tipus' => $anexo,
                 'idProfesor' => authUser()->dni,
                 'idSao' => $idSao,
-                'sendTo' => $sendTo,
-                'signed' => $anexo === 'A3' ? true : false
+                'sendTo' => false,
+                'signed' => ($anexo == 'A3') ? 1 : 0
             ]);
             $sig->save();
         } else {
-            $sig->signed = $anexo === 'A3' ? true : false;
-            $sig->sendTo = $sendTo;
+            $sig->signed = ($anexo == 'A3') ? 1 : 0;
+            $sig->sendTo = false;
             $sig->save();
         }
         return $sig;
@@ -57,5 +64,28 @@ class Signatura extends Model
     public function getAlumneAttribute()
     {
         return $this->Fct->Alumno->shortName;
+    }
+
+    public function getCentreAttribute()
+    {
+        return $this->Fct->Fct->Colaboracion->Centro->nombre;
+    }
+
+    public function getRouteFileAttribute()
+    {
+        return storage_path('app/annexes/')."{$this->tipus}_{$this->idSao}.pdf";
+    }
+     public function getSimpleRouteFileAttribute()
+     {
+         return 'app/annexes/'."{$this->tipus}_{$this->idSao}.pdf";
+     }
+
+    public function getEmailAttribute()
+    {
+        return $this->Fct->Fct->Colaboracion->email;
+    }
+    public function getContactoAttribute()
+    {
+        return $this->Fct->Fct->Colaboracion->contacto;
     }
 }
