@@ -9,9 +9,9 @@
             <td>
                 <span class='input' name='{{ $item }}'>
                     @if (isset($elemento->leido)&&!($elemento->leido))
-                        <strong> {!!  mb_substr($elemento->$item, 0, $long) !!} </strong>
+                        <strong> {!!  in_substr($elemento->$item, $long) !!} </strong>
                     @else
-                        {!!  mb_substr($elemento->$item, 0, $long)  !!}
+                        {!!  in_substr($elemento->$item, $long)  !!}
                     @endif
                 </span>
             </td>

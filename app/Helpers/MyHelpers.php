@@ -695,6 +695,15 @@ function replaceCachitos($view)
     return replaceCachitos($view);
 }
 
+function in_substr($item, $long)
+{
+    if (strlen($item) < $long) {
+        return $item;
+    } else {
+        return mb_substr($item, 0, $long);
+    }
+}
+
 function arrayAlert(array $avisos, $title='Fcts Sincronitzades', $action='success')
 {
     if (count($avisos)) {
