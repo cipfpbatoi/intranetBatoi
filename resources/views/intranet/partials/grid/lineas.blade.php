@@ -11,7 +11,7 @@
                     @if (isset($elemento->leido)&&!($elemento->leido))
                         <strong> {!!  $elemento->$item !!} </strong>
                     @else
-                        {!!  mb_substr($elemento->$item, 0, $long)  !!}
+                        {!! $elemento->$item  !!}
                     @endif
                 </span>
             </td>
