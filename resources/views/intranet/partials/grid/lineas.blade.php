@@ -4,14 +4,14 @@
             @if (substr($item,0,1) == 'L')
                 @php($long = 200)
             @else
-                @php($long = 90)
+                @php($long = 100)
             @endif
             <td>
                 <span class='input' name='{{ $item }}'>
                     @if (isset($elemento->leido)&&!($elemento->leido))
-                        <strong> {!!  $elemento->$item !!} </strong>
+                        <strong> {!!  mb_substr($elemento->$item, 0, $long) !!} </strong>
                     @else
-                        {!!  eliminarTildes(mb_substr($elemento->$item, 0, $long))  !!}
+                        {!!  mb_substr($elemento->$item, 0, $long)  !!}
                     @endif
                 </span>
             </td>
