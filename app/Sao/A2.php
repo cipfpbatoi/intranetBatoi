@@ -48,24 +48,24 @@ class A2
         $fcts = array_keys($request, 'on');
         $decrypt = $request['decrypt']??null;
         $cert = $request['cert']??null;
-        $sendTo = isset($request['sendTo'])?true:false;
+
 
         if (isset($decrypt)) {
             $nameFile = AuthUser()->fileName;
             $file = DigitalSignatureService::decryptCertificate($nameFile, $decrypt);
         }
 
-        self::download_files_from_fcts($driver, $fcts, $file ?? null, $cert, $sendTo);
+        self::downloadFilesFromFcts($driver, $fcts, $file ?? null, $cert);
 
         if ($file) {
             unlink($file);
         }
-        $driver->close();
+        $driver->quit();
         return back();
     }
 
 
-    public static function download_files_from_fcts(RemoteWebDriver $driver, $fcts, $certFile, $passCert, $sendTo)
+    public static function downloadFilesFromFcts(RemoteWebDriver $driver, $fcts, $certFile, $passCert)
     {
         $tmpDirectory = storage_path('tmp/');
         foreach ($fcts as $fct) {
@@ -81,7 +81,7 @@ class A2
                     if (file_exists($tmpFile)) {
                         copy($tmpFile, $saveFile);
                     }
-                    Firma::saveIfNotExists(1, $fctAl->idSao, $sendTo);
+                    Firma::saveIfNotExists(1, $fctAl->idSao);
                     unlink($tmpFile);
                 }
                 $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
@@ -89,7 +89,8 @@ class A2
             }
             for ($anexe = 2; $anexe <=3; $anexe++) {    // Anexe II
                 try {
-                    $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc={$anexe}&centro=59&idFct=$fctAl->idSao");
+                    $ad = "https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc={$anexe}&centro=59&idFct=$fctAl->idSao";
+                    $driver->get($ad);
                 } catch (\Throwable $exception) {
                     $tmpFile = $tmpDirectory."A{$anexe}.pdf";
                     $saveFile = $fctAl->routeFile($anexe);
@@ -108,7 +109,7 @@ class A2
                         } else {
                             copy($tmpFile, $saveFile);
                         }
-                        Firma::saveIfNotExists($anexe, $fctAl->idSao, $sendTo);
+                        Firma::saveIfNotExists($anexe, $fctAl->idSao);
                         unlink($tmpFile);
                     } else {
                         Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");

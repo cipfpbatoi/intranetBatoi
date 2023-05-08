@@ -304,6 +304,7 @@ return array(
         'Task' => 'Tareas',
         'Files' => "Ficheros personales",
         'Propuestabaja' => 'Cambios Propuestos Inventario',
+        'Signatures' => 'Firmas pendientes',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

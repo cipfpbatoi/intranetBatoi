@@ -45,7 +45,7 @@ class Signatura
                 foreach ($windowsHandles as $windowHandle) {
                     if ($window != $windowHandle) {
                         $driver->switchTo()->window($windowHandle);
-                        $driver->close();
+                        $driver->quit();
                         var_dump('Tancada finestra '.$windowHandle);
                     }
                 }
@@ -70,9 +70,9 @@ class Signatura
                 $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
                 sleep(1);
                 $this->signa($driver);
-                $driver->close;
+                $driver->quit();
             } catch (Exception $e) {
-                $driver->close();
+                $driver->quit();
             }
         }
         return redirect(route('alumnofct.index'));

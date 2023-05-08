@@ -3,7 +3,6 @@
 namespace Intranet\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
-use Styde\Html\Facades\Alert;
 use Intranet\Http\Controllers\IntranetController;
 
 

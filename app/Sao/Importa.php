@@ -213,7 +213,7 @@ class Importa
                 }
             }
         }
-        $driver->close();
+        $driver->quit();
         session(compact('dades'));
         return view('sao.importa', compact('dades', 'ciclo'));
     }

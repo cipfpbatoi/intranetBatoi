@@ -6,6 +6,8 @@ use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
 use Styde\Html\Facades\Alert;
+use mikehaertl\pdftk\Pdf as PdfTk;
+use Illuminate\Http\Response;
 
 class DocumentService
 {
@@ -75,9 +77,19 @@ class DocumentService
                 $this->document->pdf,
                 $this->document->pdf['orientacion']
             )->stream();
-        } else {
+        }
+        if (isset($this->document->printResource)) {
             $resource = PrintResource::build($this->document->printResource, $this->elements);
             return response()->file(FDFPrepareService::exec($resource));
         }
+        $archivos = [];
+        foreach ($this->elements as $element) {
+            $archivos[] = $element->routeFile;
+        }
+        $pdf = new PdfTk($archivos);
+        $tmpFile = "tmp/annexes_".authUser()->dni.".pdf";
+        $pdf->saveAs(storage_path($tmpFile));
+
+        return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
     }
 }

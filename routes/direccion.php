@@ -82,7 +82,8 @@ Route::get('/lote/{id}/capture', ['as' => 'lote.capture','uses' => 'LoteControll
 Route::post('/lote/{id}/capture', ['as' => 'lote.capture','uses' => 'LoteController@postcapture']);
 
 Route::get('/materialBaja', ['as' => 'materialBaja.direccion.index','uses' => 'MaterialModController@index']);
-Route::get('/signatures',['as' => 'signatura.direccion.index', 'uses' => 'PanelSignaturaController@index']);
+Route::get('/signatures', ['as' => 'signatura.direccion.index', 'uses' => 'PanelSignaturaController@index']);
+Route::post('/signatures', ['as' => 'signatura.direccion.post', 'uses' => 'PanelSignaturaController@sign']);
 
 Route::view('/guardia/control', 'guardias.control');
 

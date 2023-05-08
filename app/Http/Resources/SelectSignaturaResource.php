@@ -4,7 +4,7 @@ namespace Intranet\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SignaturaDireccionResource extends JsonResource
+class SelectSignaturaResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +16,8 @@ class SignaturaDireccionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'texto' => $this->tipus.' -> '.$this->centre.' de '.$this->profesor. ' per '.$this->alumne,
-            'marked' => 1
+            'texto' => $this->tipus.' '.$this->Centre.' '.$this->Alumne,
+            'marked' => $this->sendTo == 0 ? 1 : 0
         ];
     }
 }

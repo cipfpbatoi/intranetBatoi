@@ -1,12 +1,12 @@
 @extends('layouts.intranet')
 @section('content')
     
-    {!! Form::open(['url' =>  'myMail','enctype'=> 'multipart/form-data' ]) !!}
+    {!! Form::open(['url' =>  route($action) ,'enctype'=> 'multipart/form-data' ]) !!}
     
-        {!! Form::hidden('route',$route) !!}
-        {!! Form::hidden('register',$register) !!}
-        {!! Form::hidden('class',$class) !!}
-        {!! Form::hidden('editable',$editable) !!}
+        {!! Form::hidden('route', $route) !!}
+        {!! Form::hidden('register', $register) !!}
+        {!! Form::hidden('class', $class) !!}
+        {!! Form::hidden('editable', $editable) !!}
         <div class="form-group">
             {!! Form::label('from', 'De') !!}
             {!! Form::text('from', $from, ['class' => 'form-control']) !!}
@@ -36,8 +36,6 @@
                 {!! Form::textarea('contenido',$contenido, ['id'=>'content','class' => 'form-control','style'=>'display:none']) !!}
             @endif
         </div>
-
-
     <div class="btn-toolbar editor" data-role="editor-toolbar" data-target="#area">
         <div class="btn-group">
             <a class="btn dropdown-toggle" data-toggle="dropdown" title="Font Size"><i class="fa fa-text-height"></i>

@@ -54,7 +54,7 @@ class Sync
             Alert::danger($e);
         }
         if (isset($driver)) {
-            $driver->close();
+            $driver->quit();
         }
         return back();
     }

@@ -152,7 +152,7 @@ class Compara
         } catch (Exception $e) {
             Alert::danger($e);
         }
-        $driver->close();
+        $driver->quit();
         if (count($dades)) {
             session(compact('dades'));
             return view('sao.compara', compact('dades'));

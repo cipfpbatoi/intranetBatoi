@@ -327,6 +327,7 @@ Route::get('/alumnofct/{id}/AEng', ['as' => 'alumnofct.AEng', 'uses' => 'FctAlum
 Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
 Route::get('/alumnofct/{id}/unlink', ['as' => 'alumnofct.unlink', 'uses' => 'FctAlumnoController@unlink']);
 Route::get('/alumnofct/{id}/A{num}',['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num','[1-3]');
+Route::get('/alumnofct/{id}/send', ['as' => 'alumnofct.send', 'uses' => 'FctAlumnoController@send']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy', 'show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
@@ -490,7 +491,8 @@ Route::get('/poll/{id}/delete', ['as' => 'poll.delete', 'uses' => 'PollControlle
 Route::get('/votes/{colaboracion}/show', ['as' => 'votes.colaboracion', 'uses'=> 'VotesController@showColaboracion']);
 
 Route::get('/myPoll', ['as' => 'mypoll.index', 'uses' => 'PanelPollResultController@index']);
-Route::post('/myMail', 'MyMailController@send');
+Route::post('/myMail', ['as'=> 'myMail.send', 'uses' => 'MyMailController@send']);
+//Route::post('/myMail/annexes', ['as' => 'myMail.sendAnnexes', 'uses' => 'MyMailController@sendAnnexes']);
 Route::get('/qualitat/documento', ['as' => 'qualitat.docuentacio' ,'uses' => 'QualitatDocumentoController@index']);
 
 Route::get('fiCurs', ['as'=>'fiCurs', 'uses'=>'PanelFinCursoController@index']);
@@ -517,8 +519,7 @@ Route::post('/sao/compara', [Intranet\Sao\Compara::class,'compara']);
 
 //Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@login']);
 Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);
-/* Prova */
-Route::get('/signatura', ['as'=>'signatura','uses'=>SignaturaController::class]);
+
 
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');

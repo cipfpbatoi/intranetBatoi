@@ -13,16 +13,27 @@ return [
         'jefeEstudios' => ['H' => "EL CAP D'ESTUDIS",'M' =>"LA CAP D'ESTUDIS"],
     ],
     'files' => [
+        'A1' => [
+            'director' => [
+                'x' => 25 ,
+                'y' => 240,
+            ]
+        ],
         'A2' => [
             'owner' => [
                 'x' => 72 ,
                 'y' => 250,
-            ]],
+            ],
+            'director' => [
+                'x' => 12 ,
+                'y' => 250,
+            ]
+        ],
         'A3' => [
             'owner' => [
                 'x' => 135 ,
                 'y' => 240,
-            ]
+            ],
         ]
     ]
 ];

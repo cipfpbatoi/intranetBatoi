@@ -37,11 +37,6 @@ $(function () {
         $("#formPassword" ).submit();
         $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
     });
-    $('.fa-unlink').on("click", function(){
-        if (!confirm("Vas a deslligar la FCT del SAO. L'hauràs de tornar a importar. Estas segur?")) {
-            event.preventDefault();
-        }
-    });
 });
 
 
