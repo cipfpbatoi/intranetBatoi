@@ -1,4 +1,3 @@
-@php(mb_internal_encoding("UTF-8"))
 @foreach ($panel->getElementos($pestana) as $elemento)
     <tr class="lineaGrupo {{$elemento->class??''}} " id='{{$elemento->getkey()}}'>
         @foreach ($pestana->getRejilla() as $item)
@@ -10,9 +9,9 @@
             <td>
                 <span class='input' name='{{ $item }}'>
                     @if (isset($elemento->leido)&&!($elemento->leido))
-                        <strong> {!!  mb_substr($elemento->$item,0,$long) !!} </strong>
+                        <strong> {!!  $elemento->$item !!} </strong>
                     @else
-                        {!!  mb_substr($elemento->$item,0,$long)  !!}
+                        {!!  mb_substr($elemento->$item, 0, $long)  !!}
                     @endif
                 </span>
             </td>
