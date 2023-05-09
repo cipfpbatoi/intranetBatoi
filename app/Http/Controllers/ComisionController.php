@@ -113,10 +113,11 @@ class ComisionController extends ModalController
         return $comision;
     }
 
-    private function enviarCorreos($comision){
-        foreach ($comision->Fcts as $fct){
-            if ($fct->pivot->aviso){
-                $this->sendEmail($fct,$comision->desde);
+    private function enviarCorreos($comision)
+    {
+        foreach ($comision->Fcts as $fct) {
+            if ($fct->pivot->aviso) {
+                $this->sendEmail($fct, $comision->desde);
             }
             Activity::record('visita', $fct, null, $comision->desde, 'Visita Empresa');
         }
@@ -125,6 +126,7 @@ class ComisionController extends ModalController
 
     private function sendEmail($elemento, $fecha)
     {
+
         if (file_exists(storage_path("tmp/visita_$elemento->id.ics"))){
             unlink(storage_path("tmp/visita_$elemento->id.ics"));
         }
@@ -145,9 +147,10 @@ class ComisionController extends ModalController
         $attach = [ "tmp/visita_$elemento->id.ics" => 'text/calendar'];
         $documento = new DocumentoFct('visitaComision');
         $documento->fecha = $fecha;
+        $elemento->desde = $fecha;
 
 
-        $mail = new MyMail($elemento, $documento->view, $documento->email, $attach,'visita');
+        $mail = new MyMail($elemento, $documento->view, $documento->email, $attach, 'visita');
         $mail->send($fecha);
 
     }
