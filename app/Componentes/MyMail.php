@@ -134,6 +134,7 @@ class MyMail
     private function sendMail($elemento, $fecha)
     {
         if (isset($elemento->contacto)) {
+
             $mail = $elemento->mail??$elemento->email;
             $contacto = $elemento->contact??$elemento->contacto;
             if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {

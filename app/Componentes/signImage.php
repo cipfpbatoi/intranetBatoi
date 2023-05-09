@@ -3,8 +3,8 @@
 namespace Intranet\Componentes;
 
 use Illuminate\Support\Fluent;
-use LSNepomuceno\LaravelA1PdfSign\ManageCert;
-use LSNepomuceno\LaravelA1PdfSign\SealImage;
+use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
+use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
 
 class signImage extends SealImage
 {

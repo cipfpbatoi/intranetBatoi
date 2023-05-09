@@ -5,9 +5,9 @@ namespace Intranet\Services;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\File;
 use Intranet\Componentes\signImage;
-use LSNepomuceno\LaravelA1PdfSign\ManageCert;
-use LSNepomuceno\LaravelA1PdfSign\SealImage;
-use LSNepomuceno\LaravelA1PdfSign\SignaturePdf;
+use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
+use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
+use LSNepomuceno\LaravelA1PdfSign\Sign\SignaturePdf;
 use Styde\Html\Facades\Alert;
 
 class DigitalSignatureService
