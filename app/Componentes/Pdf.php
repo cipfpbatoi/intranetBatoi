@@ -17,7 +17,7 @@ class Pdf
         $rutaDesglosada = explode('.', $informe);
         $document = end($rutaDesglosada);
         $pie = config('footers.'.$document);
-        if (isset($pie)){
+        if (isset($pie)) {
             return  "Codi: ".$pie['codi']."  - Num. edicio: ".$pie['edicio'];
         }
         return "";
@@ -29,7 +29,7 @@ class Pdf
         $datosInforme = null,
         $orientacion = 'portrait',
         $dimensiones = 'a4',
-        $margin_top = 15,
+        $marginTop = 15,
         $driver = null
     )
     {
@@ -39,7 +39,7 @@ class Pdf
             return self::hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones);
         }
         if ($driver==='SnappyPdf') {
-            return self::hazSnappyPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones, $margin_top);
+            return self::hazSnappyPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones, $marginTop);
         }
     }
 
@@ -79,7 +79,7 @@ class Pdf
 
     protected static function hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones)
     {
-        $datosInforme = $datosInforme==null?fechaString(null,'ca'):$datosInforme;
+        $datosInforme = $datosInforme==null?fechaString(null, 'ca'):$datosInforme;
         if (is_string($dimensiones)) {
             return(DomPDF::loadView($informe, compact('todos', 'datosInforme'))
                 ->setPaper($dimensiones, $orientacion));
