@@ -9,30 +9,30 @@ use Illuminate\Support\Facades\Storage;
  * Class ActualizacionController
  * @package Intranet\Http\Controllers
  */
-class ActualizacionController extends Controller{
+class ActualizacionController extends Controller
+{
 
     const FITXER_VERSION = 'version.txt';
 
     /**
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    protected function actualizacion(){
+    protected function actualizacion()
+    {
         Alert::info(system('rm ./../composer.lock'));
-        Alert::info(system('git pull'));
+        Alert::info(system('git pull origin '.config('constants.branch')));
         Alert::info(system('php ./../artisan config:cache'));
         Alert::info(system('php ./../artisan migrate --force'));
         $versionesInstaladas = config('constants.version');
-        $version_nueva = end($versionesInstaladas );
-        $version_actual = Storage::exists(self::FITXER_VERSION)?Storage::get(self::FITXER_VERSION):'v0';
-        if ($version_nueva > $version_actual){
-            AdministracionController::exe_actualizacion($version_actual);
-            Storage::put(self::FITXER_VERSION,$version_nueva);
+        $versionNueva = end($versionesInstaladas);
+        $versionActual = Storage::exists(self::FITXER_VERSION)?Storage::get(self::FITXER_VERSION):'v0';
+        if ($versionNueva > $versionActual) {
+            AdministracionController::exe_actualizacion($versionActual);
+            Storage::put(self::FITXER_VERSION, $versionNueva);
             Alert::info('Actualització realitzada correctament');
-        }
-        else {
+        } else {
             Alert::info('Ja tens la darrera versió');
         }
         return redirect('/');
     }
-
 }
