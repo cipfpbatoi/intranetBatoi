@@ -14,7 +14,8 @@ class Empresa extends Model
 
     protected $table = 'empresas';
     protected $fillable = [ 'europa','sao','concierto','cif', 'nombre', 'email', 'direccion', 'localidad', 'telefono',
-        'dual', 'actividad', 'delitos', 'menores','copia_anexe1','observaciones', 'gerente','fichero','creador'];
+        'dual', 'actividad', 'delitos', 'menores','copia_anexe1','observaciones',
+        'gerente', 'fichero', 'creador', 'idSao'];
     protected $rules = [
         'cif' => 'required|alpha_num',
         'nombre' => 'required|between:0,100',
@@ -36,6 +37,7 @@ class Empresa extends Model
         'observaciones' => ['type' => 'textarea'],
         'fichero' => ['type' => 'file'],
         'creador' => ['type' => 'hidden'],
+        'idSao' => ['type' => 'hidden'],
     ];
     protected $hidden = ['created_at', 'updated_at','creador'];
     protected $dispatchesEvents = [

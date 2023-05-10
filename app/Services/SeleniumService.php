@@ -1,15 +1,11 @@
 <?php
 namespace Intranet\Services;
 
-
-
-
-use Facebook\WebDriver\Firefox\FirefoxOptions;
-use Facebook\WebDriver\Firefox\FirefoxProfile;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Intranet\Exceptions\IntranetException;
+use Styde\Html\Facades\Alert;
 
 class SeleniumService
 {
@@ -44,5 +40,29 @@ class SeleniumService
         } else {
             return $driver;
         }
+    }
+
+    /**
+     * @param  RemoteWebDriver  $driver
+     * @return void
+     * @throws \Facebook\WebDriver\Exception\UnknownErrorException
+     */
+    public function loginItaca($dni='21657327K', $password='Smi*2004'): RemoteWebDriver
+    {
+        try {
+            $desiredCapabilities = $desiredCapabilities??DesiredCapabilities::firefox();
+            $driver = RemoteWebDriver::create(config('services.selenium.url'), $desiredCapabilities);
+        } catch (\Exception $e) {
+            throw new IntranetException('No s\'ha pogut connectar al servidor de Selenium');
+        }
+        $driver->get(config('services.selenium.itaca'));
+        $driver->findElement(WebDriverBy::id('form1:j_username')) // find usuario
+        ->sendKeys($dni);
+        $driver->findElement(WebDriverBy::id('form1:j_password'))
+            ->sendKeys($password);
+        $driver->findElement(WebDriverBy::name('form1:j_id47'))
+            ->click();
+        sleep(1);
+        return $driver;
     }
 }

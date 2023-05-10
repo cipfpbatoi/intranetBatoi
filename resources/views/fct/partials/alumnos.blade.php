@@ -22,9 +22,9 @@
                             <a href="{{route('alumnofct.unlink',$alfct->id)}}" class="fa fa-unlink" title="Esborrar enllaç amb SAO" > SAO - </a>
                         @endif
                         @if ($alfct->saoAnnexes)
-                            <em class="fa fa-file-pdf-o"> A2 A3</em>
+                            <em> A2 A3</em>
                         @endif
-                        <a href="{{route('alumnofct.link',$alfct->id)}}" class="fa fa-link" title="Enllaçar fitxers"></a>
+                        <a href="{{route('alumnofct.link',$alfct->id)}}" class="fa fa-file-pdf-o" title="Enllaçar fitxers"></a>
                     </h4>
                 </div>
                 <div class="message_wrapper">

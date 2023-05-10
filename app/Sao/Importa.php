@@ -147,8 +147,6 @@ class Importa
                 )
             )->click();
             sleep(0.5);
-        } else {
-            Alert::info("Fct $alumne finalitzada");
         }
     }
 
@@ -205,6 +203,7 @@ class Importa
                 try {
                     $dades[$index] = self::extractFromEdit($dada, $driver);
                     $empresa = Empresa::where('cif', $dades[$index]['cif'])->first();
+
                     if ($empresa) { //Si hi ha empresa
                         $dades[$index]['centre']['id'] = self::buscaCentro($dades[$index], $empresa);
                     }
@@ -237,10 +236,18 @@ class Importa
 
     private static function getCentro($dades)
     {
+
         $idCentro = $dades['centre']['id']??null;
 
         if ($idCentro) {
             return Centro::find($idCentro);
+        } else {
+            $idSao = $dades['centre']['idSao']??null;
+            if ($idSao) {
+                $centro = Centro::where('idSao', $idSao)->first();
+                $centro->Empresa->update(['idSao' => $dades['idEmpresa']]);
+                return $centro;
+            }
         }
 
         if (!$empresa = Empresa::where('cif', $dades['cif'])->get()->first()) {

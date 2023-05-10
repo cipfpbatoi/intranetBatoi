@@ -20,7 +20,8 @@ class Centro extends Model
         'horarios',
         'observaciones',
         'idioma',
-        'codiPostal'];
+        'codiPostal',
+        'idSao'];
     protected $rules = [
         'idEmpresa' => 'required',
         'nombre' => 'required',
