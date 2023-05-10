@@ -19,7 +19,7 @@ trait traitAutorizar
     // cancela pasa a estat -1
     protected function cancel($id)
     {
-        $stSrv = new StateService($this->class,$id);
+        $stSrv = new StateService($this->class, $id);
         $stSrv->putEstado(-1);
         return back();
     }
@@ -27,7 +27,7 @@ trait traitAutorizar
     //inicializat a init (normalment 1)
     protected function init($id)
     {
-        $stSrv = new StateService($this->class,$id);
+        $stSrv = new StateService($this->class, $id);
         $stSrv->putEstado(1);
 
         return back();
@@ -36,14 +36,14 @@ trait traitAutorizar
     //imprimeix
     protected function _print($id)
     {
-        $stSrv = new StateService($this->class,$id);
+        $stSrv = new StateService($this->class, $id);
         $stSrv->_print();
     }
 
-    //resol    
-    protected function resolve($id, $redirect = true,Request $request)
+
+    protected function resolve(Request $request, $id, $redirect = true)
     {
-        $stSrv = new StateService($this->class,$id);
+        $stSrv = new StateService($this->class, $id);
         $iniSta = $stSrv->getEstado();
         $finSta = $stSrv->resolve($request->explicacion);
         if ($redirect) {
@@ -54,7 +54,7 @@ trait traitAutorizar
     // estat + 1
     protected function accept($id, $redirect = true)
     {
-        $stSrv = new StateService($this->class,$id);
+        $stSrv = new StateService($this->class, $id);
         $iniSta = $stSrv->getEstado();
         $finSta = $stSrv->putEstado($iniSta+1);
         if ($redirect) {
@@ -65,7 +65,7 @@ trait traitAutorizar
     // estat -1
     protected function resign($id, $redirect = true)
     {
-        $stSrv = new StateService($this->class,$id);
+        $stSrv = new StateService($this->class, $id);
         $iniSta = $stSrv->getEstado();
         $finSta = $stSrv->putEstado($iniSta-1);
         if ($redirect) {
@@ -76,7 +76,7 @@ trait traitAutorizar
     // refusa
     protected function refuse(Request $request, $id, $redirect = true)
     {
-        $stSrv = new StateService($this->class,$id);
+        $stSrv = new StateService($this->class, $id);
         $iniSta = $stSrv->getEstado();
         $finSta = $stSrv->refuse($request->explicacion);
         if ($redirect) {
@@ -87,7 +87,7 @@ trait traitAutorizar
 
     
     // rediriguix o no a un altra pestana
-    private function follow($inicial,$final)
+    private function follow($inicial, $final)
     {
         return $this->notFollow ? back()->with('pestana', $inicial) : back()->with('pestana', $final);
     }
@@ -101,8 +101,7 @@ trait traitAutorizar
                 $stSrv = new StateService($uno);
                 $stSrv->$accion(false);
             }
-        }
-        else {
+        } else {
             foreach ($todos as $uno) {
                 $stSrv = new StateService($uno);
                 $stSrv->putEstado($accion);
@@ -111,7 +110,7 @@ trait traitAutorizar
     }
     
     //crea link a gestor documental
-    protected static function makeLink($todos,$doc)
+    protected static function makeLink($todos, $doc)
     {
         foreach ($todos as $uno) {
             $uno->idDocumento = $doc;
@@ -135,7 +134,7 @@ trait traitAutorizar
         $inicial =  $inicial ?? config('modelos.' . getClass($this->class) . '.print') - 1;
         $todos = $this->class::where('estado', '=', $inicial)->get();
         if ($todos->Count()) {
-            $pdf = Pdf::hazPdf("pdf.$modelo", $todos,null,$orientacion);
+            $pdf = Pdf::hazPdf("pdf.$modelo", $todos, null, $orientacion);
             $nom = $this->model . new Date() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
             $tags = config("modelos.$this->model.documento");
@@ -143,7 +142,7 @@ trait traitAutorizar
             $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => $tags ]);
             $this->makeAll($todos, $final);
             if ($link) {
-                $this->makeLink($todos,$doc);
+                $this->makeLink($todos, $doc);
             }
             return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
         }

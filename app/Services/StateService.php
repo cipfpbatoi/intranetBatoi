@@ -12,9 +12,9 @@ class StateService
     /**
      * @param $id
      */
-    public function __construct($class,$id=null)
+    public function __construct($class, $id=null)
     {
-        if (is_string($class)){
+        if (is_string($class)) {
             $this->element = $class::find($id);
             $this->statesElement = config('modelos.'.getClass($class));
         } else {
@@ -35,13 +35,14 @@ class StateService
         $this->element->estado = $estado;
         $this->element->save();
 
-        AdviseService::exec($this->element,$mensaje);
+        AdviseService::exec($this->element, $mensaje);
 
         return ($this->element->estado);
     }
 
-    private function makeDocument(){
-        if ($this->element->fichero != ''){
+    private function makeDocument()
+    {
+        if ($this->element->fichero != '') {
             $gestor = new GestorService($this->element);
             $gestor->save([
                 'tipoDocumento' => getClase($this->element),
@@ -50,7 +51,8 @@ class StateService
         }
     }
 
-    private function dateResolve($fecha){
+    private function dateResolve($fecha)
+    {
         if (isset($this->element->fechasolucion)) {
             $this->element->fechasolucion = $fecha;
         }
@@ -68,7 +70,7 @@ class StateService
 
     public function _print()
     {
-        if ( $this->statesElement['print'] == $this->statesElement['resolve']) {
+        if ($this->statesElement['print'] == $this->statesElement['resolve']) {
             return $this->putEstado($this->statesElement['print'], '', hoy());
         }  else {
             return $this->putEstado($this->statesElement['print']);
@@ -79,5 +81,4 @@ class StateService
     {
         return $this->element->estado;
     }
-
 }
