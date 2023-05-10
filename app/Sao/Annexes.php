@@ -27,7 +27,6 @@ class Annexes
                          ->where('beca', 0)
                          ->whereNotNull('idSao')
                          ->activa()
-                         ->where('pg0301', 0)
                          ->get() as $fct) {
                 $find = Adjunto::where('size', 1024)->where('route', 'alumnofctaval/'.$fct->id)->count();
                 if ($fct->idSao) {
