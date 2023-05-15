@@ -43,7 +43,7 @@ class Menu extends Model
 
     public static function make($nom, $array = false)
     {
-        $menu = Cache::remember('menu'.$nom.authUser()->dni, now()->addDay(),function () use ($nom) {
+        $menu = Cache::remember('menu'.$nom.authUser()->dni, now()->addDay(), function () use ($nom) {
            return self::build($nom);
         });
         if ($array) {
@@ -73,7 +73,7 @@ class Menu extends Model
                             self::tipoUrl($item->url) => $item->url,
                             'img' => $item->img,
                             'roles' => $item->rol,
-                            'secure'=> env('APP_DEBUG')?true:false
+                            'secure'=> true
                         );
                 }
             } else {
@@ -81,7 +81,7 @@ class Menu extends Model
                     array(
                         self::tipoUrl($sitem->url) => $sitem->url,
                         'class' => $sitem->class,
-                        'secure'=> env('APP_DEBUG')?true:false
+                        'secure'=> true
                     );
             }
         }

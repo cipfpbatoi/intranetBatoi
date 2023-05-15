@@ -7,8 +7,12 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use DB;
+use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\WebDriverKeys;
+use Facebook\WebDriver\WebDriverWait;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Services\SeleniumService;
+use Facebook\WebDriver\Interactions\WebDriverActions;
 use Styde\Html\Facades\Alert;
 use Illuminate\Http\Request;
 
@@ -23,16 +27,27 @@ class ItacaController extends Controller
     public function index()
     {
         $driver = SeleniumService::loginItaca();
-
-    }
-
-
-
-
-        $this->driver->get('https://docent.edu.gva.es/md-front/www/#moduldocent/centres');
+        $driver->get('https://itaca3.edu.gva.es/itaca3-gad/');
+        sleep(2);
+        $driver->findElement(WebDriverBy::xpath("//span[contains(text(),'Gestión')]"))->click();
+        sleep(1);
+        $driver->findElement(WebDriverBy::xpath("//span[contains(text(),'Personal')]"))->click();
+        sleep(1);
+        $driver->findElement(WebDriverBy::xpath("//span[contains(text(),'Listado Personal')]"))->click();
+        sleep(1);
+        $formulari = $driver->findElement(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'));
+        $formulari->sendKeys('021652470V');
+        $driver->findElement(WebDriverBy::xpath("//button[contains(text(),'Buscar')]"))->click();
+        $element = $driver->findElement(WebDriverBy::xpath("//div[contains(text(),'021652470V')]"));
+        $actions = new WebDriverActions($driver);
+        $actions->contextClick($element)->perform();
         sleep(3);
-        $this->driver->get('https://docent.edu.gva.es/md-front/www/#centre/03012165/horari');
-        sleep(3);
+
+        $driver->findElement(WebDriverBy::xpath("//span[contains(text(),'Faltas docente')]"))->click();
+
+        sleep(5);
+        $driver->close();
+        /*
         $ul = $this->driver->findElement(
                 WebDriverBy::cssSelector('ul.imc-horari-dies li.imc-horari-dia:nth-child(1)')
             );
@@ -58,6 +73,7 @@ class ItacaController extends Controller
 
 
         $this->driver->close();
+        */
     }
 
 

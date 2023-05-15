@@ -47,7 +47,7 @@ class SeleniumService
      * @return void
      * @throws \Facebook\WebDriver\Exception\UnknownErrorException
      */
-    public function loginItaca($dni='21657327K', $password='Smi*2004'): RemoteWebDriver
+    public static function loginItaca($dni='21657327K', $password='Smi*2004'): RemoteWebDriver
     {
         try {
             $desiredCapabilities = $desiredCapabilities??DesiredCapabilities::firefox();

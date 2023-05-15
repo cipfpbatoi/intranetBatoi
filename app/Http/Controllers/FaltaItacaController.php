@@ -25,7 +25,7 @@ class FaltaItacaController extends IntranetController
         $profesor = AuthUser();
         $horarios = Horario::Profesor($profesor->dni)->get();
         $horas = Hora::all();
-        return view('falta.itaca', compact('profesor','horarios', 'horas'));
+        return view('falta.itaca', compact('profesor', 'horarios',  'horas'));
     }
     
     public static function printReport($request)
@@ -69,11 +69,12 @@ class FaltaItacaController extends IntranetController
         return 'gestor/' . Curso() . '/informes/' . 'Birret' . $fecha->format('M') . '.pdf';
     }
 
-    public function resolve($id){
+    public function resolve($id)
+    {
         $falta = Falta_itaca::find($id);
 
         $faltes_dia = Falta_itaca::where('idProfesor',$falta->idProfesor)->
-            where('dia',FechaInglesa($falta->dia))->where('estado',1)->get();
+            where('dia', FechaInglesa($falta->dia))->where('estado',1)->get();
         foreach ($faltes_dia as $falta_hora){
             $staSer = new StateService($falta_hora);
             $staSer->resolve();
@@ -81,15 +82,16 @@ class FaltaItacaController extends IntranetController
         return $this->follow(1,2);
     }
 
-    public function refuse($id,Request $request){
+    public function refuse($id, Request $request)
+    {
         $falta = Falta_itaca::find($id);
 
-        $faltes_dia = Falta_itaca::where('idProfesor',$falta->idProfesor)->
-            where('dia',FechaInglesa($falta->dia))->get();
+        $faltes_dia = Falta_itaca::where('idProfesor', $falta->idProfesor)->
+            where('dia', FechaInglesa($falta->dia))->get();
         foreach ($faltes_dia as $falta_hora){
             $staSer = new StateService($falta_hora);
             $staSer->refuse($request->explicacion);
         }
-        return $this->follow(2,1);
+        return $this->follow(2, 1);
     }
 }

@@ -517,7 +517,7 @@ Route::post('/sao/importa', [Intranet\Sao\Importa::class,'importa']);
 Route::post('/sao/compara', [Intranet\Sao\Compara::class,'compara']);
 
 
-//Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@login']);
+Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@index']);
 Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);
 
 
