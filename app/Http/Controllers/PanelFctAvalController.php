@@ -260,7 +260,7 @@ class PanelFctAvalController extends IntranetController
             $grupo->acta_pendiente = 1;
             $grupo->save();
             avisa(
-                config('contacto.jefeEstudios2'),
+                config('avisos.jefeEstudios2'),
                 "Acta pendent grup $grupo->nombre",
                 config('contacto.host.web')."/direccion/$grupo->codigo/acta"
             );

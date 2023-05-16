@@ -61,7 +61,7 @@ class ComisionController extends ModalController
     {
         $comision = Comision::findOrFail($id);
         if ($comision->estado == 0) {
-            return ConfirmAndSend::render($this->model, $id,'Enviar a direcció i correus confirmació');
+            return ConfirmAndSend::render($this->model, $id, 'Enviar a direcció i correus confirmació');
         } else {
             return $this->redirect();
         }
@@ -76,12 +76,24 @@ class ComisionController extends ModalController
      {
          $this->panel->setBotonera(['create']);
          $this->panel->setBothBoton('comision.detalle', ['where' => ['estado', '<', '2','fct','==',1,'estado','>',-1]]);
-         $this->panel->setBoton('grid', new BotonImg('comision.edit', ['where' => ['estado', '>=', '0', 'estado', '<', '2']]));
-         $this->panel->setBoton('grid', new BotonImg('comision.delete', ['where' => ['estado', '>=', '0', 'estado', '<', '2']]));
-         $this->panel->setBothBoton('comision.cancel', ['class'=>'confirm','where' => ['estado', '>=', '2', 'estado', '<', '4']]);
+         $this->panel->setBoton(
+             'grid',
+             new BotonImg('comision.edit', ['where' => ['estado', '>=', '0', 'estado', '<', '2']])
+         );
+         $this->panel->setBoton(
+             'grid',
+             new BotonImg('comision.delete', ['where' => ['estado', '>=', '0', 'estado', '<', '2']])
+         );
+         $this->panel->setBothBoton(
+             'comision.cancel',
+             ['class'=>'confirm','where' => ['estado', '>=', '2', 'estado', '<', '4']]
+         );
          $this->panel->setBothBoton('comision.unpaid', ['where' => ['estado', '==', '3','total','>',0]]);
          $this->panel->setBothBoton('comision.init', ['where' => ['estado', '==', '0','desde','posterior',Hoy()]]);
-         $this->panel->setBothBoton('comision.notification', ['where' => ['estado', '>', '0', 'hasta', 'posterior', Hoy()]]);
+         $this->panel->setBothBoton(
+             'comision.notification',
+             ['where' => ['estado', '>', '0', 'hasta', 'posterior', Hoy()]]
+         );
     }
 
 
@@ -89,11 +101,10 @@ class ComisionController extends ModalController
     {
         $manana = new Date('tomorrow');
         $manana->addHours(8);
-        if (Fct::misFcts()->count()){
+        if (Fct::misFcts()->count()) {
             $fct = 1;
             $servicio = "Visita a Empreses per FCT: ";
-        }
-        else{
+        } else{
             $fct = 0;
             $servicio = "Visita a Empreses: ";
         }
@@ -107,7 +118,7 @@ class ComisionController extends ModalController
         if (!$fct) {
             $comision->deleteInputType('fct');
         }
-        if (AuthUser()->dni == config('contacto.director')) {
+        if (AuthUser()->dni == config('avisos.director')) {
             $comision->setInputType('idProfesor', ["type" => "select"]);
         }
         return $comision;
@@ -127,7 +138,7 @@ class ComisionController extends ModalController
     private function sendEmail($elemento, $fecha)
     {
 
-        if (file_exists(storage_path("tmp/visita_$elemento->id.ics"))){
+        if (file_exists(storage_path("tmp/visita_$elemento->id.ics"))) {
             unlink(storage_path("tmp/visita_$elemento->id.ics"));
         }
 
@@ -171,7 +182,7 @@ class ComisionController extends ModalController
      */
     public function payment()
     {
-        return $this->imprimir('payments',4,5,'landscape',false);
+        return $this->imprimir('payments', 4, 5, 'landscape', false);
     }
 
     public function printAutoritzats()
@@ -206,7 +217,7 @@ class ComisionController extends ModalController
      */
     public function autorizar()
     {
-        $this->makeAll(Comision::where('estado','1')->get(),2 );
+        $this->makeAll(Comision::where('estado', '1')->get(), 2);
         return back();
     }
 
@@ -215,7 +226,7 @@ class ComisionController extends ModalController
         $comision = Comision::find($id);
         $all = Fct::esFct()->misFcts()->orWhere('cotutor', authUser()->dni)->distinct()->orderBy('id')->get();
         $allFcts = collect();
-        foreach ($all as $fct){
+        foreach ($all as $fct) {
             $allFcts[$fct->Colaboracion->idCentro] = $fct;
         }
         $allFcts = hazArray($allFcts, 'id', 'Centro');
@@ -223,20 +234,20 @@ class ComisionController extends ModalController
         return view('comision.detalle', compact('comision', 'allFcts'));
     }
 
-    public function createFct(Request $request, $comision_id)
+    public function createFct(Request $request, $comisionId)
     {
-        $comision = Comision::find($comision_id);
+        $comision = Comision::find($comisionId);
         $aviso = isset($request->aviso)?1:0;
         $comision->fcts()
             ->syncWithoutDetaching([$request->idFct => ['hora_ini' => $request->hora_ini ,'aviso' => $aviso]]);
-        return $this->detalle($comision_id);
+        return $this->detalle($comisionId);
     }
 
-    public function deleteFct($comision_id, $fct_id)
+    public function deleteFct($comisionId, $fctId)
     {
-        $comision = Comision::find($comision_id);
-        $comision->fcts()->detach($fct_id);
-        return $this->detalle($comision_id);
+        $comision = Comision::find($comisionId);
+        $comision->fcts()->detach($fctId);
+        return $this->detalle($comisionId);
     }
 
 }

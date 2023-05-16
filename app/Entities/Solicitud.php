@@ -43,9 +43,9 @@ class Solicitud extends Model
         return $fecha->format('d-m-Y');
     }
 
-    public function getIdOrientadorOptions(){
+    public function getIdOrientadorOptions() {
         $orientador = [];
-        foreach (config('contacto.orientador') as $dni){
+        foreach (config('avisos.orientador') as $dni){
             $orientador[$dni] = Profesor::find($dni)->fullName;
         }
         return $orientador;

@@ -35,7 +35,7 @@
                 <p>{{config('contacto.poblacion')}},a {{$datosInforme}} </p>
                 <br/><br/><br/><br/><br/>
                 <div style="width:45%; float:left; ">
-                    <p><strong>{{\Intranet\Entities\Profesor::find(config('contacto.director'))->FullName}}</strong></p>
+                    <p><strong>{{\Intranet\Entities\Profesor::find(config('avisos.director'))->FullName}}</strong></p>
                     <br/><br/><br/>
                     <p>{{signatura('expediente')}}</p>
                 </div>

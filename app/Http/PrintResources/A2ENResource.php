@@ -24,7 +24,7 @@ class A2ENResource extends PrintResource
     public function toArray()
     {
         $empresa = $this->elements->Fct->Colaboracion->Centro->Empresa;
-        $director = Profesor::find(config('contacto.director'));
+        $director = Profesor::find(config('avisos.director'));
         $tutor = AuthUser();
         $alumno = $this->elements->Alumno;
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();

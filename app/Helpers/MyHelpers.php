@@ -144,7 +144,7 @@ function fullDireccion()
 
 function cargo($cargo)
 {
-    return \Intranet\Entities\Profesor::find(config(fileContactos().".$cargo"));
+    return \Intranet\Entities\Profesor::find(config("avisos.$cargo"));
 }
 
 function signatura($document)
@@ -152,7 +152,7 @@ function signatura($document)
     foreach (config('signatures.llistats') as $key => $carrec) {
         if (array_search($document, $carrec) !== false) {
             return config("signatures.genere.$key")
-                    [Intranet\Entities\Profesor::find(config(fileContactos().".$key"))->sexo];
+                    [Intranet\Entities\Profesor::find(config("avisos.$key"))->sexo];
         }
     }
 }
@@ -525,6 +525,7 @@ function loadImg($fixer)
 
 function fileContactos()
 {
+    return 'avisos';
     return is_file(base_path().'/config/avisos.php')?'avisos':'contacto';
 }
 

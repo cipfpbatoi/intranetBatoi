@@ -90,8 +90,8 @@ class FctController extends IntranetController
     public static function certificatColaboradores($id)
     {
         $fct = Fct::findOrFail($id);
-        $secretario = Profesor::find(config(fileContactos().'.secretario'));
-        $director = Profesor::find(config(fileContactos().'.director'));
+        $secretario = Profesor::find('avisos.secretario');
+        $director = Profesor::find('avisos.director');
         $dades = ['date' => FechaString(hoy(), 'ca'),
             'fecha' => FechaString(hoy(), 'es'),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',

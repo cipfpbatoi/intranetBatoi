@@ -209,8 +209,8 @@ class InstructorController extends IntranetController
         if ($instructor->surnames != '') {
             $fcts = $instructor->Fcts;
             $fecha = $this->ultimaFecha($fcts);
-            $secretario = Profesor::find(config(fileContactos().'.secretario'));
-            $director = Profesor::find(config(fileContactos().'.director'));
+            $secretario = Profesor::find(config('avisos.secretario'));
+            $director = Profesor::find(config('avisos.director'));
             $dades = ['date' => FechaString($fecha, 'ca'),
                 'fecha' => FechaString($fecha, 'es'),
                 'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',

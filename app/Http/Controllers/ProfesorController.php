@@ -203,15 +203,15 @@ use traitAutorizar,
         $cargo = 'Professorat';
         if (esRol($profesor->rol, config('roles.rol.direccion'))) {
             switch ($profesor->dni) {
-                case config(fileContactos().'.director'): $cargo = 'Director';
+                case config('avisos.director'): $cargo = 'Director';
                     break;
-                case config(fileContactos().'.secretario'): $cargo = 'Secretària';
+                case config('avisos.secretario'): $cargo = 'Secretària';
                     break;
-                case config(fileContactos().'vicedirector'): $cargo = 'ViceDirector';
+                case config('avisos.vicedirector'): $cargo = 'ViceDirector';
                     break;
-                case config(fileContactos().'jefeEstudios'): $cargo = "Cap d'Estudis";
+                case config('avisos.jefeEstudios'): $cargo = "Cap d'Estudis";
                     break;
-                case config(fileContactos().'jefeEstudios2'): $cargo = "Cap d'Estudis";
+                case config('avisos.jefeEstudios2'): $cargo = "Cap d'Estudis";
                     break;
                 default: $cargo = 'Professorat';
             }
