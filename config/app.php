@@ -170,7 +170,6 @@ return [
         Intranet\Providers\HelperServiceProvider::class,
         Intranet\Providers\HtmlServiceProvider::class,
         Intranet\Providers\ValidationServiceProvider::class,
-        Intranet\Providers\DatabaseConfigServiceProvider::class,
 
     ],
 
