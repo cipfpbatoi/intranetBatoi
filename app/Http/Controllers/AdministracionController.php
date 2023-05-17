@@ -20,6 +20,7 @@ use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
+use Intranet\Entities\Setting;
 use Intranet\Services\ExcelService;
 use MongoDB\Driver\Exception\ExecutionTimeoutException;
 use Styde\Html\Facades\Alert;
@@ -45,22 +46,6 @@ class AdministracionController extends Controller
 {
     const DIRECTORIO_GESTOR = 'gestor/Empresa/';
 
-/*
-    public function actualizaLang(){
-        $valencia = config('messages');
-        $angles = config('messagesAngles');
-        foreach ($valencia as $keyArray => $Array){
-            foreach ($Array as $key => $value){
-                if (!isset($angles[$keyArray][$key])){
-                    $angles[$keyArray][$key] = $value;
-                }
-            }
-        }
-        $fp = fopen('message.txt', 'w');
-        fwrite($fp, var_export($angles, true));
-        fclose($fp);
-    }
-*/
     /**
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -151,8 +136,8 @@ class AdministracionController extends Controller
     {
 
 
-        Colaboracion::where('tutor', '!=',  '')->update(['tutor'=>'']);
-        Colaboracion::where('estado', '>',  1)->update(['estado' => 1]);
+        Colaboracion::where('tutor', '!=', '')->update(['tutor'=>'']);
+        Colaboracion::where('estado', '>', 1)->update(['estado' => 1]);
         Fct::where('asociacion', '!=', 3)->delete();
         Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
 
@@ -208,17 +193,31 @@ class AdministracionController extends Controller
     }
 
 
-    public static function v2_50()
+    public static function v3_00()
     {
-        Alert::info('Version 2.50');
-        foreach (Comision::all() as $comision) {
-            if ($comision->medio > 0) {
-                $comision->medio += 2;
-            } else {
-                $comision->medio = 0;
+        Alert::info('Version 3.00');
+        $a = config('contacto');
+        foreach ($a as $key => $value) {
+            if (! is_array($value) && $value != '') {
+                $set = new Setting(['collection' => 'contacto','key' => $key, 'value' => $value]);
+                $set->save();
             }
-            $comision->save();
         }
+        $a = config('avisos');
+        foreach ($a as $key => $value) {
+            if (! is_array($value) && $value != '') {
+                $set = new Setting(['collection' => 'avisos','key' => $key, 'value' => $value]);
+                $set->save();
+            }
+        }
+        $a = config('variables');
+        foreach ($a as $key => $value) {
+            if (! is_array($value) && $value != '') {
+                $set = new Setting(['collection' => 'variables','key' => $key, 'value' => $value]);
+                $set->save();
+            }
+        }
+        return back();
     }
 
 
@@ -309,14 +308,6 @@ class AdministracionController extends Controller
 
     public function consulta()
     {
-        foreach (Material::where('inventariable', 1)->where('estado', 3)->get() as $material) {
-            $materialBaja = new MaterialBaja(
-                ['idMaterial' => $material->id, 'motivo' => 'Desconegut','estado' => 0 ]
-            );
-            $material->estado = 1;
-            $material->save();
-            $materialBaja->save();
-        }
-        return back();
+        // TODO
     }
 }

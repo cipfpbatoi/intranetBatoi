@@ -15,9 +15,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        //$this->call(ImportTableSeeder::class);
-        //$this->call(newProject::class);
-        //$this->call(ModifyEmpresas::class);
-        //$this->call(Inventari::class);
+        $this->call(newProject::class);
     }
 }
