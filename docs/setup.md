@@ -51,9 +51,6 @@ DB_USERNAME, DB_PASSWORD: el usuario y contraseña para acceder a la misma
 i afegint:
 ```bash
 SESSION_DOMAIN: URL de nnuestra intranet (como APP_URL pero sin http), ej. intranet.my
-GOOGLE_ID: nuestro identificador para utilizar el login de Google para loguearnos en la intranet
-GOOGLE_SECRET: nuestra clave
-GOOGLE_REDIRECT: la url que lo gestiona, ej. 'http://intranet.my/social/callback/google'
 ```
 
 Relitzem les configuracions inicials. 
@@ -82,12 +79,12 @@ El `db:seed` fica les dades inicials de:
 Així com un usuari amb el codi 9999 i la contrasenya 'abcd@1234' que és Administrador de la intranet.
 
 ### Altres dades inicials necessarios
-Les dades de les taules de _muninipios_ i _provincias_ no els obtenim de Itaca sinó que els hem de importar a ma si els volem (és opcional,s'utilitzen només en alguns llistats).
+Les dades de les taules de _muninipios_ i _provincias_ no els obtenim de Itaca sinó que els hem de importar a ma si els volem (és opcional, s'utilitzen només en alguns llistats).
 
 ## Importar dades de Itaca
 Abans de fer la primera importació de dades de Itaca hem d'obrir el fitxer **contacto.php** en _/config_ on configurem totes les dades del nostre centre. A més indicarem el NIF (en format Itaca, és a dir, amb un 0 davant) dels càrrecs així com:
-* avisos->material: la persona que indiquen rebrà un misstage cada vegada que es canvia un material inventariable d'ubicacio
-* incidències: ací posem a totes les persones que s'encarreguen de solventar incidències e el Centre. Són els usuaris a qui es pot asignar una incidència quan es crea.
+* avisos -> material: la persona que indiquen rebrà un misstage cada vegada que es canvia d'ubicació un material inventariable
+* incidències: ací posem a totes les persones que s'encarreguen de solventar incidències en el Centre. Són els usuaris a qui es pot asignar una incidència quan es crea.
 
 També és convenient posar correctament les dades de les taules (això només cal fer-ho la primera vegada que es crea la intranet, la resta d'anys es conserven les dades):
 * Departamentos
