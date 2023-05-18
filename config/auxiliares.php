@@ -111,5 +111,6 @@ return [
         'annexes' => 'Baixa Annexes signats per a l\'Intranet',
     ],
     'precioKilometro' => [0.19,0.078,0,0,0,0,0],
+
 ];
 
