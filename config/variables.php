@@ -12,7 +12,6 @@ return [
         [ 'ip' => '172.16.109.201', 'codOcup' => 3249454 ],
         [ 'ip' => '172.16.109.200', 'codOcup' => 3249454 ],
         [ 'ip' => '172.16.20.219', 'codOcup' => 3249454 ]],
-
     'actividadImg' => 0,
     'altaInstructores' => 0,
     'ipDomotica' => 'http://172.16.10.74/api/devices/{dispositivo}/action',
