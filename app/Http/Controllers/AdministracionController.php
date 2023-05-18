@@ -8,21 +8,18 @@ namespace Intranet\Http\Controllers;
 
 
 use Illuminate\Support\Facades\Http;
-use Intranet\Entities\Activity;
-use Intranet\Entities\Comision;
+
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Material;
+use Intranet\Entities\IpGuardia;
+
 use Intranet\Entities\Poll\Poll;
-use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Setting;
-use Intranet\Services\ExcelService;
-use MongoDB\Driver\Exception\ExecutionTimeoutException;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
@@ -33,8 +30,7 @@ use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Fct;
 use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
-use Intranet\Entities\Instructor;
-use Intranet\Entities\MaterialBaja;
+
 
 
 
@@ -198,9 +194,16 @@ class AdministracionController extends Controller
         Alert::info('Version 3.00');
         $a = config('contacto');
         foreach ($a as $key => $value) {
-            if (! is_array($value) && $value != '') {
-                $set = new Setting(['collection' => 'contacto','key' => $key, 'value' => $value]);
-                $set->save();
+            if ($value != '') {
+                if (is_array($value)) {
+                    foreach ($value as $k => $v) {
+                        $set = new Setting(['collection' => 'contacto','key' => $key.'.'.$k, 'value' => $v]);
+                        $set->save();
+                    }
+                } else {
+                    $set = new Setting(['collection' => 'contacto','key' => $key, 'value' => $value]);
+                    $set->save();
+                }
             }
         }
         $a = config('avisos');
@@ -212,9 +215,16 @@ class AdministracionController extends Controller
         }
         $a = config('variables');
         foreach ($a as $key => $value) {
-            if (! is_array($value) && $value != '') {
-                $set = new Setting(['collection' => 'variables','key' => $key, 'value' => $value]);
-                $set->save();
+            if ( $value != '') {
+                if (is_array($value) && $key == 'ipGuardias') {
+                    foreach ($value as $k => $v) {
+                        $ip = new IpGuardia(['ip' => $v['ip'],'codOcup' => $v['codOcup']]);
+                        $ip->save();
+                    }
+                } else {
+                    $set = new Setting(['collection' => 'variables', 'key' => $key, 'value' => $value]);
+                    $set->save();
+                }
             }
         }
         return back();
@@ -308,6 +318,42 @@ class AdministracionController extends Controller
 
     public function consulta()
     {
-        // TODO
+        /*
+        $a = config('contacto');
+        foreach ($a as $key => $value) {
+            if ($value != '') {
+                if (is_array($value)) {
+                    foreach ($value as $k => $v) {
+                            $set = new Setting(['collection' => 'contacto','key' => $key.'.'.$k, 'value' => $v]);
+                            $set->save();
+                    }
+                } else {
+                        $set = new Setting(['collection' => 'contacto','key' => $key, 'value' => $value]);
+                        $set->save();
+                }
+            }
+        }
+        $a = config('avisos');
+        foreach ($a as $key => $value) {
+            if (! is_array($value) && $value != '') {
+                $set = new Setting(['collection' => 'avisos','key' => $key, 'value' => $value]);
+                $set->save();
+            }
+        }
+        $a = config('variables');
+        foreach ($a as $key => $value) {
+            if ( $value != '') {
+                if (is_array($value) && $key == 'ipGuardias') {
+                    foreach ($value as $k => $v) {
+                        $ip = new IpGuardia(['ip' => $v['ip'],'codOcup' => $v['codOcup']]);
+                        $ip->save();
+                    }
+                } else {
+                    $set = new Setting(['collection' => 'variables', 'key' => $key, 'value' => $value]);
+                    $set->save();
+                }
+            }
+        }
+        */
     }
 }
