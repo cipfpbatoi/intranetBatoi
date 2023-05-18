@@ -25,9 +25,5 @@ return [
     'fct' => [
         1 => ['inici' => '2022-09-01','fi' => '2023-01-31'],
         2 => ['inici' =>'2023-02-01','fi' =>'2023-07-31']
-    ],
-    'certificatFol' => '2023-06-14',
-    'enquestesAutomatiques' => 1,
-    'convocatoria' => '24j281hdofd3',
-    'fitxerMatricula' => 'email.matricula'
+    ]
 ];
