@@ -8,5 +8,6 @@ return [
     //'pdf' => 'DomPdf',
     'pdf' => 'SnappyPdf',
     'branch' => env('BRANCH', 'laravel10'),
+
 ];
 
