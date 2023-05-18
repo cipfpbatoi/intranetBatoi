@@ -348,6 +348,9 @@ return array(
             'an2' => 'Imprimir anexos II',
             'an3' => 'Imprimir anexos III',
         ),
+        'Ipguardia' => array(
+            'index' => 'Control IP',
+        ),
         'Dual' => array(
             'index' => 'FP Dual',
             'create' => 'Nueva Dual',

@@ -470,6 +470,9 @@ return array(
            'check' => 'Control documentació'
           
         ),
+        'Ipguardia' => array(
+          'index' => 'Control IP',
+        ),
         'Ppoll' => array(
           'show' => 'Plantilla Enquesta',
           'index' => 'Manteniment Plantilles Enquestes',
