@@ -72,7 +72,7 @@ class GrupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('grupo.edit', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid',new BotonImg('equipo.grupo',['img' => 'fa-graduation-cap']));
 
-        if (AuthUser()->xdepartamento == 'Fol' && date('Y-m-d') > config('curso.certificatFol')){
+        if (AuthUser()->xdepartamento == 'Fol' && date('Y-m-d') > config('variables.certificatFol')) {
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>['fol','==', 0]]));
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>['fol','==', 1]]));
         }

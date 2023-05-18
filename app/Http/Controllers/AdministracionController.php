@@ -318,7 +318,7 @@ class AdministracionController extends Controller
 
     public function consulta()
     {
-        /*
+
         $a = config('contacto');
         foreach ($a as $key => $value) {
             if ($value != '') {
@@ -354,6 +354,14 @@ class AdministracionController extends Controller
                 }
             }
         }
-        */
+        $set = new Setting(['collection' => 'variables', 'key' => 'certificatFol', 'value' => '2023-06-14']);
+        $set->save();
+        $set = new Setting(['collection' => 'variables', 'key' => 'enquestesAutomatiques', 'value' => '1']);
+        $set->save();
+        $set = new Setting(['collection' => 'variables', 'key' => 'convocatoria', 'value' => '24j281hdofd3']);
+        $set->save();
+        $set = new Setting(['collection' => 'variables', 'key' => 'fitxerMatricula', 'value' => 'email.matricula']);
+        $set->save();
+
     }
 }

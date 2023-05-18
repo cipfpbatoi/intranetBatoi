@@ -32,7 +32,7 @@
     <ul>
         <li>La data de matrícula serà del 29 de juny al 7 de juliol (ambdós inclosos).</li>
         <li>La matrícula es farà de forma telemàtica mitjançant un assistent al qual entraràs pulsant sobre el següent enllaç:
-            <a href="http://ext.matricula.cipfpbatoi.es/{{config('curso.convocatoria')}}/{{$aR->token}}" >http://ext.matricula.cipfpbatoi.es/{{config('curso.convocatoria')}}/{{$aR->token}}</a></li>
+            <a href="http://ext.matricula.cipfpbatoi.es/{{config('variables.convocatoria')}}/{{$aR->token}}" >http://ext.matricula.cipfpbatoi.es/{{config('variables.convocatoria')}}/{{$aR->token}}</a></li>
         <li>Aquest enllaç és únic i vàlid només per a tu.</li>
    </ul>
     <p>Per a qualsevol dubte, pots cridar al centre (966527660) o enviar un correu a info@cipfpbatoi.es.</p>

@@ -65,8 +65,8 @@ class AlumnoReunionController extends ApiBaseController
             try {
                 Mail::to($request->email, 'Secretaria CIPFP Batoi')
                     ->send(new MatriculaAlumne(
-                        $aR, config('curso.fitxerMatricula'),$request->convocatoria));
-                return $this->sendResponse('OK','Email enviat');
+                        $aR, config('variables.fitxerMatricula'), $request->convocatoria));
+                return $this->sendResponse('OK', 'Email enviat');
             } catch (Swift_RfcComplianceException $e) {
                 return $this->sendError('Error enviant email');
             }
@@ -75,7 +75,8 @@ class AlumnoReunionController extends ApiBaseController
 
 
 
-    public function getTestMatricula($token){
+    public function getTestMatricula($token)
+    {
         if ($token == '2Kpd5xIfNYfx3U7aTaRWPQZtmF9LFlP6dXR07DB88DdL28ZMfWXsYKWAC0TV') {
             $alumno = Alumno::find('10001551');
             $fecha_nac = $alumno->fecha_nac;

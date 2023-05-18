@@ -398,7 +398,7 @@ class FctAlumnoController extends IntranetController
      *
      *
      * // MANE ELS TREBALLS
-     * if ($elemento->Alumno->email != '' && config('curso.enquestesAutomatiques')){
+     * if ($elemento->Alumno->email != '' && config('variables.enquestesAutomatiques')){
      * $remitente = ['email' => AuthUser()->email, 'nombre' => AuthUser()->FullName, 'id' => AuthUser()->dni];
      * dispatch(new SendEmail($elemento->Alumno->email, $remitente, 'email.fct.alumno', $elemento));
      * Alert::info('Correu enviat');
