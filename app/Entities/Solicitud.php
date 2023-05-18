@@ -46,7 +46,7 @@ class Solicitud extends Model
     public function getIdOrientadorOptions()
     {
         $orientador = [];
-        foreach (config('avisos.orientador') as $dni) {
+        foreach (usersWithRol(config('roles.rol.orientador')) as $dni) {
             $orientador[$dni] = Profesor::find($dni)->fullName;
         }
         return $orientador;

@@ -300,6 +300,18 @@ function isAdmin()
     return Auth::user()?esRol(Auth::user()->rol, 11):false;
 }
 
+function usersWithRol($rol)
+{
+    $usuarios = [];
+    foreach (Profesor::activo()->get() as $usuario) {
+        if (esRol($usuario->rol, $rol)) {
+            $usuarios[] = $usuario->dni;
+        }
+    }
+    return $usuarios;
+}
+
+
 
 
 /**
@@ -522,13 +534,6 @@ function loadImg($fixer)
  * @param $datos
  * @return mixed
  */
-
-function fileContactos()
-{
-    return 'avisos';
-    return is_file(base_path().'/config/avisos.php')?'avisos':'contacto';
-}
-
 
 function cargaDatosCertificado($datos, $date=null)
 {

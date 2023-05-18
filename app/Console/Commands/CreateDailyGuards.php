@@ -84,15 +84,15 @@ class CreateDailyGuards extends Command
                 $horario = Horario::distinct()
                         ->Profesor($idProfesor)
                         ->Dia($diaSemana)
+                        ->GuardiaAll()
                         ->whereIn('sesion_orden', $horas)
-                        ->where('ocupacion', config('constants.codigoGuardia'))
                         ->get();
             }
         } else {
             $horario = Horario::distinct()
                     ->Profesor($idProfesor)
                     ->Dia($diaSemana)
-                    ->where('ocupacion', config('constants.codigoGuardia'))
+                    ->GuardiaAll()
                     ->get();
         }
         foreach ($horario as $horasAfectadas) {

@@ -149,7 +149,7 @@ class Comision extends Model
         return $this->comida
             + $this->gastos
             + $this->alojamiento
-            + ($this->kilometraje * config('variables.precioKilometro')[$this->medio]);
+            + ($this->kilometraje * config('auxiliares.precioKilometro')[$this->medio]);
     }
 
     public function getDescripcionAttribute()

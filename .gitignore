@@ -12,14 +12,8 @@ npm-debug.log
 yarn-error.log
 .env
 /public/fotos
-/config/contacto.php
-/config/variables.php
-/config/curso.php
-/config/signatures.php
 /config/services.php
 /config/mail.php
-/config/modelos.php
-/config/avisos.php
 /public/img/pdf
 composer.lock
 /nbproject/private/
