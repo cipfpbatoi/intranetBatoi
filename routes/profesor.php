@@ -82,7 +82,7 @@ Route::get('/grupotrabajo/{grupotrabajo}/coordinador/{profesor}', 'GrupoTrabajoC
 Route::resource('/curso', 'CursoController', ['except' => ['destroy', 'update']]);
 Route::get('/curso/{curso}/delete', ['as' => 'curso.destroy', 'uses' => 'CursoController@destroy']);
 Route::post('/curso/create', ['as' => 'curso.store', 'uses' => 'CursoController@store']);
-Route::put('/curso/{curso}/edit', ['as' => 'comision.update', 'uses' => 'CursoController@update']);
+Route::put('/curso/{curso}/edit', ['as' => 'curso.update', 'uses' => 'CursoController@update']);
 Route::get('/curso/{curso}/detalle', ['as' => 'curso.detalle', 'uses' => 'CursoController@detalle']);
 Route::get('/alumnocurso/{grupo}', ['as' => 'alumnocurso.show', 'uses' => 'AlumnoCursoController@indice']);
 Route::get('/alumnocurso/{id}/delete', ['as' => 'alumnocurso.delete', 'uses' => 'AlumnoCursoController@destroy']);

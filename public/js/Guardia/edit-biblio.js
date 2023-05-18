@@ -15,7 +15,7 @@ var dias_semana=["D", "L", "M", "X", "J", "V", "S"];
 
 $(function() {
     $.ajax ({
-    	url: "/api/ipGuardia",
+    	url: "/api/ipGuardias",
     	type: "GET",
     	dataType: "json",
         data: {

@@ -37,7 +37,7 @@ $(function() {
 		.then(
 			(response) => miIP = response.data)
     $.ajax ({
-    	url: "/api/ipGuardia",
+    	url: "/api/ipGuardias",
     	type: "GET",
     	dataType: "json",
         data: {

@@ -32,8 +32,14 @@ Route::put('/ciclo/{ciclo}/edit', ['as' => 'ciclo.update', 'uses' => 'CicloContr
 Route::get('/ciclo/{ciclo}/delete', ['as' => 'ciclo.destroy', 'uses' => 'CicloController@destroy']);
 
 Route::resource('/departamento', 'DepartamentoController', ['except' => ['destroy', 'update', 'edit']]);
-Route::put('/departamento/{departamento}/edit', ['as' => 'departamento.update', 'uses' => 'DepartamentoController@update']);
-Route::get('/departamento/{departamento}/delete', ['as' => 'departamento.destroy', 'uses' => 'DepartamentoController@destroy']);
+Route::put(
+    '/departamento/{departamento}/edit',
+    ['as' => 'departamento.update', 'uses' => 'DepartamentoController@update']
+);
+Route::get(
+    '/departamento/{departamento}/delete',
+    ['as' => 'departamento.destroy', 'uses' => 'DepartamentoController@destroy']
+);
 
 Route::resource('/task', 'TaskController', ['except' => ['destroy', 'update', 'edit']]);
 Route::put('/task/{task}/edit', ['as' => 'task.update', 'uses' => 'TaskController@update']);
@@ -79,3 +85,8 @@ Route::post('/secure', ['as' => 'secure.door','uses' => 'AdministracionControlle
 
 Route::get('/consulta', 'AdministracionController@consulta');
 Route::post('centro/{id}/empresa/create', 'CentroController@empresaCreateCentro');
+
+Route::resource('/ipguardia', 'IpGuardiaController', ['except' => ['destroy', 'update', 'edit']]);
+Route::get('/ipguardia/{id}/delete', ['as' => 'ipguardia.destroy', 'uses' => 'IpGuardiaController@destroy']);
+Route::put('/ipguardia/{comision}/edit', ['as' => 'ipguardia.update', 'uses' => 'IpGuardiaController@update']);
+

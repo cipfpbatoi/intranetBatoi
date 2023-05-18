@@ -22,16 +22,7 @@ class FicharController extends ApiBaseController
         return $this->sendResponse(['updated' => false], 'Profesor no identificado');
     }
 
-    public function ip()
-    {
-        $ips = array();
-        foreach (IpGuardia::all() as $key => $ip) {
-            $ips[$key]['ip'] = $ip->ip;
-            $ips[$key]['codOcup'] = (int)$ip->codOcup;
-        }
-        return $this->sendResponse($ips, 'OK');
-        
-    }
+
 
     public function entrefechas(Request $datos)
     {

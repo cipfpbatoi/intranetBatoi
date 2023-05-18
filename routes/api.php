@@ -20,7 +20,7 @@ Route::get('miIp', 'IPController@miIP');
 Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 
 
-Route::group(['middleware' => 'auth:api'], function() {
+Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('dual', 'DualController', ['except' => [ 'create']]);
     Route::get('misAlumnosFct', 'AlumnoFctController@misAlumnos');
     Route::resource('actividad', 'ActividadController', ['except' => [ 'create']]);
@@ -32,6 +32,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('resultado', 'ResultadoController', ['except' => [ 'create']]);
     Route::resource('comision', 'ComisionController', ['except' => [ 'create']]);
     Route::resource('instructor', 'InstructorController', ['except' => [ 'create']]);
+    Route::resource('ipguardia', 'IpGuardiaController');
     Route::get('autorizar/comision', 'ComisionController@autorizar');
     Route::get('notification/{id}', 'NotificationController@leer');
     Route::resource('ppoll', 'PPollController', ['except' => [ 'create']]);
@@ -41,7 +42,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('profesor/rol/{rol}', 'ProfesorController@getRol');
     Route::get('ficha', 'ProfesorController@ficha');
     Route::get('doficha', 'FicharController@fichar');
-    Route::get('ipGuardia', 'FicharController@ip');
+    Route::get('ipGuardias', 'IpGuardiaController@arrayIps');
     Route::get('verficha', 'FicharController@entrefechas');
     Route::get('itaca/{dia}/{idProfesor}', 'FaltaItacaController@potencial');
     Route::post('itaca', 'FaltaItacaController@guarda');
@@ -115,7 +116,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('/alumno/{dni}/foto', 'AlumnoController@putImage');
     Route::post('/matricula/send', 'AlumnoReunionController@sendMatricula');
 
-    Route::resource('lote', 'LoteController',['except' => [ 'create']]);
+    Route::resource('lote', 'LoteController', ['except' => [ 'create']]);
     Route::get('lote/{id}/articulos', 'LoteController@getArticulos');
     Route::put('lote/{id}/articulos', 'LoteController@putArticulos');
     Route::resource('articuloLote', 'ArticuloLoteController');
@@ -133,7 +134,7 @@ Route::group(['middleware' => 'auth:api'], function() {
 
 });
 
-Route::fallback(function(){
+Route::fallback( function() {
     return response()->json([
         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
 });
