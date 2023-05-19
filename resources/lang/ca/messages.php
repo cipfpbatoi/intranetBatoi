@@ -310,6 +310,7 @@ return array(
         'Files' => "Fitxers personals",
         'Propuestabaja' => 'Canvis proposats Inventari',
         'Signatures' => 'Signatures Pendents',
+        'Ipguardia' => 'IPs Ordinadors de Guàrdia',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

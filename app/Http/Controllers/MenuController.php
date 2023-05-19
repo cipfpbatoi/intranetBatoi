@@ -24,7 +24,15 @@ class MenuController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['categoria', 'nombre','descripcion', 'url', 'Xrol', 'Xactivo','ajuda'];
+    protected $gridFields = [
+        'categoria',
+        'nombre',
+        'descripcion',
+        'url',
+        'Xrol',
+        'Xactivo',
+        'ajuda'
+    ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Collection|Menu[]|mixed
@@ -49,11 +57,19 @@ class MenuController extends IntranetController
 
         foreach (Menu::where('submenu', '')->orderBy('menu')->orderBy('orden')->get() as $menu) {
             $orden = 1;
-            foreach (Menu::where('submenu',$menu->nombre)->orderBy('orden')->get() as $submenu) {
+            foreach (Menu::where('submenu', $menu->nombre)->orderBy('orden')->get() as $submenu) {
                 $submenu->orden = $orden ++;
                 $submenu->save();
             }
         }
+    }
+
+    public function realStore(Request $request, $id = null)
+    {
+        $elemento = $id ? Menu::find($id) : new Menu;
+        $elemento->fillAll($request);
+        $elemento->save();
+        return redirect("/menu/$elemento->id/edit");
     }
 
     /**
@@ -112,7 +128,7 @@ class MenuController extends IntranetController
                 ->where('submenu', $elemento->submenu)
                 ->first();
         }
-        if ($find){
+        if ($find) {
             $find->orden = $inicial;
             $elemento->orden = $orden;
             $find->save();
