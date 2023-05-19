@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('comision', 'ComisionController', ['except' => [ 'create']]);
     Route::resource('instructor', 'InstructorController', ['except' => [ 'create']]);
     Route::resource('ipguardia', 'IpGuardiaController');
+    Route::resource('setting', 'SettingController');
     Route::get('autorizar/comision', 'ComisionController@autorizar');
     Route::get('notification/{id}', 'NotificationController@leer');
     Route::resource('ppoll', 'PPollController', ['except' => [ 'create']]);
@@ -51,7 +52,6 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => [ 'create']]);
     Route::get('faltaProfesor/horas/{condicion}', 'FaltaProfesorController@horas');
-    //Route::get('/departamento', 'DepartamentoController@index');
 
     Route::put('/material/cambiarUbicacion/', 'MaterialController@putUbicacion');
     Route::put('/material/cambiarEstado/', 'MaterialController@putEstado');
@@ -134,7 +134,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
 });
 
-Route::fallback( function() {
+Route::fallback(function () {
     return response()->json([
         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
 });

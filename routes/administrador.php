@@ -90,3 +90,7 @@ Route::resource('/ipguardia', 'IpGuardiaController', ['except' => ['destroy', 'u
 Route::get('/ipguardia/{id}/delete', ['as' => 'ipguardia.destroy', 'uses' => 'IpGuardiaController@destroy']);
 Route::put('/ipguardia/{comision}/edit', ['as' => 'ipguardia.update', 'uses' => 'IpGuardiaController@update']);
 
+Route::resource('/setting', 'SettingController', ['except' => ['destroy', 'update', 'edit']]);
+Route::get('/setting/{id}/delete', ['as' => 'settings.destroy', 'uses' => 'SettingController@destroy']);
+Route::put('/setting/{comision}/edit', ['as' => 'settings.update', 'uses' => 'SettingController@update']);
+

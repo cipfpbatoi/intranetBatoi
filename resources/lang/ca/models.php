@@ -473,6 +473,11 @@ return array(
         'Ipguardia' => array(
           'index' => 'Control IP',
         ),
+        'Setting' => array(
+          'index' => 'Variables de Configuració',
+          'edit' => 'Editar Configuració',
+          'create' => 'Crear Configuració',
+        ),
         'Ppoll' => array(
           'show' => 'Plantilla Enquesta',
           'index' => 'Manteniment Plantilles Enquestes',

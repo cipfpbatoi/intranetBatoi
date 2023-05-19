@@ -351,6 +351,11 @@ return array(
         'Ipguardia' => array(
             'index' => 'Control IP',
         ),
+        'Setting' => array(
+            'index' => 'Variables de Configuración',
+            'edit' => 'Editar Configuración',
+            'create' => 'Crear Configuración',
+        ),
         'Dual' => array(
             'index' => 'FP Dual',
             'create' => 'Nueva Dual',

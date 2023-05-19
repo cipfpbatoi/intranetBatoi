@@ -306,6 +306,7 @@ return array(
         'Propuestabaja' => 'Cambios Propuestos Inventario',
         'Signatures' => 'Firmas pendientes',
         'Ipguardia' => 'IPs Ordenadores de Guardia',
+        'Setting' => 'Configuración',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

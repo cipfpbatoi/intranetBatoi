@@ -311,6 +311,7 @@ return array(
         'Propuestabaja' => 'Canvis proposats Inventari',
         'Signatures' => 'Signatures Pendents',
         'Ipguardia' => 'IPs Ordinadors de Guàrdia',
+        'Setting' => 'Configuració',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
