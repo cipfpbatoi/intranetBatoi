@@ -6,5 +6,5 @@ use DB;
 
 class SettingController extends ApiBaseController
 {
-    protected $model = 'setting';
+    protected $model = 'Setting';
 }
