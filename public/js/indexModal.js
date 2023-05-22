@@ -29,7 +29,7 @@ $(function () {
         if (!cur_modal) {
             cur_modal = '#create';
         } else {
-            localStorage.removeItem("curl_modal");
+            localStorage.removeItem("cur_modal");
         }
         $(cur_modal).modal('show');
     }

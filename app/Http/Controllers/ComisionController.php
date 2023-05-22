@@ -42,6 +42,7 @@ class ComisionController extends ModalController
 
     public function store(ComisionRequest $request)
     {
+        dd('hola');
         $new = new Comision();
         $new->fillAll($request);
         if ($new->fct) {
@@ -104,7 +105,7 @@ class ComisionController extends ModalController
         if (Fct::misFcts()->count()) {
             $fct = 1;
             $servicio = "Visita a Empreses per FCT: ";
-        } else{
+        } else {
             $fct = 0;
             $servicio = "Visita a Empreses: ";
         }

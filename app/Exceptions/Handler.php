@@ -5,6 +5,7 @@ namespace Intranet\Exceptions;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Intranet\Componentes\Mensaje;
 use Styde\Html\Facades\Alert;
 use Throwable;
@@ -48,19 +49,23 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
-        if ($exception->getMessage()!='The given data was invalid.'&&
-               $exception->getMessage()!='Unauthenticated.'&&
-               $exception->getMessage()!='' &&
-               !strpos($exception->getMessage(),'SRF')) {
-            Mensaje::send(config('avisos.errores'),$exception->getMessage().$exception->getTraceAsString());
+        if (
+            !$exception instanceof ValidationException &&
+            $exception->getMessage()!='The given data was invalid.'&&
+            $exception->getMessage()!='Unauthenticated.'&&
+            $exception->getMessage()!='' &&
+            !strpos($exception->getMessage(), 'SRF')
+        ) {
+            Mensaje::send(config('avisos.errores'), $exception->getMessage().$exception->getTraceAsString());
         }
-        if ($exception instanceof \PDOException){
-            Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :".$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
+        if ($exception instanceof \PDOException) {
+            Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :"
+                .$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
         }
         if ($request->wantsJson()) {
             return response()->json(['message' => $exception->getMessage()], $exception->getCode());
         }
-        if ($exception instanceof AuthenticationException){
+        if ($exception instanceof AuthenticationException) {
             return redirect()->guest('login');
         }
 
