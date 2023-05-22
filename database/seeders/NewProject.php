@@ -1788,7 +1788,7 @@ class NewProject extends Seeder
             'nombre' => 'Admin',
             'apellido1' => 'Administrador',
             'apellido2' => '',
-            'password' => 'MU8kVSFXbWf12',
+            'password' => bcrypt('12345678'),
             'emailItaca' => 'admin@intranet.my',
             'email' => 'admin@intranet.my',
             'domicilio' => '',
