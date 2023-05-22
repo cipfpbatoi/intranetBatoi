@@ -165,7 +165,6 @@ return [
         Intranet\Providers\AppServiceProvider::class,
         Intranet\Providers\AuthServiceProvider::class,
         Intranet\Providers\EventServiceProvider::class,
-        //Intranet\Providers\NovaServiceProvider::class,
         Intranet\Providers\RouteServiceProvider::class,
         Intranet\Providers\HelperServiceProvider::class,
         Intranet\Providers\HtmlServiceProvider::class,
