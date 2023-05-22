@@ -1,8 +1,7 @@
 <?php
-namespace Database\Seeder;
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Menu;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Departamento;
@@ -10,7 +9,7 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\TipoIncidencia;
 use Intranet\Entities\Profesor;
 
-class newProject extends Seeder
+class NewProject extends Seeder
 {
 
     public function run()
