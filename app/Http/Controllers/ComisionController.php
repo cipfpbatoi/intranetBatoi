@@ -42,7 +42,6 @@ class ComisionController extends ModalController
 
     public function store(ComisionRequest $request)
     {
-        dd('hola');
         $new = new Comision();
         $new->fillAll($request);
         if ($new->fct) {
