@@ -25,26 +25,33 @@ SET time_zone = "+00:00";
 -- Bolcament de dades per a la taula `departamentos`
 --
 
-
 INSERT INTO `departamentos` (`id`, `cliteral`, `vliteral`, `depcurt`, `didactico`, `idProfesor`) VALUES
-                                                                                                     (1, 'INGLES', 'ANGLES', 'Ang', 1, '052782223Y'),
-                                                                                                     (2, 'SERVICIOS A LA COMUNIDAD', 'SERVEIS A LA COMUNITAT', 'SCo', 1, '021673101V'),
-                                                                                                     (3, 'IMAGEN PERSONAL', 'IMATGE PERSONAL', 'Img', 1, '021663517R'),
-                                                                                                     (4, 'PROGRAMAS DE GARANTIA SOCIAL', 'PROGRAMES DE GARANTIA SOCIAL', 'Pgs', 0, NULL),
-                                                                                                     (5, 'DEPARTAMENTO ADMINISTRATIVO', 'DEPARTAMENT ADMINISTRACIÓ', 'Adm', 1, '021661601V'),
-                                                                                                     (6, 'DEPARTAMENTO SANITARIO', 'DEPARTAMENT SANITARI', 'San', 1, '073993296L'),
-                                                                                                     (9, 'EXTENSION CULTURAL', 'EXTENSIO CULTURAL', 'Cul', 0, NULL),
-                                                                                                     (10, 'HOSTELERIA Y TURISMO', 'HOSTELERIA I TURISME', 'Hos', 1, '020428584F'),
-                                                                                                     (12, 'FORMACION Y ORIENTACION LABORA', 'FORMACIO I ORIENTACIO LABORAL', 'Fol', 1, '052736808Q'),
-                                                                                                     (14, 'FRANCES', 'FRANCES', 'Fra', 0, NULL),
-                                                                                                     (18, 'ORIENTACION', 'ORIENTACIO', 'Ori', 1, '048293140V'),
-                                                                                                     (22, 'CICLOS FORMATIVOS', 'CICLES FORMATIUS', 'Cf', 0, NULL),
-                                                                                                     (23, 'FCT', 'FCT', 'Fct', 0, NULL),
-                                                                                                     (24, 'DEPARTAMENTO INFORMATICA', 'DEPARTAMENT INFORMÀTICA', 'Inf', 1, '021676764T'),
-                                                                                                     (25, 'Seguridad y Medio Ambiente', 'Seguretat i Medi Ambient', 'SMA', 1, '029072738W'),
-                                                                                                     (90, 'Personal No Docente', 'Personal No Docent', 'PND', 0, NULL),
-                                                                                                     (91, 'Personal Limpieza', 'Personal Neteja', 'NET', 0, NULL),
-                                                                                                     (99, 'Desconegut', 'Desconegut', '???', 0, NULL);
+             (1, 'INGLES', 'ANGLES', 'Ang', 1, '052782223Y'),
+             (2, 'SERVICIOS A LA COMUNIDAD', 'SERVEIS A LA COMUNITAT', 'SCo', 1, '021673101V'),
+             (3, 'IMAGEN PERSONAL', 'IMATGE PERSONAL', 'Img', 1, '021663517R'),
+             (4, 'PROGRAMAS DE GARANTIA SOCIAL', 'PROGRAMES DE GARANTIA SOCIAL', 'Pgs', 0, NULL),
+             (5, 'DEPARTAMENTO ADMINISTRATIVO', 'DEPARTAMENT ADMINISTRACIÓ', 'Adm', 1, '021661601V'),
+             (6, 'DEPARTAMENTO SANITARIO', 'DEPARTAMENT SANITARI', 'San', 1, '073993296L'),
+             (9, 'EXTENSION CULTURAL', 'EXTENSIO CULTURAL', 'Cul', 0, NULL),
+             (10, 'HOSTELERIA Y TURISMO', 'HOSTELERIA I TURISME', 'Hos', 1, '020428584F'),
+             (12, 'FORMACION Y ORIENTACION LABORA', 'FORMACIO I ORIENTACIO LABORAL', 'Fol', 1, '052736808Q'),
+             (14, 'FRANCES', 'FRANCES', 'Fra', 0, NULL),
+             (18, 'ORIENTACION', 'ORIENTACIO', 'Ori', 1, '048293140V'),
+             (22, 'CICLOS FORMATIVOS', 'CICLES FORMATIUS', 'Cf', 0, NULL),
+             (23, 'FCT', 'FCT', 'Fct', 0, NULL),
+             (24, 'DEPARTAMENTO INFORMATICA', 'DEPARTAMENT INFORMÀTICA', 'Inf', 1, '021676764T'),
+             (25, 'Seguridad y Medio Ambiente', 'Seguretat i Medi Ambient', 'SMA', 1, '029072738W'),
+             (90, 'Personal No Docente', 'Personal No Docent', 'PND', 0, NULL),
+             (91, 'Personal Limpieza', 'Personal Neteja', 'NET', 0, NULL),
+             (99, 'Desconegut', 'Desconegut', '???', 0, NULL);
+
+INSERT INTO `ipGuardias` (`id`, `ip`, `codOcup`) VALUES
+             (1, '172.16.20.238', '149034734'),
+             (2, '172.16.109.203', '3249454'),
+             (3, '172.16.109.201', '3249454'),
+             (4, '172.16.109.200', '3249454'),
+             (5, '172.16.20.219', '3249454');
+
 --
 -- Bolcament de dades per a la taula `ciclos`
 --
@@ -76,11 +83,6 @@ INSERT INTO `ciclos` (`id`, `ciclo`, `departamento`, `tipo`, `normativa`, `titol
 (57, 'TPB Perruqueria i Estética', 3, 3, 'LOE', 'PROFESSIONAL BÀSIC EN PERRUQUERIA I ESTÈTICA', '127/2014, de 28 febrer, Rd 356/2014, de 16 maig i el D 185/2014, de 31 d\'octubre', NULL, 'FP Bàsica Perruqueria i Estètica', 'FP Básica Peluqueria i Estética', 120, NULL, NULL, NULL),
 (58, 'CFS QUIMICA I SALUT AMBIENTAL', 25, 2, 'LOE', 'TÈCNIC SUPERIOR EN QUÍMICA I SALUT AMBIENTAL', '283/2019 (BOE 22/4/2019)', NULL, 'Química i Salut Ambiental', 'Química i Salut Ambiental', 400, 'QSM', NULL, NULL),
 (59, 'MASTER CIBERSEGURETAT', 24, 2, 'LOE', 'MASTER SEGURETAT', '283/2019 (BOE 22/4/2019)', NULL, 'Curs d\'EspecialiTzació en Ciberseguretat en Entorns de les Tecnologies de la Información', 'Curso de Especialización en Ciberseguridad en Entornos de las Tecnologías de la Información', 0, 'MCS', NULL, NULL);
-
-
-
-
-
 
 --
 -- Bolcament de dades per a la taula `horas`
@@ -326,8 +328,6 @@ INSERT INTO `settings` (`id`, `collection`, `key`, `value`) VALUES
 (67, 'variables', 'actividadImg', '0'),
 (68, 'variables', 'altaInstructores', '0'),
 (69, 'variables', 'ipDomotica', 'http://172.16.10.74/api/devices/{dispositivo}/action');
-
-
 
 --
 -- Bolcament de dades per a la taula `tipoincidencias`
