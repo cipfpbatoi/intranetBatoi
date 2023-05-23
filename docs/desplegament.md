@@ -1,55 +1,48 @@
 # Desplegar la intranet en una nova màquina
-Instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versió de PHP ha de ser al menys la 7.2
+Instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versió de PHP ha de ser al menys la 7.2, encara que és preferible tindre la 8.1 o superior.
 
-## Instal·lar el software
+## Preparació
+### Instal·lar el software
 Els paquets a instal·lar són:
 
+* **php**
+* **phpmyadmin**
+* **git**
+* **composer**
 * **apache2**
-* **mysql-server** o **mariadb-server** (recorda que després hem d'executar el comando **`mysql_secure_installation`** que configura l'usuari root). NOTA: ara la validació dels usuaris la fa el sistema (el _plugin_ 'auth_socket' o 'unix_socket'). Per a configurar un usuari amb privilegis consulta [StackOverflow](https://stackoverflow.com/questions/39281594/error-1698-28000-access-denied-for-user-rootlocalhost) o qualsevol altra pàgina en internet. En resum, executem:
+* **mysql-server** o **mariadb-server**
+
+Hem de donar accéss a l'usuari `root` a MySql, encara que es recomana crear un usuari per a la BBDD de la intranet y utilitzar aquest usuari y no root (però podem fer-ho després des del **phpmyadmin**). Farem:
 ```bash
 sudo mysql -u root
 
 mysql> USE mysql;
-mysql> SELECT User, Host, plugin, authentication_string FROM mysql.user;
-### Si uso Mysql le cambio el plugin y le pongo una contraseña
 mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'P@ssw0rd';
-### Si uso MariaDB le cambio el password al usuario
-mysql> UPDATE user SET password=PASSWORD('your_p@ssw0rd') WHERE User='root';
-mysql> UPDATE user SET plugin='auth_socket' WHERE User='root';
-### en ambos casos
 mysql> FLUSH PRIVILEGES;
 mysql> exit;
 
 sudo systemctl restart mysql.service    # o mariadb.service
 ```
-Fuente correcta para mysql:[How To Install MySQL on Ubuntu 18.04](https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-18-04#step-2-%E2%80%94-configuring-mysql)
 
-> Altra alternativa és instal·lar una versió més recent desde els repositoris, consulta [MariaDB Downloads](https://downloads.mariadb.org/mariadb/repositories/#mirror=tedeco&distro=Ubuntu&distro_release=bionic--ubuntu_bionic&version=10.3), o més senzill encara, tras instal·lar _phpmyadmin_ donem permisos a l'usuari phpmyadmin i utilitzem eixe usuari:
+### Crear la BBDD
+Crearem la BBDD per a la nostra intranet. Podem fer-ho del del phpmyadmin o des de la CLI. Es recomana crear un usuari per a gestionar aquesta base de dades.
+
+### Descarregar la aplicació
+Dins de `/var/www/html` clonem el repositori de la intranet:
+
 ```bash
-sudo mysql -u root
-
-mysql> USE mysql;
-mysql> GRANT ALL PRIVILEGES ON *.* TO 'phpmyadmin'@'localhost';
-mysql> FLUSH PRIVILEGES;
-mysql> exit;
-
-sudo systemctl restart mysql.service
+git clone git@github.com:cipfpbatoi/intranetBatoi.git
 ```
 
-* **php**
-* **phpmyadmin** (abans hem d'haver configurat el mysql)
-* **git**
-* **composer**
+En el moment d'escriure aquesta ajuda hauríem de utilitzar la branca `laravel10` perquè `master` encara no està actualitzada. EN el futur es farà directament des de la branca _master_.
 
 ### Configurar apache
-Creem els certificats (el _.key_ en /etc/ssl/private i els altres 2 en en /etc/ssl/certs):
+Creem els certificats (el _.key_ en `/etc/ssl/private` i els altres 2 en en `/etc/ssl/certs`):
 ```bash
-openssl genrsa -out intranet.key 1024
+openssl genrsa -out intranet.key 2048
 openssl req -new -key intranet.key -out intranet.csr   # completem la informació que ens demanen
 openssl x509 -req -in intranet.csr -signkey intranet.key -out intranet.crt
 ```
-
-Posem en /etc/hosts el nom de la màquina (p.ej. `intranet.my`).
 
 Configurem el lloc web SSL en _/etc/apache2/sites-available_:
 * ServerName: p.ej. `ServerName intranet.my`
@@ -76,7 +69,7 @@ sudo a2ensite intranet.conf
 sudo a2ensite intranet-ssl.conf
 ```
 
-Configurem el **php.ini** (en _/etc/php/7.x/apache2/_) per a poder subir els fitxers de Itaca que són molt grans. També és convenient indicar la hora local:
+Configurem el **php.ini** (en _/etc/php/8.x/apache2/_) per a poder subir els fitxers de Itaca que són molt grans. També és convenient indicar la hora local:
 ```bash
 post_max_size=0
 upload_max_filesize = 200M
@@ -95,6 +88,31 @@ sudo a2enmod rewrite
 sudo systemctl restart apache2.service
 ```
 ATENCIÓ: cal que estiga la carpeta intranetBatoi ja creada abans de reiniciar Apache per que no done un error.
+
+## Initzialitzar l'aplicació
+Creem el fitxer `.env` amb les dades de la nostra intranet. Utilitzem como plantilla el fitxer `.env.dusk.local`:
+```bash
+cp .env.dusk.local .env
+```
+
+I editem el fitxer _`.env`_ modificant les variables:
+```bash
+- `APP_KEY`: haurà de contener la clave generada con php artisan key:generate (ho farem després automàticament)
+- `APP_URL`: URL de la nostra intranet, ej. `http://intranet.my`
+- `DB_DATABASE`: ponemos el nombre de nuestra BBDD
+- `DB_USERNAME`, `DB_PASSWORD`: el usuario y contraseña para acceder a la misma
+- `SESSION_DOMAIN`: URL de la nostra intranet (com la APP_URL però sense http), ej. `intranet.my`
+```
+
+composer update
+Si falta algo hay que instalarlo, p.ej. si dice que falta ext-bcmath hay que instalar php8.1-bcmath
+
+migrete
+db:seeder
+
+mv public/img/pdf.exemple/ a pdf/
+
+iniciar con admin@intranet.my y 12345678
 
 ## Instal·lar el servidor de correu
 Instal·lem el servidor de correu **exim4** y després el configurem:
