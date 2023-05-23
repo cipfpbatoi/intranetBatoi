@@ -1,8 +1,7 @@
 # Desplegar la intranet en una nova màquina
-Instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versió de PHP ha de ser al menys la 7.2, encara que és preferible tindre la 8.1 o superior.
+Instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versió de PHP ha de ser al menys la 7.2, encara que és preferible tindre la 8.
 
-## Preparació
-### Instal·lar el software
+## Instal·lar el programari
 Els paquets a instal·lar són:
 
 * **php**
@@ -12,6 +11,7 @@ Els paquets a instal·lar són:
 * **apache2**
 * **mysql-server** o **mariadb-server**
 
+### Configurar MySQL
 Hem de donar accéss a l'usuari `root` a MySql, encara que es recomana crear un usuari per a la BBDD de la intranet y utilitzar aquest usuari y no root (però podem fer-ho després des del **phpmyadmin**). Farem:
 ```bash
 sudo mysql -u root
@@ -36,7 +36,7 @@ git clone git@github.com:cipfpbatoi/intranetBatoi.git
 
 En el moment d'escriure aquesta ajuda hauríem de utilitzar la branca `laravel10` perquè `master` encara no està actualitzada. En el futur es farà directament des de la branca _master_.
 
-### Configurar apache
+### Configurar Apache
 Creem els certificats (el _.key_ en `/etc/ssl/private` i els altres 2 en en `/etc/ssl/certs`):
 ```bash
 openssl genrsa -out intranet.key 2048
@@ -103,11 +103,99 @@ I editem el fitxer _`.env`_ modificant les variables:
 - `SESSION_DOMAIN`: URL de la nostra intranet (com la APP_URL però sense http), ej. `intranet.my`
 ```
 
+Ara ja podem instal·lar les dependències amb el comando:
+```bash
 composer update
-Si falta algo hay que instalarlo, p.ej. si dice que falta ext-bcmath hay que instalar php8.1-bcmath
+```
+Si falla perquè falta algun paquet l'haurem d'instal·lar. Per exemple en aquesta versió diu que falta `ext-bcmath`. Com que la nostra versió de PHP és la 8.1 haurem d'executar `apt install php8.1-bcmath`.
 
-php artisan migrate
-php artisan db:seed
+Creem la clau que es guardarà en el fitxer `.env` amb: 
+```bash
+php artisan key:generate      # Genera la clave de la aplicación y la añade a APP_KEY en el fichero .env
+```
+
+Ara hem de recarregar el fitxer de configuració en la caché (cal fer-ho cada vegada que canviem alguna cosa en qualsevl fitxer de configuració):
+```bash
+php artisan config:cache
+```
+
+Per últim només queda crear les taules de la BBDD i carregar-les amb les dades inicials. Ho fem amb:
+```bash
+php artisan migrate     # crea las tablas en la base de datos
+php artisan db:seed     # inserta los datos iniciales de algunas tablas
+```
+
+El `db:seed` fica les dades inicials de:
+* menu:
+* ciclos:
+* horas:
+* departamentos:
+* tipoincidencias
+
+Les dades de les taules de _muninipios_ i _provincias_ no els obtenim de Itaca sinó que els hem de importar a ma si els volem (és opcional, s'utilitzen només en alguns llistats).
+
+També crea un usuari amb el codi 9999 i la contrasenya '12345678' que és Administrador de la intranet. Per a iniciar sessió per primera vegada hem de posar com usuari el seu email què és `admin@intranet.my`.
+
+A continuació canviem el nom de la carpeta `pdf.exemple` a `pdf` amb
+```bash
+mv public/img/pdf.exemple/ a pdf/
+```
+
+Ara canviem el propietari de la carpeta de la intranet i el seu contingut a l'usuari **www-data** i donem permisos d'escriptura per a tothom sobre la carpeta `/storage` y el seu contingut.
+```bash
+chown -R www-data:www-data .
+chmod -R a+w ./storage
+```
+
+## Importar dades de Itaca
+Abans de fer la primera importació de dades de Itaca hem d'obrir el fitxer **contacto.php** en _/config_ on configurem totes les dades del nostre centre. A més indicarem el NIF (en format Itaca, és a dir, amb un 0 davant) dels càrrecs així com:
+* avisos -> material: la persona que indiquen rebrà un misstage cada vegada que es canvia d'ubicació un material inventariable
+* incidències: ací posem a totes les persones que s'encarreguen de solventar incidències en el Centre. Són els usuaris a qui es pot asignar una incidència quan es crea.
+
+També és convenient posar correctament les dades de les taules (això només cal fer-ho la primera vegada que es crea la intranet, la resta d'anys es conserven les dades):
+* Departamentos
+* Ciclos
+
+La taula _Departamentos_ ha de tindre OBLIGATORIAMENT un departament (podem dir-li 'Desconegut' o com vulgam) amb **codi 99** que és al que s'asignaran els nous professors fins que es posen en el departament adequat.
+
+### Primera importació
+En el xml de Itaca per a la primera importació han d'estar les següents taules:
+* Continguts (mòduls del centre)
+* Ocupacions (codis de les ocupacions no lectives dels professors)
+* Grups (grups del centre)
+* Professors
+* Alumnes
+* Horaris grup (horaris lectius dels diferents grups)
+* Horaris ocupacions (horaris no lectius dels profsesores)
+
+Les importacions es fan des del menú **Administració -> Importació des de Itaca**. Al ser la primera cal marcar la casella '_Primera Importació anual_'.
+
+![Importar dades itaca](./img/ajuda/setupImportItaca1a-1.png)
+
+A continuació seleccionen el fitxer amb les dades en format .XML i polsem 'Enviar'.
+
+**ATENCIÖ: Aquest procés tardarà uns quants minuts en funció de la mida del fitxer XML. És molt important _NO TANCAR_ el navegador ni tornar a polsar '_Enviar_' fins que acabe**.
+
+Tras importar les dades la primera vegada hurem d'assignar a ma **els professores als departaments** i **els grups als cicles** (posteriorment només haurem de tornar-ho a fer amb elo nous professors i els nous grups si hi haguera tras cada importació).
+
+Els professors estan asignats per defecte al departament 99 ('Desconegut'). Cada professor pot posar el departament al que pertany editant el seu perfil. També des de direcció es pot posar cadascun al seu departament des de **Equip directiu -> Dades professors -> Editar perfil professor**.
+
+Els grups por defecte no estan asignats a cap cicle. Per a fer-ho anem a **Professorat -> Gestió grups -> Editar grup** i li posem a cada grup el seu cicle.
+
+Per a finalitzar hem de tornar a fer la importació per a que s'asignen correctament els mòduls als cicles al importar els horaris **sense la casella de 'Primera importació' MARCADA.
+
+### Resta d'importacions
+En el xml de Itaca per a la resta d'importacions només estaran les taules en que hi haja canvis, normalment:
+* Alumnes per a reflectir les noves matrículas i baixes
+* Profesores, si hay nuevos profesores
+* Horaris grup i horaris ocupacions, si hi hagueren canvis
+
+Marquem 'Assignar tutor' si hi ha nous tutors (si no, no cal) i deixem desmarcada la d'esborrar grups sense tutor.
+
+Tras esperar uns minuts...
+
+
+
  
 mv public/img/pdf.exemple/ a pdf/
 
