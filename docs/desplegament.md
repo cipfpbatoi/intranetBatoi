@@ -34,7 +34,7 @@ Dins de `/var/www/html` clonem el repositori de la intranet:
 git clone git@github.com:cipfpbatoi/intranetBatoi.git
 ```
 
-En el moment d'escriure aquesta ajuda hauríem de utilitzar la branca `laravel10` perquè `master` encara no està actualitzada. EN el futur es farà directament des de la branca _master_.
+En el moment d'escriure aquesta ajuda hauríem de utilitzar la branca `laravel10` perquè `master` encara no està actualitzada. En el futur es farà directament des de la branca _master_.
 
 ### Configurar apache
 Creem els certificats (el _.key_ en `/etc/ssl/private` i els altres 2 en en `/etc/ssl/certs`):
@@ -97,7 +97,6 @@ cp .env.dusk.local .env
 
 I editem el fitxer _`.env`_ modificant les variables:
 ```bash
-- `APP_KEY`: haurà de contener la clave generada con php artisan key:generate (ho farem després automàticament)
 - `APP_URL`: URL de la nostra intranet, ej. `http://intranet.my`
 - `DB_DATABASE`: ponemos el nombre de nuestra BBDD
 - `DB_USERNAME`, `DB_PASSWORD`: el usuario y contraseña para acceder a la misma
@@ -107,9 +106,9 @@ I editem el fitxer _`.env`_ modificant les variables:
 composer update
 Si falta algo hay que instalarlo, p.ej. si dice que falta ext-bcmath hay que instalar php8.1-bcmath
 
-migrete
-db:seeder
-
+php artisan migrate
+php artisan db:seed
+ 
 mv public/img/pdf.exemple/ a pdf/
 
 iniciar con admin@intranet.my y 12345678
