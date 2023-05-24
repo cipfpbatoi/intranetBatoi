@@ -90,9 +90,9 @@ sudo systemctl restart apache2.service
 ATENCIÓ: cal que estiga la carpeta intranetBatoi ja creada abans de reiniciar Apache per que no done un error.
 
 ## Initzialitzar l'aplicació
-Creem el fitxer `.env` amb les dades de la nostra intranet. Utilitzem como plantilla el fitxer `.env.dusk.local`:
+Creem el fitxer `.env` amb les dades de la nostra intranet. Utilitzem como plantilla el fitxer `.env.example`:
 ```bash
-cp .env.dusk.local .env
+cp .env.example .env
 ```
 
 I editem el fitxer _`.env`_ modificant les variables:
@@ -130,11 +130,13 @@ El `db:seed` fica les dades inicials de:
 * ciclos:
 * horas:
 * departamentos:
-* tipoincidencias
+* tipoincidencias:
+* settings:
+* ipguardias:
 
 Les dades de les taules de _muninipios_ i _provincias_ no els obtenim de Itaca sinó que els hem de importar a ma si els volem (és opcional, s'utilitzen només en alguns llistats).
 
-També crea un usuari amb el codi 9999 i la contrasenya '12345678' que és Administrador de la intranet. Per a iniciar sessió per primera vegada hem de posar com usuari el seu email què és `admin@intranet.my`.
+També crea un usuari amb el codi 9999 i la contrasenya '12345678' que és Administrador provisional de la intranet. Per a iniciar sessió per primera vegada hem de posar com usuari el seu email què és `admin@intranet.my`.
 
 A continuació canviem el nom de la carpeta `pdf.exemple` a `pdf` amb
 ```bash
@@ -192,14 +194,6 @@ En el xml de Itaca per a la resta d'importacions només estaran les taules en qu
 
 Marquem 'Assignar tutor' si hi ha nous tutors (si no, no cal) i deixem desmarcada la d'esborrar grups sense tutor.
 
-Tras esperar uns minuts...
-
-
-
- 
-mv public/img/pdf.exemple/ a pdf/
-
-iniciar con admin@intranet.my y 12345678
 
 ## Instal·lar el servidor de correu
 Instal·lem el servidor de correu **exim4** y després el configurem:
