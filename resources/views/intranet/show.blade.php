@@ -17,4 +17,3 @@
 @section('titulo')
     {{trans("models.$modelo.show")}} {{$elemento->getKey()}}
 @endsection
-

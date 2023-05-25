@@ -67,8 +67,8 @@ class InventarioController extends IntranetController
 
     public function edit($id)
     {
+        $material = Inventario::findOrFail($id);
         if (isProfesor()) {
-            $material = Inventario::findOrFail($id);
             if ($material->espacio == 'INVENT') {
                 $formulario = new FormBuilder($material, [
                     'descripcion' => ['disabled' => 'disabled'],
@@ -83,7 +83,7 @@ class InventarioController extends IntranetController
                 return parent::edit($id);
             }
         } else {
-            return parent::show($id);
+            return view('inventario.show', compact('material'));
         }
     }
 

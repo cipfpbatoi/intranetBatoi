@@ -72,6 +72,7 @@ trait traitCRUD{
     {
         $elemento = $this->class::findOrFail($id);
         $modelo = $this->model;
+
         return view($this->chooseView('show'), compact('elemento', 'modelo'));
     }
     /* 
