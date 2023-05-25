@@ -347,6 +347,7 @@ return array(
             'an1' => 'Imprimir anexos I',
             'an2' => 'Imprimir anexos II',
             'an3' => 'Imprimir anexos III',
+            'an5' => 'Imprimir informes Valoratius'
         ),
         'Ipguardia' => array(
             'index' => 'Control IP',

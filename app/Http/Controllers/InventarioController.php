@@ -53,32 +53,37 @@ class InventarioController extends IntranetController
         // empty
     }
 
-    function barcode(Request $request)
+    public function barcode(Request $request)
     {
         $materiales = collect();
-        $ids = explode(',',$request->ids);
-        foreach ($ids as $id){
+        $ids = explode(',', $request->ids);
+        foreach ($ids as $id) {
             $materiales->add(Material::find($id));
         }
-        return $this->hazPdf('pdf.inventario.lote',$materiales,$request->posicion,'portrait',[210,297],5)->stream();
+        return $this->hazPdf('pdf.inventario.lote', $materiales, $request->posicion, 'portrait', [210, 297], 5)->stream();
 
     }
 
 
     public function edit($id)
     {
-        $material = Inventario::findOrFail($id);
-        if ($material->espacio == 'INVENT'){
-            $formulario = new FormBuilder($material,[
-                'descripcion' => ['disabled' => 'disabled'],
-                'marca' => ['disabled' => 'disabled'],
-                'modelo' => ['disabled' => 'disabled'],
-                'nserieprov' => ['type' => 'text'],
-                'espacio' => ['type' => 'select']]);
-            $modelo =  $this->model;
-            return view('intranet.edit',compact('formulario','modelo'));
+        if (isProfesor()) {
+            $material = Inventario::findOrFail($id);
+            if ($material->espacio == 'INVENT') {
+                $formulario = new FormBuilder($material, [
+                    'descripcion' => ['disabled' => 'disabled'],
+                    'marca' => ['disabled' => 'disabled'],
+                    'modelo' => ['disabled' => 'disabled'],
+                    'nserieprov' => ['type' => 'text'],
+                    'espacio' => ['type' => 'select']
+                ]);
+                $modelo = $this->model;
+                return view('intranet.edit', compact('formulario', 'modelo'));
+            } else {
+                return parent::edit($id);
+            }
         } else {
-            return parent::edit($id);
+            return parent::show($id);
         }
     }
 

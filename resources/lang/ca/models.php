@@ -354,6 +354,7 @@ return array(
             'an1' => 'Imprimir annexes I',
             'an2' => 'Imprimir annexes II',
             'an3' => 'Imprimir annexes III',
+            'an5' => 'Imprimir annexes valoratius',
         ),
         'Dual' => array(
             'index' => 'FP Dual',

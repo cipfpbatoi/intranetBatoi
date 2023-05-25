@@ -164,4 +164,15 @@ return [
         'route' => 'alumnofct',
         'finder' => 'A3',
     ],
+    /*
+    'A5' => [
+        'modelo' => 'AlumnoFct',
+        'route' => 'alumnofct',
+        'finder' => 'AlumnoEnFct',
+        'pdf' => [
+            'descripcion' => "ENTREVISTA DEL TUTOR AMB L'ALUMNAT",
+            'orientacion' => 'landscape'
+        ],
+        'view' => 'pdf.fct.seguimentAlumnes',
+    ], */
 ];

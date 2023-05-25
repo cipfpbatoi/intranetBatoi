@@ -175,12 +175,15 @@ Route::resource('/expediente', 'ExpedienteController', ['except' => ['destroy', 
 Route::get('/expediente/{expediente}/delete', ['as' => 'expediente.destroy', 'uses' => 'ExpedienteController@destroy']);
 Route::get('/expediente/{expediente}/show', ['as' => 'expediente.show', 'uses' => 'ExpedienteController@show']);
 Route::post('/expediente/create', ['as' => 'expediente.store', 'uses' => 'ExpedienteController@store']);
-Route::put('/expediente/{expediente}/assigna', ['as' => 'expediente.assigna', 'uses' => 'ExpedienteController@assigna']);
+Route::put('/expediente/{expediente}/assigna',
+    ['as' => 'expediente.assigna', 'uses' => 'ExpedienteController@assigna']);
 Route::put('/expediente/{expediente}/edit', ['as' => 'expediente.update', 'uses' => 'ExpedienteController@update']);
 Route::get('/expediente/{expediente}/pdf', ['as' => 'expediente.pdf', 'uses' => 'ExpedienteController@pdf']);
-Route::get('/expediente/{expediente}/notification', ['as' => 'expediente.notificar', 'uses' => 'ExpedienteController@notify']);
+Route::get('/expediente/{expediente}/notification',
+    ['as' => 'expediente.notificar', 'uses' => 'ExpedienteController@notify']);
 Route::get('/expediente/{expediente}/init', ['as' => 'expediente.init', 'uses' => 'ExpedienteController@init']);
-Route::get('/expediente/{expediente}/active', ['as' => 'expediente.active', 'uses' => 'ExpedienteController@orientacion']);
+Route::get('/expediente/{expediente}/active',
+    ['as' => 'expediente.active', 'uses' => 'ExpedienteController@orientacion']);
 
 
 Route::get('/procedimento', ['as'=> 'procedimiento.all', 'uses'=>'PanelProcedimientoController@index']);
@@ -326,7 +329,8 @@ Route::get('/alumnofct/{id}/Valoratiu', ['as' => 'alumnofct.Valoratiu', 'uses' =
 Route::get('/alumnofct/{id}/AEng', ['as' => 'alumnofct.AEng', 'uses' => 'FctAlumnoController@AEng']);
 Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
 Route::get('/alumnofct/{id}/unlink', ['as' => 'alumnofct.unlink', 'uses' => 'FctAlumnoController@unlink']);
-Route::get('/alumnofct/{id}/A{num}',['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num','[1-3]');
+Route::get('/alumnofct/{id}/A{num}',
+    ['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num', '[1-3]');
 Route::get('/alumnofct/{id}/send', ['as' => 'alumnofct.send', 'uses' => 'FctAlumnoController@send']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy', 'show']]);
@@ -355,7 +359,6 @@ Route::get('/lote', ['as' => 'lote.index', 'uses'=>'PanelLoteController@index'])
 
 //RUTAS INVENTARIO
 Route::get('/inventario', ['as' => 'inventario.index', 'uses' => 'InventarioController@index']);
-Route::get('/inventario/{material}/edit', ['as' => 'inventario.edit', 'uses' => 'InventarioController@edit']);
 Route::get('/inventario/{material}/delete', ['as' => 'inventario.delete', 'uses' => 'InventarioController@destroy']);
 Route::put('/inventario/{material}/edit', ['as' => 'inventario.update', 'uses' => 'InventarioController@update']);
 Route::post('/inventario/barcode', 'InventarioController@barcode');
