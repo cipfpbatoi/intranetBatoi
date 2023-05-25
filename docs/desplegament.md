@@ -1,5 +1,20 @@
 # Desplegar la intranet en una nova màquina
-Instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versió de PHP ha de ser al menys la 7.2, encara que és preferible tindre la 8.
+- [Desplegar la intranet en una nova màquina](#desplegar-la-intranet-en-una-nova-màquina)
+  - [Introducció](#introducció)
+  - [Instal·lar el programari](#installar-el-programari)
+    - [Configurar MySQL](#configurar-mysql)
+    - [Crear la BBDD](#crear-la-bbdd)
+    - [Descarregar la aplicació](#descarregar-la-aplicació)
+    - [Configurar Apache](#configurar-apache)
+  - [Initzialitzar l'aplicació](#initzialitzar-laplicació)
+  - [Importar dades de Itaca](#importar-dades-de-itaca)
+    - [Primera importació](#primera-importació)
+    - [Resta d'importacions](#resta-dimportacions)
+  - [Instal·lar el servidor de correu](#installar-el-servidor-de-correu)
+
+
+## Introducció
+Ací es detalla com configurar el servidor per a la intranet. En aquesta màquina instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versió de PHP ha de ser al menys la 7.2, encara que és preferible tindre la 8.
 
 ## Instal·lar el programari
 Els paquets a instal·lar són:
@@ -171,7 +186,7 @@ En el xml de Itaca per a la primera importació han d'estar les següents taules
 * Horaris grup (horaris lectius dels diferents grups)
 * Horaris ocupacions (horaris no lectius dels profsesores)
 
-Les importacions es fan des del menú **Administració -> Importació des de Itaca**. Al ser la primera cal marcar la casella '_Primera Importació anual_'.
+Les importacions es fan des del menú **Administració -> Importació des de Itaca**. Al ser la primera cal marcar la casella '_Hi ha professors amb horari nou (no és substitut)_'.
 
 ![Importar dades itaca](./img/ajuda/setupImportItaca1a-1.png)
 
@@ -185,13 +200,15 @@ Els professors estan asignats per defecte al departament 99 ('Desconegut'). Cada
 
 Els grups por defecte no estan asignats a cap cicle. Per a fer-ho anem a **Professorat -> Gestió grups -> Editar grup** i li posem a cada grup el seu cicle.
 
-Per a finalitzar hem de tornar a fer la importació per a que s'asignen correctament els mòduls als cicles al importar els horaris **sense la casella de 'Primera importació' MARCADA.
+Per a finalitzar hem de tornar a fer la importació per a que s'asignen correctament els mòduls als cicles al importar els horaris **sense la casella de 'Hi ha professors amb horari nou' MARCADA.
 
 ### Resta d'importacions
 En el xml de Itaca per a la resta d'importacions només estaran les taules en que hi haja canvis, normalment:
 * Alumnes per a reflectir les noves matrículas i baixes
-* Profesores, si hay nuevos profesores
+* Profesores, si hi ha nous professors
 * Horaris grup i horaris ocupacions, si hi hagueren canvis
+
+Si hi ha algun professor nou que **no és substitut** d'altre que ja estava hem de marcar la caselle '_Hi ha professors amb horari nou_'.
 
 Marquem 'Assignar tutor' si hi ha nous tutors (si no, no cal) i deixem desmarcada la d'esborrar grups sense tutor.
 
