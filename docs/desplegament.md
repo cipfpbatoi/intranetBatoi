@@ -4,10 +4,11 @@ Instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versi�
 ## Instal·lar el programari
 Els paquets a instal·lar són:
 
-* **php**
-* **phpmyadmin**
 * **git**
 * **composer**
+* **libxrender1, libxtst6 i libssl1.0-dev** (per a poder generar PDFs)
+* **php**
+* **phpmyadmin**
 * **apache2**
 * **mysql-server** o **mariadb-server**
 
@@ -176,7 +177,7 @@ Les importacions es fan des del menú **Administració -> Importació des de Ita
 
 A continuació seleccionen el fitxer amb les dades en format .XML i polsem 'Enviar'.
 
-**ATENCIÖ: Aquest procés tardarà uns quants minuts en funció de la mida del fitxer XML. És molt important _NO TANCAR_ el navegador ni tornar a polsar '_Enviar_' fins que acabe**.
+**ATENCIÓ: Aquest procés tardarà uns quants minuts en funció de la mida del fitxer XML. És molt important _NO TANCAR_ el navegador ni tornar a polsar '_Enviar_' fins que acabe**.
 
 Tras importar les dades la primera vegada hurem d'assignar a ma **els professores als departaments** i **els grups als cicles** (posteriorment només haurem de tornar-ho a fer amb elo nous professors i els nous grups si hi haguera tras cada importació).
 
@@ -196,7 +197,9 @@ Marquem 'Assignar tutor' si hi ha nous tutors (si no, no cal) i deixem desmarcad
 
 
 ## Instal·lar el servidor de correu
-Instal·lem el servidor de correu **exim4** y després el configurem:
+Necessitem un servidor de correu instal·lat per a moltes de les funcionalitats de la intranet. Ací teniu com exemple la instal·lació i configuració del servidor de correu **exim4** amb un compte de Gmail, però es pot utilitzar qualsevol.
+
+El primer pas és instal·lar el paquet i configurar-lo:
 ```bash
 sudo apt install exim4
 sudo dpkg-reconfigure exim4-config
@@ -238,6 +241,6 @@ També cal possar en el crontab:
 00 01 * * * rm /var/www/html/IntranetBatoi/storage/tmp/*
 */1 * * * * php /var/www/html/IntranetBatoi/artisan queue:work --once --timeout=120 --tries=3
 
-Si estem gastant https:: no funcionaran els pdf por el snapy. Cal mirar la documentació d'esta pàgina per resoldre el bug
+Si estem gastant _https_ no funcionaran els pdf por el snapy. Cal mirar la documentació d'esta pàgina per resoldre el bug
 https://github.com/barryvdh/laravel-snappy/issues/217. Depenent de la versió de linux que hem instal·lat variarà. Es tracta de degradar el ssl.
 
