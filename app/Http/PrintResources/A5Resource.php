@@ -49,7 +49,7 @@ class A5Resource extends PrintResource
             'untitled14' => day(Hoy()),
             'untitled15' => month(Hoy()),
             'untitled16' => substr(year(Hoy()), 2, 2),
-            'untitled17' => $tutor->fullName,
+            'untitled18' => $tutor->fullName,
         ];
     }
 }
