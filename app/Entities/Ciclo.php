@@ -15,11 +15,13 @@ class Ciclo extends Model
     
     protected $table = "ciclos";
     public $timestamps = false;
-    protected $fillable = [ 'ciclo','vliteral','cliteral', 'departamento','tipo','normativa','titol','rd','rd2','horasFct','acronim','llocTreball','dataSignaturaDual'];
+    protected $fillable = [ 'ciclo','vliteral','cliteral', 'departamento','tipo','normativa','titol','rd','rd2','horasFct','acronim','llocTreball','dataSignaturaDual','competencies'];
+    protected $notFillable = ['competencies'];
     protected $inputTypes = [
         'departamento' => ['type' => 'select'],
         'tipo' => ['type' => 'select'],
-        'dataSignaturaDual' => ['type' => 'date']
+        'dataSignaturaDual' => ['type' => 'date'],
+        'competencies' => ['type' => 'file'],
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
