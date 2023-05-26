@@ -22,7 +22,7 @@ class CicloController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = [ 'ciclo','literal','Xdepartamento','Xtipo'];
+    protected $gridFields = [ 'id','ciclo','literal','Xdepartamento','Xtipo'];
 
 
     protected function iniBotones()
