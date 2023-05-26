@@ -10,6 +10,7 @@
                 <option value="A1">@lang("models.Fct.an1")</option>
                 <option value="A2">@lang("models.Fct.an2")</option>
                 <option value="A3">@lang("models.Fct.an3")</option>
+                <option value="A5">@lang("models.Fct.an5")</option>
         </select>
         <hr/>
         <table id="tableSeleccion"></table>

@@ -3,11 +3,11 @@ namespace Intranet\Services;
 
 use Intranet\Componentes\MyMail;
 use Intranet\Componentes\Pdf;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
 use Styde\Html\Facades\Alert;
 use mikehaertl\pdftk\Pdf as PdfTk;
-use Illuminate\Http\Response;
 
 class DocumentService
 {
@@ -70,6 +70,7 @@ class DocumentService
 
     private function print()
     {
+        // Document simple pdf desde vista
         if (isset($this->document->view)) {
             return Pdf::hazPdf(
                 $this->document->view,
@@ -78,10 +79,21 @@ class DocumentService
                 $this->document->pdf['orientacion']
             )->stream();
         }
+        // Document pdf desde plantilla
         if (isset($this->document->printResource)) {
-            $resource = PrintResource::build($this->document->printResource, $this->elements);
-            return response()->file(FDFPrepareService::exec($resource));
+            if (!$this->document->multiple) {
+                $resource = PrintResource::build($this->document->printResource, $this->elements);
+                return response()->file(FDFPrepareService::exec($resource));
+            } else {
+                $pdfs = [];
+                foreach ($this->elements as $element) {
+                    $resource = PrintResource::build($this->document->printResource, $element);
+                    $pdfs[] = FDFPrepareService::exec($resource);
+                }
+                return response()->file(storage_path(ZipService::exec($pdfs, 'annexes_'.authUser()->dni)));
+            }
         }
+        // Concatenar pdfs ja fets
         $archivos = [];
         foreach ($this->elements as $element) {
             $archivos[] = $element->routeFile;

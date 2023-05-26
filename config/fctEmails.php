@@ -148,6 +148,7 @@ return [
         'modelo' => 'AlumnoFct',
         'route' => 'alumnofct',
         'finder' => 'AlumnoEnFct',
+        'multiple' => false,
     ],
     'A1' => [
         'modelo' => 'Signatura',
@@ -164,15 +165,12 @@ return [
         'route' => 'alumnofct',
         'finder' => 'A3',
     ],
-    /*
+
     'A5' => [
         'modelo' => 'AlumnoFct',
         'route' => 'alumnofct',
         'finder' => 'AlumnoEnFct',
-        'pdf' => [
-            'descripcion' => "ENTREVISTA DEL TUTOR AMB L'ALUMNAT",
-            'orientacion' => 'landscape'
-        ],
-        'view' => 'pdf.fct.seguimentAlumnes',
-    ], */
+        'printResource' => 'A5Resource',
+        'multiple' => true,
+    ],
 ];
