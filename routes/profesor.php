@@ -156,6 +156,7 @@ Route::get('/horario/change', ['as' => 'horario.change', 'uses' => 'HorarioContr
 Route::get('/profesor/{profesor}/horario-aceptar', ['as' => 'horario.aceptar', 'uses' => 'HorarioController@changeTable']);
 Route::get('/profesor/{profesor}/horario-cambiar', ['as' => 'horario.profesor.change', 'uses' => 'HorarioController@horarioCambiar']);
 
+
 Route::get('/ficha', ['as' => 'fichar.ficha', 'uses' => 'FicharController@ficha']);
 
 

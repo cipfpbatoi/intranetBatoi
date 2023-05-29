@@ -16,9 +16,7 @@ class DigitalSignatureService
     {
 
         $cert = new ManageCert;
-        $cert
-            ->setPreservePfx()
-            ->fromPfx($certificat, $password);
+        $cert->setPreservePfx()->fromPfx($certificat, $password);
         return $cert;
     }
 
@@ -72,6 +70,7 @@ class DigitalSignatureService
     )
     {
         try {
+
             $cert = self::readCertificat($filecrt, $passCert);
             $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
             $imagePath = a1TempDir(true, '.png');

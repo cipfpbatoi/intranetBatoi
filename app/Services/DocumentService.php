@@ -72,12 +72,27 @@ class DocumentService
     {
         // Document simple pdf desde vista
         if (isset($this->document->view)) {
-            return Pdf::hazPdf(
-                $this->document->view,
-                $this->elements,
-                $this->document->pdf,
-                $this->document->pdf['orientacion']
-            )->stream();
+            if ($this->document->zip &&
+                file_exists(storage_path('app/certificats/'.authUser()->fileName.'.tmp')) &&
+                count($this->elements) > 1
+            ) {
+                return response()->file(
+                    Pdf::hazZip(
+                        $this->document->view,
+                        $this->elements,
+                        $this->document->pdf,
+                        $this->document->pdf['orientacion']
+                    )
+                );
+            } else {
+                return Pdf::hazPdf(
+                    $this->document->view,
+                    $this->elements,
+                    $this->document->pdf,
+                    $this->document->pdf['orientacion']
+                )->stream();
+            }
+
         }
         // Document pdf desde plantilla
         if (isset($this->document->printResource)) {
@@ -88,7 +103,7 @@ class DocumentService
                 $pdfs = [];
                 foreach ($this->elements as $element) {
                     $resource = PrintResource::build($this->document->printResource, $element);
-                    $pdfs[] = FDFPrepareService::exec($resource);
+                    $pdfs[] = FDFPrepareService::exec($resource, $element->id);
                 }
                 return response()->file(storage_path(ZipService::exec($pdfs, 'annexes_'.authUser()->dni)));
             }

@@ -132,6 +132,7 @@ return [
         'finder' => 'Fct',
         'route' => 'alumnofct',
         'view' => 'pdf.fct.seguimentInstructor',
+        'zip' => true
     ],
     'pr0402' => [
         'pdf' => [

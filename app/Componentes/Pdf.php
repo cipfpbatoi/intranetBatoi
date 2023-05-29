@@ -4,6 +4,7 @@ namespace Intranet\Componentes;
 
 use Barryvdh\DomPDF\Facade as DomPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf as SnappyPDF;
+use Intranet\Services\ZipService;
 use function config;
 use function env;
 use function fechaString;
@@ -41,6 +42,35 @@ class Pdf
         if ($driver==='SnappyPdf') {
             return self::hazSnappyPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones, $marginTop);
         }
+    }
+
+
+    public static function hazZip(
+        $informe,
+        $all,
+        $datosInforme = null,
+        $orientacion = 'portrait',
+        $dimensiones = 'a4',
+        $marginTop = 15,
+    )
+    {
+        $pie = self::pie($informe);
+        $datosInforme = $datosInforme==null?fechaString(null, 'ca'):$datosInforme;
+        foreach ($all as $elemento) {
+            $todos = [$elemento];
+            SnappyPDF::loadView(
+                $informe,
+                compact('todos', 'datosInforme')
+            )->setPaper($dimensiones)
+                ->setOrientation($orientacion)
+                ->setOption('margin-top', $marginTop)
+                ->setOption('footer-line', true)
+                ->setOption('footer-right', $pie)
+                ->setOption('enable-external-links', true)->save(storage_path('tmp/'.$elemento->id.'.pdf'));
+            $pdfs[] = storage_path('tmp/'.$elemento->id.'.pdf');
+        }
+        return storage_path(ZipService::exec($pdfs, 'seguiments_'.authUser()->dni));
+
     }
 
     protected static function hazSnappyPdf(

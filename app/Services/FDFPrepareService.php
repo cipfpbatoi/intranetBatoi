@@ -8,9 +8,9 @@ use Exception;
 
 class FDFPrepareService
 {
-    public static function exec(PrintResource $resource)
+    public static function exec(PrintResource $resource, $id=null)
     {
-        $id = str_shuffle('abcdeft12');
+        $id = $id??str_shuffle('abcdeft12');
         $nameFile = storage_path("tmp/{$id}_{$resource->getFile()}");
         $pdf = new Pdf(public_path("fdf/".$resource->getFile()));
         $pdf->fillForm($resource->toArray());
