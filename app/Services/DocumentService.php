@@ -103,7 +103,7 @@ class DocumentService
                 $pdfs = [];
                 foreach ($this->elements as $element) {
                     $resource = PrintResource::build($this->document->printResource, $element);
-                    $pdfs[] = FDFPrepareService::exec($resource, $element->id);
+                    $pdfs[] = FDFPrepareService::exec($resource, $element->idPrint);
                 }
                 return response()->file(storage_path(ZipService::exec($pdfs, 'annexes_'.authUser()->dni)));
             }

@@ -211,6 +211,10 @@ class AlumnoFct extends Model
     {
         return substr($this->Fct->Centro, 0, 30);
     }
+    public function getMiniCentroAttribute()
+    {
+        return substr($this->Fct->Centro, 0, 15);
+    }
     public function getInstructorAttribute()
     {
         return substr($this->Fct->XInstructor, 0, 30);
@@ -270,6 +274,10 @@ class AlumnoFct extends Model
         return storage_path('app/annexes/')."A{$anexe}_{$this->idSao}.pdf";
     }
 
+    public function getIdPrintAttribute()
+    {
+        return $this->idFct.'-'.$this->miniCentro;
+    }
 
     public function getClassAttribute()
     {
