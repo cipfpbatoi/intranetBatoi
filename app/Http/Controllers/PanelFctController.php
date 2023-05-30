@@ -156,17 +156,7 @@ class PanelFctController extends IntranetController
                 ]
             )
         );
-        $this->panel->setBoton(
-            'index',
-            new BotonBasico(
-                "colaboracion.finEmpresa",
-                [
-                    'class' => 'btn-info selecciona',
-                    'icon' => 'fa fa-flag-checkered',
-                    'data-url' => '/api/documentacionFCT/finEmpresa'
-                ]
-            )
-        );
+
         $this->panel->setBoton(
             'index',
             new BotonBasico(

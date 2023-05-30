@@ -39,6 +39,9 @@
                     <a href="/fct/{{$fct->id}}/show" class="btn-success btn btn-xs">
                         <i class="fa fa-eye"></i>
                     </a>
+                    <a href="/documentacionFCT/{{$fct->id}}/finEmpresa" class="btn-success btn btn-xs">
+                        <i class="fa fa-flag-checkered"></i>
+                    </a>
                 </div>
                 <div class="col-xs-12 col-sm-7 emphasis">
                     @include ('intranet.partials.components.buttons',['tipo' => 'fct'])
