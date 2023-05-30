@@ -189,7 +189,7 @@ class GrupoController extends IntranetController
     {
         $grupo = Alumno::findOrFail($alumno)->Grupo->first();
         $datos['ciclo'] = $grupo->Ciclo;  
-        return $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,Alumno::where('nia',$alumno)->get(),cargaDatosCertificado($datos),'portrait')->stream();
+        return $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa, Alumno::where('nia',$alumno)->get(),cargaDatosCertificado($datos),'portrait')->stream();
     }
 
     public function checkFol($id)

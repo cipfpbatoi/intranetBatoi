@@ -537,9 +537,8 @@ function loadImg($fixer)
 
 function cargaDatosCertificado($datos, $date=null)
 {
-    $file = fileContactos();
-    $secretario = Profesor::find(config($file.'.secretario'));
-    $director = Profesor::find(config($file.'.director'));
+    $secretario = Profesor::find(config('avisos.secretario'));
+    $director = Profesor::find(config('avisos.director'));
     $datos['fecha'] = fechaString($date, 'ca');
     $datos['secretario']['titulo'] = $secretario->sexo == 'H'?'En':'Na';
     $datos['secretario']['articulo'] = $secretario->sexo == 'H'?'El':'La';
