@@ -35,12 +35,13 @@ class SignaturaService
         }
     }
 
-    /**
+
     public static function exists($dni)
     {
         $profesor = Profesor::find($dni);
         return file_exists(storage_path().'/app/public/signatures/'.$profesor->fileName.'.png');
     }
+    /*
 
     public static function getFile($dni)
     {

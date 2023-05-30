@@ -73,7 +73,7 @@ class DocumentService
         // Document simple pdf desde vista
         if (isset($this->document->view)) {
             if ($this->document->zip &&
-                file_exists(storage_path('app/certificats/'.authUser()->fileName.'.tmp')) &&
+                SignaturaService::exists(authUser()->dni) &&
                 count($this->elements) > 1
             ) {
                 return response()->file(

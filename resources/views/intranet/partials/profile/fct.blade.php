@@ -36,10 +36,12 @@
                         {{strtoupper($fct->Colaboracion->Centro->localidad)}}<br/>
                     </p>
                     <em class="btn-success btn btn-xs">{{count($fct->Alumnos)}}</em>
-                    <a href="/fct/{{$fct->id}}/show" class="btn-success btn btn-xs">
+                    <a href="/fct/{{$fct->id}}/show" class="btn-success btn btn-xs" title="Mostrar Fct">
                         <i class="fa fa-eye"></i>
                     </a>
-                    <a href="/documentacionFCT/{{$fct->id}}/finEmpresa" class="btn-success btn btn-xs">
+                    <a href="/documentacionFCT/{{$fct->id}}/finEmpresa"
+                       class="btn-success btn btn-xs"
+                       title="Fin de pràctiques">
                         <i class="fa fa-flag-checkered"></i>
                     </a>
                 </div>
