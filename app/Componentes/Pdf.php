@@ -57,6 +57,9 @@ class Pdf
         $pie = self::pie($informe);
         $datosInforme = $datosInforme==null?fechaString(null, 'ca'):$datosInforme;
         foreach ($all as $elemento) {
+            if (file_exists(storage_path('tmp/'.$elemento->id.'.pdf'))) {
+                unlink(storage_path('tmp/'.$elemento->id.'.pdf'));
+            }
             $todos = [$elemento];
             SnappyPDF::loadView(
                 $informe,
