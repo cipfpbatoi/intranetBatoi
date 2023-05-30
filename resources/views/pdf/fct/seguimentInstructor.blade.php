@@ -67,12 +67,17 @@
                 <br/>
                 <table border='1' style="width:350px;height:100px;float:left;margin-bottom: 20px">
                     <tr>
-                        <td style='text-align: left; vertical-align: top '><strong>Signatura Tutor:</strong></td>
+                        <td style='text-align: left; vertical-align: top '>
+                            <strong>Signatura Tutor:</strong>
+                        </td>
                     </tr>
                 </table>
                 <table border='1' style="width:350px;height:100px;float:left;margin-bottom: 20px">
                     <tr>
-                        <td style='text-align: left; vertical-align: top '><strong>Signatura Instructor:</strong></td>
+                        <td style='text-align: left; vertical-align: top '>
+                            <strong>Signatura Instructor:</strong>
+                            {!!  Intranet\Services\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.5) !!}
+                        </td>
                     </tr>
                 </table>
             </div>
