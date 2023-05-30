@@ -719,3 +719,23 @@ function arrayAlert(array $avisos, $title='Fcts Sincronitzades', $action='succes
         \Styde\Html\Facades\Alert::$action($title.$tots);
     }
 }
+
+function array_depth($array) {
+    if (!is_array($array)) {
+        return 0;
+    }
+
+    $max_depth = 1;
+
+    foreach ($array as $value) {
+        if (is_array($value)) {
+            $depth = array_depth($value) + 1;
+
+            if ($depth > $max_depth) {
+                $max_depth = $depth;
+            }
+        }
+    }
+
+    return $max_depth;
+}
