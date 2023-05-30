@@ -177,18 +177,18 @@ class AlumnoFct extends Model
     }
     public function getQualificacioAttribute()
     {
-        return isset($this->calificacion)?
+       /* return isset($this->calificacion)?
             ($this->calificacion?
                 ($this->calificacion==2?'Convalidat/Exempt': 'Apte')
                 : 'No Apte')
-            : 'No Avaluat';
+            : 'No Avaluat';*/
 
-        /* return match($this->calificacion){
+        return match($this->calificacion) {
              0 => 'No Apte',
              1 => 'Apte' ,
              2 => 'Convalidat/Exempt',
              null =>  'No Avaluat',
-         };*/
+         };
     }
 
     public function getProjecteAttribute()
@@ -276,7 +276,7 @@ class AlumnoFct extends Model
 
     public function getIdPrintAttribute()
     {
-        return $this->idFct.'-'.$this->miniCentro;
+        return $this->idFct.'-'.$this->nombre;
     }
 
     public function getClassAttribute()
