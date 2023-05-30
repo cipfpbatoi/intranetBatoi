@@ -171,7 +171,8 @@ return array(
         'contact' =>'Registrar contacto',
         'final' => 'Comprimir i guardar',
         'acabar' => 'Finalizar',
-        'resolve' => 'Resolución'
+        'resolve' => 'Resolución',
+        'finEmpresa' => 'Fin',
     ),
     'menu' => array(
         'Link' => 'Enlaces externos',

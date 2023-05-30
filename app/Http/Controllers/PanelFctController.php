@@ -159,6 +159,17 @@ class PanelFctController extends IntranetController
         $this->panel->setBoton(
             'index',
             new BotonBasico(
+                "colaboracion.finEmpresa",
+                [
+                    'class' => 'btn-info selecciona',
+                    'icon' => 'fa fa-flag-checkered',
+                    'data-url' => '/api/documentacionFCT/finEmpresa'
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
                 "alumnofct",
                 [
                     'class' => 'btn-dark',
@@ -175,7 +186,7 @@ class PanelFctController extends IntranetController
      */
     public function search()
     {
-        $fcts= Fct::esFct()->misFcts()->orWhere('cotutor',authUser()->dni)->get();
+        $fcts= Fct::esFct()->misFcts()->orWhere('cotutor', authUser()->dni)->get();
         return $fcts->sortBy('centro');
     }
 

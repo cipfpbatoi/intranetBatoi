@@ -20,13 +20,17 @@ class MyMailController extends Controller
     
     public function send(Request $request)
     {
-        if ($request->hasFile('file') && $request->file('file')->isValid()) {
-            $ext = $request->file('file')->getClientOriginalExtension();
-            $mime = $request->file('file')->getMimeType();
-            $nom = "AdjuntCorreu.".$ext;
-            $request->file('file')->move(storage_path('tmp/'), $nom);
-            $fitxer = 'tmp/'.$nom;
-            $attach = [$fitxer => $mime];
+        if ($request->file) {
+            foreach ($request->file as $key => $file) {
+                if ($file->isValid()) {
+                    $ext = $file->getClientOriginalExtension();
+                    $mime = $file->getMimeType();
+                    $nom = "AdjuntCorreu$key.".$ext;
+                    $file->move(storage_path('tmp/'), $nom);
+                    $fitxer = 'tmp/'.$nom;
+                    $attach[] = [$fitxer => $mime];
+                }
+            }
         } else {
             $attach = null;
         }

@@ -45,6 +45,19 @@ return [
         'fcts' => 1,
         'unique' => 1,
     ],
+    'finEmpresa' => [
+        'email' => [
+            'subject' => "Finalització de pràctiques",
+            'toPeople' => 'Instructor',
+            'editable' => true,
+            'register' => false
+        ],
+        'modelo' => 'Fct',
+        'template' =>'email.fct.finish',
+        'route' => 'fct',
+        'fcts' => 1,
+        'unique' => 1,
+    ],
     'inicioAlumno' => [
         'email' => [
             'subject' => "Informació relativa a l'inici de les Pràctiques de FCT",

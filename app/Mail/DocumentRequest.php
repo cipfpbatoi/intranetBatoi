@@ -56,8 +56,10 @@ class DocumentRequest extends Mailable
         )->view($this->view);
 
         if (isset($this->attach)) {
-            foreach ($this->attach as $index => $value) {
-                $vista = $vista->attach(storage_path($index), ['mime' => $value]);
+            foreach ($this->attach as $file) {
+                foreach ($file as $index => $value) {
+                    $vista = $vista->attach(storage_path($index), ['mime' => $value]);
+                }
             }
         }
         return $vista;
