@@ -13,6 +13,7 @@ class DocumentService
 {
     private $elements;
     private $document;
+    private $zip;
 
     /**
      * DocumentService constructor.
@@ -20,6 +21,7 @@ class DocumentService
      */
     public function __construct(Finder $finder)
     {
+        $this->zip = $finder->getZip();
         $this->elements = $finder->exec();
         $this->document = $finder->getDocument();
     }
@@ -72,10 +74,7 @@ class DocumentService
     {
         // Document simple pdf desde vista
         if (isset($this->document->view)) {
-            if ($this->document->zip &&
-                SignaturaService::exists(authUser()->dni) &&
-                count($this->elements) > 1
-            ) {
+            if ($this->zip && $this->document->zip && count($this->elements) > 1) {
                 return response()->file(
                     Pdf::hazZip(
                         $this->document->view,
@@ -96,16 +95,24 @@ class DocumentService
         }
         // Document pdf desde plantilla
         if (isset($this->document->printResource)) {
-            if (!$this->document->multiple) {
-                $resource = PrintResource::build($this->document->printResource, $this->elements);
-                return response()->file(FDFPrepareService::exec($resource));
-            } else {
+            if ($this->document->zip) {
                 $pdfs = [];
                 foreach ($this->elements as $element) {
                     $resource = PrintResource::build($this->document->printResource, $element);
                     $pdfs[] = FDFPrepareService::exec($resource, $element->idPrint);
                 }
-                return response()->file(storage_path(ZipService::exec($pdfs, 'annexes_'.authUser()->dni)));
+                if ($this->zip && count($this->elements) > 1) {
+                    return response()->file(storage_path(ZipService::exec($pdfs, 'annexes_'.authUser()->dni)));
+                } else {
+                    $pdf = new PdfTk($pdfs);
+                    $tmpFile = "tmp/annexes_".authUser()->dni.".pdf";
+                    $pdf->saveAs(storage_path($tmpFile));
+
+                    return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
+                }
+            } else {
+                $resource = PrintResource::build($this->document->printResource, $this->elements);
+                return response()->file(FDFPrepareService::exec($resource));
             }
         }
         // Concatenar pdfs ja fets

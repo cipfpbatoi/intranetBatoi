@@ -347,7 +347,7 @@ return array(
             'an1' => 'Imprimir anexos I',
             'an2' => 'Imprimir anexos II',
             'an3' => 'Imprimir anexos III',
-            'an5' => 'Imprimir informes Valoratius'
+            'an5' => 'Imprimir comptencias adquiridas'
         ),
         'Ipguardia' => array(
             'index' => 'Control IP',
@@ -451,7 +451,7 @@ return array(
             'pg0301' => "Entregada documentación",
             'default' => 'x Alumne',
             'selecciona' => 'Alumno/a',
-            'A5' => 'Informe valoratiu A5',
+            'A5' => 'Informe competencias adquiridas',
             'delete' => 'Borra fct',
             'unlink' => 'Borra conexión con el SAO',
 

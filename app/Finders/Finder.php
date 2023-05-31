@@ -12,6 +12,7 @@ abstract class Finder {
     {
         $this->dni = authUser()->dni??apiAuthUser()->dni;
         $this->document = $document;
+
     }
 
     protected function existsActivity($id)
@@ -30,5 +31,10 @@ abstract class Finder {
     public function getDocument()
     {
         return $this->document;
+    }
+
+    public function getZip()
+    {
+        return false;
     }
 }

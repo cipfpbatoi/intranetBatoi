@@ -354,7 +354,7 @@ return array(
             'an1' => 'Imprimir annexes I',
             'an2' => 'Imprimir annexes II',
             'an3' => 'Imprimir annexes III',
-            'an5' => 'Imprimir annexes valoratius',
+            'an5' => 'Imprimir informe competències adquirides',
         ),
         'Dual' => array(
             'index' => 'FP Dual',
@@ -453,7 +453,7 @@ return array(
           'pg0301' => "Entregada documentació",
             'default' => 'x Alumne/a',
             'selecciona' => 'Alumne/a',
-            'A5' => 'Informe valoratiu A5',
+            'A5' => 'Informe Competències adquirides',
             'delete' => 'Esborra fct',
             'unlink' => 'Esborra connexiò amb el SAO',
         ),

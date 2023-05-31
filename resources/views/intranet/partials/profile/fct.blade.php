@@ -41,8 +41,8 @@
                     </a>
                     <a href="/documentacionFCT/{{$fct->id}}/finEmpresa"
                        class="btn-success btn btn-xs"
-                       title="Fin de pràctiques">
-                        <i class="fa fa-flag-checkered"></i>
+                       title="Enviar Correu">
+                        <i class="fa fa-envelope-o"></i>
                     </a>
                 </div>
                 <div class="col-xs-12 col-sm-7 emphasis">

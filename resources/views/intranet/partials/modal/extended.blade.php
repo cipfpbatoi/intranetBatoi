@@ -12,7 +12,9 @@
                 <option value="A3">@lang("models.Fct.an3")</option>
                 <option value="A5">@lang("models.Fct.an5")</option>
         </select>
+        <input type="checkbox" name="zip" id="zip" /> Zip
         <hr/>
         <table id="tableSeleccion"></table>
+
 </x-modal>
 {{ Html::script("/js/extended.js") }}

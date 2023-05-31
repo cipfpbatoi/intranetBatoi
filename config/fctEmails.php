@@ -185,6 +185,6 @@ return [
         'route' => 'alumnofct',
         'finder' => 'AlumnoEnFct',
         'printResource' => 'A5Resource',
-        'multiple' => true,
+        'zip' => true
     ],
 ];

@@ -26,11 +26,16 @@ class RequestFinder extends Finder
     {
         $elementos = new Collection();
         $modelo = "Intranet\\Entities\\".$this->document->modelo;
-        foreach ($this->request->toArray() as $item => $value){
-            if ($value == 'on'){
+        foreach ($this->request->toArray() as $item => $value) {
+            if (($value == 'on') && ($item != 'zip')) {
                 $elementos->push($modelo::find($item));
             }
         }
         return $elementos;
+    }
+
+    public function getZip()
+    {
+        return isset($this->request->zip);
     }
 }

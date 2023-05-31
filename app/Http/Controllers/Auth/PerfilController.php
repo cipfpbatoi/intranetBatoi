@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\IntranetController;
+use Styde\Html\Facades\Alert;
 
 
 abstract class PerfilController extends IntranetController
@@ -14,6 +15,13 @@ abstract class PerfilController extends IntranetController
     public function update(Request $request, $new)
     {
         $this->validate($request, $new->getRules());
+        if ($request->hasFile('foto')) {
+            if ($request->file('foto')->isValid()) {
+                $new->foto = $request->file('foto')->store('fotos', 'public');
+            } else {
+                Alert::info('Formato no valido');
+            }
+        }
         if ($request->email) {
             $new->email = $request->email;
         }
