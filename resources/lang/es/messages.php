@@ -101,6 +101,7 @@ return array(
         'resuelta' => 'Resueltas',
         'authorize' => 'Autorizar',
         'justify' => 'Justificar',
+        'itaca' => 'Itaca',
         'unauthorize' => 'Desautorizar',
         'refuse' => 'Rechazar',
         'pendiente' => 'Pendientes Contestación',
@@ -173,6 +174,7 @@ return array(
         'acabar' => 'Finalizar',
         'resolve' => 'Resolución',
         'finEmpresa' => 'Fin',
+        'itaca' => 'Pasar datos a Itaca',
     ),
     'menu' => array(
         'Link' => 'Enlaces externos',

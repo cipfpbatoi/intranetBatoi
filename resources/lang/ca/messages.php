@@ -118,6 +118,7 @@ return array(
         'nojustify' => 'Sense justificant',
         'withjustify' => 'Amb justificant',
         'refused' => 'Rebutjades',
+        'itaca' => 'ITACA',
         'justificada' => 'Justificades',
         'cobrada' => 'Cobrades',
         'deleteAll' => 'Esborra tot',
