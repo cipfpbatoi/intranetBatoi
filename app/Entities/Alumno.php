@@ -166,7 +166,9 @@ class Alumno extends Authenticatable
             return [];
         }
         foreach ($this->Grupo as $grupo) {
-            $tutor[] = $grupo->Tutor;
+            $tutor[] = $grupo->Tutor->fecha_baja?
+                Profesor::where('sustituye_a', $grupo->tutor)->first():
+                $grupo->Tutor;
         }
         return $tutor;
     }
