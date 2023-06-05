@@ -420,6 +420,7 @@ return array(
             '3' => 'Rebutjada',
             '1' => 'Pendent',
             '2' => 'Justificada',
+            '4' => 'Itaca',
         ),
         'Horario' => array(
             'index' => 'Modificar Horari :quien',

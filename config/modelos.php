@@ -91,7 +91,8 @@ return [
         'estados' => [
             1 => 'pendiente',
             2 => 'autorizada',
-            3 => 'refused'
+            3 => 'refused',
+            4 => 'itaca',
         ],
         'avisos' => [ 'idProfesor' => [2,3],'director' =>[1]],
         'resolve' => 2,

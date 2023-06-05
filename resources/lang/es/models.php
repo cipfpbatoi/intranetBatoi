@@ -420,7 +420,8 @@ return array(
             '0' => 'No comunicada',
             '1' => 'Pendiente',
             '2' => 'Justificada',
-            '3' => 'Rechazada'
+            '3' => 'Rechazada',
+            '4' => 'Itaca'
         ),
         'Instructor' => array(
           'index' => 'Consulta de instructores',
