@@ -43,7 +43,7 @@ class ItacaController extends Controller
         $count = 0;
         $failures = 0;
 
-        foreach (Falta_itaca::where('estado', 1)->where('dia', '>=', '2023/05/01')->get() as $falta) {
+        foreach (Falta_itaca::where('estado', 2)->where('dia', '>=', '2023/05/01')->get() as $falta) {
             try {
                 $formulari = $driver->findElement(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'));
                 $formulari->clear();
