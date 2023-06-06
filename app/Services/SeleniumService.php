@@ -5,7 +5,6 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Intranet\Exceptions\IntranetException;
-use Styde\Html\Facades\Alert;
 
 class SeleniumService
 {
@@ -47,7 +46,7 @@ class SeleniumService
      * @return void
      * @throws \Facebook\WebDriver\Exception\UnknownErrorException
      */
-    public static function loginItaca($dni='21657327K', $password='Smi@2004'): RemoteWebDriver
+    public static function loginItaca($dni, $password): RemoteWebDriver
     {
         try {
             $desiredCapabilities = $desiredCapabilities??DesiredCapabilities::firefox();
@@ -55,6 +54,7 @@ class SeleniumService
         } catch (\Exception $e) {
             throw new IntranetException('No s\'ha pogut connectar al servidor de Selenium');
         }
+        $dni = substr($dni, -9);
         $driver->get(config('services.selenium.itaca'));
         $driver->findElement(WebDriverBy::id('form1:j_username')) // find usuario
         ->sendKeys($dni);
@@ -64,5 +64,6 @@ class SeleniumService
             ->click();
         sleep(1);
         return $driver;
+
     }
 }

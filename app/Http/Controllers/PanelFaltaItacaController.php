@@ -37,20 +37,35 @@ class PanelFaltaItacaController extends BaseController
     /**
      * @var array
      */
-    protected $parametresVista = ['modal' => ['explicacion','loading']];
+    protected $parametresVista = ['modal' => ['explicacion','loading','ItacaPassword']];
 
     /**
      *
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('index',
+        $this->panel->setBoton(
+            'index',
             new BotonBasico(
                 "direccion.itaca.birret",
                 ['class' => 'btn-info convalidacion', 'roles' => config(self::ROLES_ROL_DIRECCION)]
             ));
-        $this->panel->setBoton('profile', new BotonIcon("$this->model.resolve", ['class' => 'btn-success authorize', 'where' => ['estado', '!=', '2']], true));
-        $this->panel->setBoton('profile', new BotonIcon("$this->model.refuse", ['class' => 'btn-danger refuse', 'where' => ['estado', '>', '0','estado','<','3']], true));
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                "$this->model.resolve",
+                ['class' => 'btn-success authorize', 'where' => ['estado', '!=', '2']],
+                true
+            )
+        );
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                "$this->model.refuse",
+                ['class' => 'btn-danger refuse', 'where' => ['estado', '>', '0','estado','<','3']],
+                true
+            )
+        );
         $this->panel->setBothBoton('itaca.gestor', ['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
         
     }

@@ -7,8 +7,10 @@ use Facebook\WebDriver\WebDriverBy;
 use DB;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
+use Illuminate\Http\Request;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Hora;
+use Intranet\Exceptions\IntranetException;
 use Intranet\Services\SeleniumService;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Styde\Html\Facades\Alert;
@@ -20,88 +22,108 @@ use Styde\Html\Facades\Alert;
  */
 class ItacaController extends Controller
 {
-    private function goToLlist($driver)
+    private $driver;
+
+    private function waitAndClick($xpath)
     {
-        $driver->get('https://itaca3.edu.gva.es/itaca3-gad/');
-        sleep(2);
-        $driver->findElement(WebDriverBy::xpath("//span[contains(text(),'Gestión')]"))->click();
-        sleep(1);
-        $driver->findElement(WebDriverBy::xpath("//span[contains(text(),'Personal')]"))->click();
-        sleep(1);
-        $driver->findElement(WebDriverBy::xpath("//span[contains(text(),'Listado Personal')]"))->click();
-        sleep(1);
-        return $driver;
+        if (is_string($xpath)) {
+            $element = WebDriverBy::xpath($xpath);
+        } else {
+            $element = $xpath;
+        }
+        $wait = new WebDriverWait($this->driver, 10);
+        $wait->until(WebDriverExpectedCondition::elementToBeClickable($element));
+        $this->driver->findElement($element)->click();
+    }
+
+    private function send($selector, $keys)
+    {
+        $formulari = $this->driver->findElement($selector);
+        $formulari->clear();
+        $formulari->sendKeys($keys);
+    }
+
+
+    private function goToLlist()
+    {
+        try {
+            $this->driver->get('https://itaca3.edu.gva.es/itaca3-gad/');
+            $this->waitAndClick("//span[contains(text(),'Gestión')]");
+            $this->waitAndClick("//span[contains(text(),'Personal')]");
+            $this->waitAndClick("//span[contains(text(),'Listado Personal')]");
+        } catch (\Exception $e) {
+            $this->driver->quit();
+            throw new IntranetException($e->getMessage());
+        }
     }
     /**
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
 
-    public function birret()
+    public function birret(Request $request)
     {
-        $driver = SeleniumService::loginItaca();
-        $driver = $this->goToLlist($driver);
+        try {
+            $dni = authUser()->dni;
+            $this->driver = SeleniumService::loginItaca($dni, $request->password);
+            $this->goToLlist();
+        } catch (IntranetException $e) {
+            Alert::danger($e->getMessage());
+            return back();
+        }
+
+
         $count = 0;
         $failures = 0;
 
-        foreach (Falta_itaca::where('estado', 2)->where('dia', '>=', '2023/05/01')->get() as $falta) {
+        foreach (Falta_itaca::where('estado', 1)->where('dia', '>=', '2023/05/01')->get() as $falta) {
             try {
-                $formulari = $driver->findElement(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'));
-                $formulari->clear();
-                $formulari->sendKeys($falta->idProfesor);
-                sleep(0.5);
-                $driver->findElement(WebDriverBy::xpath("//button[contains(text(),'Buscar')]"))->click();
+                $this->send(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
+                $this->waitAndClick("//button[contains(text(),'Buscar')]");
                 sleep(1);
-                $element = $driver->findElement(WebDriverBy::xpath("//div[contains(text(),'$falta->idProfesor')]"));
-                $actions = new WebDriverActions($driver);
+                $element = $this->driver->findElement(
+                    WebDriverBy::xpath("//div[contains(text(),'$falta->idProfesor')]"));
+                $actions = new WebDriverActions($this->driver);
                 $actions->contextClick($element)->perform();
-                $wait = new WebDriverWait($driver, 10);
-                $menuContextual = WebDriverBy::xpath("//span[contains(text(),'Faltas docente')]");
-                $wait->until(WebDriverExpectedCondition::elementToBeClickable($menuContextual));
-                $driver->findElement($menuContextual)->click();
+                $this->waitAndClick("//span[contains(text(),'Faltas docente')]");
                 sleep(3);
                 $fechaActual = date('d/m/Y');
-                $formulari = $driver->findElement(WebDriverBy::xpath("//input[@value='$fechaActual']"));
-                $formulari->clear();
-                $formulari->sendKeys($falta->dia);
-                sleep(0.5);
-                $driver->findElement(WebDriverBy::xpath("//button[contains(text(),'Cambiar Fecha')]"))->click();
-                sleep(1);
-                $dia_semana = date('N', strtotime($falta->dia)) + 1;
+                $this->send(WebDriverBy::xpath("//input[@value='$fechaActual']"), $falta->dia);
+                $this->waitAndClick("//button[contains(text(),'Cambiar Fecha')]");
+                $diaSemana = date('N', strtotime($falta->dia)) + 1;
                 $hora = Hora::find($falta->sesion_orden);
                 $textHora = $hora->hora_ini.' - '.$hora->hora_fin;
-                $expresionXPath = "//table//tr/td[$dia_semana]//div[starts-with(@title, '$textHora')]";
-                $driver->findElement(WebDriverBy::xpath($expresionXPath))->click();
-                sleep(1);
-                $driver->findElement(
-                    WebDriverBy::xpath("//button[contains(text(),'Impartido por titular')]"))->click();
+                $expresionXPath = "//table//tr/td[$diaSemana]//div[starts-with(@title, '$textHora')]";
+                $this->waitAndClick($expresionXPath);
+                $this->waitAndClick("//button[contains(text(),'Impartido por titular')]");
                 sleep(1);
 
-                $checkboxLabel = $driver->findElement(
+                $checkboxLabel = $this->driver->findElement(
                     WebDriverBy::xpath('//label[contains(text(), "Clase impartida por el profesor titular.")]'));
                 $checkboxId = $checkboxLabel->getAttribute('for');
-                $checkbox = $driver->findElement(WebDriverBy::id($checkboxId));
+                $checkbox = $this->driver->findElement(WebDriverBy::id($checkboxId));
                 if (!$checkbox->isSelected()) {
                     $checkbox->click();
-                    sleep(1);
                 }
-                $button = $driver->findElement(WebDriverBy::xpath('//button[contains(text(), "Guardar")]'));
-                $button->click();
-                sleep(1);
-                $button = $driver->findElement(WebDriverBy::xpath('//button[contains(text(), "Aceptar")]'));
-                $button->click();
-                sleep(1);
-                $modalLocator = WebDriverBy::className('z-icon-times');
-                $driver->findElement($modalLocator)->click();
+                $this->waitAndClick("//button[contains(text(),'Guardar')]");
+                $this->waitAndClick("//button[contains(text(),'Aceptar')]");
+                $this->waitAndClick(WebDriverBy::className('z-icon-times'));
                 $falta->estado = 4;
                 $falta->save();
                 $count++;
             } catch (\Exception $e) {
                 Alert::danger($e->getMessage());
-                $driver = $this->goToLlist($driver);
+                try {
+                    $this->goToLlist();
+                } catch (IntranetException $e) {
+                    Alert::danger($e->getMessage());
+                    $this->driver->quit();
+                    Alert::info("$count faltas actualizadas, $failures errores");
+                    return back();
+                }
                 $failures++;
             }
         }
-        $driver->quit();
+        $this->driver->quit();
         Alert::info("$count faltas actualizadas, $failures errores");
         return back();
     }
