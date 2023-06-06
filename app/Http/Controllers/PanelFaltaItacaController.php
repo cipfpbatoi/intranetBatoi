@@ -37,7 +37,7 @@ class PanelFaltaItacaController extends BaseController
     /**
      * @var array
      */
-    protected $parametresVista = ['modal' => ['explicacion']];
+    protected $parametresVista = ['modal' => ['explicacion','loading']];
 
     /**
      *

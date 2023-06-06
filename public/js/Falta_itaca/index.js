@@ -14,4 +14,8 @@ $(function() {
 		$(this).attr("action",MODEL+"/"+id+"/refuse");
 	});
 	$("#explicacion").focus();
+
+	$(".convalidacion").click(function() {
+		$(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
+	});
 })

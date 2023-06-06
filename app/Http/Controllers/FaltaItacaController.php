@@ -18,14 +18,15 @@ class FaltaItacaController extends IntranetController
     
     protected $perfil = 'profesor';
     protected $model = 'Falta_itaca';
-    
+
+
     public function index()
     {
         Session::forget('redirect');
         $profesor = AuthUser();
         $horarios = Horario::Profesor($profesor->dni)->get();
         $horas = Hora::all();
-        return view('falta.itaca', compact('profesor', 'horarios',  'horas'));
+        return view('falta.itaca', compact('profesor', 'horarios', 'horas'));
     }
     
     public static function printReport($request)
