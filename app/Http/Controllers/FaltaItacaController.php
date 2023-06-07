@@ -31,7 +31,7 @@ class FaltaItacaController extends IntranetController
     
     public static function printReport($request)
     {
-        $elementos = self::findElements($request->desde,$request->hasta);
+        $elementos = self::findElements($request->desde, $request->hasta);
 
         if ($request->mensual != 'on') {
             return self::hazPdf("pdf.comunicacioBirret", $elementos)->stream();
@@ -47,25 +47,30 @@ class FaltaItacaController extends IntranetController
                         ->download($nomComplet);
 
     }
-    private static function deleteFile(String $nomComplet){
-        if ($doc = Documento::where('fichero',$nomComplet)->first()){
+
+    private static function deleteFile(String $nomComplet)
+    {
+        if ($doc = Documento::where('fichero', $nomComplet)->first()) {
             unlink(storage_path('app/' . $doc->fichero));
             $doc->delete();
         }
     }
-    private static function findElements(String $desde,String $hasta){
+
+    private static function findElements(String $desde, String $hasta)
+    {
         return Falta_itaca::where([
             ['estado', '2'],
             ['dia', '>=', FechaInglesa($desde)],
             ['dia', '<=',FechaInglesa($hasta)]
-        ])->join('profesores','profesores.dni','=','faltas_itaca.idProfesor')
+        ])->join('profesores', 'profesores.dni', '=', 'faltas_itaca.idProfesor')
             ->orderBy('profesores.apellido1')
             ->orderBy('profesores.apellido2')
             ->orderBy('profesores.nombre')
             ->orderBy('dia')->get();
     }
 
-    private static function nameFile(String $desde){
+    private static function nameFile(String $desde)
+    {
         $fecha = new Date($desde);
         return 'gestor/' . Curso() . '/informes/' . 'Birret' . $fecha->format('M') . '.pdf';
     }
@@ -74,22 +79,22 @@ class FaltaItacaController extends IntranetController
     {
         $falta = Falta_itaca::find($id);
 
-        $faltes_dia = Falta_itaca::where('idProfesor',$falta->idProfesor)->
-            where('dia', FechaInglesa($falta->dia))->where('estado',1)->get();
-        foreach ($faltes_dia as $falta_hora){
+        $faltesDia = Falta_itaca::where('idProfesor', $falta->idProfesor)->
+            where('dia', FechaInglesa($falta->dia))->where('estado', 1)->get();
+        foreach ($faltesDia as $falta_hora) {
             $staSer = new StateService($falta_hora);
             $staSer->resolve();
         }
-        return $this->follow(1,2);
+        return $this->follow(1, 1);
     }
 
     public function refuse($id, Request $request)
     {
         $falta = Falta_itaca::find($id);
 
-        $faltes_dia = Falta_itaca::where('idProfesor', $falta->idProfesor)->
+        $faltesDia = Falta_itaca::where('idProfesor', $falta->idProfesor)->
             where('dia', FechaInglesa($falta->dia))->get();
-        foreach ($faltes_dia as $falta_hora){
+        foreach ($faltesDia as $falta_hora) {
             $staSer = new StateService($falta_hora);
             $staSer->refuse($request->explicacion);
         }

@@ -75,7 +75,7 @@ class ItacaController extends Controller
         $count = 0;
         $failures = 0;
 
-        foreach (Falta_itaca::where('estado', 1)->where('dia', '>=', '2023/05/01')->get() as $falta) {
+        foreach (Falta_itaca::where('estado', 2)->whereMonth('dia', '=', $request->month)->get() as $falta) {
             try {
                 $this->send(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
                 $this->waitAndClick("//button[contains(text(),'Buscar')]");
