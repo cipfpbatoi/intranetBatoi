@@ -44,7 +44,7 @@ return [
         'SAO' => env('SELENIUM_URL_SAO', 'https://foremp.edu.gva.es/index.php'),
         'SAO_USER' => env('SELENIUM_USER_SAO', '21668389C'),
         'SAO_PASS' => env('SELENIUM_PASS_SAO', '21668389C'),
-        'itaca' => env('SELENIUM_URL_ITACA', 'https://www.itaca.es/itaca/login.aspx'),
+        'itaca' => env('SELENIUM_URL_ITACA', 'https://acces.edu.gva.es/sso/login.xhtml?callbackUrl=https://acces.edu.gva.es/escriptori/'),
     ]
 
 ];
