@@ -63,7 +63,14 @@ class SeleniumService
         $driver->findElement(WebDriverBy::name('form1:j_id47'))
             ->click();
         sleep(1);
-        return $driver;
-
+        $errorElement = $driver->findElement(
+            WebDriverBy::xpath("//dt[contains(@class, 'error') and span[contains(text(), 'La contraseña no es válida')]]")
+        );
+        if ($errorElement) {
+            $driver->close();
+            throw new IntranetException('Password no vàlid. Has de ficarl el de l\'ITACA');
+        } else {
+            return $driver;
+        }
     }
 }
