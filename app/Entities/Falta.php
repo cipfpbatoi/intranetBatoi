@@ -45,8 +45,8 @@ class Falta extends Model
         'hasta' => ['type' => 'date'],
         'baja' => ['type' => 'hidden'],
         'dia_completo' => ['type' => 'checkbox'],
-        'hora_ini' => ['type' => 'time'],
-        'hora_fin' => ['type' => 'time'],
+        'hora_ini' => ['type' => 'select'],
+        'hora_fin' => ['type' => 'select'],
         'motivos' => ['type' => 'select'],
         'fecha' => ['type' => 'date'],
         'fichero' => ['type' => 'file']
@@ -154,6 +154,28 @@ class Falta extends Model
         }
 
         return $falta;
+    }
+
+    public function getHoraIniOptions()
+    {
+        $horas = Hora::all();
+        $arrayHoras = [];
+        foreach ($horas as $hora) {
+            $stringHora = $hora->hora_ini.':00';
+            $arrayHoras[$stringHora] = $hora->hora_ini;
+        }
+        return $arrayHoras;
+    }
+
+    public function getHoraFinOptions()
+    {
+        $horas = Hora::all();
+        $arrayHoras = [];
+        foreach ($horas as $hora) {
+            $stringHora = $hora->hora_fin.':00';
+            $arrayHoras[$stringHora] = $hora->hora_fin;
+        }
+        return $arrayHoras;
     }
 
 }

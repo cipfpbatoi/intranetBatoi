@@ -9,7 +9,7 @@
             {!! Field::label('Fichero Actual',$elemento->$property) !!}
             {!! Field::$tipo($property,$default[$property]['params']) !!}
         @else
-            @if (($tipo == 'date') || ($tipo == 'datetime') || ($tipo == 'time'))
+            @if (($tipo == 'date') || ($tipo == 'datetime') || ($tipo == 'time') || ($tipo == 'hora'))
                 {!! Field::text($property,$default[$property]['default'],$default[$property]['params']) !!}
             @else
                 {!! Field::$tipo($property,$default[$property]['default'],$default[$property]['params']) !!}
