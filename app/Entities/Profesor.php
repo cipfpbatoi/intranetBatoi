@@ -320,7 +320,7 @@ class Profesor extends Authenticatable
 
     public function getGrupoTutoriaAttribute()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->get();
+        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->get();
         if (isset($miGrupo->first()->codigo)) {
             return $miGrupo->first()->codigo;
         } else {
