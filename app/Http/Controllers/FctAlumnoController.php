@@ -80,7 +80,8 @@ class FctAlumnoController extends IntranetController
                             'asociacion', '<', 3,
                             'actualizacion', '<', hace(7),
                             'desde', 'anterior', hace(7),
-                            'hasta','posterior',hoy()
+                            'hasta','posterior',hoy(),
+                            'realizadas','<',380
                         ]
                 ]
             )
