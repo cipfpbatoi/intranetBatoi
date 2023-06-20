@@ -76,7 +76,7 @@ class DocumentoController extends IntranetController
     public function store(Request $request, $fct = null)
     {
         $except = ['nota'];
-        if ($request->has('nota') && $this->validate($request, ['nota' => 'numeric|min:1|max:10'])) {
+        if ($request->has('nota') && $this->validate($request, ['nota' => 'numeric|min:1|max:11'])) {
             $this->saveNota($request->nota, $fct);
             if ($request->nota < 5) {
                 return $this->redirect();

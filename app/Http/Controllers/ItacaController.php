@@ -131,7 +131,7 @@ class ItacaController extends Controller
     public function faltes(PasswordRequest $request)
     {
         try {
-            $this->driver = SeleniumService::loginItaca($authUser()->dni, $request->password);
+            $this->driver = SeleniumService::loginItaca(authUser()->dni, $request->password);
             $this->goToLlist();
         } catch (IntranetException $e) {
             Alert::danger($e->getMessage());
@@ -142,11 +142,12 @@ class ItacaController extends Controller
         $count = 0;
         $failures = 0;
 
-        foreach (Falta::where('estado', 4)->whereMonth('hasta', '=', $request->month)->get() as $falta) {
-            try {
+        foreach (Falta::where('estado', 4)->where('dia_completo', 1)->whereMonth('hasta', '=', $request->month)->get() as $falta) {
+            /*try { */
+                sleep(1);
                 $this->send(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
                 $this->waitAndClick("//button[contains(text(),'Buscar')]");
-                sleep(1);
+                sleep(2);
                 $element = $this->driver->findElement(
                     WebDriverBy::xpath("//div[contains(text(),'$falta->idProfesor')]"));
                 $actions = new WebDriverActions($this->driver);
@@ -157,20 +158,24 @@ class ItacaController extends Controller
                     $this->waitAndClick(WebDriverBy::cssSelector('span[title="Listados de Faltas / Comunicados"]'));
                     $this->waitAndClick(WebDriverBy::cssSelector('[data-id="btnNuevi"]'));
                     $span = $this->driver->findElement(WebDriverBy::cssSelector('[data-id="fechaInicialBaja"]'));
-                    $this->send(WebDriverBy::cssSelector('input.z-datebox-input'), $falta->desde, $span);
-                    $span = $this->driver->findElement(WebDriverBy::cssSelector('[data-id="fechaFinalBaja"]'));
-                    $this->send(WebDriverBy::cssSelector('input.z-datebox-input'), $falta->hasta, $span);
-                    $span = $this->driver->findElement(WebDriverBy::cssSelector('[data-id="justificada"]'));
-                    $checkbox = $span->findElement(WebDriverBy::cssSelector('input'));
+                    $formulari = $span->findElement(WebDriverBy::cssSelector('input.z-datebox-input'));
+                    $formulari->clear();
+                    $formulari->sendKeys($falta->desde);
+                    sleep(1);
+                    $span1 = $this->driver->findElement(WebDriverBy::cssSelector('[data-id="fechaFinalBaja"]'));
+                    $this->send(WebDriverBy::cssSelector('input.z-datebox-input'), $falta->hasta, $span1);
+                    sleep(1);
+                    $span2 = $this->driver->findElement(WebDriverBy::cssSelector('[data-id="justificada"]'));
+                    $checkbox = $span2->findElement(WebDriverBy::cssSelector('input'));
                     if (!$checkbox->isSelected()) {
                         $checkbox->click();
                     }
-                    $this->send(WebDriverBy::cssSelector('input.z-combobox-input'), config($falta->motivo);
-
-
+                    $span = $this->driver->findElement(WebDriverBy::cssSelector('[data-id="cbJustificacion"]'));
+                    $this->send(WebDriverBy::cssSelector('input.z-combobox-input'), $falta->motivo, $span);
                 } else {
 
                 }
+                /*
                 $fechaActual = date('d/m/Y');
                 $this->send(WebDriverBy::xpath("//input[@value='$fechaActual']"), $falta->dia);
                 $this->waitAndClick("//button[contains(text(),'Cambiar Fecha')]");
@@ -195,7 +200,10 @@ class ItacaController extends Controller
                 $falta->estado = 4;
                 $falta->save();
                 $count++;
-            } catch (\Exception $e) {
+                */
+            /*} catch (\Exception $e) {
+                $this->driver->quit();
+                dd($e->getMessage());
                 Alert::danger($e->getMessage());
                 try {
                     $this->goToLlist();
@@ -207,6 +215,7 @@ class ItacaController extends Controller
                 }
                 $failures++;
             }
+            */
         }
         $this->driver->quit();
         Alert::info("$count faltas actualizadas, $failures errores");

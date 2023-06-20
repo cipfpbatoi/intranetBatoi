@@ -14,6 +14,16 @@ $(function() {
 		$(this).attr("action",MODEL+"/"+id+"/refuse");
 	});
 	$("#dialogo").focus();
+	$(".convalidacion").click(function() {
+		event.preventDefault();
+		$(this).attr("data-toggle", "modal").attr("data-target", "#password").attr("href", "");
+	});
+	$("#password .submit").click(function() {
+		event.preventDefault();
+		$('#password').modal('hide');
+		$("#formPassword").attr('action', '/direccion/itaca/faltes').submit();
+		$(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
+	});
 })
 
 function getToken() {

@@ -94,6 +94,7 @@ Route::get('/materialBaja', ['as' => 'materialBaja.direccion.index','uses' => 'M
 Route::get('/signatures', ['as' => 'signatura.direccion.index', 'uses' => 'PanelSignaturaController@index']);
 Route::post('/signatures', ['as' => 'signatura.direccion.post', 'uses' => 'PanelSignaturaController@sign']);
 Route::post('/itaca/birret', ['as'=>'itaca.birret', 'uses'=>'ItacaController@birret']);
+Route::post('/itaca/faltes', ['as'=>'itaca.faltes', 'uses'=>'ItacaController@faltes']);
 
 Route::view('/guardia/control', 'guardias.control');
 
