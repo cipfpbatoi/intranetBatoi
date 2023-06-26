@@ -238,17 +238,18 @@ class PanelFinCursoController extends BaseController
         }
     }
 
-    private static function lookUnPaidBills(&$avisos){
-        if (Comision::Actual()->where('estado','<',4)
+    private static function lookUnPaidBills(&$avisos)
+    {
+        if (Comision::Actual()->where('estado', '<', 4)
+            ->where('estado', '>', 0)
             ->where(function($query) {
-                $query->where('comida','>',0)
-                    ->orWhere('gastos','>',0)
-                    ->orWhere('alojamiento','>',0)
-                    ->orWhere('kilometraje','>',0);
-            })->count()){
+                $query->where('comida', '>', 0)
+                    ->orWhere('gastos', '>', 0)
+                    ->orWhere('alojamiento', '>', 0)
+                    ->orWhere('kilometraje', '>', 0);
+            })->count()) {
             $avisos['alert'][] = "Tens comissions de servei pendents de cobrar";
-        }
-        else{
+        } else {
             $avisos[self::SUCCESS][] = 'Comissions correctes';
         }
     }
