@@ -45,12 +45,12 @@ class PanelFinCursoController extends BaseController
         $avisos = [];
         $teacher = Profesor::find($profesor)??AuthUser();
         foreach (config('roles.rol') as $nomRol => $rol){
-            if (($teacher->rol % $rol == 0) && method_exists($this,$nomRol)){
+            if (($teacher->rol % $rol == 0) && method_exists($this, $nomRol)) {
                 $avisos[$nomRol] = $this::$nomRol();
             }
         }
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        return view('notification.fiCurs',compact('avisos'));
+        return view('notification.fiCurs', compact('avisos'));
 
     }
 
@@ -68,7 +68,8 @@ class PanelFinCursoController extends BaseController
         return $avisos;
     }
 
-    private static function mantenimiento(){
+    private static function mantenimiento()
+    {
         $avisos = [];
 
         self::lookForIssues($avisos);
@@ -76,7 +77,8 @@ class PanelFinCursoController extends BaseController
         return $avisos;
     }
 
-    private static function direccion(){
+    private static function direccion()
+    {
         $avisos = [];
 
         self::lookForActesPendents($avisos);
@@ -84,7 +86,8 @@ class PanelFinCursoController extends BaseController
         return $avisos;
     }
 
-    private static function jefe_dpto(){
+    private static function jefe_dpto()
+    {
         $avisos = [];
 
         self::lookforInformsDepartment($avisos);
@@ -92,43 +95,44 @@ class PanelFinCursoController extends BaseController
         return $avisos;
     }
 
-    private static function tutor(){
+    private static function tutor()
+    {
         $avisos = [];
 
         self::lookAtPollsTutor($avisos);
         self::lookAtActasUpload($avisos);
         self::lookAtFctsProjects($avisos);
         self::lookAtQualitatUpload($avisos);
-
-
         return $avisos;
     }
 
-    private static function lookForCheckFol(&$avisos){
-        foreach (Grupo::misGrupos()->get() as $grupo){
-            if ($grupo->fol == 0){
-
+    private static function lookForCheckFol(&$avisos)
+    {
+        foreach (Grupo::misGrupos()->get() as $grupo) {
+            if ($grupo->fol == 0) {
                 $avisos[self::DANGER][] = "FOL Grupo no revisado : ".$grupo->nombre;
             }
         }
     }
 
-    private static function lookForIssues(&$avisos){
-        foreach (Incidencia::where('responsable',AuthUser()->dni)->where('estado','<',3)->get() as $incidencia){
+    private static function lookForIssues(&$avisos) {
+        foreach (Incidencia::where('responsable', AuthUser()->dni)->where('estado', '<', 3)->where('estado','>',0)->get() as $incidencia) {
             $avisos[self::DANGER][] = "Incidencia no resolta : ".$incidencia->descripcion;
         }
     }
 
-    private static function lookForActesPendents(&$avisos){
-        foreach (Grupo::where('acta_pendiente','>',0)->get() as $grupo){
+    private static function lookForActesPendents(&$avisos)
+    {
+        foreach (Grupo::where('acta_pendiente', '>', 0)->get() as $grupo) {
             $avisos[self::DANGER][] = "Acta pendent del grup : ".$grupo->nombre;
         }
 
     }
 
-    private static function lookforInformsDepartment(&$avisos){
+    private static function lookforInformsDepartment(&$avisos)
+    {
         if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'Acta')
-            ->where('curso', Curso())->where('descripcion','Informe Trimestral')->count()==3) {
+            ->where('curso', Curso())->where('descripcion', 'Informe Trimestral')->count()==3) {
             $avisos[self::SUCCESS][] = "Informes trimestrals fets";
         }
         else {
@@ -136,7 +140,8 @@ class PanelFinCursoController extends BaseController
         }
     }
 
-    private static function lookAtQualitatUpload(&$avisos){
+    private static function lookAtQualitatUpload(&$avisos)
+    {
         if (esRol(AuthUser()->rol,31)){
             if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'FCT')
                 ->where('curso', Curso())->first()) {
@@ -148,7 +153,8 @@ class PanelFinCursoController extends BaseController
         }
     }
 
-    private static function lookAtActasUpload(&$avisos){
+    private static function lookAtActasUpload(&$avisos)
+    {
         foreach ( config('auxiliares.reunionesControlables') as $tipo => $howManyNeeded) {
             if ($howManyNeeded){
                 $howManyAre = Reunion::Convocante()->Tipo($tipo)->Archivada()->count();

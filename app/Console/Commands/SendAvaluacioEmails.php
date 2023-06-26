@@ -72,7 +72,6 @@ class SendAvaluacioEmails extends Command
         foreach (AlumnoReunion::with('Reunion')->where('sent', 0)->get() as $aR) {
             $this->sendMatricula($aR);
         }
-
     }
 
 
