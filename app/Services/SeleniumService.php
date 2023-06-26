@@ -4,10 +4,32 @@ namespace Intranet\Services;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\WebDriverKeys;
+use Facebook\WebDriver\WebDriverWait;
 use Intranet\Exceptions\IntranetException;
 
 class SeleniumService
 {
+    private $driver;
+
+    public function __construct( $dni, $password)
+    {
+        $this->driver = self::loginItaca($dni, $password);
+    }
+
+    /**
+     * @return RemoteWebDriver|null
+     */
+    public function getDriver(): ?RemoteWebDriver
+    {
+        return $this->driver;
+    }
+
+    public function quit()
+    {
+        $this->driver->quit();
+    }
 
     /**
      * @param $password
@@ -66,4 +88,37 @@ class SeleniumService
         return $driver;
 
     }
+
+    public function fill($selector, $keys, $driver = null)
+    {
+        $driver = $driver ?? $this->driver;
+        $formulari = $driver->findElement($selector);
+        $formulari->clear();
+        $formulari->sendKeys($keys);
+        $formulari->sendKeys(WebDriverKeys::ENTER);
+    }
+
+    public function waitAndClick($xpath, $driver = null)
+    {
+        $driver = $driver ?? $this->driver;
+        $element = is_string($xpath)?WebDriverBy::xpath($xpath):$xpath;
+        $wait = new WebDriverWait($this->driver, 10);
+        $wait->until(WebDriverExpectedCondition::elementToBeClickable($element));
+        $driver->findElement($element)->click();
+    }
+
+    public function gTPersonalLlist()
+    {
+        try {
+            $this->driver->get('https://itaca3.edu.gva.es/itaca3-gad/');
+            $this->waitAndClick("//span[contains(text(),'Gestión')]");
+            $this->waitAndClick("//span[contains(text(),'Personal')]");
+            $this->waitAndClick("//span[contains(text(),'Listado Personal')]");
+        } catch (\Exception $e) {
+            $this->driver->quit();
+            throw new IntranetException($e->getMessage());
+        }
+    }
+
+
 }
