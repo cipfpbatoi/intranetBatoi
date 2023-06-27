@@ -78,7 +78,6 @@ class ReservaController extends ApiBaseController
         $response = Http::withBasicAuth($user, $pass)
             ->accept('application/json')
             ->post($link, ['args'=>[]]);
-        dd($response);
         return $response->successful()?true:false;
     }
 }

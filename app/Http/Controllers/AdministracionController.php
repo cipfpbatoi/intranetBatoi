@@ -304,6 +304,7 @@ class AdministracionController extends Controller
         if (esrol(AuthUser()->rol, config('roles.rol.administrador'))) {
             $link = str_replace('{dispositivo}', $request->dispositivo, config('variables.ipDomotica')).'/secure';
             $response = Http::withBasicAuth($user, $pass)->accept('application/json')->post($link, ['args'=>[]]);
+            dd($response->status(),$response->body(),$response->json(),$response->successful(),$response->failed(),$response->serverError(),$response->clientError(),$response->headers());
             if ($response->successful()) {
                 $missatge = 'Porta tancada';
             } else {
