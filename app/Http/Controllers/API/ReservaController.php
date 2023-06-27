@@ -28,32 +28,56 @@ class ReservaController extends ApiBaseController
     public function unsecure(Request $datosProfesor)
     {
         $profesor = Profesor::find($datosProfesor->dni);
-        if ($datosProfesor->api_token === $profesor->api_token){
+        if ($datosProfesor->api_token === $profesor->api_token) {
             $reserva = Reserva::where('idProfesor', $datosProfesor->dni)
                 ->where('dia', Hoy())
                 ->where('hora', sesion(hora()))
                 ->first();
-            if ($reserva && $espacio=Espacio::find($reserva->idEspacio)){
+            if ($reserva && $espacio=Espacio::find($reserva->idEspacio)) {
                 if ($espacio->dispositivo) {
-                    $link = str_replace(
-                        '{dispositivo}',
-                        $espacio->dispositivo, config('variables.ipDomotica')).'/unsecure';
-                    $response = Http::withBasicAuth('admin', 'Admin*HC3*Batoi22')
-                        ->accept('application/json')
-                        ->post($link, ['args'=>[]]);
-                    if ($response->successful()) {
+                    if ($this->action('unsecure', $espacio)) {
                         return $this->sendResponse('Porta oberta');
                     } else {
-                        return $this->sendError("No s'ha pogut obrir la porta: ".$response->status());
+                        return $this->sendError("No s'ha pogut obrir la porta");
                     }
                 } else {
                     return $this->sendError('Eixe espai no te obertura', 401);
                 }
             } else {
-                return $this->sendError('No tens cap reserva per ara', 401);
+                $reserva = Reserva::where('idProfesor', $datosProfesor->dni)
+                    ->where('dia', Hoy())
+                    ->first();
+                if ($reserva && $espacio=Espacio::find($reserva->idEspacio)) {
+                    if ($espacio->dispositivo) {
+                        if ($this->action('secure', $espacio)) {
+                            return $this->sendResponse('Porta Tancada');
+                        } else {
+                            return $this->sendError("No s'ha pogut tancar la porta");
+                        }
+                    } else {
+                        return $this->sendError('Eixe espai no te obertura', 401);
+                    }
+                } else {
+                    return $this->sendError('No tens cap reserva per ara', 401);
+                }
             }
-
         }
         return $this->sendError('Persona no identificada', 401);
+    }
+
+
+    private function action($action, $espacio): bool
+    {
+        $user = config('variables.domotica.user');
+        $pass =  config('variables.domotica.pass');
+        $link = str_replace(
+            '{dispositivo}',
+            $espacio->dispositivo,
+            config('variables.ipDomotica')
+            )."/".$action;
+        $response = Http::withBasicAuth($user, $pass)
+            ->accept('application/json')
+            ->post($link, ['args'=>[]]);
+        return $response->successful()?true:false;
     }
 }
