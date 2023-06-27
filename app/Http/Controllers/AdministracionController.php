@@ -299,8 +299,8 @@ class AdministracionController extends Controller
 
     public function secure(Request $request)
     {
-        $user = env('USER_DOMOTICA');
-        $pass =  env('PASS_DOMOTICA');
+        $user = config('variables.domotica.user');
+        $pass =  config('variables.domotica.pass');
         if (esrol(AuthUser()->rol, config('roles.rol.administrador'))) {
             $link = str_replace('{dispositivo}', $request->dispositivo, config('variables.ipDomotica')).'/secure';
             $response = Http::withBasicAuth($user, $pass)->accept('application/json')->post($link, ['args'=>[]]);

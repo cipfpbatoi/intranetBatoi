@@ -6,7 +6,7 @@
 @include('programacion.partials.formCreate')
 @endsection
 @section('titulo')
-@lang("models.Programacion.seguimiento") 
+@lang("models.Programacion.seguimiento")
 @endsection
 @section('scripts')
 @endsection
