@@ -18,7 +18,8 @@ class PanelProgramacionController extends BaseController
     protected $vista = ['seguimiento' => 'programacion.seguimiento'];
     protected $modal = true;
     
-   
+
+
     protected function search()
     {
         return Programacion::where('estado', '>', '0')
