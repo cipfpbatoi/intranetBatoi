@@ -68,7 +68,8 @@ class ProgramacionController extends IntranetController
         return back();
     }
 
-    protected function advise($id){
+    protected function advise($id)
+    {
         $elemento = Modulo_ciclo::findOrFail($id);
         if (isset($elemento->Modulo->codigo)){
             $horario = Horario::where('modulo',$elemento->Modulo->codigo)

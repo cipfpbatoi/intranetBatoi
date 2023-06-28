@@ -32,10 +32,12 @@
         </div>
         <div class="col-xs-12 bottom text-center">
             <div class="col-xs-12 col-sm-2 emphasis">
-                @if ($elemento->estado<2) <a href='#' class='btn btn-danger btn-xs' >
-                    @else <a href='#' class='btn btn-success btn-xs' >   
-                    @endif    
-                    {{ $elemento->situacion }}</a>
+                @if ($elemento->estado<2)
+                    <a href='#' class='btn btn-danger btn-xs' >
+                @else
+                    <a href='#' class='btn btn-success btn-xs' >
+                @endif
+                {{ $elemento->situacion }}</a>
             </div>
             <div class="col-xs-12 col-sm-9 emphasis">
                  @include ('intranet.partials.components.buttons',['tipo' => 'profile'])

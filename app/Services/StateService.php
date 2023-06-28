@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Services;
 
+use Intranet\Componentes\Mensaje;
 use function config,getClass,getClase;
 
 
@@ -35,7 +36,8 @@ class StateService
         $this->element->estado = $estado;
         $this->element->save();
 
-        AdviseService::exec($this->element, $mensaje);
+
+        Mensaje::send($this->element->profesor, 'Revisió programacion: '.$mensaje.' Incomplets');
 
         return ($this->element->estado);
     }
