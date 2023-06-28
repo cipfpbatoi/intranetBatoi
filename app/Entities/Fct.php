@@ -150,7 +150,8 @@ class Fct extends Model
     public function scopeMisFctsColaboracion($query, $profesor=null)
     {
         $dni = $profesor??authUser()->dni;
-        $colaboraciones = hazArray(Colaboracion::where('tutor', $dni)->get(), 'id', 'id');
+        $allTeachers = Profesor::find($dni)->sustituidos??[$dni];
+        $colaboraciones = hazArray(Colaboracion::whereIn('tutor', $allTeachers)->get(), 'id', 'id');
         return $query->whereIn('idColaboracion', $colaboraciones);
     }
 

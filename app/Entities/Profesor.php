@@ -342,4 +342,20 @@ class Profesor extends Authenticatable
         return isset($substitut->fullName)?$substitut->fullName:'';
     }
 
+    public function getSustituidosAttribute()
+    {
+        $sustituidos[] = $this->dni;
+        $profesor = $this;
+        while ($profesor) {
+            if (!empty($profesor->sustituye_a) && $profesor->sustituye_a != ' ') {
+                $sustituidos[] = $profesor->sustituye_a;
+                $profesor = Profesor::find($profesor->sustituye_a);
+            } else {
+                $profesor = null;
+            }
+        }
+
+        return $sustituidos;
+    }
+
 }
