@@ -182,20 +182,22 @@ class PanelFinCursoController extends BaseController
             }
         }
     }
-    private static function lookAtFctsProjects(&$avisos){
+
+    private static function lookAtFctsProjects(&$avisos)
+    {
         $grupo = Grupo::QTutor()->first();
         $alumnes = AlumnoFctAval::select('idAlumno')->distinct()->misFcts()->esAval()->get()->toArray();
-        foreach ($alumnes as $alumne){
-            $fctAval = AlumnoFctAval::esAval()->where('idAlumno',$alumne['idAlumno'])->orderBy('idAlumno')->first();
+        foreach ($alumnes as $alumne) {
+            $fctAval = AlumnoFctAval::esAval()->where('idAlumno', $alumne['idAlumno'])->orderBy('idAlumno')->first();
 
-            if (( !isNull($fctAval->calificacion)  || $fctAval->actas < 2) && $fctAval->asociacion == 1){
+            if (( !isNull($fctAval->calificacion)  || $fctAval->actas < 2) && $fctAval->asociacion == 1) {
                 $avisos[self::DANGER][] = "Fct de l'alumne ".$fctAval->Nombre.' no avaluada';
             }
 
-            if (($fctAval->calProyecto >0 && $grupo->proyecto) &&
-                (Documento::where('tipoDocumento','Proyecto')
-                        ->where('curso',curso())
-                        ->where('propietario',$fctAval->fullName)
+            if (($fctAval->calProyecto >4 && $grupo->proyecto) &&
+                (Documento::where('tipoDocumento', 'Proyecto')
+                        ->where('curso', curso())
+                        ->where('propietario', $fctAval->fullName)
                         ->count() == 0))
             {
                 $avisos[self::DANGER][] = "Projecte de l'alumne ".$fctAval->fullName.' no existeix';
@@ -205,10 +207,13 @@ class PanelFinCursoController extends BaseController
     }
 
 
-    private static function loadPreviousVotes($poll){
-        return hazArray(Vote::where('user_id','=', AuthUser()->dni)
-            ->where('idPoll', $poll->id)
-            ->get(),'idOption1','idOption1');
+    private static function loadPreviousVotes($poll)
+    {
+        return hazArray(
+            Vote::where('user_id', '=', AuthUser()->dni)->where('idPoll', $poll->id)->get(),
+            'idOption1',
+            'idOption1'
+        );
     }
 
 
@@ -218,7 +223,7 @@ class PanelFinCursoController extends BaseController
 
     private static function lookForMyResults(&$avisos){
         foreach (Modulo_grupo::misModulos() as $modulo){
-            if (!$modulo->resultados->where('evaluacion',3)){
+            if (!$modulo->resultados->where('evaluacion', 3)) {
                 $avisos[self::DANGER][] = "Falta resultats finals del modul ".$modulo->literal;
             }
             else{
