@@ -72,9 +72,9 @@ class ProgramacionController extends IntranetController
     {
         $elemento = Modulo_ciclo::findOrFail($id);
         if (isset($elemento->Modulo->codigo)){
-            $horario = Horario::where('modulo',$elemento->Modulo->codigo)
+            $horario = Horario::where('modulo', $elemento->Modulo->codigo)
                 ->first();
-            if ($horario){
+            if ($horario) {
                 avisa($horario->idProfesor, 'Et falta entregar la programacio de '.$elemento->Modulo->vliteral);
                 Alert::danger("El professor ".$horario->Mestre->FullName." del mòdul ".$elemento->Modulo->vliteral." ha estat avisat.");
             } else {
@@ -84,8 +84,8 @@ class ProgramacionController extends IntranetController
         return back();
     }
     
-    protected function updateSeguimiento(Request $request,$id){
-        $elemento = Programacion::findOrFail($id); 
+    protected function updateSeguimiento(Request $request, $id){
+        $elemento = Programacion::findOrFail($id);
         $elemento->criterios = $request->criterios;
         $elemento->metodologia = $request->metodologia;
         $elemento->propuestas = $request->propuestas;
@@ -112,7 +112,13 @@ class ProgramacionController extends IntranetController
         $this->panel->setBotonera();
         $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
         $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0]]));
-        $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','orWhere' => ['estado', '==', 0,'estado', '==', 3]]));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'programacion.seguimiento',
+                ['img' => 'fa-binoculars','orWhere' => ['estado', '==', 0,'estado', '==', 3]]
+            )
+        );
 
     }
     
