@@ -146,8 +146,7 @@ class PanelFinCursoController extends BaseController
             if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'FCT')
                 ->where('curso', Curso())->first()) {
                 $avisos[self::SUCCESS][] = "Documentació FCT correcta";
-            }
-            else {
+            } else {
                 $avisos[self::DANGER][] = "Falta pujar documentacio entrevistes FCT";
             }
         }
@@ -160,17 +159,15 @@ class PanelFinCursoController extends BaseController
                 $howManyAre = Reunion::Convocante()->Tipo($tipo)->Archivada()->count();
                 if ($howManyAre >= $howManyNeeded) {
                     $avisos[self::SUCCESS][] = "Acta ".TipoReunion::find($tipo)->vliteral." Arxivada";
-                }
-                else {
+                } else {
                     $avisos[self::DANGER][] = "Falten Actes de ".TipoReunion::find($tipo)->vliteral." per arxivar";
                 }
-
             }
         }
     }
     private static function lookAtPollsTutor(&$avisos){
-        $ppols = hazArray(PPoll::where('what','Fct')->get(),'id','id');
-        $polls = hazArray(Poll::whereIn('idPPoll',$ppols)->get(),'id','id');
+        $ppols = hazArray(PPoll::where('what', 'Fct')->get(), 'id','id');
+        $polls = hazArray(Poll::whereIn('idPPoll', $ppols)->get(), 'id','id');
         foreach ($polls as $id){
             $poll = Poll::find($id);
             $modelo = $poll->modelo;
