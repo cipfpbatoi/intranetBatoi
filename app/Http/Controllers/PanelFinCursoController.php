@@ -54,7 +54,8 @@ class PanelFinCursoController extends BaseController
 
     }
 
-    private static function profesor(){
+    private static function profesor()
+    {
         $avisos = [];
 
         self::lookForMyResults($avisos);
@@ -165,9 +166,10 @@ class PanelFinCursoController extends BaseController
             }
         }
     }
-    private static function lookAtPollsTutor(&$avisos){
-        $ppols = hazArray(PPoll::where('what', 'Fct')->get(), 'id','id');
-        $polls = hazArray(Poll::whereIn('idPPoll', $ppols)->get(), 'id','id');
+    private static function lookAtPollsTutor(&$avisos)
+    {
+        $ppols = hazArray(PPoll::where('what', 'Fct')->get(), 'id', 'id');
+        $polls = hazArray(Poll::whereIn('idPPoll', $ppols)->get(), 'id', 'id');
         foreach ($polls as $id){
             $poll = Poll::find($id);
             $modelo = $poll->modelo;
@@ -218,18 +220,19 @@ class PanelFinCursoController extends BaseController
 
 
 
-    private static function lookForMyResults(&$avisos){
+    private static function lookForMyResults(&$avisos)
+    {
         foreach (Modulo_grupo::misModulos() as $modulo){
             if (!$modulo->resultados->where('evaluacion', 3)) {
                 $avisos[self::DANGER][] = "Falta resultats finals del modul ".$modulo->literal;
-            }
-            else{
+            } else{
                 $avisos[self::SUCCESS][] = "Resultats finals del modul ".$modulo->literal;
             }
         }
     }
 
-    private static function lookforMyPrograms(&$avisos){
+    private static function lookforMyPrograms(&$avisos)
+    {
         foreach (Programacion::misProgramaciones()->get() as $programacion){
             if (is_null($programacion->propuestas ) || $programacion->propuestas == ''){
                 $avisos[self::DANGER][] = "Falta avaluació programació del modul ".$programacion->descripcion;
