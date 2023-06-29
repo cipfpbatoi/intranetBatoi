@@ -57,7 +57,7 @@ class SendAvaluacioEmails extends Command
                 avisa($aR->Reunion->idProfesor, $mensaje, '#', 'Servidor de correu');
                 $aR->save();
             }
-        } catch (Swift_RfcComplianceException $e) {
+        } catch (\Exception $e) {
             $mensaje = 'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email;
             avisa('021652470V', $mensaje, '#', 'Servidor de correu');
         }
