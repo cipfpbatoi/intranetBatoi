@@ -50,10 +50,9 @@ class SendFctEmails extends Command
                     Mail::to($alumno->Alumno->email)->send(new CertificatAlumneFct($alumno));
                     $alumno->correoAlumno = 1;
                     $alumno->save();
-                } catch (Swift_RfcComplianceException $e) {
+                } catch (Exception $e) {
                     //
                 } catch (Swift_TransportException $e) {
-                    dd($alumno->Alumno->email);
                 }
 
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
@@ -67,7 +66,7 @@ class SendFctEmails extends Command
                         }
                         $fct->correoInstructor = 1;
                         $fct->save();
-                    } catch (Swift_RfcComplianceException $e) {
+                    } catch (\Exception $e) {
 
                     } catch (Swift_TransportException $e) {
 
