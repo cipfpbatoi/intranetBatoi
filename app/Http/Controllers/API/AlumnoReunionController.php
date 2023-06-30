@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoReunion;
 use Illuminate\Http\Request;
@@ -15,7 +16,8 @@ class AlumnoReunionController extends ApiBaseController
 
     protected $model = 'AlumnoReunion';
 
-    private function getDades($nia){
+    private function getDades($nia)
+    {
        $alumno = Alumno::find($nia);
        $capacitat = AlumnoReunion::where('idAlumno',$nia)->min('capacitats');
        $grupo = AlumnoReunion::where('idAlumno',$nia)->first()->Reunion->grupoClase;
@@ -41,7 +43,8 @@ class AlumnoReunionController extends ApiBaseController
        return $this->sendResponse(compact('nia','dni','nombre','apellidos','email','telef1','telef2','fecha_nac','ciclo','promociona','curso','curso_actual','turno'),'OK');
     }
 
-    public function getDadesMatricula($token){
+    public function getDadesMatricula($token)
+    {
         $aR = AlumnoReunion::where('token',$token)->first();
         if (!$aR) {
             return $this->sendError('Token no vàlid');
@@ -49,25 +52,37 @@ class AlumnoReunionController extends ApiBaseController
         return $this->getDades($aR->idAlumno);
     }
 
-    public function sendMatricula(Request $request){
+    private function generaToken()
+    {
+        return Str::random(60);
+    }
 
-        $alumne = Alumno::where('dni',$request->dni)->first();
+    public function sendMatricula(Request $request)
+    {
+
+        $alumne = Alumno::where('dni', $request->dni)->first();
 
         if (!$alumne) {
             return $this->sendError('DNI no vàlid');
         }
 
-        $aR = AlumnoReunion::where('idAlumno',$alumne->nia)->first();
+
+
+        $aR = AlumnoReunion::where('idAlumno', $alumne->nia)->first();
 
         if (!$aR) {
             return $this->sendError("Eixe alumne no te matricules pendents");
         } else {
+            if (is_null($alumne->token)) {
+                $alumne->token  = $this->generaToken();
+                $alumne->save();
+            }
             try {
                 Mail::to($request->email, 'Secretaria CIPFP Batoi')
                     ->send(new MatriculaAlumne(
                         $aR, config('variables.fitxerMatricula'), $request->convocatoria));
                 return $this->sendResponse('OK', 'Email enviat');
-            } catch (Swift_RfcComplianceException $e) {
+            } catch (\Exception $e) {
                 return $this->sendError('Error enviant email');
             }
         }
