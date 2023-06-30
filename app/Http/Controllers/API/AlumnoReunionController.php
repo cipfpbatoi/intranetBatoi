@@ -19,8 +19,8 @@ class AlumnoReunionController extends ApiBaseController
     private function getDades($nia)
     {
        $alumno = Alumno::find($nia);
-       $capacitat = AlumnoReunion::where('idAlumno',$nia)->min('capacitats');
-       $grupo = AlumnoReunion::where('idAlumno',$nia)->first()->Reunion->grupoClase;
+       $capacitat = AlumnoReunion::where('idAlumno', $nia)->min('capacitats');
+       $grupo = AlumnoReunion::where('idAlumno', $nia)->first()->Reunion->grupoClase;
        $fecha_nac = $alumno->fecha_nac;
        $nombre = $alumno->nombre;
        $apellidos = $alumno->apellido1.' '.$alumno->apellido2;
@@ -61,21 +61,18 @@ class AlumnoReunionController extends ApiBaseController
     {
 
         $alumne = Alumno::where('dni', $request->dni)->first();
-
         if (!$alumne) {
             return $this->sendError('DNI no vàlid');
         }
-
-
 
         $aR = AlumnoReunion::where('idAlumno', $alumne->nia)->first();
 
         if (!$aR) {
             return $this->sendError("Eixe alumne no te matricules pendents");
         } else {
-            if (is_null($alumne->token)) {
-                $alumne->token  = $this->generaToken();
-                $alumne->save();
+            if (is_null($aR->token)) {
+                $aR->token  = $this->generaToken();
+                $aR->save();
             }
             try {
                 Mail::to($request->email, 'Secretaria CIPFP Batoi')
