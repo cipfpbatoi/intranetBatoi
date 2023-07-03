@@ -9,6 +9,9 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Http;
 
+use Illuminate\Support\Facades\Mail;
+use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
@@ -20,6 +23,7 @@ use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Setting;
+use Intranet\Mail\CertificatAlumneFct;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
@@ -318,50 +322,16 @@ class AdministracionController extends Controller
 
     public function consulta()
     {
+        $alumnosPendientes = AlumnoFct::esErasmus()->get();
 
-        $a = config('contacto');
-        foreach ($a as $key => $value) {
-            if ($value != '') {
-                if (is_array($value)) {
-                    foreach ($value as $k => $v) {
-                            $set = new Setting(['collection' => 'contacto','key' => $key.'.'.$k, 'value' => $v]);
-                            $set->save();
-                    }
-                } else {
-                        $set = new Setting(['collection' => 'contacto','key' => $key, 'value' => $value]);
-                        $set->save();
+            foreach ($alumnosPendientes as $alumno) {
+                try {
+                    Mail::to($alumno->Alumno->email)->send(new CertificatAlumneFct($alumno));
+                    $alumno->correoAlumno = 1;
+                    $alumno->save();
+                } catch (Exception $e) {
+                    Alert::info($e->getMessage());
                 }
             }
-        }
-        $a = config('avisos');
-        foreach ($a as $key => $value) {
-            if (! is_array($value) && $value != '') {
-                $set = new Setting(['collection' => 'avisos','key' => $key, 'value' => $value]);
-                $set->save();
-            }
-        }
-        $a = config('variables');
-        foreach ($a as $key => $value) {
-            if ( $value != '') {
-                if (is_array($value) && $key == 'ipGuardias') {
-                    foreach ($value as $k => $v) {
-                        $ip = new IpGuardia(['ip' => $v['ip'],'codOcup' => $v['codOcup']]);
-                        $ip->save();
-                    }
-                } else {
-                    $set = new Setting(['collection' => 'variables', 'key' => $key, 'value' => $value]);
-                    $set->save();
-                }
-            }
-        }
-        $set = new Setting(['collection' => 'variables', 'key' => 'certificatFol', 'value' => '2023-06-14']);
-        $set->save();
-        $set = new Setting(['collection' => 'variables', 'key' => 'enquestesAutomatiques', 'value' => '1']);
-        $set->save();
-        $set = new Setting(['collection' => 'variables', 'key' => 'convocatoria', 'value' => '24j281hdofd3']);
-        $set->save();
-        $set = new Setting(['collection' => 'variables', 'key' => 'fitxerMatricula', 'value' => 'email.matricula']);
-        $set->save();
-
     }
 }

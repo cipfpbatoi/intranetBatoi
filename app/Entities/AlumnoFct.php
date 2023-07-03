@@ -124,6 +124,12 @@ class AlumnoFct extends Model
         return $query->whereIn('idFct', $fcts);
     }
 
+    public function scopeEsErasmus($query)
+    {
+        $fcts = Fct::select('id')->esErasmus()->get()->toArray();
+        return $query->whereIn('idFct', $fcts);
+    }
+
     public function scopeActiva($query)
     {
        return $query->whereNull('calificacion')->where('correoAlumno', 0)->where('horas', '>', 'realizadas');
