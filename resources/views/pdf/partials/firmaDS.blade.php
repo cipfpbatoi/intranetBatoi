@@ -1,6 +1,7 @@
 <br/>
 <p style='font-size: 1.2em;line-height: 175%'>
-    A {{config('contacto.poblacion')}}, a {{$datosInforme['fecha']}}<br/><br/>
+    {{-- A {{config('contacto.poblacion')}}, a {{$datosInforme['fecha']}}<br/><br/> --}}
+    A {{config('contacto.poblacion')}}, a 30 de juny de 2023<br/><br/>
     Vist i plau
 </p>
 <div class="container" style="width:90%;font-size: 1.2em;line-height: 100%">
