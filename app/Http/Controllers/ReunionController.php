@@ -227,13 +227,11 @@ class ReunionController extends IntranetController
         if ($elemento->fichero != '') {
             if (file_exists(storage_path('/app/' . $elemento->fichero))) {
                 return response()->file(storage_path('/app/' . $elemento->fichero));
-            }
-            else {
+            } else {
                 Alert::message('No trobe fitxer', 'danger');
                 return back();
             }
-        }
-        else {
+        } else {
             if ($elemento->archivada) {
                 $this->saveFile($id);
             }
@@ -246,8 +244,7 @@ class ReunionController extends IntranetController
         $elemento = $this->class::find($id);
         if ($elemento->fichero != '') {
             $nomComplet = $elemento->fichero;
-        }
-        else {
+        } else {
             $nom = 'Acta_' . $elemento->id . '.pdf';
             $directorio = 'gestor/' . Curso() . '/' . $this->model;
             $nomComplet = $directorio . '/' . $nom;
@@ -335,7 +332,8 @@ class ReunionController extends IntranetController
         return $this->hazPdf($this->informe($elemento), OrdenReunion::where('idReunion', '=', $id)->get(), $elemento, 'portrait', 'a4');
     }
 
-    private function informe($elemento){
+    private function informe($elemento)
+    {
         $tipo_reunion = TipoReunion::find($elemento->tipo);
         return haVencido($elemento->fecha) ?
             'pdf.reunion.'.$tipo_reunion->acta:
@@ -343,7 +341,8 @@ class ReunionController extends IntranetController
     }
 
 
-    public static function preparePdf($informe,$aR){
+    public static function preparePdf($informe, $aR)
+    {
         $hoy = new Date();
         $elemento = FechaString($hoy,'ca');
         return self::hazPdf($informe, $aR,$elemento ,'portrait','a4');
