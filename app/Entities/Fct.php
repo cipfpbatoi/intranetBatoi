@@ -117,6 +117,11 @@ class Fct extends Model
     {
         return $this->belongsTo(Profesor::class, 'cotutor', 'dni');
     }
+
+    public function tutor()
+    {
+        return $this->hasOneThrough(Profesor::class, Colaboracion::class, 'id', 'dni', 'idColaboracion', 'tutor');
+    }
     
     public function scopeCentro($query, $centro)
     {
@@ -142,6 +147,11 @@ class Fct extends Model
         $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno', $alumnos)->get()->toArray();
 
         return $query->whereIn('id', $alumnosFct)->whereIn('idColaboracion', $colaboraciones);
+    }
+
+    public function getEncarregatAttribute()
+    {
+        return $this->Cotutor??$this->Tutor;
     }
 
 

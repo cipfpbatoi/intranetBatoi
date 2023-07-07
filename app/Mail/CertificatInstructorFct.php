@@ -38,9 +38,13 @@ class CertificatInstructorFct extends Mailable
     */
     public function build()
     {
+        $emitent = $this->fct->encarregat;
         $pdf = FDFPrepareService::exec(
             new CertificatInstructorResource($this->fct));
         $view = $this->view("email.fct.certificadoInstructor")
+            ->from($emitent->email, $emitent->fullName)
+            ->replyTo($emitent->email, $emitent->fullName)
+            ->cc($emitent->email, $emitent->fullName)
             ->attach($pdf, ['as'=>'certificadoInstructor.pdf','mime' => 'application/pdf']);
         if (count($this->fct->Colaboradores)) {
             $id = $this->fct->id;

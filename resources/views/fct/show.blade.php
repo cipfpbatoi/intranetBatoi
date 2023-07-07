@@ -57,6 +57,8 @@
             <input type="submit" value="Canvia" class="fa fa-user">
         </form>
         <hr/>
+    @else
+        <h5>Tutor : {{$fct->Tutor->fullName??'No hi ha tutor'}}</h5>
     @endif
 
     @if ($fct->Colaboracion->Centro->Empresa->conveniNou)

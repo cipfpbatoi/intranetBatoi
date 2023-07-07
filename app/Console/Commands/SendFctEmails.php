@@ -44,15 +44,17 @@ class SendFctEmails extends Command
 
             foreach ($alumnosPendientes as $alumno) {
                 $fct = $alumno->Fct;
-                $tutor = Profesor::find($fct->Colaboracion->tutor);
 
                 try {
                     Mail::to($alumno->Alumno->email)->send(new CertificatAlumneFct($alumno));
                     $alumno->correoAlumno = 1;
                     $alumno->save();
                 } catch (Exception $e) {
-                    //
-                } catch (Swift_TransportException $e) {
+                    $mensaje = "Error : Enviant certificats a l'alumne: ".
+                        $alumno->Alumno->fullName.' al email '.
+                        $alumno->Alumno->email;
+                    avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
+                    avisa($fct->tutor->dni, $mensaje, '#', 'Servidor de correu');
                 }
 
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
@@ -61,15 +63,15 @@ class SendFctEmails extends Command
                             ->send(new AvalFct($fct, 'instructor'));
                         Mail::to($fct->Instructor->email, 'Secretaria CIPFP Batoi')
                             ->send(new CertificatInstructorFct($fct));
-                        if ($tutor) {
-                            Mail::to($tutor->email, 'Intranet CIFP Batoi')->send(new CertificatInstructorFct($fct));
-                        }
                         $fct->correoInstructor = 1;
                         $fct->save();
                     } catch (\Exception $e) {
-
-                    } catch (Swift_TransportException $e) {
-
+                        $mensaje = 'Error : Enviant certificats al Instructor: '.
+                            $fct->Instructor->nombre.' al email '.
+                            $fct->Instructor->email.
+                            $fct->Encarregat. $e->getMessage();
+                        avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
+                        //avisa($fct->encarregat->dni, $mensaje, '#', 'Servidor de correu');
                     }
                 }
             }

@@ -45,7 +45,7 @@ class AlumnoReunionController extends ApiBaseController
 
     public function getDadesMatricula($token)
     {
-        $aR = AlumnoReunion::where('token',$token)->first();
+        $aR = AlumnoReunion::where('token', $token)->first();
         if (!$aR) {
             return $this->sendError('Token no vàlid');
         }
