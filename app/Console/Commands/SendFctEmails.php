@@ -46,7 +46,7 @@ class SendFctEmails extends Command
                 $fct = $alumno->Fct;
 
                 try {
-                    Mail::to($alumno->Alumno->email)->send(new CertificatAlumneFct($alumno));
+                    Mail::to($alumno->Alumno->email, $alumno->Alumno->fullName)->send(new CertificatAlumneFct($alumno));
                     $alumno->correoAlumno = 1;
                     $alumno->save();
                 } catch (Exception $e) {
@@ -59,9 +59,10 @@ class SendFctEmails extends Command
 
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
                     try {
-                        Mail::to($fct->Instructor->email, 'Intranet Batoi')
+                        Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
+                            ->cc($fct->Tutor->email, $fct->Tutor->fullName)
                             ->send(new AvalFct($fct, 'instructor'));
-                        Mail::to($fct->Instructor->email, 'Secretaria CIPFP Batoi')
+                        Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
                             ->send(new CertificatInstructorFct($fct));
                         $fct->correoInstructor = 1;
                         $fct->save();
@@ -71,7 +72,7 @@ class SendFctEmails extends Command
                             $fct->Instructor->email.
                             $fct->Encarregat. $e->getMessage();
                         avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
-                        //avisa($fct->encarregat->dni, $mensaje, '#', 'Servidor de correu');
+                        avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
                     }
                 }
             }
