@@ -12,7 +12,7 @@
         <p><strong>{{strtoupper($datosInforme['director']['articulo'].' '.$datosInforme['director']['genero']) }}</strong></p>
         <p>Signatura: {{$datosInforme['director']['nombre']}} </p>
     </div>
-    <div style="width:35%; float:left;margin-right: 0% ">
+    <div style="width:40%; float:left;margin-right: 0% ">
         <p><strong>{{strtoupper($datosInforme['secretario']['articulo'].' '.$datosInforme['secretario']['genero'])}} </strong></p>
         <p>Signatura: {{$datosInforme['secretario']['nombre']}} </p>
     </div>
