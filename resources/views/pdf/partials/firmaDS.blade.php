@@ -8,7 +8,7 @@
     <div style="width:40%; float:left; margin-left: 0%; ">
         <img src="{{public_path('img/pdf/director-secretari.png')}}"  /><br/>
     </div>
-    <div style="width:35%; float:left; clear: both;margin-left: 0%;margin-right: 28%;">
+    <div style="width:35%; float:left; clear: both;margin-left: 0%;margin-right: 25%;">
         <p><strong>{{strtoupper($datosInforme['director']['articulo'].' '.$datosInforme['director']['genero']) }}</strong></p>
         <p>Signatura: {{$datosInforme['director']['nombre']}} </p>
     </div>
