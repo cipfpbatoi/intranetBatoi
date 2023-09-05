@@ -116,7 +116,7 @@ class AdministracionController extends Controller
     private function ferVotsPermanents()
     {
         foreach (Vote::all() as $vote) {
-            if ($fct = Fct::find($vote->idOption1)) {
+            if ($vote->Poll->remains && $fct = Fct::find($vote->idOption1)) {
                 $newVote = new VoteAnt([
                     'option_id' => $vote->option_id,
                     'idColaboracion' => $fct->idColaboracion,
@@ -135,14 +135,15 @@ class AdministracionController extends Controller
     protected function nuevoCurso()
     {
 
+        $this->ferVotsPermanents();
 
         Colaboracion::where('tutor', '!=', '')->update(['tutor'=>'']);
         Colaboracion::where('estado', '>', 1)->update(['estado' => 1]);
         Fct::where('asociacion', '!=', 3)->delete();
         Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
 
-        $this->esborrarEnquestes();
-        $this->ferVotsPermanents();
+        //$this->esborrarEnquestes();
+
 
         foreach (AlumnoGrupo::with('Grupo')->with('Alumno')->get() as $algr) {
             if ($algr->curso == 2 && $algr->fol > 0) {
@@ -160,7 +161,7 @@ class AdministracionController extends Controller
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
             'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
             'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos',
-            'polls','autorizaciones'];
+            ,'autorizaciones'];
         foreach ($tables as $tabla) {
             DB::table($tabla)->delete();
         }
