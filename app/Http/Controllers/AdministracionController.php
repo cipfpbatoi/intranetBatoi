@@ -161,7 +161,7 @@ class AdministracionController extends Controller
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
             'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
             'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos',
-            ,'autorizaciones'];
+            'autorizaciones'];
         foreach ($tables as $tabla) {
             DB::table($tabla)->delete();
         }
