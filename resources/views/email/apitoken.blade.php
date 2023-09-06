@@ -18,13 +18,15 @@ $programaciones = Intranet\Entities\Programacion::misProgramaciones($elemento->d
         </li>
         <li>Les teues programacions:
             <ul>
-                @foreach ($programaciones as $programacion)
+                @forelse ($programaciones as $programacion)
                 <li>
                     <a href="{{$programacion->ModuloCiclo->enlace}}">
                         Mòdul: {{$programacion->ModuloCiclo->Modulo->literal}} (<b>{{$programacion->ModuloCiclo->Ciclo->literal}}</b>)
                     </a>
                 </li>
-                @endforeach
+                @empty
+                    <li>No tens programacions</li>
+                @endforelse
             </ul>
         </li>
         @if (config('contacto.host.externo'))
@@ -34,6 +36,8 @@ $programaciones = Intranet\Entities\Programacion::misProgramaciones($elemento->d
             <li>Enllaç per a obrir aules:
                 <a href="{{config('contacto.host.web')}}/api/aula?dni={{$elemento->dni}}&api_token={{$elemento->api_token}}">{{config('contacto.host.web')}}/api/aula?dni={{$elemento->dni}}&api_token={{$elemento->api_token}}</a>
             </li>
+        @else
+            <li>{{config('contacto.host.externo')}}</li>
         @endif
     </ul>
     <p></p>

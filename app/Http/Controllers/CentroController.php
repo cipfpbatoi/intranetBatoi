@@ -38,11 +38,12 @@ class CentroController extends IntranetController
     public function update(Request $request, $id)
     {
         parent::update($request, $id);
-        Session::put('pestana',2);
+        Session::put('pestana', 2);
         return $this->showEmpresa($request->idEmpresa);
     }
 
-    private function showEmpresa($id){
+    private function showEmpresa($id)
+    {
         return redirect()->action('EmpresaController@show', ['empresa' => $id]);
     }
 
@@ -85,7 +86,8 @@ class CentroController extends IntranetController
         return $this->showEmpresa($empresa);
     }
 
-    public function empresaCreateCentro(EmpresaCentroRequest $request,$id){
+    public function empresaCreateCentro(EmpresaCentroRequest $request, $id)
+    {
         $centro = Centro::findOrFail($id);
         $empresaAnt = $centro->Empresa;
         if ($empresaAnt->concierto == $request->concierto) {
@@ -104,6 +106,7 @@ class CentroController extends IntranetController
         ]);
         $empresa->save();
         $centro->idEmpresa = $empresa->id;
+        $centro->idSao = null;
         $centro->save();
         return $this->showEmpresa($empresa->id);
     }
