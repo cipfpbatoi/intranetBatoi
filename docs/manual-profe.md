@@ -2,45 +2,50 @@
 
 Índex de continguts:
 
-* [Entrada](#entrada)
-  * [Pàgina d'inici](#pàgina-dinici)
-  * [Control de presència](#control-de-presència)
-  * [Notificacions](#notificacions)
-* [Menú 'Documentació'](#menú-documentació)
-  * [Programacions](#programacions)
-  * [Gestió de Centre](#gestió-de-centre)
-  * [Informació de Centre](#informació-de-centre)
-  * [Actes](#actes)
-  * [Projectes](#projectes)
-* [Menú 'Docència'](#menú-docència)
-  * [Gestió de grups](#gestió-de-grups)
-  * [Claustre](#claustre)
-  * [Equip directiu](#equip-directiu)
-  * [Guàrdia](#guàrdia)
-    * [Fer la guàrdia](#fer-la-guàrdia)
-  * [Seguiments](#seguiments)
-  * [Programacions](#programacions)
-  * [Tancament de curs](#tancament-de-curs)
-* [Menú 'Tràmits'](#menú-tràmits)
-  * [Expedients](#expedients)
-  * [Activitats extraescolars](#activitats-extraescolars)
-    * [Alta de nova activitat](#alta-de-nova-activitat)
-  * [Comisions de servei](#comisions-de-servei)
-    * [Estat de una comissió](#estat-de-una-comissió)
-    * [Alta nova comissió](#alta-nova-comissió)
-  * [Notificació absències](#notif`i`cació-absències)
-  * [Gestió d'incidències](#gestió-dincidències)
-  * [Reserva aules](#reserva-aules)
-  * [Oblit birret](#oblit-birret)
-  * [Canviar horari](#canviar-horari)
-* [Menú 'Enquestes'](#menú-enquestes)
-* [Menú 'Actes/Convocatories'](#menú-actesconvocatories)
-  * [Gestió de reunions](#gestió-de-reunions)
-  * [Grups de treball](#grups-de-treball)
-* [Menú 'Enllaços externs'](#menú-enllaços-externs)
-* [Altres accions](#altres-accions)
-  * [Taules amb informació](#taules-amb-informació)
-  * [Editar el nostre perfil](#editar-perfil)
+- [Manual del professor](#manual-del-professor)
+  - [Entrada](#entrada)
+    - [Pàgina d'inici](#pàgina-dinici)
+    - [Control de presència](#control-de-presència)
+    - [Notificacions](#notificacions)
+  - [Menú 'Documentació'](#menú-documentació)
+    - [Programacions](#programacions)
+    - [Gestió de Centre](#gestió-de-centre)
+    - [Informació de Centre](#informació-de-centre)
+    - [Actes](#actes)
+    - [Projectes](#projectes)
+  - [Menú 'Docència'](#menú-docència)
+    - [Gestió de grups](#gestió-de-grups)
+    - [Claustre](#claustre)
+    - [Equip directiu](#equip-directiu)
+    - [Guàrdia](#guàrdia)
+      - [Fer la guàrdia](#fer-la-guàrdia)
+    - [Seguiments](#seguiments)
+    - [Programacions](#programacions-1)
+    - [Tancament de curs](#tancament-de-curs)
+  - [Menú 'Tràmits'](#menú-tràmits)
+    - [Expedients](#expedients)
+    - [Activitats extraescolars](#activitats-extraescolars)
+      - [Alta de nova activitat](#alta-de-nova-activitat)
+    - [Comissions de servei](#comissions-de-servei)
+      - [Estat de una comissió](#estat-de-una-comissió)
+      - [Alta nova comissió](#alta-nova-comissió)
+    - [Notificació absències](#notificació-absències)
+    - [Gestió d'incidències](#gestió-dincidències)
+    - [Reserva aules](#reserva-aules)
+    - [Oblit birret](#oblit-birret)
+    - [Canviar horari](#canviar-horari)
+  - [Menú 'Enquestes'](#menú-enquestes)
+    - [Resultats](#resultats)
+    - [Realitzar](#realitzar)
+    - [Gestió documentació](#gestió-documentació)
+  - [Menú 'Actes/Convocatories'](#menú-actesconvocatories)
+    - [Gestió de reunions](#gestió-de-reunions)
+    - [Grups de treball](#grups-de-treball)
+  - [Menú 'Enllaços externs'](#menú-enllaços-externs)
+  - [Altres accions](#altres-accions)
+    - [Taules amb informació](#taules-amb-informació)
+    - [Editar perfil](#editar-perfil)
+      - [Fitxers personals](#fitxers-personals)
 
 
 ## Entrada
@@ -266,7 +271,8 @@ Es vol utilitzar la intranet del Centre per a gestionar diferents expedients del
 
 Quan creem un nou expedient hem d'indicar l'alumne, el tipus d'expedient i una explicació. Els tipus que tenim actualment són:
 
-* Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Només es poden tindre en compte les faltes marcades en Ítaca.
+* Baixa inasistència: permet donar de baixa a un alumne per faltes d'asistència segons la normativa
+* Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Tant ací com en el cas anterior només es poden tindre en compte les faltes marcades en Ítaca.
 * Part d'amonestació: per a incoar un part d'amonestació a l'alumne
 
 ![Expedients](./img/ajuda/expediente.png)
@@ -452,11 +458,20 @@ Podem fer canvis totes les vegades que vulguem fins que el nou horari siga aprov
 Podem continuar fent canvis fins que Caporalia accepte la nostra proposta. En eixe moment l'estat canvia a **'Aprovat'** i ja no podem fer més canvis. Encara que estiga aprovat, el nou horari no entra en vigor fins que ens ho indiquen des de Caporalia (normalment a Març).
 
 ## Menú 'Enquestes'
-Des d'ací podem accedir als resultats de les diferents enquestes passades al nostre alumnat.
+Ací tenim els documents relacionats amb la qualitat així com les diferents enquestes. Hi ha 3 submenús:
+
+### Resultats
+Des d'ací podem accedir als resultats de les diferents enquestes passades al nostre alumnat:
 
 ![Enquestes](./img/ajuda/enquestes.png)
 
-En la taula tenim les enquestes que el/la tutor/a o direcció han passat al nostre alumnat.
+En cada enquesta tenim botons per a vore les dades i els resultats.
+
+### Realitzar
+Des d'ací crear noves enquestes de valoració del professorat (si som tutors), de valoració de la FCT (si som tutors de FCT), d'activitats extraescolars, etc.
+
+### Gestió documentació
+Ací tenim els diferents documents per a la gestió de la qualitat en el Centre.
 
 ## Menú 'Actes/Convocatories'
 Ací trobem informació sobre les reunions de tot tipus i els Grups de treball als que pertanyem.
@@ -495,6 +510,18 @@ Baix de la taula podem veure quins registres estem veient ('Mostrant de 26 a 50 
 Moltes pàgines tenen a la part superior dreta 2 pestanyes per a poder veure la informació en forma de taula (**Llistat**) o de **Mosaic**.
 
 ### Editar perfil
-Des del botó de 'Editar perfil' podem canviar el nostre correu electrònic i la nostra foto.
+Des del botó de 'Editar perfil' podem canviar algunes opcions com:
+- si volem que es mostre el nostre telèfon al companys en la intranet
+- el idioma per defecte de la intranet
+- el nostre correu electrònic
 
 ![Editar perfil](./img/ajuda/08-perfil-modificar.png)
+
+#### Fitxers personals
+A més de pujar la nostra foto de perfil a intranet des d'ací podem estabir altres opcions com:
+- **Imatge**: és per a pujar la nostra foto a la intranet
+- **Rúbrica**: podem pujar una imatge amb la nostra signatura per a que s'incloga en les convocatòries i altres documents de la intranet. És útil sobre tot per als tutors
+- **Peu email**: ací podem pujar una imatge que s'inclourà en els emails que s'envien a alumnes i empreses (per a la FCT)
+- **Certificat Digital**: podem pujar el nostre certificat digital per a signar la documentació de les FCT (útil per als tutors de FCT)
+
+![Fitxers personals](./img/ajuda/08-fitxers-personals.png)

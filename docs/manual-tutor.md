@@ -1,17 +1,24 @@
 # Manual del tutor
 Índex de continguts
-* [Introducció](#introducció)
-* [Menú 'Docència' → 'Gestió dels grups'](#men%C3%BA-docència--gesti%C3%B3-dels-grups)
-* [Menú 'Tràmits' → 'Expedients'](#men%C3%BA-tr%C3%A0mits--expedients)
-* [Menú 'Actes/Convocatòries' → 'Gestió de reunions'](#menú-actesconvocatòries--gestió-de-reunions)
-  * [Nova reunió](#nova-reunió)
-  * [Gestionar les reunions](#gestionar-les-reunions)
-  * [Acta de la reunió](#acta-de-la-reunió)
-* [Menú 'Tutor'](#menú-tutor)
-  * [Seguiments](#seguiments)
-  * [Tutories](#tutories)
-* [Menú 'Pràctiques'](#menú-pràctiques)
-* [Menú 'FP Dual'](#menú-fp-dual)
+- [Manual del tutor](#manual-del-tutor)
+  - [Introducció](#introducció)
+  - [Menú 'Docència' → 'Gestió dels grups'](#menú-docència--gestió-dels-grups)
+  - [Menú 'Tràmits' → 'Expedients'](#menú-tràmits--expedients)
+    - [Expedients](#expedients)
+    - [Remissió a Orientació](#remissió-a-orientació)
+  - [Menú 'Actes/Convocatòries' → 'Gestió de reunions'](#menú-actesconvocatòries--gestió-de-reunions)
+    - [Nova reunió](#nova-reunió)
+    - [Gestionar les reunions](#gestionar-les-reunions)
+    - [Acta de la reunió](#acta-de-la-reunió)
+  - [Menú 'Actes/Convocatòries' → 'Gestor documental'](#menú-actesconvocatòries--gestor-documental)
+  - [Menú 'Tutor'](#menú-tutor)
+    - [Seguiments](#seguiments)
+    - [Tutories](#tutories)
+  - [Menú 'Pràctiques'](#menú-pràctiques)
+    - [Menú 'Empresa'](#menú-empresa)
+    - [Centres de treball](#centres-de-treball)
+    - [FCTs](#fcts)
+  - [Menú 'FP Dual'](#menú-fp-dual)
 
 
 ## Introducció
@@ -34,18 +41,20 @@ A més, quan entrem a **Vore els alumnes** del nostre grup apareixen noves icone
 
 ## Menú 'Tràmits' → 'Expedients'
 ### Expedients
-És igual que per al professor però al crear un nou expedient el tutor pot triar entre 3 tipus més:
-
-![Nou expedient reunió](img/tutor/07-nou-expedient.png)
-
-Els tipus que tenim actualment són:
-* **Baixa inasistència**: permet donar de baixa a un alumne per faltes d'asistència segons la normativa
-* Pérdua avaluació contínua: per a gestionar la predua d'avaluació contínua de l'alumne a un mòdul per faltes d'assistència. Tant ací com en el cas anterior només es poden tindre en compte les faltes marcades en Ítaca.
-* **Remisió al departament d'Orientació**: envia un avís als orientadors de que han de atendre a aquest alumne. Més avant l'orientador es posarà en contacte amb el tutor per a concretar quan es farà
-* Part d'amonestació: per a incoar un part d'amonestació a l'alumne
+És igual que per al professor però al crear un nou expedient el tutor pot triar també 
+* **Baixa per inasistència** que permet donar de baixa a un alumne per faltes d'asistència segons la normativa
 * **Informe d'exempció FCT**: si un alumne sol·licita l'exempció de les FCT hem d'omplir aquest informe.
 
 Una vegada omplit **caldrà avisar a direcció de la tramitació de l'expedient** polsant el botó del sobre i ja s'encarregan de resoldre'l.
+
+![Nou expedient reunió](img/tutor/07-nou-expedient.png)
+
+### Remissió a Orientació
+Des d'ací podem derivar alumnes per a que siguen tractats pel departament d'Orientació. Per a cada alumne creem un 'Qüestionari de derivació' on indiquem el motiu i l'orientador responsable esposarà en contacte en el tutor o directament en l'alumne.
+
+En la taula podem vore totes les derivacions fetes i el resultat de les mateixes.
+
+![Remissió a Orientació](img/tutor/orientacio .png)
 
 ## Menú 'Actes/Convocatòries' → 'Gestió de reunions'
 El tutor tindrà que convocar diferents reunions al llarg del curs. 
