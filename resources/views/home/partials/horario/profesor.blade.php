@@ -8,11 +8,11 @@
             @if (isset($horario[$dia_semana][$hora->codigo]))
                 @if (isset($horario[$dia_semana][$hora->codigo]->ocupacion))
                     <td id="{{$hora->codigo}}-{{$dia_semana}}" class='warning'><div data-orig="{{$hora->codigo}}-{{$dia_semana}}">
-                        <span>{{ $horario[$dia_semana][$hora->codigo]->Ocupacion->nombre }}</span>
+                        <span>{{ $horario[$dia_semana][$hora->codigo]->Ocupacion->nombre??'Ocupacio Desconeguda' }}</span>
                     </div></td>
                 @else
                     <td id="{{$hora->codigo}}-{{$dia_semana}}" class='active'><div data-orig="{{$hora->codigo}}-{{$dia_semana}}">
-                        <strong>{{ $horario[$dia_semana][$hora->codigo]->Modulo->cliteral }}</strong><br/>
+                        <strong>{{ $horario[$dia_semana][$hora->codigo]->Modulo->cliteral??'Modul desconegut' }}</strong><br/>
                         {{ $horario[$dia_semana][$hora->codigo]->Grupo->nombre }}(
                         {{ $horario[$dia_semana][$hora->codigo]->aula }})
                     </div></td>
