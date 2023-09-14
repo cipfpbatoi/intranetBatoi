@@ -38,9 +38,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('fault:Daily')
-                ->dailyAt('23:00');
-        $schedule->command('email:Daily')
                 ->dailyAt('21:30');
+        $schedule->command('email:Daily')
+                ->dailyAt('21:45');
         $schedule->command('guard:Daily')
                 ->dailyAt('07:00');
         $schedule->command('fct:Daily')

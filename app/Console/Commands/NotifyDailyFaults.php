@@ -41,7 +41,7 @@ class NotifyDailyFaults extends Command
     {
         if (config('variables.controlDiario')) {
             $guardias = hazArray(
-                Guardia::where('dia', hoy()->where('realizada', -1)->get()),
+                Guardia::where('dia', hoy())->where('realizada', -1)->get(),
                 'idProfesor',
                 'idProfesor'
             );
