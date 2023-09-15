@@ -185,44 +185,44 @@ class Importa
         return $dada;
     }
 
+    private static function selectDirectorFct($driver){
+        $button = $driver->findElement(WebDriverBy::xpath("//button[contains(@class, 'botonSelec') and text()='Tutor/a...']"));
+        $button->click();
+        sleep(1);
+        $selectElement = $driver->findElement(WebDriverBy::id('selecFiltroProfesores'));
+        $select = new WebDriverSelect($selectElement);
+        $select->selectByValue('nombre');
+        $wait = new WebDriverWait($driver, 10);
+        $inputElement = $wait->until(
+            WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('filtroProfesores'))
+        );
+        $inputElement->sendKeys(AuthUser()->apellido1);
+        $link = $driver->findElement(WebDriverBy::cssSelector('a[title="Filtrar"]'));
+        $link->click();
+        sleep(1);
+        $table = $driver->findElement(WebDriverBy::className('tablaSelEmpresas'));
+        $rows = $table->findElements(WebDriverBy::cssSelector("tr"));
+        foreach ($rows as $key => $row) {
+            if ($key == 0) {
+                continue;
+            }
+            $segonaColumna = $row->findElement(WebDriverBy::cssSelector('td:nth-child(2)'));
+            if ($segonaColumna->getText() ==" ".AuthUser()->dni) {
+                break;
+            }
+        }
+
+        $table->findElement(WebDriverBy::cssSelector('tr:nth-child('.$key.')'))->click();
+        sleep(1);
+    }
+
     public static function index($driver)
     {
         $grupo = Grupo::where('tutor', AuthUser()->dni)->first();
         $ciclo = $grupo->idCiclo??null;
         $dades = array();
         if (AuthUser()->dni === config('avisos.director')) {
-            $button = $driver->findElement(WebDriverBy::xpath("//button[contains(@class, 'botonSelec') and text()='Tutor/a...']"));
-            $button->click();
-            sleep(1);
-            $selectElement = $driver->findElement(WebDriverBy::id('selecFiltroProfesores'));
-            $select = new WebDriverSelect($selectElement);
-            $select->selectByValue('nombre');
-            $link = $driver->findElement(WebDriverBy::cssSelector('a[title="Filtrar"]'));
-            $wait = new WebDriverWait($driver, 10);
-            $inputElement = $wait->until(
-                WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('filtroProfesores'))
-            );
-            $inputElement->sendKeys(AuthUser()->apellido1);
-            $link = $driver->findElement(WebDriverBy::cssSelector('a[title="Filtrar"]'));
-            $link->click();
-            sleep(1);
-            $table = $driver->findElement(WebDriverBy::className('tablaSelEmpresas'));
-            $rows = $table->findElements(WebDriverBy::cssSelector("tr"));
-            //$rows = $table->findElements(WebDriverBy::tagName('tr'));
-            foreach ($rows as $key => $row) {
-                if ($key == 0) {
-                    continue;
-                }
-                $segonaColumna = $row->findElement(WebDriverBy::cssSelector('td:nth-child(2)'));
-                if ($segonaColumna->getText() ==" ".AuthUser()->dni) {
-                    break;
-                }
-            }
-
-            $table->findElement(WebDriverBy::cssSelector('tr:nth-child('.$key.')'))->click();
-            sleep(1);
-        } else {
-            dd(AuthUser()->dni,config('avisos.director'));
+            self::selectDirectorFct($driver);
         }
 
         try {
