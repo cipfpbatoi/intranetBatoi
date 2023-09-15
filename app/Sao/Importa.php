@@ -5,6 +5,9 @@ namespace Intranet\Sao;
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverSelect;
+use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\WebDriverWait;
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Centro;
@@ -187,6 +190,40 @@ class Importa
         $grupo = Grupo::where('tutor', AuthUser()->dni)->first();
         $ciclo = $grupo->idCiclo??null;
         $dades = array();
+        if (AuthUser()->dni === config('avisos.director')) {
+            $button = $driver->findElement(WebDriverBy::xpath("//button[contains(@class, 'botonSelec') and text()='Tutor/a...']"));
+            $button->click();
+            sleep(1);
+            $selectElement = $driver->findElement(WebDriverBy::id('selecFiltroProfesores'));
+            $select = new WebDriverSelect($selectElement);
+            $select->selectByValue('nombre');
+            $link = $driver->findElement(WebDriverBy::cssSelector('a[title="Filtrar"]'));
+            $wait = new WebDriverWait($driver, 10);
+            $inputElement = $wait->until(
+                WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('filtroProfesores'))
+            );
+            $inputElement->sendKeys(AuthUser()->apellido1);
+            $link = $driver->findElement(WebDriverBy::cssSelector('a[title="Filtrar"]'));
+            $link->click();
+            sleep(1);
+            $table = $driver->findElement(WebDriverBy::className('tablaSelEmpresas'));
+            $rows = $table->findElements(WebDriverBy::cssSelector("tr"));
+            //$rows = $table->findElements(WebDriverBy::tagName('tr'));
+            foreach ($rows as $key => $row) {
+                if ($key == 0) {
+                    continue;
+                }
+                $segonaColumna = $row->findElement(WebDriverBy::cssSelector('td:nth-child(2)'));
+                if ($segonaColumna->getText() ==" ".AuthUser()->dni) {
+                    break;
+                }
+            }
+
+            $table->findElement(WebDriverBy::cssSelector('tr:nth-child('.$key.')'))->click();
+            sleep(1);
+        } else {
+            dd(AuthUser()->dni,config('avisos.director'));
+        }
 
         try {
             self::extractPage($driver, $dades);
@@ -245,8 +282,10 @@ class Importa
             $idSao = $dades['centre']['idSao']??null;
             if ($idSao) {
                 $centro = Centro::where('idSao', $idSao)->first();
-                $centro->Empresa->update(['idSao' => $dades['idEmpresa']]);
-                return $centro;
+                if ($centro) {
+                    $centro->Empresa->update(['idSao' => $dades['idEmpresa']]);
+                    return $centro;
+                }
             }
         }
 
