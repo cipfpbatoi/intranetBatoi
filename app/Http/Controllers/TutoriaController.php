@@ -24,27 +24,32 @@ class TutoriaController extends IntranetController
     protected $model = 'Tutoria';
     protected $gridFields = ['descripcion','tipos','hasta', 'Xobligatoria','Grupo'];
 
-    public function index(){
+    public function index()
+    {
         Session::forget('redirect');
         if (esRol(AuthUser()->rol, config('roles.rol.orientador'))) {
             return $this->indexTutoria();
         }
 
-        if ($grupo = Grupo::select('nombre')->QTutor()->get()->first()){
+        if ($grupo = Grupo::select('nombre')->QTutor()->get()->first()) {
             $this->titulo = ['que' => $grupo->nombre];
             return parent::index();
         }
 
         Alert::danger('No eres tutor de cap grup');
         return back();
-
-                
-
     }
+
+    public function search()
+    {
+        return Tutoria::where('hasta', '>=', Date::now()->format('Y-m-d'))->get();
+    }
+
     public function detalle($id)
     {
         return redirect()->route('tutoriagrupo.indice', ['id' => $id]);
     }
+
     public function indexTutoria()
     {
         $todos = Tutoria::all();
