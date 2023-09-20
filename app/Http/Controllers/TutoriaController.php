@@ -22,7 +22,7 @@ class TutoriaController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Tutoria';
-    protected $gridFields = ['descripcion','tipos','hasta', 'Xobligatoria','Grupo'];
+    protected $gridFields = ['descripcion','tipos','hasta', 'Xobligatoria','Grupo','feedBack'];
 
     public function index()
     {
