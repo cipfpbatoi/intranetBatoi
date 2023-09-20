@@ -42,7 +42,7 @@ class TutoriaController extends IntranetController
 
     public function search()
     {
-        return Tutoria::where('hasta', '>=', Date::now()->format('Y-m-d'))->get();
+        return Tutoria::where('desde', '>=', config('curso.evaluaciones.1')[0])->get();
     }
 
     public function detalle($id)
@@ -62,11 +62,10 @@ class TutoriaController extends IntranetController
     {
         $grupo = Grupo::select('codigo')->QTutor()->get()->first()->codigo;
         $elemento = TutoriaGrupo::where('idTutoria', '=', $id)->where('idGrupo', '=', $grupo)->first();
-        if (isset($elemento->idGrupo))
-        {
+        if (isset($elemento->idGrupo)) {
             return redirect()->route('tutoriagrupo.edit', ['id' => $elemento->id]);
         }
-        return redirect()->route('tutoriagrupo.create',['tutoria' => $id, 'grupo' => $grupo ]);
+        return redirect()->route('tutoriagrupo.create', ['tutoria' => $id, 'grupo' => $grupo ]);
     }
 
     protected function iniTutBotones()
