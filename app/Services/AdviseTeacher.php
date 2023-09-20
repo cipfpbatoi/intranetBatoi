@@ -78,11 +78,9 @@ class AdviseTeacher
             foreach ($grupos as $item) {
                 $grupo = Grupo::find($item);
                 $correoTutor = $grupo->Tutor->Sustituye->email ?? $grupo->Tutor->email;
-                $correoDireccion = 'faltes@cipfpbatoi.es';
-                $remitente =  ['nombre'=>'Caporalia','email'=>'faltes@cipfpbatoi.es'];
+                $remitente =  ['nombre'=>'Caporalia','email'=>'intranet@cipfpbatoi.es'];
 
                 SendEmail::dispatch($correoTutor, $remitente, 'email.faltaProfesor', $elemento);
-                SendEmail::dispatch($correoDireccion, $remitente, 'email.faltaProfesor', $elemento);
                 Alert::info("Correos enviados a $item");
             }
         }
