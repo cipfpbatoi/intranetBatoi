@@ -42,11 +42,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('email:Daily')
                 ->dailyAt('21:15');
         $schedule->command('guards:Daily')
-                ->dailyAt('07:00');
+                ->dailyAt('07:50');
         $schedule->command('fct:Daily')
-                ->dailyAt('08:10');
-        $schedule->command('sao:connect')->weekly()->fridays()->at('8:00');
-        $schedule->command('sao:connect')->weekly()->tuesdays()->at('8:00');
+                ->dailyAt('08:00');
+        $schedule->command('sao:connect')->weekly()->fridays()->at('8:05');
+        $schedule->command('sao:connect')->weekly()->tuesdays()->at('8:05');
         $schedule->command('sao:annexes')
             ->weeklyOn(1, '8:30');
     }
