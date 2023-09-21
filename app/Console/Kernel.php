@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('fault:Daily')
                 ->dailyAt('21:00');
         $schedule->command('email:Daily')
-                ->dailyAt('11:25');
+                ->dailyAt('11:40');
         $schedule->command('guards:Daily')
                 ->dailyAt('11:30');
         $schedule->command('fct:Daily')
