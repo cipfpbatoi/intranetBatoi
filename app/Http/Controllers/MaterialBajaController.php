@@ -43,7 +43,6 @@ class MaterialBajaController extends ModalController
                     $query->where('idDepartamento', AuthUser()->departamento);
             })->where('estado', 1)->where('tipo', 0)->where('idProfesor', AuthUser()->dni)->get();
         }
-
     }
 
     public function iniBotones()
