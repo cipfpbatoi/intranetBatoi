@@ -518,7 +518,7 @@ Des del botó de 'Editar perfil' podem canviar algunes opcions com:
 ![Editar perfil](./img/ajuda/08-perfil-modificar.png)
 
 #### Fitxers personals
-A més de pujar la nostra foto de perfil a intranet des d'ací podem estabir altres opcions com:
+Des d'ací podem pujar la nostra foto de perfil a intranet, i a més podem estabir altres opcions com:
 - **Imatge**: és per a pujar la nostra foto a la intranet
 - **Rúbrica**: podem pujar una imatge amb la nostra signatura per a que s'incloga en les convocatòries i altres documents de la intranet. És útil sobre tot per als tutors
 - **Peu email**: ací podem pujar una imatge que s'inclourà en els emails que s'envien a alumnes i empreses (per a la FCT)
