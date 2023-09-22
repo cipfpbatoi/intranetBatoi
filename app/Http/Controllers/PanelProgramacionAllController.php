@@ -18,6 +18,7 @@ class PanelProgramacionAllController extends BaseController
     public function search()
     {
         return Programacion::where('estado', 3)
+            ->where('curso', curso())
             ->with('Departament')
             ->with('Ciclo')
             ->with('Modulo')
