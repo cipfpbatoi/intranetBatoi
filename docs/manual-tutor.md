@@ -37,7 +37,8 @@ En el nostre grup apareixen 2 noves icones:
 A més, quan entrem a **Vore els alumnes** del nostre grup apareixen noves icones:
 * Modificació Perfil Alumne: podem obrir el perfil d'eixe alumne per a modificar el seu e-mail, la seua foto o l'idioma de la intranet per a l'alumne
 * Carnet: permet imprimir el carnet de l'alumne. Ha de fer-se des de caporalia que és on es troba la impresora de carnets
-* Si hi ha curs o jornada podem inscriure a l'alumne
+
+També tenim l¡opció de vore els alumnes en **_Mosaic_** en compte de en _Llistat_ i això ens mostra el NIA de cadascú i la seua contrasenya inicial per si algú no s'ho sap per a entrar a la intranet.
 
 ## Menú 'Tràmits' → 'Expedients'
 ### Expedients
