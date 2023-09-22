@@ -37,4 +37,11 @@ class GTProfesorRequest extends FormRequest
             ]
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'idProfesor.unique' => 'Eixa Persona ja pertany a eixe grup.',
+        ];
+    }
 }
