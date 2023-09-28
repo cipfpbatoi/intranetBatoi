@@ -31,6 +31,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('modulo_ciclo', 'Modulo_cicloController', ['except' => [ 'create']]);
     Route::resource('resultado', 'ResultadoController', ['except' => [ 'create']]);
     Route::resource('comision', 'ComisionController', ['except' => [ 'create']]);
+    Route::put('/comision/{dni}/prePay', 'ComisionController@prePay');
     Route::resource('instructor', 'InstructorController', ['except' => [ 'create']]);
     Route::resource('ipguardia', 'IpGuardiaController');
     Route::resource('setting', 'SettingController');
