@@ -49,7 +49,8 @@ class PanelFaltaController extends ModalController
 
     ];
 
-    protected function search(){
+    protected function search()
+    {
         return(Falta::orderBy('desde')->get());
     }
 
@@ -60,14 +61,34 @@ class PanelFaltaController extends ModalController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create']);
-        $this->panel->setBoton('profile', new BotonIcon("$this->model.resolve", ['class' => 'btn-success authorize', 'where' => ['estado', '>', '0', 'estado', '<', '3']], true));
-        $this->panel->setBoton('profile', new BotonIcon("$this->model.refuse", ['class' => 'btn-danger refuse', 'where' => ['estado', '>', '0', 'estado', '<', '4']], true));
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                "$this->model.resolve",
+                [
+                    'class' => 'btn-success authorize',
+                    'where' => ['estado', '>', '0', 'estado', '<', '3']
+                ],
+                true
+            )
+        );
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                "$this->model.refuse",
+                [
+                    'class' => 'btn-danger refuse',
+                    'where' => ['estado', '>', '0', 'estado', '<', '4']
+                ],
+                true
+            )
+        );
         $this->panel->setBoton('profile', new BotonIcon("$this->model.alta", ['class' => 'btn-success alta', 'where' => ['estado', '==', '5']], true));
         $this->panel->setBoton('grid', new BotonImg('falta.delete', ['where' => ['estado', '<', '4']]));
         $this->panel->setBoton('grid', new BotonImg('falta.edit', ['where' => ['estado', '<', '4']]));
         $this->panel->setBoton('grid', new BotonImg('falta.notification', ['where' => ['estado', '>', '0', 'hasta', 'posterior', Ayer()]]));
         $this->panel->setBothBoton('falta.document', ['where' => ['fichero', '!=', '']]);
-        $this->panel->setBothBoton('falta.gestor',['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
+        $this->panel->setBothBoton('falta.gestor', ['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
         
     }
 }
