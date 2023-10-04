@@ -3,7 +3,7 @@
     <title>Empresa {{$elemento->nombre}}</title>
 @endsection
 @php($centros = $elemento->centros->count())
-@php($ciclo = \Intranet\Entities\Grupo::find(authUser()->GrupoTutoria)->idCiclo)
+@php($ciclo = \Intranet\Entities\Grupo::find(authUser()->GrupoTutoria)->idCiclo??'')
 @section('content')
     <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
         <h3>{{$elemento->nombre}}</h3>
