@@ -11,7 +11,7 @@ class PanelProgramacionAllController extends BaseController
 
    
     protected $model = 'Programacion';
-    protected $gridFields = ['XModulo', 'Xdepartamento','XCiclo','situacion'];
+    protected $gridFields = ['XModulo', 'XCiclo','Xdepartamento','situacion'];
     protected $redirect = 'PanelProgramacionAllController@index';
     protected $parametresVista = [];
     
