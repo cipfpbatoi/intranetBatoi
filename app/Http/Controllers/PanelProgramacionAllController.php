@@ -19,9 +19,14 @@ class PanelProgramacionAllController extends BaseController
     {
         if (isset(authUser()->departamento)) {
             return Programacion::where(function ($query) {
-                $query->where('estado', 2)
-                    ->where('departamento', authUser()->departamento);
-            })->orWhere('estado', 3)
+                $query->where('estado', 3)
+                    ->orWhere(function ($query) {
+                        $query->where('estado', 2)
+                            ->whereHas('Departament', function ($query) {
+                                $query->where('departamentos.id', authUser()->departamento);
+                            });
+                    });
+            })
                 ->where('curso', curso())
                 ->with('Departament')
                 ->with('Ciclo')
