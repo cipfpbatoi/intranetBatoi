@@ -17,12 +17,25 @@ class PanelProgramacionAllController extends BaseController
     
     public function search()
     {
-        return Programacion::where('estado', 3)
-            ->where('curso', curso())
-            ->with('Departament')
-            ->with('Ciclo')
-            ->with('Modulo')
-            ->get();
+        if (isset(authUser()->departamento)) {
+            return Programacion::where(function ($query) {
+                $query->where('estado', 2)
+                    ->where('departamento', authUser()->departamento);
+            })->orWhere('estado', 3)
+                ->where('curso', curso())
+                ->with('Departament')
+                ->with('Ciclo')
+                ->with('Modulo')
+                ->get();
+        } else {
+            return Programacion::where('estado', 3)
+                ->where('curso', curso())
+                ->with('Departament')
+                ->with('Ciclo')
+                ->with('Modulo')
+                ->get();
+        }
+
     }
     protected function iniPestanas($parametres = null)
     {
