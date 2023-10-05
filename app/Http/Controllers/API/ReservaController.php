@@ -35,8 +35,8 @@ class   ReservaController extends ApiBaseController
                 ->first();
             if ($reserva && $espacio=Espacio::find($reserva->idEspacio)) {
                 if ($espacio->dispositivo) {
-                    $open = $this->checkSecuredStatus($this->getJson($espacio->dispositivo));
-                    $action = $open?'secure':'unsecure';
+                    $closed = $this->checkSecuredStatus($this->getJson($espacio->dispositivo));
+                    $action = $closed?'unsecure':'secure';
                     if ($this->action($action, $espacio)) {
                         return $this->sendResponse('Modificat estat Porta');
                     } else {
@@ -95,7 +95,6 @@ class   ReservaController extends ApiBaseController
 
     private function checkSecuredStatus($data) {
         $secured = $data['properties']['secured'];
-        dd($secured);
         return ($secured>0)?true:false;
     }
 }
