@@ -35,7 +35,7 @@ class   ReservaController extends ApiBaseController
                 ->first();
             if ($reserva && $espacio=Espacio::find($reserva->idEspacio)) {
                 if ($espacio->dispositivo) {
-                    $open = $this->checkSecuredStatus($this->getJson());
+                    $open = $this->checkSecuredStatus($this->getJson($espacio->dispositivo));
                     $action = $open?'secure':'unsecure';
                     if ($this->action($action, $espacio)) {
                         return $this->sendResponse('Modificat estat Porta');
@@ -67,11 +67,11 @@ class   ReservaController extends ApiBaseController
         return $this->sendError('Persona no identificada', 401);
     }
 
-    private function getJson()
+    private function getJson($dispositivo)
     {
         $user = config('variables.domotica.user');
         $pass =  config('variables.domotica.pass');
-        $link = config('variables.ipDomotica')."/";
+        $link = config('variables.ipDomotica')."/".$dispositivo;
         $response = Http::withBasicAuth($user, $pass)
             ->accept('application/json')
             ->get($link);
