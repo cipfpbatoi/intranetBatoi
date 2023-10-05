@@ -71,8 +71,7 @@ class   ReservaController extends ApiBaseController
     {
         $user = config('variables.domotica.user');
         $pass =  config('variables.domotica.pass');
-        $link = config('variables.ipDomotica')."/".$dispositivo;
-        dd($link);
+        $link = 'http://172.16.10.74/api/devices/'.$dispositivo;
         $response = Http::withBasicAuth($user, $pass)
             ->accept('application/json')
             ->get($link);
