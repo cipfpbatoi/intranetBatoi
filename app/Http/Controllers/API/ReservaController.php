@@ -8,7 +8,7 @@ use Intranet\Entities\Profesor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-class ReservaController extends ApiBaseController
+class   ReservaController extends ApiBaseController
 {
 
     protected $model = 'Reserva';
@@ -35,10 +35,12 @@ class ReservaController extends ApiBaseController
                 ->first();
             if ($reserva && $espacio=Espacio::find($reserva->idEspacio)) {
                 if ($espacio->dispositivo) {
-                    if ($this->action('unsecure', $espacio)) {
-                        return $this->sendResponse('Porta oberta');
+                    $open = $this->checkSecuredStatus($this->getJson());
+                    $action = $open?'secure':'unsecure';
+                    if ($this->action($action, $espacio)) {
+                        return $this->sendResponse('Modificat estat Porta');
                     } else {
-                        return $this->sendError("No s'ha pogut obrir la porta");
+                        return $this->sendError("No s'ha pogut modificar la porta");
                     }
                 } else {
                     return $this->sendError('Eixe espai no te obertura', 401);
@@ -65,6 +67,16 @@ class ReservaController extends ApiBaseController
         return $this->sendError('Persona no identificada', 401);
     }
 
+    private function getJson()
+    {
+        $user = config('variables.domotica.user');
+        $pass =  config('variables.domotica.pass');
+        $link = config('variables.ipDomotica')."/";
+        $response = Http::withBasicAuth($user, $pass)
+            ->accept('application/json')
+            ->get($link);
+        return $response->json();
+    }
 
     private function action($action, $espacio): bool
     {
@@ -79,5 +91,16 @@ class ReservaController extends ApiBaseController
             ->accept('application/json')
             ->post($link, ['args'=>[]]);
         return $response->successful()?true:false;
+    }
+
+    private function checkSecuredStatus($data) {
+        $secured = $data['properties']['secured'];
+        if ($secured === 255) {
+            return 1;
+        } elseif ($secured === 0) {
+            return 0;
+        } else {
+            return 'Error: Valor de "secured" no reconegut';
+        }
     }
 }
