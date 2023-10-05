@@ -94,7 +94,6 @@ class   ReservaController extends ApiBaseController
     }
 
     private function checkSecuredStatus($data) {
-        dd($data);
         $secured = $data['properties']['secured'];
         if ($secured === 255) {
             return 1;
