@@ -40,11 +40,12 @@ return [
         'redirect' => env('GOOGLE_REDIRECT', config('contacto.host.web').'/social/callback/google'),
     ],
     'selenium' => [
-        'url' => env('SELENIUM_URL', 'http://172.16.9.10:4444'),
+        'url' => env('SELENIUM_URL', '172.16.9.10:4444'),
         'SAO' => env('SELENIUM_URL_SAO', 'https://foremp.edu.gva.es/index.php'),
         'SAO_USER' => env('SELENIUM_USER_SAO', '21668389C'),
         'SAO_PASS' => env('SELENIUM_PASS_SAO', '21668389C'),
-        'itaca' => env('SELENIUM_URL_ITACA', 'https://acces.edu.gva.es/sso/login.xhtml?callbackUrl=https://acces.edu.gva.es/escriptori/'),
+        'SELENIUM_ROOT_PASS' => env('SELENIUM_ROOT_PASS', 'intranet'),
+        'itaca' => env('SELENIUM_URL_ITACA','https://acces.edu.gva.es/sso/login.xhtml?callbackUrl=https://acces.edu.gva.es/escriptori/'),
     ]
 
 ];

@@ -139,7 +139,9 @@ class Programacion extends Model
 
     public function getSituacionAttribute()
     {
-        return isblankTrans('models.Programacion.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Programacion.' . $this->estado);
+        return isblankTrans('models.Programacion.' . $this->estado)
+            ? trans('messages.situations.' . $this->estado)
+            : trans('models.Programacion.' . $this->estado);
     }
 
     public static function resolve($id, $mensaje = null)
