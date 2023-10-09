@@ -35,7 +35,8 @@
                     <td style="text-align:left;font-size: 0.9em ">
                             {{ $fct->Fct->Colaboracion->Centro->nombre??'' }} ({{ $fct->Alumno->fullName??'' }})
                     </td>
-                    <td>{{ $fct->Fct->Colaboracion->Centro->Empresa->conveniNou?'X':'' }}</td>
+                    <td>{{ $fct->Fct->Colaboracion->Centro->Empresa->conveniNou?
+                            'X':($fct->Fct->Colaboracion->Centro->Empresa->conveniCaducat?'!!':'O') }}</td>
                     <td>{{ $fct->saoAnnexes?'X':'' }}</td>
                     <td>{{ $fct->saoAnnexes?'X':'' }}</td>
                     <td></td>
