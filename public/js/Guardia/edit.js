@@ -304,10 +304,11 @@ function setPlace() {
 		biblio=true;
 		codLugar = infoIp.codOcup;
 		let descripLugar = ocupacionGuardia.find(item=>item.cod==infoIp.codOcup).descrip;
-		document.querySelector('legend.centrado').textContent = 'Dades de la guàrdia de '+descripLugar;
+		// document.querySelector('legend.centrado').textContent = 'Dades de la guàrdia de '+descripLugar;
 	} else {
 		codLugar = 1;
-		document.querySelector('legend.centrado').textContent = 'Dades de la guàrdia';
+		// document.querySelector('legend.centrado').textContent = 'Dades de la guàrdia';
 	}
+	document.querySelector('legend.centrado').textContent = 'Dades de la guàrdia';
 	cambiaHora();
 }
