@@ -24,6 +24,7 @@ use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Setting;
 use Intranet\Mail\CertificatAlumneFct;
+use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
@@ -233,6 +234,23 @@ class AdministracionController extends Controller
             }
         }
         return back();
+    }
+
+    public static function v3_01()
+    {
+       $fcts = AlumnoFct::all();
+       foreach ($fcts as $fct) {
+           $grupo = $fct->Alumno->Grupo->first() ?? null;
+           if ($grupo) {
+               if ($grupo->curso == 2) {
+                   $fct->idProfesor = $grupo->tutor;
+               } else {
+                   $fct->idProfesor = $grupo->tutorDual;
+               }
+               $fct->save();
+           }
+       }
+        Alert::info('Version 3.01');
     }
 
 

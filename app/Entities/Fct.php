@@ -136,17 +136,11 @@ class Fct extends Model
         return $query->whereIn('idColaboracion', $colaboracion);
     }
     
-    public function scopeMisFcts($query, $profesor=null, $dual=false)
+    public function scopeMisFcts($query, $profesor=null)
     {
-        $profesor = $profesor??authUser()->dni;
-        $cicloC =  Grupo::QTutor($profesor, $dual)->first()->idCiclo??null;
-
-        $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
-
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor, $dual)->get()->toArray();
-        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno', $alumnos)->get()->toArray();
-
-        return $query->whereIn('id', $alumnosFct)->whereIn('idColaboracion', $colaboraciones);
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idProfesor', $profesor)->get()->toArray();
+        return $query->whereIn('id', $alumnosFct);
     }
 
     public function getEncarregatAttribute()

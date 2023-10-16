@@ -270,10 +270,10 @@ class FctAlumnoController extends IntranetController
                 ->where('asociacion', $request->asociacion)
                 ->get();
             $elemento = $elementos->first() ?? null;
-
             if (!$elemento) {
                 $elemento = new FctConvalidacion();
                 $this->validateAll($request, $elemento);
+                $elemento->idProfesor = authUser()->dni;
                 $elemento->fillAll($request);
             }
 
@@ -283,7 +283,8 @@ class FctAlumnoController extends IntranetController
                     'desde' => FechaInglesa(Hoy()),
                     'horas' => $request->horas,
                     'calificacion' => 2,
-                    'correoAlumno' => 1
+                    'correoAlumno' => 1,
+                    'idProfesor' => authUser()->dni
                 ]
             );
 

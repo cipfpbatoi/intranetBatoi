@@ -118,6 +118,7 @@ class Profesor extends Authenticatable
         return $this->hasOne(Profesor::class, 'sustituye_a', 'dni');
     }
 
+
     public function Reserva()
     {
         return $this->hasMany(Reserva::getClass(), 'profesor_id', 'dni');
@@ -355,6 +356,22 @@ class Profesor extends Authenticatable
             }
         }
 
+        return $sustituidos;
+    }
+
+
+    public static function getSubstituts($dni)
+    {
+        $profesor = Profesor::find($dni);
+        $sustituidos[] = $dni;
+        while ($profesor) {
+            if (!empty($profesor->sustituye_a) && $profesor->sustituye_a != ' ') {
+                $sustituidos[] = $profesor->sustituye_a;
+                $profesor = Profesor::find($profesor->sustituye_a);
+            } else {
+                $profesor = null;
+            }
+        }
         return $sustituidos;
     }
 
