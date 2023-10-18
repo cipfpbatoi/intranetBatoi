@@ -24,17 +24,17 @@ class ConformidadAlumnadoGrupoResource extends PrintResource
         $tutor = AuthUser();
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $array = [
-            'untitled1' => config('contacto.nombre').' '.config('contacto.codi') ,
-            'untitled2' => $grupo->Ciclo->vliteral,
-            'untitled3' => "$tutor->fullName - DNI: $tutor->dni",
-            'untitled84' => config('contacto.poblacion'),
-            'untitled85' => day(Hoy()),
-            'untitled86' => month(Hoy()),
-            'untitled87' => substr(year(Hoy()), 2,2),
+            'Text1' => config('contacto.nombre').' '.config('contacto.codi') ,
+            'Text3' => $grupo->Ciclo->vliteral,
+            'Text2' => "$tutor->fullName - DNI: $tutor->dni",
+            'Text66' => config('contacto.poblacion'),
+            'Text67' => day(Hoy()),
+            'Text68' => month(Hoy()),
+            'Text69' => substr(year(Hoy()), 2,2),
         ];
-        $i = 24;
+        $i = 6;
         foreach ($this->getElements()??[] as $element) {
-            $title = 'untitled'.$i;
+            $title = 'Text'.$i;
             $array[$title] = $element->Alumno->fullName;
             $i += 2;
         }
