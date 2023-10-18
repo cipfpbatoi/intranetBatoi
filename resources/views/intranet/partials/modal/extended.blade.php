@@ -6,7 +6,9 @@
                 <option value="pg0301">@lang("models.Fct.pg0301")</option>
                 <option value="pr0401">@lang("models.Fct.pr0401")</option>
                 <option value="pr0402">@lang("models.Fct.pr0402")</option>
-                <option value="pasqua">@lang("models.Fct.pasqua")</option>
+                <option value="autTutor">@lang("models.Fct.autTutor")</option>
+                <option value="autDireccio">@lang("models.Fct.autDireccio")</option>
+                <option value="autAlumnat">@lang("models.Fct.autAlumnat")</option>
                 <option value="A1">@lang("models.Fct.an1")</option>
                 <option value="A2">@lang("models.Fct.an2")</option>
                 <option value="A3">@lang("models.Fct.an3")</option>

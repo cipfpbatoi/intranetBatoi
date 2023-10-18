@@ -157,8 +157,22 @@ return [
         'route' => 'alumnofct',
         'view' => 'pdf.fct.seguimentAlumnes',
     ],
-    'pasqua' => [
+    'autTutor' => [
         'printResource' => 'AutorizacionGrupoResource',
+        'modelo' => 'AlumnoFct',
+        'route' => 'alumnofct',
+        'finder' => 'AlumnoEnFct',
+        'multiple' => false,
+    ],
+    'autDireccio' => [
+        'printResource' => 'AutorizacionDireccionGrupoResource',
+        'modelo' => 'AlumnoFct',
+        'route' => 'alumnofct',
+        'finder' => 'AlumnoEnFct',
+        'multiple' => false,
+    ],
+    'autAlumnat' => [
+        'printResource' => 'ConformidadAlumnadoGrupoResource',
         'modelo' => 'AlumnoFct',
         'route' => 'alumnofct',
         'finder' => 'AlumnoEnFct',

@@ -9,7 +9,7 @@ class AutorizacionGrupoResource extends PrintResource
     public function __construct($elements)
     {
         $this->elements = $elements;
-        $this->file = 'Conformitat_tutoria_per_a_grups.pdf';
+        $this->file = '10b_Conformitat_tutoria_per_a_grups.pdf';
     }
 
     /**
