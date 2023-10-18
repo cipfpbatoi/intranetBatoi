@@ -67,7 +67,7 @@ class A2
 
     public static function downloadFilesFromFcts(RemoteWebDriver $driver, $fcts, $certFile, $passCert)
     {
-        $tmpDirectory = storage_path('tmp/');
+        $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
         foreach ($fcts as $fct) {
                 // Anexe 1
             $fctAl = AlumnoFct::find($fct);
