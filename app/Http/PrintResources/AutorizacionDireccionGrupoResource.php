@@ -35,7 +35,7 @@ class AutorizacionDireccionGrupoResource extends PrintResource
             'untitled2' => $grupo->Ciclo->vliteral ,
             'untitled3' => $grupo->curso.' '.$grupo->Ciclo->vliteral.' - '.$grupo->Ciclo->ciclo,
             'untitled4' => $director ,
-            'untitled8' => $director,
+            'untitled6' => $director,
             'untitled28' => $alumnes,
             'untitled29' => "L'alumnat no interrumpisca les pràctiques per les festes escolars per tal de garantir la continuïtat formativa i la inserció en el món laboral.",
             'untitled30' => config('contacto.poblacion'),
