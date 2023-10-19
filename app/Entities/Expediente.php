@@ -59,7 +59,13 @@ class Expediente extends Model
 
     public function getTipoOptions()
     {
-        return hazArray(TipoExpediente::all(), 'id', 'titulo');
+        $array = [];
+        foreach (TipoExpediente::all() as $tipo) {
+            if (esRol(AuthUser()->rol, $tipo->rol)) {
+                $array[$tipo->id] = $tipo->titulo;
+            }
+        }
+        return $array;
     }
     
     public function getIdModuloOptions()
