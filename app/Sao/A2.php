@@ -5,6 +5,12 @@ namespace Intranet\Sao;
 use Facebook\WebDriver\Firefox\FirefoxProfile;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Intranet\Componentes\Mensaje;
+use Intranet\Entities\Profesor;
+use Intranet\Exceptions\IntranetException;
 use Intranet\Services\DigitalSignatureService;
 use Intranet\Entities\AlumnoFct;
 use Styde\Html\Facades\Alert;
@@ -43,7 +49,6 @@ class A2
 
     public static function index($driver, $request)
     {
-
         $driver->manage()->timeouts()->pageLoadTimeout(2);
         $fcts = array_keys($request, 'on');
         $decrypt = $request['decrypt']??null;
@@ -51,15 +56,28 @@ class A2
 
 
         if (isset($decrypt)) {
-            $nameFile = AuthUser()->fileName;
-            $file = DigitalSignatureService::decryptCertificate($nameFile, $decrypt);
+            $password= Profesor::find(authUser()->dni)->password;
+            if (Hash::check($decrypt, $password)){
+                $nameFile = AuthUser()->fileName;
+                $file = DigitalSignatureService::decryptCertificate($nameFile, $decrypt);
+                self::downloadFilesFromFcts($driver, $fcts, $file , $cert);
+                if ($file) {
+                    unlink($file);
+                }
+            } else {
+                Log::channel('certificate')->alert("Intent de signatura amb password erroni.", [
+                    'intranetUser' => authUser()->fullName,
+                ]);
+                Alert::warning("La contrasenya d'usuari no és correcta");
+                Mensaje::send(
+                    config('avisos.errores'),
+                    "Intent de signatura amb password erroni. Usuari: ".authUser()->fullName
+                );
+            }
+        } else {
+            self::downloadFilesFromFcts($driver, $fcts);
         }
 
-        self::downloadFilesFromFcts($driver, $fcts, $file ?? null, $cert);
-
-        if ($file) {
-            unlink($file);
-        }
         $driver->quit();
         return back();
     }
@@ -99,14 +117,18 @@ class A2
                         if ($certFile && $passCert) {
                             $x = config("signatures.files.A{$anexe}.owner.x");
                             $y = config("signatures.files.A{$anexe}.owner.y");
-                            DigitalSignatureService::sign(
-                                $tmpFile,
-                                $saveFile,
-                                $x,
-                                $y,
-                                $certFile,
-                                $passCert
-                            );
+                            try {
+                                DigitalSignatureService::sign(
+                                    $tmpFile,
+                                    $saveFile,
+                                    $x,
+                                    $y,
+                                    $certFile,
+                                    $passCert
+                                );
+                            } catch (IntranetException $exception) {
+                                $errorSignatura = true;
+                            }
                         } else {
                             copy($tmpFile, $saveFile);
                         }
@@ -119,6 +141,12 @@ class A2
                     sleep(1);
                 }
             }
+        }
+        if (isset($errorSignatura) && $errorSignatura) {
+            Alert::warning("No s'ha pogut signar el fitxer. Comprova que el certificat i la contrasenya són correctes");
+            Mensaje::send(
+                config('avisos.errores'),
+                "No s'ha pogut signar el fitxer. Password de l'usuari ". authUser()->fullName." Incorrecte");
         }
     }
 }

@@ -5,6 +5,7 @@ namespace Intranet\Services;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\File;
 use Intranet\Componentes\signImage;
+use Intranet\Exceptions\IntranetException;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SignaturePdf;
@@ -27,6 +28,10 @@ class DigitalSignatureService
         $encrypter = self::getEncrypter($password);
         $content = $encrypter->encryptString(base64_encode(file_get_contents($certificat)));
         file_put_contents($file, $content);
+        Log::channel('certificate')->info("S'ha pujat el certificat d'usuari.", [
+            'intranetUser' => authUser()->fullName,
+            'Path' => $file,
+        ]);
     }
 
 
@@ -38,10 +43,12 @@ class DigitalSignatureService
         $encrypter = self::getEncrypter($password);
         $fileContent = file_get_contents($cryptfile);
         $cert = base64_decode($encrypter->decryptString($fileContent));
-        dd($cert);
         File::put($decryptfile, $cert);
-
+        Log::channel('certificate')->info("S'ha desxifrat el certificat d'usuari.", [
+            'intranetUser' => authUser()->fullName,
+        ]);
         return $decryptfile;
+
     }
 
 
@@ -53,7 +60,7 @@ class DigitalSignatureService
 
     public static function getFileNameDeCrypt($fileName)
     {
-        return storage_path('app/certificats/'.$fileName.'.pfx');
+        return storage_path('tmp/'.$fileName.'.pfx');
     }
 
 
@@ -75,7 +82,7 @@ class DigitalSignatureService
         try {
 
             $cert = self::readCertificat($filecrt, $passCert);
-            $user = $cert->getCert()->data['subject']['commonName']);
+            $user = $cert->getCert()->data['subject']['commonName'];
             $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
             $imagePath = a1TempDir(true, '.png');
             File::put($imagePath, $image);
@@ -96,7 +103,11 @@ class DigitalSignatureService
                     'signedPdfPath' => $newFile,
                     ]);
         } catch (\Throwable $th) {
-            Alert::danger($th->getMessage().' '.$th->getLine().' '.$th->getFile());
+            Log::channel('certificate')->alert("Password certificat incorrecte", [
+                'intranetUser' => authUser()->fullName,
+                'pdfPath' => $file,
+            ]);
+            throw new IntranetException("Error al signar el document: ".$th->getMessage());
         }
     }
 
