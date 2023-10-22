@@ -9,6 +9,7 @@ use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SignaturePdf;
 use Styde\Html\Facades\Alert;
+use Illuminate\Support\Facades\Log;
 
 class DigitalSignatureService
 {
@@ -37,7 +38,9 @@ class DigitalSignatureService
         $encrypter = self::getEncrypter($password);
         $fileContent = file_get_contents($cryptfile);
         $cert = base64_decode($encrypter->decryptString($fileContent));
+        dd($cert);
         File::put($decryptfile, $cert);
+
         return $decryptfile;
     }
 
@@ -72,6 +75,7 @@ class DigitalSignatureService
         try {
 
             $cert = self::readCertificat($filecrt, $passCert);
+            $user = $cert->getCert()->data['subject']['commonName']);
             $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
             $imagePath = a1TempDir(true, '.png');
             File::put($imagePath, $image);
@@ -85,6 +89,12 @@ class DigitalSignatureService
             $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy)
                 ->signature();
             file_put_contents($newFile, $signed_pdf_content);
+            Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
+                    'signUser' => $user,
+                    'intranetUser' => authUser()->fullName,
+                    'pdfPath' => $file,
+                    'signedPdfPath' => $newFile,
+                    ]);
         } catch (\Throwable $th) {
             Alert::danger($th->getMessage().' '.$th->getLine().' '.$th->getFile());
         }
