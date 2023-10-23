@@ -39,6 +39,7 @@ class DocumentRequest extends Mailable
         $this->attach = $attach;
     }
 
+    /*
     public function headers(): Headers
     {
         return new Headers(
@@ -47,6 +48,7 @@ class DocumentRequest extends Mailable
             ],
         );
     }
+    */
     /**
      * Build the message.
      *
