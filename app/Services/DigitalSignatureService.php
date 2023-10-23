@@ -34,6 +34,14 @@ class DigitalSignatureService
         ]);
     }
 
+    public static function deleteCertificate($user)
+    {
+        unlink(storage_path('app/certificats/'.$user->fileName.'.tmp'));
+        Log::channel('certificate')->info("S'ha esborrat el certificat d'usuari.", [
+            'intranetUser' => authUser()->fullName,
+        ]);
+    }
+
 
 
     public static function decryptCertificate($fileName, $password)

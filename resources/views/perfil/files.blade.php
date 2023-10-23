@@ -43,6 +43,7 @@
                 </td>
                 <td>
                     <input id='certificat' type="file" name="certificat_digital" />
+                    <input type="checkbox" name="eliminar_certificat" value="1" /> Eliminar Certificat<br/>
                     <label for="password">Login usuari:</label>
                     <input type="password" id="password" name="password" />
                 </td>

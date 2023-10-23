@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers\Auth\Profesor;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Entities\Profesor;
@@ -64,6 +65,14 @@ class PerfilController extends Perfil
                 Alert::info('Peu guardat amb exit');
             } else {
                 Alert::info('Format no vàlid');
+            }
+        }
+        if ($request->eliminar_certificat) {
+            if (Hash::check($request->password, $new->password)) {
+                DigitalSignatureService::deleteCertificate($new);
+                Alert::info('Certificat eliminat');
+            } else {
+                Alert::info('La contrasenya no és correcta');
             }
         }
         if ($request->hasFile('certificat_digital')) {
