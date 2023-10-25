@@ -34,13 +34,17 @@ class Sync
                         )[0];
                         if ($fct->realizadas != $horas) {
                             $fct->realizadas = (int) $horas;
-                            list($diarias,$ultima) =
-                                self::consultaDiario(
-                                    $driver,
-                                    $driver->findElement(WebDriverBy::cssSelector("#contenido"))
-                                );
-                            $fct->horas_diarias = (float)$diarias;
-                            $fct->actualizacion = fechaSao(substr($ultima, 2, 10));
+                            try {
+                                list($diarias,$ultima) =
+                                    self::consultaDiario(
+                                        $driver,
+                                        $driver->findElement(WebDriverBy::cssSelector("#contenido"))
+                                    );
+                                $fct->horas_diarias = (float)$diarias;
+                                $fct->actualizacion = fechaSao(substr($ultima, 2, 10));
+                            } catch (\Exception $e){
+                                Alert::info('Informació incompleta '.$fct->Alumno->shortName);
+                            }
                             $fct->save();
                             $alumnes[] = $fct->Alumno->shortName;
                         }
