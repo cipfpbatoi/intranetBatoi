@@ -73,7 +73,7 @@ return array(
                 'index' => 'LListat Professorat',
                 'list' => 'Professorat Absents',
                 'horario-cambiar' => 'Canviar horari Professorat',
-                'titulo' => 'Entrevistes FCTs de :quien',
+                'titulo' => 'Documentació Addicional Pràctiques de :quien',
         ),
         'profesor' => array(
             'files' => "Fitxers de l'usuari",

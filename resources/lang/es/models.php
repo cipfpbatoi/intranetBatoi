@@ -69,7 +69,7 @@ return array(
                 'index' => 'Listado Profesores',
                 'list' => 'Profesores Ausentes',
                 'horario-cambiar' => 'Cambiar horario Profesor',
-                'titulo' => 'Entrevistas FCTs de :quien',
+                'titulo' => 'Documentación Adicional Prácticas de :quien',
 
         ),
         'profesor' => array(
