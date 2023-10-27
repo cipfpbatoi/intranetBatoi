@@ -5,7 +5,6 @@ namespace Intranet\Sao;
 use Facebook\WebDriver\Firefox\FirefoxProfile;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Intranet\Componentes\Mensaje;
@@ -47,7 +46,7 @@ class A2
     }
 
 
-    public static function index($driver, $request)
+    public static function index($driver,$request,$file = null)
     {
         $driver->manage()->timeouts()->pageLoadTimeout(2);
         $fcts = array_keys($request, 'on');
@@ -75,7 +74,17 @@ class A2
                 );
             }
         } else {
-            self::downloadFilesFromFcts($driver, $fcts);
+            if ($file) {
+                $nomFitxer = storage_path('tmp/'.authUser()->fileName.'.pfx');
+                // Emmagatzemar el fitxer
+                $file->move(dirname($nomFitxer), basename($nomFitxer));
+                self::downloadFilesFromFcts($driver, $fcts,$nomFitxer,$cert);
+                if ($file) {
+                    unlink($nomFitxer);
+                }
+            } else {
+                self::downloadFilesFromFcts($driver, $fcts);
+            }
         }
 
         $driver->quit();
@@ -83,14 +92,14 @@ class A2
     }
 
 
-    public static function downloadFilesFromFcts(RemoteWebDriver $driver, $fcts, $certFile, $passCert)
+    public static function downloadFilesFromFcts(RemoteWebDriver $driver, $fcts, $certFile=null, $passCert=null)
     {
         $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
 
         foreach ($fcts as $fct) {
                 // Anexe 1
             $fctAl = AlumnoFct::find($fct);
-            if (! $fctAl->Fct->Colaboracion->Centro->Empresa->ConveniNou) {
+            if ($fctAl->Fct->Colaboracion->Centro->Empresa->ConveniCaducat) {
                 try {
                     $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
                     $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=101&centro=59&ct=$idSao");

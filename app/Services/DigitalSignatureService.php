@@ -16,7 +16,6 @@ class DigitalSignatureService
 {
     public static function readCertificat($certificat, $password):ManageCert
     {
-
         $cert = new ManageCert;
         $cert->setPreservePfx()->fromPfx($certificat, $password);
         return $cert;
@@ -36,7 +35,7 @@ class DigitalSignatureService
 
     public static function deleteCertificate($user)
     {
-        unlink(storage_path('app/certificats/'.$user->fileName.'.tmp'));
+        unlink(storage_path('app/zip/'.$user->fileName.'.tmp'));
         Log::channel('certificate')->info("S'ha esborrat el certificat d'usuari.", [
             'intranetUser' => authUser()->fullName,
         ]);
@@ -63,7 +62,7 @@ class DigitalSignatureService
 
     public static function getFileNameCrypt($fileName)
     {
-       return  storage_path('app/certificats/'.$fileName.'.tmp');
+       return  storage_path('app/zip/'.$fileName.'.tmp');
     }
 
     public static function getFileNameDeCrypt($fileName)

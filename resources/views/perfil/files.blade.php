@@ -22,7 +22,7 @@
                 <img style="max-width: 50%" src="{{'/storage/peus/'.$profesor->fileName.'.png'}}" alt="peu" />
             </td>
             <td>
-                @if(file_exists(storage_path('app/certificats/'.$profesor->fileName.'.tmp')))
+                @if(file_exists(storage_path('app/zip/'.$profesor->fileName.'.tmp')))
                    <img src="/img/certificat_digital.png" alt="digital carregat" />
                 @endif
             </td>
