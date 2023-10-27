@@ -104,6 +104,7 @@ class FaltaController extends IntranetController
      */
     public function store(Request $request)
     {
+
         $request->baja = isset($request->baja)?$request->baja:0;
         if ($request->baja) {
             DB::transaction(function () use ($request) {
