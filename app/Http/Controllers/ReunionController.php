@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Exceptions\IntranetException;
 use Intranet\Services\CalendarService;
 use Intranet\Services\GestorService;
 use Intranet\Entities\Reunion;
@@ -239,34 +240,50 @@ class ReunionController extends IntranetController
         }
     }
 
-    public function saveFile($id)
+    private function actaCompleta(Reunion $reunion)
     {
-        $elemento = $this->class::find($id);
-        if ($elemento->fichero != '') {
-            $nomComplet = $elemento->fichero;
-        } else {
-            $nom = 'Acta_' . $elemento->id . '.pdf';
-            $directorio = 'gestor/' . Curso() . '/' . $this->model;
-            $nomComplet = $directorio . '/' . $nom;
-            if (!file_exists(storage_path('/app/' . $nomComplet))) {
-                $this->construye_pdf($id)->save(storage_path('/app/' . $nomComplet));
+        if ($reunion->tipo == 7) {
+            foreach ($reunion->ordenes as $orden) {
+                if (empty($orden->resumen)) {
+                    throw new IntranetException("Tots els punts han de completar-se en una reunió d'avaluació");
+                }
             }
         }
-        $elemento->archivada = 1;
-        $elemento->fichero = $nomComplet;
-        DB::transaction(function () use ($elemento) {
-            $gestor = new GestorService($elemento);
-            $gestor->save(['propietario' => $elemento->Creador->FullName,
-                'tipoDocumento' => 'Acta',
-                'descripcion' => $elemento->descripcion,
-                'fichero' => $elemento->fichero,
-                'supervisor' => $elemento->Creador->FullName,
-                'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
-                'tags' => TipoReunion::find($elemento->tipo)->vliteral,
-                'created_at' => new Date($elemento->fecha),
-                'rol' => config('roles.rol.profesor')]);
-            $elemento->save();
-        });
+    }
+
+    public function saveFile($id)
+    {
+        try {
+            $elemento = $this->class::find($id);
+            if ($elemento->fichero != '') {
+                $nomComplet = $elemento->fichero;
+            } else {
+                $this->actaCompleta($elemento);
+                $nom = 'Acta_' . $elemento->id . '.pdf';
+                $directorio = 'gestor/' . Curso() . '/' . $this->model;
+                $nomComplet = $directorio . '/' . $nom;
+                if (!file_exists(storage_path('/app/' . $nomComplet))) {
+                    $this->construye_pdf($id)->save(storage_path('/app/' . $nomComplet));
+                }
+            }
+            $elemento->archivada = 1;
+            $elemento->fichero = $nomComplet;
+            DB::transaction(function () use ($elemento) {
+                $gestor = new GestorService($elemento);
+                $gestor->save(['propietario' => $elemento->Creador->FullName,
+                    'tipoDocumento' => 'Acta',
+                    'descripcion' => $elemento->descripcion,
+                    'fichero' => $elemento->fichero,
+                    'supervisor' => $elemento->Creador->FullName,
+                    'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
+                    'tags' => TipoReunion::find($elemento->tipo)->vliteral,
+                    'created_at' => new Date($elemento->fecha),
+                    'rol' => config('roles.rol.profesor')]);
+                $elemento->save();
+            });
+        } catch (IntranetException $e){
+            Alert::warning($e->getMessage());
+        }
         return back();
     }
 
