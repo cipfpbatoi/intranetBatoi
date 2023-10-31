@@ -163,6 +163,7 @@ return [
         'route' => 'alumnofct',
         'finder' => 'AlumnoEnFct',
         'multiple' => false,
+        'sign' => true,
     ],
     'autDireccio' => [
         'printResource' => 'AutorizacionDireccionGrupoResource',

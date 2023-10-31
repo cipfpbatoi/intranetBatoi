@@ -25,6 +25,12 @@ class AutorizacionDireccionGrupoResource extends PrintResource
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $director = Profesor::find(config('avisos.director'))->fullName;
         $alumnes = '';
+        $data_actual = new \DateTime();
+        $any_academic_inici =
+            ($data_actual->format('m') < 6) ?
+                $data_actual->format('Y') - 1 :
+                $data_actual->format('Y');
+        $primer_de_desembre = new \DateTime("December 1, $any_academic_inici");
 
         foreach ($this->getElements()??[] as $element) {
             $alumnes .= $element->Alumno->fullName.'
@@ -36,6 +42,12 @@ class AutorizacionDireccionGrupoResource extends PrintResource
             'untitled3' => $grupo->curso.' '.$grupo->Ciclo->vliteral.' - '.$grupo->Ciclo->ciclo,
             'untitled4' => $director ,
             'untitled6' => $director,
+            'untitled8' => 'Yes',
+            'untitled10' => $data_actual < $primer_de_desembre?'Yes':'No',
+            'untitled11' => $data_actual < $primer_de_desembre?'No':'Yes',
+            'untitled17' => 'Yes',
+            'untitled19' => $data_actual < $primer_de_desembre?'Yes':'No',
+            'untitled20' => $data_actual < $primer_de_desembre?'No':'Yes',
             'untitled28' => $alumnes,
             'untitled29' => "L'alumnat no interrumpisca les pràctiques per les festes escolars per tal de garantir la continuïtat formativa i la inserció en el món laboral.",
             'untitled30' => config('contacto.poblacion'),

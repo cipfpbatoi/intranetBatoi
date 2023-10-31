@@ -4,12 +4,19 @@ namespace Intranet\Http\PrintResources;
 
 use Intranet\Entities\Grupo;
 
+
 class AutorizacionGrupoResource extends PrintResource
 {
     public function __construct($elements)
     {
         $this->elements = $elements;
         $this->file = '10b_Conformitat_tutoria_per_a_grups.pdf';
+        $this->flatten = false;
+    }
+
+    public function setFlatten($flatten)
+    {
+        $this->flatten = $flatten;
     }
 
     /**
@@ -25,6 +32,13 @@ class AutorizacionGrupoResource extends PrintResource
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $alumnes = '';
         $mes = mes(Hoy());
+        $data_actual = new \DateTime();
+        $any_academic_inici =
+            ($data_actual->format('m') < 6) ?
+            $data_actual->format('Y') - 1 :
+            $data_actual->format('Y');
+        $primer_de_desembre = new \DateTime("December 1, $any_academic_inici");
+
 
         foreach ($this->getElements()??[] as $element) {
             $alumnes .= $element->Alumno->fullName.'
@@ -37,7 +51,11 @@ class AutorizacionGrupoResource extends PrintResource
             'untitled4' => $nomTutor,
             'untitled6' => $nomTutor,
             'untitled8' => 'Yes',
+            'untitled10' => $data_actual < $primer_de_desembre?'Yes':'No',
+            'untitled11' => $data_actual < $primer_de_desembre?'No':'Yes',
             'untitled17' => 'Yes',
+            'untitled19' => $data_actual < $primer_de_desembre?'Yes':'No',
+            'untitled20' => $data_actual < $primer_de_desembre?'No':'Yes',
             'untitled28' => $alumnes,
             'untitled29' => config('contacto.poblacion'),
             'untitled30' => day(Hoy()),

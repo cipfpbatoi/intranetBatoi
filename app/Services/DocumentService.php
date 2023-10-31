@@ -3,7 +3,6 @@ namespace Intranet\Services;
 
 use Intranet\Componentes\MyMail;
 use Intranet\Componentes\Pdf;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
 use Styde\Html\Facades\Alert;
@@ -15,6 +14,8 @@ class DocumentService
     private $document;
     private $zip;
 
+
+
     /**
      * DocumentService constructor.
      * @param $elements
@@ -24,6 +25,7 @@ class DocumentService
         $this->zip = $finder->getZip();
         $this->elements = $finder->exec();
         $this->document = $finder->getDocument();
+        $this->finder = $finder;
     }
 
     public function __get($key)
@@ -91,28 +93,47 @@ class DocumentService
                     $this->document->pdf['orientacion']
                 )->stream();
             }
-
         }
         // Document pdf desde plantilla
         if (isset($this->document->printResource)) {
-            if ($this->document->zip) {
-                $pdfs = [];
-                foreach ($this->elements as $element) {
-                    $resource = PrintResource::build($this->document->printResource, $element);
-                    $pdfs[] = FDFPrepareService::exec($resource, $element->idPrint);
-                }
-                if ($this->zip && count($this->elements) > 1) {
-                    return response()->file(storage_path(ZipService::exec($pdfs, 'annexes_'.authUser()->dni)));
-                } else {
-                    $pdf = new PdfTk($pdfs);
-                    $tmpFile = "tmp/annexes_".authUser()->dni.".pdf";
-                    $pdf->saveAs(storage_path($tmpFile));
-
-                    return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
+            if ($this->document->sign && $this->finder->getRequest()->mostraDiv) {
+                $resource = PrintResource::build($this->document->printResource, $this->elements);
+                $resource->setFlatten(true);
+                $tmp_name =FDFPrepareService::exec($resource);
+                if ($this->document->sign && file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp'))) {
+                    $x = config("signatures.files.AutTutor.owner.x");
+                    $y = config("signatures.files.AutTutor.owner.y");
+                    DigitalSignatureService::signCrypt(
+                        $tmp_name,
+                        storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'),
+                        $x,
+                        $y,
+                        authUser()->fileName,
+                        $this->finder->getRequest()->decrypt,
+                        $this->finder->getRequest()->cert
+                    );
+                    return response()->file(storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'));
                 }
             } else {
-                $resource = PrintResource::build($this->document->printResource, $this->elements);
-                return response()->file(FDFPrepareService::exec($resource));
+                if ($this->document->zip) {
+                    $pdfs = [];
+                    foreach ($this->elements as $element) {
+                        $resource = PrintResource::build($this->document->printResource, $element);
+                        $pdfs[] = FDFPrepareService::exec($resource, $element->idPrint);
+                    }
+                    if ($this->zip && count($this->elements) > 1) {
+                        return response()->file(storage_path(ZipService::exec($pdfs, 'annexes_'.authUser()->dni)));
+                    } else {
+                        $pdf = new PdfTk($pdfs);
+                        $tmpFile = "tmp/annexes_".authUser()->dni.".pdf";
+                        $pdf->saveAs(storage_path($tmpFile));
+
+                        return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
+                    }
+                } else {
+                    $resource = PrintResource::build($this->document->printResource, $this->elements);
+                    return response()->file(FDFPrepareService::exec($resource));
+                }
             }
         }
         // Concatenar pdfs ja fets

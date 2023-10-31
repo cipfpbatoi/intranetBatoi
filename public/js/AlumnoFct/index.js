@@ -29,6 +29,14 @@ $(function () {
         $("#formSeleccion" ).submit();
     });
 
+    $('#mostraDiv').change(function() {
+        if($(this).is(':checked')) {
+            $('#divSignatura').show();
+        } else {
+            $('#divSignatura').hide();
+        }
+    });
+
 
     $("#password .submit").click(function() {
         localStorage.setItem("cur_modal", '#password');

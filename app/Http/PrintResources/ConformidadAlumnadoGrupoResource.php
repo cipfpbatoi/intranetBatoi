@@ -23,10 +23,22 @@ class ConformidadAlumnadoGrupoResource extends PrintResource
     {
         $tutor = AuthUser();
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $data_actual = new \DateTime();
+        $any_academic_inici = ($data_actual->format('m') < 6) ?
+            $data_actual->format('Y') - 1 :
+            $data_actual->format('Y');
+        $primer_de_desembre = new \DateTime("December 1, $any_academic_inici");
+
         $array = [
             'Text1' => config('contacto.nombre').' '.config('contacto.codi') ,
             'Text3' => $grupo->Ciclo->vliteral,
             'Text2' => "$tutor->fullName - DNI: $tutor->dni",
+            'Button70' => 'Yes',
+            'Button72' => $data_actual < $primer_de_desembre?'Yes':'No',
+            'Button73' => $data_actual < $primer_de_desembre?'No':'Yes',
+            'Button79' => 'Yes',
+            'Button81' => $data_actual < $primer_de_desembre?'Yes':'No',
+            'Button82' => $data_actual < $primer_de_desembre?'No':'Yes',
             'Text66' => config('contacto.poblacion'),
             'Text67' => day(Hoy()),
             'Text68' => month(Hoy()),

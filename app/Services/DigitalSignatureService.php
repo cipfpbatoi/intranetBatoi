@@ -70,7 +70,21 @@ class DigitalSignatureService
         return storage_path('tmp/'.$fileName.'.pfx');
     }
 
-
+    public static function signCrypt(
+        $file,
+        $newFile,
+        $coordx,
+        $coordy,
+        $filecrypt,
+        $passCrypt,
+        $passCert
+    ){
+        $fileCert = self::decryptCertificate($filecrypt, $passCrypt);
+        self::sign($file, $newFile, $coordx, $coordy, $fileCert, $passCert);
+        if ($fileCert) {
+            unlink($fileCert);
+        }
+    }
 
     /**
      * Provision a new web server.
@@ -87,7 +101,6 @@ class DigitalSignatureService
     )
     {
         try {
-
             $cert = self::readCertificat($filecrt, $passCert);
             $user = $cert->getCert()->data['subject']['commonName'];
             $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');

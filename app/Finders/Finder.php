@@ -8,6 +8,7 @@ abstract class Finder {
     protected $dni;
     protected $document;
 
+
     public function __construct($document)
     {
         $this->dni = authUser()->dni??apiAuthUser()->dni;
@@ -32,6 +33,8 @@ abstract class Finder {
     {
         return $this->document;
     }
+
+
 
     public function getZip()
     {
