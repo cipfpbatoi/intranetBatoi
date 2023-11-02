@@ -35,7 +35,7 @@ class Departamento extends Model
 
     public function getidProfesorOptions()
     {
-        return hazArray(Profesor::orderBy('departamento')->orderBy('apellido1')->get(), 'dni', 'fullName');
+        return hazArray(Profesor::where('activo',1)->orderBy('departamento')->orderBy('apellido1')->get(), 'dni', 'nameFull');
     }
 
 }
