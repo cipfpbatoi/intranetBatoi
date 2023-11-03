@@ -106,14 +106,12 @@ class AsistentesCreate
     {
         foreach ($profesores as $profe) {
             if ($profe->Sustituye) {
-                $reunion->profesores()->attach($profe->Sustituye->dni, ['asiste' => true]);
-                $reunion->profesores()->attach($profe->dni, ['asiste' => false]);
+                $reunion->profesores()->attach($profe->Sustituye->dni, ['asiste' => false]);
+            }
+            if ($profe->fecha_baja == null){
+                $reunion->profesores()->attach($profe->dni, ['asiste' => true]);
             } else {
-                if ($profe->fecha_baja == null){
-                    $reunion->profesores()->attach($profe->dni, ['asiste' => true]);
-                } else {
-                    $reunion->profesores()->attach($profe->dni, ['asiste' => false]);
-                }
+                $reunion->profesores()->attach($profe->dni, ['asiste' => false]);
             }
         }
     }
