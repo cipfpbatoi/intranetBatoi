@@ -60,10 +60,10 @@ class AsistentesCreate
             $tipo = $reunion->Tipos();
             switch ($tipo->colectivo) {
                 case 'Departamento' :
-                    $profesores = Profesor::Activo()->where('departamento', '=', authUser()->departamento)->get();
+                    $profesores = Profesor::Plantilla()->where('departamento', '=', authUser()->departamento)->get();
                     break;
                 case 'Profesor' :
-                    $profesores = Profesor::Activo()->get();
+                    $profesores = Profesor::Plantilla()->get();
                     break;
                 case 'GrupoTrabajo':
                     $profesores = Profesor::GrupoT($reunion->grupo)->get();
@@ -105,10 +105,10 @@ class AsistentesCreate
     private function asignaProfeReunion($profesores, Reunion $reunion): void
     {
         foreach ($profesores as $profe) {
-            if ($profe->Sustituye) {
-                $reunion->profesores()->attach($profe->Sustituye->dni, ['asiste' => true]);
-            } else {
+            if ($profe->fecha_baja == null){
                 $reunion->profesores()->attach($profe->dni, ['asiste' => true]);
+            } else {
+                $reunion->profesores()->attach($profe->dni, ['asiste' => false]);
             }
         }
     }

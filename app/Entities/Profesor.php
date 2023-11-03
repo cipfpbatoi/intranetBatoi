@@ -150,6 +150,7 @@ class Profesor extends Authenticatable
         return $query->where('fecha_baja', null)->where('activo', 1);
     }
 
+
     public static function getRol($rol)
     {
         $all = Profesor::Activo()->get();
@@ -176,7 +177,7 @@ class Profesor extends Authenticatable
     public function scopeGrupo($query, $grupo)
     {
         $profesores = Horario::distinct()->select('idProfesor')->Grup($grupo)->get()->toArray();
-        return $query->whereIn('dni', $profesores)->orWhereIn('sustituye_a', $profesores)->Activo();
+        return $query->whereIn('dni', $profesores)->orWhereIn('sustituye_a', $profesores)->Plantilla();
     }
     public function scopeGrupoT($query, $grupoT)
     {
