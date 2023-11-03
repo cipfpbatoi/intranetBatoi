@@ -105,10 +105,15 @@ class AsistentesCreate
     private function asignaProfeReunion($profesores, Reunion $reunion): void
     {
         foreach ($profesores as $profe) {
-            if ($profe->fecha_baja == null){
-                $reunion->profesores()->attach($profe->dni, ['asiste' => true]);
-            } else {
+            if ($profe->Sustituye) {
+                $reunion->profesores()->attach($profe->Sustituye->dni, ['asiste' => true]);
                 $reunion->profesores()->attach($profe->dni, ['asiste' => false]);
+            } else {
+                if ($profe->fecha_baja == null){
+                    $reunion->profesores()->attach($profe->dni, ['asiste' => true]);
+                } else {
+                    $reunion->profesores()->attach($profe->dni, ['asiste' => false]);
+                }
             }
         }
     }
