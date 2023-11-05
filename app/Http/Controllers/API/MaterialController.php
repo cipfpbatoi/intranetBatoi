@@ -5,11 +5,10 @@ namespace Intranet\Http\Controllers\API;
 use Illuminate\Http\Request;
 use Intranet\Entities\Material;
 use Intranet\Entities\MaterialBaja;
-use Intranet\Http\Requests;
-use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
+
 use Intranet\Http\Resources\MaterialResource;
 use Jenssegers\Date\Date;
+use Yajra\DataTables\DataTables;
 
 class MaterialController extends ApiBaseController
 {
@@ -22,14 +21,41 @@ class MaterialController extends ApiBaseController
         return response()->json(Material::where('espacio', $espacio)->get());
     }
 
-    function inventario()
+    public function espai($espai = null)
     {
         if (esRol(apiAuthUser($_GET['api_token'])->rol, config(self::ROLES_ROL_DIRECCION))) {
             $data = Material::where('inventariable', 1)
                     ->where('espacio', '<>', 'INVENT')
                     ->where('estado', '<', 3)
                     ->whereNotNull('articulo_lote_id')
+                    ->when($espai, function ($query) use ($espai) {
+                        return $query->where('espacio', $espai);
+                    })
                     ->get();
+        } else {
+            $data = Material::whereHas('espacios', function ($query) {
+                $query->where('idDepartamento', apiAuthUser($_GET['api_token'])->departamento);
+            })->where('inventariable', 1)
+                ->where('espacio', '<>', 'INVENT')
+                ->where('estado', '<', 3)
+                ->whereNotNull('articulo_lote_id')
+                ->when($espai, function ($query) use ($espai) {
+                    return $query->where('espacio', $espai);
+                })
+                ->get();
+        }
+
+        return $this->sendResponse(MaterialResource::collection($data), 'OK');
+    }
+
+    public function inventario()
+    {
+        if (esRol(apiAuthUser($_GET['api_token'])->rol, config(self::ROLES_ROL_DIRECCION))) {
+            $data = Material::where('inventariable', 1)
+                ->where('espacio', '<>', 'INVENT')
+                ->where('estado', '<', 3)
+                ->whereNotNull('articulo_lote_id')
+                ->get();
         } else {
             $data = Material::whereHas('espacios', function ($query) {
                 $query->where('idDepartamento', apiAuthUser($_GET['api_token'])->departamento);
@@ -39,6 +65,7 @@ class MaterialController extends ApiBaseController
                 ->whereNotNull('articulo_lote_id')
                 ->get();
         }
+
         return $this->sendResponse(MaterialResource::collection($data), 'OK');
     }
 

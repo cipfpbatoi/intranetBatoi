@@ -53,11 +53,11 @@ const mesesCaduca=6;
             { "search": article},
             null,
             null,
-            { "search": espai }
+            null,
         ],
         ajax : {
             method: "GET",
-            url: '/api/inventario',
+            url: '/api/inventario/'+espai,
             data: {
                 api_token: token},
         },
