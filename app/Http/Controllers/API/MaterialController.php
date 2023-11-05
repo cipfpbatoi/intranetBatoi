@@ -21,17 +21,17 @@ class MaterialController extends ApiBaseController
         return response()->json(Material::where('espacio', $espacio)->get());
     }
 
-    public function espai($espai = null)
+    private function getInventario($espai = null)
     {
         if (esRol(apiAuthUser($_GET['api_token'])->rol, config(self::ROLES_ROL_DIRECCION))) {
             $data = Material::where('inventariable', 1)
-                    ->where('espacio', '<>', 'INVENT')
-                    ->where('estado', '<', 3)
-                    ->whereNotNull('articulo_lote_id')
-                    ->when($espai, function ($query) use ($espai) {
-                        return $query->where('espacio', $espai);
-                    })
-                    ->get();
+                ->where('espacio', '<>', 'INVENT')
+                ->where('estado', '<', 3)
+                ->whereNotNull('articulo_lote_id')
+                ->when($espai, function ($query) use ($espai) {
+                    return $query->where('espacio', $espai);
+                })
+                ->get();
         } else {
             $data = Material::whereHas('espacios', function ($query) {
                 $query->where('idDepartamento', apiAuthUser($_GET['api_token'])->departamento);
@@ -48,25 +48,14 @@ class MaterialController extends ApiBaseController
         return $this->sendResponse(MaterialResource::collection($data), 'OK');
     }
 
+    public function espai($espai)
+    {
+        return $this->getInventario($espai);
+    }
+
     public function inventario()
     {
-        if (esRol(apiAuthUser($_GET['api_token'])->rol, config(self::ROLES_ROL_DIRECCION))) {
-            $data = Material::where('inventariable', 1)
-                ->where('espacio', '<>', 'INVENT')
-                ->where('estado', '<', 3)
-                ->whereNotNull('articulo_lote_id')
-                ->get();
-        } else {
-            $data = Material::whereHas('espacios', function ($query) {
-                $query->where('idDepartamento', apiAuthUser($_GET['api_token'])->departamento);
-            })->where('inventariable', 1)
-                ->where('espacio', '<>', 'INVENT')
-                ->where('estado', '<', 3)
-                ->whereNotNull('articulo_lote_id')
-                ->get();
-        }
-
-        return $this->sendResponse(MaterialResource::collection($data), 'OK');
+        return $this->getInventario();
     }
 
     function index()
