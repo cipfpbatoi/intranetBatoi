@@ -9,6 +9,8 @@ use Intranet\Exceptions\IntranetException;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SignaturePdf;
+use Intranet\Services\ValidatePdfMultipleSignature;
+use LSNepomuceno\LaravelA1PdfSign\Sign\ValidatePdfSignature;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Log;
 
@@ -139,5 +141,15 @@ class DigitalSignatureService
     {
         $customKey = substr('base64:'.$password.config('app.key'), 0, 32);
         return new Encrypter($customKey, config('app.cipher'));
+    }
+
+    public static function validate($file){
+        $signatures = [];
+        $signs =  ValidatePdfMultipleSignatures::from($file);
+        dd($signs);
+        foreach ($signs as $sign){
+            $signatures[$sign->data['serialNumber']] = $sign->data['GN']. $sign->data['SN'];
+        }
+        return $signatures;
     }
 }

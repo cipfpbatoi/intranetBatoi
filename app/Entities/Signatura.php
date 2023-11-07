@@ -88,4 +88,14 @@ class Signatura extends Model
     {
         return $this->Fct->Fct->Colaboracion->contacto;
     }
+
+    public function getSignAttribute()
+    {
+        return $this->signed ? 'Sí' : 'No';
+    }
+
+    public function getSendAttribute()
+    {
+        return $this->sendTo ? 'Sí' : 'No';
+    }
 }

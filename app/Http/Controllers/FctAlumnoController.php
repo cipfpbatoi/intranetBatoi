@@ -100,6 +100,20 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton(
             'grid',
             new BotonImg(
+                'signatura',
+                [
+                    'img' => 'fa-certificate',
+                    'text' => 'Signatures',
+                    'where' =>
+                        [
+                            'sign', '==', true,
+                        ]
+                ]
+            )
+        );
+        /*$this->panel->setBoton(
+            'grid',
+            new BotonImg(
                 'alumnofct.A1',
                 [
                     'text' => 'A1',
@@ -153,7 +167,7 @@ class FctAlumnoController extends IntranetController
                         ]
                 ]
             )
-        );
+        );*/
 
         $this->panel->setBoton(
             'index',

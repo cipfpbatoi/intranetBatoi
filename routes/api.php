@@ -111,6 +111,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/documentacionFCT/{documento}', 'DocumentacionFCTController@exec');
     Route::get('/signatura', 'DocumentacionFCTController@signatura');
     Route::get('/signatura/director', 'DocumentacionFCTController@signaturaDirector');
+    Route::get('/signatura/{id}','SignaturaController@show');
 
     Route::resource('alumnoresultado', 'AlumnoResultadoContoller');
     Route::get('/matricula/{token}', 'AlumnoReunionController@getDadesMatricula');

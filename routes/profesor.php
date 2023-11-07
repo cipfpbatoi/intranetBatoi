@@ -522,6 +522,10 @@ Route::post('/sao/compara', [Intranet\Sao\Compara::class,'compara']);
 
 Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);
 
+Route::get('/signatura/{fct}',['as' => 'signatura.fct','uses' => 'SignaturaController@fct']);
+Route::get('/signatura/{id}/pdf', ['as' => 'signatura.pdf', 'uses' => 'SignaturaController@pdf']);
+Route::get('/signatura/{id}/delete', ['as' => 'signatura.destroy', 'uses' => 'SignaturaController@destroy']);
+
 
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');

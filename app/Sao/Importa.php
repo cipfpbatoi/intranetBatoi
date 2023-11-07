@@ -236,10 +236,10 @@ class Importa
         }
 
         try {
-            self::extractPage($driver, $dades);
+            self::extractPage($driver, $dades,1);
             $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
             sleep(1);
-            self::extractPage($driver, $dades);
+            self::extractPage($driver, $dades,2);
         } catch (Exception $e) {
             //No hi ha més pàgines
         }
@@ -532,16 +532,17 @@ class Importa
      * @param  array  $dades
      * @return array
      */
-    private static function extractPage(RemoteWebDriver $driver, array &$dades)
+    private static function extractPage(RemoteWebDriver $driver, array &$dades,$page)
     {
         $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
         foreach ($table as $index => $tr) {
             if ($index) { //el primer és el titol i no cal iterar-lo
+                $key = ($page-1) * 30 + $index;
                 try {
                     //dades de la linea
-                    self::extractFromModal($dades, $index, $tr, $driver);
+                    self::extractFromModal($dades, $key, $tr, $driver);
                 } catch (Exception $e) {
-                    unset($dades[$index]);
+                    unset($dades[$key]);
                     Alert::info($e->getMessage());
                 }
             }

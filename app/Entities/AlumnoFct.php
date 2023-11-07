@@ -274,6 +274,11 @@ class AlumnoFct extends Model
         return Signatura::where('idSao', $this->idSao)->where('tipus', 'A3')->get()->first();
     }
 
+    public function getSignAttribute()
+    {
+        return Signatura::where('idSao', $this->idSao)->get()->count()?true:false;
+    }
+
     public function routeFile($anexe)
     {
         return storage_path('app/annexes/')."A{$anexe}_{$this->idSao}.pdf";

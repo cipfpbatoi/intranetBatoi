@@ -287,12 +287,12 @@ class PanelFctAvalController extends IntranetController
                     $found = true;
                 }
             } elseif (isset($fct->calificacion)) {
+                    dd($fct);
                     $fct->actas = 3;
                     $fct->save();
                     $found = true;
             }
         }
-
         return $found;
     }
 

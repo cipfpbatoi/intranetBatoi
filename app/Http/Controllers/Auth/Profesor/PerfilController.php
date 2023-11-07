@@ -36,7 +36,17 @@ class PerfilController extends Perfil
         $new = Profesor::find(Auth::user('profesor')->dni);
         if ($request->hasFile('foto')) {
             if ($request->file('foto')->isValid()) {
-                $new->foto = $request->file('foto')->store('fotos', 'public');
+                if (isset($new->foto)) {
+                    $request->file('foto')
+                        ->storeAs(
+                            'fotos',
+                            $new->fileName.'.png',
+                            'public'
+                        );
+                } else {
+                    $new->foto = $request->file('foto')->store('fotos', 'public');
+                    $new->save();
+                }
             } else {
                 Alert::info('Formato no valido');
             }
@@ -93,7 +103,7 @@ class PerfilController extends Perfil
                 Alert::info('Format no vàlid');
             }
         }
-        $new->save();
+
         return redirect()->back();
     }
 

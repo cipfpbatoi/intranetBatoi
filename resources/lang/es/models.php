@@ -504,10 +504,13 @@ return array(
         'Sao' => array(
             'post' => 'Conexión SAO',
         ),
-        'Signatura' => array(
-            'post' => 'Firma Anexos',
-            'index' => 'Lista de Firmas pendientes',
-        ),
+    'Signatura' => array(
+        'post' => 'Firma  Anexos',
+        'index' => 'Listado de firmas pendientes de :quien',
+        'show' => 'Ver Estado Firmas',
+        'pdf' => 'Imprimir Fichero',
+        'delete' => 'Borrar Fichero',
+    ),
         'Solicitud' => array(
             'index' => "Derivaciones al departamento de Orientación",
             'create' => "Cuestionario de derivación",

@@ -144,7 +144,7 @@ class A2
                         Firma::saveIfNotExists($anexe, $fctAl->idSao);
                         unlink($tmpFile);
                     } else {
-                        Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe {$anexe} $fctAl->idSao");
+                        Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe {$anexe} $fctAl->idSao de $tmpFile");
                     }
                     $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
                     sleep(1);

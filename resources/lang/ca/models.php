@@ -459,6 +459,7 @@ return array(
             'A5' => 'Informe Competències adquirides',
             'delete' => 'Esborra fct',
             'unlink' => 'Esborra connexiò amb el SAO',
+
         ),
         'AlumnoFct' => array(
             'selecciona' => 'Alumne/a',
@@ -519,7 +520,10 @@ return array(
         ),
         'Signatura' => array(
             'post' => 'Signatura Annexes',
-            'index' => 'Llistat signatures pendents'
+            'index' => 'Llistat signatures pendents de :quien',
+            'show' => 'Vore Estat Signatures',
+            'pdf' => 'Imprimir Fitxer',
+            'delete' => 'Esborrar fitxer'
         ),
         'Solicitud' => array(
             'index' => "Derivacions al departament d'Orientació",
