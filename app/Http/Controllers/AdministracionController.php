@@ -259,7 +259,7 @@ class AdministracionController extends Controller
     public function consulta()
     {
         // canviar les fotos dels alumnes i professors
-
+/*
         foreach (Profesor::all() as $profesor) {
             try {
                 if ($profesor->foto != '') {
@@ -292,11 +292,10 @@ class AdministracionController extends Controller
                 Alert::info($e->getMessage());
             }
         }
+*/
 
-        $i = 1;
         foreach (Alumno::all() as $alumno){
             if ($alumno->foto != '') {
-                $i++;
                 try {
                     if ($alumno->baja) {
                         unlink(storage_path('app/public/fotos/'.$alumno->foto));
@@ -304,13 +303,15 @@ class AdministracionController extends Controller
                         $alumno->save();
                     } else {
                         $original = $alumno->foto;
-                        $originalFile = new File(storage_path('app/public/'.$original));
-                        $desti = ImageService::newPhotoCarnet(
-                            $originalFile,
-                            storage_path('app/public/tmpfotos/')
-                        );
-                        $alumno->foto = $desti;
-                        $alumno->save();
+                        if (strcmp(substr($original, 0, 5), 'fotos') !== 0) {
+                            $originalFile = new File(storage_path('app/public/'.$original));
+                            $desti = ImageService::newPhotoCarnet(
+                                $originalFile,
+                                storage_path('app/public/tmpfotos/')
+                            );
+                            $alumno->foto = $desti;
+                            $alumno->save();
+                        }
                         //unlink(storage_path('app/public/'.$original));
                     }
                 } catch (\Throwable $e) {
