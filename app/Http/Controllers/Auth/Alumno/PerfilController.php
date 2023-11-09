@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers\Auth\Alumno;
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
+use Intranet\Services\ImageService;
 use Styde\Html\Facades\Alert;
 
 class PerfilController extends Perfil
@@ -26,8 +27,16 @@ class PerfilController extends Perfil
 
         $new = $this->class::find(Auth::user('alumno')->nia);
         if ($request->hasFile('foto')) {
-            if ($request->file('foto')->isValid()) {
-                $new->foto = $request->file('foto')->store('fotos', 'public');
+            $fitxer = $request->file('foto');
+            if ($fitxer->isValid()) {
+                if ($new->foto) {
+                    ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos'.$new->foto));
+                    Alert::info('Modificació foto feta amb exit');
+                } else {
+                    $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
+                    $new->foto = $nameFile;
+                    Alert::info('Foto nova guardada amb exit');
+                }
             } else {
                 Alert::info('Formato no valido');
             }

@@ -57,7 +57,7 @@ class PerfilController extends Perfil
         if ($request->hasFile('signatura')) {
             $signatura = $request->file('signatura');
             if ($signatura->isValid()) {
-                ImageService::toPng($signatura, storage_path('app/public/signatures/'.$new->foto));
+                ImageService::toPng($signatura, storage_path('/app/public/signatures/'.$new->foto));
                 Alert::info('Signatura guardada amb exit');
             } else {
                 Alert::info('Format no vàlid');
@@ -66,7 +66,7 @@ class PerfilController extends Perfil
         if ($request->hasFile('peu')) {
             $signatura = $request->file('peu');
             if ($signatura->isValid()) {
-                ImageService::toPng($signatura, storage_path('app/public/peus/'.$new->foto));
+                ImageService::toPng($signatura, storage_path('/app/public/peus/'.$new->foto));
                 Alert::info('Peu guardat amb exit');
             } else {
                 Alert::info('Format no vàlid');

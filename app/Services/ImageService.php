@@ -54,13 +54,14 @@ class ImageService
         return $nomFitxer;
     }
 
-    public static function toPng($fitxerOriginal,$fitxerDesti)
+    public static function toPng($fitxerOriginal, $fitxerDesti)
     {
+
         if ($fitxerOriginal->extension() !== 'png') {
             $imatgeOriginal = imagecreatefromjpeg($fitxerOriginal);
             imagepng($imatgeOriginal, $fitxerDesti);
         } else {
-            $fitxerOriginal->storeAs($fitxerDesti);
+            $fitxerOriginal->move(pathinfo($fitxerDesti, PATHINFO_DIRNAME), pathinfo($fitxerDesti, PATHINFO_BASENAME));
         }
     }
 }
