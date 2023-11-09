@@ -30,7 +30,7 @@ class PerfilController extends Perfil
             $fitxer = $request->file('foto');
             if ($fitxer->isValid()) {
                 if ($new->foto) {
-                    ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos'.$new->foto));
+                    ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos/'.$new->foto));
                     Alert::info('Modificació foto feta amb exit');
                 } else {
                     $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
