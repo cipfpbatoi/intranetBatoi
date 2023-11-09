@@ -303,7 +303,7 @@ class AdministracionController extends Controller
                         $alumno->save();
                     } else {
                         $original = $alumno->foto;
-                        if (strcmp(substr($original, 0, 5), 'fotos') !== 0) {
+                        if (strcmp(substr($original, 0, 5), 'fotos') === 0) {
                             $originalFile = new File(storage_path('app/public/'.$original));
                             $desti = ImageService::newPhotoCarnet(
                                 $originalFile,
