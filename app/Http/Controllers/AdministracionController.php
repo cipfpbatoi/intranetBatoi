@@ -7,9 +7,11 @@
 namespace Intranet\Http\Controllers;
 
 
+use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
 
 use Illuminate\Support\Facades\Mail;
+use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Espacio;
@@ -24,6 +26,7 @@ use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Setting;
 use Intranet\Mail\CertificatAlumneFct;
+use Intranet\Services\ImageService;
 use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
@@ -253,6 +256,70 @@ class AdministracionController extends Controller
         Alert::info('Version 3.01');
     }
 
+    public function consulta()
+    {
+        // canviar les fotos dels alumnes i professors
+
+        foreach (Profesor::all() as $profesor) {
+            try {
+                if ($profesor->foto != '') {
+                    if ($profesor->activo === 0) {
+                        unlink(storage_path('app/public/'.$profesor->foto));
+                        $profesor->foto = null;
+                        $profesor->save();
+                    } else {
+                        $original = $profesor->foto;
+                        $desti = substr($profesor->foto, 6);
+                        $originalFile = new File(storage_path('app/public/'.$original));
+                        if (pathinfo($original, PATHINFO_EXTENSION) == 'png') {
+                            ImageService::updatePhotoCarnet(
+                                $originalFile,
+                                storage_path('app/public/tmpfotos/'.$desti));
+                            $profesor->foto = $desti;
+                            $profesor->save();
+                        } else {
+                            $desti = ImageService::newPhotoCarnet(
+                                $originalFile,
+                                storage_path('app/public/tmpfotos')
+                            );
+                            $profesor->foto = $desti;
+                            $profesor->save();
+                            //unlink(storage_path('app/public/'.$original));
+                        }
+                    }
+                }
+            } catch (\Throwable $e) {
+                Alert::info($e->getMessage());
+            }
+        }
+
+        $i = 1;
+        foreach (Alumno::all() as $alumno){
+            if ($alumno->foto != '') {
+                $i++;
+                try {
+                    if ($alumno->baja) {
+                        unlink(storage_path('app/public/fotos/'.$alumno->foto));
+                        $alumno->foto = null;
+                        $alumno->save();
+                    } else {
+                        $original = $alumno->foto;
+                        $originalFile = new File(storage_path('app/public/'.$original));
+                        $desti = ImageService::newPhotoCarnet(
+                            $originalFile,
+                            storage_path('app/public/tmpfotos/')
+                        );
+                        $alumno->foto = $desti;
+                        $alumno->save();
+                        //unlink(storage_path('app/public/'.$original));
+                    }
+                } catch (\Throwable $e) {
+                    Alert::info($e->getMessage());
+                }
+            }
+        }
+    }
+
 
     public static function v2_01()
     {
@@ -339,7 +406,7 @@ class AdministracionController extends Controller
         return view('espai.show', compact('missatge', 'doors'));
     }
 
-    public function consulta()
+    /*public function consulta()
     {
         $alumnosPendientes = AlumnoFct::esErasmus()->get();
 
@@ -353,4 +420,5 @@ class AdministracionController extends Controller
                 }
             }
     }
+    */
 }

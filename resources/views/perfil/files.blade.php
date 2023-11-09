@@ -13,13 +13,13 @@
         </tr>
         <tr>
             <td>
-                <img style="max-width: 50%" src="{{'/storage/'.$profesor->foto}}"  alt="foto"/>
+                <img style="max-width: 50%" src="{{'/storage/fotos/'.$profesor->foto}}"  alt="foto"/>
             </td>
             <td>
-                <img style="max-width: 50%" src="{{'/storage/signatures/'.$profesor->fileName.'.png'}}" alt="rubrica" />
+                <img style="max-width: 50%" src="{{'/storage/signatures/'.$profesor->foto}}" alt="rubrica" />
             </td>
             <td>
-                <img style="max-width: 50%" src="{{'/storage/peus/'.$profesor->fileName.'.png'}}" alt="peu" />
+                <img style="max-width: 50%" src="{{'/storage/peus/'.$profesor->foto}}" alt="peu" />
             </td>
             <td>
                 @if(file_exists(storage_path('app/zip/'.$profesor->fileName.'.tmp')))

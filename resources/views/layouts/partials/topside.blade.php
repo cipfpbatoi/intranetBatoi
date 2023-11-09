@@ -17,7 +17,7 @@
         <div id="_token" class="hidden">{!! authUser()->api_token !!}</div>
     @endif
     <div class="profile_pic">
-        <img src="{{ asset('/storage/'.authUser()->foto) }}" alt="FotoUsuari" class="img-circle profile_img">
+        <img src="{{ asset('/storage/fotos/'.authUser()->foto) }}" alt="FotoUsuari" class="img-circle profile_img">
     </div>
     <div class="profile_info">
         <h2>{{authUser()->nombre}}</h2>

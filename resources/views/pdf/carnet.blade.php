@@ -34,7 +34,7 @@
                 </div>
                 <div style="float:left;width:29%;margin-right: 5px;">
                     @if ($elemento->foto)
-                        <img style="border:black solid thin;float:right" src="{{public_path('/storage/'.$elemento->foto)}}" width="68px" height="90px" alt="Foto Carnet"/>
+                        <img style="border:black solid thin;float:right" src="{{public_path('/storage/fotos/'.$elemento->foto)}}" width="68px" height="90px" alt="Foto Carnet"/>
                     @else
                         <img style="border:black solid thin;float: right" src="" width="68px" height="90px" alt="Foto blanc" />
                     @endif

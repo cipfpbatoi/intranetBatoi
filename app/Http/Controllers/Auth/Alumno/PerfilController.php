@@ -21,6 +21,9 @@ class PerfilController extends Perfil
 
     public function update(Request $request, $id = null)
     {
+        $request->validate(['foto' => 'nullable|image|mimes:jpg,jpeg,png|max:10240']);
+
+
         $new = $this->class::find(Auth::user('alumno')->nia);
         if ($request->hasFile('foto')) {
             if ($request->file('foto')->isValid()) {
