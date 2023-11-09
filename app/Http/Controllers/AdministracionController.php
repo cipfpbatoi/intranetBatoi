@@ -295,24 +295,24 @@ class AdministracionController extends Controller
 */
 
         foreach (Alumno::all() as $alumno){
-            if ($alumno->foto != '') {
+            $original = $alumno->foto;
+            if ($original) {
                 try {
                     if ($alumno->baja) {
-                        unlink(storage_path('app/public/fotos/'.$alumno->foto));
                         $alumno->foto = null;
                         $alumno->save();
+                        unlink(storage_path('app/public/fotos/'.$alumno->foto));
                     } else {
-                        $original = $alumno->foto;
                         if (strcmp(substr($original, 0, 5), 'fotos') === 0) {
                             $originalFile = new File(storage_path('app/public/'.$original));
                             $desti = ImageService::newPhotoCarnet(
                                 $originalFile,
-                                storage_path('app/public/tmpfotos/')
+                                storage_path('app/public/fotos/')
                             );
                             $alumno->foto = $desti;
                             $alumno->save();
                         }
-                        //unlink(storage_path('app/public/'.$original));
+                        unlink(storage_path('app/public/'.$original));
                     }
                 } catch (\Throwable $e) {
                     Alert::info($e->getMessage());
