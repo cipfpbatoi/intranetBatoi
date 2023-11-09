@@ -304,15 +304,17 @@ class AdministracionController extends Controller
                         unlink(storage_path('app/public/fotos/'.$alumno->foto));
                     } else {
                         if (strcmp(substr($original, 0, 5), 'fotos') === 0) {
-                            $originalFile = new File(storage_path('app/public/'.$original));
+                            /*$originalFile = new File(storage_path('app/public/'.$original));
                             $desti = ImageService::newPhotoCarnet(
                                 $originalFile,
                                 storage_path('app/public/fotos/')
                             );
                             $alumno->foto = $desti;
                             $alumno->save();
+                            unlink(storage_path('app/public/'.$original));*/
+                            var_dump($original);
                         }
-                        unlink(storage_path('app/public/'.$original));
+
                     }
                 } catch (\Throwable $e) {
                     Alert::info($e->getMessage());
