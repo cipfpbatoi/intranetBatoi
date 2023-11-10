@@ -61,6 +61,8 @@ class Profesor extends Authenticatable
         'email',
         'departamento',
         'idioma',
+        'movil1',
+        'movil2',
         'mostrar',
         'especialitat',
     ];

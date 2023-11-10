@@ -103,13 +103,19 @@ class PerfilController extends Perfil
     }
 
 
-    public function update(Request $request, $id = null)
+    public function update(Request $request, $id=null)
     {
         $new = $this->class::find(Auth::user('profesor')->dni);
         if (isset($request->mostrar)) {
             $new->mostrar = $request->mostrar;
         } else {
             $new->mostrar = 0;
+        }
+        if (isset($request->movil1)){
+            $new->movil1 = $request->movil1;
+        }
+        if (isset($request->movil2)){
+            $new->movil2 = $request->movil2;
         }
         
         parent::update($request, $new);

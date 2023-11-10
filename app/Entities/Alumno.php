@@ -46,6 +46,8 @@ class Alumno extends Authenticatable
         'apellido1',
         'apellido2',
         'email',
+        'telef1',
+        'telef2',
         'foto',
         'idioma',
     ];
@@ -148,7 +150,11 @@ class Alumno extends Authenticatable
         $profesor = $profesor ?? authUser()->dni;
         $gruposC = Grupo::select('codigo')->QTutor($profesor, $dual)->get();
         $grupos = $gruposC->count()>0?$gruposC->toarray():[];
-        $alumnos = hazArray(AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupos)->get(), 'idAlumno', 'idAlumno');
+        $alumnos = hazArray(
+            AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupos)->get(),
+            'idAlumno',
+            'idAlumno'
+        );
         return $query->whereIn('nia', $alumnos);
         
     }

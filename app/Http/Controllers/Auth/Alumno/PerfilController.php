@@ -23,24 +23,7 @@ class PerfilController extends Perfil
     public function update(Request $request, $id = null)
     {
         $request->validate(['foto' => 'nullable|image|mimes:jpg,jpeg,png|max:10240']);
-
-
         $new = $this->class::find(Auth::user('alumno')->nia);
-        if ($request->hasFile('foto')) {
-            $fitxer = $request->file('foto');
-            if ($fitxer->isValid()) {
-                if ($new->foto) {
-                    ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos/'.$new->foto));
-                    Alert::info('Modificació foto feta amb exit');
-                } else {
-                    $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
-                    $new->foto = $nameFile;
-                    Alert::info('Foto nova guardada amb exit');
-                }
-            } else {
-                Alert::info('Formato no valido');
-            }
-        }
         parent::update($request, $new);
         return redirect("/alumno/home");
     }
