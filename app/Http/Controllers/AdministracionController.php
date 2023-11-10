@@ -258,69 +258,6 @@ class AdministracionController extends Controller
 
     public function consulta()
     {
-        // canviar les fotos dels alumnes i professors
-/*
-        foreach (Profesor::all() as $profesor) {
-            try {
-                if ($profesor->foto != '') {
-                    if ($profesor->activo === 0) {
-                        unlink(storage_path('app/public/'.$profesor->foto));
-                        $profesor->foto = null;
-                        $profesor->save();
-                    } else {
-                        $original = $profesor->foto;
-                        $desti = substr($profesor->foto, 6);
-                        $originalFile = new File(storage_path('app/public/'.$original));
-                        if (pathinfo($original, PATHINFO_EXTENSION) == 'png') {
-                            ImageService::updatePhotoCarnet(
-                                $originalFile,
-                                storage_path('app/public/tmpfotos/'.$desti));
-                            $profesor->foto = $desti;
-                            $profesor->save();
-                        } else {
-                            $desti = ImageService::newPhotoCarnet(
-                                $originalFile,
-                                storage_path('app/public/tmpfotos')
-                            );
-                            $profesor->foto = $desti;
-                            $profesor->save();
-                            //unlink(storage_path('app/public/'.$original));
-                        }
-                    }
-                }
-            } catch (\Throwable $e) {
-                Alert::info($e->getMessage());
-            }
-        }
-*/
-
-        foreach (Alumno::all() as $alumno){
-            $original = $alumno->foto;
-            if ($original) {
-                try {
-                    if ($alumno->baja) {
-                        $alumno->foto = null;
-                        $alumno->save();
-                        unlink(storage_path('app/public/fotos/'.$alumno->foto));
-                    } else {
-                        if (strcmp(substr($original, 0, 5), 'fotos') === 0) {
-                            /*$originalFile = new File(storage_path('app/public/'.$original));
-                            $desti = ImageService::newPhotoCarnet(
-                                $originalFile,
-                                storage_path('app/public/fotos/')
-                            );
-                            $alumno->foto = $desti;
-                            $alumno->save();
-                            unlink(storage_path('app/public/'.$original));*/
-                            var_dump($original);
-                        }
-
-                    }
-                } catch (\Throwable $e) {
-                    Alert::info($e->getMessage());
-                }
-            }
-        }
     }
 
 
