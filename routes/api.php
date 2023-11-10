@@ -132,6 +132,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('removeAttached/{modelo}/{id}/{file}', 'DropZoneController@removeAttached');
 
     Route::get('activity/{id}/move/{fct}', 'ActivityController@move');
+    Route::get('tutoriagrupo/{id}','TutoriaGrupoController@show');
 
 
 

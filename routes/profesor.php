@@ -419,6 +419,8 @@ Route::post(
 );
 Route::put('/tutoriagrupo/{id}', ['as' => 'tutoriagrupo.update', 'uses' => 'TutoriaGrupoController@update']);
 Route::get('/tutoriagrupo/indice/{id}', ['as' => 'tutoriagrupo.indice', 'uses' => 'TutoriaGrupoController@indice']);
+Route::get('/tutoriagrupo/{id}/show', ['as' => 'tutoriagrupo.show', 'uses' => 'TutoriaGrupoController@show']);
+
 
 Route::get('/guardia', ['as' => 'guardia.index', 'uses' => 'GuardiaController@index']);
 Route::get('/reserva', ['as' => 'reserva.index', 'uses' => 'ReservaController@index']);
