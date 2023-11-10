@@ -65,6 +65,13 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton(
             'grid',
             new BotonImg(
+                'alumnofct.edit',
+                ['where' => ['asociacion', '<', '3'],'text'=>'Canviar dates']
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
                 'alumnofct.pdf',
                 ['where' => ['asociacion', '==', '3']]
             )
