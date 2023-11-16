@@ -1,5 +1,4 @@
 <?php
-
 namespace Intranet\Services;
 
 use Illuminate\Support\{Arr, Facades\File, Str};
@@ -53,7 +52,6 @@ class ValidatePdfMultipleSignatures
         $regexp  = '#ByteRange\[\s*(\d+) (\d+) (\d+) (\d+)\s*\]#'; // Adjusted to match the full ByteRange pattern
         $result  = [];
         preg_match_all($regexp, $content, $result);
-        dd($result);
 
 
         // Check if there are any matches
@@ -78,7 +76,6 @@ class ValidatePdfMultipleSignatures
                 $this->pkcs7Paths[] = $pkcs7Path; // Store the path for later processing
             }
         }
-
         return $this;
 
     }

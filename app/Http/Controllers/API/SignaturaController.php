@@ -14,9 +14,7 @@ class SignaturaController extends ApiBaseController
     {
         $signatura = Signatura::findOrFail($cadena);
 
-        $signatures = DigitalSignatureService::validate($signatura->routeFile);
-        dd($signatures);
-        $signatura->Fct;
-        return $signatura;
+        $data = DigitalSignatureService::validate($signatura->routeFile);
+        return ['data'=> $data];
     }
 }
