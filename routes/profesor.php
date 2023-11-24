@@ -464,7 +464,8 @@ Route::get('/itaca', ['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@in
 Route::get('/profesor/backChange', ['as' =>'profesor.backChange', 'uses' => 'ProfesorController@backChange']);
 
 //Jefa de practicas
-Route::get('/fctcap/{grupo}/check', ['as' => 'fct.acta', 'uses' => 'PanelPG0301Controller@indice']);
+Route::get('/fctcap/{grupo}/check', ['as' => 'fctcap.acta', 'uses' => 'PanelPG0301Controller@indice']);
+Route::get('/fctcap/{grupo}/show', ['as' => 'fctcap.show', 'uses' => 'PanelPracticasController@show']);
 Route::get('/controlFct', ['as'=> 'controlFct.index', 'uses' => 'PanelPracticasController@index']);
 
 //gestor documental
