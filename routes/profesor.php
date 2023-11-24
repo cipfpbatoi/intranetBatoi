@@ -13,6 +13,7 @@ Route::get('/files', ['as' => 'files.edit', 'uses' => 'Auth\Profesor\PerfilContr
 Route::put('/files', ['as' => 'files.update', 'uses' => 'Auth\Profesor\PerfilController@updateFiles']);
 
 Route::get('/materialbaja/{id}/delete', ['as' => 'material.delete', 'uses' => 'MaterialBajaController@delete']);
+Route::get('/materialbaja/{id}/recover', ['as' => 'material.recover', 'uses' => 'MaterialBajaController@recover']);
 Route::get('/materialbaja/{id}/resolve', ['as' => 'materialBaja.resolve', 'uses' => 'MaterialModController@resolve']);
 Route::get('/materialbaja/{id}/refuse', ['as' => 'materialBaja.refuse', 'uses' => 'MaterialModController@refuse']);
 

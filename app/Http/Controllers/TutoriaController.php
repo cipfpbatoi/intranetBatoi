@@ -2,18 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Response;
-use Exception;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
 use Intranet\Entities\Tutoria;
 use Intranet\Entities\TutoriaGrupo;
 use Intranet\Entities\Grupo;
-use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Session;
 

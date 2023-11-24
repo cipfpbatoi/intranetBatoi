@@ -47,7 +47,13 @@ class MaterialController extends IntranetController
      */
     public function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('material.create', ['roles' => [config('roles.rol.direccion'), config('roles.rol.mantenimiento')]]));
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                'material.create',
+                ['roles' => [config('roles.rol.direccion'), config('roles.rol.mantenimiento')]]
+            )
+        );
     }
 
 
