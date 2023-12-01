@@ -14,6 +14,7 @@
         "doctrine/dbal": "^2.6",
         "eluceo/ical": "^0.13.0",
         "fedeisas/laravel-mail-css-inliner": "^5.0",
+        "google/apiclient": "^2.15",
         "guzzlehttp/guzzle": "^7.4",
         "h4cc/wkhtmltopdf-amd64": "^0.12.4",
         "igomis/laravel-html": "*",

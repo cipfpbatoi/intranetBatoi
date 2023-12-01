@@ -71,10 +71,11 @@ class MyMail
             if (!isset($element)) {
                 return null;
             }
+
             if (isset($toCompost[1]) && strpos($toCompost[1], ';')) {
                 $email = explode(';', $toCompost[1]);
-                $element->mail = $email[0];
-                $element->contact = $email[1];
+                $contacte =  substr($email[1], 0, -1);
+                $element->contact = strlen($contacte)>3?$contacte:null;
             }
             return $element;
         }
@@ -133,9 +134,10 @@ class MyMail
 
     private function sendMail($elemento, $fecha)
     {
-        if (isset($elemento->contacto)) {
+        $contacto = $elemento->contact??$elemento->contacto??'A qui corresponga';
+        if (isset($elemento)){
             $mail = $elemento->mail??$elemento->email;
-            $contacto = $elemento->contact??$elemento->contacto;
+
             if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {
                 Mail::to($mail, $contacto)
                     ->bcc($this->from)
@@ -146,10 +148,6 @@ class MyMail
                 }
             } else {
                 Alert::danger("No s'ha pogut enviar correu a $contacto. Comprova email");
-            }
-        } else {
-            if (isset($elemento)) {
-                Alert::info("No s'ha pogut enviar. Falta contacte");
             }
         }
     }

@@ -39,6 +39,11 @@ return [
         'client_secret' => env('GOOGLE_SECRET', 'QU20APPRUWBlDlp839bI3P98'),
         'redirect' => env('GOOGLE_REDIRECT', config('contacto.host.web').'/social/callback/google'),
     ],
+    'google-calendar' => [
+        'client_id' => env('GOOGLE_ID', '24143841601-1per4o1b4sheviki8a42uqtns2qma7ku.apps.googleusercontent.com'),
+        'client_secret' => env('GOOGLE_SECRET', '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'),
+        'redirect' => env('GOOGLE_REDIRECT', config('contacto.host.web').'/social/calendar'),
+    ],
     'selenium' => [
         'url' => env('SELENIUM_URL', '172.16.9.10:4444'),
         'SAO' => env('SELENIUM_URL_SAO', 'https://foremp.edu.gva.es/index.php'),
