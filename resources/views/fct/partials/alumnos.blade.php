@@ -19,7 +19,7 @@
                     </h4>
                     <h4>
                         @if ($alfct->idSao)
-                            <a href="{{route('alumnofct.unlink',$alfct->id)}}" class="fa fa-unlink" title="Esborrar enllaç amb SAO" > SAO - </a>
+                            <i class="fa fa-unlink"> SAO - </i>
                         @endif
                         @if ($alfct->saoAnnexes)<em>@endif
                              A2 A3 A5
