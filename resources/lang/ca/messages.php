@@ -213,7 +213,7 @@ return array(
         'Authfalta' => 'Autoritzar Absències Professorat',
         'Incidenciasmant' => "Mantenimient d'Incidències",
         'Programacion' => 'Programacions',
-        'ProgramacionAll' => 'Totes les Programacions',
+        'Programacionall' => 'Totes les Programacions',
         'Authprogram' => 'Autoritzar Programacions',
         'Authexpediente' => 'Gestionar Expedients',
         'Modulo' => 'Manteniment Taula Mòduls',

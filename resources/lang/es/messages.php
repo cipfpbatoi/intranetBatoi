@@ -209,7 +209,7 @@ return array(
         'Authfalta' => 'Autorizar Ausencias Profesorado',
         'Incidenciasmant' => 'Mantenimiento de Incidencias',
         'Programacion' => 'Programaciones',
-        'ProgramacionAll' => 'Todas las Programaciones',
+        'Programacionall' => 'Todas las Programaciones',
         'Authprogram' => 'Autorizar Programaciones',
         'Authexpediente' => 'Gestionar Expedientes',
         'Modulo' => 'Mantenimiento Tabla Módulos',
