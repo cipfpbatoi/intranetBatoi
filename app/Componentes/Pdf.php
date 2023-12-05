@@ -36,11 +36,12 @@ class Pdf
     {
         $driver = $driver??env('PDF_DRIVER', 'SnappyPdf');
 
+
         if ($driver==='DomPdf') {
             return self::hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones);
         }
         if ($driver==='SnappyPdf') {
-            return self::hazSnappyPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones, $marginTop);
+            dd(self::hazSnappyPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones, $marginTop));
         }
     }
 
