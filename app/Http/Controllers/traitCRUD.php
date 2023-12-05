@@ -44,6 +44,7 @@ trait traitCRUD{
      */
     public function destroy($id)
     {
+        dd($this->class,$id);
         if ($elemento = $this->class::findOrFail($id)) {
             $this->borrarFichero($elemento->fichero);
             $elemento->delete();

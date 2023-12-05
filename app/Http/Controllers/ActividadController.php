@@ -13,6 +13,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Intranet\Services\CalendarService;
 use Intranet\Services\GestorService;
+use Intranet\Services\GoogleCalendarService;
 use Response;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
@@ -268,7 +269,14 @@ class ActividadController extends ModalController
 
     public function autorizar()
     {
-        $this->makeAll(Actividad::where('estado', '1')->get(), 2);
+        $gC = new GoogleCalendarService();
+        $activitats = Actividad::where('estado', '1')->get();
+        foreach ($activitats as $activitat){
+            $assistents = $activitat->profesores()->select('email')->get()->toArray();
+            $gC->addEvent($activitat->name, $activitat->descripcion, $activitat->desde, $activitat->hasta,$assistents);
+        }
+        $gC->saveEvents();
+        $this->makeAll($activitats, 2);
         return back();
     }
 
