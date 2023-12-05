@@ -39,6 +39,12 @@ return [
         'client_secret' => env('GOOGLE_SECRET', 'QU20APPRUWBlDlp839bI3P98'),
         'redirect' => env('GOOGLE_REDIRECT', config('contacto.host.web').'/social/callback/google'),
     ],
+    'calendar' => [
+        'calendarCredentialsPath' => env('CALENDAR_CREDENTIALS_PATH', 'calendar/google-calendar.json'),
+        'calendarId' => env('CALENDAR_ID', 'esdeveniments@cipfpbatoi.es'),
+        'calendarApplicationName' => env('CALENDAR_APPLICATION_NAME', 'Google Calendar API PHP'),
+        'calendarSubject' => env('CALENDAR_SUBJECT', 'esdeveniments@cipfpbatoi.es')
+    ],
     'selenium' => [
         'url' => env('SELENIUM_URL', '172.16.9.10:4444'),
         'SAO' => env('SELENIUM_URL_SAO', 'https://foremp.edu.gva.es/index.php'),
