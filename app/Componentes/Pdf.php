@@ -41,7 +41,7 @@ class Pdf
             return self::hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones);
         }
         if ($driver==='SnappyPdf') {
-            dd(self::hazSnappyPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones, $marginTop));
+            return self::hazSnappyPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones, $marginTop);
         }
     }
 
