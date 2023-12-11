@@ -22,7 +22,7 @@ class SeleniumException extends \Exception
     {
         $counter = Counter::firstOrCreate(['name' => 'selenium_exception_count'], ['count' => 0]);
         $counter->increment('count');
-        if ($counter->count > 5) {
+        if ($counter->count > 1) {
             $counter->count = 0;
             SeleniumService::restartSelenium();
         }
