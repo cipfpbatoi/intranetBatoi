@@ -64,7 +64,7 @@ class SeleniumService
         ->sendKeys($dni);
         $driver->findElement(WebDriverBy::id('form1:j_password'))
             ->sendKeys($password);
-        $driver->findElement(WebDriverBy::name('form1:j_id47'))
+        $driver->findElement(WebDriverBy::cssSelector('input[value="Entrar"]'))
             ->click();
         sleep(1);
         try {

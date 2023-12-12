@@ -43,11 +43,24 @@ class ItacaController extends Controller
         $formulari->sendKeys($keys);
     }
 
+    private function closeNoticias()
+    {
+        try {
+            $elements = $this->driver->findElements(WebDriverBy::cssSelector('.z-window-close.imc--bt-terciari'));
+            foreach ($elements??[] as $element) {
+                $element->click();
+            }
+        } catch (\Exception $e) {
+            // No pasa res
+        }
+    }
+
 
     private function goToLlist()
     {
         try {
             $this->driver->get('https://itaca3.edu.gva.es/itaca3-gad/');
+            $this->closeNoticias();
             $this->waitAndClick("//span[contains(text(),'Gestión')]");
             $this->waitAndClick("//span[contains(text(),'Personal')]");
             $this->waitAndClick("//span[contains(text(),'Listado Personal')]");
