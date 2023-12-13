@@ -32,7 +32,7 @@ class ItacaController extends Controller
         } else {
             $element = $xpath;
         }
-        $wait = new WebDriverWait($this->driver, 5);
+        $wait = new WebDriverWait($this->driver, 10);
         $wait->until(WebDriverExpectedCondition::elementToBeClickable($element));
         $this->driver->findElement($element)->click();
     }
@@ -67,7 +67,7 @@ class ItacaController extends Controller
             }
             $this->waitAndClick("//span[contains(text(),'Gestión')]");
             $this->waitAndClick("//span[contains(text(),'Personal')]");
-            $this->waitAndClick("//span[contains(text(),'Listado Personal')]");
+            $this->driver->findElement(WebDriverBy::xpath("//span[contains(text(),'Listado Personal')]"))->click();
         } catch (\Exception $e) {
         }
     }
@@ -77,7 +77,7 @@ class ItacaController extends Controller
 
     public function birret(Request $request)
     {
-        $faltas = Falta_itaca::where('estado', 2)->whereMonth('dia', '=', $request->month)->get();
+        $faltas = Falta_itaca::where('estado', 2)->whereMonth('dia', '=', $request->month)->take(5)->get();
         $total = count($faltas);
         if ($total == 0) {
             Alert::info('No hi ha faltas pendents');
@@ -107,18 +107,19 @@ class ItacaController extends Controller
                 $actions = new WebDriverActions($this->driver);
                 $actions->contextClick($element)->perform();
                 $this->waitAndClick("//span[contains(text(),'Faltas docente')]");
-                sleep(3);
+                sleep(1);
                 $fechaActual = date('d/m/Y');
                 $this->send(WebDriverBy::xpath("//input[@value='$fechaActual']"), $falta->dia);
                 $this->waitAndClick("//button[contains(text(),'Cambiar Fecha')]");
+                sleep(2);
                 $diaSemana = date('N', strtotime($falta->dia)) + 1;
                 $hora = Hora::find($falta->sesion_orden);
                 $textHora = $hora->hora_ini.' - '.$hora->hora_fin;
                 $expresionXPath = "//table//tr/td[$diaSemana]//div[starts-with(@title, '$textHora')]";
                 $this->waitAndClick($expresionXPath);
+                sleep(1);
                 $this->waitAndClick("//button[contains(text(),'Impartido por titular')]");
                 sleep(1);
-
                 $checkboxLabel = $this->driver->findElement(
                     WebDriverBy::xpath('//label[contains(text(), "Clase impartida por el profesor titular.")]'));
                 $checkboxId = $checkboxLabel->getAttribute('for');
@@ -133,7 +134,9 @@ class ItacaController extends Controller
                 $falta->save();
                 $count++;
             } catch (\Exception $e) {
-                Alert::danger($e->getMessage());
+                Alert::danger(
+                    $e->getMessage().' '.$falta->Profesor->shortName.' '.$falta->dia.' '.$falta->sesion_orden
+                );
                 try {
                     $this->goToLlist();
                 } catch (IntranetException $e) {
