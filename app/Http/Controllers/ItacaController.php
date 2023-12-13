@@ -65,8 +65,6 @@ class ItacaController extends Controller
             $this->waitAndClick("//span[contains(text(),'Personal')]");
             $this->waitAndClick("//span[contains(text(),'Listado Personal')]");
         } catch (\Exception $e) {
-            $this->driver->quit();
-            throw new IntranetException($e->getMessage());
         }
     }
     /**
@@ -75,12 +73,18 @@ class ItacaController extends Controller
 
     public function birret(Request $request)
     {
+        $faltas = Falta_itaca::where('estado', 2)->whereMonth('dia', '=', $request->month)->get();
+        $total = count($faltas);
+        if ($total == 0) {
+            Alert::info('No hi ha faltas pendents');
+            return back();
+        }
         try {
             $dni = authUser()->dni;
             $this->driver = SeleniumService::loginItaca($dni, $request->password);
             $this->goToLlist();
         } catch (IntranetException $e) {
-            Alert::danger($e->getMessage());
+            Alert::danger('No he pogut loguejar-me:'. $e->getMessage());
             return back();
         }
 
@@ -88,7 +92,8 @@ class ItacaController extends Controller
         $count = 0;
         $failures = 0;
 
-        foreach (Falta_itaca::where('estado', 2)->whereMonth('dia', '=', $request->month)->get() as $falta) {
+
+        foreach ($faltas as $falta) {
             try {
                 $this->send(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
                 $this->waitAndClick("//button[contains(text(),'Buscar')]");
@@ -130,14 +135,14 @@ class ItacaController extends Controller
                 } catch (IntranetException $e) {
                     Alert::danger($e->getMessage());
                     $this->driver->quit();
-                    Alert::info("$count faltas actualizadas, $failures errores");
+                    Alert::info("$count faltas actualizadas, $failures errores de $total");
                     return back();
                 }
                 $failures++;
             }
         }
         $this->driver->quit();
-        Alert::info("$count faltas actualizadas, $failures errores");
+        Alert::info("$count faltas actualizadas, $failures errores de $total");
         return back();
     }
 }
