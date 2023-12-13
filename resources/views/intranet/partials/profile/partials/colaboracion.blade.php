@@ -11,7 +11,7 @@
                     <ul class="list-unstyled">
                         <li>Conveni: <strong>
                                 {{$elemento->Centro->Empresa->concierto}}
-                                @if ($elemento->Centro->Empresa->conveniNou)
+                                @if ($elemento->Centro->Empresa->conveniCaducat)
                                     <em class="fa fa-hand-o-up"></em>
                                 @else
                                     <em class="fa fa-hand-o-down"></em>
