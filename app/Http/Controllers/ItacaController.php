@@ -77,7 +77,7 @@ class ItacaController extends Controller
 
     public function birret(Request $request)
     {
-        $faltas = Falta_itaca::where('estado', 2)->whereMonth('dia', '=', $request->month)->take(5)->get();
+        $faltas = Falta_itaca::where('estado', 2)->whereMonth('dia', '=', $request->month)->get();
         $total = count($faltas);
         if ($total == 0) {
             Alert::info('No hi ha faltas pendents');
