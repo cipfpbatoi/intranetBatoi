@@ -6,8 +6,10 @@
                 substr($elemento->hasta,11):
                 $elemento->hasta }}"
             title="{{$elemento->name}}"
-            subtitle="Participants"
         >
+        <p><strong>Descripció</strong> : {{$elemento->descripcion}}</p>
+        <p><strong>Objectius</strong> : {{$elemento->objetivos}}</p>
+        <h5>Participants</h5>
         <ul class="list-unstyled">
             @foreach ($elemento->profesores as $profesor)
                 <li><em class="fa fa-user"></em> {{$profesor->nombre}} {{$profesor->apellido1}}</li>
