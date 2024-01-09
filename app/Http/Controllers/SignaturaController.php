@@ -23,11 +23,11 @@ class SignaturaController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = [ 'centre', 'tipus',  'alumne', 'sign','send', 'created_at'];
+    protected $gridFields = [ 'centre', 'tipus',  'alumne', 'signed','send', 'created_at'];
     /**
      * @var string
      */
-    protected $perfil = 'profesor';
+    //protected $perfil = 'profesor';
     /**
      * @var string
      */
@@ -40,6 +40,41 @@ class SignaturaController extends ModalController
     protected function iniBotones()
     {
         $this->panel->setBotonera([],['delete','pdf','show']);
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'signatura.sendAlumne',
+                ['img'=>'fa-send','where' => ['tipus', '==', 'A3', 'signed', '==', '1']]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'signatura.sendInstructor',
+                ['img'=>'fa-envelope','where' => ['tipus', '==', 'A2', 'signed', '==', '2']]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'signatura.sendInstructor',
+                ['img'=>'fa-envelope','where' => ['tipus', '==', 'A1', 'signed', '==', '1']]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'signatura.sendInstructor',
+                ['img'=>'fa-envelope','where' => ['tipus', '==', 'A3', 'signed', '==', '2']]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'signatura.upload',
+                ['img'=>'fa-upload','where' => ['sendTo',">=", '1']]
+            )
+        );
         $this->panel->setBoton(
             'index',
             new BotonBasico(

@@ -35,7 +35,7 @@ class Signatura extends Model
         }
     }
 
-    public static function saveIfNotExists($anexe, $idSao)
+    public static function saveIfNotExists($anexe, $idSao , $signat = 0)
     {
         $anexo = 'A'.$anexe;
         $sig = Signatura::where('tipus', $anexo)->where('idSao', $idSao)->get()->first();
@@ -45,11 +45,11 @@ class Signatura extends Model
                 'idProfesor' => authUser()->dni,
                 'idSao' => $idSao,
                 'sendTo' => false,
-                'signed' => ($anexo == 'A3') ? 1 : 0
+                'signed' => $signat
             ]);
             $sig->save();
         } else {
-            $sig->signed = ($anexo == 'A3') ? 1 : 0;
+            $sig->signed = $signat;
             $sig->sendTo = false;
             $sig->save();
         }

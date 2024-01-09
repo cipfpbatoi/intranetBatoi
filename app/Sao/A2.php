@@ -116,6 +116,7 @@ class A2
                 sleep(1);
             }
             for ($anexe = 2; $anexe <=3; $anexe++) {    // Anexe II
+                $signat = 0;
                 try {
                     $ad = "https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc={$anexe}&centro=59&idFct=$fctAl->idSao";
                     $driver->get($ad);
@@ -138,10 +139,11 @@ class A2
                             } catch (IntranetException $exception) {
                                 $errorSignatura = true;
                             }
+                            $signat = 1;
                         } else {
                             copy($tmpFile, $saveFile);
                         }
-                        Firma::saveIfNotExists($anexe, $fctAl->idSao);
+                        Firma::saveIfNotExists($anexe, $fctAl->idSao, $signat);
                         unlink($tmpFile);
                     } else {
                         Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe {$anexe} $fctAl->idSao de $tmpFile");

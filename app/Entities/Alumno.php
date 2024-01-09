@@ -79,6 +79,7 @@ class Alumno extends Authenticatable
         return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'idAlumno', 'idGrupo');
     }
 
+
     public function Fcts()
     {
         return $this->belongsToMany(

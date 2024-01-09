@@ -59,7 +59,7 @@ class PanelSignaturaController extends BaseController
      */
     protected function search()
     {
-        return Signatura::where('signed', 0)->get();
+        return Signatura::where('signed','<',2)->where('sendTo',0)->where('tipus','!=','A3')->get();
     }
 
 
@@ -90,7 +90,7 @@ class PanelSignaturaController extends BaseController
                             $certFile,
                             $passCert
                         );
-                        $signatura->signed = 1;
+                        $signatura->signed += 1;
                         $signatura->save();
                     }
                 }
