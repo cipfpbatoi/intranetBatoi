@@ -18,7 +18,23 @@ $(function () {
                 console.log("La solicitud no se ha podido completar.");
             });
     });
-
+    $(".sign").on("click", function (event) {
+        event.preventDefault();
+        $(this).attr("data-toggle", "modal").attr("data-target", "#signatura").attr("href", "");
+        var token = $("#_token").text();
+        var url = "/api/signatura";
+        $.ajax({
+            method: "GET",
+            url: url,
+            dataType: 'json',
+            data: {api_token: token}
+        })
+            .then(function (result) {
+                pintaTablaSignatura(result.data);
+            }, function (result) {
+                console.log("La solicitud no se ha podido completar.");
+            });
+    });
 });
 
 

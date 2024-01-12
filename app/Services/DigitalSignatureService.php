@@ -4,7 +4,9 @@ namespace Intranet\Services;
 
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Intranet\Componentes\signImage;
+use Intranet\Exceptions\CertException;
 use Intranet\Exceptions\IntranetException;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
@@ -15,11 +17,16 @@ use Illuminate\Support\Facades\Log;
 
 class DigitalSignatureService
 {
+
     public static function readCertificat($certificat, $password):ManageCert
     {
-        $cert = new ManageCert;
-        $cert->setPreservePfx()->fromPfx($certificat, $password);
-        return $cert;
+        try {
+            $cert = new ManageCert;
+            $cert->setPreservePfx()->fromPfx($certificat, $password);
+            return $cert;
+        } catch (\Throwable $th) {
+            throw new CertException("Password del certificat incorrecte");
+        }
     }
 
     public static function cryptCertificate($certificat, $fileName, $password)
@@ -43,6 +50,18 @@ class DigitalSignatureService
     }
 
 
+    public static function decryptCertificateUser($decrypt, $user)
+    {
+        try {
+            if (Hash::check($decrypt, $user->password)) {
+                $nameFile = $user->fileName;
+                return DigitalSignatureService::decryptCertificate($nameFile, $decrypt);
+            }
+        } catch (\Throwable $th) {
+            throw new CertException("Password de la Intranet incorrecte");
+        }
+    }
+
 
     public static function decryptCertificate($fileName, $password)
     {
@@ -56,7 +75,6 @@ class DigitalSignatureService
             'intranetUser' => authUser()->fullName,
         ]);
         return $decryptfile;
-
     }
 
 
@@ -97,12 +115,10 @@ class DigitalSignatureService
         $newFile,
         $coordx,
         $coordy,
-        $filecrt,
-        $passCert
+        $cert,
     )
     {
         try {
-            $cert = self::readCertificat($filecrt, $passCert);
             $user = $cert->getCert()->data['subject']['commonName'];
             $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
             $imagePath = a1TempDir(true, '.png');
@@ -146,4 +162,6 @@ class DigitalSignatureService
         $signatura = ValidatePdfSignature::from($file);
         return $signatura->data;
     }
+
+
 }

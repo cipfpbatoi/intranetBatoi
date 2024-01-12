@@ -6,7 +6,7 @@ class BotonBasico extends Boton
 {
 
     protected $defaultClase = 'btn-primary';
-    protected $permanentClase = 'btn txtButton';
+    protected $permanentClase = 'btn btn-round txtButton';
 
     //pinta el boto
     protected function html($key = null)

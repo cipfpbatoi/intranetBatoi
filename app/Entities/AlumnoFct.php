@@ -282,7 +282,9 @@ class AlumnoFct extends Model
 
     public function routeFile($anexe)
     {
-        return storage_path('app/annexes/')."A{$anexe}_{$this->idSao}.pdf";
+        return (strlen($anexe) > 1)
+            ? storage_path('app/annexes/')."{$anexe}_{$this->idSao}.pdf"
+            : storage_path('app/annexes/')."A{$anexe}_{$this->idSao}.pdf";
     }
 
     public function getIdPrintAttribute()

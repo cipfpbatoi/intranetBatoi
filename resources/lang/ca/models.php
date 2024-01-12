@@ -1,9 +1,4 @@
 <?php
-
-
-
-
-
 return array(
 
 	/*
@@ -520,7 +515,7 @@ return array(
         ),
         'Signatura' => array(
             'post' => 'Signatura Annexes',
-            'index' => 'Llistat signatures pendents de :quien',
+            'index' => 'Llistat signatures pendents',
             'show' => 'Vore Estat Signatures',
             'pdf' => 'Imprimir Fitxer',
             'delete' => 'Esborrar fitxer'

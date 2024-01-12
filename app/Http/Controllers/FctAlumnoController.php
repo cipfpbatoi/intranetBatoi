@@ -104,20 +104,7 @@ class FctAlumnoController extends IntranetController
                 ]]
             )
         );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'signatura',
-                [
-                    'img' => 'fa-certificate',
-                    'text' => 'Signatures',
-                    'where' =>
-                        [
-                            'sign', '==', true,
-                        ]
-                ]
-            )
-        );
+
         /*$this->panel->setBoton(
             'grid',
             new BotonImg(
@@ -193,8 +180,12 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton(
             'index',
             new BotonBasico(
-                "signatura.post",
-                ['class' => 'btn-success signatura', 'roles' => config(self::ROLES_ROL_TUTOR)]
+                'signatura',
+                [
+                    'class' => 'btn-danger',
+                    'text' => 'Signatures Digitals',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                ]
             )
         );
         $this->panel->setBoton(
@@ -204,6 +195,7 @@ class FctAlumnoController extends IntranetController
                 ['class' => 'btn-warning selecciona', 'roles' => config(self::ROLES_ROL_TUTOR)]
             )
         );
+
         $this->setQualityB();
         $this->panel->setBoton(
             'index',

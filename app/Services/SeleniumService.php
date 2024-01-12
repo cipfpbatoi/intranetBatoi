@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Services;
 
+use Facebook\WebDriver\Firefox\FirefoxOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -20,10 +21,17 @@ class SeleniumService
     public static function loginSAO($dni, $password, $desiredCapabilities=null): RemoteWebDriver
     {
         try {
-            $desiredCapabilities = $desiredCapabilities??DesiredCapabilities::firefox();
+            if ($desiredCapabilities == null){
+                if (env('FIREFOX_PATH')) {
+                    $desiredCapabilities = DesiredCapabilities::firefox()->setCapability(FirefoxOptions::CAPABILITY,
+                        ['binary' => '/Applications/Firefox.app/Contents/MacOS/firefox']);
+                } else {
+                    $desiredCapabilities = DesiredCapabilities::firefox();
+                }
+            }
             $driver = RemoteWebDriver::create('http://'.(config('services.selenium.url')), $desiredCapabilities);
         } catch (\Exception $e) {
-            throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium');
+            throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium'.$e->getMessage());
         }
         $driver->get(config('services.selenium.SAO'));
         $dni = substr($dni, -9);
@@ -56,7 +64,7 @@ class SeleniumService
             $driver = RemoteWebDriver::create('http://'.config('services.selenium.url'), $desiredCapabilities);
 
         } catch (\Exception $e) {
-            throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium');
+            throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium:'.$e->getMessage());
         }
         $dni = substr($dni, -9);
         $driver->get(config('services.selenium.itaca'));

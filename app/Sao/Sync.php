@@ -4,6 +4,8 @@ namespace Intranet\Sao;
 
 use Exception;
 use Facebook\WebDriver\Exception\NoSuchElementException;
+use Facebook\WebDriver\Firefox\FirefoxOptions;
+use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Intranet\Entities\AlumnoFctAval;

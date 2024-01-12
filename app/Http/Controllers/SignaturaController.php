@@ -19,7 +19,7 @@ use Intranet\Services\FormBuilder;
  */
 class SignaturaController extends ModalController
 {
-
+    const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     /**
      * @var array
      */
@@ -27,11 +27,12 @@ class SignaturaController extends ModalController
     /**
      * @var string
      */
-    //protected $perfil = 'profesor';
+    protected $perfil = 'profesor';
     /**
      * @var string
      */
     protected $model = 'Signatura';
+    protected $parametresVista = ['modal' => ['signatura']];
 
 
     /**
@@ -39,6 +40,7 @@ class SignaturaController extends ModalController
      */
     protected function iniBotones()
     {
+
         $this->panel->setBotonera([],['delete','pdf','show']);
         $this->panel->setBoton(
             'grid',
@@ -85,34 +87,21 @@ class SignaturaController extends ModalController
                 ]
             )
         );
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "signatura.post",
+                [
+                    'text' => 'Descarrega SAO',
+                    'class' => 'btn-danger sign',
+                    'roles' => config(self::ROLES_ROL_TUTOR)]
+            )
+        );
 
     }
 
-    public function fct($id)
-    {
 
-        $fct = AlumnoFct::find($id);
-        $this->titulo = ['quien' => $fct->Alumno->fullName];
-        Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
-        $this->iniBotones();
-        $this->sao = $fct->idSao;
-        $this->iniPestanas();
-        return $this->grid();
-    }
 
-    protected function grid()
-    {
-        if (is_array($this->vista)) {
-            $vista = $this->vista['index'] ??'intranet.indexModal';
-        } else {
-            $vista = $this->vista ??'intranet.indexModal';
-        }
-        return $this->panel->render(
-            Signatura::where('idSao',$this->sao)->get(),
-            $this->titulo,
-            $vista ,
-            new FormBuilder($this->createWithDefaultValues(), $this->formFields));
-    }
 
     /**
      * @return mixed
@@ -126,6 +115,19 @@ class SignaturaController extends ModalController
     {
         $sig = Signatura::find($id);
         return response()->file($sig->routeFile);
+    }
+
+    public function destroy($id)
+    {
+        if ($elemento = Signatura::find($id)) {
+            $fctAl = AlumnoFct::where('idSao',$elemento->idSao)->first();
+            $file = $fctAl->routeFile($elemento->tipus);
+            if (isset($file)) {
+                unlink($file);
+            }
+            $elemento->delete();
+        }
+        return back();
     }
 
 

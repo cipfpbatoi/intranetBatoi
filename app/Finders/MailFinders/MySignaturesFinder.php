@@ -11,6 +11,7 @@ class MySignaturesFinder extends Finder
     {
         $dni = apiAuthUser()->dni;
         $fcts = AlumnoFct::misFcts($dni)->whereNotNull('idSao')
+            ->where('desde','>=', date('Y-m-d'))
             ->where(function ($query) {
                 $query->whereDoesntHave('signatures')
                     ->orWhereHas('signatures', function ($query) {
