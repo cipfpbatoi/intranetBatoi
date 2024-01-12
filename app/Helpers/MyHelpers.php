@@ -180,7 +180,7 @@ function userIsNameAllow($role)
 
 
 
-function authUser(): \Illuminate\Contracts\Auth\Authenticatable
+function authUser(): \Illuminate\Contracts\Auth\Authenticatable | null
 {
     $usuario = null;
     if (auth('profesor')->user()) {
