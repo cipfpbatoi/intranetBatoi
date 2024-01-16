@@ -74,6 +74,14 @@ class AlumnoFctAval extends AlumnoFct
         return $query->whereIn('idProfesor', $profesor)->esFct();
     }
 
+    public function scopeAvaluables($query, $profesor= null)
+    {
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor)->esAval();
+    }
+
+
+
     public function scopeMisErasmus($query, $profesor= null)
     {
         $profesor = Profesor::getSubstituts($profesor??authUser()->dni);

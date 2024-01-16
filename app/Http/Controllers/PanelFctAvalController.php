@@ -279,7 +279,7 @@ class PanelFctAvalController extends IntranetController
     private function lookForStudents($projectNeeded)
     {
         $found = false;
-        foreach (AlumnoFctAval::realFcts()->NoAval()->get() as $fct) {
+        foreach (AlumnoFctAval::Avaluables()->NoAval()->get() as $fct) {
             if ($projectNeeded) {
                 if (isset($fct->calProyecto)) {
                     $fct->actas = 3;
