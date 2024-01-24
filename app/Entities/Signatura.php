@@ -98,4 +98,66 @@ class Signatura extends Model
     {
         return $this->sendTo ? 'Sí' : 'No';
     }
+
+    public function getEstatAttribute()
+    {
+        if ($this->tipus == 'A1') {
+            return $this->getEstatA1();
+        }
+        if ($this->tipus == 'A2') {
+            return $this->getEstatA2();
+        }
+        if ($this->tipus == 'A3') {
+            return $this->getEstatA3();
+        }
+    }
+
+    private function getEstatA1()
+    {
+        if ($this->signed) {
+            if ($this->signed == 1){
+                if ($this->sendTo == 1){
+                    return 'Enviat a l\'instructor';
+                } else {
+                    return 'Signes del centre completades';
+                }
+            }
+        } else {
+            return 'Pendent de Signatura';
+        }
+    }
+
+    private function getEstatA2()
+    {
+        if ($this->signed >= 2) {
+            if ($this->signed == 2){
+                if ($this->sendTo == 1){
+                    return 'Enviat a l\'instructor';
+                } else {
+                    return 'Signes del centre completades';
+                }
+            }
+        } else {
+            return 'Pendent de Signatura';
+        }
+    }
+
+    private function getEstatA3()
+    {
+        if ($this->signed >= 2) {
+            if ($this->signed == 2){
+                if ($this->sendTo == 1){
+                    return 'Enviat a l\'instructor';
+                } else {
+                    return 'Signes del centre completades';
+                }
+            }
+        } else {
+            if ($this->sendTo == 1){
+                return 'Enviat a l\'alumne';
+            } else {
+                return 'Pendent de Signatura Alumnat';
+            }
+        }
+    }
 }

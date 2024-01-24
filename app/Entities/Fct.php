@@ -118,6 +118,14 @@ class Fct extends Model
         return $this->belongsTo(Profesor::class, 'cotutor', 'dni');
     }
 
+    public function hasSignatures()
+    {
+        $signatures = $this->AlFct()->with('signatures')->get()->pluck('signatures')->collapse();
+
+        return $signatures->isNotEmpty();
+    }
+
+
     public function tutor()
     {
         return $this->hasOneThrough(Profesor::class, Colaboracion::class, 'id', 'dni', 'idColaboracion', 'tutor');

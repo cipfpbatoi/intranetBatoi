@@ -29,6 +29,14 @@
                 @endif
                 {{ $elemento->situacion }}</a>
             @endif
+            @if ($elemento->fueraCentro)
+                <a href='#' class='btn btn-info btn-xs' >Extraescolar</a>
+            @else
+                <a href='#' class='btn btn-info btn-xs' >Centre</a>
+            @endif
+            @if ($elemento->transport)
+                    <a href='#' class='btn btn-warning btn-xs' >Transport</a>
+            @endif
         </x-slot>
         <x-slot name="botones">
             @foreach($panel->getBotones('profile') as $button)

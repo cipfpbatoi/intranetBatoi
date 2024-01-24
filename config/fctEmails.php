@@ -194,12 +194,15 @@ return [
         'route' => 'alumnofct',
         'finder' => 'A3',
     ],
-
     'A5' => [
         'modelo' => 'AlumnoFct',
         'route' => 'alumnofct',
         'finder' => 'AlumnoEnFct',
         'printResource' => 'A5Resource',
         'zip' => true
+    ],
+    'Signed' => [
+        'modelo' => 'AlumnoFct',
+        'finder' => 'Signed',
     ],
 ];

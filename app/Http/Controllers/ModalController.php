@@ -19,6 +19,7 @@ abstract class ModalController extends Controller
     protected $profile = true; // se mostra profile o no
     protected $redirect = null;  // pàgina a la que redirigir després de inserció o modificat
     protected $formFields = null;
+
     /*
      * Constructor
      *  asigna: perfil ,classe, panel grid per defecte

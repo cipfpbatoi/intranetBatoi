@@ -2,28 +2,27 @@
 
 namespace Intranet\Http\Controllers;
 
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Signatura;
 use Intranet\Botones\BotonImg;
-use Intranet\Entities\Expediente;
-use Intranet\Entities\TipoExpediente;
-use Intranet\Services\DigitalSignatureService;
-use Intranet\Services\FormBuilder;
+use Styde\Html\Facades\Alert;
+
 
 /**
  * Class PanelExpedienteController
  * @package Intranet\Http\Controllers
  */
-class SignaturaController extends ModalController
+class SignaturaController extends IntranetController
 {
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     /**
      * @var array
      */
-    protected $gridFields = [ 'centre', 'tipus',  'alumne', 'signed','send', 'created_at'];
+    protected $gridFields = [ 'centre', 'tipus',  'alumne', 'estat', 'created_at'];
     /**
      * @var string
      */
@@ -32,7 +31,8 @@ class SignaturaController extends ModalController
      * @var string
      */
     protected $model = 'Signatura';
-    protected $parametresVista = ['modal' => ['signatura']];
+    protected $parametresVista = ['modal' => ['signatura','selDoc']];
+
 
 
     /**
@@ -45,36 +45,15 @@ class SignaturaController extends ModalController
         $this->panel->setBoton(
             'grid',
             new BotonImg(
-                'signatura.sendAlumne',
-                ['img'=>'fa-send','where' => ['tipus', '==', 'A3', 'signed', '==', '1']]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'signatura.sendInstructor',
-                ['img'=>'fa-envelope','where' => ['tipus', '==', 'A2', 'signed', '==', '2']]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'signatura.sendInstructor',
-                ['img'=>'fa-envelope','where' => ['tipus', '==', 'A1', 'signed', '==', '1']]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'signatura.sendInstructor',
-                ['img'=>'fa-envelope','where' => ['tipus', '==', 'A3', 'signed', '==', '2']]
+                'signatura.send',
+                ['img'=>'fa-envelope']
             )
         );
         $this->panel->setBoton(
             'grid',
             new BotonImg(
                 'signatura.upload',
-                ['img'=>'fa-upload','where' => ['sendTo',">=", '1']]
+                ['img'=>'fa-upload','where' => ['tipus','==','A3','sendTo',">=", '1']]
             )
         );
         $this->panel->setBoton(
@@ -95,6 +74,31 @@ class SignaturaController extends ModalController
                     'text' => 'Descarrega SAO',
                     'class' => 'btn-danger sign',
                     'roles' => config(self::ROLES_ROL_TUTOR)]
+            )
+        );
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "signatura.sendAlumnat",
+                [
+                    'text' => 'Envia Alumnat',
+                    'class' => 'btn-info selecciona',
+                    'data-url' => '/api/documentacionFCT/A3',
+                    'id' => '/signatura/A3/send',
+                    'roles' => config(self::ROLES_ROL_TUTOR)]
+            )
+        );
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "signatura.sendFct",
+                [
+                    'text' => 'Envia Instructor',
+                    'class' => 'btn-info selecciona',
+                    'data-url' => '/api/documentacionFCT/Signed',
+                    'id' => '/signatura/All/send',
+                    'roles' => config(self::ROLES_ROL_TUTOR)
+                ]
             )
         );
 
@@ -128,6 +132,58 @@ class SignaturaController extends ModalController
             $elemento->delete();
         }
         return back();
+    }
+
+    public function sendUnique($id)
+    {
+        $signatura = Signatura::find($id);
+        $signatura->sendTo = 1;
+        $signatura->save();
+        Mail::send('email.signaturaA3', ['signatura' => $signatura], function ($message) use ($signatura) {
+            $message->to($signatura->Fct->Fct->Instructor->email,
+                $signatura->Fct->Fct->Instructor->name)->subject('Signatura FCT');
+            $message->attach($signatura->routeFile);
+        });
+        Alert::info('Signatura enviada a '.$signatura->Fct->Fct->Instructor->name);
+        return back();
+    }
+    public function sendMultiple(Request $request,$tipus)
+    {
+        if ($tipus == 'A3'){
+            foreach ($request->all() as $key => $value) {
+                if (is_numeric($key) && $value == 'on') {
+                    $signatura = Signatura::find($key);
+                    $signatura->sendTo = 1;
+                    $signatura->save();
+                    Mail::send('email.signaturaA3', ['signatura' => $signatura], function ($message) use ($signatura) {
+                        $message->to($signatura->Fct->Alumno->email,
+                            $signatura->Fct->Alumno->fullName)->subject('Signatura FCT');
+                        $message->attach($signatura->routeFile);
+                    });
+                    Alert::info('Signatura enviada a '.$signatura->Fct->Alumno->fullName);
+                }
+            }
+            return back();
+        }
+        if ($tipus == 'All'){
+            foreach ($request->all() as $key => $value) {
+                if (is_numeric($key) && $value == 'on') {
+                    $alumnoFct = AlumnoFct::find($key);
+                    Mail::send('email.signaturaAll', ['fct' => $alumnoFct], function ($message) use ($alumnoFct) {
+                        $message->to($alumnoFct->Fct->Instructor->email,
+                            $alumnoFct->Fct->Instructor->fullName)->subject('Signatura FCT');
+                        foreach ($alumnoFct->signatures as $signatura){
+                            $message->attach($signatura->routeFile);
+                            $signatura->sendTo = 1;
+                            $signatura->save();
+                        }
+                    });
+                    Alert::info('Signatura enviada a '.$alumnoFct->Fct->Instructor->nombre);
+                }
+            }
+            return back();
+        }
+
     }
 
 

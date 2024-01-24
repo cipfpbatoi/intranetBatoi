@@ -576,6 +576,7 @@ return array(
             'Incidencia' => 'Incidència',
             'Fctcap' => 'Revisió FCT',
             'Solicitud' => "Derivació al departament d'orientació",
+            'Signatura' => 'Signatures Digitals'
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

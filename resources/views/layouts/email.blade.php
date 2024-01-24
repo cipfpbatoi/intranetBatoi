@@ -8,4 +8,12 @@
         @yield('css')
     </head>
  @yield('body')
+    <footer>
+        <p>Assumpte: Instruccions Importants per al Reenviament de Correus.
+        Benvolgut/da destinatari/ària, si necessites <strong>reenviar este correu</strong>  a una altra persona,
+            et preguem que l'informes que l'adreça original és
+            <strong>{{authUser()->email??'i.gomismur@edu.gva.es'}}</strong>,
+            i a esta és on ha d'adreçar la respota.
+        Atentament, l'equip de suport de {{config('contacto.nombre')}}</p>
+    </footer>
 </html>
