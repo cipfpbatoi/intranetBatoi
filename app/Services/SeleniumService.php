@@ -22,9 +22,10 @@ class SeleniumService
     {
         try {
             if ($desiredCapabilities == null){
-                if (env('FIREFOX_PATH')) {
+                if (config('services.selenium.firefox_path')) {
+
                     $desiredCapabilities = DesiredCapabilities::firefox()->setCapability(FirefoxOptions::CAPABILITY,
-                        ['binary' => '/Applications/Firefox.app/Contents/MacOS/firefox']);
+                        ['binary' => config('services.selenium.firefox_path')]);
                 } else {
                     $desiredCapabilities = DesiredCapabilities::firefox();
                 }

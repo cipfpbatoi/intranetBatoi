@@ -82,7 +82,7 @@ class PanelSignaturaController extends BaseController
         $signatures = array_keys($request->toArray(), "on");
         $decrypt = $request['decrypt']??null;
         $passCert = $request['cert']??null;
-
+        $signed = array();
         if (isset($decrypt)) {
             try {
                 $file = DigitalSignatureService::decryptCertificateUser($decrypt, authUser());
@@ -103,6 +103,7 @@ class PanelSignaturaController extends BaseController
                             );
                             $signatura->signed += 1;
                             $signatura->save();
+                            $signed[$signatura->idProfesor] = true;
                         }
                     }
                 }
@@ -120,6 +121,9 @@ class PanelSignaturaController extends BaseController
                 }
                 return back();
             }
+        }
+        foreach (array_keys($signed) as $dni){
+            Mensaje::send($dni,'Tens nous documents signats');
         }
         return back();
     }

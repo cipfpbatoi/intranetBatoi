@@ -378,4 +378,15 @@ class Profesor extends Authenticatable
         return $sustituidos;
     }
 
+    public function getHasCertificateAttribute()
+    {
+        return file_exists($this->pathCertificate);
+    }
+
+    public function getPathCertificateAttribute()
+    {
+        $fileName = $this->getFileNameAttribute();
+        return storage_path('app/zip/'.$fileName.'.tmp');
+    }
+
 }

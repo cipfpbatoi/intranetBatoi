@@ -16,7 +16,7 @@ use Styde\Html\Facades\Alert;
  * Class PanelExpedienteController
  * @package Intranet\Http\Controllers
  */
-class SignaturaController extends IntranetController
+class SignaturaController extends ModalController
 {
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     /**

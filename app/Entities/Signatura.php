@@ -119,7 +119,7 @@ class Signatura extends Model
                 if ($this->sendTo == 1){
                     return 'Enviat a l\'instructor';
                 } else {
-                    return 'Signes del centre completades';
+                    return 'Signatura Direcció completada';
                 }
             }
         } else {
@@ -129,12 +129,23 @@ class Signatura extends Model
 
     private function getEstatA2()
     {
-        if ($this->signed >= 2) {
+        if ($this->signed >= 1) {
             if ($this->signed == 2){
                 if ($this->sendTo == 1){
                     return 'Enviat a l\'instructor';
                 } else {
-                    return 'Signes del centre completades';
+                    return 'Signatura Direcció completada';
+                }
+            }
+            if ($this->signed == 1){
+                if ($this->sendTo == 1){
+                    return 'Enviat a l\'instructor';
+                } else {
+                    if (authUser()->hasCertificate){
+                        return 'Pendent Signatura Direcció';
+                    } else {
+                        return 'Signatura Direcció completada';
+                    }
                 }
             }
         } else {
@@ -144,19 +155,17 @@ class Signatura extends Model
 
     private function getEstatA3()
     {
-        if ($this->signed >= 2) {
-            if ($this->signed == 2){
-                if ($this->sendTo == 1){
-                    return 'Enviat a l\'instructor';
-                } else {
-                    return 'Signes del centre completades';
-                }
+        if ($this->signed == 2){
+            if ($this->sendTo == 1){
+                return 'Enviat a l\'instructor';
+            } else {
+                return 'Signes del centre completades';
             }
         } else {
             if ($this->sendTo == 1){
                 return 'Enviat a l\'alumne';
             } else {
-                return 'Pendent de Signatura Alumnat';
+                return "Pendent d'enviar a l'alumne";
             }
         }
     }
