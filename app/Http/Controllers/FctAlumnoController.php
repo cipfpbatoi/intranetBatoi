@@ -20,6 +20,7 @@ use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Intranet\Http\PrintResources\A1ENResource;
+use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Http\PrintResources\A2ENResource;
 use Intranet\Http\PrintResources\A3ENResource;
 use Intranet\Http\PrintResources\A5Resource;
@@ -334,6 +335,8 @@ class FctAlumnoController extends IntranetController
     {
         return response()->file(FDFPrepareService::exec(new A5Resource(AlumnoFct::find($id))));
     }
+
+
 
     public function AEng($id)
     {

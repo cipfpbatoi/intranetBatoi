@@ -510,6 +510,7 @@ return array(
         'show' => 'Ver Estado Firmas',
         'pdf' => 'Imprimir Fichero',
         'delete' => 'Borrar Fichero',
+        'send' => "Enviar al instructor"
     ),
         'Solicitud' => array(
             'index' => "Derivaciones al departamento de Orientación",

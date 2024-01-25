@@ -71,7 +71,7 @@ class PanelSignaturaController extends BaseController
         })
             ->orWhere(function ($query) {
                 $query->where('tipus', 'A2')
-                    ->where('signed','<',2);
+                    ->where('signed','<',3);
             })
             ->get();
 
@@ -101,7 +101,7 @@ class PanelSignaturaController extends BaseController
                                 $y,
                                 $cert
                             );
-                            $signatura->signed += 1;
+                            $signatura->signed += 3;
                             $signatura->save();
                             $signed[$signatura->idProfesor] = true;
                         }

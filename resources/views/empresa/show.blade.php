@@ -9,7 +9,7 @@
         <h3>{{$elemento->nombre}}</h3>
         <h4>CIF : {{$elemento->cif}}</h4>
         <h4>
-            @lang("validation.attributes.concierto") : {{$elemento->concierto}}
+            @lang("validation.attributes.concierto") : {{$elemento->concierto}} - {{$elemento->data_signatura??''}}
             @if (!empty($elemento->fichero))
                 <a href="/empresa/{{$elemento->id}}/document"><em class="fa fa-eye"></em></a>
             @endif
@@ -125,7 +125,9 @@
             @endif
         </ul>
         <!-- end of skills -->
-
+        <a href="/empresa/{{$elemento->id}}/A1" class="fa fa-file-zip-o" target="_blank">
+            Nou Annexe I
+        </a>
     </div>
     <div class="col-md-9 col-sm-9 col-xs-12">
         <div class="x_panel" style="height: auto;">

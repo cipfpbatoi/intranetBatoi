@@ -15,7 +15,7 @@ class Empresa extends Model
     protected $table = 'empresas';
     protected $fillable = [ 'europa','sao','concierto','cif', 'nombre', 'email', 'direccion', 'localidad', 'telefono',
         'dual', 'actividad', 'delitos', 'menores','copia_anexe1','observaciones',
-        'gerente', 'fichero', 'creador', 'idSao'];
+        'gerente', 'fichero', 'creador', 'idSao','data_signatura'];
     protected $rules = [
         'cif' => 'required|alpha_num',
         'nombre' => 'required|between:0,100',
@@ -38,6 +38,7 @@ class Empresa extends Model
         'fichero' => ['type' => 'file'],
         'creador' => ['type' => 'hidden'],
         'idSao' => ['type' => 'hidden'],
+        'data_signatura' => ['type' => 'date']
     ];
     protected $hidden = ['created_at', 'updated_at','creador'];
     protected $dispatchesEvents = [
@@ -93,7 +94,11 @@ class Empresa extends Model
         }
     }
 
-
+    public function getDataSignaturaAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
+    }
 
     public function getCiclesAttribute()
     {

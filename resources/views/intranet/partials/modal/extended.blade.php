@@ -11,7 +11,6 @@
                 <option value="autAlumnat">@lang("models.Fct.autAlumnat")</option>
                 <option value="A1">@lang("models.Fct.an1")</option>
                 <option value="A2">@lang("models.Fct.an2")</option>
-                <option value="A3">@lang("models.Fct.an3")</option>
                 <option value="A5">@lang("models.Fct.an5")</option>
         </select>
         <input type="checkbox" name="zip" id="zip" /> Zip
@@ -19,7 +18,7 @@
         <hr/>
         <table id="tableSeleccion"></table>
         <div id="divSignatura" style="display:none;">
-                @if(file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp')))
+                @if(file_exists(authUser()->pathCertificate))
                         <div style="border: 1px solid black;background-color:#ddd" >
                                 <h3 style="text-align: center">Signatura Digital</h3>
                                 <label class="control-label" for="password">Introduir Password Intranet:</label>

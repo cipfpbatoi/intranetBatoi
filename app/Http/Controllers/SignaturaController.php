@@ -53,7 +53,7 @@ class SignaturaController extends ModalController
             'grid',
             new BotonImg(
                 'signatura.upload',
-                ['img'=>'fa-upload','where' => ['tipus','==','A3','sendTo',">=", '1']]
+                ['img'=>'fa-upload','where' => ['tipus','==','A3','signed',"==", '2','sendTo','==','1']]
             )
         );
         $this->panel->setBoton(
@@ -137,7 +137,9 @@ class SignaturaController extends ModalController
     public function sendUnique($id)
     {
         $signatura = Signatura::find($id);
-        $signatura->sendTo = 1;
+        if ($signatura->sendTo < 2) {
+            $signatura->sendTo += 2;
+        }
         $signatura->save();
         Mail::send('email.signaturaA3', ['signatura' => $signatura], function ($message) use ($signatura) {
             $message->to($signatura->Fct->Fct->Instructor->email,
@@ -174,7 +176,9 @@ class SignaturaController extends ModalController
                             $alumnoFct->Fct->Instructor->fullName)->subject('Signatura FCT');
                         foreach ($alumnoFct->signatures as $signatura){
                             $message->attach($signatura->routeFile);
-                            $signatura->sendTo = 1;
+                            if ($signatura->sendTo < 2) {
+                                $signatura->sendTo += 2;
+                            }
                             $signatura->save();
                         }
                     });

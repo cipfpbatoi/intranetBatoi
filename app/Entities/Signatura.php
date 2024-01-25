@@ -49,7 +49,7 @@ class Signatura extends Model
             ]);
             $sig->save();
         } else {
-            $sig->signed = $signat;
+            $sig->signed += $signat;
             $sig->sendTo = false;
             $sig->save();
         }
@@ -101,72 +101,51 @@ class Signatura extends Model
 
     public function getEstatAttribute()
     {
-        if ($this->tipus == 'A1') {
-            return $this->getEstatA1();
-        }
-        if ($this->tipus == 'A2') {
-            return $this->getEstatA2();
-        }
-        if ($this->tipus == 'A3') {
-            return $this->getEstatA3();
-        }
+        $nameFunction = 'getEstat'.$this->tipus;
+        return self::$nameFunction($this);
     }
 
-    private function getEstatA1()
+    private static function getEstatA1(Signatura $sig)
     {
-        if ($this->signed) {
-            if ($this->signed == 1){
-                if ($this->sendTo == 1){
-                    return 'Enviat a l\'instructor';
-                } else {
-                    return 'Signatura Direcció completada';
-                }
-            }
-        } else {
-            return 'Pendent de Signatura';
+        if ($sig->sendTo){
+            return "Enviat a l'instructor";
         }
+        if ($sig->signed == 3) {
+            return 'Signatura Direcció completada';
+        }
+        return 'Pendent Signatura Direcció';
     }
 
-    private function getEstatA2()
+    private static function getEstatA2(Signatura $sig)
     {
-        if ($this->signed >= 1) {
-            if ($this->signed == 2){
-                if ($this->sendTo == 1){
-                    return 'Enviat a l\'instructor';
-                } else {
-                    return 'Signatura Direcció completada';
-                }
-            }
-            if ($this->signed == 1){
-                if ($this->sendTo == 1){
-                    return 'Enviat a l\'instructor';
-                } else {
-                    if (authUser()->hasCertificate){
-                        return 'Pendent Signatura Direcció';
-                    } else {
-                        return 'Signatura Direcció completada';
-                    }
-                }
-            }
-        } else {
-            return 'Pendent de Signatura';
+        if ($sig->sendTo) {
+            return 'Enviat a l\'instructor';
         }
+        if ($sig->signed > 2 ){
+            return 'Signatura Direcció completada';
+        }
+        if ($sig->signed) {
+            return 'Pendent Signatura Direcció';
+        }
+        return 'Pendent de Signatura';
     }
 
-    private function getEstatA3()
+    private static function getEstatA3(Signatura $sig)
     {
-        if ($this->signed == 2){
-            if ($this->sendTo == 1){
-                return 'Enviat a l\'instructor';
+        if ($sig->sendTo > 1) {
+            if ($sig->signed == 3) {
+                return "Enviat a l'instructor";
             } else {
+                return "Enviat a l'instructor sense la signatura de l'alumne";
+            }
+        }
+        if ($sig->sendTo == 1){
+            if ($sig->signed == 3){
                 return 'Signes del centre completades';
-            }
-        } else {
-            if ($this->sendTo == 1){
-                return 'Enviat a l\'alumne';
             } else {
-                return "Pendent d'enviar a l'alumne";
+                return "Enviat a l'alumne";
             }
         }
+        return "Pendent d'enviar a l'alumne";
     }
 }

@@ -15,7 +15,7 @@ class MySignaturesFinder extends Finder
             ->where(function ($query) {
                 $query->whereDoesntHave('signatures')
                     ->orWhereHas('signatures', function ($query) {
-                        $query->where('signed', false);
+                        $query->where('signed', 0);
                     });
             })->get();
         $this->elements = SignaturaResource::collection($fcts);

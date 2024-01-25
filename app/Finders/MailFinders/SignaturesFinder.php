@@ -15,7 +15,7 @@ class SignaturesFinder extends Finder
         foreach ($signatures as $signature) {
             $collection->add($signature);
         }
-        $signatures = Signatura::where('signed', 1)->where('tipus','A2')->get();
+        $signatures = Signatura::where('signed','<', 3)->where('tipus','A2')->get();
         foreach ($signatures as $signature) {
             $collection->add($signature);
         }

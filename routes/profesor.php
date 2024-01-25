@@ -226,6 +226,7 @@ Route::get('/empresa/{empresa}/detalle', ['as' => 'empresa.detalle', 'uses' => '
 Route::get('/empresa/{empresa}/document', ['as' => 'empresa.document', 'uses' => 'EmpresaController@document']);
 Route::get('/empresaSC', ['as'=>'empresaSC.index', 'uses'=>'PanelEmpresaSCController@index']);
 Route::get('/empresaEr', ['as'=>'empresaEr.index', 'uses'=>'PanelErasmusController@index']);
+Route::get('/empresa/{empresa}/A1', ['as'=>'empresa.A1', 'uses'=>'EmpresaController@A1']);
 
 Route::get('/colaboracion', ['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/misColaboraciones', ['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);

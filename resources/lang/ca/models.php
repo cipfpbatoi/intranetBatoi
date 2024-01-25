@@ -518,7 +518,8 @@ return array(
             'index' => 'Llistat signatures pendents',
             'show' => 'Vore Estat Signatures',
             'pdf' => 'Imprimir Fitxer',
-            'delete' => 'Esborrar fitxer'
+            'delete' => 'Esborrar fitxer',
+            'send' => "Enviar a l'instructor"
         ),
         'Solicitud' => array(
             'index' => "Derivacions al departament d'Orientació",

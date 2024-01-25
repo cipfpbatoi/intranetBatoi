@@ -61,18 +61,22 @@ class A2
         $decrypt = $request['decrypt']??null;
         $passCert = $request['cert']??null;
         $nomFitxer = storage_path('tmp/'.authUser()->fileName.'.pfx');
-        if ($file) {
-            $file->move(dirname($nomFitxer), basename($nomFitxer));
-        }
 
         try {
             if (isset($decrypt)) {
-                $file = DigitalSignatureService::decryptCertificateUser($decrypt, authUser());
+                DigitalSignatureService::decryptCertificateUser($decrypt, authUser());
                 $cert = DigitalSignatureService::readCertificat($nomFitxer, $passCert);
-                self::downloadFilesFromFcts($driver, $fcts, $cert);
-            } else {
-                self::downloadFilesFromFcts($driver, $fcts);
             }
+            if ($file) {
+                $file->move(dirname($nomFitxer), basename($nomFitxer));
+                @unlink($file->getRealPath());
+                $cert = DigitalSignatureService::readCertificat($nomFitxer, $passCert);
+            }
+            self::downloadFilesFromFcts($driver, $fcts, $cert??null);
+            if (file_exists($nomFitxer)){
+                unlink($nomFitxer);
+            }
+
         } catch (CertException $exception){
             Log::channel('certificate')->alert($exception->getMessage(), [
                 'intranetUser' => authUser()->fullName,
@@ -82,7 +86,9 @@ class A2
                 config('avisos.errores'),
                 $exception->getMessage()." : ".authUser()->fullName
             );
-            unlink($nomFitxer);
+            if (file_exists($nomFitxer)) {
+                unlink($nomFitxer);
+            }
             $driver->quit();
             return back();
         }
@@ -137,10 +143,10 @@ class A2
                                 $y,
                                 $certFile
                             );
-                            Firma::saveIfNotExists(2, $fctAl->idSao, 1);
+                            Firma::saveIfNotExists(2, $fctAl->idSao, 2);
                         } else {
                             copy($tmpFile, $saveFile);
-                            Firma::saveIfNotExists(2, $fctAl->idSao, 0);
+                            Firma::saveIfNotExists(2, $fctAl->idSao);
                         }
                         $signat = true;
                         unlink($tmpFile);
@@ -170,7 +176,7 @@ class A2
                                 $y,
                                 $certFile
                             );
-                            Firma::saveIfNotExists(3, $fctAl->idSao, 1);
+                            Firma::saveIfNotExists(3, $fctAl->idSao, 2);
                             unlink($tmpFile);
                         } else {
                             Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe III
