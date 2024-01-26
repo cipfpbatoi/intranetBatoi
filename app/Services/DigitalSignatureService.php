@@ -94,14 +94,15 @@ class DigitalSignatureService
         $newFile,
         $coordx,
         $coordy,
-        $filecrypt,
         $passCrypt,
         $passCert
     ){
-        $fileCert = self::decryptCertificate($filecrypt, $passCrypt);
-        self::sign($file, $newFile, $coordx, $coordy, $fileCert, $passCert);
-        if ($fileCert) {
-            unlink($fileCert);
+        $nomFitxer = storage_path('tmp/'.authUser()->fileName.'.pfx');
+        DigitalSignatureService::decryptCertificateUser($passCrypt, authUser());
+        $cert = DigitalSignatureService::readCertificat($nomFitxer, $passCert);
+        self::sign($file, $newFile, $coordx, $coordy, $cert);
+        if (file_exists($nomFitxer)){
+            unlink($nomFitxer);
         }
     }
 

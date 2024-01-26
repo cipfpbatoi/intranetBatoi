@@ -29,7 +29,7 @@ class AlumnoFct extends Model
     ];
     public $timestamps = false;
     protected $dispatchesEvents = [
-        'deleting' => FctAlDeleted::class,
+        'deleted' => FctAlDeleted::class,
     ];
     
     public function Alumno()

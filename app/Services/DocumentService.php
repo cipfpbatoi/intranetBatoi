@@ -95,20 +95,20 @@ class DocumentService
             }
         }
         // Document pdf desde plantilla
+
         if (isset($this->document->printResource)) {
             if ($this->document->sign && $this->finder->getRequest()->mostraDiv) {
                 $resource = PrintResource::build($this->document->printResource, $this->elements);
                 $resource->setFlatten(true);
                 $tmp_name =FDFPrepareService::exec($resource);
                 if ($this->document->sign && file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp'))) {
-                    $x = config("signatures.files.AutTutor.owner.x");
-                    $y = config("signatures.files.AutTutor.owner.y");
+                    $x = config("signatures.files.".$this->document->route.".owner.x");
+                    $y = config("signatures.files.".$this->document->route.".owner.y");
                     DigitalSignatureService::signCrypt(
                         $tmp_name,
                         storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'),
                         $x,
                         $y,
-                        authUser()->fileName,
                         $this->finder->getRequest()->decrypt,
                         $this->finder->getRequest()->cert
                     );
@@ -134,6 +134,16 @@ class DocumentService
                     $resource = PrintResource::build($this->document->printResource, $this->elements);
                     return response()->file(FDFPrepareService::exec($resource));
                 }
+            }
+        }
+
+        if ($this->document->zip) {
+            $pdfs = [];
+            foreach ($this->elements as $element) {
+                $pdfs[] = $element->routeFile;
+            }
+            if ($this->zip && count($this->elements) > 1) {
+                return response()->file(storage_path(ZipService::exec($pdfs, 'annexes_'.authUser()->dni)));
             }
         }
         // Concatenar pdfs ja fets

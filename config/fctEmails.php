@@ -160,7 +160,7 @@ return [
     'autTutor' => [
         'printResource' => 'AutorizacionGrupoResource',
         'modelo' => 'AlumnoFct',
-        'route' => 'alumnofct',
+        'route' => 'autTutor',
         'finder' => 'AlumnoEnFct',
         'multiple' => false,
         'sign' => true,
@@ -183,15 +183,18 @@ return [
         'modelo' => 'Signatura',
         'route' => 'alumnofct',
         'finder' => 'A1',
+        'zip' => true,
     ],
     'A2' => [
         'modelo' => 'Signatura',
-        'route' => 'alumnofct',
+        'route' => 'A2',
         'finder' => 'A2',
+        'zip' => true,
+        'sign' => true,
     ],
     'A3' => [
         'modelo' => 'Signatura',
-        'route' => 'alumnofct',
+        'route' => 'A3',
         'finder' => 'A3',
     ],
     'A5' => [

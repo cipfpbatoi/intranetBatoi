@@ -6,12 +6,9 @@ use Facebook\WebDriver\Firefox\FirefoxOptions;
 use Facebook\WebDriver\Firefox\FirefoxProfile;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Intranet\Componentes\Mensaje;
-use Intranet\Entities\Profesor;
 use Intranet\Exceptions\CertException;
-use Intranet\Exceptions\IntranetException;
 use Intranet\Services\DigitalSignatureService;
 use Intranet\Entities\AlumnoFct;
 use Styde\Html\Facades\Alert;
@@ -189,7 +186,11 @@ class A2
             }
         }
         if ($signat) {
-            Mensaje::send(config('avisos.director'),'Tens nous documents per signar de '.authUser()->fullName);
+            Mensaje::send(
+                config('avisos.director'),
+                'Tens nous documents per signar de '.authUser()->fullName,
+                '/direccion/signatures'
+            );
         }
     }
 }
