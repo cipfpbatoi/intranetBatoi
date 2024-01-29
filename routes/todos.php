@@ -31,3 +31,5 @@ Route::get('/help/{fichero}/{enlace}', ['as' => 'help' ,'uses' => 'Administracio
 Route::get('/poll/{id}/do', ['as' => 'enquesta', 'uses' => 'PollController@preparaEnquesta']);
 Route::post('/poll/{id}/do', ['as' => 'enquesta.post', 'uses' => 'PollController@guardaEnquesta']);
 Route::get('/doPoll', ['as' => 'enquesta.do', 'uses' => 'PanelPollResponseController@index']);
+
+Route::post('/signatura/{id}/upload', ['as' => 'signatura.upload', 'uses' => 'SignaturaController@upload']);

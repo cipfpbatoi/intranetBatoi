@@ -21,4 +21,3 @@
     @include('intranet.partials.components.loadModals')
     @include('js.js')
 @endsection
-

@@ -70,10 +70,19 @@ class Signatura extends Model
     {
         return $this->Fct->Fct->Colaboracion->Centro->nombre;
     }
+    public function getPathAttribute()
+    {
+        return storage_path('app/annexes/');
+    }
+
+    public function getFileNameAttribute()
+    {
+        return "{$this->tipus}_{$this->idSao}.pdf";
+    }
 
     public function getRouteFileAttribute()
     {
-        return storage_path('app/annexes/')."{$this->tipus}_{$this->idSao}.pdf";
+        return $this->path.$this->fileName;
     }
      public function getSimpleRouteFileAttribute()
      {
@@ -124,28 +133,40 @@ class Signatura extends Model
         if ($sig->signed > 2 ){
             return 'Signatura Direcció completada';
         }
-        if ($sig->signed) {
-            return 'Pendent Signatura Direcció';
-        }
-        return 'Pendent de Signatura';
+        return 'Pendent de Signatura Direcció';
     }
 
     private static function getEstatA3(Signatura $sig)
     {
-        if ($sig->sendTo > 1) {
+        if ($sig->sendTo > 0) {
             if ($sig->signed == 3) {
                 return "Enviat a l'instructor";
-            } else {
+            }
+            if ($sig->signed == 2 && $sig->sendTo == 2) {
                 return "Enviat a l'instructor sense la signatura de l'alumne";
             }
-        }
-        if ($sig->sendTo == 1){
-            if ($sig->signed == 3){
-                return 'Signes del centre completades';
+            return "Enviat a l'alumne";
+        } else {
+            if ($sig->signed == 2) {
+                return "Pendent enviar a l'alumne";
             } else {
-                return "Enviat a l'alumne";
+                return "Pendent enviar a l'instructor";
             }
         }
-        return "Pendent d'enviar a l'alumne";
+    }
+
+    public function getClassAttribute()
+    {
+        if ($this->tipus == 'A3' && $this->sendTo == 1 && $this->signed == 2){
+            return 'bg-orange';
+        }
+        if ($this->signed >= 3) {
+            if ($this->sendTo == 1) {
+                return 'bg-blue-sky';
+            } else {
+                return 'bg-green';
+            }
+        }
+        return ($this->signed >= 3) ? 'bg-blue-sky':'bg-red';
     }
 }

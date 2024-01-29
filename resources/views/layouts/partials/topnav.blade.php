@@ -41,17 +41,25 @@
                         @foreach (authUser()->unreadNotifications()->paginate(6) as $notifications)
                             <li id='{{$notifications->id}}'>
                                 <a class="papelera" href="/notification/{{$notifications->id}}/delete">
-                                    <span class="image"><img src="/img/delete.png" alt="Marcar como leida"
-                                                             class="iconopequeno"/></span>
+                                    <span class="image">
+                                        <img src="/img/delete.png" alt="Marcar como leida"
+                                                             class="iconopequeno"/>
+                                    </span>
                                 </a>
-                                <a href="#">
-                                <span>
-                                    <span>{{$notifications->data['emissor']}}</span>
-                                    <span class="time">{{$notifications->data['data']}}</span>
-                                </span>
-                                    <span class="message">
-                                    {{$notifications->data['motiu']}}
-                                </span>
+                                <a href="{{$notifications->data['enlace']}}">
+                                    <span>
+                                        <span>{{$notifications->data['emissor']}}</span>
+                                        <span class="time">{{$notifications->data['data']}}</span>
+                                    </span>
+                                    @if ($notifications->data['enlace'] != "#")
+                                        <span class="message blue">
+                                            {{$notifications->data['motiu']}}
+                                        </span>
+                                    @else
+                                        <span class="message">
+                                            {{$notifications->data['motiu']}}
+                                        </span>
+                                    @endif
                                 </a>
                             </li>
                         @endforeach

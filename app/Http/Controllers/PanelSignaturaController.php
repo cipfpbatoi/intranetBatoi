@@ -123,7 +123,7 @@ class PanelSignaturaController extends BaseController
             }
         }
         foreach (array_keys($signed) as $dni){
-            Mensaje::send($dni,'Tens nous documents signats');
+            Mensaje::send($dni,'Tens nous documents signats','/signatura');
         }
         return back();
     }

@@ -23,15 +23,12 @@ class SignaturaController extends ModalController
      * @var array
      */
     protected $gridFields = [ 'centre', 'tipus',  'alumne', 'estat', 'created_at'];
-    /**
-     * @var string
-     */
-    protected $perfil = 'profesor';
+
     /**
      * @var string
      */
     protected $model = 'Signatura';
-    protected $parametresVista = ['modal' => ['signatura','selDoc']];
+    protected $parametresVista = ['modal' => ['signatura','selDoc','upload']];
 
 
 
@@ -53,19 +50,10 @@ class SignaturaController extends ModalController
             'grid',
             new BotonImg(
                 'signatura.upload',
-                ['img'=>'fa-upload','where' => ['tipus','==','A3','signed',"==", '2','sendTo','==','1']]
+                ['img'=>'fa-upload up','where' => ['tipus','==','A3','signed',"==", '2','sendTo','==','1']]
             )
         );
-        $this->panel->setBoton(
-            'index',
-            new BotonBasico(
-                "alumnoFct",
-                [
-                    'text' => 'Tornar FCTs',
-                    'class' => 'btn-success back'
-                ]
-            )
-        );
+
         $this->panel->setBoton(
             'index',
             new BotonBasico(
@@ -82,7 +70,7 @@ class SignaturaController extends ModalController
                 "signatura.sendAlumnat",
                 [
                     'text' => 'Envia Alumnat',
-                    'class' => 'btn-info selecciona',
+                    'class' => 'btn-success selecciona',
                     'data-url' => '/api/documentacionFCT/A3',
                     'id' => '/signatura/A3/send',
                     'roles' => config(self::ROLES_ROL_TUTOR)]
@@ -98,6 +86,16 @@ class SignaturaController extends ModalController
                     'data-url' => '/api/documentacionFCT/Signed',
                     'id' => '/signatura/All/send',
                     'roles' => config(self::ROLES_ROL_TUTOR)
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "alumnoFct",
+                [
+                    'text' => 'Tornar FCTs',
+                    'class' => 'btn-dark back'
                 ]
             )
         );
@@ -188,6 +186,20 @@ class SignaturaController extends ModalController
             return back();
         }
 
+    }
+
+    public function upload(Request $request,$id)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf|max:2048',
+        ]);
+        $signatura = Signatura::find($id);
+        $file = $request->file('file');
+        $file->move($signatura->path, $signatura->fileName);
+        $signatura->signed += 1;
+        $signatura->sendTo = 0;
+        $signatura->save();
+        return back();
     }
 
 
