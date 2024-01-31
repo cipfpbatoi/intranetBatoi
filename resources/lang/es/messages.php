@@ -311,7 +311,7 @@ return array(
         'Signatures' => 'Firmas pendientes',
         'Ipguardia' => 'IPs Ordenadores de Guardia',
         'Setting' => 'Configuración',
-        'a3' => 'Documentación FCT',
+        'A3' => 'Documentación FCT',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
