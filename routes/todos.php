@@ -33,3 +33,5 @@ Route::post('/poll/{id}/do', ['as' => 'enquesta.post', 'uses' => 'PollController
 Route::get('/doPoll', ['as' => 'enquesta.do', 'uses' => 'PanelPollResponseController@index']);
 
 Route::post('/signatura/{id}/upload', ['as' => 'signatura.upload', 'uses' => 'SignaturaController@upload']);
+Route::get('/A3', ['as' => 'signaturaAlumno.index', 'uses' => 'SignaturaAlumneController@index']);
+Route::get('/signatura/{id}/pdf', ['as' => 'signatura.pdf', 'uses' => 'SignaturaController@pdf']);

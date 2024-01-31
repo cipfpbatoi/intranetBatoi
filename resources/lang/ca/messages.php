@@ -315,6 +315,7 @@ return array(
         'Signatures' => 'Signatures Pendents',
         'Ipguardia' => 'IPs Ordinadors de Guàrdia',
         'Setting' => 'Configuració',
+        'a3' => 'Documentació FCT',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

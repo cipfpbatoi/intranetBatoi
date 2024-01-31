@@ -17,4 +17,3 @@ Route::get('/A3',['as' => 'signatura.alumne','uses' => 'SignaturaAlumneControlle
 Route::post('/A3/upload',['as' => 'signatura.upload','uses' => 'SignaturaAlumneController@uploadPost']);
 
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'alumno.mensaje', 'uses' => 'AlumnoController@alerta']);
-

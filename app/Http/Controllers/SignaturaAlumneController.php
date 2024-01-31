@@ -35,6 +35,8 @@ class SignaturaAlumneController extends ModalController
     /**
      *
      */
+    protected $parametresVista = ['modal' => ['upload']];
+
 
 
     public function index()
@@ -45,7 +47,7 @@ class SignaturaAlumneController extends ModalController
         foreach ($alumnoFcts as $alumnoFct){
             $this->signatures->add($alumnoFct->Signatures->where('tipus','A3')->first());
         }
-        $this->titulo = ['quien' => authUser()->nia];
+        $this->titulo = ['quien' => authUser()->fullName];
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
         $this->iniPestanas();
@@ -78,15 +80,12 @@ class SignaturaAlumneController extends ModalController
 
     protected function iniBotones()
     {
-        $this->panel->setBotonera([],['pdf','show']);
+        $this->panel->setBotonera([],['pdf']);
         $this->panel->setBoton(
-            'index',
-            new BotonBasico(
-                "alumnoFct",
-                [
-                    'text' => 'Tornar FCTs',
-                    'class' => 'btn-success back'
-                ]
+            'grid',
+            new BotonImg(
+                'signatura.upload',
+                ['img'=>'fa-upload up','where' => ['tipus','==','A3','signed',"==", '2','sendTo','==','1']]
             )
         );
 
