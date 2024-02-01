@@ -3,6 +3,7 @@
          message='{{ trans("messages.buttons.confirmar")}}'>
         <strong>Selecciona Document:</strong>
         <select name="informe" id="informe">
+                <option value="">--</option>
                 <option value="pg0301">@lang("models.Fct.pg0301")</option>
                 <option value="pr0401">@lang("models.Fct.pr0401")</option>
                 <option value="pr0402">@lang("models.Fct.pr0402")</option>
@@ -30,3 +31,4 @@
         </div>
 </x-modal>
 {{ Html::script("/js/extended.js") }}
+{{ Html::script("/js/taulaCheck.js") }}

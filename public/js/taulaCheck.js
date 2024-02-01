@@ -1,5 +1,5 @@
-function pintaTablaSeleccion(newOptions){
-    var $el = $("#tableSeleccion");
+function pintaTablaSeleccion(newOptions,tabla){
+    var $el = $(tabla);
     var checked;
     var emptys = 0;
     var checks = 0;

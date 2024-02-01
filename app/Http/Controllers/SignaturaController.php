@@ -28,7 +28,7 @@ class SignaturaController extends ModalController
      * @var string
      */
     protected $model = 'Signatura';
-    protected $parametresVista = ['modal' => ['signatura','selDoc','upload']];
+    protected $parametresVista = ['modal' => ['signatura','selDoc','upload','informes']];
 
 
 
@@ -77,10 +77,17 @@ class SignaturaController extends ModalController
         $this->panel->setBoton(
             'index',
             new BotonBasico(
+                "fct.print",
+                ['class' => 'btn-warning selecciona', 'roles' => config(self::ROLES_ROL_TUTOR)]
+            )
+        );
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
                 "signatura.sendAlumnat",
                 [
                     'text' => "Envia A3 l'Alumnat",
-                    'class' => 'btn-success selecciona',
+                    'class' => 'btn-success seleccion',
                     'data-url' => '/api/documentacionFCT/A3',
                     'id' => '/signatura/A3/send',
                     'roles' => config(self::ROLES_ROL_TUTOR)]
@@ -93,7 +100,7 @@ class SignaturaController extends ModalController
                 "signatura.sendFct",
                 [
                     'text' => "Envia Documentació a l'Instructor",
-                    'class' => 'btn-info selecciona',
+                    'class' => 'btn-info seleccion',
                     'data-url' => '/api/documentacionFCT/Signed',
                     'id' => '/signatura/All/send',
                     'roles' => config(self::ROLES_ROL_TUTOR)
@@ -113,6 +120,7 @@ class SignaturaController extends ModalController
                 ]
             )
         );
+
 
     }
 

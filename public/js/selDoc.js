@@ -1,11 +1,11 @@
 
-$(".selecciona").on("click",function(event){
+$(".seleccion").on("click",function(event){
     event.preventDefault();
-    $(this).attr("data-toggle", "modal").attr("data-target", "#seleccion").attr("href", "");
+    $(this).attr("data-toggle", "modal").attr("data-target", "#A3").attr("href", "");
     var token = $("#_token").text();
     var url = $(this).attr("data-url");
     var route = $(this).attr("id");
-    $('#formSeleccion').attr("action",route);
+    $('#formA3').attr("action",route);
     $.ajax({
         method: "GET",
         url: url,
@@ -13,16 +13,16 @@ $(".selecciona").on("click",function(event){
         data: {api_token: token}
     })
         .then(function (result) {
-            pintaTablaSeleccion(result.data);
+            pintaTablaSeleccion(result.data,"#tableA3");
          }, function (result) {
             console.log("La solicitud no se ha podido completar.");
         });
 });
 
-$("#seleccion .submit").click(function() {
+$("#A3 .submit").click(function() {
     event.preventDefault();
     $("#checkall").prop('checked',false);
-    $("#formSeleccion" ).submit();
+    $("#formA3" ).submit();
 });
 
 
