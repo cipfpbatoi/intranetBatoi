@@ -37,6 +37,16 @@ class SignaturaController extends ModalController
      */
     protected function iniBotones()
     {
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "alumnoFct",
+                [
+                    'text' => 'Tornar FCTs',
+                    'class' => 'btn-dark back'
+                ]
+            )
+        );
 
         $this->panel->setBotonera([],['delete','pdf','show']);
         $this->panel->setBoton(
@@ -76,6 +86,7 @@ class SignaturaController extends ModalController
                     'roles' => config(self::ROLES_ROL_TUTOR)]
             )
         );
+
         $this->panel->setBoton(
             'index',
             new BotonBasico(
@@ -89,20 +100,21 @@ class SignaturaController extends ModalController
                 ]
             )
         );
+
         $this->panel->setBoton(
             'index',
             new BotonBasico(
-                "alumnoFct",
+                "signatura.deleteAll",
                 [
-                    'text' => 'Tornar FCTs',
-                    'class' => 'btn-dark back'
+                    'text' => 'Esborra Signatures',
+                    'class' => 'btn-danger',
+                    'onclick' => "return confirm('Vas a esborrar totes les signatures de les FCT')",
+                    'roles' => config(self::ROLES_ROL_TUTOR)
                 ]
             )
         );
 
     }
-
-
 
 
     /**
@@ -111,6 +123,15 @@ class SignaturaController extends ModalController
     protected function search()
     {
         return Signatura::where('idProfesor', authUser()->dni)->get();
+    }
+
+    protected function deleteAll()
+    {
+        $signatures = $this->search();
+        foreach ($signatures as $signature){
+            $signature->delete();
+        }
+        return back();
     }
 
     protected function pdf($id)

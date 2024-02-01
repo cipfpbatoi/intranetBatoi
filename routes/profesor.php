@@ -531,7 +531,7 @@ Route::get('/signatura',['as' => 'signatura.index','uses' => 'SignaturaControlle
 Route::get('/signatura/{id}/delete', ['as' => 'signatura.destroy', 'uses' => 'SignaturaController@destroy']);
 Route::get('/signatura/{id}/send', ['as' => 'signatura.send', 'uses' => 'SignaturaController@sendUnique']);
 Route::post('/signatura/{tipus}/send', ['as' => 'signatura.send', 'uses' => 'SignaturaController@sendMultiple']);
-
+Route::get('/signatura/deleteAll', ['as' => 'signatura.deleteAll', 'uses' => 'SignaturaController@deleteAll']);
 
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
