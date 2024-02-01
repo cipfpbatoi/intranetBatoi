@@ -79,7 +79,7 @@ class SignaturaController extends ModalController
             new BotonBasico(
                 "signatura.sendAlumnat",
                 [
-                    'text' => 'Envia Alumnat',
+                    'text' => "Envia A3 l'Alumnat",
                     'class' => 'btn-success selecciona',
                     'data-url' => '/api/documentacionFCT/A3',
                     'id' => '/signatura/A3/send',
@@ -92,7 +92,7 @@ class SignaturaController extends ModalController
             new BotonBasico(
                 "signatura.sendFct",
                 [
-                    'text' => 'Envia Instructor',
+                    'text' => "Envia Documentació a l'Instructor",
                     'class' => 'btn-info selecciona',
                     'data-url' => '/api/documentacionFCT/Signed',
                     'id' => '/signatura/All/send',
@@ -106,7 +106,7 @@ class SignaturaController extends ModalController
             new BotonBasico(
                 "signatura.deleteAll",
                 [
-                    'text' => 'Esborra Signatures',
+                    'text' => 'Esborra totes Signatures',
                     'class' => 'btn-danger',
                     'onclick' => "return confirm('Vas a esborrar totes les signatures de les FCT')",
                     'roles' => config(self::ROLES_ROL_TUTOR)
