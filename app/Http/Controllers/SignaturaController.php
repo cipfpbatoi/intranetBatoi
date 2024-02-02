@@ -6,9 +6,11 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonBasico;
+use Intranet\Componentes\MyMail;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Signatura;
 use Intranet\Botones\BotonImg;
+use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
 
 
@@ -168,28 +170,30 @@ class SignaturaController extends ModalController
             $signatura->sendTo += 2;
         }
         $signatura->save();
-        Mail::send('email.signaturaA3', ['signatura' => $signatura], function ($message) use ($signatura) {
-            $message->to($signatura->Fct->Fct->Instructor->email,
-                $signatura->Fct->Fct->Instructor->name)->subject('Signatura FCT');
-            $message->attach($signatura->routeFile);
-        });
-        Alert::info('Signatura enviada a '.$signatura->Fct->Fct->Instructor->name);
+        $mail = new MyMail(
+            $signatura,
+            'email.signaturaA3',
+            ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
+            [$signatura->simpleRouteFile => 'application/pdf']);
+        $mail->send();
         return back();
     }
     public function sendMultiple(Request $request,$tipus)
     {
-        if ($tipus == 'A3'){
+        if ($tipus == 'A3'){ //al alumno
             foreach ($request->all() as $key => $value) {
                 if (is_numeric($key) && $value == 'on') {
                     $signatura = Signatura::find($key);
                     $signatura->sendTo = 1;
                     $signatura->save();
-                    Mail::send('email.signaturaA3', ['signatura' => $signatura], function ($message) use ($signatura) {
-                        $message->to($signatura->Fct->Alumno->email,
-                            $signatura->Fct->Alumno->fullName)->subject('Signatura FCT');
-                        $message->attach($signatura->routeFile);
-                    });
-                    Alert::info('Signatura enviada a '.$signatura->Fct->Alumno->fullName);
+                    $signatura->mail = $signatura->Fct->Alumno->email;
+                    $signatura->contact = $signatura->Fct->Alumno->fullName;
+                    $mail = new MyMail(
+                        $signatura,
+                        'email.signaturaA3',
+                        ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
+                        [$signatura->simpleRouteFile => 'application/pdf']);
+                    $mail->send();
                 }
             }
             return back();
@@ -198,18 +202,24 @@ class SignaturaController extends ModalController
             foreach ($request->all() as $key => $value) {
                 if (is_numeric($key) && $value == 'on') {
                     $alumnoFct = AlumnoFct::find($key);
-                    Mail::send('email.signaturaAll', ['fct' => $alumnoFct], function ($message) use ($alumnoFct) {
-                        $message->to($alumnoFct->Fct->Instructor->email,
-                            $alumnoFct->Fct->Instructor->fullName)->subject('Signatura FCT');
-                        foreach ($alumnoFct->signatures as $signatura){
-                            $message->attach($signatura->routeFile);
-                            if ($signatura->sendTo < 2) {
-                                $signatura->sendTo += 2;
-                            }
-                            $signatura->save();
+                    $signatures = [];
+                    foreach ($alumnoFct->signatures as $signatura){
+                        $signatures[$signatura->simpleRouteFile] = 'application/pdf';
+                    }
+                    $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
+                    $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
+                    $mail = new MyMail(
+                        $alumnoFct,
+                        'email.signaturaAll',
+                        ['subject'=>'Documents FCT de '.$alumnoFct->Alumno->fullName],
+                        $signatures);
+                    $mail->send();
+                    foreach ($alumnoFct->signatures as $signatura){
+                        if ($signatura->sendTo < 2) {
+                            $signatura->sendTo += 2;
                         }
-                    });
-                    Alert::info('Signatura enviada a '.$alumnoFct->Fct->Instructor->nombre);
+                        $signatura->save();
+                    }
                 }
             }
             return back();

@@ -91,11 +91,11 @@ class Signatura extends Model
 
     public function getEmailAttribute()
     {
-        return $this->Fct->Fct->Colaboracion->email;
+        return $this->Fct->Fct->Instructor->email;
     }
     public function getContactoAttribute()
     {
-        return $this->Fct->Fct->Colaboracion->contacto;
+        return $this->Fct->Fct->Instructor->contacto;
     }
 
     public function getSignAttribute()
