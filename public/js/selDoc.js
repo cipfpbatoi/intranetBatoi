@@ -22,6 +22,8 @@ $(".seleccion").on("click",function(event){
 $("#A3 .submit").click(function() {
     event.preventDefault();
     $("#checkall").prop('checked',false);
+    $('#signatura').modal('hide');
+    $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
     $("#formA3" ).submit();
 });
 

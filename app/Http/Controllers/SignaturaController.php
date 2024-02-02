@@ -30,7 +30,7 @@ class SignaturaController extends ModalController
      * @var string
      */
     protected $model = 'Signatura';
-    protected $parametresVista = ['modal' => ['signatura','selDoc','upload','informes']];
+    protected $parametresVista = ['modal' => ['signatura','selDoc','upload','informes','loading']];
 
 
 
