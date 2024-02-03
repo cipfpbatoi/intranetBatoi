@@ -14,7 +14,7 @@ $(function () {
             data: {api_token: token}
         })
             .then(function (result) {
-                pintaTablaSignatura(result.data);
+                pintaTablaSeleccion(result.data,"#tableSignatura");
             }, function (result) {
                 console.log("La solicitud no se ha podido completar.");
             });
@@ -31,7 +31,7 @@ $(function () {
             data: {api_token: token}
         })
             .then(function (result) {
-                pintaTablaSignatura(result.data);
+                pintaTablaSeleccion(result.data,"#tableSignatura");
             }, function (result) {
                 console.log("La solicitud no se ha podido completar.");
             });
@@ -49,4 +49,5 @@ $(function () {
         $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
     });
 });
+
 

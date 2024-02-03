@@ -12,7 +12,7 @@ $(".selecciona").on("click",function(event){
         data: {api_token: token}
     })
         .then(function (result) {
-            pintaTablaSeleccion(result.data);
+            pintaTablaSeleccion(result.data,"#tableSeleccion");
          }, function (result) {
             console.log("La solicitud no se ha podido completar.");
         });
