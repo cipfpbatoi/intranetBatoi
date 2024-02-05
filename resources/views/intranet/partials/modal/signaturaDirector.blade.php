@@ -15,3 +15,4 @@
     <br/>
     @include('layouts.partials.error')
 </x-modal>
+{{ Html::script("/js/taulaCheck.js") }}
