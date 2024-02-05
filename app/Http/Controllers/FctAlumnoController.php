@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
-use Intranet\Componentes\MyMail;
 use Intranet\Componentes\Pdf;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
@@ -20,15 +19,12 @@ use DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Intranet\Http\PrintResources\A1ENResource;
-use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Http\PrintResources\A2ENResource;
 use Intranet\Http\PrintResources\A3ENResource;
 use Intranet\Http\PrintResources\A5Resource;
 use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
-use Intranet\Http\PrintResources\PrintResource;
 use Intranet\Mail\DocumentRequest;
-use Intranet\Services\DigitalSignatureService;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Intranet\Http\PrintResources\AutorizacionDireccionResource;
@@ -106,63 +102,6 @@ class FctAlumnoController extends IntranetController
             )
         );
 
-        /*$this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.A1',
-                [
-                    'text' => 'A1',
-                    'where' =>
-                        [
-                            'A1', '!=', null,
-                            'idSao', '!=', null,
-                        ]
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.A2',
-                [
-                    'text' => 'A2',
-                    'where' =>
-                        [
-                            'A2', '!=', null,
-                            'idSao', '!=', null,
-                        ]
-                ]
-            )
-        );
-
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.A3',
-                [
-                    'text' => 'A3',
-                    'where' =>
-                        [
-                            'A3', '!=', null,
-                            'idSao', '!=', null,
-                        ]
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.send',
-                [
-                    'img' => 'fa-envelope-o',
-                    'where' =>
-                        [
-                            'A2', '!=', null,
-                            'idSao', '!=', null,
-                        ]
-                ]
-            )
-        );*/
 
         $this->panel->setBoton(
             'index',
@@ -447,34 +386,5 @@ class FctAlumnoController extends IntranetController
             ));
         return back();
     }
-
-    public function send($id)
-    {
-        $fct = AlumnoFct::findOrFail($id);
-        $col = new Collection();
-        $col->push($fct->Fct->Colaboracion);
-        $attach = [];
-        for ($i = 1; $i <= 3; $i++) {
-            $anexe = "A$i";
-            if (isset($fct->$anexe)) {
-                $attach[$fct->$anexe->simpleRouteFile] = 'application/pdf';
-            }
-        }
-        $myMail = new MyMail(
-            $col,
-            view('email.fct.anexes'),
-            [
-                'from' => authUser()->email,
-                'fromPerson' => authUser()->fullName,
-                'toPeople' => 'Recursos Humans',
-                'subject' => 'Annexos per a signar'
-            ],
-            $attach,
-            true
-        );
-        return $myMail->render('alumnofct');
-    }
-
-
 
 }

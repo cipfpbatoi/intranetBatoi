@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonBasico;
@@ -170,13 +171,16 @@ class SignaturaController extends ModalController
             $signatura->sendTo += 2;
         }
         $signatura->save();
+        $signatura->mail = $signatura->Fct->Fct->Instructor->email;
+        $signatura->contact = $signatura->Fct->Fct->Instructor->nombre;
+        $col = new Collection();
+        $col->push($signatura);
         $mail = new MyMail(
-            $signatura,
-            'email.signaturaA3',
+            $col,
+            view('email.fct.anexes'),
             ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
             [$signatura->simpleRouteFile => 'application/pdf']);
-        $mail->send();
-        return back();
+        return $mail->render('/signatura');
     }
     public function sendMultiple(Request $request,$tipus)
     {
@@ -191,7 +195,8 @@ class SignaturaController extends ModalController
                     $mail = new MyMail(
                         $signatura,
                         'email.signaturaA3',
-                        ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
+                        ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName,
+                            ''],
                         [$signatura->simpleRouteFile => 'application/pdf']);
                     $mail->send();
                 }
@@ -199,6 +204,24 @@ class SignaturaController extends ModalController
             return back();
         }
         if ($tipus == 'All'){
+            if (count($request->toArray()) === 2){
+                $element = array_keys($request->except('_token'));
+                $alumnoFct = AlumnoFct::find(reset($element));
+                $signatures = [];
+                foreach ($alumnoFct->signatures as $signatura){
+                    $signatures[$signatura->simpleRouteFile] = 'application/pdf';
+                }
+                $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
+                $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
+                $col = new Collection();
+                $col->push($alumnoFct);
+                $mail = new MyMail(
+                    $col,
+                    view('email.fct.anexes'),
+                    ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
+                    $signatures);
+                return $mail->render('/signatura');
+            }
             foreach ($request->all() as $key => $value) {
                 if (is_numeric($key) && $value == 'on') {
                     $alumnoFct = AlumnoFct::find($key);
@@ -210,7 +233,7 @@ class SignaturaController extends ModalController
                     $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
                     $mail = new MyMail(
                         $alumnoFct,
-                        'email.signaturaAll',
+                        'email.fct.anexes',
                         ['subject'=>'Documents FCT de '.$alumnoFct->Alumno->fullName],
                         $signatures);
                     $mail->send();
@@ -226,6 +249,7 @@ class SignaturaController extends ModalController
         }
 
     }
+
 
     public function upload(Request $request,$id)
     {

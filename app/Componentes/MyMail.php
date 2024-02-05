@@ -76,6 +76,7 @@ class MyMail
                 $email = explode(';', $toCompost[1]);
                 $contacte =  substr($email[1], 0, -1);
                 $element->contact = strlen($contacte)>3?$contacte:null;
+                $element->mail = $email[0];
             }
             return $element;
         }
@@ -134,10 +135,10 @@ class MyMail
 
     private function sendMail($elemento, $fecha)
     {
-
         $contacto = $elemento->contact??$elemento->contacto??'A qui corresponga';
         if (isset($elemento)){
             $mail = $elemento->mail??$elemento->email;
+
             if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {
                 Mail::to($mail, $contacto)
                     ->bcc($this->from)
@@ -172,7 +173,9 @@ class MyMail
 
     private function getReceiver($elemento)
     {
-        return $elemento->id.'('.$elemento->email.';'.$elemento->contacto.')';
+        $mail = $elemento->mail??$elemento->email;
+        $contacto = $elemento->contact??$elemento->contacto;
+        return $elemento->id.'('.$mail.';'.$contacto.')';
     }
 
     /**

@@ -54,13 +54,13 @@ class ValidatePdfMultipleSignatures
         preg_match_all($regexp, $content, $result);
 
 
+
         // Check if there are any matches
         if (empty($result[0])) {
             throw new HasNoSignatureOrInvalidPkcs7Exception($this->pdfPath);
         }
 
         $this->pkcs7Paths = []; // Assume this is an array now
-
         // Iterate over all matches
         foreach ($result[1] as $index => $start) {
             $end = $result[3][$index]; // Adjusted to the third group in the pattern
@@ -76,6 +76,7 @@ class ValidatePdfMultipleSignatures
                 $this->pkcs7Paths[] = $pkcs7Path; // Store the path for later processing
             }
         }
+        dd($this);
         return $this;
 
     }
@@ -88,7 +89,6 @@ class ValidatePdfMultipleSignatures
     private function convertSignatureDataToPlainText(): self
     {
         $this->plainTextContents = [];
-
         foreach ($this->pkcs7Paths as $pkcs7Path) {
             $output         = a1TempDir(tempFile: true, fileExt: '.txt');
             $openSslCommand = "openssl pkcs7 -in {$pkcs7Path} -inform DER -print_certs > {$output}";
