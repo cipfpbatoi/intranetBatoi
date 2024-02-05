@@ -116,7 +116,7 @@ class MyMail
                 'register',
                 'editable',
                 'template',
-                'action'
+                'action',
             )
         );
     }
@@ -138,7 +138,6 @@ class MyMail
         $contacto = $elemento->contact??$elemento->contacto??'A qui corresponga';
         if (isset($elemento)){
             $mail = $elemento->mail??$elemento->email;
-
             if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {
                 Mail::to($mail, $contacto)
                     ->bcc($this->from)

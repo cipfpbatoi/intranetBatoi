@@ -226,11 +226,16 @@ class SignaturaController extends ModalController
                 if (is_numeric($key) && $value == 'on') {
                     $alumnoFct = AlumnoFct::find($key);
                     $signatures = [];
+                    $a1 = false;
                     foreach ($alumnoFct->signatures as $signatura){
                         $signatures[$signatura->simpleRouteFile] = 'application/pdf';
+                        if ($signatura->tipus == 'A1'){
+                            $a1 = true;
+                        }
                     }
                     $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
                     $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
+                    $alumnoFct->annexe = $a1;
                     $mail = new MyMail(
                         $alumnoFct,
                         'email.fct.anexes',
