@@ -161,7 +161,7 @@ class Signatura extends Model
             return 'bg-orange';
         }
         if ($this->signed >= 3) {
-            if ($this->sendTo == 1) {
+            if ($this->sendTo >= 1) {
                 return 'bg-blue-sky';
             } else {
                 return 'bg-green';
