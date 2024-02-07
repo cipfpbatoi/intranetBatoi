@@ -17,17 +17,15 @@ class PanelPollResultController extends PollController
 
     protected function search()
     {
-
         if (esRol(AuthUser()->rol, config('roles.rol.practicas'))) {
             $ppolls = hazArray(PPoll::all(),'id','id');
         }
         else {
-            $ppolls = hazArray(PPoll::where('what', '==', 'Profesor')->get(),'id','id');
+            $ppolls = hazArray(PPoll::where('what', 'Profesor')->get(),'id','id');
         }
         return Poll::whereIn('idPPoll', $ppolls)
             ->where('hasta', '<=', now())
             ->get();
-
     }
 
 
