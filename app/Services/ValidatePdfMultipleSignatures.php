@@ -76,7 +76,6 @@ class ValidatePdfMultipleSignatures
                 $this->pkcs7Paths[] = $pkcs7Path; // Store the path for later processing
             }
         }
-        dd($this);
         return $this;
 
     }

@@ -1,5 +1,4 @@
 @foreach ($panel->getElementos($pestana) as $fct)
-    @dd($pestana)
     <div class="col-md-4 col-sm-4 col-xs-12 profile_details" >
         <div id="{{$fct->id}}" class="well profile_view">
             <div id="{{$fct->id}}" class="col-sm-12 fct">
