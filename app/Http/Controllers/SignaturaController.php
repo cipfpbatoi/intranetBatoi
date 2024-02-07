@@ -11,6 +11,7 @@ use Intranet\Componentes\MyMail;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Signatura;
 use Intranet\Botones\BotonImg;
+use Intranet\Events\EmailAnnexeIndividual;
 use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
 
@@ -180,6 +181,8 @@ class SignaturaController extends ModalController
             view('email.fct.anexes'),
             ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
             [$signatura->simpleRouteFile => 'application/pdf']);
+            //per a marcar-lo com a enviat a l'instructor
+        session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
         return $mail->render('/signatura');
     }
     public function sendMultiple(Request $request,$tipus)
@@ -203,7 +206,7 @@ class SignaturaController extends ModalController
             }
             return back();
         }
-        if ($tipus == 'All'){
+        if ($tipus == 'All'){ //a l'instructor
             if (count($request->toArray()) === 2){
                 $element = array_keys($request->except('_token'));
                 $alumnoFct = AlumnoFct::find(reset($element));
@@ -220,6 +223,7 @@ class SignaturaController extends ModalController
                     view('email.fct.anexes'),
                     ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
                     $signatures);
+                session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
                 return $mail->render('/signatura');
             }
             foreach ($request->all() as $key => $value) {
@@ -241,13 +245,8 @@ class SignaturaController extends ModalController
                         'email.fct.anexes',
                         ['subject'=>'Documents FCT de '.$alumnoFct->Alumno->fullName],
                         $signatures);
+                    session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
                     $mail->send();
-                    foreach ($alumnoFct->signatures as $signatura){
-                        if ($signatura->sendTo < 2) {
-                            $signatura->sendTo += 2;
-                        }
-                        $signatura->save();
-                    }
                 }
             }
             return back();

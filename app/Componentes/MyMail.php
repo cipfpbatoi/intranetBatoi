@@ -121,6 +121,14 @@ class MyMail
         );
     }
 
+    private function  sendEvent($elements){
+        if (session()->has('email_action')) {
+            $event = session()->get('email_action');
+            event(new $event($this->elements));
+            session()->forget('email_action');
+        }
+    }
+
     public function send($fecha=null)
     {
         if (is_iterable($this->elements)) {
@@ -130,6 +138,7 @@ class MyMail
         } else {
             $this->sendMail($this->elements, $fecha);
         }
+
         session()->forget('attach');
     }
 
@@ -146,6 +155,7 @@ class MyMail
                 if ($this->register) {
                     Activity::record('email', $elemento, null, $fecha, $this->subject);
                 }
+                $this->sendEvent($elemento);
             } else {
                 Alert::danger("No s'ha pogut enviar correu a $contacto. Comprova email");
             }
