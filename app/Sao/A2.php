@@ -104,7 +104,8 @@ class A2
             $fctAl = AlumnoFct::find($fct);
             if ($fctAl){
                 // Anexe 1
-                if ($fctAl->Fct->Colaboracion->Centro->Empresa->ConveniCaducat) {
+                if ($fctAl->Fct->Colaboracion->Centro->Empresa->ConveniCaducat
+                    || $fctAl->Fct->Colaboracion->Centro->Empresa->ConveniRenovat) {
                     try {
                         $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
                         $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=101&centro=59&ct=$idSao");
