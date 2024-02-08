@@ -17,6 +17,7 @@ use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Instructor;
+use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 
 
@@ -175,6 +176,11 @@ class Importa
         $idEmpresa = $dada['idEmpresa'];
         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
         sleep(1);
+        $concierto = $driver->findElement(WebDriverBy::cssSelector("#tdNumConciertoEmp"))->getText();
+        $dada['concierto'] = $concierto;
+        $data_conveni = $driver->findElement(WebDriverBy::cssSelector("#tdFechaConciertoEmp"))->getText();
+        $date = Date::createFromFormat('d/m/Y', $data_conveni);
+        $dada['data_conveni'] = $date->format('Y-m-d');
         $table1 = $driver
             ->findElement(WebDriverBy::cssSelector("table.infoUsuario.infoEmpresa tbody tr:nth-child(2)"));
         $cif = $table1
@@ -253,6 +259,14 @@ class Importa
 
                     if ($empresa) { //Si hi ha empresa
                         $dades[$index]['centre']['id'] = self::buscaCentro($dades[$index], $empresa);
+                        if ($empresa->data_signatura < $dades[$index]['data_conveni']) {
+                            $empresa->data_signatura = $dades[$index]['data_conveni'];
+                            $empresa->save();
+                        }
+                        if (!$empresa->concierto){
+                            $empresa->concierto = $dades[$index]['concierto'];
+                            $empresa->save();
+                        }
                     }
                 } catch (Exception $e) {
                     Alert::info($e->getMessage());
@@ -304,6 +318,7 @@ class Importa
             $empresa = new Empresa(
                 [
                     'cif' => $dades['cif'],
+                    'concierto' => $dades['concierto'],
                     'nombre' => $dades['nameEmpresa'],
                     'idSao' => $dades['idEmpresa'],
                     'email' => $dades['centre']['email'],
@@ -312,7 +327,8 @@ class Importa
                     'europa' => ($dades['erasmus']=='No')?0:1,
                     'observaciones' => 'Empresa creada automàticament',
                     'sao' => 1,
-                    'direccion' => ''
+                    'direccion' => '',
+                    'data_signatura' => $dades['data_conveni'],
                 ]
             );
             $empresa->save();
