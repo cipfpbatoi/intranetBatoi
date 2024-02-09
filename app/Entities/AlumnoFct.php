@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Jenssegers\Date\Date;
 use Intranet\Events\FctAlDeleted;
 
@@ -294,7 +295,25 @@ class AlumnoFct extends Model
 
     public function getClassAttribute()
     {
-        return ($this->asociacion === 3) ? 'bg-purple':
-            ((fechaInglesa($this->hasta) <= Hoy('Y-m-d')) ?'bg-blue-sky':'');
+        if ($this->asociacion === 3) {
+            return 'bg-purple';
+        }
+        if (fechaInglesa($this->hasta) <= Hoy('Y-m-d')) {
+            return 'bg-blue-sky';
+        }
+        if ($this->adjuntos && fechaInglesa($this->desde) > Hoy('Y-m-d')) {
+            return 'bg-green';
+        }
+        return '';
     }
+
+    public function getAdjuntosAttribute()
+    {
+        // Comprova si existeix algun registre en adjuntos que continga la id de l'AlumnoFct en el camp route
+        return DB::table('adjuntos')
+            ->where('route', 'LIKE', 'alumnofctaval/'.$this->id)
+            ->exists();
+    }
+
+
 }
