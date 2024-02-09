@@ -64,7 +64,7 @@ class SignaturaController extends ModalController
             'grid',
             new BotonImg(
                 'signatura.upload',
-                ['img'=>'fa-upload up','where' => ['tipus','==','A3','signed',"==", '2','sendTo','==','1']]
+                ['img'=>'fa-upload up','where' => ['tipus','==','A3','signed',">=", '2']]
             )
         );
 
@@ -263,7 +263,9 @@ class SignaturaController extends ModalController
         $signatura = Signatura::find($id);
         $file = $request->file('file');
         $file->move($signatura->path, $signatura->fileName);
-        $signatura->signed += 1;
+        if ($signatura->signed == 2){
+            $signatura->signed += 1;
+        }
         $signatura->sendTo = 0;
         $signatura->save();
         return back();

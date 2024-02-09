@@ -85,7 +85,7 @@ class SignaturaAlumneController extends ModalController
             'grid',
             new BotonImg(
                 'signatura.upload',
-                ['img'=>'fa-upload up','where' => ['tipus','==','A3','signed',"==", '2','sendTo','==','1']]
+                ['img'=>'fa-upload up','where' => ['tipus','==','A3','signed',">=", '2']]
             )
         );
 
