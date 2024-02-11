@@ -48,6 +48,16 @@ $(function () {
         $('#signatura').modal('hide');
         $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
     });
+    $('#file').change(function() {
+        // Comprova si s'ha seleccionat algun fitxer
+        if ($(this).val()) {
+            // Habilita el checkbox
+            $('#A3').prop('disabled', false);
+        } else {
+            // Deshabilita el checkbox si no hi ha cap fitxer seleccionat (opcional)
+            $('#A3').prop('disabled', true).prop('checked', false);
+        }
+    });
 });
 
 

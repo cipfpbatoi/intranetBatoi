@@ -49,7 +49,7 @@ class Signatura extends Model
             ]);
             $sig->save();
         } else {
-            $sig->signed += $signat;
+            $sig->signed = $signat;
             $sig->sendTo = false;
             $sig->save();
         }

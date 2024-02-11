@@ -99,13 +99,23 @@ class A2
     {
         $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
         $signat = false;
-        foreach ($fcts as $fct) {
+        $a1 = $a2 = $a3 = false;
 
+        foreach ($fcts as $fct) {
+            if ($fct === 'A1') {
+                $a1 = true;
+            }
+            if ($fct === 'A2') {
+                $a2 = true;
+            }
+            if ($fct === 'A3') {
+                $a3 = true;
+            }
             $fctAl = AlumnoFct::find($fct);
             if ($fctAl){
                 // Anexe 1
-                if ($fctAl->Fct->Colaboracion->Centro->Empresa->ConveniCaducat
-                    || $fctAl->Fct->Colaboracion->Centro->Empresa->ConveniRenovat) {
+                if ($a1 && ($fctAl->Fct->Colaboracion->Centro->Empresa->ConveniCaducat
+                    || $fctAl->Fct->Colaboracion->Centro->Empresa->ConveniRenovat)) {
                     try {
                         $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
                         $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=101&centro=59&ct=$idSao");
@@ -123,40 +133,42 @@ class A2
                     sleep(1);
                 }
                 // Anexe 2
-                try {
-                    $ad = "https://foremp.edu.gva.es/inc/ajax/generar_pdf.php".
-                        "?doc=2&centro=59&idFct=$fctAl->idSao";
-                    $driver->get($ad);
-                } catch (\Throwable $exception) {
-                    $tmpFile = $tmpDirectory."A2.pdf";
-                    $saveFile = $fctAl->routeFile(2);
-                    if (file_exists($tmpFile)) {
-                        if ($certFile) {
-                            $x = config("signatures.files.A2.owner.x");
-                            $y = config("signatures.files.A2.owner.y");
-                            DigitalSignatureService::sign(
-                                $tmpFile,
-                                $saveFile,
-                                $x,
-                                $y,
-                                $certFile
-                            );
-                            Firma::saveIfNotExists(2, $fctAl->idSao, 2);
+                if ($a2) {
+                    try {
+                        $ad = "https://foremp.edu.gva.es/inc/ajax/generar_pdf.php".
+                            "?doc=2&centro=59&idFct=$fctAl->idSao";
+                        $driver->get($ad);
+                    } catch (\Throwable $exception) {
+                        $tmpFile = $tmpDirectory."A2.pdf";
+                        $saveFile = $fctAl->routeFile(2);
+                        if (file_exists($tmpFile)) {
+                            if ($certFile) {
+                                $x = config("signatures.files.A2.owner.x");
+                                $y = config("signatures.files.A2.owner.y");
+                                DigitalSignatureService::sign(
+                                    $tmpFile,
+                                    $saveFile,
+                                    $x,
+                                    $y,
+                                    $certFile
+                                );
+                                Firma::saveIfNotExists(2, $fctAl->idSao, 2);
+                            } else {
+                                copy($tmpFile, $saveFile);
+                                Firma::saveIfNotExists(2, $fctAl->idSao);
+                            }
+                            $signat = true;
+                            unlink($tmpFile);
                         } else {
-                            copy($tmpFile, $saveFile);
-                            Firma::saveIfNotExists(2, $fctAl->idSao);
-                        }
-                        $signat = true;
-                        unlink($tmpFile);
-                    } else {
-                        Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe II
+                            Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe II
                       $fctAl->idSao de $tmpFile");
+                        }
+                        $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
+                        sleep(1);
                     }
-                    $driver->get('https://foremp.edu.gva.es/index.php?op=2&subop=0');
-                    sleep(1);
                 }
                 // Anexe 3
-                if ($certFile){
+                if ($a3 && $certFile){
                     try {
                         $ad = "https://foremp.edu.gva.es/inc/ajax/generar_pdf.php".
                             "?doc=3&centro=59&idFct=$fctAl->idSao";

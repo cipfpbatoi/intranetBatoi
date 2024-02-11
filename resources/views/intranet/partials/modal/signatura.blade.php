@@ -1,14 +1,15 @@
 <!-- Modal Nou -->
 <x-modal name="signatura" title='Signatura annexes' action="/externalAuth"
          message='Selecciona'>
+    <input type="checkbox" class="elements" name="A1" checked>A1
+    <input type="checkbox" class="elements" name="A2" checked>A2
+    @if(file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp')))
+        <input type="checkbox" class="elements" name="A3" checked>A3
+    @else
+        <input type="checkbox" id='A3' class="elements" name="A3" disabled>A3
+    @endif
     <table id="tableSignatura"></table>
     <input type="hidden" name="accion" value="A2" />
-    <p>
-        <strong>
-            * Si no apareix una fct d'un alumne/a és perquè els documents ja han estat signats pel director/a.
-            Si els vols tornar a baixar els hauràs d'esborrar.
-        </strong>
-    </p>
     <br/>
     @if(file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp')))
         <div style="border: 1px solid black;background-color:#ddd" >

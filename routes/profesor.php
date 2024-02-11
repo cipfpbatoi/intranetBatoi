@@ -121,6 +121,7 @@ Route::get('/grupo/{grupo}/pdf', ['as' => 'grupo.pdf', 'uses' => 'GrupoControlle
 Route::get('/grupo/{grupo}/edit', ['as' => 'grupo.edit', 'uses' => 'GrupoController@edit']);
 Route::put('/grupo/{grupo}/edit', ['as' => 'grupo.update', 'uses' => 'GrupoController@update']);
 Route::get('/grupo/{grupo}/carnet', ['as' => 'grupo.carnet', 'uses' => 'GrupoController@carnet']);
+Route::get('/grupo/{grupo}/list', ['as' => 'grupo.list', 'uses' => 'GrupoController@list']);
 Route::get('/fse/acta', ['as' => 'profesor.fse', 'uses' => 'ProfesorController@fse']);
 
 Route::resource('/alumno_grupo', 'AlumnoGrupoController', ['except' => ['destroy', 'update']]);
