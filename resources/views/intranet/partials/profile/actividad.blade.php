@@ -17,6 +17,9 @@
             @foreach ($elemento->grupos as $grupo)
                 <li><em class="fa fa-group"></em> {{ $grupo->nombre}} </li>
             @endforeach
+            @if ($elemento->estado == 4)
+                <li><a href="/actividad/{{$elemento->id}}/showVal"><em class="fa fa-eye-slash"></em>Valoració</a></li>
+            @endif
         </ul>
         <x-slot name="rattings">
             @if ($elemento->estraescolar == 1)
