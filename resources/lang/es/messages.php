@@ -112,6 +112,7 @@ return array(
         'nojustify' => 'Sin justificante',
         'withjustify' => 'Con justificante',
         'impresa' => 'Impresas',
+        'valorada' => 'Valoradas',
         'registrada' => 'Registradas',
         'unpaid' => 'Pedientes de Cobro',
         'justificada' => 'Justificadas',

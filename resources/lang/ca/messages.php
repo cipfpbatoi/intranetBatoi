@@ -114,6 +114,7 @@ return array(
         'autorizada' => 'Autoritzades',
         'impresa' => 'Impreses',
         'registrada' => 'Registrades',
+        'valorada' => 'Valorades',
         'unpaid' => 'Pedents de Cobrament',
         'nojustify' => 'Sense justificant',
         'withjustify' => 'Amb justificant',
