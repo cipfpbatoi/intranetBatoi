@@ -55,7 +55,7 @@ $(function () {
             $('#A3').prop('disabled', false);
         } else {
             // Deshabilita el checkbox si no hi ha cap fitxer seleccionat (opcional)
-            $('#A3').prop('disabled', true).prop('checked', false);
+            $('#A3').prop('disabled', true);
         }
     });
 });
