@@ -122,6 +122,8 @@ return array(
             'delete' => 'Esborrar Activitat',
             'autorizar' => 'Autoritzar totes activitats',
             'notification' => 'Avisar professorat',
+            'pdfVal' => 'Imprimir Valoració',
+            'showVal' => 'Mostrar valoració',
             '2' => 'Autoritzada',
             '3' => 'Impressa',
             '4' => 'Valorada',

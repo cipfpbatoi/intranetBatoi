@@ -124,6 +124,8 @@ return array(
             'autorizar' => 'Autorizar todas actividades',
             'notification' => 'Avisar profesorado',
             'value' => 'Valorar actividad',
+            'pdfVal' => 'Imprimir Valoración',
+            'showVal' => 'Mostrar valoración',
             '2' => 'Autorizada',
             '3' => 'Impresa',
             '4' => 'Valorada',

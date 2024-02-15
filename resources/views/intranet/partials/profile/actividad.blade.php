@@ -12,7 +12,13 @@
         <h5>Participants</h5>
         <ul class="list-unstyled">
             @foreach ($elemento->profesores as $profesor)
-                <li><em class="fa fa-user"></em> {{$profesor->nombre}} {{$profesor->apellido1}}</li>
+                <li><em class="fa fa-user"></em>
+                    @if($profesor->pivot->coordinador)
+                        <strong>{{$profesor->nombre}} {{$profesor->apellido1}}</strong>
+                    @else
+                        {{$profesor->nombre}} {{$profesor->apellido1}}
+                    @endif
+                </li>
             @endforeach
             @foreach ($elemento->grupos as $grupo)
                 <li><em class="fa fa-group"></em> {{ $grupo->nombre}} </li>
@@ -28,9 +34,6 @@
                     <a href='#' class='btn btn-success btn-xs' >
                 @endif
                 {{ $elemento->situacion }}</a>
-            @endif
-            @if ($elemento->estado == 4)
-                <a href="/actividad/{{$elemento->id}}/showVal" class="btn btn-link btn-xs">Valoració</a>
             @endif
             @if ($elemento->fueraCentro)
                 <a href='#' class='btn btn-info btn-xs' >Extraescolar</a>
