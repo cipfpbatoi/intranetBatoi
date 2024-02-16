@@ -7,8 +7,9 @@
                 $elemento->hasta }}"
             title="{{$elemento->name}}"
         >
-        <p><strong>Descripció</strong> : {{$elemento->descripcion}}</p>
-        <p><strong>Objectius</strong> : {{$elemento->objetivos}}</p>
+        <p><strong>Descripció</strong> : <em style="font-size: smaller">{{$elemento->descripcion}}</em></p>
+        <p><strong>Objectius</strong> : <em style="font-size: smaller">{{$elemento->objetivos}}</em></p>
+        <p><strong>Comentaris</strong> : <em style="font-size: smaller">{{$elemento->comentarios}}</em></p>
         <h5>Participants</h5>
         <ul class="list-unstyled">
             @foreach ($elemento->profesores as $profesor)
