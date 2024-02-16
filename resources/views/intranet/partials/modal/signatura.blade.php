@@ -6,7 +6,7 @@
     @if(file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp')))
         <input type="checkbox" class="elements" name="A3" checked>A3
     @else
-        <input type="checkbox" id='A3' class="elements" name="A3" checked disabled>A3
+        <input type="checkbox" id='AA3' class="elements" name="A3" checked disabled>A3
     @endif
     <table id="tableSignatura"></table>
     <input type="hidden" name="accion" value="A2" />
