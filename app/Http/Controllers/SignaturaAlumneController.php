@@ -45,7 +45,9 @@ class SignaturaAlumneController extends ModalController
         $alumnoFcts = AlumnoFct::where('idAlumno',authUser()->nia)->get();
         $this->signatures = new Collection();
         foreach ($alumnoFcts as $alumnoFct){
-            $this->signatures->add($alumnoFct->Signatures->where('tipus','A3')->first());
+            if ($signatura = $alumnoFct->Signatures->where('tipus','A1')->first()) {
+                $this->signatures->add($signatura);
+            }
         }
         $this->titulo = ['quien' => authUser()->fullName];
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
