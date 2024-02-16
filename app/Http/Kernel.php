@@ -4,6 +4,7 @@ namespace Intranet\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
+
 class Kernel extends HttpKernel
 {
     /**
@@ -37,6 +38,7 @@ class Kernel extends HttpKernel
             \Intranet\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Intranet\Http\Middleware\LangMiddleware::class,
+            \Intranet\Http\Middleware\CustomBackMiddleware::class
         ],
 
         'api' => [
