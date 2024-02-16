@@ -8,8 +8,12 @@
             title="{{$elemento->name}}"
         >
         <p><strong>Descripció</strong> : <em style="font-size: smaller">{{$elemento->descripcion}}</em></p>
-        <p><strong>Objectius</strong> : <em style="font-size: smaller">{{$elemento->objetivos}}</em></p>
-        <p><strong>Comentaris</strong> : <em style="font-size: smaller">{{$elemento->comentarios}}</em></p>
+        @if ($elemento->objetivos)
+            <p><strong>Objectius</strong> : <em style="font-size: smaller">{{$elemento->objetivos}}</em></p>
+        @endif
+        @if ($elemento->comentarios)
+            <p><strong>Comentaris</strong> : <em style="font-size: smaller">{{$elemento->comentarios}}</em></p>
+        @endif
         <h5>Participants</h5>
         <ul class="list-unstyled">
             @foreach ($elemento->profesores as $profesor)
