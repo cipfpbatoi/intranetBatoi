@@ -15,6 +15,9 @@
         <h2> <em style="text-decoration: underline">Descripció de l'activitat</em> </h2>
         <div style="display: inline-block;width: 20%">
             <strong>Data de l'activitat:</strong><br/>{{$Actividad->desde}}<br/>
+            <strong>Departament:</strong><br/>
+            {{$profesor->Departamento?$profesor->Departamento->vliteral:'Desconegut'}}
+            <br/>
             <strong>Professors Participants:</strong><br/>
             <ul class="list-unstyled">
                 @foreach ($Actividad->profesores as $profesor)
@@ -27,21 +30,17 @@
                     </li>
                 @endforeach
             </ul>
-        </div>
-        <div style="display: inline-block;width: 50%;margin-right:30px;float: right">
-            <strong>Objectius:</strong><br/><em style="font-size: smaller">{{$Actividad->objetivos}}</em><br/>
-            <strong>Comentaris:</strong><br/><em style="font-size: smaller">{{$Actividad->comentarios}}</em><br/>
-        </div>
-        <div style="display: inline-block;width: 25%;float: right">
-            <strong>Departament:</strong><br/>
-            {{$profesor->Departamento?$profesor->Departamento->vliteral:'Desconegut'}}
-            <br/>
             <strong>Grups Participants:</strong><br/>
             <ul class="list-unstyled">
                 @foreach ($Actividad->grupos as $grupo)
                     <li><em class="fa fa-group"></em> {{ $grupo->nombre}} </li>
                 @endforeach
             </ul>
+        </div>
+        <div style="display: inline-block;width: 70%;margin-right:30px;float: right">
+            <strong>Descripció:</strong><br/><em style="font-size: smaller">{{$Actividad->descripcion}}</em><br/>
+            <strong>Objectius:</strong><br/><em style="font-size: smaller">{{$Actividad->objetivos}}</em><br/>
+            <strong>Comentaris:</strong><br/><em style="font-size: smaller">{{$Actividad->comentarios}}</em><br/>
         </div>
         <hr/>
         <h2 style="text-decoration: underline ">Valoració de l'activitat</h2>
