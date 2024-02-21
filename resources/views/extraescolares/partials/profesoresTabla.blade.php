@@ -18,6 +18,7 @@
     </table>
 </div>
 <div class="gruposContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
+    <p><strong>Atenció! Els professors participants en les extraescolars no han de tindre classe amb altres grups durant les hores en què es realitze l'activitat</strong></p>
     <form method="POST" class="agua" action="/actividad/{!!$Actividad->id!!}/nuevoProfesor">
         {{ csrf_field() }}
         <input type='hidden' name='idActividad' value="{!!$Actividad->id!!}">
