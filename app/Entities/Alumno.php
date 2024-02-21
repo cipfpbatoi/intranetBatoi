@@ -248,5 +248,12 @@ class Alumno extends Authenticatable
         return $nac->age;
     }
 
+    public function esMenorEdat($day)
+    {
+        $hoy = new Date($day);
+        $hace18 = $hoy->subYears(18)->toDateString();
+        return fechaInglesa($this->fecha_nac) > $hace18 ;
+    }
+
 
 }

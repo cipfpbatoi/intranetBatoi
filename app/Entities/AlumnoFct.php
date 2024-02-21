@@ -158,6 +158,13 @@ class AlumnoFct extends Model
     {
         return $this->Alumno->ShortName;
     }
+
+    public function getNomEdatAttribute()
+    {
+        $string = $this->Alumno->ShortName.' ';
+        $perotet = $this->Alumno->esMenorEdat($this->desde)?"<em class='fa fa-child'></em>":'';
+        return $string.$perotet;
+    }
     public function getFullNameAttribute()
     {
         return $this->Alumno->fullName;

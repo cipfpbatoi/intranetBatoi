@@ -194,12 +194,12 @@ class SignaturaController extends ModalController
                     $signatura = Signatura::find($key);
                     $signatura->sendTo = 1;
                     $signatura->save();
-                    $signatura->mail = $signatura->Fct->Alumno->email;
-                    $signatura->contact = $signatura->Fct->Alumno->fullName;
+                    $signatura->mail = $signatura->Alumno->email;
+                    $signatura->contact = $signatura->Alumno->fullName;
                     $mail = new MyMail(
                         $signatura,
                         'email.signaturaA3',
-                        ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName,
+                        ['subject'=>'Documents FCT de '.$signatura->Alumno->fullName,
                             ''],
                         [$signatura->simpleRouteFile => 'application/pdf']);
                     $mail->send();
@@ -222,7 +222,7 @@ class SignaturaController extends ModalController
                 $mail = new MyMail(
                     $col,
                     view('email.fct.anexes'),
-                    ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
+                    ['subject'=>'Documents FCT de '.$signatura->Alumno->fullName],
                     $signatures);
                 session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
                 return $mail->render('/signatura');

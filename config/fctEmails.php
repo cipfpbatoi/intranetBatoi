@@ -196,6 +196,7 @@ return [
         'modelo' => 'Signatura',
         'route' => 'A3',
         'finder' => 'A3',
+        'editable' => true,
     ],
     'A5' => [
         'modelo' => 'AlumnoFct',

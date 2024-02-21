@@ -28,6 +28,10 @@ class Signatura extends Model
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
 
+    public function Alumno(){
+        return $this->hasOneThrough(Alumno::class,AlumnoFct::class,'idSao','nia','idSao','idAlumno');
+    }
+
     public function deleteFile()
     {
         if (file_exists($this->routeFile)) {
