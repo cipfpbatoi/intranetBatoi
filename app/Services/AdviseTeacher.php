@@ -39,22 +39,22 @@ class AdviseTeacher
     public static function gruposAfectados($elemento, $idProfesor)
     {
         if (!esMismoDia($elemento->desde, $elemento->hasta)) {
-            return (Horario::distinct()
+            return Horario::distinct()
                 ->select('idGrupo')
                 ->Profesor($idProfesor)
                 ->whereNotNull('idGrupo')
-                ->get());
+                ->get();
         }
 
         $diaSemana = nameDay($elemento->desde);
         if (count($horas = self::horasAfectadas($elemento))) {
-            return (Horario::distinct()
+            return Horario::distinct()
                 ->select('idGrupo')
                 ->Profesor($idProfesor)
                 ->Dia($diaSemana)
                 ->whereNotNull('idGrupo')
                 ->whereIn('sesion_orden', $horas)
-                ->get());
+                ->get();
         }
 
         return collect();
@@ -85,4 +85,14 @@ class AdviseTeacher
             }
         }
     }
+
+    public static function horariAltreGrup($elemento, $professorId)
+    {
+        $horas = self::gruposAfectados($elemento, $professorId);
+        $grupos = hazArray($elemento->grupos,'codigo','codigo');
+
+        return $horas->whereNotIn('idGrupo', $grupos)??collect();
+
+    }
+
 }
