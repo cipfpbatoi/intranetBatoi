@@ -135,6 +135,7 @@ class DigitalSignatureService
                 ->signature();
             file_put_contents($newFile, $signed_pdf_content);
             if (self::validateUserSign($newFile)){
+
                 Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
                     'signUser' => $user,
                     'intranetUser' => authUser()->fullName,

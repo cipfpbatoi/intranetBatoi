@@ -86,6 +86,7 @@ class PanelSignaturaController extends BaseController
         $signed = array();
         if (isset($decrypt)) {
             try {
+
                 $file = DigitalSignatureService::decryptCertificateUser($decrypt, authUser());
                 $cert = DigitalSignatureService::readCertificat($file, $passCert);
                 foreach ($signatures as $signature) {
