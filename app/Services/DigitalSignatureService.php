@@ -134,18 +134,26 @@ class DigitalSignatureService
             $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy)
                 ->signature();
             file_put_contents($newFile, $signed_pdf_content);
-            Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
+            if (self::validateUserSign($newFile)){
+                Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
                     'signUser' => $user,
                     'intranetUser' => authUser()->fullName,
                     'pdfPath' => $file,
                     'signedPdfPath' => $newFile,
-                    ]);
+                ]);
+            } else {
+                Log::channel('certificate')->alert("Persona que signa diferent al certificat", [
+                    'intranetUser' => authUser()->fullName,
+                    'pdfPath' => $file,
+                ]);
+                throw new IntranetException("Persona que signa diferent al certificat");
+            }
         } catch (\Throwable $th) {
             Log::channel('certificate')->alert("Password certificat incorrecte", [
                 'intranetUser' => authUser()->fullName,
                 'pdfPath' => $file,
             ]);
-            throw new IntranetException("Error al signar el document: ".$th->getMessage());
+            throw new IntranetException("Error al signar el document.: ".$th->getMessage());
         }
     }
 
@@ -162,6 +170,14 @@ class DigitalSignatureService
     public static function validate($file){
         $signatura = ValidatePdfSignature::from($file);
         return $signatura->data;
+    }
+
+    public static function validateUserSign($file,$dni=null){
+        if (is_null($dni)){
+            $dni = substr(authUser()->dni,1);
+        }
+        $signatura = ValidatePdfSignature::from($file);
+        return str_contains($signatura->data['CN'][0],$dni);
     }
 
 

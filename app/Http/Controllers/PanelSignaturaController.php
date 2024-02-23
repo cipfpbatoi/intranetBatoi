@@ -14,6 +14,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
 use Intranet\Exceptions\CertException;
+use Intranet\Exceptions\IntranetException;
 use Intranet\Services\DigitalSignatureService;
 use Styde\Html\Facades\Alert;
 
@@ -90,13 +91,13 @@ class PanelSignaturaController extends BaseController
                 foreach ($signatures as $signature) {
                     $signatura = Signatura::find($signature);
                     if ($signatura) {
-                        $file = $signatura->routeFile;
+                        $fileToSign = $signatura->routeFile;
                         if (file_exists($file)) {
                             $x = config("signatures.files.{$signatura->tipus}.director.x");
                             $y = config("signatures.files.{$signatura->tipus}.director.y");
                             DigitalSignatureService::sign(
-                                $file,
-                                $file,
+                                $fileToSign,
+                                $fileToSign,
                                 $x,
                                 $y,
                                 $cert
@@ -108,6 +109,19 @@ class PanelSignaturaController extends BaseController
                     }
                 }
             } catch (CertException $exception){
+                Log::channel('certificate')->alert($exception->getMessage(), [
+                    'intranetUser' => authUser()->fullName,
+                ]);
+                Alert::warning($exception->getMessage());
+                Mensaje::send(
+                    config('avisos.errores'),
+                    $exception->getMessage()." : ".authUser()->fullName
+                );
+                if (isset($file)) {
+                    unlink($file);
+                }
+                return back();
+            } catch (IntranetException $exception){
                 Log::channel('certificate')->alert($exception->getMessage(), [
                     'intranetUser' => authUser()->fullName,
                 ]);
