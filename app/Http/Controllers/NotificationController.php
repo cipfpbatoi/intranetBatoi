@@ -23,7 +23,7 @@ class NotificationController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['emisor', 'motivo', 'fecha'];
+    protected $gridFields = ['fecha','emisor', 'motivo'];
     /**
      * @var
      */
