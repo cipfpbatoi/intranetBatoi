@@ -178,7 +178,10 @@ class DigitalSignatureService
             $dni = substr(authUser()->dni,1);
         }
         $signatura = ValidatePdfSignature::from($file);
-        return str_contains($signatura->data['CN'][0],$dni);
+        if (isset($signatura->data['CN'][0])) {
+            return str_contains($signatura->data['CN'][0],$dni);
+        }
+        return true;    
     }
 
 
