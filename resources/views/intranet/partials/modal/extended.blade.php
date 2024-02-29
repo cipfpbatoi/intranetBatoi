@@ -15,7 +15,9 @@
                 <option value="A5">@lang("models.Fct.an5")</option>
         </select>
         <input type="checkbox" name="zip" id="zip" /> Zip
-        <input type="checkbox" name="mostraDiv" id="mostraDiv" /> Signatura Digital
+        @if(file_exists(authUser()->pathCertificate))
+                <input type="checkbox" name="mostraDiv" id="mostraDiv" /> Signatura Digital
+        @endif
         <hr/>
         <table id="tableSeleccion"></table>
         <div id="divSignatura" style="display:none;">

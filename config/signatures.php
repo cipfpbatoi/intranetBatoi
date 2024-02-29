@@ -41,7 +41,7 @@ return [
                 'y' => 240,
             ],
         ],
-        'AutTutor' => [
+        'autTutor' => [
             'owner' => [
                 'x' => 100 ,
                 'y' => 250,
