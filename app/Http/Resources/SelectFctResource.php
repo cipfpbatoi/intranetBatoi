@@ -14,9 +14,15 @@ class SelectFctResource extends JsonResource
      */
     public function toArray($request)
     {
+        $nom_centre = isset($this->Colaboracion->Centro->nombre) ?
+            $this->Colaboracion->Centro->nombre:
+            $this->Fct->Colaboracion->Centro->nombre;
+        $instructor = isset($this->Instructor->nombre) ?
+            $this->Instructor->nombre:
+            $this->Fct->Instructor->nombre;
         return [
             'id' => $this->id,
-            'texto' => $this->Instructor->nombre.'('.$this->Colaboracion->Centro->nombre.')',
+            'texto' => "$instructor($nom_centre)",
             'marked' => $this->marked
         ];
     }

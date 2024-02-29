@@ -40,6 +40,7 @@ return [
             'register' => true
         ],
         'modelo' => 'Fct',
+        'finder' => 'AlumnoNoFct',
         'template' =>'email.fct.info',
         'route' => 'fct',
         'fcts' => 1,
@@ -66,7 +67,6 @@ return [
             'register' => true
         ],
         'modelo'=> 'AlumnoFct',
-        'finder' => 'AlumnoNoFct',
         'view' => 'email.fct.ini',
         'route' => 'fct',
         'template' => 'email.fct.ini',
