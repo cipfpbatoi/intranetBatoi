@@ -175,13 +175,16 @@ class MyMail
     {
         $to = '';
         foreach ($elementos as $elemento) {
-            $to .= $this->getReceiver($elemento).',';
+            if (isset($elemento)){
+                $to .= $this->getReceiver($elemento).',';
+            }
         }
         return $to;
     }
 
     private function getReceiver($elemento)
     {
+
         $mail = $elemento->mail??$elemento->email;
         $contacto = $elemento->contact??$elemento->contacto;
         return $elemento->id.'('.$mail.';'.$contacto.')';
