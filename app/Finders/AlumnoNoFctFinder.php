@@ -8,12 +8,12 @@ use Intranet\Entities\AlumnoFct;
 class AlumnoNoFctFinder extends Finder
 {
     public function exec(){
-        $fcts = AlumnoFct::select('AlumnoFct.*', 'alumnos.apellido1 as nombreAlumno')
+        /**$fcts = AlumnoFct::select('AlumnoFct.*', 'alumnos.apellido1 as nombreAlumno')
             ->join('alumnos', 'AlumnoFct.nia', '=', 'alumnos.nia')
             ->misFcts($this->dni)
             ->orderBy('nombreAlumno')
-            ->get();
-        //$fcts =  AlumnoFct::misFcts($this->dni)->orderBy('idFct')->orderBy('desde')->get();
+            ->get();*/
+        $fcts =  AlumnoFct::misFcts($this->dni)->orderBy('idFct')->orderBy('desde')->get();
         return $this->filter($fcts);
     }
 
