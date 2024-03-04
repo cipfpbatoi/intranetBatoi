@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Jenssegers\Date\Date;
 use Intranet\Events\FctAlDeleted;
 
@@ -11,7 +12,7 @@ class AlumnoFct extends Model
 {
 
     use BatoiModels;
-    protected $fillable = ['id', 'desde','hasta','horas','beca','autorizacion'];
+    protected $fillable = ['id', 'desde','hasta','horas','beca','autorizacion','flexible'];
     
     protected $rules = [
         'id' => 'required',
@@ -24,11 +25,12 @@ class AlumnoFct extends Model
         'desde' => ['type' => 'date'],
         'hasta' => ['type' => 'date'],
         'beca' => ['type' => 'hidden'],
-        'autorizacion' => ['type' => 'checkbox']
+        'autorizacion' => ['type' => 'checkbox'],
+        'flexible' => ['type' => 'checkbox']
     ];
     public $timestamps = false;
     protected $dispatchesEvents = [
-        'deleting' => FctAlDeleted::class,
+        'deleted' => FctAlDeleted::class,
     ];
     
     public function Alumno()
@@ -57,6 +59,7 @@ class AlumnoFct extends Model
     }
 
 
+    /*
     public function scopeMisFcts($query, $profesor=null)
     {
         $profesor = $profesor?$profesor:authUser()->dni;
@@ -72,40 +75,32 @@ class AlumnoFct extends Model
             ->toArray();
         return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
     }
+    */
+    public function scopeMisFcts($query, $profesor=null)
+    {
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor);
+    }
+
 
     public function scopeMisProyectos($query, $profesor=null)
     {
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
-        $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
-        $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
-        $fcts = Fct::select('id')
-            ->whereIn('idColaboracion', $colaboraciones)
-            ->orWhere('asociacion', 3)
-            ->get()
-            ->toArray();
-        return $query->whereIn('idAlumno', $alumnos)
-            ->whereIn('idFct', $fcts)
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor)
             ->esAval()
             ->whereNull('calProyecto');
     }
     
     public function scopeMisDual($query, $profesor=null)
     {
-        $profesor = $profesor?$profesor:authUser()->dni;
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor, true)->get()->toArray();
-        $cicloC = Grupo::select('idCiclo')->QTutor($profesor, true)->first()->idCiclo??null;
-        $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
-        $fcts = Fct::select('id')->whereIn('idColaboracion', $colaboraciones)
-                ->where('asociacion', 4)->get()->toArray();
-        return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor)->esDual();
     }
     
     public function scopeMisConvalidados($query, $profesor=null)
     {
-        $profesor = $profesor?$profesor:authUser()->dni;
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
-        $fcts = Fct::select('id')->Where('asociacion', 3)->get()->toArray();
-        return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor)->esExempt();
     }
 
     public function scopeEsFct($query)
@@ -121,6 +116,18 @@ class AlumnoFct extends Model
     public function scopeEsDual($query)
     {
         $fcts = Fct::select('id')->esDual()->get()->toArray();
+        return $query->whereIn('idFct', $fcts);
+    }
+
+    public function scopeEsErasmus($query)
+    {
+        $fcts = Fct::select('id')->esErasmus()->get()->toArray();
+        return $query->whereIn('idFct', $fcts);
+    }
+
+    public function scopeEsExempt($query)
+    {
+        $fcts = Fct::select('id')->esExempt()->get()->toArray();
         return $query->whereIn('idFct', $fcts);
     }
 
@@ -150,6 +157,13 @@ class AlumnoFct extends Model
     public function getNombreAttribute()
     {
         return $this->Alumno->ShortName;
+    }
+
+    public function getNomEdatAttribute()
+    {
+        $string = $this->Alumno->ShortName.' ';
+        $perotet = $this->Alumno->esMenorEdat($this->desde)?"<em class='fa fa-child'></em>":'';
+        return $string.$perotet;
     }
     public function getFullNameAttribute()
     {
@@ -193,14 +207,14 @@ class AlumnoFct extends Model
 
     public function getProjecteAttribute()
     {
-        return isset($this->calProyecto)?
+        /*return isset($this->calProyecto)?
             ($this->calProyecto == 0 ? 'No presenta' : $this->calProyecto)
-            : 'No Avaluat';
-       /* return match($this->calProyecto){
+            : 'No Avaluat';*/
+       return match($this->calProyecto){
             0 =>  'No presenta' ,
             null => 'No Avaluat',
             default => $this->calProyecto,
-        };*/
+        };
 
     }
     public function getAsociacionAttribute()
@@ -269,9 +283,16 @@ class AlumnoFct extends Model
         return Signatura::where('idSao', $this->idSao)->where('tipus', 'A3')->get()->first();
     }
 
+    public function getSignAttribute()
+    {
+        return Signatura::where('idSao', $this->idSao)->get()->count()?true:false;
+    }
+
     public function routeFile($anexe)
     {
-        return storage_path('app/annexes/')."A{$anexe}_{$this->idSao}.pdf";
+        return (strlen($anexe) > 1)
+            ? storage_path('app/annexes/')."{$anexe}_{$this->idSao}.pdf"
+            : storage_path('app/annexes/')."A{$anexe}_{$this->idSao}.pdf";
     }
 
     public function getIdPrintAttribute()
@@ -281,7 +302,25 @@ class AlumnoFct extends Model
 
     public function getClassAttribute()
     {
-        return ($this->asociacion === 3) ? 'bg-purple':
-            ((fechaInglesa($this->hasta) <= Hoy('Y-m-d')) ?'bg-blue-sky':'');
+        if ($this->asociacion === 3) {
+            return 'bg-purple';
+        }
+        if (fechaInglesa($this->hasta) <= Hoy('Y-m-d')) {
+            return 'bg-blue-sky';
+        }
+        if ($this->adjuntos && fechaInglesa($this->desde) > Hoy('Y-m-d')) {
+            return 'bg-green';
+        }
+        return '';
     }
+
+    public function getAdjuntosAttribute()
+    {
+        // Comprova si existeix algun registre en adjuntos que continga la id de l'AlumnoFct en el camp route
+        return DB::table('adjuntos')
+            ->where('route', 'LIKE', 'alumnofctaval/'.$this->id)
+            ->exists();
+    }
+
+
 }

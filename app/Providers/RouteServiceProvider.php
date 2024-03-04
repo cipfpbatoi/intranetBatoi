@@ -166,7 +166,7 @@ class RouteServiceProvider extends ServiceProvider
         Route::group([
             'middleware' => ['web','role:jefe_dpto'],
             'namespace' => $this->namespace,
-            'prefix' => 'departamento'
+            'prefix' => 'depto'
                 ], function ($router) {
             require base_path('routes/jefeDpto.php');
         });

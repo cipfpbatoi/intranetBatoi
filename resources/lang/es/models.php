@@ -69,7 +69,7 @@ return array(
                 'index' => 'Listado Profesores',
                 'list' => 'Profesores Ausentes',
                 'horario-cambiar' => 'Cambiar horario Profesor',
-                'titulo' => 'Entrevistas FCTs de :quien',
+                'titulo' => 'Documentación Adicional Prácticas de :quien',
 
         ),
         'profesor' => array(
@@ -124,6 +124,8 @@ return array(
             'autorizar' => 'Autorizar todas actividades',
             'notification' => 'Avisar profesorado',
             'value' => 'Valorar actividad',
+            'pdfVal' => 'Imprimir Valoración',
+            'showVal' => 'Mostrar valoración',
             '2' => 'Autorizada',
             '3' => 'Impresa',
             '4' => 'Valorada',
@@ -336,7 +338,9 @@ return array(
             'pg0301' => 'Hoja Control Servicio',
             'pr0402' => 'Entrevista Alumnado',
             'pr0401' => 'Entrevista Final Instructor',
-            'pasqua' => 'Hoja Vacaciones',
+            'autTutor' => 'Autorización Tutor Situación Excepcional',
+            'autDireccio' => 'Autorización Dirección Situación Excepcional',
+            'autAlumnat' => 'Conformidad Alumnado Situación Excepcional',
             'print' => 'Informes',
             'list' => 'Acta Grupo :quien',
             'acta' => 'Pedir acta de evaluación',
@@ -344,9 +348,9 @@ return array(
             'send' => 'Enviar Correo Inicial Alumnos',
             'default' => 'x Empresa',
             'link' => 'Adjuntar ficheros',
-            'an1' => 'Imprimir anexos I',
-            'an2' => 'Imprimir anexos II',
-            'an3' => 'Imprimir anexos III',
+            'an1' => 'Imprimir anexos I firmados',
+            'an2' => 'Imprimir anexos II firmados',
+            'an3' => 'Imprimir anexos III firmados',
             'an5' => 'Imprimir comptencias adquiridas'
         ),
         'Ipguardia' => array(
@@ -502,10 +506,14 @@ return array(
         'Sao' => array(
             'post' => 'Conexión SAO',
         ),
-        'Signatura' => array(
-            'post' => 'Firma Anexos',
-            'index' => 'Lista de Firmas pendientes',
-        ),
+    'Signatura' => array(
+        'post' => 'Firma  Anexos',
+        'index' => 'Listado de firmas pendientes de :quien',
+        'show' => 'Ver Estado Firmas',
+        'pdf' => 'Imprimir Fichero',
+        'delete' => 'Borrar Fichero',
+        'send' => "Enviar al instructor"
+    ),
         'Solicitud' => array(
             'index' => "Derivaciones al departamento de Orientación",
             'create' => "Cuestionario de derivación",
@@ -560,7 +568,8 @@ return array(
             'ArticuloLote' => 'Articulo de Factura',
             'Articulo' => 'Articulo',
             'Incidencia' => 'Incidencia',
-            'Fctcap' => 'Revisión FCT'
+            'Fctcap' => 'Revisión FCT',
+            'Signatura' => 'Firmas Digitales'
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

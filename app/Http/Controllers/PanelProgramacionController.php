@@ -18,7 +18,8 @@ class PanelProgramacionController extends BaseController
     protected $vista = ['seguimiento' => 'programacion.seguimiento'];
     protected $modal = true;
     
-   
+
+
     protected function search()
     {
         return Programacion::where('estado', '>', '0')
@@ -29,8 +30,29 @@ class PanelProgramacionController extends BaseController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('profile', new BotonPost("$this->model.checklist", ['class' => 'btn-primary checklist', 'where' => ['estado', '==', '1']], true));
-        $this->panel->setBoton('profile', new BotonIcon("$this->model.resolve", ['class' => 'btn-success resolve', 'where' => ['estado', '==', '2']], true));
-        $this->panel->setBoton('profile', new BotonIcon("$this->model.unauthorize", ['class' => 'btn-danger unauthorize', 'where' => ['estado', '>=', '2']], true));
+        $this->panel->setBoton(
+            'profile',
+            new BotonPost(
+                "$this->model.checklist",
+                ['class' => 'btn-primary checklist', 'where' => ['estado', '==', '1']],
+                true
+            )
+        );
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                "$this->model.resolve",
+                ['class' => 'btn-success resolve', 'where' => ['estado', '==', '2']],
+                true
+            )
+        );
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                "$this->model.unauthorize",
+                ['class' => 'btn-danger unauthorize', 'where' => ['estado', '>=', '2']],
+                true
+            )
+        );
     }
 }

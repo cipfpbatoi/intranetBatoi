@@ -19,6 +19,7 @@ class TutoriaGrupo extends Model
         'observaciones',
         'fecha',
     ];
+
     protected $rules = [
         'idTutoria' => 'required',
         'idGrupo' => 'required',
@@ -34,6 +35,9 @@ class TutoriaGrupo extends Model
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
+    ];
+    protected $visible = [
+        'observaciones'
     ];
     
     public function getFechaAttribute($entrada)

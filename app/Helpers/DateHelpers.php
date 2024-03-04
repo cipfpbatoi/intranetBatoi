@@ -149,7 +149,7 @@ function esMayor($ini, $fin)
 function day($fecha)
 {
     $fc1 = new Jenssegers\Date\Date($fecha);
-    return $fc1->day;
+    return str_pad($fc1->day, 2, '0', STR_PAD_LEFT);
 }
 
 /**
@@ -169,7 +169,7 @@ function month($fecha)
 function mes($fecha)
 {
     $fc1 = new Jenssegers\Date\Date($fecha);
-    return $fc1->month;
+    return str_pad($fc1->month, 2, '0', STR_PAD_LEFT);
 }
 
 

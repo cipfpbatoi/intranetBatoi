@@ -14,9 +14,12 @@ class FctFinder extends Finder
 
     private function filter(&$elements)
     {
+
         foreach ($elements as $element) {
-            $fechaUltimaFct = $element->AlFct()->orderBy('hasta', 'desc')->first()->hasta;
-            if (fechaInglesa($fechaUltimaFct) < hoy()) {
+            $fechaUltimaFct = isset($element->AlFct()->first()->hasta) ?
+                $element->AlFct()->first()->hasta :
+                null;
+            if ($fechaUltimaFct && fechaInglesa($fechaUltimaFct) < hoy()) {
                 $element->marked = false;
             } else {
                 $element->marked = !$this->existsActivity($element->id)?true:false;

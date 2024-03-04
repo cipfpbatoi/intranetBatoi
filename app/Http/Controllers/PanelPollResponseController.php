@@ -11,16 +11,16 @@ class PanelPollResponseController extends PollController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('grid',new BotonImg('poll.do',['img' =>'fa-check-square-o']));
+        $this->panel->setBoton('grid', new BotonImg('poll.do', ['img' =>'fa-check-square-o']));
     }
 
     protected function search()
     {
         $polls = Poll::all();
         $key = isset(AuthUser()->nia)?'nia':'dni';
-        $activas =  $polls->where('state','Activa')->where('keyUser',$key);
+        $activas =  $polls->where('state', 'Activa')->where('keyUser', $key);
         $usuario = [];
-        foreach ($activas as $activa){
+        foreach ($activas as $activa) {
             $modelo = $activa->modelo;
             if ($modelo::has()) {
                 $usuario[] = $activa;

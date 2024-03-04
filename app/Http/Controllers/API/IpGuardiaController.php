@@ -7,7 +7,7 @@ use DB;
 
 class IpGuardiaController extends ApiBaseController
 {
-    protected $model = 'ipGuardia';
+    protected $model = 'IpGuardia';
 
     public function arrayIps()
     {

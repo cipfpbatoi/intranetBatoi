@@ -4,10 +4,13 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Grupo;
+use Intranet\Http\PrintResources\A1Resource;
+use Intranet\Services\FDFPrepareService;
 use Response;
 use Intranet\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
@@ -133,6 +136,11 @@ class EmpresaController extends IntranetController
         }
         Alert::danger(trans("messages.generic.nodocument"));
         return back();
+    }
+
+    public function A1($id)
+    {
+        return response()->file(FDFPrepareService::exec(new A1Resource(Empresa::find($id))));
     }
 
 }

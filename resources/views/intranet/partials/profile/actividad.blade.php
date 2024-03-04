@@ -6,11 +6,27 @@
                 substr($elemento->hasta,11):
                 $elemento->hasta }}"
             title="{{$elemento->name}}"
-            subtitle="Participants"
         >
+        <p><strong>Descripció</strong> : <em style="font-size: smaller">{{$elemento->descripcion}}</em></p>
+        @if ($elemento->objetivos)
+            <p><strong>Objectius</strong> : <em style="font-size: smaller">{{$elemento->objetivos}}</em></p>
+        @endif
+        @if ($elemento->comentarios)
+            <p><strong>Comentaris</strong> : <em style="font-size: smaller">{{$elemento->comentarios}}</em></p>
+        @endif
+        <h5>Participants</h5>
         <ul class="list-unstyled">
             @foreach ($elemento->profesores as $profesor)
-                <li><em class="fa fa-user"></em> {{$profesor->nombre}} {{$profesor->apellido1}}</li>
+                <li><em class="fa fa-user"></em>
+                    @if($profesor->pivot->coordinador)
+                        <strong>{{$profesor->nombre}} {{$profesor->apellido1}}</strong>
+                    @else
+                        {{$profesor->nombre}} {{$profesor->apellido1}}
+                    @endif
+                    @foreach (\Intranet\Services\AdviseTeacher::horariAltreGrup($elemento,$profesor->dni) as $grup)
+                        <span class="label label-danger"><em style="font-size: smaller">{{$grup['idGrupo']}}</em></span>
+                    @endforeach
+                </li>
             @endforeach
             @foreach ($elemento->grupos as $grupo)
                 <li><em class="fa fa-group"></em> {{ $grupo->nombre}} </li>
@@ -26,6 +42,14 @@
                     <a href='#' class='btn btn-success btn-xs' >
                 @endif
                 {{ $elemento->situacion }}</a>
+            @endif
+            @if ($elemento->fueraCentro)
+                <a href='#' class='btn btn-info btn-xs' >Extraescolar</a>
+            @else
+                <a href='#' class='btn btn-info btn-xs' >Centre</a>
+            @endif
+            @if ($elemento->transport)
+                    <a href='#' class='btn btn-warning btn-xs' >Transport</a>
             @endif
         </x-slot>
         <x-slot name="botones">

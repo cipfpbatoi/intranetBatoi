@@ -42,7 +42,7 @@ class FaltaItacaController extends IntranetController
 
         $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "Birret listado llistat autorizacion autorizacio"]);
         self::makeLink($elementos, $doc);
-        return self::hazPdf("pdf.birret", $elementos)
+        return self::hazPdf("pdf.comunicacioBirret", $elementos)
                         ->save(storage_path('/app/' . $nomComplet))
                         ->download($nomComplet);
 
@@ -51,7 +51,9 @@ class FaltaItacaController extends IntranetController
     private static function deleteFile(String $nomComplet)
     {
         if ($doc = Documento::where('fichero', $nomComplet)->first()) {
-            unlink(storage_path('app/' . $doc->fichero));
+            if (file_exists(storage_path('app/' . $doc->fichero))) {
+                unlink(storage_path('app/' . $doc->fichero));
+            }
             $doc->delete();
         }
     }

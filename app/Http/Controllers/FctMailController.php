@@ -2,21 +2,12 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonBasico;
-use Intranet\Entities\Centro;
-use Intranet\Entities\Colaboracion;
-use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Grupo;
+
 use Intranet\Finders\UniqueFinder;
 use Intranet\Componentes\DocumentoFct;
 use Intranet\Finders\RequestFinder;
 use Intranet\Services\DocumentService;
 use Illuminate\Http\Request;
-use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class PanelColaboracionController

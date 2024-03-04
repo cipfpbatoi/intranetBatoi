@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Setting;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -39,12 +40,14 @@ class SettingController extends ModalController
         $new = new Setting();
         $new->fillAll($request);
         $new->save();
+        Alert::info(system('php ./../artisan cache:clear'));
         return back();
     }
 
     public function update(Request $request, $id)
     {
         Setting::findOrFail($id)->fillAll($request);
+        Alert::info(system('php ./../artisan cache:clear'));
         return back();
     }
 

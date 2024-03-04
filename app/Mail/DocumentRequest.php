@@ -5,7 +5,8 @@ namespace Intranet\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailables\Headers;
+
 
 /**
  * Class DocumentRequest
@@ -38,6 +39,16 @@ class DocumentRequest extends Mailable
         $this->attach = $attach;
     }
 
+    /*
+    public function headers(): Headers
+    {
+        return new Headers(
+            text: [
+                'Disposition-Notification-To' => $this->mail->from??$this->mail['from'],
+            ],
+        );
+    }
+    */
     /**
      * Build the message.
      *

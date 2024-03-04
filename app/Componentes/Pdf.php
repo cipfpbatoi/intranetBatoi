@@ -36,6 +36,7 @@ class Pdf
     {
         $driver = $driver??env('PDF_DRIVER', 'SnappyPdf');
 
+
         if ($driver==='DomPdf') {
             return self::hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones);
         }

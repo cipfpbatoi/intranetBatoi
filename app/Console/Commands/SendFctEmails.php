@@ -44,33 +44,35 @@ class SendFctEmails extends Command
 
             foreach ($alumnosPendientes as $alumno) {
                 $fct = $alumno->Fct;
-                $tutor = Profesor::find($fct->Colaboracion->tutor);
 
                 try {
-                    Mail::to($alumno->Alumno->email)->send(new CertificatAlumneFct($alumno));
+                    Mail::to($alumno->Alumno->email, $alumno->Alumno->fullName)->send(new CertificatAlumneFct($alumno));
                     $alumno->correoAlumno = 1;
                     $alumno->save();
-                } catch (Swift_RfcComplianceException $e) {
-                    //
-                } catch (Swift_TransportException $e) {
-                    dd($alumno->Alumno->email);
+                } catch (Exception $e) {
+                    $mensaje = "Error : Enviant certificats a l'alumne: ".
+                        $alumno->Alumno->fullName.' al email '.
+                        $alumno->Alumno->email;
+                    avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
+                    avisa($fct->tutor->dni, $mensaje, '#', 'Servidor de correu');
                 }
 
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
                     try {
-                        Mail::to($fct->Instructor->email, 'Intranet Batoi')
+                        Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
+                            ->cc($fct->Tutor->email, $fct->Tutor->fullName)
                             ->send(new AvalFct($fct, 'instructor'));
-                        Mail::to($fct->Instructor->email, 'Secretaria CIPFP Batoi')
+                        Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
                             ->send(new CertificatInstructorFct($fct));
-                        if ($tutor) {
-                            Mail::to($tutor->email, 'Intranet CIFP Batoi')->send(new CertificatInstructorFct($fct));
-                        }
                         $fct->correoInstructor = 1;
                         $fct->save();
-                    } catch (Swift_RfcComplianceException $e) {
-
-                    } catch (Swift_TransportException $e) {
-
+                    } catch (\Exception $e) {
+                        $mensaje = 'Error : Enviant certificats al Instructor: '.
+                            $fct->Instructor->nombre.' al email '.
+                            $fct->Instructor->email.
+                            $fct->Encarregat. $e->getMessage();
+                        avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
+                        avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
                     }
                 }
             }

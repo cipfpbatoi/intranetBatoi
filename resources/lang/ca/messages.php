@@ -114,6 +114,7 @@ return array(
         'autorizada' => 'Autoritzades',
         'impresa' => 'Impreses',
         'registrada' => 'Registrades',
+        'valorada' => 'Valorades',
         'unpaid' => 'Pedents de Cobrament',
         'nojustify' => 'Sense justificant',
         'withjustify' => 'Amb justificant',
@@ -213,6 +214,7 @@ return array(
         'Authfalta' => 'Autoritzar Absències Professorat',
         'Incidenciasmant' => "Mantenimient d'Incidències",
         'Programacion' => 'Programacions',
+        'Programacionall' => 'Totes les Programacions',
         'Authprogram' => 'Autoritzar Programacions',
         'Authexpediente' => 'Gestionar Expedients',
         'Modulo' => 'Manteniment Taula Mòduls',
@@ -314,6 +316,7 @@ return array(
         'Signatures' => 'Signatures Pendents',
         'Ipguardia' => 'IPs Ordinadors de Guàrdia',
         'Setting' => 'Configuració',
+        'A3' => 'Documentació FCT',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

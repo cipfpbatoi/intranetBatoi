@@ -39,15 +39,15 @@ class FicharController extends IntranetController
         $profesor = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2')->where('codigo', '=', $request->codigo)->first();
         if (isset($profesor->dni)) {
             $fichaje = Falta_profesor::fichar($profesor->dni);
-            if ($fichaje == null){
+            if ($fichaje == null) {
                 Alert::danger(trans('messages.generic.acaba'));
                 return back();
             }
-            if (!$fichaje){
+            if (!$fichaje) {
                 Alert::danger(trans('messages.generic.fueraCentro'));
                 return back();
             }
-            if ($fichaje->salida != null){
+            if ($fichaje->salida != null) {
                 Alert::info(trans('messages.generic.sale') . ' ' . $profesor->FullName . ' a ' . $fichaje->salida);
                 return back();
             }
@@ -61,13 +61,18 @@ class FicharController extends IntranetController
 
     public function control()
     {
-        $profes = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2', 'departamento')->orderBy('departamento')->orderBy('apellido1')->orderBy('apellido2')->Plantilla()->get();
+        $profes = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2', 'departamento')->orderBy('departamento')
+            ->orderBy('apellido1')
+            ->orderBy('apellido2')
+            ->Plantilla()
+            ->get();
         return view('fichar.control', compact('profes'));
     }
 
     public function controlDia()
     {
-        $horarios = $this->loadHoraries($profes=Profesor::Plantilla()->orderBy('departamento')->orderBy('apellido1')->orderBy('apellido2')->get());
+        $horarios = $this->loadHoraries(
+            $profes=Profesor::Plantilla()->orderBy('departamento')->orderBy('apellido1')->orderBy('apellido2')->get());
         return view('fichar.control-dia', compact('profes', 'horarios'));
     }
     private function loadHoraries($profesores){
@@ -79,8 +84,8 @@ class FicharController extends IntranetController
         }
         return $horarios;
     }
-    private function loadHorary($profesor){
-        $horario = Horario::Primera($profesor->dni,FechaInglesa(Hoy()))->orderBy('sesion_orden')->get();
+    private function loadHorary($profesor) {
+        $horario = Horario::Primera($profesor->dni, FechaInglesa(Hoy()))->orderBy('sesion_orden')->get();
 
         if (isset($horario->first()->desde)) {
             return $horario->first()->desde . " - " . $horario->last()->hasta;

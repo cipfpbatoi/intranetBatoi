@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use DB;
 use Illuminate\Http\Request;
+use Intranet\Componentes\Mensaje;
 
 trait traitCheckList
 {
@@ -28,7 +29,8 @@ trait traitCheckList
             return $this->accept($id);
         }
 
-        $request->explicacion = $this->whosLeft($elemento->checkList);
+        $request->explicacion = 'Revisió programacion: '.$this->whosLeft($elemento->checkList).' Incomplets';
+        Mensaje::send($elemento->profesor, $request->explicacion);
         return $this->refuse($request, $id);
     }
 

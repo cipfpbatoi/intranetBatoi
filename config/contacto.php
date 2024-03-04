@@ -9,7 +9,7 @@ return [
     'titulo' => 'CIP FP Batoi',
     'fax' => '966 52 76 61',
     'codi' => '03012165',
-    'email' => '03012165.secretaria@gva.es',
+    'email' => '03012165.secretaria@edu.gva.es',
     'poblacion' => 'Alcoi',
     'provincia' => 'Alacant',
     'postal' => '03802',

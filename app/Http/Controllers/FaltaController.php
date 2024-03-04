@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Falta;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Horario;
@@ -103,6 +104,7 @@ class FaltaController extends IntranetController
      */
     public function store(Request $request)
     {
+
         $request->baja = isset($request->baja)?$request->baja:0;
         if ($request->baja) {
             DB::transaction(function () use ($request) {
@@ -266,12 +268,14 @@ class FaltaController extends IntranetController
     private static function tramitaAltaProfesor($idProfesor)
     {
         DB::transaction(function () use ($idProfesor) {
-            $profesor = Profesor::find($idProfesor);
-            $profesor->fecha_baja = null;
-            if ($profesor->Sustituye) {
-                self::changeWithSubstitute($profesor, $profesor->Sustituye);
+            $original = Profesor::find($idProfesor);
+            $original->fecha_baja = null;
+            $profesor = $original;
+            while ($profesor->Sustituye) {
+                self::changeWithSubstitute($original, $profesor->Sustituye);
+                $profesor = $profesor->Sustituye;
             }
-            $profesor->save();
+            $original->save();
         });
     }
 
@@ -298,6 +302,7 @@ class FaltaController extends IntranetController
             Programacion::where('profesor', $sustituto->dni)->update(['profesor' => $profesorAlta->dni]);
             Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
             Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
+            AlumnoFct::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
 
             $sustituto->sustituye_a = ' ';
             $sustituto->activo = 0;

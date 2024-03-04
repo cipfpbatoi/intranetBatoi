@@ -100,12 +100,12 @@ abstract class Boton
     }
 
     // torna id del boto en format html
-    protected function id($key = null): string
+    protected function id($key = null): string|null
     {
         if ($key == null) {
-            return $this->id ?? '';
+            return $this->id ?? null;
         }
-        return $this->id != '' ? $this->id . $key : '';
+        return $this->id != '' ? $this->id . $key : null;
 
     }
 

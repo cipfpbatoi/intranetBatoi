@@ -36,18 +36,49 @@ class Compara
         return redirect(route('alumnofct.index'));
     }
 
-    private static function igual($intranet, $sao)
+    private static function esBuida($clau){
+        return !isset($clau) || $clau == '' || $clau == ' ';
+    }
+    private static function igual($intranet, $sao, $clau=null)
     {
         if (
             trim(strtolower(eliminarTildes($intranet))) == trim(strtolower(eliminarTildes($sao))) ||
-            $sao == '' || $sao == ' ' || $sao == 'Alcoy'
+            $sao == '' || $sao == ' ' || $sao == 'Alcoy' || $sao == 'Pendiente'
         ) {
             return null;
+        }
+        if (isset($clau) && self::esBuida($intranet) && self::actualitzaBuida($clau,$sao)) {
+                return null;
         }
         return array('intranet'=>$intranet,'sao'=>$sao);
     }
 
-    public static function index($driver)
+    private static function actualitzaBuida($clau,$valueToUpdate)
+    {
+        // Utilitzem explode per dividir el string en un array
+        $parts = explode(".", $clau);
+
+        // Accedim als elements de l'array
+        $modelName = $parts[0]; // El nom del model
+        $fieldName = $parts[1]; // El nom del camp a actualitzar
+        $fieldId = $parts[2]; // El id de l'entitat a actualitzar
+
+        $modelInstance = app("Intranet\\Entities\\".ucfirst($modelName));
+
+
+        $entityToUpdate = $modelInstance::find($fieldId);
+
+        if ($entityToUpdate) {
+            $entityToUpdate->$fieldName = $valueToUpdate;
+            $entityToUpdate->save();
+            return true;
+        }
+        return false;
+    }
+
+
+
+public static function index($driver)
     {
         $dades = array();
         try {
@@ -68,36 +99,45 @@ class Compara
                             self::igual(
                                 $empresa->concierto,
                                 $driver->findElement(WebDriverBy::cssSelector('#numConciertoEmp'))
-                                    ->getAttribute('value'));
+                                    ->getAttribute('value'),
+                            "empresa.concierto.$empresa->id");
 
                         $dadesEmpresa = $driver
                             ->findElement(WebDriverBy::cssSelector("td#celdaDatosEmpresa table.infoCentroBD tbody"));
                         $detallesEmpresa = $dadesEmpresa->findElement(WebDriverBy::cssSelector(self::TR_NTH_CHILD_2));
                         $dades[$fct->id]['empresa']['cif'] = self::igual(
                             $empresa->cif,
-                            $detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(1)"))->getText());
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(1)"))->getText(),
+                            "empresa.cif.$empresa->id");
                         $dades[$fct->id]['empresa']['nombre'] = self::igual(
                             $empresa->nombre,
-                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText());
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText(),
+                            "empresa.nombre.$empresa->id");
                         $dades[$fct->id]['empresa']['direccion'] = self::igual(
                             $empresa->direccion,
-                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))->getText());
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))->getText(),
+                            "empresa.direccion.$empresa->id");
                         $dades[$fct->id]['empresa']['localidad'] = self::igual(
                             $empresa->localidad,
-                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_4))->getText());
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_4))->getText(),
+                            "empresa.localidad.$empresa->id");
                         $detallesEmpresa = $dadesEmpresa->findElement(WebDriverBy::cssSelector("tr:nth-child(4)"));
                         $dades[$fct->id]['empresa']['telefono'] = self::igual(
                             $empresa->telefono,
-                            $detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(1)"))->getText());
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector("td:nth-child(1)"))->getText(),
+                            "empresa.telefono.$empresa->id");
                         $dades[$fct->id]['empresa']['gerente'] = self::igual(
                             $empresa->gerente,
-                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText());
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText(),
+                            "empresa.gerente.$empresa->id");
                         $dades[$fct->id]['empresa']['actividad'] = self::igual(
                             $empresa->actividad,
-                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))->getText());
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))->getText(),
+                            "empresa.actividad.$empresa->id");
                         $dades[$fct->id]['empresa']['email'] = self::igual(
                             $empresa->email,
-                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_4))->getText());
+                            $detallesEmpresa->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_4))->getText(),
+                            "empresa.email.$empresa->id");
 
                         $dadesCentro = $driver->findElement(
                             WebDriverBy::cssSelector("td#celdaDatosCT table.infoCentroBD tbody")
@@ -105,26 +145,31 @@ class Compara
                         $detallesCentro = $dadesCentro->findElement(WebDriverBy::cssSelector(self::TR_NTH_CHILD_2));
                         $dades[$fct->id]['centro']['nombre'] = self::igual(
                             $centro->nombre,
-                            $detallesCentro->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText()
+                            $detallesCentro->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_2))->getText(),
+                            "centro.nombre.$centro->id"
                         );
                         $dades[$fct->id]['centro']['localidad'] = self::igual(
                             $centro->localidad,
-                            $detallesCentro->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))->getText()
+                            $detallesCentro->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_3))->getText(),
+                            "centro.localidad.$centro->id"
                         );
                         $dades[$fct->id]['centro']['telefono'] = self::igual(
                             $centro->telefono,
-                            $detallesCentro->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_4))->getText()
+                            $detallesCentro->findElement(WebDriverBy::cssSelector(self::TD_NTH_CHILD_4))->getText(),
+                            "centro.telefono.$centro->id"
                         );
                         $dades[$fct->id]['centro']['email'] = self::igual(
                             $centro->email,
-                            $detallesCentro->findElement(WebDriverBy::cssSelector("td:nth-child(6)"))->getText()
+                            $detallesCentro->findElement(WebDriverBy::cssSelector("td:nth-child(6)"))->getText(),
+                            "centro.email.$centro->id"
                         );
                         $dades[$fct->id]['centro']['horarios'] = self::igual(
                             $centro->horarios,
                             $driver->findElement(
                                 WebDriverBy
                                     ::cssSelector("table.tablaDetallesFCT tbody tr:nth-child(14) td:nth-child(2)")
-                            )->getText()
+                            )->getText(),
+                            "centro.horarios.$centro->id"
                         );
                         $driver->findElement(
                             WebDriverBy::cssSelector("button.botonRegistro[value='Registrarse']")
@@ -135,13 +180,15 @@ class Compara
                             $centro->direccion,
                             $driver->findElement(
                                 WebDriverBy::cssSelector("input.campoAlumno[name='direccion'")
-                            )->getAttribute('value')
+                            )->getAttribute('value'),
+                            "centro.direccion.$centro->id"
                         );
                         $dades[$fct->id]['centro']['codiPostal'] = self::igual(
                             $centro->codiPostal,
                             $driver->findElement(
                                 WebDriverBy::cssSelector("input.campoAlumno[name='cp'")
-                            )->getAttribute('value')
+                            )->getAttribute('value'),
+                            "centro.codiPostal.$centro->id"
                         );
                     }
                 } catch (NoSuchElementException $e) {

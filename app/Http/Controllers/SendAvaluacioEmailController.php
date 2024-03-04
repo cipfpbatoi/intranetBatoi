@@ -40,24 +40,24 @@ class SendAvaluacioEmailController extends Seeder
      */
     public function store(Request $request)
     {
-        $aR = AlumnoReunion::where('idAlumno',$request->nia)->get()->last();
-        if (!$aR){
+        $aR = AlumnoReunion::where('idAlumno', $request->nia)->get()->last();
+        if (!$aR) {
             Alert::danger('Eixe Alumne no ha estat avaluat');
-        }
-        else {
+        } else {
             $this->sendMatricula($aR);
         }
         return view('seeder.sendAvaluacio');
 
     }
 
-    public function getToken(Request $request){
-        $aR = AlumnoReunion::where('token',$request->token)->first();
+    public function getToken(Request $request)
+    {
+        $aR = AlumnoReunion::where('token', $request->token)->first();
         if (!$aR){
             Alert::danger('No hi ha cap alumne amb eixe token');
             return back();
         } else {
-            return view('seeder.sendAvaluacio',compact('aR'));
+            return view('seeder.sendAvaluacio', compact('aR'));
         }
     }
 
@@ -77,7 +77,8 @@ class SendAvaluacioEmailController extends Seeder
         return false;
     }
 
-    private function sendMatricula($aR){
+    private function sendMatricula($aR)
+    {
         try {
             $token = true;
             if (!$aR->sent) {
@@ -97,7 +98,7 @@ class SendAvaluacioEmailController extends Seeder
                 Alert::info('Correu enviat a '.$aR->Alumno->email);
             }
         }
-        catch (Swift_RfcComplianceException $e){
+        catch (\Exception $e){
             avisa($aR->Reunion->idProfesor,
                 'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email,
                 '#','Servidor de correu');

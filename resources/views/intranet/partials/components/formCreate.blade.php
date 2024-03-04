@@ -25,7 +25,9 @@
         @endif
     @endforeach
     @yield('after')
-    <a href="{{URL::previous()}}" class="btn btn-danger">@lang("messages.buttons.cancel") </a>
+    <a href="{{\Intranet\Services\NavigationService::getPreviousUrl()}}?back=true" class="btn btn-danger">
+        @lang("messages.buttons.cancel")
+    </a>
     {!! Form::submit(trans('messages.buttons.submit'),['class'=>'btn btn-success','id'=>'submit']) !!}
     {!! Form::close() !!}
 </div>

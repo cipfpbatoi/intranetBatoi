@@ -71,10 +71,12 @@ class MyMail
             if (!isset($element)) {
                 return null;
             }
+
             if (isset($toCompost[1]) && strpos($toCompost[1], ';')) {
                 $email = explode(';', $toCompost[1]);
+                $contacte =  substr($email[1], 0, -1);
+                $element->contact = strlen($contacte)>3?$contacte:null;
                 $element->mail = $email[0];
-                $element->contact = $email[1];
             }
             return $element;
         }
@@ -114,9 +116,17 @@ class MyMail
                 'register',
                 'editable',
                 'template',
-                'action'
+                'action',
             )
         );
+    }
+
+    private function  sendEvent($elements){
+        if (session()->has('email_action')) {
+            $event = session()->get('email_action');
+            event(new $event($this->elements));
+            session()->forget('email_action');
+        }
     }
 
     public function send($fecha=null)
@@ -128,15 +138,15 @@ class MyMail
         } else {
             $this->sendMail($this->elements, $fecha);
         }
+
         session()->forget('attach');
     }
 
     private function sendMail($elemento, $fecha)
     {
-        if (isset($elemento->contacto)) {
-
+        $contacto = $elemento->contact??$elemento->contacto??'A qui corresponga';
+        if (isset($elemento)){
             $mail = $elemento->mail??$elemento->email;
-            $contacto = $elemento->contact??$elemento->contacto;
             if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {
                 Mail::to($mail, $contacto)
                     ->bcc($this->from)
@@ -145,12 +155,9 @@ class MyMail
                 if ($this->register) {
                     Activity::record('email', $elemento, null, $fecha, $this->subject);
                 }
+                $this->sendEvent($elemento);
             } else {
                 Alert::danger("No s'ha pogut enviar correu a $contacto. Comprova email");
-            }
-        } else {
-            if (isset($elemento)) {
-                Alert::info("No s'ha pogut enviar. Falta contacte");
             }
         }
     }
@@ -168,14 +175,19 @@ class MyMail
     {
         $to = '';
         foreach ($elementos as $elemento) {
-            $to .= $this->getReceiver($elemento).',';
+            if (isset($elemento)){
+                $to .= $this->getReceiver($elemento).',';
+            }
         }
         return $to;
     }
 
     private function getReceiver($elemento)
     {
-        return $elemento->id.'('.$elemento->email.';'.$elemento->contacto.')';
+
+        $mail = $elemento->mail??$elemento->email;
+        $contacto = $elemento->contact??$elemento->contacto;
+        return $elemento->id.'('.$mail.';'.$contacto.')';
     }
 
     /**

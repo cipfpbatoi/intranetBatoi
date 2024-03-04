@@ -4,20 +4,29 @@ namespace Intranet\Services;
 
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Intranet\Componentes\signImage;
+use Intranet\Exceptions\CertException;
+use Intranet\Exceptions\IntranetException;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SignaturePdf;
+use LSNepomuceno\LaravelA1PdfSign\Sign\ValidatePdfSignature;
 use Styde\Html\Facades\Alert;
+use Illuminate\Support\Facades\Log;
 
 class DigitalSignatureService
 {
+
     public static function readCertificat($certificat, $password):ManageCert
     {
-
-        $cert = new ManageCert;
-        $cert->setPreservePfx()->fromPfx($certificat, $password);
-        return $cert;
+        try {
+            $cert = new ManageCert;
+            $cert->setPreservePfx()->fromPfx($certificat, $password);
+            return $cert;
+        } catch (\Throwable $th) {
+            throw new CertException("Password del certificat incorrecte");
+        }
     }
 
     public static function cryptCertificate($certificat, $fileName, $password)
@@ -26,8 +35,32 @@ class DigitalSignatureService
         $encrypter = self::getEncrypter($password);
         $content = $encrypter->encryptString(base64_encode(file_get_contents($certificat)));
         file_put_contents($file, $content);
+        Log::channel('certificate')->info("S'ha pujat el certificat d'usuari.", [
+            'intranetUser' => authUser()->fullName,
+            'Path' => $file,
+        ]);
     }
 
+    public static function deleteCertificate($user)
+    {
+        unlink($user->pathCertificate);
+        Log::channel('certificate')->info("S'ha esborrat el certificat d'usuari.", [
+            'intranetUser' => authUser()->fullName,
+        ]);
+    }
+
+
+    public static function decryptCertificateUser($decrypt, $user)
+    {
+        try {
+            if (Hash::check($decrypt, $user->password)) {
+                $nameFile = $user->fileName;
+                return DigitalSignatureService::decryptCertificate($nameFile, $decrypt);
+            }
+        } catch (\Throwable $th) {
+            throw new CertException("Password de la Intranet incorrecte");
+        }
+    }
 
 
     public static function decryptCertificate($fileName, $password)
@@ -38,6 +71,9 @@ class DigitalSignatureService
         $fileContent = file_get_contents($cryptfile);
         $cert = base64_decode($encrypter->decryptString($fileContent));
         File::put($decryptfile, $cert);
+        Log::channel('certificate')->info("S'ha desxifrat el certificat d'usuari.", [
+            'intranetUser' => authUser()->fullName,
+        ]);
         return $decryptfile;
     }
 
@@ -45,15 +81,30 @@ class DigitalSignatureService
 
     public static function getFileNameCrypt($fileName)
     {
-       return  storage_path('app/certificats/'.$fileName.'.tmp');
+       return  storage_path('app/zip/'.$fileName.'.tmp');
     }
 
     public static function getFileNameDeCrypt($fileName)
     {
-        return storage_path('app/certificats/'.$fileName.'.pfx');
+        return storage_path('tmp/'.$fileName.'.pfx');
     }
 
-
+    public static function signCrypt(
+        $file,
+        $newFile,
+        $coordx,
+        $coordy,
+        $passCrypt,
+        $passCert
+    ){
+        $nomFitxer = storage_path('tmp/'.authUser()->fileName.'.pfx');
+        DigitalSignatureService::decryptCertificateUser($passCrypt, authUser());
+        $cert = DigitalSignatureService::readCertificat($nomFitxer, $passCert);
+        self::sign($file, $newFile, $coordx, $coordy, $cert);
+        if (file_exists($nomFitxer)){
+            unlink($nomFitxer);
+        }
+    }
 
     /**
      * Provision a new web server.
@@ -65,13 +116,11 @@ class DigitalSignatureService
         $newFile,
         $coordx,
         $coordy,
-        $filecrt,
-        $passCert
+        $cert,
     )
     {
         try {
-
-            $cert = self::readCertificat($filecrt, $passCert);
+            $user = $cert->getCert()->data['subject']['commonName'];
             $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
             $imagePath = a1TempDir(true, '.png');
             File::put($imagePath, $image);
@@ -85,8 +134,27 @@ class DigitalSignatureService
             $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy)
                 ->signature();
             file_put_contents($newFile, $signed_pdf_content);
+            if (self::validateUserSign($newFile)){
+
+                Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
+                    'signUser' => $user,
+                    'intranetUser' => authUser()->fullName,
+                    'pdfPath' => $file,
+                    'signedPdfPath' => $newFile,
+                ]);
+            } else {
+                Log::channel('certificate')->alert("Persona que signa diferent al certificat", [
+                    'intranetUser' => authUser()->fullName,
+                    'pdfPath' => $file,
+                ]);
+                throw new IntranetException("Persona que signa diferent al certificat");
+            }
         } catch (\Throwable $th) {
-            Alert::danger($th->getMessage().' '.$th->getLine().' '.$th->getFile());
+            Log::channel('certificate')->alert("Password certificat incorrecte", [
+                'intranetUser' => authUser()->fullName,
+                'pdfPath' => $file,
+            ]);
+            throw new IntranetException("Error al signar el document.: ".$th->getMessage());
         }
     }
 
@@ -99,4 +167,22 @@ class DigitalSignatureService
         $customKey = substr('base64:'.$password.config('app.key'), 0, 32);
         return new Encrypter($customKey, config('app.cipher'));
     }
+
+    public static function validate($file){
+        $signatura = ValidatePdfSignature::from($file);
+        return $signatura->data;
+    }
+
+    public static function validateUserSign($file,$dni=null){
+        if (is_null($dni)){
+            $dni = substr(authUser()->dni,1);
+        }
+        $signatura = ValidatePdfSignature::from($file);
+        if (isset($signatura->data['CN'][0])) {
+            return str_contains($signatura->data['CN'][0],$dni);
+        }
+        return true;    
+    }
+
+
 }

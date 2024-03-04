@@ -26,15 +26,22 @@ class ExcelService
         }
     }
 
-    public function render()
+    public function render(...$colums)
     {
-        return $this->spreadsheet->getActiveSheet();
-        /*foreach ($this->cells as $cell => $value) {
-            $sheet->setCellValue($cell, $value);
+        $sheet = $this->spreadsheet->getActiveSheet();
+        $row = 1;
+        foreach ($colums as $colum) {
+            $col = 1;
+            foreach ($colum as $cell) {
+                $sheet->setCellValueByColumnAndRow($row, $col, $cell);
+                $col++;
+            }
+            $row++;
         }
         $writer = new Xlsx($this->spreadsheet);
-        $writer->save($this->file.'.xlsx');*/
+        $writer->save($this->file);
     }
+
 
 
 }

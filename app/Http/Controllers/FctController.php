@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
@@ -276,11 +277,21 @@ class FctController extends IntranetController
 
     public function cotutor(Request $request, $idFct)
     {
-        $fct = Fct::find($idFct);
-        if ($fct) {
-            $fct->cotutor = $request->cotutor;
-            $fct->save();
-        }
+        DB::transaction(function () use ($request, $idFct){
+            // Desactiva les restriccions de clau forana
+            Schema::disableForeignKeyConstraints();
+
+            // Realitza les operacions de guardat aquí
+            $fct = Fct::find($idFct);
+            if ($fct) {
+                $fct->cotutor = $request->cotutor??null;
+                $fct->save();
+            }
+
+            // Reactiva les restriccions de clau forana
+            Schema::enableForeignKeyConstraints();
+        });
+
         return back();
     }
 

@@ -42,7 +42,13 @@ class Tutoria extends Model
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
-    
+
+
+    public function Grupos()
+    {
+        return $this->hasManyThrough(Grupo::class, TutoriaGrupo::class, 'idTutoria', 'codigo', 'id', 'idGrupo');
+    }
+
     public function getDesdeAttribute($entrada)
     {
         $fecha = new Date($entrada);
@@ -73,6 +79,20 @@ class Tutoria extends Model
     protected function getTiposAttribute()
     {
         return config('auxiliares.tipoTutoria')[$this->tipo];
+    }
+
+    protected function getEstatAttribute()
+    {
+        return $this->obligatoria ? 'Obligatoria' : 'Voluntaria';
+    }
+
+    protected function getFeedBackAttribute()
+    {
+        if (authUser()->GrupoTutoria) {
+            return $this->Grupos->where('codigo', authUser()->GrupoTutoria)->count() ? "Realitzada" : "Incompleta";
+        } else {
+            return $this->Grupos->count();
+        }
     }
     
 }

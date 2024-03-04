@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
-use Intranet\Componentes\MyMail;
 use Intranet\Componentes\Pdf;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
@@ -25,9 +24,7 @@ use Intranet\Http\PrintResources\A3ENResource;
 use Intranet\Http\PrintResources\A5Resource;
 use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
-use Intranet\Http\PrintResources\PrintResource;
 use Intranet\Mail\DocumentRequest;
-use Intranet\Services\DigitalSignatureService;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Intranet\Http\PrintResources\AutorizacionDireccionResource;
@@ -41,7 +38,7 @@ class FctAlumnoController extends IntranetController
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';
     protected $model = 'AlumnoFct';
-    protected $gridFields = ['Nombre', 'Centro', 'Instructor', 'desde',  'horasRealizadas','hasta', 'finPracticas'];
+    protected $gridFields = ['NomEdat', 'Centro', 'Instructor', 'desde',  'horasRealizadas','hasta', 'finPracticas'];
     protected $profile = false;
     protected $titulo = [];
     protected $parametresVista = ['modal' => ['extended', 'saoPassword', 'loading','signatura']];
@@ -65,6 +62,13 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton(
             'grid',
             new BotonImg(
+                'alumnofct.edit',
+                ['where' => ['asociacion', '<', '3'],'text'=>'Canviar dates']
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
                 'alumnofct.pdf',
                 ['where' => ['asociacion', '==', '3']]
             )
@@ -80,7 +84,8 @@ class FctAlumnoController extends IntranetController
                             'asociacion', '<', 3,
                             'actualizacion', '<', hace(7),
                             'desde', 'anterior', hace(7),
-                            'hasta','posterior',hoy()
+                            'hasta','posterior',hoy(),
+                            'realizadas','<',380
                         ]
                 ]
             )
@@ -96,71 +101,7 @@ class FctAlumnoController extends IntranetController
                 ]]
             )
         );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.A1',
-                [
-                    'text' => 'A1',
-                    'where' =>
-                        [
-                            'A1', '!=', null,
-                            'idSao', '!=', null,
-                        ]
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.A2',
-                [
-                    'text' => 'A2',
-                    'where' =>
-                        [
-                            'A2', '!=', null,
-                            'idSao', '!=', null,
-                        ]
-                ]
-            )
-        );
 
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.A3',
-                [
-                    'text' => 'A3',
-                    'where' =>
-                        [
-                            'A3', '!=', null,
-                            'idSao', '!=', null,
-                        ]
-                ]
-            )
-        );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.send',
-                [
-                    'img' => 'fa-envelope-o',
-                    'where' =>
-                        [
-                            'A2', '!=', null,
-                            'idSao', '!=', null,
-                        ]
-                ]
-            )
-        );
-
-        $this->panel->setBoton(
-            'index',
-            new BotonBasico(
-                "fct.create",
-                ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]
-            )
-        );
 
         $this->panel->setBoton(
             'index',
@@ -179,8 +120,12 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton(
             'index',
             new BotonBasico(
-                "signatura.post",
-                ['class' => 'btn-success signatura', 'roles' => config(self::ROLES_ROL_TUTOR)]
+                'signatura',
+                [
+                    'class' => 'btn-danger',
+                    'text' => 'Signatures Digitals',
+                    'roles' => config(self::ROLES_ROL_TUTOR),
+                ]
             )
         );
         $this->panel->setBoton(
@@ -190,6 +135,7 @@ class FctAlumnoController extends IntranetController
                 ['class' => 'btn-warning selecciona', 'roles' => config(self::ROLES_ROL_TUTOR)]
             )
         );
+
         $this->setQualityB();
         $this->panel->setBoton(
             'index',
@@ -277,10 +223,10 @@ class FctAlumnoController extends IntranetController
                 ->where('asociacion', $request->asociacion)
                 ->get();
             $elemento = $elementos->first() ?? null;
-
             if (!$elemento) {
                 $elemento = new FctConvalidacion();
                 $this->validateAll($request, $elemento);
+                $elemento->idProfesor = authUser()->dni;
                 $elemento->fillAll($request);
             }
 
@@ -290,7 +236,8 @@ class FctAlumnoController extends IntranetController
                     'desde' => FechaInglesa(Hoy()),
                     'horas' => $request->horas,
                     'calificacion' => 2,
-                    'correoAlumno' => 1
+                    'correoAlumno' => 1,
+                    'idProfesor' => authUser()->dni
                 ]
             );
 
@@ -309,7 +256,7 @@ class FctAlumnoController extends IntranetController
     public function pdf($id)
     {
         $fct = AlumnoFct::findOrFail($id);
-        if ($fct->asociacion == 1) {
+        if ($fct->asociacion < 3) {
             return self::preparePdf($id)->stream();
         }
         if ($fct->asociacion == 3) {
@@ -327,6 +274,8 @@ class FctAlumnoController extends IntranetController
     {
         return response()->file(FDFPrepareService::exec(new A5Resource(AlumnoFct::find($id))));
     }
+
+
 
     public function AEng($id)
     {
@@ -437,34 +386,5 @@ class FctAlumnoController extends IntranetController
             ));
         return back();
     }
-
-    public function send($id)
-    {
-        $fct = AlumnoFct::findOrFail($id);
-        $col = new Collection();
-        $col->push($fct->Fct->Colaboracion);
-        $attach = [];
-        for ($i = 1; $i <= 3; $i++) {
-            $anexe = "A$i";
-            if (isset($fct->$anexe)) {
-                $attach[$fct->$anexe->simpleRouteFile] = 'application/pdf';
-            }
-        }
-        $myMail = new MyMail(
-            $col,
-            view('email.fct.anexes'),
-            [
-                'from' => authUser()->email,
-                'fromPerson' => authUser()->fullName,
-                'toPeople' => 'Recursos Humans',
-                'subject' => 'Annexos per a signar'
-            ],
-            $attach,
-            true
-        );
-        return $myMail->render('alumnofct');
-    }
-
-
 
 }

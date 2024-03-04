@@ -1,6 +1,6 @@
 <div class="container">
     <p><strong>COMUNICACIÓ A l'ALUMNAT SOBRE EL FINANÇAMENT DE LA FORMACIÓ
-            PROFESSIONAL BÀSICA EN LA COMUNITAT VALENCIANA PEL FONS SOCIAL
+            PROFESSIONAL DE GRAU BÀSIC EN LA COMUNITAT VALENCIANA PEL FONS SOCIAL
             EUROPEU</strong></p>
     <table class="table table-bordered" style="width: 1000px">
         <colgroup>

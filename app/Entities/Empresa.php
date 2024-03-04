@@ -15,7 +15,7 @@ class Empresa extends Model
     protected $table = 'empresas';
     protected $fillable = [ 'europa','sao','concierto','cif', 'nombre', 'email', 'direccion', 'localidad', 'telefono',
         'dual', 'actividad', 'delitos', 'menores','copia_anexe1','observaciones',
-        'gerente', 'fichero', 'creador', 'idSao'];
+        'gerente', 'fichero', 'creador', 'idSao','data_signatura'];
     protected $rules = [
         'cif' => 'required|alpha_num',
         'nombre' => 'required|between:0,100',
@@ -38,6 +38,7 @@ class Empresa extends Model
         'fichero' => ['type' => 'file'],
         'creador' => ['type' => 'hidden'],
         'idSao' => ['type' => 'hidden'],
+        'data_signatura' => ['type' => 'date']
     ];
     protected $hidden = ['created_at', 'updated_at','creador'];
     protected $dispatchesEvents = [
@@ -79,11 +80,38 @@ class Empresa extends Model
         if (!$this->fichero || !file_exists($file)) {
             return false;
         } else {
-            return  date("Y-m-d", filemtime($file)) > "2022-08-31";
+            return  date("Y-m-d", filemtime($file)) > "2023-08-31";
         }
     }
 
+    public function getConveniRenovatAttribute()
+    {
+        $file = storage_path('app/' . $this->fichero);
+        $date_intranet = date("Y-m-d", filemtime($file));
+        $date_sao = $this->data_signatura;
 
+        $date1 = new Date($date_intranet);
+        $date2 = new Date($date_sao);
+
+        $diferencia = $date1->diff($date2);
+        return $diferencia->days > 90;
+
+    }
+    public function getConveniCaducatAttribute()
+    {
+        $file = storage_path('app/' . $this->fichero);
+        if (!$this->fichero || !file_exists($file)) {
+            return true;
+        } else {
+            return  date("Y-m-d", filemtime($file)) < "2022-08-31";
+        }
+    }
+
+    public function getDataSignaturaAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
+    }
 
     public function getCiclesAttribute()
     {

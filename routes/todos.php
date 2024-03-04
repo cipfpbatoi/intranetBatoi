@@ -26,8 +26,12 @@ Route::get('/documento/{grupo}/acta', ['as' => 'documento.acta', 'uses' => 'Pane
 Route::get('/proyecto', ['as' => 'documento.proyecto', 'uses' => 'PanelProyectoController@index']);
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'profesor.mensaje', 'uses' => 'ProfesorController@alerta']);
 
-Route::get('/help/{fichero}/{enlace}',['as' => 'help' ,'uses' => 'AdministracionController@help']);
+Route::get('/help/{fichero}/{enlace}', ['as' => 'help' ,'uses' => 'AdministracionController@help']);
 
 Route::get('/poll/{id}/do', ['as' => 'enquesta', 'uses' => 'PollController@preparaEnquesta']);
 Route::post('/poll/{id}/do', ['as' => 'enquesta.post', 'uses' => 'PollController@guardaEnquesta']);
-Route::get('/doPoll',['as' => 'enquesta.do', 'uses' => 'PanelPollResponseController@index']);
+Route::get('/doPoll', ['as' => 'enquesta.do', 'uses' => 'PanelPollResponseController@index']);
+
+Route::post('/signatura/{id}/upload', ['as' => 'signatura.upload', 'uses' => 'SignaturaController@upload']);
+Route::get('/A3', ['as' => 'signaturaAlumno.index', 'uses' => 'SignaturaAlumneController@index']);
+Route::get('/signatura/{id}/pdf', ['as' => 'signatura.pdf', 'uses' => 'SignaturaController@pdf']);

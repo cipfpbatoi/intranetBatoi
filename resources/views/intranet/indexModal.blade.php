@@ -15,6 +15,5 @@
     @include('intranet.partials.modal.index')
     @include('intranet.partials.components.loadModals')
     @include('js.modaljs')
-
 @endsection
 

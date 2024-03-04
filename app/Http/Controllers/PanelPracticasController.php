@@ -11,12 +11,42 @@ class PanelPracticasController extends BaseController
 
     protected $perfil = 'profesor';
     protected $model = 'Grupo';
-    protected $gridFields = ['nombre','Matriculados','Resfct','Exentos','Respro', 'Resempresa','Acta', 'Calidad','Xtutor'];
+    protected $gridFields = [
+        'nombre',
+        'Matriculados',
+        'Resfct',
+        'Exentos',
+        'Respro',
+        'Resempresa',
+        'Acta',
+        'Calidad',
+        'Xtutor'
+    ];
     
     protected function iniBotones()
     {
-        $this->panel->setBoton('grid',new BotonImg('direccion.acta',['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion'),'where' => ['acta_pendiente','==','1']]));
-        $this->panel->setBoton('grid',new BotonImg('fctcap.check',['img' => 'fa-check','roles' => config('roles.rol.jefe_practicas')]));
+        $this->panel->setBoton('grid',new BotonImg(
+            'direccion.acta',
+            [
+                'img' => 'fa-file-word-o',
+                'roles' => config('roles.rol.direccion'),
+                'where' => ['acta_pendiente','==','1']
+            ])
+        );
+        $this->panel->setBoton('grid',new BotonImg(
+            'fctcap.check',
+            [
+                'img' => 'fa-check',
+                'roles' => config('roles.rol.jefe_practicas')
+            ])
+        );
+        $this->panel->setBoton('grid',new BotonImg(
+            'fctcap.show',
+            [
+                'img' => 'fa-eye',
+                'roles' => config('roles.rol.jefe_practicas')
+            ])
+        );
         
     }
     protected function search(){
@@ -24,6 +54,12 @@ class PanelPracticasController extends BaseController
         return Grupo::where('curso',2)
             ->orWhereIn('idCiclo',$ciclos)
             ->get();
+    }
+
+    protected function show($id)
+    {
+        $grupo = Grupo::find($id);
+        return redirect()->route('fct.linkQuality',['dni'=>$grupo->tutor]);
     }
 
 }

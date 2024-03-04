@@ -46,6 +46,8 @@ class Alumno extends Authenticatable
         'apellido1',
         'apellido2',
         'email',
+        'telef1',
+        'telef2',
         'foto',
         'idioma',
     ];
@@ -76,6 +78,7 @@ class Alumno extends Authenticatable
     {
         return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'idAlumno', 'idGrupo');
     }
+
 
     public function Fcts()
     {
@@ -148,7 +151,11 @@ class Alumno extends Authenticatable
         $profesor = $profesor ?? authUser()->dni;
         $gruposC = Grupo::select('codigo')->QTutor($profesor, $dual)->get();
         $grupos = $gruposC->count()>0?$gruposC->toarray():[];
-        $alumnos = hazArray(AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupos)->get(), 'idAlumno', 'idAlumno');
+        $alumnos = hazArray(
+            AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupos)->get(),
+            'idAlumno',
+            'idAlumno'
+        );
         return $query->whereIn('nia', $alumnos);
         
     }
@@ -166,9 +173,11 @@ class Alumno extends Authenticatable
             return [];
         }
         foreach ($this->Grupo as $grupo) {
-            $tutor[] = $grupo->Tutor->fecha_baja?
-                Profesor::where('sustituye_a', $grupo->tutor)->first():
-                $grupo->Tutor;
+            if ($grupo->Tutor->fecha_baja == null) {
+                $tutor[] = $grupo->Tutor;
+            } else {
+                $tutor[] = Profesor::where('sustituye_a', $grupo->tutor)->first()??$grupo->Tutor;
+            }
         }
         return $tutor;
     }
@@ -237,6 +246,13 @@ class Alumno extends Authenticatable
     {
         $nac = new Date($this->fecha_nac);
         return $nac->age;
+    }
+
+    public function esMenorEdat($day)
+    {
+        $hoy = new Date($day);
+        $hace18 = $hoy->subYears(18)->toDateString();
+        return fechaInglesa($this->fecha_nac) > $hace18 ;
     }
 
 

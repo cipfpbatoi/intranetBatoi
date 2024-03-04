@@ -163,9 +163,7 @@ class ExpedienteController extends ModalController
                     return response()->download(storage_path('/app/' . $nomComplet), $nom);
                 }
             } 
-        }
-        else 
-        {
+        } else {
             Alert::info(trans('messages.generic.empty'));
             return back();
         }

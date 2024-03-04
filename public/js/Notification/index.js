@@ -16,3 +16,8 @@ $(function() {
 		})
 	})
 })
+
+$(document).ready(function() {
+	var table = $('#datatable').DataTable();
+	table.order([0, 'dsc']).draw();
+});

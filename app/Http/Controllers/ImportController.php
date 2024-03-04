@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-Use Intranet\Entities\Alumno;
-Use Intranet\Entities\Profesor;
+use Intranet\Entities\Alumno;
+use Intranet\Entities\Profesor;
 use Intranet\Entities\Horario;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Grupo;
@@ -54,8 +54,6 @@ class ImportController extends Seeder
                 'codigo_postal' => 'cod_postal',
                 'provincia' => 'provincia',
                 'municipio' => 'municipio',
-                'telef1' => 'digitos,telefono1',
-                'telef2' => 'digitos,telefono2',
                 'fecha_ingreso' => 'getFechaFormatoIngles,fecha_ingreso_centro',
                 'fecha_matricula' => 'getFechaFormatoIngles,fecha_matricula',
                 'repite' => 'repite',
@@ -65,7 +63,9 @@ class ImportController extends Seeder
                 'baja' => null,
             ),
             'create' => array(
-                'email' => 'email1'
+                'email' => 'email1',
+                'telef1' => 'digitos,telefono1',
+                'telef2' => 'digitos,telefono2',
             )),
         array('nombrexml' => 'docentes',
             'nombreclase' => 'Profesor',
@@ -77,8 +77,6 @@ class ImportController extends Seeder
                 'sexo' => 'sexo',
                 'codigo_postal' => 'cod_postal',
                 'domicilio' => 'domicilio',
-                'movil1' => 'digitos,telefono1',
-                'movil2' => 'digitos,telefono2',
                 'emailItaca' => 'email1',
                 'sustituye_a' => 'titular_sustituido',
                 'fecha_nac' => 'getFechaFormatoIngles,fecha_nac',
@@ -87,9 +85,11 @@ class ImportController extends Seeder
                 'activo' => true,
             ),
             'create' => array(
-                'codigo' => 'crea_codigo_profesor,0',
+                'codigo' => 'creaCodigoProfesor,0',
                 'dni' => 'documento',
                 'email' => 'email2',
+                'movil1' => 'digitos,telefono1',
+                'movil2' => 'digitos,telefono2',
                 'departamento' => '99',
                 'password' => 'cifrar,documento',
                 'api_token' => 'aleatorio,60'
@@ -400,7 +400,7 @@ class ImportController extends Seeder
                     $this->eliminarHorarios();
                     // crea taula moduls_cicles, moduls_grups i programacions
                     if ($firstImport) {
-                        $this->crea_modulosCiclos();
+                        $this->creaModulosCiclos();
                     }
                 }
                 break;
@@ -440,7 +440,9 @@ class ImportController extends Seeder
         $mc->idModulo = $horario->modulo;
         $mc->idCiclo = $horario->Grupo->idCiclo;
         $mc->curso = substr($horario->idGrupo, 0, 1);
-        $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento) ? Profesor::find($horario->idProfesor)->departamento : '99';
+        $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento)
+                ? Profesor::find($horario->idProfesor)->departamento
+                : '99';
         $mc->enlace = self::getLinkSchedule();
         $mc->save();
         return $mc;
@@ -462,9 +464,9 @@ class ImportController extends Seeder
     /**
      * @param $mc
      */
-    function newProgramacion($mc)
+    protected static function newProgramacion($mc)
     {
-        $prg = New Programacion();
+        $prg = new Programacion();
         $prg->idModuloCiclo = $mc->id;
         $prg->fichero = $mc->enlace;
         $prg->curso = Curso();
@@ -484,11 +486,13 @@ class ImportController extends Seeder
     /**
      *
      */
-    private function crea_modulosCiclos()
+    private function creaModulosCiclos()
     {
         foreach (self::getHoraris() as $horario) {
             if (isset($horario->Grupo->idCiclo)) {
-                if (! $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first()) {
+                if (! $mc = Modulo_ciclo::where('idModulo', $horario->modulo)
+                    ->where('idCiclo', $horario->Grupo->idCiclo)
+                    ->first()){
                     $mc = self::newModuloCiclo($horario);
                 } else {
                     if ((isset(Profesor::find($horario->idProfesor)->departamento)) && ($mc->idDepartamento == 99)) {
@@ -624,14 +628,14 @@ class ImportController extends Seeder
     /**
      * @return int
      */
-    private function crea_codigo_profesor()
+    private function creaCodigoProfesor()
     {
         $tots = 1;
         do {
             $azar = rand(1050, 9000);
             $tots = Profesor::where('codigo', $azar)->get()->count();
         } while ($tots > 0);
-        return($azar);
+        return $azar;
     }
 
     /**
@@ -675,7 +679,7 @@ class ImportController extends Seeder
         if ($letra != "") {
             $domic .= "-" . $letra;
         }
-        return ($domic);
+        return $domic;
     }
 
     /**
@@ -684,23 +688,23 @@ class ImportController extends Seeder
      * @param int $func
      * @return false|mixed|string|string[]|null
      */
-    private function saca_campos($atrxml, $llave, $func = 1)
+    private function sacaCampos($atrxml, $llave, $func = 1)
     {
         $lista = explode(",", $llave, 99);
         if (count($lista) == 1) {
             if (isset($atrxml[$llave])) {
-                return (mb_convert_encoding($atrxml[$llave], 'utf8'));
+                return mb_convert_encoding($atrxml[$llave], 'utf8');
             } else {
-                return ($llave);
+                return $llave;
             }
         } else {
             for ($i = $func; $i < count($lista); $i++) {
                 $params[$i - $func] = mb_convert_encoding($atrxml[$lista[$i]], 'utf8');
             }
             if ($func) {
-                return (call_user_func_array(array($this, $lista[0]), $params));
+                return call_user_func_array(array($this, $lista[0]), $params);
             } else {
-                return ($params);
+                return $params;
             }
         }
     }
@@ -762,13 +766,13 @@ class ImportController extends Seeder
             }
             if ($pasa) {
                 $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
-                $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
+                $clave = $this->sacaCampos($atributosxml, $tabla['id'], 0);
                 if (!is_array($clave)) {
                     $this->log->info("Processant $clase: $clave");
                 }
                 if ($pt = $this->encuentra($clase, $clave)) {   //Update
                     foreach ($tabla['update'] as $keybd => $keyxml) {
-                        $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
+                        $pt->$keybd = $this->sacaCampos($atributosxml, $keyxml);
                     }
                     try {
                         $pt->save();
@@ -782,7 +786,7 @@ class ImportController extends Seeder
                         unset($arrayDatos);
                     }
                     foreach ($tabla['update'] + $tabla['create'] as $keybd => $keyxml) {
-                        $arrayDatos[$keybd] = $this->saca_campos($atributosxml, $keyxml);
+                        $arrayDatos[$keybd] = $this->sacaCampos($atributosxml, $keyxml);
                     }
                     try {
                         switch ($tabla['nombreclase']) {

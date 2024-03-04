@@ -6,7 +6,7 @@
             <br/><br/><br/>
             <div class="container" style="width:95%;clear:right;text-align: justify">
                 <p><strong>COMUNICAT DE LA PÈRDUA DE L'AVALUACIÓ CONTINUA D'UN MÒDUL</strong></p>
-                <p style="text-indent: 30px">Com a professor/a del grup
+                <p style="text-indent: 30px">{{$elemento->Profesor->fullName}}, com a professor/a del grup
                     <strong>{{$elemento->Alumno->Grupo->first()->nombre??'Desconegut' }}</strong> del curs {{ curso() }}
                     COMUNIQUE la pèrdua de l’avaluació contínua en el procés d’ensenyament-aprenentatge del mòdul
                     <strong>{{ $elemento->Modulo?$elemento->Modulo->vliteral:'Revisa-ho' }}</strong>.
@@ -17,9 +17,11 @@
                     i activitats programades. Per a això, en règim presencial, serà necessària almenys el 85% de les
                     clases i activitats previstes
                     en cada mòdul (Normativa : Orden 79/2010, de 27 de agosto, de la Conselleria de Educación i Normes
-                    d’inici de curs, així com l'Ordre 30/2022, de 12 de maig de la Conselleria d'Educació, Cultura i Esport
-                    que regula la pèrdua d'avaluació contínua en el règim semipresencial, tant per inassistència a les classes
-                    de presencialitat obligatòries com la insistència als exàmens presencials).</p>
+                    d’inici de curs, així com l'Ordre 30/2022, de 12 de maig de la Conselleria d'Educació,
+                    Cultura i Esport que regula la pèrdua d'avaluació contínua en el règim semipresencial,
+                    tant per inassistència a les classes de presencialitat obligatòries com la
+                    inasistència als exàmens presencials).
+                </p>
                 <p tyle="text-indent: 30px">La dita circumstància és acreditada i certificada pel cap d’estudis a partir
                     dels parts de faltes d’assistència comunicades pel professorat
                     que impartix docència i que l’alumne/a o tutor/a legal pot comprovar des de l’aplicació “web

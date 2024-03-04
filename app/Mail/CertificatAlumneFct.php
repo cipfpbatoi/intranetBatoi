@@ -38,6 +38,7 @@ class CertificatAlumneFct extends Mailable
     public function build()
     {
         $id = $this->fct->id;
+        $emitent = $this->fct->Fct->Tutor;
         if (file_exists(storage_path("tmp/certificatFct_$id.pdf"))) {
             unlink(storage_path("tmp/certificatFct_$id.pdf"));
         }
@@ -45,6 +46,9 @@ class CertificatAlumneFct extends Mailable
         $pdf->save(storage_path("tmp/certificatFct_$id.pdf"));
         Log::notice("Enviat correu certificat ".$this->fct->Alumno->fullName);
         return $this->view("email.fct.certificadoAlumno")
+            ->from($emitent->email, $emitent->fullName)
+            ->replyTo($emitent->email, $emitent->fullName)
+            ->cc($emitent->email, $emitent->fullName)
             ->attach(
                 storage_path("tmp/certificatFct_$id.pdf"),
                 [

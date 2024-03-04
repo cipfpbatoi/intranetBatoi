@@ -2,12 +2,17 @@
 
 return [
     'tipoReunion' => [
-        ['index' => '0', 'vliteral' => 'Reunió Departament', 'cliteral' => 'Reunión Departamento', 'colectivo' => 'Departamento', 'rol' => '13', 'select' => '0',
-            'convocatoria' => 'convocatoria', 'acta' => 'actaReunio',
+        ['index' => '0',
+            'vliteral' => 'Reunió Departament',
+            'cliteral' => 'Reunión Departamento',
+            'colectivo' => 'Departamento',
+            'rol' => '13', 'select' => '0',
+            'convocatoria' => 'convocatoria',
+            'acta' => 'actaReunio',
             'modificable' => 1,
             'ordenes' => ['Lectura acta anterior', "Torn obert de paraula"],
             'numeracion' => [0=>'--',1=>'01',2=>'02',3=>'03',4=>'04',5=>'05',6=>'06',7=>'07',8=>'08',9=>'09',10=>'10',11=>'11',12=>'12',13=>'13',14=>'14',15=>'15',
-                16=>'16',17=>'17',18=>'18',19=>'19']],
+                16=>'16',17=>'17',18=>'18',19=>'19',24=>'20',25=>'21',26=>'22',27=>'23',28=>'24',29=>'25']],
         ['index' => '1', 'vliteral' => 'Claustre', 'cliteral' => 'Claustro', 'colectivo' => 'Profesor', 'rol' => '2', 'select' => '0',
             'convocatoria' => 'convocatoria', 'acta' => 'actaReunio',
             'modificable' => 1,

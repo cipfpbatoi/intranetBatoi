@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Exceptions\IntranetException;
 use Intranet\Services\CalendarService;
 use Intranet\Services\GestorService;
 use Intranet\Entities\Reunion;
@@ -81,14 +82,17 @@ class ReunionController extends IntranetController
         }
         else {
             $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
-            $Profesores = Profesor::select('dni', 'apellido1', 'apellido2', 'nombre')
+            $activos = Profesor::select('dni', 'apellido1', 'apellido2', 'nombre')
                     ->OrderBy('apellido1')
                     ->OrderBy('apellido2')
+                    ->where('activo', '=', 1)
                     ->get();
-            foreach ($Profesores as $profesor) {
-                $tProfesores[$profesor->dni] = $profesor->apellido1 . ' ' . $profesor->apellido2 . ',' . $profesor->nombre;
-            }
-            $sProfesores = $elemento->profesores()->orderBy('apellido1')->orderBy('apellido2')->get(['dni', 'apellido1', 'apellido2', 'nombre']);
+            $tProfesores = hazArray($activos, 'dni', 'FullName');
+            $sProfesores = $elemento
+                ->profesores()
+                ->orderBy('apellido1')
+                ->orderBy('apellido2')
+                ->get(['dni', 'apellido1', 'apellido2', 'nombre']);
             $formulario = new FormBuilder($elemento,[
                 'idProfesor' => ['type' => 'hidden'],
                 'numero' => ['type' => 'select'],
@@ -106,7 +110,19 @@ class ReunionController extends IntranetController
                 $select = $elemento->isSemi?'auxiliares.promocionaSemi':'auxiliares.promociona';
                 $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
                 $tAlumnos = $this->tAlumnos($elemento,hazArray($sAlumnos,'nia'));
-                return view('reunion.asistencia', compact('formulario', 'modelo', 'tProfesores', 'sProfesores', 'ordenes','tAlumnos','sAlumnos','select'));
+                return view(
+                    'reunion.asistencia',
+                    compact(
+                        'formulario',
+                        'modelo',
+                        'tProfesores',
+                        'sProfesores',
+                        'ordenes',
+                        'tAlumnos',
+                        'sAlumnos',
+                        'select'
+                    )
+                );
             }
             return view('reunion.asistencia', compact('formulario', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
         }
@@ -198,7 +214,15 @@ class ReunionController extends IntranetController
         $remitente = ['email' => $elemento->Responsable->email, 'nombre' => $elemento->Responsable->FullName];
         foreach ($asistentes as $asistente) {
             if (!haVencido($elemento->fecha)) {
-                dispatch(new SendEmail($asistente->Profesor->email, $remitente, 'email.convocatoria', $elemento, $attach));
+                dispatch(
+                    new SendEmail(
+                        $asistente->Profesor->email,
+                        $remitente,
+                        'email.convocatoria',
+                        $elemento,
+                        $attach
+                    )
+                );
             }  else {
                 dispatch(new SendEmail($asistente->Profesor->email, $remitente, 'email.reunion', $elemento, $attach));
             }
@@ -211,13 +235,54 @@ class ReunionController extends IntranetController
     {
         $this->panel->setBotonera(['create'], ['pdf']);
         $actual = AuthUser()->dni;
-        $this->panel->setBoton('grid', new BotonImg('reunion.edit', ['img' => 'fa-pencil', 'where' => ['idProfesor', '==', $actual, 'archivada', '==', '0']]));
-        $this->panel->setBoton('grid', new BotonImg('reunion.delete', ['where' => ['idProfesor', '==', $actual, 'archivada', '==', '0']]));
-        $this->panel->setBoton('grid', new BotonImg('reunion.notification', ['where' => ['idProfesor', '==', $actual, 'fichero', '==', '', 'archivada', '==', '0']]));
-        $this->panel->setBoton('grid', new BotonImg('reunion.email', ['where' => ['idProfesor', '==', $actual, 'fichero', '==', '']]));
-        $this->panel->setBoton('grid', new BotonImg('reunion.ics', ['img' => 'fa-calendar', 'where' => ['fecha', 'posterior', Date::yesterday()]]));
-        $this->panel->setBoton('grid', new BotonImg('reunion.saveFile', ['where' => ['idProfesor', '==', $actual, 'archivada', '==', '0', 'fecha', 'anterior', Date::yesterday()]]));
-        $this->panel->setBoton('grid', new BotonImg('reunion.deleteFile', ['img' => 'fa-unlock','where' => ['idProfesor', '==', $actual, 'archivada', '==', '1', 'fecha', 'anterior', Date::yesterday()]]));
+        $this->panel->setBoton('grid',
+            new BotonImg('reunion.edit',
+                ['img' => 'fa-pencil', 'where' => ['idProfesor', '==', $actual, 'archivada', '==', '0']]
+            )
+        );
+        $this->panel->setBoton('grid',
+            new BotonImg('reunion.delete',
+                ['where' => ['idProfesor', '==', $actual, 'archivada', '==', '0']]
+            )
+        );
+        $this->panel->setBoton('grid',
+            new BotonImg('reunion.notification',
+                ['where' => ['idProfesor', '==', $actual, 'fichero', '==', '', 'archivada', '==', '0']]
+            )
+        );
+        $this->panel->setBoton('grid',
+            new BotonImg('reunion.email',
+                ['where' => ['idProfesor', '==', $actual, 'fichero', '==', '']]
+            )
+        );
+        $this->panel->setBoton('grid',
+            new BotonImg('reunion.ics',
+                ['img' => 'fa-calendar', 'where' => ['fecha', 'posterior', Date::yesterday()]]
+            )
+        );
+        $this->panel->setBoton('grid',
+            new BotonImg('reunion.saveFile',
+                [
+                    'where' => [
+                        'idProfesor', '==', $actual,
+                        'archivada', '==', '0',
+                        'fecha', 'anterior', Date::yesterday()
+                    ]
+                ]
+            )
+        );
+        $this->panel->setBoton('grid',
+            new BotonImg('reunion.deleteFile',
+                [
+                    'img' => 'fa-unlock',
+                    'where' => [
+                        'idProfesor', '==', $actual,
+                        'archivada', '==', '1',
+                        'fecha', 'anterior', Date::yesterday()
+                    ]
+                ]
+            )
+        );
 
     }
 
@@ -227,13 +292,11 @@ class ReunionController extends IntranetController
         if ($elemento->fichero != '') {
             if (file_exists(storage_path('/app/' . $elemento->fichero))) {
                 return response()->file(storage_path('/app/' . $elemento->fichero));
-            }
-            else {
+            } else {
                 Alert::message('No trobe fitxer', 'danger');
                 return back();
             }
-        }
-        else {
+        } else {
             if ($elemento->archivada) {
                 $this->saveFile($id);
             }
@@ -241,35 +304,50 @@ class ReunionController extends IntranetController
         }
     }
 
-    public function saveFile($id)
+    private function actaCompleta(Reunion $reunion)
     {
-        $elemento = $this->class::find($id);
-        if ($elemento->fichero != '') {
-            $nomComplet = $elemento->fichero;
-        }
-        else {
-            $nom = 'Acta_' . $elemento->id . '.pdf';
-            $directorio = 'gestor/' . Curso() . '/' . $this->model;
-            $nomComplet = $directorio . '/' . $nom;
-            if (!file_exists(storage_path('/app/' . $nomComplet))) {
-                $this->construye_pdf($id)->save(storage_path('/app/' . $nomComplet));
+        if ($reunion->tipo == 7) {
+            foreach ($reunion->ordenes as $orden) {
+                if (empty($orden->resumen)) {
+                    throw new IntranetException("Tots els punts han de completar-se en una reunió d'avaluació");
+                }
             }
         }
-        $elemento->archivada = 1;
-        $elemento->fichero = $nomComplet;
-        DB::transaction(function () use ($elemento) {
-            $gestor = new GestorService($elemento);
-            $gestor->save(['propietario' => $elemento->Creador->FullName,
-                'tipoDocumento' => 'Acta',
-                'descripcion' => $elemento->descripcion,
-                'fichero' => $elemento->fichero,
-                'supervisor' => $elemento->Creador->FullName,
-                'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
-                'tags' => TipoReunion::find($elemento->tipo)->vliteral,
-                'created_at' => new Date($elemento->fecha),
-                'rol' => config('roles.rol.profesor')]);
-            $elemento->save();
-        });
+    }
+
+    public function saveFile($id)
+    {
+        try {
+            $elemento = $this->class::find($id);
+            if ($elemento->fichero != '') {
+                $nomComplet = $elemento->fichero;
+            } else {
+                $this->actaCompleta($elemento);
+                $nom = 'Acta_' . $elemento->id . '.pdf';
+                $directorio = 'gestor/' . Curso() . '/' . $this->model;
+                $nomComplet = $directorio . '/' . $nom;
+                if (!file_exists(storage_path('/app/' . $nomComplet))) {
+                    $this->construye_pdf($id)->save(storage_path('/app/' . $nomComplet));
+                }
+            }
+            $elemento->archivada = 1;
+            $elemento->fichero = $nomComplet;
+            DB::transaction(function () use ($elemento) {
+                $gestor = new GestorService($elemento);
+                $gestor->save(['propietario' => $elemento->Creador->FullName,
+                    'tipoDocumento' => 'Acta',
+                    'descripcion' => $elemento->descripcion,
+                    'fichero' => $elemento->fichero,
+                    'supervisor' => $elemento->Creador->FullName,
+                    'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
+                    'tags' => TipoReunion::find($elemento->tipo)->vliteral,
+                    'created_at' => new Date($elemento->fecha),
+                    'rol' => config('roles.rol.profesor')]);
+                $elemento->save();
+            });
+        } catch (IntranetException $e){
+            Alert::warning($e->getMessage());
+        }
         return back();
     }
 
@@ -277,7 +355,10 @@ class ReunionController extends IntranetController
     {
         if ($request->pass == date('mdy')) {
             $elemento = $this->class::find($id);
-            $document = Documento::where('tipoDocumento','Acta')->where('curso',Curso())->where('idDocumento',$elemento->id)->first();
+            $document = Documento::where('tipoDocumento','Acta')
+                ->where('curso',Curso())
+                ->where('idDocumento',$elemento->id)
+                ->first();
             if ($elemento->fichero != '' && $document) {
                 DB::transaction(function () use ($elemento, $document) {
                     $nom = $elemento->fichero;
@@ -313,7 +394,11 @@ class ReunionController extends IntranetController
         }
         
         foreach ($grupos as $grupo) {
-            if (!Reunion::Convocante($grupo->tutor)->Tipo($request->tipo)->Numero($request->numero)->Archivada()->count()) {
+            if (!Reunion::Convocante($grupo->tutor)
+                ->Tipo($request->tipo)
+                ->Numero($request->numero)
+                ->Archivada()
+                ->count()) {
                 $texto = 'Et falta per fer i/o arxivar la reunio ' . TipoReunion::find($request->tipo)->vliteral . ' ';
                 $texto .= $request->numero > 0 ? config('auxiliares.numeracion')[$request->numero] : '';
                 avisa($grupo->tutor, $texto);
@@ -332,10 +417,17 @@ class ReunionController extends IntranetController
         $elemento->hora = $hoy->format('H:i');
         $hoy = new Date($elemento->updated_at);
         $elemento->hoy = haVencido($elemento->fecha) ? $elemento->dia : FechaString($hoy);
-        return $this->hazPdf($this->informe($elemento), OrdenReunion::where('idReunion', '=', $id)->get(), $elemento, 'portrait', 'a4');
+        return $this->hazPdf(
+            $this->informe($elemento),
+            OrdenReunion::where('idReunion', '=', $id)->get(),
+            $elemento,
+            'portrait',
+            'a4'
+        );
     }
 
-    private function informe($elemento){
+    private function informe($elemento)
+    {
         $tipo_reunion = TipoReunion::find($elemento->tipo);
         return haVencido($elemento->fecha) ?
             'pdf.reunion.'.$tipo_reunion->acta:
@@ -343,7 +435,8 @@ class ReunionController extends IntranetController
     }
 
 
-    public static function preparePdf($informe,$aR){
+    public static function preparePdf($informe, $aR)
+    {
         $hoy = new Date();
         $elemento = FechaString($hoy,'ca');
         return self::hazPdf($informe, $aR,$elemento ,'portrait','a4');

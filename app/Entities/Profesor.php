@@ -61,6 +61,8 @@ class Profesor extends Authenticatable
         'email',
         'departamento',
         'idioma',
+        'movil1',
+        'movil2',
         'mostrar',
         'especialitat',
     ];
@@ -118,6 +120,7 @@ class Profesor extends Authenticatable
         return $this->hasOne(Profesor::class, 'sustituye_a', 'dni');
     }
 
+
     public function Reserva()
     {
         return $this->hasMany(Reserva::getClass(), 'profesor_id', 'dni');
@@ -149,6 +152,7 @@ class Profesor extends Authenticatable
         return $query->where('fecha_baja', null)->where('activo', 1);
     }
 
+
     public static function getRol($rol)
     {
         $all = Profesor::Activo()->get();
@@ -175,7 +179,7 @@ class Profesor extends Authenticatable
     public function scopeGrupo($query, $grupo)
     {
         $profesores = Horario::distinct()->select('idProfesor')->Grup($grupo)->get()->toArray();
-        return $query->whereIn('dni', $profesores)->orWhereIn('sustituye_a', $profesores)->Activo();
+        return $query->whereIn('dni', $profesores)->orWhereIn('sustituye_a', $profesores)->Plantilla();
     }
     public function scopeGrupoT($query, $grupoT)
     {
@@ -320,7 +324,7 @@ class Profesor extends Authenticatable
 
     public function getGrupoTutoriaAttribute()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->get();
+        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->get();
         if (isset($miGrupo->first()->codigo)) {
             return $miGrupo->first()->codigo;
         } else {
@@ -340,6 +344,49 @@ class Profesor extends Authenticatable
     {
         $substitut = $this->Sustituye??null;
         return isset($substitut->fullName)?$substitut->fullName:'';
+    }
+
+    public function getSustituidosAttribute()
+    {
+        $sustituidos[] = $this->dni;
+        $profesor = $this;
+        while ($profesor) {
+            if (!empty($profesor->sustituye_a) && $profesor->sustituye_a != ' ') {
+                $sustituidos[] = $profesor->sustituye_a;
+                $profesor = Profesor::find($profesor->sustituye_a);
+            } else {
+                $profesor = null;
+            }
+        }
+
+        return $sustituidos;
+    }
+
+
+    public static function getSubstituts($dni)
+    {
+        $profesor = Profesor::find($dni);
+        $sustituidos[] = $dni;
+        while ($profesor) {
+            if (!empty($profesor->sustituye_a) && $profesor->sustituye_a != ' ') {
+                $sustituidos[] = $profesor->sustituye_a;
+                $profesor = Profesor::find($profesor->sustituye_a);
+            } else {
+                $profesor = null;
+            }
+        }
+        return $sustituidos;
+    }
+
+    public function getHasCertificateAttribute()
+    {
+        return file_exists($this->pathCertificate);
+    }
+
+    public function getPathCertificateAttribute()
+    {
+        $fileName = $this->getFileNameAttribute();
+        return storage_path('app/zip/'.$fileName.'.tmp');
     }
 
 }

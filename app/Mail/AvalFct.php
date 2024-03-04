@@ -22,7 +22,7 @@ class AvalFct extends Mailable
      *
      * @return void
      */
-    public function __construct($fct,$quien)
+    public function __construct($fct, $quien)
     {
         $this->fct = $fct;
         $this->quien = $quien;

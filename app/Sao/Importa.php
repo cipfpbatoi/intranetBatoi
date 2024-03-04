@@ -5,6 +5,9 @@ namespace Intranet\Sao;
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverSelect;
+use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\WebDriverWait;
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Centro;
@@ -14,6 +17,7 @@ use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Instructor;
+use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 
 
@@ -136,6 +140,16 @@ class Importa
             $dades[$index]['erasmus'] =
                 $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(2)"))
                     ->getText();
+            $dades[$index]['flexible'] =
+                $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(4)"))
+                    ->getText();
+            try {
+                $elementText = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(20) th:nth-child(1)"))
+                    ->getText();
+                $dades[$index]['dual'] = ($elementText == 'FP Dual') ? 1 : 0;
+            } catch (Exception $e) {
+                $dades[$index]['dual'] = 0;
+            }
             $dadesHores = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(14)"));
             $dades[$index]['hores'] = explode(
                 '/',
@@ -162,6 +176,11 @@ class Importa
         $idEmpresa = $dada['idEmpresa'];
         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
         sleep(1);
+        $concierto = $driver->findElement(WebDriverBy::cssSelector("#tdNumConciertoEmp"))->getText();
+        $dada['concierto'] = $concierto;
+        $data_conveni = $driver->findElement(WebDriverBy::cssSelector("#tdFechaConciertoEmp"))->getText();
+        $date = Date::createFromFormat('d/m/Y', $data_conveni);
+        $dada['data_conveni'] = $date->format('Y-m-d');
         $table1 = $driver
             ->findElement(WebDriverBy::cssSelector("table.infoUsuario.infoEmpresa tbody tr:nth-child(2)"));
         $cif = $table1
@@ -182,17 +201,51 @@ class Importa
         return $dada;
     }
 
+    private static function selectDirectorFct($driver){
+        $button = $driver->findElement(WebDriverBy::xpath("//button[contains(@class, 'botonSelec') and text()='Tutor/a...']"));
+        $button->click();
+        sleep(1);
+        $selectElement = $driver->findElement(WebDriverBy::id('selecFiltroProfesores'));
+        $select = new WebDriverSelect($selectElement);
+        $select->selectByValue('nombre');
+        $wait = new WebDriverWait($driver, 10);
+        $inputElement = $wait->until(
+            WebDriverExpectedCondition::visibilityOfElementLocated(WebDriverBy::id('filtroProfesores'))
+        );
+        $inputElement->sendKeys(AuthUser()->apellido1);
+        $link = $driver->findElement(WebDriverBy::cssSelector('a[title="Filtrar"]'));
+        $link->click();
+        sleep(1);
+        $table = $driver->findElement(WebDriverBy::className('tablaSelEmpresas'));
+        $rows = $table->findElements(WebDriverBy::cssSelector("tr"));
+        foreach ($rows as $key => $row) {
+            if ($key == 0) {
+                continue;
+            }
+            $segonaColumna = $row->findElement(WebDriverBy::cssSelector('td:nth-child(2)'));
+            if ($segonaColumna->getText() ==" ".AuthUser()->dni) {
+                break;
+            }
+        }
+
+        $table->findElement(WebDriverBy::cssSelector('tr:nth-child('.$key.')'))->click();
+        sleep(1);
+    }
+
     public static function index($driver)
     {
         $grupo = Grupo::where('tutor', AuthUser()->dni)->first();
         $ciclo = $grupo->idCiclo??null;
         $dades = array();
+        if (AuthUser()->dni === config('avisos.director')) {
+            self::selectDirectorFct($driver);
+        }
 
         try {
-            self::extractPage($driver, $dades);
+            self::extractPage($driver, $dades,1);
             $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
             sleep(1);
-            self::extractPage($driver, $dades);
+            self::extractPage($driver, $dades,2);
         } catch (Exception $e) {
             //No hi ha més pàgines
         }
@@ -206,6 +259,14 @@ class Importa
 
                     if ($empresa) { //Si hi ha empresa
                         $dades[$index]['centre']['id'] = self::buscaCentro($dades[$index], $empresa);
+                        if ($empresa->data_signatura < $dades[$index]['data_conveni']) {
+                            $empresa->data_signatura = $dades[$index]['data_conveni'];
+                            $empresa->save();
+                        }
+                        if (!$empresa->concierto){
+                            $empresa->concierto = $dades[$index]['concierto'];
+                            $empresa->save();
+                        }
                     }
                 } catch (Exception $e) {
                     Alert::info($e->getMessage());
@@ -227,7 +288,8 @@ class Importa
                 $centro = self::getCentro($dades[$key]);
                 $idColaboracion = self::getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = self::getDni($centro, $dades[$key], $ciclo);
-                $fct = self::getFct($dni, $idColaboracion, $dades[$key]['erasmus']);
+                $asociacion = $dades[$key]['dual'] ? 4 : ($dades[$key]['erasmus'] == 'No' ? 1 : 2);
+                $fct = self::getFct($dni, $idColaboracion, $asociacion);
                 self::saveFctAl($fct, $dades[$key]);
             }
         }
@@ -245,8 +307,10 @@ class Importa
             $idSao = $dades['centre']['idSao']??null;
             if ($idSao) {
                 $centro = Centro::where('idSao', $idSao)->first();
-                $centro->Empresa->update(['idSao' => $dades['idEmpresa']]);
-                return $centro;
+                if ($centro) {
+                    $centro->Empresa->update(['idSao' => $dades['idEmpresa']]);
+                    return $centro;
+                }
             }
         }
 
@@ -254,6 +318,7 @@ class Importa
             $empresa = new Empresa(
                 [
                     'cif' => $dades['cif'],
+                    'concierto' => $dades['concierto'],
                     'nombre' => $dades['nameEmpresa'],
                     'idSao' => $dades['idEmpresa'],
                     'email' => $dades['centre']['email'],
@@ -262,7 +327,8 @@ class Importa
                     'europa' => ($dades['erasmus']=='No')?0:1,
                     'observaciones' => 'Empresa creada automàticament',
                     'sao' => 1,
-                    'direccion' => ''
+                    'direccion' => '',
+                    'data_signatura' => $dades['data_conveni'],
                 ]
             );
             $empresa->save();
@@ -427,9 +493,8 @@ class Importa
      * @param $idColaboracion
      * @return Fct
      */
-    private static function getFct($dni, $idColaboracion, $erasmus): Fct
+    private static function getFct($dni, $idColaboracion, $asociacion): Fct
     {
-        $asociacion = $erasmus == 'No' ? 1 : 2;
         $fct = Fct::where('idColaboracion', $idColaboracion)
             ->where('idInstructor', $dni)
             ->where('correoInstructor', 0)
@@ -455,13 +520,15 @@ class Importa
      */
     private static function saveFctAl(Fct $fct, $dades)
     {
-        $fctAl = AlumnoFct::where('idFct', $fct->id)->where('idAlumno', $dades['nia'])->first();
+        $fctAl = AlumnoFct::where('idFct', $fct->id)
+            ->where('idAlumno', $dades['nia'])
+            ->where('idSao', $dades['idSao'])
+            ->first();
         if (!$fctAl) {
             $fctAl = new AlumnoFct([
                 'horas' => $dades['hores'],
                 'desde' => $dades['desde'],
                 'hasta' => $dades['hasta'],
-                'autorizacion' => $dades['autorizacion']
             ]);
             $fctAl->idFct = $fct->id;
             $fctAl->idAlumno = $dades['nia'];
@@ -469,8 +536,10 @@ class Importa
         $fctAl->desde = $dades['desde'];
         $fctAl->hasta = $dades['hasta'];
         $fctAl->horas = $dades['hores'];
+        $fctAl->flexible = $dades['flexible'] == 'No' ? 0 : 1;
         $fctAl->autorizacion = $dades['autorizacion'];
         $fctAl->idSao = $dades['idSao'];
+        $fctAl->idProfesor = authUser()->dni;
         $fctAl->save();
     }
 
@@ -479,16 +548,17 @@ class Importa
      * @param  array  $dades
      * @return array
      */
-    private static function extractPage(RemoteWebDriver $driver, array &$dades)
+    private static function extractPage(RemoteWebDriver $driver, array &$dades,$page)
     {
         $table = $driver->findElements(WebDriverBy::cssSelector("tr"));
         foreach ($table as $index => $tr) {
             if ($index) { //el primer és el titol i no cal iterar-lo
+                $key = ($page-1) * 30 + $index;
                 try {
                     //dades de la linea
-                    self::extractFromModal($dades, $index, $tr, $driver);
+                    self::extractFromModal($dades, $key, $tr, $driver);
                 } catch (Exception $e) {
-                    unset($dades[$index]);
+                    unset($dades[$key]);
                     Alert::info($e->getMessage());
                 }
             }

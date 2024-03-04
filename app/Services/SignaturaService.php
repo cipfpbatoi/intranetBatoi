@@ -9,10 +9,10 @@ class SignaturaService
     public static function exec($dni, $style='', $ratio=1, $notFound=null)
     {
         $profesor = Profesor::find($dni);
-        $name = $profesor->fileName.'.png';
+        $name = $profesor->foto;
         $x = $ratio * 260;
         $y = $ratio * 220;
-        if (file_exists(storage_path().'/app/public/signatures/'.$name)) {
+        if (file_exists(storage_path('/app/public/signatures/'.$name))) {
             $ruta = public_path('/storage/signatures/'.$name);
             return "<div style='".$style."'><img style='width:".(int)$x."px;heigth:"
                 .(int)$y."px' src='".$ruta."' alt='Signatura:'/></div>";
@@ -24,7 +24,7 @@ class SignaturaService
     public static function peu($dni)
     {
         $profesor = Profesor::find($dni);
-        $name = $profesor->fileName.'.png';
+        $name = $profesor->foto;
         if (file_exists(storage_path().'/app/public/peus/'.$name)) {
             $ruta = public_path('/storage/peus/'.$name);
             $imgBase64 = chunk_split(base64_encode(file_get_contents($ruta)));
@@ -39,7 +39,8 @@ class SignaturaService
     public static function exists($dni)
     {
         $profesor = Profesor::find($dni);
-        return file_exists(storage_path().'/app/public/signatures/'.$profesor->fileName.'.png');
+        $name = $profesor->foto;
+        return file_exists(storage_path().'/app/public/peus/'.$name);
     }
     /*
 

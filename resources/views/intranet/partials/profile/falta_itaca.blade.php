@@ -41,7 +41,7 @@
                                 </ul>
                             </div>
                             <div class="right col-xs-4 text-center">
-                                <img src="{{ asset('storage/'.$usuario->first()->Profesor->foto) }}"
+                                <img src="{{ asset('storage/fotos/'.$usuario->first()->Profesor->foto) }}"
                                      alt="" class="img-circle img-responsive">
                             </div>
                         </div>

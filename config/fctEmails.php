@@ -40,6 +40,7 @@ return [
             'register' => true
         ],
         'modelo' => 'Fct',
+        'finder' => 'Fct',
         'template' =>'email.fct.info',
         'route' => 'fct',
         'fcts' => 1,
@@ -157,8 +158,23 @@ return [
         'route' => 'alumnofct',
         'view' => 'pdf.fct.seguimentAlumnes',
     ],
-    'pasqua' => [
+    'autTutor' => [
         'printResource' => 'AutorizacionGrupoResource',
+        'modelo' => 'AlumnoFct',
+        'route' => 'autTutor',
+        'finder' => 'AlumnoEnFct',
+        'multiple' => false,
+        'sign' => true,
+    ],
+    'autDireccio' => [
+        'printResource' => 'AutorizacionDireccionGrupoResource',
+        'modelo' => 'AlumnoFct',
+        'route' => 'alumnofct',
+        'finder' => 'AlumnoEnFct',
+        'multiple' => false,
+    ],
+    'autAlumnat' => [
+        'printResource' => 'ConformidadAlumnadoGrupoResource',
         'modelo' => 'AlumnoFct',
         'route' => 'alumnofct',
         'finder' => 'AlumnoEnFct',
@@ -168,23 +184,30 @@ return [
         'modelo' => 'Signatura',
         'route' => 'alumnofct',
         'finder' => 'A1',
+        'zip' => true,
     ],
     'A2' => [
         'modelo' => 'Signatura',
-        'route' => 'alumnofct',
+        'route' => 'A2',
         'finder' => 'A2',
+        'zip' => true,
+        'sign' => true,
     ],
     'A3' => [
         'modelo' => 'Signatura',
-        'route' => 'alumnofct',
+        'route' => 'A3',
         'finder' => 'A3',
+        'editable' => true,
     ],
-
     'A5' => [
         'modelo' => 'AlumnoFct',
         'route' => 'alumnofct',
         'finder' => 'AlumnoEnFct',
         'printResource' => 'A5Resource',
         'zip' => true
+    ],
+    'Signed' => [
+        'modelo' => 'AlumnoFct',
+        'finder' => 'Signed',
     ],
 ];

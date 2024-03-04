@@ -279,7 +279,7 @@ class PanelFctAvalController extends IntranetController
     private function lookForStudents($projectNeeded)
     {
         $found = false;
-        foreach (AlumnoFctAval::MisFcts()->NoAval()->get() as $fct) {
+        foreach (AlumnoFctAval::Avaluables()->NoAval()->get() as $fct) {
             if ($projectNeeded) {
                 if (isset($fct->calProyecto)) {
                     $fct->actas = 3;
@@ -292,7 +292,6 @@ class PanelFctAvalController extends IntranetController
                     $found = true;
             }
         }
-
         return $found;
     }
 
@@ -446,15 +445,20 @@ class PanelFctAvalController extends IntranetController
         $registre = Profesor::findOrFail($id);
         $quien = $registre->fullName;
         $modelo = strtolower('Profesor');
+        $ara = new \DateTime();
+        $inici = new \DateTime(date('Y') . '-06-15');
+        $fi = new \DateTime(date('Y') . '-09-07');
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()],
-            'final' => [
-                'link' =>"/fct/$id/upload",
-                'message' => "Este procediment l'has de fer quan tingues tota
+        ];
+        if ($ara >= $inici && $ara <= $fi) {
+            $botones['final'] = [
+                    'link' =>"/fct/$id/upload",
+                    'message' => "Este procediment l'has de fer quan tingues tota
                      la documentació de totes les FCT completes.
                       Una vegada fet no es pot tornar arrere."
-                ]
-        ];
+                ];
+        }
         return view('dropzone.index', compact('modelo', 'id', 'quien', 'botones'));
 
     }

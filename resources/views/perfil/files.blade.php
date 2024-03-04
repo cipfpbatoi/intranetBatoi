@@ -13,16 +13,16 @@
         </tr>
         <tr>
             <td>
-                <img style="max-width: 50%" src="{{'/storage/'.$profesor->foto}}"  alt="foto"/>
+                <img style="max-width: 50%" src="{{'/storage/fotos/'.$profesor->foto}}"  alt="foto"/>
             </td>
             <td>
-                <img style="max-width: 50%" src="{{'/storage/signatures/'.$profesor->fileName.'.png'}}" alt="rubrica" />
+                <img style="max-width: 50%" src="{{'/storage/signatures/'.$profesor->foto}}" alt="rubrica" />
             </td>
             <td>
-                <img style="max-width: 50%" src="{{'/storage/peus/'.$profesor->fileName.'.png'}}" alt="peu" />
+                <img style="max-width: 50%" src="{{'/storage/peus/'.$profesor->foto}}" alt="peu" />
             </td>
             <td>
-                @if(file_exists(storage_path('app/certificats/'.$profesor->fileName.'.tmp')))
+                @if(file_exists(storage_path('app/zip/'.$profesor->fileName.'.tmp')))
                    <img src="/img/certificat_digital.png" alt="digital carregat" />
                 @endif
             </td>
@@ -43,6 +43,7 @@
                 </td>
                 <td>
                     <input id='certificat' type="file" name="certificat_digital" />
+                    <input type="checkbox" name="eliminar_certificat" value="1" /> Eliminar Certificat<br/>
                     <label for="password">Login usuari:</label>
                     <input type="password" id="password" name="password" />
                 </td>

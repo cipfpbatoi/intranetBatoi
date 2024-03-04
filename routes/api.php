@@ -31,6 +31,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('modulo_ciclo', 'Modulo_cicloController', ['except' => [ 'create']]);
     Route::resource('resultado', 'ResultadoController', ['except' => [ 'create']]);
     Route::resource('comision', 'ComisionController', ['except' => [ 'create']]);
+    Route::put('/comision/{dni}/prePay', 'ComisionController@prePay');
     Route::resource('instructor', 'InstructorController', ['except' => [ 'create']]);
     Route::resource('ipguardia', 'IpGuardiaController');
     Route::resource('setting', 'SettingController');
@@ -60,6 +61,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/material/espacio/{espacio}', 'MaterialController@getMaterial');
     Route::resource('material', 'MaterialController', ['except' => [ 'create']]);
     Route::get('inventario', 'MaterialController@inventario');
+    Route::get('inventario/{espai}', 'MaterialController@espai');
     Route::resource('materialbaja', 'MaterialBajaController', ['except' => [ 'create']]);
 
     Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
@@ -69,7 +71,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('ordenreunion', 'OrdenReunionController', ['except' => [ 'create']]);
     Route::resource('colaboracion', 'ColaboracionController', ['except' => [ 'create']]);
     Route::resource('centro', 'CentroController', ['except' => [ 'create']]);
-    Route::resource('GrupoTrabajo', 'GrupoTrabajoController', ['except' => [ 'create']]);
+    Route::resource('grupotrabajo', 'GrupoTrabajoController', ['except' => [ 'create']]);
     Route::resource('Empresa', 'EmpresaController', ['except' => [ 'create']]);
     Route::resource('ordentrabajo', 'OrdenTrabajoController', ['except' => [ 'create']]);
     Route::resource('incidencia', 'IncidenciaController', ['except' => [ 'create']]);
@@ -109,6 +111,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/documentacionFCT/{documento}', 'DocumentacionFCTController@exec');
     Route::get('/signatura', 'DocumentacionFCTController@signatura');
     Route::get('/signatura/director', 'DocumentacionFCTController@signaturaDirector');
+    Route::get('/signatura/{id}','SignaturaController@show');
 
     Route::resource('alumnoresultado', 'AlumnoResultadoContoller');
     Route::get('/matricula/{token}', 'AlumnoReunionController@getDadesMatricula');
@@ -129,6 +132,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('removeAttached/{modelo}/{id}/{file}', 'DropZoneController@removeAttached');
 
     Route::get('activity/{id}/move/{fct}', 'ActivityController@move');
+    Route::get('tutoriagrupo/{id}','TutoriaGrupoController@show');
 
 
 

@@ -7,8 +7,13 @@
 namespace Intranet\Http\Controllers;
 
 
+use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
 
+use Illuminate\Support\Facades\Mail;
+use Intranet\Entities\Alumno;
+use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
@@ -20,6 +25,9 @@ use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Setting;
+use Intranet\Mail\CertificatAlumneFct;
+use Intranet\Services\ImageService;
+use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
@@ -112,7 +120,7 @@ class AdministracionController extends Controller
     private function ferVotsPermanents()
     {
         foreach (Vote::all() as $vote) {
-            if ($fct = Fct::find($vote->idOption1)) {
+            if ($vote->Poll->remains && $fct = Fct::find($vote->idOption1)) {
                 $newVote = new VoteAnt([
                     'option_id' => $vote->option_id,
                     'idColaboracion' => $fct->idColaboracion,
@@ -131,14 +139,15 @@ class AdministracionController extends Controller
     protected function nuevoCurso()
     {
 
+        $this->ferVotsPermanents();
 
         Colaboracion::where('tutor', '!=', '')->update(['tutor'=>'']);
         Colaboracion::where('estado', '>', 1)->update(['estado' => 1]);
         Fct::where('asociacion', '!=', 3)->delete();
         Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
 
-        $this->esborrarEnquestes();
-        $this->ferVotsPermanents();
+        //$this->esborrarEnquestes();
+
 
         foreach (AlumnoGrupo::with('Grupo')->with('Alumno')->get() as $algr) {
             if ($algr->curso == 2 && $algr->fol > 0) {
@@ -156,7 +165,7 @@ class AdministracionController extends Controller
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
             'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
             'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos',
-            'polls','autorizaciones'];
+            'autorizaciones', 'votes' , 'activities', 'failed_jobs'];
         foreach ($tables as $tabla) {
             DB::table($tabla)->delete();
         }
@@ -230,6 +239,27 @@ class AdministracionController extends Controller
         return back();
     }
 
+    public static function v3_01()
+    {
+       $fcts = AlumnoFct::all();
+       foreach ($fcts as $fct) {
+           $grupo = $fct->Alumno->Grupo->first() ?? null;
+           if ($grupo) {
+               if ($grupo->curso == 2) {
+                   $fct->idProfesor = $grupo->tutor;
+               } else {
+                   $fct->idProfesor = $grupo->tutorDual;
+               }
+               $fct->save();
+           }
+       }
+        Alert::info('Version 3.01');
+    }
+
+    public function consulta()
+    {
+    }
+
 
     public static function v2_01()
     {
@@ -299,8 +329,8 @@ class AdministracionController extends Controller
 
     public function secure(Request $request)
     {
-        $user = env('USER_DOMOTICA');
-        $pass =  env('PASS_DOMOTICA');
+        $user = config('variables.domotica.user');
+        $pass =  config('variables.domotica.pass');
         if (esrol(AuthUser()->rol, config('roles.rol.administrador'))) {
             $link = str_replace('{dispositivo}', $request->dispositivo, config('variables.ipDomotica')).'/secure';
             $response = Http::withBasicAuth($user, $pass)->accept('application/json')->post($link, ['args'=>[]]);
@@ -316,52 +346,19 @@ class AdministracionController extends Controller
         return view('espai.show', compact('missatge', 'doors'));
     }
 
-    public function consulta()
+    /*public function consulta()
     {
+        $alumnosPendientes = AlumnoFct::esErasmus()->get();
 
-        $a = config('contacto');
-        foreach ($a as $key => $value) {
-            if ($value != '') {
-                if (is_array($value)) {
-                    foreach ($value as $k => $v) {
-                            $set = new Setting(['collection' => 'contacto','key' => $key.'.'.$k, 'value' => $v]);
-                            $set->save();
-                    }
-                } else {
-                        $set = new Setting(['collection' => 'contacto','key' => $key, 'value' => $value]);
-                        $set->save();
+            foreach ($alumnosPendientes as $alumno) {
+                try {
+                    Mail::to($alumno->Alumno->email)->send(new CertificatAlumneFct($alumno));
+                    $alumno->correoAlumno = 1;
+                    $alumno->save();
+                } catch (Exception $e) {
+                    Alert::info($e->getMessage());
                 }
             }
-        }
-        $a = config('avisos');
-        foreach ($a as $key => $value) {
-            if (! is_array($value) && $value != '') {
-                $set = new Setting(['collection' => 'avisos','key' => $key, 'value' => $value]);
-                $set->save();
-            }
-        }
-        $a = config('variables');
-        foreach ($a as $key => $value) {
-            if ( $value != '') {
-                if (is_array($value) && $key == 'ipGuardias') {
-                    foreach ($value as $k => $v) {
-                        $ip = new IpGuardia(['ip' => $v['ip'],'codOcup' => $v['codOcup']]);
-                        $ip->save();
-                    }
-                } else {
-                    $set = new Setting(['collection' => 'variables', 'key' => $key, 'value' => $value]);
-                    $set->save();
-                }
-            }
-        }
-        $set = new Setting(['collection' => 'variables', 'key' => 'certificatFol', 'value' => '2023-06-14']);
-        $set->save();
-        $set = new Setting(['collection' => 'variables', 'key' => 'enquestesAutomatiques', 'value' => '1']);
-        $set->save();
-        $set = new Setting(['collection' => 'variables', 'key' => 'convocatoria', 'value' => '24j281hdofd3']);
-        $set->save();
-        $set = new Setting(['collection' => 'variables', 'key' => 'fitxerMatricula', 'value' => 'email.matricula']);
-        $set->save();
-
     }
+    */
 }

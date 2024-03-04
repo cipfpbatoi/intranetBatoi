@@ -13,6 +13,8 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Intranet\Services\CalendarService;
 use Intranet\Services\GestorService;
+use Intranet\Services\GoogleCalendarService;
+use Intranet\Services\StateService;
 use Response;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
@@ -268,8 +270,47 @@ class ActividadController extends ModalController
 
     public function autorizar()
     {
-        $this->makeAll(Actividad::where('estado', '1')->get(), 2);
+        $activitats = Actividad::where('estado', '1')->get();
+        if (file_exists(storage_path(env('services.calendar.calendarCredentialsPath')))) {
+            $gC = new GoogleCalendarService();
+            foreach ($activitats as $activitat){
+                $assistents = $activitat->profesores()->select('email')->get()->toArray();
+                $gC->addEvent(
+                    $activitat->name,
+                    $activitat->descripcion,
+                    $activitat->desde,
+                    $activitat->hasta,
+                    $assistents
+                );
+            }
+            $gC->saveEvents();
+        }
+        $this->makeAll($activitats, 2);
         return back();
+    }
+
+
+    protected function accept($id, $redirect = true)
+    {
+        $stSrv = new StateService($this->class, $id);
+        if (file_exists(storage_path(env('services.calendar.calendarCredentialsPath')))) {
+            $gC = new GoogleCalendarService();
+            $activitat = Actividad::find($id);
+            $assistents = $activitat->profesores()->select('email')->get()->toArray();
+            $gC->addEvent(
+                $activitat->name,
+                $activitat->descripcion,
+                $activitat->desde,
+                $activitat->hasta,
+                $assistents
+            );
+            $gC->saveEvents();
+        }
+        $iniSta = $stSrv->getEstado();
+        $finSta = $stSrv->putEstado($iniSta+1);
+        if ($redirect) {
+            return $this->follow($iniSta, $finSta);
+        }
     }
 
     public function printAutoritzats(){

@@ -1,9 +1,4 @@
 <?php
-
-
-
-
-
 return array(
 
 	/*
@@ -73,7 +68,7 @@ return array(
                 'index' => 'LListat Professorat',
                 'list' => 'Professorat Absents',
                 'horario-cambiar' => 'Canviar horari Professorat',
-                'titulo' => 'Entrevistes FCTs de :quien',
+                'titulo' => 'Documentació Addicional Pràctiques de :quien',
         ),
         'profesor' => array(
             'files' => "Fitxers de l'usuari",
@@ -127,6 +122,8 @@ return array(
             'delete' => 'Esborrar Activitat',
             'autorizar' => 'Autoritzar totes activitats',
             'notification' => 'Avisar professorat',
+            'pdfVal' => 'Imprimir Valoració',
+            'showVal' => 'Mostrar valoració',
             '2' => 'Autoritzada',
             '3' => 'Impressa',
             '4' => 'Valorada',
@@ -339,7 +336,9 @@ return array(
             'pg0301' => 'Full Control Servei',
             'pr0402' => 'Entrevista Alumnat',
             'pr0401' => 'Entrevista Final Instructora',
-            'pasqua' => 'Full Vacances',
+            'autTutor' => 'Autorització Tutor Situació Excepcional',
+            'autDireccio' => 'Autorització Direcció Situació Excepcional',
+            'autAlumnat' => 'Conformitat Alumnat Situació Excepcional',
             'print' => 'Informes',
             'all' => 'Vore tots',
             'only' => 'Vore actius',
@@ -351,9 +350,9 @@ return array(
             'send' => 'Enviar Correu Alumnat Inici',
             'link' => 'Adjuntar fitxers',
             'default' => 'x Empresa',
-            'an1' => 'Imprimir annexes I',
-            'an2' => 'Imprimir annexes II',
-            'an3' => 'Imprimir annexes III',
+            'an1' => 'Imprimir annexes I signats',
+            'an2' => 'Imprimir annexes II signats',
+            'an3' => 'Imprimir annexes III signats',
             'an5' => 'Imprimir informe competències adquirides',
         ),
         'Dual' => array(
@@ -457,6 +456,7 @@ return array(
             'A5' => 'Informe Competències adquirides',
             'delete' => 'Esborra fct',
             'unlink' => 'Esborra connexiò amb el SAO',
+
         ),
         'AlumnoFct' => array(
             'selecciona' => 'Alumne/a',
@@ -517,7 +517,11 @@ return array(
         ),
         'Signatura' => array(
             'post' => 'Signatura Annexes',
-            'index' => 'Llistat signatures pendents'
+            'index' => 'Llistat signatures pendents',
+            'show' => 'Vore Estat Signatures',
+            'pdf' => 'Imprimir Fitxer',
+            'delete' => 'Esborrar fitxer',
+            'send' => "Enviar a l'instructor"
         ),
         'Solicitud' => array(
             'index' => "Derivacions al departament d'Orientació",
@@ -575,6 +579,7 @@ return array(
             'Incidencia' => 'Incidència',
             'Fctcap' => 'Revisió FCT',
             'Solicitud' => "Derivació al departament d'orientació",
+            'Signatura' => 'Signatures Digitals'
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

@@ -117,6 +117,19 @@ class Fct extends Model
     {
         return $this->belongsTo(Profesor::class, 'cotutor', 'dni');
     }
+
+    public function hasSignatures()
+    {
+        $signatures = $this->AlFct()->with('signatures')->get()->pluck('signatures')->collapse();
+
+        return $signatures->isNotEmpty();
+    }
+
+
+    public function tutor()
+    {
+        return $this->hasOneThrough(Profesor::class, Colaboracion::class, 'id', 'dni', 'idColaboracion', 'tutor');
+    }
     
     public function scopeCentro($query, $centro)
     {
@@ -131,17 +144,16 @@ class Fct extends Model
         return $query->whereIn('idColaboracion', $colaboracion);
     }
     
-    public function scopeMisFcts($query, $profesor=null, $dual=false)
+    public function scopeMisFcts($query, $profesor=null)
     {
-        $profesor = $profesor??authUser()->dni;
-        $cicloC =  Grupo::QTutor($profesor, $dual)->first()->idCiclo??null;
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idProfesor', $profesor)->get()->toArray();
+        return $query->whereIn('id', $alumnosFct);
+    }
 
-        $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
-
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor, $dual)->get()->toArray();
-        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno', $alumnos)->get()->toArray();
-
-        return $query->whereIn('id', $alumnosFct)->whereIn('idColaboracion', $colaboraciones);
+    public function getEncarregatAttribute()
+    {
+        return $this->Cotutor??$this->Tutor;
     }
 
 
@@ -150,7 +162,8 @@ class Fct extends Model
     public function scopeMisFctsColaboracion($query, $profesor=null)
     {
         $dni = $profesor??authUser()->dni;
-        $colaboraciones = hazArray(Colaboracion::where('tutor', $dni)->get(), 'id', 'id');
+        $allTeachers = Profesor::find($dni)->sustituidos??[$dni];
+        $colaboraciones = hazArray(Colaboracion::whereIn('tutor', $allTeachers)->get(), 'id', 'id');
         return $query->whereIn('idColaboracion', $colaboraciones);
     }
 

@@ -30,7 +30,7 @@ class AlumnoFctController extends ApiBaseController
     public function update(Request $request, $id)
     {
         $registro = AlumnoFct::findOrFail($id);
-        if (isset($request->pg0301)){
+        if (isset($request->pg0301)) {
             $registro->pg0301 = $request->pg0301==='true'?1:0;
         }
         if (isset($request->a56)) {

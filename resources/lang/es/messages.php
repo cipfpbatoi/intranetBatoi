@@ -112,6 +112,7 @@ return array(
         'nojustify' => 'Sin justificante',
         'withjustify' => 'Con justificante',
         'impresa' => 'Impresas',
+        'valorada' => 'Valoradas',
         'registrada' => 'Registradas',
         'unpaid' => 'Pedientes de Cobro',
         'justificada' => 'Justificadas',
@@ -209,6 +210,7 @@ return array(
         'Authfalta' => 'Autorizar Ausencias Profesorado',
         'Incidenciasmant' => 'Mantenimiento de Incidencias',
         'Programacion' => 'Programaciones',
+        'Programacionall' => 'Todas las Programaciones',
         'Authprogram' => 'Autorizar Programaciones',
         'Authexpediente' => 'Gestionar Expedientes',
         'Modulo' => 'Mantenimiento Tabla Módulos',
@@ -310,6 +312,7 @@ return array(
         'Signatures' => 'Firmas pendientes',
         'Ipguardia' => 'IPs Ordenadores de Guardia',
         'Setting' => 'Configuración',
+        'A3' => 'Documentación FCT',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

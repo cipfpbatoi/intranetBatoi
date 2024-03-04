@@ -5,11 +5,15 @@ namespace Intranet\Http\Controllers\Auth\Profesor;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\PerfilFilesRequest;
 use Intranet\Services\DigitalSignatureService;
+use Intranet\Services\ImageService;
+use Intranet\Services\PhotoCarnet;
 use Styde\Html\Facades\Alert;
 
 
@@ -32,38 +36,48 @@ class PerfilController extends Perfil
 
     public function updateFiles(PerfilFilesRequest $request)
     {
+
         $new = Profesor::find(Auth::user('profesor')->dni);
         if ($request->hasFile('foto')) {
-            if ($request->file('foto')->isValid()) {
-                $new->foto = $request->file('foto')->store('fotos', 'public');
+            $fitxer = $request->file('foto');
+            if ($fitxer->isValid()) {
+                if ($new->foto) {
+                    ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos/'.$new->foto));
+                    Alert::info('Modificació foto feta amb exit');
+                } else {
+                    $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
+                    $new->foto = $nameFile;
+                    $new->save();
+                    Alert::info('Foto nova guardada amb exit');
+                }
             } else {
                 Alert::info('Formato no valido');
             }
         }
         if ($request->hasFile('signatura')) {
-            if ($request->file('signatura')->isValid()) {
-                $request->file('signatura')
-                    ->storeAs(
-                        'signatures',
-                        $new->fileName.'.png',
-                        'public'
-                    );
+            $signatura = $request->file('signatura');
+            if ($signatura->isValid()) {
+                ImageService::toPng($signatura, storage_path('/app/public/signatures/'.$new->foto));
                 Alert::info('Signatura guardada amb exit');
             } else {
                 Alert::info('Format no vàlid');
             }
         }
         if ($request->hasFile('peu')) {
-            if ($request->file('peu')->isValid()) {
-                $request->file('peu')
-                    ->storeAs(
-                        'peus',
-                        $new->fileName.'.png',
-                        'public'
-                    );
+            $signatura = $request->file('peu');
+            if ($signatura->isValid()) {
+                ImageService::toPng($signatura, storage_path('/app/public/peus/'.$new->foto));
                 Alert::info('Peu guardat amb exit');
             } else {
                 Alert::info('Format no vàlid');
+            }
+        }
+        if ($request->eliminar_certificat) {
+            if (Hash::check($request->password, $new->password)) {
+                DigitalSignatureService::deleteCertificate($new);
+                Alert::info('Certificat eliminat');
+            } else {
+                Alert::info('La contrasenya no és correcta');
             }
         }
         if ($request->hasFile('certificat_digital')) {
@@ -84,18 +98,24 @@ class PerfilController extends Perfil
                 Alert::info('Format no vàlid');
             }
         }
-        $new->save();
+
         return redirect()->back();
     }
 
 
-    public function update(Request $request, $id = null)
+    public function update(Request $request, $id=null)
     {
         $new = $this->class::find(Auth::user('profesor')->dni);
         if (isset($request->mostrar)) {
             $new->mostrar = $request->mostrar;
         } else {
             $new->mostrar = 0;
+        }
+        if (isset($request->movil1)){
+            $new->movil1 = $request->movil1;
+        }
+        if (isset($request->movil2)){
+            $new->movil2 = $request->movil2;
         }
         
         parent::update($request, $new);

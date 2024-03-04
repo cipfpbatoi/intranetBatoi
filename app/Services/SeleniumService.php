@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Services;
 
+use Facebook\WebDriver\Firefox\FirefoxOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
@@ -8,6 +9,9 @@ use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use Facebook\WebDriver\WebDriverWait;
 use Intranet\Exceptions\IntranetException;
+use Intranet\Exceptions\SeleniumException;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class SeleniumService
 {
@@ -39,10 +43,18 @@ class SeleniumService
     public static function loginSAO($dni, $password, $desiredCapabilities=null): RemoteWebDriver
     {
         try {
-            $desiredCapabilities = $desiredCapabilities??DesiredCapabilities::firefox();
-            $driver = RemoteWebDriver::create(config('services.selenium.url'), $desiredCapabilities);
+            if ($desiredCapabilities == null){
+                if (config('services.selenium.firefox_path')) {
+
+                    $desiredCapabilities = DesiredCapabilities::firefox()->setCapability(FirefoxOptions::CAPABILITY,
+                        ['binary' => config('services.selenium.firefox_path')]);
+                } else {
+                    $desiredCapabilities = DesiredCapabilities::firefox();
+                }
+            }
+            $driver = RemoteWebDriver::create('http://'.(config('services.selenium.url')), $desiredCapabilities);
         } catch (\Exception $e) {
-            throw new IntranetException('No s\'ha pogut connectar al servidor de Selenium');
+            throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium'.$e->getMessage());
         }
         $driver->get(config('services.selenium.SAO'));
         $dni = substr($dni, -9);
@@ -72,9 +84,10 @@ class SeleniumService
     {
         try {
             $desiredCapabilities = $desiredCapabilities??DesiredCapabilities::firefox();
-            $driver = RemoteWebDriver::create(config('services.selenium.url'), $desiredCapabilities);
+            $driver = RemoteWebDriver::create('http://'.config('services.selenium.url'), $desiredCapabilities);
+
         } catch (\Exception $e) {
-            throw new IntranetException('No s\'ha pogut connectar al servidor de Selenium');
+            throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium:'.$e->getMessage());
         }
         $dni = substr($dni, -9);
         $driver->get(config('services.selenium.itaca'));
@@ -82,11 +95,29 @@ class SeleniumService
         ->sendKeys($dni);
         $driver->findElement(WebDriverBy::id('form1:j_password'))
             ->sendKeys($password);
-        $driver->findElement(WebDriverBy::name('form1:j_id47'))
+        $driver->findElement(WebDriverBy::cssSelector('input[value="Entrar"]'))
             ->click();
         sleep(1);
+        try {
+            $driver->findElement(WebDriverBy::xpath("//dt[contains(@class, 'error') and span[contains(text(), 'La contraseña no es válida')]]"));
+            $driver->close();
+            throw new IntranetException('Password no vàlid. Has de ficarl el de l\'ITACA');
+        } catch (\Exception $e) {
+        }
         return $driver;
+    }
 
+
+    public static function restartSelenium()
+    {
+        $process = Process::fromShellCommandline("echo '".config('services.selenium.SELENIUM_ROOT_PASS')
+            ."'  | ssh intranet@172.16.9.10 'sudo -S /sbin/reboot'");
+        try {
+            $process->mustRun();
+            echo $process->getOutput();
+        } catch (ProcessFailedException $exception) {
+            echo $exception->getMessage();
+        }
     }
 
     public function fill($selector, $keys, $driver = null)

@@ -19,7 +19,7 @@
                     </h4>
                     <h4>
                         @if ($alfct->idSao)
-                            <a href="{{route('alumnofct.unlink',$alfct->id)}}" class="fa fa-unlink" title="Esborrar enllaç amb SAO" > SAO - </a>
+                            <i class="fa fa-unlink"> SAO - </i>
                         @endif
                         @if ($alfct->saoAnnexes)<em>@endif
                              A2 A3 A5
@@ -41,11 +41,9 @@
                             Autorització
                         </a>
                     @endif
-                    @if ($fct->asociacion == '2')
-                        <a href="{{ route('alumnofct.AEng',$alfct->id) }}" class="fa fa-file-zip-o" target="_blank">
-                            Annexos Anglès
-                        </a>
-                    @endif
+                    <a href="{{ route('alumnofct.AEng',$alfct->id) }}" class="fa fa-file-zip-o" target="_blank">
+                        Annexos Anglès
+                    </a>
                     <a href="{{ route('alumnofct.Valoratiu',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
                         Inf.Competències Adquirides
                     </a>
