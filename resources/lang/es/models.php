@@ -60,6 +60,7 @@ return array(
                 '2' => 'Justificada',
                 '1' => 'Sin justificante',
                 '5' => 'Larga Duración',
+                '6' => 'Itaca',
                 '0' => 'No enviada/autorizada'
                 
              ),

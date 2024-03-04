@@ -23,27 +23,14 @@ class SeleniumService
     }
 
     /**
-     * @return RemoteWebDriver|null
-     */
-    public function getDriver(): ?RemoteWebDriver
-    {
-        return $this->driver;
-    }
-
-    public function quit()
-    {
-        $this->driver->quit();
-    }
-
-    /**
-     * @param $password
+     * @param  mixed  $desiredCapabilities
      * @return RemoteWebDriver
-     * @throws IntranetException
+     * @throws SeleniumException
      */
-    public static function loginSAO($dni, $password, $desiredCapabilities=null): RemoteWebDriver
+    private static function getDriverSelenium(mixed $desiredCapabilities=null): RemoteWebDriver
     {
         try {
-            if ($desiredCapabilities == null){
+            if ($desiredCapabilities == null) {
                 if (config('services.selenium.firefox_path')) {
 
                     $desiredCapabilities = DesiredCapabilities::firefox()->setCapability(FirefoxOptions::CAPABILITY,
@@ -56,6 +43,31 @@ class SeleniumService
         } catch (\Exception $e) {
             throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium'.$e->getMessage());
         }
+        return $driver;
+    }
+
+    /**
+     * @return RemoteWebDriver|null
+     */
+    public function getDriver(): ?RemoteWebDriver
+    {
+        return $this->driver;
+    }
+
+    public function quit()
+    {
+        $this->driver->quit();
+    }
+
+
+    /**
+     * @param $password
+     * @return RemoteWebDriver
+     * @throws IntranetException
+     */
+    public static function loginSAO($dni, $password, $desiredCapabilities=null): RemoteWebDriver
+    {
+        $driver = self::getDriverSelenium($desiredCapabilities);
         $driver->get(config('services.selenium.SAO'));
         $dni = substr($dni, -9);
         $driver->findElement(WebDriverBy::name('usuario')) // find usuario
@@ -82,13 +94,7 @@ class SeleniumService
      */
     public static function loginItaca($dni, $password): RemoteWebDriver
     {
-        try {
-            $desiredCapabilities = $desiredCapabilities??DesiredCapabilities::firefox();
-            $driver = RemoteWebDriver::create('http://'.config('services.selenium.url'), $desiredCapabilities);
-
-        } catch (\Exception $e) {
-            throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium:'.$e->getMessage());
-        }
+        $driver = self::getDriverSelenium();
         $dni = substr($dni, -9);
         $driver->get(config('services.selenium.itaca'));
         $driver->findElement(WebDriverBy::id('form1:j_username')) // find usuario

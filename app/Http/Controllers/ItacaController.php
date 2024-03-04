@@ -8,6 +8,7 @@ use DB;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use Illuminate\Http\Request;
+use Intranet\Entities\Falta;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Hora;
 use Intranet\Exceptions\IntranetException;
@@ -168,7 +169,8 @@ class ItacaController extends Controller
         $count = 0;
         $failures = 0;
 
-        foreach (Falta::where('estado', 4)->where('dia_completo', 1)->whereMonth('hasta', '=', $request->month)->first() as $falta) {
+        $falta = Falta::where('estado', 4)->where('dia_completo', 1)->whereMonth('hasta', '=', $request->month)->get()->first();
+        //foreach (Falta::where('estado', 4)->where('dia_completo', 1)->whereMonth('hasta', '=', $request->month)->get() as $falta) {
             try {
                 sleep(1);
                 $ss->fill(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
@@ -193,19 +195,29 @@ class ItacaController extends Controller
                     if ($colorFondo === 'ff5d00') {
                         $ss->waitAndClick(WebDriverBy::className('z-icon-times'));
                         Alert::info('Falta ja actualizada');
+                        $falta->estado = 6;
+                        $falta->save();
                     } else {
                         $ss->waitAndClick(WebDriverBy::xpath('//button[text()="Seleccionar todos"]'));
                         $ss->waitAndClick(WebDriverBy::xpath('//button[text()=" Nueva Falta"]'));
-                        sleep(1);
-                        $checkbox = $ss->getDriver()->findElement(WebDriverBy::cssSelector('input'));
+                        sleep(2);
+                        $selector = "span.z-checkbox[data-id='justificada'] input";
+                        $element = $ss->getDriver()->findElement(WebDriverBy::cssSelector($selector));
+                        $checkbox = $ss
+                            ->getDriver()
+                            ->findElement(WebDriverBy::cssSelector($selector));
                         if (!$checkbox->isSelected()) {
                             $checkbox->click();
                         }
-                        $span = $ss->getDriver()->findElement(WebDriverBy::cssSelector('[data-id="cbJustificacion"]'));
-                        $ss->fill(WebDriverBy::cssSelector('input.z-combobox-input'), $falta->motivo, $span);
-                        $ss->waitAndClick(WebDriverBy::xpath('//button[data-tooltip="Guardar"]'));
+                        $selector = "span.z-combobox[data-id='cbJustificacion'] input";
+                        $input = $ss->getDriver()
+                            ->findElement(WebDriverBy::cssSelector($selector));
+                        $input->sendKeys($falta->motivo);
+                        $button = $ss->getDriver()->findElement(WebDriverBy::cssSelector("button.z-button[data-tooltip='Guardar']"));
+                        $button->click();
 
-
+                        $falta->estado = 6;
+                        $falta->save();
                         //TODO: Falta actualizar
                     }
                 }
@@ -221,7 +233,7 @@ class ItacaController extends Controller
                 }
                 $failures++;
             }
-        }
+        //}
         $ss->quit();
         Alert::info("$count faltas actualizadas, $failures errores");
         return back();
