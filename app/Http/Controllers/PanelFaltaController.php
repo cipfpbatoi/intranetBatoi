@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Falta;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonIcon;
@@ -13,6 +14,8 @@ use Intranet\Botones\BotonIcon;
 class PanelFaltaController extends ModalController
 {
     use traitPanel;
+
+    const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
 
     /**
      * @var string
@@ -26,6 +29,8 @@ class PanelFaltaController extends ModalController
      * @var array
      */
     protected $gridFields = ['id', 'nombre', 'desde', 'hasta', 'motivo', 'situacion'];
+
+
     /**
      * @var bool
      */
@@ -33,7 +38,7 @@ class PanelFaltaController extends ModalController
     /**
      * @var array
      */
-    protected $parametresVista = ['modal' => ['explicacion']];
+    protected $parametresVista = ['modal' => ['explicacion','loading','ItacaPassword']];
     protected $formFields = [
         'idProfesor' => ['type' => 'select'],
         'estado' => ['type' => 'hidden'],
@@ -61,6 +66,12 @@ class PanelFaltaController extends ModalController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create']);
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "direccion.itaca.birret",
+                ['class' => 'btn-info convalidacion', 'roles' => config(self::ROLES_ROL_DIRECCION)]
+            ));
         $this->panel->setBoton(
             'profile',
             new BotonIcon(
