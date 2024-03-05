@@ -169,8 +169,13 @@ class ItacaController extends Controller
         $count = 0;
         $failures = 0;
 
-        $falta = Falta::where('estado', 4)->where('dia_completo', 1)->whereMonth('hasta', '=', $request->month)->get()->first();
-        //foreach (Falta::where('estado', 4)->where('dia_completo', 1)->whereMonth('hasta', '=', $request->month)->get() as $falta) {
+        foreach (Falta::
+            where('estado', 3)->
+            where('itaca',0)->
+            where('dia_completo', 1)->
+            whereColumn('desde','hasta')->
+            whereMonth('hasta', '=', $request->month)
+                     ->get() as $falta) {
             try {
                 sleep(1);
                 $ss->fill(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
@@ -195,7 +200,7 @@ class ItacaController extends Controller
                     if ($colorFondo === 'ff5d00') {
                         $ss->waitAndClick(WebDriverBy::className('z-icon-times'));
                         Alert::info('Falta ja actualizada');
-                        $falta->estado = 6;
+                        $falta->itaca = true;
                         $falta->save();
                     } else {
                         $ss->waitAndClick(WebDriverBy::xpath('//button[text()="Seleccionar todos"]'));
@@ -216,9 +221,8 @@ class ItacaController extends Controller
                         $button = $ss->getDriver()->findElement(WebDriverBy::cssSelector("button.z-button[data-tooltip='Guardar']"));
                         $button->click();
 
-                        $falta->estado = 6;
+                        $falta->itaca = true;
                         $falta->save();
-                        //TODO: Falta actualizar
                     }
                 }
             } catch (\Exception $e) {
@@ -233,7 +237,7 @@ class ItacaController extends Controller
                 }
                 $failures++;
             }
-        //}
+        }
         $ss->quit();
         Alert::info("$count faltas actualizadas, $failures errores");
         return back();

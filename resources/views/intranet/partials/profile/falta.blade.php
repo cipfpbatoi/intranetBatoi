@@ -28,6 +28,9 @@
                                                         class="fa fa-calendar"></i> {{$elemento->hasta}}
                                             @endif
                                         @endif
+                                        @if ($elemento->itaca)
+                                            <i class="fa fa-check">Itaca</i>
+                                        @endif
                                     </h4>
                                     <h6>{{$elemento->Profesor->nombre}} {{$elemento->Profesor->apellido1}}</h6>
                                     @if (isset(Intranet\Entities\Falta_profesor::haFichado(fecha($elemento->desde),$elemento->idProfesor)->first()->entrada))
