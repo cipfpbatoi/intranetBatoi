@@ -159,7 +159,6 @@ class ItacaController extends Controller
     {
         try {
             $ss = new SeleniumService(authUser()->dni, $request->password);
-            $ss->gTPersonalLlist();
         } catch (IntranetException $e) {
             Alert::danger($e->getMessage());
             return back();
@@ -169,80 +168,122 @@ class ItacaController extends Controller
         $count = 0;
         $failures = 0;
 
-        foreach (Falta::
+        try {
+            foreach (Falta::
             where('estado', 3)->
-            where('itaca',0)->
+            where('itaca', 0)->
             where('dia_completo', 1)->
-            whereColumn('desde','hasta')->
+            whereColumn('desde', 'hasta')->
             whereMonth('hasta', '=', $request->month)
-                     ->get() as $falta) {
-            try {
-                sleep(1);
-                $ss->fill(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
-                $ss->waitAndClick("//button[contains(text(),'Buscar')]");
-                sleep(2);
-                $element = $ss->getDriver()->findElement(
-                    WebDriverBy::xpath("//div[contains(text(),'$falta->idProfesor')]"));
-                $actions = new WebDriverActions($ss->getDriver());
-                $actions->contextClick($element)->perform();
-                $ss->waitAndClick("//span[contains(text(),'Faltas docente')]");
-                $desde= str_replace('-', '/', $falta->desde);
-                sleep(1);
-                $ss->fill(WebDriverBy::cssSelector('input.z-datebox-input'), $desde);
-                $ss->waitAndClick(WebDriverBy::xpath('//button[text()="Cambiar Fecha"]'));
-                sleep(1);
-                if ($falta->dia_completo) {
-                    $ss->waitAndClick(WebDriverBy::xpath('//button[text()="Vista diaria"]'));
-                    sleep(1);
-                    $elemento = $ss->getDriver()->findElement(WebDriverBy::cssSelector('.z-calevent-t1'));
-                    $atributoStyle = $elemento->getAttribute('style');
-                    $colorFondo = substr($atributoStyle, strpos($atributoStyle, '#') + 1);
-                    if ($colorFondo === 'ff5d00') {
-                        $ss->waitAndClick(WebDriverBy::className('z-icon-times'));
-                        Alert::info('Falta ja actualizada');
-                        $falta->itaca = true;
-                        $falta->save();
-                    } else {
-                        $ss->waitAndClick(WebDriverBy::xpath('//button[text()="Seleccionar todos"]'));
-                        $ss->waitAndClick(WebDriverBy::xpath('//button[text()=" Nueva Falta"]'));
-                        sleep(2);
-                        $selector = "span.z-checkbox[data-id='justificada'] input";
-                        $element = $ss->getDriver()->findElement(WebDriverBy::cssSelector($selector));
-                        $checkbox = $ss
-                            ->getDriver()
-                            ->findElement(WebDriverBy::cssSelector($selector));
-                        if (!$checkbox->isSelected()) {
-                            $checkbox->click();
-                        }
-                        $selector = "span.z-combobox[data-id='cbJustificacion'] input";
-                        $input = $ss->getDriver()
-                            ->findElement(WebDriverBy::cssSelector($selector));
-                        $input->sendKeys($falta->motivo);
-                        $button = $ss->getDriver()->findElement(WebDriverBy::cssSelector("button.z-button[data-tooltip='Guardar']"));
-                        $button->click();
+                         ->get() as $falta) {
+                $ss->gTPersonalLlist();
+                if ($this->tryOne($ss, $falta)) {
+                    $count++;
+                } else {
+                    $failures++;
+                }
+            }
+            foreach (Falta::
+            where('estado', 3)->
+            where('itaca', 0)->
+            where('dia_completo', 1)->
+            whereRaw('DATEDIFF(hasta, desde) BETWEEN 1 AND 3')->
+            whereMonth('hasta', '=', $request->month)
+                         ->get() as $falta) {
+                $desde = Carbon::parse($falta->desde);
+                $hasta = Carbon::parse($falta->hasta);
 
-                        $falta->itaca = true;
-                        $falta->save();
+                // Calcula la diferència en dies
+                $diferenciaDias = $desde->diffInDays($hasta);
+                $desdeOriginal = $falta->desde;
+                for ($i = 0; $i <= $diferenciaDias; $i++) {
+                    $falta->dia = $desde->addDays($i)->format('d/m/Y');
+                    $ss->gTPersonalLlist();
+                    if ($this->tryOne($ss, $falta)) {
+                        $count++;
+                    } else {
+                        $failures++;
                     }
                 }
-            } catch (\Exception $e) {
-                Alert::danger($e->getMessage());
-                try {
-                    $ss->gTPersonalLlist();
-                } catch (IntranetException $e) {
-                    Alert::danger($e->getMessage());
-                    $ss->quit();
-                    Alert::info("$count faltas actualizadas, $failures errores");
-                    return back();
-                }
-                $failures++;
+                $falta->desde = $desdeOriginal;
+                $falta->itaca = 1;
+                $falta->save();
             }
+        } catch (IntranetException $e) {
+            Alert::danger($e->getMessage());
         }
         $ss->quit();
         Alert::info("$count faltas actualizadas, $failures errores");
         return back();
     }
+
+    /**
+     * @param  SeleniumService  $ss
+     * @param  mixed  $falta
+     * @param  int  $failures
+     * @return int
+     * @throws IntranetException
+     */
+    private function tryOne(SeleniumService $ss, mixed $falta): int
+    {
+        try {
+            sleep(1);
+            $ss->fill(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
+            $ss->waitAndClick("//button[contains(text(),'Buscar')]");
+            sleep(2);
+            $element = $ss->getDriver()->findElement(
+                WebDriverBy::xpath("//div[contains(text(),'$falta->idProfesor')]"));
+            $actions = new WebDriverActions($ss->getDriver());
+            $actions->contextClick($element)->perform();
+            $ss->waitAndClick("//span[contains(text(),'Faltas docente')]");
+            $desde = str_replace('-', '/', $falta->desde);
+            sleep(1);
+            $ss->fill(WebDriverBy::cssSelector('input.z-datebox-input'), $desde);
+            $ss->waitAndClick(WebDriverBy::xpath('//button[text()="Cambiar Fecha"]'));
+            sleep(1);
+            if ($falta->dia_completo) {
+                $ss->waitAndClick(WebDriverBy::xpath('//button[text()="Vista diaria"]'));
+                sleep(1);
+                $elemento = $ss->getDriver()->findElement(WebDriverBy::cssSelector('.z-calevent-t1'));
+                $atributoStyle = $elemento->getAttribute('style');
+                $colorFondo = substr($atributoStyle, strpos($atributoStyle, '#') + 1);
+                if ($colorFondo === 'ff5d00') {
+                    $ss->waitAndClick(WebDriverBy::className('z-icon-times'));
+                    Alert::info('Falta ja actualizada');
+                    $falta->itaca = true;
+                    $falta->save();
+                } else {
+                    $ss->waitAndClick(WebDriverBy::xpath('//button[text()="Seleccionar todos"]'));
+                    $ss->waitAndClick(WebDriverBy::xpath('//button[text()=" Nueva Falta"]'));
+                    sleep(2);
+                    $selector = "span.z-checkbox[data-id='justificada'] input";
+                    $element = $ss->getDriver()->findElement(WebDriverBy::cssSelector($selector));
+                    $checkbox = $ss
+                        ->getDriver()
+                        ->findElement(WebDriverBy::cssSelector($selector));
+                    if (!$checkbox->isSelected()) {
+                        $checkbox->click();
+                    }
+                    $selector = "span.z-combobox[data-id='cbJustificacion'] input";
+                    $input = $ss->getDriver()
+                        ->findElement(WebDriverBy::cssSelector($selector));
+                    $input->sendKeys($falta->motivo);
+                    $button = $ss->getDriver()->findElement(WebDriverBy::cssSelector("button.z-button[data-tooltip='Guardar']"));
+                    $button->click();
+
+                    $falta->itaca = true;
+                    $falta->save();
+                }
+            }
+        } catch (\Exception $e) {
+            Alert::danger($e->getMessage());
+            return 0;
+        }
+        return 1;
+    }
 }
+
+
 
 /*
             if ($falta->dia_completo) {
