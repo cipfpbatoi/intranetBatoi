@@ -282,35 +282,3 @@ class ItacaController extends Controller
         return 1;
     }
 }
-
-
-
-/*
-            if ($falta->dia_completo) {
-                //$this->waitAndClick(WebDriverBy::cssSelector('span[title="Listados de Faltas / Comunicados"]'));
-                //$this->waitAndClick(WebDriverBy::cssSelector('[data-id="btnNuevi"]'));
-                sleep(1);
-                $divElement = $this->driver->findElement(WebDriverBy::xpath('//div[contains(text(), "Detalle faltas docente")]'));
-                $modalElement = $divElement->findElement(WebDriverBy::xpath('..'));
-                $desde= str_replace('-', '/', $falta->desde);
-                $span = $modalElement->findElement(WebDriverBy::cssSelector('span.z-datebox[data-id="fechaInicialBaja"]'));
-                $this->send(WebDriverBy::cssSelector('input.z-datebox-input'), $desde, $span);
-                sleep(1);
-                $hasta = str_replace('-', '/', $falta->hasta);
-                $span1 = $modalElement->findElement(WebDriverBy::cssSelector('[data-id="fechaFinalBaja"]'));
-                $this->send(WebDriverBy::cssSelector('input.z-datebox-input'), $hasta, $span1);
-                $span2 = $modalElement->findElement(WebDriverBy::cssSelector('[data-id="justificada"]'));
-                $checkbox = $span2->findElement(WebDriverBy::cssSelector('input'));
-                if (!$checkbox->isSelected()) {
-                    $checkbox->click();
-                }
-                $span = $modalElement->findElement(WebDriverBy::cssSelector('[data-id="cbJustificacion"]'));
-                $this->send(WebDriverBy::cssSelector('input.z-combobox-input'), $falta->motivo, $span);
-                dd('hola');
-                $this->waitAndClick(WebDriverBy::xpath('//button[text()="Generar faltas"]'));
-                $this->waitAndClick(WebDriverBy::xpath('//button[text()="Aceptar"]'));
-                $this->waitAndClick(WebDriverBy::xpath('//i[@class="z-icon-times"]'));
-
-            } else {
-
-            }*/
