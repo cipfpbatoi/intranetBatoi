@@ -56,9 +56,8 @@ class PanelFaltaController extends ModalController
 
     protected function search()
     {
-        // TODO
-       // return(Falta::orderBy('desde')->get());
-        return Falta::where('dia_completo', 1)->whereMonth('hasta', '=', 2)->get();
+       return(Falta::orderBy('desde')->get());
+       // return Falta::where('dia_completo', 1)->whereMonth('hasta', '=', 2)->get();
     }
 
 
