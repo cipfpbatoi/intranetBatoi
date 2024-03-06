@@ -46,7 +46,7 @@
                 <td style="text-align:left;width:1.493cm;padding-left: 5px; "><strong>Hores</strong></td>
             </tr>
             <tr style='height:40px'>
-                <td style="text-align:left;width:8.938cm;padding-left: 5px;font-size: 0.9em;">{{$elemento->Fct->Colaboracion->Centro->nombre}}</td>
+                <td style="text-align:left;width:8.938cm;padding-left: 5px;font-size: 0.9em;">{{$elemento->Fct->Colaboracion->Centro->nombre??''}}</td>
                 <td style="text-align:left;width:4.49cm;font-size: 0.9em;text-align: center ">{{$elemento->desde}}</td>
                 <td style="text-align:left;width:4.49cm;font-size: 0.9em;text-align: center ">{{$elemento->hasta}}</td>
                 <td style="text-align:left;width:1.493cm;font-size: 0.9em;text-align: center ">{{$elemento->horas}}</td>
