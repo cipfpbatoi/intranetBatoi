@@ -300,6 +300,7 @@ class ReunionController extends IntranetController
             if ($elemento->archivada) {
                 $this->saveFile($id);
             }
+
             return $this->construye_pdf($id)->stream();
         }
     }

@@ -12,7 +12,7 @@ class SignaturaService
         $name = $profesor->foto;
         $x = $ratio * 260;
         $y = $ratio * 220;
-        if (file_exists(storage_path('/app/public/signatures/'.$name))) {
+        if ($name && file_exists(storage_path('/app/public/signatures/'.$name))) {
             $ruta = public_path('/storage/signatures/'.$name);
             return "<div style='".$style."'><img style='width:".(int)$x."px;heigth:"
                 .(int)$y."px' src='".$ruta."' alt='Signatura:'/></div>";

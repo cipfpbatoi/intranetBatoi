@@ -25,7 +25,7 @@ class A5Resource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', $tutor->dni)->first();
         $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
         $centro = $this->elements->Fct->Colaboracion->Centro;
         $empresa = $centro->Empresa;

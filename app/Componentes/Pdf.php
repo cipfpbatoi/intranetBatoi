@@ -2,7 +2,7 @@
 
 namespace Intranet\Componentes;
 
-use Barryvdh\DomPDF\Facade as DomPDF;
+use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf as SnappyPDF;
 use Intranet\Services\ZipService;
 use function config;
@@ -35,7 +35,6 @@ class Pdf
     )
     {
         $driver = $driver??env('PDF_DRIVER', 'SnappyPdf');
-
 
         if ($driver==='DomPdf') {
             return self::hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones);
@@ -113,6 +112,7 @@ class Pdf
 
     protected static function hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones)
     {
+
         $datosInforme = $datosInforme==null?fechaString(null, 'ca'):$datosInforme;
         if (is_string($dimensiones)) {
             return(DomPDF::loadView($informe, compact('todos', 'datosInforme'))
