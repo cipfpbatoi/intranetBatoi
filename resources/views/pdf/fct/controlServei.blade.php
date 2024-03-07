@@ -36,7 +36,7 @@
                             {{ $fct->Fct->Colaboracion->Centro->nombre??'' }} ({{ $fct->Alumno->fullName??'' }})
                     </td>
                     <td>
-                        {{ $fct->Fct->Colaboracion->Centro->Empresa->conveniNou
+                        {{ $fct->Fct->Colaboracion->Centro->Empresa->conveniRenovat
                                     ?'X'
                                     :($fct->Fct->Colaboracion->Centro->Empresa->conveniCaducat?'!!':'O')
                         }}
