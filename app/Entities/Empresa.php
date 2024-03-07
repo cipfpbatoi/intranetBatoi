@@ -92,7 +92,7 @@ class Empresa extends Model
         $date1 = new Date($date_intranet);
         $date2 = new Date();
 
-        $diferencia = $date1->diff($date2);
+        $diferencia = $date2->diff($date1);
         return $diferencia->days > 120;
 
     }
