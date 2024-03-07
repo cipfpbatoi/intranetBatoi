@@ -133,6 +133,9 @@ class Falta extends Model
     }
     public function getMotivoAttribute()
     {
+        if (fechaInglesa($this->desde) <= '2024-02-29' && $this->motivos < 8) {
+            return config('auxiliares.motivoAusenciaOld')[$this->motivos];
+        }
         return config('auxiliares.motivoAusencia')[$this->motivos];
     }
 

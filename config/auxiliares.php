@@ -50,7 +50,7 @@ return [
         'PRE.CANDI.ELECCIONES',
         'TRASLADO DE DOMICILIO HABITUAL',
         'TÉCNICAS PRENATALES'],
-    'anteriorAusencia' => [
+    'motivoAusenciaOld' => [
         'Baixa mèdica',
         'LLicència per formació',
         'Malaltia comú',
