@@ -25,7 +25,7 @@ class SignaturaService
     {
         $profesor = Profesor::find($dni);
         $name = $profesor->foto;
-        if (file_exists(storage_path().'/app/public/peus/'.$name)) {
+        if ($name && file_exists(storage_path().'/app/public/peus/'.$name)) {
             $ruta = public_path('/storage/peus/'.$name);
             $imgBase64 = chunk_split(base64_encode(file_get_contents($ruta)));
             return "<img alt='' style='max-witdh:75%;display:block;margin:auto' src=".'"data:image/png;base64,'
