@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 
+use Carbon\Carbon;
 use Facebook\WebDriver\WebDriverBy;
 use DB;
 use Facebook\WebDriver\WebDriverExpectedCondition;
@@ -195,24 +196,24 @@ class ItacaController extends Controller
 
                 // Calcula la diferència en dies
                 $diferenciaDias = $desde->diffInDays($hasta);
-                $desdeOriginal = $falta->desde;
                 for ($i = 0; $i <= $diferenciaDias; $i++) {
-                    $falta->dia = $desde->addDays($i)->format('d/m/Y');
+                    $fecha = $desde->addDays($i)->format('d-m-Y');
                     $ss->gTPersonalLlist();
-                    if ($this->tryOne($ss, $falta)) {
+                    if ($this->tryOne($ss, $falta,$fecha)) {
                         $count++;
                     } else {
                         $failures++;
                     }
                 }
-                $falta->desde = $desdeOriginal;
                 $falta->itaca = 1;
                 $falta->save();
             }
         } catch (IntranetException $e) {
             Alert::danger($e->getMessage());
         }
-        $ss->quit();
+        if ($ss->getDriver()) {
+            $ss->quit();
+        }
         Alert::info("$count faltas actualizadas, $failures errores");
         return back();
     }
@@ -224,7 +225,7 @@ class ItacaController extends Controller
      * @return int
      * @throws IntranetException
      */
-    private function tryOne(SeleniumService $ss, mixed $falta): int
+    private function tryOne(SeleniumService $ss, mixed $falta, $fecha): int
     {
         try {
             sleep(1);
@@ -236,7 +237,7 @@ class ItacaController extends Controller
             $actions = new WebDriverActions($ss->getDriver());
             $actions->contextClick($element)->perform();
             $ss->waitAndClick("//span[contains(text(),'Faltas docente')]");
-            $desde = str_replace('-', '/', $falta->desde);
+            $desde = str_replace('-', '/', $fecha);
             sleep(1);
             $ss->fill(WebDriverBy::cssSelector('input.z-datebox-input'), $desde);
             $ss->waitAndClick(WebDriverBy::xpath('//button[text()="Cambiar Fecha"]'));
@@ -274,6 +275,7 @@ class ItacaController extends Controller
                     $falta->itaca = true;
                     $falta->save();
                 }
+                return 1;
             }
         } catch (\Exception $e) {
             Alert::danger($e->getMessage());
