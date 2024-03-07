@@ -86,7 +86,11 @@ class Empresa extends Model
 
     public function getConveniRenovatAttribute()
     {
+        if (!$this->fichero) {
+            return false;
+        }
         $file = storage_path('app/' . $this->fichero);
+
         $date_file = date("Y-m-d", filemtime($file));
 
         $date1 = new Date($date_file);
