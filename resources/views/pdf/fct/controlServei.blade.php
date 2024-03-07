@@ -54,7 +54,7 @@
         @endforeach
         <tr>
             <td colspan="8" style="text-align:left;font-size: 12px;">
-                <br/><br/>
+                <br/>Notació Annex I: x Nou conveni ; O Està actualitzat ; !! Esta desactualitzat<br/>
                 <p>1.- Es lliurarà al/a la cap de departament de pràctiques la següent documentació:</p>
                 <ul>
                     <li>1 original del C. Educatiu, Annex I (si és col·laboradora per primera vegada).</li>
