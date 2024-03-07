@@ -87,13 +87,13 @@ class Empresa extends Model
     public function getConveniRenovatAttribute()
     {
         $file = storage_path('app/' . $this->fichero);
-        $date_intranet = date("Y-m-d", filemtime($file));
+        $date_file = date("Y-m-d", filemtime($file));
 
-        $date1 = new Date($date_intranet);
+        $date1 = new Date($date_file);
         $date2 = new Date();
 
         $diferencia = $date2->diff($date1);
-        return $diferencia->days > 120;
+        return $diferencia->days < 120;
 
     }
     public function getConveniCaducatAttribute()
