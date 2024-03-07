@@ -50,6 +50,15 @@ return [
         'PRE.CANDI.ELECCIONES',
         'TRASLADO DE DOMICILIO HABITUAL',
         'TÉCNICAS PRENATALES'],
+    'anteriorAusencia' => [
+        'Baixa mèdica',
+        'LLicència per formació',
+        'Malaltia comú',
+        'Trasllat de domicili',
+        'Assistència proves sel·lectives',
+        'Malaltia greu o defunció de familiar en primer grau',
+        'Assistència mèdica, educativa o assistencial',
+        "Altres (omplir cuadre d'observacions)"],
     'tipoEstudio' => [
         1=>'Cicle Formatiu de Grau Mitjà',
         '2'=>'Cicle Formatiu de Grau Superior',
