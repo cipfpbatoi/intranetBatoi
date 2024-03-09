@@ -36,6 +36,23 @@ $(function () {
                 console.log("La solicitud no se ha podido completar.");
             });
     });
+    $(".a1").on("click", function (event) {
+        event.preventDefault();
+        $(this).attr("data-toggle", "modal").attr("data-target", "#signaturaA1").attr("href", "");
+        var token = $("#_token").text();
+        var url = "/api/signatura/a1";
+        $.ajax({
+            method: "GET",
+            url: url,
+            dataType: 'json',
+            data: {api_token: token}
+        })
+            .then(function (result) {
+                pintaTablaSeleccion(result.data,"#tableSignaturaA1");
+            }, function (result) {
+                console.log("La solicitud no se ha podido completar.");
+            });
+    });
     $(".up").on("click", function (event) {
         event.preventDefault();
         href = $(this).parents("a").attr("href");
@@ -45,6 +62,10 @@ $(function () {
         $(this).attr("action",href);
     });
     $("#signatura .submit").click(function() {
+        $('#signatura').modal('hide');
+        $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
+    });
+    $("#signaturaA1 .submit").click(function() {
         $('#signatura').modal('hide');
         $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
     });

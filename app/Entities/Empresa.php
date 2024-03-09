@@ -100,6 +100,20 @@ class Empresa extends Model
         return $diferencia->days < 120;
 
     }
+
+    public function getRenovatConveniAttribute()
+    {
+        $file = storage_path('app/' . $this->fichero);
+        $date_intranet = date("Y-m-d", filemtime($file));
+        $date_sao = $this->data_signatura;
+
+        $date1 = new Date($date_intranet);
+        $date2 = new Date($date_sao);
+
+        $diferencia = $date1->diff($date2);
+        return $diferencia->days > 90;
+
+    }
     public function getConveniCaducatAttribute()
     {
         $file = storage_path('app/' . $this->fichero);

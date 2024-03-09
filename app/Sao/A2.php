@@ -99,9 +99,12 @@ class A2
     {
         $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
         $signat = false;
-        $a1 = $a2 = $a3 = false;
+        $a1 = $a2 = $a3 = $fA1 = false;
 
         foreach ($fcts as $fct) {
+            if ($fct === 'FA1'){
+                $fA1 = true;
+            }
             if ($fct === 'A1') {
                 $a1 = true;
             }
@@ -114,8 +117,8 @@ class A2
             $fctAl = AlumnoFct::find($fct);
             if ($fctAl){
                 // Anexe 1
-                if ($a1 && ($fctAl->Fct->Colaboracion->Centro->Empresa->ConveniCaducat
-                    || $fctAl->Fct->Colaboracion->Centro->Empresa->ConveniRenovat)) {
+                if ($fA1 || ($a1 && ($fctAl->Fct->Colaboracion->Centro->Empresa->ConveniCaducat
+                    || $fctAl->Fct->Colaboracion->Centro->Empresa->RenovatConveni))) {
                     try {
                         $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
                         $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=101&centro=59&ct=$idSao");

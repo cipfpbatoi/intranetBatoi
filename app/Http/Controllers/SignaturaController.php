@@ -33,7 +33,7 @@ class SignaturaController extends ModalController
      * @var string
      */
     protected $model = 'Signatura';
-    protected $parametresVista = ['modal' => ['signatura','selDoc','upload','informes','loading']];
+    protected $parametresVista = ['modal' => ['signaturaA1','signatura','selDoc','upload','informes','loading']];
 
 
 
@@ -116,11 +116,10 @@ class SignaturaController extends ModalController
         $this->panel->setBoton(
             'index',
             new BotonBasico(
-                "signatura.deleteAll",
+                "signatura.post",
                 [
-                    'text' => 'Esborra totes Signatures',
-                    'class' => 'btn-danger',
-                    'onclick' => "return confirm('Vas a esborrar totes les signatures de les FCT')",
+                    'text' => 'A1',
+                    'class' => 'btn-danger a1',
                     'roles' => config(self::ROLES_ROL_TUTOR)
                 ]
             )
