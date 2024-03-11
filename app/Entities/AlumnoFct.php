@@ -305,6 +305,9 @@ class AlumnoFct extends Model
         if ($this->asociacion === 3) {
             return 'bg-purple';
         }
+        if ($this->asociacion === 4) {
+            return 'bg-orange';
+        }
         if (fechaInglesa($this->hasta) <= Hoy('Y-m-d')) {
             return 'bg-blue-sky';
         }
