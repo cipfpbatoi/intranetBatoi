@@ -258,6 +258,25 @@ class AdministracionController extends Controller
 
     public function consulta()
     {
+        $professors = Profesor::all(); // Obtenim tots els professors
+
+        foreach ($professors as $professor) {
+            $rol = $professor->rol; // Asumeixo que el camp es diu rol
+
+            // Comprova si el rol és divisible per 37
+            if ($rol % 37 == 0) {
+                $rol /= 37; // Divideix el rol per 37
+
+                // Després comprova si el nou rol és divisible per 31
+                if ($rol % 31 != 0) {
+                    $rol *= 31; // Multiplica el rol per 31 si no és divisible
+                }
+
+                // Actualitza el rol del professor
+                $professor->rol = $rol;
+                $professor->save();
+            }
+        }
     }
 
 
