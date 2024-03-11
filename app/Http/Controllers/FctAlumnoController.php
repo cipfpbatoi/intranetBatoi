@@ -47,7 +47,7 @@ class FctAlumnoController extends IntranetController
 
     public function search()
     {
-        return AlumnoFctAval::misFcts()->esAval()->get();
+        return AlumnoFct::misFcts()->get();
     }
 
     protected function iniBotones()

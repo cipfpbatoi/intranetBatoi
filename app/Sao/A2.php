@@ -121,9 +121,10 @@ class A2
                     || $fctAl->Fct->Colaboracion->Centro->Empresa->RenovatConveni))) {
                     try {
                         $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
-                        $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=101&centro=59&ct=$idSao");
+                        $doc = $fctAl->Fct->dual ? '201' : '101';
+                        $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=$doc&centro=59&ct=$idSao");
                     } catch (\Throwable $exception) {
-                        $tmpFile = $tmpDirectory."A1.pdf";
+                        $tmpFile = $fctAl->Fct->dual ? $tmpDirectory."A1DUAL.pdf" : $tmpDirectory."A1.pdf";
                         $saveFile = $fctAl->routeFile('1');
                         if (file_exists($tmpFile)) {
                             copy($tmpFile, $saveFile);
@@ -142,12 +143,16 @@ class A2
                             "?doc=2&centro=59&idFct=$fctAl->idSao";
                         $driver->get($ad);
                     } catch (\Throwable $exception) {
-                        $tmpFile = $tmpDirectory."A2.pdf";
+                        $tmpFile = $fctAl->Fct->dual ? $tmpDirectory."A2DUAL.pdf" : $tmpDirectory."A2.pdf";
                         $saveFile = $fctAl->routeFile(2);
                         if (file_exists($tmpFile)) {
                             if ($certFile) {
-                                $x = config("signatures.files.A2.owner.x");
-                                $y = config("signatures.files.A2.owner.y");
+                                $x = $fctAl->Fct->dual ?
+                                    config("signatures.files.A2DUAL.owner.x"):
+                                    config("signatures.files.A2.owner.x");
+                                $y = $fctAl->Fct->dual ?
+                                    config("signatures.files.A2DUAL.owner.y"):
+                                    config("signatures.files.A2.owner.y");
                                 DigitalSignatureService::sign(
                                     $tmpFile,
                                     $saveFile,
