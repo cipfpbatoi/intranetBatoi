@@ -8,7 +8,11 @@ class FctFinder extends Finder
 {
     public function exec()
     {
-        $fcts = Fct::MisFcts($this->dni)->orWhere('cotutor', $this->dni)->EsFct()->get();
+        $fcts = Fct::MisFcts($this->dni)
+            ->orWhere('cotutor', $this->dni)
+            ->has('AlFct')
+            ->EsFct()
+            ->get();
         return $this->filter($fcts);
     }
 
@@ -19,7 +23,7 @@ class FctFinder extends Finder
             $fechaUltimaFct = isset($element->AlFct()->first()->hasta) ?
                 $element->AlFct()->first()->hasta :
                 null;
-            if ($fechaUltimaFct && fechaInglesa($fechaUltimaFct) < hoy()) {
+            if ($fechaUltimaFct && fechaInglesa($fechaUltimaFct) > hoy()) {
                 $element->marked = false;
             } else {
                 $element->marked = !$this->existsActivity($element->id)?true:false;

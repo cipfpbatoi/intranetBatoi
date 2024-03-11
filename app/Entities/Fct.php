@@ -151,6 +151,14 @@ class Fct extends Model
         return $query->whereIn('id', $alumnosFct);
     }
 
+    public function scopeWithCotutor($query, $cotutor=null)
+    {
+        $cotutor = $cotutor??authUser()->dni;
+        return $query->whereHas('AlFct', function ($query) use ($cotutor) {
+            $query->where('cotutor', $cotutor);
+        });
+    }
+
     public function getEncarregatAttribute()
     {
         return $this->Cotutor??$this->Tutor;

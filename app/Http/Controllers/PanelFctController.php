@@ -179,7 +179,7 @@ class PanelFctController extends IntranetController
         $fcts= Fct::esFct()
             ->misFcts()
             ->orWhere('cotutor', authUser()->dni)
-            ->orwhere('cotutor', authUser()->sustituye_a)
+            ->has('AlFct')
             ->get();
         return $fcts->sortBy('centro');
     }
