@@ -41,11 +41,10 @@ class Signatura extends Model
 
     public static function saveIfNotExists($anexe, $idSao , $signat = 0)
     {
-        $anexo = 'A'.$anexe;
-        $sig = Signatura::where('tipus', $anexo)->where('idSao', $idSao)->get()->first();
+        $sig = Signatura::where('tipus', $anexe)->where('idSao', $idSao)->get()->first();
         if (!$sig) {
             $sig = new Signatura([
-                'tipus' => $anexo,
+                'tipus' => $anexe,
                 'idProfesor' => authUser()->dni,
                 'idSao' => $idSao,
                 'sendTo' => false,
@@ -114,7 +113,8 @@ class Signatura extends Model
 
     public function getEstatAttribute()
     {
-        $nameFunction = 'getEstat'.$this->tipus;
+        $tipus = substr($this->tipus, 0,2);
+        $nameFunction = 'getEstat'.$tipus;
         return self::$nameFunction($this);
     }
 
@@ -161,7 +161,8 @@ class Signatura extends Model
 
     public function getClassAttribute()
     {
-        if ($this->tipus == 'A3' && $this->sendTo == 1 && $this->signed == 2){
+        $tipus = substr($this->tipus, 0,2);
+        if ($tipus == 'A3' && $this->sendTo == 1 && $this->signed == 2){
             return 'bg-orange';
         }
         if ($this->signed >= 3) {
