@@ -1258,7 +1258,7 @@ DROP TABLE IF EXISTS `signatures`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `signatures` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `tipus` varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipus` varchar(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `idProfesor` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `idSao` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `sendTo` tinyint(1) NOT NULL DEFAULT '0',

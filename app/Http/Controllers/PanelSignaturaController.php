@@ -67,12 +67,12 @@ class PanelSignaturaController extends BaseController
     protected function search()
     {
         return Signatura::where(function ($query) {
-            $query->where('tipus', 'A1')
-                ->where('signed', 0);
+            $query->where('tipus', 'like', 'A1%') // Canviat a 'like' i afegit '%'
+            ->where('signed', 0);
         })
             ->orWhere(function ($query) {
-                $query->where('tipus', 'A2')
-                    ->where('signed','<',3);
+                $query->where('tipus', 'like', 'A2%') // Canviat a 'like' i afegit '%'
+                ->where('signed', '<', 3);
             })
             ->get();
 

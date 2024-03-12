@@ -155,7 +155,7 @@ class A2
         $annexe = $fctAl->Fct->dual ? 'A1DUAL' : 'A1';
         $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
         $tmpFile = $tmpDirectory.$annexe.".pdf";
-        $saveFile = $fctAl->routeFile('A1');
+        $saveFile = $fctAl->routeFile($annexe);
         try {
             $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=$doc&centro=59&ct=$idSao");
         } catch (\Throwable $exception) {
