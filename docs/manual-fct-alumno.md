@@ -14,7 +14,7 @@
 
    I quan estiguem dins veurem el següent:
 
-   ![fct2](./img/ajuda/02.jpg)
+   ![fct2](./img/ajuda/02.png)
 
    **Captura 2**
 
