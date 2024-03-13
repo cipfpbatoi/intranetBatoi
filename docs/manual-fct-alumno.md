@@ -20,23 +20,35 @@
 
    <br />
 
-   Anem a descriure cada opció que veiem en aquaquesta pantalla.
-
-   En la part superior dreta veiem una sèrie d'icones.
-
- <br />
-
-   ![fct3](./img/ajuda/03.jpg)
-
-   **Captura 3**
+   Anem a descriure cada opció que veiem en aquesta pantalla. En la part superior dreta veiem una sèrie d'icones.
 
    <br />
 
    D'esquerra a detra tenim:
 
-   ![fct4](./img/ajuda/04.jpg) Amb aquesta icona pleguem o despleguem la pantalla.
+   **FCT Convalidada/Exempt** Amb aquesta creem una convalidació o una exempció de FCT. També la farem servir si l'alumne ha aprovat amb anterioritat.
+   
+   **Connexio SAO** Amb aquesta icona farem tota la connexió amb el SAO. Les opcions són:
+      
+         * Baixa FCT's a Intranet
+         * Compara dades de Centre i empreses
+         * Sincronitza hores realitzades per Alumnat
+         * Baixa Annexes signats 
+   
+   **Signatures Digitals** Porta a la pantalla de gestió de signatures digitals
+   
+   **Informes** Tenim els següents:
 
-   ![fct5](./img/ajuda/05.jpg) Amb aquesta icona tornem a la pantalla principal de la intranet.
+         * Full de control de servei
+         * Entrevista final instructor/a
+         * Entrevista alumnat
+         * Autorització Tutor situació excepcional
+         * Autorització Direcció situació excepcional
+         * Conformitat Alumne/a situació excepcional
+         * Imprimir annexes I signats
+         * Imprimir annexes II signats
+         * Imprimit informe de competències adquirides
+
 
    ![fct6](./img/ajuda/06.jpg) Amb aquesta icona podem seleccionar l’idioma que volem que tinga tot el que veiem a la pantalla.
 
