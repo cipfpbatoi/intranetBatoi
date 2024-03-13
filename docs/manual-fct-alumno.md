@@ -6,7 +6,7 @@
 
 <br />
 
-   ![fct1](./img/ajuda/01.jpg)
+   ![fct1](./img/ajuda/01.png)
    
    **Captura 1**
 

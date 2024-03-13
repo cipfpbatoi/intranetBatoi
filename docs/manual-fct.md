@@ -5,7 +5,7 @@ Index de continguts:
 * [Temporalitzacio](#temporalització)
 * [Les meues col·laboracions](#les-meues-col·laboracions)
 * [Gestió de contactes](#gestió-de-contactes)
-* [FCTxAlumne](#fctxalumne)
+* [FCTS](#fcts)
 * 
 ---
 
@@ -32,6 +32,7 @@ L'ordre dels passos a seguir és important en este procés i anem a ordenar-los 
 * Ara és el moment de generar la **documentació** en el **SAO**.
 * Després caldrà importar les FCTS a la intranet.
 * Quan ja estiguen importades, arriba el moment de baixar la documentació del SAO per a la seua signatura, que haurem de pujar al SAO una vegada estiga completa.
+* En fer-ho podem impremer la documentació p.
 * Quan falte poc per a començar les pràctiques se li ha enviar un correu de recordatori de les pràctiques, on va l'informació de l'alumne i del segur.
 * També hem d'enviar el correu a l'alumne amb la informació de la seua pràctica.
 * Quan ja estiguen les pràctiques en marxa, haurem de fer el seguiment de les pràctiques, i tenim les següents opcions:
@@ -47,6 +48,11 @@ L'ordre dels passos a seguir és important en este procés i anem a ordenar-los 
 ## Les meues col·laboracions
 
 Fes click aci per tal de veure la informació detallada sobre les [Meues col·laboracions](manual-fct-meues-colaboracions.md)
+
+## Fcts
+
+Fes click aci per tal de veure la informació detallada sobre les [Fcts](manual-fct-alumno.md)
+
 
 ## Gestió de contactes
 

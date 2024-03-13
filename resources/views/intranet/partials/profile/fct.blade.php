@@ -19,6 +19,7 @@
                         {{ $button->show($fct) }}
                     @endforeach
                 </div>
+                @if ($fct->asociacion == 4) <h5>-DUAL-</h5> @endif
                 <div class="col-md-6 listActivity">
                     @isset (authUser()->emailItaca)
                         @foreach ($fct->Contactos as $contacto)
@@ -30,7 +31,9 @@
                     @endisset
                 </div>
             </div>
-            <div class="col-xs-12 bottom text-center">
+            <div class="col-xs-12 bottom text-center"
+                 @if ($fct->asociacion == 4) style="background-color:orange"@endif
+            >
                 <div class="col-xs-12 col-sm-5 emphasis">
                     <p class="ratings">
                         {{strtoupper($fct->Colaboracion->Centro->localidad)}}<br/>
