@@ -45,6 +45,7 @@ class PanelDocAgrupadosController extends BaseController
             ->rol))
             ->whereIn('tipoDocumento',TipoDocumento::allDocuments())
             ->whereNull('idDocumento')
+            ->where('activo',1)
             ->orderBy('curso','desc')->get();
     }
 

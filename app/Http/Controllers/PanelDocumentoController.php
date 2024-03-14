@@ -47,7 +47,9 @@ class PanelDocumentoController extends BaseController
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('documento.create', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('index',
+            new BotonBasico('documento.create', ['roles' => config('roles.rol.direccion')])
+        );
         $this->panel->setBothBoton('documento.show', ['where' => ['link','==',1]]);
         $this->panel->setBoton('grid', new BotonImg('documento.edit'));
         $this->panel->setBoton('grid', new BotonImg('documento.delete'));
@@ -58,7 +60,10 @@ class PanelDocumentoController extends BaseController
      */
     public function search()
     {
-        return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->whereIn('tipoDocumento',TipoDocumento::allDocuments())->whereNull('idDocumento')->get();
+        return Documento::
+            whereIn('rol', RolesUser(AuthUser()->rol))->
+            whereIn('tipoDocumento',TipoDocumento::allDocuments())->
+            whereNull('idDocumento')->get();
     }
 
 }

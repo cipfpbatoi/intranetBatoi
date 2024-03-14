@@ -42,6 +42,7 @@ class DocumentoController extends IntranetController
         'descripcion' => ['type' => 'text'],
         'enlace' => ['type' => 'text'],
         'fichero' => ['type' => 'file'],
+        'activo' => ['type' => 'checkbox'],
         'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']],
     ];
 
@@ -102,7 +103,7 @@ class DocumentoController extends IntranetController
 
     protected function createWithDefaultValues($default=[])
     {
-        return new Documento(['curso'=>Curso(),'propietario'=>config('contacto.titulo')]);
+        return new Documento(['curso'=>Curso(),'propietario'=>config('contacto.titulo'),'activo'=>true]);
      }
 
     public function project($idFct)
@@ -236,6 +237,7 @@ class DocumentoController extends IntranetController
                     'grupo' => ['disabled' => 'disabled'],
                     'descripcion' => ['type' => 'text'],
                     'enlace' => ['type' => 'text'],
+                    'activo' => ['type' => 'checkbox'],
                     'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
                 ]
             ):
@@ -252,6 +254,7 @@ class DocumentoController extends IntranetController
                     'ciclo' => ['type' => 'hidden'],
                     'descripcion' => ['type' => 'text'],
                     'fichero' => ['type' => 'file'],
+                    'activo' => ['type' => 'checkbox'],
                     'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
                 ]
             );
