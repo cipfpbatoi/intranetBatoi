@@ -30,7 +30,7 @@ class Documento extends Model
         'supervisor' => ['type' => 'hidden'],
         'ciclo' => ['type' => 'hidden'],
         'detalle' => ['type' => 'textarea'],
-        'activo' => ['type' => 'boolean'],
+        'activo' => ['type' => 'checkbox'],
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
