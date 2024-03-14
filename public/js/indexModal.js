@@ -43,18 +43,31 @@ $(function () {
     });
 })
 
-jQuery(document).ready(function () {
-    //Disable part of page
-    jQuery(".fa-edit").on("contextmenu",function(e){
-        return false;
-    });
-});
 jQuery(document).on('auxclick', '.fa-edit', function (e) {
     if (e.which === 2) { //middle Click
         return false;
     }
     return true;
 });
+jQuery(document).ready(function() {
+    // Temporalment deshabilitar enllaços amb la classe `.fa-edit` afegint-los una classe `disabled-link`
+    jQuery('.fa-edit').addClass('disabled-link').on('click', function(e) {
+        // Prevenir l'acció per defecte dels enllaços si tenen la classe `disabled-link`
+        if (jQuery(this).hasClass('disabled-link')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    jQuery(".fa-edit").on("contextmenu",function(e){
+        return false;
+    });
+    // Una vegada la pàgina estigui completament carregada, reactivar els enllaços eliminant la classe `disabled-link`
+    jQuery(window).on('load', function() {
+        jQuery('.fa-edit').removeClass('disabled-link');
+    });
+});
+
+
 
 jQuery("#datatable").on("click",".fa-edit" ,function () {
     event.preventDefault();

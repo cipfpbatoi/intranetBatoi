@@ -245,3 +245,9 @@ a:hover, a:focus {
 .card[data-color="orange"] .category {
 	color: #e95e37;
 }
+
+.disabled-link {
+	pointer-events: none; // Impedeix interaccions de clic
+color: grey; // Canvia el color per indicar que està desactivat
+cursor: default; // Canvia el cursor per reflectir la inactivitat
+}
