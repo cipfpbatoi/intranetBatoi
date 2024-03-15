@@ -148,7 +148,7 @@ class A2
      * @param  bool  $signat
      * @return array
      */
-    private static function annexe1($fctAl, RemoteWebDriver &$driver):bool
+    private static function annexe1($fctAl, RemoteWebDriver $driver):bool
     {
         $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
         $doc = $fctAl->Fct->dual ? '201' : '101';
