@@ -176,10 +176,15 @@ class PanelFctController extends IntranetController
      */
     public function search()
     {
-        $fcts= Fct::esFct()
-            ->misFcts()
-            ->orWhere('cotutor', authUser()->dni)
-            ->has('AlFct')
+        $fcts = Fct::where(function($query) {
+            $query->esFct() // Suposem que aquest mètode filtra per FCT
+            ->orWhere->esDual(); // Suposem que aquest mètode filtra per Dual
+        })
+            ->where(function($query) {
+                $query->misFcts() // Suposem que aquest mètode filtra FCTs pertanyents a l'usuari autenticat
+                ->orWhere('cotutor', authUser()->dni); // O on l'usuari autenticat és cotutor
+            })
+            ->has('AlFct') // Suposem que això filtra FCTs que tenen almenys un AlFct associat
             ->get();
         return $fcts->sortBy('centro');
     }
