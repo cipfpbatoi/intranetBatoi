@@ -32,7 +32,8 @@ class AlumnoFct extends Model
     protected $dispatchesEvents = [
         'deleted' => FctAlDeleted::class,
     ];
-    
+
+
     public function Alumno()
     {
         return $this->belongsTo(Alumno::class, 'idAlumno', 'nia');
@@ -56,6 +57,11 @@ class AlumnoFct extends Model
     public function Signatures()
     {
         return $this->hasMany(Signatura::class, 'idSao', 'idSao');
+    }
+
+    public function Tutor()
+    {
+        return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
     }
 
 

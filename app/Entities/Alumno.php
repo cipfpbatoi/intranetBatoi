@@ -166,20 +166,36 @@ class Alumno extends Authenticatable
     {
         return $this->Grupo->first()->Ciclo->departamento??'99';
     }
-    
+
+
     public function getTutorAttribute()
     {
         if ($this->Grupo->count() == 0) {
             return [];
         }
+
+        $tutors = []; // Inicialitzem un array buit per a acumular els tutors
+
         foreach ($this->Grupo as $grupo) {
-            if ($grupo->Tutor->fecha_baja == null) {
-                $tutor[] = $grupo->Tutor;
-            } else {
-                $tutor[] = Profesor::where('sustituye_a', $grupo->tutor)->first()??$grupo->Tutor;
+            // Afegim els tutors al array, si existeixen
+            if (!is_null($grupo->Tutor) && !is_null($grupo->Tutor->Sustituidos)) {
+                $tutors = array_merge($tutors, $grupo->Tutor->Sustituidos);
+            }
+
+            // Afegim els tutorsDual al array, si existeixen
+            if (!is_null($grupo->TutorDual) && !is_null($grupo->TutorDual->Sustituidos)) {
+                $tutors = array_merge($tutors, $grupo->TutorDual->Sustituidos);
             }
         }
-        return $tutor;
+
+        // Potser vols eliminar duplicats de l'array, depenent del teu cas d'ús
+        $tutors = array_unique($tutors, SORT_REGULAR);
+        $profesors = [];
+        foreach ($tutors as $tutor){
+            $profesors[] = Profesor::find($tutor);
+        }
+
+        return $profesors;
     }
     
     public function getIdiomaOptions()
