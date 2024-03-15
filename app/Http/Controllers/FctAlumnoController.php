@@ -62,8 +62,22 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton(
             'grid',
             new BotonImg(
+                'alumnofct.show',
+                ['img' => 'fa-plus', 'where' => ['asociacion', '==', '4'],'text'=>'Vore més']
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
                 'alumnofct.edit',
                 ['where' => ['asociacion', '<', '3'],'text'=>'Canviar dates']
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumnofct.edit',
+                ['where' => ['asociacion', '==', '4'],'text'=>'Canviar dates']
             )
         );
         $this->panel->setBoton(
@@ -82,6 +96,23 @@ class FctAlumnoController extends IntranetController
                     'where' =>
                         [
                             'asociacion', '<', 3,
+                            'actualizacion', '<', hace(7),
+                            'desde', 'anterior', hace(7),
+                            'hasta','posterior',hoy(),
+                            'realizadas','<',380
+                        ]
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumnofct.email',
+                [
+                    'img' => 'fa-send-o',
+                    'where' =>
+                        [
+                            'asociacion', '==', 4,
                             'actualizacion', '<', hace(7),
                             'desde', 'anterior', hace(7),
                             'hasta','posterior',hoy(),
