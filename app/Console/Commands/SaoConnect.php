@@ -88,7 +88,7 @@ class SaoConnect extends Command
                 }
             }
             foreach ($alumnes as $alumne) {
-                avisa($alumne->fct->cotutor??$envia, "Actualitzades hores de {$alumne->Alumno->fullName}", '#', 'SAO');
+                avisa( $envia, "Actualitzades hores de {$alumne->Alumno->fullName}", '#', 'SAO');
             }
         } catch (IntranetException $e) {
             avisa($envia, $e->getMessage(), '#', 'SAO');
