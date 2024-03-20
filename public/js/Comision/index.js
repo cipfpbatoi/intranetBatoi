@@ -42,6 +42,8 @@ $(function() {
 							// Totes les peticions han acabat, processa l'enllaç aquí
 							console.log("Totes les peticions PUT han acabat, processant l'enllaç...");
 							// Aquí pots posar el codi per processar l'enllaç
+						} else {
+							alert("Algunes peticions no ha sigut processades.");
 						}
 						$(location).attr('href', '/direccion/comision/paid');
 					},
@@ -56,6 +58,7 @@ $(function() {
 							console.log("Totes les peticions PUT han acabat, processant l'enllaç...");
 							// Aquí pots posar el codi per processar l'enllaç
 						}
+						alert("S'ha produit una errada en el processament.");
 					}
 				});
 			});
