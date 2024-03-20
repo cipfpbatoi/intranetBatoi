@@ -50,7 +50,6 @@ class SaoConnect extends Command
 
             foreach (AlumnoFctAval::whereNotNull('idSao')
                          ->noHaAcabado()
-                         ->where('beca', 0)
                          ->haEmpezado()
                          ->activa()
                          ->get() as $fct) {
@@ -79,7 +78,7 @@ class SaoConnect extends Command
                     }
                 } catch (NoSuchElementException $e) {
                     avisa(
-                        $fct->Fct->cotutor??$envia,
+                        $envia,
                         'No trobada informació en el SAO de '.$fct->Alumno->shortName.' :'.$e->getMessage(),
                         '#',
                         'SAO'

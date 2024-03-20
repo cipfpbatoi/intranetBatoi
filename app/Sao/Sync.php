@@ -23,7 +23,7 @@ class Sync
     {
         try {
             $alumnes = [];
-            foreach (AlumnoFctAval::realFcts()->haEmpezado()->where('beca', 0)->activa()->get() as $fct) {
+            foreach (AlumnoFctAval::realFcts()->haEmpezado()->activa()->get() as $fct) {
                 try {
                     if ($fct->idSao) {
                         $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=11&idFct=$fct->idSao");

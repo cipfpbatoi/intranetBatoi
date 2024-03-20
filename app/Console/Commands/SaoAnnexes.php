@@ -52,7 +52,6 @@ class SaoAnnexes extends Command
 
             foreach (AlumnoFctAval::whereNotNull('idSao')
                          ->noHaAcabado()
-                         ->where('beca', 0)
                          ->where('pg0301', 0)
                          ->activa()
                          ->get() as $fct) {
@@ -105,12 +104,7 @@ class SaoAnnexes extends Command
                         }
                     }
                 } catch (NoSuchElementException $e) {
-                avisa(
-                    $fct->Fct->cotutor??$envia,
-                    'No trobada informació en el SAO del annexes de '.$fct->Alumno->shortName,
-                    '#',
-                    'SAO'
-                );
+                    // No faces res
                 } catch (IntranetException $e) {
                     avisa($envia, $e->getMessage(), '#', 'SAO');
                 }
