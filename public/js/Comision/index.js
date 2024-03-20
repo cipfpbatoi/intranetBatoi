@@ -43,6 +43,7 @@ $(function() {
 							console.log("Totes les peticions PUT han acabat, processant l'enllaç...");
 							// Aquí pots posar el codi per processar l'enllaç
 						}
+						$(location).attr('href', '/direccion/comision/paid');
 					},
 					error: function() {
 						console.error("Hi ha hagut un error en l'enviament de la petició PUT per " + name + ".");
@@ -58,7 +59,6 @@ $(function() {
 					}
 				});
 			});
-			$(location).attr('href', '/direccion/comision/paid');
 		} else {
 			alert("No hi ha cap casella de selecció seleccionada.");
 		}
