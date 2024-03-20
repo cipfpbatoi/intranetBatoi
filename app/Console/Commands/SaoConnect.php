@@ -46,7 +46,8 @@ class SaoConnect extends Command
                 config('services.selenium.SAO_USER'),
                 config('services.selenium.SAO_PASS')
             );
-            $alumnes = [];
+            $alumnes = 0;
+            $incorrectes = 0;
 
             foreach (AlumnoFctAval::whereNotNull('idSao')
                          ->noHaAcabado()
@@ -73,23 +74,17 @@ class SaoConnect extends Command
                             $fct->horas_diarias = (float)$diarias;
                             $fct->actualizacion = fechaSao(substr($ultima, 2, 10));
                             $fct->save();
-                            $alumnes[] = $fct;
+                            $alumnes++;
                         }
                     }
                 } catch (NoSuchElementException $e) {
-                    avisa(
-                        $envia,
-                        'No trobada informació en el SAO de '.$fct->Alumno->shortName.' :'.$e->getMessage(),
-                        '#',
-                        'SAO'
-                    );
+                    $incorrectes++;
                 } catch (QueryException $e) {
-                    avisa($envia, $e->getMessage(), '#', 'SAO');
+                    $incorrectes++;
                 }
             }
-            foreach ($alumnes as $alumne) {
-                avisa( $envia, "Actualitzades hores de {$alumne->Alumno->fullName}", '#', 'SAO');
-            }
+            avisa ($envia, "Actualitzades hores de ".$alumnes." alumnes", '#', 'SAO');
+            avisa ($envia, "No actualitzades hores de ".$incorrectes." alumnes", '#', 'SAO');
         } catch (IntranetException $e) {
             avisa($envia, $e->getMessage(), '#', 'SAO');
         }
