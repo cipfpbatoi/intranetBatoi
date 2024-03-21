@@ -39,9 +39,15 @@
                             Autorització
                         </a>
                     @endif
-                    <a href="{{ route('alumnofct.AEng',$alfct->id) }}" class="fa fa-file-zip-o" target="_blank">
-                        Annexos Anglès
-                    </a>
+                    @if ($alfct->fct->asociacion == 4)
+                        <a href="{{ route('alumnofct.AVI',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
+                            Conformitat Alumnat
+                        </a>
+                    @else
+                        <a href="{{ route('alumnofct.AEng',$alfct->id) }}" class="fa fa-file-zip-o" target="_blank">
+                            Annexos Anglès
+                        </a>
+                    @endif
                     <a href="{{ route('alumnofct.Valoratiu',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
                         Inf.Competències Adquirides
                     </a>

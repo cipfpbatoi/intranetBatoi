@@ -331,7 +331,7 @@ Route::get('/alumnofct/{id}/show', ['as' => 'alumnofct.show', 'uses' => 'FctAlum
 Route::get('/alumnofct/{id}/auth', ['as' => 'alumnofct.auth', 'uses' => 'FctAlumnoController@auth']);
 Route::get('/alumnofct/{id}/Valoratiu', ['as' => 'alumnofct.Valoratiu', 'uses' => 'FctAlumnoController@Valoratiu']);
 Route::get('/alumnofct/{id}/AEng', ['as' => 'alumnofct.AEng', 'uses' => 'FctAlumnoController@AEng']);
-Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
+Route::get('/alumnofct/{id}/AVI', ['as' => 'alumnofct.AVI', 'uses' => 'FctAlumnoController@AVI']);
 //Route::get('/alumnofct/{id}/unlink', ['as' => 'alumnofct.unlink', 'uses' => 'FctAlumnoController@unlink']);
 Route::get('/alumnofct/{id}/A{num}',
     ['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num', '[1-3]');

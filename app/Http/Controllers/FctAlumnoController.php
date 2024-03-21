@@ -22,6 +22,7 @@ use Intranet\Http\PrintResources\A1ENResource;
 use Intranet\Http\PrintResources\A2ENResource;
 use Intranet\Http\PrintResources\A3ENResource;
 use Intranet\Http\PrintResources\A5Resource;
+use Intranet\Http\PrintResources\AVIResource;
 use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
 use Intranet\Mail\DocumentRequest;
@@ -304,6 +305,12 @@ class FctAlumnoController extends IntranetController
     public function Valoratiu($id)
     {
         return response()->file(FDFPrepareService::exec(new A5Resource(AlumnoFct::find($id))));
+    }
+
+
+    public function AVI($id)
+    {
+        return response()->file(FDFPrepareService::exec(new AVIResource(AlumnoFct::find($id))));
     }
 
 
