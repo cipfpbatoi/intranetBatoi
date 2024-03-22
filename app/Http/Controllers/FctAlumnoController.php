@@ -30,6 +30,7 @@ use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
 use Intranet\Http\PrintResources\AutorizacionDireccionResource;
 use Intranet\Http\PrintResources\ExempcioResource;
+use Styde\Html\Facades\Alert;
 
 
 class FctAlumnoController extends IntranetController
@@ -422,6 +423,7 @@ class FctAlumnoController extends IntranetController
                 'email.fct.advise',
                 $fct
             ));
+        Alert::info('Correu enviat a ' . $alumno->fullName);
         return back();
     }
 
