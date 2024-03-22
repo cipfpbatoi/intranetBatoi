@@ -64,7 +64,11 @@
     @if ($fct->Colaboracion->Centro->Empresa->conveniNou)
         <em class="fa fa-file-pdf-o"> A1</em><br />
     @endif
-    <a href="{{ route('fct.pdf',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Inst.</a>
+    @if ($fct->asociacion == 4)
+        <a href="{{ route('dual.instructor',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Inst.</a>
+    @else
+        <a href="{{ route('fct.pdf',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Inst.</a>
+    @endif
     @if ($fct->Colaboradores->count() > 0)
         <a href="{{ route('fct.colaborador',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Col.</a>
     @endif

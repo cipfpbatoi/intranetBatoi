@@ -15,7 +15,9 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Exceptions\IntranetException;
+use Intranet\Http\PrintResources\AVIIAResource;
 use Intranet\Http\Requests\DualRequest;
+use Intranet\Services\FDFPrepareService;
 use mikehaertl\pdftk\Pdf;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Fct;
@@ -41,7 +43,7 @@ class DualController extends ModalController
     /**
      * @var string
      */
-    protected $model = 'Dual';
+    protected $model = 'Fct';
     /**
      * @var array
      */
@@ -65,6 +67,13 @@ class DualController extends ModalController
         'hasta' => ['type' => 'date'],
         'horas' => ['type' => 'text'],
         'beca' => ['type' => 'text']];
+
+
+
+    public function AnexeVIIa($id)
+    {
+        return response()->file(FDFPrepareService::exec(new AVIIAResource(Fct::find($id))));
+    }
     /**
      * @return mixed
      */
