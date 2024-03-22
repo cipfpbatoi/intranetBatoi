@@ -258,7 +258,7 @@ function roleIsInArray(array $role, \Illuminate\Contracts\Auth\Authenticatable $
 function nameRolesUser($rolUsuario)
 {
     $jerarquia = config('roles.rol');
-
+    $roles = [];
     if ($rolUsuario == 1) {
         return array(trans('messages.rol.todos'));
     }
