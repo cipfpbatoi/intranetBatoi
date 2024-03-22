@@ -149,6 +149,7 @@ return array(
         'Consell' => 'Consell',
         'Millora' => 'Mejora',
         'Acta' => 'Actas',
+        'GestioEconomica' => 'Gestión Económica',
         'Dual' => 'Dual',
         'Protocol' => "Protocolos de IyC",
         'Tutories' => "Tutores/as de IyC",
