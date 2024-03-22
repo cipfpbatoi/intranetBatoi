@@ -1,4 +1,4 @@
-<a href="{{$href}}" class="{{$class}} js-temp-disabled" id="{{$id}}" disabled>
+<a href="{{$href}}" class="{{$class}}" id="{{$id}}">
     @isset($icon)
         <em class='fa {{$icon}}'></em>
     @endisset
