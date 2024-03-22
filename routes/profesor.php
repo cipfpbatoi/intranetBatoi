@@ -307,7 +307,6 @@ Route::get('/fct/{document}/insercio', ['as' => 'fct.insercio', 'uses' => 'Panel
 Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFctAvalController@edit']);
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
 
-
 Route::resource('dual', 'DualController', ['except' => ['destroy', 'update', 'show', 'edit']]);
 Route::get('/dual/{id}/edit', ['as' => 'dual.edit', 'uses' => 'DualController@edit']);
 Route::put('/dual/{id}/edit', ['as' => 'dual.update', 'uses' => 'DualController@update']);
@@ -332,7 +331,7 @@ Route::get('/alumnofct/{id}/auth', ['as' => 'alumnofct.auth', 'uses' => 'FctAlum
 Route::get('/alumnofct/{id}/Valoratiu', ['as' => 'alumnofct.Valoratiu', 'uses' => 'FctAlumnoController@Valoratiu']);
 Route::get('/alumnofct/{id}/AEng', ['as' => 'alumnofct.AEng', 'uses' => 'FctAlumnoController@AEng']);
 Route::get('/alumnofct/{id}/AVI', ['as' => 'alumnofct.AVI', 'uses' => 'FctAlumnoController@AVI']);
-//Route::get('/alumnofct/{id}/unlink', ['as' => 'alumnofct.unlink', 'uses' => 'FctAlumnoController@unlink']);
+Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@unlink']);
 Route::get('/alumnofct/{id}/A{num}',
     ['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num', '[1-3]');
 Route::get('/alumnofct/{id}/send', ['as' => 'alumnofct.send', 'uses' => 'FctAlumnoController@send']);
@@ -369,10 +368,6 @@ Route::post('/inventario/barcode', 'InventarioController@barcode');
 Route::get('/inventaria', ['as'=>'inventariar.index', 'uses'=>'ArticuloLoteController@index']);
 Route::get('/lote/{espacio}/barcode/{posicion?}', ['as' => 'lote.barcode', 'uses'=> 'PanelLoteController@barcode']);
 
-
-
-
-
 //RUTAS INCIDENCIAS
 Route::resource('/incidencia', 'IncidenciaController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/incidencia/{incidencia}/show', ['as' => 'incidencia.show', 'uses' => 'IncidenciaController@show']);
@@ -380,7 +375,6 @@ Route::get('/incidencia/{incidencia}/delete', ['as' => 'incidencia.destroy', 'us
 Route::post('/incidencia/create', ['as' => 'incidencia.store', 'uses' => 'IncidenciaController@store']);
 Route::put('/incidencia/{incidencia}/edit', ['as' => 'incidencia.update', 'uses' => 'IncidenciaController@update']);
 Route::get('/incidencia/{incidencia}/notification', ['as' => 'incidencia.notification', 'uses' => 'IncidenciaController@notify']);
-
 
 //RUTAS ESPACIOS
 Route::resource('/espacio', 'EspacioController', ['except' => ['destroy', 'update', 'show']]);
