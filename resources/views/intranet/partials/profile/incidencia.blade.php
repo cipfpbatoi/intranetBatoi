@@ -3,10 +3,12 @@
     <div id="{{$elemento->id}}" class="well profile_view">
         <div class="col-sm-12">
             <h4 class="brief">
-                <em class="fa fa-wrench"></em><strong> id.{{$elemento->id}}</strong>  {{$elemento->material}} {{ $elemento->descripcion }}.
+                <em class="fa fa-wrench"></em>
+                <strong> id.{{$elemento->id}}</strong>
+                {{$elemento->material}} {{ $elemento->descripcion }}.
             </h4>
-            @if (!empty($elemento->Observaciones))
-                <h5><em class="fa fa-comment-o"></em> {{$elemento->Observaciones}}</h5>
+            @if (!empty($elemento->observaciones))
+                <h5><em class="fa fa-comment-o"></em> {{$elemento->observaciones}}</h5>
             @endif
             <div class="left col-xs-12">
                 <h5> <em class="fa fa-tag"></em> {{$elemento->Xespacio}}</h5>
