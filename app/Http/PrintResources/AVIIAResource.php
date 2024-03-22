@@ -25,20 +25,25 @@ class AVIIAResource extends PrintResource
         $director = Profesor::find(config('avisos.director'))->fullName;
         $secretario = Profesor::find(config('avisos.secretario'))->fullName;
 
-        return [
-            'SENYOR' => $secretario,
+        $dades_fct = [
+            'SECRETARI' => $secretario,
             'DIRECTOR' => $director,
             'SECRETARIO' => $secretario,
             'CENTRE' => config('contacto.nombre'),
             'CODI' => config('contacto.codi'),
             'EMPRESA' => $this->elements->Colaboracion->Centro->Empresa->nombre,
             'NIF' => $this->elements->Colaboracion->Centro->Empresa->cif,
-            'CURSO' => curso(),
-            'POBLACION' => config('contacto.poblacion'),
+            'CURS' => curso(),
+            'POBLACIÓN' => config('contacto.poblacion'),
             'DIA' => day(Hoy()),
             'MES' => month(Hoy()),
             'AÑO' => substr(year(Hoy()), 2,2),
+            'ADRES 1' => $this->elements->Colaboracion->Centro->direccion,
+            'LOCA 1' => $this->elements->Colaboracion->Centro->localidad,
+            'NUM ALU 1' => $this->elements->AlFct->count(),
+            'TOT HOR 1' => $this->elements->AlFct->sum('horas'),
         ];
+        return $dades_fct;
     }
 }
 
