@@ -24,7 +24,6 @@ class AVIIAResource extends PrintResource
     {
         $director = Profesor::find(config('avisos.director'))->fullName;
         $secretario = Profesor::find(config('avisos.secretario'))->fullName;
-
         $dades_fct = [
             'SECRETARI' => $secretario,
             'DIRECTOR' => $director,

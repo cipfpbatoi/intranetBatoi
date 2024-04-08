@@ -5,10 +5,12 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Session;
+use Intranet\Http\PrintResources\AVIIAResource;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
 use Intranet\Http\Requests\ColaboradorRequest;
 use Intranet\Services\FDFPrepareService;
@@ -84,8 +86,15 @@ class FctController extends IntranetController
 
     public function certificat($id)
     {
-        return response()->file(FDFPrepareService::exec(
-            new CertificatInstructorResource(Fct::findOrFail($id))));
+        $fct = Fct::findOrFail($id);
+        if ($fct->asociacion == 4){
+            return response()->file(FDFPrepareService::exec(new AVIIAResource(Fct::find($id))));
+
+        } else {
+            return response()->file(FDFPrepareService::exec(
+                new CertificatInstructorResource(Fct::findOrFail($id))));
+        }
+
     }
 
     public static function certificatColaboradores($id)

@@ -70,10 +70,7 @@ class DualController extends ModalController
 
 
 
-    public function AnexeVIIa($id)
-    {
-        return response()->file(FDFPrepareService::exec(new AVIIAResource(Fct::find($id))));
-    }
+
     /**
      * @return mixed
      */
