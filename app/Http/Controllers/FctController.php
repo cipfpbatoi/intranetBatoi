@@ -11,6 +11,7 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Session;
 use Intranet\Http\PrintResources\AVIIAResource;
+use Intranet\Http\PrintResources\AVIIBResource;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
 use Intranet\Http\Requests\ColaboradorRequest;
 use Intranet\Services\FDFPrepareService;
@@ -88,8 +89,16 @@ class FctController extends IntranetController
     {
         $fct = Fct::findOrFail($id);
         if ($fct->asociacion == 4){
-            return response()->file(FDFPrepareService::exec(new AVIIAResource(Fct::find($id))));
-
+            $nameFile = storage_path("tmp/Dual_AVII_{$fct->id}.zip");
+            if (file_exists($nameFile)) {
+                unlink($nameFile);
+            }
+            $zip = new \ZipArchive();
+            $zip->open($nameFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+            $zip->addFile(FDFPrepareService::exec(new AVIIAResource(Fct::find($id))), 'AVIIa_Certificat_empresa.pdf');
+            $zip->addFile(FDFPrepareService::exec(new AVIIBResource(Fct::find($id))), 'AVIIb_Certificat_instructor.pdf');
+            $zip->close();
+            return response()->download($nameFile);
         } else {
             return response()->file(FDFPrepareService::exec(
                 new CertificatInstructorResource(Fct::findOrFail($id))));

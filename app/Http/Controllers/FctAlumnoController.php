@@ -315,10 +315,6 @@ class FctAlumnoController extends IntranetController
         return response()->file(FDFPrepareService::exec(new AVIResource(AlumnoFct::find($id))));
     }
 
-    public function AVIIa($id)
-    {
-    }
-
 
 
     public function AEng($id)
