@@ -23,6 +23,7 @@ use Intranet\Http\PrintResources\A2ENResource;
 use Intranet\Http\PrintResources\A3ENResource;
 use Intranet\Http\PrintResources\A5Resource;
 use Intranet\Http\PrintResources\AVIIAResource;
+use Intranet\Http\PrintResources\AVIIIResource;
 use Intranet\Http\PrintResources\AVIResource;
 use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
@@ -295,6 +296,9 @@ class FctAlumnoController extends IntranetController
         }
         if ($fct->asociacion == 3) {
             return response()->file(FDFPrepareService::exec(new ExempcioResource(AlumnoFct::find($id))));
+        }
+        if ($fct->asociacion == 4){
+            return response()->file(FDFPrepareService::exec(new AVIIIResource(AlumnoFct::find($id))));
         }
     }
 
