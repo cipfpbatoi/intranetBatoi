@@ -47,7 +47,10 @@ class DocumentoController extends IntranetController
     ];
 
 
-
+    public function index(){
+        ini_set('memory_limit', '512M');
+        return parent::index();
+    }
     public function search()
     {
         if (Session::get('completa')) {
