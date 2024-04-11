@@ -24,7 +24,7 @@ class AVIIBResource extends PrintResource
     {
         $director = Profesor::find(config('avisos.director'))->fullName;
         $secretario = Profesor::find(config('avisos.secretario'))->fullName;
-        $dades_fct = [
+        return [
             'SECRETARI' => $secretario,
             'DIRECTOR' => $director,
             'SECRETARIO' => $secretario,
@@ -33,7 +33,7 @@ class AVIIBResource extends PrintResource
             'EMPRESA' => $this->elements->Colaboracion->Centro->Empresa->nombre,
             'NIF' => $this->elements->Instructor->dni,
             'ENSE 2' => $this->elements->Colaboracion->Ciclo->vliteral,
-            'INSTRUCT' => $this->elements->Instructor->nombre,
+            'INSTRUCT' => $this->elements->Instructor->name,
             'INSTRUCT 2' => $this->elements->Instructor->surnames,
             'CURS' => curso(),
             'POBLACIÓN' => config('contacto.poblacion'),
@@ -43,7 +43,6 @@ class AVIIBResource extends PrintResource
             'ALUMNES' => $this->elements->AlFct->count(),
             'HORES' => $this->elements->AlFct->sum('horas'),
         ];
-        return $dades_fct;
     }
 }
 
