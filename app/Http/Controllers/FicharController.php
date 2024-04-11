@@ -36,7 +36,9 @@ class FicharController extends IntranetController
 
     public function store(Request $request)
     {
-        $profesor = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2')->where('codigo', '=', $request->codigo)->first();
+        $profesor = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2')
+            ->where('codigo', '=', $request->codigo)
+            ->first();
         if (isset($profesor->dni)) {
             $fichaje = Falta_profesor::fichar($profesor->dni);
             if ($fichaje == null) {
@@ -76,9 +78,9 @@ class FicharController extends IntranetController
         return view('fichar.control-dia', compact('profes', 'horarios'));
     }
     private function loadHoraries($profesores){
-        $horarios = Array();
+        $horarios = array();
         foreach ($profesores as $profesor) {
-            $profesor->departamento = $profesor->Departamento->depcurt;
+            $profesor->departamento = $profesor->Departamento ?  $profesor->Departamento->depcurt : '';
             $horarios[$profesor->dni] = $this->loadHorary($profesor);
 
         }
