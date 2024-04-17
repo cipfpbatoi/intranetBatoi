@@ -12,8 +12,27 @@
                     @php
                         $alumno = Intranet\Entities\Alumno::find($fct['nia']);
                     @endphp
-                    @if($fct['erasmus'] == 'No')
-                        <div class="form-check">
+                    @isset ($alumno)
+                        @if($fct['erasmus'] == 'No')
+                            <div class="form-check">
+                                    <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="{{$key}}"
+                                            id="{{$key}}flexRadio"
+                                            checked
+                                    >
+                                    <label class="form-check-label" for="flexRadioDefault1">
+                                        @isset($fct['centre']['id'])
+                                            {{ Intranet\Entities\Centro::find($fct['centre']['id'])->nombre }}
+                                        @else
+                                            {{"No trobat ".$fct['centre']['name'].". Marca per crear" }}
+                                        @endisset
+                                        - {{ $alumno->fullName }} => {{ $fct['hores'] }}
+                                    </label>
+                            </div>
+                        @else
+                            <div class="form-check">
                                 <input
                                         class="form-check-input"
                                         type="checkbox"
@@ -22,29 +41,14 @@
                                         checked
                                 >
                                 <label class="form-check-label" for="flexRadioDefault1">
-                                    @isset($fct['centre']['id'])
-                                        {{ Intranet\Entities\Centro::find($fct['centre']['id'])->nombre }}
-                                    @else
-                                        {{"No trobat ".$fct['centre']['name'].". Marca per crear" }}
-                                    @endisset
-                                    - {{ $alumno->fullName }} => {{ $fct['hores'] }}
+                                    Erasmus -
+                                    {{ $alumno->fullName }} =>
+                                    {{ $fct['hores'] }}
                                 </label>
-                        </div>
+                            </div>
+                        @endif
                     @else
-                        <div class="form-check">
-                            <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    name="{{$key}}"
-                                    id="{{$key}}flexRadio"
-                                    checked
-                            >
-                            <label class="form-check-label" for="flexRadioDefault1">
-                                Erasmus -
-                                {{ $alumno->fullName }} =>
-                                {{ $fct['hores'] }}
-                            </label>
-                        </div>
+                        No trobat alumne amb nia {{$fct['nia']}}
                     @endisset
                 @endforeach
                 <br/>
