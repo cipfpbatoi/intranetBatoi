@@ -26,7 +26,6 @@ use Styde\Html\Facades\Alert;
 class ItacaController extends Controller
 {
     private $driver;
-    private $closeNoticias = false;
 
     private function waitAndClick($xpath)
     {
@@ -49,7 +48,6 @@ class ItacaController extends Controller
 
     private function closeNoticias()
     {
-        $this->closeNoticias = true;
         try {
             $elements = $this->driver->findElements(WebDriverBy::cssSelector('.z-window-close.imc--bt-terciari'));
             foreach ($elements??[] as $element) {
@@ -65,9 +63,7 @@ class ItacaController extends Controller
     {
         try {
             $this->driver->get('https://itaca3.edu.gva.es/itaca3-gad/');
-            if (!$this->closeNoticias) {
-                $this->closeNoticias();
-            }
+            $this->closeNoticias();
             $this->waitAndClick("//span[contains(text(),'Gestión')]");
             $this->waitAndClick("//span[contains(text(),'Personal')]");
             $this->driver->findElement(WebDriverBy::xpath("//span[contains(text(),'Listado Personal')]"))->click();
