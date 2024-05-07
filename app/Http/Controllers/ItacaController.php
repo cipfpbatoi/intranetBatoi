@@ -173,8 +173,9 @@ class ItacaController extends Controller
             whereColumn('desde', 'hasta')->
             whereMonth('hasta', '=', $request->month)
                          ->get() as $falta) {
+                $fecha = Carbon::parse($falta->desde)->format('d-m-Y');
                 $ss->gTPersonalLlist();
-                if ($this->tryOne($ss, $falta)) {
+                if ($this->tryOne($ss, $falta,$fecha)) {
                     $count++;
                 } else {
                     $failures++;
