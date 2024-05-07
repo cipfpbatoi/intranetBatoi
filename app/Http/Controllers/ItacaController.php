@@ -253,7 +253,7 @@ class ItacaController extends Controller
                 } else {
                     $ss->waitAndClick(WebDriverBy::xpath('//button[text()="Seleccionar todos"]'));
                     $ss->waitAndClick(WebDriverBy::xpath('//button[text()=" Nueva Falta"]'));
-                    sleep(2);
+                     sleep(2);
                     $selector = "span.z-checkbox[data-id='justificada'] input";
                     $element = $ss->getDriver()->findElement(WebDriverBy::cssSelector($selector));
                     $checkbox = $ss
@@ -268,7 +268,7 @@ class ItacaController extends Controller
                     $input->sendKeys($falta->motivo);
                     $button = $ss->getDriver()->findElement(WebDriverBy::cssSelector("button.z-button[data-tooltip='Guardar']"));
                     $button->click();
-
+                    Alert::info('Falta actualizada');
                     $falta->itaca = true;
                     $falta->save();
                 }
