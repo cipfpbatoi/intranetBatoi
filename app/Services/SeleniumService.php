@@ -148,6 +148,7 @@ class SeleniumService
     {
         try {
             $this->driver->get('https://itaca3.edu.gva.es/itaca3-gad/');
+            sleep(1);
             $this->closeNoticias();
             $this->waitAndClick("//span[contains(text(),'Gestión')]");
             $this->waitAndClick("//span[contains(text(),'Personal')]");
