@@ -148,12 +148,25 @@ class SeleniumService
     {
         try {
             $this->driver->get('https://itaca3.edu.gva.es/itaca3-gad/');
+            $this->closeNoticias();
             $this->waitAndClick("//span[contains(text(),'Gestión')]");
             $this->waitAndClick("//span[contains(text(),'Personal')]");
             $this->waitAndClick("//span[contains(text(),'Listado Personal')]");
         } catch (\Exception $e) {
             $this->driver->quit();
             throw new IntranetException($e->getMessage());
+        }
+    }
+
+    private function closeNoticias()
+    {
+        try {
+            $elements = $this->driver->findElements(WebDriverBy::cssSelector('.z-window-close.imc--bt-terciari'));
+            foreach ($elements??[] as $element) {
+                $element->click();
+            }
+        } catch (\Exception $e) {
+            // No pasa res
         }
     }
 

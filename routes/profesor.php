@@ -322,6 +322,7 @@ Route::get('/dual/anexeVI', ['as'=>'dual.anexevi', 'uses'=>'DualController@print
 Route::get('/dual/anexeXIV', ['as'=>'dual.anexexiv', 'uses'=>'DualController@printAnexeXIV']);
 */
 Route::get('/alumnofct/{id}/AVI', ['as' => 'alumnofct.AVI', 'uses' => 'FctAlumnoController@AVI']);
+Route::get('/alumnofct/{id}/AutDual', ['as' => 'alumnofct.AutDual', 'uses' => 'FctAlumnoController@AutDual']);
 
 Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
 Route::put('/alumnofct/{id}/edit', ['as' => 'alumnofct.update', 'uses' => 'FctAlumnoController@update']);

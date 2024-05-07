@@ -48,9 +48,16 @@
                             Annexos Anglès
                         </a>
                     @endif
-                    <a href="{{ route('alumnofct.Valoratiu',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
-                        Inf.Competències Adquirides
-                    </a>
+                    @if ($alfct->fct->asociacion == 4)
+                        <a href="{{ route('alumnofct.AutDual',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
+                            Autorització No Lectius
+                        </a>
+                    @else
+                        <a href="{{ route('alumnofct.Valoratiu',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
+                            Inf.Competències Adquirides
+                        </a>
+                    @endif
+
                 </div>
             </li>
         @else
