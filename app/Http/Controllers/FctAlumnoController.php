@@ -27,6 +27,7 @@ use Intranet\Http\PrintResources\AVIIIResource;
 use Intranet\Http\PrintResources\AVIResource;
 use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
+use Intranet\Http\PrintResources\NotificacioInspeccioResource;
 use Intranet\Mail\DocumentRequest;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
@@ -338,13 +339,16 @@ class FctAlumnoController extends IntranetController
         return response()->download($nameFile);
     }
 
+
     public function auth($id)
     {
         $fct = AlumnoFct::findOrFail($id);
         $folder = storage_path("tmp/auth$id/");
         $zipFile = storage_path("tmp/auth_".$fct->Alumno->dualName.".zip");
         if (!file_exists($folder)) {
-            mkdir($folder, 0777, true);
+            if (!mkdir($folder, 0777, true) && !is_dir($folder)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $folder));
+            }
         }
         $zip = new \ZipArchive();
         $zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
@@ -367,6 +371,10 @@ class FctAlumnoController extends IntranetController
         return response()->download($zipFile);
     }
 
+    public function AutDual($id)
+    {
+        return response()->file(FDFPrepareService::exec(new NotificacioInspeccioResource(AlumnoFct::findOrFail($id))));
+    }
 
     public static function preparePdf($id)
     {
