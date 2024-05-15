@@ -12,6 +12,8 @@ return [
     'tipoVehiculo' => ['Cotxe','Motocicleta','Avió','Tren','Taxi','Autobus','Altres'],
     'estadoDocumento' => ['Creado','Pendiente','Autorizado','Impreso'],
     'numeracion' => ['--','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15',
+        '16','18','19','20',24=>'20',25=>'21',26=>'22',27=>'23',28=>'24',29=>'25',40=>'26',41=>'27',
+        42=>'28',43=>'29',44=>'30',45=>'31',46=>'32',47=>'33',48=>'34',49=>'35',
         30=>'AvaIni',31=>'1Ava',32=>'2Ava',33=>'3Ava',34=>'AvFinal',35=>'AvExtr',
         21=>'1er Trimestre',22=>'2on Trimestre',23=>'Final'],
     'nombreEval' => [1=>'Primera', 2=> 'Segona', 3=>'Final'],
