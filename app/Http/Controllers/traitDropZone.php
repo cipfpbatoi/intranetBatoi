@@ -29,6 +29,7 @@ trait traitDropZone
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()]
         ];
+
         return view('dropzone.index', compact('modelo', 'id', 'quien', 'botones'));
     }
 

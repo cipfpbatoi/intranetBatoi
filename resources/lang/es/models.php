@@ -468,7 +468,8 @@ return array(
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
-            'titulo' => "Anexos SAO :quien"
+            'list' => "Listado pendientes de evaluación del grupo :quien",
+            'titulo' => "Anexos FCT/DUAL de :quien"
         ),
         'Fctcap' => array(
             'index' => 'Control Fct :quien',

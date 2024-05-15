@@ -20,7 +20,7 @@
                             <i class="fa fa-unlink"> SAO - </i>
                         @endif
                         @if ($alfct->saoAnnexes)<em>@endif
-                             A2 A3 A5
+                             Fitxers Annexes
                         @if ($alfct->saoAnnexes)</em>@endif
                         <a href="{{route('alumnofct.link',$alfct->id)}}" class="fa fa-file-pdf-o" title="Enllaçar fitxers"></a>
                     </h4>
