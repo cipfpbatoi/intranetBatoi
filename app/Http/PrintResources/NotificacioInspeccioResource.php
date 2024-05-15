@@ -26,16 +26,14 @@ class NotificacioInspeccioResource extends PrintResource
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
         $director = Profesor::find(config('avisos.director'))->fullName;
         return [
-            'centre' => config('contacto.nombre').' '.config('contacto.codi'),
-            'cicle' => $grupo->Ciclo->vliteral ,
-            'codi' => "$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni",
-            'nombre' => $director ,
-            'cognoms' => $director,
-            'untitled29' => config('contacto.poblacion'),
-            'untitled31' => day(Hoy()),
-            'untitled30' => month(Hoy()),
-            'untitled32' => substr(year(Hoy()), 2, 2),
-            'untitled33' => $director
+            'Texto1' => config('contacto.nombre'),
+            'Texto2' => config('contacto.codi'),
+            'Texto3' => $grupo->Ciclo->vliteral,"$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni",
+            'Texto4' => $alumno->nombre,
+            'Texto5' => $alumno->apellido1.' '.$alumno->apellido2,
+            'Texto6' => $alumno->nia,
+            'Texto7' => $this->elements->desde,
+            'Texto8' => $this->elements->hasta,
         ];
     }
 }
