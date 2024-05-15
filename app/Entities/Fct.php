@@ -202,6 +202,9 @@ class Fct extends Model
     {
         return $query->where('correoInstructor', 0);
     }
+
+
+
    
 
    

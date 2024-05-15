@@ -71,7 +71,7 @@ class AlumnoFctAval extends AlumnoFct
     public function scopeRealFcts($query, $profesor= null)
     {
         $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
-        return $query->whereIn('idProfesor', $profesor)->esFct();
+        return $query->whereIn('idProfesor', $profesor)->estaSao();
     }
 
     public function scopeAvaluables($query, $profesor= null)

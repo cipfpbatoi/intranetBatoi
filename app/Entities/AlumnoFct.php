@@ -137,6 +137,12 @@ class AlumnoFct extends Model
         return $query->whereIn('idFct', $fcts);
     }
 
+    public function scopeEstaSao($query)
+    {
+        $fcts = Fct::select('id')->esExempt()->get()->toArray();
+        return $query->whereNotIn('idFct', $fcts);
+    }
+
     public function scopeActiva($query)
     {
        return $query->whereNull('calificacion')->where('correoAlumno', 0)->where('horas', '>', 'realizadas');
