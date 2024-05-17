@@ -9,7 +9,7 @@
             {{$fct->Colaboracion->Centro->nombre}}
         </a>
     </h3>
-    <h5>ID : {{$fct->id}}</h5>
+    <h5>ID : <div id="fct_id">{{$fct->id}}</div></h5>
     @if ($fct->asociacion == 3)
         <h5>DUAL</h5>
     @endif
@@ -133,6 +133,7 @@ FCT : {{$fct->Colaboracion->Centro->nombre}} - {{$fct->Colaboracion->Ciclo->cicl
 @endsection
 @section('scripts')
 {{ Html::script("/js/datepicker.js") }}
+@include('intranet.partials.modal.contactoAl')
 {{ Html::script("/js/fct/show.js") }}
 @endsection
 
