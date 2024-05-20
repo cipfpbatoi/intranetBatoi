@@ -105,6 +105,20 @@ class Fct extends Model
             'pg0301'
         ]);
     }
+
+    public function AlumnosActivos()
+    {
+        return $this->belongsToMany(
+            Alumno::class,
+            'alumno_fcts',
+            'idFct',
+            'idAlumno',
+            'id',
+            'nia'
+        )->withPivot([
+            'calificacion'
+        ])->whereNull('calificacion');
+    }
     public function AlFct()
     {
         return $this->hasMany(AlumnoFct::class, 'idFct');

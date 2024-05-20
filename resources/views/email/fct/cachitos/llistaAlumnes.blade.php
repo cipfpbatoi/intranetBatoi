@@ -1,5 +1,5 @@
 <ul>
-    @foreach ($elemento->Alumnos as $alumno)
+    @foreach ($elemento->AlumnosActivos as $alumno)
         <li> {{$alumno->fullName}} </li>
     @endforeach
 </ul>
