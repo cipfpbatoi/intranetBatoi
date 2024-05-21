@@ -134,6 +134,6 @@ FCT : {{$fct->Colaboracion->Centro->nombre}} - {{$fct->Colaboracion->Ciclo->cicl
 @section('scripts')
 {{ Html::script("/js/datepicker.js") }}
 @include('intranet.partials.modal.contactoAl')
-{{ Html::script("/js/fct/show.js") }}
+{{ Html::script("/js/Fct/show.js") }}
 @endsection
 
