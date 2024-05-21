@@ -279,6 +279,7 @@ return array(
         'Auxiliar' => 'Taules auxiliars',
         'Modulociclo' => 'Mòdul / Cicle',
         'Actasfct' => 'Control Fct/Actas',
+        'Actasdual' => 'Control Dual',
         'Actualizacion' => 'Actualización aplicación',
         'Dual' => 'FP Dual',
         'Micolaboracion' => 'Mis colaboraciones',
