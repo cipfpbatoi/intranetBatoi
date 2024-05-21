@@ -473,6 +473,10 @@ return array(
            'check' => 'Control documentació'
           
         ),
+        'Fctdual' => array(
+            'index' => 'Control Dual :quien',
+            'check' => 'Control documentació'
+        ),
         'Ipguardia' => array(
           'index' => 'Control IP',
         ),
@@ -579,6 +583,7 @@ return array(
             'ArticuloLote' => 'Articles Factura',
             'Incidencia' => 'Incidència',
             'Fctcap' => 'Revisió FCT',
+            'Fctdual' => 'Revisió Dual',
             'Solicitud' => "Derivació al departament d'orientació",
             'Signatura' => 'Signatures Digitals'
         ),

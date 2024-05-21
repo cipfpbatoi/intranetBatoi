@@ -21,6 +21,7 @@ Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 
 
 Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual');
     Route::resource('dual', 'DualController', ['except' => [ 'create']]);
     Route::get('fct/{id}/alFct', 'FctController@llist');
     Route::post('fct/{id}/alFct', 'FctController@seguimiento');

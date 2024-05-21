@@ -465,8 +465,10 @@ Route::get('/profesor/backChange', ['as' =>'profesor.backChange', 'uses' => 'Pro
 
 //Jefa de practicas
 Route::get('/fctcap/{grupo}/check', ['as' => 'fctcap.acta', 'uses' => 'PanelPG0301Controller@indice']);
+Route::get('/fctcap/{grupo}/dual', ['as' => 'fctcap.dual', 'uses' => 'PanelPGDualController@indice']);
 Route::get('/fctcap/{grupo}/show', ['as' => 'fctcap.show', 'uses' => 'PanelPracticasController@show']);
 Route::get('/controlFct', ['as'=> 'controlFct.index', 'uses' => 'PanelPracticasController@index']);
+Route::get('/controlDual',['as'=> 'controlDual.index', 'uses' => 'PanelDualController@index']);
 
 //gestor documental
 Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.gestor', 'uses' => 'ActividadController@gestor']);

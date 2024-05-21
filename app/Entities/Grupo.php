@@ -136,6 +136,7 @@ class Grupo extends Model
         return $query->whereIn('codigo', $grupos);
     }
 
+
     public function scopeDepartamento($query, $dep)
     {
         $ciclos = Ciclo::select('id')->where('departamento', $dep)->get()->toarray();
@@ -196,6 +197,22 @@ class Grupo extends Model
         }
 
         return $aprob;
+    }
+
+    public function getEnDualAttribute()
+    {
+        $todos = $this->Alumnos;
+        $dual = 0;
+        foreach ($todos as $alumno){
+            foreach ($alumno->Fcts as $fct){
+                if ($fct->dual){
+                    $dual++;
+                }
+            }
+
+        }
+
+        return $dual;
     }
 
     public function getAprobFctAttribute()

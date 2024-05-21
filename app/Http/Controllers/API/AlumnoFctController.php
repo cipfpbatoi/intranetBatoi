@@ -23,6 +23,14 @@ class AlumnoFctController extends ApiBaseController
         return $this->sendResponse($data, 'OK');
     }
 
+    public function dual($grupo)
+    {
+        $grup = Grupo::findOrFail($grupo);
+        $data = AlumnoFctControlResource::collection(AlumnoFct::Grupo($grup)->esDual()->get());
+
+        return $this->sendResponse($data, 'OK');
+    }
+
     public function update(Request $request, $id)
     {
         $registro = AlumnoFct::findOrFail($id);
