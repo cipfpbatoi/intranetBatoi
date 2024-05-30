@@ -157,7 +157,7 @@ class SignaturaController extends ModalController
         if ($elemento = Signatura::find($id)) {
             $fctAl = AlumnoFct::where('idSao',$elemento->idSao)->first();
             $file = $fctAl->routeFile($elemento->tipus);
-            if (isset($file)) {
+            if (isset($file) && file_exists($file)){
                 unlink($file);
             }
             $elemento->delete();

@@ -11,6 +11,7 @@ use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
 
 use Illuminate\Support\Facades\Mail;
+use Intranet\Entities\Adjunto;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
@@ -141,14 +142,17 @@ class AdministracionController extends Controller
 
         $this->ferVotsPermanents();
 
+        // inicialitza dels col·laboracions
         Colaboracion::where('tutor', '!=', '')->update(['tutor'=>'']);
         Colaboracion::where('estado', '>', 1)->update(['estado' => 1]);
-        Fct::where('asociacion', '!=', 3)->delete();
+
+        // inicialitza professors
         Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
 
         //$this->esborrarEnquestes();
 
 
+        // certificats de fol
         foreach (AlumnoGrupo::with('Grupo')->with('Alumno')->get() as $algr) {
             if ($algr->curso == 2 && $algr->fol > 0) {
                 $alumno = $algr->Alumno;
@@ -161,11 +165,14 @@ class AdministracionController extends Controller
             $grupo->save();
         }
 
+        // preservar dual
+        Adjunto::moveAndPreserveDualFiles();
+
 
         $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
             'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
             'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos',
-            'autorizaciones', 'votes' , 'activities', 'failed_jobs'];
+            'autorizaciones', 'votes' , 'activities', 'failed_jobs','fct'];
         foreach ($tables as $tabla) {
             DB::table($tabla)->delete();
         }
@@ -258,6 +265,8 @@ class AdministracionController extends Controller
 
     public function consulta()
     {
+        ///Adjunto::moveAndPreserveDualFiles();
+        return back();
     }
 
 

@@ -79,6 +79,18 @@ $(function () {
             $('#AA3').prop('disabled', true);
         }
     });
+    $('#FA1').change(function() {
+        if (this.checked) {
+            $('#A5').prop('checked', false);
+        }
+    });
+
+    $('#A5').change(function() {
+        if (this.checked) {
+            $('#FA1').prop('checked', false);
+        }
+    });
+
 });
 
 

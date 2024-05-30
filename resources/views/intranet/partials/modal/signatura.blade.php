@@ -3,6 +3,7 @@
          message='Selecciona'>
     <input type="checkbox" class="elements" name="A1" checked>A1
     <input type="checkbox" class="elements" name="A2" checked>A2
+
     @if(file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp')))
         <input type="checkbox" class="elements" name="A3" checked>A3
     @else

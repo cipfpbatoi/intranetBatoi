@@ -159,6 +159,11 @@ class Signatura extends Model
         }
     }
 
+    private function getEstatA5()
+    {
+        return 'Complet';
+    }
+
     public function getClassAttribute()
     {
         $tipus = substr($this->tipus, 0,2);
