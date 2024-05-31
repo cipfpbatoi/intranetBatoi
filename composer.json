@@ -30,6 +30,8 @@
         "php-webdriver/webdriver": "^1.13",
         "phpoffice/phpspreadsheet": "^1.26",
         "predis/predis": "^1.1",
+        "setasign/fpdf": "^1.8",
+        "setasign/fpdi": "^2.6",
         "simplesoftwareio/simple-qrcode": "~4",
         "smalot/pdfparser": "^2.1",
         "symfony/http-client": "^6.2",

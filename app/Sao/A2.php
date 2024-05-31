@@ -12,6 +12,7 @@ use Intranet\Componentes\Mensaje;
 use Intranet\Exceptions\CertException;
 use Intranet\Services\DigitalSignatureService;
 use Intranet\Entities\AlumnoFct;
+use setasign\Fpdi\Fpdi;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Signatura as Firma;
 
@@ -238,6 +239,7 @@ class A2
         $annexe = $fctAl->Fct->dual ? 'A5DUAL' : 'A5';
         $idSao = $fctAl->idSao;
         $tmpFile = $tmpDirectory.$annexe.".pdf";
+        $tmp1File = $tmpDirectory.$annexe."(1).pdf";
         $saveFile = $fctAl->routeFile($annexe);
         $x = config("signatures.files.".$annexe.".owner.x");
         $y = config("signatures.files.".$annexe.".owner.y");
@@ -252,11 +254,34 @@ class A2
             sleep(1);
             self::waitForFile($tmpFile, 5);
 
-            // Copia el fitxer descarregat al destí
-            if (file_exists($tmpFile)) {
-                copy($tmpFile, $saveFile);
-            }
+            $pdf = new FPDI();
+            $pageCount = $pdf->setSourceFile($tmpFile);
+            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
 
+                $tplIdx = $pdf->importPage($pageNo);
+                $size = $pdf->getTemplateSize($tplIdx);
+                $pdf->addPage($size['orientation'], [$size['width'], $size['height']]);
+
+                $pdf->useTemplate($tplIdx);
+                $contacto = $fctAl->Contactos->last();
+                if ($pageNo == $pageCount && $contacto){
+                    // Estableix la font i el tamany
+                    $pdf->SetFont('Helvetica', '', 9);
+
+                    // Defineix la posició on afegir el text (x, y)
+                    $x1 = 10;
+                    $y1 = 175;
+
+                    // Afegeix el text a la posició especificada
+                    $pdf->SetXY($x1, $y1);
+                    $pdf->Cell(0, 10, $contacto->comentari);
+
+                }
+            }
+            $pdf->SetXY($x, $y);
+            $pdf->Cell(0, 10,' ');
+            $pdf->Output($tmp1File, 'F');
+            // Copia el fitxer descarregat al destí
         } catch (\Throwable $exception) {
             Alert::danger($exception->getMessage());
             if (file_exists($tmpFile)) {
@@ -266,7 +291,7 @@ class A2
 
             if ($certFile) {
                 DigitalSignatureService::sign(
-                    $tmpFile,
+                    $tmp1File,
                     $saveFile,
                     $x,
                     $y,
@@ -274,7 +299,7 @@ class A2
                 );
                 Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
             } else {
-                copy($tmpFile, $saveFile);
+                copy($tmp1File, $saveFile);
                 Firma::saveIfNotExists($annexe, $fctAl->idSao);
             }
             if (file_exists($tmpFile)) {
