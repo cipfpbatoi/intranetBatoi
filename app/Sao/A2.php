@@ -278,8 +278,6 @@ class A2
 
                 }
             }
-            $pdf->SetXY($x, $y);
-            $pdf->Cell(0, 10,' ');
             $pdf->Output($tmp1File, 'F');
             // Copia el fitxer descarregat al destí
         } catch (\Throwable $exception) {
