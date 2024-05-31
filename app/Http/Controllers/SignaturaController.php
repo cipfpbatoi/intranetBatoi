@@ -118,7 +118,7 @@ class SignaturaController extends ModalController
             new BotonBasico(
                 "signatura.post",
                 [
-                    'text' => 'A1',
+                    'text' => 'A1/A5',
                     'class' => 'btn-danger a1',
                     'roles' => config(self::ROLES_ROL_TUTOR)
                 ]
