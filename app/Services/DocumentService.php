@@ -51,6 +51,7 @@ class DocumentService
     private function mail()
     {
         $elemento = $this->elements->first();
+        $attached = isset($this->document->email['attached'])?$this->document->email['attached']:null;
         if ($elemento) {
             if (!$this->document->email['editable']) {
                 $contenido['view'] = view($this->document->template, compact('elemento'));
