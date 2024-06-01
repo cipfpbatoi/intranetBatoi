@@ -1,14 +1,15 @@
 <!-- Modal Nou -->
 <x-modal name="signatura" title='Signatura annexes' action="/externalAuth"
          message='Selecciona'>
-    <input type="checkbox" class="elements" name="A1" checked>A1
-    <input type="checkbox" class="elements" name="A2" checked>A2
+    <input type="checkbox" id="A1" class="elements" name="A1">A1
+    <input type="checkbox" id="A2" class="elements" name="A2" checked>A2
 
     @if(file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp')))
-        <input type="checkbox" class="elements" name="A3" checked>A3
+        <input type="checkbox" id="A3" class="elements" name="A3" checked>A3
     @else
         <input type="checkbox" id='AA3' class="elements" name="A3" checked disabled>A3
     @endif
+    <input type="checkbox" id='A5' class="elements" name="A5">A5
     <table id="tableSignatura"></table>
     <input type="hidden" name="accion" value="A2" />
     <br/>

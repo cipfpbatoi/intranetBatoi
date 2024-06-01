@@ -22,6 +22,7 @@ $(function () {
     $(".sign").on("click", function (event) {
         event.preventDefault();
         $(this).attr("data-toggle", "modal").attr("data-target", "#signatura").attr("href", "");
+        $("#A5").attr("checked", false).prop('disabled', true);
         var token = $("#_token").text();
         var url = "/api/signatura";
         $.ajax({
@@ -38,7 +39,10 @@ $(function () {
     });
     $(".a1").on("click", function (event) {
         event.preventDefault();
-        $(this).attr("data-toggle", "modal").attr("data-target", "#signaturaA1").attr("href", "");
+        $(this).attr("data-toggle", "modal").attr("data-target", "#signatura").attr("href", "");
+        $("#A2").attr("checked", false).prop('disabled', true);
+        $("#A3").attr("checked", false).prop('disabled', true);
+        $("#AA3").attr("checked", false).prop('disabled', true);
         var token = $("#_token").text();
         var url = "/api/signatura/a1";
         $.ajax({
@@ -48,7 +52,7 @@ $(function () {
             data: {api_token: token}
         })
             .then(function (result) {
-                pintaTablaSeleccion(result.data,"#tableSignaturaA1");
+                pintaTablaSeleccion(result.data,"#tableSignatura");
             }, function (result) {
                 console.log("La solicitud no se ha podido completar.");
             });
@@ -79,7 +83,7 @@ $(function () {
             $('#AA3').prop('disabled', true);
         }
     });
-    $('#FA1').change(function() {
+    $('#A1').change(function() {
         if (this.checked) {
             $('#A5').prop('checked', false);
         }
@@ -87,7 +91,7 @@ $(function () {
 
     $('#A5').change(function() {
         if (this.checked) {
-            $('#FA1').prop('checked', false);
+            $('#A1').prop('checked', false);
         }
     });
 

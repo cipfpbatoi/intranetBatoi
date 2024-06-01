@@ -5,16 +5,13 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonBasico;
 use Intranet\Componentes\MyMail;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Signatura;
 use Intranet\Botones\BotonImg;
-use Intranet\Events\EmailAnnexeIndividual;
-use Intranet\Mail\DocumentRequest;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\AttachedFileService;
+
 
 
 /**
@@ -33,7 +30,7 @@ class SignaturaController extends ModalController
      * @var string
      */
     protected $model = 'Signatura';
-    protected $parametresVista = ['modal' => ['signaturaA1','signatura','selDoc','upload','informes','loading']];
+    protected $parametresVista = ['modal' => ['signatura','selDoc','upload','informes','loading']];
 
 
 
@@ -113,6 +110,7 @@ class SignaturaController extends ModalController
             )
         );
 
+
         $this->panel->setBoton(
             'index',
             new BotonBasico(
@@ -120,6 +118,17 @@ class SignaturaController extends ModalController
                 [
                     'text' => 'A1/A5',
                     'class' => 'btn-danger a1',
+                    'roles' => config(self::ROLES_ROL_TUTOR)
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "signatura.a5",
+                [
+                    'text' => "Guarda A5",
+                    'class' => 'btn-info',
                     'roles' => config(self::ROLES_ROL_TUTOR)
                 ]
             )
@@ -176,9 +185,10 @@ class SignaturaController extends ModalController
         $signatura->contact = $signatura->Fct->Fct->Instructor->nombre;
         $col = new Collection();
         $col->push($signatura);
+        $view = $signatura->tipus === 'A5' ? 'email.fct.A5' : 'email.fct.anexes';
         $mail = new MyMail(
             $col,
-            view('email.fct.anexes'),
+            view($view),
             ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
             [$signatura->simpleRouteFile => 'application/pdf']);
             //per a marcar-lo com a enviat a l'instructor
@@ -213,6 +223,7 @@ class SignaturaController extends ModalController
                 $signatures = [];
                 foreach ($alumnoFct->signatures as $signatura){
                     $signatures[$signatura->simpleRouteFile] = 'application/pdf';
+                    $view = $signatura->tipus === 'A5' ? 'email.fct.A5' : 'email.fct.anexes';
                 }
                 $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
                 $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
@@ -220,7 +231,7 @@ class SignaturaController extends ModalController
                 $col->push($alumnoFct);
                 $mail = new MyMail(
                     $col,
-                    view('email.fct.anexes'),
+                    view($view),
                     ['subject'=>'Documents FCT de '.$signatura->Alumno->fullName],
                     $signatures);
                 session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
@@ -236,13 +247,14 @@ class SignaturaController extends ModalController
                         if ($signatura->tipus == 'A1'){
                             $a1 = true;
                         }
+                        $view = $signatura->tipus === 'A5' ? 'email.fct.A5' : 'email.fct.anexes';
                     }
                     $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
                     $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
                     $alumnoFct->annexe = $a1;
                     $mail = new MyMail(
                         $alumnoFct,
-                        'email.fct.anexes',
+                        $view,
                         ['subject'=>'Documents FCT de '.$alumnoFct->Alumno->fullName],
                         $signatures);
                     session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
@@ -271,5 +283,17 @@ class SignaturaController extends ModalController
         return back();
     }
 
+    public function a5(){
 
+        $signatures = Signatura::where('tipus','A5')->where('idProfesor', authUser()->dni)->get();
+        foreach ($signatures as $signature){
+            $alFct = AlumnoFct::where('idSao',$signature->idSao)->first();
+            $path = 'alumnofctaval/'.$alFct->id;
+            if (AttachedFileService::saveExistingFile($signature->routeFile, $path, authUser()->dni))
+            {
+                $signature->delete();
+            }
+        }
+        return back();
+    }
 }

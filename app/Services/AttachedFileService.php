@@ -6,6 +6,7 @@ use Intranet\Entities\Adjunto;
 
 class AttachedFileService
 {
+
     private static function safeFile($file, $route, $dni, $title)
     {
         $nameFile = $file->getClientOriginalName();
@@ -67,4 +68,51 @@ class AttachedFileService
         $attached->delete();
         return 1;
     }
+    public static function saveExistingFile($filePath, $route, $dni, $title=null)
+    {
+
+        // Comprova si el fitxer existeix
+        if (!file_exists($filePath)) {
+            return 0; // Si el fitxer no existeix, retorna 0
+        }
+
+        // Obtenim la informació del fitxer existent
+        $nameFile = basename($filePath);
+        $fileSize = filesize($filePath);
+        $fileExtension = pathinfo($filePath, PATHINFO_EXTENSION);
+
+        // Comprova si el fitxer ja existeix a la base de dades
+        $adjunto = Adjunto::findByName($route, $nameFile)->first();
+        if (!$adjunto) {
+            // Crea un nou registre Adjunto
+            $attached = new Adjunto();
+            $attached->route = $route;
+            $attached->name = $nameFile;
+            $attached->title = $title ?? str_shuffle('abcdefgh123456');
+            $attached->extension = $fileExtension;
+            $attached->size = $fileSize;
+            $attached->owner = $dni;
+
+            // Defineix el directori on es guardarà el fitxer
+            $relativeDirectory = $attached->directory;
+            $destinationDirectory = $relativeDirectory;
+
+            // Crea el directori si no existeix
+            if (!file_exists($attached->directory)) {
+                mkdir($attached->directory, 0755, true);
+            }
+
+            // Defineix el camí de destí per al fitxer
+            $destinationPath = $attached->directory . '/' . $attached->title . '.' . $attached->extension;
+
+            // Mou el fitxer a la nova ubicació
+            if (rename($filePath, $destinationPath)) {
+                // Guarda el registre a la base de dades
+                $attached->save();
+                return 1;
+            }
+        }
+        return 0;
+    }
+
 }

@@ -10,7 +10,6 @@ class MyA1Finder extends Finder
 {
     public function __construct()
     {
-
         $dni = apiAuthUser()->dni;
         $fcts = AlumnoFct::misFcts($dni)->whereNotNull('idSao')->get();
         $this->elements = SignaturaResource::collection($fcts);
