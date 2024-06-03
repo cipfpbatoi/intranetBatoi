@@ -272,9 +272,11 @@ class A2
                     $x1 = 10;
                     $y1 = 175;
 
+                    $valoracioText = iconv('UTF-8', 'ISO-8859-1', $fctAl->valoracio);
+
                     // Afegeix el text a la posició especificada
                     $pdf->SetXY($x1, $y1);
-                    $pdf->Cell(0, 10, $fctAl->valoracio);
+                    $pdf->Cell(0, 10, $valoracioText);
 
                 }
             }
