@@ -264,7 +264,7 @@ class A2
 
                 $pdf->useTemplate($tplIdx);
                 $contacto = $fctAl->valoracio;
-                if ($pageNo == $pageCount && $contacto){
+                if ($pageNo == $pageCount && $contacto) {
                     // Estableix la font i el tamany
                     $pdf->SetFont('Helvetica', '', 9);
 
@@ -272,12 +272,18 @@ class A2
                     $x1 = 10;
                     $y1 = 175;
 
+                    // Converteix el text a ISO-8859-1 per gestionar els accents correctament
                     $valoracioText = iconv('UTF-8', 'ISO-8859-1', $fctAl->valoracio);
 
-                    // Afegeix el text a la posició especificada
+                    // Afegeix el text a la posició especificada amb MultiCell per gestionar el canvi de línia
                     $pdf->SetXY($x1, $y1);
-                    $pdf->Cell(0, 10, $valoracioText);
 
+                    // Defineix l'amplada de la cel·la i la interlínia (height)
+                    $cellWidth = 190; // Amplada de la cel·la (ajusta segons les teves necessitats)
+                    $lineHeight = 5; // Alçada de la línia
+
+                    // Afegeix el text a la posició especificada
+                    $pdf->MultiCell($cellWidth, $lineHeight, $valoracioText, 0, 'L');
                 }
             }
             $pdf->Output($tmp1File, 'F');
