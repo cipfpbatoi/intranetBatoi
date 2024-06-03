@@ -263,7 +263,7 @@ class A2
                 $pdf->addPage($size['orientation'], [$size['width'], $size['height']]);
 
                 $pdf->useTemplate($tplIdx);
-                $contacto = $fctAl->Contactos->last();
+                $contacto = $fctAl->valoracio;
                 if ($pageNo == $pageCount && $contacto){
                     // Estableix la font i el tamany
                     $pdf->SetFont('Helvetica', '', 9);
@@ -274,7 +274,7 @@ class A2
 
                     // Afegeix el text a la posició especificada
                     $pdf->SetXY($x1, $y1);
-                    $pdf->Cell(0, 10, $contacto->comentari);
+                    $pdf->Cell(0, 10, $fctAl->valoracio);
 
                 }
             }
