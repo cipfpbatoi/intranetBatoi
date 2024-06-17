@@ -273,7 +273,7 @@ class A2
                     $y1 = 175;
 
                     $valoracioText = str_replace("'", "&#39;", $fctAl->valoracio);
-                    $valoracioText = iconv('UTF-8', 'ISO-8859-1//IGNORE', $valoracioText);
+                    $valoracioText = mb_convert_encoding($valoracioText, 'ISO-8859-1', 'UTF-8');
                     $valoracioText = str_replace("&#39;", "'", $valoracioText);
 
                     // Afegeix el text a la posició especificada amb MultiCell per gestionar el canvi de línia
