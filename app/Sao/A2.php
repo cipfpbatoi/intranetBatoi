@@ -273,7 +273,7 @@ class A2
                     $y1 = 175;
 
                     // Converteix el text a ISO-8859-1 per gestionar els accents correctament
-                    $valoracioText = iconv('UTF-8', 'ISO-8859-1', $fctAl->valoracio);
+                    $valoracioText = mb_convert_encoding($fctAl->valoracio, 'ISO-8859-1', 'UTF-8');
 
                     // Afegeix el text a la posició especificada amb MultiCell per gestionar el canvi de línia
                     $pdf->SetXY($x1, $y1);
