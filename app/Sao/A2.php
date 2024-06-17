@@ -272,10 +272,9 @@ class A2
                     $x1 = 10;
                     $y1 = 175;
 
-                    if (!mb_check_encoding($fctAl->valoracio, 'UTF-8')) {
-                        $fctAl->valoracio = mb_convert_encoding($fctAl->valoracio, 'UTF-8', 'auto');
-                    }
-                    $valoracioText = mb_convert_encoding($fctAl->valoracio, 'ISO-8859-1', 'UTF-8');
+                    $valoracioText = str_replace("'", "&#39;", $fctAl->valoracio);
+                    $valoracioText = iconv('UTF-8', 'ISO-8859-1//IGNORE', $valoracioText);
+                    $valoracioText = str_replace("&#39;", "'", $valoracioText);
 
                     // Afegeix el text a la posició especificada amb MultiCell per gestionar el canvi de línia
                     $pdf->SetXY($x1, $y1);
