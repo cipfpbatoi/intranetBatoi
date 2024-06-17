@@ -272,7 +272,9 @@ class A2
                     $x1 = 10;
                     $y1 = 175;
 
-                    // Converteix el text a ISO-8859-1 per gestionar els accents correctament
+                    if (!mb_check_encoding($fctAl->valoracio, 'UTF-8')) {
+                        $fctAl->valoracio = mb_convert_encoding($fctAl->valoracio, 'UTF-8', 'auto');
+                    }
                     $valoracioText = mb_convert_encoding($fctAl->valoracio, 'ISO-8859-1', 'UTF-8');
 
                     // Afegeix el text a la posició especificada amb MultiCell per gestionar el canvi de línia
