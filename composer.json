@@ -24,6 +24,7 @@
         "laravel/tinker": "^2.4.1",
         "laravel/ui": "^4.0",
         "laravelcollective/html": "^6.0",
+        "lcobucci/jwt": "^5.3",
         "livewire/livewire": "^2.10",
         "lsnepomuceno/laravel-a1-pdf-sign": "^1",
         "mikehaertl/php-pdftk": "^0.8.1",

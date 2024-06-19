@@ -58,6 +58,13 @@ class Programacion extends Model
         return $this->belongsTo(Profesor::class, 'profesor', 'dni');
     }
 
+    public function Grupo()
+    {
+        return $this->hasOneThrough(Grupo::class, Modulo_grupo::class,'id','codigo','idModuloCiclo','idGrupo');
+    }
+
+
+
     public function getidModuloCicloOptions()
     {
         $horas = Horario::select()

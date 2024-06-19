@@ -399,6 +399,7 @@ Route::get(
     '/programacion/{programacion}/advise',
     ['as' => 'programacion.advise', 'uses' => 'ProgramacionController@advise']
 );
+Route::get('/programacion/{programacion}/token', ['as' => 'programacion.token', 'uses' => 'JWTController@createToken']);
 
 //RUTAS TUTORIAS
 Route::resource('/tutoria', 'TutoriaController', ['except' => ['destroy', 'update']]);

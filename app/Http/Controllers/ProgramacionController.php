@@ -110,6 +110,7 @@ class ProgramacionController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera();
+        $this->panel->setBoton('grid', new BotonImg('programacion.token',['img' => 'fa-link']));
         $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
         $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0]]));
         $this->panel->setBoton(
