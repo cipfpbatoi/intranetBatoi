@@ -27,14 +27,12 @@ class PanelProgramacionAllController extends BaseController
                             });
                     });
             })
-                ->where('curso', curso())
                 ->with('Departament')
                 ->with('Ciclo')
                 ->with('Modulo')
                 ->get();
         } else {
             return Programacion::where('estado', 3)
-                ->where('curso', curso())
                 ->with('Departament')
                 ->with('Ciclo')
                 ->with('Modulo')
