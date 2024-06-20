@@ -399,7 +399,6 @@ Route::get(
     '/programacion/{programacion}/advise',
     ['as' => 'programacion.advise', 'uses' => 'ProgramacionController@advise']
 );
-Route::get('/programacion/{programacion}/token', ['as' => 'programacion.token', 'uses' => 'JWTController@createToken']);
 Route::get('/modulogrupo',['as'=>'modulogrupo.index','uses'=>'ModuloGrupoController@index']);
 Route::get('/modulo_grupo/{id}/link',['as'=>'modulogrupo.link','uses'=>'ModuloGrupoController@link']);
 
