@@ -446,6 +446,9 @@ return array(
             'edit' => 'Edita Horario',
             'cambiar' => "Canviar funciones horario",
         ),
+        'Modulo_grupo' => array(
+            'index' => 'Listado de módulos',
+        ),
         'Alumnofct' => array(
             'index' => 'Fct x Alumno',
             'convalidacion' => 'FCT Convalidada/Exento',

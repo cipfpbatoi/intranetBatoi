@@ -53,10 +53,6 @@ class Programacion extends Model
     {
         return $this->hasOneThrough(Modulo::class, Modulo_ciclo::class,'id','codigo','idModuloCiclo','idModulo');
     }
-    public function Profesor()
-    {
-        return $this->belongsTo(Profesor::class, 'profesor', 'dni');
-    }
 
     public function Grupo()
     {
@@ -101,8 +97,7 @@ class Programacion extends Model
             }
         }
 
-        return $query->whereIn('idModuloCiclo', $modulos)
-                ->where('curso', curso());
+        return $query->whereIn('idModuloCiclo', $modulos);
     }
 
     public function scopeDepartamento($query)

@@ -81,6 +81,14 @@ class Modulo_grupo extends Model
     public function getXModuloAttribute(){
         return $this->ModuloCiclo->Xmodulo;
     }
+
+    public function getXcicloAttribute(){
+        return $this->ModuloCiclo->Xciclo;
+    }
+
+    public function getXdepartamentoAttribute(){
+        return $this->ModuloCiclo->Departamento->literal;
+    }
     public function getliteralAttribute(){
         return $this->XGrupo.'-'.$this->XModulo;
     }

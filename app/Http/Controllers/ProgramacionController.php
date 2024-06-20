@@ -23,7 +23,7 @@ class ProgramacionController extends IntranetController
     use traitAutorizar,traitCheckList;
 
     protected $model = 'Programacion';
-    protected $gridFields = ['Xciclo','XModulo', 'curso', 'situacion'];
+    protected $gridFields = ['Xciclo','XModulo', 'situacion'];
     protected $vista = ['seguimiento' => 'programacion.seguimiento'];
     protected $modal = false;
     protected $items = 6;
@@ -99,20 +99,12 @@ class ProgramacionController extends IntranetController
         $elemento = Programacion::findOrFail($id);
         return redirect()->away($elemento->fichero);
     }
-
-    protected function createWithDefaultValues( $default=[]){
-        return new Programacion(['curso'=>Curso()]);
-    }
-
-    
     
     
     protected function iniBotones()
     {
         $this->panel->setBotonera();
-        $this->panel->setBoton('grid', new BotonImg('programacion.token',['img' => 'fa-link']));
         $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
-        $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0]]));
         $this->panel->setBoton(
             'grid',
             new BotonImg(

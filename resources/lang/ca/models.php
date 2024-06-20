@@ -442,7 +442,7 @@ return array(
             
         ),
         'Modulo_grupo' => array(
-          'index' => 'Seguiments Modul departament',
+          'index' => 'Llistat de mòduls',
         ),
         'Alumnofct' => array(
           'index' => 'Fct x Alumne/a',

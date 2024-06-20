@@ -408,18 +408,7 @@ class ImportController extends Seeder
         }
     }
 
-    /**
-     * @return string
-     */
-    private static function getLinkSchedule()
-    {
-        if (Storage::exists('public/programacions.txt')) {
-            $fichero = explode("\n", Storage::get('public/programacions.txt'));
-            $indice = Modulo_ciclo::max('id') ? Modulo_ciclo::max('id') : 0;
-            return $fichero[$indice];
-        }
-        return '';
-    }
+
 
     /**
      * @return mixed
@@ -443,7 +432,6 @@ class ImportController extends Seeder
         $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento)
                 ? Profesor::find($horario->idProfesor)->departamento
                 : '99';
-        $mc->enlace = self::getLinkSchedule();
         $mc->save();
         return $mc;
     }
@@ -458,28 +446,6 @@ class ImportController extends Seeder
         $nuevo->idGrupo = $grupo;
         $nuevo->save();
         return $nuevo;
-
-    }
-
-    /**
-     * @param $mc
-     */
-    protected static function newProgramacion($mc)
-    {
-        $prg = new Programacion();
-        $prg->idModuloCiclo = $mc->id;
-        $prg->fichero = $mc->enlace;
-        $prg->curso = Curso();
-
-        if ($antigua = Programacion::where('idModuloCiclo', $mc->id)->first()) {
-            $prg->criterios = $antigua->criterios;
-            $prg->metodologia = $antigua->metodologia;
-            $prg->propuestas = $antigua->propuestas;
-
-        }
-
-        $prg->save();
-        return $prg;
 
     }
 
@@ -499,38 +465,22 @@ class ImportController extends Seeder
                         $mc->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
                         $mc->save();
                     }
-                    if (!$mc->enlace) {
-                        $mc->enlace = self::getLinkSchedule();
-                        $mc->save();
-                    }
                 }
                 if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo', $horario->idGrupo)->count() == 0) {
                     self::newModuloGrupo($mc->id, $horario->idGrupo);
-                }
-                if (!Programacion::where('idModuloCiclo', $mc->id)->where('curso', Curso())->first()) {
-                    self::newProgramacion($mc);
                 }
             } else {
                 Alert::danger($horario->Grupo->id.' sin ciclo');
             }
         }
-
-
     }
 
-
-/**
- *
- */
     private function alumnosBaja()
     {
         $hoy = Hoy();
         DB::table('alumnos')->whereNull('baja')->update(['baja' => $hoy]);
     }
 
-    /**
-     *
-     */
     private function noSustituye()
     {
         foreach (Profesor::where('sustituye_a', '>', ' ')->get() as $sustituto) {
@@ -561,41 +511,26 @@ class ImportController extends Seeder
         }
     }
 
-    /**
-     *
-     */
     private function profesoresBaja()
     {
         DB::table('profesores')->update(['activo' => false, 'sustituye_a' => '']);
     }
 
-    /**
-     *
-     */
     private function bajaAlumnos()
     {
         DB::table('alumnos_grupos')->join('alumnos', 'idAlumno', '=', 'nia')->whereNotNull('alumnos.baja')->delete();
     }
 
-    /**
-     *
-     */
     private function gruposBaja()
     {
         DB::table('grupos')->update(['tutor' => 'BAJA']);
     }
 
-    /**
-     *
-     */
     private function bajaGrupos()
     {
         DB::table('grupos')->where('tutor', '=', 'BAJA')->delete();
     }
 
-    /**
-     *
-     */
     private function removeTutor()
     {
          DB::table('grupos')->where('tutor', '=', ' ')->update(['tutor' => 'SIN TUTOR']);
@@ -611,9 +546,8 @@ class ImportController extends Seeder
         $fecha2 = date_create_from_format('j-m-Y', $fecha);
         if (!$fecha2) {
             return null;
-        } else {
-            return $fecha2->format('Y-m-d');
         }
+        return $fecha2->format('Y-m-d');
     }
 
     /**
@@ -903,9 +837,6 @@ class ImportController extends Seeder
         DB::statement('DROP table IF exists tmp_alumnos_grupos');
     }
 
-    /**
-     *
-     */
     private function eliminarHorarios()
     {
         $ultimoHorario =  DB::table('horarios')->orderBy('plantilla', 'desc')->first();
