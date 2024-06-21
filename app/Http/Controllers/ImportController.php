@@ -428,7 +428,6 @@ class ImportController extends Seeder
         $mc = new Modulo_ciclo();
         $mc->idModulo = $horario->modulo;
         $mc->idCiclo = $horario->Grupo->idCiclo;
-        $mc->curso = substr($horario->idGrupo, 0, 1);
         $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento)
                 ? Profesor::find($horario->idProfesor)->departamento
                 : '99';
