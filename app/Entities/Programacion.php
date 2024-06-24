@@ -16,7 +16,6 @@ class Programacion extends Model
     protected $table = "programaciones";
     protected $fillable = [
         'idModuloCiclo',
-        'curso',
         'fichero',
     ];
     protected $rules = [
@@ -104,8 +103,7 @@ class Programacion extends Model
     {
         return $query->whereIn(
             'idModuloCiclo',
-            hazArray(Modulo_ciclo::where('idDepartamento', authUser()->departamento)->get(), 'id', 'id'))
-                ->where('curso',curso());
+            hazArray(Modulo_ciclo::where('idDepartamento', authUser()->departamento)->get(), 'id', 'id'));
     }
     
     public function nomFichero()
