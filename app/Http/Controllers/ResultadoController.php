@@ -47,7 +47,7 @@ class ResultadoController extends ModalController
     }
 
     private function rellenaPropuestasMejora($idModulo){
-        $programacion = Programacion::where('idModuloCiclo', $idModulo)->where('curso', Curso())->first()->id;
+        $programacion = Programacion::where('idModuloCiclo', $idModulo)->first()->id;
         return redirect("/programacion/$programacion/seguimiento");
     }
 
