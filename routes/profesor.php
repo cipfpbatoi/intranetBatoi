@@ -308,7 +308,7 @@ Route::put('/fct/upload', ['as' => 'qualitat.update', 'uses' => 'DocumentoContro
 Route::get('/fct/{document}/insercio', ['as' => 'fct.insercio', 'uses' => 'PanelFctAvalController@empresa']);
 Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFctAvalController@edit']);
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
-
+Route::get('/fct/estadisticas',['as' => 'fct.stat', 'uses' => 'PanelFctAvalController@estadistiques']);
 /*
 Route::resource('dual', 'DualController', ['except' => ['destroy', 'update', 'show', 'edit']]);
 Route::get('/dual/{id}/edit', ['as' => 'dual.edit', 'uses' => 'DualController@edit']);

@@ -522,4 +522,30 @@ class PanelFctAvalController extends IntranetController
 
         return back();
     }
+
+    public function estadistiques()
+    {
+        $grupos = Grupo::all()->sortBy('idCiclo');
+        $ciclos = [];
+        foreach ($grupos as $grupo) {
+            $ciclo = $grupo->idCiclo;
+            $ciclos[$ciclo]['matriculados'] =
+                isset($ciclos[$ciclo]['matriculados']) ?
+                $ciclos[$ciclo]['matriculados'] + $grupo->matriculados : $grupo->matriculados;
+            $ciclos[$ciclo]['resfct'] = isset($ciclos[$ciclo]['resfct']) ?
+                $ciclos[$ciclo]['resfct'] + $grupo->AprobFct : $grupo->AprobFct;
+            $ciclos[$ciclo]['exentos'] = isset($ciclos[$ciclo]['exentos']) ?
+                $ciclos[$ciclo]['exentos'] + $grupo->exentos : $grupo->exentos;
+            $ciclos[$ciclo]['respro'] = isset($ciclos[$ciclo]['respro']) ?
+                $ciclos[$ciclo]['respro'] + $grupo->AprobPro : $grupo->AprobPro;
+            $ciclos[$ciclo]['avalpro'] = isset($ciclos[$ciclo]['avalpro']) ?
+                $ciclos[$ciclo]['avalpro'] + $grupo->AvalPro : $grupo->AvalPro;
+            $ciclos[$ciclo]['resempresa'] = isset($ciclos[$ciclo]['resempresa']) ?
+                $ciclos[$ciclo]['resempresa'] + $grupo->colocados : $grupo->colocados;
+            $ciclos[$ciclo]['avalfct'] = isset($ciclos[$ciclo]['avalfct']) ?
+                $ciclos[$ciclo]['avalfct'] + $grupo->avalFct : $grupo->avalFct;
+        }
+        return view('fct.estadisticas', compact('ciclos', 'grupos'));
+    }
+
 }
