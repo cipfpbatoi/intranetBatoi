@@ -143,7 +143,7 @@ return array(
                 'alojamiento' => "Despeses d'allotjament",
                 'comida' => 'Despeses de menjar',
                 'gastos' => 'Altres Despeses',
-                'itinerario' => 'itinerari',
+                'itinerario' => 'Itinerari',
                 'servicio' => 'Descripció del servei a realitzar',
                 'otros' => 'Altres mitjans',
                 'Profesor' => 'Professorat',

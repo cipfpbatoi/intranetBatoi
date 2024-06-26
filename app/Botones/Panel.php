@@ -14,6 +14,7 @@ class Panel
     private $elementos; // elements
     private $data = []; // array de més dades
     public $items = [];
+
     
     public function __construct($modelo, $rejilla = null, $vista = null, $creaPestana=true, $include=[])
     {

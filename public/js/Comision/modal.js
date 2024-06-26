@@ -33,5 +33,16 @@ $(function () {
             $('#field_comida_id').attr('class','form-group item');
         }
     });
+
+    let alertShown = false;
+
+    $('#itinerario_id').attr('placeholder', "L'itinerari comença i acaba al centre");
+    $("#kilometraje_id").focus(function () {
+        if (!alertShown) {
+            alert("Recorda que el quilometratge s'ha de comptar des del centre.");
+            alertShown = true;
+        }
+    });
+
     
 });

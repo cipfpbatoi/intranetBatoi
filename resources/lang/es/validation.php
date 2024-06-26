@@ -211,7 +211,7 @@ return array(
                 'resumen' => 'Resumen',
                 'idDocumento' => 'Doc.',
                 'ciclo' => 'Ciclo/Nivel',
-                'itinerario' => 'intinerario',
+                'itinerario' => 'Intinerario',
                 'contacto' => 'Persona contacto',
                 'tutor' => 'Tutor',
                 'puestos' => 'Puestos',

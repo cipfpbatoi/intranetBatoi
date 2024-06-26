@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Entities\Fct;
 use Response;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Poll\Poll;
