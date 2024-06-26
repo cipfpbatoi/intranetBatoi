@@ -525,7 +525,7 @@ class PanelFctAvalController extends IntranetController
 
     public function estadistiques()
     {
-        $grupos = Grupo::all()->sortBy('idCiclo');
+        $grupos = Grupo::where('curso',2)->orderBy('idCiclo')->get();
         $ciclos = [];
         foreach ($grupos as $grupo) {
             $ciclo = $grupo->idCiclo;

@@ -319,6 +319,7 @@ return array(
         'Ipguardia' => 'IPs Ordinadors de Guàrdia',
         'Setting' => 'Configuració',
         'A3' => 'Documentació FCT',
+        'Estadisticas' => 'Estadístiques FCT',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

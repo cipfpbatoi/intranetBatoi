@@ -315,6 +315,7 @@ return array(
         'Ipguardia' => 'IPs Ordenadores de Guardia',
         'Setting' => 'Configuración',
         'A3' => 'Documentación FCT',
+        'Estadisticas' => 'Estadísticas FCT',
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
