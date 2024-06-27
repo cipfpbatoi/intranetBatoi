@@ -179,14 +179,21 @@ class Fct extends Model
     }
 
 
-
-
-    public function scopeMisFctsColaboracion($query, $profesor=null)
+    public function scopeMisFctsColaboracion($query, $profesor = null, $cotutor = null)
     {
-        $dni = $profesor??authUser()->dni;
-        $allTeachers = Profesor::find($dni)->sustituidos??[$dni];
-        $colaboraciones = hazArray(Colaboracion::whereIn('tutor', $allTeachers)->get(), 'id', 'id');
-        return $query->whereIn('idColaboracion', $colaboraciones);
+        $profesor = Profesor::getSubstituts($profesor ?? authUser()->dni);
+        $cotutor = $cotutor ?? authUser()->dni;
+
+        // Obtener IDs de alumnos FCT del profesor
+        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idProfesor', $profesor)->get()->toArray();
+
+        // Aplicar condiciones 'or' para ambas scopes
+        return $query->where(function($query) use ($alumnosFct, $cotutor) {
+            $query->whereIn('id', $alumnosFct)
+                ->orWhereHas('AlFct', function ($query) use ($cotutor) {
+                    $query->where('cotutor', $cotutor);
+                });
+        });
     }
 
     public function scopeEsExempt($query)
