@@ -12,7 +12,11 @@ class FctFinder extends Finder
             ->orWhere('cotutor', $this->dni)
             ->has('AlFct')
             ->EsFct()
-            ->get();
+            ->where('correoInstructor', 0)
+            ->join('instructores', 'fcts.idInstructor', '=', 'instructores.dni') // Assuming the relationship field names
+            ->orderBy('instructores.name')
+            ->orderBy('instructores.surnames')
+            ->get(['fcts.*']); // Ensure you only select the fcts columns to avoid conflict
         return $this->filter($fcts);
     }
 
