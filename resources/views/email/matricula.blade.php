@@ -2,7 +2,7 @@
 @section('body')
     <table style='text-align: center'>
         <tr>
-            <th>Matricula curs 2023/24</th>
+            <th>Matricula curs 2024/25</th>
         </tr>
     </table>
     <div>
@@ -15,11 +15,11 @@
     <div class="container" style="font-size: 1.3em; line-height: 1.3em" >
         <p> Hola, des del CIPFP Batoi,
             volem informar-te que el procediment per a realitzar la matrícula per al
-            <strong>curs 2023-24</strong> es farà de la següent forma:
+            <strong>curs 2024-25</strong> es farà de la següent forma:
         </p>
         <ul>
             <li style=" margin-top: 1.3em">
-                La data de matrícula serà del <strong>29 de juny al 10 de juliol</strong> (ambdós inclosos).
+                La data de matrícula serà a partir del 4 de juliol</strong>.
             </li>
             <li style=" margin-top: 1.3em">
                 La matrícula es farà de forma telemàtica mitjançant un assistent al qual entraràs polsant sobre el
