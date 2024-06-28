@@ -43,15 +43,16 @@ class JWTTokenService
         return response()->json(['token' => $token->toString()]);
     }
 
-    private function role($role)
+    private function role($role): array
     {
-        if (esRol($role,config('roles.rol.jefe_dpto'))) {
-            return 'ROLE_HEAD_DEPARTMENT';
-        }
+        $roles = ['ROLE_USER'];
         if (esRol($role,config('roles.rol.profesor'))) {
-            return 'ROLE_TEACHER';
+            $roles[] = 'ROLE_TEACHER';
         }
-        return 'ROLE_USER';
+        if (esRol($role,config('roles.rol.jefe_dpto'))) {
+            $roles[] = 'ROLE_HEAD_DEPARTMENT';
+        }
+        return $roles;
     }
 
     private function turno($turno)
@@ -60,7 +61,7 @@ class JWTTokenService
             case 'D':
                 return 'presential';
             case 'S':
-                return 'semi-presential';
+                return 'half-presential';
         }
     }
 }
