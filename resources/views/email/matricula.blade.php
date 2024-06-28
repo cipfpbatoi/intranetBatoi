@@ -38,7 +38,7 @@
                 <a href="https://bit.ly/2SGWC2o">https://bit.ly/2SGWC2o</a>
             </li>
             <li style=" margin-top: 1.3em">
-                Per a qualsevol dubte, pots cridar al centre (966527660) o enviar un correu a info@cipfpbatoi.es.
+                Per a qualsevol dubte, pots cridar al centre (966527660) o enviar un correu a 03012165.secretaria+automatricula@edu.gva.es.
             </li>
         </ul>
         <p>Salutacions cordials.</p>
