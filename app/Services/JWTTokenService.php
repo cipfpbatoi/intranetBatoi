@@ -38,6 +38,9 @@ class JWTTokenService
             ->withClaim('module', $moduleGrupo->ModuloCiclo->idModule)
             ->withClaim('cycle', $moduleGrupo->ModuloCiclo->Ciclo->ciclo)
             ->withClaim('turn', $this->turno($moduleGrupo->Grupo->turno))
+            ->withClaim('name', authUser()->fullName)
+            ->withClaim('email', authUser()->email)
+            ->withClaim('department', $moduleGrupo->Grupo->Departamento->deptcurt)
             ->getToken($this->config->signer(), $this->config->signingKey());
 
         return response()->json(['token' => $token->toString()]);
