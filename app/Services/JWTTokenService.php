@@ -38,7 +38,8 @@ class JWTTokenService
             ->withClaim('module', $moduleGrupo->ModuloCiclo->idModule)
             ->withClaim('cycle', $moduleGrupo->ModuloCiclo->Ciclo->ciclo)
             ->withClaim('turn', $this->turno($moduleGrupo->Grupo->turno))
-            ->withClaim('name', authUser()->fullName)
+            ->withClaim('name', authUser()->nombre)
+            ->withClaim('surnames', authUser()->surnames)
             ->withClaim('email', authUser()->email)
             ->withClaim('department', $moduleGrupo->ModuloCiclo->Ciclo->Departament->depcurt)
             ->getToken($this->config->signer(), $this->config->signingKey());
