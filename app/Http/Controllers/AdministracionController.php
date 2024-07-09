@@ -269,10 +269,11 @@ class AdministracionController extends Controller
         $programaciones = Programacion::all();
 
         // Autenticació per obtenir el token
-        $loginResponse = Http::post('https://programacions.cipfpbatoi.es/api/login_check', [
-            'username' => 'your_username', // Canvia-ho per les teves credencials
-            'password' => 'your_password'  // Canvia-ho per les teves credencials
+        $loginResponse = Http::post('http://localhost/api/login_check', [
+            'email' => 'admin@cipfpbatoi.es', // Canvia-ho per les teves credencials
+            'password' => '1234'  // Canvia-ho per les teves credencials
         ]);
+        dd($loginResponse);
 
         if (!$loginResponse->successful()) {
             return response()->json(['error' => 'Error en l\'autenticació'], 401);

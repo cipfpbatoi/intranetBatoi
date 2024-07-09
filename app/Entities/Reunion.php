@@ -247,6 +247,7 @@ class Reunion extends Model
     }
     public function getGrupoClaseAttribute()
     {
+        dd($this->Tipos()->colectivo, $this->idProfesor, Grupo::QTutor($this->idProfesor)->first());
         return $this->Tipos()->colectivo == 'Grupo'?Grupo::QTutor($this->idProfesor)->first():null;
 
     }
