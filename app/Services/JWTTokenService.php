@@ -44,7 +44,7 @@ class JWTTokenService
             ->withClaim('department', $moduleGrupo->ModuloCiclo->Ciclo->Departament->depcurt)
             ->getToken($this->config->signer(), $this->config->signingKey());
 
-        return response()->json(['token' => $token->toString()]);
+        return $token->toString();
     }
 
     private function role($role): array

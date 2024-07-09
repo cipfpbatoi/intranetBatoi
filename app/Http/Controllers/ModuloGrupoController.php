@@ -56,16 +56,11 @@ class ModuloGrupoController extends IntranetController
         $service = new JWTTokenService();
         $token = $service->createTokenProgramacio($id);
 
-        // Crida a la URL externa amb el token
-        $response = Http::get("https://pcompetencies.cipfpbatoi.es/login/auth/{$token}");
+        // Construeix la URL amb el token
+        $url = "https://pcompetencies.cipfpbatoi.es/login/auth/{$token}";
 
-        // Comprova la resposta
-        if ($response->successful()) {
-            // Tracta la resposta amb èxit
-            return $response->body();
-        }
-            // Tracta l'error
-        return response()->json(['error' => 'No s\'ha pogut realitzar la crida a la URL externa.'], $response->status());
+        // Redirigeix l'usuari a la URL externa amb el token
+        return redirect()->away($url);
     }
 
 }
