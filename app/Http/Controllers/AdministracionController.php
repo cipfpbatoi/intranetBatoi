@@ -265,8 +265,41 @@ class AdministracionController extends Controller
 
     public function consulta()
     {
-        ///Adjunto::moveAndPreserveDualFiles();
-        return back();
+
+        $programaciones = Programacion::all();
+
+        // Autenticació per obtenir el token
+        $loginResponse = Http::post('https://programacions.cipfpbatoi.es/api/login_check', [
+            'username' => 'your_username', // Canvia-ho per les teves credencials
+            'password' => 'your_password'  // Canvia-ho per les teves credencials
+        ]);
+
+        if (!$loginResponse->successful()) {
+            return response()->json(['error' => 'Error en l\'autenticació'], 401);
+        }
+
+        $token = $loginResponse->json('token');
+
+        $failedProposals = [];
+
+        // Fer la petició POST a /api/improvementProposal per a cada proposta de millora
+        foreach ($programaciones as $programacion) {
+            $response = Http::withToken($token)->post('https://programacions.cipfpbatoi.es/api/improvementProposal', [
+                'moduleCode' => $programacion->Modulo->codigo,
+                'cycle' => $programacion->ciclo->id,
+                'improvementProposal' => $programacion->propuestas
+            ]);
+
+            if (!$response->successful()) {
+                $failedProposals[] = $programacion->id;
+            }
+        }
+
+        if (empty($failedProposals)) {
+            return response()->json(['message' => 'Totes les propostes de millora s\'han enviat correctament']);
+        } else {
+            return response()->json(['error' => 'Algunes propostes de millora no s\'han pogut enviar', 'failedProposals' => $failedProposals], 400);
+        }
     }
 
 
