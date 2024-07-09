@@ -35,7 +35,7 @@ class JWTTokenService
             ->canOnlyBeUsedAfter($now)
             ->expiresAt($expiresAt)
             ->withClaim('role', $this->role(authUser()->rol))
-            ->withClaim('module', $moduleGrupo->ModuloCiclo->idModule)
+            ->withClaim('module', $moduleGrupo->ModuloCiclo->idModulo)
             ->withClaim('cycle', $moduleGrupo->ModuloCiclo->Ciclo->ciclo)
             ->withClaim('turn', $this->turno($moduleGrupo->Grupo->turno))
             ->withClaim('name', authUser()->nombre)

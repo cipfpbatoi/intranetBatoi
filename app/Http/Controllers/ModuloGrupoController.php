@@ -58,7 +58,6 @@ class ModuloGrupoController extends IntranetController
 
         // Construeix la URL amb el token
         $url = "https://pcompetencies.cipfpbatoi.es/login/auth/{$token}";
-        dd($url);
         // Redirigeix l'usuari a la URL externa amb el token
         return redirect()->away($url);
     }
