@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Modulo_grupo;
@@ -53,8 +54,18 @@ class ModuloGrupoController extends IntranetController
     protected function link($id)
     {
         $service = new JWTTokenService();
-        return $service->createTokenProgramacio($id);
+        $token = $service->createTokenProgramacio($id);
 
+        // Crida a la URL externa amb el token
+        $response = Http::get("https://pcompetencies.cipfpbatoi.es/login/auth/{$token}");
+
+        // Comprova la resposta
+        if ($response->successful()) {
+            // Tracta la resposta amb èxit
+            return $response->body();
+        }
+            // Tracta l'error
+        return response()->json(['error' => 'No s\'ha pogut realitzar la crida a la URL externa.'], $response->status());
     }
 
 }
