@@ -84,6 +84,7 @@ class UploadAnexes extends Command
         foreach ($fcts as $key => $fct1) {  // cerque els adjunts
             $adjuntos[$key] = Adjunto::where('route', 'alumnofctaval/'.$fct1->id)
                 ->where('extension', 'pdf')
+                ->whereNotNull('route')
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->first();
