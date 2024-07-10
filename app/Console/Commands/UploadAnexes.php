@@ -53,16 +53,7 @@ class UploadAnexes extends Command
         foreach (AlumnoFct::where('a56', 1)->where('beca', 0)->get() as $fct) {
             $document = array();
             $this->buscaDocuments($fct, $document);
-            if (count($document) == 1){
-                UploadFiles::dispatch($document, $this->sService);
-            } else {
-                $profesor = Profesor::find('021652470V');
-                Mail::to($profesor->email, 'Intranet')
-                    ->send(new Comunicado([
-                        'tutor' => $profesor->shortName, 'nombre' => 'Ignasi Gomis',
-                        'email' => 'igomis@cipfpbatoi.es', 'document' => $document
-                    ], $fct, 'email.a56'));
-            }
+            UploadFiles::dispatch($document, $this->sService);
         }
     }
 
