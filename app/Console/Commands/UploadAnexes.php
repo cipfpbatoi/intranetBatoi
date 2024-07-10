@@ -53,7 +53,9 @@ class UploadAnexes extends Command
         foreach (AlumnoFct::where('a56', 1)->where('beca', 0)->get() as $fct) {
             $document = array();
             $this->buscaDocuments($fct, $document);
-            UploadFiles::dispatch($document, $this->sService);
+            if (isset($document['route'])) {
+                UploadFiles::dispatch($document, $this->sService);
+            }
         }
     }
 
