@@ -9,9 +9,11 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Notification;
 use Illuminate\Support\Facades\Mail;
+use Intranet\Exceptions\IntranetException;
 use Intranet\Jobs\UploadFiles;
 use Intranet\Mail\Comunicado;
 use Intranet\Mail\ResumenDiario;
+use Intranet\Services\FDFPrepareService;
 use Intranet\Services\SecretariaService;
 use Styde\Html\Facades\Alert;
 
@@ -30,24 +32,10 @@ class UploadAnexes extends Command
      *
      * @var string
      */
-    protected $description = 'Pujar anexes V i VI';
+    protected $description = 'Pujar anexes V';
     protected $sService;
 
 
-
-
-    private function tipoDocument($title)
-    {
-        $tipos = ['A5'=>'10','A6'=>'11','AVI'=>'11','AV'=>'10','AN.VI'=>'11','AN.V'=>'10',
-            'ANEXO5'=>'10','ANEXO6'=>'11','ANNEXVI'=>'11','ANNEXV'=>'10'];
-
-        foreach ($tipos as $key => $tipo) {
-            if (str_contains(strtoupper($title), $key)) {
-                return $tipos[$key];
-            }
-        }
-        return null;
-    }
 
     /**
      * Execute the console command.
@@ -64,58 +52,67 @@ class UploadAnexes extends Command
         }
         foreach (AlumnoFct::where('a56', 1)->where('beca', 0)->get() as $fct) {
             $document = array();
-            $tutor = $this->buscaDocuments($fct, $document);
-            if (count($document) == 2) {
-                $this->uploadFiles($document);
+            $this->buscaDocuments($fct, $document);
+            if (count($document) == 1){
+                UploadFiles::dispatch($document, $this->sService);
             } else {
-                if (count($document)) {
-                    $profesor = Profesor::find($tutor);
-                    Mail::to($profesor->email, 'Intranet')
-                        ->send(new Comunicado([
-                            'tutor' => $profesor->shortName, 'nombre' => 'Ignasi Gomis',
-                            'email' => 'igomis@cipfpbatoi.es', 'document' => $document
-                        ], $fct, 'email.a56'));
-                }
+                $profesor = Profesor::find('021652470V');
+                Mail::to($profesor->email, 'Intranet')
+                    ->send(new Comunicado([
+                        'tutor' => $profesor->shortName, 'nombre' => 'Ignasi Gomis',
+                        'email' => 'igomis@cipfpbatoi.es', 'document' => $document
+                    ], $fct, 'email.a56'));
             }
         }
     }
+
 
     /**
      * @param $fct
      * @param  array  &$document
      * @return string
      */
-    private function buscaDocuments($fct, array &$document): string
+    private function buscaDocuments($fct, array &$document)
     {
-        $tutor = '';
-        $adjuntos = Adjunto::where('route', 'alumnofctaval/'.$fct->id)->where('extension', 'pdf')->get();
-        foreach ($adjuntos as $key => $adjunto) {
-            $document[$key]['title'] = $this->tipoDocument($adjunto->title);
-            $document[$key]['file'] = $adjunto->route;
-            $document[$key]['name'] = $adjunto->name;
-            $document[$key]['size'] = $adjunto->size;
-            $document[$key]['dni'] = $fct->Alumno->dni;
-            $document[$key]['fct'] = $fct;
-            $tutor = $adjunto->owner;
+        $document['title'] = 10;
+        $document['dni'] = $fct->Alumno->dni;
+        $document['alumne'] = trim($fct->Alumno->shortName);
+
+
+        $fcts = AlumnoFct::where('idAlumno', $fct->idAlumno)->where('a56', '>', 0)->get(); //mira tots els de l'alumne
+
+        foreach ($fcts as $key => $fct1) {  // cerque els adjunts
+            $adjuntos[$key] = Adjunto::where('route', 'alumnofctaval/'.$fct1->id)
+                ->where('extension', 'pdf')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->first();
         }
-        return $tutor;
+
+        if (count($adjuntos) == 1) { // si soles hi ha un
+            $document['route'] =
+                'app/public/adjuntos/'.
+                $adjuntos[0]->route.'/'.
+                $adjuntos[0]->title.'.'.$adjuntos[0]->extension;
+            $document['name'] = $adjuntos[0]->title.'.'.$adjuntos[0]->extension;
+            $document['size'] = $adjuntos[0]->size;
+
+        } else {
+            $size = 0;
+            foreach ($adjuntos as $key => $adjunto) {
+                $files[$key] =
+                    storage_path(
+                        'app/public/adjuntos/'.
+                        $adjuntos[$key]->route.'/'.
+                        $adjuntos[$key]->title.'.'.$adjuntos[$key]->extension
+                    );
+                $size += $adjuntos[$key]->size;
+            }
+            $document['route'] = FDFPrepareService::joinPDFs($files, $document['dni']);
+            $document['name'] = $document['dni'].'.pdf';
+            $document['size'] = $size;
+        }
     }
 
-    /**
-     * @param  array  $document
-     * @return void
-     */
-    private function uploadFiles(array &$document): void
-    {
-        if (!isset($document[0]['title']) || !$document[1]['title']) {
-            if ($document[0]['size'] > $document[1]['size']) {
-                $document[0]['title'] = '10';
-                $document[1]['title'] = '11';
-            } else {
-                $document[0]['title'] = '11';
-                $document[1]['title'] = '10';
-            }
-        }
-        UploadFiles::dispatch($document, $this->sService);
-    }
+
 }
