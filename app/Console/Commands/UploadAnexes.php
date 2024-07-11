@@ -66,10 +66,9 @@ class UploadAnexes extends Command
 
         $fcts = AlumnoFct::where('idAlumno', $fct->idAlumno)->where('a56', '>', 0)->get(); //mira tots els de l'alumne
 
-        foreach ($fcts as $key => $fct1) {  // cerque els adjunts
-            $adjuntos[$key] = Adjunto::where('route', 'alumnofctaval/'.$fct1->id)
+        foreach ($fcts as $fct1) {  // cerque els adjunts
+            $adjuntos[] = Adjunto::where('route', 'alumnofctaval/'.$fct1->id)
                 ->where('extension', 'pdf')
-                ->whereNotNull('route')
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->first();
@@ -85,14 +84,15 @@ class UploadAnexes extends Command
 
         } else {
             $size = 0;
-            foreach ($adjuntos as $key => $adjunto) {
-                $files[$key] =
+            $files = array();
+            foreach ($adjuntos as $adjunto) {
+                $files[] =
                     storage_path(
                         'app/public/adjuntos/'.
-                        $adjuntos[$key]->route.'/'.
-                        $adjuntos[$key]->title.'.'.$adjuntos[$key]->extension
+                        $adjunto->route.'/'.
+                        $adjunto->title.'.'.$adjunto->extension
                     );
-                $size += $adjuntos[$key]->size;
+                $size += $adjunto->size;
             }
             $document['route'] = FDFPrepareService::joinPDFs($files, $document['dni']);
             $document['name'] = $document['dni'].'.pdf';
