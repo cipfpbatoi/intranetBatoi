@@ -5,9 +5,11 @@ namespace Intranet\Console\Commands;
 use Illuminate\Console\Command;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
+use Intranet\Exceptions\IntranetException;
 use Intranet\Jobs\UploadFiles;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\SecretariaService;
+use Styde\Html\Facades\Alert;
 
 class UploadAnexes extends Command
 {
@@ -25,7 +27,6 @@ class UploadAnexes extends Command
      * @var string
      */
     protected $description = 'Pujar anexes V';
-    protected $sService;
 
 
 
@@ -37,18 +38,32 @@ class UploadAnexes extends Command
     public function handle()
     {
         try {
-            $this->sService = new SecretariaService();
+            $sService = new SecretariaService();
         } catch (\Exception $e) {
             echo 'No hi ha connexió amb el servidor de matrícules';
             exit();
         }
+        $correctos = 0;
+        $incorrectos = 0;
         foreach (AlumnoFct::where('a56', 1)->where('beca', 0)->get() as $fct) {
             $document = array();
             $fcts = $this->buscaDocuments($fct, $document);
+            sleep(1);
             if (isset($document['route'])) {
-                UploadFiles::dispatch($document, $this->sService,$fcts);
+                try {
+                    $sService->uploadFile($document);
+                    foreach ($fcts as $fct1) {
+                        $fct1->a56 = 2;
+                        $fct1->save();
+                    }
+                    $correctos++;
+                } catch (IntranetException $e) {
+                    $incorrectos++;
+                    echo $fct->Alumno->shortName.' '.$e->getMessage().PHP_EOL;
+                }
             }
         }
+        echo 'Correctos: '.$correctos.' Incorrectos: '.$incorrectos.PHP_EOL;
     }
 
 
