@@ -3,19 +3,11 @@
 namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Http;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Notification;
-use Illuminate\Support\Facades\Mail;
-use Intranet\Exceptions\IntranetException;
 use Intranet\Jobs\UploadFiles;
-use Intranet\Mail\Comunicado;
-use Intranet\Mail\ResumenDiario;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\SecretariaService;
-use Styde\Html\Facades\Alert;
 
 class UploadAnexes extends Command
 {
@@ -52,9 +44,9 @@ class UploadAnexes extends Command
         }
         foreach (AlumnoFct::where('a56', 1)->where('beca', 0)->get() as $fct) {
             $document = array();
-            $this->buscaDocuments($fct, $document);
+            $fcts = $this->buscaDocuments($fct, $document);
             if (isset($document['route'])) {
-                UploadFiles::dispatch($document, $this->sService);
+                UploadFiles::dispatch($document, $this->sService,$fcts);
             }
         }
     }
@@ -106,6 +98,7 @@ class UploadAnexes extends Command
             $document['name'] = $document['dni'].'.pdf';
             $document['size'] = $size;
         }
+        return $fcts;
     }
 
 

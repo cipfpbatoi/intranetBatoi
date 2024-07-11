@@ -23,10 +23,11 @@ class UploadFiles implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($files, $sService)
+    public function __construct($file, $sService,$fcts)
     {
-        $this->files = $files;
+        $this->file = $file;
         $this->sService = $sService;
+        $this->fcts = $fcts;
     }
 
 
@@ -38,7 +39,11 @@ class UploadFiles implements ShouldQueue
     public function handle()
     {
         try {
-            $this->sService->uploadA56($this->files);
+            $this->sService->uploadFile($this->file);
+            foreach ($this->fcts as $fct) {
+                $fct->a56 = 2;
+                $fct->save();
+            }
         } catch (\Exception $e) {
             Mail::to('igomis@cipfpbatoi.es', 'Intranet')
                 ->send(new Comunicado(
