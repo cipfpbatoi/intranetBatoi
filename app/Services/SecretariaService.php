@@ -21,16 +21,25 @@ class SecretariaService
 
     public function uploadFile($document)
     {
-        $curso = substr(curso(), 0, 4);
-        $link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
-        $route = storage_path($document['route']);
+        try {
+            $curso = substr(curso(), 0, 4);
+            $link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
+            $route = storage_path($document['route']);
 
-        $response = Http::withToken($this->token)
-            ->attach('file', file_get_contents($route), $document['name'])
-            ->post($link);
+            $response = Http::withToken($this->token)
+                ->attach('file', file_get_contents($route), $document['name'])
+                ->post($link);
 
-        if ($response['code'] == 200) {
-            return 1;
+            if ($response['code'] == 200) {
+                return 1;
+            }
+
+        } catch (\Exception $e) {
+            throw new IntranetException(
+                "No he pogut carregar el fitxer ".$document['name']." de la fct de l'alumne".
+                $document['alumne'].' situat al fitxer: '.$route.' al servidor de matrícules: '.
+                'Petició: '.$link.' Error: '.$e->getMessage()
+            );
         }
         throw new IntranetException(
             "No he pogut carregar el fitxer ".$document['name']." de la fct de l'alumne".
