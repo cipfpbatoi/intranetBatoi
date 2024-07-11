@@ -89,7 +89,7 @@ class UploadAnexes extends Command
                 ->first();
         }
 
-        if (count($adjuntos) == 1) { // si soles hi ha un
+        if (count($adjuntos) == 1 && isset($adjuntos[0])) { // si soles hi ha un
             $document['route'] =
                 'app/public/adjuntos/'.
                 $adjuntos[0]->route.'/'.
