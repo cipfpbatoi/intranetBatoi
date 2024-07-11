@@ -101,13 +101,15 @@ class UploadAnexes extends Command
             $size = 0;
             $files = array();
             foreach ($adjuntos as $adjunto) {
-                $files[] =
-                    storage_path(
-                        'app/public/adjuntos/'.
-                        $adjunto->route.'/'.
-                        $adjunto->title.'.'.$adjunto->extension
-                    );
-                $size += $adjunto->size;
+                if (isset($adjunto)) {
+                    $files[] =
+                        storage_path(
+                            'app/public/adjuntos/'.
+                            $adjunto->route.'/'.
+                            $adjunto->title.'.'.$adjunto->extension
+                        );
+                    $size += $adjunto->size;
+                }
             }
             $document['route'] = FDFPrepareService::joinPDFs($files, $document['dni']);
             $document['name'] = $document['dni'].'.pdf';
