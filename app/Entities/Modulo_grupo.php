@@ -3,10 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Ciclo;
-use Intranet\Entities\Modulo;
-use Intranet\Events\ActivityReport;
-use Intranet\Entities\Profesor;
 use Styde\Html\Facades\Alert;
 
 class Modulo_grupo extends Model
@@ -88,6 +84,10 @@ class Modulo_grupo extends Model
 
     public function getXdepartamentoAttribute(){
         return $this->ModuloCiclo->Departamento->literal;
+    }
+
+    public function getXtornAttribute(){
+        return $this->Grupo->turno === 'S'?'half-presential':'presential';
     }
     public function getliteralAttribute(){
         return $this->XGrupo.'-'.$this->XModulo;

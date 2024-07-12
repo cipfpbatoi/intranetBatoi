@@ -1,13 +1,7 @@
 <?php
 
-Route::get('/allProgramacion/', ['as' => 'programacion.all', 'uses' => 'PanelProgramacionAllController@index']);
-//Route::get('/programaciones/', ['as' => 'programacion.all', 'uses' => 'PanelProgramacionesController@index']);
-
-Route::get('/programacion/{programacion}/show', ['as' => 'programacion.show', 'uses' => 'ProgramacionController@show']);
-Route::get('/programacion/{programacion}/anexo', ['as' => 'programacion.anexo', 'uses' => 'ProgramacionController@anexo']);
-Route::get('/programacion/{programacion}/document', ['as' => 'programacion.document', 'uses' => 'ProgramacionController@document']);
-Route::get('/programacion/{programacion}/link', ['as' => 'programacion.link', 'uses' => 'ProgramacionController@link']);
-Route::get('/programacion/{programacion}/veranexo/{anexo}', ['as' => 'programacion.veranexo', 'uses' => 'ProgramacionController@veranexo']);
+Route::get('/allProgramacion/', ['as' => 'modulogrupo.all', 'uses' => 'PanelModuloGrupoController@index']);
+Route::get('/modulogrupo/{modulogrupo}/pdf', ['as' => 'modulogrupo.programacion', 'uses' =>  'PanelModuloGrupoController@pdf']);
 
 Route::get('/notification', ['as' => 'notificacion.index', 'uses' => 'NotificationController@index']);
 Route::get('/notification/{notification}/show', ['as' => 'notification.show', 'uses' => 'NotificationController@show']);
