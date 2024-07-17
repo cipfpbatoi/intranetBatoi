@@ -121,6 +121,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/matricula/{token}', 'AlumnoReunionController@getDadesMatricula');
     Route::get('/test/matricula/{token}', 'AlumnoReunionController@getTestMatricula');
     Route::post('/alumno/{dni}/foto', 'AlumnoController@putImage');
+    Route::post('/alumno/{dni}/dades', 'AlumnoController@putDades');
     Route::post('/matricula/send', 'AlumnoReunionController@sendMatricula');
 
     Route::resource('lote', 'LoteController', ['except' => [ 'create']]);

@@ -23,11 +23,26 @@ class AlumnoController extends ApiBaseController
                 $alumno->save();
                 return $this->sendResponse("$id", 'OK');
             }
-            else {
-                return $this->sendError('No existeix alumne '.$id);
-            }
-        } else {
-            return $this->sendError('No hi ha foto');
+            return $this->sendError('No existeix alumne '.$id);
         }
+        return $this->sendError('No hi ha foto');
+    }
+
+    public function putDades(Request $request,$id)
+    {
+        $validator = Validator::make($request->all(), [
+            'imageRightAccept' => 'required|boolean',
+            'outOfSchoolActivityAccept' => 'required|boolean'
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError('Format dades no valides');
+        }
+        if ($alumno = Alumno::where('dni', $id)->first()){
+            $alumno->imageRightAccept = $request->imageRightAccept;
+            $alumno->outOfSchoolActivityAccept = $request->outOfSchoolActivityAccept;
+            $alumno->save();
+            return $this->sendResponse("$id", 'OK');
+        }
+        return $this->sendError('No existeix alumne '.$id);
     }
 }
