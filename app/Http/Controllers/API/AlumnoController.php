@@ -35,7 +35,7 @@ class AlumnoController extends ApiBaseController
             'outOfSchoolActivityAccept' => 'required|boolean'
         ]);
         if ($validator->fails()) {
-            return $this->sendError('Format dades no valides');
+            return $this->sendError('Format dades no valides'. $validator->errors());
         }
         if ($alumno = Alumno::where('dni', $id)->first()){
             $alumno->imageRightAccept = $request->imageRightAccept;
