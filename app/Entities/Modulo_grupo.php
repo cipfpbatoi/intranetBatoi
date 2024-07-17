@@ -114,5 +114,15 @@ class Modulo_grupo extends Model
         }
         return $a;
     }
+    public function getProgramacioLinkAttribute(){
+        $centerId = config('contacto.codi');
+        $cycleId = $this->ModuloCiclo->idCiclo;
+        $moduleCode = $this->ModuloCiclo->idModulo;
+        $turn = $this->Xtorn;
+
+        // Construye la URL
+        return "https://pcompetencies.cipfpbatoi.es/public/syllabus/{$centerId}/{$cycleId}/{$moduleCode}/{$turn}";
+
+    }
     
 }

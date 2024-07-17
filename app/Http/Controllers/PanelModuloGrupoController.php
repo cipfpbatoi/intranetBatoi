@@ -34,17 +34,9 @@ class PanelModuloGrupoController extends BaseController
     {
         $modulogrupo = Modulo_grupo::findorfail($id);
 
-            // Obtén los datos necesarios para construir la URL
-        $centerId = config('contacto.codi');
-        $cycleId = $modulogrupo->ModuloCiclo->idCiclo;
-        $moduleCode = $modulogrupo->ModuloCiclo->idModulo;
-        $turn = $modulogrupo->Xtorn;
-
-            // Construye la URL
-        $url = "https://pcompetencies.cipfpbatoi.es/public/syllabus/{$centerId}/{$cycleId}/{$moduleCode}/{$turn}";
 
             // Redirige a la URL
-        return redirect()->away($url);
+        return redirect()->away($modulogrupo->ProgramacioLink);
 
     }
 }
