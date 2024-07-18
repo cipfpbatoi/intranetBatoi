@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Services\JWTTokenService;
 use Styde\Html\Facades\Alert;
 
 class Modulo_grupo extends Model
@@ -123,6 +124,12 @@ class Modulo_grupo extends Model
         // Construye la URL
         return "https://pcompetencies.cipfpbatoi.es/public/syllabus/{$centerId}/{$cycleId}/{$moduleCode}/{$turn}";
 
+    }
+
+    public function getTokenLinkAttribute(){
+        $service = new JWTTokenService();
+        $token = $service->createTokenProgramacio($this->id);
+        return "https://pcompetencies.cipfpbatoi.es/login/auth/{$token}";
     }
     
 }

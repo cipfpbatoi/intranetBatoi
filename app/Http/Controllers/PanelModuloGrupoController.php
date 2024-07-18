@@ -34,8 +34,6 @@ class PanelModuloGrupoController extends BaseController
     {
         $modulogrupo = Modulo_grupo::findorfail($id);
 
-
-            // Redirige a la URL
         return redirect()->away($modulogrupo->ProgramacioLink);
 
     }

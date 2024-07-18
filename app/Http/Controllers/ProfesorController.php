@@ -3,11 +3,13 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Grupo;
 use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Illuminate\Support\Facades\Auth;
+use Intranet\Mail\Comunicado;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Horario;
@@ -162,7 +164,11 @@ use traitAutorizar,
     public function miApiToken()
     {
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
-        dispatch(new SendEmail(AuthUser()->email, $remitente, 'email.apitoken', Profesor::find(AuthUser()->dni)));
+        $user = AuthUser();
+        $profesor = Profesor::find($user->dni);
+
+        Mail::to($user->email)->send(new Comunicado($remitente, $profesor, 'email.apitoken'));
+
         Alert::info('Correu enviat');
         return back();
     }

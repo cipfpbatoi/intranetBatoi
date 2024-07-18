@@ -4,6 +4,7 @@ namespace Intranet\Services;
 
 use DateTimeImmutable;
 use Intranet\Entities\Modulo_grupo;
+use Intranet\Entities\Profesor;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
@@ -11,6 +12,8 @@ use Lcobucci\JWT\Signer\Rsa\Sha256;
 class JWTTokenService
 {
     protected $config;
+
+    const EXPIRATION_DATE = '15 October';
 
     public function __construct()
     {
@@ -21,11 +24,20 @@ class JWTTokenService
         );
     }
 
-    public function createTokenProgramacio($idModuleGrupo)
+    public function createTokenProgramacio($idModuleGrupo,$dni=null)
     {
-        $moduleGrupo =Modulo_grupo::find($idModuleGrupo);
+        $moduleGrupo =Modulo_grupo::findOrFail($idModuleGrupo);
         $now = new DateTimeImmutable();
-        $expiresAt = $now->modify('+' . config('jwt.expiry') . ' seconds');
+        if (!$dni){
+            $user = authUser();
+            $expiresAt = $now->modify('+' . config('jwt.expiry') . ' seconds');
+        } else {
+            $user = Profesor::findOrFail($dni);
+            $year = $now->format('Y');
+            $expiresAt = new DateTimeImmutable(self::EXPIRATION_DATE . " $year");
+        }
+
+
 
         $token = $this->config->builder()
             ->issuedBy('http://intranet.cipfpbatoi.es') // Configura-ho amb el teu domini
@@ -34,13 +46,13 @@ class JWTTokenService
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now)
             ->expiresAt($expiresAt)
-            ->withClaim('role', $this->role(authUser()->rol))
+            ->withClaim('role', $this->role($user->rol))
             ->withClaim('module', $moduleGrupo->ModuloCiclo->idModulo)
             ->withClaim('cycle', $moduleGrupo->ModuloCiclo->Ciclo->ciclo)
             ->withClaim('turn', $this->turno($moduleGrupo->Grupo->turno))
-            ->withClaim('name', authUser()->nombre)
-            ->withClaim('surnames', authUser()->surnames)
-            ->withClaim('email', authUser()->email)
+            ->withClaim('name', $user->nombre)
+            ->withClaim('surnames', $user->surnames)
+            ->withClaim('email', $user->email)
             ->withClaim('department', $moduleGrupo->ModuloCiclo->Ciclo->Departament->depcurt)
             ->getToken($this->config->signer(), $this->config->signingKey());
 

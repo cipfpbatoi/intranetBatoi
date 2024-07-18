@@ -53,13 +53,8 @@ class ModuloGrupoController extends IntranetController
 
     protected function link($id)
     {
-        $service = new JWTTokenService();
-        $token = $service->createTokenProgramacio($id);
-
-        // Construeix la URL amb el token
-        $url = "https://pcompetencies.cipfpbatoi.es/login/auth/{$token}";
-        // Redirigeix l'usuari a la URL externa amb el token
-        return redirect()->away($url);
+        $modulo = Modulo_grupo::find($id);
+        return redirect()->away($modulo->TokenLink);
     }
 
 }
