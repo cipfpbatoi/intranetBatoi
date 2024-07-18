@@ -9,12 +9,8 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
-
-use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Adjunto;
-use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
@@ -268,12 +264,16 @@ class AdministracionController extends Controller
 
         $programaciones = Programacion::all();
 
+
         // Autenticació per obtenir el token
-        $loginResponse = Http::post('http://localhost/api/login_check', [
-            'email' => 'admin@cipfpbatoi.es', // Canvia-ho per les teves credencials
-            'password' => '1234'  // Canvia-ho per les teves credencials
+        $loginResponse = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            // Afegeix altres headers si n'hi ha
+        ])->post('https://programacions.cipfpbatoi.es/api/login_check', [
+            'email' => 'i.gomismullor@edu.gva.es', // Canvia-ho per les teves credencials
+            'password' => 'igomis1234*'  // Canvia-ho per les teves credencials
         ]);
-        dd($loginResponse);
+
 
         if (!$loginResponse->successful()) {
             return response()->json(['error' => 'Error en l\'autenticació'], 401);
@@ -283,12 +283,14 @@ class AdministracionController extends Controller
 
         $failedProposals = [];
 
+
         // Fer la petició POST a /api/improvementProposal per a cada proposta de millora
         foreach ($programaciones as $programacion) {
-            $response = Http::withToken($token)->post('https://programacions.cipfpbatoi.es/api/improvementProposal', [
-                'moduleCode' => $programacion->Modulo->codigo,
-                'cycle' => $programacion->ciclo->id,
-                'improvementProposal' => $programacion->propuestas
+            $moduleCode = $programacion->Modulo->codigo;
+            $cycleId = $programacion->ciclo->id;
+            $turn = 'presential';
+            $response = Http::withToken($token)->post("https://programacions.cipfpbatoi.es/api/syllabus/{$cycleId}/{$moduleCode}/{$turn}", [
+                'improvementProposal' => $programacion->propuestas,
             ]);
 
             if (!$response->successful()) {
