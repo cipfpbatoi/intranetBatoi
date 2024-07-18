@@ -284,7 +284,7 @@ class AdministracionController extends Controller
         foreach ($programaciones as $programacion) {
             $grupo = $programacion->Grupo;
             if ($grupo){
-                if ($grupo->turno = 'S'){
+                if ($grupo->turno == 'S'){
                     $turn = 'half-presential';
                 } else {
                     $turn = 'presential';
