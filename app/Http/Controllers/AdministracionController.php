@@ -262,6 +262,7 @@ class AdministracionController extends Controller
     public function consulta() {
         $programaciones = Programacion::all();
 
+
         // Autenticació per obtenir el token
         $loginResponse = Http::withHeaders([
             'Content-Type' => 'application/json',
@@ -281,27 +282,17 @@ class AdministracionController extends Controller
         $success = 0;
 
         foreach ($programaciones as $programacion) {
+            $grupo = $programacion->Grupo;
+            if ($grupo->turno = 'S'){
+                $turn = 'half-presential';
+            } else {
+                $turn = 'presential';
+            }
             $moduleCode = $programacion->Modulo->codigo;
             $cycleId = $programacion->ciclo->id;
 
             // Enviar petició per a 'presential'
-            $turn = 'presential';
-            $response = Http::withToken($token)->post("https://programacions.cipfpbatoi.es/api/syllabus/{$cycleId}/{$moduleCode}/{$turn}", [
-                'proposals' => $programacion->propuestas,
-            ]);
 
-            if (!$response->successful()) {
-                $failedProposals[] = [
-                    'id' => $programacion->id,
-                    'turn' => $turn,
-                    'error' => $response->body()
-                ];
-            } else {
-                $success++;
-            }
-
-            // Enviar petició per a 'half-presential'
-            $turn = 'half-presential';
             $response = Http::withToken($token)->post("https://programacions.cipfpbatoi.es/api/syllabus/{$cycleId}/{$moduleCode}/{$turn}", [
                 'proposals' => $programacion->propuestas,
             ]);
