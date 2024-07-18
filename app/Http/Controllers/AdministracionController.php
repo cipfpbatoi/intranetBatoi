@@ -292,9 +292,7 @@ class AdministracionController extends Controller
 
             if (!$response->successful()) {
                 $failedProposals[] = $programacion->id;
-            } else {
                 dd($response->json());
-
             }
         }
 
