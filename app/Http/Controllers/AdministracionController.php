@@ -283,28 +283,30 @@ class AdministracionController extends Controller
 
         foreach ($programaciones as $programacion) {
             $grupo = $programacion->Grupo;
-            if ($grupo->turno = 'S'){
-                $turn = 'half-presential';
-            } else {
-                $turn = 'presential';
-            }
-            $moduleCode = $programacion->Modulo->codigo;
-            $cycleId = $programacion->ciclo->id;
+            if ($grupo){
+                if ($grupo->turno = 'S'){
+                    $turn = 'half-presential';
+                } else {
+                    $turn = 'presential';
+                }
+                $moduleCode = $programacion->Modulo->codigo;
+                $cycleId = $programacion->ciclo->id;
 
-            // Enviar petició per a 'presential'
+                // Enviar petició per a 'presential'
 
-            $response = Http::withToken($token)->post("https://programacions.cipfpbatoi.es/api/syllabus/{$cycleId}/{$moduleCode}/{$turn}", [
-                'proposals' => $programacion->propuestas,
-            ]);
+                $response = Http::withToken($token)->post("https://programacions.cipfpbatoi.es/api/syllabus/{$cycleId}/{$moduleCode}/{$turn}", [
+                    'proposals' => $programacion->propuestas,
+                ]);
 
-            if (!$response->successful()) {
-                $failedProposals[] = [
-                    'id' => $programacion->id,
-                    'turn' => $turn,
-                    'error' => $response->body()
-                ];
-            } else {
-                $success++;
+                if (!$response->successful()) {
+                    $failedProposals[] = [
+                        'id' => $programacion->id,
+                        'turn' => $turn,
+                        'error' => $response->body()
+                    ];
+                } else {
+                    $success++;
+                }
             }
         }
 
