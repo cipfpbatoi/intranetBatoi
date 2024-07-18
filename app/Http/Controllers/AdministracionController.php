@@ -282,6 +282,7 @@ class AdministracionController extends Controller
         $token = $loginResponse->json('token');
 
         $failedProposals = [];
+        $success = 0;
         foreach ($programaciones as $programacion) {
             $moduleCode = $programacion->Modulo->codigo;
             $cycleId = $programacion->ciclo->id;
@@ -292,14 +293,23 @@ class AdministracionController extends Controller
 
             if (!$response->successful()) {
                 $failedProposals[] = $programacion->id;
-                dd($response->json());
+            } else {
+                $success++;
+            }
+
+            $turn = 'half-presential';
+            $response = Http::withToken($token)->post("https://programacions.cipfpbatoi.es/api/syllabus/{$cycleId}/{$moduleCode}/{$turn}", [
+                'proposals' => $programacion->propuestas,
+            ]);
+
+            if (!$response->successful()) {
+                $failedProposals[] = $programacion->id;
+            } else {
+                $success++;
             }
         }
 
-        if (empty($failedProposals)) {
-            return response()->json(['message' => 'Totes les propostes de millora s\'han enviat correctament']);
-        }
-        return response()->json(['error' => 'Algunes propostes de millora no s\'han pogut enviar', 'failedProposals' => $failedProposals], 400);
+        return response()->json(['message' => "$success correctes, ".count($failedProposals)." errors"]);
     }
 
 
