@@ -132,7 +132,7 @@ return array(
                 'hini' => "Hora d'inici",
                 'hfin' => 'Hora de fi',
                 'comentarios' => 'Comentaris',
-                'descripcion' => ' Descripció',
+                'descripcion' => 'Justificació RA',
                 'objetivos' => 'Objectius',
                 'desde' => "Data d'inici",
                 'hasta' => 'Data de fin',
@@ -286,6 +286,8 @@ return array(
                 'alumno' => 'Alumnat',
                 'periode' => 'Periode',
                 'sendCorreo' => 'Enviats Correus',
+                'imageRightAccept' => "Drets d'imatge",
+                'outOfSchoolActivityAccept' => "Accepta activitats extraescolars",
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

@@ -50,6 +50,8 @@ class Alumno extends Authenticatable
         'telef2',
         'foto',
         'idioma',
+        'imageRightAccept',
+        'outOfSchoolActivityAccept'
     ];
     protected $rules = [
         'email' => 'required|email',
@@ -62,6 +64,8 @@ class Alumno extends Authenticatable
         'foto' => ['type' => 'file'],
         'email' => ['type' => 'email'],
         'idioma' => ['type' => 'select'],
+        'imageRightAccept' => ['disabled' => 'disabled'],
+        'outOfSchoolActivityAccept' => ['disabled' => 'disabled'],
     ];
 
     public function Curso()
@@ -270,6 +274,8 @@ class Alumno extends Authenticatable
         $hace18 = $hoy->subYears(18)->toDateString();
         return fechaInglesa($this->fecha_nac) > $hace18 ;
     }
+
+
 
 
 }

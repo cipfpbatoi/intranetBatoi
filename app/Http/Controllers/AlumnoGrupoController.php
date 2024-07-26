@@ -18,7 +18,8 @@ class AlumnoGrupoController extends IntranetController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoGrupo';
-    protected $gridFields = ['nombre', 'telef1',  'email','poblacion','subGrupo','posicion','telef2'];
+    protected $gridFields = ['nombre', 'telef1',  'email','poblacion','drets',
+        'extraescolars','subGrupo','posicion','telef2'];
     const FOL = 12;
     protected $modal = true;
 

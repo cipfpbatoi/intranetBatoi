@@ -292,8 +292,6 @@ class AdministracionController extends Controller
                 $moduleCode = $programacion->Modulo->codigo;
                 $cycleId = $programacion->ciclo->id;
 
-                // Enviar petició per a 'presential'
-
                 $response = Http::withToken($token)->post("https://programacions.cipfpbatoi.es/api/syllabus/{$cycleId}/{$moduleCode}/{$turn}", [
                     'proposals' => $programacion->propuestas,
                 ]);

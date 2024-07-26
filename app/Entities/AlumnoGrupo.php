@@ -69,4 +69,14 @@ class AlumnoGrupo extends Model
         return $this->Alumno->foto;
     }
 
+    public function getDretsAttribute()
+    {
+        return $this->Alumno->imageRightAccept?'Sí':'No';
+    }
+
+    public function getExtraescolarsAttribute()
+    {
+        return $this->Alumno->outOfSchoolActivityAccept?'Sí':'No';
+    }
+
 }
