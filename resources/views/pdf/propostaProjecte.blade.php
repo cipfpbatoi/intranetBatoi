@@ -69,6 +69,6 @@
         <p style="margin-top: 40px; font-size: 16px;">Firma: ___________________________</p>
         <p style="font-size: 16px;">Nom i cognoms: {{$alumno->fullName}}</p>
     </div>
-     @include('pdf.partials.pie',['document'=>'valoracio'])
+     @include('pdf.partials.pie',['document'=>'propuestaProyecto'])
  @endsection
 
