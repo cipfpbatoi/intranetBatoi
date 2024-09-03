@@ -8,9 +8,11 @@
     @include('pdf.partials.cabecera')
 
     <div class="container">
-        <table class="table table-bordered" style="width: 100%">
+        <table class="table table-bordered" style="width: 100% ">
             <tr>
-                <th><h1>Proposta Projecte de Cicle Formatiu Superior</h1></th> <!-- Títol principal més gran -->
+                <td style="background-color: #f2f2f2 !important; font-size: 24px; font-weight: bold; text-align: center;">
+                    Proposta Projecte de Cicle Formatiu Superior
+                </td>
             </tr>
         </table>
     </div>
@@ -21,42 +23,42 @@
         </p>
         <table class="table table-bordered" style="width: 100%;">
             <tr>
-                <th style="text-align: left; padding: 12px; font-weight: bold; border-bottom: 2px solid black; font-size: 18px;">Títol</th> <!-- Ús de bord inferior negre per simular el destacat -->
+                <td style="text-align: left; padding: 12px; font-weight: bold; background-color: #f2f2f2 !important; font-size: 18px;">Títol</td>
             </tr>
             <tr>
                 <td style="text-align: left; padding: 12px; font-size: 16px;">{{$projecte->titol}}</td>
             </tr>
 
             <tr>
-                <th style="text-align: left; padding: 12px; font-weight: bold; border-bottom: 2px solid black; font-size: 18px;">Objectius generals del projecte i resultats esperats</th>
+                <td style="text-align: left; padding: 12px;   background-color: #f2f2f2 !important; font-size: 18px;"><strong>Objectius</strong> generals del projecte i <strong>resultats esperats</strong></td>
             </tr>
             <tr>
                 <td style="text-align: left; padding: 12px; font-size: 16px;">{{$projecte->objectius}}</td>
             </tr>
 
             <tr>
-                <th style="text-align: left; padding: 12px; font-weight: bold; border-bottom: 2px solid black; font-size: 18px;">Possibles aplicacions pràctiques del projecte (en general). En cas d'aplicació real concreta del projecte (en una empresa o ...), especificar el lloc on es posarà en marxa i descripció breu d'on i com es posarà en marxa</th>
+                <td style="text-align: left; padding: 12px;  background-color: #f2f2f2 !important; font-size: 18px;">Possibles <strong>aplicacions pràctiques</strong> del projecte (en general).<strong> En cas d'aplicació real </strong>concreta del projecte (en una empresa o ...), especificar el lloc on es posarà en marxa i descripció breu d'on i com es posarà en marxa</td>
             </tr>
             <tr>
                 <td style="text-align: left; padding: 12px; font-size: 16px;">{{$projecte->resultats}}</td>
             </tr>
 
             <tr>
-                <th style="text-align: left; padding: 12px; font-weight: bold; border-bottom: 2px solid black; font-size: 18px;">Recursos a utilitzar:</th>
+                <td style="text-align: left; padding: 12px;   background-color: #f2f2f2 !important; font-size: 18px;"><strong>Recursos</strong> a utilitzar:</td>
             </tr>
             <tr>
                 <td style="text-align: left; padding: 12px; font-size: 16px;">{{$projecte->recursos}}</td>
             </tr>
 
             <tr>
-                <th style="text-align: left; padding: 12px; font-weight: bold; border-bottom: 2px solid black; font-size: 18px;">Descripció del contingut del projecte, incloent el pla de treball previst</th>
+                <td style="text-align: left; padding: 12px;   background-color: #f2f2f2 !important; font-size: 18px;"><strong>Descripció del contingut</strong> del projecte, incloent el pla de treball previst</td>
             </tr>
             <tr>
                 <td style="text-align: left; padding: 12px; font-size: 16px;">{{$projecte->descripcio}}</td>
             </tr>
 
             <tr>
-                <th style="text-align: left; padding: 12px; font-weight: bold; border-bottom: 2px solid black; font-size: 18px;">Observacions i comentaris :</th>
+                <td style="text-align: left; padding: 12px;   background-color: #f2f2f2 !important; font-size: 18px;"><strong>Observacions</strong> i comentaris:</td>
             </tr>
             <tr>
                 <td style="text-align: left; padding: 12px; font-size: 16px;">{{$projecte->observacions}}</td>
@@ -64,11 +66,10 @@
         </table>
     </div>
     <p style="font-size: 16px;">I espere que aquesta proposta siga acceptada com a vàlida.</p>
-    <div style="margin-top: 20px; text-align: center;"> <!-- Centrat de la data i la firma -->
+    <div style="margin-top: 20px; text-align: center;">
         <p style="font-size: 16px;">Alcoi a {{$datosInforme}}</p>
         <p style="margin-top: 40px; font-size: 16px;">Firma: ___________________________</p>
         <p style="font-size: 16px;">Nom i cognoms: {{$alumno->fullName}}</p>
     </div>
-     @include('pdf.partials.pie',['document'=>'propuestaProyecto'])
- @endsection
-
+    @include('pdf.partials.pie',['document'=>'propuestaProyecto'])
+@endsection
