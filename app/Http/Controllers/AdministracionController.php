@@ -133,49 +133,62 @@ class AdministracionController extends Controller
     /**
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function nuevoCurso()
+
+
+
+    protected function nuevoCurso(Request $request)
     {
-
-        $this->ferVotsPermanents();
-
-        // inicialitza dels col·laboracions
-        Colaboracion::where('tutor', '!=', '')->update(['tutor'=>'']);
-        Colaboracion::where('estado', '>', 1)->update(['estado' => 1]);
-
-        // inicialitza professors
-        Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
-
-        //$this->esborrarEnquestes();
-
-
-        // certificats de fol
-        foreach (AlumnoGrupo::with('Grupo')->with('Alumno')->get() as $algr) {
-            if ($algr->curso == 2 && $algr->fol > 0) {
-                $alumno = $algr->Alumno;
-                $alumno->fol = 0;
-                $alumno->save();
+         if ($request->Vots) {
+            $this->ferVotsPermanents();
+        }
+        if ($request->Auxiliars){
+            $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
+                'grupos_trabajo', 'guardias',  'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
+                'resultados',   'tutorias_grupos', 'activities',
+                'autorizaciones', 'votes' , 'activities', 'failed_jobs'   ];
+            foreach ($tables as $tabla) {
+                DB::table($tabla)->delete();
             }
         }
-        foreach (Grupo::all() as $grupo) {
-            $grupo->fol = 0;
-            $grupo->save();
+
+        if ($request->Dual) {
+            // inicialitza dels col·laboracions
+            Colaboracion::where('tutor', '!=', '')->update(['tutor'=>'']);
+            Colaboracion::where('estado', '>', 1)->update(['estado' => 1]);
+
+            // inicialitza professors
+            Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
+
+            //$this->esborrarEnquestes();
+
+
+            // certificats de fol
+            foreach (AlumnoGrupo::with('Grupo')->with('Alumno')->get() as $algr) {
+                if ($algr->curso == 2 && $algr->fol > 0) {
+                    $alumno = $algr->Alumno;
+                    $alumno->fol = 0;
+                    $alumno->save();
+                }
+            }
+            foreach (Grupo::all() as $grupo) {
+                $grupo->fol = 0;
+                $grupo->save();
+            }
+
+            // preservar dual
+            Adjunto::moveAndPreserveDualFiles();
         }
 
-        // preservar dual
-        Adjunto::moveAndPreserveDualFiles();
-
-
-        $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
-            'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
-            'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos',
-            'autorizaciones', 'votes' , 'activities', 'failed_jobs','fct'];
-        foreach ($tables as $tabla) {
-            DB::table($tabla)->delete();
+        if ($request->Esborrat){
+            $tables = [
+                  'horarios', 'reuniones',  'alumno_resultados','alumnos_grupos',
+                 'alumno_fcts','fcts'  ];
+            foreach ($tables as $tabla) {
+                DB::table($tabla)->delete();
+            }
         }
-        $this->esborrarProgramacions();
 
-
-        return back();
+         return back();
     }
 
     /**

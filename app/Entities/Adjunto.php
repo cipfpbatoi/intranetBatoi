@@ -69,7 +69,8 @@ class Adjunto extends Model
         $dualRoutes = array();
 
         foreach ($alumnesDual as $alumne) {
-            if ($alumne->Alumno->Grupos->first()->curso == 1){
+
+            if ($alumne->Alumno->Grupo->first()  && $alumne->Alumno->Grupo->first()->curso == 1){
                 $route = 'alumnofctaval/' . $alumne->id;
                 $newRoute = 'dual/' . $alumne->Alumno->dni;
                 $adjuntos = Adjunto::where('route', $route)->get();

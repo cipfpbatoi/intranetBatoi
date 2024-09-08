@@ -58,6 +58,8 @@ Route::get('/alumno/{idAlumne}/change', ['as' =>'alumno.change','uses' => 'Alumn
 Route::get('/nuevoCurso', ['as' => 'curso.nuevo.index', 'uses' => 'AdministracionController@nuevoCursoIndex']);
 Route::post('/nuevoCurso', ['as' => 'curso.nuevo', 'uses' => 'AdministracionController@nuevoCurso']);
 
+
+
 // modificar funcions en l'horari
 Route::resource('/horario', 'HorarioController', ['except' => ['destroy', 'update','create']]);
 Route::get('/horario/{profesor}/cambiar', ['uses'=>'HorarioController@modificarHorario']);
