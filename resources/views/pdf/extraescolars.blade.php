@@ -5,7 +5,7 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th colspan="10">Full Registre d'Activitats extraescolars</th>
+                <th colspan="10"><h2>Full Registre d'Activitats extraescolars</h2></th>
             </tr>
             <tr>
                 <th style='width:2%'>N</th>
