@@ -42,6 +42,8 @@ També tenim l¡opció de vore els alumnes en **_Mosaic_** en compte de en _Llis
 ### Expedients
 És igual que per al professor però al crear un nou expedient el tutor pot triar també 
 * **Baixa per inasistència** que permet donar de baixa a un alumne per faltes d'asistència segons la normativa
+* **Pèrdua Avaluació Contínua** que permet tramitar la pèrdua de l'avaluació continua per a un alumne
+* **Part d'amonestació**
 * **Informe d'exempció FCT**: si un alumne sol·licita l'exempció de les FCT hem d'omplir aquest informe.
 
 Una vegada omplit **caldrà avisar a direcció de la tramitació de l'expedient** polsant el botó del sobre i ja s'encarregan de resoldre'l.
@@ -114,7 +116,7 @@ Després d'omplir l'acta des del llistat de reunions podem tornar a avisar als p
 
 Tras comprovar que tot és correcte polsem la icona de '_**Guardar en el gestor documental**_' que puja l'acta al gestor documental (dins del menú Documentació) per a que la pugen veure.
 
-## Menú 'Actes/Convocatòries' → 'Gestor documental'
+## Menú 'Documentació' → 'Gestor documental'
 Als tutors els aparei a la part superior un botó per a 'Pujar els projectes dels alumnes'. Es tracta del mòdul de Projecte dels alumnes de cicles de grau superior.
 
 Hem d'omplir els camps amb les dades del projecte:
