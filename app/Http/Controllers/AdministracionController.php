@@ -117,8 +117,7 @@ class AdministracionController extends Controller
     private function ferVotsPermanents()
     {
         foreach (Vote::all() as $vote) {
-            //&& $fct = Fct::find($vote->idOption1)
-            if ($vote->Poll->Plantilla->remains ) {
+            if ($vote->idPoll == 13 && $fct = Fct::find($vote->idOption1)) {
                 dd($vote,$vote->Poll,$vote->Poll->Plantilla);
 
                 $newVote = new VoteAnt([
