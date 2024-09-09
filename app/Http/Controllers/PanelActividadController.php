@@ -43,7 +43,6 @@ class PanelActividadController extends BaseController
                 'where' => ['estado', '<', '4']
             ]
         );
-        $this->panel->setBoton('grid', new BotonImg('notificacion', ['where'=>['estado','<','3']]));
         $this->panel->setBoton('grid', new BotonImg('actividad.edit', ['where'=>['estado','<','3']]));
         $this->panel->setBoton('grid', new BotonImg('actividad.delete', ['where'=>['estado','<','3']]));
         $this->panel->setBoton(

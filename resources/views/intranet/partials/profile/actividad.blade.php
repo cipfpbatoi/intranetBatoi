@@ -7,7 +7,12 @@
                 $elemento->hasta }}"
             title="{{$elemento->name}}"
         >
-        <p><strong>Descripció</strong> : <em style="font-size: smaller">{{$elemento->descripcion}}</em></p>
+        @if ($elemento->complementaria)
+            <p>Complementària</p>
+        @else
+            <p>Extraescolar</p>
+        @endif
+        <p><strong>@if ($elemento->complementaria) Justificació RA @else Descripció @endif</strong> : <em style="font-size: smaller">{{$elemento->descripcion}}</em></p>
         @if ($elemento->objetivos)
             <p><strong>Objectius</strong> : <em style="font-size: smaller">{{$elemento->objetivos}}</em></p>
         @endif
