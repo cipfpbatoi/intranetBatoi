@@ -20,6 +20,7 @@ class Actividad extends Model
         'extraescolar',
         'desde',
         'hasta',
+        'complementaria',
         'fueraCentro',
         'transport',
         'objetivos',
