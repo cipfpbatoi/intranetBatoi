@@ -1,20 +1,16 @@
 @extends('layouts.pdf')
 @section('content')
 @include('pdf.partials.cabecera')
-<div class="container col-lg-12" >
-    <table class="table table-bordered">
-        <tr>
-            <th>Full Registre d'Activitats extraescolars</th>
-        </tr>
-    </table>
-</div>
-<div class="container col-lg-12" >
+ <div class="container col-lg-12" >
     <table class="table table-bordered">
         <thead>
             <tr>
+                <th colspan="10">Full Registre d'Activitats extraescolars</th>
+            </tr>
+            <tr>
                 <th style='width:2%'>N</th>
                 <th style='width:15%'>Activitat</th>
-                <th style='width:15%'>Descripció</th>
+                <th style='width:15%'>Descripció/Justificació</th>
                 <th style='width:10%'>Objectius</th>
                 <th style='width:10%'>Desde</th>
                 <th style='width:10%'>Fins</th>
