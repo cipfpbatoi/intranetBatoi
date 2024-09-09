@@ -22,10 +22,8 @@ L'accés a la intranet és igual per a tots els professors i és el sistema qui 
 Els tutors tenen en el menú general un apartat anomenat 'Tutor' però també té noves opcions en alguns altres menús.
 
 ## Menú 'Docència' → 'Gestió dels grups'
-En el nostre grup apareixen 2 noves icones:
+En el nostre grup apareixen una nova icona:
 * Carnet: permet imprimir el carnet de tots els alumnes del grup. Això ha de fer-se des de caporalia que és on es troba la impresora de carnets
-* Acta Fons Social Europeu (icona del €): apareix el full amb tots els alumnes que hem d'omplir i signar després d'haver explicat als alumnes la informació del FSE. Després farem una nova '_Reunió_' de tipus FSE i adjuntarem aquest full signat escanejat. L'original s'ha de lliurar a Caporalia.
-* Si hi ha curs o jornada activa podem inscriure a tots els alumnes
 
 A més, quan entrem a **Vore els alumnes** del nostre grup apareixen noves icones:
 * Modificació Perfil Alumne: podem obrir el perfil d'eixe alumne per a modificar el seu e-mail, la seua foto o l'idioma de la intranet per a l'alumne
@@ -48,14 +46,16 @@ Els tipus que tenim actualment són:
 Una vegada omplit **caldrà avisar a direcció de la tramitació de l'expedient** polsant el botó del sobre i ja s'encarregan de resoldre'l.
 
 ## Menú 'Actes/Convocatòries' → 'Gestió de reunions'
-El tutor tindrà que convocar diferents reunions al llarg del curs. 
+Tenim les opcions:
+- Gestió de reunions: el tutor tindrà que convocar diferents reunions d'equip educatiu al llarg del curs. A continuació expliquem cóm fer-ho
+- Imprimir Acta FSE (Fons Social Europeu): apareix el full amb tots els alumnes que hem d'omplir i signar després d'haver explicat als alumnes la informació del FSE. Després farem una nova '_Reunió_' de tipus FSE i adjuntarem aquest full signat escanejat. L'original s'ha de lliurar a Caporalia.
 
 ### Nova reunió
 Per a convocar una nova reunió premem el botó de 'Nova reunió' i omplim els camps:
 * tipo: ací indiquem el tipus de reunió que anem a convocar: 
     * d'equip educatiu: reunió normal de l'equip educatiu del nostre grup
     * d'un grup de treball
-    * turoria: per indicar que hem fet alguna de les tutories creades pel departament d'orientació o altra
+    * tutoria: per indicar que hem fet alguna de les tutories creades pel departament d'orientació o altra
     * elecció de delegat: per a fer l'acta 
     * reunió de pares: la reunió de principi de curs o si convoquem alguna més
     * reunió d'avaluació: només 1 per avaluació
@@ -91,19 +91,17 @@ Una vegada creada la reunió ens apareix en el llistat de reunions, des d'on pod
 * imprimir: s'imprimeix la convocatòria en PDF
 * editar: tornem a la finestra d'edició per a modificar qualsevol cosa
 * avisar participants: s'envia una notificació a cadascun dels professors participants que els apareixerà en la seua icona de notificacions
-* enviar convocatòria/acta: s'envia la convocatòria per e-mail als participants
+* **enviar convocatòria/acta**: s'envia la convocatòria per e-mail als participants
 * esborrar: s'esborra l'acta
 
 ### Acta de la reunió
-Una vegada celebrada la reunió podem omplir l'acta de la mateixa. Per a això editem la reunió i des de la part de l''Ordre del dia' polsem en cada punt el botó d'Editar (l'últim) i ens apareix una zona on escriure el que s'ha parlat en la reunió sobre el punt en qüestió.
+Una vegada celebrada la reunió podem omplir l'acta de la mateixa. Per a això editem la reunió i des de la part de l'_**Ordre del dia**_ polsem en cada punt el botó d'_Editar_ i ens apareix una zona on escriure el que s'ha parlat en la reunió sobre el punt en qüestió. Quan acabes d’escriure en eixe recuadre és **MOLT IMPORTANT** polsar la **icona _V_** de la dreta per a guradar els canvis o X per a cancel·lar-los (si no ho fas es cancel·la).
 
 ![Acta reunió](img/tutor/05-omplir-acta-reunio.png)
 
-Quan acabes d'escriure en eixe recuadre és **MOLT IMPORTANT polsar la icona _V_** de la dreta per a guradar els canvis o **_X_** per a cancel·lar-los.
-
 Després d'omplir l'acta des del llistat de reunions podem tornar a avisar als participants o enviar l'acta. En aquest cas l'avís els indicarà que ja està l'acta disponible per a que la puguen veure.
 
-També apareix una nova icona de 'Guardar en el gestor documental' que puja l'acta al gestor documental (dins del menú Documentació) per a que la pugen veure.
+Tras comprovar que tot és correcte polsem la icona de '_**Guardar en el gestor documental**_' que puja l'acta al gestor documental (dins del menú _Documentació_) per a que la pugen veure.
 
 ## Menú 'Actes/Convocatòries' → 'Gestor documental'
 Als tutors els aparei a la part superior un botó per a 'Pujar els projectes dels alumnes'. Es tracta del mòdul de Projecte dels alumnes de cicles de grau superior.
