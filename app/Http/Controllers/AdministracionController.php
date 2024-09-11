@@ -9,6 +9,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Espacio;
@@ -23,6 +24,7 @@ use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Setting;
 use Intranet\Mail\CertificatAlumneFct;
+use Intranet\Mail\Comunicado;
 use Intranet\Services\ImageService;
 use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
@@ -35,8 +37,7 @@ use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Fct;
 use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
-
-
+use Symfony\Component\Mime\Exception\RfcComplianceException;
 
 
 /**
@@ -77,7 +78,12 @@ class AdministracionController extends Controller
     {
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
         foreach (Profesor::Activo()->get() as $profesor) {
-            dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
+            //dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
+            try {
+                Mail::to($profesor->email)->send(new Comunicado(  $remitente, $profesor,'email.apitoken'  ));
+            } catch (RfcComplianceException $e) {
+            }
+
         }
         Alert::info('Correus enviats');
         return back();
