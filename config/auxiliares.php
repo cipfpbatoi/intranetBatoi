@@ -18,7 +18,6 @@ return [
         30=>'AvaIni',31=>'1Ava',32=>'2Ava',33=>'3Ava',34=>'AvFinal',35=>'AvExtr',
         21=>'1er Trimestre',22=>'2on Trimestre',23=>'Final'],
     'nombreEval' => [1=>'Primera', 2=> 'Segona', 3=>'Final'],
-    'asociacionEmpresa' => [1=>'FCT',2=>'Erasmus',3=>'FCT Convalidada/Exempció',4=>'Dual'],
     'grupoTutoria' => [0=>'Tots el grups',1=>'Grau mitjà',2=>'Grau Superior'],
     'motivoAusencia' => [
         'ADOPCIÓN INTERNACIONAL',

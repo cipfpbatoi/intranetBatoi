@@ -198,21 +198,21 @@ class Fct extends Model
 
     public function scopeEsExempt($query)
     {
-        return $query->where('asociacion', '=', 3);
+        return $query->where('asociacion', '=', 2);
     }
 
     public function scopeEsErasmus($query)
     {
-        return $query->where('asociacion', '=', 2);
+        return $query->where('erasmus', '=', 1);
     }
     
     public function scopeEsFct($query)
     {
-        return $query->where('asociacion', '<', 3);
+        return $query->where('asociacion',  '<', 2);
     }
     public function scopeEsAval($query)
     {
-        return $query->where('asociacion', '<', 4);
+        return $query->where('asociacion', '<', 3);
     }
     public function scopeEsDual($query)
     {
@@ -270,7 +270,7 @@ class Fct extends Model
 
     public function getTipusAttribute()
     {
-        return config('auxiliares.asociacionEmpresa')[$this->asociacion];
+        return config('auxiliares.tipusFCT')[$this->asociacion];
     }
     public function getDesdeAttribute($entrada)
     {
@@ -278,17 +278,14 @@ class Fct extends Model
         return $fecha->format('d-m-Y');
     }
 
-    public function getErasmusAttribute()
-    {
-        return $this->Colaboracion->Centro->Empresa->europa;
-    }
+
     public function getDualAttribute()
     {
-        return $this->asociacion == 4;
+        return $this->asociacion == 3;
     }
     public function getExentoAttribute()
     {
-        return $this->asociacion == 3;
+        return $this->asociacion == 2;
     }
     
     public function getCentroAttribute()
