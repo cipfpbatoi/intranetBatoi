@@ -292,7 +292,7 @@ class Importa
                 $idColaboracion = self::getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = self::getDni($centro, $dades[$key], $ciclo);
                 $asociacion =  asociacion_fct($dades[$key]['tipus']);
-                $erasmus = $dades[$key]['erasmus'];
+                $erasmus = $dades[$key]['erasmus'] === 'NO'?0:1;
 
                 $fct = self::getFct($dni, $idColaboracion, $asociacion, $erasmus);
                 self::saveFctAl($fct, $dades[$key]);
