@@ -739,3 +739,15 @@ function array_depth($array) {
 
     return $max_depth;
 }
+
+function asociacion_fct($tipus)
+{
+    // Accedir a la configuració de l'array 'tipusFCT'
+    $tipusFCT = config('auxiliares.tipusFCT');
+
+    // Buscar la clau associada al valor donat
+    $clau = array_search($tipus, $tipusFCT);
+
+    // Retornar la clau si s'ha trobat, o null si no s'ha trobat
+    return $clau !== false ? $clau : null;
+}

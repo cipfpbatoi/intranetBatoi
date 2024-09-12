@@ -20,7 +20,7 @@ class Fct extends Model
 
     protected $fillable = ['idAlumno',
         'idColaboracion','idInstructor','desde', 'hasta',
-        'horas','asociacion','autorizacion'
+        'horas','asociacion','autorizacion','erasmus'
         ];
     protected $notFillable = ['desde','hasta','idAlumno','horas','autorizacion'];
 

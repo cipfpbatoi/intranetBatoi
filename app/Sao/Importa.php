@@ -135,21 +135,22 @@ class Importa
                 ($detalles
                         ->findElement(WebDriverBy::cssSelector("tr:nth-child(15) td:nth-child(4)"))
                         ->getText()
-                    ==
+                    ===
                     'No requiere autorización') ? 0 : 1;
             $dades[$index]['erasmus'] =
                 $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(4)"))
                     ->getText();
-            $dades[$index]['flexible'] =
+            $dades[$index]['tipus'] =
                 $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(4)"))
                     ->getText();
+            /*
             try {
                 $elementText = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(20) th:nth-child(1)"))
                     ->getText();
                 $dades[$index]['dual'] = ($elementText == 'FP Dual') ? 1 : 0;
             } catch (Exception $e) {
                 $dades[$index]['dual'] = 0;
-            }
+            }*/
             $dadesHores = $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(14)"));
             $dades[$index]['hores'] = explode(
                 '/',
@@ -279,20 +280,21 @@ class Importa
     }
 
 
+
     public function importa(Request $request)
     {
 
         $dades = session('dades');
-        dd($dades);
-        $ciclo = $request->ciclo;
         foreach ($request->request as $key => $value) {
             if ($value == 'on') {
                 $centro = self::getCentro($dades[$key]);
                 $idColaboracion = self::getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = self::getDni($centro, $dades[$key], $ciclo);
 
-                $asociacion = $dades[$key]['dual'] ? 4 : ($dades[$key]['erasmus'] == 'No' ? 1 : 2);
-                $fct = self::getFct($dni, $idColaboracion, $asociacion);
+                $asociacion =  asociacion_fct($dades[$key]['tipus']);
+                $erasmus = $dades[$key]['erasmus'];
+
+                $fct = self::getFct($dni, $idColaboracion, $asociacion, $erasmus);
                 self::saveFctAl($fct, $dades[$key]);
             }
         }
@@ -496,12 +498,13 @@ class Importa
      * @param $idColaboracion
      * @return Fct
      */
-    private static function getFct($dni, $idColaboracion, $asociacion): Fct
+    private static function getFct($dni, $idColaboracion, $asociacion, $erasmus): Fct
     {
         $fct = Fct::where('idColaboracion', $idColaboracion)
             ->where('idInstructor', $dni)
             ->where('correoInstructor', 0)
             ->where('asociacion', $asociacion)
+            ->where('erasmus',$erasmus)
             ->first();
         if (!$fct) {
             $col = Colaboracion::find($idColaboracion);
@@ -509,6 +512,7 @@ class Importa
                 'idColaboracion' => $idColaboracion,
                 'asociacion' => $asociacion,
                 'idInstructor' => $dni,
+                'erasmus' => $erasmus,
             ]);
             $fct->cotutor = $col->Propietario?$col->tutor:null;
             $fct->save();
