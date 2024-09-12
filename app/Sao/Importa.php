@@ -291,8 +291,6 @@ class Importa
                 $centro = self::getCentro($dades[$key]);
                 $idColaboracion = self::getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = self::getDni($centro, $dades[$key], $ciclo);
-
-                dd($dades[$key]['tipus']);
                 $asociacion =  asociacion_fct($dades[$key]['tipus']);
                 $erasmus = $dades[$key]['erasmus'];
 
