@@ -141,7 +141,7 @@ class Importa
                 $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(4)"))
                     ->getText();
             $dades[$index]['tipus'] =
-                $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(4)"))
+                $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(2)"))
                     ->getText();
             /*
             try {
@@ -292,6 +292,7 @@ class Importa
                 $idColaboracion = self::getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = self::getDni($centro, $dades[$key], $ciclo);
 
+                dd($dades[$key]['tipus']);
                 $asociacion =  asociacion_fct($dades[$key]['tipus']);
                 $erasmus = $dades[$key]['erasmus'];
 
