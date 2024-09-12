@@ -94,7 +94,7 @@ class Importa
             $dades[$index]['idSao'] = self::getIdSao($tr);
             $dades[$index]['idEmpresa'] = $idEmpresa;
             $dades[$index]['nameEmpresa'] = $nameEmpresa;
-            $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"))->click();
+            $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles Formación Empresa']"))->click();
             sleep(1);
             $detalles = $driver
                 ->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody"));
