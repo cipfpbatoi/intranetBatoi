@@ -543,7 +543,7 @@ class Importa
         $fctAl->desde = $dades['desde'];
         $fctAl->hasta = $dades['hasta'];
         $fctAl->horas = $dades['hores'];
-        $fctAl->flexible = $dades['flexible'] == 'No' ? 0 : 1;
+        //$fctAl->flexible = $dades['flexible'] == 'No' ? 0 : 1;
         $fctAl->autorizacion = $dades['autorizacion'];
         $fctAl->idSao = $dades['idSao'];
         $fctAl->idProfesor = authUser()->dni;
