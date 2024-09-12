@@ -291,8 +291,14 @@ class Importa
                 $centro = self::getCentro($dades[$key]);
                 $idColaboracion = self::getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = self::getDni($centro, $dades[$key], $ciclo);
+                if ($dades[$key]['tipus'] === 'FCT Flexible') {
+                    $dades[$key]['tipus'] = 'FCT';
+                    $dades['flexible'] = 'Si';
+                } else {
+                    $dades['flexible'] = 'No';
+                }
                 $asociacion =  asociacion_fct($dades[$key]['tipus']);
-                $erasmus = $dades[$key]['erasmus'] === 'NO'?0:1;
+                $erasmus = $dades[$key]['erasmus'] === 'No'?0:1;
 
                 $fct = self::getFct($dni, $idColaboracion, $asociacion, $erasmus);
                 self::saveFctAl($fct, $dades[$key]);
@@ -329,7 +335,7 @@ class Importa
                     'email' => $dades['centre']['email'],
                     'localidad' => $dades['centre']['localidad'],
                     'telefono' => $dades['centre']['telefon'],
-                    'europa' => ($dades['erasmus']=='No')?0:1,
+                    'europa' =>  $dades['erasmus']==='No'?0:1,
                     'observaciones' => 'Empresa creada automàticament',
                     'sao' => 1,
                     'direccion' => '',
@@ -543,7 +549,7 @@ class Importa
         $fctAl->desde = $dades['desde'];
         $fctAl->hasta = $dades['hasta'];
         $fctAl->horas = $dades['hores'];
-        //$fctAl->flexible = $dades['flexible'] == 'No' ? 0 : 1;
+        $fctAl->flexible = $dades['flexible'] === 'No' ? 0 : 1;
         $fctAl->autorizacion = $dades['autorizacion'];
         $fctAl->idSao = $dades['idSao'];
         $fctAl->idProfesor = authUser()->dni;
