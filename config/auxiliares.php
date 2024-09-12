@@ -149,8 +149,8 @@ return [
     'precioKilometro' => [0.19,0.078,0,0,0,0,0],
     'tipusFCT' => [
         1 => 'FCT',
-        2 => 'FCT Dual',
-        3 => 'Exento',
+        2 => 'Exempt',
+        3 => 'FCT Dual',
         4 => 'Formación en empresa general',
         5 => 'Formación en empresa intensiva',
      ],

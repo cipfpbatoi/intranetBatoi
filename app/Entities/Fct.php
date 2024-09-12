@@ -216,7 +216,7 @@ class Fct extends Model
     }
     public function scopeEsDual($query)
     {
-        return $query->where('asociacion', 4);
+        return $query->where('asociacion', 3);
     }
 
     public function scopeNoAval($query)
