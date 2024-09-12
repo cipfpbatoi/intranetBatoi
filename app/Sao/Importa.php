@@ -138,7 +138,7 @@ class Importa
                     ==
                     'No requiere autorización') ? 0 : 1;
             $dades[$index]['erasmus'] =
-                $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(2)"))
+                $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(4)"))
                     ->getText();
             $dades[$index]['flexible'] =
                 $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(4)"))
