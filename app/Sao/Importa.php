@@ -285,8 +285,9 @@ class Importa
     {
 
         $dades = session('dades');
+        $ciclo = $request->ciclo;
         foreach ($request->request as $key => $value) {
-            if ($value == 'on') {
+            if ($value === 'on') {
                 $centro = self::getCentro($dades[$key]);
                 $idColaboracion = self::getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = self::getDni($centro, $dades[$key], $ciclo);
