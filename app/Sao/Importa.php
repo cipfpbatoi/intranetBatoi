@@ -288,20 +288,19 @@ class Importa
         $ciclo = $request->ciclo;
         foreach ($request->request as $key => $value) {
             if ($value === 'on') {
+                $flexible = 0;
                 $centro = self::getCentro($dades[$key]);
                 $idColaboracion = self::getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = self::getDni($centro, $dades[$key], $ciclo);
                 if ($dades[$key]['tipus'] === 'FCT Flexible') {
                     $dades[$key]['tipus'] = 'FCT';
-                    $dades['flexible'] = 'Si';
-                } else {
-                    $dades['flexible'] = 'No';
+                    $flexible = 1 ;
                 }
                 $asociacion =  asociacion_fct($dades[$key]['tipus']);
                 $erasmus = $dades[$key]['erasmus'] === 'No'?0:1;
 
                 $fct = self::getFct($dni, $idColaboracion, $asociacion, $erasmus);
-                self::saveFctAl($fct, $dades[$key]);
+                self::saveFctAl($fct, $dades[$key],$flexible);
             }
         }
         return redirect(route('alumnofct.index'));
@@ -531,7 +530,7 @@ class Importa
      * @param $dades
      * @return AlumnoFct
      */
-    private static function saveFctAl(Fct $fct, $dades)
+    private static function saveFctAl(Fct $fct, $dades,$flexible=0)
     {
         $fctAl = AlumnoFct::where('idFct', $fct->id)
             ->where('idAlumno', $dades['nia'])
@@ -549,7 +548,7 @@ class Importa
         $fctAl->desde = $dades['desde'];
         $fctAl->hasta = $dades['hasta'];
         $fctAl->horas = $dades['hores'];
-        $fctAl->flexible = $dades['flexible'] === 'No' ? 0 : 1;
+        $fctAl->flexible = $flexible;
         $fctAl->autorizacion = $dades['autorizacion'];
         $fctAl->idSao = $dades['idSao'];
         $fctAl->idProfesor = authUser()->dni;
