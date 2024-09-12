@@ -140,6 +140,7 @@ class Importa
             $dades[$index]['erasmus'] =
                 $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(2)"))
                     ->getText();
+            var_dump($dades[$index]['erasmus'] );
             $dades[$index]['flexible'] =
                 $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(4)"))
                     ->getText();
