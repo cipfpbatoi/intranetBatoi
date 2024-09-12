@@ -94,7 +94,7 @@ class Importa
             $dades[$index]['idSao'] = self::getIdSao($tr);
             $dades[$index]['idEmpresa'] = $idEmpresa;
             $dades[$index]['nameEmpresa'] = $nameEmpresa;
-            $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles Formación Empresa']"))->click();
+            $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"))->click();
             sleep(1);
             $detalles = $driver
                 ->findElement(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody"));
@@ -405,7 +405,7 @@ class Importa
      */
     private static function getIdSao(\Facebook\WebDriver\Remote\RemoteWebElement $tr)
     {
-        $enlace = $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles FCT']"));
+        $enlace = $tr->findElement(WebDriverBy::cssSelector("a[title='Detalles Formación Empresa']"));
         $href = explode("'", $enlace->getAttribute('href'))[1];
         $fctAl = AlumnoFct::where('idSao', $href)->where('beca', 0)->get()->first();
         if ($fctAl) {
