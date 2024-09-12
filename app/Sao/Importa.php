@@ -140,7 +140,6 @@ class Importa
             $dades[$index]['erasmus'] =
                 $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(2)"))
                     ->getText();
-            var_dump($dades[$index]['erasmus'] );
             $dades[$index]['flexible'] =
                 $detalles->findElement(WebDriverBy::cssSelector("tr:nth-child(16) td:nth-child(4)"))
                     ->getText();
@@ -282,13 +281,16 @@ class Importa
 
     public function importa(Request $request)
     {
+
         $dades = session('dades');
+        dd($dades);
         $ciclo = $request->ciclo;
         foreach ($request->request as $key => $value) {
             if ($value == 'on') {
                 $centro = self::getCentro($dades[$key]);
                 $idColaboracion = self::getColaboracion($dades[$key], $ciclo, $centro->id);
                 $dni = self::getDni($centro, $dades[$key], $ciclo);
+
                 $asociacion = $dades[$key]['dual'] ? 4 : ($dades[$key]['erasmus'] == 'No' ? 1 : 2);
                 $fct = self::getFct($dni, $idColaboracion, $asociacion);
                 self::saveFctAl($fct, $dades[$key]);
