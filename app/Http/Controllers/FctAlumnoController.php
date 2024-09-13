@@ -126,6 +126,19 @@ class FctAlumnoController extends IntranetController
                 ]
             )
         );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumnofct.importa',
+                [
+                    'img' => 'fa-download',
+                    'where' =>
+                        [
+                            'asociacion', '==', 3,
+                        ]
+                ]
+            )
+        );
 
         $this->panel->setBoton(
             'grid',
@@ -437,6 +450,22 @@ class FctAlumnoController extends IntranetController
                 $fct
             ));
         Alert::info('Correu enviat a ' . $alumno->fullName);
+        return back();
+    }
+
+    public function importa($id){
+        $fct = AlumnoFct::findOrFail($id);
+        $dni = $fct->Alumno->dni;
+        $annexos = Adjunto::where('route', 'like', "dual/$dni")->get();
+        if ($annexos->isEmpty()){
+            Alert::info('No hi ha fitxers a importar');
+            return back();
+        }
+        foreach ($annexos as $annex){
+            $annex->route = "alumnofctaval/$id";
+            $annex->save();
+        }
+        Alert::info('Fitxers importats');
         return back();
     }
 

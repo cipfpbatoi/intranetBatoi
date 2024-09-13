@@ -457,6 +457,7 @@ return array(
             'A5' => 'Informe Competències adquirides',
             'delete' => 'Esborra fct',
             'unlink' => 'Esborra connexiò amb el SAO',
+            'importa' => 'Importa annexes dual any anterior'
 
         ),
         'AlumnoFct' => array(

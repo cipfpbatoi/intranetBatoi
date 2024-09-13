@@ -463,6 +463,7 @@ return array(
             'A5' => 'Informe competencias adquiridas',
             'delete' => 'Borra fct',
             'unlink' => 'Borra conexión con el SAO',
+            'importa' => 'Importa anexos dual año anterior'
 
         ),
         'AlumnoFct' => array(
