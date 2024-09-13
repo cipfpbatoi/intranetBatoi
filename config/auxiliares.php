@@ -149,7 +149,7 @@ return [
     'tipusFCT' => [
         1 => 'FCT',
         2 => 'Exempt',
-        3 => 'FCT Dual',
+        3 => 'FP Dual',
         4 => 'Formación en empresa general',
         5 => 'Formación en empresa intensiva',
      ],
