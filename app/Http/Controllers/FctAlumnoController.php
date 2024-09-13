@@ -61,35 +61,35 @@ class FctAlumnoController extends IntranetController
             'grid',
             new BotonImg(
                 'alumnofct.show',
-                ['img' => 'fa-plus', 'where' => ['asociacion', '<', '3'],'text'=>'Vore més']
+                ['img' => 'fa-plus', 'where' => ['asociacion', '<', '2'],'text'=>'Vore més']
             )
         );
         $this->panel->setBoton(
             'grid',
             new BotonImg(
                 'alumnofct.show',
-                ['img' => 'fa-plus', 'where' => ['asociacion', '==', '4'],'text'=>'Vore més']
+                ['img' => 'fa-plus', 'where' => ['asociacion', '>', '2'],'text'=>'Vore més']
             )
         );
         $this->panel->setBoton(
             'grid',
             new BotonImg(
                 'alumnofct.edit',
-                ['where' => ['asociacion', '<', '3'],'text'=>'Canviar dates']
+                ['where' => ['asociacion', '<', '2'],'text'=>'Canviar dates']
             )
         );
         $this->panel->setBoton(
             'grid',
             new BotonImg(
                 'alumnofct.edit',
-                ['where' => ['asociacion', '==', '4'],'text'=>'Canviar dates']
+                ['where' => ['asociacion', '>', '2'],'text'=>'Canviar dates']
             )
         );
         $this->panel->setBoton(
             'grid',
             new BotonImg(
                 'alumnofct.pdf',
-                ['where' => ['asociacion', '==', '3']]
+                ['where' => ['asociacion', '==', '2']]
             )
         );
         $this->panel->setBoton(
@@ -100,7 +100,7 @@ class FctAlumnoController extends IntranetController
                     'img' => 'fa-send-o',
                     'where' =>
                         [
-                            'asociacion', '<', 3,
+                            'asociacion', '<', 2,
                             'actualizacion', '<', hace(7),
                             'desde', 'anterior', hace(7),
                             'hasta','posterior',hoy(),
@@ -117,7 +117,7 @@ class FctAlumnoController extends IntranetController
                     'img' => 'fa-send-o',
                     'where' =>
                         [
-                            'asociacion', '==', 4,
+                            'asociacion', '>', 2,
                             'actualizacion', '<', hace(7),
                             'desde', 'anterior', hace(7),
                             'hasta','posterior',hoy(),
