@@ -315,10 +315,10 @@ class AlumnoFct extends Model
 
     public function getClassAttribute()
     {
-        if ($this->asociacion === 3) {
+        if ($this->asociacion === 2) {
             return 'bg-purple';
         }
-        if ($this->asociacion === 4) {
+        if ($this->asociacion === 3) {
             return 'bg-orange';
         }
         if (fechaInglesa($this->hasta) <= Hoy('Y-m-d')) {

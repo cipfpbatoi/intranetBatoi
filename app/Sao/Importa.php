@@ -296,6 +296,7 @@ class Importa
                     $dades[$key]['tipus'] = 'FCT';
                     $flexible = 1 ;
                 }
+                dd($dades[$key]['tipus'],config('auxiliares.tipusFCT'));
                 $asociacion =  asociacion_fct($dades[$key]['tipus']);
                 $erasmus = $dades[$key]['erasmus'] === 'No'?0:1;
 
