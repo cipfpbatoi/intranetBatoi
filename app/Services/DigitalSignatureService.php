@@ -123,7 +123,6 @@ class DigitalSignatureService
             $user = $cert->getCert()->data['subject']['commonName'];
             $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
             $imagePath = a1TempDir(true, '.png');
-            dd($imagePath,$image,$file,$newFile,$coordx,$coordy);
             File::put($imagePath, $image);
 
             $pdf = new SignaturePdf(
@@ -142,6 +141,7 @@ class DigitalSignatureService
                     'intranetUser' => authUser()->fullName,
                     'pdfPath' => $file,
                     'signedPdfPath' => $newFile,
+                    'imagePath' => $imagePath,
                 ]);
             } else {
                 Log::channel('certificate')->alert("Persona que signa diferent al certificat", [
