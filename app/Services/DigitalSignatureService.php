@@ -121,7 +121,7 @@ class DigitalSignatureService
     {
         try {
             $user = $cert->getCert()->data['subject']['commonName'];
-            $image = SealImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
+            $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
             $imagePath = a1TempDir(true, '.png');
             File::put($imagePath, $image);
 
@@ -141,6 +141,8 @@ class DigitalSignatureService
                     'pdfPath' => $file,
                     'signedPdfPath' => $newFile,
                     'imagePath' => $imagePath,
+                    'coordx' => $coordx,
+                    'coordy' => $coordy,
                 ]);
             } else {
                 Log::channel('certificate')->alert("Persona que signa diferent al certificat", [
