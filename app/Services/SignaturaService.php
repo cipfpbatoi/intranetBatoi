@@ -16,9 +16,9 @@ class SignaturaService
             $ruta = public_path('/storage/signatures/'.$name);
             return "<div style='".$style."'><img style='width:".(int)$x."px;heigth:"
                 .(int)$y."px' src='".$ruta."' alt='Signatura:'/></div>";
-        } else {
-            return $notFound;
         }
+        return $notFound;
+
     }
 
     public static function peu($dni)
@@ -42,12 +42,12 @@ class SignaturaService
         $name = $profesor->foto;
         return file_exists(storage_path().'/app/public/peus/'.$name);
     }
-    /*
+
 
     public static function getFile($dni)
     {
-        return "/Users/igomis/code/intranetBatoi/storage/app/public/signatures/$dni.png";
-        //return storage_path().'/app/public/signatures/'.$dni.'.png';
+        //return "/Users/igomis/code/intranetBatoi/storage/app/public/signatures/$dni.png";
+        return storage_path().'/app/public/signatures/'.$dni.'.png';
     }
-     */
+
 }
