@@ -121,7 +121,7 @@ class DigitalSignatureService
     {
         try {
             $user = $cert->getCert()->data['subject']['commonName'];
-            $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
+            $image = SealImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
             $imagePath = a1TempDir(true, '.png');
             File::put($imagePath, $image);
 
@@ -131,8 +131,7 @@ class DigitalSignatureService
                 SignaturePdf::MODE_RESOURCE
             );
 
-            $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy)
-                ->signature();
+            $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
             file_put_contents($newFile, $signed_pdf_content);
             if (self::validateUserSign($newFile)){
 
