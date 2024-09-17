@@ -12,7 +12,7 @@ use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SignaturePdf;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ValidatePdfSignature;
-use Styde\Html\Facades\Alert;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
 class DigitalSignatureService
