@@ -78,12 +78,10 @@ class AdministracionController extends Controller
     {
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
         foreach (Profesor::Activo()->get() as $profesor) {
-            //dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
-            try {
+             try {
                 Mail::to($profesor->email)->send(new Comunicado(  $remitente, $profesor,'email.apitoken'  ));
             } catch (RfcComplianceException $e) {
             }
-
         }
         Alert::info('Correus enviats');
         return back();

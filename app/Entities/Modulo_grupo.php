@@ -102,7 +102,8 @@ class Modulo_grupo extends Model
         $quants = $this->resultados->where('evaluacion',$trimestre)->count();
         if ($quants){
             return true;
-        }elseif (count($this->profesores())) {
+        }
+        if (count($this->profesores())) {
             return false;
         }
         return true;
@@ -126,10 +127,12 @@ class Modulo_grupo extends Model
 
     }
 
+    /*
     public function getTokenLinkAttribute(){
         $service = new JWTTokenService();
         $token = $service->createTokenProgramacio($this->id);
         return "https://pcompetencies.cipfpbatoi.es/login/auth/{$token}";
     }
+    */
     
 }

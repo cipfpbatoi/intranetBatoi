@@ -59,6 +59,14 @@ class JWTTokenService
         return $token->toString();
     }
 
+    public static function getTokenLink($id,$dni = null)
+    {
+        $service = new JWTTokenService();
+        $token = $service->createTokenProgramacio($id,$dni);
+        return "https://pcompetencies.cipfpbatoi.es/login/auth/{$token}";
+
+    }
+
     private function role($role): array
     {
         $roles = ['ROLE_USER'];
@@ -80,4 +88,6 @@ class JWTTokenService
                 return 'half-presential';
         }
     }
+
+
 }

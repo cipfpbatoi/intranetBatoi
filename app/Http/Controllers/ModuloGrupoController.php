@@ -53,8 +53,7 @@ class ModuloGrupoController extends IntranetController
 
     protected function link($id)
     {
-        $modulo = Modulo_grupo::find($id);
-        return redirect()->away($modulo->TokenLink);
+         return redirect()->away(JWTTokenService::getTokenLink($id));
     }
 
 }
