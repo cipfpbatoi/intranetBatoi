@@ -48,6 +48,7 @@ class Actividad extends Model
         //'poll' => ['type' => 'checkbox'],
         'fueraCentro' => ['type' => 'checkbox'],
         'transport' => ['type' => 'checkbox'],
+        'complementaria' => ['type' => 'checkbox'],
 
     ];
     protected $dispatchesEvents = [
