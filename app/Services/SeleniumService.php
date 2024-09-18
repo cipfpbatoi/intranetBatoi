@@ -32,13 +32,13 @@ class SeleniumService
         try {
             if ($desiredCapabilities == null) {
                 if (config('services.selenium.firefox_path')) {
-
-                    $desiredCapabilities = DesiredCapabilities::firefox()->setCapability(FirefoxOptions::CAPABILITY,
+                     $desiredCapabilities = DesiredCapabilities::firefox()->setCapability(FirefoxOptions::CAPABILITY,
                         ['binary' => config('services.selenium.firefox_path')]);
                 } else {
                     $desiredCapabilities = DesiredCapabilities::firefox();
                 }
             }
+
 
             $driver = RemoteWebDriver::create('http://'.(config('services.selenium.url')), $desiredCapabilities);
 

@@ -54,6 +54,7 @@ class JWTTokenService
             ->withClaim('surnames', $user->surnames)
             ->withClaim('email', $user->email)
             ->withClaim('department', $user->Departamento->depcurt)
+            ->withClaim('version', '1')
             ->getToken($this->config->signer(), $this->config->signingKey());
 
         return $token->toString();
