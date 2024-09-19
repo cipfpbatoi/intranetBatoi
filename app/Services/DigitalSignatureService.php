@@ -124,6 +124,7 @@ class DigitalSignatureService
             $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
 
             $imagePath = storage_path('tmp/'.Str::orderedUuid() . '.png');
+            $imagePath =storage_path('tmp/actas.png');
             File::put($imagePath, $image);
 
             $pdf = new SignaturePdf(
@@ -131,11 +132,11 @@ class DigitalSignatureService
                 $cert,
                 SignaturePdf::MODE_RESOURCE
             );
-            sleep(2);
+            //sleep(2);
 
             Log::channel('certificate')->info('Image path:', ['imagePath' => $imagePath, 'imageExists' => file_exists($imagePath)]);
 
-            $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy,50,50)->signature();
+            $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy  )->signature();
             file_put_contents($newFile, $signed_pdf_content);
             if (self::validateUserSign($newFile)){
 
