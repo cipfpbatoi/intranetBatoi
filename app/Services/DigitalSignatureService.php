@@ -123,8 +123,7 @@ class DigitalSignatureService
             $user = $cert->getCert()->data['subject']['commonName'];
             $image = signImage::fromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y');
 
-            $imagePath = storage_path('tmp/'.Str::orderedUuid() . '.png');
-            $imagePath =storage_path('tmp/actas.png');
+            $imagePath = storage_path('/tmp/'.Str::orderedUuid() . '.png');
             File::put($imagePath, $image);
 
             $pdf = new SignaturePdf(
