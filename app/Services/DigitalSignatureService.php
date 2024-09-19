@@ -130,7 +130,9 @@ class DigitalSignatureService
                 $cert,
                 SignaturePdf::MODE_RESOURCE
             );
-            sleep(1);
+            sleep(2);
+
+            Log::channel('certificate')->info('Image path:', ['imagePath' => $imagePath, 'imageExists' => file_exists($imagePath)]);
 
             $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
             file_put_contents($newFile, $signed_pdf_content);
