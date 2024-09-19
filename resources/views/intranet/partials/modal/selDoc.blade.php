@@ -1,5 +1,5 @@
 <!-- Modal Nou -->
-<x-modal name="A3" title='Selecciona elements' action="/signatura/A3/send"
+<x-modal name="A3A" title='Selecciona elements' action="/signatura/A3/send"
          message='{{ trans("messages.buttons.confirmar")}}'>
         <table id="tableA3"></table>
 </x-modal>

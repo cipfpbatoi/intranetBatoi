@@ -1,7 +1,7 @@
 
 $(".seleccion").on("click",function(event){
     event.preventDefault();
-    $(this).attr("data-toggle", "modal").attr("data-target", "#A3").attr("href", "");
+    $(this).attr("data-toggle", "modal").attr("data-target", "#A3A").attr("href", "");
     var token = $("#_token").text();
     var url = $(this).attr("data-url");
     var route = $(this).attr("id");
