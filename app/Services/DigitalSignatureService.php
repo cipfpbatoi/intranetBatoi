@@ -131,7 +131,7 @@ class DigitalSignatureService
                 $cert,
                 SignaturePdf::MODE_RESOURCE
             );
-            //sleep(2);
+
 
             Log::channel('certificate')->info('Image path:', ['imagePath' => $imagePath, 'imageExists' => file_exists($imagePath)]);
 
