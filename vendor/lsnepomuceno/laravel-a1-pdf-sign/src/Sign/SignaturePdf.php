@@ -154,7 +154,6 @@ class SignaturePdf
              */
             extract($this->image);
             $this->pdf->Image($imagePath, $pageX, $pageY, $imageW, $imageH, 'PNG');
-            dd($imagePath);
             $this->pdf->setSignatureAppearance($pageX, $pageY, $imageW, $imageH, $currentPage ?? $page);
         }
     }

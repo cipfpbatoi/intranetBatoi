@@ -129,7 +129,7 @@ class DigitalSignatureService
             $pdf = new SignaturePdf(
                 $file,
                 $cert,
-                SignaturePdf::MODE_RESOURCE
+                SignaturePdf::MODE_DOWNLOAD
             );
 
 
