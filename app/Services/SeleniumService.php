@@ -39,8 +39,7 @@ class SeleniumService
                 }
             }
 
-
-            $driver = RemoteWebDriver::create('http://'.(config('services.selenium.url')), $desiredCapabilities);
+            $driver = RemoteWebDriver::create('http://'.(config('services.selenium.url')), $desiredCapabilities,5000,120000);
 
         } catch (\Exception $e) {
             throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium'.$e->getMessage());
