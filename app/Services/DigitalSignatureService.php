@@ -137,6 +137,7 @@ class DigitalSignatureService
 
             $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
             file_put_contents($newFile, $signed_pdf_content);
+            
             if (self::validateUserSign($newFile)){
 
                 Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
