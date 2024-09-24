@@ -5,7 +5,7 @@ $(".seleccion").on("click",function(event){
     var token = $("#_token").text();
     var url = $(this).attr("data-url");
     var route = $(this).attr("id");
-    $('#formA3').attr("action",route);
+    $('#formA3A').attr("action",route);
     $.ajax({
         method: "GET",
         url: url,
@@ -24,7 +24,7 @@ $("#A3A .submit").click(function() {
     $("#checkall").prop('checked',false);
     $('#signatura').modal('hide');
     $(this).attr("data-toggle", "modal").attr("data-target", "#loading").attr("href", "");
-    $("#formA3" ).submit();
+    $("#formA3A" ).submit();
 });
 
 
