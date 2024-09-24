@@ -197,10 +197,9 @@ class SignaturaController extends ModalController
     }
     public function sendMultiple(Request $request,$tipus)
     {
-        if ($tipus == 'A3'){ //al alumno
+        if ($tipus === 'A3'){ //al alumno
             foreach ($request->all() as $key => $value) {
-                if (is_numeric($key) && $value == 'on') {
-                    $signatura = Signatura::find($key);
+                if (is_numeric($key) && $value === 'on' && $signatura = Signatura::find($key)) {
                     $signatura->sendTo = 1;
                     $signatura->save();
                     $signatura->mail = $signatura->Alumno->email;
@@ -216,7 +215,7 @@ class SignaturaController extends ModalController
             }
             return back();
         }
-        if ($tipus == 'All'){ //a l'instructor
+        if ($tipus === 'All'){ //a l'instructor
             if (count($request->toArray()) === 2){
                 $element = array_keys($request->except('_token'));
                 $alumnoFct = AlumnoFct::find(reset($element));
@@ -238,13 +237,13 @@ class SignaturaController extends ModalController
                 return $mail->render('/signatura');
             }
             foreach ($request->all() as $key => $value) {
-                if (is_numeric($key) && $value == 'on') {
+                if (is_numeric($key) && $value === 'on') {
                     $alumnoFct = AlumnoFct::find($key);
                     $signatures = [];
                     $a1 = false;
                     foreach ($alumnoFct->signatures as $signatura){
                         $signatures[$signatura->simpleRouteFile] = 'application/pdf';
-                        if ($signatura->tipus == 'A1'){
+                        if ($signatura->tipus === 'A1'){
                             $a1 = true;
                         }
                         $view = $signatura->tipus === 'A5' ? 'email.fct.A5' : 'email.fct.anexes';

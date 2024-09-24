@@ -19,7 +19,7 @@ $(".seleccion").on("click",function(event){
         });
 });
 
-$("#A3 .submit").click(function() {
+$("#A3A .submit").click(function() {
     event.preventDefault();
     $("#checkall").prop('checked',false);
     $('#signatura').modal('hide');
