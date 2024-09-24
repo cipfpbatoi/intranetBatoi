@@ -108,7 +108,6 @@
  */
 
 // TCPDF configuration
-use Illuminate\Support\Facades\Log;
 
 require_once(dirname(__FILE__).'/tcpdf_autoconfig.php');
 // TCPDF static font methods and data
@@ -3012,7 +3011,6 @@ class TCPDF {
 		if (defined('K_TCPDF_THROW_EXCEPTION_ERROR') AND !K_TCPDF_THROW_EXCEPTION_ERROR) {
 			die('<strong>TCPDF ERROR: </strong>'.$msg);
 		} else {
-            Log::channel('certificate')->error('TCPDF ERROR: '.$msg);
             throw new Exception('TCPDF ERROR: '.$msg);
 		}
 	}

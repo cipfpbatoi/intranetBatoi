@@ -11,6 +11,7 @@ use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Adjunto;
+use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Empresa;
@@ -278,57 +279,20 @@ class AdministracionController extends Controller
     }
 
     public function consulta() {
-        $programaciones = Programacion::all();
-
-
-        // Autenticació per obtenir el token
-        $loginResponse = Http::withHeaders([
-            'Content-Type' => 'application/json',
-            // Afegeix altres headers si n'hi ha
-        ])->post('https://programacions.cipfpbatoi.es/api/login_check', [
-            'email' => 'i.gomismullor@edu.gva.es', // Canvia-ho per les teves credencials
-            'password' => 'igomis1234*'  // Canvia-ho per les teves credencials
-        ]);
-
-        if (!$loginResponse->successful()) {
-            return response()->json(['error' => 'Error en l\'autenticació'], 401);
-        }
-
-        $token = $loginResponse->json('token');
-
-        $failedProposals = [];
+        $alumnos = Alumno::all();
         $success = 0;
 
-        foreach ($programaciones as $programacion) {
-            $grupo = $programacion->Grupo;
-            if ($grupo){
-                if ($grupo->turno == 'S'){
-                    $turn = 'half-presential';
-                } else {
-                    $turn = 'presential';
-                }
-                $moduleCode = $programacion->Modulo->codigo;
-                $cycleId = $programacion->ciclo->id;
-
-                $response = Http::withToken($token)->post("https://programacions.cipfpbatoi.es/api/syllabus/{$cycleId}/{$moduleCode}/{$turn}", [
-                    'proposals' => $programacion->propuestas,
-                ]);
-
-                if (!$response->successful()) {
-                    $failedProposals[] = [
-                        'id' => $programacion->id,
-                        'turn' => $turn,
-                        'error' => $response->body()
-                    ];
-                } else {
-                    $success++;
-                }
+        foreach ($alumnos as $alumno) {
+            // Eliminar el prefix si cal
+            if (strpos($alumno->foto, 'fotos/') === 0) {
+                 $this->foto = substr($this->foto, strlen('fotos/'));
+                 $this->save();
+                 $success++;
             }
         }
 
         return response()->json([
-            'message' => "$success correctes, " . count($failedProposals) . " errors",
-            'errors' => $failedProposals
+            'message' => "$success canvis "
         ]);
     }
 
