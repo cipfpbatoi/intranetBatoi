@@ -285,8 +285,8 @@ class AdministracionController extends Controller
         foreach ($alumnos as $alumno) {
             // Eliminar el prefix si cal
             if (strpos($alumno->foto, 'fotos/') === 0) {
-                 $this->foto = substr($this->foto, strlen('fotos/'));
-                 $this->save();
+                 $alumno->foto = substr($alumno->foto, strlen('fotos/'));
+                 $alumno->save();
                  $success++;
             }
         }
