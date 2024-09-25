@@ -28,7 +28,7 @@ class FDFPrepareService
             }
             return $nameFile;
         }  catch (Exception $e) {
-                dd($e->getMessage(), $pdf, $nameFile);
+            return null;
         }
     }
 

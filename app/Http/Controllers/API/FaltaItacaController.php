@@ -95,7 +95,9 @@ class FaltaItacaController extends ApiBaseController
                     $falta->enCentro = $hora['enCentro'];
                     $falta->justificacion = $hora['justificacion'];
                     $falta->estado = 1;
+                     
                     $falta->save();
+
                     $alta = true;
                     $respuesta[$hora['sesion_orden']]=1;
                 }
