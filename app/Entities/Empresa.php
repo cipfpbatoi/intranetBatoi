@@ -119,13 +119,15 @@ class Empresa extends Model
         $file = storage_path('app/' . $this->fichero);
         if (!$this->fichero || !file_exists($file)) {
             return true;
-        } else {
-            return  date("Y-m-d", filemtime($file)) < "2022-08-31";
         }
-    }
+        return  date("Y-m-d", filemtime($file)) < "2023-08-31";
+     }
 
     public function getDataSignaturaAttribute($entrada)
     {
+        if (!$entrada) {
+            return '';
+        }
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
