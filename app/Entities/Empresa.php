@@ -14,7 +14,7 @@ class Empresa extends Model
 
     protected $table = 'empresas';
     protected $fillable = [ 'europa','sao','concierto','cif', 'nombre', 'email', 'direccion', 'localidad', 'telefono',
-        'dual', 'actividad', 'delitos', 'menores','copia_anexe1','observaciones',
+        'dual', 'actividad', 'delitos', 'menores', 'observaciones',
         'gerente', 'fichero', 'creador', 'idSao','data_signatura'];
     protected $rules = [
         'cif' => 'required|alpha_num',
@@ -33,7 +33,6 @@ class Empresa extends Model
         'email' => ['type' => 'email'],
         'telefono' => ['type'=>'number'],
         'sao' => ['type' => 'checkbox'],
-        'copia_anexe1' => ['type'=>'checkbox'],
         'observaciones' => ['type' => 'textarea'],
         'fichero' => ['type' => 'file'],
         'creador' => ['type' => 'hidden'],
@@ -47,7 +46,7 @@ class Empresa extends Model
     ];
     protected $fileField = 'cif';
 
-    protected $attributes = ['europa'=>0,'sao'=>1,'copia_anexe1'=>1];
+    protected $attributes = ['europa'=>0,'sao'=>1,'data_signatura'=>null ];
 
     public function centros()
     {

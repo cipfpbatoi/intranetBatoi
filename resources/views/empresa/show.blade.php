@@ -99,18 +99,6 @@
                     </div>
                 </div>
             </li>
-            <li>
-                <p>{{trans('validation.attributes.anexo1')}}</p>
-                <div class="progress progress_sm">
-                    <div class="progress-bar bg-green" role="progressbar"
-                         @if ($elemento->copia_anexe1)
-                             data-transitiongoal="100">
-                        @else
-                            data-transitiongoal="0">
-                        @endif
-                    </div>
-                </div>
-            </li>
             @if ($elemento->actividad)
                 <li>
                     <p><strong>@lang("messages.generic.actividades")</strong></p>
@@ -125,9 +113,6 @@
             @endif
         </ul>
         <!-- end of skills -->
-        <a href="/empresa/{{$elemento->id}}/A1" class="fa fa-file-zip-o" target="_blank">
-            Nou Annexe I
-        </a>
     </div>
     <div class="col-md-9 col-sm-9 col-xs-12">
         <div class="x_panel" style="height: auto;">
