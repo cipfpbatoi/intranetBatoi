@@ -304,13 +304,13 @@ class FctAlumnoController extends IntranetController
     public function pdf($id)
     {
         $fct = AlumnoFct::findOrFail($id);
-        if ($fct->asociacion < 3) {
+        if ($fct->asociacion < 2) {
             return self::preparePdf($id)->stream();
         }
-        if ($fct->asociacion == 3) {
+        if ($fct->asociacion == 2) {
             return response()->file(FDFPrepareService::exec(new ExempcioResource(AlumnoFct::find($id))));
         }
-        if ($fct->asociacion == 4){
+        if ($fct->asociacion == 3){
             return response()->file(FDFPrepareService::exec(new AVIIIResource(AlumnoFct::find($id))));
         }
     }
