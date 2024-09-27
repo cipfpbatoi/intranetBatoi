@@ -17,7 +17,6 @@ class FctConvalidacion extends Fct
         'idAlumno',
         'horas',
         'asociacion',
-        'idProfesor'
     ];
     protected $notFillable = ['idAlumno','horas'];
     protected $rules = [

@@ -52,7 +52,7 @@ class FctAlumnoController extends IntranetController
 
     public function search()
     {
-        return AlumnoFct::misFcts()->get();
+        return AlumnoFct::totesFcts()->get();
     }
 
     protected function iniBotones()
@@ -275,7 +275,6 @@ class FctAlumnoController extends IntranetController
             if (!$elemento) {
                 $elemento = new FctConvalidacion();
                 $this->validateAll($request, $elemento);
-                $elemento->idProfesor = authUser()->dni;
                 $elemento->fillAll($request);
             }
 

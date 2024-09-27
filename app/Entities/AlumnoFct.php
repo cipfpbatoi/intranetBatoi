@@ -89,6 +89,12 @@ class AlumnoFct extends Model
         return $query->whereIn('idProfesor', $profesor)->whereNotNull('idSao');
     }
 
+    public function scopeTotesFcts($query, $profesor=null)
+    {
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor);
+    }
+
 
     public function scopeMisProyectos($query, $profesor=null)
     {
