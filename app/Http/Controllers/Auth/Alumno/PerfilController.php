@@ -22,8 +22,15 @@ class PerfilController extends Perfil
 
     public function update(Request $request, $id = null)
     {
-        $request->validate(['foto' => 'nullable|image|mimes:jpg,jpeg,png|max:10240']);
-        $new = $this->class::find(Auth::user('alumno')->nia);
+        $request->validate(
+            ['foto' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+                'telef1' =>'max:14',
+                'telef2' =>'max:14',
+                'email' => 'email|max:45'
+            ]
+        );
+        $nia = $id ?? Auth::user('alumno')->nia;
+        $new = $this->class::find($nia);
         parent::update($request, $new);
         return redirect("/alumno/home");
     }
