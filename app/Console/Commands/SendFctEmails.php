@@ -38,7 +38,7 @@ class SendFctEmails extends Command
      */
     public function handle()
     {
-        if (config('variables.enquestesAutomatiques')) {
+
             $alumnosAprobados = hazArray(AlumnoFctAval::aprobados()->get(), 'idAlumno');
             $alumnosPendientes = AlumnoFctAval::pendienteNotificar($alumnosAprobados)->get();
 
@@ -83,5 +83,5 @@ class SendFctEmails extends Command
                 }
             }
         }
-    }
+
 }
