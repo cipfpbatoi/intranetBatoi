@@ -46,7 +46,7 @@ class AlumnoFctAval extends AlumnoFct
      public function scopePendienteNotificar($query, array $alumnos)
      {
          return $query->whereIn('idAlumno', $alumnos)
-             ->where('correoAlumno', false);
+             ->where('correoAlumno', 0);
      }
      public function scopeCalificados($query)
      {
