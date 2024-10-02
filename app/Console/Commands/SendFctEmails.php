@@ -47,6 +47,9 @@ class SendFctEmails extends Command
 
                 try {
                     Mail::to($alumno->Alumno->email, $alumno->Alumno->fullName)->send(new CertificatAlumneFct($alumno));
+                    avisa($fct->tutor->dni,
+                        'El correu amb el certificat de FCT de ' . $alumno->Alumno->fullName . " ha estat enviat a l'adreça " . $alumno->Alumno->email,
+                        '#', 'Servidor de correu');
                     $alumno->correoAlumno = 1;
                     $alumno->save();
                 } catch (Exception $e) {
@@ -64,6 +67,9 @@ class SendFctEmails extends Command
                             ->send(new AvalFct($fct, 'instructor'));
                         Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
                             ->send(new CertificatInstructorFct($fct));
+                        avisa($fct->tutor->dni,
+                            'El correu amb el certificat de FCT de ' . $fct->Instructor->nombre . " ha estat enviat a l'adreça " . $fct->Instructor->email,
+                            '#', 'Servidor de correu');
                         $fct->correoInstructor = 1;
                         $fct->save();
                     } catch (\Exception $e) {
