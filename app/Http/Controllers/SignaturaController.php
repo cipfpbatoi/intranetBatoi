@@ -31,8 +31,35 @@ class SignaturaController extends ModalController
      */
     protected $model = 'Signatura';
     protected $parametresVista = ['modal' => ['signatura','selDoc','upload','informes','loading']];
+    protected $formFields = ['tipus' => ['type' => 'select'],
+        'fct' => ['type' => 'select'] ,
+        'file' => ['type' => 'file'],
+    ];
 
-
+    public function store(Request $request )
+    {
+        $request->validate([
+            'tipus' => 'required',
+            'fct' => 'required',
+            'file' => 'required|file|mimes:pdf|max:2048',
+        ]);
+        $file = $request->file('file');
+        $tipus = $request->tipus;
+        $idSao =  $request->fct ;
+        $fctAl = AlumnoFct::where('idSao',$idSao)->first();
+        $path = storage_path('app/annexes/');
+        $fileName = "{$tipus}_{$idSao}.pdf";
+        $file->move($path, $fileName );
+        $signatura = new Signatura([
+            'tipus' => $request->tipus,
+            'idProfesor' => authUser()->dni,
+            'idSao' => $idSao,
+            'sendTo' => 0,
+            'signed' => 0
+        ]);
+        $signatura->save();
+        return back();
+    }
 
     /**
      *
@@ -50,7 +77,7 @@ class SignaturaController extends ModalController
             )
         );
 
-        $this->panel->setBotonera([],['delete','pdf','show']);
+        $this->panel->setBotonera(['create'],['delete','pdf','show']);
         $this->panel->setBoton(
             'grid',
             new BotonImg(

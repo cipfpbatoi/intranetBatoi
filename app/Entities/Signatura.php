@@ -179,4 +179,30 @@ class Signatura extends Model
         }
         return ($this->signed >= 3) ? 'bg-blue-sky':'bg-red';
     }
+
+    public function getFctOptions()
+    {
+        $user = AuthUser();
+        $alumnos  = AlumnoFct::misFcts($user->dni)->get()->map(function ($fct) {
+             return [  $fct->idSao  => $fct->Alumno->fullName];
+        });
+        $array = array();
+
+        foreach ($alumnos->toArray() as $tmp) {
+            foreach ($tmp as $key => $value) {
+                $array[$key] = $value;
+            }
+        }
+        return $array;
+    }
+
+    public function getTipusOptions()
+    {
+        return [
+            'A1' => 'A1',
+            'A2' => 'A2',
+            'A3' => 'A3',
+            'A5' => 'A5',
+        ];
+    }
 }
