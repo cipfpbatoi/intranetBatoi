@@ -23,16 +23,23 @@ class AlumnoNoFctFinder extends Finder
 
     private function filter(&$elements)
     {
-        $uniqueAlumnos = [];
+        //$uniqueAlumnos = [];
         $filteredElements = [];
 
         foreach ($elements as $element) {
             // Verificar si l'alumne ja ha estat afegit
-            if (!isset($uniqueAlumnos[$element->idAlumno])) {
+            /*if (!isset($uniqueAlumnos[$element->idAlumno])) {
                 // Afegir l'alumne a la llista de únics
                 $uniqueAlumnos[$element->idAlumno] = true;
                 $filteredElements[] = $element;
+            }*/
+            if (!isset($uniqueAlumnos[$element->idAlumno])) {
+                // Afegir l'alumne a la llista de únics
+                $uniqueAlumnos[$element->idAlumno] = true;
+
             }
+
+            $filteredElements[] = $element;
             // Marcar l'element segons la condició
             $element->marked = ($element->pg0301 == 0);
         }
