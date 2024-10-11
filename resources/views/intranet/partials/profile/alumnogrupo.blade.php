@@ -5,7 +5,7 @@
                 id="{{$alumno->nia}}"
                 cab1="{{ $alumno->nia }}"
                 cab2="{{ $alumno->dni }}"
-                title="{{ asset('storage/fotos/'.$alumno->foto) }}"
+                title="{{ asset('storage/fotos/'.$alumno->foto) }}?v={{ time() }}"
                 subtitle="{{ $alumno->fullName }}"
                 view="alumno"
         >
