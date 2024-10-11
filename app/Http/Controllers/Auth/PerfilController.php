@@ -46,8 +46,12 @@ abstract class PerfilController extends IntranetController
             if ($fitxer->isValid()) {
                 if ($new->foto) {
 
-                    ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos/'.$new->foto));
-                    Alert::info('Modificació foto feta amb exit');
+                    $success = ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos/'.$new->foto));
+                    if ($success) {
+                        Alert::info('Modificació foto feta amb exit');
+                    } else {
+                        Alert::info('Error en la modificació de la foto');
+                    }
                 } else {
                     $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
                     $new->foto = $nameFile;

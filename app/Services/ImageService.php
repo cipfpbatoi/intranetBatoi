@@ -41,7 +41,7 @@ class ImageService
     public static function updatePhotoCarnet($fitxerOriginal,$fitxerDesti)
     {
         $imatgeRedimensionada = self::transform($fitxerOriginal);
-        imagepng($imatgeRedimensionada, $fitxerDesti);
+        return imagepng($imatgeRedimensionada, $fitxerDesti) ;
     }
     public static function newPhotoCarnet($fitxerOriginal,$directoriDesti) : String
     {
