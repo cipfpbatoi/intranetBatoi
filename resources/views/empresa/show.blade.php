@@ -15,13 +15,12 @@
             @endif
         </h4>
         @if (!empty($elemento->fichero))
-                <embed
-                        type="application/pdf"
-                        src="/empresa/{{$elemento->id}}/document#toolbar=0&navpanes=0&scrollbar=0"
-                        width="100%"
-                        height="150px"
-                />
-
+            <embed
+                    type="application/pdf"
+                    src="/empresa/{{$elemento->id}}/document?v={{ time() }}#toolbar=0&navpanes=0&scrollbar=0"
+                    width="100%"
+                    height="150px"
+            />
         @endif
         <ul class="list-unstyled user_data">
             <li>
