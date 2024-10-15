@@ -19,9 +19,12 @@ Route::get('alumnofct/{grupo}/grupo', 'AlumnoFctController@indice');
 Route::get('/convenio', 'EmpresaController@indexConvenio');
 Route::get('miIp', 'IPController@miIP');
 Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
+Route::get('server-time', 'GuardiaController@getServerTime' );
+
 
 
 Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('grupo/list/{id}', 'GrupoController@list');
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual');
     Route::resource('dual', 'DualController', ['except' => [ 'create']]);
     Route::get('fct/{id}/alFct', 'FctController@llist');
