@@ -52,6 +52,7 @@ class FctAlumnoController extends IntranetController
 
     public function search()
     {
+
         return AlumnoFct::totesFcts()->get();
     }
 

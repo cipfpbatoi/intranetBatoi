@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Horario;
@@ -39,6 +40,9 @@ class GrupoController extends IntranetController
      * @var array
      */
     protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo','XDual','Torn'];
+    protected $parametresVista = ['modal' => [  'selAlumGrup']];
+
+
 
 
 
@@ -73,7 +77,17 @@ class GrupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('grupo.carnet', ['roles' => config(self::TUTOR),'where'=>['tutor','==',AuthUser()->dni]]));
         $this->panel->setBoton('grid', new BotonImg('grupo.edit', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid',new BotonImg('equipo.grupo',['img' => 'fa-graduation-cap']));
-        $this->panel->setBoton('grid',new BotonImg('grupo.list',['img' => 'fa-file-excel-o']));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'grupo.list',
+                    [
+                         'img' => 'fa-file-excel-o',
+                        'class' => 'selecciona',
+                     ]
+            )
+        );
+
 
 
         if (AuthUser()->xdepartamento == 'Fol' && date('Y-m-d') > config('variables.certificatFol')) {
@@ -153,6 +167,28 @@ class GrupoController extends IntranetController
             ->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
+    public function list(Request $request)
+    {
+        // Cerca el grup i els alumnes associats
+        $ids = array( );
+        foreach ($request->toArray() as $nia => $value){
+             if ($value === 'on') {
+                $ids[] = $nia;
+            }
+        }
+        $alumnos =  Alumno::whereIn('nia',$ids)->get()->sortBy( 'nameFull');
+        $alumnes = hazArray($alumnos,'nameFull');
+
+        // Combina el nom del grup amb els noms dels alumnes
+        $nomsAlumnes = implode('; ', $alumnes);
+
+
+        // Retorna la llista d'alumnes separada per ;
+        return response($nomsAlumnes, 200)
+            ->header('Content-Type', 'text/plain');
+    }
+
+    /*
     public function list($idGrupo)
     {
         $grupo = Grupo::find($idGrupo);
@@ -167,6 +203,7 @@ class GrupoController extends IntranetController
             ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'] // Aquest és el Content-Type per a fitxers .xlsx
         );
     }
+    */
 
     /**
      * @param $grupo
