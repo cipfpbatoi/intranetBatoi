@@ -27,6 +27,16 @@ var dias_semana=["D", "L", "M", "X", "J", "V", "S"];
 
 $(function() {
 	$.ajax({
+		url: "/api/server-time",
+		type: "GET",
+		dataType: "json"
+	}).then(function(res) {
+		// Assumim que el servidor retorna `res.date` i `res.time`
+		diaHoy = res.date;
+		horaActual = res.time;
+		setSesion();
+
+	$.ajax({
     	url: "/api/miIp",
     	type: "GET",
     	dataType: "json",
@@ -61,14 +71,15 @@ $(function() {
 	$('#hora').prepend('<option value="0">-- Seleciona --</option>');
 	$('#hora').val(0);				
 	// Miramos la fecha y hora actuales y configuramos el datepicker
-	var ahora=new Date();
-	diaHoy=ahora.toISOString().split('T')[0];
+		// Configura el datepicker
+	var	ahora = new Date(`${res.date}T${res.time}`);
+
+		// Actualitza el datepicker
 	$('#dia').attr('maxDate', diaHoy);
-	$("#dia").val(ahora.getDate()+"-"+(ahora.getMonth()+1)+"-"+ahora.getFullYear());
-	diaSelec=diaHoy;
-//	var hora=ahora.toLocaleTimeString().substr(0,5);
-	horaActual=ahora.toTimeString().substr(0,5);
-	setSesion();
+	$("#dia").val(ahora.getDate() + "-" + (ahora.getMonth() + 1) + "-" + ahora.getFullYear());
+	diaSelec = diaHoy;
+
+	 setSesion();
 //hora="17:00";
 	// Pediremos el horario del profesor para ver las guardias y los tramos horarios
 	// Cuando los tengamos habilitamos esas horas en el select de tramos horarios
@@ -111,7 +122,8 @@ $(function() {
 		}
 	});
 	$("#hora").on("change", cambiaHora);
-	$("#submit").on("click", modDatos);    
+	$("#submit").on("click", modDatos);
+	});
 })
 
 function habilitaHoras(fecha) {

@@ -24,6 +24,15 @@ class Incidencia extends Model
         'observaciones',
         'fecha'
     ];
+
+    protected $visible = [
+        'tipo',
+        'descripcion',
+        'observaciones',
+        'solucion',
+        'fechasolucion'
+
+    ];
     protected $descriptionField = 'descripcion';
 
     use BatoiModels;

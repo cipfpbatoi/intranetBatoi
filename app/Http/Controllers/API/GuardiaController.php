@@ -18,5 +18,15 @@ class GuardiaController extends ApiBaseController
         return $this->sendResponse($data, 'OK');
     }
 
+    public function getServerTime()
+    {
+        return response()->json([
+            'date' => now()->toDateString(),
+            'time' => now()->toTimeString(),
+        ]);
+    }
+
+
+
     
 }
