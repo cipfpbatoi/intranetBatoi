@@ -75,6 +75,7 @@ return [
         'avisos' => [ 'idProfesor' => [0, 3], 'responsable' => [1] ],
         'resolve' => '3',
         'refuse' => '0',
+        'mensaje' => 'solucion'
     ],
     'OrdenTrabajo' => [
         'modelo' => 'OrdenTrabajo',

@@ -29,10 +29,11 @@ class StateService
     {
         if ($fecha != null) {
             $this->makeDocument();
-            $this->dateResolve($fecha);
+            $this->dateResolve($fecha,$mensaje);
         }
 
         $this->element->estado = $estado;
+
         $this->element->save();
 
         AdviseService::exec($this->element, $mensaje);
@@ -51,10 +52,14 @@ class StateService
         }
     }
 
-    private function dateResolve($fecha)
+    private function dateResolve($fecha,$mensaje)
     {
         if (isset($this->element->fechasolucion)) {
             $this->element->fechasolucion = $fecha;
+        }
+        if (isset($this->statesElement['mensaje']) && $mensaje) {
+            $field = $this->statesElement['mensaje'];
+            $this->element->$field = $mensaje;
         }
     }
 
