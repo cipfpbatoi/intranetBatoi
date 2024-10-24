@@ -23,7 +23,7 @@
             </div>
             <div style="width: 100%; margin-bottom: 0px ;">
                 <div style="float:left;width:69%;">
-                    <p style="font-size: 6pt;  margin-top:40px;margin-bottom: 6px">{!! fullDireccion() !!}<br/>Telef: {!! config('contacto.telefono') !!}<br/>{!! config('contacto.web') !!}</p>
+                    <p style="padding-left: 2px; font-size: 6pt;  margin-top:40px;margin-bottom: 6px">{!! fullDireccion() !!}<br/>Telef: {!! config('contacto.telefono') !!}<br/>{!! config('contacto.web') !!}</p>
                     <div style="float:left;width:65%; text-align: center;margin-top: 10px;">
                         <strong style="font-size: 9pt">{!!$datosInforme[1]!!}</strong>
                     </div>
