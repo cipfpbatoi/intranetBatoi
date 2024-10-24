@@ -28,7 +28,7 @@
                         <strong style="font-size: 9pt">{!!$datosInforme[1]!!}</strong>
                     </div>
                     <div style="float:left;width:35%;text-align: center;">
-                        <strong style="font-size: 7pt">Validesa
+                        <strong style="font-size: 7pt">Validesa </br>
                             {!! $datosInforme[0] !!}-{!! $datosInforme[0]+3 !!}</strong>
                     </div>
                 </div>
