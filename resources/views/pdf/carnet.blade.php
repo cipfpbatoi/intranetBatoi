@@ -39,7 +39,7 @@
         background-size: 120% auto;
         overflow: hidden;
         clear: both;">
-            <div style="width: 100%; margin-bottom: 0px;">
+            <div style="width: 99%; margin-bottom: 0px;">
                 <p style="font-size: 10pt;text-align: center; margin-bottom: 1px;margin-top: 3px;"><strong >{!! config('contacto.nombre') !!}</strong></p>
                 <strong style="padding-left: 2px; font-size: 9pt;">Nom : {!! $elemento->apellido1 !!} {!! $elemento->apellido2 !!}, {!! $elemento->nombre !!}</strong><br/>
                 @if (isset($elemento->nia))
