@@ -12,7 +12,7 @@
         background-size: 120% auto;
         overflow: hidden;
         clear: both;">
-            <div style="width: 100%; margin-bottom: 0px ;">
+            <div style="width: 100%; margin-bottom: 0px ; padding: 1px">
                 <p style="font-size: 10pt;text-align: center; margin-bottom: 1px;margin-top: 3px;"><strong >{!! config('contacto.nombre') !!}</strong></p>
                 <strong style="font-size: 9pt;">Nom : {!! $elemento->apellido1 !!} {!! $elemento->apellido2 !!}, {!! $elemento->nombre !!}</strong><br/>
                 @if (isset($elemento->nia))
@@ -34,7 +34,7 @@
                 </div>
                 <div style="float:left;width:29%;margin-right: 5px;">
                     @if ($elemento->foto)
-                        <img style="border:black solid thin;float:right" src="{{public_path('/storage/fotos/'.$elemento->foto)}}" width="68px" height="90px" alt="Foto Carnet"/>
+                        <img style="border:white solid thin;float:right; border-radius: 40%;" src="{{public_path('/storage/fotos/'.$elemento->foto)}}" width="68px" height="90px" alt="Foto Carnet"/>
                     @else
                         <img style="border:black solid thin;float: right" src="" width="68px" height="90px" alt="Foto blanc" />
                     @endif
