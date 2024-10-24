@@ -24,10 +24,10 @@
             <div style="width: 100%; margin-bottom: 0px ;">
                 <div style="float:left;width:69%;">
                     <p style="font-size: 6pt;  margin-top:40px;margin-bottom: 6px">{!! fullDireccion() !!}<br/>Telef: {!! config('contacto.telefono') !!}<br/>{!! config('contacto.web') !!}</p>
-                    <div style="float:left;width:65%; text-align: center;margin-top: 10px;">
+                    <div style="float:left;width:65%; text-align: center;margin-top: 10px; color: white">
                         <strong style="font-size: 9pt">{!!$datosInforme[1]!!}</strong>
                     </div>
-                    <div style="float:left;width:35%;text-align: center;">
+                    <div style="float:left;width:35%;text-align: center; color: white">
                         <strong style="font-size: 7pt">Validesa<br/>
                             {!! $datosInforme[0] !!}-{!! $datosInforme[0]+3 !!}</strong>
                     </div>
