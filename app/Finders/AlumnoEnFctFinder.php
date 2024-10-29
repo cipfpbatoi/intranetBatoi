@@ -12,6 +12,7 @@ class AlumnoEnFctFinder extends Finder
             ->orderBy('alumnos.nombre')
             ->orderBy('alumnos.apellido1')
             ->orderBy('alumnos.apellido2')
+            ->orderBy('alumno_fcts.desde')
             ->get(['alumno_fcts.*']); // Seleccionar tots els camps d'alumno_fcts
 
         return $this->filter($fcts);
@@ -19,20 +20,13 @@ class AlumnoEnFctFinder extends Finder
 
     private function filter(&$elements)
     {
-        $uniqueAlumnos = [];
-        $filteredElements = [];
-
         foreach ($elements as $element) {
             // Verificar si l'alumne ja ha estat afegit
-            if (!isset($uniqueAlumnos[$element->idAlumno])) {
-                // Afegir l'alumne a la llista de únics
-                $uniqueAlumnos[$element->idAlumno] = true;
-                $filteredElements[] = $element;
-            }
+
             // Marcar l'element segons les dates proporcionades
             $element->marked = (fechaInglesa($element->desde) <= hoy() && fechaInglesa($element->hasta) >= hoy());
         }
 
-        return $filteredElements;
+        return $elements;
     }
 }
