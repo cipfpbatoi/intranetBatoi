@@ -320,6 +320,7 @@ return array(
         'Setting' => 'Configuració',
         'A3' => 'Documentació FCT',
         'Estadisticas' => 'Estadístiques FCT',
+        'Projecte' => 'Proposta projecte',
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
