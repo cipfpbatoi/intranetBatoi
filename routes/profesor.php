@@ -543,11 +543,10 @@ Route::get('/signatura/deleteAll', ['as' => 'signatura.deleteAll', 'uses' => 'Si
 Route::get('/signatura/a5',['as' => 'signatura.a5','uses' => 'SignaturaController@a5']);
 
 
-Route::resource('projecte' , 'ProjecteController',['except'=>['update','destroy']]);
-Route::put('/projecte/{id}/edit', ['as' => 'projecte.update', 'uses' => 'ProjecteController@update']);
-Route::get('/projecte/{id}/delete', ['as' => 'projecte.delete', 'uses' => 'ProjecteController@destroy']);
-Route::get('/projecte/{id}/email', ['as' => 'projecte.email', 'uses' => 'ProjecteController@email']);
-Route::get('/projecte/{id}/pdf', ['as' => 'projecte.pdf', 'uses' => 'ProjecteController@pdf']);
+Route::resource('projecte' , 'PanelProjecteController',['except'=>['update','destroy']]);
+Route::put('/projecte/{id}/edit', ['as' => 'projecte.update', 'uses' => 'PanelProjecteController@update']);
+Route::get('/projecte/{id}/delete', ['as' => 'projecte.delete', 'uses' => 'PanelProjecteController@destroy']);
+Route::get('/projecte/{id}/pdf', ['as' => 'projecte.pdf', 'uses' => 'PanelProjecteController@pdf']);
 
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
