@@ -25,12 +25,12 @@ class PanelProjecteController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['titol', 'status', 'defensa', 'hora'];
+    protected $gridFields = ['alumne','titol', 'status', 'defensa', 'hora'];
 
     protected $formFields = [
         'idAlumne' => ['type' => 'select'],
         'titol' => ['type' => 'text'],
-        'grup' => ['type' => 'select'],
+        'grup' => ['type' => 'hidden'],
         'descripcio' => ['type' => 'textarea'],
         'objectius' => ['type' => 'textarea'],
         'resultats'=> ['type' => 'textarea'],
@@ -47,17 +47,19 @@ class PanelProjecteController extends ModalController
 
     public function store(ProyectoRequest $request)
     {
+        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->first();
         $new = new Projecte();
+        $request->request->add(['grup' => $miGrupo->codigo]);
         $new->fillAll($request);
-        return $this->redirect();
+
+        return back();
     }
 
     public function update(ProyectoRequest $request, $id)
     {
         Projecte::findOrFail($id)->fillAll($request);
-        return $this->redirect();
+        return back();
     }
-
 
 
     public function pdf($id)

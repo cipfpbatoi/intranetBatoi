@@ -25,7 +25,7 @@ class ProyectoRequest extends FormRequest
     {
         return [
             'titol'=> 'required|max:255',
-            'grup'=> 'required',
+            //'grup'=> 'required',
             'objectius'=> 'required',
             'resultats'=> 'required',
             'aplicacions'=> 'required',
