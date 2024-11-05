@@ -37,9 +37,21 @@ class Projecte extends Model
          return config('auxiliares.estadoProjecte')[$this->estat];
     }
 
+    public function getAlumneAttribute()
+    {
+        return $this->Alumno->fullName;
+    }
+
     public function getGrupOptions()
     {
          return hazArray(AuthUser()->Grupo, 'codigo', 'nombre');
+    }
+
+    public function getIdAlumneOptions()
+    {
+        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->first();
+        return hazArray($miGrupo->Alumnos,'nia','fullName');
+
     }
 
 }

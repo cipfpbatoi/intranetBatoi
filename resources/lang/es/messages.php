@@ -316,6 +316,7 @@ return array(
         'Setting' => 'Configuración',
         'A3' => 'Documentación FCT',
         'Estadisticas' => 'Estadísticas FCT',
+        'Projecte' =>  'Propuesta proyecto'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

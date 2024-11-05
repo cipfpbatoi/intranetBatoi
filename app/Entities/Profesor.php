@@ -332,11 +332,10 @@ class Profesor extends Authenticatable
         $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->get();
         if (isset($miGrupo->first()->codigo)) {
             return $miGrupo->first()->codigo;
-        } else {
-            $miGrupo = Grupo::where('tutorDual', '=', authUser()->dni)->get();
-            return isset($miGrupo->first()->codigo) ? $miGrupo->first()->codigo : '';
         }
-    }
+        $miGrupo = Grupo::where('tutorDual', '=', authUser()->dni)->get();
+        return isset($miGrupo->first()->codigo) ? $miGrupo->first()->codigo : '';
+     }
 
     public function getFileNameAttribute()
     {

@@ -541,5 +541,12 @@ Route::get('/signatura/{id}/send', ['as' => 'signatura.send', 'uses' => 'Signatu
 Route::post('/signatura/{tipus}/send', ['as' => 'signatura.send', 'uses' => 'SignaturaController@sendMultiple']);
 Route::get('/signatura/deleteAll', ['as' => 'signatura.deleteAll', 'uses' => 'SignaturaController@deleteAll']);
 Route::get('/signatura/a5',['as' => 'signatura.a5','uses' => 'SignaturaController@a5']);
+
+
+Route::resource('projecte' , 'PanelProjecteController',['except'=>['update','destroy']]);
+Route::put('/projecte/{id}/edit', ['as' => 'projecte.update', 'uses' => 'PanelProjecteController@update']);
+Route::get('/projecte/{id}/delete', ['as' => 'projecte.delete', 'uses' => 'PanelProjecteController@destroy']);
+Route::get('/projecte/{id}/pdf', ['as' => 'projecte.pdf', 'uses' => 'PanelProjecteController@pdf']);
+
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
