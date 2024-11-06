@@ -13,6 +13,7 @@ class Projecte extends Model
     protected $fillable = [
         'idAlumne',
         'grup',
+        'estat',
         'titol',
         'objectius',
         'resultats',

@@ -37,9 +37,7 @@ class JWTTokenService
             $expiresAt = new DateTimeImmutable(self::EXPIRATION_DATE . " $year");
         }
 
-
-
-        $token = $this->config->builder()
+         $token = $this->config->builder()
             ->issuedBy('http://intranet.cipfpbatoi.es') // Configura-ho amb el teu domini
             ->permittedFor('http://programacions.cipfpbatoi.es') // Configura-ho amb el domini de l'aplicació de programacions
             ->identifiedBy(bin2hex(random_bytes(16)))

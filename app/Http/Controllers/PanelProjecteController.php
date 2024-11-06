@@ -30,7 +30,6 @@ class PanelProjecteController extends ModalController
     protected $formFields = [
         'idAlumne' => ['type' => 'select'],
         'titol' => ['type' => 'text'],
-        'grup' => ['type' => 'hidden'],
         'descripcio' => ['type' => 'textarea'],
         'objectius' => ['type' => 'textarea'],
         'resultats'=> ['type' => 'textarea'],
@@ -49,7 +48,7 @@ class PanelProjecteController extends ModalController
     {
         $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->first();
         $new = new Projecte();
-        $request->request->add(['grup' => $miGrupo->codigo]);
+        $request->request->add(['grup' => $miGrupo->codigo,'estat'=>1]);
         $new->fillAll($request);
 
         return back();
