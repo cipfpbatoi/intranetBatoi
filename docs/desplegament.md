@@ -19,12 +19,12 @@ Ací es detalla com configurar el servidor per a la intranet. En aquesta màquin
 ## Instal·lar el programari
 Els paquets a instal·lar són:
 
-* **git**
-* **composer**
+* **git** apt-get install git
+* **extension de php** apt-get install install php-zip php-dom php-mbstring php-json
+* **composer** (https://getcomposer.org)
 * **libxrender1, libxtst6 i libssl1.0-dev** (per a poder generar PDFs)
-* **php**
 * **phpmyadmin**
-* **apache2**
+* **apache2** 
 * **mysql-server** o **mariadb-server**
 
 ### Configurar MySQL
