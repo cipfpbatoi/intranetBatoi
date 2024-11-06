@@ -1,5 +1,5 @@
 # Desplegar la intranet en una nova màquina
-Instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versió de PHP ha de ser al menys la 7.2
+Instal·lem el sistema operatiu, preferiblemente sense entorn gràfic. La versió de PHP ha de ser al menys la 8.1
 
 ## Instal·lar el software
 Els paquets a instal·lar són:
