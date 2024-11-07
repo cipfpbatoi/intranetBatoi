@@ -45,22 +45,27 @@ class Pdf
     }
 
 
-    public static function hazZip(
-        $informe,
-        $all,
-        $datosInforme = null,
-        $orientacion = 'portrait',
-        $dimensiones = 'a4',
-        $marginTop = 15,
-    )
+
+
+    public static function hazZip($informe, $all, $datosInforme = null, $orientacion = 'portrait',$field ='id'  )
     {
+        $pdfs = [];
         $pie = self::pie($informe);
-        $datosInforme = $datosInforme==null?fechaString(null, 'ca'):$datosInforme;
-        foreach ($all as $elemento) {
-            if (file_exists(storage_path('tmp/'.$elemento->id.'.pdf'))) {
-                unlink(storage_path('tmp/'.$elemento->id.'.pdf'));
+        $className = 'seguiments';
+        $datosInforme = $datosInforme ?? fechaString(null, 'ca');
+        $dimensiones = 'a4';
+        $marginTop = 15;
+
+        foreach ($all as $element) {
+            $className = strtolower(str_replace('Intranet\Entities\\', '', get_class($element)));
+
+            // Generar y guardar cada PDF en la carpeta temporal
+            $filePath = storage_path("tmp/{$element->$field}.pdf");
+            if (file_exists($filePath)) {
+                unlink($filePath);
             }
-            $todos = [$elemento];
+            $todos = [$element];
+            //
             SnappyPDF::loadView(
                 $informe,
                 compact('todos', 'datosInforme')
@@ -69,12 +74,19 @@ class Pdf
                 ->setOption('margin-top', $marginTop)
                 ->setOption('footer-line', true)
                 ->setOption('footer-right', $pie)
-                ->setOption('enable-external-links', true)->save(storage_path('tmp/'.$elemento->id.'.pdf'));
-            $pdfs[] = storage_path('tmp/'.$elemento->id.'.pdf');
+                ->setOption('enable-external-links', true)->save($filePath);
+            $pdfs[] = $filePath;
         }
-        return storage_path(ZipService::exec($pdfs, 'seguiments_'.authUser()->dni));
 
+        // Generar el archivo zip con los PDFs generados
+        $zipPath = ZipService::exec($pdfs, $className.'_' . authUser()->dni);
+
+
+        // Retornar la ruta del zip generado
+        return storage_path($zipPath);
     }
+
+
 
     protected static function hazSnappyPdf(
         $informe,

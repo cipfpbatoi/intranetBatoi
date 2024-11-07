@@ -1,6 +1,6 @@
 @extends('layouts.pdf')
 
-@php ($projecte = $todos)
+@php ($projecte = is_array($todos)?$todos[0]:$todos)
 @php ($alumno = $projecte->Alumno)
 
 @section('content')

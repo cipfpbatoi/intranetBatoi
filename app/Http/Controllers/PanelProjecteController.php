@@ -3,11 +3,13 @@
 namespace Intranet\Http\Controllers;
 
 
+use Illuminate\Support\Facades\Mail;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Componentes\Mensaje;
 use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\Profesor;
 use Intranet\Entities\Projecte;
 use Intranet\Http\Requests\ProyectoRequest;
 
@@ -60,6 +62,41 @@ class PanelProjecteController extends ModalController
         return back();
     }
 
+    public function show()
+    {
+        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)
+            ->orWhere('tutor', '=', authUser()->sustituye_a)
+            ->first();
+
+        $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
+        $projectes = Projecte::whereIn('idAlumne', $alumnos)
+            ->where('estat', 1)
+            ->get();
+
+        // Usar hazZip para generar el zip
+        $zipPath = Pdf::hazZip('pdf.propostaProjecte', $projectes , null, 'portrait',  'idAlumne'   );
+
+        // Enviar el correo con el zip adjunto
+        $profesores = Profesor::Grupo($miGrupo->codigo)->get();
+        $professorsEmails = [];
+        foreach ($profesores as $profesor) {
+            $professorsEmails[] = $profesor->email;
+        }
+
+        Mail::send('email.projectes', ['grupo' => $miGrupo], function($message) use ($zipPath, $professorsEmails) {
+            $message->to($professorsEmails)
+                ->subject('Projectes del grup')
+                ->attach($zipPath);
+        });
+
+        // Limpiar el archivo zip
+        unlink($zipPath);
+
+        return back()->with('success', 'Se ha enviado el correo con los proyectos del grupo.');
+    }
+
+
+
 
     public function pdf($id)
     {
@@ -73,6 +110,7 @@ class PanelProjecteController extends ModalController
 
     protected function iniBotones()
     {
+        $this->panel->setBoton('index', new BotonBasico('projecte.send',[ 'class' => 'btn-info'  ] ));
         $this->panel->setBoton('index', new BotonBasico('projecte.create'));
         $this->panel->setBoton('grid', new BotonImg('projecte.show'));
         $this->panel->setBoton('grid', new BotonImg('projecte.edit', ['roles' => config(self::TUTOR)]));
