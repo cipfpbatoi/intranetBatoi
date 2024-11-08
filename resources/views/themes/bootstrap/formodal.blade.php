@@ -3,6 +3,7 @@
     {{ csrf_field() }}
     <input id='metodo' type='hidden' name='_method' value='{{old('_method')}}'/>
     <input id='id' type='hidden' name='id' value='{{old('id')}}'/>
+
     @foreach($fillable as $property)
         @php $tipo = $default[$property]['type']; @endphp
         @if ($tipo == 'file')

@@ -166,7 +166,7 @@ class SeleniumService
                 $element->click();
             }
         } catch (\Exception $e) {
-            // No pasa res
+
         }
     }
 

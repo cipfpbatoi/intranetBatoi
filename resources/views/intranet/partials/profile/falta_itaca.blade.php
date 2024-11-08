@@ -20,7 +20,7 @@
                 <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
                     <div id="{{$usuario->first()->id}}" class="well profile_view">
                         <div class="col-sm-12">
-                            <h4 class="brief"><em>{{ $usuario->first()->Profesor->FullName }}</em></h4>
+                            <h4 class="brief"><em>{{ $usuario->first()->Profesor->FullName??'' }}</em></h4>
                             <div class="left col-xs-8">
                                 <p><strong>{{ $usuario->first()->dia }}</strong></p>
                                 <ul class="list-unstyled">
@@ -41,8 +41,10 @@
                                 </ul>
                             </div>
                             <div class="right col-xs-4 text-center">
-                                <img src="{{ asset('storage/fotos/'.$usuario->first()->Profesor->foto) }}"
+                                @if ($usuario->first()->Profesor)
+                                <img src="{{ asset('storage/fotos/'. $usuario->first()->Profesor->foto )}}"
                                      alt="" class="img-circle img-responsive">
+                                @endif
                             </div>
                         </div>
                         <div class="col-xs-12 bottom text-center">

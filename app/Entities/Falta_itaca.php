@@ -28,7 +28,7 @@ class Falta_itaca extends Model
     
     public function getNombreAttribute()
     {
-        return $this->Profesor->nameFull;
+        return $this->Profesor->nameFull??'';
     }
     public function getHorasAttribute()
     {
