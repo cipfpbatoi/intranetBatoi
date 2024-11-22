@@ -161,12 +161,43 @@ class SeleniumService
     private function closeNoticias()
     {
         try {
-            $elements = $this->driver->findElements(WebDriverBy::cssSelector('.z-window-close.imc--bt-terciari'));
-            foreach ($elements??[] as $element) {
-                $element->click();
+            $remainingWindows = []; // Lista para las ventanas pendientes de cerrar
+            $retryCount = 0; // Contador de intentos para evitar bucles infinitos
+
+            while (true) {
+                // Encuentra todos los botones de cierre de ventanas
+                $elements = $this->driver->findElements(WebDriverBy::cssSelector('.z-window-close.imc--bt-terciari'));
+
+                // Si no hay más ventanas y no quedan pendientes, rompe el bucle
+                if (empty($elements) && empty($remainingWindows)) {
+                    break;
+                }
+
+                // Intenta cerrar cada ventana en el array `elements`
+                foreach ($elements as $element) {
+                    try {
+                        $element->click();
+                        usleep(500000); // Pausa breve para permitir que la ventana se cierre
+                    } catch (\Exception $e) {
+                        // Si no puede cerrarse, la añade a pendientes
+                        $remainingWindows[] = $element;
+                    }
+                }
+
+                // Procesa las ventanas pendientes
+                $elements = $remainingWindows;
+                $remainingWindows = []; // Resetea la lista de pendientes
+
+                // Incrementa el contador de intentos
+                $retryCount++;
+
+                // Si hemos intentado demasiadas veces, salimos del bucle para evitar un bucle infinito
+                if ($retryCount > 10) {
+                    break;
+                }
             }
         } catch (\Exception $e) {
-
+            // No pasa nada si ocurre una excepción
         }
     }
 

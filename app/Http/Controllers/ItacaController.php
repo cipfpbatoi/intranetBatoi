@@ -90,17 +90,6 @@ class ItacaController extends Controller
     }
 
 
-    /*private function closeNoticias()
-    {
-        try {
-            $elements = $this->driver->findElements(WebDriverBy::cssSelector('.z-window-close.imc--bt-terciari'));
-            foreach ($elements??[] as $element) {
-                $element->click();
-            }
-        } catch (\Exception $e) {
-            // No pasa res
-        }
-    }*/
 
 
     private function goToLlist()
@@ -126,6 +115,7 @@ class ItacaController extends Controller
             Alert::info('No hi ha faltas pendents');
             return back();
         }
+         
         try {
             $dni = authUser()->dni;
             $this->driver = SeleniumService::loginItaca($dni, $request->password);

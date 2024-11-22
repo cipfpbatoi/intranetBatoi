@@ -38,9 +38,8 @@ class AsistentesCreate
                 return $grupo
                     ->Alumnos
                     ->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(), 'idAlumno'));
-            } else {
-                return $grupo->Alumnos;
             }
+            return $grupo->Alumnos;
         }
         return [];
     }

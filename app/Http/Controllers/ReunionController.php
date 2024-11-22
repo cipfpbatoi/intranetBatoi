@@ -80,52 +80,52 @@ class ReunionController extends IntranetController
         if ($elemento->fichero != '') {
             return parent::edit($id);
         }
-        else {
-            $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
-            $activos = Profesor::select('dni', 'apellido1', 'apellido2', 'nombre')
-                    ->OrderBy('apellido1')
-                    ->OrderBy('apellido2')
-                    ->where('activo', '=', 1)
-                    ->get();
-            $tProfesores = hazArray($activos, 'dni', 'FullName');
-            $sProfesores = $elemento
-                ->profesores()
-                ->orderBy('apellido1')
-                ->orderBy('apellido2')
-                ->get(['dni', 'apellido1', 'apellido2', 'nombre']);
-            $formulario = new FormBuilder($elemento,[
-                'idProfesor' => ['type' => 'hidden'],
-                'numero' => ['type' => 'select'],
-                'tipo' => ['type' => 'hidden'],
-                'grupo' => ['type' => 'hidden'],
-                'curso' => ['disabled' => 'disabled'],
-                'fecha' => ['type' => 'datetime'],
-                'descripcion' => ['type' => 'text'],
-                'objetivos' => ['type' => 'textarea'],
-                'idEspacio' => ['type' => 'select'],
-                'fichero' => ['type' => 'file'],
-            ]);
-            $modelo = $this->model;
-            if ($elemento->informe){
-                $select = $elemento->isSemi?'auxiliares.promocionaSemi':'auxiliares.promociona';
-                $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
-                $tAlumnos = $this->tAlumnos($elemento,hazArray($sAlumnos,'nia'));
-                return view(
-                    'reunion.asistencia',
-                    compact(
-                        'formulario',
-                        'modelo',
-                        'tProfesores',
-                        'sProfesores',
-                        'ordenes',
-                        'tAlumnos',
-                        'sAlumnos',
-                        'select'
-                    )
-                );
-            }
-            return view('reunion.asistencia', compact('formulario', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
+
+        $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
+        $activos = Profesor::select('dni', 'apellido1', 'apellido2', 'nombre')
+                ->OrderBy('apellido1')
+                ->OrderBy('apellido2')
+                ->where('activo', '=', 1)
+                ->get();
+        $tProfesores = hazArray($activos, 'dni', 'FullName');
+        $sProfesores = $elemento
+            ->profesores()
+            ->orderBy('apellido1')
+            ->orderBy('apellido2')
+            ->get(['dni', 'apellido1', 'apellido2', 'nombre']);
+        $formulario = new FormBuilder($elemento,[
+            'idProfesor' => ['type' => 'hidden'],
+            'numero' => ['type' => 'select'],
+            'tipo' => ['type' => 'hidden'],
+            'grupo' => ['type' => 'hidden'],
+            'curso' => ['disabled' => 'disabled'],
+            'fecha' => ['type' => 'datetime'],
+            'descripcion' => ['type' => 'text'],
+            'objetivos' => ['type' => 'textarea'],
+            'idEspacio' => ['type' => 'select'],
+            'fichero' => ['type' => 'file'],
+        ]);
+        $modelo = $this->model;
+        if ($elemento->informe){
+            $select = $elemento->isSemi?'auxiliares.promocionaSemi':'auxiliares.promociona';
+            $sAlumnos = $elemento->alumnos()->orderBy('apellido1')->orderBy('apellido2')->get();
+            $tAlumnos = $this->tAlumnos($elemento,hazArray($sAlumnos,'nia'));
+            return view(
+                'reunion.asistencia',
+                compact(
+                    'formulario',
+                    'modelo',
+                    'tProfesores',
+                    'sProfesores',
+                    'ordenes',
+                    'tAlumnos',
+                    'sAlumnos',
+                    'select'
+                )
+            );
         }
+        return view('reunion.asistencia', compact('formulario', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
+
     }
 
     private function tAlumnos($reunion,$sAlumnos){

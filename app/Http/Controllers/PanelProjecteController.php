@@ -9,8 +9,10 @@ use Intranet\Botones\BotonBasico;
 use Intranet\Componentes\Mensaje;
 use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\Grupo;
+use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Projecte;
+use Intranet\Entities\Reunion;
 use Intranet\Http\Requests\ProyectoRequest;
 
 /**
@@ -62,7 +64,7 @@ class PanelProjecteController extends ModalController
         return back();
     }
 
-    public function show()
+    public function send()
     {
         $miGrupo = Grupo::where('tutor', '=', authUser()->dni)
             ->orWhere('tutor', '=', authUser()->sustituye_a)
@@ -96,6 +98,34 @@ class PanelProjecteController extends ModalController
     }
 
 
+    public function acta()
+    {
+        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)
+            ->orWhere('tutor', '=', authUser()->sustituye_a)
+            ->first();
+
+        $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
+        $projectes = Projecte::whereIn('idAlumne', $alumnos)
+            ->where('estat', 1)
+            ->get();
+
+
+        $acta = new Reunion(['tipo'=>11,'numero'=>0,'curso'=>curso(),'fecha'=>hoy(),'idProfesor'=>authUser()->dni,'descripcion'=>'Acta valoració propostes','objectivos'=>"Valorar les propostes que ha fet l'alumnat per al mòdul de Projecte",'idEspacio'=>'SalaProf' ]);
+        $acta->save();
+        foreach ($projectes as $key => $projecte) {
+            OrdenReunion::create([
+                'idReunion' => $acta->id,
+                'descripcion' => $projecte->Alumno->fullName,
+                'resumen' => $projecte->titol,
+                'orden' => $key+1
+            ]);
+        }
+
+        return back()->with('success', 'Se ha creado el acta de valoración de propuestas.');
+
+    }
+
+
 
 
     public function pdf($id)
@@ -110,9 +140,10 @@ class PanelProjecteController extends ModalController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('projecte.send',[ 'class' => 'btn-info'  ] ));
+        $this->panel->setBoton('index', new BotonBasico('projectes.send',[ 'class' => 'btn-info '  ] ));
+        $this->panel->setBoton('index', new BotonBasico('projectes.acta',[ 'class' => 'btn-warning '  ] ));
         $this->panel->setBoton('index', new BotonBasico('projecte.create'));
-        $this->panel->setBoton('grid', new BotonImg('projecte.show'));
+        //$this->panel->setBoton('grid', new BotonImg('projecte.show'));
         $this->panel->setBoton('grid', new BotonImg('projecte.edit', ['roles' => config(self::TUTOR)]));
         $this->panel->setBoton('grid',
             new BotonImg('projecte.delete', ['roles' => config(self::TUTOR), 'where' => ['estat', '==', '0']]));

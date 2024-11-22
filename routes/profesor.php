@@ -547,7 +547,8 @@ Route::resource('projecte' , 'PanelProjecteController',['except'=>['update','des
 Route::put('/projecte/{id}/edit', ['as' => 'projecte.update', 'uses' => 'PanelProjecteController@update']);
 Route::get('/projecte/{id}/delete', ['as' => 'projecte.delete', 'uses' => 'PanelProjecteController@destroy']);
 Route::get('/projecte/{id}/pdf', ['as' => 'projecte.pdf', 'uses' => 'PanelProjecteController@pdf']);
-Route::get('/projecte/send', ['as' => 'projecte.send', 'uses' => 'PanelProjecteController@send']);
+Route::get('/projectes/acta', ['as' => 'projectes.acta', 'uses' => 'PanelProjecteController@acta']);
+Route::get('/projectes/send', ['as' => 'projectes.send', 'uses' => 'PanelProjecteController@send']);
 
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
