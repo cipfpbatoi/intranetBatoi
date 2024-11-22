@@ -121,7 +121,7 @@ class PanelProjecteController extends ModalController
             ]);
         }
 
-        return back()->with('success', 'Se ha creado el acta de valoración de propuestas.');
+        return redirect()->route('reunion.edit', $acta->id);
 
     }
 
