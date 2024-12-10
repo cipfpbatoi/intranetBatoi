@@ -325,7 +325,7 @@ class PanelListadoEntregasController extends BaseController
                 'id'
             )
         )->get() as $modulo) {
-            if ($modulo->seguimiento == 0) {
+            if ($modulo->seguimiento == 0 && $modulo->Grupo->Alumnos->count() > 0) {
                 $empty++;
             }
         }
