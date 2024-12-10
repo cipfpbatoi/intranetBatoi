@@ -35,6 +35,7 @@ class PanelListadoEntregasController extends BaseController
 
     public function search()
     {
+        // Obtenim els mòduls rellevants
         $modulos = hazArray(
             Modulo_ciclo::whereIn(
                 'idModulo',
@@ -46,10 +47,13 @@ class PanelListadoEntregasController extends BaseController
             'id'
         );
 
-        return Modulo_grupo::with('Grupo')
-            ->with('resultados')
-            ->with('ModuloCiclo')
-            ->whereIn('idModuloCiclo',$modulos)->get();
+        // Retornem només aquells modulo_grupo que tenen alumnes
+        return Modulo_grupo::with('Grupo', 'resultados', 'ModuloCiclo')
+            ->whereIn('idModuloCiclo', $modulos)
+            ->whereHas('Grupo', function ($query) {
+                $query->whereHas('alumnos'); // Comprovar que el grupo té almenys un alumne
+            })
+            ->get();
     }
 
     public function iniBotones()
@@ -316,19 +320,21 @@ class PanelListadoEntregasController extends BaseController
 
     private function faltan()
     {
-        $empty = 0;
-        foreach (Modulo_grupo::whereIn(
-            'idModuloCiclo',
-            hazArray(
-                Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(),
-                'id',
-                'id'
-            )
-        )->get() as $modulo) {
-            if ($modulo->seguimiento == 0 && $modulo->Grupo->Alumnos->count() > 0) {
-                $empty++;
-            }
-        }
-        return $empty;
+        // Obtenim els id dels Modulo_ciclo rellevants
+        $moduloCicloIds = hazArray(
+            Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(),
+            'id',
+            'id'
+        );
+
+        // Comptem els Modulo_grupo que compleixen les condicions
+        return Modulo_grupo::whereIn('idModuloCiclo', $moduloCicloIds)
+            ->where('seguimiento', 0) // Només aquells amb seguimiento == 0
+            ->whereHas('Grupo', function ($query) {
+                $query->whereHas('Alumnos'); // Assegurem que el grup té almenys un alumne
+            })
+            ->count();
+
+
     }
 }
