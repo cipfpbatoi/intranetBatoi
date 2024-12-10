@@ -50,10 +50,10 @@ class PanelListadoEntregasController extends BaseController
         // Retornem només aquells modulo_grupo que tenen alumnes
         return Modulo_grupo::with('Grupo', 'resultados', 'ModuloCiclo')
             ->whereIn('idModuloCiclo', $modulos)
-            ->whereHas('Grupo', function ($query) {
-                $query->whereHas('alumnos'); // Comprovar que el grupo té almenys un alumne
-            })
-            ->get();
+            ->get()
+            ->filter(function ($moduloGrupo) {
+                return $moduloGrupo->Grupo->Alumnos->isNotEmpty(); // Només retorna si té alumnes
+            });
     }
 
     public function iniBotones()
