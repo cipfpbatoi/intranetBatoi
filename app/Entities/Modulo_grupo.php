@@ -100,6 +100,7 @@ class Modulo_grupo extends Model
         $curso = $this->ModuloCiclo->curso??1;
         $trimestre = config("curso.trimestres.$tipoCiclo.$tr.$curso");
         $quants = $this->resultados->where('evaluacion',$trimestre)->count();
+        dd($tr,$tipoCiclo,$curso,$trimestre,$quants);
         if ($quants){
             return true;
         }
