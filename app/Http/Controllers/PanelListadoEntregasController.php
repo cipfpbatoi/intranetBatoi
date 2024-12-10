@@ -320,21 +320,24 @@ class PanelListadoEntregasController extends BaseController
 
     private function faltan()
     {
-        // Obtenim els id dels Modulo_ciclo rellevants
+        // Obtenim els ID dels Modulo_ciclo rellevants
         $moduloCicloIds = hazArray(
             Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(),
             'id',
             'id'
         );
 
-        // Comptem els Modulo_grupo que compleixen les condicions
-        return Modulo_grupo::whereIn('idModuloCiclo', $moduloCicloIds)
-            ->where('seguimiento', 0) // Només aquells amb seguimiento == 0
+        // Recuperem els Modulo_grupo i filtrem en memòria
+        $empty = Modulo_grupo::whereIn('idModuloCiclo', $moduloCicloIds)
             ->whereHas('Grupo', function ($query) {
                 $query->whereHas('Alumnos'); // Assegurem que el grup té almenys un alumne
             })
+            ->get()
+            ->filter(function ($modulo) {
+                return $modulo->seguimiento == false; // Utilitzem l'accessor calculat aquí
+            })
             ->count();
 
-
+        return $empty;
     }
 }
