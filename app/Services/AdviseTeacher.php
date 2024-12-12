@@ -23,8 +23,10 @@ class AdviseTeacher
         }
 
         foreach (self::profesoresAfectados($grupos, $idEmisor) as $profesor) {
-            if (isset($profesor->idProfesor)) {
+            try {
                 Mensaje::send($profesor->idProfesor, $mensaje, '#', $emisor);
+            } catch (\Exception $e) {
+                Alert::danger("Error al enviar mensaje a $profesor->idProfesor");
             }
         }
     }
