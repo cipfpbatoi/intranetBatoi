@@ -23,7 +23,9 @@ class AdviseTeacher
         }
 
         foreach (self::profesoresAfectados($grupos, $idEmisor) as $profesor) {
-            Mensaje::send($profesor->idProfesor, $mensaje, '#', $emisor);
+            if (isset($profesor->idProfesor)) {
+                Mensaje::send($profesor->idProfesor, $mensaje, '#', $emisor);
+            }
         }
     }
 
