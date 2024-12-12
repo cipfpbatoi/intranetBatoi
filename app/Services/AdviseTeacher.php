@@ -81,11 +81,15 @@ class AdviseTeacher
         foreach (self::gruposAfectados($elemento, $idEmisor)->toArray() as $grupos) {
             foreach ($grupos as $item) {
                 $grupo = Grupo::find($item);
-                $correoTutor = $grupo->Tutor->Sustituye->email ?? $grupo->Tutor->email;
-                $remitente =  ['nombre'=>'Caporalia','email'=>'intranet@cipfpbatoi.es'];
+                if ($grupo->Tutor) {
+                    $correoTutor = $grupo->Tutor->Sustituye->email ?? $grupo->Tutor->email;
+                    $remitente = ['nombre' => 'Caporalia', 'email' => 'intranet@cipfpbatoi.es'];
 
-                SendEmail::dispatch($correoTutor, $remitente, 'email.faltaProfesor', $elemento);
-                Alert::info("Correos enviados a $item");
+                    SendEmail::dispatch($correoTutor, $remitente, 'email.faltaProfesor', $elemento);
+                    Alert::info("Correos enviados a $item");
+                } else {
+                    Alert::info("No hay tutor para $item");
+                }
             }
         }
     }
