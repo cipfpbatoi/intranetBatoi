@@ -576,7 +576,7 @@ function getClientIpAddress(): String
 function isPrivateAddress($ip):bool
 {
     $privateAddressRange = array(
-      '213.0.87.207|213.0.87.207',
+      '213.0.87.0|213.0.87.255',
       '10.0.0.0|10.255.255.255',
       '172.16.0.0|172.31.255.255',
       '192.168.0.0|192.168.255.255',
