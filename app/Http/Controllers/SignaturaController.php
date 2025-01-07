@@ -212,7 +212,7 @@ class SignaturaController extends ModalController
         $signatura->contact = $signatura->Fct->Fct->Instructor->nombre;
         $col = new Collection();
         $col->push($signatura);
-        $view = $signatura->tipus === 'A5' ? 'email.fct.A5' : 'email.fct.anexes';
+        $view = $signatura->tipus === 'A5' ? 'email.fct.a5' : 'email.fct.anexes';
         $mail = new MyMail(
             $col,
             view($view),
@@ -249,7 +249,7 @@ class SignaturaController extends ModalController
                 $signatures = [];
                 foreach ($alumnoFct->signatures as $signatura){
                     $signatures[$signatura->simpleRouteFile] = 'application/pdf';
-                    $view = $signatura->tipus === 'A5' ? 'email.fct.A5' : 'email.fct.anexes';
+                    $view = $signatura->tipus === 'A5' ? 'email.fct.a5' : 'email.fct.anexes';
                 }
                 $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
                 $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
@@ -273,7 +273,7 @@ class SignaturaController extends ModalController
                         if ($signatura->tipus === 'A1'){
                             $a1 = true;
                         }
-                        $view = $signatura->tipus === 'A5' ? 'email.fct.A5' : 'email.fct.anexes';
+                        $view = $signatura->tipus === 'A5' ? 'email.fct.a5' : 'email.fct.anexes';
                     }
                     $alumnoFct->mail = $alumnoFct->Fct->Instructor->email;
                     $alumnoFct->contact = $alumnoFct->Fct->Instructor->nombre;
