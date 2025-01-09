@@ -9,7 +9,7 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
-use Intranet\Http\Controllers\AlumnoFct;
+
 use Intranet\Services\SeleniumService;
 use Intranet\Services\SignaturaService;
 use Styde\Html\Facades\Alert;
@@ -24,8 +24,6 @@ class Signatura
 
     private function closeWindows(RemoteWebDriver $driver, $window)
     {
-        var_dump($driver->getWindowHandles());
-
         return $driver;
     }
 

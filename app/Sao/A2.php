@@ -243,6 +243,7 @@ class A2
         $saveFile = $fctAl->routeFile($annexe);
         $x = config("signatures.files.".$annexe.".owner.x");
         $y = config("signatures.files.".$annexe.".owner.y");
+        $error = false;
         try {
             $driver->get("https://foremp.edu.gva.es/index.php?accion=7&idFct=$idSao");
             sleep(1);
@@ -290,24 +291,25 @@ class A2
             $pdf->Output($tmp1File, 'F');
             // Copia el fitxer descarregat al destí
         } catch (\Throwable $exception) {
-            Alert::danger($exception->getMessage());
-            if (file_exists($tmpFile)) {
-                copy($tmpFile, $saveFile);
-            }
+            Alert::danger($exception->getMessage().' en Annex 5 de '.$fctAl->Alumno->FullName );
+            $error = true;
+
         } finally {
 
-            if ($certFile) {
-                DigitalSignatureService::sign(
-                    $tmp1File,
-                    $saveFile,
-                    $x,
-                    $y,
-                    $certFile
-                );
-                Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
-            } else {
-                copy($tmp1File, $saveFile);
-                Firma::saveIfNotExists($annexe, $fctAl->idSao);
+            if (!$error) {
+                if ($certFile) {
+                    DigitalSignatureService::sign(
+                        $tmp1File,
+                        $saveFile,
+                        $x,
+                        $y,
+                        $certFile
+                    );
+                    Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
+                } else {
+                    copy($tmp1File, $saveFile);
+                    Firma::saveIfNotExists($annexe, $fctAl->idSao);
+                }
             }
             if (file_exists($tmpFile)) {
                 unlink($tmpFile);
