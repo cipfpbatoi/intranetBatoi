@@ -2,6 +2,8 @@
 
 namespace Intranet\Console\Commands;
 
+use ErrorException;
+use Exception;
 use Illuminate\Console\Command;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Mail\CertificatAlumneFct;
@@ -51,7 +53,7 @@ class SendFctEmails extends Command
                         '#', 'Servidor de correu');
                     $alumno->correoAlumno = 1;
                     $alumno->save();
-                } catch (Exception $e) {
+                } catch (Exception  $e) {
                     $mensaje = "Error : Enviant certificats a l'alumne: ".
                         $alumno->Alumno->fullName.' al email '.
                         $alumno->Alumno->email;

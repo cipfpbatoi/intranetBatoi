@@ -39,6 +39,10 @@ class CertificatAlumneFct extends Mailable
     {
         $id = $this->fct->id;
         $emitent = $this->fct->Fct->Tutor;
+        if (is_null($emitent)) {
+            $emitent = Profesor::find(config('contacto.email'));
+        }
+
         if (file_exists(storage_path("tmp/certificatFct_$id.pdf"))) {
             unlink(storage_path("tmp/certificatFct_$id.pdf"));
         }
@@ -57,10 +61,4 @@ class CertificatAlumneFct extends Mailable
                 ]
             );
     }
-
-
-
-
-
-
-}
+ }
