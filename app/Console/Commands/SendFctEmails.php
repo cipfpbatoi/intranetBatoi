@@ -47,11 +47,11 @@ class SendFctEmails extends Command
                 $fct = $alumno->Fct;
 
                 try {
-                    if ($fct->tutor == null) {
+                    if ($fct->Encarregat == null) {
                         throw new ErrorException('No hi ha tutor assignat a la FCT');
                     }
                     Mail::to($alumno->Alumno->email, $alumno->Alumno->fullName)->send(new CertificatAlumneFct($alumno));
-                    avisa($fct->tutor->dni,
+                    avisa($fct->Encarregat->dni,
                         'El correu amb el certificat de FCT de ' . $alumno->Alumno->fullName . " ha estat enviat a l'adreça " . $alumno->Alumno->email,
                         '#', 'Servidor de correu');
                     $alumno->correoAlumno = 1;
@@ -61,8 +61,8 @@ class SendFctEmails extends Command
                         $alumno->Alumno->fullName.' al email '.
                         $alumno->Alumno->email;
                     avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
-                    if ($fct->tutor != null) {
-                        avisa($fct->tutor->dni, $mensaje, '#', 'Servidor de correu');
+                    if ($fct->Encarregat != null) {
+                        avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
                     }
 
                 }
