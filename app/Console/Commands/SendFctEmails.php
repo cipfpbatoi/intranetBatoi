@@ -68,8 +68,11 @@ class SendFctEmails extends Command
 
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
                     try {
+                        if ($fct->Encarregat == null) {
+                            throw new ErrorException('No hi ha tutor assignat a la FCT');
+                        }
                         Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
-                            ->cc($fct->Encarregat->email, $fct->Tutor->fullName)
+                            ->cc($fct->Encarregat->email)
                             ->send(new AvalFct($fct, 'instructor'));
                         Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
                             ->send(new CertificatInstructorFct($fct));
