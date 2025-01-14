@@ -10,8 +10,7 @@ use Intranet\Mail\CertificatAlumneFct;
 use Intranet\Mail\CertificatInstructorFct;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\AvalFct;
-use Intranet\Entities\Profesor;
-use Styde\Html\Facades\Alert;
+
 use Swift_RfcComplianceException;
 use Swift_TransportException;
 
@@ -70,11 +69,11 @@ class SendFctEmails extends Command
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
                     try {
                         Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
-                            ->cc($fct->Tutor->email, $fct->Tutor->fullName)
+                            ->cc($fct->Encarregat->email, $fct->Tutor->fullName)
                             ->send(new AvalFct($fct, 'instructor'));
                         Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
                             ->send(new CertificatInstructorFct($fct));
-                        avisa($fct->tutor->dni,
+                        avisa($fct->Encarregat->dni,
                             'El correu amb el certificat de FCT de ' . $fct->Instructor->nombre . " ha estat enviat a l'adreça " . $fct->Instructor->email,
                             '#', 'Servidor de correu');
                         $fct->correoInstructor = 1;
@@ -82,8 +81,7 @@ class SendFctEmails extends Command
                     } catch (\Exception $e) {
                         $mensaje = 'Error : Enviant certificats al Instructor: '.
                             $fct->Instructor->nombre.' al email '.
-                            $fct->Instructor->email.
-                            $fct->Encarregat. $e->getMessage();
+                            $fct->Instructor->email.':'. $e->getMessage();
                         avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
                         if ($fct->Encarregat != null) {
                             avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
