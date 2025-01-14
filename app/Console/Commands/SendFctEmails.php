@@ -39,8 +39,7 @@ class SendFctEmails extends Command
     public function handle()
     {
 
-            $alumnosAprobados = hazArray(AlumnoFctAval::aprobados()->get(), 'idAlumno');
-            $alumnosPendientes = AlumnoFctAval::pendienteNotificar($alumnosAprobados)->get();
+             $alumnosPendientes = AlumnoFctAval::pendienteNotificar()->get();
 
             foreach ($alumnosPendientes as $alumno) {
                 $fct = $alumno->Fct;
