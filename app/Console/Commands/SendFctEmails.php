@@ -85,7 +85,10 @@ class SendFctEmails extends Command
                             $fct->Instructor->email.
                             $fct->Encarregat. $e->getMessage();
                         avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
-                        avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
+                        if ($fct->Encarregat != null) {
+                            avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
+                        }
+
                     }
                 }
             }
