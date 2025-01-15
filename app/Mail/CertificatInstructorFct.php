@@ -38,7 +38,7 @@ class CertificatInstructorFct extends Mailable
     */
     public function build()
     {
-        $emitent = $this->fct->encarregat;
+        $emitent = $this->fct->Encarregat??$this->fct->FctAl->first()->Tutor;
         $pdf = FDFPrepareService::exec(
             new CertificatInstructorResource($this->fct));
         $view = $this->view("email.fct.certificadoInstructor")

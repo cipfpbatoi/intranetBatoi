@@ -38,7 +38,7 @@ class CertificatAlumneFct extends Mailable
     public function build()
     {
         $id = $this->fct->id;
-        $emitent = $this->fct->Fct->Tutor;
+        $emitent = $this->fct->Tutor;
         if (is_null($emitent)) {
             $emitent = Profesor::find(config('contacto.email'));
         }

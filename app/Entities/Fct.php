@@ -175,7 +175,7 @@ class Fct extends Model
 
     public function getEncarregatAttribute()
     {
-        return $this->Cotutor??$this->Tutor;
+        return $this->Cotutor??$this->Tutor ;
     }
 
 
