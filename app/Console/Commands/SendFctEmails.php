@@ -46,7 +46,9 @@ class SendFctEmails extends Command
                 $fct = $alumno->Fct;
 
                 try {
-                    Mail::to($alumno->Alumno->email, $alumno->Alumno->fullName)->send(new CertificatAlumneFct($alumno));
+                    Mail::to($alumno->Alumno->email, $alumno->Alumno->fullName)
+                        ->cc($alumno->Tutor->email)
+                        ->send(new CertificatAlumneFct($alumno));
                     avisa($alumno->Tutor->dni,
                         'El correu amb el certificat de FCT de ' . $alumno->Alumno->fullName . " ha estat enviat a l'adreça " . $alumno->Alumno->email,
                         '#', 'Servidor de correu');
@@ -65,15 +67,17 @@ class SendFctEmails extends Command
 
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
                     try {
-                        if ($fct->Encarregat == null) {
-                            throw new ErrorException('No hi ha tutor assignat a la FCT');
+                        $encarregat = $fct->Encarregat??$fct->FctAl->first()->Tutor;
+                        if ($encarregat == null) {
+                             throw new ErrorException('No hi ha tutor assignat a la FCT');
                         }
                         Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
-                            ->cc($fct->Encarregat->email)
+                            ->cc($encarregat->email)
                             ->send(new AvalFct($fct, 'instructor'));
                         Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
-                            ->send(new CertificatInstructorFct($fct));
-                        avisa($fct->Encarregat->dni,
+                            ->cc($encarregat->email)
+                            ->send(new CertificatInstructorFct($fct,$encarregat));
+                        avisa($encarregat->dni,
                             'El correu amb el certificat de FCT de ' . $fct->Instructor->nombre . " ha estat enviat a l'adreça " . $fct->Instructor->email,
                             '#', 'Servidor de correu');
                         $fct->correoInstructor = 1;

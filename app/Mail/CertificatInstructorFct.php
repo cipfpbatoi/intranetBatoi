@@ -26,9 +26,10 @@ class CertificatInstructorFct extends Mailable
      *
      * @return void
      */
-    public function __construct($fct)
+    public function __construct($fct,$emitent)
     {
         $this->fct = $fct;
+        $this->emitent = $emitent;
     }
 
     /**
@@ -38,13 +39,11 @@ class CertificatInstructorFct extends Mailable
     */
     public function build()
     {
-        $emitent = $this->fct->Encarregat??$this->fct->FctAl->first()->Tutor;
         $pdf = FDFPrepareService::exec(
             new CertificatInstructorResource($this->fct));
         $view = $this->view("email.fct.certificadoInstructor")
-            ->from($emitent->email, $emitent->fullName)
-            ->replyTo($emitent->email, $emitent->fullName)
-            ->cc($emitent->email, $emitent->fullName)
+            ->from($this->emitent->email, $this->emitent->fullName)
+            ->replyTo($this->emitent->email, $this->emitent->fullName)
             ->attach($pdf, ['as'=>'certificadoInstructor.pdf','mime' => 'application/pdf']);
         if (count($this->fct->Colaboradores)) {
             $id = $this->fct->id;

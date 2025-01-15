@@ -39,9 +39,6 @@ class CertificatAlumneFct extends Mailable
     {
         $id = $this->fct->id;
         $emitent = $this->fct->Tutor;
-        if (is_null($emitent)) {
-            $emitent = Profesor::find(config('contacto.email'));
-        }
 
         if (file_exists(storage_path("tmp/certificatFct_$id.pdf"))) {
             unlink(storage_path("tmp/certificatFct_$id.pdf"));
@@ -52,7 +49,6 @@ class CertificatAlumneFct extends Mailable
         return $this->view("email.fct.certificadoAlumno")
             ->from($emitent->email, $emitent->fullName)
             ->replyTo($emitent->email, $emitent->fullName)
-            ->cc($emitent->email, $emitent->fullName)
             ->attach(
                 storage_path("tmp/certificatFct_$id.pdf"),
                 [
