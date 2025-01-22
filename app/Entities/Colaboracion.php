@@ -125,6 +125,19 @@ class Colaboracion extends Model
     {
         return config('auxiliares.estadoColaboracion');
     }
+
+    public function getAnotacioAttribute()
+    {
+        $contactos = '';
+        foreach  (Activity::modelo('Colaboracion')
+            ->id($this->id)
+            ->where('action','book')
+            ->orderBy('created_at')
+            ->get() as $contacto) {
+            $contactos  .= $contacto->comentari  ;
+        }
+        return $contactos;
+    }
     public function getProfesorAttribute()
     {
         return $this->Propietario->fullName??'';

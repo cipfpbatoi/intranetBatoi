@@ -44,7 +44,8 @@ class ColaboracionController extends ModalController
         'telefono',
         'horari',
         'profesor',
-        'ultimo'
+        'ultimo',
+        'anotacio'
     ];
     /**
      * @var array
