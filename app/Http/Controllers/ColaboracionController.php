@@ -59,7 +59,8 @@ class ColaboracionController extends ModalController
         'telefono' => ['type'=>'number'],
         'email' => ['type'=>'email'],
         'puestos' => ['type' => 'text'],
-        'estado' => ['type' => 'select']
+        'estado' => ['type' => 'select'],
+        'anotacio' => ['type' => 'textarea'],
     ];
 
 
@@ -101,6 +102,8 @@ class ColaboracionController extends ModalController
                 ]
             )
         );
+
+
     }
 
     /**
@@ -123,6 +126,9 @@ class ColaboracionController extends ModalController
         $colaboracion->tutor = authUser()->dni;
         $colaboracion->estado = $request->estado;
         $colaboracion->save();
+        if ($request->anotacio != '') {
+            Activity::record('book',  $colaboracion, $request->anotacio, null, 'Contacte previ');
+        }
         return $this->redirect();
     }
 
