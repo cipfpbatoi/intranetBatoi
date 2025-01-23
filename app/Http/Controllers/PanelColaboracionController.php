@@ -49,7 +49,7 @@ class PanelColaboracionController extends IntranetController
 
         $this->crea_pestanas(
             config('modelos.Colaboracion.estados'),
-            "profile.Colaboracion",
+            "profile.colaboracion",
             3,
             1,
             'situation'
