@@ -155,7 +155,7 @@ class Colaboracion extends Model
 
     public function getSituationAttribute()
     {
-        if ($this->estado == 0) {
+        if ($this->tutor == '' && $this->estado == 1) {
             return 1;
         }
         if ($this->estado == 1 || $this->estado == 3) {
