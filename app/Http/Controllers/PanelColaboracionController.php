@@ -48,8 +48,8 @@ class PanelColaboracionController extends IntranetController
         $todos = $this->search();
 
         $this->crea_pestanas(
-            config('modelos.'.$this->model.'.estados'),
-            "profile.".strtolower($this->model),
+            config('modelos.Colaboracion.estados'),
+            "profile.Colaboracion",
             3,
             1,
             'situation'
@@ -83,7 +83,7 @@ class PanelColaboracionController extends IntranetController
                 [
                     'roles' => config(self::ROLES_ROL_PRACTICAS),
                     'class' => 'btn-primary unauthorize estado',
-                    'where' => ['tutor', '==', AuthUser()->dni, 'estado', '!=', '1']
+                    'where' => [  'estado', '!=', '1']
                 ]
             )
         );
@@ -94,7 +94,7 @@ class PanelColaboracionController extends IntranetController
                 [
                     'roles' => config(self::ROLES_ROL_PRACTICAS),
                     'class' => 'btn-success resolve estado',
-                    'where' => ['tutor', '==', AuthUser()->dni, 'estado', '!=', '2']
+                    'where' => [  'estado', '!=', '2']
                 ]
             )
         );
@@ -105,7 +105,7 @@ class PanelColaboracionController extends IntranetController
                 [
                     'roles' => config(self::ROLES_ROL_PRACTICAS),
                     'class' => 'btn-danger refuse estado',
-                    'where' => ['tutor', '==', AuthUser()->dni, 'estado', '!=', '3']
+                    'where' => [  'estado', '!=', '3']
                 ]
             )
         );
@@ -159,7 +159,7 @@ class PanelColaboracionController extends IntranetController
         if (count($colaboracions)) {
             $this->titulo = ['quien' => $colaboracions->first()->Ciclo->literal];
         }
-        return $colaboracions->sortBy('tutor')->sortBy('empresa');
+        return $colaboracions->sortBy('empresa');
     }
 
 

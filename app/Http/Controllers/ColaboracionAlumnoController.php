@@ -35,7 +35,6 @@ class ColaboracionAlumnoController extends IntranetController
     public function index()
     {
         $todos = $this->search();
-
         $this->crea_pestanas(
             config('modelos.'.$this->model.'.estados'),
             "profile.".strtolower($this->model),

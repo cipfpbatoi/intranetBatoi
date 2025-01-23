@@ -37,6 +37,7 @@
                                 @endif
                             @endforeach
                         @endif
+                        <li><em class="fa fa-user-secret"></em> {{$elemento->profesor??'No assignada'}}</li>
                     </ul>
                 @else
                     <ul class="list-unstyled">

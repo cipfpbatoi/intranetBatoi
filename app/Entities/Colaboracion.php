@@ -90,9 +90,8 @@ class Colaboracion extends Model
         $ciclo = $cicloC->count()>0?$cicloC->toarray():[];
         if ($empresa) {
             return $query->whereIn('idCiclo', $ciclo)->Empresa($empresa);
-        } else {
-            return $query->whereIn('idCiclo', $ciclo);
         }
+        return $query->whereIn('idCiclo', $ciclo);
     }
 
     public function getEmpresaAttribute()
@@ -156,7 +155,7 @@ class Colaboracion extends Model
 
     public function getSituationAttribute()
     {
-        if ($this->tutor != $this->dniTutor()) {
+        if ($this->estado == 0) {
             return 1;
         }
         if ($this->estado == 1 || $this->estado == 3) {
