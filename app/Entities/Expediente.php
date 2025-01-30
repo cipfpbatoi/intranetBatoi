@@ -111,6 +111,11 @@ class Expediente extends Model
     {
         return $this->Alumno->FullName;
     }
+
+    public function getNomProfeAttribute()
+    {
+        return $this->Profesor->FullName;
+    }
     public function getSituacionAttribute()
     {
         return isblankTrans('models.Expediente.'.$this->estado)

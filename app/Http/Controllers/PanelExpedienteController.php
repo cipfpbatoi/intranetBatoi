@@ -16,7 +16,7 @@ class PanelExpedienteController extends BaseController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nomAlum', 'fecha', 'Xtipo', 'Xmodulo', 'situacion'];
+    protected $gridFields = ['id', 'nomAlum','nomProfe', 'fecha', 'Xtipo', 'Xmodulo', 'situacion'   ];
     /**
      * @var string
      */
