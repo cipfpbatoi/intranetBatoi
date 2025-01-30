@@ -3,7 +3,9 @@
 namespace Intranet\Http\Controllers;
 
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Componentes\Mensaje;
@@ -30,7 +32,6 @@ class PanelProjecteController extends ModalController
      * @var array
      */
     protected $gridFields = ['alumne','titol', 'status', 'defensa', 'hora'];
-
     protected $formFields = [
         'idAlumne' => ['type' => 'select'],
         'titol' => ['type' => 'text'],
@@ -40,6 +41,9 @@ class PanelProjecteController extends ModalController
         'aplicacions' => ['type' => 'textarea'],
         'recursos' => ['type' => 'textarea'],
      ];
+    protected $parametresVista = ['modal' => ['defensa']];
+
+
 
     public function search()
     {
@@ -63,6 +67,23 @@ class PanelProjecteController extends ModalController
         Projecte::findOrFail($id)->fillAll($request);
         return back();
     }
+
+    public function check($id)
+    {
+        $projecte = Projecte::findOrFail($id);
+        $projecte->estat = 2;
+        $projecte->save();
+        return back();
+    }
+
+    public function destroy($id)
+    {
+        if ($elemento = Projecte::findOrFail($id)) {
+            $elemento->delete();
+        }
+        return back();
+    }
+
 
     public function send()
     {
@@ -116,7 +137,7 @@ class PanelProjecteController extends ModalController
             OrdenReunion::create([
                 'idReunion' => $acta->id,
                 'descripcion' => $projecte->Alumno->fullName,
-                'resumen' => $projecte->titol,
+                'resumen' => $projecte->titol.' (Tutor individual)',
                 'orden' => $key+1
             ]);
         }
@@ -125,8 +146,32 @@ class PanelProjecteController extends ModalController
 
     }
 
+    public function actaE()
+    {
+        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)
+            ->orWhere('tutor', '=', authUser()->sustituye_a)
+            ->first();
+
+        $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
+        $projectes = Projecte::whereIn('idAlumne', $alumnos)
+            ->where('estat', 2)
+            ->get();
 
 
+        $acta = new Reunion(['tipo'=>12,'numero'=>0,'curso'=>curso(),'fecha'=>hoy(),'idProfesor'=>authUser()->dni,'descripcion'=>'Data Defensa del mòdul de projecte','objectivos'=>"Assignar dia i hora per a la defensa dels Projectes",'idEspacio'=>'SalaProf' ]);
+        $acta->save();
+        foreach ($projectes as $key => $projecte) {
+            OrdenReunion::create([
+                'idReunion' => $acta->id,
+                'descripcion' => $projecte->Alumno->fullName,
+                'resumen' => '('.$projecte->titol.') Data i Hora',
+                'orden' => $key+1
+            ]);
+        }
+
+        return redirect()->route('reunion.edit', $acta->id);
+
+    }
 
     public function pdf($id)
     {
@@ -140,14 +185,18 @@ class PanelProjecteController extends ModalController
 
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('projectes.send',[ 'class' => 'btn-info '  ] ));
-        $this->panel->setBoton('index', new BotonBasico('projectes.acta',[ 'class' => 'btn-warning '  ] ));
+        $this->panel->setBoton('index', new BotonBasico('projectes.sendP',[ 'class' => 'btn-info '  ] ));
+
+        $this->panel->setBoton('index', new BotonBasico('projectes.actaP',[ 'class' => 'btn-warning '  ] ));
+        $this->panel->setBoton('index', new BotonBasico('projectes.actaE',[ 'class' => 'btn-success '  ] ));
         $this->panel->setBoton('index', new BotonBasico('projecte.create'));
+
         //$this->panel->setBoton('grid', new BotonImg('projecte.show'));
-        $this->panel->setBoton('grid', new BotonImg('projecte.edit', ['roles' => config(self::TUTOR)]));
+        $this->panel->setBoton('grid', new BotonImg('projecte.edit', ['roles' => config(self::TUTOR), 'where' => ['estat', '<' , '2']]));
         $this->panel->setBoton('grid',
-            new BotonImg('projecte.delete', ['roles' => config(self::TUTOR), 'where' => ['estat', '==', '0']]));
+            new BotonImg('projectes.delete', ['roles' => config(self::TUTOR), 'where' => ['estat', '< ', '2']]));
         $this->panel->setBoton('grid', new BotonImg('projecte.pdf', ['roles' => config(self::TUTOR)]));
+        $this->panel->setBoton('grid', new BotonImg('projecte.check', ['img' => 'fa-check','roles' => config(self::TUTOR), 'where' => ['estat', '==', '1']]));
     }
 
 }

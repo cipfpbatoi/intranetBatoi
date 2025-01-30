@@ -275,9 +275,10 @@ return array(
             'edit' => 'Modifica Document',
             'default' => 'Modifica Documentació Qualitat',
         ),
-        'Proyecto' => array(
-            'create' => 'Pujar projecte alumne/a'
-        ),
+        'Projecte' => array(
+            'create' => 'Pujar projecte alumne/a',
+            'index' => 'Gestió de Projectes',
+         ),
         'Empresa' => array(
             'index' => 'Llistat Empreses',
             'create' => 'Crear empresa',

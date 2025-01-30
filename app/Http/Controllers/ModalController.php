@@ -126,9 +126,4 @@ abstract class ModalController extends Controller
         return redirect()->action($this->model . 'Controller@index'); //defecto
     }
 
-
-
-
-
-
 }

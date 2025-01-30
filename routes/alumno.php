@@ -18,8 +18,4 @@ Route::post('/A3/upload',['as' => 'signatura.upload','uses' => 'SignaturaAlumneC
 
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'alumno.mensaje', 'uses' => 'AlumnoController@alerta']);
 
-Route::resource('projecte' , 'ProjecteController',['except'=>['update','destroy']]);
-Route::put('/projecte/{id}/edit', ['as' => 'projecte.update', 'uses' => 'ProjecteController@update']);
-Route::get('/projecte/{id}/delete', ['as' => 'projecte.delete', 'uses' => 'ProjecteController@destroy']);
-Route::get('/projecte/{id}/email', ['as' => 'projecte.email', 'uses' => 'ProjecteController@email']);
-Route::get('/projecte/{id}/pdf', ['as' => 'projecte.pdf', 'uses' => 'ProjecteController@pdf']);
+

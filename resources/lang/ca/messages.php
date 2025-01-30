@@ -76,7 +76,6 @@ return array(
      ),
     'buttons' => array(
         'confirmar' => 'Confirmar',
-
         'edit' => 'Editar',
         'delete' => 'Esborrar',
         'pdf' => 'Imprimir',
@@ -169,6 +168,9 @@ return array(
         'remove' => 'Traure',
         'verorden' => 'Totes Ordres',
         'acta' => 'Demanar Acta Avaluació',
+        'actaP' => 'Crear Acta Projectes',
+        'sendP' => 'Enviar Projectes  professorat',
+        'actaE' => 'Crear Acta Defensa',
         'chooseDate' => 'Tria Fecha',
         'change' => 'Accedir com a eixa persona',
         'fse' => 'Acta fons social Europeu',

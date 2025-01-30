@@ -45,6 +45,7 @@ class ProjecteController extends ModalController
     {
         $new = new Projecte();
         $request->request->add(['idAlumne' => AuthUser()->nia]);
+        $request->request->add(['estat' => 0]);
         $new->fillAll($request);
         return $this->redirect();
     }
