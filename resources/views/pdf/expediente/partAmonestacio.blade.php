@@ -23,7 +23,7 @@
                 <p>{{config('contacto.poblacion')}},a {{$datosInforme}} </p>
                 <br/><br/><br/>
                 <div style="width:45%; float:left;color:grey ">
-                    <p><strong>PROFESOR: </strong></p>
+                    <p><strong>PROFESOR: {{ $elemento->nomProfe }}</strong></p>
                     <br/><br/>
                 </div>
                 <div style="width:45%; float:left;color:grey ">
