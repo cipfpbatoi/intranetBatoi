@@ -2,6 +2,7 @@
 
 
 use Intranet\Http\Controllers\RedirectAfterAuthenticationController;
+use Intranet\Livewire\ColaboracionesLivewire;
 
 Route::get('/home', ['as' => 'home.profesor', 'uses' => 'Auth\Profesor\HomeController@index']);
 Route::get('/legal', ['as' => 'legal', 'uses' => 'Auth\Profesor\HomeController@legal']);
@@ -553,3 +554,4 @@ Route::get('/projectes/sendP', ['as' => 'projectes.sendP    ', 'uses' => 'PanelP
 Route::get('/projectes/actaE', ['as' => 'projecte.actaE', 'uses' => 'PanelProjecteController@actaE']);
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
+

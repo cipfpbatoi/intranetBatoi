@@ -1,5 +1,5 @@
 @extends('layouts.intranet')
-@section('css')
+ @section('css')
     <title>@lang("models.Guardia.control")</title>
     <style>
         table, th, td {
