@@ -72,7 +72,8 @@ return array(
         'hasta' => 'Fins',
         'resum' => 'Resum',
         'tasks' => 'Tasques pendents',
-        'explicacion' => 'Explicación'
+        'explicacion' => 'Explicación',
+        'afternoon' => 'Vesprada'
      ),
     'buttons' => array(
         'confirmar' => 'Confirmar',

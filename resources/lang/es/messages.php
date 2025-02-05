@@ -318,7 +318,8 @@ return array(
         'Estadisticas' => 'Estadísticas FCT',
         'Projecte' =>  'Propuesta proyecto',
         'Projectes' => 'Módulo Proyecto',
-        'Certificat' => 'Cita previa Certificado Digital'
+        'Certificat' => 'Cita previa Certificado Digital',
+        'afternoon' => 'Tarde'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
