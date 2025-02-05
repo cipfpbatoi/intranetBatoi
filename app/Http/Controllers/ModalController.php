@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\Panel;
+use Intranet\Http\Traits\Searchable;
 use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\FormBuilder;
 use Response;
@@ -11,6 +12,7 @@ use Response;
 
 abstract class ModalController extends Controller
 {
+    use Searchable;
     protected $gridFields = null;  // campos que ixen en la rejilla
     protected $panel;       // panel per a la vista
     protected $parametresVista = []; // paràmetres per a la vista
@@ -73,28 +75,25 @@ abstract class ModalController extends Controller
    */
     public function destroy($id)
     {
-        if ($elemento = $this->class::findOrFail($id)) {
-            if ($elemento->fichero && method_exists($this, 'borrarFichero')) {
-                $this->borrarFichero($elemento->fichero);
-            }
-            if (method_exists($this, 'deleteAttached')) {
-                $this->deleteAttached($id);
-            }
-            $elemento->delete();
+        $elemento = $this->class::find($id);
+
+        if (!$elemento) {
+            return redirect()->back()->with('error', 'Element no trobat');
         }
+
+        if ($elemento->fichero && method_exists($this, 'borrarFichero')) {
+            $this->borrarFichero($elemento->fichero);
+        }
+
+        if (method_exists($this, 'deleteAttached')) {
+            $this->deleteAttached($id);
+        }
+
+        $elemento->delete();
+
         return $this->redirect();
     }
 
-
-    protected function search()
-    {
-        $todos =  $this->class::all(); // carrega totes les dades de un model
-        if (isset($todos->first()->idProfesor)) // Si existe profesor en el model limite la cerca a les seues
-        {
-            $todos = $todos->where('idProfesor', '=', AuthUser()->dni);
-        }
-        return $todos;
-    }
 
     public function confirm($id){
         return ConfirmAndSend::render($this->model,$id);

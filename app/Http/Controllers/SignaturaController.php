@@ -165,14 +165,6 @@ class SignaturaController extends ModalController
     }
 
 
-    /**
-     * @return mixed
-     */
-    protected function search()
-    {
-        return Signatura::where('idProfesor', authUser()->dni)->get();
-    }
-
     protected function deleteAll()
     {
         $signatures = $this->search();
