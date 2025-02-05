@@ -4,11 +4,11 @@
  */
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Traits\crud;
+use Intranet\Http\Traits\Crud;
 
 
 abstract class IntranetController extends BaseController
 {
-    use crud;
+    use Crud;
        
 }
