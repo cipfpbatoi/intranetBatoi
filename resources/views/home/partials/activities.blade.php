@@ -1,6 +1,6 @@
 <ul class="messages">
     @foreach ($actividades as $actividad)
-        <x-llist image="/img/actividad.png" date="{{$actividad->desde}}">
+        <x-llist image="actividad.png" date="{{$actividad->desde}}">
             @isset($actividad->Tutor)
                 <h4 class="heading">
                     {{$actividad->Tutor->first()->shortName}}
