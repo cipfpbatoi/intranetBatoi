@@ -11,12 +11,15 @@
         <li>
             <em class="fa fa-map-marker user-profile-icon"></em> {{ $usuario->domicilio }}
         </li>
-        <li>
-            <em class="fa fa-briefcase user-profile-icon"></em> {{ $usuario->Departamento->cliteral }}
-        </li>
         <li class="m-top-xs">
             <em class="fa fa-envelope user-profile-icon"></em> {{ $usuario->email }}
         </li>
+        @isset($usuario->Departamento->cliteral)
+            <li>
+                <em class="fa fa-briefcase user-profile-icon"></em> {{ $usuario->Departamento->cliteral }}
+            </li>
+        @endisset
+
     </ul>
     <h6>{!!  implode('<br/>', nameRolesUser($usuario->rol)) !!}</h6>
     <a href="/perfil" class="btn btn-success">

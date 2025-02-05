@@ -1,3 +1,4 @@
+<table class='table table-bordered'>
     @include('home.partials.horario.cabeceraTabla')
     <tbody>
     @foreach (Intranet\Entities\Hora::all() as $hora)
