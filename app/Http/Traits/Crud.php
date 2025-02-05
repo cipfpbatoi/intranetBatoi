@@ -1,32 +1,33 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Http\Traits;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Services\FormBuilder;
 use Styde\Html\Facades\Alert;
-use Response;
 
 
-trait traitCRUD{
-    
-    protected $redirect = null;  // pàgina a la que redirigir després de inserció o modificat
-    /*
-     * redirect 
-     * redirecciona per ordre a :
-     *   variable de sessio(distinguir professor i direccio
-     *   a variable redirect del modelo
-     *   al index del modelo
+/**
+ *
+ */
+trait Crud
+{
+
+    /**
+     * @var null
      */
-    
-    
+    protected $redirect = null;
+
+
+    /**
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function redirect()
     {
         if (Session::get('redirect')) {
             $this->redirect = Session::get('redirect');
         } //variable session
-
 
         if ($this->redirect) {
             if (!isset($this->search)) {
@@ -37,29 +38,45 @@ trait traitCRUD{
         
         return redirect()->action($this->model . 'Controller@index'); //defecto
     }
-    /* 
-     * destroy($id) return redirect
-     * busca i esborra en un model
-     * si hi ha fitxer associat l'esborra
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy($id)
     {
-        if ($elemento = $this->class::findOrFail($id)) {
-            $this->borrarFichero($elemento->fichero);
-            $elemento->delete();
+        $elemento = $this->class::find($id);
+
+        if (!$elemento) {
+            return redirect()->back()->with('error', 'Element no trobat');
         }
+
+        if ($elemento->fichero) {
+            $this->borrarFichero($elemento->fichero);
+        }
+
+        $elemento->delete();
         return $this->redirect();
     }
-    
+
+    /**
+     * @param $fichero
+     * @return void
+     */
     protected function borrarFichero($fichero){
-        if (!isset($fichero) || strlen($fichero)<3) {
-            return null;
+        if (!$fichero || strlen($fichero) < 3) {
+            return;
         }
-        if (file_exists($fichero)) {
-            unlink($fichero);
-        }
-        if (file_exists(storage_path('app/' . $fichero))) {
-            unlink(storage_path('app/' . $fichero));
+
+        $paths = [
+            public_path($fichero),
+            storage_path('app/' . $fichero),
+        ];
+
+        foreach ($paths as $path) {
+            if (file_exists($path)) {
+                unlink($path);
+            }
         }
     }
     
@@ -67,7 +84,11 @@ trait traitCRUD{
      * show($id) return vista
      * busca en model de dades i el mostra amb vista show 
      */
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+     */
     public function show($id)
     {
         $elemento = $this->class::findOrFail($id);
@@ -80,6 +101,10 @@ trait traitCRUD{
      * accepta un array de valors per defecte
      */
 
+    /**
+     * @param $default
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+     */
     public function create($default = [])
     {
         $formulario = new FormBuilder($this->createWithDefaultValues($default),$this->formFields);
@@ -88,6 +113,10 @@ trait traitCRUD{
     }
 
 
+    /**
+     * @param $default
+     * @return mixed
+     */
     protected function createWithDefaultValues($default = []){
         return new $this->class($default);
     }
@@ -96,16 +125,21 @@ trait traitCRUD{
      * store (Request) return redirect
      * guarda els valors del formulari
      */
+    /**
+     * @param  Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         $this->realStore($request);
         return $this->redirect();
     }
 
-    /* 
-     * realStore (Request,id=null) return element guardat
-     * valida el request
-     * guarda l'element
+
+    /**
+     * @param  Request  $request
+     * @param $id
+     * @return mixed
      */
     protected function realStore(Request $request, $id = null)
     {
@@ -114,8 +148,10 @@ trait traitCRUD{
         return $elemento->fillAll($request);        // ompli i guarda
     }
 
-    /* 
-     * edit($id) return vista edit 
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
      */
     public function edit($id)
     {
@@ -125,6 +161,10 @@ trait traitCRUD{
         return view($this->chooseView('edit'), compact('formulario', 'modelo'));
     }
 
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+     */
     public function editdelete($id)
     {
         $formulario = new FormBuilder($this->class::findOrFail($id),$this->formFields);
@@ -132,9 +172,11 @@ trait traitCRUD{
         return view($this->chooseView('editdelete'), compact('formulario', 'modelo','id'));
     }
 
-    /*
-     *  update (Request,$id) return redirect
-     * guarda els valors del formulari
+
+    /**
+     * @param  Request  $request
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, $id)
     {
@@ -143,27 +185,22 @@ trait traitCRUD{
     }
 
    
-    /*
-     * active ($id) 
-     * canvia la variable activo del elemento (alumnocurso,curso,menu)
+
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function active($id)
     {
         $elemento = $this->class::findOrFail($id);
-        if ($elemento->activo) {
-            $elemento->activo = false;
-        } else {
-            $elemento->activo = true;
-        }
-        $elemento->save();
+        $elemento->update(['activo' => !$elemento->activo]); // Toggle
         return $this->redirect();
     }
 
-    /*
-     * document ($id)
-     * torna el fitxer de un model
+    /**
+     * @param $id
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    
     public function document($id)
     {
         $elemento = $this->class::findOrFail($id);
@@ -173,7 +210,11 @@ trait traitCRUD{
         Alert::danger(trans("messages.generic.nodocument"));
         return back();
     }
-    
+
+    /**
+     * @param $id
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function gestor($id)
     {
         $documento = $this->class::findOrFail($id)->idDocumento;
@@ -186,11 +227,24 @@ trait traitCRUD{
     }
 
     //valida extes per controlar els checkbox que pasen blancs
+
+    /**
+     * @param $request
+     * @param $elemento
+     * @return mixed
+     */
     protected function validateAll($request, $elemento)
     {
-        return $this->validate($this->manageCheckBox($request, $elemento), $elemento->getRules());
+        $rules = method_exists($this->class, 'getRules') ? $this->class::getRules() : [];
+        return $this->validate($this->manageCheckBox($request, $elemento), $rules);
     }
 
+
+    /**
+     * @param $request
+     * @param $elemento
+     * @return mixed
+     */
     protected function manageCheckBox($request,$elemento){
         foreach ($elemento->getFillable() as $property) {
             if (isset($elemento->getInputType($property)['type']) && 
