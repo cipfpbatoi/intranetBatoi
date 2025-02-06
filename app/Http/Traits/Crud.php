@@ -234,7 +234,7 @@ trait Crud
      */
     protected function validateAll($request, $elemento)
     {
-        $rules = method_exists($this->class, 'getRules') ? $this->class::getRules() : [];
+        $rules = method_exists($elemento, 'getRules') ? $elemento->getRules() : [];
         return $this->validate($this->manageCheckBox($request, $elemento), $rules);
     }
 
