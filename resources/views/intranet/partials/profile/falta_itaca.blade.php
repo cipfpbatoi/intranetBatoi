@@ -17,48 +17,37 @@
             <div class='form_box'>
                 @php $usuarios = $grupo->groupBy('idProfesor'); @endphp
                 @foreach ($usuarios as $usuario)
-                <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
-                    <div id="{{$usuario->first()->id}}" class="well profile_view">
-                        <div class="col-sm-12">
-                            <h4 class="brief"><em>{{ $usuario->first()->Profesor->FullName??'' }}</em></h4>
-                            <div class="left col-xs-8">
-                                <p><strong>{{ $usuario->first()->dia }}</strong></p>
-                                <ul class="list-unstyled">
-                                    @php $justificacion = ''; @endphp
-                                    @foreach ($usuario as $elemento)
-                                        @php $justificacion .= $elemento->justificacion; @endphp
+                    <x-label id="{{$usuario->first()->id}}"
+                             cab1="{{$usuario->first()->Profesor->FullName ?? ''}}"
+                             cab2="{{$usuario->first()->dia}} "
+                             title=""
+                             view="people">
+                        <div class="left col-xs-8">
+                            <ul class="list-unstyled">
+                                @php $justificacion = ''; @endphp
+                                @foreach ($usuario as $elemento)
+                                    @php $justificacion .= $elemento->justificacion; @endphp
                                     <li>
                                         @if ($elemento->enCentro)
-                                            {!! Html::image('img/clock-icon.png',
-                                                    'reloj', array('class' => 'iconopequeno')) !!}
+                                            {!! Html::image('img/clock-icon.png', 'reloj', ['class' => 'iconopequeno']) !!}
                                         @else
-                                            {!! Html::image('img/clock-icon-rojo.png',
-                                                    'reloj', array('class' => 'iconopequeno', 'id' => 'imgFitxar')) !!}
+                                            {!! Html::image('img/clock-icon-rojo.png', 'reloj', ['class' => 'iconopequeno', 'id' => 'imgFitxar']) !!}
                                         @endif
                                         {{ $elemento->horas }} - {{ $elemento->Xgrupo }}
                                     </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                            <div class="right col-xs-4 text-center">
-                                @if ($usuario->first()->Profesor)
-                                <img src="{{ asset('storage/fotos/'. $usuario->first()->Profesor->foto )}}"
-                                     alt="" class="img-circle img-responsive">
-                                @endif
-                            </div>
+                                @endforeach
+                            </ul>
                         </div>
-                        <div class="col-xs-12 bottom text-center">
-                            <div class="col-xs-12 col-sm-6 emphasis">
-                                <p class="ratings">
-                                    {{ $justificacion }}
-                                </p>
-                            </div>
-                            <div class="col-xs-12 col-sm-6 emphasis">
-                                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+                        <x-slot name="rattings">
+                            <p class="ratings">
+                                {{ ucfirst($justificacion) }}
+                            </p>
+                        </x-slot>
+                        <x-slot name="botones">
+                            @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
+                        </x-slot>
+                    </x-label>
                 @endforeach
             </div>
         </div>
