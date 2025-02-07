@@ -17,37 +17,38 @@
             <div class='form_box'>
                 @php $usuarios = $grupo->groupBy('idProfesor'); @endphp
                 @foreach ($usuarios as $usuario)
-                    <x-label id="{{$usuario->first()->id}}"
-                             cab1="{{$usuario->first()->Profesor->FullName ?? ''}}"
-                             cab2="{{$usuario->first()->dia}}"
-                             title="{{$usuario->first()->Profesor->foto ??''  }}"
-                             view="people">
-                        <div class="left col-xs-8">
-                            <ul class="list-unstyled">
-                                @php $justificacion = ''; @endphp
-                                @foreach ($usuario as $elemento)
-                                    @php $justificacion .= $elemento->justificacion; @endphp
-                                    <li>
-                                        @if ($elemento->enCentro)
-                                            {!! Html::image('img/clock-icon.png', 'reloj', ['class' => 'iconopequeno']) !!}
-                                        @else
-                                            {!! Html::image('img/clock-icon-rojo.png', 'reloj', ['class' => 'iconopequeno', 'id' => 'imgFitxar']) !!}
-                                        @endif
-                                        {{ $elemento->horas }} - {{ $elemento->Xgrupo }}
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </div>
-
-                        <x-slot name="rattings">
-                            <p class="ratings">
-                                {{ ucfirst($justificacion) }}
-                            </p>
-                        </x-slot>
-                        <x-slot name="botones">
-                            @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
-                        </x-slot>
-                    </x-label>
+                    @if ($usuario->first()->Profesor)
+                        <x-label id="{{$usuario->first()->id}}"
+                                 cab1="{{$usuario->first()->Profesor->FullName  }}"
+                                 cab2="{{$usuario->first()->dia}}"
+                                 title="{{asset('storage/fotos/'. $usuario->first()->Profesor->foto ) }}"
+                                 view="people">
+                            <div class="left col-xs-8">
+                                <ul class="list-unstyled">
+                                    @php $justificacion = ''; @endphp
+                                    @foreach ($usuario as $elemento)
+                                        @php $justificacion .= $elemento->justificacion; @endphp
+                                        <li>
+                                            @if ($elemento->enCentro)
+                                                {!! Html::image('img/clock-icon.png', 'reloj', ['class' => 'iconopequeno']) !!}
+                                            @else
+                                                {!! Html::image('img/clock-icon-rojo.png', 'reloj', ['class' => 'iconopequeno', 'id' => 'imgFitxar']) !!}
+                                            @endif
+                                            {{ $elemento->horas }} - {{ $elemento->Xgrupo }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                            <x-slot name="rattings">
+                                <p class="ratings">
+                                    {{ ucfirst($justificacion) }}
+                                </p>
+                            </x-slot>
+                            <x-slot name="botones">
+                                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
+                            </x-slot>
+                        </x-label>
+                    @endif
                 @endforeach
             </div>
         </div>
