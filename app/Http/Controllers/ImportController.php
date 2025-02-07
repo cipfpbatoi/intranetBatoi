@@ -846,6 +846,18 @@ class ImportController extends Seeder
             DB::table('horarios')->where('plantilla', '<>', $ultimPlantilla)->delete();
         }
 
+        //chatgpt per a esborrar duplicats
+        DB::table('horarios')
+            ->whereIn('id', function ($query) {
+                $query->select(DB::raw('id'))
+                    ->from('horarios as h1')
+                    ->whereRaw('id NOT IN (
+                    SELECT MIN(id) FROM horarios 
+                    GROUP BY idProfesor, dia_semana, sesion_orden
+                )');
+            })
+            ->delete();
+
 
     }
 
