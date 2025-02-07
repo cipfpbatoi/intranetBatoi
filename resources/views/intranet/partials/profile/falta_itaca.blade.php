@@ -19,8 +19,8 @@
                 @foreach ($usuarios as $usuario)
                     <x-label id="{{$usuario->first()->id}}"
                              cab1="{{$usuario->first()->Profesor->FullName ?? ''}}"
-                             cab2="{{$usuario->first()->dia}} "
-                             title=""
+                             cab2="{{$usuario->first()->dia}}"
+                             title="{{$usuario->first()->Profesor->foto ??''  }}"
                              view="people">
                         <div class="left col-xs-8">
                             <ul class="list-unstyled">
