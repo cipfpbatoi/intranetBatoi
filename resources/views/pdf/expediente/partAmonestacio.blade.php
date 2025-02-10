@@ -6,9 +6,9 @@
             <br/><br/><br/>
             <div class="container" style="width:95%;clear:right;text-align: justify">
                 <p><strong>PART D'AMONESTACIÓ</strong></p>
-                <p style="text-indent: 30px">ALUMNE/A: <strong>{{$elemento->Alumno->FullName}}</strong></p>
+                <p style="text-indent: 30px">ALUMNE/A: <strong>{{$elemento->Alumno->FullName??'Desconegut'}}</strong></p>
                 <p style="text-indent: 30px">CURS/GRUP: <strong>{{curso()}}
-                        /{{$elemento->Alumno->Grupo->first()->nombre}}</strong>
+                        /{{$elemento->Alumno->Grupo->first()->nombre ?? 'Sense Grup'}}</strong>
                 <p style="text-indent: 30px">DATA: <strong>{{$elemento->fecha}}</strong> HORA: </p>
                 <p style="text-indent: 30px">LLOC: <strong></strong></p> <b/>
                 <p style="text-indent: 30px">D'acord amb el RRI del CIPFP BATOI (aprovat pel Consell Social el dia 20
@@ -23,7 +23,7 @@
                 <p>{{config('contacto.poblacion')}},a {{$datosInforme}} </p>
                 <br/><br/><br/>
                 <div style="width:45%; float:left;color:grey ">
-                    <p><strong>PROFESOR: {{ $elemento->nomProfe }}</strong></p>
+                    <p><strong>PROFESOR: {{ $elemento->nomProfe ?? 'Desconegut' }}</strong></p>
                     <br/><br/>
                 </div>
                 <div style="width:45%; float:left;color:grey ">
