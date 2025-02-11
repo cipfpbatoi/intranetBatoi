@@ -47,7 +47,7 @@ class ConformidadAlumnadoGrupoResource extends PrintResource
         $i = 6;
         foreach ($this->getElements()??[] as $element) {
             $title = 'Text'.$i;
-            $array[$title] = $element->Alumno->fullName;
+            $array[$title] = $element->Alumno->fullName??$element->fullName;
             $i += 2;
         }
         return $array;

@@ -15,7 +15,7 @@ return array(
         'activityReport' => 'Hores al centre',
         'lastActivity' => 'Darreres accions',
         'timeTable' => 'Horari',
-        'nextActivities' => 'Properes Activitats Extraescolars',
+        'nextActivities' => 'Act. Extraescolars',
         'patio' => 'Descans',
         'notAllowed' => 'Operació no permesa',
         'login' => 'Darrer Accés',
@@ -73,7 +73,8 @@ return array(
         'resum' => 'Resum',
         'tasks' => 'Tasques pendents',
         'explicacion' => 'Explicación',
-        'afternoon' => 'Vesprada'
+        'afternoon' => 'Vesprada',
+        'calendari' => 'Calendari Escolar'
      ),
     'buttons' => array(
         'confirmar' => 'Confirmar',

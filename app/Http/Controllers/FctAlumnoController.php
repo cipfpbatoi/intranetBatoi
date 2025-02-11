@@ -82,6 +82,15 @@ class FctAlumnoController extends IntranetController
         $this->panel->setBoton(
             'grid',
             new BotonImg(
+                'alumnofct.days',
+                [
+                    'img' => 'fa-calendar',
+                    'where' => ['asociacion', '<', '2'],'text'=>'Modificar Calendari']
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
                 'alumnofct.edit',
                 ['where' => ['asociacion', '>', '2'],'text'=>'Canviar dates']
             )
@@ -240,7 +249,11 @@ class FctAlumnoController extends IntranetController
         }
     }
 
-    //
+    public function days($id)
+    {
+        $alumnoFct = AlumnoFct::find($id);
+        return view('fct.days',compact('alumnoFct'));
+    }
 
     public function nuevaConvalidacion()
     {

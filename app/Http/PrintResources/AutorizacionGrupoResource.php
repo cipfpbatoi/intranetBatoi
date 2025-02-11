@@ -41,7 +41,7 @@ class AutorizacionGrupoResource extends PrintResource
 
 
         foreach ($this->getElements()??[] as $element) {
-            $alumnes .= $element->Alumno->fullName.'
+            $alumnes .= $element->Alumno->fullName??$element->fullName.'
 ';
         }
         return [

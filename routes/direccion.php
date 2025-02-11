@@ -97,4 +97,5 @@ Route::post('/itaca/birret', ['as'=>'itaca.birret', 'uses'=>'ItacaController@bir
 Route::post('/itaca/faltes', ['as'=>'itaca.faltes', 'uses'=>'ItacaController@faltes']);
 
 Route::view('/guardia/control', 'guardias.control');
+Route::view('/calendari',  'calendari.escolar');
 

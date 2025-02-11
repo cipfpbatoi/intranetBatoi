@@ -1,4 +1,5 @@
 @php $agrupados = $panel->getElementos($pestana)->groupBy('desde'); @endphp
+
 @foreach ($agrupados as $grupo)
     @php $nombre = $pestana->getNombre().$grupo->first()->desde; @endphp
     <div class="panel">
@@ -14,58 +15,66 @@
                         <div class="col-md-3 col-sm-3 col-xs-11 profile_details">
                             <div id="{{$elemento->id}}" class="well profile_view">
                                 <div class="col-sm-12">
-                                    <h4 class="brief">
-                                        @if ($elemento->baja)
-                                            <i class="fa fa-calendar"></i> {{$elemento->desde}}
+                                    <x-label id="{{$elemento->id}}"
+                                             cab1="{{$elemento->desde}}"
+                                             cab2="{{  esMismoDia($elemento->desde,$elemento->hasta)? substr($elemento->hasta,11): $elemento->hasta }}"
+                                             title="{{$elemento->name}}">
+                                        @if ($elemento->complementaria)
+                                            <p>Complementària</p>
                                         @else
-                                            @if (esMismoDia($elemento->desde,$elemento->hasta))
-                                                <i class="fa fa-calendar"></i> {{$elemento->desde}}
-                                                @if (!$elemento->dia_completo)
-                                                    {{$elemento->hora_ini}} - {{$elemento->hora_fin}}
-                                                @endif
-                                            @else
-                                                <i class="fa fa-calendar"></i> {{$elemento->desde}} - <i
-                                                        class="fa fa-calendar"></i> {{$elemento->hasta}}
-                                            @endif
+                                            <p>Extraescolar</p>
                                         @endif
-                                        @if ($elemento->itaca)
-                                            <i class="fa fa-check">Itaca</i>
+                                        <p><strong>@if ($elemento->complementaria) Justificació RA @else Descripció @endif</strong> : <em style="font-size: smaller">{{$elemento->descripcion}}</em></p>
+                                        @if ($elemento->objetivos)
+                                            <p><strong>Objectius</strong> : <em style="font-size: smaller">{{$elemento->objetivos}}</em></p>
                                         @endif
-                                    </h4>
-                                    <h6>{{$elemento->Profesor->nombre}} {{$elemento->Profesor->apellido1}}</h6>
-                                    @if (isset(Intranet\Entities\Falta_profesor::haFichado(fecha($elemento->desde),$elemento->idProfesor)->first()->entrada))
-                                        <h6><i class="fa fa-clock-o"></i>
-                                            {{ Intranet\Entities\Falta_profesor::haFichado(fecha($elemento->desde),$elemento->idProfesor)->first()->entrada}}
-                                            - {{ Intranet\Entities\Falta_profesor::haFichado(fecha($elemento->desde),$elemento->idProfesor)->latest()->first()->salida}}
-                                        </h6>
-                                    @else
-                                        <h6><i class="fa fa-clock-o"></i> No ha fixat</h6>
-                                    @endif
-                                    <div class="left col-xs-12">
-                                        <h5>@if ($elemento->baja)
-                                                <a href="#"><span class="fa fa-star"></span></a>
-                                            @endif
-                                            {{ $elemento->motivo }} </h5>
-                                        <p> {{$elemento->observaciones}}</p>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 bottom text-center">
-                                    <div class="col-xs-12 col-sm-12 emphasis">
-                                        @if ($elemento->estado < 4)
-                                            @foreach (Intranet\Entities\Horario::Profesor($elemento->idProfesor)->Dia(NameDay($elemento->desde))->orderBy('sesion_orden')->get() as $hora)
-                                                <a href='#' class='btn btn-primary btn-xs'>
-                                                    <i class="fa fa-clock-o"></i>{{$hora->Hora->hora_ini}}
-                                                    -{{$hora->Hora->hora_fin}}
-                                                    @if (isset($hora->Modulo->cliteral))
-                                                        {{$hora->Modulo->literal}}
+                                        @if ($elemento->comentarios)
+                                            <p><strong>Comentaris</strong> : <em style="font-size: smaller">{{$elemento->comentarios}}</em></p>
+                                        @endif
+                                        <h5>Participants</h5>
+                                        <ul class="list-unstyled">
+                                            @foreach ($elemento->profesores as $profesor)
+                                                <li><em class="fa fa-user"></em>
+                                                    @if($profesor->pivot->coordinador)
+                                                        <strong>{{$profesor->nombre}} {{$profesor->apellido1}}</strong>
                                                     @else
-                                                        {{$hora->Ocupacion->nombre}}
+                                                        {{$profesor->nombre}} {{$profesor->apellido1}}
                                                     @endif
-                                                </a>
+                                                    @foreach (\Intranet\Services\AdviseTeacher::horariAltreGrup($elemento,$profesor->dni) as $grup)
+                                                        <span class="label label-danger"><em style="font-size: smaller">{{$grup['idGrupo']}}</em></span>
+                                                    @endforeach
+                                                </li>
                                             @endforeach
-                                        @endif
-                                        @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
-                                    </div>
+                                            @foreach ($elemento->grupos as $grupo)
+                                                <li><em class="fa fa-group"></em> {{ $grupo->nombre}} </li>
+                                            @endforeach
+                                        </ul>
+                                        <x-slot name="rattings">
+                                            @if ($elemento->estraescolar == 1)
+                                                <a href='#' class='btn btn-success btn-xs' >@lang("messages.menu.Orientacion")</a>
+                                            @else
+                                                @if ($elemento->estado<2)
+                                                    <a href='#' class='btn btn-danger btn-xs' >
+                                                        @else
+                                                            <a href='#' class='btn btn-success btn-xs' >
+                                                                @endif
+                                                                {{ $elemento->situacion }}</a>
+                                                        @endif
+                                                        @if ($elemento->fueraCentro)
+                                                            <a href='#' class='btn btn-info btn-xs' >Extraescolar</a>
+                                                        @else
+                                                            <a href='#' class='btn btn-info btn-xs' >Centre</a>
+                                                        @endif
+                                                        @if ($elemento->transport)
+                                                            <a href='#' class='btn btn-warning btn-xs' >Transport</a>
+                                                @endif
+                                        </x-slot>
+                                        <x-slot name="botones">
+                                            @foreach($panel->getBotones('profile') as $button)
+                                                {{ $button->show($elemento) }}
+                                            @endforeach
+                                        </x-slot>
+                                    </x-label>
                                 </div>
                             </div>
                         </div>
