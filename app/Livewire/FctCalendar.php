@@ -51,7 +51,7 @@ class FctCalendar extends Component
         for ($date = $startDate->copy(); $remainingHours > 0; $date->addDay()) {
             $dayName = $date->locale('ca')->isoFormat('dddd');
 
-            if  ((!$this->autorizacion && !CalendariEscolar::esLectiu($date))  ) {
+            if  ((!$this->allowNoLectiu && !CalendariEscolar::esLectiu($date))  ) {
                 $horesDiaries = 0;
             } elseif (CalendariEscolar::esFestiu($date) && !$this->allowFestiu) {
                 $horesDiaries = 0;

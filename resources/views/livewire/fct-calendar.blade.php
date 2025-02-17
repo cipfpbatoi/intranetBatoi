@@ -1,13 +1,18 @@
 @if($showConfigForm)
     <div>
-        <div class="mb-4">
-            <label class="block font-bold">Pot fer FCT en dies no lectius?</label>
-            <input type="checkbox" wire:model="allowNoLectiu">
-            @if ($alumnoFct->allowNoLectiu)
-                <label class="block font-bold">Pot fer FCT en dies festius?</label>
-                <input type="checkbox" wire:model="allowFestiu">
-            @endif
+        <div class="mt-4 flex items-center">
+            <input type="checkbox" id="autorizacion" class="mr-2"
+                   wire:model="allowNoLectiu">
+            <label for="autorizacion" class="text-sm font-bold">Pot fer pràctiques en dies no lectius</label>
         </div>
+        @if($allowNoLectiu)
+            <div class="mt-4 flex items-center"  >
+                <input type="checkbox" id="allowFestiu" class="mr-2"
+                       wire:model="allowFestiu">
+                <label for="allowFestiu" class="text-sm font-bold">Pot fer pràctiques en dies festius</label>
+            </div>
+        @endif
+
         <div class="mb-4">
             <label class="block font-bold">Defineix les hores per cada dia</label>
             <table class="table-auto border-collapse border w-full text-xs">
