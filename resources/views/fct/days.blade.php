@@ -12,7 +12,7 @@
     @livewire('fct-calendar', ['alumnoFct' => $alumnoFct])
 @endsection
 @section('titulo')
-    @lang("models.Guardia.control")
+    @lang("models.fctDay.show" ,['quien'=> $alumnoFct->fullName])
 @endsection
 @section('scripts')
     @livewireScripts

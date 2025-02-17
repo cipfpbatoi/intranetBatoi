@@ -12,4 +12,14 @@ class CalendariEscolar extends Model
     protected $table = 'calendari_escolar';
 
     protected $fillable = ['data', 'tipus', 'esdeveniment'];
+
+    public static function esLectiu($date)
+    {
+        return self::where('data', $date->format('Y-m-d'))->where('tipus', 'lectiu')->exists();
+    }
+
+    public static function esFestiu($date)
+    {
+        return self::where('data', $date->format('Y-m-d'))->where('tipus', 'festiu')->exists();
+    }
 }

@@ -169,6 +169,7 @@ class FctAlumnoController extends IntranetController
                 ['class' => 'btn-info convalidacion', 'roles' => config(self::ROLES_ROL_TUTOR)]
             )
         );
+
         $this->panel->setBoton(
             'index',
             new BotonBasico(
@@ -252,6 +253,7 @@ class FctAlumnoController extends IntranetController
     public function days($id)
     {
         $alumnoFct = AlumnoFct::find($id);
+
         return view('fct.days',compact('alumnoFct'));
     }
 

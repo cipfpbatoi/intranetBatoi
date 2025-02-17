@@ -847,7 +847,7 @@ class ImportController extends Seeder
         }
 
         //chatgpt per a esborrar duplicats
-        DB::table('horarios')
+        /*DB::table('horarios')
             ->whereIn('id', function ($query) {
                 $query->select(DB::raw('id'))
                     ->from('horarios as h1')
@@ -856,7 +856,7 @@ class ImportController extends Seeder
                     GROUP BY idProfesor, dia_semana, sesion_orden
                 )');
             })
-            ->delete();
+            ->delete();*/
 
 
     }

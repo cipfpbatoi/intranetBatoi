@@ -1,5 +1,46 @@
+@if($showConfigForm)
+    <div>
+        <div class="mb-4">
+            <label class="block font-bold">Pot fer FCT en dies no lectius?</label>
+            <input type="checkbox" wire:model="autorizacion">
+        </div>
+        <div class="mb-4">
+            <label class="block font-bold">Defineix les hores per cada dia</label>
+            <table class="table-auto border-collapse border w-full text-xs">
+                <thead>
+                <tr class="bg-gray-200">
+                    @foreach($defaultHours as $day => $hours)
+                        <th class="border px-2 py-1 text-center">{{ $day }}</th>
+                    @endforeach
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    @foreach($defaultHours as $day => $hours)
+                        <td class="border px-2 py-1 text-center">
+                            <input type="number" wire:model="defaultHours.{{ $day }}" class="border w-12 text-center text-xs" min="0" max="24">
+                        </td>
+                    @endforeach
+                </tr>
+                </tbody>
+            </table>
+            <button wire:click="createCalendar"
+                    class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+                Generar Calendari
+            </button>
+        </div>
+        <div class="mb-4">
+            <p><strong>Horari en la intranet:</strong>  {{ $alumnoFct->Fct->Colaboracion->Centro->horarios ?? 'No especificat'}} </p>
+        </div>
+
+    </div>
+@else
 <div>
     <h2 class="text-lg font-bold mb-4">Calendari de FCT</h2>
+    <button wire:click="deleteCalendar"
+            class="mb-4 bg-red-500 text-white px-4 py-2 rounded">
+        Esborrar Calendari
+    </button>
 
     <table class="table-auto border-collapse border w-full text-xs">
         <thead>
@@ -26,8 +67,9 @@
                                   onclick="this.nextElementSibling.classList.remove('hidden'); this.classList.add('hidden')">
                                     {{ $dayData['hores_previstes'] }}
                                 </span>
-                            <input type="number" class="hidden border w-10 text-center text-xs"
+                            <input type="text" class="hidden border w-10 text-center text-xs bg-white text-black"
                                    value="{{ $dayData['hores_previstes'] }}"
+                                   oninput="validateNumberInput(this)"
                                    onchange="this.previousElementSibling.innerText = this.value;
                                                  this.classList.add('hidden');
                                                  this.previousElementSibling.classList.remove('hidden');"
@@ -47,36 +89,6 @@
         <span class="text-blue-600">{{ $totalHours }}</span>
     </div>
 
-    <div class="mt-4">
-        <h3 class="text-lg font-bold">Configurar hores per dia de la setmana</h3>
-        <table class="table-auto border-collapse border w-full text-xs">
-            <thead>
-            <tr class="bg-gray-200">
-                @foreach($defaultHours as $day => $hours)
-                    <th class="border px-2 py-1 text-center">{{ $day }}</th>
-                @endforeach
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                @foreach($defaultHours as $day => $hours)
-                    <td class="border px-2 py-1 text-center">
-                            <span class="cursor-pointer"
-                                  onclick="this.nextElementSibling.classList.remove('hidden'); this.classList.add('hidden')">
-                                {{ $hours }}
-                            </span>
-                        <input type="number" class="hidden border w-12 text-center text-xs"
-                               value="{{ $hours }}"
-                               onchange="this.previousElementSibling.innerText = this.value;
-                                             this.classList.add('hidden');
-                                             this.previousElementSibling.classList.remove('hidden');"
-                               wire:change="updateDefaultHours('{{ $day }}', $event.target.value)">
-                    </td>
-                @endforeach
-            </tr>
-            </tbody>
-        </table>
-    </div>
 
     <div class="mt-4">
         <h3 class="text-lg font-bold">Afegir dies</h3>
@@ -87,3 +99,11 @@
         </button>
     </div>
 </div>
+@endif
+<script>
+    function validateNumberInput(input) {
+        let value = input.value.replace(/[^0-9]/g, ''); // Elimina lletres i símbols
+        value = Math.max(0, Math.min(12, parseInt(value) || 0)); // Limita de 0 a 24
+        input.value = value;
+    }
+</script>
