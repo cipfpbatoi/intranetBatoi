@@ -3,6 +3,8 @@
         <div class="mb-4">
             <label class="block font-bold">Pot fer FCT en dies no lectius?</label>
             <input type="checkbox" wire:model="autorizacion">
+            <label class="block font-bold">Pot fer FCT en dies festius?</label>
+            <input type="checkbox" wire:model="allowFestiu">
         </div>
         <div class="mb-4">
             <label class="block font-bold">Defineix les hores per cada dia</label>

@@ -18,6 +18,7 @@ class FctCalendar extends Component
     public $autorizacion = false;
     public $showConfigForm = true;
     public $daysToAdd = 1;
+    public $allowFestiu = false;
 
     public function mount(AlumnoFct $alumnoFct)
     {
@@ -48,11 +49,13 @@ class FctCalendar extends Component
         for ($date = $startDate->copy(); $remainingHours > 0; $date->addDay()) {
             $dayName = $date->locale('ca')->isoFormat('dddd');
 
-            if  ((!$this->autorizacion && !CalendariEscolar::esLectiu($date)) || CalendariEscolar::esFestiu($date)) {
+            if  ((!$this->autorizacion && !CalendariEscolar::esLectiu($date))  ) {
                 $horesDiaries = 0;
+            } elseif (CalendariEscolar::esFestiu($date) && !$this->allowFestiu) {
+                $horesDiaries = 1;
             } else {
                   $horesDiaries = $this->defaultHours[$dayName] ?? 8;
-             }
+            }
 
             if ($remainingHours < $horesDiaries) {
                 $horesDiaries = $remainingHours;
