@@ -320,7 +320,8 @@ return array(
         'Projecte' =>  'Propuesta proyecto',
         'Projectes' => 'Módulo Proyecto',
         'Certificat' => 'Cita previa Certificado Digital',
-        'afternoon' => 'Tarde'
+        'afternoon' => 'Tarde',
+        'Calendari' => 'Calendario Escolar'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

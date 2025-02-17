@@ -326,7 +326,8 @@ return array(
         'Estadisticas' => 'Estadístiques FCT',
         'Projecte' => 'Proposta projecte',
         'Projectes' => 'Mòdul Projecte',
-        'Certificat' => 'Cita prèvia Certificat Digital'
+        'Certificat' => 'Cita prèvia Certificat Digital',
+        'Calendari' => 'Calendari Escolar'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
