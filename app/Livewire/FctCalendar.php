@@ -48,11 +48,11 @@ class FctCalendar extends Component
         for ($date = $startDate->copy(); $remainingHours > 0; $date->addDay()) {
             $dayName = $date->locale('ca')->isoFormat('dddd');
 
-            if  (!$this->autorizacion && !CalendariEscolar::esLectiu($date)) {
+            if  ((!$this->autorizacion && !CalendariEscolar::esLectiu($date)) || CalendariEscolar::esFestiu($date)) {
                 $horesDiaries = 0;
             } else {
-                $horesDiaries = $this->defaultHours[$dayName] ?? 8;
-            }
+                  $horesDiaries = $this->defaultHours[$dayName] ?? 8;
+             }
 
             if ($remainingHours < $horesDiaries) {
                 $horesDiaries = $remainingHours;
