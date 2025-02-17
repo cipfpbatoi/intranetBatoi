@@ -480,6 +480,14 @@ return array(
             'check' => 'Control documentación'
 
         ),
+        'Fctdual' => array(
+            'index' => 'Control Dual :quien',
+            'check' => 'Control documentacióN'
+        ),
+        'FctDay' => array(
+            'show' => 'Calendario prácticas :quien',
+
+        ),
         'Poll' => array(
             'show' => 'Muestra resultados',
             'index' => 'Mantenimento Encuestas',

@@ -63,7 +63,7 @@ class Panel
     }
 
     // afegix boto
-    public function setBoton($tipo, Boton $boton)
+    public function setBoton($tipo,  $boton)
     {
         $this->botones[$tipo][] = $boton;
     }

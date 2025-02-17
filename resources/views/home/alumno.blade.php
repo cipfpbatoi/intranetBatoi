@@ -11,6 +11,7 @@
         <x-user-tabs :tabs="[
             ['title' => 'messages.generic.nextActivities', 'view' => 'home.partials.activities', 'data' => ['actividades' => $actividades]],
             ['title' => 'messages.generic.timeTable', 'view' => 'home.partials.horario.grupo', 'data' => ['horario' => $horario]],
+            ['title' => 'messages.generic.calendari', 'view' => 'home.partials.calendari' ],
         ]" />
     </div>
 @endsection

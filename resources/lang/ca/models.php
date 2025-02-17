@@ -479,6 +479,10 @@ return array(
             'index' => 'Control Dual :quien',
             'check' => 'Control documentació'
         ),
+        'fctDay' => array(
+            'show' => 'Calendari pràctiques :quien',
+
+        ),
         'Ipguardia' => array(
           'index' => 'Control IP',
         ),

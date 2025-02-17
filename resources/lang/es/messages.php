@@ -72,6 +72,7 @@ return array(
         'explicacion' => 'Explicación',
         'faltas' => 'Ausencias',
         'reuniones' => 'Reuniones',
+        'calendari' => 'Calendario Escolar'
     ),
     'buttons' => array(
         'confirmar' => 'Confirmar',
@@ -186,7 +187,7 @@ return array(
         'Moodle' => 'Ir a Moodle centro',
         'Itaca' => 'Ir a Itaca',
         'Perfil' => 'Editar Perfil',
-        'Extraescolar' => 'Actividades Extraescolares',
+        'Extraescolar' => 'Act. Extraescolares',
         'Comision' => 'Comisiones de Servicio',
         'Manipulador' => 'Cursos / Ponencias',
         'Grupo' => 'Gestión Grupos',

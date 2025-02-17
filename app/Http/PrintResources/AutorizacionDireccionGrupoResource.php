@@ -33,7 +33,7 @@ class AutorizacionDireccionGrupoResource extends PrintResource
         $primer_de_desembre = new \DateTime("December 1, $any_academic_inici");
 
         foreach ($this->getElements()??[] as $element) {
-            $alumnes .= $element->Alumno->fullName.'
+            $alumnes .= $element->Alumno->fullName??$element->fullName.'
 ';
         }
         return [

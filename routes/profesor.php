@@ -343,7 +343,7 @@ Route::get('/alumnofct/{id}/A{num}',
     ['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num', '[1-3]');
 Route::get('/alumnofct/{id}/send', ['as' => 'alumnofct.send', 'uses' => 'FctAlumnoController@send']);
 Route::get('/alumnofct/{id}/importa', ['as' => 'alumnofct.importa', 'uses' => 'FctAlumnoController@importa']);
-
+Route::get('/alumnofct/{id}/days', ['as' => 'alumnofct.days', 'uses' => 'FctAlumnoController@days']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy', 'show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
