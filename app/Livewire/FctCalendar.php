@@ -1,7 +1,9 @@
 <?php
 namespace Intranet\Livewire;
 
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
 use Intranet\Entities\CalendariEscolar;
 use Intranet\Entities\FctDay;
 use Livewire\Component;
@@ -183,6 +185,22 @@ class FctCalendar extends Component
                 case 'D': $this->defaultHours['diumenge'] = $horesTotals; break;
             }
         }
+    }
+
+    public function exportCalendarPdf()
+    {
+        $data = [
+            'monthlyCalendar' => $this->monthlyCalendar,
+            'totalHours' => $this->totalHours,
+            'alumnoFct' => $this->alumnoFct
+        ];
+
+        $pdf = Pdf::loadView('livewire.pdf.fct-calendar', $data);
+        $nom = "calendari_".$this->alumnoFct->Alumno->nia.".pdf";
+        return Response::stream(fn () => print($pdf->output()), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$nom.'" ' ,
+        ]);
     }
 
 
