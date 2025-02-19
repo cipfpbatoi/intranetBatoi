@@ -160,8 +160,8 @@ class FctCalendar extends Component
             $matiInici = Carbon::createFromFormat('H:i', $match[2]);
             $matiFi = Carbon::createFromFormat('H:i', $match[3]);
 
-            // Calcular hores del matí
-            $horesMati = $matiFi->diffInHours($matiInici);
+             // Calcular hores del matí
+            $horesMati = $matiFi->diffInMinutes($matiInici) / 60 ;
 
             $horesVesprada = 0;
             if (!empty($match[4]) && !empty($match[5])) {
@@ -169,7 +169,7 @@ class FctCalendar extends Component
                 $vespradaFi = Carbon::createFromFormat('H:i', $match[5]);
 
                 // Calcular hores de la vesprada
-                $horesVesprada = $vespradaFi->diffInHours($vespradaInici);
+                $horesVesprada = $vespradaFi->diffInMinutes($vespradaInici) / 60;
             }
 
             // Assignar el total d'hores al dia corresponent

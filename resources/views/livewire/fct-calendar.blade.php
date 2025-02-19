@@ -117,8 +117,20 @@
 @endif
 <script>
     function validateNumberInput(input) {
-        let value = input.value.replace(/[^0-9]/g, ''); // Elimina lletres i símbols
-        value = Math.max(0, Math.min(12, parseInt(value) || 0)); // Limita de 0 a 24
-        input.value = value;
+        let value = input.value.replace(/[^0-9.]/g, ''); // Permet dígits i el punt decimal
+
+        // Assegura que només hi haja un punt decimal
+        if ((value.match(/\./g) || []).length > 1) {
+            value = value.replace(/\.+$/, ''); // Elimina punts extra
+        }
+
+        // Converteix a número i limita entre 0 i 12
+        let numericValue = parseFloat(value);
+        if (isNaN(numericValue)) numericValue = 0;
+
+        numericValue = Math.max(0, Math.min(12, numericValue));
+
+        // Limita a 2 decimals
+        input.value = numericValue.toFixed(2).replace(/\.00$/, ''); // Si no cal, elimina ".00"
     }
 </script>
