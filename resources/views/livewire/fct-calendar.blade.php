@@ -80,11 +80,10 @@
                             @if ($dayData)
                                 <span class="cursor-pointer"
                                       onclick="this.nextElementSibling.classList.remove('hidden'); this.classList.add('hidden')">
-                                        {{ $dayData['hores_previstes'] }}
-                                    </span>
-                                <input type="text" class="hidden border w-10 text-center text-xs bg-white text-black"
+                                        {{ number_format($dayData['hores_previstes'], 1) }}
+                                </span>
+                                <input type="number" class="hidden border w-10 text-center text-xs bg-white text-black"
                                        value="{{ $dayData['hores_previstes'] }}"
-                                       oninput="validateNumberInput(this)"
                                        onchange="this.previousElementSibling.innerText = this.value;
                                                      this.classList.add('hidden');
                                                      this.previousElementSibling.classList.remove('hidden');"
@@ -115,22 +114,4 @@
         </div>
     </div>
 @endif
-<script>
-    function validateNumberInput(input) {
-        let value = input.value.replace(/[^0-9.]/g, ''); // Permet dígits i el punt decimal
 
-        // Assegura que només hi haja un punt decimal
-        if ((value.match(/\./g) || []).length > 1) {
-            value = value.replace(/\.+$/, ''); // Elimina punts extra
-        }
-
-        // Converteix a número i limita entre 0 i 12
-        let numericValue = parseFloat(value);
-        if (isNaN(numericValue)) numericValue = 0;
-
-        numericValue = Math.max(0, Math.min(12, numericValue));
-
-        // Limita a 2 decimals
-        input.value = numericValue.toFixed(2).replace(/\.00$/, ''); // Si no cal, elimina ".00"
-    }
-</script>
