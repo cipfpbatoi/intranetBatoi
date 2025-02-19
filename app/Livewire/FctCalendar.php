@@ -196,16 +196,14 @@ class FctCalendar extends Component
         ];
 
         $pdf = Pdf::loadView('livewire.pdf.fct-calendar', $data);
-        $nom = "calendari_".$this->alumnoFct->Alumno->nia.".pdf";
-        return Response::stream(fn () => print($pdf->output()), 200, [
+        $nom = "calendari_" . $this->alumnoFct->Alumno->nia . ".pdf";
+
+        // Retorna el PDF en mode "inline" per mostrar-lo en el navegador
+        return response()->stream(fn () => print($pdf->output()), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$nom.'" ' ,
+            'Content-Disposition' => 'inline; filename="' . $nom . '"'
         ]);
     }
-
-
-
-
 
     public function render()
     {
