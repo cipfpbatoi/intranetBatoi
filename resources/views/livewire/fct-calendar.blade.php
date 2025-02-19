@@ -73,11 +73,13 @@
                     @for ($day = 1; $day <= 31; $day++)
                         @php
                             $dayData = collect($days)->firstWhere('dia_numero', $day);
-                            $isWeekend = $dayData['weekend'] ?? false;
+                            $isFestiu = $dayData['festiu'] ?? false;
+                            $isLectiu = $dayData['lectiu'] ?? false;
                         @endphp
-                        <td style="padding:5px" class="border px-1 py-1 text-center w-6
-                                {{ $isWeekend ? 'bg-red' : 'bg-blue' }}">
+
                             @if ($dayData)
+                            <td style="padding:5px" class="border px-1 py-1 text-center w-6
+                                {{ $isFestiu ? 'bg-danger' : (!$isLectiu ? 'bg-warning' :'bg-info') }}">
                                 <span class="cursor-pointer"
                                       onclick="this.nextElementSibling.classList.remove('hidden'); this.classList.add('hidden')">
                                         {{ number_format($dayData['hores_previstes'], 1) }}
@@ -89,6 +91,7 @@
                                                      this.previousElementSibling.classList.remove('hidden');"
                                        wire:change="updateDay({{ $dayData['id'] }}, $event.target.value)">
                             @else
+                            <td style="padding:5px" class="border px-1 py-1 text-center w-6 ">
                                 -
                             @endif
                         </td>

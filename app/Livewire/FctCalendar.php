@@ -98,7 +98,8 @@ class FctCalendar extends Component
                     'hores_previstes' => $day->hores_previstes,
                     'mes' => Carbon::parse($day->dia)->format('F'),
                     'dia_numero' => Carbon::parse($day->dia)->format('j'),
-                    'weekend' => Carbon::parse($day->dia)->isWeekend(),
+                    'festiu' => \Intranet\Entities\CalendariEscolar::esFestiu(Carbon::parse($day->dia)),
+                    'lectiu' =>  \Intranet\Entities\CalendariEscolar::esLectiu(Carbon::parse($day->dia)),
                 ];
             })->groupBy('mes')->toArray();
 
