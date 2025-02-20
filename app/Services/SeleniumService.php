@@ -76,7 +76,7 @@ class SeleniumService
         $driver->findElement(WebDriverBy::cssSelector('.botonform'))
             ->click();
         $driver->get(config('services.selenium.SAO').'?op=2&subop=0');
-        sleep(1);
+        sleep(2);
         $name = $driver->findElement(WebDriverBy::cssSelector('.botonform'))->getAttribute('name');
         if ($name === 'login') {
             $driver->close();
