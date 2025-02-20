@@ -172,6 +172,74 @@ class Importa
      * @return mixed
      * @throws \Facebook\WebDriver\Exception\UnknownErrorException
      */
+
+    private static function extractFromEdit($dada, RemoteWebDriver $driver)
+    {
+        static $empresesVisitades = [];
+
+        $idEmpresa = $dada['idEmpresa'];
+
+        // Comprovar si ja hem processat aquesta empresa
+        if (isset($empresesVisitades[$idEmpresa])) {
+            // Fusió profunda per conservar les dades aniuades
+            return self::deepMerge($dada, $empresesVisitades[$idEmpresa]);
+        }
+
+        // Si no està a la memòria cau, navegar i obtenir dades
+        $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
+        sleep(1);
+
+        // Recollir dades bàsiques
+        $concierto = $driver->findElement(WebDriverBy::cssSelector("#tdNumConciertoEmp"))->getText();
+        $data_conveni = $driver->findElement(WebDriverBy::cssSelector("#tdFechaConciertoEmp"))->getText();
+        $date = Date::createFromFormat('d/m/Y', $data_conveni);
+        $cif = $driver->findElement(WebDriverBy::cssSelector("table.infoUsuario.infoEmpresa tbody tr:nth-child(2) td:nth-child(1)"))->getText();
+
+        // Obtenir idSao
+        $table2 = $driver->findElements(WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr"));
+        $idSao = null;
+        foreach ($table2 as $index2 => $trinside) {
+            if ($index2) {
+                $td = trim($trinside->findElement(WebDriverBy::cssSelector("td:nth-child(2)"))->getText());
+                if ($td == ($dada['centre']['name'] ?? '')) {
+                    $idSao = substr($trinside->getAttribute('id'), 13);
+                    break;
+                }
+            }
+        }
+
+        // Guardar les dades a la memòria cau
+        $empresesVisitades[$idEmpresa] = [
+            'concierto' => $concierto,
+            'data_conveni' => $date->format('Y-m-d'),
+            'cif' => $cif,
+            'centre' => [
+                'idSao' => $idSao,
+                'name' => $dada['centre']['name'] ?? null // Assegurem que 'name' no es perdi
+            ]
+        ];
+
+        // Fusió profunda i retorn
+        return self::deepMerge($dada, $empresesVisitades[$idEmpresa]);
+    }
+
+    /**
+     * Funció per fusionar profundament dos arrays
+     */
+    private static function deepMerge(array $array1, array $array2): array
+    {
+        foreach ($array2 as $key => $value) {
+            if (is_array($value) && isset($array1[$key]) && is_array($array1[$key])) {
+                $array1[$key] = self::deepMerge($array1[$key], $value);
+            } else {
+                $array1[$key] = $value;
+            }
+        }
+        return $array1;
+    }
+
+
+    /*
     private static function extractFromEdit($dada, RemoteWebDriver $driver)
     {
         $idEmpresa = $dada['idEmpresa'];
@@ -200,7 +268,7 @@ class Importa
             }
         }
         return $dada;
-    }
+    }  */
 
     private static function selectDirectorFct($driver){
         $button = $driver->findElement(WebDriverBy::xpath("//button[contains(@class, 'botonSelec') and text()='Tutor/a...']"));
