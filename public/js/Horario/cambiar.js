@@ -7,9 +7,9 @@ window.onload=function() {
 	esDireccion=($('#rol').text()%2 == 0);
 	if (esDireccion){
 		$('#guardar').text('Aprobar horario');
-		profe=location.pathname.split('/')[2];
+		//profe=location.pathname.split('/')[2];
 	}
-	else profe= document.getElementById('dni').textContent;
+    profe= document.getElementById('dni').textContent;
 
 	cargaCambios();
 	$('#init').on('click', function(ev) {

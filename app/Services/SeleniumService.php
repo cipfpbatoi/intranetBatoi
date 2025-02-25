@@ -81,9 +81,8 @@ class SeleniumService
         if ($name === 'login') {
             $driver->close();
             throw new IntranetException('Password no vàlid. Has de ficarl el del SAO');
-        } else {
-            return $driver;
         }
+        return $driver;
     }
 
     /**
