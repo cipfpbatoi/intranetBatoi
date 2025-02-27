@@ -88,7 +88,7 @@ class ProjecteController extends ModalController
         }
         $this->panel->setBoton('grid', new BotonImg('projecte.show'));
         $this->panel->setBoton('grid', new BotonImg('projecte.edit', ['roles' => config(self::ALUMNO)]));
-        $this->panel->setBoton('grid', new BotonImg('projecte.delete', ['roles' => config(self::ALUMNO),'where' => ['estat','<=','1']]));
+        $this->panel->setBoton('grid', new BotonImg('projecte.delete', ['roles' => config(self::ALUMNO),'where' => ['estat','<=','2']]));
         $this->panel->setBoton('grid', new BotonImg('projecte.pdf', ['roles' => config(self::ALUMNO)]));
         $this->panel->setBoton('grid', new BotonImg('projecte.email', ['roles' => config(self::ALUMNO),'where' => ['estat','==','0']]));
 
