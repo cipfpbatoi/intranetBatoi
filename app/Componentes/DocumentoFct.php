@@ -7,10 +7,18 @@ class DocumentoFct
 {
     private $features;
 
+
     public function __construct($document)
     {
-        $this->features = config('fctEmails.' . $document);
+        if (config("fctEmails.$document")) {
+            $this->features = config("fctEmails.$document");
+        } elseif (config("fctPdfs.$document")) {
+            $this->features = config("fctPdfs.$document");
+        } else {
+            $this->features = null;
+        }
     }
+
 
     public function __get($key)
     {
