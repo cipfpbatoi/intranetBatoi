@@ -42,35 +42,37 @@ class DocumentService
     {
         if (isset($this->document->email)) {
             return $this->mail();
-        } else {
-            return $this->print();
         }
+        return $this->print();
+
     }
 
 
     private function mail()
     {
         $elemento = $this->elements->first();
-        $attached = isset($this->document->email['attached'])?$this->document->email['attached']:null;
-        if ($elemento) {
-            if (!$this->document->email['editable']) {
-                $contenido['view'] = view($this->document->template, compact('elemento'));
-                $contenido['template'] = $this->document->template;
-            } else {
-                $contenido = view($this->document->template, compact('elemento'));
-            }
-            $mail = new MyMail(
-                $this->elements,
-                $contenido,
-                $this->document->email,
-                null,
-                $this->document->email['editable']
-            );
-            return $mail->render($this->document->route??'misColaboraciones');
-        } else {
+        if (!$elemento) {
             Alert::danger('No hi ha cap destinatari');
             return back();
         }
+        $attached = isset($this->document->email['attached'])?$this->document->email['attached']:null;
+
+        if (!$this->document->email['editable']) {
+            $contenido['view'] = view($this->document->template, compact('elemento'));
+            $contenido['template'] = $this->document->template;
+        } else {
+            $contenido = view($this->document->template, compact('elemento'));
+        }
+        $mail = new MyMail(
+            $this->elements,
+            $contenido,
+            $this->document->email,
+            null,
+            $this->document->email['editable']
+        );
+        return $mail->render($this->document->route??'misColaboraciones');
+
+
     }
 
     private function print()
@@ -86,14 +88,13 @@ class DocumentService
                         $this->document->pdf['orientacion']
                     )
                 );
-            } else {
-                return Pdf::hazPdf(
-                    $this->document->view,
-                    $this->elements,
-                    $this->document->pdf,
-                    $this->document->pdf['orientacion']
-                )->stream();
             }
+            return Pdf::hazPdf(
+                $this->document->view,
+                $this->elements,
+                $this->document->pdf,
+                $this->document->pdf['orientacion']
+            )->stream();
         }
         // Document pdf desde plantilla
 

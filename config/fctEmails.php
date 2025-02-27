@@ -6,7 +6,7 @@ return [
             'subject' => "Sol·licitud Pràctiques de FCT",
             'toPeople' => 'A/A de Recursos Humans',
             'editable' => true,
-            'register' => true
+            'register' => 'Sol·licitud Pràctiques de FCT'
         ],
         'modelo' => 'Colaboracion',
         'view' => 'email.fct.contact',
@@ -21,7 +21,7 @@ return [
             'subject' => 'Revisió Documentació Pràctiques',
             'toPeople' => 'A/A de Recursos Humans',
             'editable' => false,
-            'register' => true
+            'register' => 'Revisió Documentació Pràctiques'
         ],
         'modelo' => 'Colaboracion',
         'view' => 'email.fct.request',
@@ -37,7 +37,7 @@ return [
             'subject' => "Recordatori inici de pràctiques",
             'toPeople' => 'Instructor',
             'editable' => true,
-            'register' => true
+            'register' => "Recordatori inici de pràctiques"
         ],
         'modelo' => 'Fct',
         'finder' => 'Fct',
@@ -51,7 +51,6 @@ return [
             'subject' => "Finalització de pràctiques",
             'toPeople' => 'Instructor',
             'editable' => true,
-            'register' => false
         ],
         'modelo' => 'Fct',
         'template' =>'email.fct.finish',
@@ -64,7 +63,7 @@ return [
             'subject' => "Informació relativa a l'inici de les Pràctiques de FCT",
             'toPeople' => "Alumnat",
             'editable' => false,
-            'register' => true
+            'register' => "Informació relativa a l'inici de les Pràctiques de FCT",
         ],
         'modelo'=> 'AlumnoFct',
         'finder' => 'AlumnoNoFct',
@@ -80,7 +79,7 @@ return [
             'subject' => "Seguiment Pràctiques de FCT",
             'toPeople' => 'Instructor',
             'editable' => true,
-            'register' => true
+            'register' => "Seguiment Pràctiques de FCT",
         ],
         'modelo' => 'Fct',
         'template' =>  'email.fct.follow',
@@ -95,7 +94,7 @@ return [
             'subject' => "Concertar visita de FCT",
             'toPeople' => 'Instructor',
             'editable' => true,
-            'register' => true
+            'register' => "Concertar visita de FCT",
         ],
         'modelo' => 'Fct',
         'template' => 'email.fct.visit',
@@ -109,7 +108,6 @@ return [
             'subject' => "Citar alumnes per seguiment de FCT",
             'toPeople' => 'Alumno',
             'editable' => true,
-            'register' => false
         ],
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoEnFct',
@@ -122,7 +120,6 @@ return [
         'email' => [
             'subject' => "Visita Empresa",
             'toPeople' => 'Instructor',
-            'register' => false,
             'editable' => false
         ],
         'modelo' => 'Fct',

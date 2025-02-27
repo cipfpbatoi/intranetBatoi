@@ -20,17 +20,19 @@ class MyMail
 
     public function __get($key)
     {
-        return $this->$key??($this->features[$key]??null);
+        if (property_exists($this, $key)) {
+            return $this->$key;
+        }
+        return $this->features[$key] ?? null;
     }
 
     public function __set($key, $value)
     {
-        if (isset($this->$key)) {
+        if (property_exists($this, $key)) {
             $this->$key = $value;
         } else {
             $this->features[$key] = $value;
         }
-
     }
 
     public function __construct($elements=null, $view=null, $features=[], $attach=null, $editable=null)
@@ -52,6 +54,8 @@ class MyMail
         }
         $this->attach = $attach??session()->get('attach')??null;
         $this->editable = $editable;
+
+        $this->register = $this->features['register'] ?? null;
     }
 
     private function recoveryObjects($elements)
@@ -64,10 +68,15 @@ class MyMail
     }
     private function recoveryObject($element)
     {
+        if (!$element) {
+            return null;
+        }
+
         if ($element != '') {
             $toCompost = explode('(', $element);
             $id = $toCompost[0];
             $element = $this->class::find($id);
+
             if (!isset($element)) {
                 return null;
             }
@@ -152,8 +161,8 @@ class MyMail
                     ->bcc($this->from)
                     ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attach));
                 Alert::info('Enviat correus ' . $this->subject . ' a ' . $contacto);
-                if ($this->register) {
-                    Activity::record('email', $elemento, null, $fecha, $this->subject);
+                if ($this->register !== null) {
+                    Activity::record('email', $elemento, null, $fecha, $this->register);
                 }
                 $this->sendEvent($elemento);
             } else {
