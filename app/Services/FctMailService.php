@@ -1,27 +1,55 @@
 <?php
 namespace Intranet\Services;
 
+use Illuminate\Http\JsonResponse;
 use Intranet\Finders\UniqueFinder;
 use Intranet\Finders\RequestFinder;
 use Intranet\Componentes\DocumentoFct;
 
 class FctMailService
 {
-    public function getMailById($id, $documento)
+    /**
+     * Obté un correu per ID.
+     *
+     * @param int $id
+     * @param string $documento
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     */
+    public function getMailById(int $id, string $documento)
     {
-        $document = new DocumentoFct($documento);
-        $parametres = ['id' => $id, 'document' => $document];
-        $service = new DocumentService(new UniqueFinder($parametres));
-
-        return $service->render();
+        $finder = new UniqueFinder(['id' => $id, 'document' => new DocumentoFct($documento)]);
+        return $this->generateMail($finder);
     }
 
-    public function getMailByRequest($request, $documento)
+    /**
+     * Obté un correu a partir d'una petició.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $documento
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     */
+    public function getMailByRequest($request, string $documento)
     {
-        $document = new DocumentoFct($documento);
-        $parametres = ['request' => $request, 'document' => $document];
-        $service = new DocumentService(new RequestFinder($parametres));
+        $finder = new RequestFinder(['request' => $request, 'document' => new DocumentoFct($documento)]);
+        return $this->generateMail($finder);
+    }
 
-        return $service->render();
+    /**
+     * Genera el correu a partir d'un Finder.
+     *
+     * @param mixed $finder
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    private function generateMail($finder)
+    {
+        $service = new DocumentService($finder);
+        $response = $service->render();
+
+        // Gestiona possibles errors retornats per `render()`
+        if ($response instanceof  JsonResponse && $response->getStatusCode() !== 200) {
+            return back()->with('error', $response->getData()->error);
+        }
+
+        return $response;
     }
 }
