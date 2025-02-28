@@ -37,7 +37,11 @@ trait traitAutorizar
     protected function _print($id)
     {
         $stSrv = new StateService($this->class, $id);
-        $stSrv->_print();
+        $result = $stSrv->_print();
+
+        if ($result === false) {
+            return back()->with('error', 'Error en imprimir el document.');
+        }
     }
 
 
@@ -46,6 +50,11 @@ trait traitAutorizar
         $stSrv = new StateService($this->class, $id);
         $iniSta = $stSrv->getEstado();
         $finSta = $stSrv->resolve($request->explicacion);
+
+        if ($finSta === false) {
+            return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
+        }
+
         if ($redirect) {
             return $this->follow($iniSta, $finSta);
         }
@@ -56,11 +65,17 @@ trait traitAutorizar
     {
         $stSrv = new StateService($this->class, $id);
         $iniSta = $stSrv->getEstado();
-        $finSta = $stSrv->putEstado($iniSta+1);
+        $finSta = $stSrv->putEstado($iniSta + 1);
+
+        if ($finSta === false) {
+            return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
+        }
+
         if ($redirect) {
             return $this->follow($iniSta, $finSta);
         }
     }
+
 
     // estat -1
     protected function resign($id, $redirect = true)
@@ -68,6 +83,11 @@ trait traitAutorizar
         $stSrv = new StateService($this->class, $id);
         $iniSta = $stSrv->getEstado();
         $finSta = $stSrv->putEstado($iniSta-1);
+
+        if ($finSta === false) {
+            return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
+        }
+
         if ($redirect) {
             return $this->follow($iniSta, $finSta);
         }
@@ -79,6 +99,11 @@ trait traitAutorizar
         $stSrv = new StateService($this->class, $id);
         $iniSta = $stSrv->getEstado();
         $finSta = $stSrv->refuse($request->explicacion);
+
+        if ($finSta === false) {
+            return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
+        }
+
         if ($redirect) {
             return $this->follow($iniSta, $finSta);
         }
@@ -96,15 +121,16 @@ trait traitAutorizar
     //efectuar sobre tots una acció
     protected function makeAll($todos, $accion)
     {
-        if (is_string($accion)) {
-            foreach ($todos as $uno) {
-                $stSrv = new StateService($uno);
-                $stSrv->$accion(false);
-            }
-        } else {
-            foreach ($todos as $uno) {
-                $stSrv = new StateService($uno);
-                $stSrv->putEstado($accion);
+        if (!$todos || $todos->count() === 0) {
+            return;
+        }
+
+        foreach ($todos as $uno) {
+            $stSrv = new StateService($uno);
+            $result = is_string($accion) ? $stSrv->$accion(false) : $stSrv->putEstado($accion);
+
+            if ($result === false) {
+                Alert::danger("Error en processar {$uno->id}.");
             }
         }
     }

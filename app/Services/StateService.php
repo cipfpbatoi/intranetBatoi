@@ -1,58 +1,60 @@
 <?php
 namespace Intranet\Services;
 
-use function config,getClass,getClase;
-
+use function config, getClass, getClase;
 
 class StateService
 {
     private $element;
     private $statesElement;
 
-    /**
-     * @param $id
-     */
-    public function __construct($class, $id=null)
+    public function __construct($class, $id = null)
     {
         if (is_string($class)) {
-            $this->element = $class::find($id);
-            $this->statesElement = config('modelos.'.getClass($class));
+            $this->element = $id ? $class::find($id) : new $class;
+            $this->statesElement = config('modelos.' . getClass($class));
         } else {
             $this->element = $class;
-            $this->statesElement = config('modelos.'.getClase($class));
+            $this->statesElement = config('modelos.' . getClase($class));
         }
     }
 
-
-
     public function putEstado($estado, $mensaje = null, $fecha = null)
     {
-        if ($fecha != null) {
+        if (!$this->element) {
+            return false; // Retornem false en lloc de JSON per facilitar la gestió d'errors
+        }
+
+        if ($fecha !== null) {
             $this->makeDocument();
-            $this->dateResolve($fecha,$mensaje);
+            $this->dateResolve($fecha, $mensaje);
         }
 
         $this->element->estado = $estado;
 
-        $this->element->save();
+        if (!$this->element->save()) {
+            return false; // Retornem false si hi ha un error en el save()
+        }
 
         AdviseService::exec($this->element, $mensaje);
 
-        return ($this->element->estado);
+        return $this->element->estado;
     }
 
     private function makeDocument()
     {
-        if ($this->element->fichero != '') {
-            $gestor = new GestorService($this->element);
-            $gestor->save([
-                'tipoDocumento' => getClase($this->element),
-                'rol'=> '2',
-            ]);
+        if (!isset($this->element->fichero) || empty($this->element->fichero)) {
+            return;
         }
+
+        $gestor = new GestorService($this->element);
+        $gestor->save([
+            'tipoDocumento' => getClase($this->element),
+            'rol' => '2',
+        ]);
     }
 
-    private function dateResolve($fecha,$mensaje)
+    private function dateResolve($fecha, $mensaje)
     {
         if (isset($this->element->fechasolucion)) {
             $this->element->fechasolucion = $fecha;
@@ -65,25 +67,40 @@ class StateService
 
     public function resolve($mensaje = null)
     {
-        return $this->putEstado($this->statesElement['resolve'], $mensaje, hoy());
+        $estado = $this->statesElement['resolve'] ?? null;
+        if (!$estado) {
+            return false; // Si no hi ha estat de resolució definit, retornem false
+        }
+        return $this->putEstado($estado, $mensaje, hoy());
     }
 
     public function refuse($mensaje = null)
     {
-        return $this->putEstado($this->statesElement['refuse'], $mensaje);
+        $estado = $this->statesElement['refuse'] ?? null;
+        if (!$estado) {
+            return false;
+        }
+        return $this->putEstado($estado, $mensaje);
     }
 
     public function _print()
     {
-        if ($this->statesElement['print'] == $this->statesElement['resolve']) {
-            return $this->putEstado($this->statesElement['print'], '', hoy());
-        }  else {
-            return $this->putEstado($this->statesElement['print']);
+        $printState = $this->statesElement['print'] ?? null;
+        $resolveState = $this->statesElement['resolve'] ?? null;
+
+        if (!$printState) {
+            return false; // Si no hi ha estat definit per imprimir, retornem false
         }
+
+        if ($printState == $resolveState) {
+            return $this->putEstado($printState, '', hoy());
+        }
+
+        return $this->putEstado($printState);
     }
 
     public function getEstado()
     {
-        return $this->element->estado;
+        return $this->element ? $this->element->estado : null;
     }
 }
