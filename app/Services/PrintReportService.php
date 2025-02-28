@@ -1,6 +1,5 @@
 <?php
-
-
+/*
 namespace Intranet\Services;
 
 use Intranet\Componentes\Pdf;
@@ -24,7 +23,7 @@ class PrintReportService
      * @param $finalState
      * @param $orientation
      * @param $linked
-     */
+
     public function __construct(Finder $finder, $initialState = null, $finalState = '_print', $linked = true)
     {
         $this->finder = $finder;
@@ -52,10 +51,9 @@ class PrintReportService
                 $this->linking($doc);
             }
             return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
-        } else {
-            Alert::info(trans('messages.generic.empty'));
-            return back();
         }
+        Alert::info(trans('messages.generic.empty'));
+        return back();
     }
 
     private function linking($doc)
@@ -83,3 +81,5 @@ class PrintReportService
 
 
 }
+
+*/

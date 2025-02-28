@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Componentes\Pdf;
-use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
@@ -117,32 +116,6 @@ trait traitAutorizar
         return $this->notFollow ? back()->with('pestana', $inicial) : back()->with('pestana', $final);
     }
 
-    
-    //efectuar sobre tots una acció
-    protected function makeAll($todos, $accion)
-    {
-        if (!$todos || $todos->count() === 0) {
-            return;
-        }
-
-        foreach ($todos as $uno) {
-            $stSrv = new StateService($uno);
-            $result = is_string($accion) ? $stSrv->$accion(false) : $stSrv->putEstado($accion);
-
-            if ($result === false) {
-                Alert::danger("Error en processar {$uno->id}.");
-            }
-        }
-    }
-    
-    //crea link a gestor documental
-    protected static function makeLink($todos, $doc)
-    {
-        foreach ($todos as $uno) {
-            $uno->idDocumento = $doc;
-            $uno->save();
-         }
-    }
 
     /**
      * @param string $modelo
@@ -158,24 +131,36 @@ trait traitAutorizar
         $modelo = $modelo ?? strtolower($this->model) . 's';
         $final = $final ?? '_print';
         $inicial =  $inicial ?? config('modelos.' . getClass($this->class) . '.print') - 1;
+
         $todos = $this->class::where('estado', '=', $inicial)->get();
-        if ($todos->Count()) {
+
+        if ($todos->count()) {
+            // Generem el PDF
             $pdf = Pdf::hazPdf("pdf.$modelo", $todos, null, $orientacion);
+
+            // Nom del fitxer
             $nom = $this->model . new Date() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
             $tags = config("modelos.$this->model.documento");
-            $gestor = new GestorService();
-            $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => $tags ]);
-            $this->makeAll($todos, $final);
+
+            // Guardem el document al gestor documental
+            $doc = StateService::saveDocument($nomComplet, $tags);
+
+            // Modifiquem l'estat de tots els elements
+            StateService::makeAll($todos, $final);
+
+            // Enllacem els elements amb el document si cal
             if ($link) {
-                $this->makeLink($todos, $doc);
+                StateService::makeLink($todos, $doc);
             }
+
             return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
         }
+
         Alert::info(trans('messages.generic.empty'));
         return back();
-
     }
-    
+
+
 
 }

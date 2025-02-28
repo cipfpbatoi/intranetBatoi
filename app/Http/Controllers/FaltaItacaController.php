@@ -41,7 +41,7 @@ class FaltaItacaController extends IntranetController
         $gestor = new GestorService();
 
         $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "Birret listado llistat autorizacion autorizacio"]);
-        self::makeLink($elementos, $doc);
+        StateService::makeLink($elementos, $doc);
         return self::hazPdf("pdf.comunicacioBirret", $elementos)
                         ->save(storage_path('/app/' . $nomComplet))
                         ->download($nomComplet);

@@ -217,7 +217,7 @@ class ComisionController extends ModalController
      */
     public function autorizar()
     {
-        $this->makeAll(Comision::where('estado', '1')->get(), 2);
+        StateService::makeAll(Comision::where('estado', '1')->get(), 2);
         return back();
     }
 

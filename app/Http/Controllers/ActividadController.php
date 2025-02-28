@@ -286,7 +286,7 @@ class ActividadController extends ModalController
             }
             $gC->saveEvents();
         }
-        $this->makeAll($activitats, 2);
+        StateService::makeAll($activitats, 2);
         return back();
     }
 

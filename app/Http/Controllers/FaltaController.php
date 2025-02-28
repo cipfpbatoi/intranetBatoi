@@ -242,7 +242,7 @@ class FaltaController extends IntranetController
 
         $elementos = self::findElements($desde, $hasta);
         self::markPrinted($hasta);
-        self::makeLink($elementos, $doc);
+        StateService::makeLink($elementos, $doc);
 
         return self::hazPdf("pdf.faltas", $elementos)
             ->save(storage_path('/app/' . $nomComplet))
