@@ -163,7 +163,7 @@ class ExpedienteController extends ModalController
                     $tags = "listado llistat expediente expedient $tipo->titulo";
 
                     // Guardem el document
-                    $doc = StateService::saveDocument($nomComplet, $tags);
+                    $doc = GestorService::saveDocument($nomComplet, $tags);
 
                     // Modifiquem l'estat de tots els elements
                     StateService::makeAll($todos, '_print');

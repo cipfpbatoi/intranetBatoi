@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Intranet\Componentes\Pdf;
+use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
@@ -144,7 +145,7 @@ trait traitAutorizar
             $tags = config("modelos.$this->model.documento");
 
             // Guardem el document al gestor documental
-            $doc = StateService::saveDocument($nomComplet, $tags);
+            $doc = GestorService::saveDocument($nomComplet, $tags);
 
             // Modifiquem l'estat de tots els elements
             StateService::makeAll($todos, $final);

@@ -146,16 +146,4 @@ class StateService
         }
     }
 
-    public static function saveDocument($filePath, $tags, $descripcion = null, $supervisor = null)
-    {
-        return Documento::create([
-            'fichero' => $filePath,
-            'tags' => $tags,
-            'curso' => curso(),
-            'descripcion' => $descripcion ?? 'Registre dia ' . hoy('d-m-Y'),
-            'supervisor' => $supervisor ?? authUser()->fullName,
-            'rol' => 2,
-        ]);
-    }
-
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Intranet\Services;
 
 use Intranet\Entities\Documento;
@@ -104,6 +103,19 @@ class GestorService
         }
         return back();
     }
+
+    public static function saveDocument($filePath, $tags, $descripcion = null, $supervisor = null)
+    {
+        return Documento::create([
+            'fichero' => $filePath,
+            'tags' => $tags,
+            'curso' => curso(),
+            'descripcion' => $descripcion ?? 'Registre dia ' . hoy('d-m-Y'),
+            'supervisor' => $supervisor ?? authUser()->FullName,
+            'rol' => 2,
+        ]);
+    }
+
 
     private function update($parametres)
     {
