@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Hora extends Model
 {
@@ -15,16 +16,11 @@ class Hora extends Model
         return $this->hasMany(Horario::class, 'codigo', 'sesion_orden');
     }
 
-    public static function horasAfectadas($horaIni, $horaFin)
+    public static function horasAfectadas(string $horaIni, string $horaFin): Collection
     {
-        $horas = Hora::all();
-        $horasAfectadas = [];
-        foreach ($horas as $hora) {
-            if (($hora->hora_ini <= $horaFin) && ($hora->hora_fin >= $horaIni)) {
-                $horasAfectadas[] = $hora->codigo;
-            }
-        }
-        return $horasAfectadas;
+        return self::where('hora_ini', '<=', $horaFin)
+            ->where('hora_fin', '>=', $horaIni)
+            ->pluck('codigo');
     }
 
 }
