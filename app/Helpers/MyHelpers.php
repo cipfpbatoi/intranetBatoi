@@ -413,7 +413,14 @@ function extrauValor($campo1, $elemento, $separador)
 function getClase($elemento)
 {
     $clase = get_class($elemento);
-    return substr($clase, strlen("Intranet\Entities\\"));
+
+    // Si la classe comença amb "Intranet\Entities\", eliminem el prefix
+    if (str_starts_with($clase, "Intranet\Entities\\")) {
+        return substr($clase, strlen("Intranet\Entities\\"));
+    }
+
+    // Si no, simplement retornem el nom curt de la classe
+    return (new \ReflectionClass($elemento))->getShortName();
 }
 
 function getClass($str)
