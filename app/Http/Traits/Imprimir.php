@@ -1,19 +1,19 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Http\Traits;
 
+use Illuminate\Support\Facades\Response;
+use Intranet\Componentes\Pdf as PDF;
 use Intranet\Services\AdviseTeacher;
 use Intranet\Services\CalendarService;
 use Intranet\Services\GestorService;
-use Intranet\Componentes\Pdf as PDF;
-use Illuminate\Support\Facades\Response;
 
 
 /**
  * Trait traitImprimir
  * @package Intranet\Http\Controllers
  */
-trait traitImprimir
+trait Imprimir
 {
 
     protected function notify($id)

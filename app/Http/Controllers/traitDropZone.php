@@ -1,38 +1,39 @@
 <?php
+
 namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Adjunto;
 use Intranet\Services\AttachedFileService;
-use Response;
+use Illuminate\Support\Facades\Storage;
+
 
 trait traitDropZone
 {
     protected function deleteAttached($id)
     {
-        $path = strtolower($this->model)."/$id";
-        $attached = Adjunto::getByPath($path)->get();
-        foreach ($attached as $attach) {
+        $path = strtolower($this->model) . "/$id";
+        $attachedFiles = Adjunto::getByPath($path)->get();
+
+        foreach ($attachedFiles as $attach) {
             AttachedFileService::delete($attach);
-            $directory = $attach->directory;
-        }
-        if (isset($directory)) {
-            rmdir($directory);
         }
     }
 
-    public function link($id)
+    public function link(int $id)
     {
+        if (!isset($this->model)) {
+            abort(500, "El atributo 'model' no está definido en la clase que usa traitDropZone.");
+        }
+
         $registre = $this->class::findOrFail($id);
         $quien = $registre->quien;
         $modelo = strtolower($this->model);
 
         $botones = [
-            'volver' => ['link' => back()->getTargetUrl()]
+            'volver' => ['link' => url()->previous()]
         ];
 
         return view('dropzone.index', compact('modelo', 'id', 'quien', 'botones'));
     }
-
 }
-
 

@@ -2,19 +2,20 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
 use DB;
+use Illuminate\Http\Request;
 use Intranet\Botones\BotonImg;
 use Intranet\Componentes\DocumentoFct;
 use Intranet\Componentes\MyMail;
+use Intranet\Entities\Activity;
+use Intranet\Entities\Comision;
+use Intranet\Entities\Fct;
 use Intranet\Http\Requests\ComisionRequest;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\CalendarService;
 use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\StateService;
-use \PDF;
-use Intranet\Entities\Comision;
-use Intranet\Entities\Fct;
-use Intranet\Entities\Activity;
 use Jenssegers\Date\Date;
 
 
@@ -25,8 +26,8 @@ use Jenssegers\Date\Date;
 class ComisionController extends ModalController
 {
 
-    use traitImprimir,  traitSCRUD,
-        traitAutorizar;
+    use Imprimir,  traitSCRUD,
+        Autorizacion;
 
 
     /**
@@ -46,9 +47,8 @@ class ComisionController extends ModalController
         $new->fillAll($request);
         if ($new->fct) {
             return $this->detalle($new->id);
-        } else {
-            return $this->confirm($new->id);
         }
+        return $this->confirm($new->id);
     }
 
     public function update(ComisionRequest $request, $id)
@@ -62,9 +62,8 @@ class ComisionController extends ModalController
         $comision = Comision::findOrFail($id);
         if ($comision->estado == 0) {
             return ConfirmAndSend::render($this->model, $id, 'Enviar a direcció i correus confirmació');
-        } else {
-            return $this->redirect();
         }
+        return $this->redirect();
     }
 
 

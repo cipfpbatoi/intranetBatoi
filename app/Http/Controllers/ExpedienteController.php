@@ -3,15 +3,16 @@
 namespace Intranet\Http\Controllers;
 
 
+use Illuminate\Http\Request;
 use Intranet\Botones\BotonImg;
+use Intranet\Entities\Expediente;
+use Intranet\Entities\TipoExpediente;
 use Intranet\Http\Requests\ExpedienteRequest;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
-use Jenssegers\Date\Date;
-use Intranet\Entities\Expediente;
 use Styde\Html\Facades\Alert;
-use Intranet\Entities\TipoExpediente;
-use Illuminate\Http\Request;
 
 
 /**
@@ -21,8 +22,8 @@ use Illuminate\Http\Request;
 class ExpedienteController extends ModalController
 {
 
-    use traitImprimir,traitDropZone,
-        traitAutorizar;
+    use Imprimir,traitDropZone,
+        Autorizacion;
 
     /**
      * @var array

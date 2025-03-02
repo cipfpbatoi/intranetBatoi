@@ -2,34 +2,35 @@
 
 namespace Intranet\Http\Controllers;
 
+use DB;
 use Illuminate\Http\Request;
+use Intranet\Botones\BotonIcon;
+use Intranet\Botones\BotonImg;
 use Intranet\Componentes\Mensaje;
 use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\Actividad;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\ActividadProfesor;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Profesor;
+use Intranet\Http\Requests\ActividadRequest;
+use Intranet\Http\Requests\ValoracionRequest;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Services\AdviseTeacher;
 use Intranet\Services\CalendarService;
 use Intranet\Services\GestorService;
 use Intranet\Services\GoogleCalendarService;
 use Intranet\Services\StateService;
-use Response;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
-use Styde\Html\Facades\Alert;
 use Jenssegers\Date\Date;
-use DB;
-use Intranet\Http\Requests\ActividadRequest;
-use Intranet\Http\Requests\ValoracionRequest;
-use Intranet\Services\AdviseTeacher;
+use Response;
+use Styde\Html\Facades\Alert;
 
 
 class ActividadController extends ModalController
 {
 
-    use traitAutorizar,  traitSCRUD;
+    use Autorizacion,  traitSCRUD;
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';

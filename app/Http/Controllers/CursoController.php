@@ -2,15 +2,16 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Curso;
-use Intranet\Entities\AlumnoCurso;
-use Intranet\Botones\BotonImg;
 use DB;
+use Intranet\Botones\BotonImg;
+use Intranet\Entities\AlumnoCurso;
+use Intranet\Entities\Curso;
+use Intranet\Http\Requests\CursoRequest;
+use Intranet\Http\Traits\Imprimir;
+use Intranet\Jobs\SendEmail;
 use Intranet\Services\GestorService;
 use Jenssegers\Date\Date;
-use Intranet\Jobs\SendEmail;
 use Styde\Html\Facades\Alert;
-use Intranet\Http\Requests\CursoRequest;
 
 /**
  * Class CursoController
@@ -19,7 +20,7 @@ use Intranet\Http\Requests\CursoRequest;
 class CursoController extends ModalController
 {
 
-    use traitImprimir;
+    use Imprimir;
 
 
     /**

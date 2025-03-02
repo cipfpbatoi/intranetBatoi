@@ -3,31 +3,32 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Exceptions\IntranetException;
-use Intranet\Services\CalendarService;
-use Intranet\Services\GestorService;
-use Intranet\Entities\Reunion;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Asistencia;
-use Intranet\Http\Requests\OrdenReunionStoreRequest;
-use Intranet\Services\FormBuilder;
-use Intranet\Services\MeetingOrderGenerateService;
-use Response;
-use Intranet\Botones\BotonImg;
-use Intranet\Entities\TipoReunion;
-use Intranet\Entities\OrdenReunion;
-use Jenssegers\Date\Date;
-use Styde\Html\Facades\Alert;
-use Intranet\Entities\Documento;
-use Intranet\Jobs\SendEmail;
-use Intranet\Entities\Grupo;
 use Illuminate\Support\Facades\DB;
+use Intranet\Botones\BotonImg;
+use Intranet\Entities\Asistencia;
+use Intranet\Entities\Documento;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\OrdenReunion;
+use Intranet\Entities\Profesor;
+use Intranet\Entities\Reunion;
+use Intranet\Entities\TipoReunion;
+use Intranet\Exceptions\IntranetException;
+use Intranet\Http\Requests\OrdenReunionStoreRequest;
+use Intranet\Http\Traits\Imprimir;
+use Intranet\Jobs\SendEmail;
+use Intranet\Services\CalendarService;
+use Intranet\Services\FormBuilder;
+use Intranet\Services\GestorService;
+use Intranet\Services\MeetingOrderGenerateService;
+use Jenssegers\Date\Date;
+use Response;
+use Styde\Html\Facades\Alert;
 use function dispatch;
 
 class ReunionController extends IntranetController
 {
 
-    use traitImprimir;
+    use Imprimir;
 
     const REUNION_UPDATE = 'reunion.update';
     protected $perfil = 'profesor';

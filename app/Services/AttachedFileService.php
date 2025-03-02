@@ -1,27 +1,33 @@
 <?php
 
+
 namespace Intranet\Services;
 
 use Intranet\Entities\Adjunto;
+use Illuminate\Support\Facades\Storage;
 
 class AttachedFileService
 {
-
-    private static function safeFile($file, $route, $dni, $title)
+    private static function safeFile($file, string $route, ?string $dni, ?string $title): int
     {
         $nameFile = $file->getClientOriginalName();
         $adjunto = Adjunto::findByName($route, $nameFile)->first();
+
         if (!$adjunto) {
             $attached = new Adjunto();
             $attached->route = $route;
             $attached->name = $nameFile;
             $attached->title = $title ?? str_shuffle('abcdefgh123456');
-            $attached->extension = pathinfo($file->getClientOriginalName())['extension'];
+            $attached->extension = $file->getClientOriginalExtension();
             $attached->size = $file->getSize();
             $attached->owner = $dni;
 
+            // Crea el directori si no existeix dins de "public/adjuntos"
+            Storage::makeDirectory("public/adjuntos/$route");
 
-            if ($file->move($attached->directory, $attached->title.'.'.$attached->extension)) {
+            $destinationPath = "public/adjuntos/{$route}/{$attached->title}.{$attached->extension}";
+
+            if (Storage::putFileAs("public/adjuntos/$route", $file, "{$attached->title}.{$attached->extension}")) {
                 $attached->save();
                 return 1;
             }
@@ -29,62 +35,61 @@ class AttachedFileService
         return 0;
     }
 
-    public static function saveLink($nameFile, $referencesTo, $title, $extension, $route, $dni=null)
+    public static function saveLink(string $nameFile, string $referencesTo, string $title, string $extension, string $route, ?string $dni = null): int
     {
         $adjunto = Adjunto::findByName($route, $nameFile)->first();
+
         if (!$adjunto) {
             $adjunto = new Adjunto([
                 'name' => $nameFile,
-                'owner' => $dni??authUser()->dni,
+                'owner' => $dni ?? authUser()->dni,
                 'referencesTo' => $referencesTo,
                 'title' => $title,
                 'extension' => $extension,
                 'size' => 1024,
-                'route' => $route
+                'route' => $route,
             ]);
             $adjunto->save();
         }
         return 0;
     }
 
-
-    public static function save($files, $route, $dni=null, $title=null)
+    public static function save($files, string $route, ?string $dni = null, ?string $title = null): array
     {
-        if (is_array($files)) {
-            foreach ($files as $file) {
-                return self::safeFile($file, $route, $dni, $title);
-            }
-        }
-        return self::safeFile($files, $route, $dni, $title);
+        return array_map(fn($file) => self::safeFile($file, $route, $dni, $title), is_array($files) ? $files : [$files]);
     }
 
-    public static function delete($attached)
+    public static function delete(Adjunto $attached): int
     {
-        if (is_file($attached->path)) {
-            unlink($attached->path);
-            $attached->delete();
-            return 1;
+        $filePath = "public/adjuntos/{$attached->route}/{$attached->title}.{$attached->extension}";
+        $directory = "public/adjuntos/{$attached->route}";
+
+        if (Storage::exists($filePath)) {
+            Storage::delete($filePath);
         }
+
         $attached->delete();
+
+        // Comprovar si el directori està buit abans d'eliminar-lo
+        if (Storage::exists($directory) && empty(Storage::files($directory))) {
+            Storage::deleteDirectory($directory);
+        }
+
         return 1;
     }
-    public static function saveExistingFile($filePath, $route, $dni, $title=null)
-    {
 
-        // Comprova si el fitxer existeix
+    public static function saveExistingFile(string $filePath, string $route, string $dni, ?string $title = null): int
+    {
         if (!file_exists($filePath)) {
-            return 0; // Si el fitxer no existeix, retorna 0
+            return 0;
         }
 
-        // Obtenim la informació del fitxer existent
         $nameFile = basename($filePath);
         $fileSize = filesize($filePath);
         $fileExtension = pathinfo($filePath, PATHINFO_EXTENSION);
 
-        // Comprova si el fitxer ja existeix a la base de dades
         $adjunto = Adjunto::findByName($route, $nameFile)->first();
         if (!$adjunto) {
-            // Crea un nou registre Adjunto
             $attached = new Adjunto();
             $attached->route = $route;
             $attached->name = $nameFile;
@@ -93,26 +98,16 @@ class AttachedFileService
             $attached->size = $fileSize;
             $attached->owner = $dni;
 
-            // Defineix el directori on es guardarà el fitxer
-            $relativeDirectory = $attached->directory;
-            $destinationDirectory = $relativeDirectory;
+            // Crea el directori dins de "public/adjuntos"
+            Storage::makeDirectory("public/adjuntos/$route");
 
-            // Crea el directori si no existeix
-            if (!file_exists($attached->directory)) {
-                mkdir($attached->directory, 0755, true);
-            }
+            $destinationPath = "public/adjuntos/{$route}/{$attached->title}.{$attached->extension}";
 
-            // Defineix el camí de destí per al fitxer
-            $destinationPath = $attached->directory . '/' . $attached->title . '.' . $attached->extension;
-
-            // Mou el fitxer a la nova ubicació
-            if (rename($filePath, $destinationPath)) {
-                // Guarda el registre a la base de dades
+            if (Storage::move($filePath, $destinationPath)) {
                 $attached->save();
                 return 1;
             }
         }
         return 0;
     }
-
 }

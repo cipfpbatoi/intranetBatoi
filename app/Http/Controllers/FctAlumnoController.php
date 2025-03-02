@@ -3,42 +3,40 @@
 namespace Intranet\Http\Controllers;
 
 
-use Illuminate\Database\Eloquent\Collection;
+use DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Intranet\Botones\BotonImg;
+use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonBasico;
+use Intranet\Botones\BotonImg;
 use Intranet\Componentes\Pdf;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Fct;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\FctConvalidacion;
-use DB;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Http\Request;
+use Intranet\Entities\Profesor;
 use Intranet\Http\PrintResources\A1ENResource;
 use Intranet\Http\PrintResources\A2ENResource;
 use Intranet\Http\PrintResources\A3ENResource;
 use Intranet\Http\PrintResources\A5Resource;
-use Intranet\Http\PrintResources\AVIIAResource;
+use Intranet\Http\PrintResources\AutorizacionDireccionResource;
 use Intranet\Http\PrintResources\AVIIIResource;
 use Intranet\Http\PrintResources\AVIResource;
 use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
+use Intranet\Http\PrintResources\ExempcioResource;
 use Intranet\Http\PrintResources\NotificacioInspeccioResource;
+use Intranet\Http\Traits\Imprimir;
 use Intranet\Mail\DocumentRequest;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
-use Intranet\Http\PrintResources\AutorizacionDireccionResource;
-use Intranet\Http\PrintResources\ExempcioResource;
 use Styde\Html\Facades\Alert;
 
 
 class FctAlumnoController extends IntranetController
 {
-    use traitImprimir,traitDropZone;
+    use Imprimir,traitDropZone;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';

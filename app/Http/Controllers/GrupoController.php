@@ -1,19 +1,20 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Intranet\Entities\AlumnoGrupo;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Ciclo;
 use DB;
+use Illuminate\Http\Request;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Alumno;
-use Intranet\Services\ExcelService;
-use Jenssegers\Date\Date;
+use Intranet\Entities\AlumnoGrupo;
+use Intranet\Entities\Ciclo;
 use Intranet\Entities\Curso;
-use Styde\Html\Facades\Alert;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Horario;
+use Intranet\Http\Traits\Imprimir;
 use Intranet\Jobs\SendEmail;
+use Jenssegers\Date\Date;
+use Styde\Html\Facades\Alert;
+
 /**
  * Class GrupoController
  * @package Intranet\Http\Controllers
@@ -26,7 +27,7 @@ class GrupoController extends IntranetController
     const ORIENTADOR ='roles.rol.orientador';
 
 
-    use traitImprimir;
+    use Imprimir;
 
     /**
      * @var string

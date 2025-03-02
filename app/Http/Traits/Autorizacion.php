@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Http\Traits;
 
 use Illuminate\Http\Request;
 use Intranet\Componentes\Pdf;
@@ -10,7 +10,7 @@ use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 
 
-trait traitAutorizar
+trait Autorizacion
 {
 
     protected $init = 1; //estat quan s'inicialitza
