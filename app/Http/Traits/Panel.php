@@ -81,6 +81,7 @@ trait Panel
         ];
 
         foreach ($botons as [$action, $class, $field, $operator, $value]) {
+            $where = [$field, $operator, $value];
             $this->panel->setBoton('profile', new BotonIcon("{$this->model}.$action", compact('class', 'where'), $enlace));
         }
     }
