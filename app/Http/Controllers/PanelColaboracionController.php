@@ -2,21 +2,17 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
-use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonBasico;
+use Intranet\Botones\BotonIcon;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
-use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Grupo;
-use Intranet\Finders\UniqueFinder;
-use Intranet\Componentes\DocumentoFct;
-use Intranet\Finders\RequestFinder;
-use Intranet\Services\DocumentService;
-use Illuminate\Http\Request;
+use Intranet\Http\Traits\Panel;
 use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class PanelColaboracionController
@@ -24,7 +20,7 @@ use Illuminate\Support\Facades\DB;
  */
 class PanelColaboracionController extends IntranetController
 {
-    use traitPanel;
+    use Panel;
 
     const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
     const FCT_EMAILS_REQUEST = 'fctEmails.request';
@@ -47,7 +43,7 @@ class PanelColaboracionController extends IntranetController
     {
         $todos = $this->search();
 
-        $this->crea_pestanas(
+        $this->setTabs(
             config('modelos.Colaboracion.estados'),
             "profile.colaboracion",
             3,

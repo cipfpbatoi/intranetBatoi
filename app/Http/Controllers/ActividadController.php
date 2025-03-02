@@ -17,6 +17,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
 use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\SCRUD;
 use Intranet\Services\AdviseTeacher;
 use Intranet\Services\CalendarService;
 use Intranet\Services\GestorService;
@@ -30,7 +31,7 @@ use Styde\Html\Facades\Alert;
 class ActividadController extends ModalController
 {
 
-    use Autorizacion,  traitSCRUD;
+    use Autorizacion,  SCRUD;
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';

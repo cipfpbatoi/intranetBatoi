@@ -10,6 +10,7 @@ use Intranet\Entities\TipoExpediente;
 use Intranet\Http\Requests\ExpedienteRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\DropZone;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Styde\Html\Facades\Alert;
@@ -22,7 +23,7 @@ use Styde\Html\Facades\Alert;
 class ExpedienteController extends ModalController
 {
 
-    use Imprimir,traitDropZone,
+    use Imprimir,DropZone,
         Autorizacion;
 
     /**

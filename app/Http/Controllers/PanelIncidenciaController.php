@@ -1,15 +1,16 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonIcon;
 use Illuminate\Support\Facades\Session;
+use Intranet\Botones\BotonIcon;
+use Intranet\Botones\BotonImg;
+use Intranet\Http\Traits\Panel;
 
 
 class   PanelIncidenciaController extends BaseController
 {
 
-    use traitPanel;
+    use Panel;
     
     protected $perfil = 'profesor';
     protected $model = 'Incidencia';

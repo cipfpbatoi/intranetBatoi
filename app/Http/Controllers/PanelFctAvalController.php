@@ -3,20 +3,21 @@
 namespace Intranet\Http\Controllers;
 
 
+use DB;
+use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonConfirmacion;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
-use DB;
+use Intranet\Entities\Documento;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Profesor;
 use Intranet\Exceptions\IntranetException;
+use Intranet\Http\Traits\DropZone;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\SecretariaService;
 use Styde\Html\Facades\Alert;
-use Intranet\Entities\Documento;
-use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Profesor;
 
 
 /**
@@ -25,7 +26,7 @@ use Intranet\Entities\Profesor;
  */
 class PanelFctAvalController extends IntranetController
 {
-    use traitDropZone;
+    use DropZone;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
 

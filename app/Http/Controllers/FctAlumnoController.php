@@ -28,6 +28,7 @@ use Intranet\Http\PrintResources\ConformidadTutoriaResource;
 use Intranet\Http\PrintResources\ExempcioResource;
 use Intranet\Http\PrintResources\NotificacioInspeccioResource;
 use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\DropZone;
 use Intranet\Mail\DocumentRequest;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\FormBuilder;
@@ -36,7 +37,7 @@ use Styde\Html\Facades\Alert;
 
 class FctAlumnoController extends IntranetController
 {
-    use Imprimir,traitDropZone;
+    use Imprimir,DropZone;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';

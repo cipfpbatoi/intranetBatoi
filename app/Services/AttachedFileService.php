@@ -5,6 +5,8 @@ namespace Intranet\Services;
 
 use Intranet\Entities\Adjunto;
 use Illuminate\Support\Facades\Storage;
+use Intranet\Entities\AlumnoFct;
+use Styde\Html\Facades\Alert;
 
 class AttachedFileService
 {
@@ -109,5 +111,76 @@ class AttachedFileService
             }
         }
         return 0;
+    }
+
+    public static function moveAndPreserveDualFiles()
+    {
+        $alumnesDual = AlumnoFct::esDual()->get();
+        $dualRoutes = [];
+
+        foreach ($alumnesDual as $alumne) {
+            if ($alumne->Alumno->Grupo->first() && $alumne->Alumno->Grupo->first()->curso == 1) {
+                $route = "alumnofctaval/{$alumne->id}";
+                $newRoute = "dual/{$alumne->Alumno->dni}";
+                $adjuntos = Adjunto::where('route', $route)->get();
+
+                foreach ($adjuntos as $adjunto) {
+                    $file = "{$adjunto->title}.{$adjunto->extension}";
+                    $oldPath = "adjuntos/{$route}/{$file}";
+                    $newPath = "adjuntos/{$newRoute}/{$file}";
+
+                    if (is_null($adjunto->referencesTo)) {
+                        if (!Storage::disk('public')->exists($oldPath)) {
+                            Alert::warning("El fitxer no existeix: $oldPath");
+                            continue;
+                        }
+
+                        if (!Storage::disk('public')->exists(dirname($newPath))) {
+                            Storage::disk('public')->makeDirectory(dirname($newPath));
+                        }
+
+                        if (Storage::disk('public')->move($oldPath, $newPath)) {
+                            $adjunto->route = $newRoute;
+                            $dualRoutes[] = $newRoute;
+                            $adjunto->save();
+                            Alert::info("De $oldPath a $newPath");
+                        } else {
+                            Alert::warning("No he pogut moure el fitxer de $oldPath a $newPath");
+                        }
+                    }
+                }
+            }
+        }
+
+        self::deleteNonDualFiles($dualRoutes);
+    }
+
+    private static function deleteNonDualFiles($dualRoutes)
+    {
+        $allAdjuntos = Adjunto::all();
+        $directoriesToCheck = [];
+
+        foreach ($allAdjuntos as $adjunto) {
+            if (!in_array($adjunto->route, $dualRoutes)) {
+                $oldPath = "adjuntos/{$adjunto->route}/{$adjunto->title}.{$adjunto->extension}";
+                $directory = dirname($oldPath);
+                $directoriesToCheck[] = $directory;
+
+                if (Storage::disk('public')->delete($oldPath)) {
+                    $adjunto->delete();
+                    Alert::info("Esborrat $oldPath");
+                } else {
+                    Alert::warning("No esborrat $oldPath");
+                }
+            }
+        }
+
+        $directoriesToCheck = array_unique($directoriesToCheck);
+        foreach ($directoriesToCheck as $directory) {
+            if (Storage::disk('public')->exists($directory) && empty(Storage::disk('public')->files($directory))) {
+                Storage::disk('public')->deleteDirectory($directory);
+                Alert::info("Directori esborrat: $directory");
+            }
+        }
     }
 }

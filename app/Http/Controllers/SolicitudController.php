@@ -7,6 +7,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Componentes\Mensaje;
 use Intranet\Entities\Solicitud;
 use Intranet\Http\Requests\SolicitudRequest;
+use Intranet\Http\Traits\DropZone;
 use Intranet\Services\ConfirmAndSend;
 
 
@@ -17,7 +18,7 @@ use Intranet\Services\ConfirmAndSend;
 class SolicitudController extends ModalController
 {
 
-    use traitDropZone;
+    use DropZone;
 
     /**
      * @var array

@@ -13,6 +13,7 @@ use Intranet\Entities\Fct;
 use Intranet\Http\Requests\ComisionRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\SCRUD;
 use Intranet\Services\CalendarService;
 use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\StateService;
@@ -26,7 +27,7 @@ use Jenssegers\Date\Date;
 class ComisionController extends ModalController
 {
 
-    use Imprimir,  traitSCRUD,
+    use Imprimir,  SCRUD,
         Autorizacion;
 
 

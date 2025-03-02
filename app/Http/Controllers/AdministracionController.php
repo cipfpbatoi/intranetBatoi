@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Setting;
 use Intranet\Mail\CertificatAlumneFct;
 use Intranet\Mail\Comunicado;
+use Intranet\Services\AttachedFileService;
 use Intranet\Services\ImageService;
 use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
@@ -182,7 +183,7 @@ class AdministracionController extends Controller
             }
 
             // preservar dual
-            Adjunto::moveAndPreserveDualFiles();
+            AttachedFileService::moveAndPreserveDualFiles();
         }
 
         if ($request->Esborrat){

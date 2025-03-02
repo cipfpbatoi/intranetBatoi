@@ -4,11 +4,11 @@ namespace Intranet\Http\Controllers;
 
 
 use DB;
-use Intranet\Entities\Fct;
-use Intranet\Botones\BotonIcon;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonBasico;
-
+use Intranet\Botones\BotonIcon;
+use Intranet\Entities\Fct;
+use Intranet\Http\Traits\Panel;
 
 
 /**
@@ -51,7 +51,7 @@ class PanelFctController extends IntranetController
      */
     protected $modal = false;
 
-    use traitPanel;
+    use Panel;
 
 
     /**
@@ -60,7 +60,7 @@ class PanelFctController extends IntranetController
     public function index()
     {
         $todos = $this->search();
-        $this->crea_pestanas(
+        $this->setTabs(
             [ 0 => 'Actius', 1 => 'Finalizats'],
             "profile.fct",
             0,

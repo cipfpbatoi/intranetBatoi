@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonIcon;
+use Intranet\Http\Traits\Panel;
 
 /**
  * Class PanelFaltaItacaController
@@ -11,7 +12,7 @@ use Intranet\Botones\BotonIcon;
  */
 class PanelFaltaItacaController extends BaseController
 {
-    use traitPanel;
+    use Panel;
 
     const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
     /**

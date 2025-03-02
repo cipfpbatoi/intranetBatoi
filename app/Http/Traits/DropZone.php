@@ -1,13 +1,12 @@
 <?php
 
-namespace Intranet\Http\Controllers;
+namespace Intranet\Http\Traits;
 
 use Intranet\Entities\Adjunto;
 use Intranet\Services\AttachedFileService;
-use Illuminate\Support\Facades\Storage;
 
 
-trait traitDropZone
+trait DropZone
 {
     protected function deleteAttached($id)
     {
