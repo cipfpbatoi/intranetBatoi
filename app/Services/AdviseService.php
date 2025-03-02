@@ -3,7 +3,6 @@
 namespace Intranet\Services;
 
 use Intranet\Componentes\Mensaje;
-require_once base_path('app/Helpers/MyHelpers.php');
 
 class AdviseService
 {

@@ -1,6 +1,6 @@
 <?php
-
 namespace Intranet\Services;
+
 use Intranet\Componentes\Mensaje;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Hora;
@@ -104,4 +104,3 @@ class AdviseTeacher
         return $horas->whereNotIn('idGrupo', $grupos)->values();
     }
 }
-
