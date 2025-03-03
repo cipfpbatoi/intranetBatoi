@@ -2,17 +2,15 @@
 
 namespace Tests;
 
-
-
+use Illuminate\Support\Facades\DB;
 use Laravel\BrowserKitTesting\TestCase as BaseTestCase;
 use ReflectionMethod;
 use ReflectionProperty;
+use function base_path;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication;
-
-    public $baseUrl = 'http://localhost';
+    use CreatesApplication ;
 
     protected function callProtectedMethod($object, $methodName, array $args = [])
     {
@@ -28,5 +26,7 @@ abstract class TestCase extends BaseTestCase
         $reflection->setAccessible(true);
         return $reflection->getValue($object);
     }
+
+
 
 }

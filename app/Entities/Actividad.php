@@ -2,6 +2,7 @@
 
 namespace Intranet\Entities;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActividadCreated;
@@ -12,7 +13,7 @@ use Intranet\Events\PreventAction;
 class Actividad extends Model
 {
 
-    use BatoiModels;
+    use BatoiModels ;
 
     protected $table = 'actividades';
     protected $fillable = [
@@ -98,21 +99,16 @@ class Actividad extends Model
      */
     public function Creador()
     {
-        if (ActividadProfesor::select('idProfesor')
-                        ->where('idActividad', $this->id)
-                        ->where('coordinador', 1)
-                        ->count()) {
-            return ActividadProfesor::select('idProfesor')
-                ->where('idActividad', $this->id)
-                ->where('coordinador', 1)
-                ->first()
-                ->idProfesor;
-        }
-        return null;
+        return ActividadProfesor::where([
+            ['idActividad', $this->id],
+            ['coordinador', 1]
+        ])->value('idProfesor');
     }
     public function scopeProfesor($query, $dni)
     {
-        $actividades = ActividadProfesor::select('idActividad')->where('idProfesor', $dni)->get()->toArray();
+        $actividades = ActividadProfesor::where('idProfesor', $dni)
+            ->pluck('idActividad')
+            ->toArray();
         return $query->whereIn('id', $actividades);
     }
 
@@ -174,13 +170,9 @@ class Actividad extends Model
 
     public static function loadPoll()
     {
-        $actividades = collect();
-        foreach (authUser()->Grupo as $grupo) {
-            foreach ($grupo->Actividades as $actividad) {
-                $actividades->push(['option1' => $actividad]);
-            }
-        }
-        return $actividades;
+        return authUser()->Grupo->flatMap(fn($grupo) =>
+        $grupo->Actividades->map(fn($actividad) => ['option1' => $actividad])
+        );
     }
 
     public function getRecomendadaAttribute()

@@ -13,7 +13,7 @@ use function hora, nameDay;
 
 class AdviseTeacher
 {
-    public static function exec(object $elemento, ?string $mensaje = null, ?int $idEmisor = null, ?string $emisor = null): void
+    public static function exec(object $elemento, ?string $mensaje = null, ?string $idEmisor = null, ?string $emisor = null): void
     {
         $mensaje = $mensaje ?? "No estaré en el centre des de " . $elemento->desde . " fins " . $elemento->hasta;
         $idEmisor = $idEmisor ?? $elemento->idProfesor;
@@ -41,7 +41,7 @@ class AdviseTeacher
             ->get();
     }
 
-    public static function gruposAfectados(object $elemento, int $idProfesor): Collection
+    public static function gruposAfectados(object $elemento, string $idProfesor): Collection
     {
         if (!Carbon::parse($elemento->desde)->isSameDay(Carbon::parse($elemento->hasta))) {
             return Horario::distinct()
@@ -96,7 +96,7 @@ class AdviseTeacher
         }
     }
 
-    public static function horariAltreGrup(object $elemento, int $professorId): Collection
+    public static function horariAltreGrup(object $elemento, string $professorId): Collection
     {
         $horas = self::gruposAfectados($elemento, $professorId);
         $grupos = collect($elemento->grupos)->pluck('codigo');

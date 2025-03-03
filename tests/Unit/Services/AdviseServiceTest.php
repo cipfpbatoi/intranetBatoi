@@ -1,10 +1,10 @@
 <?php
-namespace Tests\Unit;
+namespace Tests\Unit\Services;
 
-use Tests\TestCase;
-use Intranet\Services\AdviseService;
 use Illuminate\Support\Facades\Config;
+use Intranet\Services\AdviseService;
 use Mockery;
+use Tests\TestCase;
 
 class TestElement
 {
@@ -36,7 +36,7 @@ class AdviseServiceTest extends TestCase
             'director' => [2, 3]
         ]);
 
-        $mockElement = new TestElement(); // Ara fem servir una classe real
+        $mockElement = new  TestElement(); // Ara fem servir una classe real
 
         $service = new AdviseService($mockElement);
         $result = $this->callProtectedMethod($service, 'getAdvises');
@@ -66,7 +66,7 @@ class AdviseServiceTest extends TestCase
 
     public function testSetLink()
     {
-        $mockElement = new TestElement(); // Fem servir una classe real
+        $mockElement = new  TestElement();
 
         $service = new AdviseService($mockElement);
         $link = $this->getProtectedProperty($service, 'link');

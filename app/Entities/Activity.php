@@ -7,52 +7,60 @@ use Styde\Html\Facades\Alert;
 
 class Activity extends Model
 {
-    protected $fillable = ['comentari'];
+    protected $fillable = ['action', 'model_class', 'model_id', 'comentari', 'document', 'author_id', 'created_at'];
 
-
-    public static function record($action, Model $model = null, $comentari = null, $fecha = null, $document=null)
+    /*
+    |--------------------------------------------------------------------------
+    | Factory Method per a Crear una Activitat
+    |--------------------------------------------------------------------------
+    */
+    public static function record(string $action, ?Model $model = null, ?string $comentari = null, ?string $fecha = null, ?string $document = null)
     {
-        $activity = new Activity();
-        $activity->action = $action;
-        if ($model) {
-            $key = $model->primaryKey;
-            $activity->model_class = get_class($model);
-            $activity->model_id = $model->$key;
-        }
-        $activity->comentari = $comentari;
-        $activity->document = $document;
-        if ($fecha) {
-            $activity->setCreatedAt(fechaInglesaLarga($fecha));
-            $activity->setUpdatedAt(fechaInglesaLarga($fecha));
+        $activity = new self([
+            'action'     => $action,
+            'comentari'  => $comentari,
+            'document'   => $document,
+            'model_class' => $model ? get_class($model) : null,
+            'model_id'   => $model?->getKey(),
+            'created_at' => $fecha ? fechaInglesaLarga($fecha) : now(),
+        ]);
+
+        $user = Auth::user();
+        if ($user) {
+            $user->Activity()->save($activity);
         }
 
-        $ac = auth()->user()->Activity()->save($activity);
-        Alert::success(
-            trans('models.modelos.' . substr($activity->model_class, 18)).' '.
-            trans("messages.generic.$action")
-        );
-        return $ac;
+        self::notifyUser($activity);
+        return $activity;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Notificació d'Alertes
+    |--------------------------------------------------------------------------
+    */
+    private static function notifyUser(Activity $activity)
+    {
+        if ($activity->model_class) {
+            $modelName = trans('models.modelos.' . class_basename($activity->model_class));
+            $message = trans("messages.generic.{$activity->action}");
+            Alert::success("$modelName $message");
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scopes de Consulta
+    |--------------------------------------------------------------------------
+    */
     public function scopeProfesor($query, $profesor)
     {
-        return $query->where('author_id', '=', $profesor);
-    }
-
-    public function getUpdateAtAttribute($salida)
-    {
-        $fecha = new Date($salida);
-        return $fecha->format('d-m-Y H:i');
-    }
-
-    public function Propietario()
-    {
-        return $this->belongsTo(Profesor::class, 'author_id', 'dni');
+        return $query->where('author_id', $profesor);
     }
 
     public function scopeModelo($query, $modelo)
     {
-        return $query->where('model_class', 'Intranet\Entities\\'.$modelo);
+        return $query->where('model_class', 'Intranet\Entities\\' . $modelo);
     }
 
     public function scopeNotUpdate($query)
@@ -62,44 +70,80 @@ class Activity extends Model
 
     public function scopeMail($query)
     {
-        return $query->where('action', 'email')
-            ->orWhere('action', 'phone')
-            ->orWhere('action', 'visita')
-            ->orWhere('action', 'review');
+        return $query->whereIn('action', ['email', 'phone', 'visita', 'review']);
     }
+
     public function scopeId($query, $id)
     {
         return $query->where('model_id', $id);
     }
+
     public function scopeIds($query, $ids)
     {
         return $query->whereIn('model_id', $ids);
     }
+
     public function scopeRelationId($query, $id)
     {
-        $colaboracion = Fct::find($id)->idColaboracion;
+        $colaboracion = Fct::find($id)?->idColaboracion;
         return $query->where('model_id', $id)->orWhere('model_id', $colaboracion);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Relacions
+    |--------------------------------------------------------------------------
+    */
+    public function propietario()
+    {
+        return $this->belongsTo(Profesor::class, 'author_id', 'dni');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors i Mutators
+    |--------------------------------------------------------------------------
+    */
+    public function getUpdatedAtAttribute($value)
+    {
+        return $value ? (new \DateTime($value))->format('d-m-Y H:i') : null;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mètode de Presentació - Ha de traslladar-se a un View Component o Blade
+    |--------------------------------------------------------------------------
+    */
     public function render()
     {
-        $fecha = fechaCurta($this->created_at);
-        switch (firstWord($this->document)) {
-            case 'Recordatori':$class='flag';break;
-            case 'Informació':$class='lock';break;
-            case 'Revisió':$class='check';break;
-            case 'Sol·licitud':$class='bell';break;
-            default: $class=null;
-        }
-        switch ($this->action) {
-            case 'email' : $action='envelope';break;
-            case 'visita' : $action='car';break;
-            case 'phone' : $action='phone';break;
-            case 'book' : $action='book';break;
-            default: $action = null;
-        }
-        $id = $this->id;
-        $comentari = $this->comentari;
-        return view('partials.activity', compact('class', 'id', 'action', 'class', 'fecha', 'comentari'));
+        return view('partials.activity', [
+            'class'     => $this->getIconClass(),
+            'id'        => $this->id,
+            'action'    => $this->getActionIcon(),
+            'fecha'     => fechaCurta($this->created_at),
+            'comentari' => $this->comentari
+        ]);
+    }
+
+    private function getIconClass()
+    {
+        return match (firstWord($this->document)) {
+            'Recordatori' => 'flag',
+            'Informació'  => 'lock',
+            'Revisió'     => 'check',
+            'Sol·licitud' => 'bell',
+            default       => null
+        };
+    }
+
+    private function getActionIcon()
+    {
+        return match ($this->action) {
+            'email'  => 'envelope',
+            'visita' => 'car',
+            'phone'  => 'phone',
+            'book'   => 'book',
+            default  => null
+        };
     }
 }

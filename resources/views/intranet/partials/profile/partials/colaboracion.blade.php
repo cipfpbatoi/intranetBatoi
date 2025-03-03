@@ -52,9 +52,7 @@
             <div class="col-md-3 listActivity">
                 @isset (authUser()->emailItaca)
                     @foreach ($contactos as $contacto)
-                        <small>
-                            {{ $contacto->render() }}
-                        </small>
+                        <x-activity :activity="$contacto" />
                         <br/>
                     @endforeach
                 @endisset
