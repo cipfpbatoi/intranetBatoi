@@ -6,202 +6,162 @@ use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Activity;
 use Intranet\Mail\DocumentRequest;
 use Styde\Html\Facades\Alert;
-use function authUser,collect,view;
-
+use function authUser, collect, view;
 
 class MyMail
 {
     private $elements;
     private $features;
     private $view;
-    private $template=null;
+    private $template = null;
     private $attach;
     private $editable;
+    private $from;
+    private $fromPerson;
+    private $register;
 
-    public function __get($key)
-    {
-        if (property_exists($this, $key)) {
-            return $this->$key;
-        }
-        return $this->features[$key] ?? null;
-    }
-
-    public function __set($key, $value)
-    {
-        if (property_exists($this, $key)) {
-            $this->$key = $value;
-        } else {
-            $this->features[$key] = $value;
-        }
-    }
-
-    public function __construct($elements=null, $view=null, $features=[], $attach=null, $editable=null)
+    public function __construct($elements = null, $view = null, $features = [], $attach = null, $editable = null)
     {
         $this->features = $features;
-        $this->from = !isset($this->features['from'])?authUser()->email:$this->from;
-        $this->fromPerson = !isset($this->features['fromPerson'])?authUser()->FullName:$this->fromPerson;
-        if (is_object($elements)) {
-            $this->elements = $elements;
-            $this->class = get_class($this->elements->first());
-        } else {
-            $this->elements = $this->recoveryObjects($elements);
-        }
-        if (is_array($view)) {
-            $this->view = $view['view'];
-            $this->template = $view['template'];
-        } else {
-            $this->view = $view;
-        }
-        $this->attach = $attach??session()->get('attach')??null;
+        $this->from = $features['from'] ?? authUser()->email;
+        $this->fromPerson = $features['fromPerson'] ?? authUser()->FullName;
+        $this->elements = is_object($elements) ? collect($elements) : $this->recoveryObjects($elements);
+        $this->class = $this->elements->isNotEmpty() ? get_class($this->elements->first()) : null;
+        $this->view = is_array($view) ? $view['view'] : $view;
+        $this->template = is_array($view) ? $view['template'] : null;
+        $this->attach = $attach ?? session()->get('attach');
         $this->editable = $editable;
-
-        $this->register = $this->features['register'] ?? null;
+        $this->register = $features['register'] ?? null;
     }
 
     private function recoveryObjects($elements)
     {
-        $objects = collect();
-        foreach (explode(',', $elements) as $element) {
-            $objects->push($this->recoveryObject($element));
+        if (!$elements) {
+            return collect();
         }
-        return $objects;
+
+        return collect(is_array($elements) ? $elements : explode(',', $elements))
+            ->map(fn($element) => $this->recoveryObject($element))
+            ->filter(); // Eliminem valors null
     }
+
     private function recoveryObject($element)
     {
-        if (!$element) {
+        if (is_object($element)) {
+            return $element;
+        }
+
+        if (!is_string($element) || empty($element) || !class_exists($this->class)) {
             return null;
         }
 
-        if ($element != '') {
-            $toCompost = explode('(', $element);
-            $id = $toCompost[0];
-            $element = $this->class::find($id);
+        [$id, $contactInfo] = array_pad(explode('(', $element, 2), 2, null);
+        $instance = $this->class::find($id);
 
-            if (!isset($element)) {
-                return null;
-            }
-
-            if (isset($toCompost[1]) && strpos($toCompost[1], ';')) {
-                $email = explode(';', $toCompost[1]);
-                $contacte =  substr($email[1], 0, -1);
-                $element->contact = strlen($contacte)>3?$contacte:null;
-                $element->mail = $email[0];
-            }
-            return $element;
+        if (!$instance) {
+            return null;
         }
-        return null;
+
+        if ($contactInfo && strpos($contactInfo, ';') !== false) {
+            [$email, $contact] = explode(';', rtrim($contactInfo, ')'));
+            $instance->contact = strlen($contact) > 3 ? $contact : null;
+            $instance->mail = $email;
+        }
+
+        return $instance;
     }
-
-
-
 
     public function render($route)
     {
-        $to  = $this->getReceivers($this->elements);
-        $editable = (count($this->elements) > 1)?$this->editable:true;
-        $from = $this->from;
-        $subject = $this->subject;
-        $contenido = $this->view;
-        $fromPerson = $this->fromPerson;
-        $toPeople = $this->toPeople;
-        $class = $this->class;
-        $register = $this->register;
-        $template = $this->template;
-        $action = $this->action??'myMail.send';
+        $data = [
+            'to' => $this->getFormattedReceivers(),
+            'from' => $this->from,
+            'subject' => $this->features['subject'] ?? null,
+            'contenido' => $this->view,
+            'route' => $route,
+            'fromPerson' => $this->fromPerson,
+            'toPeople' => $this->features['toPeople'] ?? null,
+            'class' => $this->class,
+            'register' => $this->register,
+            'editable' => count($this->elements) > 1 ? $this->editable : true,
+            'template' => $this->template,
+            'action' => $this->features['action'] ?? 'myMail.send',
+        ];
+
         if ($this->attach) {
             session()->put('attach', $this->attach);
         }
-        return view(
-            'email.view',
-            compact(
-                'to',
-                'from',
-                'subject',
-                'contenido',
-                'route',
-                'fromPerson',
-                'toPeople',
-                'class',
-                'register',
-                'editable',
-                'template',
-                'action',
-            )
-        );
+
+        return view('email.view', $data)->render();
     }
 
-    private function  sendEvent($elements){
-        if (session()->has('email_action')) {
-            $event = session()->get('email_action');
-            event(new $event($this->elements));
-            session()->forget('email_action');
-        }
-    }
-
-    public function send($fecha=null)
+    private function sendEvent()
     {
-        if (is_iterable($this->elements)) {
-            foreach ($this->elements as $elemento) {
-                $this->sendMail($elemento, $fecha);
-            }
-        } else {
-            $this->sendMail($this->elements, $fecha);
+        if (session()->has('email_action')) {
+            event(new (session()->pull('email_action'))($this->elements));
+        }
+    }
+
+    public function send($fecha = null)
+    {
+        if ($this->elements->isEmpty()) {
+            return;
         }
 
+        $this->elements->each(fn($element) => $this->sendMail($element, $fecha));
         session()->forget('attach');
     }
 
-    private function sendMail($elemento, $fecha)
+    private function sendMail($element, $fecha)
     {
-        $contacto = $elemento->contact??$elemento->contacto??'A qui corresponga';
-        if (isset($elemento)){
-            $mail = $elemento->mail??$elemento->email;
-            if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-                Mail::to($mail, $contacto)
-                    ->bcc($this->from)
-                    ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attach));
-                Alert::info('Enviat correus ' . $this->subject . ' a ' . $contacto);
-                if ($this->register !== null) {
-                    Activity::record('email', $elemento, null, $fecha, $this->register);
-                }
-                $this->sendEvent($elemento);
-            } else {
-                Alert::danger("No s'ha pogut enviar correu a $contacto. Comprova email");
-            }
+        if (!isset($element)) {
+            return;
         }
+
+        $contacto = $element->contact ?? $element->contacto ?? 'A qui corresponga';
+        $mail = $element->mail ?? $element->email;
+
+        if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+            Alert::danger("No s'ha pogut enviar correu a $contacto. Comprova email");
+            return;
+        }
+
+        Mail::to($mail, $contacto)
+            ->bcc($this->from)
+            ->send(new DocumentRequest($this, $this->chooseView(), $element, $this->attach));
+
+        $subject = $this->features['subject'] ?? 'Sense assumpte';
+        Alert::info("Enviat correus {$subject} a $contacto");
+
+        if ($this->register !== null) {
+            Activity::record('email', $element, null, $fecha, $this->register);
+        }
+
+        $this->sendEvent();
     }
 
     private function chooseView()
     {
-        if (strlen($this->view)< 50) {
-            $viewPath = view($this->view)->getPath();
-            $this->view = file_get_contents($viewPath);
-        }
-        return 'email.standard';
+        return view()->exists($this->view) ? $this->view : 'email.standard';
     }
 
-    private function getReceivers($elementos)
+    private function getReceivers()
     {
-        $to = '';
-        foreach ($elementos as $elemento) {
-            if (isset($elemento)){
-                $to .= $this->getReceiver($elemento).',';
-            }
-        }
-        return $to;
+        return $this->elements
+            ->map(fn($element) => $this->getReceiver($element))
+            ->implode(',');
     }
 
-    private function getReceiver($elemento)
+    private function getReceiver($element)
     {
-
-        $mail = $elemento->mail??$elemento->email;
-        $contacto = $elemento->contact??$elemento->contacto;
-        return $elemento->id.'('.$mail.';'.$contacto.')';
+        return "{$element->id}({$element->mail};{$element->contact})";
     }
 
-    /**
-     * @return null
-     */
+    public function getFormattedReceivers()
+    {
+        return $this->getReceivers();
+    }
+
     public function getTo()
     {
         return $this->elements;
