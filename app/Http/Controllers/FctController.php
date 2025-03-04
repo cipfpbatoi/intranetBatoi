@@ -177,6 +177,7 @@ class FctController extends IntranetController
         Session::put('pestana', 1);
         $fct = Fct::findOrFail($id);
         $instructores = $fct->Colaboradores->pluck('dni');
+
         return view($this->chooseView('show'), compact('fct', 'activa', 'instructores'));
     }
 

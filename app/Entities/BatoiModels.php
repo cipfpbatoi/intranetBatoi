@@ -132,10 +132,8 @@ trait BatoiModels
      */
     public function isTypeDate($type)
     {
-        if (isset($type['type']) && (strpos($type['type'], 'ate') || strpos($type['type'], 'ime') || strpos($type['type'], 'ag'))) {
-            return true;
-        }
-        return false;
+        return isset($type['type']) && (strpos($type['type'], 'ate') || strpos($type['type'],
+                    'ime') || strpos($type['type'], 'ag'));
     }
 
 
@@ -173,10 +171,12 @@ trait BatoiModels
 
     public function fillFile($file)
     {
+
         if (!$file->isValid()) {
             Alert::danger(trans('messages.generic.invalidFormat'));
             return;
         }
+
 
         // Validar extensió
         $allowedExtensions = ['pdf', 'docx', 'xlsx', 'jpg', 'png'];
@@ -187,17 +187,16 @@ trait BatoiModels
             return;
         }
 
+
         // Obtenir el nom de la classe correctament
         $clase = getClase($this) === 'Documento' ? $this->tipoDocumento : getClase($this);
 
         // Guardar fitxer
-        $this->fichero = $file->storeAs(
+        return $file->storeAs(
             $this->getDirectory($clase),
             $this->getFileName($extension, $clase)
         );
 
-        // Guardar registre a la BD
-        $this->save();
     }
 
     private function getDirectory($clase)

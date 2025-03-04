@@ -37,9 +37,6 @@ trait SCRUD
      * Defineix quina vista s'ha d'usar.
      * Pot ser sobreescrita en el controlador.
      */
-    protected function chooseView($view)
-    {
-        return "intranet.$view"; // 🔹 Modifica-ho si cal canviar l'estructura de carpetes
-    }
+
 }
 

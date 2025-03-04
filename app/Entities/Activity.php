@@ -25,7 +25,7 @@ class Activity extends Model
             'created_at' => $fecha ? fechaInglesaLarga($fecha) : now(),
         ]);
 
-        $user = Auth::user();
+        $user = auth()->user();
         if ($user) {
             $user->Activity()->save($activity);
         }
