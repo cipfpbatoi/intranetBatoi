@@ -35,10 +35,7 @@ trait BatoiModels
      */
     public function isRequired($campo)
     {
-        if (isset($this->rules[$campo])&&strpos($this->rules[$campo], 'equired')) {
-            return true;
-        }
-        return false;
+        return isset($this->rules[$campo]) && strpos($this->rules[$campo], 'equired');
     }
 
     /**
