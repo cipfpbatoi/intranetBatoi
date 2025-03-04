@@ -164,9 +164,17 @@ class Alumno extends Authenticatable
         return optional($this->Municipio)->municipio ?? 'NO TROBAT';
     }
 
-    public function getesMenorAttribute(): bool
+    public function getEsMenorAttribute(): bool
     {
         return $this->fecha_nac ? (new Date($this->fecha_nac))->gt((new Date())->subYears(18)) : false;
+    }
+
+    public function esMenorEdat($fecha)
+    {
+        $dataNaixement = new \Jenssegers\Date\Date($this->fecha_nac);
+        $dataComparacio = new \Jenssegers\Date\Date($fecha);
+
+        return $dataNaixement->diffInYears($dataComparacio) < 18;
     }
 
     public function getEdatAttribute(): ?int

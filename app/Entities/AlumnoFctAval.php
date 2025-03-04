@@ -10,8 +10,6 @@ use Intranet\Entities\AlumnoFct;
 class AlumnoFctAval extends AlumnoFct
 {
 
-   
-    
     protected $table = 'alumno_fcts';
     protected $fillable = ['id','idFct','idAlumno', 'calificacion','calProyecto'];
     
@@ -79,7 +77,6 @@ class AlumnoFctAval extends AlumnoFct
         $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
         return $query->whereIn('idProfesor', $profesor)->esAval();
     }
-
 
 
     public function scopeMisErasmus($query, $profesor= null)

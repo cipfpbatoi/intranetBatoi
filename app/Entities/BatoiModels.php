@@ -2,8 +2,9 @@
 
 namespace Intranet\Entities;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Jenssegers\Date\Date;
+use Styde\Html\Facades\Alert;
 
 /**
  * Trait BatoiModels
@@ -138,89 +139,82 @@ trait BatoiModels
     }
 
 
-    /**
-     * @param Request $request
-     */
+    public function fillAll(Request $request)
+    {
+        $fillable = $this->notFillable
+            ? array_diff($this->fillable, $this->notFillable)
+            : $this->fillable;
+
+        foreach ($fillable as $key) {
+            if ($request->has($key) || $request->hasFile($key)) {
+                $this->$key = $this->fillField($key, $request->$key);
+            }
+        }
+
+        $this->save();
+
+        $primaryKey = $this->primaryKey ?? 'id';
+        return $this->$primaryKey;
+    }
+
+    private function fillField($key, $value)
+    {
+        $type = $this->inputTypes[$key]['type'] ?? null;
+
+        return match ($type) {
+            'date' => Carbon::parse($value)->format('Y-m-d'),
+            'datetime' => Carbon::parse($value)->format('Y-m-d H:i'),
+            'select' => empty($value) ? null : $value,
+            'file' => request()->hasFile($key) ? $this->fillFile(request()->file($key)) : $this->$key,
+            'checkbox' => empty($value) ? 0 : 1,
+            default => $value,
+        };
+    }
+
     public function fillFile($file)
     {
         if (!$file->isValid()) {
             Alert::danger(trans('messages.generic.invalidFormat'));
-            return ;
+            return;
         }
-        $clase = getClase($this) == 'Documento'?$this->tipoDocumento:getClase($this);
+
+        // Validar extensió
+        $allowedExtensions = ['pdf', 'docx', 'xlsx', 'jpg', 'png'];
+        $extension = strtolower($file->getClientOriginalExtension());
+
+        if (!in_array($extension, $allowedExtensions)) {
+            Alert::danger(trans('messages.generic.invalidFileType'));
+            return;
+        }
+
+        // Obtenir el nom de la classe correctament
+        $clase = getClase($this) === 'Documento' ? $this->tipoDocumento : getClase($this);
+
+        // Guardar fitxer
         $this->fichero = $file->storeAs(
             $this->getDirectory($clase),
-            $this->getFileName($file->getClientOriginalExtension(), $clase)
+            $this->getFileName($extension, $clase)
         );
+
+        // Guardar registre a la BD
         $this->save();
-        
     }
 
     private function getDirectory($clase)
     {
-        return '/gestor/' . curso() . '/' . $clase;
+        return 'gestor/' . curso() . '/' . $clase;
     }
 
     private function getFileName($extension, $clase)
     {
-        $nombre = isset($this->id)?$this->id.'_':'';
-        if (isset($this->fileField)) {
-            $field = $this->fileField;
-            $nombre .= $this->$field.'_';
+        $nombre = $this->id ? $this->id . '_' : '';
+
+        if (!empty($this->fileField) && isset($this->{$this->fileField})) {
+            $nombre .= $this->{$this->fileField} . '_';
         }
+
         return $nombre . $clase . '.' . $extension;
     }
-
-    /**
-     * @param $key
-     * @param $value
-     * @return mixed|string|null
-     */
-    private function fillField($key, $value)
-    {
-        $type = $this->inputTypes[$key]['type']??null;
-        if ($type == 'date') {
-            return (new Date($value))->format('Y-m-d');
-        }
-        if ($type == 'datetime') {
-            return (new Date($value))->format('Y-m-d H:i');
-        }
-        if ($type == 'select') {
-            return $value == ''?null:$value;
-        }
-        if ($type == 'file') {
-            return $value = $this->$key;
-        }
-        if ($type == 'checkbox') {
-            return $value == null?0:1;
-        }
-        return $value;
-    }
-
-    /**
-     * @param Request $request
-     * @return mixed
-     */
-    public function fillAll(Request $request)
-    {
-        $fillable = $this->notFillable?array_diff($this->fillable, $this->notFillable):$this->fillable;
-        foreach ($fillable as $key) {
-            $value = $request->$key;
-            $this->$key = $this->fillField($key, $value);
-        }
-
-        $this->save();
-        
-        if ($request->hasFile('fichero')) {
-            $this->fillFile($request->file('fichero'));
-        }
-        
-        $primaryKey =  $this->primaryKey ?? 'id';
-        return $this->$primaryKey;
-    }
-
-
-
 
 
     /**
@@ -229,10 +223,7 @@ trait BatoiModels
      */
     public function has($field)
     {
-        if (isset($this->$field) || is_null($this->$field)) {
-            return true;
-        }
-        return false;
+        return isset($this->$field) || is_null($this->$field);
     }
 
     /**
@@ -240,10 +231,7 @@ trait BatoiModels
      */
     public function getLinkAttribute()
     {
-        if (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero))) {
-            return true;
-        }
-        return false;
+        return isset($this->fichero) && file_exists(storage_path('app/'.$this->fichero));
     }
 
     public function saveContact($contacto, $email)

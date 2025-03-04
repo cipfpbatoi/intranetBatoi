@@ -31,7 +31,7 @@ use Styde\Html\Facades\Alert;
 class ActividadController extends ModalController
 {
 
-    use Autorizacion,  SCRUD;
+    use Autorizacion, SCRUD;
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';
@@ -107,31 +107,39 @@ class ActividadController extends ModalController
     public function printValue($id){
         $elemento = $this->class::findOrFail($id);
         $informe = 'pdf.valoracionActividad';
-        $pdf = PDF::hazPdf($informe, $elemento, null);
-        return $pdf->stream();
+        return PDF::hazPdf($informe, $elemento, null)->stream();
     }
 
     private function showDetalle($id){
         return redirect()->route('actividad.detalle', ['actividad' => $id]);
     }
+
     public function detalle($id)
     {
-        $tGrupos = Grupo::pluck('nombre', 'codigo')->toArray();
-        $Actividad = Actividad::find($id);
-        $Profesores = Profesor::select('apellido1', 'apellido2', 'nombre', 'dni')
-                ->Activo()
-                ->OrderBy('apellido1')
-                ->OrderBy('apellido2')
-                ->get();
-        foreach ($Profesores as $profesor) {
-            $tProfesores[$profesor->dni] = $profesor->apellido1 . ' ' . $profesor->apellido2 . ',' . $profesor->nombre;
-        }
-        $sProfesores = $Actividad->profesores()
+        $Actividad = Actividad::with(['profesores' => function ($query) {
+            $query->select('dni', 'apellido1', 'apellido2', 'nombre', 'coordinador')
                 ->orderBy('apellido1')
-                ->get(['dni', 'apellido1', 'apellido2', 'nombre', 'coordinador']);
-        $sGrupos = $Actividad->grupos()->get(['codigo', 'nombre']);
+                ->orderBy('apellido2');
+        }, 'grupos:codigo,nombre'])->findOrFail($id);
+
+        // Obtenir tots els professors actius i estructurar-los en un array associatiu
+        $tProfesores = Profesor::Activo()
+            ->orderBy('apellido1')
+            ->orderBy('apellido2')
+            ->get()
+            ->mapWithKeys(fn($p) => [$p->dni => "$p->apellido1 $p->apellido2, $p->nombre"])
+            ->toArray();
+
+        // Llista de tots els grups disponibles
+        $tGrupos = Grupo::pluck('nombre', 'codigo')->toArray();
+
+        // Assignem professors i grups associats a l'activitat
+        $sProfesores = $Actividad->profesores;
+        $sGrupos = $Actividad->grupos;
+
         return view('extraescolares.edit', compact('Actividad', 'tProfesores', 'tGrupos', 'sGrupos', 'sProfesores'));
     }
+
 
     public function altaGrupo(Request $request, $actividad_id)
     {
@@ -140,10 +148,17 @@ class ActividadController extends ModalController
         return $this->showDetalle($actividad_id);
     }
 
+    private function desassignar($actividad_id, $relation, $id)
+    {
+        $actividad = Actividad::findOrFail($actividad_id);
+        $actividad->$relation()->detach($id);
+
+
+    }
+
     public function borrarGrupo($actividad_id, $grupo_id)
     {
-        $actividad = Actividad::find($actividad_id);
-        $actividad->grupos()->detach($grupo_id);
+        $this->desassignar($actividad_id, 'grupos', $grupo_id);
         return $this->showDetalle($actividad_id);
     }
 
@@ -161,14 +176,11 @@ class ActividadController extends ModalController
             Alert::info('No es pot donar de baixa el últim profesor');
             return back();
         }
-        $actividad->profesores()->detach($profesor_id);
-        if (!ActividadProfesor::where('idActividad', '=', $actividad_id)
-                        ->where('coordinador', '=', '1')
-                        ->count()) {
-            $nuevo_coord = ActividadProfesor::where('idActividad', '=', $actividad_id)
-                    ->where('coordinador', '=', '0')
-                    ->first();
-            $actividad->profesores()->updateExistingPivot($nuevo_coord->idProfesor, ['coordinador' => 1]);
+        $this->desassignar($actividad_id, 'profesores', $profesor_id);
+
+        $nuevo_coord = $actividad->profesores()->wherePivot('coordinador', 0)->first();
+        if ($nuevo_coord) {
+            $actividad->profesores()->updateExistingPivot($nuevo_coord->dni, ['coordinador' => 1]);
         }
         return $this->showDetalle($actividad_id);
     }
@@ -188,42 +200,41 @@ class ActividadController extends ModalController
 
     public function notify($id)
     {
-        $elemento = Actividad::findOrFail($id);
-        $coordinador = Profesor::find($elemento->Creador());
-        foreach ($elemento->grupos as $grupo){
-            $mensaje = $this->hazMensajeGrupo($elemento,$grupo);
-            foreach (Profesor::Grupo($grupo->codigo)->get() as $profesor){
-                Mensaje::send($profesor->dni, $mensaje, '#', $coordinador->shortName);
-            }
-        }
+        $actividad = Actividad::findOrFail($id);
+        $coordinador = Profesor::find($actividad->Creador());
 
-        $mensaje = $this->hazMensaje($elemento);
-        foreach ($elemento->profesores as $profesor) {
-            AdviseTeacher::exec($elemento,  $mensaje, $profesor->dni,$profesor->shortName);
-        }
+        $this->notificarGrupos($actividad, $coordinador);
+        $this->notificarProfessors($actividad);
+
         return back();
     }
 
-    protected function hazMensajeGrupo($elemento,$grupo){
-        $mensaje = "El grup {$grupo->nombre} se'n van a l'activitat extraescolar:  {$elemento->name}.";
-        return $mensaje . 'Estarà fora des de ' . $elemento->desde . " fins " . $elemento->hasta;
+    private function notificarGrupos($actividad, $coordinador)
+    {
+        foreach ($actividad->grupos as $grupo) {
+            $mensaje = "El grup {$grupo->nombre} se’n va a l’activitat {$actividad->name}.";
+            foreach (Profesor::Grupo($grupo->codigo)->get() as $profesor) {
+                Mensaje::send($profesor->dni, $mensaje, '#', $coordinador->shortName);
+            }
+        }
     }
 
-    protected function hazMensaje($elemento){
-        
-        $mensaje = "Els grups: -";
-        foreach ($elemento->grupos as $grupo) {
-            $mensaje .= $grupo->nombre . "- ";
+    private function notificarProfessors($actividad)
+    {
+        $mensaje = "Els grups: " . $actividad->grupos->implode('nombre', ', ') .
+            " van a l’activitat {$actividad->name} i jo me’n vaig amb ells. " .
+            "Estarem fora des de {$actividad->desde} fins {$actividad->hasta}.";
+
+        foreach ($actividad->profesores as $profesor) {
+            AdviseTeacher::exec($actividad, $mensaje, $profesor->dni, $profesor->shortName);
         }
-        $mensaje .= "se'n van a l'activitat extraescolar: " . $elemento->name . " i jo me'n vaig amb ells. ";
-        return $mensaje . 'Estarem fora des de ' . $elemento->desde . " fins " . $elemento->hasta;
     }
-    
+
     public function autorizacion($id)
     {
         $grups = [];
         $actividad = Actividad::findOrFail($id);
-        $grups = hazArray(ActividadGrupo::select('idGrupo')->where('idActividad', '=', $id)->get(),'idGrupo');
+        $grups = ActividadGrupo::where('idActividad', $id)->pluck('idGrupo')->toArray();
         $todos = Alumno::join('alumnos_grupos', 'idAlumno', '=', 'nia')
                 ->select('alumnos.*', 'idGrupo')
                 ->QGrupo($grups)
