@@ -51,6 +51,7 @@ return [
             'subject' => "Finalització de pràctiques",
             'toPeople' => 'Instructor',
             'editable' => true,
+            'register' => "Seguiment Pràctiques de FCT",
         ],
         'modelo' => 'Fct',
         'template' =>'email.fct.finish',
