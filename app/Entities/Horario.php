@@ -107,44 +107,42 @@ class Horario extends Model
      * @return array[][]
      */
 
-
-
+    // 🔹 Funció optimitzada: Obtindre l'horari setmanal d'un professor
     public static function HorarioSemanal($profesor)
     {
-        $horario = static::Profesor($profesor)
-            ->with('Modulo')
-            ->with('Ocupacion')
-            ->with('Grupo')
+        return self::Profesor($profesor)
+            ->with(['Modulo', 'Ocupacion', 'Grupo'])
+            ->get()
+            ->groupBy(fn($hora) => [$hora->dia_semana, $hora->sesion_orden])
+            ->map(fn($horas) => $horas->first()) // Només el primer de cada grup
+            ->toArray();
+    }
+
+    // 🔹 Funció optimitzada: Obtindre l'horari d'un grup
+    public static function HorarioGrupo($grupo)
+    {
+        // Obtenim totes les hores
+        $horas = Hora::all()->pluck('codigo');
+
+        // Agafem totes les entrades d'horari en una sola consulta
+        $horario = self::Grup($grupo)
+            ->whereIn('sesion_orden', $horas)
+            ->whereNull('ocupacion')
+            ->whereNotIn('modulo', ['TU01CF', 'TU02CF'])
             ->get();
+
+        // Reestructurem l'array per [dia_semana][sesion_orden]
         $semana = [];
+
         foreach ($horario as $hora) {
             $semana[$hora->dia_semana][$hora->sesion_orden] = $hora;
         }
+
         return $semana;
     }
 
-    public static function HorarioGrupo($grupo)
-    {
-        $horas = Hora::all();
-        $diasSemana = array('L', 'M', 'X', 'J', 'V');
-        $semana = [];
-        foreach ($diasSemana as $dia) {
-            foreach ($horas as $hora) {
-                $queHace = static::Grup($grupo)
-                        ->Dia($dia)
-                        ->where('sesion_orden', '=', $hora->codigo)
-                        ->where('ocupacion', '=', null)
-                        ->where('modulo', '!=', 'TU01CF')
-                        ->where('modulo', '!=', 'TU02CF')
-                        ->first();
-                if ($queHace) {
-                    $semana[$dia][$hora->codigo] = $queHace;
-                }
-            }
-        }
-        return $semana;
-    }
-    
+ 
+
     protected function getProfesorAttribute()
     {
         return $this->Mestre->ShortName;
