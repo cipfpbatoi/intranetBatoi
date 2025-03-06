@@ -7,9 +7,10 @@ window.onload=function() {
 	esDireccion=($('#rol').text()%2 == 0);
 	if (esDireccion){
 		$('#guardar').text('Aprobar horario');
-		//profe=location.pathname.split('/')[2];
+		profe=location.pathname.split('/')[2];
 	}
-    profe= document.getElementById('dni').textContent;
+	else profe= document.getElementById('dni').textContent;
+
 
 	cargaCambios();
 	$('#init').on('click', function(ev) {
@@ -33,7 +34,7 @@ window.onload=function() {
 	});
 
 	$('#guardar').on('click', function(ev) {
-		var cambios=anotaCambios(); 
+		var cambios=anotaCambios();
 		var datos={
 			estado: (esDireccion)?'Aceptado':'Pendiente',
 			cambios: cambios,
@@ -46,7 +47,7 @@ window.onload=function() {
 		    dataType: "json"
 		}).then(function(res) {
 			if (esDireccion) {
-				alert(res.data+'. Horario aprobado');				
+				alert(res.data+'. Horario aprobado');
 				location.reload();
 			} else {
 				alert(res.data+'. Tu nuevo horario te aparecerá cuando esté aprobado');
@@ -205,8 +206,8 @@ function activaDragAndDrop() {
    	    ev.originalEvent.dataTransfer.setData('text', this.id);
 	});
 	// POnemos eventos drop a las celdas vacías
-	$('table').find('tbody').find('td').on('dragover', function(ev) { 
-		ev.preventDefault() 
+	$('table').find('tbody').find('td').on('dragover', function(ev) {
+		ev.preventDefault()
 	})
-	$('table').find('td:empty').on('drop', dropHora);	
+	$('table').find('td:empty').on('drop', dropHora);
 }
