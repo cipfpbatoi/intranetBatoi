@@ -15,7 +15,8 @@
                                 <strong>{{ $horario[$dia_semana][$hora->codigo]->Modulo->cliteral??'Modul desconegut' }}</strong><br/>
                                 {{ $horario[$dia_semana][$hora->codigo]->Grupo->nombre }}(
                                 {{ $horario[$dia_semana][$hora->codigo]->aula }})
-                            </div></td>
+                            </div>
+                        </td>
 
                     @endif
                 @else
