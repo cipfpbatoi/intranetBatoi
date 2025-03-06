@@ -14,7 +14,6 @@ use LSNepomuceno\LaravelA1PdfSign\Sign\SignaturePdf;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ValidatePdfSignature;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
-use setasign\Fpdi\Fpdi;
 
 class DigitalSignatureService
 {

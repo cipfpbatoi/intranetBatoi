@@ -24,9 +24,9 @@ class RedirectAfterAuthenticationController extends Controller
             $driver = SeleniumService::loginSAO(AuthUser()->dni, $request->password, $caps??null);
             if ($request->hasFile('file')) {
                 return $class::index($driver, $request->toArray(),$request->file('file'));
-            } else {
-                return $class::index($driver, $request->toArray());
             }
+
+            return $class::index($driver, $request->toArray());
 
         } catch (\Throwable $exception) {
             Alert::info($exception->getMessage());
