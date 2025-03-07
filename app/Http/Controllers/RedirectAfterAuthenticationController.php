@@ -9,24 +9,36 @@ use Styde\Html\Facades\Alert;
 
 class RedirectAfterAuthenticationController extends Controller
 {
-    /**
-     * Provision a new web server.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
+
+
     public function __invoke(PasswordRequest $request)
     {
-        $class = 'Intranet\Sao\\'. ucfirst($request->accion);
-        if (method_exists($class, 'setFireFoxCapabilities')) {
-            $caps = $class::setFireFoxCapabilities();
+        $className = 'Intranet\Sao\\' . ucfirst($request->accion);
+
+        if (!class_exists($className)) {
+            throw new \Exception("La classe $className no existeix.");
         }
+
+        $caps = method_exists($className, 'setFireFoxCapabilities') ? $className::setFireFoxCapabilities() : null;
+
         try {
-            $driver = SeleniumService::loginSAO(AuthUser()->dni, $request->password, $caps??null);
-            if ($request->hasFile('file')) {
-                return $class::index($driver, $request->toArray(),$request->file('file'));
+            $driver = SeleniumService::loginSAO(authUser()->dni, $request->password, $caps);
+
+            $reflection = new \ReflectionMethod($className, 'index');
+            // Si la classe té un mètode estàtic `handle`, el cridem directament
+            if ($reflection->isStatic()) {
+                if ($request->hasFile('file')) {
+                    return $className::index($driver, $request->toArray(), $request->file('file'));
+                }
+                return $className::index($driver, $request->toArray());
             }
 
-            return $class::index($driver, $request->toArray());
+            // Si no té `handle` estàtic, la instanciem i cridem el mètode corresponent
+            $classInstance = app($className);
+            if ($request->hasFile('file')) {
+                return $classInstance->index($driver, $request->toArray(), $request->file('file'));
+            }
+            return $classInstance->index($driver, $request->toArray());
 
         } catch (\Throwable $exception) {
             Alert::info($exception->getMessage());
