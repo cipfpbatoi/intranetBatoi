@@ -172,12 +172,12 @@ class AlumnoFct extends Model
 
     public function scopeHaEmpezado($query)
     {
-        return $query->where('desde', '<', Hoy('Y-m-d'));
+        return $query->where('desde', '<=', Hoy('Y-m-d'));
     }
 
     public function scopeNoHaAcabado($query)
     {
-        return $query->where('hasta', '>', Hoy('Y-m-d'));
+        return $query->where('hasta', '>=', Hoy('Y-m-d'));
     }
 
     // ===========================

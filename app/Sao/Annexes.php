@@ -2,6 +2,7 @@
 namespace Intranet\Sao;
 
 use Exception;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFctAval;
@@ -11,11 +12,11 @@ use Intranet\Entities\Signatura;
 
 class Annexes
 {
-    private $driver;
+    private RemoteWebDriver $driver;
 
     private $queryCallback = null;
 
-    public function __construct($driver)
+    public function __construct(RemoteWebDriver $driver)
     {
         $this->driver = $driver;
     }

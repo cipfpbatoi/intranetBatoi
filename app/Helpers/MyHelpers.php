@@ -717,16 +717,7 @@ function in_substr($item, $long)
     }
 }
 
-function arrayAlert(array $avisos, $title='Fcts Sincronitzades', $action='success')
-{
-    if (count($avisos)) {
-        $tots = '';
-        foreach ($avisos as $avis) {
-            $tots .= $avis.', ';
-        }
-        \Styde\Html\Facades\Alert::$action($title.$tots);
-    }
-}
+
 
 function array_depth($array) {
     if (!is_array($array)) {
