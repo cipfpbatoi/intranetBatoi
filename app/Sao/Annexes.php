@@ -3,7 +3,6 @@ namespace Intranet\Sao;
 
 use Exception;
 use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverExpectedCondition;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Services\AlertLogger;
@@ -32,7 +31,7 @@ class Annexes
         try {
             $this->processFcts();
         } catch (Exception $e) {
-            AlertLogger::danger($e->getMessage());
+            AlertLogger::error($e->getMessage());
         } finally {
             $this->driver->quit();
         }
@@ -46,7 +45,7 @@ class Annexes
                 try {
                     $this->downloadAnnex($fct);
                 } catch (Exception $e) {
-                    AlertLogger::danger("Error en descarregar annexes de {$fct->Alumno->fullName}: " .$e->getMessage());
+                    AlertLogger::error("Error en descarregar annexes de {$fct->Alumno->fullName}: " .$e->getMessage());
                 }
             }
         }
@@ -113,7 +112,7 @@ class Annexes
         $this->deleteSignatures($fct);
         $this->closePopup( );
 
-        AlertLogger::success("Annex descarregat correctament per a {$fct->Alumno->fullName}");
+        AlertLogger::info("Annex descarregat correctament per a {$fct->Alumno->fullName}");
     }
 
 
