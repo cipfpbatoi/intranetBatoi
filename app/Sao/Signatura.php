@@ -61,17 +61,17 @@ class Signatura
         if (!SignaturaService::exists(AuthUser()->dni)) {
             Alert::danger('No tens cap signatura associada. Ves al perfil i afegeix-la');
             return redirect(route('alumnofct.index'));
-        } else {
-            $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
-            try {
-                $this->signa($driver);
-                $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
-                sleep(1);
-                $this->signa($driver);
-                $driver->quit();
-            } catch (Exception $e) {
-                $driver->quit();
-            }
+        }
+
+        $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
+        try {
+            $this->signa($driver);
+            $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
+            sleep(1);
+            $this->signa($driver);
+            $driver->quit();
+        } catch (Exception $e) {
+            $driver->quit();
         }
         return redirect(route('alumnofct.index'));
     }

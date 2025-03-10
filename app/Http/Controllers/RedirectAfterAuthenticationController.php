@@ -24,14 +24,20 @@ class RedirectAfterAuthenticationController extends Controller
             ? $className::setFireFoxCapabilities()
             : null;
 
+        $driver = null;
+
         try {
             $driver = SeleniumService::loginSAO(authUser()->dni, $request->password, $caps);
             return $this->executeAction($className, $driver, $request);
         } catch (Throwable $exception) {
             Alert::info($exception->getMessage());
-            $driver?->close();
-            return back();
+        } finally {
+            if ($driver) {
+                $driver->close();
+            }
         }
+        return back();
+
     }
 
     private function resolveClassName(string $action): string
@@ -50,6 +56,6 @@ class RedirectAfterAuthenticationController extends Controller
 
         return $reflection->isStatic()
             ? $className::index(...$parameters)
-            : app($className)->index(...$parameters);
+            : (new $className($driver))->index(...$parameters);
     }
 }

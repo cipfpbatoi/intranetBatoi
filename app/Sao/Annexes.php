@@ -1,96 +1,148 @@
 <?php
-
 namespace Intranet\Sao;
 
 use Exception;
 use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverExpectedCondition;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFctAval;
+use Intranet\Services\AlertLogger;
 use Intranet\Services\AttachedFileService;
-use Styde\Html\Facades\Alert;
 use Intranet\Entities\Signatura;
 
-
-/**
- * Class AdministracionController
- * @package Intranet\Http\Controllers
- */
 class Annexes
 {
+    private $driver;
 
+    private $queryCallback = null;
 
-    public static function index($driver)
+    public function __construct($driver)
+    {
+        $this->driver = $driver;
+    }
+
+    public function execute(callable $queryCallback = null)
+    {
+        $this->queryCallback = $queryCallback;
+        return $this->index();
+    }
+
+    public function index()
     {
         try {
-            $alumnes = [];
-            foreach (AlumnoFctAval::realFcts()
-                         ->where('beca', 0)
-                         ->whereNotNull('idSao')
-                         ->activa()
-                         ->get() as $fct) {
-                $find = Adjunto::where('size', 1024)->where('route', 'alumnofctaval/'.$fct->id)->count();
-                if ($fct->idSao) {
-                    if (!$find) {
-                        $driver->navigate()->to(
-                            "https://foremp.edu.gva.es/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2"
-                        );
-                        sleep(1);
-                        try {
-                            $name = trim(
-                                $driver->findElement(
-                                    WebDriverBy::cssSelector(
-                                        "table.tablaListadoFCTs tbody tr:nth-child(2) td:nth-child(1)"
-                                    )
-                                )->getText()
-                            );
-                            $onclick = $driver->findElement(
-                                WebDriverBy::cssSelector(".botonSelec[value='Descargar']")
-                            )->getAttribute('onclick');
-                            $cut1 = explode("'", $onclick);
-                            AttachedFileService::saveLink(
-                                $name,
-                                "https://foremp.edu.gva.es/".$cut1[1],
-                                'SAO:Annexe II i III',
-                                'zip',
-                                "alumnofctaval/$fct->id"
-                            );
-                            // esborrar fitxers de signatura
-                            foreach (Signatura::where('idSao', $fct->idSao)->get() as $signatura) {
-                                $signatura->deleteFile();
-                                $signatura->delete();
-                            }
-                            $alumnes[] = $fct->Alumno->shortName;
-                        } catch (Exception $e) {
-                            Alert::info("Annexes de ".$fct->Alumno->fullName." no trobats");
-                        }
-                        try {
-                            $driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Cerrar']"))->click();
-                            sleep(1);
-                        } catch (Exception $e) {
-                            Alert::info("Fct de ".$fct->Alumno->fullName." no trobada. Esborra-la de la intranet");
-                        }
-                    } else {
-                        Alert::info("Annexes de ".$fct->Alumno->fullName." ja descarregats");
-                    }
-                }
-            }
-            arrayAlert($alumnes, 'Annexes Baixats: ');
+            $this->processFcts();
         } catch (Exception $e) {
-            Alert::danger($e);
+            AlertLogger::danger($e->getMessage());
+        } finally {
+            $this->driver->quit();
         }
-        $driver->quit();
         return back();
     }
 
-    protected static function alertSuccess(array $alumnes, $message='Sincronitzades Fcts: ')
+    private function processFcts()
     {
-        if (count($alumnes)) {
-            $tots = '';
-            foreach ($alumnes as $alumne) {
-                $tots .= $alumne.', ';
+         foreach ($this->getValidFcts() as $fct) {
+            if (!$this->isAnnexDownloaded($fct)) {
+                try {
+                    $this->downloadAnnex($fct);
+                } catch (Exception $e) {
+                    AlertLogger::danger("Error en descarregar annexes de {$fct->Alumno->fullName}: " .$e->getMessage());
+                }
             }
-            Alert::info($message.$tots);
         }
+    }
+
+    private function getValidFcts()
+    {
+        if ($this->queryCallback) {
+            return call_user_func($this->queryCallback)->get();
+        }
+
+        return AlumnoFctAval::realFcts()
+            ->where('beca', 0)
+            ->whereNotNull('idSao')
+            ->activa()
+            ->get();
+
+    }
+
+    private function isAnnexDownloaded($fct): bool
+    {
+        return Adjunto::where('size', 1024)
+            ->where('route', "alumnofctaval/{$fct->id}")
+            ->exists();
+    }
+
+
+    private function downloadAnnex($fct)
+    {
+
+        AlertLogger::info("Intentant descarregar annexes per a {$fct->Alumno->fullName}");
+
+        // Navegar a la pàgina
+        $url = "https://foremp.edu.gva.es/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2";
+        $this->driver->navigate()->to($url);
+        sleep(2);
+
+        // Comprovar si el botó de descàrrega existeix
+        $downloadButtons = $this->driver->findElements(WebDriverBy::cssSelector(".botonSelec[value='Descargar']"));
+        if (count($downloadButtons) === 0) {
+            throw new Exception("No s'ha trobat el botó de descàrrega per a {$fct->Alumno->fullName} a la URL: $url");
+        }
+
+        // Obtenir el nom del fitxer
+        $name = trim(
+            $this->driver->findElement(
+                WebDriverBy::cssSelector("table.tablaListadoFCTs tbody tr:nth-child(2) td:nth-child(1)")
+            )->getText()
+        );
+
+        // Obtenir l'enllaç de descàrrega
+        $onclick = $downloadButtons[0]->getAttribute('onclick');
+        if (!$onclick) {
+            throw new Exception("No s'ha pogut obtenir l'atribut 'onclick' per a {$fct->Alumno->fullName}");
+        }
+
+        $cut = explode("'", $onclick);
+        if (!isset($cut[1])) {
+            throw new Exception("No s'ha pogut extraure l'enllaç de descàrrega per a {$fct->Alumno->fullName}");
+        }
+
+        $downloadLink = "https://foremp.edu.gva.es/" . $cut[1];
+        $this->saveAnnex($name, $downloadLink, $fct);
+        $this->deleteSignatures($fct);
+        $this->closePopup( );
+
+        AlertLogger::success("Annex descarregat correctament per a {$fct->Alumno->fullName}");
+    }
+
+
+    private function saveAnnex($name, $downloadLink, $fct)
+    {
+        $dniTutor = $fct->Alumno->tutor[0]['dni']  ?? null;
+
+        AttachedFileService::saveLink(
+            $name,
+            $downloadLink,
+            'SAO:Annexe II i III',
+            'zip',
+            "alumnofctaval/{$fct->id}",
+            $dniTutor
+        );
+    }
+
+    private function deleteSignatures($fct)
+    {
+        foreach (Signatura::where('idSao', $fct->idSao)->get() as $signatura) {
+            $signatura->deleteFile();
+            $signatura->delete();
+        }
+    }
+
+    private function closePopup( )
+    {
+        $this->driver->findElement(WebDriverBy::cssSelector(".botonSelec[value='Cerrar']"))->click();
+        sleep(1);
     }
 
 }

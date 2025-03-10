@@ -83,11 +83,11 @@ class Sync
         } while (!$find && $i-- >0);
         if ($find) {
             return array($hores, $dia);
-        } else {
-            $driver->findElement(WebDriverBy::cssSelector("p.celdaInfoAlumno a:nth-child(1)"))->click();
-            sleep(1);
-            return self::consultaDiario($driver, $driver->findElement(WebDriverBy::cssSelector("#contenido")));
         }
+
+        $driver->findElement(WebDriverBy::cssSelector("p.celdaInfoAlumno a:nth-child(1)"))->click();
+        sleep(1);
+        return self::consultaDiario($driver, $driver->findElement(WebDriverBy::cssSelector("#contenido")));
     }
 
 
