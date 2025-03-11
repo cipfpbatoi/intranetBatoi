@@ -146,10 +146,13 @@ class Comision extends Model
     }
     public function getTotalAttribute()
     {
-        return $this->comida
-            + $this->gastos
-            + $this->alojamiento
-            + ($this->kilometraje * config('auxiliares.precioKilometro')[$this->medio]);
+        $precioKilometro = config('auxiliares.precioKilometro');
+
+        $kilometraje = isset($this->medio, $precioKilometro[$this->medio])
+            ? $this->kilometraje * $precioKilometro[$this->medio]
+            : 0;
+
+        return $this->comida + $this->gastos + $this->alojamiento + $kilometraje;
     }
 
     public function getDescripcionAttribute()
@@ -163,7 +166,7 @@ class Comision extends Model
 
     public function getTipoVehiculoAttribute()
     {
-        return config('auxiliares.tipoVehiculo')[$this->medio];
+        return config('auxiliares.tipoVehiculo')[$this->medio] ?? 'Desconocido';
     }
 
     public function showConfirm()
