@@ -38,5 +38,10 @@ trait SCRUD
      * Pot ser sobreescrita en el controlador.
      */
 
+     protected function chooseView($view)
+    {
+        return  'intranet.' . $view;
+    }
+
 }
 
