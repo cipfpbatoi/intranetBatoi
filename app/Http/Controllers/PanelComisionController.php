@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonPost;
+use Intranet\Http\Traits\Panel;
 
 
 /**
@@ -13,7 +13,7 @@ use Intranet\Botones\BotonPost;
  */
 class PanelComisionController extends BaseController
 {
-    use traitPanel;
+    use Panel;
 
     /**
      * @var array

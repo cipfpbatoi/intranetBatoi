@@ -4,11 +4,11 @@ namespace Intranet\Http\Controllers;
 
 
 use DB;
-use Intranet\Entities\Fct;
-use Intranet\Botones\BotonIcon;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonBasico;
-
+use Intranet\Botones\BotonIcon;
+use Intranet\Entities\Fct;
+use Intranet\Http\Traits\Panel;
 
 
 /**
@@ -19,7 +19,6 @@ class PanelFctController extends IntranetController
 {
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
-    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
 
 
     /**
@@ -51,7 +50,7 @@ class PanelFctController extends IntranetController
      */
     protected $modal = false;
 
-    use traitPanel;
+    use Panel;
 
 
     /**
@@ -60,7 +59,7 @@ class PanelFctController extends IntranetController
     public function index()
     {
         $todos = $this->search();
-        $this->crea_pestanas(
+        $this->setTabs(
             [ 0 => 'Actius', 1 => 'Finalizats'],
             "profile.fct",
             0,
@@ -82,7 +81,7 @@ class PanelFctController extends IntranetController
             new BotonIcon(
                 'fct.telefonico',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-primary informe telefonico',
                     'text' => '',
                     'title' => 'Contacte telefònic',

@@ -8,6 +8,7 @@ use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Http\Requests\ResultadoStoreRequest;
 use Intranet\Http\Requests\ResultadoUpdateRequest;
+use Intranet\Http\Traits\Imprimir;
 use Styde\Html\Facades\Alert;
 
 
@@ -18,7 +19,7 @@ use Styde\Html\Facades\Alert;
 class ResultadoController extends ModalController
 {
 
-    use traitImprimir;
+    use Imprimir;
 
     /**
      * @var string

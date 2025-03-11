@@ -3,17 +3,15 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Botones\BotonImg;
 use Intranet\Entities\Activity;
-use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Fct;
-use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Ciclo;
+use Intranet\Entities\Colaboracion;
+use Intranet\Http\Requests\ColaboracionRequest;
+use Intranet\Http\Traits\Autorizacion;
 use Jenssegers\Date\Date;
 use mikehaertl\pdftk\Pdf;
 use Response;
-use Intranet\Botones\BotonImg;
-use Illuminate\Support\Facades\Session;
-use Intranet\Http\Requests\ColaboracionRequest;
 
 /**
  * Class ColaboracionController
@@ -21,7 +19,7 @@ use Intranet\Http\Requests\ColaboracionRequest;
  */
 class ColaboracionController extends ModalController
 {
-    use traitAutorizar;
+    use Autorizacion;
     /**
      * @var string
      */
@@ -90,7 +88,7 @@ class ColaboracionController extends ModalController
                 'colaboracion.show',
                 [
                     'img'=>'fa-eye-slash',
-                    'roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]
+                    'roles' => [config('roles.rol.tutor') ]
                 ]
         ));
         $this->panel->setBoton(
@@ -98,7 +96,7 @@ class ColaboracionController extends ModalController
             new BotonImg(
                 'colaboracion.edit',
                 [
-                    'roles' => [config('roles.rol.practicas')]
+                    'roles' => [config('roles.rol.tutor')]
                 ]
             )
         );

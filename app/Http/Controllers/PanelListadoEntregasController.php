@@ -2,31 +2,31 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonImg;
+use Intranet\Entities\Actividad;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Horario;
-use Intranet\Entities\Profesor;
-use Intranet\Services\GestorService;
-use Styde\Html\Facades\Alert;
-use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Modulo_ciclo;
+use Intranet\Entities\Modulo_grupo;
+use Intranet\Entities\OrdenReunion;
+use Intranet\Entities\Poll\Vote;
+use Intranet\Entities\Profesor;
+use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
-use Illuminate\Http\Request;
-use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\TipoReunion;
-use Intranet\Entities\Actividad;
-use Intranet\Entities\Documento;
-use Intranet\Entities\Programacion;
-use Illuminate\Support\Facades\DB;
+use Intranet\Http\Traits\Imprimir;
+use Intranet\Services\GestorService;
 use Jenssegers\Date\Date;
-use Intranet\Entities\Poll\Vote;
+use Styde\Html\Facades\Alert;
 
 
 class PanelListadoEntregasController extends BaseController
 {
-    use traitImprimir;
+    use Imprimir;
 
     const ROLES_ROL_JEFE_DPTO = 'roles.rol.jefe_dpto';
     protected $model = 'Modulo_grupo';

@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Inventario;
 use Intranet\Entities\Material;
+use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\FormBuilder;
-use Jenssegers\Date\Date;
 
 /**
  * Class MaterialController
@@ -15,7 +15,7 @@ use Jenssegers\Date\Date;
  */
 class InventarioController extends IntranetController
 {
-    use traitImprimir;
+    use Imprimir;
     /**
      * @var string
      */

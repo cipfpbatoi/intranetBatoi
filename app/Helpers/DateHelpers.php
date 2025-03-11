@@ -36,7 +36,7 @@ function fechaInglesaCurta($fecha, $separator='-')
 
 function fechaInglesa($fecha)
 {
-    $hoy = new Date($fecha);
+    $hoy = new  Date($fecha);
     return $hoy->format('Y-m-d');
 }
 

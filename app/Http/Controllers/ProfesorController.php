@@ -3,23 +3,24 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Intranet\Entities\Grupo;
-use Intranet\Http\Controllers\Auth\PerfilController;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Alumno;
 use Illuminate\Support\Facades\Auth;
-use Intranet\Mail\Comunicado;
-use Jenssegers\Date\Date;
-use Intranet\Entities\Departamento;
-use Intranet\Entities\Horario;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Intranet\Botones\BotonBasico;
+use Intranet\Botones\BotonIcon;
+use Intranet\Botones\BotonImg;
+use Intranet\Entities\Alumno;
+use Intranet\Entities\Departamento;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Horario;
+use Intranet\Entities\Profesor;
+use Intranet\Http\Controllers\Auth\PerfilController;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Imprimir;
+use Intranet\Mail\Comunicado;
+use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
-use Intranet\Jobs\SendEmail;
 
 
 class ProfesorController extends PerfilController
@@ -33,8 +34,8 @@ class ProfesorController extends PerfilController
      * gridfields -> los campos que se muestran en el listado de la vista index
      */
 
-use traitAutorizar,
-    traitImprimir;
+use Autorizacion,
+    Imprimir;
 
     const PROFILE_PROFESOR = 'profile.profesor';
     protected $model = 'Profesor';

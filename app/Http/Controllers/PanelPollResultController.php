@@ -17,7 +17,7 @@ class PanelPollResultController extends PollController
 
     protected function search()
     {
-        if (esRol(AuthUser()->rol, config('roles.rol.practicas'))) {
+        if (esRol(AuthUser()->rol, config('roles.rol.tutor'))) {
             $ppolls = hazArray(PPoll::all(),'id','id');
         }
         else {

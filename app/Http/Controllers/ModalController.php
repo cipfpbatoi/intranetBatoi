@@ -7,7 +7,7 @@ use Intranet\Botones\Panel;
 use Intranet\Http\Traits\Searchable;
 use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\FormBuilder;
-use Response;
+
 
 
 abstract class ModalController extends Controller

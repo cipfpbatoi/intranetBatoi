@@ -1,6 +1,8 @@
 <?php
 namespace Intranet\Services;
 
+use Intranet\Entities\Documento;
+use Styde\Html\Facades\Alert;
 use function config, getClass, getClase;
 
 class StateService
@@ -103,4 +105,45 @@ class StateService
     {
         return $this->element ? $this->element->estado : null;
     }
+
+    /**
+     * Modifica l'estat d'un conjunt d'elements
+     *
+     * @param mixed $todos Col·lecció d'elements
+     * @param mixed $accio Pot ser un estat (int) o una funció de StateService
+     */
+    public static function makeAll($todos, $accio)
+    {
+        if (!$todos || $todos->count() === 0) {
+            return;
+        }
+
+        foreach ($todos as $element) {
+            $stateService = new self(get_class($element), $element->id);
+            $result = is_string($accio) ? $stateService->$accio(false) : $stateService->putEstado($accio);
+
+            if ($result === false) {
+                Alert::danger("Error en processar {$element->id}.");
+            }
+        }
+    }
+
+    /**
+     * Enllaça múltiples elements a un document.
+     *
+     * @param mixed $todos Col·lecció d'elements
+     * @param Documento $doc Document a enllaçar
+     */
+    public static function makeLink($todos, $doc)
+    {
+        if (!$todos || !$doc) {
+            return;
+        }
+
+        foreach ($todos as $element) {
+            $element->idDocumento = $doc;
+            $element->save();
+        }
+    }
+
 }

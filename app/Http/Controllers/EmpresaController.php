@@ -41,7 +41,7 @@ class EmpresaController extends IntranetController
     
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config('roles.rol.practicas')]));
+        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config('roles.rol.tutor')]));
      }
 
     public function store(Request $request)

@@ -3,9 +3,10 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonBasico;
-use Intranet\Entities\Falta;
-use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonIcon;
+use Intranet\Botones\BotonImg;
+use Intranet\Entities\Falta;
+use Intranet\Http\Traits\Panel;
 
 /**
  * Class PanelFaltaController
@@ -13,7 +14,7 @@ use Intranet\Botones\BotonIcon;
  */
 class PanelFaltaController extends ModalController
 {
-    use traitPanel;
+    use Panel;
 
     const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
 

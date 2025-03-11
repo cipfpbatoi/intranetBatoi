@@ -2,25 +2,24 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
+use DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonBasico;
+use Intranet\Botones\BotonImg;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Dual;
+use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
-use DB;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Intranet\Exceptions\IntranetException;
-use Intranet\Http\PrintResources\AVIIAResource;
 use Intranet\Http\Requests\DualRequest;
-use Intranet\Services\FDFPrepareService;
-use mikehaertl\pdftk\Pdf;
+use Intranet\Http\Traits\Imprimir;
 use Jenssegers\Date\Date;
-use Intranet\Entities\Fct;
+use mikehaertl\pdftk\Pdf;
 use Styde\Html\Facades\Alert;
 
 
@@ -30,7 +29,7 @@ use Styde\Html\Facades\Alert;
  */
 class DualController extends ModalController
 {
-    use traitImprimir;
+    use Imprimir;
 
     const CONTACTO_NOMBRE = 'contacto.nombre';
     const CONTACTO_CODI = 'contacto.codi';

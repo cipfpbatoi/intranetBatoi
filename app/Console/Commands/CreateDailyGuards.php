@@ -74,27 +74,30 @@ class CreateDailyGuards extends Command
     {
         $idProfesor = $idProfesor ? $idProfesor : $elemento->idProfesor;
         $diaSemana = nameDay(hoy());
+
         if (esMismoDia($elemento->desde, $elemento->hasta)) {
             if (isset($elemento->hora_ini)) {
-                $horas = Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin);
+                $horas = Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin)->toArray();
             } else {
-                $horas = Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta));
+                $horas = Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta))->toArray();
             }
+
             if (count($horas)) {
                 $horario = Horario::distinct()
-                        ->Profesor($idProfesor)
-                        ->Dia($diaSemana)
-                        ->GuardiaAll()
-                        ->whereIn('sesion_orden', $horas)
-                        ->get();
-            }
-        } else {
-            $horario = Horario::distinct()
                     ->Profesor($idProfesor)
                     ->Dia($diaSemana)
                     ->GuardiaAll()
+                    ->whereIn('sesion_orden', $horas)
                     ->get();
+            }
+        } else {
+            $horario = Horario::distinct()
+                ->Profesor($idProfesor)
+                ->Dia($diaSemana)
+                ->GuardiaAll()
+                ->get();
         }
+
         foreach ($horario as $horasAfectadas) {
             $guardia['idProfesor'] = $idProfesor;
             $guardia['dia'] = hoy();
@@ -105,6 +108,7 @@ class CreateDailyGuards extends Command
             $this->saveGuardia($guardia);
         }
     }
+
 
     private function saveGuardia($dades)
     {

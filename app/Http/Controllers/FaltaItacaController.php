@@ -2,19 +2,21 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Hora;
-use Intranet\Entities\Horario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Documento;
+use Intranet\Entities\Falta_itaca;
+use Intranet\Entities\Hora;
+use Intranet\Entities\Horario;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
-use Intranet\Entities\Falta_itaca;
-use Intranet\Entities\Documento;
 
 class FaltaItacaController extends IntranetController
 {
-    use traitAutorizar,traitImprimir;
+    use Autorizacion,Imprimir;
     
     protected $perfil = 'profesor';
     protected $model = 'Falta_itaca';
@@ -41,7 +43,7 @@ class FaltaItacaController extends IntranetController
         $gestor = new GestorService();
 
         $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "Birret listado llistat autorizacion autorizacio"]);
-        self::makeLink($elementos, $doc);
+        StateService::makeLink($elementos, $doc);
         return self::hazPdf("pdf.comunicacioBirret", $elementos)
                         ->save(storage_path('/app/' . $nomComplet))
                         ->download($nomComplet);

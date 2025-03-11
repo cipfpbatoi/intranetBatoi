@@ -2,27 +2,26 @@
 
 namespace Intranet\Http\Controllers;
 
+use DB;
+use Illuminate\Http\Request;
+use Intranet\Botones\BotonImg;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Falta;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Horario;
 use Intranet\Entities\Asistencia;
-use Intranet\Entities\Reunion;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Programacion;
 use Intranet\Entities\Expediente;
+use Intranet\Entities\Falta;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Horario;
+use Intranet\Entities\Profesor;
+use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
-
-use Intranet\Jobs\SendEmail;
+use Intranet\Entities\Reunion;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\AdviseTeacher;
 use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
-use \DB;
-use Intranet\Botones\BotonImg;
-use Illuminate\Http\Request;
-use PDF;
 
 
 /**
@@ -32,7 +31,7 @@ use PDF;
 class FaltaController extends IntranetController
 {
 
-    use traitImprimir, traitAutorizar;
+    use Imprimir, Autorizacion;
 
     /**
      * @var string
@@ -242,7 +241,7 @@ class FaltaController extends IntranetController
 
         $elementos = self::findElements($desde, $hasta);
         self::markPrinted($hasta);
-        self::makeLink($elementos, $doc);
+        StateService::makeLink($elementos, $doc);
 
         return self::hazPdf("pdf.faltas", $elementos)
             ->save(storage_path('/app/' . $nomComplet))

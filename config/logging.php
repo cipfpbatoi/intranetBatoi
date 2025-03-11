@@ -83,6 +83,12 @@ return [
             'level' => 'debug',
             'days' => 30,  // nombre de dies per retenir
         ],
+        'sao' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/sao.log'),
+            'level' => 'debug',
+            'days' => 7,
+        ],
     ],
 
 ];

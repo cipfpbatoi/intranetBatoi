@@ -1,9 +1,9 @@
 <?php
 
 namespace Intranet\Http\Controllers;
-use Intranet\Botones\BotonImg;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
+use Intranet\Http\Traits\Panel;
 
 /**
  * Class PanelExpedienteController
@@ -11,7 +11,7 @@ use Intranet\Entities\TipoExpediente;
  */
 class PanelExpedienteController extends BaseController
 {
-    use traitPanel;
+    use Panel;
 
     /**
      * @var array

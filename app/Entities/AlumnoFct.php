@@ -12,14 +12,16 @@ class AlumnoFct extends Model
 {
 
     use BatoiModels;
-    protected $fillable = ['id', 'desde','hasta','horas','beca','autorizacion','flexible','valoracio'];
-    
+
+    protected $fillable = ['id', 'desde', 'hasta', 'horas', 'beca', 'autorizacion', 'flexible', 'valoracio'];
+
     protected $rules = [
         'id' => 'required',
         'desde' => 'date',
         'hasta' => 'date',
         'horas' => 'required|numeric'
     ];
+
     protected $inputTypes = [
         'id' => ['type' => 'hidden'],
         'desde' => ['type' => 'date'],
@@ -29,30 +31,35 @@ class AlumnoFct extends Model
         'flexible' => ['type' => 'checkbox'],
         'valoracio' => ['type' => 'textarea']
     ];
+
     public $timestamps = false;
+
     protected $dispatchesEvents = [
         'deleted' => FctAlDeleted::class,
     ];
 
+    // 🎨 Constants per a estils de fons (background)
+    private const BG_PURPLE = 'bg-purple';
+    private const BG_ORANGE = 'bg-orange';
+    private const BG_BLUE_SKY = 'bg-blue-sky';
+    private const BG_GREEN = 'bg-green';
 
+    // ===========================
+    // 📌 RELACIONS
+    // ===========================
     public function Alumno()
     {
         return $this->belongsTo(Alumno::class, 'idAlumno', 'nia');
     }
+
     public function Fct()
     {
         return $this->belongsTo(Fct::class, 'idFct', 'id');
     }
+
     public function Dual()
     {
         return $this->belongsTo(Dual::class, 'idFct', 'id');
-    }
-
-    public function Contactos()
-    {
-        return $this->hasMany(Activity::class, 'model_id', 'id')
-            ->mail()
-            ->where('model_class', 'Intranet\Entities\AlumnoFct');
     }
 
     public function Signatures()
@@ -63,6 +70,13 @@ class AlumnoFct extends Model
     public function Tutor()
     {
         return $this->belongsTo(Profesor::class, 'idProfesor', 'dni');
+    }
+
+    public function Contactos()
+    {
+        return $this->hasMany(Activity::class, 'model_id', 'id')
+            ->mail()
+            ->where('model_class', self::class);
     }
 
 
@@ -83,27 +97,43 @@ class AlumnoFct extends Model
         return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
     }
     */
-    public function scopeMisFcts($query, $profesor=null)
+
+    // ===========================
+    // 📌 SCOPES
+    // ===========================
+    public function scopeMisFcts($query, $profesor = null)
     {
-        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        $profesor = Profesor::getSubstituts($profesor ?? authUser()->dni);
         return $query->whereIn('idProfesor', $profesor)->whereNotNull('idSao');
     }
 
-    public function scopeTotesFcts($query, $profesor=null)
+    public function scopeTotesFcts($query, $profesor = null)
     {
-        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
-        return $query->whereIn('idProfesor', $profesor);
+        return $this->scopeMisFcts($query, $profesor);
     }
 
-
-    public function scopeMisProyectos($query, $profesor=null)
+    public function scopeMisProyectos($query, $profesor = null)
     {
-        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
-        return $query->whereIn('idProfesor', $profesor)
+        return $this->scopeMisFcts($query, $profesor)
             ->esAval()
             ->whereNull('calProyecto');
     }
-    
+
+    public function scopeEsFct($query)
+    {
+        return $query->whereIn('idFct', Fct::select('id')->esFct()->pluck('id'));
+    }
+
+    public function scopeEsAval($query)
+    {
+        return $query->whereIn('idFct', Fct::select('id')->esAval()->pluck('id'));
+    }
+
+    public function scopeEsDual($query)
+    {
+        return $query->whereIn('idFct', Fct::select('id')->esDual()->pluck('id'));
+    }
+
     public function scopeMisDual($query, $profesor=null)
     {
         $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
@@ -116,21 +146,6 @@ class AlumnoFct extends Model
         return $query->whereIn('idProfesor', $profesor)->esExempt();
     }
 
-    public function scopeEsFct($query)
-    {
-        $fcts = Fct::select('id')->esFct()->get()->toArray();
-        return $query->whereIn('idFct', $fcts);
-    }
-    public function scopeEsAval($query)
-    {
-        $fcts = Fct::select('id')->esAval()->get()->toArray();
-        return $query->whereIn('idFct', $fcts);
-    }
-    public function scopeEsDual($query)
-    {
-        $fcts = Fct::select('id')->esDual()->get()->toArray();
-        return $query->whereIn('idFct', $fcts);
-    }
 
     public function scopeEsErasmus($query)
     {
@@ -157,33 +172,114 @@ class AlumnoFct extends Model
 
     public function scopeHaEmpezado($query)
     {
-        return $query->where('desde', '<', Hoy('Y-m-d'));
+        return $query->where('desde', '<=', Hoy('Y-m-d'));
     }
 
     public function scopeNoHaAcabado($query)
     {
-        return $query->where('hasta', '>', Hoy('Y-m-d'));
+        return $query->where('hasta', '>=', Hoy('Y-m-d'));
     }
-    
+
+    // ===========================
+    // 📌 GETTERS D'ATRIBUTS
+    // ===========================
     public function getEmailAttribute()
     {
-        return $this->Alumno->email;
+        return $this->Alumno?->email ?? null;
     }
-    public function getContactoAttribute()
+
+    public function getCentroAttribute()
     {
-        return $this->Alumno->NameFull;
+        return substr($this->Fct?->Centro ?? '', 0, 30);
     }
+
+
     public function getNombreAttribute()
     {
-        return $this->Alumno->ShortName;
+        return $this->Alumno->ShortName ?? '';
     }
 
     public function getNomEdatAttribute()
     {
-        $string = $this->Alumno->ShortName.' ';
-        $perotet = $this->Alumno->esMenorEdat($this->desde)?"<em class='fa fa-child'></em>":'';
-        return $string.$perotet;
+        return $this->Alumno->ShortName . ($this->Alumno->esMenorEdat($this->desde) ? "<em class='fa fa-child'></em>" : '');
     }
+
+    public function getQualificacioAttribute()
+    {
+        return match ($this->calificacion) {
+            0 => 'No Apte',
+            1 => 'Apte',
+            2 => 'Convalidat/Exempt',
+            default => 'No Avaluat',
+        };
+    }
+
+
+
+    public function getDesdeAttribute($entrada)
+    {
+        return (new Date($entrada))->format('d-m-Y');
+    }
+
+    public function getHastaAttribute($entrada)
+    {
+        return $this->getDesdeAttribute($entrada);
+    }
+
+    public function getFinPracticasAttribute()
+    {
+        if (!$this->horas_diarias) return '??';
+        $dies = ($this->horas - $this->realizadas) / $this->horas_diarias;
+        return floor($dies / 5) . ' Setmanes - ' . ($dies % 5) . ' Dia';
+    }
+
+    public function getClassAttribute()
+    {
+        return match ($this->asociacion) {
+            2 => self::BG_PURPLE,
+            3 => self::BG_ORANGE,
+            default => $this->determinarFonsPerData(),
+        };
+    }
+
+    private function determinarFonsPerData()
+    {
+        $hoy = Date::now();
+        $fechaHasta = new Date($this->hasta);
+        $fechaDesde = new Date($this->desde);
+
+        if ($fechaHasta->format('Y-m-d') <= $hoy->format('Y-m-d')) {
+            return self::BG_BLUE_SKY;
+        }
+        if ($this->adjuntos && $fechaDesde->format('Y-m-d') > $hoy->format('Y-m-d')) {
+            return self::BG_GREEN;
+        }
+        return '';
+    }
+
+    public function getAdjuntosAttribute()
+    {
+        return DB::table('adjuntos')
+            ->where('route', 'LIKE', 'alumnofctaval/' . $this->id)
+            ->exists();
+    }
+
+    public function routeFile($anexe)
+    {
+        return storage_path("app/annexes/" . (strlen($anexe) > 1 ? "{$anexe}_{$this->idSao}.pdf" : "A{$anexe}_{$this->idSao}.pdf"));
+    }
+
+    public function getSignAttribute()
+    {
+        return $this->Signatures()->exists();
+    }
+    
+
+    public function getContactoAttribute()
+    {
+        return $this->Alumno->NameFull;
+    }
+
     public function getFullNameAttribute()
     {
         return $this->Alumno->fullName;
@@ -193,42 +289,14 @@ class AlumnoFct extends Model
         return $this->realizadas.'/'.$this->horas.' '.$this->actualizacion;
     }
 
-    public function getFinPracticasAttribute()
-    {
-        if ($this->horas_diarias) {
-            $dias = (int)($this->horas-$this->realizadas)/$this->horas_diarias;
-            $semanas = floor($dias / 5);
-            $dias = $dias % 5;
-            return "{$semanas} Setmanes - {$dias} Dia";
-        }
-        return '??';
-    }
-
     public function getPeriodeAttribute()
     {
         return $this->Fct->periode;
     }
-    public function getQualificacioAttribute()
-    {
-       /* return isset($this->calificacion)?
-            ($this->calificacion?
-                ($this->calificacion==2?'Convalidat/Exempt': 'Apte')
-                : 'No Apte')
-            : 'No Avaluat';*/
 
-        return match($this->calificacion) {
-             0 => 'No Apte',
-             1 => 'Apte' ,
-             2 => 'Convalidat/Exempt',
-             null =>  'No Avaluat',
-         };
-    }
 
     public function getProjecteAttribute()
     {
-        /*return isset($this->calProyecto)?
-            ($this->calProyecto == 0 ? 'No presenta' : $this->calProyecto)
-            : 'No Avaluat';*/
        return match($this->calProyecto){
             0 =>  'No presenta' ,
             null => 'No Avaluat',
@@ -240,10 +308,7 @@ class AlumnoFct extends Model
     {
         return $this->Fct->asociacion;
     }
-    public function getCentroAttribute()
-    {
-        return substr($this->Fct->Centro, 0, 30);
-    }
+
     public function getMiniCentroAttribute()
     {
         return substr($this->Fct->Centro, 0, 15);
@@ -253,15 +318,7 @@ class AlumnoFct extends Model
         return substr($this->Fct->XInstructor, 0, 30);
     }
     
-    public function getDesdeAttribute($entrada)
-    {
-        $fecha = new Date($entrada);
-        return $fecha->format('d-m-Y');
-    }
-    public function getHastaAttribute($entrada)
-    {
-        return $this->getDesdeAttribute($entrada);
-    }
+
     public function getGrupAttribute()
     {
         foreach ($this->Alumno->Grupo as $grupo) {
@@ -302,47 +359,14 @@ class AlumnoFct extends Model
         return Signatura::where('idSao', $this->idSao)->where('tipus', 'A3')->get()->first();
     }
 
-    public function getSignAttribute()
-    {
-        return Signatura::where('idSao', $this->idSao)->get()->count()?true:false;
-    }
 
-    public function routeFile($anexe)
-    {
-        return (strlen($anexe) > 1)
-            ? storage_path('app/annexes/')."{$anexe}_{$this->idSao}.pdf"
-            : storage_path('app/annexes/')."A{$anexe}_{$this->idSao}.pdf";
-    }
 
     public function getIdPrintAttribute()
     {
         return $this->idFct.'-'.$this->nombre;
     }
 
-    public function getClassAttribute()
-    {
-        if ($this->asociacion === 2) {
-            return 'bg-purple';
-        }
-        if ($this->asociacion === 3) {
-            return 'bg-orange';
-        }
-        if (fechaInglesa($this->hasta) <= Hoy('Y-m-d')) {
-            return 'bg-blue-sky';
-        }
-        if ($this->adjuntos && fechaInglesa($this->desde) > Hoy('Y-m-d')) {
-            return 'bg-green';
-        }
-        return '';
-    }
 
-    public function getAdjuntosAttribute()
-    {
-        // Comprova si existeix algun registre en adjuntos que continga la id de l'AlumnoFct en el camp route
-        return DB::table('adjuntos')
-            ->where('route', 'LIKE', 'alumnofctaval/'.$this->id)
-            ->exists();
-    }
 
 
 }

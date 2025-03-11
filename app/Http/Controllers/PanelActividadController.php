@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
+use Intranet\Http\Traits\Panel;
 
 
 /**
@@ -13,7 +14,7 @@ use Intranet\Botones\BotonImg;
 class PanelActividadController extends BaseController
 {
 
-    use traitPanel;
+    use Panel;
 
     /**
      * @var string

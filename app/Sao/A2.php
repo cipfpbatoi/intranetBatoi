@@ -25,7 +25,12 @@ class A2
 {
 
     const HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0 = 'https://foremp.edu.gva.es/index.php?op=2&subop=0';
+    private DigitalSignatureService $digitalSignatureService;
 
+    public function __construct(DigitalSignatureService $digitalSignatureService)
+    {
+        $this->digitalSignatureService = $digitalSignatureService;
+    }
     public static function setFireFoxCapabilities()
     {
         $profile = new FirefoxProfile();
@@ -53,39 +58,49 @@ class A2
         return $caps;
     }
 
+    private static function waitForFile($filePath, $timeout)
+    {
+        $startTime = time();
+        while (!file_exists($filePath)) {
+            if (time() - $startTime > $timeout) {
+                throw new \Exception("Timeout waiting for file: $filePath");
+            }
+            sleep(1);
+        }
+    }
 
 
-    public static function index($driver,$request,$file = null)
+
+    public function index($driver, $request, $file = null)
     {
         $driver->manage()->timeouts()->pageLoadTimeout(2);
         $fcts = array_keys($request, 'on');
-        $decrypt = $request['decrypt']??null;
-        $passCert = $request['cert']??null;
-        $nomFitxer = storage_path('tmp/'.authUser()->fileName.'.pfx');
+        $decrypt = $request['decrypt'] ?? null;
+        $passCert = $request['cert'] ?? null;
+        $nomFitxer = storage_path('tmp/' . authUser()->fileName . '.pfx');
 
         try {
             if (isset($decrypt)) {
-                DigitalSignatureService::decryptCertificateUser($decrypt, authUser());
-                $cert = DigitalSignatureService::readCertificat($nomFitxer, $passCert);
+                $this->digitalSignatureService->decryptUserCertificateInstance($decrypt, authUser());
+                $cert = $this->digitalSignatureService->readCertificate($nomFitxer, $passCert);
             }
             if ($file) {
                 $file->move(dirname($nomFitxer), basename($nomFitxer));
                 @unlink($file->getRealPath());
-                $cert = DigitalSignatureService::readCertificat($nomFitxer, $passCert);
+                $cert = $this->digitalSignatureService->readCertificate($nomFitxer, $passCert);
             }
-            self::downloadFilesFromFcts($driver, $fcts, $cert??null);
-            if (file_exists($nomFitxer)){
+            $this->downloadFilesFromFcts($driver, $fcts, $cert ?? null);
+            if (file_exists($nomFitxer)) {
                 unlink($nomFitxer);
             }
-
-        } catch (CertException $exception){
+        } catch (CertException $exception) {
             Log::channel('certificate')->alert($exception->getMessage(), [
                 'intranetUser' => authUser()->fullName,
             ]);
             Alert::warning($exception->getMessage());
             Mensaje::send(
                 config('avisos.errores'),
-                $exception->getMessage()." : ".authUser()->fullName
+                $exception->getMessage() . " : " . authUser()->fullName
             );
             if (file_exists($nomFitxer)) {
                 unlink($nomFitxer);
@@ -93,13 +108,13 @@ class A2
             $driver->quit();
             return back();
         }
-
         $driver->quit();
         return back();
     }
 
 
-    public static function downloadFilesFromFcts(RemoteWebDriver $driver, $fcts, $certFile=null)
+
+    public function downloadFilesFromFcts(RemoteWebDriver $driver, $fcts, $certFile=null)
     {
         $signat = false;
         $a1 = $a2 = $a3 = $fA1 = $a5 = false;
@@ -125,18 +140,18 @@ class A2
                 // Anexe 1
                 if ($fA1 || ($a1 && ($fctAl->Fct->Colaboracion->Centro->Empresa->ConveniCaducat
                     || $fctAl->Fct->Colaboracion->Centro->Empresa->RenovatConveni))) {
-                    $signat = self::annexe1($fctAl, $driver);
+                    $signat = $this->annexe1($fctAl, $driver);
                 }
                 // Anexe 2
-                if ($a2 && self::annexe23($fctAl, $driver, $certFile,2)) {
+                if ($a2 && $this->annexe23($fctAl, $driver, $certFile,2)) {
                     $signat = true;
                 }
                 // Anexe 3
                 if ($a3 && $certFile){
-                    self::annexe23($fctAl, $driver, $certFile,3);
+                    $this->annexe23($fctAl, $driver, $certFile,3);
                 }
                 if ($a5) {
-                    self::annexe5($fctAl, $driver, $certFile);
+                    $this->annexe5($fctAl, $driver, $certFile);
                 }
             }
         }
@@ -156,27 +171,30 @@ class A2
      * @param  bool  $signat
      * @return array
      */
-    private static function annexe1($fctAl, RemoteWebDriver $driver):bool
+    public function annexe1(AlumnoFct $fctAl, RemoteWebDriver $driver): bool
     {
-        $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
+        $tmpDirectory = config('variables.shareDirectory') ?? storage_path('tmp/');
         $doc = $fctAl->Fct->dual ? '201' : '101';
         $annexe = $fctAl->Fct->dual ? 'A1DUAL' : 'A1';
         $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
-        $tmpFile = $tmpDirectory.$annexe.".pdf";
+        $tmpFile = "$tmpDirectory$annexe.pdf";
         $saveFile = $fctAl->routeFile($annexe);
+
         try {
             $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=$doc&centro=59&ct=$idSao");
         } catch (\Throwable $exception) {
-           if (file_exists($tmpFile)) {
-                copy($tmpFile, $saveFile);
-            }
-            Firma::saveIfNotExists($annexe, $fctAl->idSao);
-            if (file_exists($tmpFile)){
-                unlink($tmpFile);
-            }
-            $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
-            sleep(1);
+            Log::error("Error en la generació del PDF per $annexe: " . $exception->getMessage());
         }
+
+        if (file_exists($tmpFile)) {
+            copy($tmpFile, $saveFile);
+            Firma::saveIfNotExists($annexe, $fctAl->idSao);
+            unlink($tmpFile);
+        }
+
+        $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
+        sleep(1);
+
         return true;
     }
 
@@ -189,7 +207,7 @@ class A2
      * @return array
      * @throws \Intranet\Exceptions\IntranetException
      */
-    private static function annexe23(
+    private function annexe23(
         $fctAl,
         RemoteWebDriver $driver,
         mixed $certFile,
@@ -208,7 +226,7 @@ class A2
         } catch (\Throwable $exception) {
             if (file_exists($tmpFile)) {
                 if ($certFile) {
-                    DigitalSignatureService::sign(
+                    $this->digitalSignatureService->signDocument(
                         $tmpFile,
                         $saveFile,
                         $x,
@@ -222,17 +240,17 @@ class A2
                 }
                 unlink($tmpFile);
                 return true;
-            } else {
-                Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe II
-                      $fctAl->idSao de $tmpFile");
             }
+
+            Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe II
+                  $fctAl->idSao de $tmpFile");
             $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
             sleep(1);
         }
         return false;
     }
 
-    private static function annexe5($fctAl, RemoteWebDriver $driver,$certFile):bool
+    private  function annexe5($fctAl, RemoteWebDriver $driver,$certFile):bool
     {
         $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
         $doc = $fctAl->Fct->dual ? '201' : '101';
@@ -298,7 +316,7 @@ class A2
 
             if (!$error) {
                 if ($certFile) {
-                    DigitalSignatureService::sign(
+                    $this->digitalSignatureService->signDocument(
                         $tmp1File,
                         $saveFile,
                         $x,
@@ -319,14 +337,5 @@ class A2
         }
         return true;
     }
-    private static function waitForFile($filePath, $timeout)
-    {
-        $startTime = time();
-        while (!file_exists($filePath)) {
-            if (time() - $startTime > $timeout) {
-                throw new \Exception("Timeout waiting for file: $filePath");
-            }
-            sleep(1);
-        }
-    }
+
 }

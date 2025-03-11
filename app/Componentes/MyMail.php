@@ -2,6 +2,7 @@
 
 namespace Intranet\Componentes;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Entities\Activity;
 use Intranet\Mail\DocumentRequest;
@@ -60,74 +61,97 @@ class MyMail
 
     private function recoveryObjects($elements)
     {
-        $objects = collect();
-        foreach (explode(',', $elements) as $element) {
-            $objects->push($this->recoveryObject($element));
+        // 🔹 Si `$elements` és `null` o buit, retornem una col·lecció buida
+        if (!$elements) {
+            return collect();
         }
-        return $objects;
+
+        // 🔹 Si `$elements` és una col·lecció ja feta, la retornem directament
+        if ($elements instanceof \Illuminate\Support\Collection) {
+            return $elements;
+        }
+
+        // 🔹 Convertim `$elements` en array si és una cadena separada per comes
+        $elementsArray = is_string($elements) ? explode(',', $elements) : (array) $elements;
+
+        return collect($elementsArray)
+            ->map(fn($element) => $this->recoveryObject($element))
+            ->filter(); // Eliminem els valors `null`
     }
+
     private function recoveryObject($element)
     {
-        if (!$element) {
+        // 🔹 Si l'element és buit o `null`, retornem `null`
+        if (empty($element)) {
             return null;
         }
 
-        if ($element != '') {
-            $toCompost = explode('(', $element);
-            $id = $toCompost[0];
-            $element = $this->class::find($id);
-
-            if (!isset($element)) {
-                return null;
-            }
-
-            if (isset($toCompost[1]) && strpos($toCompost[1], ';')) {
-                $email = explode(';', $toCompost[1]);
-                $contacte =  substr($email[1], 0, -1);
-                $element->contact = strlen($contacte)>3?$contacte:null;
-                $element->mail = $email[0];
-            }
+        // 🔹 Si `$element` ja és un objecte, el retornem directament
+        if (is_object($element)) {
             return $element;
         }
-        return null;
+
+        // 🔹 Comprovem si `$this->class` està definit i existeix abans de fer `find()`
+        if (!$this->class || !class_exists($this->class)) {
+            Log::warning("⚠️ `class` no està definit o no existeix: {$this->class}");
+            return null;
+        }
+
+        // 🔹 Separem l'ID i la informació de contacte
+        [$id, $contactInfo] = array_pad(explode('(', $element, 2), 2, null);
+        $id = trim($id);
+
+        // 🔹 Si l'ID no és numèric, retornem `null`
+        if (!is_numeric($id)) {
+            return null;
+        }
+
+        // 🔹 Busquem l'element a la base de dades
+        $instance = $this->class::find($id);
+
+        if (!$instance) {
+            return null;
+        }
+
+        // 🔹 Processar correu i contacte, si estan presents
+        if ($contactInfo && strpos($contactInfo, ';') !== false) {
+            [$email, $contact] = explode(';', rtrim($contactInfo, ')'), 2);
+            $instance->mail = $email;
+            $instance->contact = strlen($contact) > 3 ? $contact : null;
+        }
+
+        return $instance;
     }
-
-
 
 
     public function render($route)
     {
-        $to  = $this->getReceivers($this->elements);
-        $editable = (count($this->elements) > 1)?$this->editable:true;
-        $from = $this->from;
-        $subject = $this->subject;
-        $contenido = $this->view;
-        $fromPerson = $this->fromPerson;
-        $toPeople = $this->toPeople;
-        $class = $this->class;
-        $register = $this->register;
-        $template = $this->template;
-        $action = $this->action??'myMail.send';
-        if ($this->attach) {
-            session()->put('attach', $this->attach);
-        }
-        return view(
-            'email.view',
-            compact(
-                'to',
-                'from',
-                'subject',
-                'contenido',
-                'route',
-                'fromPerson',
-                'toPeople',
-                'class',
-                'register',
-                'editable',
-                'template',
-                'action',
-            )
-        );
+        $to = $this->getReceivers($this->elements);
+        $editable = (count($this->elements) > 1) ? $this->editable : true;
+
+        // 🔹 Assegurar que `contenido` sempre és una instància de `View`
+        $contenido = ($this->view instanceof \Illuminate\View\View)
+            ? $this->view
+            : (view()->exists($this->view) ? view($this->view) : $this->view);
+
+        $data = [
+            'to' => $to,
+            'from' => $this->from,
+            'subject' => $this->subject ?? null,
+            'contenido' => $contenido,
+            'route' => $route,
+            'fromPerson' => $this->fromPerson,
+            'toPeople' => $this->toPeople ?? null,
+            'class' => $this->class ?? null,
+            'register' => $this->register ?? null,
+            'editable' => $editable,
+            'template' => $this->template ?? null,
+            'action' => $this->action ?? 'myMail.send',
+        ];
+
+        Log::info("📌 Dades passades a la vista (modificat):", $data);
+
+        return view('email.view', $data);
     }
 
     private function  sendEvent($elements){

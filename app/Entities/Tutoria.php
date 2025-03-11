@@ -8,7 +8,6 @@ use Intranet\Events\ActivityReport;
 
 class Tutoria extends Model
 {
-
     use BatoiModels;
 
     protected $table = 'tutorias';
@@ -90,9 +89,9 @@ class Tutoria extends Model
     {
         if (authUser()->GrupoTutoria) {
             return $this->Grupos->where('codigo', authUser()->GrupoTutoria)->count() ? "Realitzada" : "Incompleta";
-        } else {
-            return $this->Grupos->count();
         }
+
+        return $this->Grupos->count();
     }
     
 }

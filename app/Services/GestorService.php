@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Intranet\Services;
 
 use Intranet\Entities\Documento;
@@ -37,11 +36,11 @@ class GestorService
         if (isset($this->elemento)) {
             if ($this->elemento->idDocumento) {
                 return Documento::find($this->elemento->idDocumento);
-            } else {
-                return isset($this->elemento->fichero)
-                    ? Documento::where('fichero', $this->elemento->fichero)->first()
-                    : null;
             }
+
+            return isset($this->elemento->fichero)
+                ? Documento::where('fichero', $this->elemento->fichero)->first()
+                : null;
         }
         return null;
     }
@@ -88,9 +87,6 @@ class GestorService
         return $this->document->id;
     }
 
-
-
-
     public function render()
     {
         if ($this->isAllowed()) {
@@ -107,6 +103,19 @@ class GestorService
         }
         return back();
     }
+
+    public static function saveDocument($filePath, $tags, $descripcion = null, $supervisor = null)
+    {
+        return Documento::create([
+            'fichero' => $filePath,
+            'tags' => $tags,
+            'curso' => curso(),
+            'descripcion' => $descripcion ?? 'Registre dia ' . hoy('d-m-Y'),
+            'supervisor' => $supervisor ?? authUser()->FullName,
+            'rol' => 2,
+        ]);
+    }
+
 
     private function update($parametres)
     {
@@ -128,9 +137,6 @@ class GestorService
 
     private function isAllowed()
     {
-        if ($this->document && !in_array($this->document->rol, rolesUser(authUser()->rol))) {
-            return false;
-        }
-        return true;
+        return !($this->document && !in_array($this->document->rol, rolesUser(authUser()->rol)));
     }
 }

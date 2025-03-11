@@ -2,6 +2,7 @@
 
 namespace Intranet\Entities;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Jenssegers\Date\Date;
@@ -13,6 +14,8 @@ use Intranet\Notifications\MyResetPassword;
 
 class Profesor extends Authenticatable
 {
+
+
     /*     * ************************************************************************
      * $keyType -> solo si no es entero. Da errores si no se pone
      * $visible -> Para mostrar en el método show

@@ -2,25 +2,20 @@
 
 namespace Intranet\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Intranet\Botones\BotonImg;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Programacion;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonPost;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
-use Illuminate\Http\Request;
+use Intranet\Http\Traits\Autorizacion;
 use Intranet\Services\StateService;
 use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\Session;
-use Intranet\Jobs\SendEmail;
 
 class ProgramacionController extends IntranetController
 {
 
-    use traitAutorizar,traitCheckList;
+    use Autorizacion;
 
     protected $model = 'Programacion';
     protected $gridFields = ['Xciclo','XModulo', 'situacion'];

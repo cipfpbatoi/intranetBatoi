@@ -2,18 +2,18 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Intranet\Entities\Instructor;
-use Intranet\Entities\Centro;
-use Intranet\Entities\Fct;
-use Intranet\Entities\Profesor;
-use Response;
 use DB;
-use Styde\Html\Facades\Alert;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonImg;
+use Intranet\Entities\Centro;
+use Intranet\Entities\Fct;
+use Intranet\Entities\Instructor;
+use Intranet\Entities\Profesor;
+use Intranet\Http\Traits\Imprimir;
 use Jenssegers\Date\Date;
-
+use Response;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -44,7 +44,7 @@ class InstructorController extends IntranetController
      */
     protected $modal = false;
     
-    use traitImprimir;
+    use Imprimir;
 
     /**
      *
