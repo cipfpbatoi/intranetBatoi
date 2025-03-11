@@ -16,8 +16,7 @@ class ColaboracionAlumnoController extends IntranetController
 {
     use Panel;
 
-    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
-    const FCT_EMAILS_REQUEST = 'fctEmails.request';
+     const FCT_EMAILS_REQUEST = 'fctEmails.request';
     /**
      * @var array
      */

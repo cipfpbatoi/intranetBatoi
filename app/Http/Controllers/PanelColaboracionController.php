@@ -22,7 +22,7 @@ class PanelColaboracionController extends IntranetController
 {
     use Panel;
 
-    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
+    const ROLES_ROL_TUTOR= 'roles.rol.tutor';
     const FCT_EMAILS_REQUEST = 'fctEmails.request';
     /**
      * @var string
@@ -65,7 +65,7 @@ class PanelColaboracionController extends IntranetController
             new BotonIcon(
                 'colaboracion.switch',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-warning switch',
                     'icon' => 'fa-user',
                     'where' => ['tutor', '<>', AuthUser()->dni]
@@ -77,7 +77,7 @@ class PanelColaboracionController extends IntranetController
             new BotonIcon(
                 'colaboracion.unauthorize',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-primary unauthorize estado',
                     'where' => [  'estado', '!=', '1']
                 ]
@@ -88,7 +88,7 @@ class PanelColaboracionController extends IntranetController
             new BotonIcon(
                 'colaboracion.resolve',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-success resolve estado',
                     'where' => [  'estado', '!=', '2']
                 ]
@@ -99,7 +99,7 @@ class PanelColaboracionController extends IntranetController
             new BotonIcon(
                 'colaboracion.refuse',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-danger refuse estado',
                     'where' => [  'estado', '!=', '3']
                 ]
@@ -110,7 +110,7 @@ class PanelColaboracionController extends IntranetController
             new BotonIcon(
                 'colaboracion.book',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-primary informe book',
                     'text' => '',
                     'title' => 'Contacte previ',

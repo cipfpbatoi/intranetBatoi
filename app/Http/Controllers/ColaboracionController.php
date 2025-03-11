@@ -88,7 +88,7 @@ class ColaboracionController extends ModalController
                 'colaboracion.show',
                 [
                     'img'=>'fa-eye-slash',
-                    'roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]
+                    'roles' => [config('roles.rol.tutor') ]
                 ]
         ));
         $this->panel->setBoton(
@@ -96,7 +96,7 @@ class ColaboracionController extends ModalController
             new BotonImg(
                 'colaboracion.edit',
                 [
-                    'roles' => [config('roles.rol.practicas')]
+                    'roles' => [config('roles.rol.tutor')]
                 ]
             )
         );

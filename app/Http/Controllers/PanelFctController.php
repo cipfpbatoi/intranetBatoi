@@ -19,7 +19,6 @@ class PanelFctController extends IntranetController
 {
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
-    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
 
 
     /**
@@ -82,7 +81,7 @@ class PanelFctController extends IntranetController
             new BotonIcon(
                 'fct.telefonico',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-primary informe telefonico',
                     'text' => '',
                     'title' => 'Contacte telefònic',

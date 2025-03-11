@@ -30,14 +30,14 @@ class PanelErasmusController extends PanelEmpresaSCController
            'grid',
            new BotonImg(
                'empresa.detalle',
-               ['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]
+               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
            )
        );
        $this->panel->setBoton(
            'grid',
            new BotonImg(
                'empresa.delete',
-               ['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]
+               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
            )
        );
     }

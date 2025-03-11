@@ -27,9 +27,6 @@ use Styde\Html\Facades\Alert;
 class FctController extends IntranetController
 {
 
-    const ROLES_ROL_TUTOR = 'roles.rol.tutor';
-    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
-
 
     /**
      * @var string
@@ -100,10 +97,10 @@ class FctController extends IntranetController
             $zip->addFile(FDFPrepareService::exec(new AVIIBResource(Fct::find($id))), 'AVIIb_Certificat_instructor.pdf');
             $zip->close();
             return response()->download($nameFile);
-        } else {
-            return response()->file(FDFPrepareService::exec(
-                new CertificatInstructorResource(Fct::findOrFail($id))));
         }
+
+        return response()->file(FDFPrepareService::exec(
+            new CertificatInstructorResource(Fct::findOrFail($id))));
 
     }
 
