@@ -78,8 +78,10 @@ class StateService
 
     public function refuse($mensaje = null)
     {
+
         $estado = $this->statesElement['refuse'] ?? null;
-        if (!$estado) {
+
+        if (is_null($estado)) {
             return false;
         }
         return $this->putEstado($estado, $mensaje);
