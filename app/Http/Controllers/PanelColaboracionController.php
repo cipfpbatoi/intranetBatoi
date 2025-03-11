@@ -46,9 +46,8 @@ class PanelColaboracionController extends IntranetController
         $this->setTabs(
             config('modelos.Colaboracion.estados'),
             "profile.colaboracion",
-            3,
             1,
-            'situation'
+        'situation'
         );
         $this->iniBotones();
         Session::put('redirect', 'PanelColaboracionController@index');

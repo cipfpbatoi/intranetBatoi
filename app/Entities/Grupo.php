@@ -100,6 +100,7 @@ class Grupo extends Model
     {
         $profesor = $profesor ?? authUser()->dni;
         $sustituido = Profesor::findOrFail($profesor)->sustituye_a;
+
         $searchField = $dual?'tutorDual':'tutor';
         return ($sustituido != ' ')?
             $query->where($searchField, $sustituido)->orWhere('tutor', $profesor):

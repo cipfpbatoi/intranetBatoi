@@ -87,7 +87,8 @@ class Colaboracion extends Model
     {
         $dni = $dni??authUser()->dni;
         $cicloC = Grupo::select('idCiclo')->QTutor($dni)->get();
-        $ciclo = $cicloC->count()>0?$cicloC->toarray():[];
+        $ciclo = $cicloC->count()>0?hazArray($cicloC,'idCiclo') :[];
+
         if ($empresa) {
             return $query->whereIn('idCiclo', $ciclo)->Empresa($empresa);
         }

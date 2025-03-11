@@ -104,5 +104,6 @@ trait Panel
             $sustituto = ($key == $sustituye) ? 1 : null;
             $this->panel->setPestana($estado, $key == $activa, $vista, [$field, $key], null, $sustituto, $this->parametresVista);
         }
+
     }
 }
