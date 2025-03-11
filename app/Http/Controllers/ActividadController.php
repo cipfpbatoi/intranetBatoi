@@ -353,7 +353,6 @@ class ActividadController extends ModalController
 
     public function gestor($id)
     {
-        $gestor = new GestorService(Actividad::findOrFail($id));
-        return $gestor->render();
+        return (new GestorService(Actividad::findOrFail($id)))->render();
     }
 }

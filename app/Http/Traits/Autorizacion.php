@@ -124,7 +124,7 @@ trait Autorizacion
      * @param null $final
      * @param string $orientacion
      * @param bool $link
-     * @return \Illuminate\Http\RedirectResponse
+
      */
 
     public function imprimir($modelo = '', $inicial = null, $final = null, $orientacion='portrait', $link=true)
@@ -152,7 +152,7 @@ trait Autorizacion
 
             // Enllacem els elements amb el document si cal
             if ($link) {
-                StateService::makeLink($todos, $doc);
+                StateService::makeLink($todos, $doc->id);
             }
 
             return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);

@@ -141,7 +141,6 @@ class StateService
         if (!$todos || !$doc) {
             return;
         }
-
         foreach ($todos as $element) {
             $element->idDocumento = $doc;
             $element->save();
