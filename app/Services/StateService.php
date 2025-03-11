@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Services;
 
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\Documento;
 use Styde\Html\Facades\Alert;
 use function config, getClass, getClase;
@@ -141,9 +142,15 @@ class StateService
         if (!$todos || !$doc) {
             return;
         }
+
         foreach ($todos as $element) {
-            $element->idDocumento = $doc;
-            $element->save();
+            try {
+                $element->idDocumento = $doc;
+                $element->save();
+            } catch (\Exception $e) {
+                Log::error("Error guardant element: " . $e->getMessage());
+                continue;
+            }
         }
     }
 
