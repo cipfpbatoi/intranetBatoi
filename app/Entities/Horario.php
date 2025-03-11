@@ -113,8 +113,8 @@ class Horario extends Model
         return self::Profesor($profesor)
             ->with(['Modulo', 'Ocupacion', 'Grupo'])
             ->get()
-            ->groupBy(fn($hora) => [$hora->dia_semana, $hora->sesion_orden])
-            ->map(fn($horas) => $horas->first()) // Només el primer de cada grup
+            ->groupBy('dia_semana')
+            ->map(fn($dia) => $dia->keyBy('sesion_orden'))
             ->toArray();
     }
 
