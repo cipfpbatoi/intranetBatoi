@@ -111,6 +111,7 @@ class GestorService
             'tags' => $tags,
             'curso' => curso(),
             'descripcion' => $descripcion ?? 'Registre dia ' . hoy('d-m-Y'),
+            'propietario' => $supervisor ?? authUser()->FullName,
             'supervisor' => $supervisor ?? authUser()->FullName,
             'rol' => 2,
         ]);
