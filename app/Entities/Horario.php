@@ -101,21 +101,18 @@ class Horario extends Model
         return $query->Profesor($profesor)->Dia($dia);
     }
 
-    /**
-     * Devuelve un array con el horario del profesor
-     * @param profesor
-     * @return array[][]
-     */
-
-    // 🔹 Funció optimitzada: Obtindre l'horari setmanal d'un professor
-    public static function HorarioSemanal($profesor)
+       public static function HorarioSemanal($profesor)
     {
-        return self::Profesor($profesor)
-            ->with(['Modulo', 'Ocupacion', 'Grupo'])
-            ->get()
-            ->groupBy('dia_semana')
-            ->map(fn($dia) => $dia->keyBy('sesion_orden'))
-            ->toArray();
+        $horario = static::Profesor($profesor)
+            ->with('Modulo')
+            ->with('Ocupacion')
+            ->with('Grupo')
+            ->get();
+        $semana = [];
+        foreach($horario as $hora){
+            $semana[$hora->dia_semana][$hora->sesion_orden] = $hora;
+        }
+        return $semana;
     }
 
     // 🔹 Funció optimitzada: Obtindre l'horari d'un grup
