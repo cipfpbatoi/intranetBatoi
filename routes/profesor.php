@@ -235,6 +235,7 @@ Route::get('/empresa/{empresa}/A1', ['as'=>'empresa.A1', 'uses'=>'EmpresaControl
 
 Route::get('/colaboracion', ['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/misColaboraciones', ['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
+Route::get('/liveColaboraciones', ['as' => 'colaboracion.live', 'uses' => 'PanelColaboracionController@live']);
 
 Route::get(
     '/documentacionFCT/{id}/{documento}',

@@ -236,5 +236,10 @@ class PanelColaboracionController extends IntranetController
         return $this->showEmpresa($empresa);
     }
 
+    public function live()
+    {
+        return view('colaboraciones.panel');
+    }
+
 
 }

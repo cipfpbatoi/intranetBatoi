@@ -36,7 +36,7 @@ class EmpresaController extends IntranetController
         $elemento = Empresa::findOrFail($id);
         $modelo = 'Empresa';
         $misColaboraciones = Grupo::find(AuthUser()->GrupoTutoria)->Ciclo->Colaboraciones??collect();
-        return view($this->chooseView('show'), compact('elemento', 'modelo', 'activa', 'misColaboraciones'));
+        return view('empresa.show' , compact('elemento', 'modelo', 'activa', 'misColaboraciones'));
     }
     
     protected function iniBotones()
