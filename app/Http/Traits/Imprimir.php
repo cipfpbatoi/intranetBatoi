@@ -28,7 +28,6 @@ trait Imprimir
      * @param $orientacion
      * @param $dimensiones
      * @param $margin_top
-     * @return void
      */
     protected static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
                                      $margin_top= 15)
@@ -55,8 +54,7 @@ trait Imprimir
      */
     public function gestor($id)
     {
-        $gestor = new GestorService($this->class::findOrFail($id));
-        return $gestor->render();
+        return (new GestorService($this->class::findOrFail($id)))->render();
     }
 
 

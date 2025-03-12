@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
@@ -157,10 +158,12 @@ class ExpedienteController extends ModalController
 
                 if ($todos->count()) {
                     // Generem el PDF
-                    $pdf = $this->hazPdf("pdf.expediente.$tipo->vista", $todos);
+                    $pdf = self::hazPdf("pdf.expediente.$tipo->vista", $todos);
 
                     // Nom del fitxer
-                    $nom = "Expediente_" . $tipo->titulo . "_" . now()->format('Ymd_His') . ".pdf";
+                    //$nom = "Expediente_" . $tipo->titulo . "_" . now()->format('Ymd_His') . ".pdf";
+                    $nom = "Expediente_" . Str::slug($tipo->titulo, '_') . "_" . now()->format('Ymd_His') . ".pdf";
+
                     $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
                     $tags = "listado llistat expediente expedient $tipo->titulo";
 
@@ -173,8 +176,7 @@ class ExpedienteController extends ModalController
 
                     // Enllacem els elements amb el document
                     StateService::makeLink($todos, $doc);
-
-                    // Guardem i descarreguem el PDF
+                     // Guardem i descarreguem el PDF
                     $pdf->save(storage_path('/app/' . $nomComplet));
                     return response()->download(storage_path('/app/' . $nomComplet), $nom);
                 }
