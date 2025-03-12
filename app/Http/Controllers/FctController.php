@@ -47,7 +47,7 @@ class FctController extends IntranetController
     /**
      * @var array
      */
-    protected $vista = ['show' => 'fct'];
+
     protected $parametresVista = ['modal' => ['contactoAl']];
 
 
@@ -175,8 +175,10 @@ class FctController extends IntranetController
         $fct = Fct::findOrFail($id);
         $instructores = $fct->Colaboradores->pluck('dni');
 
-        return view($this->chooseView('show'), compact('fct', 'activa', 'instructores'));
+        return view('fct.show', compact('fct', 'activa', 'instructores'));
     }
+
+
 
 
     /**
@@ -190,9 +192,9 @@ class FctController extends IntranetController
             parent::destroy($id);
             Session::put('pestana', 3);
             return redirect()->action('EmpresaController@show', ['empresa' => $empresa]);
-        } else {
-            return parent::destroy($id);
         }
+
+        return parent::destroy($id);
     }
 
     /**
