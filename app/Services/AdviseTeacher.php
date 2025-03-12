@@ -32,7 +32,7 @@ class AdviseTeacher
         }
     }
 
-    private static function profesoresAfectados(Collection $grupos, int $emisor): Collection
+    private static function profesoresAfectados(Collection $grupos, string  $emisor): Collection
     {
         return Horario::distinct()
             ->select('idProfesor')
