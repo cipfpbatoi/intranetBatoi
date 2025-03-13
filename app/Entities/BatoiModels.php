@@ -140,11 +140,13 @@ trait BatoiModels
             ? array_diff($this->fillable, $this->notFillable)
             : $this->fillable;
 
+
         foreach ($fillable as $key) {
             if ($request->has($key) || $request->hasFile($key)) {
                 $this->$key = $this->fillField($key, $request->$key);
             }
         }
+
 
         $this->save();
 
@@ -159,7 +161,7 @@ trait BatoiModels
         return match ($type) {
             'date' => Carbon::parse($value)->format('Y-m-d'),
             'datetime' => Carbon::parse($value)->format('Y-m-d H:i'),
-            'select' => empty($value) ? null : $value,
+            'select' => empty($value) ? 0 : $value,
             'file' => request()->hasFile($key) ? $this->fillFile(request()->file($key)) : $this->$key,
             'checkbox' => empty($value) ? 0 : 1,
             default => $value,

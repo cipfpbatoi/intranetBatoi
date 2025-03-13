@@ -293,17 +293,17 @@ class ReunionController extends IntranetController
         if ($elemento->fichero != '') {
             if (file_exists(storage_path('/app/' . $elemento->fichero))) {
                 return response()->file(storage_path('/app/' . $elemento->fichero));
-            } else {
-                Alert::message('No trobe fitxer', 'danger');
-                return back();
-            }
-        } else {
-            if ($elemento->archivada) {
-                $this->saveFile($id);
             }
 
-            return $this->construye_pdf($id)->stream();
+            Alert::message('No trobe fitxer', 'danger');
+            return back();
         }
+
+        if ($elemento->archivada) {
+            $this->saveFile($id);
+        }
+
+        return $this->construye_pdf($id)->stream();
     }
 
     private function actaCompleta(Reunion $reunion)
