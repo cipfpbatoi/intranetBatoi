@@ -84,6 +84,7 @@ class A2
                 $this->digitalSignatureService->decryptUserCertificateInstance($decrypt, authUser());
                 $cert = $this->digitalSignatureService->readCertificate($nomFitxer, $passCert);
             }
+
             if ($file) {
                 $file->move(dirname($nomFitxer), basename($nomFitxer));
                 @unlink($file->getRealPath());

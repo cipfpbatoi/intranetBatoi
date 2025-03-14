@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Requests\PasswordRequest;
+use Intranet\Services\DigitalSignatureService;
 use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Str;
@@ -48,14 +49,14 @@ class RedirectAfterAuthenticationController extends Controller
     private function executeAction(string $className, $driver, PasswordRequest $request)
     {
         $reflection = new ReflectionMethod($className, 'index');
+        $ds = new DigitalSignatureService();
         $parameters = [$driver, $request->toArray()];
 
         if ($request->hasFile('file')) {
             $parameters[] = $request->file('file');
         }
-
         return $reflection->isStatic()
             ? $className::index(...$parameters)
-            : (new $className($driver))->index(...$parameters);
+            : (new $className($ds))->index(...$parameters);
     }
 }
