@@ -146,12 +146,13 @@ class Alumno extends Authenticatable
         return optional($this->Grupo->first()?->Ciclo)->departamento ?? '99';
     }
 
-    public function getTutorAttribute(): array
+    public function getTutorAttribute()
     {
-        return $this->Grupo->flatMap(fn($grupo) => array_merge(
-            $grupo->Tutor->Sustituidos ?? [],
-            $grupo->TutorDual->Sustituidos ?? []
-        ))->unique()->map(fn($tutor) => Profesor::find($tutor))->toArray();
+        if ($this->Grupo->isEmpty()) {
+            return collect(); // Retorna una col·lecció buida
+        }
+
+        return $this->Grupo->map(fn($grupo) => $grupo->Tutor)->flatten()->unique();
     }
 
     public function getFechaNacAttribute(?string $entrada): ?string

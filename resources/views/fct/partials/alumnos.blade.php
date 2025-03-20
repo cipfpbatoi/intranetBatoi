@@ -66,7 +66,7 @@
                     <p class="text-info">
                         Tutor:
                         @foreach ($alumno->Tutor as $tutor)
-                            {{$tutor->FullName}}
+                            {{$tutor->FullName ?? 'Sense nom'}}
                         @endforeach
                     </p>
                 </div>
