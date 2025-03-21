@@ -48,11 +48,6 @@ class InventarioController extends IntranetController
     ];
 
 
-    public function search()
-    {
-        // empty
-    }
-
     public function barcode(Request $request)
     {
         $materiales = collect();
@@ -79,12 +74,12 @@ class InventarioController extends IntranetController
                 ]);
                 $modelo = $this->model;
                 return view('intranet.edit', compact('formulario', 'modelo'));
-            } else {
-                return parent::edit($id);
             }
-        } else {
-            return view('inventario.show', compact('material'));
+
+            return parent::edit($id);
         }
+
+        return view('inventario.show', compact('material'));
     }
 
     /**

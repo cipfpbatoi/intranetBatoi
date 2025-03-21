@@ -75,6 +75,7 @@ abstract class BaseController extends Controller
         $this->iniBotones();
         $this->iniPestanas();
 
+
         return $this->grid($this->search(), $this->modal);
     }
 
@@ -97,6 +98,7 @@ abstract class BaseController extends Controller
     protected function search()
     {
         $todos =  $this->class::all(); // carrega totes les dades de un model
+
         if (isset($todos->first()->idProfesor)) // Si existe profesor en el model limite la cerca a les seues
         {
             $todos = $todos->where('idProfesor', '=', AuthUser()->dni);
