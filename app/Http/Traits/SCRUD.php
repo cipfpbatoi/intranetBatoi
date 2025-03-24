@@ -40,6 +40,12 @@ trait SCRUD
 
      protected function chooseView($view)
     {
+        if (isset($this->vista[$view])){
+            $vista = $this->vista[$view].".$view";
+            if (view()->exists($vista)) {
+                 return $vista;
+            }
+        }
         return  'intranet.' . $view;
     }
 

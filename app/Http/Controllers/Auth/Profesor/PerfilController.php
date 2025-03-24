@@ -25,7 +25,7 @@ class PerfilController extends Perfil
 
     public function editar()
     {
-        return parent::edit(AuthUser()->dni);
+         return parent::edit(AuthUser()->dni);
     }
 
     public function files()
