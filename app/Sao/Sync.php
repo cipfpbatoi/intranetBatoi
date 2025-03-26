@@ -8,15 +8,18 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Services\AlertLogger;
+use Intranet\Services\DigitalSignatureService;
 
 class Sync
 {
     private RemoteWebDriver $driver;
     private $queryCallback = null;
 
-    public function __construct(RemoteWebDriver $driver)
+    private DigitalSignatureService $digitalSignatureService;
+
+    public function __construct(DigitalSignatureService $digitalSignatureService)
     {
-        $this->driver = $driver;
+        $this->digitalSignatureService = $digitalSignatureService;
     }
 
     public function execute(callable $queryCallback = null)
@@ -25,8 +28,9 @@ class Sync
         return $this->index();
     }
 
-    public function index()
+    public function index($driver)
     {
+        $this->driver = $driver;
         try {
             $this->processFcts();
         } catch (Exception $e) {

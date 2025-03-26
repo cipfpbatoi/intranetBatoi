@@ -78,9 +78,9 @@ class Importa
         if (count($centros)) {
             $value = max($centros);
             return array_search($value, $centros);
-        } else {
-            return null;
         }
+
+        return null;
 
     }
 
