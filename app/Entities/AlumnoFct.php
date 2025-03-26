@@ -104,7 +104,7 @@ class AlumnoFct extends Model
     public function scopeMisFcts($query, $profesor = null)
     {
         $profesor = Profesor::getSubstituts($profesor ?? authUser()->dni);
-        return $query->whereIn('idProfesor', $profesor)->whereNotNull('idSao');
+        return $query->whereIn('idProfesor', $profesor) ;
     }
 
     public function scopeTotesFcts($query, $profesor = null)
