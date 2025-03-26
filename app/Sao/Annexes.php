@@ -16,19 +16,20 @@ class Annexes
 
     private $queryCallback = null;
 
-    public function __construct(RemoteWebDriver $driver)
+    public function __construct( $digitalSignatureService = null)
     {
-        $this->driver = $driver;
+
     }
 
-    public function execute(callable $queryCallback = null)
+    public function execute($driver,callable $queryCallback = null)
     {
         $this->queryCallback = $queryCallback;
-        return $this->index();
+        return $this->index($driver);
     }
 
-    public function index()
+    public function index($driver)
     {
+        $this->driver = $driver;
         try {
             $this->processFcts();
         } catch (Exception $e) {
