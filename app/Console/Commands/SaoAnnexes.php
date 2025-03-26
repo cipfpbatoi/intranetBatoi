@@ -42,7 +42,7 @@ class SaoAnnexes extends Command
                 config('services.selenium.SAO_USER'),
                 config('services.selenium.SAO_PASS')
             );
-             (new Annexes())->execute(function ( ) {
+             (new Annexes())->execute($driver,function ( ) {
                 return AlumnoFct::whereNotNull('idSao')->noHaAcabado()->where('beca',0)->where('pg0301', 0)->activa();
             });
             return Command::SUCCESS;
