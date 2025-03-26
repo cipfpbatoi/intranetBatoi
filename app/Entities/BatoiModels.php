@@ -161,9 +161,9 @@ trait BatoiModels
         return match ($type) {
             'date' => Carbon::parse($value)->format('Y-m-d'),
             'datetime' => Carbon::parse($value)->format('Y-m-d H:i'),
-            'select' => empty($value) ? 0 : $value,
+            'select' => $value == '' ? null : $value,
             'file' => request()->hasFile($key) ? $this->fillFile(request()->file($key)) : $this->$key,
-            'checkbox' => empty($value) ? 0 : 1,
+            'checkbox' => $value==null ? 0 : 1,
             default => $value,
         };
     }
