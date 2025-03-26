@@ -15,17 +15,17 @@ class Sync
     private RemoteWebDriver $driver;
     private $queryCallback = null;
 
-    private DigitalSignatureService $digitalSignatureService;
 
-    public function __construct(DigitalSignatureService $digitalSignatureService)
+
+    public function __construct( $digitalSignatureService = null)
     {
-        $this->digitalSignatureService = $digitalSignatureService;
+
     }
 
-    public function execute(callable $queryCallback = null)
+    public function execute($driver, callable $queryCallback = null)
     {
         $this->queryCallback = $queryCallback;
-        return $this->index();
+        return $this->index($driver);
     }
 
     public function index($driver)

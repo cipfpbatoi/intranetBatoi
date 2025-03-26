@@ -28,7 +28,7 @@ class SaoConnect extends Command
                 config('services.selenium.SAO_PASS')
             );
 
-            (new Sync($driver))->execute(function () {
+            (new Sync( ))->execute($driver,function () {
                 return AlumnoFctAval::whereNotNull('idSao')
                     ->noHaAcabado()
                     ->haEmpezado()
