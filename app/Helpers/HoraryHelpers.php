@@ -2,6 +2,8 @@
 
 // segun horari on està el professor
 
+use Intranet\Entities\Hora;
+
 function horarioAhora($dni)
 {
     $ahora = Jenssegers\Date\Date::now();
@@ -40,35 +42,7 @@ function horarioAhora($dni)
     return null;
 }
 
-// coincidix element amb sesió actual
-function coincideHorario($elemento, $sesion)
-{
-    if (esMismoDia($elemento->desde, $elemento->hasta)) {
-        if (isset($elemento->dia_completo)) {
-            return true;
-        }
-        $horas = getHorasAfectas($elemento);
-        return (isset($horas[0]) && $sesion >= $horas[0] && $sesion <= $horas[count($horas) - 1])?
-            true:false;
-    } else {
-        return true;
-    }
 
-}
-
-/**
- * @param $elemento
- * @return array
- */
-function getHorasAfectas($elemento): array
-{
-    if (isset($elemento->hora_ini)) {
-        $horas = Intranet\Entities\Hora::horasAfectadas($elemento->hora_ini, $elemento->hora_fin);
-    } else {
-        $horas = Intranet\Entities\Hora::horasAfectadas(hora($elemento->desde), hora($elemento->hasta));
-    }
-    return $horas;
-}
 
 /**
  * Mira si el profesor esta en el instituto
