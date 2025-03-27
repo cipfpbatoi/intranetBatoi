@@ -64,7 +64,7 @@ class InventarioController extends IntranetController
     {
         $material = Inventario::findOrFail($id);
         if (isProfesor()) {
-            if ($material->espacio == 'INVENT') {
+            if ($material->espacio === 'INVENT') {
                 $formulario = new FormBuilder($material, [
                     'descripcion' => ['disabled' => 'disabled'],
                     'marca' => ['disabled' => 'disabled'],
@@ -88,11 +88,9 @@ class InventarioController extends IntranetController
      */
     public function espacio($espacio)
     {
-        if (Espacio::find($espacio)) {
-            $this->vista = ['index' => 'Espai'];
-        } else {
-            $this->vista = ['index' => 'Articulo'];
-        }
+        $this->vista = [
+            'index' => Espacio::find($espacio) ? 'Espai' : 'Articulo'
+        ];
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniPestanas();
 
