@@ -10,8 +10,7 @@
 <table id='datamaterial' class="table table-striped" data-page-length="25" >
     <thead>
     <tr>
-        @dd($panel->getRejilla())
-        @foreach ($panel->getRejilla() as $item)
+         @foreach ($panel->getRejilla() as $item)
         <th scope="col">
             @if (strpos(trans("validation.attributes.$item"),'alidation.'))
             {{ucwords($item)}}

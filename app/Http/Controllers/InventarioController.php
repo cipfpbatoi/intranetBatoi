@@ -89,7 +89,7 @@ class InventarioController extends IntranetController
     public function espacio($espacio)
     {
         $this->vista = [
-            'index' => Espacio::find($espacio) ? 'Espai' : 'Articulo'
+            'index' => Espacio::find($espacio) ? 'espai' : 'articulo'
         ];
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniPestanas();
