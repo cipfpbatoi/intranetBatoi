@@ -433,8 +433,7 @@ Route::get('/tutoriagrupo/{id}/show', ['as' => 'tutoriagrupo.show', 'uses' => 'T
 
 Route::get('/guardia', ['as' => 'guardia.index', 'uses' => 'GuardiaController@index']);
 Route::get('/reserva', ['as' => 'reserva.index', 'uses' => 'ReservaController@index']);
-
-//API_TOKENF
+ //API_TOKENF
 Route::get('/myApiToken', ['as' => 'profesor.miapiToken', 'uses' => 'ProfesorController@miApiToken']);
 //Documentaci
 Route::get('/readme', ['as' => 'documentacio.miapiToken', 'uses' => 'ProfesorController@readme']);
