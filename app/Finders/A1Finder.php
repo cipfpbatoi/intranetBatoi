@@ -4,6 +4,7 @@ namespace Intranet\Finders;
 use Intranet\Entities\Signatura;
 
 class A1Finder extends Finder
+
 {
     public function exec()
     {
