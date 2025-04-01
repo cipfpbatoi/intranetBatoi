@@ -37,6 +37,7 @@ class AlumnoGrupo extends Model
     }
     public function Grupo()
     {
+
         return $this->belongsTo(Grupo::class, 'idGrupo', 'codigo');
     }
     public function getNombreAttribute()

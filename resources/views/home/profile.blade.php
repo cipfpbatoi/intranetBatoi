@@ -3,8 +3,7 @@
     <title>Panel de control</title>
 @endsection
 @section('content')
-    <x-user-profile :usuario="$usuario" />
-    <div class="col-md-9 col-sm-9 col-xs-12">
+    <div class="col-md-11 col-sm-11 col-xs-12">
          <x-user-tabs :tabs="[
     ['title' => 'messages.generic.nextActivities', 'view' => 'home.partials.activities', 'data' => ['actividades' => $actividades]],
     ['title' => 'messages.generic.faltas', 'view' => 'home.partials.faltas', 'data' => ['faltas' => $faltas, 'hoyActividades' => $hoyActividades, 'comisiones'  => $comisiones]],
