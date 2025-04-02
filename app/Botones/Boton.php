@@ -77,6 +77,16 @@ abstract class Boton
             }
         }
     }
+
+    public function render($elemento = null)
+    {
+        if ( userIsAllow($this->roles)) {
+            return $elemento === null
+                ? $this->html()
+                : $this->html($elemento->getKey());
+        }
+        return null;
+    }
     
     abstract protected function html($key = null);
 

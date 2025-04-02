@@ -9,12 +9,14 @@ use Illuminate\View\Component;
 class Panel extends Component
 {
     public $panel;
+    public $pestanyes;
     /**
      * Create a new component instance.
      */
     public function __construct($panel)
     {
         $this->panel = $panel;
+        $this->pestanyes = $panel->getPestanas();
     }
 
     /**

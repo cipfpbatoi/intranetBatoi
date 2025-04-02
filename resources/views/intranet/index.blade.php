@@ -1,3 +1,4 @@
+
 @extends('layouts.intranet')
 @section('css')
     <title>{{$panel->getTitulo()}}</title>
@@ -6,9 +7,9 @@
     @section($pestana->getNombre())
         @include('intranet.partials.components.loadBefores')
         <div class="centrado">
-            @include('intranet.partials.components.buttons',['tipo' => 'index'])
+            <x-botones :panel="$panel" tipo="index" :elemento="$elemento ?? null" />
             @if ($pestana->getNombre() <> 'grid' && $pestana->getNombre() <> 'profile')
-                @include('intranet.partials.components.buttons',['tipo' => $pestana->getNombre()])
+                <x-botones :panel="$panel" tipo="{{$pestana->getNombre()}}" :elemento="$elemento ?? null" /><br/>
             @endif
         </div><br/>
         @include($pestana->getVista(),$pestana->getFiltro())
