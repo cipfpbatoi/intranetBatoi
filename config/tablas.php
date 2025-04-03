@@ -73,7 +73,6 @@ return [
         ['index'=>'Convivencia','rol'=>1,'pestana'=>1,'grupo'=>'1'],
         ['index'=>'Seguretat','rol'=>1,'pestana'=>1,'grupo'=>'1'],
         ['index'=>'GestioEconomica','rol'=>1,'pestana'=>1,'grupo'=>'1'],
-        ['index'=>'Tutor','rol'=>17,'pestana'=>1,'grupo'=>'1'],
         ['index'=>'Profesor','rol'=>3,'pestana'=>1,'grupo'=>'1'],
         ['index'=>'Alumno','rol'=>5,'pestana'=>1,'grupo'=>'1'],
         ['index'=>'Jefe','rol'=>13,'pestana'=>1,'grupo'=>'1'],
