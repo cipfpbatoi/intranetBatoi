@@ -268,7 +268,7 @@ class ActividadController extends ModalController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create']);
-        $this->panel->setBothBoton('actividad.detalle', ['where' => ['estado', '<', '2']]);
+        $this->panel->setBothBoton('actividad.detalle', ['where' => ['estado', '<', '5']]);
         $this->panel->setBothBoton('actividad.edit', ['where' => ['estado', '<', '2']]);
         $this->panel->setBothBoton('actividad.init', ['where' => ['estado', '==', '0']]);
         $this->panel->setBothBoton('actividad.notification', ['where' => ['estado', '>', '0', 'estado', '<', '4', 'coord', '==', '1','desde','posterior',Hoy()]]);
@@ -276,7 +276,7 @@ class ActividadController extends ModalController
         $this->panel->setBoton('grid',new BotonImg('actividad.pdfVal', ['img'=>'fa-file-pdf-o','where' => ['estado', '==', '4','hasta','anterior',Hoy()]]));
         $this->panel->setBoton('grid',new BotonImg('actividad.showVal', ['img'=>'fa-eye-slash','where' => ['estado', '==', '4','hasta','anterior',Hoy()]]));
         $this->panel->setBoton('grid',new BotonImg('actividad.autorize', ['img'=>'fa-filter','where' => ['estado', '>', '0','estado','<=','3','desde','posterior',Hoy()]]));
-        $this->panel->setBoton('grid',new BotonImg('actividad.value', ['img'=>'fa-eyedropper','where' => ['estado', '>=', '3','hasta','anterior',Hoy()]]));
+        $this->panel->setBoton('grid',new BotonImg('actividad.value', ['img'=>'fa-eyedropper','where' => ['estado', '>=', '3','hasta','anterior',Hoy(),'coord','==',1]]));
         $this->panel->setBoton('grid', new BotonImg('actividad.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('profile', new BotonIcon('actividad.delete', ['class' => 'btn-danger', 'where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Date::yesterday()]]));
