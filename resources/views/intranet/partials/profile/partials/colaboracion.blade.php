@@ -66,8 +66,8 @@
             </div>
             <div class="col-xs-12 col-sm-8 emphasis">
                 @isset (authUser()->emailItaca)
-                    @include ('intranet.partials.components.buttons',['tipo' => 'profile'])<br/>
-                    @include ('intranet.partials.components.buttons',['tipo' => 'nofct'])
+                    <x-botones :panel="$panel" tipo="profile" :elemento="$elemento ?? null"/><br/>
+                    <x-botones :panel="$panel" tipo="nofct" :elemento="$elemento ?? null"/>
                 @endisset
             </div>
         </div>

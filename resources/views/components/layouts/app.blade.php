@@ -8,7 +8,7 @@
     @yield('css')
 </head>
 <body class="nav-md">
-@if ($user)
+
     <div class="container body">
         <div class="main_container">
 
@@ -21,7 +21,7 @@
                 <x-layouts.panel :panel="$panel" />
             @else
                 <x-layouts.page>
-                    @yield('content')
+                    {{ $slot }}
                 </x-layouts.page>
             @endif
 
@@ -29,7 +29,7 @@
             <x-layouts.footer />
         </div>
     </div>
-@endif
+
 
 {{-- JS --}}
 <script src="{{ mix('js/gentelella.js') }}"></script>

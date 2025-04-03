@@ -47,8 +47,8 @@
                     </a>
                 </div>
                 <div class="col-xs-12 col-sm-7 emphasis">
-                    @include ('intranet.partials.components.buttons',['tipo' => 'fct'])
-                </div>
+                    <x-botones :panel="$panel" tipo="fct" :elemento="$elemento ?? null"/>
+                 </div>
             </div>
         </div>
     </div>

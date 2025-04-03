@@ -36,4 +36,3 @@
 </div>
 @endforeach
 @include('intranet.partials.modal.explicacion')
-

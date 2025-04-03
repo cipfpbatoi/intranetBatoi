@@ -61,8 +61,8 @@
                                                 </a>
                                             @endforeach
                                         @endif
-                                        @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
-                                    </div>
+                                            <x-botones :panel="$panel" tipo="profile" :elemento="$elemento ?? null" /><br/>
+                                     </div>
                                 </div>
                             </div>
                         </div>

@@ -45,7 +45,7 @@
                                 </p>
                             </x-slot>
                             <x-slot name="botones">
-                                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
+                                <x-botones :panel="$panel" ttipo="profile" :elemento="$elemento ?? null"/>
                             </x-slot>
                         </x-label>
                     @endif

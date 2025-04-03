@@ -43,8 +43,8 @@
                 
             </div>
             <div class="col-xs-12 col-sm-6 emphasis">
-                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
-            </div>
+                <x-botones :panel="$panel" tipo="profile" :elemento="$elemento ?? null" /><br/>
+             </div>
         </div>
     </div>
 </div>

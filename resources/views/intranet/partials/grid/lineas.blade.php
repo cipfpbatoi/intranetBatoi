@@ -18,7 +18,7 @@
         @endforeach
         <td>
             <span class="botones">
-                @include('intranet.partials.components.buttons',['tipo'=>'grid'])
+                 <x-botones :panel="$panel" tipo="grid" :elemento="$elemento ?? null"  /><br/>
             </span>
         </td>
     </tr>
