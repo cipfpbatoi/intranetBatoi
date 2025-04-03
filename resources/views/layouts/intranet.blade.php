@@ -13,7 +13,7 @@
             <x-layouts.leftside />
             <x-layouts.topnav />
             @if (isset($panel))
-                <x-layouts.panel :panel="$panel" />
+                <x-layouts.panel :panel="$panel"   />
             @else
                 <x-layouts.page />
             @endif

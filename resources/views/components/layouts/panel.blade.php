@@ -6,7 +6,7 @@
 
                     {{-- Títol del panell --}}
                     <x-layouts.titlebar>
-                        @yield('titulo')
+                        {{  $title }}
                     </x-layouts.titlebar>
                     {{-- Pestanyes --}}
                      <x-ui.tabs id="myTab1" :pestanyes="$pestanyes" />

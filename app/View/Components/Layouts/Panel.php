@@ -8,15 +8,19 @@ use Illuminate\View\Component;
 
 class Panel extends Component
 {
-    public $panel;
+
     public $pestanyes;
+    public $title;
     /**
      * Create a new component instance.
      */
-    public function __construct($panel)
+    public function __construct(
+        public $panel,
+
+    )
     {
-        $this->panel = $panel;
         $this->pestanyes = $panel->getPestanas();
+        $this->title = $panel->getTitulo();
     }
 
     /**
