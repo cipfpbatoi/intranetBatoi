@@ -274,8 +274,7 @@ class Fct extends Model
     }
     public function getDesdeAttribute($entrada)
     {
-        $fecha = new Date($entrada);
-        return $fecha->format('d-m-Y');
+        return (new Date($entrada))->format('d-m-Y');
     }
 
 
@@ -292,9 +291,9 @@ class Fct extends Model
     {
         if (isset($this->Colaboracion->Centro->nombre)) {
             return $this->Colaboracion->Centro->nombre;
-        } else {
-            return 'Convalidada/Exent';
         }
+
+        return 'Convalidada/Exent';
     }
 
     public function getCicloAttribute()

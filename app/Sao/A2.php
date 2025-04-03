@@ -215,7 +215,7 @@ class A2
         $anexeNum
     ): bool {
         $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
-        $annexe = $fctAl->Fct->dual ? 'A'.$anexeNum.'DUAL' : 'A'.$anexeNum;
+        $annexe = $fctAl->Fct->asociacion >= 3 ? 'A'.$anexeNum.'DUAL' : 'A'.$anexeNum;
         $tmpFile = $tmpDirectory.$annexe.".pdf";
         $saveFile = $fctAl->routeFile($annexe);
         $x = config("signatures.files.".$annexe.".owner.x");
