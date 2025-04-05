@@ -91,7 +91,7 @@ class GrupoController extends IntranetController
 
 
 
-        if (AuthUser()->xdepartamento == 'Fol' && date('Y-m-d') > config('variables.certificatFol')) {
+        if (AuthUser()->xdepartamento === 'Fol' && date('Y-m-d') > config('variables.certificatFol')) {
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>['fol','==', 0]]));
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>['fol','==', 1]]));
         }

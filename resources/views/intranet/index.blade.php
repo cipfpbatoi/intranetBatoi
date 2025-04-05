@@ -14,7 +14,7 @@
         @include($pestana->getVista(),$pestana->getFiltro())
     @endsection
 @endforeach
-@section('titulo') 
+@section('titulo')
     {{$panel->getTitulo()}}
 @endsection
 @section('scripts')
