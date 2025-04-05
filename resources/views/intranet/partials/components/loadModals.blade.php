@@ -1,4 +1,4 @@
-@foreach ($pestana->getInclude('modal') as $include)
-    @include('intranet.partials.modal.'.$include)
+@foreach ($panel->getLastPestanaWithModals() as $include)
+    @include('intranet.partials.modal.' . $include)
 @endforeach
 

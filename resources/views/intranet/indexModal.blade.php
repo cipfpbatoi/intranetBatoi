@@ -1,12 +1,8 @@
- <x-layouts.app>
-
-     @php($pestana = $panel->getPestanas()[0])
-
-    {{-- Slot per a scripts (substitueix @section('scripts')) --}}
-    <x-slot name="scripts">
+<x-layouts.app :panel="$panel">
+    @push('scripts')
         @include('intranet.partials.modal.index')
+        @include('intranet.partials.modal.show')
         @include('intranet.partials.components.loadModals')
         @include('js.modaljs')
-    </x-slot>
-
+    @endpush
 </x-layouts.app>

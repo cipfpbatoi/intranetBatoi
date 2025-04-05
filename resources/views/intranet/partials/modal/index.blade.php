@@ -11,4 +11,4 @@
         </div>
     </div>
 </div>
-@include('intranet.partials.modal.show')
+

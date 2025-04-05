@@ -1,13 +1,9 @@
-@extends('layouts.intranet')
-@section('css')
-    <title>Aviso Legal</title>
-@endsection
-@section('content')
+<x-layouts.app  title="Avís Legal">
 	<p><small>La utilización del contenido y/o servicios del portal por parte del usuario supone la aceptación expresa de las siguientes condiciones:</small></p>
 
 	<p><small><strong>Condiciones de uso del portal</strong></small></p>
 
-        <p><small>El <b>"{{ config('contacto.nombre')}}"</b> dependiente de la Conselleria de Educación, Formación y Empleo se reserva el derecho de efectuar modificaciones en el contenido de este portal sin previo aviso, así como de su configuración y presentación.</small></p>
+	<p><small>El <b>"{{ config('contacto.nombre')}}"</b> dependiente de la Conselleria de Educación, Formación y Empleo se reserva el derecho de efectuar modificaciones en el contenido de este portal sin previo aviso, así como de su configuración y presentación.</small></p>
 
 	<p><small>Este portal puede contener enlaces a páginas externas, no siendo la Conselleria de Educación, Formación y Empleo responsable del contenido de dichas páginas externas ni de cualquier otro aspecto relacionado con las mismas.</small></p>
 
@@ -23,8 +19,8 @@
 
 	<p><small>Para ejercer sus derechos de acceso, rectificación, cancelación y oposición al tratamiento de sus datos personales, en los términos y condiciones previstos en la propia normativa vigente en materia de protección de datos, puede comunicarlo por escrito al centro o en el Registro General de la Conselleria de Educación, Formación y Empleo:</small></p>
 
-<p><small><strong>{{ config('contacto.nombre')}}
-	<br>{{ config('contacto.direccion')}} – {{ config('contacto.postal')}} {{ config('contacto.poblacion')}}</strong></small></p>
+	<p><small><strong>{{ config('contacto.nombre')}}
+				<br>{{ config('contacto.direccion')}} – {{ config('contacto.postal')}} {{ config('contacto.poblacion')}}</strong></small></p>
 
 	<p><small>La recogida de sus datos de carácter personal se lleva a cabo con la finalidad principal de poder ofrecer y prestarle los servicios ofrecidos en la presente web.</small></p>
 
@@ -36,9 +32,5 @@
 
 	<p><small>Este Aviso Legal se rige en todos y cada uno de sus extremos por la ley española, siendo competentes para la resolución de cualquier conflicto derivado o relacionado con el uso de este portal los Juzgados y Tribunales de Alicante.</small></p>
 
-@endsection
-@section('titulo')
-    Aviso Legal
-@endsection
-@section('scripts')
-@endsection
+</x-layouts.app>
+

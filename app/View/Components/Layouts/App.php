@@ -9,14 +9,15 @@ use Illuminate\View\Component;
 class App extends Component
 {
     public $user;
-    public $panel;
+
+
     /**
      * Create a new component instance.
      */
-    public function __construct($panel=null)
+    public function __construct(public $panel=null, public $title = ' ' )
     {
         $this->user = authUser();
-        $this->panel = $panel;
+
     }
 
     /**

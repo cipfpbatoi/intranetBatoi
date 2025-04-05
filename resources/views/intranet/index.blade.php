@@ -1,4 +1,3 @@
-
 @extends('layouts.intranet')
 @section('css')
     <title>{{$panel->getTitulo()}}</title>

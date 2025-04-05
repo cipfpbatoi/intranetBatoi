@@ -240,4 +240,12 @@ class Panel
         $this->setTitulo($titulo);
         return $this;
     }
+
+    public function getLastPestanaWithModals(): array
+    {
+        $pestanas = $this->getPestanas();
+        $last = is_array($pestanas) ? end($pestanas) : collect($pestanas)->last();
+
+        return $last?->getInclude('modal') ?? [];
+    }
 }

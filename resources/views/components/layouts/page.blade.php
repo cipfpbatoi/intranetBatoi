@@ -7,13 +7,13 @@
                     {{-- Títol --}}
 
                     <x-layouts.titlebar>
-                        @yield('titulo')
+                        {{  $title }}
                     </x-layouts.titlebar>
 
 
                     {{-- Contingut --}}
                     <div class="x_content">
-                        @yield('content')
+                        {{ $slot }}
                     </div>
 
                     {{-- Alertes --}}

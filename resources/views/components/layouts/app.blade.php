@@ -20,7 +20,7 @@
             @if (isset($panel))
                 <x-layouts.panel :panel="$panel" />
             @else
-                <x-layouts.page>
+                <x-layouts.page :title="$title" >
                     {{ $slot }}
                 </x-layouts.page>
             @endif
