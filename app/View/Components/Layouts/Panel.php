@@ -8,9 +8,7 @@ use Illuminate\View\Component;
 
 class Panel extends Component
 {
-
-    public $pestanyes;
-    public $title;
+     public $title;
     /**
      * Create a new component instance.
      */
@@ -19,8 +17,7 @@ class Panel extends Component
 
     )
     {
-        $this->pestanyes = $panel->getPestanas();
-        $this->title = $panel->getTitulo();
+         $this->title = $panel->getTitulo();
     }
 
     /**

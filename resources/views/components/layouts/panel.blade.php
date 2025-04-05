@@ -9,7 +9,7 @@
                         {{  $title }}
                     </x-layouts.titlebar>
                     {{-- Pestanyes --}}
-                     <x-ui.tabs id="myTab1" :pestanyes="$pestanyes" />
+                     <x-ui.tabs id="myTab1" :panel="$panel" />
                      {{-- Alertes --}}
                     <div class="x_content">
                         {!! Alert::render() !!}

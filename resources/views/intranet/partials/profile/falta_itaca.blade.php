@@ -45,7 +45,7 @@
                                 </p>
                             </x-slot>
                             <x-slot name="botones">
-                                <x-botones :panel="$panel" ttipo="profile" :elemento="$elemento ?? null"/>
+                                <x-botones :panel="$panel"  tipo="profile" :elemento="$elemento ?? null"/>
                             </x-slot>
                         </x-label>
                     @endif

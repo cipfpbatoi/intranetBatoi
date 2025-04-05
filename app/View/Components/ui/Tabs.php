@@ -8,11 +8,13 @@ class Tabs extends Component
 {
     public string $id;
     public $pestanyes;
+    public $panel;
 
-    public function __construct(string $id, $pestanyes)
+    public function __construct(string $id , $panel)
     {
         $this->id = $id;
-        $this->pestanyes = $pestanyes;
+        $this->panel = $panel;
+        $this->pestanyes = $this->panel->getPestanas();
     }
 
     public function render()
