@@ -13,6 +13,7 @@
         </div>
     @endif
     <br/>
-    @include('layouts.partials.error')
+    <x-ui.errors />
+
 </x-modal>
 {{ Html::script("/js/taulaCheck.js") }}

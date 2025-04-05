@@ -7,5 +7,6 @@
         <label class="control-label" for="file">Introduir A3:</label>
         <input type="file" id="file" name="file" class="form-control"/>
     </div>
-    @include('layouts.partials.error')
+    <x-ui.errors />
+
 </x-modal>

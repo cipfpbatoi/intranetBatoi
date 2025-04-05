@@ -4,7 +4,5 @@
         @foreach (session('breadCrum') as $opcio)
             <li class="breadcrumb-item"><a href="#">{{$opcio}}</a></li>
         @endforeach
-
-
     </ol>
 </nav>

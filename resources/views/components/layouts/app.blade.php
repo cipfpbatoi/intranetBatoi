@@ -18,7 +18,9 @@
 
             {{-- Contingut de la pàgina --}}
             @if (isset($panel))
-                <x-layouts.panel :panel="$panel" />
+                <x-layouts.panel :panel="$panel" >
+                    {{ $slot }}
+                </x-layouts.panel>
             @else
                 <x-layouts.page :title="$title" >
                     {{ $slot }}

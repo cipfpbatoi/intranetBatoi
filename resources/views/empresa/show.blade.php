@@ -209,7 +209,8 @@
                 @endforeach
             </div>
         </div>
-        @include('layouts.partials.error')
+        <x-ui.errors />
+
     </div>
     @include('empresa.partials.modalCentro')
     @include('empresa.partials.modalColaboraciones')

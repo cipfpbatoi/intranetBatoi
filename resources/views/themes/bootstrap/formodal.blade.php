@@ -25,6 +25,7 @@
     <button id='close' class="btn btn-danger" data-dismiss="modal" value='' />@lang("messages.buttons.cancel")</button>
     {!! Form::submit(trans('messages.buttons.submit'),['class'=>'btn btn-success','id'=>'submit']) !!}
     {!! Form::close() !!}
-    @include('layouts.partials.error')
+    <x-ui.errors />
+
 </div>
 

@@ -31,4 +31,5 @@
     {!! Form::submit(trans('messages.buttons.submit'),['class'=>'btn btn-success','id'=>'submit']) !!}
     {!! Form::close() !!}
 </div>
-@include('layouts.partials.error')
+<x-ui.errors />
+

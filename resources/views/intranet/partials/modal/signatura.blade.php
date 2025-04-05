@@ -34,5 +34,6 @@
     <br/>
     <label class="control-label" for="password">Introduir Password SAO:</label>
     <input type="password" id="password" name="password" class="form-control"/>
-    @include('layouts.partials.error')
+    <x-ui.errors />
+
 </x-modal>

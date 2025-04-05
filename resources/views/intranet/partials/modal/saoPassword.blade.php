@@ -18,5 +18,6 @@
             <input type="password" id="cert" name="cert" class="form-control"/>
         </div>
     @endif
-    @include('layouts.partials.error')
+    <x-ui.errors />
+
 </x-modal>

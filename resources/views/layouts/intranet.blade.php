@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <x-layouts.meta />
@@ -13,9 +13,9 @@
             <x-layouts.leftside />
             <x-layouts.topnav />
             @if (isset($panel))
-                <x-layouts.panel :panel="$panel"   />
+                @include('layouts.partials.panel')
             @else
-                <x-layouts.page />
+                @include('layouts.partials.content')
             @endif
             <x-layouts.footer />
         </div>
