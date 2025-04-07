@@ -46,6 +46,7 @@ class FormBuilder
         $elemento = $this->elemento;
         $default = $this->default;
         $fillable = $this->fillable;
+
         return view('themes.bootstrap.form', compact('elemento', 'method', 'default', 'fillable'));
     }
 

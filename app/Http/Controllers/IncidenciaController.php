@@ -192,12 +192,4 @@ class IncidenciaController extends ModalController
     }
 
 
-    public function show($id)
-    {
-        $elemento = $this->class::findOrFail($id);
-        $modelo = $this->model;
-        return view('intranet.show', compact('elemento', 'modelo'));
-    }
-
-
 }

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\PerfilFilesRequest;
 use Intranet\Services\DigitalSignatureService;
+use Intranet\Services\FormBuilder;
 use Intranet\Services\ImageService;
 use Intranet\Services\PhotoCarnet;
 use Styde\Html\Facades\Alert;
@@ -27,6 +28,8 @@ class PerfilController extends Perfil
     {
          return parent::edit(AuthUser()->dni);
     }
+
+
 
     public function files()
     {

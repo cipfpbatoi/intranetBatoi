@@ -25,7 +25,7 @@
         <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") @lang("models.modelos.Profesor") ">
     </form>
     <br/>
-    @include('intranet.partials.validationErrors')
 </div>
+<x-ui.errors />
 
 

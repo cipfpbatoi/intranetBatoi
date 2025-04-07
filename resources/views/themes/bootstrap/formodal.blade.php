@@ -3,22 +3,43 @@
     {{ csrf_field() }}
     <input id='metodo' type='hidden' name='_method' value='{{old('_method')}}'/>
     <input id='id' type='hidden' name='id' value='{{old('id')}}'/>
-
     @foreach($fillable as $property)
-        @php $tipo = $default[$property]['type']; @endphp
-        @if ($tipo == 'file')
-            {!! Field::label('Fichero Actual',$elemento->$property) !!}
-            {!! Field::$tipo($property,$default[$property]['params']) !!}
-        @else
-            @if (($tipo == 'date') || ($tipo == 'datetime') || ($tipo == 'time') || ($tipo == 'hora'))
-                {!! Field::text($property,$default[$property]['default'],$default[$property]['params']) !!}
-            @else
-                {!! Field::$tipo($property,$default[$property]['default'],$default[$property]['params']) !!}
-                @if (isset($default[$property]['params']['disabled']))
-                    {!! Field::hidden($property,null,[]) !!}
-                @endif
-            @endif
-        @endif
+        @php
+            $tipo = $default[$property]['type'];
+            $params = $default[$property]['params'] ?? [];
+            $value = $default[$property]['default'];
+        @endphp
+
+        @switch($tipo)
+            @case('file')
+                <x-form.file-input
+                        :name="$property"
+                        label="Fitxer Actual"
+                        :current-file="$elemento->$property"
+                        :params="$params"
+                />
+                @break
+
+            @case('date')
+            @case('datetime')
+            @case('time')
+                <x-form.generic-field
+                        :name="$property"
+                        type="text"
+                        :value="$value"
+                        :params="$params"
+                />
+                @break
+
+            @default
+                <x-form.generic-field
+                        :name="$property"
+                        :type="$tipo"
+                        :value="$value"
+                        :params="$params"
+                />
+        @endswitch
+
     @endforeach
 </div>
 <div class="modal-footer">
@@ -26,6 +47,4 @@
     {!! Form::submit(trans('messages.buttons.submit'),['class'=>'btn btn-success','id'=>'submit']) !!}
     {!! Form::close() !!}
     <x-ui.errors />
-
 </div>
-
