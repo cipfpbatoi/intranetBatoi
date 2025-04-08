@@ -1,0 +1,1 @@
+{!! Field::checkboxes('rol',config('roles.lor'),rolesUser($formulario->getElemento()->rol),['inline','roles'=>['2','11']]) !!}

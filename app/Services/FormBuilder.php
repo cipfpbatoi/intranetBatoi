@@ -2,6 +2,8 @@
 
 namespace Intranet\Services;
 
+use Illuminate\View\View;
+
 class FormBuilder
 {
 
@@ -39,16 +41,17 @@ class FormBuilder
         return $this->default;
     }
 
-
-
-    public function render($method)
-    {
-        $elemento = $this->elemento;
-        $default = $this->default;
-        $fillable = $this->fillable;
-
-        return view('themes.bootstrap.form', compact('elemento', 'method', 'default', 'fillable'));
-    }
+        public function render(string $method = 'POST',? string $afterView = null): View
+        {
+           return view('themes.bootstrap.form', [
+                'elemento' => $this->elemento,
+                'method' => $method,
+                'default' => $this->default,
+                'fillable' => $this->fillable,
+                'afterView' => $afterView,
+                'formulario' => $this,
+            ]);
+        }
 
     public function modal()
     {
@@ -57,9 +60,6 @@ class FormBuilder
         $fillable = $this->fillable;
         return view('themes.bootstrap.formodal', compact('elemento', 'default', 'fillable'));
     }
-
-
-
 
     private function fillDefaultOptionsToForm($formFields)
     {
