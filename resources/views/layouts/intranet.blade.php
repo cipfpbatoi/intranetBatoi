@@ -3,6 +3,7 @@
 <head>
     <x-layouts.meta />
     <link rel="stylesheet" href="{{ mix('css/gentelella.css') }}">
+    <title>@yield('titulo')</title>
     @stack('styles')
     @yield('css')
 </head>

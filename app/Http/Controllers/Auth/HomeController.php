@@ -70,17 +70,19 @@ abstract class HomeController extends Controller
             if (!estaDentro() && !Session::get('userChange')) {
                 Falta_profesor::fichar($usuario->dni);
             }
+            $tabs =  [
+                ['title' => 'messages.generic.nextActivities', 'view' => 'home.partials.activities', 'data' => ['actividades' => $actividades]],
+                ['title' => 'messages.generic.faltas', 'view' => 'home.partials.faltas', 'data' => ['faltas' => $faltas, 'hoyActividades' => $hoyActividades, 'comisiones'  => $comisiones]],
+                ['title' => 'messages.generic.tasks', 'view' => 'home.partials.tasks', 'data' => ['tasks' => $tasks]],
+                ['title' => 'messages.generic.calendari', 'view' => 'home.partials.calendari' ],
+                ['title' => 'messages.generic.timeTable', 'view' => 'home.partials.horario.corto', 'data' => ['horario' => $horario]],
+                ['title' => 'messages.generic.reuniones', 'view' => 'home.partials.reuniones', 'data' => ['reuniones' => $reuniones]],
+
+            ];
             return view(
                 'home.profile',
                 compact(
-                    'usuario',
-                    'horario',
-                    'actividades',
-                    'tasks',
-                    'reuniones',
-                    'faltas',
-                    'hoyActividades',
-                    'comisiones'
+                    'tabs'
                 )
             );
         }

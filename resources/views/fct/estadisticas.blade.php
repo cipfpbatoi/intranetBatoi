@@ -1,8 +1,4 @@
-@extends('layouts.intranet')
-@section('css')
-    <title>Estadistiques FCT</title>
-@endsection
-@section('content')
+<x-layouts.app  title="Estadistiques FCT {{curso()}}">
     <!-- page content -->
     <div class="x_content">
         <h2>Estadístiques FCT {{curso()}}</h2>
@@ -45,12 +41,5 @@
         </table>
     </div>
 
-    <!-- /page content -->
-@endsection
-@section('titulo')
-    Estadistiques FCT {{curso()}}
-@endsection
-@section('scripts')
-
-@endsection
+</x-layouts.app>
 

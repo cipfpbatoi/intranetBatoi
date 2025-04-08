@@ -4,7 +4,7 @@
 @endsection
 @section('grid')
     <x-botones :panel="$panel" tipo="index" :elemento="$elemento ?? null" /><br/>
-    @include('intranet.partials.grid.vacia')
+    <x-grid.table :panel="$panel" :mostrarBody="false" />
 @endsection
 @section('titulo')
     {{$panel->getTitulo()}}

@@ -1,4 +1,4 @@
-<x-layouts.app :panel="$panel">
+<x-layouts.app :panel="$panel"  :title="$panel->getTitulo()">
     @push('scripts')
         @include('intranet.partials.modal.index')
         @include('intranet.partials.modal.show')

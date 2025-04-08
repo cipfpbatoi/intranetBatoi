@@ -45,7 +45,6 @@
     </div>
 @else
     <div>
-        <h2 class="text-lg font-bold mb-4">Calendari de FCT</h2>
         <div class="mt-4">
             <button wire:click="deleteCalendar"
                     class="mb-4 bg-red-500 text-white px-4 py-2 rounded">

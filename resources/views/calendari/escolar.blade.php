@@ -1,14 +1,4 @@
-@extends('layouts.intranet')
-@section('css')
-    <title>Calendari escolar curs  {{curso()}}</title>
-    @livewireStyles
-@endsection
-@section('content')
-    @livewire('calendari-component')
-@endsection
-@section('titulo')
-    Calendari Escolar
-@endsection
-@section('scripts')
-    @livewireScripts
-@endsection
+<x-pages.livewire
+        title="Calendari Escolar curs {{ curso() }}"
+        component="calendari-component"
+/>
