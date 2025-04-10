@@ -2,7 +2,7 @@
     que faré al teu centre de treball per tal de fer el <strong>seguiment de les practiques FCT</strong>
     dels alumnes al teu càrrec.
 </p>
-<p>L'horari que em quedat és <strong>{{$elemento->pivot->hora_ini}}
+<p>L'horari que hem acordat és <strong>{{$elemento->pivot->hora_ini}}
         del {{fechaString($elemento->desde)}}</strong></p>
 <p>Salutacions cordials.</p>
 [peu]
