@@ -251,7 +251,7 @@ return array(
         'Importacion' => 'Importació dades Itaca',
         'Documents' => 'Documentació',
         'Centro' => 'Informació de centre',
-        'Proceso' => 'Gestió Administrativa',
+        'Proceso' => 'Procediments de Gestió',
         'Acta' => 'Actes',
         'Proyecto' => 'Projectes',
         'Reserva' => 'Reserva aules',
