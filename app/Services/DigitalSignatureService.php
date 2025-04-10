@@ -126,10 +126,10 @@ class DigitalSignatureService
             $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
             file_put_contents($newFile, $signed_pdf_content);
 
-
+            /*
             if (!$this->validateUserSignature($newFile)) {
                 throw new IntranetException("Persona que signa diferent al certificat");
-            }
+            }*/
 
 
             Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
