@@ -39,76 +39,121 @@ class PerfilController extends Perfil
 
     public function updateFiles(PerfilFilesRequest $request)
     {
+        $profesor = Profesor::findOrFail(Auth::user('profesor')->dni);
 
-        $new = Profesor::find(Auth::user('profesor')->dni);
-        if ($request->hasFile('foto')) {
-            $fitxer = $request->file('foto');
-            if ($fitxer->isValid()) {
-                if ($new->foto) {
-                    ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos/'.$new->foto));
-                    Alert::info('Modificació foto feta amb exit');
-                } else {
-                    $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
-                    $new->foto = $nameFile;
-                    $new->save();
-                    Alert::info('Foto nova guardada amb exit');
-                }
-            } else {
-                Alert::info('Formato no valido');
-            }
-        }
-        if ($request->hasFile('signatura')) {
-            $signatura = $request->file('signatura');
-            if ($signatura->isValid()) {
-                ImageService::toPng($signatura, storage_path('/app/public/signatures/'.$new->foto));
-                Alert::info('Signatura guardada amb exit');
-            } else {
-                Alert::info('Format no vàlid');
-            }
-        }
-        if ($request->hasFile('peu')) {
-            $signatura = $request->file('peu');
-            if ($signatura->isValid()) {
-                ImageService::toPng($signatura, storage_path('/app/public/peus/'.$new->foto));
-                Alert::info('Peu guardat amb exit');
-            } else {
-                Alert::info('Format no vàlid');
-            }
-        }
-        if ($request->eliminar_certificat) {
-            if (Hash::check($request->password, $new->password)) {
-                DigitalSignatureService::deleteCertificate($new);
-                Alert::info('Certificat eliminat');
-            } else {
-                Alert::info('La contrasenya no és correcta');
-            }
-        }
-        if ($request->hasFile('certificat_digital')) {
-            if ($request->file('certificat_digital')->isValid()) {
-                if (Hash::check($request->password, $new->password)) {
-                    $cert = $request->file('certificat_digital')->getRealPath();
-                    $nameFile = $new->fileName;
-                    DigitalSignatureService::cryptCertificate(
-                        $cert,
-                        $nameFile,
-                        $request->password
-                    );
-                    Alert::info('Certificat guardat amb exit');
-                } else {
-                    Alert::info('La contrasenya no és correcta');
-                }
-            } else {
-                Alert::info('Format no vàlid');
-            }
-        }
+        // Processa cada fitxer o acció en mètodes separats
+        $this->updatePhoto($request, $profesor);
+        $this->updateSignature($request, $profesor);
+        $this->updatePeu($request, $profesor);
+        $this->deleteCertificate($request, $profesor);
+        $this->updateDigitalCertificate($request, $profesor);
 
         return redirect()->back();
+    }
+
+    private function updatePhoto(PerfilFilesRequest $request, Profesor $profesor)
+    {
+        if (!$request->hasFile('foto')) {
+            return;
+        }
+
+        $foto = $request->file('foto');
+        if (!$foto->isValid()) {
+            Alert::info('Format no vàlid');
+            return;
+        }
+
+        if ($profesor->foto) {
+            // Actualitzem la foto si ja existia
+            ImageService::updatePhotoCarnet($foto, storage_path('app/public/fotos/' . $profesor->foto));
+            Alert::info('Modificació de la foto feta amb èxit');
+        } else {
+            // Guardem una foto nova si no en tenia
+            $fileName = ImageService::newPhotoCarnet($foto, storage_path('app/public/fotos'));
+            $profesor->foto = $fileName;
+            $profesor->save();
+
+            Alert::info('Foto nova guardada amb èxit');
+        }
+    }
+
+    private function updateSignature(PerfilFilesRequest $request, Profesor $profesor)
+    {
+        if (!$request->hasFile('signatura')) {
+            return;
+        }
+
+        $signatura = $request->file('signatura');
+        if (!$signatura->isValid()) {
+            Alert::info('Format no vàlid');
+            return;
+        }
+
+        // Si vols guardar-ho amb el mateix nom que la foto (segons el teu codi original):
+        ImageService::toPng($signatura, storage_path('app/public/signatures/' . $profesor->foto));
+        Alert::info('Signatura guardada amb èxit');
+    }
+
+    private function updatePeu(PerfilFilesRequest $request, Profesor $profesor)
+    {
+        if (!$request->hasFile('peu')) {
+            return;
+        }
+
+        $peu = $request->file('peu');
+        if (!$peu->isValid()) {
+            Alert::info('Format no vàlid');
+            return;
+        }
+
+        ImageService::toPng($peu, storage_path('app/public/peus/' . $profesor->foto));
+        Alert::info('Peu guardat amb èxit');
+    }
+
+    private function deleteCertificate(PerfilFilesRequest $request, Profesor $profesor)
+    {
+        if (!$request->eliminar_certificat) {
+            return;
+        }
+
+        if (!Hash::check($request->password, $profesor->password)) {
+            Alert::info('La contrasenya no és correcta');
+            return;
+        }
+
+        DigitalSignatureService::deleteCertificate($profesor);
+        Alert::info('Certificat eliminat');
+    }
+
+    private function updateDigitalCertificate(PerfilFilesRequest $request, Profesor $profesor)
+    {
+        if (!$request->hasFile('certificat_digital')) {
+            return;
+        }
+
+        $certificatDigital = $request->file('certificat_digital');
+        if (!$certificatDigital->isValid()) {
+            Alert::info('Format no vàlid');
+            return;
+        }
+
+        if (!Hash::check($request->password, $profesor->password)) {
+            Alert::info('La contrasenya no és correcta');
+            return;
+        }
+
+        // Assumint que $profesor->fileName és on es guarda el nom del certificat
+        $certPath = $certificatDigital->getRealPath();
+        $nameFile = $profesor->fileName;
+
+        DigitalSignatureService::cryptCertificate($certPath, $nameFile, $request->password);
+        Alert::info('Certificat guardat amb èxit');
     }
 
 
     public function update(Request $request, $id=null)
     {
-        $new = $this->class::find(Auth::user('profesor')->dni);
+        $new = Profesor::find(Auth::user('profesor')->dni);
         if (isset($request->mostrar)) {
             $new->mostrar = $request->mostrar;
         } else {

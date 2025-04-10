@@ -70,9 +70,7 @@ return array(
                 'list' => 'Professorat Absents',
                 'horario-cambiar' => 'Canviar horari Professorat',
                 'titulo' => 'Documentació Addicional Pràctiques de :quien',
-        ),
-        'profesor' => array(
-            'files' => "Fitxers de l'usuari",
+                'files' => "Fitxers de l'usuari",
         ),
         'Menu' => array(
                 'index' => 'Elements del menú',

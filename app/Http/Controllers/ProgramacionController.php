@@ -19,7 +19,6 @@ class ProgramacionController extends IntranetController
 
     protected $model = 'Programacion';
     protected $gridFields = ['Xciclo','XModulo', 'situacion'];
-    protected $vista = ['seguimiento' => 'programacion.seguimiento'];
     protected $modal = false;
     protected $items = 6;
     
@@ -47,7 +46,7 @@ class ProgramacionController extends IntranetController
     protected function seguimiento($id)
     {
         $elemento = Programacion::findOrFail($id);
-        return view($this->chooseView('seguimiento'), compact('elemento'));
+        return view('programacion.seguimiento', compact('elemento'));
     }
 
 

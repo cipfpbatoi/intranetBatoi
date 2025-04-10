@@ -71,10 +71,7 @@ return array(
                 'list' => 'Profesores Ausentes',
                 'horario-cambiar' => 'Cambiar horario Profesor',
                 'titulo' => 'Documentación Adicional Prácticas de :quien',
-
-        ),
-        'profesor' => array(
-            'files' => "Ficheros del usuario",
+                'files' => "Ficheros del usuario",
         ),
         'Menu' => array(
                 'index' => 'Elementos del menú',

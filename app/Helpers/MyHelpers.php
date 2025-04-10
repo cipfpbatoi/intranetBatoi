@@ -3,7 +3,16 @@
 use Intranet\Entities\Profesor;
 use Jenssegers\Date\Date;
 
+function asset_nocache(string $path)
+{
+    $realPath = public_path($path);
 
+    $version = file_exists($realPath)
+        ? filemtime($realPath)
+        : time();
+
+    return asset($path) . '?v=' . $version;
+}
 
 function emailConselleria($nombre, $apellido1, $apellido2)
 {

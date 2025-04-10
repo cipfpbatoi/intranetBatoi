@@ -1,5 +1,4 @@
 <?php
-
 namespace Intranet\Services;
 
 use Styde\Html\Str;
@@ -11,6 +10,7 @@ class ImageService
 
     private static function transform($fitxerOriginal)
     {
+        // Creem la imatge segons l’extensió
         if ($fitxerOriginal->extension() !== 'png') {
             $imatgeOriginal = imagecreatefromjpeg($fitxerOriginal);
         } else {
@@ -19,7 +19,10 @@ class ImageService
 
         $ampladaOriginal = imagesx($imatgeOriginal);
         $alcadaOriginal = imagesy($imatgeOriginal);
+
+        // Creem la imatge redimensionada
         $imatgeRedimensionada = imagecreatetruecolor(self::WIDTH, self::HEIGHT);
+
         imagecopyresampled(
             $imatgeRedimensionada,
             $imatgeOriginal,
@@ -32,36 +35,48 @@ class ImageService
             $ampladaOriginal,
             $alcadaOriginal
         );
-        imagedestroy($imatgeOriginal);
-        imagedestroy($imatgeRedimensionada);
 
+        // Només destruïm la imatge original, no la redimensionada
+        imagedestroy($imatgeOriginal);
+
+        // Retornem la imatge redimensionada i no la toquem fins que la guardem
         return $imatgeRedimensionada;
     }
 
-    public static function updatePhotoCarnet($fitxerOriginal,$fitxerDesti)
+    public static function updatePhotoCarnet($fitxerOriginal, $fitxerDesti)
     {
         $imatgeRedimensionada = self::transform($fitxerOriginal);
-        return imagepng($imatgeRedimensionada, $fitxerDesti) ;
+        $result = imagepng($imatgeRedimensionada, $fitxerDesti);
+        imagedestroy($imatgeRedimensionada); // Aquí sí, després de guardar
+
+        return $result;
     }
-    public static function newPhotoCarnet($fitxerOriginal,$directoriDesti) : String
+
+    public static function newPhotoCarnet($fitxerOriginal, $directoriDesti) : string
     {
         $imatgeRedimensionada = self::transform($fitxerOriginal);
 
         $nomFitxer = Str::random(40) . '.png';
         $fitxerDesti = $directoriDesti . '/' . $nomFitxer;
+
         imagepng($imatgeRedimensionada, $fitxerDesti);
+        imagedestroy($imatgeRedimensionada);
 
         return $nomFitxer;
     }
 
     public static function toPng($fitxerOriginal, $fitxerDesti)
     {
-
         if ($fitxerOriginal->extension() !== 'png') {
             $imatgeOriginal = imagecreatefromjpeg($fitxerOriginal);
             imagepng($imatgeOriginal, $fitxerDesti);
+            imagedestroy($imatgeOriginal);
         } else {
-            $fitxerOriginal->move(pathinfo($fitxerDesti, PATHINFO_DIRNAME), pathinfo($fitxerDesti, PATHINFO_BASENAME));
+            // Si ja és PNG, simplement el movem
+            $fitxerOriginal->move(
+                pathinfo($fitxerDesti, PATHINFO_DIRNAME),
+                pathinfo($fitxerDesti, PATHINFO_BASENAME)
+            );
         }
     }
 }
