@@ -132,7 +132,7 @@ return array(
                 'hini' => "Hora d'inici",
                 'hfin' => 'Hora de fi',
                 'comentarios' => 'Comentaris',
-                'descripcion' => 'Justificació RA',
+                'descripcion' => 'Descripció',
                 'objetivos' => 'Objectius',
                 'desde' => "Data d'inici",
                 'hasta' => 'Data de fin',

@@ -519,7 +519,8 @@ return array(
             'index' => 'Mostra Articles',
             'edit' => 'Editar Article',
             'show' => 'Mostrar Article',
-            'delete' => 'Esborrar Article'
+            'delete' => 'Esborrar Article',
+            'create' => 'Crear Article',
         ),
         'Sao' => array(
             'post' => 'Connexió SAO',

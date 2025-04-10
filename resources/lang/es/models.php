@@ -509,10 +509,11 @@ return array(
             'show' => 'Ver Materiales'
         ),
         'Articulo' => array(
-            'index' => 'Mostra Articulos',
-            'edit' => 'Editar Articulo',
-            'show' => 'Mostrar Articulo',
-            'delete' => 'Eliminar Articulo'
+            'index' => 'Mostra Artículos',
+            'edit' => 'Editar Artículo',
+            'show' => 'Mostrar Artículo',
+            'delete' => 'Eliminar Artículo',
+            'create' => 'Crear Artículo'
         ),
         'Sao' => array(
             'post' => 'Conexión SAO',
