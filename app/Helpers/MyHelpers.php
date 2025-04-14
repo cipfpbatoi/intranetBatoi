@@ -437,7 +437,7 @@ function getClass($str)
     return substr($str, strlen("Intranet\Entities\\"));
 }
 
-function literal()
+function my_literal()
 {
     return App::getLocale(session('lang')) == 'es' ? 'cliteral' : 'vliteral';
 }

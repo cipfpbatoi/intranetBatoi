@@ -91,7 +91,7 @@ class CalendariComponent extends Component
 
         $this->carregarDies(); // Actualitza el calendari
         $this->resetSeleccionat();
-        $this->dispatchBrowserEvent('tancarModal');
+        $this->dispatch ('tancarModal');
     }
 
     public function resetSeleccionat()
@@ -99,7 +99,7 @@ class CalendariComponent extends Component
         $this->seleccionat = null;
         $this->tipus = null;
         $this->esdeveniment = null;
-        $this->dispatchBrowserEvent('tancarModal');
+        $this->dispatch ('tancarModal');
     }
     public function cancelarEdicio()
     {
