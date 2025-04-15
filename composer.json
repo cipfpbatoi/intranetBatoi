@@ -10,7 +10,7 @@
     "require": {
         "php": "^8.2",
         "ext-gd": "*",
-        "barryvdh/laravel-dompdf": "^2.0",
+        "barryvdh/laravel-dompdf": "^3.0",
         "barryvdh/laravel-snappy": "^1.0.0",
         "doctrine/dbal": "^3",
         "eluceo/ical": "^0.13.0",
