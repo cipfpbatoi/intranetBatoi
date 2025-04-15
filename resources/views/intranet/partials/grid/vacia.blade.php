@@ -1,0 +1,1 @@
+<x-grid.table :panel="$panel" :pestana="$pestana" :elementos="$panel->getElementos($pestana)"  mostrarBody="false" />
