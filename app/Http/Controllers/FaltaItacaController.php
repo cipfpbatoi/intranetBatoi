@@ -12,7 +12,7 @@ use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 class FaltaItacaController extends IntranetController
 {
@@ -75,7 +75,7 @@ class FaltaItacaController extends IntranetController
 
     private static function nameFile(String $desde)
     {
-        $fecha = new Date($desde);
+        $fecha =  Carbon::parse($desde);
         return 'gestor/' . Curso() . '/informes/' . 'Birret' . $fecha->format('M') . '.pdf';
     }
 

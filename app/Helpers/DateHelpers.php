@@ -2,7 +2,7 @@
 
 function periodePractiques($fecha = null)
 {
-    $inici = $fecha ? new Date($fecha) : new Date(hoy());
+    $inici = $fecha ?  Carbon::parse($fecha) :  Carbon::parse(hoy());
     $inici->format('Y-m-d');
     if ($inici <= config('curso.fct.2')['inici']) {
         return 1;
@@ -13,13 +13,13 @@ function periodePractiques($fecha = null)
 
 function fechaCurta($fecha)
 {
-    $hoy = new Date($fecha);
+    $hoy =  Carbon::parse($fecha);
     return $hoy->format("d/m");
 }
 
 function fecha($fecha)
 {
-    $hoy = new Date($fecha);
+    $hoy =  Carbon::parse($fecha);
     return $hoy->toDateString();
 }
 function fechaSao($fecha)
@@ -42,15 +42,15 @@ function fechaInglesa($fecha)
 
 function fechaInglesaLarga($fecha)
 {
-    $hoy = new Date($fecha);
+    $hoy =  Carbon::parse($fecha);
     return $hoy->format('Y-m-d H:i:s');
 }
 
 function buildFecha($fecha, $hora)
 {
-    $date = new Date($fecha);
+    $date =  Carbon::parse($fecha);
     $str = $date->format('Y-m-d');
-    return new DateTime($str." ".$hora.":00");
+    return  Carbon::parseTime($str." ".$hora.":00");
 
 }
 function fechaString($fecha = null, $idioma = null)
@@ -60,7 +60,7 @@ function fechaString($fecha = null, $idioma = null)
     if (!isset($idioma)) {
         $idioma = Session::get('lang');
     }
-    Jenssegers\Date\Date::setlocale($idioma);
+    Jenssegers\Date\ Carbon::setlocale($idioma);
 
     return $fc1->format('d') . ' de ' . $fc1->format('F') .
             ' de ' . $fc1->format('Y');
@@ -68,48 +68,48 @@ function fechaString($fecha = null, $idioma = null)
 
 function hoy($format = null)
 {
-    $fecha = new Date();
+    $fecha =  Carbon::parse();
     return $format ? $fecha->format($format) : $fecha->toDateString();
 }
 
 function ayer()
 {
-    $fecha = new Date();
+    $fecha =  Carbon::parse();
     $fecha->subDay(1);
     return $fecha->toDateString();
 }
 
 function hace($days)
 {
-    $fecha = new Date();
+    $fecha =  Carbon::parse();
     $fecha->subDay($days);
     return $fecha->format('Y-m-d');
 }
 
 function dentro($days)
 {
-    $fecha = new Date();
+    $fecha =  Carbon::parse();
     $fecha->addDay($days);
     return $fecha->format('Y-m-d');
 }
 
 function manana($format = null)
 {
-    $fecha = new Date();
+    $fecha =  Carbon::parse();
     $fecha->addDay(1);
     return $format ? $fecha->format($format) : $fecha->toDateString();
 }
 {
-    $fecha = new Date();
+    $fecha =  Carbon::parse();
     $fecha->addDay(1);
     return $fecha;
 }
 
 function fechaPosterior($fecha1, $fecha2 = null)
 {
-    $fecha2 = is_string($fecha2) ? new Date($fecha2) : $fecha2;
-    $fecha2 = $fecha2 ?? new Date();
-    $fecha1 = is_string($fecha1) ? new Date($fecha1) : $fecha1;
+    $fecha2 = is_string($fecha2) ?  Carbon::parse($fecha2) : $fecha2;
+    $fecha2 = $fecha2 ??  Carbon::parse();
+    $fecha1 = is_string($fecha1) ?  Carbon::parse($fecha1) : $fecha1;
     return $fecha1 > $fecha2 ? $fecha1 : $fecha2;
 }
 
@@ -126,16 +126,16 @@ function vigente($fecha1, $fecha2)
 
 function esMismoDia($ini, $fin)
 {
-    $fec1 = new Date($ini);
-    $fec2 = new Date($fin);
+    $fec1 =  Carbon::parse($ini);
+    $fec2 =  Carbon::parse($fin);
 
     return $fec1->isSameDay($fec2) ? true : false;
 }
 
 function esMayor($ini, $fin)
 {
-    $fec1 = new Date($ini);
-    $fec2 = new Date($fin);
+    $fec1 =  Carbon::parse($ini);
+    $fec2 =  Carbon::parse($fin);
 
     return $fec1 > $fec2 ? true : false;
 }
@@ -162,7 +162,7 @@ function month($fecha)
 {
     $idioma = Session::get('lang');
     $fc1 = new Jenssegers\Date\Date($fecha);
-    Jenssegers\Date\Date::setlocale($idioma);
+    Jenssegers\Date\ Carbon::setlocale($idioma);
     return $fc1->format('F');
 }
 
@@ -183,7 +183,7 @@ function hour($fecha)
 {
     $idioma = Session::get('lang');
     $fc1 = new Jenssegers\Date\Date($fecha);
-    Jenssegers\Date\Date::setlocale($idioma);
+    Jenssegers\Date\ Carbon::setlocale($idioma);
     return $fc1->format('H:i');
 }
 
@@ -207,7 +207,7 @@ function nameDay($fecha)
  */
 function hora($fecha = null)
 {
-    $fc1 = $fecha ? new Date($fecha) : new Date();
+    $fc1 = $fecha ?  Carbon::parse($fecha) :  Carbon::parse();
     return $fc1->format('H:i');
 }
 

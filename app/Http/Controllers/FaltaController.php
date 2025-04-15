@@ -21,7 +21,7 @@ use Intranet\Services\AdviseTeacher;
 use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 
 /**
@@ -80,7 +80,7 @@ class FaltaController extends IntranetController
      */
     private static function nameFile():string
     {
-        return 'gestor/' . Curso() . '/informes/' . 'Falta' . new Date() . '.pdf';
+        return 'gestor/' . Curso() . '/informes/' . 'Falta' .  Carbon::parse() . '.pdf';
     }
 
 
@@ -153,7 +153,7 @@ class FaltaController extends IntranetController
 
     protected function createWithDefaultValues($default = [])
     {
-        $data = new Date('tomorrow');
+        $data =  Carbon::parse('tomorrow');
         return new Falta(['desde'=>$data,'hasta'=>$data,'idProfesor'=>AuthUser()->dni]);
     }
 
@@ -186,7 +186,7 @@ class FaltaController extends IntranetController
         $elemento = Falta::findOrFail($id);
         DB::transaction(function () use ($elemento) {
             $elemento->estado = 3;
-            $elemento->hasta = new Date();
+            $elemento->hasta =  Carbon::parse();
             $elemento->baja = 0;
             $elemento->save();
             // quita la  baja del profesor
@@ -216,8 +216,8 @@ class FaltaController extends IntranetController
      */
     public static function printReport($request)
     {
-        $desde = new Date($request->desde);
-        $hasta = new Date($request->hasta);
+        $desde =  Carbon::parse($request->desde);
+        $hasta =  Carbon::parse($request->hasta);
         if ($request->mensual != 'on') {
             return self::hazPdf(
                 "pdf.comunicacioAbsencia",
@@ -257,7 +257,7 @@ class FaltaController extends IntranetController
     private static function tramitaBajaProfesor($idProfesor, $fecha)
     {
         $profe = Profesor::find($idProfesor);
-        $profe->fecha_baja = new Date($fecha);
+        $profe->fecha_baja =  Carbon::parse($fecha);
         $profe->save();
     }
 

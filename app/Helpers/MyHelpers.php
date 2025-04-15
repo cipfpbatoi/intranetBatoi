@@ -1,7 +1,7 @@
 <?php
 
 use Intranet\Entities\Profesor;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 function asset_nocache(string $path)
 {
@@ -123,7 +123,7 @@ function evaluacion()
 
 function curso()
 {
-    $hoy = new Date();
+    $hoy =  Carbon::parse();
     $ano = $hoy->format('Y');
     $mes = $hoy->format('m');
     $curso = $mes > '07' ? $ano : $ano - 1;
@@ -132,7 +132,7 @@ function curso()
 }
 function cursoAnterior()
 {
-    $hoy = new Date();
+    $hoy =  Carbon::parse();
     $ano = $hoy->format('Y');
     $mes = $hoy->format('m');
     $curso = $mes > '07' ? $ano : $ano - 1;

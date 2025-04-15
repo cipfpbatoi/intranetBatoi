@@ -10,7 +10,7 @@ use Intranet\Http\Requests\CursoRequest;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Jobs\SendEmail;
 use Intranet\Services\GestorService;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Styde\Html\Facades\Alert;
 
 /**
@@ -104,7 +104,7 @@ class CursoController extends ModalController
                 'tags' => 'Curs',
                 'fichero' => $elemento->fichero,
                 'supervisor' => AuthUser()->shortName,
-                'created_at' => new Date($elemento->fecha_fin),
+                'created_at' =>  Carbon::parse($elemento->fecha_fin),
                 'rol' => config('roles.rol.direccion')]);
             $elemento->archivada = 1;
             $elemento->save();

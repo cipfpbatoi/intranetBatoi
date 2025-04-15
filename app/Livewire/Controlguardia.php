@@ -6,7 +6,7 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\Guardia;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 class Controlguardia extends Component
 {
@@ -20,8 +20,8 @@ class Controlguardia extends Component
     {
         $this->horas = Hora::all();
         $this->dias  = array('L','M','X','J','V');
-        $this->firstDay = new Date('last monday');
-        $this->lastDay = new Date('last monday');
+        $this->firstDay =  Carbon::parse('last monday');
+        $this->lastDay =  Carbon::parse('last monday');
         $this->lastDay->addDays(5);
     }
 

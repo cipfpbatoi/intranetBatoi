@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 class Solicitud extends Model
 {
@@ -33,13 +33,13 @@ class Solicitud extends Model
     
     public function getfechaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha =  Carbon::parse($entrada);
         return $fecha->format('d-m-Y');
     }
 
     public function getfechasolucionAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha =  Carbon::parse($salida);
         return $fecha->format('d-m-Y');
     }
 

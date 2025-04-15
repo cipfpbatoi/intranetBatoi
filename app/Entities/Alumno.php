@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany};
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 class Alumno extends Authenticatable
 {
@@ -114,7 +114,7 @@ class Alumno extends Authenticatable
 
     public function scopeMenor(Builder $query, ?string $fecha = null): Builder
     {
-        $fechaLimite = ($fecha ? new Date($fecha) : new Date())->subYears(18)->toDateString();
+        $fechaLimite = ($fecha ?  Carbon::parse($fecha) :  Carbon::parse())->subYears(18)->toDateString();
         return $query->where('fecha_nac', '>', $fechaLimite);
     }
 
@@ -157,7 +157,7 @@ class Alumno extends Authenticatable
 
     public function getFechaNacAttribute(?string $entrada): ?string
     {
-        return $entrada ? (new Date($entrada))->format('d-m-Y') : null;
+        return $entrada ? ( Carbon::parse($entrada))->format('d-m-Y') : null;
     }
 
     public function getPoblacionAttribute(): string
@@ -167,7 +167,7 @@ class Alumno extends Authenticatable
 
     public function getEsMenorAttribute(): bool
     {
-        return $this->fecha_nac ? (new Date($this->fecha_nac))->gt((new Date())->subYears(18)) : false;
+        return $this->fecha_nac ? ( Carbon::parse($this->fecha_nac))->gt(( Carbon::parse())->subYears(18)) : false;
     }
 
     public function esMenorEdat($fecha)
@@ -180,7 +180,7 @@ class Alumno extends Authenticatable
 
     public function getEdatAttribute(): ?int
     {
-        return $this->fecha_nac ? (new Date($this->fecha_nac))->age : null;
+        return $this->fecha_nac ? ( Carbon::parse($this->fecha_nac))->age : null;
     }
 
     public function getFullNameAttribute(): string

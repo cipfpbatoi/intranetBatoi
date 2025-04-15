@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Intranet\Componentes\Pdf;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Styde\Html\Facades\Alert;
 
 
@@ -140,7 +140,7 @@ trait Autorizacion
             $pdf = Pdf::hazPdf("pdf.$modelo", $todos, null, $orientacion);
 
             // Nom del fitxer
-            $nom = $this->model . new Date() . '.pdf';
+            $nom = $this->model .  Carbon::parse() . '.pdf';
             $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
             $tags = config("modelos.$this->model.documento");
 

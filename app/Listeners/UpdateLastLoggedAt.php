@@ -5,7 +5,7 @@ namespace Intranet\Listeners;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 class UpdateLastLoggedAt
 {
@@ -28,7 +28,7 @@ class UpdateLastLoggedAt
      */
     public function handle(Logout $event)
     {
-        $event->user->last_logged = Date::now()->toDateTimeString();
+        $event->user->last_logged =  Carbon::now()->toDateTimeString();
         $event->user->save(['timestamps' => false]);
     }
 

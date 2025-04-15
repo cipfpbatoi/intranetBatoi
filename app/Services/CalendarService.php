@@ -20,11 +20,11 @@ class CalendarService
     public static function build($elemento, $descripcion='descripcion', $objetivos='objetivos')
     {
         if (isset($elemento->desde)) {
-            $ini =  new DateTime($elemento->desde);
-            $fin = new DateTime($elemento->hasta);
+            $ini =   Carbon::parseTime($elemento->desde);
+            $fin =  Carbon::parseTime($elemento->hasta);
         } else {
-            $ini = new DateTime($elemento->fecha);
-            $fin = new DateTime($elemento->fecha);
+            $ini =  Carbon::parseTime($elemento->fecha);
+            $fin =  Carbon::parseTime($elemento->fecha);
             $fin->add(new \DateInterval("PT1H"));
         }
         return self::render(

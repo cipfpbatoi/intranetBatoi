@@ -27,14 +27,14 @@ class JWTTokenService
     public function createTokenProgramacio($idModuleGrupo,$dni=null)
     {
         $moduleGrupo =Modulo_grupo::findOrFail($idModuleGrupo);
-        $now = new DateTimeImmutable();
+        $now =  Carbon::parseTimeImmutable();
         if (!$dni){
             $user = authUser();
             $expiresAt = $now->modify('+' . config('jwt.expiry') . ' seconds');
         } else {
             $user = Profesor::findOrFail($dni);
             $year = $now->format('Y');
-            $expiresAt = new DateTimeImmutable(self::EXPIRATION_DATE . " $year");
+            $expiresAt =  Carbon::parseTimeImmutable(self::EXPIRATION_DATE . " $year");
         }
 
          $token = $this->config->builder()

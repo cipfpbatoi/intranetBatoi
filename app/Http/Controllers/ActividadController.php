@@ -23,7 +23,7 @@ use Intranet\Services\CalendarService;
 use Intranet\Services\GestorService;
 use Intranet\Services\GoogleCalendarService;
 use Intranet\Services\StateService;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Response;
 use Styde\Html\Facades\Alert;
 
@@ -62,7 +62,7 @@ class ActividadController extends ModalController
 
     protected function createWithDefaultValues( $default=[])
     {
-        $data = new Date('tomorrow');
+        $data =  Carbon::parse('tomorrow');
         return new Actividad(['extraescolar' => 1,'desde'=>$data,'hasta'=>$data,'poll' => 0,'recomanada'=>1,'complementaria'=>1,'fueraCentro'=>0,'transport'=>0]);
     }
 
@@ -279,7 +279,7 @@ class ActividadController extends ModalController
         $this->panel->setBoton('grid',new BotonImg('actividad.value', ['img'=>'fa-eyedropper','where' => ['estado', '>=', '3','hasta','anterior',Hoy()]]));
         $this->panel->setBoton('grid', new BotonImg('actividad.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('profile', new BotonIcon('actividad.delete', ['class' => 'btn-danger', 'where' => ['estado', '<', '2']]));
-        $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Date::yesterday()]]));
+        $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior',  Carbon::yesterday()]]));
     }
 
     public function autorizar()

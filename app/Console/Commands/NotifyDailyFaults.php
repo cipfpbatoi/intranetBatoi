@@ -11,7 +11,7 @@ use Intranet\Entities\Guardia;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FicharController;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 
 class NotifyDailyFaults extends Command
@@ -88,7 +88,7 @@ class NotifyDailyFaults extends Command
         $profesores = Profesor::select('dni')->Activo()->get();
         foreach ($profesores as $profesor) {
             if (Falta_profesor::haFichado($dia, $profesor->dni)->count() == 0 &&
-                Horario::Profesor($profesor->dni)->Dia(nameDay(new Date($dia)))->count() > 1) {
+                Horario::Profesor($profesor->dni)->Dia(nameDay( Carbon::parse($dia)))->count() > 1) {
                 $noHanFichado[$profesor->dni] = $profesor->dni;
             }
         }

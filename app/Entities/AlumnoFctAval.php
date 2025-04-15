@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Alumno;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Entities\AlumnoFct;
 
 class AlumnoFctAval extends AlumnoFct

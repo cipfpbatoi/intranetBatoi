@@ -11,7 +11,7 @@ use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Traits\Imprimir;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Response;
 use Styde\Html\Facades\Alert;
 
@@ -246,7 +246,7 @@ class InstructorController extends IntranetController
      */
     private function ultimaFecha($fcts)
     {
-        $posterior = new Date();
+        $posterior =  Carbon::parse();
         foreach ($fcts as $fct) {
             $posterior = FechaPosterior($fct->hasta, $posterior);
         }

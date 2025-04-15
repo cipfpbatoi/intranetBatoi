@@ -20,7 +20,7 @@ use Intranet\Entities\Reunion;
 use Intranet\Entities\TipoReunion;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\GestorService;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Styde\Html\Facades\Alert;
 
 
@@ -136,7 +136,7 @@ class PanelListadoEntregasController extends BaseController
                         'supervisor' => $reunion->idProfesor,
                         'grupo' => str_replace(' ', '_', $reunion->Xgrupo),
                         'tags' => TipoReunion::find($reunion->tipo)->vliteral . ',' . config('auxiliares.numeracion')[$reunion->numero],
-                        'created_at' => new Date($reunion->fecha),
+                        'created_at' =>  Carbon::parse($reunion->fecha),
                         'rol' => config('roles.rol.profesor')]);
 
         });

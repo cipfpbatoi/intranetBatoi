@@ -7,7 +7,7 @@ use Intranet\Entities\Material;
 use Intranet\Entities\MaterialBaja;
 
 use Intranet\Http\Resources\MaterialResource;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
 
 class MaterialController extends ApiBaseController
@@ -178,7 +178,7 @@ class MaterialController extends ApiBaseController
 
     public function putInventario(Request $request)
     {
-        $fecha = new Date();
+        $fecha =  Carbon::parse();
 
         $material = Material::findOrFail($request->id);
         if ($request->inventario == 'true') {

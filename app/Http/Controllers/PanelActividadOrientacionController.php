@@ -6,7 +6,7 @@ use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Intranet\Entities\Actividad;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 
 /**
@@ -49,7 +49,7 @@ class PanelActividadOrientacionController extends IntranetController
         $this->panel->setBothBoton('actividad.edit');
         $this->panel->setBoton('grid', new BotonImg('actividad.delete'));
         $this->panel->setBoton('profile', new BotonIcon('actividad.delete', ['class' => 'btn-danger']));
-        $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Date::yesterday()]]));
+        $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior',  Carbon::yesterday()]]));
     }
 
 

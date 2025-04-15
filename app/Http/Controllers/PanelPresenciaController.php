@@ -9,7 +9,7 @@ use Intranet\Entities\Actividad;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Falta;
 use Illuminate\Support\Facades\Session;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Entities\Horario;
 
 
@@ -25,7 +25,7 @@ class PanelPresenciaController extends BaseController
     {
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $dia = $dia ? $dia : Hoy();
-        $fdia = new Date($dia);
+        $fdia =  Carbon::parse($dia);
         $this->panel->dia = $fdia->toDateString();
         $this->panel->anterior = $fdia->subDay()->toDateString();
         $this->panel->posterior = $fdia->addDays(2)->toDateString();
@@ -48,7 +48,7 @@ class PanelPresenciaController extends BaseController
         $noHanFichado = [];
         foreach ($profesores as $profesor) {
             if (Falta_profesor::haFichado($dia, $profesor->dni)->count() == 0) {
-                if (Horario::Profesor($profesor->dni)->Dia(nameDay(new Date($dia)))->count() > 1) {
+                if (Horario::Profesor($profesor->dni)->Dia(nameDay( Carbon::parse($dia)))->count() > 1) {
                     $noHanFichado[$profesor->dni] = $profesor->dni;
                 }
             }

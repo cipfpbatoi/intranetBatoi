@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Events\FctAlDeleted;
 
 
@@ -218,7 +218,7 @@ class AlumnoFct extends Model
 
     public function getDesdeAttribute($entrada)
     {
-        return (new Date($entrada))->format('d-m-Y');
+        return ( Carbon::parse($entrada))->format('d-m-Y');
     }
 
     public function getHastaAttribute($entrada)
@@ -244,9 +244,9 @@ class AlumnoFct extends Model
 
     private function determinarFonsPerData()
     {
-        $hoy = Date::now();
-        $fechaHasta = new Date($this->hasta);
-        $fechaDesde = new Date($this->desde);
+        $hoy =  Carbon::now();
+        $fechaHasta =  Carbon::parse($this->hasta);
+        $fechaDesde =  Carbon::parse($this->desde);
 
         if ($fechaHasta->format('Y-m-d') <= $hoy->format('Y-m-d')) {
             return self::BG_BLUE_SKY;

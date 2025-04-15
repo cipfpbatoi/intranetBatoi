@@ -17,7 +17,7 @@ use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Instructor;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Styde\Html\Facades\Alert;
 
 
@@ -192,7 +192,7 @@ class Importa
         // Recollir dades bàsiques
         $concierto = $driver->findElement(WebDriverBy::cssSelector("#tdNumConciertoEmp"))->getText();
         $data_conveni = $driver->findElement(WebDriverBy::cssSelector("#tdFechaConciertoEmp"))->getText();
-        $date = Date::createFromFormat('d/m/Y', $data_conveni);
+        $date =  Carbon::createFromFormat('d/m/Y', $data_conveni);
         $cif = $driver->findElement(WebDriverBy::cssSelector("table.infoUsuario.infoEmpresa tbody tr:nth-child(2) td:nth-child(1)"))->getText();
 
         // Obtenir idSao
@@ -248,7 +248,7 @@ class Importa
         $concierto = $driver->findElement(WebDriverBy::cssSelector("#tdNumConciertoEmp"))->getText();
         $dada['concierto'] = $concierto;
         $data_conveni = $driver->findElement(WebDriverBy::cssSelector("#tdFechaConciertoEmp"))->getText();
-        $date = Date::createFromFormat('d/m/Y', $data_conveni);
+        $date =  Carbon::createFromFormat('d/m/Y', $data_conveni);
         $dada['data_conveni'] = $date->format('Y-m-d');
         $table1 = $driver
             ->findElement(WebDriverBy::cssSelector("table.infoUsuario.infoEmpresa tbody tr:nth-child(2)"));

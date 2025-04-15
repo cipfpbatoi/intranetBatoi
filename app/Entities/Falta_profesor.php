@@ -5,7 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\FichaCreated;
 use Intranet\Events\FichaSaved;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 class Falta_profesor extends Model
 {
@@ -42,11 +42,11 @@ class Falta_profesor extends Model
                 ->get()->last();
 
             if ($ultimo != null) {
-                $now = new Date();
+                $now =  Carbon::parse();
                 if ($ultimo->salida != null) {
-                    $last = new Date($ultimo->salida);
+                    $last =  Carbon::parse($ultimo->salida);
                 } else {
-                    $last = new Date($ultimo->entrada);
+                    $last =  Carbon::parse($ultimo->entrada);
                 }
                 $diff = $now->diffInMinutes($last);
                 if ($diff < 10) {

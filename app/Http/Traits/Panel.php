@@ -6,7 +6,7 @@ namespace Intranet\Http\Traits;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonIcon;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 /**
  * Trait traitPanel
@@ -46,7 +46,7 @@ trait Panel
         $query = $this->class::where('estado', '>', 0)->orderBy($orden, 'desc');
 
         if (!Session::get('completa', false)) {
-            $fecha = Date::now()->subDays(config('variables.diasNoCompleta'));
+            $fecha =  Carbon::now()->subDays(config('variables.diasNoCompleta'));
             $query->where(function ($q) use ($orden, $fecha) {
                 $q->where('estado', '!=', config("modelos.{$this->model}.resolve"))
                     ->where('estado', '!=', config("modelos.{$this->model}.completa"))

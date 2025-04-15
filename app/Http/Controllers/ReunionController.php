@@ -20,7 +20,7 @@ use Intranet\Services\CalendarService;
 use Intranet\Services\FormBuilder;
 use Intranet\Services\GestorService;
 use Intranet\Services\MeetingOrderGenerateService;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Response;
 use Styde\Html\Facades\Alert;
 use function dispatch;
@@ -258,7 +258,7 @@ class ReunionController extends IntranetController
         );
         $this->panel->setBoton('grid',
             new BotonImg('reunion.ics',
-                ['img' => 'fa-calendar', 'where' => ['fecha', 'posterior', Date::yesterday()]]
+                ['img' => 'fa-calendar', 'where' => ['fecha', 'posterior',  Carbon::yesterday()]]
             )
         );
         $this->panel->setBoton('grid',
@@ -267,7 +267,7 @@ class ReunionController extends IntranetController
                     'where' => [
                         'idProfesor', '==', $actual,
                         'archivada', '==', '0',
-                        'fecha', 'anterior', Date::yesterday()
+                        'fecha', 'anterior',  Carbon::yesterday()
                     ]
                 ]
             )
@@ -279,7 +279,7 @@ class ReunionController extends IntranetController
                     'where' => [
                         'idProfesor', '==', $actual,
                         'archivada', '==', '1',
-                        'fecha', 'anterior', Date::yesterday()
+                        'fecha', 'anterior',  Carbon::yesterday()
                     ]
                 ]
             )
@@ -343,7 +343,7 @@ class ReunionController extends IntranetController
                     'supervisor' => $elemento->Creador->FullName,
                     'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
                     'tags' => TipoReunion::find($elemento->tipo)->vliteral,
-                    'created_at' => new Date($elemento->fecha),
+                    'created_at' =>  Carbon::parse($elemento->fecha),
                     'rol' => config('roles.rol.profesor')]);
                 $elemento->save();
             });
@@ -414,10 +414,10 @@ class ReunionController extends IntranetController
     private function construye_pdf($id)
     {
         $elemento = Reunion::findOrFail($id);
-        $hoy = new Date($elemento->fecha);
+        $hoy =  Carbon::parse($elemento->fecha);
         $elemento->dia = FechaString($hoy);
         $elemento->hora = $hoy->format('H:i');
-        $hoy = new Date($elemento->updated_at);
+        $hoy =  Carbon::parse($elemento->updated_at);
         $elemento->hoy = haVencido($elemento->fecha) ? $elemento->dia : FechaString($hoy);
         return $this->hazPdf(
             $this->informe($elemento),
@@ -439,7 +439,7 @@ class ReunionController extends IntranetController
 
     public static function preparePdf($informe, $aR)
     {
-        $hoy = new Date();
+        $hoy =  Carbon::parse();
         $elemento = FechaString($hoy,'ca');
         return self::hazPdf($informe, $aR,$elemento ,'portrait','a4');
     }

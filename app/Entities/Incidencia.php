@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Services\AdviseService;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
 use function authUser;
@@ -99,7 +99,7 @@ class Incidencia extends Model
 
     public function getFechasolucionAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha =  Carbon::parse($salida);
         return $fecha->format('d-m-Y');
     }
 

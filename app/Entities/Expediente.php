@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\ActivityReport;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
@@ -47,13 +47,13 @@ class Expediente extends Model
     
     public function getfechaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha =  Carbon::parse($entrada);
         return $fecha->format('d-m-Y');
     }
 
     public function getfechasolucionAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha =  Carbon::parse($salida);
         return $fecha->format('d-m-Y');
     }
 

@@ -6,7 +6,7 @@ use Intranet\Entities\Hora;
 
 function horarioAhora($dni)
 {
-    $ahora = Jenssegers\Date\Date::now();
+    $ahora = Jenssegers\Date\ Carbon::now();
     $hora = sesion(Hora($ahora));
     $dia = config("auxiliares.diaSemana." . $ahora->format('w'));
 

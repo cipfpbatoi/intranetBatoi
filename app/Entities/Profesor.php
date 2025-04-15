@@ -5,7 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Events\ActivityReport;
 use \DB;
 use Intranet\Events\PreventAction;
@@ -202,7 +202,7 @@ class Profesor extends Authenticatable
     public function getfechaIngresoAttribute($fecha)
     {
         if ($fecha) {
-            $fecha = new Date($fecha);
+            $fecha =  Carbon::parse($fecha);
             return $fecha->format('d-m-Y');
         }
     }
@@ -210,7 +210,7 @@ class Profesor extends Authenticatable
     public function getFechaNacAttribute($fecha)
     {
         if ($fecha) {
-            $fecha = new Date($fecha);
+            $fecha =  Carbon::parse($fecha);
             return $fecha->format('d-m-Y');
         }
     }
@@ -218,7 +218,7 @@ class Profesor extends Authenticatable
     public function getFechaBajaAttribute($fecha)
     {
         if ($fecha) {
-            $fecha = new Date($fecha);
+            $fecha =  Carbon::parse($fecha);
             return $fecha->format('d-m-Y');
         }
     }

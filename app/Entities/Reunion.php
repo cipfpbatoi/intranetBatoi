@@ -4,7 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\ReunionCreated;
@@ -166,13 +166,13 @@ class Reunion extends Model
 
     public function getFechaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha =  Carbon::parse($entrada);
         return $fecha->format('d-m-Y H:i');
     }
 
     public function getUpdatedAtAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha =  Carbon::parse($entrada);
         return $fecha->format('d-m-Y');
     }
 
