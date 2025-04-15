@@ -19,7 +19,6 @@
         "guzzlehttp/guzzle": "^7.4",
         "h4cc/wkhtmltopdf-amd64": "^0.12.4",
         "igomis/laravel-html": "*",
-        "jenssegers/date": "^4.0.0@beta",
         "laravel/framework": "^11.0",
         "laravel/socialite": "^5.0",
         "laravel/tinker": "^2.4.1",
