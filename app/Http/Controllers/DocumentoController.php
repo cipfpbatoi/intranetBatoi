@@ -42,11 +42,15 @@ class DocumentoController extends IntranetController
         'descripcion' => ['type' => 'text'],
         'enlace' => ['type' => 'text'],
         'fichero' => ['type' => 'file'],
+        'activo' => ['type' => 'checkbox'],
         'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']],
     ];
 
 
-
+    public function index(){
+        ini_set('memory_limit', '512M');
+        return parent::index();
+    }
     public function search()
     {
         if (Session::get('completa')) {
@@ -76,7 +80,7 @@ class DocumentoController extends IntranetController
     public function store(Request $request, $fct = null)
     {
         $except = ['nota'];
-        if ($request->has('nota') && $this->validate($request, ['nota' => 'numeric|min:1|max:10'])) {
+        if ($request->has('nota') && $this->validate($request, ['nota' => 'numeric|min:1|max:11'])) {
             $this->saveNota($request->nota, $fct);
             if ($request->nota < 5) {
                 return $this->redirect();
@@ -102,7 +106,7 @@ class DocumentoController extends IntranetController
 
     protected function createWithDefaultValues($default=[])
     {
-        return new Documento(['curso'=>Curso(),'propietario'=>config('contacto.titulo')]);
+        return new Documento(['curso'=>Curso(),'propietario'=>config('contacto.titulo'),'activo'=>true]);
      }
 
     public function project($idFct)
@@ -137,7 +141,7 @@ class DocumentoController extends IntranetController
             return back();
         }
     }
-    
+
     public function qualitatUpload($id)
     {
         $profesor = Profesor::findOrFail($id);
@@ -152,13 +156,23 @@ class DocumentoController extends IntranetController
         $elemento->supervisor = $profesor->FullName;
         $elemento->propietario = $elemento->supervisor;
         $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor';
-        $elemento->descripcion = "Documentació FCT Cicle ".$grupo->Ciclo->ciclo;
+        $elemento->descripcion = "Documentació FCT Cicle " . $grupo->Ciclo->ciclo;
         $elemento->save();
 
         $zip = new \ZipArchive();
-        $path = "gestor/".curso()."/FCT/".$elemento->id."_FCT.zip";
-        $elemento->fichero = $path;
-        $zip->open(storage_path('app/'.$path), \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        $path = "gestor/" . curso() . "/FCT/";
+        $zipFile = $path . $elemento->id . "_FCT.zip";
+        $elemento->fichero = $zipFile;
+
+        // Comprovar si el directori existeix, si no, crear-lo
+        $storagePath = storage_path('app/' . $path);
+        if (!file_exists($storagePath)) {
+            if (!mkdir($storagePath, 0777, true) && !is_dir($storagePath)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $storagePath));
+            }
+        }
+
+        $zip->open($storagePath . $elemento->id . "_FCT.zip", \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
         $problem = false;
         $esborrar = [];
         foreach ($documents as $document) {
@@ -179,11 +193,11 @@ class DocumentoController extends IntranetController
                 unlink($file);
             }
             return redirect('/alumnofct');
-        } else {
-            $elemento->delete();
         }
+        $elemento->delete();
         return back();
     }
+
 
     public function qualitat()
     {
@@ -236,6 +250,7 @@ class DocumentoController extends IntranetController
                     'grupo' => ['disabled' => 'disabled'],
                     'descripcion' => ['type' => 'text'],
                     'enlace' => ['type' => 'text'],
+                    'activo' => ['type' => 'checkbox'],
                     'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
                 ]
             ):
@@ -252,6 +267,7 @@ class DocumentoController extends IntranetController
                     'ciclo' => ['type' => 'hidden'],
                     'descripcion' => ['type' => 'text'],
                     'fichero' => ['type' => 'file'],
+                    'activo' => ['type' => 'checkbox'],
                     'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
                 ]
             );

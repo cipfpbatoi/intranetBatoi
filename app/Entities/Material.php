@@ -73,6 +73,16 @@ class Material extends Model
         return hazArray(Espacio::all(), 'aula', 'descripcion');
     }
 
+    public function getEspaiAttribute()
+    {
+        $materialBaja = MaterialBaja::where('idMaterial',$this->id)->first();
+        if ($materialBaja && $materialBaja->tipo) {
+            return 'Proposta Nova Ubicació';
+        } else {
+            return $this->espacio;
+        }
+    }
+
     public function getProcedenciaOptions()
     {
         return config('auxiliares.procedenciaMaterial');

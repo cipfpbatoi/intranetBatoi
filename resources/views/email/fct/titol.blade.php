@@ -2,7 +2,7 @@
 @section('body')
 <table style='text-align: center'>
     <tr>
-        <th>Certificat FCT</th>
+        <th>Titol Alumne</th>
     </tr>
 </table>
 <div>

@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Notification;
 use Intranet\Botones\BotonImg;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Styde\Html\Facades\Alert;
@@ -23,7 +23,7 @@ class NotificationController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['emisor', 'motivo', 'fecha'];
+    protected $gridFields = ['fecha','emisor', 'motivo'];
     /**
      * @var
      */
@@ -51,7 +51,7 @@ class NotificationController extends IntranetController
     public function read($id)
     {
         $notification = Notification::find($id);
-        $notification->read_at = new Date('now');
+        $notification->read_at =  Carbon::parse('now');
         $notification->save();
         return back();
     }

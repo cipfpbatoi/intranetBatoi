@@ -3,20 +3,21 @@
 namespace Intranet\Http\Controllers;
 
 
+use DB;
+use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonConfirmacion;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
-use DB;
+use Intranet\Entities\Documento;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Profesor;
 use Intranet\Exceptions\IntranetException;
+use Intranet\Http\Traits\DropZone;
 use Intranet\Services\FDFPrepareService;
 use Intranet\Services\SecretariaService;
 use Styde\Html\Facades\Alert;
-use Intranet\Entities\Documento;
-use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Profesor;
 
 
 /**
@@ -25,7 +26,7 @@ use Intranet\Entities\Profesor;
  */
 class PanelFctAvalController extends IntranetController
 {
-    use traitDropZone;
+    use DropZone;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
 
@@ -260,7 +261,7 @@ class PanelFctAvalController extends IntranetController
             $grupo->acta_pendiente = 1;
             $grupo->save();
             avisa(
-                config('contacto.jefeEstudios2'),
+                config('avisos.jefeEstudios2'),
                 "Acta pendent grup $grupo->nombre",
                 config('contacto.host.web')."/direccion/$grupo->codigo/acta"
             );
@@ -279,7 +280,7 @@ class PanelFctAvalController extends IntranetController
     private function lookForStudents($projectNeeded)
     {
         $found = false;
-        foreach (AlumnoFctAval::MisFcts()->NoAval()->get() as $fct) {
+        foreach (AlumnoFctAval::Avaluables()->NoAval()->get() as $fct) {
             if ($projectNeeded) {
                 if (isset($fct->calProyecto)) {
                     $fct->actas = 3;
@@ -292,7 +293,6 @@ class PanelFctAvalController extends IntranetController
                     $found = true;
             }
         }
-
         return $found;
     }
 
@@ -446,15 +446,20 @@ class PanelFctAvalController extends IntranetController
         $registre = Profesor::findOrFail($id);
         $quien = $registre->fullName;
         $modelo = strtolower('Profesor');
+        $ara = new \DateTime();
+        $inici = new \DateTime(date('Y') . '-06-15');
+        $fi = new \DateTime(date('Y') . '-09-07');
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()],
-            'final' => [
-                'link' =>"/fct/$id/upload",
-                'message' => "Este procediment l'has de fer quan tingues tota
+        ];
+        if ($ara >= $inici && $ara <= $fi) {
+            $botones['final'] = [
+                    'link' =>"/fct/$id/upload",
+                    'message' => "Este procediment l'has de fer quan tingues tota
                      la documentació de totes les FCT completes.
                       Una vegada fet no es pot tornar arrere."
-                ]
-        ];
+                ];
+        }
         return view('dropzone.index', compact('modelo', 'id', 'quien', 'botones'));
 
     }
@@ -518,4 +523,30 @@ class PanelFctAvalController extends IntranetController
 
         return back();
     }
+
+    public function estadistiques()
+    {
+        $grupos = Grupo::where('curso',2)->orderBy('idCiclo')->get();
+        $ciclos = [];
+        foreach ($grupos as $grupo) {
+            $ciclo = $grupo->idCiclo;
+            $ciclos[$ciclo]['matriculados'] =
+                isset($ciclos[$ciclo]['matriculados']) ?
+                $ciclos[$ciclo]['matriculados'] + $grupo->matriculados : $grupo->matriculados;
+            $ciclos[$ciclo]['resfct'] = isset($ciclos[$ciclo]['resfct']) ?
+                $ciclos[$ciclo]['resfct'] + $grupo->AprobFct : $grupo->AprobFct;
+            $ciclos[$ciclo]['exentos'] = isset($ciclos[$ciclo]['exentos']) ?
+                $ciclos[$ciclo]['exentos'] + $grupo->exentos : $grupo->exentos;
+            $ciclos[$ciclo]['respro'] = isset($ciclos[$ciclo]['respro']) ?
+                $ciclos[$ciclo]['respro'] + $grupo->AprobPro : $grupo->AprobPro;
+            $ciclos[$ciclo]['avalpro'] = isset($ciclos[$ciclo]['avalpro']) ?
+                $ciclos[$ciclo]['avalpro'] + $grupo->AvalPro : $grupo->AvalPro;
+            $ciclos[$ciclo]['resempresa'] = isset($ciclos[$ciclo]['resempresa']) ?
+                $ciclos[$ciclo]['resempresa'] + $grupo->colocados : $grupo->colocados;
+            $ciclos[$ciclo]['avalfct'] = isset($ciclos[$ciclo]['avalfct']) ?
+                $ciclos[$ciclo]['avalfct'] + $grupo->avalFct : $grupo->avalFct;
+        }
+        return view('fct.estadisticas', compact('ciclos', 'grupos'));
+    }
+
 }

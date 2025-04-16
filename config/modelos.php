@@ -20,7 +20,8 @@ return [
         'modelo' => 'Actividad',
         'estados' => [  1 => 'pendiente',
                         2 => 'autorizada',
-                        3 => 'impresa'],
+                        3 => 'impresa',
+                        4 => 'valorada'],
         'avisos' => ['Creador' => [ 0, 3],'vicedirector'=>[1]],
         'resolve' => '3',
         'refuse' => '0',
@@ -74,6 +75,7 @@ return [
         'avisos' => [ 'idProfesor' => [0, 3], 'responsable' => [1] ],
         'resolve' => '3',
         'refuse' => '0',
+        'mensaje' => 'solucion'
     ],
     'OrdenTrabajo' => [
         'modelo' => 'OrdenTrabajo',
@@ -91,7 +93,8 @@ return [
         'estados' => [
             1 => 'pendiente',
             2 => 'autorizada',
-            3 => 'refused'
+            3 => 'refused',
+            4 => 'itaca',
         ],
         'avisos' => [ 'idProfesor' => [2,3],'director' =>[1]],
         'resolve' => 2,

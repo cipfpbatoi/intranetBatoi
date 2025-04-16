@@ -23,7 +23,7 @@ class A1ENResource extends PrintResource
     public function toArray()
     {
         $empresa = $this->elements->Fct->Colaboracion->Centro->Empresa;
-        $director = Profesor::find(config('contacto.director'));
+        $director = Profesor::find(config('avisos.director'));
 
         return [
             'Text1' => config('contacto.codi'),

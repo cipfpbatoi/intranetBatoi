@@ -20,7 +20,7 @@
             <tr>
                 <td>{!! $elemento->Profesor->apellido1 !!} {!! $elemento->Profesor->apellido2 !!} {!! $elemento->Profesor->nombre !!}</td>
                 <td>{!! $elemento->idProfesor !!}</td>
-                <td>{{Intranet\Entities\Falta::getMotivosOptions()[$elemento->motivos]}}</td>
+                <td>{{ $elemento->Motivo }}</td>
                 <td>{{$elemento->desde }}
                     @if ($elemento->desde == $elemento->hasta)
                         @if (!$elemento->dia_completo) 

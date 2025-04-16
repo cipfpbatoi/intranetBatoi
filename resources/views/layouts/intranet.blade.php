@@ -1,38 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {{ Html::style('/css/estilo.css')}}
-    {{ Html::style('/css/app.css')}}
+    <x-layouts.meta />
+    <link rel="stylesheet" href="{{ mix('css/gentelella.css') }}">
+    <title>@yield('titulo')</title>
+    @stack('styles')
     @yield('css')
 </head>
 <body class="nav-md">
 @if (authUser())
     <div class="container body">
         <div class="main_container">
-            <div class="col-md-3 left_col">
-                <div class="left_col scroll-view">
-                    @include('layouts.partials.topside')
-                    <br/>
-                    @include('layouts.partials.sidebar')
-                    @include('layouts.partials.footerbuttons')
-                </div>
-            </div>
-            @include('layouts.partials.topnav')
+            <x-layouts.leftside />
+            <x-layouts.topnav />
             @if (isset($panel))
                 @include('layouts.partials.panel')
             @else
                 @include('layouts.partials.content')
             @endif
-            @include('layouts.partials.footer')
+            <x-layouts.footer />
         </div>
     </div>
 @endif
-{{ HTML::script('/js/app.js') }}
+<script src="{{ mix('js/gentelella.js') }}"></script>
+<script src="{{ mix('js/ppIntranet.js') }}"></script>
 @yield('scripts')
-{{ HTML::script('/js/ppIntranet.js') }}
+@stack('scripts')
 </body>
 </html>

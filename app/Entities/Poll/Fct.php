@@ -38,6 +38,7 @@ class Fct extends ModelPoll
         }
         return null;
     }
+
     public static function aggregate(&$votes, $option1, $option2)
     {
         foreach ($option1 as $idFct => $vote) {

@@ -8,10 +8,8 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Falta;
-use Styde\Html\Facades\Alert;
-use Jenssegers\Date\Date;
 use Intranet\Botones\BotonBasico;
-use DateTime;
+
 
 class PanelGuardiaController extends BaseController
 {
@@ -48,7 +46,7 @@ class PanelGuardiaController extends BaseController
 
         // Ompli les dades de les extaescolas per grup i per profe
         foreach ($actividades as $actividad) {
-            if (coincideHorario($actividad, $sesion)) {
+            if ($this->coincideHorario($actividad, $sesion)) {
                 foreach ($actividad->grupos as $grupo) {
                     $horario = $ahora->firstWhere('idGrupo', $grupo->codigo);
                     if ($horario) {
@@ -74,11 +72,11 @@ class PanelGuardiaController extends BaseController
                     $horario->donde = 'Al centre';
                 else {
                     $comision = Comision::Dia(Hoy())->where('idProfesor', $profesor->dni)->first();
-                    if ($comision && coincideHorario($comision, $sesion))
+                    if ($comision && $this->coincideHorario($comision, $sesion))
                         $horario->donde = 'En comisión de servicio';
                     else {
                         $falta = Falta::Dia(Hoy())->where('idProfesor', $profesor->dni)->first();
-                        if ($falta && coincideHorario($falta, $sesion))
+                        if ($falta && $this->coincideHorario($falta, $sesion))
                             $horario->donde = 'Comunica Ausencia';
                         else
                             $horario->donde = 'No ha fitxat';
@@ -89,5 +87,36 @@ class PanelGuardiaController extends BaseController
         return $ahora;
 
     }
+
+    private function coincideHorario($elemento, $sesion): bool
+    {
+        if (!esMismoDia($elemento->desde, $elemento->hasta)) {
+            return true;
+        }
+
+        if (!empty($elemento->dia_completo)) {
+            return true;
+        }
+
+        $horas = $this->getHorasAfectas($elemento);
+
+        if (empty($horas)) {
+            return false;
+        }
+
+        $horaInici = $horas[0];
+        $horaFi = end($horas);
+
+        return $sesion >= $horaInici && $sesion <= $horaFi;
+    }
+
+    private function getHorasAfectas($elemento): array
+    {
+        $inicio = $elemento->hora_ini ?? hora($elemento->desde);
+        $fi     = $elemento->hora_fin ?? hora($elemento->hasta);
+
+        return Hora::horasAfectadas($inicio, $fi)->toArray();
+    }
+
 
 }

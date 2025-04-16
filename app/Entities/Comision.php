@@ -2,7 +2,7 @@
 
 namespace Intranet\Entities;
 
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Events\ActivityReport;
 use Illuminate\Database\Eloquent\Model;
 
@@ -87,13 +87,13 @@ class Comision extends Model
 
     public function getDesdeAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha =  Carbon::parse($entrada);
         return $fecha->format('d-m-Y H:i');
     }
 
     public function getHastaAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha =  Carbon::parse($salida);
         return $fecha->format('d-m-Y H:i');
     }
 
@@ -146,10 +146,13 @@ class Comision extends Model
     }
     public function getTotalAttribute()
     {
-        return $this->comida
-            + $this->gastos
-            + $this->alojamiento
-            + ($this->kilometraje * config('variables.precioKilometro')[$this->medio]);
+        $precioKilometro = config('auxiliares.precioKilometro');
+
+        $kilometraje = isset($this->medio, $precioKilometro[$this->medio])
+            ? $this->kilometraje * $precioKilometro[$this->medio]
+            : 0;
+
+        return $this->comida + $this->gastos + $this->alojamiento + $kilometraje;
     }
 
     public function getDescripcionAttribute()
@@ -163,7 +166,7 @@ class Comision extends Model
 
     public function getTipoVehiculoAttribute()
     {
-        return config('auxiliares.tipoVehiculo')[$this->medio];
+        return config('auxiliares.tipoVehiculo')[$this->medio] ?? 'Desconocido';
     }
 
     public function showConfirm()

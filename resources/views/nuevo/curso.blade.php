@@ -11,6 +11,10 @@
 <p></p>
 <form method="POST" >
     {{ csrf_field() }}
+    <input type="checkbox" name="Vots" checked/>Vots Permanents<br/>
+    <input type="checkbox" name="Auxiliars" checked/>Esborrat taules auxiliars<br/>
+    <input type="checkbox" name="Dual" checked/>Traspassar dual<br/>
+    <input type="checkbox" name="Esborrat" />Esborrar dades<br/>
     <input type='submit' value='Enviar'/>
 </form>
 @endsection

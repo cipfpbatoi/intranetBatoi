@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Events\ActivityReport;
 
 
@@ -14,7 +14,7 @@ class Documento extends Model
 
     protected $table = 'documentos';
     protected $fillable = ['tipoDocumento', 'rol', 'curso', 'propietario', 'supervisor', 'descripcion'
-        , 'ciclo', 'grupo', 'detalle','enlace', 'fichero', 'tags'];
+        , 'ciclo', 'grupo', 'detalle','enlace', 'fichero', 'tags', 'activo'];
     protected $rules = [
         'tipoDocumento' => 'required',
         'descripcion' => 'required|max:200',
@@ -29,7 +29,8 @@ class Documento extends Model
         'grupo' => ['type' => 'select'],
         'supervisor' => ['type' => 'hidden'],
         'ciclo' => ['type' => 'hidden'],
-        'detalle' => ['type' => 'textarea']
+        'detalle' => ['type' => 'textarea'],
+        'activo' => ['type' => 'checkbox'],
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
@@ -39,7 +40,7 @@ class Documento extends Model
 
     public function getCreatedAtAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha =  Carbon::parse($entrada);
         return $fecha->format('d-m-Y');
     }
 

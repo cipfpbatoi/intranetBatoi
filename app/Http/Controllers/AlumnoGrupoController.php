@@ -18,7 +18,8 @@ class AlumnoGrupoController extends IntranetController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoGrupo';
-    protected $gridFields = ['nombre', 'telef1',  'email','poblacion','subGrupo','posicion','telef2'];
+    protected $gridFields = ['nombre', 'telef1',  'email','poblacion','drets',
+        'extraescolars','subGrupo','posicion','telef2'];
     const FOL = 12;
     protected $modal = true;
 
@@ -78,7 +79,7 @@ class AlumnoGrupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumno.carnet', ['where' => ['idGrupo', '==',  $grupoTutoria]]));
         $this->panel->setBoton('profile', new BotonIcon('alumno.carnet', ['where' => ['idGrupo', '==',  $grupoTutoria]]));
         $this->panel->setBoton('grid', new BotonImg('direccion.aFol', ['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion')]));
-        if (AuthUser()->departamento == self::FOL && date('Y-m-d')>config('curso.certificatFol')) {
+        if (AuthUser()->departamento == self::FOL && date('Y-m-d')>config('variables.certificatFol')) {
             $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-square-o', 'where' => ['fol', '==', 0]]));
             $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-check', 'where' => ['fol', '==', 1]]));
         }

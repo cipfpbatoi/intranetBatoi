@@ -23,10 +23,13 @@ class PPoll extends Model
         'remains' => ['type'=>'checkbox']
     ];
     public $timestamps = false;
-    protected $dispatchesEvents = [
-        'saved' => ActivityReport::class,
-        'deleted' => ActivityReport::class,
-    ];
+
+
+    public function polls()
+    {
+        return $this->hasMany(Poll::class, 'idPPoll');
+    }
+
     
     /**
      * A poll has many options related to

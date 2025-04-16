@@ -14,6 +14,17 @@ $(function() {
 		$(this).attr("action",MODEL+"/"+id+"/refuse");
 	});
 	$("#explicacion").focus();
+	$('#complementaria_id').change(function() {
+		if ($(this).is(':checked')) {
+			// Si està seleccionat, canvia el text del label a Justificacio_RA
+			$('#field_descripcion_id label').text('Justificació RA');
+			$('#descripcion_id').attr('placeholder', 'Justificació RA');
+		} else {
+			// Si no està seleccionat, canvia el text del label a Descripció d'activitat
+			$('#field_descripcion_id label').text("Descripció d'activitat");
+			$('#descripcion_id').attr('placeholder', 'Descripció d\'activitat');
+		}
+	});
 })
 
 function getToken() {

@@ -1,12 +1,9 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Incidencia;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonIcon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
-use Intranet\Entities\OrdenTrabajo;
+use Intranet\Entities\Incidencia;
+use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\StateService;
 
 /**
@@ -16,7 +13,7 @@ use Intranet\Services\StateService;
 class OrdenTrabajoController extends IntranetController
 {
 
-    use traitImprimir;
+    use Imprimir;
 
     /**
      * @var string

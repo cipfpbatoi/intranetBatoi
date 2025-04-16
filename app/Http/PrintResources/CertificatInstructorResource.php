@@ -22,8 +22,8 @@ class CertificatInstructorResource extends PrintResource
      */
     public function toArray()
     {
-        $secretario = Profesor::find(config(fileContactos().'.secretario'));
-        $director = Profesor::find(config(fileContactos().'.director'));
+        $secretario = Profesor::find(config('avisos.secretario'));
+        $director = Profesor::find(config('avisos.director'));
         return [
             'untitled1' => $secretario->fullName,
             'untitled13' =>  $secretario->fullName,

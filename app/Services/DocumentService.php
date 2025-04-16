@@ -7,12 +7,14 @@ use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
 use Styde\Html\Facades\Alert;
 use mikehaertl\pdftk\Pdf as PdfTk;
-use Illuminate\Http\Response;
 
 class DocumentService
 {
     private $elements;
     private $document;
+    private $zip;
+
+
 
     /**
      * DocumentService constructor.
@@ -20,13 +22,15 @@ class DocumentService
      */
     public function __construct(Finder $finder)
     {
+        $this->zip = $finder->getZip();
         $this->elements = $finder->exec();
         $this->document = $finder->getDocument();
+        $this->finder = $finder;
     }
 
     public function __get($key)
     {
-        return $this->$key??($this->features[$key]??null);
+        return property_exists($this, $key) ? $this->$key : ($this->features[$key] ?? null);
     }
 
     public function load()
@@ -37,59 +41,183 @@ class DocumentService
     public function render()
     {
         if (isset($this->document->email)) {
-            return $this->mail();
-        } else {
-            return $this->print();
+            return $this->mail() ?? response()->json(['error' => 'No s\'ha pogut enviar el correu'], 400);
         }
+        return $this->print() ?? response()->json(['error' => 'No s\'ha pogut generar el PDF'], 400);
+
     }
 
 
     private function mail()
     {
         $elemento = $this->elements->first();
-        if ($elemento) {
-            if (!$this->document->email['editable']) {
-                $contenido['view'] = view($this->document->template, compact('elemento'));
-                $contenido['template'] = $this->document->template;
-            } else {
-                $contenido = view($this->document->template, compact('elemento'));
-            }
-            $mail = new MyMail(
-                $this->elements,
-                $contenido,
-                $this->document->email,
-                null,
-                $this->document->email['editable']
-            );
-            return $mail->render($this->document->route??'misColaboraciones');
-        } else {
+        $editable = $this->document->email['editable'] ?? false;
+        if (!$elemento) {
             Alert::danger('No hi ha cap destinatari');
             return back();
         }
+        $attached = isset($this->document->email['attached'])?$this->document->email['attached']:null;
+
+        if (!$editable) {
+            $contenido['view'] = view($this->document->template, compact('elemento'));
+            $contenido['template'] = $this->document->template;
+        } else {
+            $contenido = view($this->document->template, compact('elemento'));
+        }
+        $mail = new MyMail(
+            $this->elements,
+            $contenido,
+            $this->document->email,
+            null,
+            $editable
+        );
+        return $mail->render($this->document->route??'misColaboraciones');
+
+
     }
 
     private function print()
     {
         if (isset($this->document->view)) {
-            return Pdf::hazPdf(
-                $this->document->view,
-                $this->elements,
-                $this->document->pdf,
-                $this->document->pdf['orientacion']
-            )->stream();
+            return $this->generatePdfFromView();
         }
+
         if (isset($this->document->printResource)) {
-            $resource = PrintResource::build($this->document->printResource, $this->elements);
-            return response()->file(FDFPrepareService::exec($resource));
+            return $this->generatePdfFromTemplate();
         }
-        $archivos = [];
+
+        return $this->concatenatePdfs();
+    }
+
+    /**
+     * Genera un PDF a partir d'una vista Blade.
+     */
+    private function generatePdfFromView()
+    {
+        if (!$this->elements || count($this->elements) === 0) {
+            return response()->json(['error' => 'No s\'ha pogut generar el PDF'], 400);
+        }
+
+        if ($this->zip && $this->document->zip && count($this->elements) > 1) {
+            return response()->file(
+                Pdf::hazZip(
+                    $this->document->view,
+                    $this->elements,
+                    $this->document->pdf,
+                    $this->document->pdf['orientacion']
+                )
+            );
+        }
+
+        return Pdf::hazPdf(
+            $this->document->view,
+            $this->elements,
+            $this->document->pdf,
+            $this->document->pdf['orientacion']
+        )->stream();
+    }
+
+    /**
+     * Genera un PDF a partir d'una plantilla (`printResource`).
+     */
+
+    private function generatePdfFromTemplate()
+    {
+        if ($this->document->sign && $this->finder->getRequest()->mostraDiv) {
+            return $this->generateSignedPdf();
+        }
+
+        if ($this->document->zip) {
+            return $this->generateMultiplePdfs();
+        }
+
+        // Generació simple d'un PDF des d'una plantilla
+        $resource = PrintResource::build($this->document->printResource, $this->elements);
+        return response()->file(FDFPrepareService::exec($resource));
+    }
+
+    /**
+     * Genera un PDF signat si està activada la signatura digital.
+     */
+    private function generateSignedPdf()
+    {
+        $resource = PrintResource::build($this->document->printResource, $this->elements);
+        $resource->setFlatten(true);
+        $tmp_name = FDFPrepareService::exec($resource);
+
+        if ($this->document->sign && file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp'))) {
+            $x = config("signatures.files." . $this->document->route . ".owner.x");
+            $y = config("signatures.files." . $this->document->route . ".owner.y");
+
+            DigitalSignatureService::signCrypt(
+                $tmp_name,
+                storage_path('tmp/auttutor_' . authUser()->dni . 'signed.pdf'),
+                $x,
+                $y,
+                $this->finder->getRequest()->decrypt,
+                $this->finder->getRequest()->cert
+            );
+
+            return response()->file(storage_path('tmp/auttutor_' . authUser()->dni . 'signed.pdf'));
+        }
+
+        return response()->json(['error' => 'No s\'ha pogut signar el document'], 400);
+    }
+
+
+    /**
+     * Genera múltiples PDFs i els empaqueta en un ZIP.
+     */
+    private function generateMultiplePdfs()
+    {
+        if (!$this->elements || count($this->elements) === 0) {
+            return response()->json(['error' => 'No hi ha elements per generar el PDF'], 400);
+        }
+
+        $pdfs = [];
         foreach ($this->elements as $element) {
-            $archivos[] = $element->routeFile;
+            $resource = PrintResource::build($this->document->printResource, $element);
+            $pdfs[] = FDFPrepareService::exec($resource, $element->idPrint);
         }
-        $pdf = new PdfTk($archivos);
-        $tmpFile = "tmp/annexes_".authUser()->dni.".pdf";
+
+        if ($this->zip && count($this->elements) > 1) {
+            return $this->generateZip($pdfs, 'annexes_' . authUser()->dni);
+        }
+
+        // Si només hi ha un PDF, el retorna directament
+        $pdf = new PdfTk($pdfs);
+        $tmpFile = "tmp/annexes_" . authUser()->dni . ".pdf";
         $pdf->saveAs(storage_path($tmpFile));
 
         return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
+    }
+
+
+    /**
+     * Concatenar PDFs existents.
+     */
+    private function concatenatePdfs()
+    {
+        $pdfs = array_map(fn($element) => $element->routeFile, $this->elements);
+
+        if ($this->document->zip) {
+            return $this->generateZip($pdfs, 'annexes_' . authUser()->dni);
+        }
+
+        $pdf = new PdfTk($pdfs);
+        $tmpFile = "tmp/annexes_" . authUser()->dni . ".pdf";
+        $pdf->saveAs(storage_path($tmpFile));
+
+        return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
+    }
+
+    /**
+     * Genera un ZIP amb múltiples PDFs.
+     */
+
+
+    private function generateZip($pdfs, $filename)
+    {
+        return response()->file(storage_path(ZipService::exec($pdfs, $filename)));
     }
 }

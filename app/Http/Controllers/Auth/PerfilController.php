@@ -4,6 +4,8 @@ namespace Intranet\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\IntranetController;
+use Intranet\Services\ImageService;
+use Styde\Html\Facades\Alert;
 
 
 abstract class PerfilController extends IntranetController
@@ -13,6 +15,7 @@ abstract class PerfilController extends IntranetController
 
     public function update(Request $request, $new)
     {
+
         $this->validate($request, $new->getRules());
         if ($request->email) {
             $new->email = $request->email;
@@ -31,6 +34,31 @@ abstract class PerfilController extends IntranetController
         }
         if ($request->rol) {
             $new->rol = Rol($request->rol);
+        }
+        if ($request->telef1) {
+            $new->telef1 = $request->telef1;
+        }
+        if ($request->telef2) {
+            $new->telef2 = $request->telef2;
+        }
+        if ($request->hasFile('foto')) {
+            $fitxer = $request->file('foto');
+            if ($fitxer->isValid()) {
+                if ($new->foto) {
+                    $success = ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos/'.$new->foto));
+                    if ($success) {
+                        Alert::info('Modificació foto feta amb exit');
+                    } else {
+                        Alert::info('Error en la modificació de la foto');
+                    }
+                } else {
+                    $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
+                    $new->foto = $nameFile;
+                    Alert::info('Foto nova guardada amb exit');
+                }
+            } else {
+                Alert::info('Formato no valido');
+            }
         }
         
         $new->save();

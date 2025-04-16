@@ -2,18 +2,18 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Intranet\Entities\Instructor;
-use Intranet\Entities\Centro;
-use Intranet\Entities\Fct;
-use Intranet\Entities\Profesor;
-use Response;
 use DB;
-use Styde\Html\Facades\Alert;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Botones\BotonImg;
-use Jenssegers\Date\Date;
-
+use Intranet\Entities\Centro;
+use Intranet\Entities\Fct;
+use Intranet\Entities\Instructor;
+use Intranet\Entities\Profesor;
+use Intranet\Http\Traits\Imprimir;
+use Carbon\Carbon;
+use Response;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -44,7 +44,7 @@ class InstructorController extends IntranetController
      */
     protected $modal = false;
     
-    use traitImprimir;
+    use Imprimir;
 
     /**
      *
@@ -209,8 +209,8 @@ class InstructorController extends IntranetController
         if ($instructor->surnames != '') {
             $fcts = $instructor->Fcts;
             $fecha = $this->ultimaFecha($fcts);
-            $secretario = Profesor::find(config(fileContactos().'.secretario'));
-            $director = Profesor::find(config(fileContactos().'.director'));
+            $secretario = Profesor::find(config('avisos.secretario'));
+            $director = Profesor::find(config('avisos.director'));
             $dades = ['date' => FechaString($fecha, 'ca'),
                 'fecha' => FechaString($fecha, 'es'),
                 'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
@@ -246,7 +246,7 @@ class InstructorController extends IntranetController
      */
     private function ultimaFecha($fcts)
     {
-        $posterior = new Date();
+        $posterior =  Carbon::parse();
         foreach ($fcts as $fct) {
             $posterior = FechaPosterior($fct->hasta, $posterior);
         }

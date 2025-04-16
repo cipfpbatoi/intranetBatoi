@@ -100,6 +100,7 @@ class Grupo extends Model
     {
         $profesor = $profesor ?? authUser()->dni;
         $sustituido = Profesor::findOrFail($profesor)->sustituye_a;
+
         $searchField = $dual?'tutorDual':'tutor';
         return ($sustituido != ' ')?
             $query->where($searchField, $sustituido)->orWhere('tutor', $profesor):
@@ -135,6 +136,7 @@ class Grupo extends Model
         $grupos = AlumnoGrupo::select('idGrupo')->where('idAlumno', $alumno)->get()->toarray();
         return $query->whereIn('codigo', $grupos);
     }
+
 
     public function scopeDepartamento($query, $dep)
     {
@@ -196,6 +198,22 @@ class Grupo extends Model
         }
 
         return $aprob;
+    }
+
+    public function getEnDualAttribute()
+    {
+        $todos = $this->Alumnos;
+        $dual = 0;
+        foreach ($todos as $alumno){
+            foreach ($alumno->Fcts as $fct){
+                if ($fct->dual){
+                    $dual++;
+                }
+            }
+
+        }
+
+        return $dual;
     }
 
     public function getAprobFctAttribute()

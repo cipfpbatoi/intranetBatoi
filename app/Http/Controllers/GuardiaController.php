@@ -34,8 +34,9 @@ class GuardiaController extends IntranetController
         $ip = getClientIpAddress();
         if ($ip) {
             $horas = Hora::all();
-
             return view('guardias.guardia',compact('horas'));
         }
     }
+
+
 }

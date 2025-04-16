@@ -14,6 +14,7 @@ class Panel
     private $elementos; // elements
     private $data = []; // array de més dades
     public $items = [];
+
     
     public function __construct($modelo, $rejilla = null, $vista = null, $creaPestana=true, $include=[])
     {
@@ -62,7 +63,7 @@ class Panel
     }
 
     // afegix boto
-    public function setBoton($tipo, Boton $boton)
+    public function setBoton($tipo,  $boton)
     {
         $this->botones[$tipo][] = $boton;
     }
@@ -238,5 +239,13 @@ class Panel
         $this->setElementos($todos);
         $this->setTitulo($titulo);
         return $this;
+    }
+
+    public function getLastPestanaWithModals(): array
+    {
+        $pestanas = $this->getPestanas();
+        $last = is_array($pestanas) ? end($pestanas) : collect($pestanas)->last();
+
+        return $last?->getInclude('modal') ?? [];
     }
 }

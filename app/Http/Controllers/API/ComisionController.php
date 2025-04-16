@@ -28,4 +28,16 @@ class ComisionController extends ApiBaseController
         return $this->sendResponse($data, 'OK');
     }
 
+    public function prePay($dni)
+    {
+        $data = Comision::where('idProfesor', $dni)
+                ->where('estado', 4)
+                ->get();
+        foreach ($data as $item) {
+            $item->estado = 6;
+            $item->save();
+        }
+        return $this->sendResponse($data, 'OK');
+    }
+
 }

@@ -14,14 +14,17 @@ class Vote extends Model
     {
         return $this->belongsTo(Option::class, 'option_id','id');
     }
-    public function ModuloGrupo(){
+    public function ModuloGrupo()
+    {
         return $this->belongsTo(Modulo_grupo::class,'idOption1','id');
     }
 
-    public function Actividad(){
+    public function Actividad()
+    {
         return $this->belongsTo(Actividad::class,'idOption1','id');
     }
-    public function Fct(){
+    public function Fct()
+    {
         return $this->belongsTo(Fct::class,'idOption1','id');
     }
     public function Profesor()
@@ -37,7 +40,8 @@ class Vote extends Model
     {
         return $this->Option->scala;
     }
-    private function optionsPoll($id){
+    private function optionsPoll($id)
+    {
         return hazArray(Poll::find($id)->Plantilla->options,'id');
     }
     private function optionsNumericPoll($id){
@@ -73,7 +77,9 @@ class Vote extends Model
     }
     public function getAnswerAttribute()
     {
-        if ($this->isValue) return $this->value;
+        if ($this->isValue) {
+            return $this->value;
+        }
         return $this->text;
     }
     public function getYearAttribute()
@@ -84,11 +90,11 @@ class Vote extends Model
     {
         return $this->Fct->Instructor->nombre;
     }
-    public function scopeTipusEnquesta($query,$tipusEnquesta)
+    public function scopeTipusEnquesta($query, $tipusEnquesta)
     {
-        $ppol = hazArray(PPoll::where('what',$tipusEnquesta)->get(),'id','id');
-        $poll = hazArray(Poll::whereIn('idPPoll',$ppol)->get(),'id','id');
-        return $this->whereIn('idPoll',$poll);
+        $ppol = hazArray(PPoll::where('what', $tipusEnquesta)->get(), 'id','id');
+        $poll = hazArray(Poll::whereIn('idPPoll', $ppol)->get(), 'id','id');
+        return $this->whereIn('idPoll', $poll);
     }
 
 }

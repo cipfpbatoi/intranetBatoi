@@ -26,9 +26,10 @@ class CertificatInstructorFct extends Mailable
      *
      * @return void
      */
-    public function __construct($fct)
+    public function __construct($fct,$emitent)
     {
         $this->fct = $fct;
+        $this->emitent = $emitent;
     }
 
     /**
@@ -41,6 +42,8 @@ class CertificatInstructorFct extends Mailable
         $pdf = FDFPrepareService::exec(
             new CertificatInstructorResource($this->fct));
         $view = $this->view("email.fct.certificadoInstructor")
+            ->from($this->emitent->email, $this->emitent->fullName)
+            ->replyTo($this->emitent->email, $this->emitent->fullName)
             ->attach($pdf, ['as'=>'certificadoInstructor.pdf','mime' => 'application/pdf']);
         if (count($this->fct->Colaboradores)) {
             $id = $this->fct->id;
@@ -60,8 +63,8 @@ class CertificatInstructorFct extends Mailable
 
     public function certificatColaboradors()
     {
-        $secretario = Profesor::find(config(fileContactos().'.secretario'));
-        $director = Profesor::find(config(fileContactos().'.director'));
+        $secretario = Profesor::find(config('avisos.secretario'));
+        $director = Profesor::find(config('avisos.director'));
         $dades = ['date' => FechaString(hoy(), 'ca'),
             'fecha' => FechaString(hoy(), 'es'),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',

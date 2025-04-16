@@ -1,9 +1,4 @@
 <?php
-
-
-
-
-
 return array(
 
 	/*
@@ -64,6 +59,7 @@ return array(
                 '2' => 'Justificada',
                 '1' => 'Sense justificant',
                 '5' => 'Llarga Durada',
+                '6' => 'Itaca',
                 '0' => 'No enviada/autoritzada'
                 
              ),
@@ -73,10 +69,8 @@ return array(
                 'index' => 'LListat Professorat',
                 'list' => 'Professorat Absents',
                 'horario-cambiar' => 'Canviar horari Professorat',
-                'titulo' => 'Entrevistes FCTs de :quien',
-        ),
-        'profesor' => array(
-            'files' => "Fitxers de l'usuari",
+                'titulo' => 'Documentació Addicional Pràctiques de :quien',
+                'files' => "Fitxers de l'usuari",
         ),
         'Menu' => array(
                 'index' => 'Elements del menú',
@@ -127,6 +121,8 @@ return array(
             'delete' => 'Esborrar Activitat',
             'autorizar' => 'Autoritzar totes activitats',
             'notification' => 'Avisar professorat',
+            'pdfVal' => 'Imprimir Valoració',
+            'showVal' => 'Mostrar valoració',
             '2' => 'Autoritzada',
             '3' => 'Impressa',
             '4' => 'Valorada',
@@ -277,9 +273,10 @@ return array(
             'edit' => 'Modifica Document',
             'default' => 'Modifica Documentació Qualitat',
         ),
-        'Proyecto' => array(
-            'create' => 'Pujar projecte alumne/a'
-        ),
+        'Projecte' => array(
+            'create' => 'Pujar projecte alumne/a',
+            'index' => 'Gestió de Projectes',
+         ),
         'Empresa' => array(
             'index' => 'Llistat Empreses',
             'create' => 'Crear empresa',
@@ -339,7 +336,9 @@ return array(
             'pg0301' => 'Full Control Servei',
             'pr0402' => 'Entrevista Alumnat',
             'pr0401' => 'Entrevista Final Instructora',
-            'pasqua' => 'Full Vacances',
+            'autTutor' => 'Autorització Tutor Situació Excepcional',
+            'autDireccio' => 'Autorització Direcció Situació Excepcional',
+            'autAlumnat' => 'Conformitat Alumnat Situació Excepcional',
             'print' => 'Informes',
             'all' => 'Vore tots',
             'only' => 'Vore actius',
@@ -351,9 +350,10 @@ return array(
             'send' => 'Enviar Correu Alumnat Inici',
             'link' => 'Adjuntar fitxers',
             'default' => 'x Empresa',
-            'an1' => 'Imprimir annexes I',
-            'an2' => 'Imprimir annexes II',
-            'an3' => 'Imprimir annexes III',
+            'an1' => 'Imprimir annexes I signats',
+            'an2' => 'Imprimir annexes II signats',
+            'an3' => 'Imprimir annexes III signats',
+            'an5' => 'Imprimir informe competències adquirides',
         ),
         'Dual' => array(
             'index' => 'FP Dual',
@@ -419,6 +419,7 @@ return array(
             '3' => 'Rebutjada',
             '1' => 'Pendent',
             '2' => 'Justificada',
+            '4' => 'Itaca',
         ),
         'Horario' => array(
             'index' => 'Modificar Horari :quien',
@@ -440,7 +441,7 @@ return array(
             
         ),
         'Modulo_grupo' => array(
-          'index' => 'Seguiments Modul departament',
+          'index' => 'Llistat de mòduls',
         ),
         'Alumnofct' => array(
           'index' => 'Fct x Alumne/a',
@@ -452,9 +453,11 @@ return array(
           'pg0301' => "Entregada documentació",
             'default' => 'x Alumne/a',
             'selecciona' => 'Alumne/a',
-            'A5' => 'Informe valoratiu A5',
+            'A5' => 'Informe Competències adquirides',
             'delete' => 'Esborra fct',
             'unlink' => 'Esborra connexiò amb el SAO',
+            'importa' => 'Importa annexes dual any anterior'
+
         ),
         'AlumnoFct' => array(
             'selecciona' => 'Alumne/a',
@@ -463,12 +466,28 @@ return array(
         'Alumnofctaval' => array(
             'index' => 'Avaluació FCT i projecte',
             'list' => "Llistat pendents d'avaluació grup :quien",
-            'titulo' => "Annexes SAO :quien"
+            'titulo' => "Annexes FCT/DUAL de :quien"
         ),
         'Fctcap' => array(
           'index' => 'Control Fct :quien',
            'check' => 'Control documentació'
           
+        ),
+        'Fctdual' => array(
+            'index' => 'Control Dual :quien',
+            'check' => 'Control documentació'
+        ),
+        'fctDay' => array(
+            'show' => 'Calendari pràctiques :quien',
+
+        ),
+        'Ipguardia' => array(
+          'index' => 'Control IP',
+        ),
+        'Setting' => array(
+          'index' => 'Variables de Configuració',
+          'edit' => 'Editar Configuració',
+          'create' => 'Crear Configuració',
         ),
         'Ppoll' => array(
           'show' => 'Plantilla Enquesta',
@@ -500,14 +519,19 @@ return array(
             'index' => 'Mostra Articles',
             'edit' => 'Editar Article',
             'show' => 'Mostrar Article',
-            'delete' => 'Esborrar Article'
+            'delete' => 'Esborrar Article',
+            'create' => 'Crear Article',
         ),
         'Sao' => array(
             'post' => 'Connexió SAO',
         ),
         'Signatura' => array(
             'post' => 'Signatura Annexes',
-            'index' => 'Llistat signatures pendents'
+            'index' => 'Llistat signatures pendents',
+            'show' => 'Vore Estat Signatures',
+            'pdf' => 'Imprimir Fitxer',
+            'delete' => 'Esborrar fitxer',
+            'send' => "Enviar a l'instructor"
         ),
         'Solicitud' => array(
             'index' => "Derivacions al departament d'Orientació",
@@ -564,7 +588,9 @@ return array(
             'ArticuloLote' => 'Articles Factura',
             'Incidencia' => 'Incidència',
             'Fctcap' => 'Revisió FCT',
+            'Fctdual' => 'Revisió Dual',
             'Solicitud' => "Derivació al departament d'orientació",
+            'Signatura' => 'Signatures Digitals'
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

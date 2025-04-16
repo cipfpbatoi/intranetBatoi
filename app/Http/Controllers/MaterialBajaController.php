@@ -43,7 +43,6 @@ class MaterialBajaController extends ModalController
                     $query->where('idDepartamento', AuthUser()->departamento);
             })->where('estado', 1)->where('tipo', 0)->where('idProfesor', AuthUser()->dni)->get();
         }
-
     }
 
     public function iniBotones()
@@ -57,6 +56,16 @@ class MaterialBajaController extends ModalController
             new BotonImg(
                 'materialBaja.delete',
                 [
+                    'roles' => config(self::ROLES_ROL_DIRECCION)
+                ]
+            )
+        );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'materialBaja.recover',
+                [
+                    'img' => 'fa-recycle',
                     'roles' => config(self::ROLES_ROL_DIRECCION)
                 ]
             )
@@ -80,6 +89,17 @@ class MaterialBajaController extends ModalController
         $material->save();
         $registro->estado = 1;
         $registro->save();
+        return redirect()->back();
+    }
+
+    public function recover($id)
+    {
+        $registro = MaterialBaja::findOrFail($id);
+        $material = Material::findOrFail($registro->idMaterial);
+        $material->fechaBaja = null;
+        $material->estado = 1;
+        $material->save();
+        $registro->delete();
         return redirect()->back();
     }
 }

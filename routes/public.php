@@ -35,3 +35,4 @@ Route::get(
     ['as' => 'social.callback.google', 'uses' => 'Auth\Social\SocialController@getSocialAuthCallback']
 );
 Route::get('lang/{lang}', ['as' => 'lang.choose', 'uses' => 'AdministracionController@lang']);
+Route::get('/inventario/{material}/edit', ['as' => 'inventario.edit', 'uses' => 'InventarioController@edit']);

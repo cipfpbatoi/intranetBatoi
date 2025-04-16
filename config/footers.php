@@ -10,6 +10,7 @@ return
     'extraescolars' => ['codi' => 'F18.PC02' ,'edicio' => '00'],
     'baixaInasistencia' => ['codi' => 'F11.PC02' , 'edicio' => '00'],
     'perdidaContinua' => ['codi' => 'F12.PC02' , 'edicio' => '00'],
+    'propuestaProyecto' => ['codi' => 'F8.PC02' , 'edicio' => '00'],
     'actaProyecto' => ['codi' => 'F14.PC02', 'edicio' => '00'],
     'actaDefensa' => ['codi' => 'F15.PC02' ,'edicio' => '00'],
     'comisionsServei' => ['codi' => 'F2.PC04' , 'edicio' => '00'],

@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Events\ActivityReport;
 
 class TutoriaGrupo extends Model
@@ -19,6 +19,7 @@ class TutoriaGrupo extends Model
         'observaciones',
         'fecha',
     ];
+
     protected $rules = [
         'idTutoria' => 'required',
         'idGrupo' => 'required',
@@ -35,10 +36,13 @@ class TutoriaGrupo extends Model
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
+    protected $visible = [
+        'observaciones'
+    ];
     
     public function getFechaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha =  Carbon::parse($entrada);
         return $fecha->format('d-m-Y');
     }
     public function getNombreAttribute(){

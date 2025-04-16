@@ -2,7 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonIcon;
+use Intranet\Http\Traits\Panel;
 
 
 /**
@@ -11,7 +13,7 @@ use Intranet\Botones\BotonIcon;
  */
 class PanelComisionController extends BaseController
 {
-    use traitPanel;
+    use Panel;
 
     /**
      * @var array
@@ -35,7 +37,15 @@ class PanelComisionController extends BaseController
     protected function iniBotones()
     {
         $this->panel->setBotonera([], ['delete', 'edit', 'notification']);
-        $this->setAuthBotonera(['2' => 'pdf', '1' => 'autorizar', '4' => 'paid']);
+        $this->setAuthBotonera();
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "comision.paid",
+                ['id'=>'paid' ,'class'=>'paid'],
+                true
+            )
+        );
         $this->panel->setBoton(
             'profile',
             new BotonIcon(

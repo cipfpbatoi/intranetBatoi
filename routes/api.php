@@ -14,14 +14,21 @@ use Illuminate\Http\Request;
  */
 
 Route::resource('alumnofct', 'AlumnoFctController', ['except' => [ 'create']]);
+Route::resource('projecte', 'ProjecteController', ['except' => [ 'create']]);
 Route::get('alumnofct/{grupo}/grupo', 'AlumnoFctController@indice');
 Route::get('/convenio', 'EmpresaController@indexConvenio');
 Route::get('miIp', 'IPController@miIP');
 Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
+Route::get('server-time', 'GuardiaController@getServerTime' );
 
 
-Route::group(['middleware' => 'auth:api'], function() {
+
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::get('grupo/list/{id}', 'GrupoController@list');
+    Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual');
     Route::resource('dual', 'DualController', ['except' => [ 'create']]);
+    Route::get('fct/{id}/alFct', 'FctController@llist');
+    Route::post('fct/{id}/alFct', 'FctController@seguimiento');
     Route::get('misAlumnosFct', 'AlumnoFctController@misAlumnos');
     Route::resource('actividad', 'ActividadController', ['except' => [ 'create']]);
     Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']]);
@@ -31,7 +38,10 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('modulo_ciclo', 'Modulo_cicloController', ['except' => [ 'create']]);
     Route::resource('resultado', 'ResultadoController', ['except' => [ 'create']]);
     Route::resource('comision', 'ComisionController', ['except' => [ 'create']]);
+    Route::put('/comision/{dni}/prePay', 'ComisionController@prePay');
     Route::resource('instructor', 'InstructorController', ['except' => [ 'create']]);
+    Route::resource('ipguardia', 'IpGuardiaController');
+    Route::resource('setting', 'SettingController');
     Route::get('autorizar/comision', 'ComisionController@autorizar');
     Route::get('notification/{id}', 'NotificationController@leer');
     Route::resource('ppoll', 'PPollController', ['except' => [ 'create']]);
@@ -41,7 +51,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('profesor/rol/{rol}', 'ProfesorController@getRol');
     Route::get('ficha', 'ProfesorController@ficha');
     Route::get('doficha', 'FicharController@fichar');
-    Route::get('ipGuardia', 'FicharController@ip');
+    Route::get('ipGuardias', 'IpGuardiaController@arrayIps');
     Route::get('verficha', 'FicharController@entrefechas');
     Route::get('itaca/{dia}/{idProfesor}', 'FaltaItacaController@potencial');
     Route::post('itaca', 'FaltaItacaController@guarda');
@@ -50,7 +60,6 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     Route::resource('faltaProfesor', 'FaltaProfesorController', ['except' => [ 'create']]);
     Route::get('faltaProfesor/horas/{condicion}', 'FaltaProfesorController@horas');
-    //Route::get('/departamento', 'DepartamentoController@index');
 
     Route::put('/material/cambiarUbicacion/', 'MaterialController@putUbicacion');
     Route::put('/material/cambiarEstado/', 'MaterialController@putEstado');
@@ -59,6 +68,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/material/espacio/{espacio}', 'MaterialController@getMaterial');
     Route::resource('material', 'MaterialController', ['except' => [ 'create']]);
     Route::get('inventario', 'MaterialController@inventario');
+    Route::get('inventario/{espai}', 'MaterialController@espai');
     Route::resource('materialbaja', 'MaterialBajaController', ['except' => [ 'create']]);
 
     Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
@@ -68,7 +78,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::resource('ordenreunion', 'OrdenReunionController', ['except' => [ 'create']]);
     Route::resource('colaboracion', 'ColaboracionController', ['except' => [ 'create']]);
     Route::resource('centro', 'CentroController', ['except' => [ 'create']]);
-    Route::resource('GrupoTrabajo', 'GrupoTrabajoController', ['except' => [ 'create']]);
+    Route::resource('grupotrabajo', 'GrupoTrabajoController', ['except' => [ 'create']]);
     Route::resource('Empresa', 'EmpresaController', ['except' => [ 'create']]);
     Route::resource('ordentrabajo', 'OrdenTrabajoController', ['except' => [ 'create']]);
     Route::resource('incidencia', 'IncidenciaController', ['except' => [ 'create']]);
@@ -108,14 +118,17 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/documentacionFCT/{documento}', 'DocumentacionFCTController@exec');
     Route::get('/signatura', 'DocumentacionFCTController@signatura');
     Route::get('/signatura/director', 'DocumentacionFCTController@signaturaDirector');
+    Route::get('/signatura/a1', 'DocumentacionFCTController@signaturaA1');
+    Route::get('/signatura/{id}','SignaturaController@show');
 
     Route::resource('alumnoresultado', 'AlumnoResultadoContoller');
     Route::get('/matricula/{token}', 'AlumnoReunionController@getDadesMatricula');
     Route::get('/test/matricula/{token}', 'AlumnoReunionController@getTestMatricula');
     Route::post('/alumno/{dni}/foto', 'AlumnoController@putImage');
+    Route::post('/alumno/{dni}/dades', 'AlumnoController@putDades');
     Route::post('/matricula/send', 'AlumnoReunionController@sendMatricula');
 
-    Route::resource('lote', 'LoteController',['except' => [ 'create']]);
+    Route::resource('lote', 'LoteController', ['except' => [ 'create']]);
     Route::get('lote/{id}/articulos', 'LoteController@getArticulos');
     Route::put('lote/{id}/articulos', 'LoteController@putArticulos');
     Route::resource('articuloLote', 'ArticuloLoteController');
@@ -128,12 +141,13 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('removeAttached/{modelo}/{id}/{file}', 'DropZoneController@removeAttached');
 
     Route::get('activity/{id}/move/{fct}', 'ActivityController@move');
+    Route::get('tutoriagrupo/{id}','TutoriaGrupoController@show');
 
 
 
 });
 
-Route::fallback(function(){
+Route::fallback(function () {
     return response()->json([
         'message' => 'Page Not Found. If error persists, contact info@website.com'], 404);
 });

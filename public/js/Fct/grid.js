@@ -19,6 +19,7 @@ $(function() {
         list = $(this).parents(".profile_view").find(".listActivity");
         tipo = 'telefonico';
     });
+
     $(".small").on("click",function(event){
         event.preventDefault();
         id=$(this).attr("id");
@@ -31,7 +32,7 @@ $(function() {
         }).then(function (result) {
             $("#dialogo").find("#explicacion").val(result.data.comentari);
         }, function () {
-            console.log("Error al buscarr");
+            console.log("Error al buscar");
         });
         $(this).attr("data-toggle","modal").attr("data-target", "#dialogo").attr("href","");
         tipo = 'seguimiento';
@@ -74,6 +75,7 @@ $(function() {
             });
         }
     });
+
     $('.fa-minus').on("click", function(){
         event.preventDefault();
         event.stopPropagation();

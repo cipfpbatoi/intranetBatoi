@@ -15,6 +15,7 @@ class TutoriaGrupoController extends IntranetController
     protected $model = 'TutoriaGrupo';
     protected $gridFields = ['Nombre', 'observaciones', 'fecha'];
     protected $redirect = 'TutoriaController@index';
+    protected $modal = true;
     
     public function createfrom($tutoria,$grupo)
     {
@@ -25,5 +26,11 @@ class TutoriaGrupoController extends IntranetController
         $this->titulo = ['que' => Tutoria::find($this->search)->descripcion];
         return TutoriaGrupo::where('idTutoria','=',$this->search)->get();
     }
-    
+
+    public function iniBotones()
+    {
+        $this->panel->setBotonera([], ['show']);
+    }
+
+
 }

@@ -2,26 +2,26 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Falta;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Horario;
+use DB;
+use Illuminate\Http\Request;
+use Intranet\Botones\BotonImg;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Asistencia;
-use Intranet\Entities\Reunion;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Programacion;
 use Intranet\Entities\Expediente;
+use Intranet\Entities\Falta;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Horario;
+use Intranet\Entities\Profesor;
+use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
-
-use Intranet\Jobs\SendEmail;
+use Intranet\Entities\Reunion;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\AdviseTeacher;
 use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
-use Jenssegers\Date\Date;
-use \DB;
-use Intranet\Botones\BotonImg;
-use Illuminate\Http\Request;
-use PDF;
+use Carbon\Carbon;
 
 
 /**
@@ -31,7 +31,7 @@ use PDF;
 class FaltaController extends IntranetController
 {
 
-    use traitImprimir, traitAutorizar;
+    use Imprimir, Autorizacion;
 
     /**
      * @var string
@@ -54,7 +54,7 @@ class FaltaController extends IntranetController
      * @param Request $request
      * @return mixed
      */
-    private static function findElements($desde,$hasta)
+    private static function findElements($desde, $hasta)
     {
         return Falta::where([
             ['estado', '>', '0'],
@@ -80,7 +80,7 @@ class FaltaController extends IntranetController
      */
     private static function nameFile():string
     {
-        return 'gestor/' . Curso() . '/informes/' . 'Falta' . new Date() . '.pdf';
+        return 'gestor/' . Curso() . '/informes/' . 'Falta' .  Carbon::parse() . '.pdf';
     }
 
 
@@ -103,9 +103,10 @@ class FaltaController extends IntranetController
      */
     public function store(Request $request)
     {
+
         $request->baja = isset($request->baja)?$request->baja:0;
         if ($request->baja) {
-            DB::transaction(function() use ($request){
+            DB::transaction(function () use ($request) {
                 $request->hora_ini = null;
                 $request->hora_fin = null;
                 $request->hasta = '';
@@ -115,16 +116,16 @@ class FaltaController extends IntranetController
                 parent::realStore($request);
             });
         } else {
-            $dia_completo = $request->dia_completo == '' ? '0' : '1';
-            $request->hora_ini = $dia_completo ? null : $request->hora_ini;
-            $request->hora_fin = $dia_completo ? null : $request->hora_fin;
+            $diaCompleto = $request->dia_completo == '' ? '0' : '1';
+            $request->hora_ini = $diaCompleto ? null : $request->hora_ini;
+            $request->hora_fin = $diaCompleto ? null : $request->hora_fin;
             $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
             $id = parent::realStore($request);
             if (UserisAllow(config('roles.rol.direccion'))) {
                 $this->init($id);
-            } // si es direcció autoritza
-            else {
-                return ConfirmAndSend::render($this->model,$id);
+            } else {
+                // si es direcció autoritza
+                return ConfirmAndSend::render($this->model, $id);
             }
         }
         return $this->redirect();
@@ -142,7 +143,7 @@ class FaltaController extends IntranetController
         $request->hora_ini = $request->dia_completo ? null : $request->hora_ini;
         $request->hora_fin = $request->dia_completo ? null : $request->hora_fin;
         $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
-        $elemento = Falta::find(parent::realStore($request,$id));
+        $elemento = Falta::find(parent::realStore($request, $id));
         if ($elemento->estado == 1 && $elemento->fichero) {
             $staSer = new StateService($elemento);
             $staSer->putEstado(2);
@@ -150,9 +151,9 @@ class FaltaController extends IntranetController
         return $this->redirect();
     }
 
-    protected function createWithDefaultValues( $default = [])
+    protected function createWithDefaultValues($default = [])
     {
-        $data = new Date('tomorrow');
+        $data =  Carbon::parse('tomorrow');
         return new Falta(['desde'=>$data,'hasta'=>$data,'idProfesor'=>AuthUser()->dni]);
     }
 
@@ -163,8 +164,7 @@ class FaltaController extends IntranetController
     public function init($id)
     {
         $elemento = Falta::findOrFail($id);
-        if (esMayor($elemento->desde,Hoy('Y/m/d') ))
-        {
+        if (esMayor($elemento->desde, Hoy('Y/m/d'))) {
             AdviseTeacher::sendEmailTutor($elemento);
         }
         $stSrv = new StateService($elemento);
@@ -184,9 +184,9 @@ class FaltaController extends IntranetController
     public function alta($id)
     {
         $elemento = Falta::findOrFail($id);
-        DB::transaction(function() use ($elemento){
+        DB::transaction(function () use ($elemento) {
             $elemento->estado = 3;
-            $elemento->hasta = new Date();
+            $elemento->hasta =  Carbon::parse();
             $elemento->baja = 0;
             $elemento->save();
             // quita la  baja del profesor
@@ -198,7 +198,8 @@ class FaltaController extends IntranetController
     /**
      * @param $hasta
      */
-    private static function markPrinted($hasta){
+    private static function markPrinted($hasta)
+    {
         foreach (Falta::where([
             ['estado', '>', '0'],
             ['estado', '<', '4'],
@@ -215,27 +216,32 @@ class FaltaController extends IntranetController
      */
     public static function printReport($request)
     {
-        $desde = new Date($request->desde);
-        $hasta = new Date($request->hasta);
+        $desde =  Carbon::parse($request->desde);
+        $hasta =  Carbon::parse($request->hasta);
         if ($request->mensual != 'on') {
-            return self::hazPdf("pdf.comunicacioAbsencia", Falta::where('estado', '>', '0')
+            return self::hazPdf(
+                "pdf.comunicacioAbsencia",
+                Falta::where('estado', '>', '0')
                 ->where('estado', '<', '5')
                 ->whereBetween('desde', [$desde, $hasta])
                 ->orWhereBetween('hasta', [$desde, $hasta])
-                ->orwhere([['estado', '=', '5'],
-                    ['desde', '<=', $hasta]])
+                ->orwhere([['estado', '=', '5'], ['desde', '<=', $hasta]])
                 ->orderBy('idProfesor')
                 ->orderBy('desde')
-                ->get())->stream();
+                ->get()
+            )->stream();
         }
 
         $nomComplet = self::nameFile();
         $gestor = new GestorService();
-        $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"]);
+        $doc = $gestor->save([
+                'fichero' => $nomComplet,
+                'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"
+        ]);
 
-        $elementos = self::findElements($desde,$hasta);
+        $elementos = self::findElements($desde, $hasta);
         self::markPrinted($hasta);
-        self::makeLink($elementos, $doc);
+        StateService::makeLink($elementos, $doc);
 
         return self::hazPdf("pdf.faltas", $elementos)
             ->save(storage_path('/app/' . $nomComplet))
@@ -251,7 +257,7 @@ class FaltaController extends IntranetController
     private static function tramitaBajaProfesor($idProfesor, $fecha)
     {
         $profe = Profesor::find($idProfesor);
-        $profe->fecha_baja = new Date($fecha);
+        $profe->fecha_baja =  Carbon::parse($fecha);
         $profe->save();
     }
 
@@ -260,13 +266,15 @@ class FaltaController extends IntranetController
      */
     private static function tramitaAltaProfesor($idProfesor)
     {
-        DB::transaction(function() use ($idProfesor) {
-            $profesor = Profesor::find($idProfesor);
-            $profesor->fecha_baja = null;
-            if ($profesor->Sustituye) {
-                self::changeWithSubstitute($profesor, $profesor->Sustituye);
+        DB::transaction(function () use ($idProfesor) {
+            $original = Profesor::find($idProfesor);
+            $original->fecha_baja = null;
+            $profesor = $original;
+            while ($profesor->Sustituye) {
+                self::changeWithSubstitute($original, $profesor->Sustituye);
+                $profesor = $profesor->Sustituye;
             }
-            $profesor->save();
+            $original->save();
         });
     }
 
@@ -293,6 +301,7 @@ class FaltaController extends IntranetController
             Programacion::where('profesor', $sustituto->dni)->update(['profesor' => $profesorAlta->dni]);
             Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
             Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
+            AlumnoFct::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
 
             $sustituto->sustituye_a = ' ';
             $sustituto->activo = 0;
@@ -304,8 +313,9 @@ class FaltaController extends IntranetController
      * @param $dniProfesor
      * @param $meeting
      */
-    private static function markAssistenceMeetings($dniProfesor, $meeting){
-        if (Asistencia::where('idProfesor', $dniProfesor)->where('idReunion', $meeting->idReunion)->count() == 0){
+    private static function markAssistenceMeetings($dniProfesor, $meeting)
+    {
+        if (Asistencia::where('idProfesor', $dniProfesor)->where('idReunion', $meeting->idReunion)->count() == 0) {
             Reunion::find($meeting->idReunion)->profesores()->syncWithoutDetaching([$dniProfesor=>['asiste'=>0]]);
         }
     }

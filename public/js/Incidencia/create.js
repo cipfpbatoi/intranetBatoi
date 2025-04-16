@@ -10,7 +10,7 @@ $(function () {
             .then(function (result) {
                 $("#material_id").empty().append("<option value=0>Escoge un material</option>")
                 $(result).each(function (i, item) {
-                    $("#material_id").append("<option value='" + item.id + "'>" + item.descripcion + "</option>");
+                    $("#material_id").append("<option value='" + item.id + "'>" + item.descripcion + '('+ item.id +')' +"</option>");
                 });
             }, function (result) {
                 console.log("La solicitud no se ha podido completar.");

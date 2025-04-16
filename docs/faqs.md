@@ -38,7 +38,7 @@ Al arribar al Centre hem de fitxar a la Intranet. Podem fer-ho de 3 formes difer
 Per a fitxar la nostra eixida del Centre podem fer-ho exactament igual (des del mòbil, l'ordinador de Consergeria o la Intranet). Per a fer-ho des de la Intranet només hem de [polsar el rellotge blau](./manual-profe.md#control-de-presència) que hi ha en la part superior dreta
 
 ## Com canviar la meua foto
-Des de la pantalla principal o des del meu nom (part superior dreta) trie **_Editar perfil_**. On diu _Enlace foto_ polse el botó d'_Explorar_ i trie el fitxer amb la meua foto. Intenta que la foto no siga masa pesada (pocs KB).
+Des del menú del perfil (el meu nom a la part superior dreta) trie **_Fitxers personals_**. On diu _Imtage_ polse el botó d'_Examinar_ i trie el fitxer amb la meua foto. Intenta que la foto no siga masa pesada (pocs KB).
 
 ## Com Fitxar una guàrdia
 Cada vegada que fem una guàrdia hem de fitxar que estem fent-la. Només es pot fer durant l'hora de la guàrdia i des de l'ordinador de la Biblioteca (si és guàrdia de biblioteca) o des de un dels ordinadors de la Sala de profes (si és guàrdia normal).

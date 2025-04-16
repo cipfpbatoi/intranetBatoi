@@ -24,7 +24,7 @@ class AutorizacionDireccionResource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
-        $director = Profesor::find(config('contacto.director'))->fullName;
+        $director = Profesor::find(config('avisos.director'))->fullName;
         return [
             'untitled1' => config('contacto.nombre').' '.config('contacto.codi'),
             'untitled2' => $grupo->Ciclo->vliteral ,

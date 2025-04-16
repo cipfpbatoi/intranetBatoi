@@ -3,7 +3,7 @@
         <div  class="col-sm-12">
             <h4 class="brief"><em>{{ $cab1 }}</em></h4>
             <div class="left col-xs-8">
-                <p>{{ $cab2 }}</p>
+                <p><em>{{ $cab2 }}</em></p>
                 <ul class="list-unstyled">
                     {{ $slot }}
                 </ul>
@@ -14,12 +14,12 @@
             </div>
         </div>
         <div class="col-xs-12 bottom text-center">
-            <div class="col-xs-12 col-sm-2 emphasis">
+            <div class="col-xs-12 col-sm-4 emphasis">
                 <p class="ratings">
                     {{ $rattings }}
                 </p>
             </div>
-            <div class="col-xs-12 col-sm-8 emphasis">
+            <div class="col-xs-12 col-sm-6 emphasis">
                 {{ $botones }}
             </div>
         </div>

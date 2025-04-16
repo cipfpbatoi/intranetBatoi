@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Events\ActivityReport;
 
@@ -66,25 +66,25 @@ class Curso extends Model
 
     public function getFechaInicioAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha =  Carbon::parse($entrada);
         return $fecha->format('d-m-Y');
     }
 
     public function getFechaFinAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha =  Carbon::parse($salida);
         return $fecha->format('d-m-Y');
     }
 
     public function getHorainiAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha =  Carbon::parse($salida);
         return $fecha->format('H:i');
     }
 
     public function getHorafinAttribute($salida)
     {
-        $fecha = new Date($salida);
+        $fecha =  Carbon::parse($salida);
         return $fecha->format('H:i');
     }
     public function getNAlumnosAttribute()

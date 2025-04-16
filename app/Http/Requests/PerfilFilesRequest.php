@@ -24,8 +24,9 @@ class PerfilFilesRequest extends FormRequest
     public function rules()
     {
         return [
-            'signatura' => 'sometimes|mimes:png',
-            'peu' => 'sometimes|mimes:png',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+            'signatura' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+            'peu' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
         ];
     }
 }

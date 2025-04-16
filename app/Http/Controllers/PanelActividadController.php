@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
+use Intranet\Http\Traits\Panel;
 
 
 /**
@@ -13,7 +14,7 @@ use Intranet\Botones\BotonImg;
 class PanelActividadController extends BaseController
 {
 
-    use traitPanel;
+    use Panel;
 
     /**
      * @var string
@@ -38,8 +39,11 @@ class PanelActividadController extends BaseController
      */
     protected function iniBotones()
     {
-        $this->panel->setBothBoton('actividad.detalle');
-        $this->panel->setBoton('grid', new BotonImg('notificacion', ['where'=>['estado','<','3']]));
+        $this->panel->setBothBoton('actividad.detalle',
+            [
+                'where' => ['estado', '<', '4']
+            ]
+        );
         $this->panel->setBoton('grid', new BotonImg('actividad.edit', ['where'=>['estado','<','3']]));
         $this->panel->setBoton('grid', new BotonImg('actividad.delete', ['where'=>['estado','<','3']]));
         $this->panel->setBoton(
@@ -64,15 +68,11 @@ class PanelActividadController extends BaseController
                 ]
             )
         );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'actividad.showVal',
-                [
-                    'img'=>'fa-eye-slash',
-                    'where' => ['estado', '==', '4','hasta','anterior',Hoy()]
-                ]
-            )
+        $this->panel->setBothBoton('actividad.showVal',
+            [
+                'img'=>'fa-eye-slash',
+                'where' => ['estado', '==', '4','hasta','anterior',Hoy()]
+            ]
         );
 
         $this->setAuthBotonera();

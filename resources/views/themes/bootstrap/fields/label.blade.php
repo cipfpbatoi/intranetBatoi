@@ -17,7 +17,7 @@ else $clase = 'form-control has-feedback-left';
             @case('gif')
             @case('png')
             @case('peg')
-                <img src='{{$value}}' width="60" height="80" />{{$input}}
+                <img src='/storage/fotos/{{$value}}?v={{time()}}' width="60" height="80" />{{$input}}
                 @break
             @default 
                 {{ $input }}

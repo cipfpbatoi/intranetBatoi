@@ -1,11 +1,13 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Incidencia;
-use Intranet\Botones\BotonImg;
-use Intranet\Http\Requests\IncidenciaRequest;
 use Illuminate\Support\Facades\Session;
+use Intranet\Botones\BotonImg;
+use Intranet\Entities\Incidencia;
 use Intranet\Entities\OrdenTrabajo;
+use Intranet\Http\Requests\IncidenciaRequest;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\FormBuilder;
 
 
@@ -16,7 +18,7 @@ use Intranet\Services\FormBuilder;
 class IncidenciaController extends ModalController
 {
 
-    use traitImprimir,traitAutorizar;
+    use Imprimir,Autorizacion;
 
     /**
      * @var string

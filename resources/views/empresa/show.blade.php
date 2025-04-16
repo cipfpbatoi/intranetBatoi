@@ -3,25 +3,24 @@
     <title>Empresa {{$elemento->nombre}}</title>
 @endsection
 @php($centros = $elemento->centros->count())
-@php($ciclo = \Intranet\Entities\Grupo::find(authUser()->GrupoTutoria)->idCiclo)
+@php($ciclo = \Intranet\Entities\Grupo::find(authUser()->GrupoTutoria)->idCiclo??'')
 @section('content')
     <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
         <h3>{{$elemento->nombre}}</h3>
         <h4>CIF : {{$elemento->cif}}</h4>
         <h4>
-            @lang("validation.attributes.concierto") : {{$elemento->concierto}}
+            @lang("validation.attributes.concierto") : {{$elemento->concierto}} - {{$elemento->data_signatura??''}}
             @if (!empty($elemento->fichero))
                 <a href="/empresa/{{$elemento->id}}/document"><em class="fa fa-eye"></em></a>
             @endif
         </h4>
         @if (!empty($elemento->fichero))
-                <embed
-                        type="application/pdf"
-                        src="/empresa/{{$elemento->id}}/document#toolbar=0&navpanes=0&scrollbar=0"
-                        width="100%"
-                        height="150px"
-                />
-
+            <embed
+                    type="application/pdf"
+                    src="/empresa/{{$elemento->id}}/document?v={{ time() }}#toolbar=0&navpanes=0&scrollbar=0"
+                    width="100%"
+                    height="150px"
+            />
         @endif
         <ul class="list-unstyled user_data">
             <li>
@@ -99,18 +98,6 @@
                     </div>
                 </div>
             </li>
-            <li>
-                <p>{{trans('validation.attributes.anexo1')}}</p>
-                <div class="progress progress_sm">
-                    <div class="progress-bar bg-green" role="progressbar"
-                         @if ($elemento->copia_anexe1)
-                             data-transitiongoal="100">
-                        @else
-                            data-transitiongoal="0">
-                        @endif
-                    </div>
-                </div>
-            </li>
             @if ($elemento->actividad)
                 <li>
                     <p><strong>@lang("messages.generic.actividades")</strong></p>
@@ -125,7 +112,6 @@
             @endif
         </ul>
         <!-- end of skills -->
-
     </div>
     <div class="col-md-9 col-sm-9 col-xs-12">
         <div class="x_panel" style="height: auto;">
@@ -223,7 +209,8 @@
                 @endforeach
             </div>
         </div>
-        @include('layouts.partials.error')
+        <x-ui.errors />
+
     </div>
     @include('empresa.partials.modalCentro')
     @include('empresa.partials.modalColaboraciones')

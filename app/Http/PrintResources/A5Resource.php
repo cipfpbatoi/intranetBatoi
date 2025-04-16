@@ -25,11 +25,14 @@ class A5Resource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', $tutor->dni)->first();
         $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
         $centro = $this->elements->Fct->Colaboracion->Centro;
         $empresa = $centro->Empresa;
         $instructor = $this->elements->Fct->instructor;
+        $idCiclo = $this->elements->Fct->Colaboracion->Ciclo->id;
+        $file = storage_path("app/public/Ciclos/$idCiclo.txt");
+
 
         return [
             'untitled1' => $alumno->fullName." (NIA: $alumno->nia) - $alumno->dni",
@@ -41,6 +44,7 @@ class A5Resource extends PrintResource
             'untitled7' => "$centro->direccion , $centro->localidad ($centro->codiPostal ".provincia($centro->codiPostal).") - Tel: $centro->telefono - $centro->email",
             'untitled8' => $instructor->nombre.' - '.$instructor->dni.' - '.$instructor->email,
             'untitled9' => $this->elements->horas.' h',
+            'untitled10' => file_exists($file)?file_get_contents($file):'',
             'untitled13' =>  config('contacto.poblacion'),
             'untitled14' => day(Hoy()),
             'untitled15' => month(Hoy()),

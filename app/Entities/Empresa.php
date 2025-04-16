@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Events\ActivityReport;
 
 
@@ -14,7 +14,8 @@ class Empresa extends Model
 
     protected $table = 'empresas';
     protected $fillable = [ 'europa','sao','concierto','cif', 'nombre', 'email', 'direccion', 'localidad', 'telefono',
-        'dual', 'actividad', 'delitos', 'menores','copia_anexe1','observaciones', 'gerente','fichero','creador'];
+        'dual', 'actividad', 'delitos', 'menores', 'observaciones',
+        'gerente', 'fichero', 'creador', 'idSao','data_signatura'];
     protected $rules = [
         'cif' => 'required|alpha_num',
         'nombre' => 'required|between:0,100',
@@ -32,10 +33,11 @@ class Empresa extends Model
         'email' => ['type' => 'email'],
         'telefono' => ['type'=>'number'],
         'sao' => ['type' => 'checkbox'],
-        'copia_anexe1' => ['type'=>'checkbox'],
         'observaciones' => ['type' => 'textarea'],
         'fichero' => ['type' => 'file'],
         'creador' => ['type' => 'hidden'],
+        'idSao' => ['type' => 'hidden'],
+        'data_signatura' => ['type' => 'date']
     ];
     protected $hidden = ['created_at', 'updated_at','creador'];
     protected $dispatchesEvents = [
@@ -44,7 +46,7 @@ class Empresa extends Model
     ];
     protected $fileField = 'cif';
 
-    protected $attributes = ['europa'=>0,'sao'=>1,'copia_anexe1'=>1];
+    protected $attributes = ['europa'=>0,'sao'=>1,'data_signatura'=>null ];
 
     public function centros()
     {
@@ -65,7 +67,7 @@ class Empresa extends Model
 
     public function scopeMenor($query, $fecha = null)
     {
-        $hoy = $fecha ? new Date($fecha) : new Date();
+        $hoy = $fecha ?  Carbon::parse($fecha) :  Carbon::parse();
         $hace18 = $hoy->subYears(18)->toDateString();
         return $query->where('fecha_nac', '>', $hace18);
     }
@@ -77,11 +79,57 @@ class Empresa extends Model
         if (!$this->fichero || !file_exists($file)) {
             return false;
         } else {
-            return  date("Y-m-d", filemtime($file)) > "2022-08-31";
+            return  date("Y-m-d", filemtime($file)) > "2023-08-31";
         }
     }
 
+    public function getConveniRenovatAttribute()
+    {
+        if (!$this->fichero) {
+            return false;
+        }
+        $file = storage_path('app/' . $this->fichero);
 
+        $date_file = date("Y-m-d", filemtime($file));
+
+        $date1 =  Carbon::parse($date_file);
+        $date2 =  Carbon::parse();
+
+        $diferencia = $date2->diff($date1);
+        return $diferencia->days < 120;
+
+    }
+
+    public function getRenovatConveniAttribute()
+    {
+        $file = storage_path('app/' . $this->fichero);
+        $date_intranet = date("Y-m-d", filemtime($file));
+        $date_sao = $this->data_signatura;
+
+        $date1 =  Carbon::parse($date_intranet);
+        $date2 =  Carbon::parse($date_sao);
+
+        $diferencia = $date1->diff($date2);
+        return $diferencia->days > 90;
+
+    }
+    public function getConveniCaducatAttribute()
+    {
+        $file = storage_path('app/' . $this->fichero);
+        if (!$this->fichero || !file_exists($file)) {
+            return true;
+        }
+        return  date("Y-m-d", filemtime($file)) < "2024-01-01";
+     }
+
+    public function getDataSignaturaAttribute($entrada)
+    {
+        if (!$entrada) {
+            return '';
+        }
+        $fecha =  Carbon::parse($entrada);
+        return $fecha->format('d-m-Y');
+    }
 
     public function getCiclesAttribute()
     {

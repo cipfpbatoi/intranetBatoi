@@ -27,7 +27,7 @@ class Dual extends Fct
         'hasta' => 'sometimes|required|date',
         'beca' => 'numeric'
     ];
-    protected $attributes = ['asociacion'=>4,'correoInstructor'=>1];
+    protected $attributes = ['asociacion'=>3,'correoInstructor'=>1];
     
 
     public function getIdAlumnoOptions()

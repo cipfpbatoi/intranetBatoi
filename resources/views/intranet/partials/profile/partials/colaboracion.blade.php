@@ -11,10 +11,10 @@
                     <ul class="list-unstyled">
                         <li>Conveni: <strong>
                                 {{$elemento->Centro->Empresa->concierto}}
-                                @if ($elemento->Centro->Empresa->conveniNou)
-                                    <em class="fa fa-hand-o-up"></em>
-                                @else
+                                @if ($elemento->Centro->Empresa->conveniCaducat)
                                     <em class="fa fa-hand-o-down"></em>
+                                @else
+                                    <em class="fa fa-hand-o-up"></em>
                                 @endif
                             </strong>
                         </li>
@@ -37,6 +37,7 @@
                                 @endif
                             @endforeach
                         @endif
+                        <li><em class="fa fa-user-secret"></em> {{$elemento->profesor??'No assignada'}}</li>
                     </ul>
                 @else
                     <ul class="list-unstyled">
@@ -51,9 +52,7 @@
             <div class="col-md-3 listActivity">
                 @isset (authUser()->emailItaca)
                     @foreach ($contactos as $contacto)
-                        <small>
-                            {{ $contacto->render() }}
-                        </small>
+                        <x-activity :activity="$contacto" />
                         <br/>
                     @endforeach
                 @endisset
@@ -67,8 +66,8 @@
             </div>
             <div class="col-xs-12 col-sm-8 emphasis">
                 @isset (authUser()->emailItaca)
-                    @include ('intranet.partials.components.buttons',['tipo' => 'profile'])<br/>
-                    @include ('intranet.partials.components.buttons',['tipo' => 'nofct'])
+                    <x-botones :panel="$panel" tipo="profile" :elemento="$elemento ?? null"/><br/>
+                    <x-botones :panel="$panel" tipo="nofct" :elemento="$elemento ?? null"/>
                 @endisset
             </div>
         </div>

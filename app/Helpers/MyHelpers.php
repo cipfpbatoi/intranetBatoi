@@ -1,9 +1,18 @@
 <?php
 
 use Intranet\Entities\Profesor;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
+function asset_nocache(string $path)
+{
+    $realPath = public_path($path);
 
+    $version = file_exists($realPath)
+        ? filemtime($realPath)
+        : time();
+
+    return asset($path) . '?v=' . $version;
+}
 
 function emailConselleria($nombre, $apellido1, $apellido2)
 {
@@ -114,7 +123,7 @@ function evaluacion()
 
 function curso()
 {
-    $hoy = new Date();
+    $hoy =  Carbon::parse();
     $ano = $hoy->format('Y');
     $mes = $hoy->format('m');
     $curso = $mes > '07' ? $ano : $ano - 1;
@@ -123,7 +132,7 @@ function curso()
 }
 function cursoAnterior()
 {
-    $hoy = new Date();
+    $hoy =  Carbon::parse();
     $ano = $hoy->format('Y');
     $mes = $hoy->format('m');
     $curso = $mes > '07' ? $ano : $ano - 1;
@@ -144,7 +153,7 @@ function fullDireccion()
 
 function cargo($cargo)
 {
-    return \Intranet\Entities\Profesor::find(config(fileContactos().".$cargo"));
+    return \Intranet\Entities\Profesor::find(config("avisos.$cargo"));
 }
 
 function signatura($document)
@@ -152,7 +161,7 @@ function signatura($document)
     foreach (config('signatures.llistats') as $key => $carrec) {
         if (array_search($document, $carrec) !== false) {
             return config("signatures.genere.$key")
-                    [Intranet\Entities\Profesor::find(config(fileContactos().".$key"))->sexo];
+                    [Intranet\Entities\Profesor::find(config("avisos.$key"))->sexo];
         }
     }
 }
@@ -180,7 +189,7 @@ function userIsNameAllow($role)
 
 
 
-function authUser()
+function authUser(): \Illuminate\Contracts\Auth\Authenticatable | null
 {
     $usuario = null;
     if (auth('profesor')->user()) {
@@ -196,10 +205,10 @@ function authUser()
 function apiAuthUser($token=null)
 {
     if ($token==null) {
-        $token = $_GET['api_token'];
+        $token = $_GET['api_token']??null;
     }
     return Intranet\Entities\Profesor::where('api_token', $token)->get()
-        ->first();
+        ->first()??null;
         //??Intranet\Entities\Profesor::find('021652470V');
 }
 
@@ -258,7 +267,7 @@ function roleIsInArray(array $role, \Illuminate\Contracts\Auth\Authenticatable $
 function nameRolesUser($rolUsuario)
 {
     $jerarquia = config('roles.rol');
-
+    $roles = [];
     if ($rolUsuario == 1) {
         return array(trans('messages.rol.todos'));
     }
@@ -299,6 +308,18 @@ function isAdmin()
 {
     return Auth::user()?esRol(Auth::user()->rol, 11):false;
 }
+
+function usersWithRol($rol)
+{
+    $usuarios = [];
+    foreach (Profesor::activo()->get() as $usuario) {
+        if (esRol($usuario->rol, $rol)) {
+            $usuarios[] = $usuario->dni;
+        }
+    }
+    return $usuarios;
+}
+
 
 
 
@@ -401,7 +422,14 @@ function extrauValor($campo1, $elemento, $separador)
 function getClase($elemento)
 {
     $clase = get_class($elemento);
-    return substr($clase, strlen("Intranet\Entities\\"));
+
+    // Si la classe comença amb "Intranet\Entities\", eliminem el prefix
+    if (str_starts_with($clase, "Intranet\Entities\\")) {
+        return substr($clase, strlen("Intranet\Entities\\"));
+    }
+
+    // Si no, simplement retornem el nom curt de la classe
+    return (new \ReflectionClass($elemento))->getShortName();
 }
 
 function getClass($str)
@@ -409,7 +437,7 @@ function getClass($str)
     return substr($str, strlen("Intranet\Entities\\"));
 }
 
-function literal()
+function my_literal()
 {
     return App::getLocale(session('lang')) == 'es' ? 'cliteral' : 'vliteral';
 }
@@ -523,17 +551,10 @@ function loadImg($fixer)
  * @return mixed
  */
 
-function fileContactos()
-{
-    return is_file(base_path().'/config/avisos.php')?'avisos':'contacto';
-}
-
-
 function cargaDatosCertificado($datos, $date=null)
 {
-    $file = fileContactos();
-    $secretario = Profesor::find(config($file.'.secretario'));
-    $director = Profesor::find(config($file.'.director'));
+    $secretario = Profesor::find(config('avisos.secretario'));
+    $director = Profesor::find(config('avisos.director'));
     $datos['fecha'] = fechaString($date, 'ca');
     $datos['secretario']['titulo'] = $secretario->sexo == 'H'?'En':'Na';
     $datos['secretario']['articulo'] = $secretario->sexo == 'H'?'El':'La';
@@ -571,11 +592,12 @@ function getClientIpAddress(): String
 function isPrivateAddress($ip):bool
 {
     $privateAddressRange = array(
+      '213.0.87.0|213.0.87.255',
       '10.0.0.0|10.255.255.255',
       '172.16.0.0|172.31.255.255',
-        '192.168.0.0|192.168.255.255',
-        '169.254.0.0|169.254.255.255',
-        '127.0.0.0|127.255.255.255'
+      '192.168.0.0|192.168.255.255',
+      '169.254.0.0|169.254.255.255',
+      '127.0.0.0|127.255.255.255'
     );
     $longIpAddress = ip2long($ip);
     if ($longIpAddress != -1) {
@@ -695,13 +717,45 @@ function replaceCachitos($view)
     return replaceCachitos($view);
 }
 
-function arrayAlert(array $avisos, $title='Fcts Sincronitzades', $action='success')
+function in_substr($item, $long)
 {
-    if (count($avisos)) {
-        $tots = '';
-        foreach ($avisos as $avis) {
-            $tots .= $avis.', ';
-        }
-        \Styde\Html\Facades\Alert::$action($title.$tots);
+    if (strlen($item) < $long) {
+        return $item;
+    } else {
+        return mb_substr($item, 0, $long);
     }
+}
+
+
+
+function array_depth($array) {
+    if (!is_array($array)) {
+        return 0;
+    }
+
+    $max_depth = 1;
+
+    foreach ($array as $value) {
+        if (is_array($value)) {
+            $depth = array_depth($value) + 1;
+
+            if ($depth > $max_depth) {
+                $max_depth = $depth;
+            }
+        }
+    }
+
+    return $max_depth;
+}
+
+function asociacion_fct($tipus)
+{
+    // Accedir a la configuració de l'array 'tipusFCT'
+    $tipusFCT = config('auxiliares.tipusFCT');
+
+    // Buscar la clau associada al valor donat
+    $clau = array_search($tipus, $tipusFCT);
+
+    // Retornar la clau si s'ha trobat, o null si no s'ha trobat
+    return $clau !== false ? $clau : null;
 }

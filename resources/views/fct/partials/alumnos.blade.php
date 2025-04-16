@@ -2,7 +2,7 @@
     @foreach($fct->alFct as $alfct)
         @php
             $alumno = $alfct->Alumno;
-            $mio = in_array(authUser(),$alumno->Tutor)
+            $mio = in_array(authUser()->dni,$alfct->Tutor->Sustituidos);
         @endphp
         @if ($mio)
             <li>
@@ -12,19 +12,17 @@
                                 class="fa fa-calendar-times-o"></i> {{$alfct->desde}}
                         - {{$alfct->hasta}} ({{$alfct->horas}})</h4>
                     <h4 class="text-info">
-                        Tutor:
-                        @foreach ($alumno->Tutor as $tutor)
-                            {{$tutor->FullName}}
-                        @endforeach
+                        Tutor: {{$alfct->Tutor->fullName??''}}
+
                     </h4>
                     <h4>
                         @if ($alfct->idSao)
-                            <a href="{{route('alumnofct.unlink',$alfct->id)}}" class="fa fa-unlink" title="Esborrar enllaç amb SAO" > SAO - </a>
+                            <i class="fa fa-unlink"> SAO - </i>
                         @endif
-                        @if ($alfct->saoAnnexes)
-                            <em class="fa fa-file-pdf-o"> A2 A3</em>
-                        @endif
-                        <a href="{{route('alumnofct.link',$alfct->id)}}" class="fa fa-link" title="Enllaçar fitxers"></a>
+                        @if ($alfct->saoAnnexes)<em>@endif
+                             Fitxers Annexes
+                        @if ($alfct->saoAnnexes)</em>@endif
+                        <a href="{{route('alumnofct.link',$alfct->id)}}" class="fa fa-file-pdf-o" title="Enllaçar fitxers"></a>
                     </h4>
                 </div>
                 <div class="message_wrapper">
@@ -41,14 +39,25 @@
                             Autorització
                         </a>
                     @endif
-                    @if ($fct->asociacion == '2')
+                    @if ($alfct->fct->asociacion == 4)
+                        <a href="{{ route('alumnofct.AVI',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
+                            Conformitat Alumnat
+                        </a>
+                    @else
                         <a href="{{ route('alumnofct.AEng',$alfct->id) }}" class="fa fa-file-zip-o" target="_blank">
                             Annexos Anglès
                         </a>
                     @endif
-                    <a href="{{ route('alumnofct.Valoratiu',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
-                        Inf.Valoratiu
-                    </a>
+                    @if ($alfct->fct->asociacion == 4)
+                        <a href="{{ route('alumnofct.AutDual',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
+                            Autorització No Lectius
+                        </a>
+                    @else
+                        <a href="{{ route('alumnofct.Valoratiu',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
+                            Inf.Competències Adquirides
+                        </a>
+                    @endif
+
                 </div>
             </li>
         @else
@@ -57,7 +66,7 @@
                     <p class="text-info">
                         Tutor:
                         @foreach ($alumno->Tutor as $tutor)
-                            {{$tutor->FullName}}
+                            {{$tutor->FullName ?? 'Sense nom'}}
                         @endforeach
                     </p>
                 </div>
@@ -68,3 +77,4 @@
         @endif
     @endforeach
 </ul>
+

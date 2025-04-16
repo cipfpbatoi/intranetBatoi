@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Events\ActivityReport;
 
 class Centro extends Model
@@ -20,7 +20,8 @@ class Centro extends Model
         'horarios',
         'observaciones',
         'idioma',
-        'codiPostal'];
+        'codiPostal',
+        'idSao'];
     protected $rules = [
         'idEmpresa' => 'required',
         'nombre' => 'required',

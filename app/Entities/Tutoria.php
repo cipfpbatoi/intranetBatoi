@@ -3,12 +3,11 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Intranet\Events\ActivityReport;
 
 class Tutoria extends Model
 {
-
     use BatoiModels;
 
     protected $table = 'tutorias';
@@ -42,16 +41,22 @@ class Tutoria extends Model
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
-    
+
+
+    public function Grupos()
+    {
+        return $this->hasManyThrough(Grupo::class, TutoriaGrupo::class, 'idTutoria', 'codigo', 'id', 'idGrupo');
+    }
+
     public function getDesdeAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha =  Carbon::parse($entrada);
         return $fecha->format('d-m-Y');
     }
 
     public function getHastaAttribute($entrada)
     {
-        $fecha = new Date($entrada);
+        $fecha =  Carbon::parse($entrada);
         return $fecha->format('d-m-Y');
     }
     public function getGruposOptions()
@@ -73,6 +78,20 @@ class Tutoria extends Model
     protected function getTiposAttribute()
     {
         return config('auxiliares.tipoTutoria')[$this->tipo];
+    }
+
+    protected function getEstatAttribute()
+    {
+        return $this->obligatoria ? 'Obligatoria' : 'Voluntaria';
+    }
+
+    protected function getFeedBackAttribute()
+    {
+        if (authUser()->GrupoTutoria) {
+            return $this->Grupos->where('codigo', authUser()->GrupoTutoria)->count() ? "Realitzada" : "Incompleta";
+        }
+
+        return $this->Grupos->count();
     }
     
 }

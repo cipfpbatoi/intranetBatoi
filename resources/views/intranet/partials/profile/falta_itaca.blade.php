@@ -17,46 +17,38 @@
             <div class='form_box'>
                 @php $usuarios = $grupo->groupBy('idProfesor'); @endphp
                 @foreach ($usuarios as $usuario)
-                <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
-                    <div id="{{$usuario->first()->id}}" class="well profile_view">
-                        <div class="col-sm-12">
-                            <h4 class="brief"><em>{{ $usuario->first()->Profesor->FullName }}</em></h4>
+                    @if ($usuario->first()->Profesor)
+                        <x-label id="{{$usuario->first()->id}}"
+                                 cab1="{{$usuario->first()->Profesor->FullName  }}"
+                                 cab2="{{$usuario->first()->dia}}"
+                                 title="{{asset('storage/fotos/'. $usuario->first()->Profesor->foto ) }}"
+                                 view="people">
                             <div class="left col-xs-8">
-                                <p><strong>{{ $usuario->first()->dia }}</strong></p>
                                 <ul class="list-unstyled">
                                     @php $justificacion = ''; @endphp
                                     @foreach ($usuario as $elemento)
                                         @php $justificacion .= $elemento->justificacion; @endphp
-                                    <li>
-                                        @if ($elemento->enCentro)
-                                            {!! Html::image('img/clock-icon.png',
-                                                    'reloj', array('class' => 'iconopequeno')) !!}
-                                        @else
-                                            {!! Html::image('img/clock-icon-rojo.png',
-                                                    'reloj', array('class' => 'iconopequeno', 'id' => 'imgFitxar')) !!}
-                                        @endif
-                                        {{ $elemento->horas }} - {{ $elemento->Xgrupo }}
-                                    </li>
+                                        <li>
+                                            @if ($elemento->enCentro)
+                                                {!! Html::image('img/clock-icon.png', 'reloj', ['class' => 'iconopequeno']) !!}
+                                            @else
+                                                {!! Html::image('img/clock-icon-rojo.png', 'reloj', ['class' => 'iconopequeno', 'id' => 'imgFitxar']) !!}
+                                            @endif
+                                            {{ $elemento->horas }} - {{ $elemento->Xgrupo }}
+                                        </li>
                                     @endforeach
                                 </ul>
                             </div>
-                            <div class="right col-xs-4 text-center">
-                                <img src="{{ asset('storage/'.$usuario->first()->Profesor->foto) }}"
-                                     alt="" class="img-circle img-responsive">
-                            </div>
-                        </div>
-                        <div class="col-xs-12 bottom text-center">
-                            <div class="col-xs-12 col-sm-6 emphasis">
+                            <x-slot name="rattings">
                                 <p class="ratings">
-                                    {{ $justificacion }}
+                                    {{ ucfirst($justificacion) }}
                                 </p>
-                            </div>
-                            <div class="col-xs-12 col-sm-6 emphasis">
-                                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            </x-slot>
+                            <x-slot name="botones">
+                                <x-botones :panel="$panel"  tipo="profile" :elemento="$elemento ?? null"/>
+                            </x-slot>
+                        </x-label>
+                    @endif
                 @endforeach
             </div>
         </div>

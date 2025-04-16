@@ -8,7 +8,7 @@ use Intranet\Entities\Lote;
 use Intranet\Http\Requests;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 class ArticuloController extends ApiBaseController
 {

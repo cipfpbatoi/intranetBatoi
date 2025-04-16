@@ -36,10 +36,10 @@ class ReservaController extends IntranetController
             $profes = Profesor::Activo()->orderBy('apellido1')->get();
         } else
         {
-            $profes = Profesor::where('dni',AuthUser()->dni)->get();
+            $profes = Profesor::where('dni', AuthUser()->dni)->get();
         }
 
-        return view('reservas.reserva', compact('espacios', 'horas','profes'));
+        return view('reservas.reserva', compact('espacios', 'horas', 'profes'));
     }
 
 

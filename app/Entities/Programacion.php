@@ -16,7 +16,6 @@ class Programacion extends Model
     protected $table = "programaciones";
     protected $fillable = [
         'idModuloCiclo',
-        'curso',
         'fichero',
     ];
     protected $rules = [
@@ -43,20 +42,23 @@ class Programacion extends Model
 
     public function Departament()
     {
-        return $this->hasOneThrough(Departamento::class,Modulo_ciclo::class,'id','id','idModuloCiclo','idDepartamento');
+        return $this->hasOneThrough(Departamento::class, Modulo_ciclo::class, 'id', 'id','idModuloCiclo','idDepartamento');
     }
     public function Ciclo()
     {
-        return $this->hasOneThrough(Ciclo::class,Modulo_ciclo::class,'id','id','idModuloCiclo','idCiclo');
+        return $this->hasOneThrough(Ciclo::class, Modulo_ciclo::class,'id','id','idModuloCiclo','idCiclo');
     }
     public function Modulo()
     {
-        return $this->hasOneThrough(Modulo::class,Modulo_ciclo::class,'id','codigo','idModuloCiclo','idModulo');
+        return $this->hasOneThrough(Modulo::class, Modulo_ciclo::class,'id','codigo','idModuloCiclo','idModulo');
     }
-    public function Profesor()
+
+    public function Grupo()
     {
-        return $this->belongsTo(Profesor::class, 'profesor', 'dni');
+        return $this->hasOneThrough(Grupo::class, Modulo_grupo::class,'id','codigo','idModuloCiclo','idGrupo');
     }
+
+
 
     public function getidModuloCicloOptions()
     {
@@ -67,8 +69,8 @@ class Programacion extends Model
                 ->distinct()
                 ->get();
         $todos = [];
-        foreach ($horas as $hora){
-            $mc = Modulo_ciclo::where('idModulo',$hora->modulo)
+        foreach ($horas as $hora) {
+            $mc = Modulo_ciclo::where('idModulo', $hora->modulo)
                     ->where('idCiclo',$hora->Grupo->idCiclo)
                     ->first();
             $todos[$mc->id] = $mc->Xmodulo.' - '.$mc->Xciclo;
@@ -87,22 +89,21 @@ class Programacion extends Model
                 ->get();
         $modulos = [];
         foreach ($horas as $hora){
-            if ($mc = Modulo_ciclo::where('idModulo',$hora->modulo)
-                    ->where('idCiclo',$hora->Grupo->idCiclo)
+            if ($mc = Modulo_ciclo::where('idModulo', $hora->modulo)
+                    ->where('idCiclo', $hora->Grupo->idCiclo)
                     ->first()) {
                 $modulos[] = $mc->id;
             }
         }
 
-        return $query->whereIn('idModuloCiclo', $modulos)
-                ->where('curso',curso());
+        return $query->whereIn('idModuloCiclo', $modulos);
     }
 
     public function scopeDepartamento($query)
     {
-        return $query->whereIn('idModuloCiclo', 
-                hazArray(Modulo_ciclo::where('idDepartamento', authUser()->departamento)->get(), 'id', 'id'))
-                ->where('curso',curso());
+        return $query->whereIn(
+            'idModuloCiclo',
+            hazArray(Modulo_ciclo::where('idDepartamento', authUser()->departamento)->get(), 'id', 'id'));
     }
     
     public function nomFichero()
@@ -127,18 +128,23 @@ class Programacion extends Model
     public function getXCicloAttribute(){
         return $this->Ciclo->literal??'';
     }
-    public function getDescripcionAttribute(){
+    public function getDescripcionAttribute()
+    {
         return isset($this->ModuloCiclo->idCiclo)?$this->ModuloCiclo->Aciclo." - ".$this->ModuloCiclo->Xmodulo:'';
     }
-    public function getXnombreAttribute(){
+    public function getXnombreAttribute()
+    {
         return $this->Profesor->ShortName??'';
     }
 
-    public function getSituacionAttribute(){
-        return isblankTrans('models.Comision.' . $this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Comision.' . $this->estado);
+    public function getSituacionAttribute()
+    {
+        return isblankTrans('models.Programacion.' . $this->estado)
+            ? trans('messages.situations.' . $this->estado)
+            : trans('models.Programacion.' . $this->estado);
     }
 
-    public static function resolve($id,$mensaje = null)
+    public static function resolve($id, $mensaje = null)
     {
         Programacion::find($id);
         $staServ = new StateService(Programacion::find($id));

@@ -8,14 +8,19 @@
                 <h4 class="modal-title">{{$title}}</h4>
             </div>
             <div class="modal-body">
-                <form id="form{{ucwords($name)}}" action="{{$action}}" method="POST">
+                <form id="form{{ucwords($name)}}" action="{{$action}}" enctype="multipart/form-data" method="POST">
                     {{ csrf_field() }}
                     {{ $slot }}
                 </form>
             </div>
             <div class="modal-footer">
                 @if (strlen($message))
-                    <button type="submit" form="form{{ucwords($name)}}" class="submit btn btn-primary">{{$message}}</button>
+                    <button
+                            type="submit"
+                            form="form{{ucwords($name)}}"
+                            class="submit btn btn-primary">
+                        {{$message}}
+                    </button>
                 @endif
                 <button type="button" class="btn btn-default" data-dismiss="modal">{{$cancel}}</button>
             </div>

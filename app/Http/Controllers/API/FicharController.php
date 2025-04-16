@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers\API;
 
 use Intranet\Entities\Falta_profesor;
+use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Profesor;
 use Illuminate\Http\Request;
 
@@ -21,11 +22,7 @@ class FicharController extends ApiBaseController
         return $this->sendResponse(['updated' => false], 'Profesor no identificado');
     }
 
-    public function ip()
-    {
-        return $this->sendResponse(config('variables.ipGuardias'),'OK');
-        
-    }
+
 
     public function entrefechas(Request $datos)
     {
@@ -36,13 +33,16 @@ class FicharController extends ApiBaseController
         foreach ($registros as $registro) {
             if ($registro->salida != null) {
                 if (isset($dias[$registro->dia])) {
-                    $dias[$registro->dia]['horas'] = sumarHoras($dias[$registro->dia]['horas'], restarHoras($registro->entrada, $registro->salida));
+                    $dias[$registro->dia]['horas'] =
+                        sumarHoras(
+                            $dias[$registro->dia]['horas'],
+                            restarHoras($registro->entrada, $registro->salida)
+                        );
                 } else {
                     $dias[$registro->dia] = array('fecha' => $registro->dia, 'horas' =>
                         restarHoras($registro->entrada, $registro->salida));
                 }
-            }
-            else {
+            } else {
                 if (isset($dias[$registro->dia])) {
                     $dias[$registro->dia]['horas'] = sumarHoras($dias[$registro->dia]['horas'], "01:00:00");
                 } else {
@@ -54,9 +54,6 @@ class FicharController extends ApiBaseController
             $dia['horas'] = number_format(Horas($dia['horas']), 1);
             $def[] = $dia;
         }
-
         return $this->sendResponse(['ok'], $def);
     }
-    
-
 }

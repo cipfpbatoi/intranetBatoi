@@ -19,30 +19,36 @@
                         {{ $button->show($fct) }}
                     @endforeach
                 </div>
+                @if ($fct->asociacion == 4) <h5>-DUAL-</h5> @endif
                 <div class="col-md-6 listActivity">
                     @isset (authUser()->emailItaca)
                         @foreach ($fct->Contactos as $contacto)
-                            <small>
-                               {!! $contacto->render() !!}
-                            </small>
+                            <x-activity :activity="$contacto" />
                             <br/>
                         @endforeach
                     @endisset
                 </div>
             </div>
-            <div class="col-xs-12 bottom text-center">
+            <div class="col-xs-12 bottom text-center"
+                 @if ($fct->asociacion == 4) style="background-color:orange"@endif
+            >
                 <div class="col-xs-12 col-sm-5 emphasis">
                     <p class="ratings">
                         {{strtoupper($fct->Colaboracion->Centro->localidad)}}<br/>
                     </p>
                     <em class="btn-success btn btn-xs">{{count($fct->Alumnos)}}</em>
-                    <a href="/fct/{{$fct->id}}/show" class="btn-success btn btn-xs">
+                    <a href="/fct/{{$fct->id}}/show" class="btn-success btn btn-xs" title="Mostrar Fct">
                         <i class="fa fa-eye"></i>
+                    </a>
+                    <a href="/documentacionFCT/{{$fct->id}}/finEmpresa"
+                       class="btn-success btn btn-xs"
+                       title="Enviar Correu">
+                        <i class="fa fa-envelope-o"></i>
                     </a>
                 </div>
                 <div class="col-xs-12 col-sm-7 emphasis">
-                    @include ('intranet.partials.components.buttons',['tipo' => 'fct'])
-                </div>
+                    <x-botones :panel="$panel" tipo="fct" :elemento="$elemento ?? null"/>
+                 </div>
             </div>
         </div>
     </div>

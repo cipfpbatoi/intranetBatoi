@@ -8,7 +8,7 @@
 		a qué tareas dedicarás cada una de dichas horas.</p>
 	<strong>Estado: </strong><input type="text" id="estado" readonly><br>
 	<button id="init">Iniciar Procedimiento</button>
-@include('home.partials.horario.profesor')
+	@include('home.partials.horario.profesor')
 	Observaciones:
 	<textarea class="form-control" id="obs" placeholder="Indica el nº de horas liberadas y a qué las dedicarás"></textarea>
 	<br>

@@ -37,6 +37,7 @@ class AlumnoGrupo extends Model
     }
     public function Grupo()
     {
+
         return $this->belongsTo(Grupo::class, 'idGrupo', 'codigo');
     }
     public function getNombreAttribute()
@@ -67,6 +68,16 @@ class AlumnoGrupo extends Model
     public function getFotoAttribute()
     {
         return $this->Alumno->foto;
+    }
+
+    public function getDretsAttribute()
+    {
+        return $this->Alumno->imageRightAccept?'Sí':'No';
+    }
+
+    public function getExtraescolarsAttribute()
+    {
+        return $this->Alumno->outOfSchoolActivityAccept?'Sí':'No';
     }
 
 }

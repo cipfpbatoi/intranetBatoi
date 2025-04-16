@@ -1,11 +1,10 @@
 <?php
-
-
+/*
 namespace Intranet\Services;
 
 use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 use Styde\Html\Facades\Alert;
 
 class PrintReportService
@@ -24,7 +23,7 @@ class PrintReportService
      * @param $finalState
      * @param $orientation
      * @param $linked
-     */
+
     public function __construct(Finder $finder, $initialState = null, $finalState = '_print', $linked = true)
     {
         $this->finder = $finder;
@@ -40,7 +39,7 @@ class PrintReportService
     {
         if ($this->elements->Count()) {
             $pdf = Pdf::hazPdf($this->document->getView(), $this->elements, null, $this->document->orientation);
-            $nom = $this->document->modelo . new Date() . '.pdf';
+            $nom = $this->document->modelo .  Carbon::parse() . '.pdf';
             $nomComplet = 'gestor/' . curso() . '/informes/' . $nom;
             $gestor = new GestorService();
             $doc = $gestor->save([
@@ -52,10 +51,9 @@ class PrintReportService
                 $this->linking($doc);
             }
             return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
-        } else {
-            Alert::info(trans('messages.generic.empty'));
-            return back();
         }
+        Alert::info(trans('messages.generic.empty'));
+        return back();
     }
 
     private function linking($doc)
@@ -83,3 +81,5 @@ class PrintReportService
 
 
 }
+
+*/

@@ -4,8 +4,8 @@
 @endsection
 @php $pestana = $panel->getPestanas()[0] @endphp
 @section($pestana->getNombre())
-<div class="centrado">@include('intranet.partials.components.buttons',['tipo' => 'index'])</div><br/>
-@include($pestana->getVista(),$pestana->getFiltro())
+    <x-botones :panel="$panel" tipo="index" :elemento="$elemento ?? null" /><br/>
+    @include($pestana->getVista(),$pestana->getFiltro())
 @endsection
 @section('titulo')
 {{$panel->getTitulo('list')}}

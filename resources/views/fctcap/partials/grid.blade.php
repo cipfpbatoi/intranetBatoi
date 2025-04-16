@@ -1,4 +1,4 @@
-<div class='centrado'>@include('intranet.partials.components.buttons',['tipo' => 'index'])</div><br/>
+<x-botones :panel="$panel" tipo="index" :elemento="$elemento ?? null" /><br/>
 <div class="x_content">
 <table id='dataFct' class="table table-striped" data-page-length="25">
     <thead>

@@ -3,17 +3,15 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Intranet\Botones\BotonImg;
 use Intranet\Entities\Activity;
-use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Fct;
-use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Ciclo;
-use Jenssegers\Date\Date;
+use Intranet\Entities\Colaboracion;
+use Intranet\Http\Requests\ColaboracionRequest;
+use Intranet\Http\Traits\Autorizacion;
+use Carbon\Carbon;
 use mikehaertl\pdftk\Pdf;
 use Response;
-use Intranet\Botones\BotonImg;
-use Illuminate\Support\Facades\Session;
-use Intranet\Http\Requests\ColaboracionRequest;
 
 /**
  * Class ColaboracionController
@@ -21,7 +19,7 @@ use Intranet\Http\Requests\ColaboracionRequest;
  */
 class ColaboracionController extends ModalController
 {
-    use traitAutorizar;
+    use Autorizacion;
     /**
      * @var string
      */
@@ -44,7 +42,8 @@ class ColaboracionController extends ModalController
         'telefono',
         'horari',
         'profesor',
-        'ultimo'
+        'ultimo',
+        'anotacio'
     ];
     /**
      * @var array
@@ -58,7 +57,8 @@ class ColaboracionController extends ModalController
         'telefono' => ['type'=>'number'],
         'email' => ['type'=>'email'],
         'puestos' => ['type' => 'text'],
-        'estado' => ['type' => 'select']
+        'estado' => ['type' => 'select'],
+        'anotacio' => ['type' => 'textarea'],
     ];
 
 
@@ -88,7 +88,7 @@ class ColaboracionController extends ModalController
                 'colaboracion.show',
                 [
                     'img'=>'fa-eye-slash',
-                    'roles' => [config('roles.rol.practicas'),config('roles.rol.dual')]
+                    'roles' => [config('roles.rol.tutor') ]
                 ]
         ));
         $this->panel->setBoton(
@@ -96,10 +96,12 @@ class ColaboracionController extends ModalController
             new BotonImg(
                 'colaboracion.edit',
                 [
-                    'roles' => [config('roles.rol.practicas')]
+                    'roles' => [config('roles.rol.tutor')]
                 ]
             )
         );
+
+
     }
 
     /**
@@ -122,6 +124,9 @@ class ColaboracionController extends ModalController
         $colaboracion->tutor = authUser()->dni;
         $colaboracion->estado = $request->estado;
         $colaboracion->save();
+        if ($request->anotacio != '') {
+            Activity::record('book',  $colaboracion, $request->anotacio, null, 'Contacte previ');
+        }
         return $this->redirect();
     }
 
@@ -207,8 +212,8 @@ class ColaboracionController extends ModalController
         $array[28] = config('contacto.poblacion');
         $array[29] = config('contacto.provincia');
         $array[30] = config('contacto.email');
-        $fc1 = new Date();
-        Date::setlocale('ca');
+        $fc1 =  Carbon::parse();
+         Carbon::setlocale('ca');
         $array[31] = config('contacto.poblacion');
         $array[32] = $fc1->format('d');
         $array[33] = $fc1->format('F');

@@ -30,12 +30,17 @@
             <td style="text-align:center;font-weight: bold;font-size: 0.8em ">SIGNATURA CAP PRÀCTIQUES</td>
         </tr>
         @foreach ($todos??[] as $fct)
-            @isset($fct->Fct)
+            @isset($fct->Fct->Colaboracion->Centro)
                 <tr style="height: 50px">
                     <td style="text-align:left;font-size: 0.9em ">
                             {{ $fct->Fct->Colaboracion->Centro->nombre??'' }} ({{ $fct->Alumno->fullName??'' }})
                     </td>
-                    <td>{{ $fct->Fct->Colaboracion->Centro->Empresa->conveniNou?'X':'' }}</td>
+                    <td>
+                        {{ $fct->Fct->Colaboracion->Centro->Empresa->conveniRenovat
+                                    ?'X'
+                                    :($fct->Fct->Colaboracion->Centro->Empresa->conveniCaducat?'!!':'O')
+                        }}
+                    </td>
                     <td>{{ $fct->saoAnnexes?'X':'' }}</td>
                     <td>{{ $fct->saoAnnexes?'X':'' }}</td>
                     <td></td>
@@ -49,7 +54,7 @@
         @endforeach
         <tr>
             <td colspan="8" style="text-align:left;font-size: 12px;">
-                <br/><br/>
+                <br/>Notació Annex I: x Nou conveni ; O Està actualitzat ; !! Esta desactualitzat<br/>
                 <p>1.- Es lliurarà al/a la cap de departament de pràctiques la següent documentació:</p>
                 <ul>
                     <li>1 original del C. Educatiu, Annex I (si és col·laboradora per primera vegada).</li>

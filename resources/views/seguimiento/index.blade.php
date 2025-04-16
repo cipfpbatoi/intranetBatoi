@@ -1,9 +1,5 @@
-@extends('layouts.intranet')
-@section('css')
-    <title> {{ $elemento->literal }}</title>
-@endsection
-@section('content')
-    <div class="panel">
+<x-layouts.app  :title="$elemento->literal">
+     <div class="panel">
         <div class="panel-body">
             <table class="table table-striped table-condensed" name='alumnoresultado'>
                 <tr><th style="width: 20%">@lang("validation.attributes.Alumno")</th><th style="width: 25%">@lang("validation.attributes.valoraciones")</th><th style="width: 45%">@lang("validation.attributes.observaciones")</th><th style="width: 10%">@lang("validation.attributes.operaciones")</th></tr>
@@ -48,13 +44,9 @@
             </table>
         </div>
     </div>
-
-    <a href="/resultado" class="btn btn-success">@lang("messages.buttons.atras") </a>
-@endsection
-@section('titulo')
-   {{ $elemento->literal }}
-@endsection
-@section('scripts')
+     <a href="/resultado" class="btn btn-success">@lang("messages.buttons.atras") </a>
+@push('scripts')
     <script src="/js/tabledit.js"></script>
     <script src="/js/Seguimiento/index.js"></script>
-@endsection
+@endpush
+</x-layouts.app>

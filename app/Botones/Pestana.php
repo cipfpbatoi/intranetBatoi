@@ -2,6 +2,8 @@
 
 namespace Intranet\Botones;
 
+use Illuminate\Support\Str;
+
 class Pestana
 {
 
@@ -71,6 +73,16 @@ class Pestana
     public function setRejilla($grid)
     {
         $this->rejilla = $grid;
+    }
+
+    public function getLabel( ): string
+    {
+        $label = trans("messages.buttons." . $this->getNombre());
+
+        // Si la traducció no existeix, mostrem el nom original
+        return Str::contains($label, 'essages')
+            ? $this->getNombre()
+            : $label;
     }
 
 }

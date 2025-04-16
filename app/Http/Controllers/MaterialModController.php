@@ -27,7 +27,16 @@ class MaterialModController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = [ 'idMaterial','tipus', 'descripcion', 'espacio','fechaBaja','solicitante', 'motivo','nuevo' ];
+    protected $gridFields = [
+        'idMaterial',
+        'tipus',
+        'descripcion',
+        'espacio',
+        'fechaBaja',
+        'solicitante',
+        'motivo',
+        'nuevo'
+    ];
     /**
      * @var array
      */
@@ -84,10 +93,11 @@ class MaterialModController extends ModalController
         $registro = MaterialBaja::findOrFail($id);
         $material = Material::findOrFail($registro->idMaterial);
         if ($registro->tipo == 0) {
+            $material->fechaBaja = Hoy();
             $material->estado = 3;
             $material->save();
         } else {
-            $material->espacio = $registro->nuevo;
+            $material->espacio = $registro->nuevoEstado;
             $material->save();
         }
         $registro->estado = 1;

@@ -30,7 +30,7 @@ class MatriculaAlumne extends Mailable
     {
         $this->aR = $aR;
         $this->vista = $vista;
-        $this->convocatoria = $convocatoria??config('curso.convocatoria');
+        $this->convocatoria = $convocatoria??config('variables.convocatoria');
     }
 
     /**

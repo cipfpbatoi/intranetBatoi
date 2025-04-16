@@ -12,6 +12,15 @@ abstract class BotonElemento extends Boton
         if ($this->isVisible($elemento)) {
             return parent::show($elemento, $key);
         }
+        return null;
+    }
+
+    public function render($elemento = null )
+    {
+        if ($this->isVisible($elemento)) {
+            return parent::render($elemento );
+        }
+        return null;
     }
 
     private function isVisible($elemento)
@@ -30,7 +39,7 @@ abstract class BotonElemento extends Boton
     {
         $condiciones = [];
 
-        for ($i = 0; $i < count($this->$condicio); $i = $i + 3) {
+        for ($i = 0, $iMax = count($this->$condicio); $i < $iMax; $i = $i + 3) {
 
             $campo = $this->$condicio[$i];
             $condiciones[] = $this->avalCondition(

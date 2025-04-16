@@ -43,7 +43,8 @@
     </form>
 
 @include('fct.partials.modalColaboradores')
-@include('layouts.partials.error')
+<x-ui.errors />
+
 
 
 

@@ -2,29 +2,29 @@
 
 namespace Intranet\Helpers;
 
-use Jenssegers\Date\Date;
+use Carbon\Carbon;
 
 trait DatesTranslator
 {
 
     public function getCreatedAttribute($date)
     {
-        return new Date($date);
+        return  Carbon::parse($date);
     }
 
     public function getUpdatedAttribute($date)
     {
-        return new Date($date);
+        return  Carbon::parse($date);
     }
 
     public function getSalidaAttribute($date)
     {
-        return new Date($date);
+        return  Carbon::parse($date);
     }
 
     public function getEntradaAttribute($date)
     {
-        return new Date($date);
+        return  Carbon::parse($date);
     }
 
 }

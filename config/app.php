@@ -156,7 +156,7 @@ return [
         Jenssegers\Date\DateServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
-        GrahamCampbell\Markdown\MarkdownServiceProvider::class,
+        //GrahamCampbell\Markdown\MarkdownServiceProvider::class,
         
         
         /*
@@ -165,11 +165,12 @@ return [
         Intranet\Providers\AppServiceProvider::class,
         Intranet\Providers\AuthServiceProvider::class,
         Intranet\Providers\EventServiceProvider::class,
-        Intranet\Providers\NovaServiceProvider::class,
         Intranet\Providers\RouteServiceProvider::class,
         Intranet\Providers\HelperServiceProvider::class,
         Intranet\Providers\HtmlServiceProvider::class,
         Intranet\Providers\ValidationServiceProvider::class,
+        Intranet\Providers\SettingsProvider::class
+
     ],
 
     /*
@@ -227,7 +228,7 @@ return [
         'Markdown' => GrahamCampbell\Markdown\Facades\Markdown::class,
         'SnappyPDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,
         'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
-        'DomPDF' => Barryvdh\DomPDF\Facade::class,
+        'DomPDF' => Barryvdh\DomPDF\Facade\Pdf::class,
         'Socialite' => Laravel\Socialite\Facades\Socialite::class,
     ],
 

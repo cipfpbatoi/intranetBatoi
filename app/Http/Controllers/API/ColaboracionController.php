@@ -75,6 +75,18 @@ class ColaboracionController extends ApiBaseController
         return $this->sendResponse($activity, 'OK');
     }
 
+    public function alumnat($id, Request $request)
+    {
+        $activity = Activity::record(
+            'review',
+            Fct::find($id),
+            $request->explicacion,
+            null,
+            'Seguiment Alumnat'
+        );
+        return $this->sendResponse($activity, 'OK');
+    }
+
     public function book($id, Request $request)
     {
         $activities = Activity::where('action', 'book')->where('model_id', $id)->get();

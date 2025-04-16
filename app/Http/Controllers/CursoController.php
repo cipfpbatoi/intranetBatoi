@@ -2,15 +2,16 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Curso;
-use Intranet\Entities\AlumnoCurso;
-use Intranet\Botones\BotonImg;
 use DB;
-use Intranet\Services\GestorService;
-use Jenssegers\Date\Date;
-use Intranet\Jobs\SendEmail;
-use Styde\Html\Facades\Alert;
+use Intranet\Botones\BotonImg;
+use Intranet\Entities\AlumnoCurso;
+use Intranet\Entities\Curso;
 use Intranet\Http\Requests\CursoRequest;
+use Intranet\Http\Traits\Imprimir;
+use Intranet\Jobs\SendEmail;
+use Intranet\Services\GestorService;
+use Carbon\Carbon;
+use Styde\Html\Facades\Alert;
 
 /**
  * Class CursoController
@@ -19,7 +20,7 @@ use Intranet\Http\Requests\CursoRequest;
 class CursoController extends ModalController
 {
 
-    use traitImprimir;
+    use Imprimir;
 
 
     /**
@@ -103,7 +104,7 @@ class CursoController extends ModalController
                 'tags' => 'Curs',
                 'fichero' => $elemento->fichero,
                 'supervisor' => AuthUser()->shortName,
-                'created_at' => new Date($elemento->fecha_fin),
+                'created_at' =>  Carbon::parse($elemento->fecha_fin),
                 'rol' => config('roles.rol.direccion')]);
             $elemento->archivada = 1;
             $elemento->save();

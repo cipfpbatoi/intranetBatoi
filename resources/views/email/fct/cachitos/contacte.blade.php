@@ -1,1 +1,1 @@
-<strong>{{$elemento->contacto}}</strong>
+<strong>{{$elemento->contact??$elemento->contacto}}</strong>

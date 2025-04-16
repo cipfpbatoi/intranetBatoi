@@ -1,5 +1,4 @@
-@extends('layouts.intranet')
-@section('content')
+<x-layouts.app  title="Dades de {{$elemento->fullName}}">
     <div class="col-md-6 col-sm-6 col-xs-12">
         <div class="x_panel">
             <div class="x_content">
@@ -14,7 +13,4 @@
             </div>
         </div>
     </div>
-@endsection
-@section('titulo')
-    {{trans("models.$modelo.show")}} {{$elemento->getKey()}}
-@endsection
+</x-layouts.app>

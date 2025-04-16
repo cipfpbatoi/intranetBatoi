@@ -1,17 +1,14 @@
 document.getElementById('formulari').addEventListener('submit', function(e) {
     e.preventDefault(); // prevenir comportament per defecte
 
-    var certificat = document.getElementById('certificat');
+    var certificat = document.getElementById('certificat'); // assegura’t que coincideix amb l’ID de l’input
 
-    // comprovar si s'ha carregat el fitxer que requereix la contrasenya
-    if (certificat.files.length > 0){
+    if (certificat && certificat.files.length > 0) {
         if (certificat.files[0].type === 'application/x-pkcs12') {
             // demanar contrasenya
             this.submit();
-
         } else {
             alert('El fitxer no és un certificat digital');
-            return;
         }
     } else {
         this.submit();
@@ -20,6 +17,7 @@ document.getElementById('formulari').addEventListener('submit', function(e) {
 
 $(function() {
     $("#formPassword").on("submit", function(){
-        $('#passwd').value($('#pass').value);
+        // Correcció: usem .val(...)
+        $('#passwd').val( $('#pass').val() );
     });
 });

@@ -11,6 +11,7 @@ window.onload=function() {
 	}
 	else profe= document.getElementById('dni').textContent;
 
+
 	cargaCambios();
 	$('#init').on('click', function(ev) {
 		var datos={
@@ -33,7 +34,7 @@ window.onload=function() {
 	});
 
 	$('#guardar').on('click', function(ev) {
-		var cambios=anotaCambios(); 
+		var cambios=anotaCambios();
 		var datos={
 			estado: (esDireccion)?'Aceptado':'Pendiente',
 			cambios: cambios,
@@ -46,7 +47,7 @@ window.onload=function() {
 		    dataType: "json"
 		}).then(function(res) {
 			if (esDireccion) {
-				alert(res.data+'. Horario aprobado');				
+				alert(res.data+'. Horario aprobado');
 				location.reload();
 			} else {
 				alert(res.data+'. Tu nuevo horario te aparecerá cuando esté aprobado');
@@ -146,36 +147,58 @@ function cargaCambios() {
 }
 
 function realizaCambios(cambios, modificable) {
-	// guardamos los datos que machacaremos antes de machacarlos con los nuevos datos
-	// por si hay un cambio cruzado, ej. 1-L a 1-M y 1-M a 1-L
-	var datosOrig=[];
-	cambios.forEach(cambio=>{
-		var dato=document.getElementById(cambio.de).querySelector('div');
+	var datosOrig = [];
+
+	cambios.forEach(cambio => {
+		var celdaOrigen = document.getElementById(cambio.de);
+		if (!celdaOrigen) {
+			console.warn(`No s'ha trobat la cel·la d'origen amb id: ${cambio.de}`);
+			return; // Salta aquest canvi si no existeix l'element origen
+		}
+		var dato = celdaOrigen.querySelector('div');
+		if (!dato) {
+			console.warn(`No s'ha trobat cap <div> dins de la cel·la d'origen amb id: ${cambio.de}`);
+			return;
+		}
+
 		dato.classList.add('movido');
-		datosOrig.push({id: cambio.de, data: dato});
-		var padre=dato.parentElement;
-		if (modificable)
+		datosOrig.push({ id: cambio.de, data: dato });
+		var padre = dato.parentElement;
+		if (modificable) {
 			$(padre).css('cursor', 'default').attr('draggable', 'false').off('dragstart').on('drop', dropHora);
+		}
 		padre.removeChild(dato);
-	})
-	// guardamos los nuevos cambios
-	cambios.forEach(cambio=>{
-		var celda=document.getElementById(cambio.a);
-		var dato=datosOrig.find(dato=>dato.id==cambio.de).data;
+	});
+
+	cambios.forEach(cambio => {
+		var celda = document.getElementById(cambio.a);
+		if (!celda) {
+			console.warn(`No s'ha trobat la cel·la de destí amb id: ${cambio.a}`);
+			return;
+		}
+
+		var dato = datosOrig.find(dato => dato.id == cambio.de)?.data;
+		if (!dato) {
+			console.warn(`No s'ha pogut trobar el <div> corresponent al canvi de ${cambio.de} a ${cambio.a}`);
+			return;
+		}
+
 		celda.appendChild(dato);
 		if (modificable) {
 			celda.removeEventListener('drop', dropHora);
 			celda.addEventListener('dragstart', function(ev) {
-	     	    ev.dataTransfer.setData('text', this.id);			
-			})
-			$(celda).css('cursor','pointer').attr('draggable', 'true');			
+				ev.dataTransfer.setData('text', this.id);
+			});
+			$(celda).css('cursor', 'pointer').attr('draggable', 'true');
 		}
-		if (dato.getAttribute('data-orig')==celda.id)
+		if (dato.getAttribute('data-orig') == celda.id) {
 			dato.classList.remove('movido');
-		else
+		} else {
 			dato.classList.add('movido');
-	})
+		}
+	});
 }
+
 
 function activaDragAndDrop() {
 	// Ponemos cursos y eventos draggable a las celdas ocupadas
@@ -183,8 +206,8 @@ function activaDragAndDrop() {
    	    ev.originalEvent.dataTransfer.setData('text', this.id);
 	});
 	// POnemos eventos drop a las celdas vacías
-	$('table').find('tbody').find('td').on('dragover', function(ev) { 
-		ev.preventDefault() 
+	$('table').find('tbody').find('td').on('dragover', function(ev) {
+		ev.preventDefault()
 	})
-	$('table').find('td:empty').on('drop', dropHora);	
+	$('table').find('td:empty').on('drop', dropHora);
 }
