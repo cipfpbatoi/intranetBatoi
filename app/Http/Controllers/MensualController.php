@@ -16,10 +16,9 @@ class MensualController extends Controller
 
     public function imprimir(DesdeHastaRequest $request)
     {
-        if ($request->llistat == 'faltas') {
+        if ($request->llistat === 'faltas') {
             return FaltaController::printReport($request);
         }
-
         return FaltaItacaController::printReport($request);
     }
 

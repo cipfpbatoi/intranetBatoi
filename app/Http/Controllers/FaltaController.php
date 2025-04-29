@@ -61,8 +61,7 @@ class FaltaController extends IntranetController
             ['estado', '<', '4'],
             ['desde', '>=', $desde],
             ['desde', '<=', $hasta]
-        ])
-            ->orwhere([
+        ]) ->orwhere([
                 ['estado', '>', '0'],
                 ['estado', '<', '4'],
                 ['hasta', '>=', $desde],
@@ -218,7 +217,7 @@ class FaltaController extends IntranetController
     {
         $desde = new Date($request->desde);
         $hasta = new Date($request->hasta);
-        if ($request->mensual != 'on') {
+        if ($request->mensual !== 'on') {
             return self::hazPdf(
                 "pdf.comunicacioAbsencia",
                 Falta::where('estado', '>', '0')
