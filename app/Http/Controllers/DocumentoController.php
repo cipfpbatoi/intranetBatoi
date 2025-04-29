@@ -240,7 +240,7 @@ class DocumentoController extends IntranetController
             new FormBuilder(
                 $elemento,
                 [
-                    'tipoDocumento' => ['disabled' => 'disabled'],
+                    'tipoDocumento' => ['type' => 'select'],
                     'propietario' => ['disabled' => 'disabled'],
                     'supervisor' => ['type' => 'hidden'],
                     'rol' => ['type' => 'hidden'],
@@ -257,7 +257,7 @@ class DocumentoController extends IntranetController
             new FormBuilder(
                 $elemento,
                 [
-                    'tipoDocumento' => ['disabled' => 'disabled'],
+                    'tipoDocumento' => ['type' => 'select'],
                     'propietario' => ['disabled' => 'disabled'],
                     'rol' => ['type' => 'hidden'],
                     'supervisor' => ['type' => 'hidden'],
