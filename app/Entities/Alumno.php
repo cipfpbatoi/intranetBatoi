@@ -136,6 +136,11 @@ class Alumno extends Authenticatable
         return optional($this->Grupo->first())->codigo;
     }
 
+    public function getIdAttribute(): ?string
+    {
+        return $this->nia;
+    }
+
     public function getHorasFctAttribute(): int
     {
         return $this->AlumnoFct->sum('horas');
