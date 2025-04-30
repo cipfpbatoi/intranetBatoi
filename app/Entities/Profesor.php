@@ -228,7 +228,7 @@ class Profesor extends Authenticatable
         return config('auxiliares.idiomas');
     }
 
-    public function getIdAttribute($cifrar)
+    public function getIdAttribute()
     {
         return $this->dni;
     }
