@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Jenssegers\Date\Date;
@@ -132,6 +133,11 @@ class Profesor extends Authenticatable
     public function Horari()
     {
         return $this->hasMany(Horario::class, 'idProfesor', 'dni');
+    }
+
+    public function Cotxes(): HasMany
+    {
+        return $this->hasMany(Cotxe::class, 'idProfesor', 'dni');
     }
 
 
