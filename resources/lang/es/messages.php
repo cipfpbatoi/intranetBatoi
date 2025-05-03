@@ -324,7 +324,8 @@ return array(
         'Projectes' => 'Módulo Proyecto',
         'Certificat' => 'Cita previa Certificado Digital',
         'afternoon' => 'Tarde',
-        'Calendari' => 'Calendario Escolar'
+        'Calendari' => 'Calendario Escolar',
+        'Cotxe' => 'Vehículos'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',
