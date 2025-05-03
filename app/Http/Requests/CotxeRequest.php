@@ -22,13 +22,17 @@ class CotxeRequest extends FormRequest
      */
     public function rules(): array
     {
+        $cotxeId = $this->route('id'); // o $this->cotxe, depèn del nom a la ruta
+
         return [
             'matricula' => [
                 'required',
                 'string',
                 'max:8',
-                Rule::unique('cotxes')->where(function ($query) {
-                    return $query->where('idProfesor', authUser()->dni);
+                Rule::unique('cotxes')
+                    ->ignore($cotxeId)
+                    ->where(function ($query) {
+                    return $query->where('idProfesor', authUser()->dni) ;
                 }),
             ],
             'marca' => 'required|string|max:80',
