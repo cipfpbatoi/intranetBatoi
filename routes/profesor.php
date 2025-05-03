@@ -555,3 +555,6 @@ Route::get('/projectes/actaE', ['as' => 'projecte.actaE', 'uses' => 'PanelProjec
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
 
+Route::resource('cotxe' , 'CotxeController',['except'=>['update','destroy','show']]);
+Route::get('/cotxe/{id}/delete', ['as' => 'cotxe.delete', 'uses' => 'CotxeController@destroy']);
+Route::put('/cotxe/{id}/edit', ['as' => 'cotxe.update', 'uses' => 'CotxeController@update']);
