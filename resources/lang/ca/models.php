@@ -548,6 +548,11 @@ return array(
             '3' => 'Resolta',
 
         ),
+        'Cotxe' => array(
+            'index' => 'Manteniment de Vehicles',
+            'create' => 'Crear Vehicle',
+        ),
+
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
             'Curso' => 'Curs',

@@ -542,6 +542,10 @@ return array(
             '3' => 'Resuelta',
 
         ),
+        'Cotxe' => array(
+            'index' => 'Mantenimento de Vehículos',
+            'create' => 'Crear Vehículo',
+        ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',
             'Curso' => 'Curso',
