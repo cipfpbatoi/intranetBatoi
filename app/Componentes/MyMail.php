@@ -182,7 +182,7 @@ class MyMail
             $mail = $elemento->mail??$elemento->email;
             if (filter_var($mail, FILTER_VALIDATE_EMAIL)) {
                 Mail::to($mail, $contacto)
-                    ->bcc($this->from)
+                    ->cc($this->from)
                     ->send(new DocumentRequest($this, $this->chooseView(), $elemento, $this->attach));
                 Alert::info('Enviat correus ' . $this->subject . ' a ' . $contacto);
                 if ($this->register !== null) {
