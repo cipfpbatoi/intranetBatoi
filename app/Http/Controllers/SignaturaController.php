@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Intranet\Botones\BotonBasico;
 use Intranet\Componentes\MyMail;
 use Intranet\Entities\AlumnoFct;
@@ -219,6 +220,11 @@ class SignaturaController extends ModalController
         if ($tipus === 'A3'){ //al alumno
             foreach ($request->all() as $key => $value) {
                 if (is_numeric($key) && $value === 'on' && $signatura = Signatura::find($key)) {
+                    if (!$signatura->Alumno) {
+                        Log::error("Signatura amb id $key no té Alumno relacionat.");
+                        continue;
+                    }
+
                     $signatura->sendTo = 1;
                     $signatura->save();
                     $signatura->mail = $signatura->Alumno->email;
