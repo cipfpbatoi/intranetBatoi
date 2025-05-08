@@ -84,6 +84,7 @@ return [
         ],
         'modelo' => 'Fct',
         'template' =>  'email.fct.follow',
+        'finder' => 'FctActiva',
         'route' => 'fct',
         'fcts' => 1,
         'unique' => 0,

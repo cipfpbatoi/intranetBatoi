@@ -16,7 +16,7 @@ return [
             'orientacion' => 'landscape'
         ],
         'modelo' => 'Fct',
-        'finder' => 'Fct',
+        'finder' => 'FctActiva',
         'route' => 'alumnofct',
         'view' => 'pdf.fct.seguimentInstructor',
         'zip' => true
