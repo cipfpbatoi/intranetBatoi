@@ -40,7 +40,7 @@ return [
             'register' => "Recordatori inici de pràctiques"
         ],
         'modelo' => 'Fct',
-        'finder' => 'Fct',
+        'finder' => 'FctActiva',
         'template' =>'email.fct.info',
         'route' => 'fct',
         'fcts' => 1,
