@@ -146,19 +146,25 @@ class DocumentService
         $tmp_name = FDFPrepareService::exec($resource);
 
         if ($this->document->sign && file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp'))) {
-            $x = config("signatures.files." . $this->document->route . ".owner.x");
-            $y = config("signatures.files." . $this->document->route . ".owner.y");
+            try {
+                $x = config("signatures.files.".$this->document->route.".owner.x");
+                $y = config("signatures.files.".$this->document->route.".owner.y");
+                $file = DigitalSignatureService::decryptCertificateUser($this->finder->getRequest()->decrypt,
+                    authUser());
+                $cert = DigitalSignatureService::readCertificat($file, $this->finder->getRequest()->cert);
 
-            DigitalSignatureService::signCrypt(
-                $tmp_name,
-                storage_path('tmp/auttutor_' . authUser()->dni . 'signed.pdf'),
-                $x,
-                $y,
-                $this->finder->getRequest()->decrypt,
-                $this->finder->getRequest()->cert
-            );
+                DigitalSignatureService::sign(
+                    $tmp_name,
+                    storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'),
+                    $x,
+                    $y,
+                    $cert
+                );
 
-            return response()->file(storage_path('tmp/auttutor_' . authUser()->dni . 'signed.pdf'));
+                return response()->file(storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'));
+            } catch (\Exception $e) {
+                Alert::info($e->getMessage());
+            }
         }
 
         return response()->json(['error' => 'No s\'ha pogut signar el document'], 400);
