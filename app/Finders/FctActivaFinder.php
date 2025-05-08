@@ -28,9 +28,9 @@ class FctActivaFinder extends Finder
                 $element->AlFct()->first()->hasta :
                 null;
             if ($fechaUltimaFct && fechaInglesa($fechaUltimaFct) > hoy()) {
-                $element->marked = false;
+                $element->marked = true;
             } else {
-                $element->marked = !$this->existsActivity($element->id)?true:false;
+                $element->marked =  false;
             }
         }
         return $elements;
