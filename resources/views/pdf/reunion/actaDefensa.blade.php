@@ -1,10 +1,6 @@
 @php
-    if ($reunion = \Intranet\Entities\Reunion::where('tipo',11)->where('idProfesor',authUser()->dni)->orderBy('fecha','desc')->first())
-         $anterior = $reunion->ordenes->sortBy('orden');
-    else
-         $anterior = false;
     $ciclo = \Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->count()?\Intranet\Entities\Ciclo::where('ciclo',$datosInforme->Ciclo)->first()->literal:$datosInforme->Ciclo;
-    $all = $todos->sortBy('resumen');
+    $all = $todos->sortBy('orden');
 @endphp
 @extends('layouts.pdf')
 @section('content')

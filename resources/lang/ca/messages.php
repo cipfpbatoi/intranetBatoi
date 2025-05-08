@@ -330,7 +330,8 @@ return array(
         'Projecte' => 'Proposta projecte',
         'Projectes' => 'Mòdul Projecte',
         'Certificat' => 'Cita prèvia Certificat Digital',
-        'Calendari' => 'Calendari Escolar'
+        'Calendari' => 'Calendari Escolar',
+        'Cotxe' => 'Vehicles'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',

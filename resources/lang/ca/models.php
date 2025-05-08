@@ -547,6 +547,11 @@ return array(
             '3' => 'Resolta',
 
         ),
+        'Cotxe' => array(
+            'index' => 'Manteniment de Vehicles',
+            'create' => 'Crear Vehicle',
+        ),
+
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
             'Curso' => 'Curs',
@@ -590,7 +595,8 @@ return array(
             'Fctcap' => 'Revisió FCT',
             'Fctdual' => 'Revisió Dual',
             'Solicitud' => "Derivació al departament d'orientació",
-            'Signatura' => 'Signatures Digitals'
+            'Signatura' => 'Signatures Digitals',
+            'Cotxe' => 'Vehicles'
         ),
         'resign' => array(
             'Falta' => 'El document no justifica la baixa',

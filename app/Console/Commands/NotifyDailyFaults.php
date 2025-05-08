@@ -47,10 +47,10 @@ class NotifyDailyFaults extends Command
             );
             $profesores = $this->noHanFichado(hoy());
             foreach ($profesores as $profesor) {
-                avisa($profesor, 'No has fixat hui dia '.hoy('d-m-Y'), '#', 'Sistema');
+                avisa($profesor, 'No has fitxat hui dia '.hoy('d-m-Y'), '#', 'Sistema');
             }
             foreach ($guardias as $guardia) {
-                avisa($guardia, 'No has fixat la guardia  hui dia '.hoy('d-m-Y'), '#', 'Sistema');
+                avisa($guardia, 'No has fixtat la guàrdia  hui dia '.hoy('d-m-Y'), '#', 'Sistema');
             }
         }
     }

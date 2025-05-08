@@ -540,6 +540,10 @@ return array(
             '3' => 'Resuelta',
 
         ),
+        'Cotxe' => array(
+            'index' => 'Mantenimento de Vehículos',
+            'create' => 'Crear Vehículo',
+        ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',
             'Curso' => 'Curso',
@@ -581,7 +585,8 @@ return array(
             'Articulo' => 'Articulo',
             'Incidencia' => 'Incidencia',
             'Fctcap' => 'Revisión FCT',
-            'Signatura' => 'Firmas Digitales'
+            'Signatura' => 'Firmas Digitales',
+            'Cotxe' => 'Vehículos'
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

@@ -63,8 +63,7 @@ class PanelFctController extends IntranetController
             [ 0 => 'Actius', 1 => 'Finalizats'],
             "profile.fct",
             0,
-            0,
-            'correoInstructor'
+             'correoInstructor'
         );
         $this->iniBotones();
         Session::put('redirect', 'PanelFctController@index');
