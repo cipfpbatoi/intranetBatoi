@@ -205,10 +205,10 @@ class Fct extends Model
     {
         return $query->where('erasmus', '=', 1);
     }
-    
+
     public function scopeEsFct($query)
     {
-        return $query->where('asociacion',  '<', 2);
+        return $query->whereIn('asociacion', [1, 4, 5]);
     }
     public function scopeEsAval($query)
     {
