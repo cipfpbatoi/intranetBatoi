@@ -101,6 +101,7 @@ return [
         'modelo' => 'Fct',
         'template' => 'email.fct.visit',
         'route' => 'fct',
+        'finder' => 'FctActiva',
         'fcts' => 1,
         'unique' => 0,
         'default' => 'Les pràctiques es desenvolupen amb normalitat',
