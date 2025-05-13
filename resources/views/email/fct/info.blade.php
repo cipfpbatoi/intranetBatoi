@@ -11,8 +11,8 @@
     <li>{{ config('contacto.telefono') }}</li>
 </ul>
 <p>Així com també informació relevant en cas d'accident laboral que trobaràs en aquest enllaç
-    <a href="http://www.ceice.gva.es/va/web/formacion-profesional/seguro">
-        http://www.ceice.gva.es/va/web/formacion-profesional/seguro
+    <a href="https://ceice.gva.es/va/web/formacion-profesional/assegurances">
+        https://ceice.gva.es/va/web/formacion-profesional/assegurances
     </a>
 </p>
 <p>Per qualsevol dubte em tens a la teua disposició. Salutacions cordials.</p>

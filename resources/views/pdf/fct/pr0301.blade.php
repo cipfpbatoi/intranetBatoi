@@ -30,7 +30,7 @@
                 centre. Zona FCT.
             </li>
             <li>Informació a l'alumne de l'assegurança de responsabilitat civil i en cas d'accident laboral.
-                (http://www.ceice.gva.es/va/web/formacion-profesional/seguro)
+                (https://ceice.gva.es/va/web/formacion-profesional/assegurances)
             </li>
             <li>L'alumne coneix les activitats a realitzar a l'empresa segons l'Annex III, on s'especifica el seu horari
                 i les dades de l'empresa i instructor.

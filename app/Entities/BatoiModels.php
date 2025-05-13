@@ -144,9 +144,10 @@ trait BatoiModels
         foreach ($fillable as $key) {
             if ($request->has($key) || $request->hasFile($key)) {
                 $this->$key = $this->fillField($key, $request->$key);
+            } else {
+                $this->$key = 0;
             }
-        }
-
+         }
 
         $this->save();
 

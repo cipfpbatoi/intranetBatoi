@@ -22,6 +22,7 @@ use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\GestorService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
+use function PHPUnit\Framework\isEmpty;
 
 
 /**
@@ -115,7 +116,7 @@ class FaltaController extends IntranetController
                 parent::realStore($request);
             });
         } else {
-            $diaCompleto = $request->dia_completo == '' ? '0' : '1';
+            $diaCompleto = isset($request->dia_completo)  ? 1 : null;
             $request->hora_ini = $diaCompleto ? null : $request->hora_ini;
             $request->hora_fin = $diaCompleto ? null : $request->hora_fin;
             $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
@@ -138,15 +139,22 @@ class FaltaController extends IntranetController
      */
     public function update(Request $request, $id)
     {
-        $request->dia_completo = isset($request->dia_completo)?1:0;
-        $request->hora_ini = $request->dia_completo ? null : $request->hora_ini;
-        $request->hora_fin = $request->dia_completo ? null : $request->hora_fin;
-        $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
+
+        $diaCompleto = $request->has('dia_completo') ? 1 : 0;
+
+        $request->merge([
+            'hora_ini' => $diaCompleto ? null : $request->hora_ini,
+            'hora_fin' => $diaCompleto ? null : $request->hora_fin,
+            'hasta' => esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta,
+        ]);
+
         $elemento = Falta::find(parent::realStore($request, $id));
+
         if ($elemento->estado == 1 && $elemento->fichero) {
             $staSer = new StateService($elemento);
             $staSer->putEstado(2);
-        } // si estava enviat i he pujat fitxer
+        }
+
         return $this->redirect();
     }
 
