@@ -117,8 +117,7 @@ class SeleniumService
     public static function restartSelenium()
     {
         $command = "echo '".config('services.selenium.SELENIUM_ROOT_PASS')
-            ."'  | ssh root@'".config('services.selenium.url') ."' sudo -S /sbin/reboot";
-        dd($command);
+            ."'  | ssh root@'".config('services.selenium.url') ."' /sbin/reboot";
         $process = Process::fromShellCommandline($command);
         try {
             $process->mustRun();
