@@ -183,6 +183,7 @@ class A2
 
         try {
             $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=$doc&centro=59&ct=$idSao");
+            Log::info("A1 trobat");
         } catch (\Throwable $exception) {
             Log::error("Error en la generació del PDF per $annexe: " . $exception->getMessage());
         }

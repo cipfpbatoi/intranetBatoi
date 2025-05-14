@@ -8,6 +8,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use Facebook\WebDriver\WebDriverWait;
+use Illuminate\Support\Facades\Log;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Exceptions\SeleniumException;
 use Symfony\Component\Process\Process;
@@ -82,6 +83,7 @@ class SeleniumService
             $driver->close();
             throw new IntranetException('Password no vàlid. Has de ficarl el del SAO');
         }
+        Log::info("Connection established with SAO $dni");
         return $driver;
     }
 
@@ -122,6 +124,7 @@ class SeleniumService
         } catch (ProcessFailedException $exception) {
             echo $exception->getMessage();
         }
+        Log::info("Try restarting Selenium");
     }
 
     public function fill($selector, $keys, $driver = null)
