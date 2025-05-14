@@ -46,7 +46,8 @@ return [
         'calendarSubject' => env('CALENDAR_SUBJECT', 'esdeveniments@cipfpbatoi.es')
     ],
     'selenium' => [
-        'url' => env('SELENIUM_URL', '172.16.9.10:4444'),
+        'url' => env('SELENIUM_URL', '172.16.9.10'),
+        'full_url'  => env('SELENIUM_URL', '172.16.9.10').":4444",
         //'url' => env('SELENIUM_URL', '192.168.56.1:4444'),
         'SAO' => env('SELENIUM_URL_SAO', 'https://foremp.edu.gva.es/index.php'),
         'SAO_USER' => env('SELENIUM_USER_SAO', '21668389C'),

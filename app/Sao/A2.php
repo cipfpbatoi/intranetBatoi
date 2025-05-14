@@ -120,7 +120,6 @@ class A2
         $signat = false;
         $a1 = $a2 = $a3 = $fA1 = $a5 = false;
 
-        dd($fcts);
         foreach ($fcts as $fct) {
             if ($fct === 'FA1'){ //A1 forçat
                 $fA1 = true;

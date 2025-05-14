@@ -39,7 +39,7 @@ class SeleniumService
                     $desiredCapabilities = DesiredCapabilities::firefox();
                 }
             }
-            $driver = RemoteWebDriver::create('http://'.(config('services.selenium.url')), $desiredCapabilities,10000,200000);
+            $driver = RemoteWebDriver::create('http://'.(config('services.selenium.full_url')), $desiredCapabilities,10000,200000);
         } catch (\Exception $e) {
             throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium'.$e->getMessage());
         }
@@ -117,7 +117,7 @@ class SeleniumService
     public static function restartSelenium()
     {
         $process = Process::fromShellCommandline("echo '".config('services.selenium.SELENIUM_ROOT_PASS')
-            ."'  | ssh intranet@172.16.9.10 'sudo -S /sbin/reboot'");
+            ."'  | ssh root@'".config('services.selenium.url') ."' sudo -S /sbin/reboot'");
         try {
             $process->mustRun();
             echo $process->getOutput();
