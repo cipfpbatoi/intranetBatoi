@@ -120,6 +120,7 @@ class A2
         $signat = false;
         $a1 = $a2 = $a3 = $fA1 = $a5 = false;
 
+        dd($fcts);
         foreach ($fcts as $fct) {
             if ($fct === 'FA1'){ //A1 forçat
                 $fA1 = true;
@@ -175,7 +176,6 @@ class A2
     public function annexe1(AlumnoFct $fctAl, RemoteWebDriver $driver): bool
     {
         $tmpDirectory = config('variables.shareDirectory') ?? storage_path('tmp/');
-        dd($tmpDirectory);
         $doc = $fctAl->Fct->dual ? '201' : '101';
         $annexe = $fctAl->Fct->dual ? 'A1DUAL' : 'A1';
         $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
