@@ -175,6 +175,7 @@ class A2
     public function annexe1(AlumnoFct $fctAl, RemoteWebDriver $driver): bool
     {
         $tmpDirectory = config('variables.shareDirectory') ?? storage_path('tmp/');
+        dd($tmpDirectory);
         $doc = $fctAl->Fct->dual ? '201' : '101';
         $annexe = $fctAl->Fct->dual ? 'A1DUAL' : 'A1';
         $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
