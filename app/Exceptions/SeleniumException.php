@@ -3,6 +3,7 @@
 namespace Intranet\Exceptions;
 
 
+use Illuminate\Support\Facades\Log;
 use Intranet\Services\SeleniumService;
 use Intranet\Entities\Counter;
 
@@ -20,9 +21,10 @@ class SeleniumException extends \Exception
 
     private function incrementCounter()
     {
+        Log::channel('sao')->info("Selenium Exception incrementing counter");
         $counter = Counter::firstOrCreate(['name' => 'selenium_exception_count'], ['count' => 0]);
         $counter->increment('count');
-        if ($counter->count > 0) {
+        if ($counter->count > 1) {
             $counter->count = 0;
             $counter->save();
             SeleniumService::restartSelenium();
