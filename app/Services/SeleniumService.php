@@ -81,9 +81,9 @@ class SeleniumService
         $name = $driver->findElement(WebDriverBy::cssSelector('.botonform'))->getAttribute('name');
         if ($name === 'login') {
             $driver->close();
-            throw new IntranetException('Password no vàlid. Has de ficarl el del SAO');
+            throw new IntranetException('El password de SAO no és correcte');
         }
-        Log::info("Connection established with SAO $dni");
+        Log::channel('sao')->info("Connection established with SAO $dni");
         return $driver;
     }
 
@@ -107,9 +107,10 @@ class SeleniumService
         try {
             $driver->findElement(WebDriverBy::xpath("//dt[contains(@class, 'error') and span[contains(text(), 'La contraseña no es válida')]]"));
             $driver->close();
-            throw new IntranetException('Password no vàlid. Has de ficarl el de l\'ITACA');
+            throw new IntranetException('El Password del Itaca no és correcte');
         } catch (\Exception $e) {
         }
+        Log::channel('sao')->info("Connection established with ITACA $dni");
         return $driver;
     }
 
@@ -125,7 +126,7 @@ class SeleniumService
         } catch (ProcessFailedException $exception) {
             echo $exception->getMessage();
         }
-        Log::info("Try restarting Selenium");
+        Log::channel('sao')->info("Try restarting Selenium");
     }
 
     public function fill($selector, $keys, $driver = null)

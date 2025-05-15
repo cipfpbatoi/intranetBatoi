@@ -4,6 +4,7 @@ namespace Intranet\Console\Commands;
 
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Services\SeleniumService;
@@ -38,7 +39,7 @@ class SaoConnect extends Command
             return Command::SUCCESS;
         } catch (IntranetException $e) {
             avisa($envia, $e->getMessage(), '#', 'SAO');
-            AlertLogger::error("Error en la connexió a SAO: " . $e->getMessage());
+            Log::channel('sao')->error("Error en la connexió a SAO: " . $e->getMessage());
         } finally {
             if (isset($driver)) {
                 $driver->quit();
