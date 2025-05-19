@@ -68,6 +68,7 @@ class ReunionController extends IntranetController
             $service->exec();
             return $elemento;
         });
+
         if ($elemento->fichero != '') {
             return back();
         }

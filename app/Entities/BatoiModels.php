@@ -133,7 +133,7 @@ trait BatoiModels
                     'ime') || strpos($type['type'], 'ag'));
     }
 
-
+    /*
     public function fillAll(Request $request)
     {
         $fillable = $this->notFillable
@@ -142,9 +142,9 @@ trait BatoiModels
 
 
         foreach ($fillable as $key) {
-            if ($request->has($key) || $request->hasFile($key)) {
+            if ($request->has($key) && !$request->hasFile($key)) {
                 $this->$key = $this->fillField($key, $request->$key);
-            } else {
+            } elseif (!$request->hasFile($key)) {
                 $this->$key = 0;
             }
          }
@@ -152,6 +152,25 @@ trait BatoiModels
         $this->save();
 
         $primaryKey = $this->primaryKey ?? 'id';
+        return $this->$primaryKey;
+    }
+    */
+
+    public function fillAll(Request $request)
+    {
+        $fillable = $this->notFillable?array_diff($this->fillable, $this->notFillable):$this->fillable;
+        foreach ($fillable as $key) {
+            $value = $request->$key;
+            $this->$key = $this->fillField($key, $value);
+        }
+
+        $this->save();
+
+        if ($request->hasFile('fichero')) {
+            $this->fillFile($request->file('fichero'));
+        }
+
+        $primaryKey =  $this->primaryKey ?? 'id';
         return $this->$primaryKey;
     }
 
