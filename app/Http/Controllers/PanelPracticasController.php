@@ -50,11 +50,8 @@ class PanelPracticasController extends BaseController
         
     }
     protected function search(){
-        return Grupo::whereIn('codigo', function($query) {
-            $query->select('idGrupo')
-                ->from('alumno_grupo')
-                ->groupBy('idGrupo');
-        })->get();
+        return Grupo::has('alumnos')->get();
+
         /*$ciclos = hazArray(Ciclo::where('tipo',3)->get(),'id','id');
         return Grupo::where('curso',2)
             ->orWhereIn('idCiclo',$ciclos)
