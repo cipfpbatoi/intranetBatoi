@@ -50,7 +50,8 @@ class PanelPracticasController extends BaseController
         
     }
     protected function search(){
-        return Grupo::has('alumnos')->get();
+        return Grupo::whereHas('alumnos')->get();
+
 
         /*$ciclos = hazArray(Ciclo::where('tipo',3)->get(),'id','id');
         return Grupo::where('curso',2)
