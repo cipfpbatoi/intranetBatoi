@@ -12,7 +12,6 @@ class FctActivaFinder extends Finder
             ->orWhere('cotutor', $this->dni)
             ->has('AlFct')
             ->EsFct()
-            ->where('correoInstructor', 0)
             ->join('instructores', 'fcts.idInstructor', '=', 'instructores.dni') // Assuming the relationship field names
             ->orderBy('instructores.name')
             ->orderBy('instructores.surnames')
