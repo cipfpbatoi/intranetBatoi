@@ -51,9 +51,7 @@ class PanelPracticasController extends BaseController
     }
     protected function search(){
         $ciclos = hazArray(Ciclo::where('tipo',3)->get(),'id','id');
-        return Grupo::where('curso',2)
-            ->orWhereIn('idCiclo',$ciclos)
-            ->get();
+        return Grupo::WhereIn('idCiclo',$ciclos)->get();
     }
 
     protected function show($id)
