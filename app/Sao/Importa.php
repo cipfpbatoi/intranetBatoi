@@ -303,7 +303,8 @@ class Importa
 
     public static function index($driver)
     {
-        $grupo = Grupo::where('tutor', AuthUser()->dni)->first();
+        //$grupo = Grupo::where('tutor', AuthUser()->dni)->first();
+        $grupo = Grupo::QTutor()->first();
         $ciclo = $grupo->idCiclo??null;
         $dades = array();
         if (AuthUser()->dni === config('avisos.director')) {
