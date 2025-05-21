@@ -31,8 +31,10 @@ class PanelProjecteController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['alumne','titol', 'status', 'defensa', 'hora'];
+    protected $gridFields = ['alumne','titol', 'status', 'defensa', 'hora_defensa'];
     protected $formFields = [
+        'grup' => ['type' => 'hidden'],
+        'estat' => ['type' => 'hidden'],
         'idAlumne' => ['type' => 'select'],
         'titol' => ['type' => 'text'],
         'descripcio' => ['type' => 'textarea'],
@@ -40,6 +42,8 @@ class PanelProjecteController extends ModalController
         'resultats'=> ['type' => 'textarea'],
         'aplicacions' => ['type' => 'textarea'],
         'recursos' => ['type' => 'textarea'],
+        'defensa' => ['type' => 'date'],
+        'hora_defensa' => ['type' => 'time'],
      ];
     protected $parametresVista = ['modal' => ['defensa']];
 
@@ -192,7 +196,7 @@ class PanelProjecteController extends ModalController
         $this->panel->setBoton('index', new BotonBasico('projecte.create'));
 
         //$this->panel->setBoton('grid', new BotonImg('projecte.show'));
-        $this->panel->setBoton('grid', new BotonImg('projecte.edit', ['roles' => config(self::TUTOR), 'where' => ['estat', '<' , '2']]));
+        $this->panel->setBoton('grid', new BotonImg('projecte.edit', ['roles' => config(self::TUTOR), 'where' => ['estat', '<' , '3']]));
         $this->panel->setBoton('grid',
             new BotonImg('projectes.delete', ['roles' => config(self::TUTOR), 'where' => ['estat', '< ', '2']]));
         $this->panel->setBoton('grid', new BotonImg('projecte.pdf', ['roles' => config(self::TUTOR)]));

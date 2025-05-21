@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Intranet\Events\ActivityReport;
+use Jenssegers\Date\Date;
 
 class Projecte extends Model
 {
@@ -20,8 +21,15 @@ class Projecte extends Model
         'aplicacions',
         'recursos',
         'descripcio',
-        'observacions'
+        'observacions',
+        'defensa',
+        'hora_defensa'
     ];
+    protected $inputTypes = [
+        'defensa' => ['type' => 'date'],
+        'hora_defensa' => ['type' => 'time']
+    ];
+
 
     public function Alumno()
     {
@@ -53,6 +61,12 @@ class Projecte extends Model
         $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->first();
         return hazArray($miGrupo->Alumnos,'nia','fullName');
 
+    }
+
+    public function getDefensaAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
     }
 
 }
