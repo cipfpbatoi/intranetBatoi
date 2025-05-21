@@ -52,7 +52,7 @@ return [
         'PRE.CANDI.ELECCIONES',
         'TRASLADO DE DOMICILIO HABITUAL',
         'TÉCNICAS PRENATALES',
-        'ASISTENCIA TRIBUNALS (MAX 2. DIAS /SETMANA)'],
+        'ASSISTÈNCIA TRIBUNALS (Màx 2. DIES /SETMANA)'],
     'motivoAusenciaOld' => [
         'Baixa mèdica',
         'LLicència per formació',
