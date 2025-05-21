@@ -158,6 +158,8 @@ class PanelProjecteController extends ModalController
 
         $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
         $projectes = Projecte::whereIn('idAlumne', $alumnos)
+            ->orderBy('defensa')
+            ->orderBy('hora_defensa')
             ->where('estat', 2)
             ->get();
 
@@ -168,7 +170,7 @@ class PanelProjecteController extends ModalController
             OrdenReunion::create([
                 'idReunion' => $acta->id,
                 'descripcion' => $projecte->Alumno->fullName,
-                'resumen' => '('.$projecte->titol.') Data i Hora',
+                'resumen' => '('.$projecte->titol.')'.$projecte->defensa.'('.$projecte->hora_defensa.')',
                 'orden' => $key+1
             ]);
         }
