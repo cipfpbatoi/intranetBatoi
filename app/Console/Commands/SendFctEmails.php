@@ -69,8 +69,8 @@ class SendFctEmails extends Command
                     try {
                         $encarregat = $fct->Encarregat;
 
-                        if (!$encarregat && $fct->FctAl && $fct->FctAl->first()) {
-                            $encarregat = $fct->FctAl->first()->Tutor;
+                        if (!$encarregat && $fct->AlFct && $fct->AlFct->first()) {
+                            $encarregat = $fct->AlFct->first()->Tutor;
                         }
 
                         if (!$encarregat) {
