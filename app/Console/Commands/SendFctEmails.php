@@ -10,6 +10,7 @@ use Intranet\Mail\CertificatAlumneFct;
 use Intranet\Mail\CertificatInstructorFct;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\AvalFct;
+use Intranet\Entities\Fct;
 
 use Swift_RfcComplianceException;
 use Swift_TransportException;
