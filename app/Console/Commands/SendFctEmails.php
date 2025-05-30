@@ -40,7 +40,7 @@ class SendFctEmails extends Command
     public function handle()
     {
 
-             $alumnosPendientes = AlumnoFctAval::pendienteNotificar()->get();
+            $alumnosPendientes = AlumnoFctAval::pendienteNotificar()->get();
 
             foreach ($alumnosPendientes as $alumno) {
                 $fct = $alumno->Fct;
@@ -66,39 +66,57 @@ class SendFctEmails extends Command
                 }
 
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
-                    try {
-                        $encarregat = $fct->Encarregat;
-
-                        if (!$encarregat && $fct->AlFct && $fct->AlFct->first()) {
-                            $encarregat = $fct->AlFct->first()->Tutor;
-                        }
-
-                        if (!$encarregat) {
-                            throw new \ErrorException('No hi ha tutor assignat a la FCT ni encarregat directe.');
-                        }
-                        Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
-                            ->cc($encarregat->email)
-                            ->send(new AvalFct($fct, 'instructor'));
-                        Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
-                            ->cc($encarregat->email)
-                            ->send(new CertificatInstructorFct($fct,$encarregat));
-                        avisa($encarregat->dni,
-                            'El correu amb el certificat de FCT de ' . $fct->Instructor->nombre . " ha estat enviat a l'adreça " . $fct->Instructor->email,
-                            '#', 'Servidor de correu');
-                        $fct->correoInstructor = 1;
-                        $fct->save();
-                    } catch (\Exception $e) {
-                        $mensaje = 'Error : Enviant certificats al Instructor: '.
-                            $fct->Instructor->nombre.' al email '.
-                            $fct->Instructor->email.':'. $e->getMessage();
-                        avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
-                        if ($fct->Encarregat != null) {
-                            avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
-                        }
-
-                    }
+                    $this->correuInstructor($fct);
+                }
+            }
+            $fcts = Fct::where('correoInstructor' === 0)->get();
+            foreach ($fcts as $fct) {
+                $first = $fct->AlFct->first();
+                if ( isset($fct->Instructor->email) && $first->correoAlumno) {
+                    $this->correuInstructor($fct);
                 }
             }
         }
+
+    /**
+     * @param $fct
+     * @return array
+     */
+    private function correuInstructor($fct): int
+    {
+        try {
+            $encarregat = $fct->Encarregat;
+
+            if (!$encarregat && $fct->AlFct && $fct->AlFct->first()) {
+                $encarregat = $fct->AlFct->first()->Tutor;
+            }
+
+            if (!$encarregat) {
+                throw new \ErrorException('No hi ha tutor assignat a la FCT ni encarregat directe.');
+            }
+            Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
+                ->cc($encarregat->email)
+                ->send(new AvalFct($fct, 'instructor'));
+            Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
+                ->cc($encarregat->email)
+                ->send(new CertificatInstructorFct($fct, $encarregat));
+            avisa($encarregat->dni,
+                'El correu amb el certificat de FCT de '.$fct->Instructor->nombre." ha estat enviat a l'adreça ".$fct->Instructor->email,
+                '#', 'Servidor de correu');
+            $fct->correoInstructor = 1;
+            $fct->save();
+            return 1;
+        } catch (\Exception $e) {
+            $mensaje = 'Error : Enviant certificats al Instructor: '.
+                $fct->Instructor->nombre.' al email '.
+                $fct->Instructor->email.':'.$e->getMessage();
+            avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
+            if ($fct->Encarregat != null) {
+                avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
+            }
+            return 0;
+        }
+    }
+
 
 }
