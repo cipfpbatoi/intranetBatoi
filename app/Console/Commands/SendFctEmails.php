@@ -70,7 +70,7 @@ class SendFctEmails extends Command
                     $this->correuInstructor($fct);
                 }
             }
-            $fcts = Fct::where('correoInstructor' === 0)->get();
+            $fcts = Fct::where('correoInstructor', 0)->get();
             foreach ($fcts as $fct) {
                 $first = $fct->AlFct->first();
                 if ( isset($fct->Instructor->email) && $first->correoAlumno) {
