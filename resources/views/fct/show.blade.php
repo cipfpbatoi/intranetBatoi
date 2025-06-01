@@ -65,6 +65,7 @@
         <em class="fa fa-file-pdf-o"> A1</em><br />
     @endif
         <a href="{{ route('fct.pdf',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Inst.</a>
+    @if ($fct->correoInstructor)(Enviat Automàticament) @endif
     @if ($fct->Colaboradores->count() > 0)
         <a href="{{ route('fct.colaborador',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Col.</a>
     @endif
