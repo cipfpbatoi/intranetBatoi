@@ -66,7 +66,7 @@ return [
         'A5DUAL' => [
             'owner' => [
                 'x' => 130 ,
-                'y' => 250,
+                'y' => 245,
             ],
         ],
         'autTutor' => [
