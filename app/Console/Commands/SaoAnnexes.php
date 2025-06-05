@@ -37,6 +37,7 @@ class SaoAnnexes extends Command
     {
         $envia = config('contacto.avisos.errores') ?? '021652470V';
 
+
         try {
             $driver = SeleniumService::loginSAO(
                 config('services.selenium.SAO_USER'),

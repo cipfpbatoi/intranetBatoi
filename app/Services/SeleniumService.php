@@ -8,6 +8,7 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverKeys;
 use Facebook\WebDriver\WebDriverWait;
+use Illuminate\Support\Facades\Log;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Exceptions\SeleniumException;
 use Symfony\Component\Process\Process;
@@ -38,7 +39,7 @@ class SeleniumService
                     $desiredCapabilities = DesiredCapabilities::firefox();
                 }
             }
-            $driver = RemoteWebDriver::create('http://'.(config('services.selenium.url')), $desiredCapabilities,10000,200000);
+            $driver = RemoteWebDriver::create('http://'.(config('services.selenium.full_url')), $desiredCapabilities,10000,200000);
         } catch (\Exception $e) {
             throw new SeleniumException('No s\'ha pogut connectar al servidor de Selenium'.$e->getMessage());
         }
@@ -66,23 +67,35 @@ class SeleniumService
      */
     public static function loginSAO($dni, $password, $desiredCapabilities=null): RemoteWebDriver
     {
-        $driver = self::getDriverSelenium($desiredCapabilities);
-        $driver->get(config('services.selenium.SAO'));
-        $dni = substr($dni, -9);
-        $driver->findElement(WebDriverBy::name('usuario')) // find usuario
-        ->sendKeys($dni);
-        $driver->findElement(WebDriverBy::name('password'))
-            ->sendKeys($password);
-        $driver->findElement(WebDriverBy::cssSelector('.botonform'))
-            ->click();
-        $driver->get(config('services.selenium.SAO').'?op=2&subop=0');
-        sleep(2);
-        $name = $driver->findElement(WebDriverBy::cssSelector('.botonform'))->getAttribute('name');
-        if ($name === 'login') {
-            $driver->close();
-            throw new IntranetException('Password no vàlid. Has de ficarl el del SAO');
+        $driver = null;
+        try {
+            $driver = self::getDriverSelenium($desiredCapabilities);
+            $driver->get(config('services.selenium.SAO'));
+            $dni = substr($dni, -9);
+            $driver->findElement(WebDriverBy::name('usuario'))->sendKeys($dni);
+            $driver->findElement(WebDriverBy::name('password'))->sendKeys($password);
+            $driver->findElement(WebDriverBy::cssSelector('.botonform'))->click();
+            $driver->get(config('services.selenium.SAO').'?op=2&subop=0');
+            sleep(2);
+
+            $name = $driver->findElement(WebDriverBy::cssSelector('.botonform'))->getAttribute('name');
+            if ($name === 'login') {
+                throw new IntranetException('El password de SAO no és correcte');
+            }
+
+            Log::channel('sao')->info("Connection established with SAO $dni");
+            return $driver;
+
+        } catch (\Throwable $e) {
+            if ($driver) {
+                try {
+                    $driver->quit(); // assegurem que el driver es tanca
+                } catch (\Throwable $inner) {
+                    Log::channel('sao')->error("Error tancant el driver: ".$inner->getMessage());
+                }
+            }
+            throw $e;
         }
-        return $driver;
     }
 
     /**
@@ -92,36 +105,58 @@ class SeleniumService
      */
     public static function loginItaca($dni, $password): RemoteWebDriver
     {
-        $driver = self::getDriverSelenium();
-        $dni = substr($dni, -9);
-        $driver->get(config('services.selenium.itaca'));
-        $driver->findElement(WebDriverBy::id('form1:j_username')) // find usuario
-        ->sendKeys($dni);
-        $driver->findElement(WebDriverBy::id('form1:j_password'))
-            ->sendKeys($password);
-        $driver->findElement(WebDriverBy::cssSelector('input[value="Entrar"]'))
-            ->click();
-        sleep(1);
+        $driver = null;
+
         try {
-            $driver->findElement(WebDriverBy::xpath("//dt[contains(@class, 'error') and span[contains(text(), 'La contraseña no es válida')]]"));
-            $driver->close();
-            throw new IntranetException('Password no vàlid. Has de ficarl el de l\'ITACA');
-        } catch (\Exception $e) {
+            $driver = self::getDriverSelenium();
+            $dni = substr($dni, -9);
+            $driver->get(config('services.selenium.itaca'));
+
+            $driver->findElement(WebDriverBy::id('form1:j_username'))->sendKeys($dni);
+            $driver->findElement(WebDriverBy::id('form1:j_password'))->sendKeys($password);
+            $driver->findElement(WebDriverBy::cssSelector('input[value="Entrar"]'))->click();
+
+            sleep(1); // Espera per carregar errors
+
+            // Comprovem si apareix el missatge d'error de contrasenya
+            try {
+                $driver->findElement(WebDriverBy::xpath(
+                    "//dt[contains(@class, 'error') and span[contains(text(), 'La contraseña no es válida')]]"
+                ));
+                throw new IntranetException('El Password del Itaca no és correcte');
+            } catch (\Facebook\WebDriver\Exception\NoSuchElementException $e) {
+                // No hi ha error de contrasenya → continua
+            }
+
+            Log::channel('sao')->info("Connection established with ITACA $dni");
+            return $driver;
+
+        } catch (\Throwable $e) {
+            if ($driver) {
+                try {
+                    $driver->quit(); // Tanca navegador i geckodriver si hi ha hagut cap problema
+                } catch (\Throwable $inner) {
+                    Log::channel('sao')->error("Error tancant el driver ITACA: ".$inner->getMessage());
+                }
+            }
+            throw $e;
         }
-        return $driver;
     }
+
 
 
     public static function restartSelenium()
     {
-        $process = Process::fromShellCommandline("echo '".config('services.selenium.SELENIUM_ROOT_PASS')
-            ."'  | ssh intranet@172.16.9.10 'sudo -S /sbin/reboot'");
+        $command = "echo '".config('services.selenium.SELENIUM_ROOT_PASS')
+            ."'  | ssh root@'".config('services.selenium.url') ."' /sbin/reboot";
+        $process = Process::fromShellCommandline($command);
         try {
             $process->mustRun();
             echo $process->getOutput();
         } catch (ProcessFailedException $exception) {
             echo $exception->getMessage();
         }
+        Log::channel('sao')->info("Try restarting Selenium");
     }
 
     public function fill($selector, $keys, $driver = null)
