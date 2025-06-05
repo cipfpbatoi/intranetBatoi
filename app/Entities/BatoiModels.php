@@ -156,18 +156,23 @@ trait BatoiModels
     }
     */
 
+
     public function fillAll(Request $request)
     {
         $fillable = $this->notFillable?array_diff($this->fillable, $this->notFillable):$this->fillable;
+
         foreach ($fillable as $key) {
             $value = $request->$key;
             $this->$key = $this->fillField($key, $value);
         }
 
         $this->save();
+        $this->refresh();
+
 
         if ($request->hasFile('fichero')) {
-            $this->fillFile($request->file('fichero'));
+            $this->fichero = $this->fillFile($request->file('fichero'));
+            $this->save();
         }
 
         $primaryKey =  $this->primaryKey ?? 'id';
@@ -188,14 +193,14 @@ trait BatoiModels
         };
     }
 
+
+
     public function fillFile($file)
     {
-
         if (!$file->isValid()) {
             Alert::danger(trans('messages.generic.invalidFormat'));
             return;
         }
-
 
         // Validar extensió
         $allowedExtensions = ['pdf', 'docx', 'xlsx', 'jpg', 'png'];
