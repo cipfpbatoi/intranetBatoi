@@ -62,9 +62,9 @@ class PanelActasController extends BaseController
         $this->titulo = ['quien' => $grupo->nombre ];
         if ($grupo->acta_pendiente) {
             return AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
-        } else {
-            return [];
         }
+
+        return [];
     }
 
     /**

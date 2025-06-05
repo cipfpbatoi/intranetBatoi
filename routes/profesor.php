@@ -545,13 +545,13 @@ Route::get('/signatura/a5',['as' => 'signatura.a5','uses' => 'SignaturaControlle
 
 
 Route::resource('projectes' , 'PanelProjecteController',['except'=>['update','destroy','show']]);
-Route::put('/projecte/{id}/edit', ['as' => 'projecte.update', 'uses' => 'PanelProjecteController@update']);
-Route::get('/projecte/{id}/delete', ['as' => 'projecte.delete', 'uses' => 'PanelProjecteController@destroy']);
-Route::get('/projecte/{id}/pdf', ['as' => 'projecte.pdf', 'uses' => 'PanelProjecteController@pdf']);
-Route::get('/projecte/{id}/check', ['as' => 'projecte.check', 'uses' => 'PanelProjecteController@check']);
+Route::put('/projectes/{id}/edit', ['as' => 'projectes.update', 'uses' => 'PanelProjecteController@update']);
+Route::get('/projectes/{id}/delete', ['as' => 'projectes.delete', 'uses' => 'PanelProjecteController@destroy']);
+Route::get('/projectes/{id}/pdf', ['as' => 'projectes.pdf', 'uses' => 'PanelProjecteController@pdf']);
+Route::get('/projectes/{id}/check', ['as' => 'projectes.check', 'uses' => 'PanelProjecteController@check']);
 Route::get('/projectes/actaP', ['as' => 'projectes.actaP', 'uses' => 'PanelProjecteController@acta']);
 Route::get('/projectes/sendP', ['as' => 'projectes.sendP    ', 'uses' => 'PanelProjecteController@send']);
-Route::get('/projectes/actaE', ['as' => 'projecte.actaE', 'uses' => 'PanelProjecteController@actaE']);
+Route::get('/projectes/actaE', ['as' => 'projectes.actaE', 'uses' => 'PanelProjecteController@actaE']);
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
 

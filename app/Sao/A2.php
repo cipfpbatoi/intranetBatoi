@@ -254,8 +254,7 @@ class A2
     private  function annexe5($fctAl, RemoteWebDriver $driver,$certFile):bool
     {
         $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
-        $doc = $fctAl->Fct->dual ? '201' : '101';
-        $annexe = $fctAl->Fct->dual ? 'A5DUAL' : 'A5';
+        $annexe = $fctAl->Fct->asociacion >= 3 ? 'A5DUAL' : 'A5' ;
         $idSao = $fctAl->idSao;
         $tmpFile = $tmpDirectory.$annexe.".pdf";
         $tmp1File = $tmpDirectory.$annexe."(1).pdf";

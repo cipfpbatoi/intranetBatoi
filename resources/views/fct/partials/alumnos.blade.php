@@ -32,7 +32,9 @@
                         <i class="fa fa-envelope"></i> {{$alumno->email}}
                     </h4>
                     <a href="{{ route('alumnofct.pdf',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
+                        @if ($alfct->correoAlumno)<strong> @endif
                         Cert.Alu.
+                        @if ($alfct->correoAlumno)</strong> @endif
                     </a>
                     @if ($alfct->autorizacion)
                         <a href="{{ route('alumnofct.auth',$alfct->id) }}" class="fa fa-file-zip-o" target="_blank">

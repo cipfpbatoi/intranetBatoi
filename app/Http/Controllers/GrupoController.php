@@ -12,6 +12,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Horario;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Jobs\SendEmail;
+use Intranet\Services\SecretariaService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 
@@ -212,18 +213,35 @@ class GrupoController extends IntranetController
      */
     public function certificados($grupo)
     {
+        try {
+            $sService = new SecretariaService();
+        } catch (\Exception $e) {
+            echo 'No hi ha connexió amb el servidor de matrícules';
+            exit();
+        }
         $grupo = Grupo::find($grupo);
         $datos['ciclo'] = $grupo->Ciclo;
         $remitente = ['email' => cargo('secretario')->email, 'nombre' => cargo('secretario')->FullName];
         $count = 0;
+
         foreach ($grupo->Alumnos as $alumno){
             if ($alumno->fol == 1){
+
+
                 $id = $alumno->nia;
                 if (file_exists(storage_path("tmp/fol_$id.pdf"))){
                     unlink(storage_path("tmp/fol_$id.pdf"));
                 }
                 self::hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,[$alumno],cargaDatosCertificado($datos),'portrait')->save(storage_path("tmp/fol_$id.pdf"));
                 $attach = ["tmp/fol_$id.pdf" => 'application/pdf'];
+                $document = array();
+                $document['title'] = 15;
+                $document['dni'] = $alumno->dni;
+                $document['alumne'] = trim($alumno->shortName);
+                $document['route'] = "tmp/fol_$id.pdf";
+                $document['name'] = "fol_$id.pdf";
+                $document['size'] =  filesize("tmp/fol_$id.pdf");
+                $sService->uploadFile($document);
                 dispatch(new SendEmail($alumno->email, $remitente, 'email.fol', $alumno , $attach));
                 $count++;
             }

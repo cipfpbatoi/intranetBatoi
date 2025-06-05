@@ -32,7 +32,7 @@
             </li>
             <li>També faré visites al centre de les quals informaré el teu instructor.</li>
             <li>Tens una assegurança de responsabilitat civil i d'accident laboral. La informació la trobaràs en aquest
-                <a href="https://ceice.gva.es/va/web/formacion-profesional/seguro">enllaç</a></li>
+                <a href="https://ceice.gva.es/va/web/formacion-profesional/assegurances">enllaç</a></li>
             <li>Les tasques a realitzar a l'empresa seran les que es deriven de l'Annex III, que et donaré i on
                 s'especifica el teu horari i les dades de l'empresa i instructor
             </li>
