@@ -240,7 +240,7 @@ class GrupoController extends IntranetController
                 $document['alumne'] = trim($alumno->shortName);
                 $document['route'] = "tmp/fol_$id.pdf";
                 $document['name'] = "fol_$id.pdf";
-                $document['size'] =  filesize("tmp/fol_$id.pdf");
+                $document['size'] =  filesize(storage_path("tmp/fol_$id.pdf"));
                 $sService->uploadFile($document);
                 dispatch(new SendEmail($alumno->email, $remitente, 'email.fol', $alumno , $attach));
                 $count++;
