@@ -56,7 +56,7 @@ class PanelFctAvalController extends IntranetController
         $todas = collect();
         foreach ($nombres as $nombre) {
             $todas->push(AlumnoFctAval::misFcts()->esAval()->where('idAlumno', $nombre['idAlumno'])
-                ->orderBy('idAlumno')
+                ->orderByDesc('idSao')
                 ->first());
         }
         return $todas;
@@ -81,7 +81,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calificacion', '!=', '1',
                         'actas', '==', 0,
-                        'asociacion', '<', 3
+                        'asociacion', '<>', 2
                     ]
                 ]
             ));
@@ -94,7 +94,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '5',
                         'calificacion', '!=', '0',
-                        'actas', '==', 0, 'asociacion', '<', 3
+                        'actas', '==', 0, 'asociacion', '<>', 2
                     ]
                 ]
             ));
@@ -120,7 +120,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '1',
                         'calificacion', '==', 0,
-                        'actas', '>', 0, 'asociacion', '<', 3
+                        'actas', '>', 0, 'asociacion', '<>', 2
                     ]
                 ]
             ));
@@ -374,7 +374,7 @@ class PanelFctAvalController extends IntranetController
                         'where' => [
                             'calProyecto', '<', '1',
                             'actas', '<', 2,
-                            'asociacion', '==', '3'
+                            'asociacion', '==', '2'
                         ]
                     ]
                 )
@@ -389,7 +389,7 @@ class PanelFctAvalController extends IntranetController
                         'where' => [
                             'calProyecto', '<', '0',
                             'actas', '<', 2,
-                            'asociacion', '==', '3'
+                            'asociacion', '==', '2'
                         ]
                     ]
                 )
@@ -404,7 +404,7 @@ class PanelFctAvalController extends IntranetController
                         'where' => [
                             'calProyecto', '>=', '0',
                             'actas', '<', 2,
-                            'asociacion', '==', '3'
+                            'asociacion', '==', '2'
                         ]
                     ]
                 )

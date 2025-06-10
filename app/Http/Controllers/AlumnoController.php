@@ -34,7 +34,9 @@ class AlumnoController extends PerfilController
     public function update(Request $request, $id)
     {
         $new = Alumno::find($id);
+
         parent::update($request, $new);
+
         return redirect("/alumno_grupo/" . $new->Grupo()->first()->codigo . "/show");
     }
 
