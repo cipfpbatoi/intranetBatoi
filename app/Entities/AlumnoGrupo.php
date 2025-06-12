@@ -80,4 +80,9 @@ class AlumnoGrupo extends Model
         return $this->Alumno->outOfSchoolActivityAccept?'Sí':'No';
     }
 
+    public function getDAAttribute()
+    {
+        return $this->Alumno->DA?'Sí':'No';
+    }
+
 }

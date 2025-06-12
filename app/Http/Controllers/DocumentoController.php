@@ -112,8 +112,13 @@ class DocumentoController extends IntranetController
     public function project($idFct)
     {
         if ($fct = AlumnoFct::findOrFail($idFct)) {
-            
+
+            $proyecto = $fct->Alumno->Projecte ?? null;
+            $descripcion = $proyecto->titol ?? '';
+            $detalle = $proyecto->descripcio ?? '';
             $elemento = $this->createWithDefaultValues();
+            $elemento->descripcion = $descripcion;
+            $elemento->detalle = $detalle;
             $elemento->supervisor = AuthUser()->FullName;
             $elemento->propietario = $fct->Alumno->FullName;
             $elemento->tipoDocumento = 'Proyecto';

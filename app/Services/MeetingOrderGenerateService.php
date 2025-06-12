@@ -9,49 +9,82 @@ use Intranet\Entities\TipoReunion;
 
 class MeetingOrderGenerateService
 {
-        private $reunion;
-        private $tipo;
+    private $reunion;
+    private $tipo;
 
+    public function __construct($reunion)
+    {
+        $this->reunion = $reunion;
+        $this->tipo = $reunion->Tipos();
+    }
 
-        public function __construct($reunion)
-        {
-            $this->reunion = $reunion;
-            $this->tipo = $reunion->Tipos();
-        }
-
-        public function exec()
-        {
-            $contador = 1;
-            foreach ($this->tipo->ordenes as $key => $texto) {
-                if ($this->isOrderAdvanced($texto)) {
-                    $this->storeAdvancedItems($texto);
-                } else {
-                    $this->storeItem($contador, $texto, $this->tipo->resumen[$key] ?? '');
-                }
-            }
-        }
-
-        private function isOrderAdvanced($texto)
-        {
-            return strpos($texto, '->');
-        }
-
-
-
-    private function storeAdvancedItems($query)
+    public function exec()
     {
         $contador = 1;
+
+        foreach ($this->tipo->ordenes as $key => $texto) {
+            if (is_array($this->tipo->resumen)) {
+                $resumen = $this->tipo->resumen[$key] ?? '';
+            } else {
+                $resumen = $this->tipo->resumen;
+            }
+
+
+            if ($this->isOrderAdvanced($texto)) {
+                $this->storeAdvancedItems($texto, $resumen, $contador);
+            } else {
+                if ($this->isOrderAdvanced($resumen)) {
+                    $resumenText = $this->getResumenAdvanced($resumen);
+                } else {
+                    $resumenText = $resumen;
+                }
+
+                $this->storeItem($contador, $texto, $resumenText);
+            }
+        }
+    }
+
+    private function isOrderAdvanced($texto)
+    {
+        return strpos($texto, '->') !== false;
+    }
+
+    private function storeAdvancedItems($query, $resumen, &$contador)
+    {
         $descomposedQuery = explode('->', $query, 3);
-        $class = "Intranet\\Entities\\". $descomposedQuery[0];
+        $class = "Intranet\\Entities\\" . $descomposedQuery[0];
         $funcion = $descomposedQuery[1];
         $campo = $descomposedQuery[2];
-        foreach ($class::$funcion()->get() as $element) {
+
+        // Si resumen també és dinàmic
+        $resumenEsAvançat = $this->isOrderAdvanced($resumen);
+        if ($resumenEsAvançat) {
+            $resumenResults = $this->getResumenAdvanced($resumen, true);
+        }
+
+        foreach ($class::$funcion()->get() as $index => $element) {
+            $resumenText = $resumenEsAvançat
+                ? ($resumenResults[$index] ?? '')
+                : ($resumen !== null ? $resumen . ' ' . ($index + 1) : '');
+
             $this->storeItem(
                 $contador,
                 $element->$campo,
-                $this->tipo->resumen != null ? $this->tipo->resumen . $contador : ''
+                $resumenText
             );
         }
+    }
+
+    private function getResumenAdvanced($query, $asArray = false)
+    {
+        $descomposed = explode('->', $query, 3);
+        $class = "Intranet\\Entities\\" . $descomposed[0];
+        $method = $descomposed[1];
+        $field = $descomposed[2];
+
+        $results = $class::$method()->get()->pluck($field);
+
+        return $asArray ? $results->toArray() : $results->implode(', ');
     }
 
     private function storeItem(&$contador, $text, $resumen)
