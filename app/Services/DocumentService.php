@@ -204,7 +204,13 @@ class DocumentService
      */
     private function concatenatePdfs()
     {
-        $pdfs = array_map(fn($element) => $element->routeFile, $this->elements);
+        if (is_array($this->elements)) {
+            $pdfs = array_map(fn($element) => $element->routeFile, $this->elements);
+        } elseif ($this->elements instanceof \Illuminate\Support\Collection) {
+            $pdfs = $this->elements->map(fn($element) => $element->routeFile)->all();
+        } else {
+            throw new \Exception('Format inesperat per a elements');
+        }
 
         if ($this->document->zip) {
             return $this->generateZip($pdfs, 'annexes_' . authUser()->dni);
