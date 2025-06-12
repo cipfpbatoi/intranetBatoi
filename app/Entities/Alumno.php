@@ -102,6 +102,11 @@ class Alumno extends Authenticatable
             ->where('provincias_id', $this->provincia);
     }
 
+    public function Projecte()
+    {
+        return $this->hasOne(Projecte::class, 'idAlumne', 'nia');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | SCOPES
