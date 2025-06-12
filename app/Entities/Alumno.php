@@ -224,4 +224,12 @@ class Alumno extends Authenticatable
     {
         return config('auxiliares.idiomas');
     }
+
+    public function scopeMisDA(Builder $query, ?string $profesor = null, bool $dual = false): Builder
+    {
+        $profesor = $profesor ?? authUser()->dni;
+        $grupos = Grupo::QTutor($profesor, $dual)->pluck('codigo')->toArray();
+        $alumnos = AlumnoGrupo::whereIn('idGrupo', $grupos)->pluck('idAlumno');
+        return $query->whereIn('nia', $alumnos)->where('DA',1);
+    }
 }
