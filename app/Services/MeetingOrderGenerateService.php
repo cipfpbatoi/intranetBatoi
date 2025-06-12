@@ -23,7 +23,12 @@ class MeetingOrderGenerateService
         $contador = 1;
 
         foreach ($this->tipo->ordenes as $key => $texto) {
-            $resumen = $this->tipo->resumen[$key] ?? '';
+            if (is_array($this->tipo->resumen)) {
+                $resumen = $this->tipo->resumen[$key] ?? '';
+            } else {
+                $resumen = $this->tipo->resumen;
+            }
+
 
             if ($this->isOrderAdvanced($texto)) {
                 $this->storeAdvancedItems($texto, $resumen, $contador);
