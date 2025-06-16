@@ -57,12 +57,12 @@ class DocumentoController extends IntranetController
             return Documento::whereIn('rol', RolesUser(AuthUser()->rol))
                 ->orderBy('curso', 'desc')
                 ->get();
-        } else {
-            return Documento::where('curso', Curso())
-                ->whereIn('rol', RolesUser(AuthUser()->rol))
-                ->orWhere('propietario', AuthUser()->fullName)
-                ->orderBy('curso', 'desc')->get();
         }
+        return Documento::where('curso', Curso())
+            ->whereIn('rol', RolesUser(AuthUser()->rol))
+            ->orWhere('propietario', AuthUser()->fullName)
+            ->orderBy('curso', 'desc')->get();
+
     }
 
     protected function iniBotones()
@@ -142,9 +142,9 @@ class DocumentoController extends IntranetController
             $modelo = $this->model;
             Session::put('redirect', 'PanelFctAvalController@index');
             return view($this->chooseView('create'), compact('formulario', 'modelo'));
-        } else {
-            return back();
         }
+        return back();
+
     }
 
     public function qualitatUpload($id)

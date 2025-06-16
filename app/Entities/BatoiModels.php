@@ -197,13 +197,14 @@ trait BatoiModels
 
     public function fillFile($file)
     {
+
         if (!$file->isValid()) {
             Alert::danger(trans('messages.generic.invalidFormat'));
             return;
         }
 
         // Validar extensió
-        $allowedExtensions = ['pdf', 'docx', 'xlsx', 'jpg', 'png'];
+        $allowedExtensions = ['pdf', 'docx', 'xlsx', 'jpg', 'png','zip'];
         $extension = strtolower($file->getClientOriginalExtension());
 
         if (!in_array($extension, $allowedExtensions)) {
