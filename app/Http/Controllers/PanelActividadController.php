@@ -57,21 +57,34 @@ class PanelActividadController extends BaseController
                 true
             )
         );
-        $this->panel->setBothBoton('actividad.gestor', ['img' => 'fa-archive', 'where'=>['idDocumento','!=',null]]);
+        $this->panel->setBothBoton(
+            'actividad.gestor',
+            [
+                'img' => 'fa-archive',
+                'where'=>['idDocumento','!=',null ]
+            ]
+        );
+        $this->panel->setBothBoton(
+            'actividad.itaca',
+            [
+                'img' => 'fa-bullseye',
+                'where'=>['estado','==',4]
+            ]
+        );
         $this->panel->setBoton(
             'grid',
             new BotonImg(
                 'actividad.pdfVal',
                 [
                     'img'=>'fa-file-pdf-o',
-                    'where' => ['estado', '==', '4','hasta','anterior',Hoy()]
+                    'where' => ['estado', '>=', '4','hasta','anterior',Hoy()]
                 ]
             )
         );
         $this->panel->setBothBoton('actividad.showVal',
             [
                 'img'=>'fa-eye-slash',
-                'where' => ['estado', '==', '4','hasta','anterior',Hoy()]
+                'where' => ['estado', '>=', '4','hasta','anterior',Hoy()]
             ]
         );
 
