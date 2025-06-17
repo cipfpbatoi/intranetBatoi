@@ -61,6 +61,7 @@ class PanelActividadController extends BaseController
             'actividad.gestor',
             [
                 'img' => 'fa-archive',
+                'icon' => 'fa-archive',
                 'where'=>['idDocumento','!=',null ]
             ]
         );
@@ -68,6 +69,7 @@ class PanelActividadController extends BaseController
             'actividad.itaca',
             [
                 'img' => 'fa-bullseye',
+                'icon' => 'fa-bullseye',
                 'where'=>['estado','==',4]
             ]
         );

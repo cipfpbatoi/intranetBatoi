@@ -336,7 +336,7 @@ class ActividadController extends ModalController
         $elemento = $this->class::findOrFail($id);
         $elemento->estado = 5;
         $elemento->save();
-        return back();
+        return $this->follow(4, 5);
     }
 
 
