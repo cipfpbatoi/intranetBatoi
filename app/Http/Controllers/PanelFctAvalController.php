@@ -357,8 +357,7 @@ class PanelFctAvalController extends IntranetController
                 new BotonImg(
                     'fct.nullProyecto',
                     [
-
-                        'img' => 'fa-minus-circle', 'roles' => config(self::ROLES_ROL_TUTOR),
+                       'img' => 'fa-minus-circle', 'roles' => config(self::ROLES_ROL_TUTOR),
                         'where' => [
                             'calProyecto', '>=', '0',
                             'actas', '<', 2,
