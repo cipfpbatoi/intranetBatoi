@@ -288,6 +288,7 @@ return array(
                 'sendCorreo' => 'Enviats Correus',
                 'imageRightAccept' => "Drets d'imatge",
                 'outOfSchoolActivityAccept' => "Accepta activitats extraescolars",
+                'DA' => 'NEE',
              ),
         'empty_option' => array(
             'default' => '-Selecciona-',

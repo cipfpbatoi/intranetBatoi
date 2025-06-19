@@ -74,7 +74,8 @@ return array(
         'tasks' => 'Tasques pendents',
         'explicacion' => 'Explicación',
         'afternoon' => 'Vesprada',
-        'calendari' => 'Calendari Escolar'
+        'calendari' => 'Calendari Escolar',
+
      ),
     'buttons' => array(
         'confirmar' => 'Confirmar',
@@ -188,6 +189,7 @@ return array(
         'acabar' => 'Finalitzar',
         'resolve' => 'Resolució',
         'finEmpresa' => 'Fin',
+
     ),
     'menu' => array(
         'Link' => 'Enllaços externs',

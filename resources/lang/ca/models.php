@@ -21,6 +21,7 @@ return array(
     'Alumno' => array(
           'show' => "Dades de l'alumna",
           'edit' => "Modificació del perfil de l'Alumna",
+
         ),
 	'Comision' => array(
 		'create'=>'Sol·licitud autorització comissió Servei',
