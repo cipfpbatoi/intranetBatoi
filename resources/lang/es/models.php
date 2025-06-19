@@ -128,6 +128,7 @@ return array(
             '3' => 'Impresa',
             '4' => 'Valorada',
             '1' => 'Pendiente',
+            '5' => 'Itaca',
             '0' => 'Rechazada/No comunicada'
         ),
         'TipoIncidencia' => array(

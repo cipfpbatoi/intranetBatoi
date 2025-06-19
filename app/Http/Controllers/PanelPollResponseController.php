@@ -20,10 +20,11 @@ class PanelPollResponseController extends PollController
         $polls = Poll::all();
         $key = isset(AuthUser()->nia)?'nia':'dni';
         $activas =  $polls->where('state', 'Activa')->where('keyUser', $key);
+
         $usuario = [];
         foreach ($activas as $activa) {
             $modelo = $activa->modelo;
-            if ($modelo::has()) {
+        if ($modelo::has()) {
                 $usuario[] = $activa;
             }
         }

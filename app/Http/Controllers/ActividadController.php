@@ -331,6 +331,14 @@ class ActividadController extends ModalController
         return $this->imprimir('extraescolars');
     }
 
+    public function itaca($id)
+    {
+        $elemento = $this->class::findOrFail($id);
+        $elemento->estado = 5;
+        $elemento->save();
+        return $this->follow(4, 5);
+    }
+
 
     public function i_c_s($id)
     {
