@@ -279,6 +279,9 @@ return array(
                 'alumno' => 'Alumnado',
                 'periode' => 'Periodo',
                 'sendCorreo' => 'Enviats Correus',
+                'imageRightAccept' => "Derechos de imagen aceptados",
+                'outOfSchoolActivityAccept' => "Acepta actividades extraescolares",
+                'DA' => 'NEE',
         ),
         'empty_option' => array(
             'default' => '-Selecciona-',
