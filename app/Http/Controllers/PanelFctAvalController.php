@@ -361,7 +361,8 @@ class PanelFctAvalController extends IntranetController
                         'where' => [
                             'calProyecto', '>=', '0',
                             'actas', '<', 2,
-                            'calificacion', '==', '1'
+                            'calificacion', '==', '1',
+                            'asociacion', '<>', '2'
                         ]
                     ]
                 )
