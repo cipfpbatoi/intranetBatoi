@@ -29,6 +29,7 @@ class PanelFctAvalController extends IntranetController
     use DropZone;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
+    const ROLES_ROL_CAPAC = 'roles.rol.jefe_practicas';
 
     /**
      * @var string
@@ -457,7 +458,7 @@ class PanelFctAvalController extends IntranetController
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()],
         ];
-        if ($ara >= $inici && $ara <= $fi) {
+        if ($ara >= $inici && $ara <= $fi && userIsAllow(config(self::ROLES_ROL_CAPAC)))  {
             $botones['final'] = [
                     'link' =>"/fct/$id/upload",
                     'message' => "Este procediment l'has de fer quan tingues tota
