@@ -220,7 +220,7 @@ class FctAlumnoController extends IntranetController
             ->where('curso', Curso())->first();
         if (!$find) {
             $documents = Adjunto::where('route', "profesor/".AuthUser()->dni)->count();
-            $fcts = Fct::misFcts()->where('correoInstructor', 0)->count();
+            $fcts = Fct::misFcts()->count();
             if ($documents || $fcts) {
                 $this->panel->setBoton(
                     'index',
