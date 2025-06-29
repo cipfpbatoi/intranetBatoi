@@ -29,6 +29,7 @@
 
     @foreach($monthlyCalendar as $month => $days)
         @php
+
             $monthName = \Carbon\Carbon::createFromFormat('F', $month)->locale('ca')->translatedFormat('F');
             $firstDayOfMonth = \Carbon\Carbon::parse("first day of $month")->startOfMonth();
             $lastDayOfMonth = \Carbon\Carbon::parse("last day of $month")->endOfMonth();

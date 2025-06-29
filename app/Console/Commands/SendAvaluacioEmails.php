@@ -36,6 +36,9 @@ class SendAvaluacioEmails extends Command
     private function obtenToken($aR)
     {
         $grupo = $aR->Reunion->grupoClase;
+        if ($aR->token) {
+            return $aR->token;
+        }
         if ($grupo->isSemi) {
             return ($aR->capacitats == self::PROMOCIONA)?$this->generaToken():false;
         }

@@ -1,4 +1,3 @@
-<div class="container mt-4">
     <div class="row">
         <!-- 📆 COL 1: CALENDARI (66%) -->
         <div class="col-md-8">
