@@ -61,11 +61,9 @@ class SendAvaluacioEmails extends Command
                 $aR->save();
             }
         } catch (\Exception $e) {
-            $mensaje = $e->getMessage();
-            //$mensaje = 'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email;
+            $mensaje = 'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email;
             avisa('021652470V', $mensaje, '#', 'Servidor de correu');
-            die();
-            //avisa($aR->Reunion->idProfesor, $mensaje, '#', 'Servidor de correu');
+            avisa($aR->Reunion->idProfesor, $mensaje, '#', 'Servidor de correu');
         }
     }
     /**
