@@ -63,7 +63,7 @@ class SendAvaluacioEmails extends Command
         } catch (\Exception $e) {
             $mensaje = $e->getMessage();
             avisa('021652470V', $mensaje, '#', 'Servidor de correu');
-            die();
+
             //avisa($aR->Reunion->idProfesor, $mensaje, '#', 'Servidor de correu');
         }
     }
