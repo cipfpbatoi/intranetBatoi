@@ -13,13 +13,13 @@
         </table>
     </div>
     <div class="container" style="font-size: 1.3em; line-height: 1.3em" >
-        <p>  Hi havia una errada en les dates de matrícula del curs 2025-26, per això s'ha tornat a enviar aquest correu.</p>
+        <p>  Recordar-vos les dates de matrícula del curs 2025-26 .</p>
         <ul>
             <li style=" margin-top: 1.3em">
                 La data de matrícula serà a partir del 30 de juny fins al 7 de juliol a les 14hores</strong>.
             </li>
             <li style=" margin-top: 1.3em">
-                Lca matríula es farà de forma telemàtica mitjançant un assistent al qual entraràs polsant sobre el
+                La matríula es farà de forma telemàtica mitjançant un assistent al qual entraràs polsant sobre el
                 següent enllaç:<br/>
                 <a href="http://ext.matricula.cipfpbatoi.es/{{$convocatoria}}/{{$aR->token}}" >
                     http://ext.matricula.cipfpbatoi.es/{{$convocatoria}}/{{$aR->token}}
