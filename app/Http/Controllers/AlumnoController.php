@@ -109,14 +109,7 @@ class AlumnoController extends PerfilController
         return back();
     }
 
-    public function days($id)
-    {
-        $alumno  = Alumno::find($id);
 
-
-
-        return view('fct.days',compact('alumno'  ));
-    }
 
 
 

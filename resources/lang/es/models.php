@@ -20,6 +20,7 @@ return array(
 
 	
         'Alumno' => array(
+          'index' => "Listado de alumnos",
           'show' => 'Datos del Alumno',
           'edit' => 'Modificación Perfil Alumno'
         ),

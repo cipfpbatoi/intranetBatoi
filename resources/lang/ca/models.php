@@ -19,6 +19,7 @@ return array(
 
 	
     'Alumno' => array(
+          'index' => "Llistat d'alumnes",
           'show' => "Dades de l'alumna",
           'edit' => "Modificació del perfil de l'Alumna",
         ),
