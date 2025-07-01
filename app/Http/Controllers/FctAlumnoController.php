@@ -78,15 +78,7 @@ class FctAlumnoController extends IntranetController
                 ['where' => ['asociacion', '<', '2'],'text'=>'Canviar dates']
             )
         );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.days',
-                [
-                    'img' => 'fa-calendar',
-                    'where' => ['asociacion', '<', '2'],'text'=>'Modificar Calendari']
-            )
-        );
+
         $this->panel->setBoton(
             'grid',
             new BotonImg(

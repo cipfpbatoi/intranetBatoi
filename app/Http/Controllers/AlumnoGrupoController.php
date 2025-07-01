@@ -89,6 +89,17 @@ class AlumnoGrupoController extends IntranetController
                 $this->panel->setBoton('grid', new BotonImg('alumnocurso.registerAlumno/' . $curso->id, ['text' => trans('messages.generic.register') . $curso->titulo, 'img' => 'fa-institution']));
             }
         }
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumno.days',
+                [
+                    'img' => 'fa-calendar',
+                    'roles' => config('roles.rol.tutor'),
+                    'text'=>'Modificar Calendari'
+                ]
+            )
+        );
         
     }
 
