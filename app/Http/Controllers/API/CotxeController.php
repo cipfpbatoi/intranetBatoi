@@ -3,12 +3,10 @@
 namespace Intranet\Http\Controllers\API;
 
 
+use Intranet\Services\CotxeAccessService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Cotxe;
-use Intranet\Entities\CotxeAcces;
+
 
 
 class CotxeController extends ApiResourceController
@@ -16,42 +14,45 @@ class CotxeController extends ApiResourceController
 
     protected $model = 'Cotxe';
 
-    public function eventPorta(Request $request)
+
+    public function eventEntrada(Request $request, CotxeAccessService $accessService)
     {
         $data = json_decode($request->getContent(), true);
-        if (!$data) return response()->json(['error' => 'Format incorrecte'], 400);
+        $matricula = strtoupper($data['plate'] ?? '');
+        $device = $data['device'] ?? 'Cam_exterior';
 
-        $matricula = strtoupper($data['plate']);
-        $hora = $data['time'] ?? now();
-        $device = $data['device'] ?? null;
+        if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
 
         $cotxe = Cotxe::where('matricula', $matricula)->first();
-        $autoritzat = $cotxe !== null;
+        if (!$cotxe) return response()->json(['status' => 'No autoritzat']);
 
-        CotxeAcces::create([
-            'matricula' => $matricula,
-            'data' => $hora,
-            'autoritzat' => $autoritzat,
-            'porta_oberta' => false,
-            'device' => $device,
-            'image_path' => null,
-        ]);
+        $accessService->obrirIPorta();
+        $accessService->registrarAcces($matricula, true, true, $device,'entrada');
 
-        if ($autoritzat) {
-            Http::withBasicAuth('api', 'Admin*HC3*Batoi22')
-                ->get('http://195.181.255.163:8898/api/callAction?deviceID=267&name=turnOn');
-
-            CotxeAcces::where('matricula', $matricula)->latest()->first()->update([
-                'porta_oberta' => true
-            ]);
-
-            Http::withBasicAuth('api', 'Admin*HC3*Batoi22')
-                ->get('http://195.181.255.163:8898/api/callAction?deviceID=267&name=turnOff');
-        }
-
-        return response()->json(['status' => 'OK']);
+        return response()->json(['status' => 'Porta oberta (entrada)']);
     }
 
 
+    public function eventSortida(Request $request, CotxeAccessService $accessService)
+    {
+        $data = json_decode($request->getContent(), true);
+        $matricula = strtoupper($data['license_plate'] ?? '');
+        $device = $data['device_name'] ?? 'Cam_interior';
+
+        if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
+
+        if (!$accessService->estaDins($matricula)) {
+            return response()->json(['status' => 'El cotxe no consta com a dins']);
+        }
+
+        if ($accessService->segonsDesdeUltimAcces($matricula) < 60) {
+            return response()->json(['status' => 'Accés massa recent']);
+        }
+
+        $accessService->obrirIPorta();
+        $accessService->registrarAcces($matricula, true, true, $device, 'sortida');
+
+        return response()->json(['status' => 'Porta oberta (sortida)']);
+    }
 
 }
