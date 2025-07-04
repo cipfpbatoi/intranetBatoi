@@ -21,6 +21,7 @@ Route::get('miIp', 'IPController@miIP');
 Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 Route::get('server-time', 'GuardiaController@getServerTime' );
 Route::post('eventPorta', 'CotxeController@eventPorta');
+Route::post('eventPortaSortida', 'CotxeController@eventPortaSortida');
 
 
 
