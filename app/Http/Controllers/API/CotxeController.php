@@ -3,9 +3,11 @@
 namespace Intranet\Http\Controllers\API;
 
 
+use Illuminate\Support\Facades\Log;
 use Intranet\Services\CotxeAccessService;
 use Illuminate\Http\Request;
 use Intranet\Entities\Cotxe;
+
 
 
 
@@ -20,6 +22,7 @@ class CotxeController extends ApiResourceController
         $data = json_decode($request->getContent(), true);
         $matricula = strtoupper($data['plate'] ?? '');
         $device = $data['device'] ?? 'Cam_exterior';
+        Log::info("Matricula detectada: $matricula, Dispositiu: $device");
 
         if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
 
