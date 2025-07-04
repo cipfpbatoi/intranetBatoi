@@ -78,15 +78,7 @@ class FctAlumnoController extends IntranetController
                 ['where' => ['asociacion', '<', '2'],'text'=>'Canviar dates']
             )
         );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'alumnofct.days',
-                [
-                    'img' => 'fa-calendar',
-                    'where' => ['asociacion', '<', '2'],'text'=>'Modificar Calendari']
-            )
-        );
+
         $this->panel->setBoton(
             'grid',
             new BotonImg(
@@ -220,7 +212,7 @@ class FctAlumnoController extends IntranetController
             ->where('curso', Curso())->first();
         if (!$find) {
             $documents = Adjunto::where('route', "profesor/".AuthUser()->dni)->count();
-            $fcts = Fct::misFcts()->where('correoInstructor', 0)->count();
+            $fcts = Fct::misFcts()->count();
             if ($documents || $fcts) {
                 $this->panel->setBoton(
                     'index',

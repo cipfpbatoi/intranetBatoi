@@ -3,17 +3,9 @@
 namespace Intranet\Http\Controllers\Auth;
 
 use Intranet\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Cache;
-use Intranet\Entities\Actividad;
-use Intranet\Entities\Reunion;
-use Intranet\Entities\Falta;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Falta_profesor;
-use Intranet\Entities\AlumnoGrupo;
-use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Comision;
-use Intranet\Entities\Task;
+use Intranet\Services\FitxatgeService;
+use Intranet\Services\PerfilService;
 
 /**
  * Description of HomeIdentifyController
@@ -31,76 +23,28 @@ abstract class HomeController extends Controller
         
     }
 
-    public function index()
+    public function index(FitxatgeService $fitxatgeService, PerfilService $perfilService)
     {
+        $usuari = AuthUser();
+
         if ($this->guard === 'profesor') {
-            $usuario = AuthUser();
-            if ($usuario->dni === '12345678A') {
+            if ($usuari->dni === '12345678A') {
                 return redirect('/fichar');
             }
 
-            $horario = Cache::remember('horario'.$usuario->dni, now()->addDay(), function () use ($usuario) {
-                return Horario::HorarioSemanal($usuario->dni);
-            });
-            $actividades =  Cache::remember('actividades', now()->addHour(), function () {
-                return Actividad::next()
-                    ->with(['profesores','grupos','Tutor'])
-                    ->auth()
-                    ->orderby('desde', 'asc')
-                    ->take(10)
-                    ->get();
-            });
-            $tasks = Task::misTareas()->orderBy('vencimiento')->get();
-            $reuniones = Reunion::with('profesores')->next()->orderBy('fecha')->get();
-
-
-            $faltas = Falta::select('idProfesor', 'dia_completo', 'hora_ini', 'hora_fin')
-                ->with('profesor')
-                ->Dia(Hoy())
-                ->get();
-
-            $hoyActividades = Actividad::Dia(Hoy())
-                ->where('estado', '>', 1)
-                ->where('fueraCentro', '=', 1)
-                ->get();
-            $comisiones = Cache::remember('comisionesHui', now()->addHours(6), function () {
-               return(Comision::with('profesor')->Dia(Hoy())->get());
-            });
-
             if (!estaDentro() && !Session::get('userChange')) {
-                Falta_profesor::fichar($usuario->dni);
+                $fitxatgeService->fitxar($usuari->dni);
             }
-            $tabs =  [
-                ['title' => 'messages.generic.nextActivities', 'view' => 'home.partials.activities', 'data' => ['actividades' => $actividades]],
-                ['title' => 'messages.generic.faltas', 'view' => 'home.partials.faltas', 'data' => ['faltas' => $faltas, 'hoyActividades' => $hoyActividades, 'comisiones'  => $comisiones]],
-                ['title' => 'messages.generic.tasks', 'view' => 'home.partials.tasks', 'data' => ['tasks' => $tasks]],
-                ['title' => 'messages.generic.calendari', 'view' => 'home.partials.calendari' ],
-                ['title' => 'messages.generic.timeTable', 'view' => 'home.partials.horario.corto', 'data' => ['horario' => $horario]],
-                ['title' => 'messages.generic.reuniones', 'view' => 'home.partials.reuniones', 'data' => ['reuniones' => $reuniones]],
 
-            ];
-            return view(
-                'home.profile',
-                compact(
-                    'tabs'
-                )
-            );
+            $dades = $perfilService->carregarDadesProfessor($usuari->dni);
+            return view('home.profile', array_merge(['usuario' => $usuari], $dades));
         }
 
-        $usuario = AuthUser();
-        if (isset(AlumnoGrupo::where('idAlumno', AuthUser()->nia)->first()->idGrupo)) {
-            $grupo = AlumnoGrupo::where('idAlumno', AuthUser()->nia)->first()->idGrupo;
-            $horario = Horario::HorarioGrupo($grupo);
-        } else {
-            $grupo = [];
-            $horario = [];
-        }
-        $actividades = Actividad::next()->auth()->take(10)->get();
-        $activities = [];
-        $documents = Documento::where('curso', '=', Curso())->where('tipoDocumento', '=', 'Alumno')->get();
-
-        return view('home.alumno', compact('usuario', 'horario', 'actividades', 'activities', 'documents'));
+        // Alumne
+        $dades = $perfilService->carregarDadesAlumne($usuari->nia);
+        return view('home.alumno', array_merge(['usuario' => $usuari], $dades));
     }
+
 
     public function legal()
     {

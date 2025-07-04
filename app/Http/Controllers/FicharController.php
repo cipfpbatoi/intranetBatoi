@@ -3,10 +3,11 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Falta_profesor;
+
 use \DB;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Horario;
+use Intranet\Services\FitxatgeService;
 use Styde\Html\Facades\Alert;
 
 
@@ -18,13 +19,15 @@ class FicharController extends IntranetController
     protected $gridFields = ['Xdepartamento', 'FullName', 'Horario', 'Entrada', 'Salida'];
     protected $parametresVista = ['before' => ['formulario']];
     protected $amount= 200;
-    
-    public function ficha()
+
+    public function ficha(FitxatgeService $fitxatgeService)
     {
-        Falta_profesor::fichar();
+        $fitxatgeService->fitxar(); // usa l’usuari autenticat per defecte
+
         if (!estaDentro()) {
             return redirect('/logout');
         }
+
         return back();
     }
     
@@ -34,30 +37,38 @@ class FicharController extends IntranetController
     }
 
 
-    public function store(Request $request)
+
+    public function store(Request $request )
     {
+        $fitxatgeService = app( FitxatgeService::class);
+
         $profesor = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2')
             ->where('codigo', '=', $request->codigo)
             ->first();
-        if (isset($profesor->dni)) {
-            $fichaje = Falta_profesor::fichar($profesor->dni);
-            if ($fichaje == null) {
-                Alert::danger(trans('messages.generic.acaba'));
-                return back();
-            }
-            if (!$fichaje) {
-                Alert::danger(trans('messages.generic.fueraCentro'));
-                return back();
-            }
-            if ($fichaje->salida != null) {
-                Alert::info(trans('messages.generic.sale') . ' ' . $profesor->FullName . ' a ' . $fichaje->salida);
-                return back();
-            }
-            Alert::success(trans('messages.generic.entra') . ' ' . $profesor->FullName . ' a ' . $fichaje->entrada);
+
+        if (!$profesor) {
+            Alert::danger(trans('messages.generic.nocodigo'));
             return back();
         }
 
-        Alert::danger(trans('messages.generic.nocodigo'));
+        $fichaje = $fitxatgeService->fitxar($profesor->dni);
+
+        if ($fichaje === null) {
+            Alert::danger(trans('messages.generic.acaba')); // Ja ha fitxat fa menys de 10 min
+            return back();
+        }
+
+        if ($fichaje === false) {
+            Alert::danger(trans('messages.generic.fueraCentro')); // IP no vàlida
+            return back();
+        }
+
+        if ($fichaje->salida !== null) {
+            Alert::info(trans('messages.generic.sale') . ' ' . $profesor->FullName . ' a ' . $fichaje->salida);
+        } else {
+            Alert::success(trans('messages.generic.entra') . ' ' . $profesor->FullName . ' a ' . $fichaje->entrada);
+        }
+
         return back();
     }
 

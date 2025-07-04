@@ -39,30 +39,25 @@ class   ReservaController extends ApiBaseController
                     $action = $closed?'unsecure':'secure';
                     if ($this->action($action, $espacio)) {
                         return $this->sendResponse('Modificat estat Porta');
-                    } else {
-                        return $this->sendError("No s'ha pogut modificar la porta");
                     }
-                } else {
-                    return $this->sendError('Eixe espai no te obertura', 401);
+                    return $this->sendError("No s'ha pogut modificar la porta");
                 }
-            } else {
-                $reserva = Reserva::where('idProfesor', $datosProfesor->dni)
-                    ->where('dia', Hoy())
-                    ->first();
-                if ($reserva && $espacio=Espacio::find($reserva->idEspacio)) {
-                    if ($espacio->dispositivo) {
-                        if ($this->action('secure', $espacio)) {
-                            return $this->sendResponse('Porta Tancada');
-                        } else {
-                            return $this->sendError("No s'ha pogut tancar la porta");
-                        }
-                    } else {
-                        return $this->sendError('Eixe espai no te obertura', 401);
-                    }
-                } else {
-                    return $this->sendError('No tens cap reserva per ara', 401);
-                }
+                return $this->sendError('Eixe espai no te obertura', 401);
             }
+
+            $reserva = Reserva::where('idProfesor', $datosProfesor->dni)
+                ->where('dia', Hoy())
+                ->first();
+            if ($reserva && $espacio=Espacio::find($reserva->idEspacio)) {
+                if ($espacio->dispositivo) {
+                    if ($this->action('secure', $espacio)) {
+                        return $this->sendResponse('Porta Tancada');
+                    }
+                    return $this->sendError("No s'ha pogut tancar la porta");
+                }
+                return $this->sendError('Eixe espai no te obertura', 401);
+            }
+            return $this->sendError('No tens cap reserva per ara', 401);
         }
         return $this->sendError('Persona no identificada', 401);
     }

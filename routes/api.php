@@ -20,6 +20,8 @@ Route::get('/convenio', 'EmpresaController@indexConvenio');
 Route::get('miIp', 'IPController@miIP');
 Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 Route::get('server-time', 'GuardiaController@getServerTime' );
+Route::post('eventPorta', 'CotxeController@eventEntrada');
+Route::post('eventPortaSortida', 'CotxeController@eventSortida');
 
 
 
