@@ -24,7 +24,10 @@ class CotxeController extends ApiResourceController
         if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
 
         $cotxe = Cotxe::where('matricula', $matricula)->first();
-        if (!$cotxe) return response()->json(['status' => 'No autoritzat']);
+        if (!$cotxe){
+            $accessService->registrarAcces($matricula, false, false, $device,'entrada');
+            return response()->json(['status' => 'No autoritzat']);
+        }
 
         $accessService->obrirIPorta();
         $accessService->registrarAcces($matricula, true, true, $device,'entrada');
