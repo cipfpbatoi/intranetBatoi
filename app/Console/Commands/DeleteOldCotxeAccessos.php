@@ -1,7 +1,7 @@
 <?php
 // app/Console/Commands/DeleteOldCotxeAccessos.php
 
-namespace App\Console\Commands;
+namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
 use Intranet\Entities\CotxeAcces;

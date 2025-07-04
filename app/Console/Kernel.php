@@ -4,6 +4,7 @@ namespace Intranet\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Intranet\Console\Commands\DeleteOldCotxeAccessos;
 use Intranet\Console\Commands\SaoAnnexes;
 use Intranet\Console\Commands\SaoConnect;
 use Intranet\Console\Commands\SendDailyEmails;
@@ -26,7 +27,8 @@ class Kernel extends ConsoleKernel
         SendFctEmails::class,
         UploadAnexes::class,
         SaoConnect::class,
-        SaoAnnexes::class
+        SaoAnnexes::class,
+        DeleteOldCotxeAccessos::class
     ];
 
     /**
