@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('cotxe_accessos', function (Blueprint $table) {
             $table->id();
             $table->string('matricula');
-            $table->timestamp('data')->useCurrent();
             $table->boolean('autoritzat')->default(false);
             $table->boolean('porta_oberta')->default(false);
             $table->string('device')->nullable();

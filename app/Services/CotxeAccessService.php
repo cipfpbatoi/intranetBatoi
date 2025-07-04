@@ -17,7 +17,7 @@ class CotxeAccessService
     {
         $últims = CotxeAcces::where('matricula', $matricula)
             ->where('autoritzat', true)
-            ->orderByDesc('data')
+            ->orderByDesc('created_at')
             ->take(2)
             ->get();
 
@@ -34,7 +34,7 @@ class CotxeAccessService
     {
         $últim = CotxeAcces::where('matricula', $matricula)
             ->where('autoritzat', true)
-            ->orderByDesc('data')
+            ->orderByDesc('created_at')
             ->first();
 
         if (!$últim) return null;
@@ -49,7 +49,6 @@ class CotxeAccessService
     {
         CotxeAcces::create([
             'matricula' => $matricula,
-            'data' => now(),
             'autoritzat' => $autoritzat,
             'porta_oberta' => $porta_oberta,
             'device' => $device,
