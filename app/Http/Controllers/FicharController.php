@@ -38,8 +38,10 @@ class FicharController extends IntranetController
 
 
 
-    public function store(Request $request, FitxatgeService $fitxatgeService)
+    public function store(Request $request )
     {
+        $fitxatgeService = app( FitxatgeService::class);
+
         $profesor = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2')
             ->where('codigo', '=', $request->codigo)
             ->first();
