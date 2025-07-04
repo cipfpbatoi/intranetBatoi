@@ -16,11 +16,12 @@ class PerfilService
 {
     public function carregarDadesProfessor(string $dni): array
     {
-        $horari = Cache::remember("horario$dni", now()->addDay(), fn () =>
+
+        $horario = Cache::remember("horario$dni", now()->addDay(), fn () =>
         Horario::HorarioSemanal($dni)
         );
 
-        $activitats = Cache::remember('actividades', now()->addHour(), fn () =>
+        $actividades = Cache::remember('actividades', now()->addHour(), fn () =>
         Actividad::next()
             ->with(['profesores', 'grupos', 'Tutor'])
             ->auth()
@@ -29,37 +30,38 @@ class PerfilService
             ->get()
         );
 
-        $tasques = Task::misTareas()->orderBy('vencimiento')->get();
+        $tasks = Task::misTareas()->orderBy('vencimiento')->get();
 
-        $reunions = Reunion::with('profesores')->next()->orderBy('fecha')->get();
+        $reuniones = Reunion::with('profesores')->next()->orderBy('fecha')->get();
 
         $faltas = Falta::select('idProfesor', 'dia_completo', 'hora_ini', 'hora_fin')
             ->with('profesor')
             ->Dia(Hoy())
             ->get();
 
-        $activitatsHui = Actividad::Dia(Hoy())
+        $hoyActividades = Actividad::Dia(Hoy())
             ->where('estado', '>', 1)
             ->where('fueraCentro', '=', 1)
             ->get();
 
-        $comissions = Cache::remember('comisionesHui', now()->addHours(6), fn () =>
+        $comisiones = Cache::remember('comisionesHui', now()->addHours(6), fn () =>
         Comision::with('profesor')->Dia(Hoy())->get()
         );
 
-        return compact('horari', 'activitats', 'tasques', 'reunions', 'faltas', 'activitatsHui', 'comissions');
+        return compact('horario', 'actividades', 'tasks', 'reuniones', 'faltas', 'hoyActividades', 'comisiones');
     }
 
     public function carregarDadesAlumne(string $nia): array
     {
         $grupo = AlumnoGrupo::where('idAlumno', $nia)->first()?->idGrupo;
-        $horari = $grupo ? Horario::HorarioGrupo($grupo) : [];
+        $horario = $grupo ? Horario::HorarioGrupo($grupo) : [];
 
-        $activitats = Actividad::next()->auth()->take(10)->get();
+        $actividades = Actividad::next()->auth()->take(10)->get();
+        $activities = [];
         $documents = Documento::where('curso', '=', Curso())
             ->where('tipoDocumento', '=', 'Alumno')
             ->get();
 
-        return compact('grupo', 'horari', 'activitats', 'documents');
+        return compact( 'grupo', 'horario', 'actividades','activities' ,'documents');
     }
 }
