@@ -6,21 +6,29 @@ use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Profesor;
 use Illuminate\Http\Request;
+use Intranet\Services\FitxatgeService;
 
 class FicharController extends ApiBaseController
 {
 
     protected $model = 'Falta_profesor';
 
-    public function fichar(Request $datosProfesor)
+
+    public function fichar(Request $request, FitxatgeService $fitxatgeService)
     {
-        $profesor = Profesor::find($datosProfesor->dni);
-        if ($datosProfesor->api_token === $profesor->api_token) {
-            $ultimo = Falta_profesor::fichar($profesor->dni);
-            return response()->view('ficha', compact('ultimo'), 200)->header('Content-type', 'text/html');
+        $profesor = Profesor::find($request->dni);
+
+        if (!$profesor || $request->api_token !== $profesor->api_token) {
+            return $this->sendResponse(['updated' => false], 'Profesor no identificat');
         }
-        return $this->sendResponse(['updated' => false], 'Profesor no identificado');
+
+        $últim = $fitxatgeService->fitxar($profesor->dni);
+
+        return response()
+            ->view('ficha', compact('últim'), 200)
+            ->header('Content-Type', 'text/html');
     }
+
 
 
 

@@ -7,8 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Intranet\Services\CotxeAccessService;
 use Illuminate\Http\Request;
 use Intranet\Entities\Cotxe;
-
-
+use Intranet\Services\FitxatgeService;
 
 
 class CotxeController extends ApiResourceController
@@ -17,7 +16,7 @@ class CotxeController extends ApiResourceController
     protected $model = 'Cotxe';
 
 
-    public function eventEntrada(Request $request, CotxeAccessService $accessService)
+    public function eventEntrada(Request $request, CotxeAccessService $accessService, FitxatgeService $fitxatgeService)
     {
         $data = json_decode($request->getContent(), true);
         $matricula = strtoupper($data['plate'] ?? '');
@@ -35,15 +34,21 @@ class CotxeController extends ApiResourceController
         $accessService->obrirIPorta();
         $accessService->registrarAcces($matricula, true, true, $device,'entrada');
 
+        if ($cotxe->professor) {
+            $fitxatgeService->fitxar($cotxe->professor->dni);
+        }
+
+
         return response()->json(['status' => 'Porta oberta (entrada)']);
     }
 
 
-    public function eventSortida(Request $request, CotxeAccessService $accessService)
+    public function eventSortida(Request $request, CotxeAccessService $accessService, FitxatgeService $fitxatgeService)
     {
         $data = json_decode($request->getContent(), true);
         $matricula = strtoupper($data['license_plate'] ?? '');
         $device = $data['device_name'] ?? 'Cam_interior';
+        $cotxe = Cotxe::where('matricula', $matricula)->first();
 
         if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
 
@@ -57,6 +62,11 @@ class CotxeController extends ApiResourceController
 
         $accessService->obrirIPorta();
         $accessService->registrarAcces($matricula, true, true, $device, 'sortida');
+
+        if ($cotxe->professor) {
+            $fitxatgeService->fitxar($cotxe->professor->dni);
+        }
+
 
         return response()->json(['status' => 'Porta oberta (sortida)']);
     }
