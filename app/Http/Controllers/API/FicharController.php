@@ -22,10 +22,10 @@ class FicharController extends ApiBaseController
             return $this->sendResponse(['updated' => false], 'Profesor no identificat');
         }
 
-        $últim = $fitxatgeService->fitxar($profesor->dni);
+        $ultimo = $fitxatgeService->fitxar($profesor->dni);
 
         return response()
-            ->view('ficha', compact('últim'), 200)
+            ->view('ficha', compact('ultimo'), 200)
             ->header('Content-Type', 'text/html');
     }
 
