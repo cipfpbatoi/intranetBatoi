@@ -7,4 +7,4 @@
     @if (isset($datosInforme['ciclo']->rd2)) i {{$datosInforme['ciclo']->rd2}} @endif
 </p>
 <h3 style="text-align: center">ACREDITE:</h3>
-<br/>
+
