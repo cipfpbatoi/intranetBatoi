@@ -66,7 +66,7 @@ class CotxeAccessService
         Http::withBasicAuth($user, $pass)
             ->get("$url/api/callAction?deviceID=$id&name=turnOn");
 
-        sleep(2);
+        sleep(0.5);
 
         Http::withBasicAuth($user, $pass)
             ->get("$url/api/callAction?deviceID=$id&name=turnOff");
