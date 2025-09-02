@@ -562,7 +562,6 @@ Route::resource('cotxe' , 'CotxeController',['except'=>['update','destroy','show
 Route::get('/cotxe/{id}/delete', ['as' => 'cotxe.delete', 'uses' => 'CotxeController@destroy']);
 Route::put('/cotxe/{id}/edit', ['as' => 'cotxe.update', 'uses' => 'CotxeController@update']);
 
-
 Route::resource('tipoactividad','TipoActividadController',['except'=>['update','destroy','show']]);
 Route::put('/tipoactividad/{id}/edit', ['as' => 'tipoactividad.update', 'uses' => 'TipoActividadController@update']);
 Route::get('/tipoactividad/{id}/delete', ['as' => 'tipoactividad.delete', 'uses' => 'TipoActividadController@destroy']);

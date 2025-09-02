@@ -331,7 +331,8 @@ return array(
         'Projectes' => 'Mòdul Projecte',
         'Certificat' => 'Cita prèvia Certificat Digital',
         'Calendari' => 'Calendari Escolar',
-        'Cotxe' => 'Vehicles'
+        'Cotxe' => 'Vehicles',
+        'Tipoactividad' => 'Tipus Act. Extraescolar'
     ),
     'situations' => array(
         '0' => 'No comunicat/ada',
