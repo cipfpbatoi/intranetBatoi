@@ -21,7 +21,7 @@ Route::get('miIp', 'IPController@miIP');
 Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 Route::get('server-time', 'GuardiaController@getServerTime' );
 Route::post('eventPortaSortida', 'CotxeController@eventSortida');
-
+Route::post('eventPorta', 'CotxeController@eventEntrada');
 
 
 Route::group(['middleware' => 'auth:api'], function () {
