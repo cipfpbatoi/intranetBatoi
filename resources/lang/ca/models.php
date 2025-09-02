@@ -554,8 +554,10 @@ return array(
             'index' => 'Manteniment de Vehicles',
             'create' => 'Crear Vehicle',
         ),
-        'TipoActividad' => array(
+        'Tipoactividad' => array(
             'index' => 'Gestionar Tipus Activitat Extraescolar',
+        ),
+        'TipoActividad' => array(
             'create' => 'Crear Tipus Activitat Extraescolar',
         ),
         'modelos' => array(
