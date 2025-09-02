@@ -46,6 +46,7 @@ class CotxeController extends ApiResourceController
     public function eventSortida(Request $request, CotxeAccessService $accessService, FitxatgeService $fitxatgeService)
     {
         $data = json_decode($request->getContent(), true);
+        Log::info("Matricula detectada: $data"  );
         $matricula = strtoupper($data['license_plate'] ?? '');
         $device = $data['device_name'] ?? 'Cam_interior';
         $cotxe = Cotxe::where('matricula', $matricula)->first();
