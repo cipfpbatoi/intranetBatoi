@@ -45,9 +45,10 @@ class CotxeController extends ApiResourceController
 
     public function eventSortida(Request $request, CotxeAccessService $accessService, FitxatgeService $fitxatgeService)
     {
-        $data = json_decode($request->getContent(), true);
+        //$data = json_decode($request->getContent(), true);
         Log::info("Matricula detectada dins: "  );
         Log::info( print_r($request->toArray() ) );
+        /*
         $matricula = strtoupper($data['license_plate'] ?? '');
         $device = $data['device_name'] ?? 'Cam_interior';
         $cotxe = Cotxe::where('matricula', $matricula)->first();
@@ -68,6 +69,7 @@ class CotxeController extends ApiResourceController
         if ($cotxe->professor) {
             $fitxatgeService->fitxar($cotxe->professor->dni);
         }
+        */
 
 
         return response()->json(['status' => 'Porta oberta (sortida)']);
