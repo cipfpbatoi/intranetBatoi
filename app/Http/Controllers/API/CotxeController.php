@@ -48,6 +48,7 @@ class CotxeController extends ApiResourceController
         //$data = json_decode($request->getContent(), true);
         Log::info("Matricula detectada dins: "  );
         Log::info( print_r($request->toArray() ) );
+        $accessService->obrirIPorta();
         /*
         $matricula = strtoupper($data['license_plate'] ?? '');
         $device = $data['device_name'] ?? 'Cam_interior';
