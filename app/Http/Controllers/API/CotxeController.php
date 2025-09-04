@@ -52,22 +52,19 @@ class CotxeController extends ApiResourceController
 
         if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
 
-        if (!$accessService->estaDins($matricula)) {
-            return response()->json(['status' => 'El cotxe no consta com a dins']);
-        }
-
         if ($accessService->segonsDesdeUltimAcces($matricula) < 60) {
             return response()->json(['status' => 'Accés massa recent']);
         }
 
-        $accessService->obrirIPorta();
-        $accessService->registrarAcces($matricula, true, true, $device, 'sortida');
-
         $cotxe = Cotxe::where('matricula', $matricula)->first();
         if ($cotxe->professor) {
             $fitxatgeService->fitxar($cotxe->professor->dni);
+        } elseif (!Cotxe::plateHamming1($matricula)->exists()) {
+            return response()->json(['status' => 'El cotxe no consta com a dins']);
         }
 
+        $accessService->obrirIPorta();
+        $accessService->registrarAcces($matricula, true, true, $device, 'sortida');
 
 
         return response()->json(['status' => 'Porta oberta (sortida)']);

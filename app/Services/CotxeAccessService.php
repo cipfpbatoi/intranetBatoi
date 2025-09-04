@@ -4,28 +4,14 @@ namespace Intranet\Services;
 
 
 
+use Intranet\Entities\Cotxe;
 use Intranet\Entities\CotxeAcces;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class CotxeAccessService
 {
-    /**
-     * Determina si un cotxe està dins del pàrquing
-     */
-    public function estaDins(string $matricula): bool
-    {
-        $últims = CotxeAcces::where('matricula', $matricula)
-            ->where('autoritzat', true)
-            ->orderByDesc('created_at')
-            ->take(2)
-            ->get();
 
-        if ($últims->isEmpty()) return false;
-
-        // Si l'últim accés és entrada (porta oberta) i no hi ha una sortida posterior
-        return $últims->first()->porta_oberta;
-    }
 
     /**
      * Retorna els segons que han passat des del darrer accés
