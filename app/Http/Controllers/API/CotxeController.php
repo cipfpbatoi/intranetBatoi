@@ -45,32 +45,10 @@ class CotxeController extends ApiResourceController
 
     public function eventSortida(Request $request, CotxeAccessService $accessService, FitxatgeService $fitxatgeService)
     {
-        //$data = json_decode($request->getContent(), true);
-        $payload = [
-            'method'   => $request->method(),
-            'url'      => $request->fullUrl(),
-            'headers'  => $request->headers->all(),
-            'ctype'    => $request->header('Content-Type'),
-            'query'    => $request->query(),      // si la càmera posa paràmetres a la URL
-            'post'     => $_POST,                 // quan envien x-www-form-urlencoded “estrany”
-            'files'    => array_map(fn($f)=>[$f->getClientOriginalName(), $f->getSize()], iterator_to_array($request->files)),
-            'laravel'  => $request->all(),        // el que Laravel aconsegueix parsejar
-            'raw'      => $request->getContent(), // el cos literal (pot ser "1")
-        ];
-
-        Log::info('MILESIGHT HOOK', $payload);
-
-        // Si ve una imatge snapshot
-        if ($request->hasFile('snapshot')) {
-            $path = $request->file('snapshot')->store('milesight', 'public');
-            Log::info('Snapshot guardat', ['path' => $path]);
-        }
-        $accessService->obrirIPorta();
-
-        /*
+        $data = json_decode($request->getContent(), true);
         $matricula = strtoupper($data['license_plate'] ?? '');
-        $device = $data['device_name'] ?? 'Cam_interior';
-        $cotxe = Cotxe::where('matricula', $matricula)->first();
+        $device = $data['device_name'] ?? 'Cam_exterior';
+        Log::info("Matricula detectada: $matricula, Dispositiu: $device");
 
         if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
 
@@ -85,10 +63,11 @@ class CotxeController extends ApiResourceController
         $accessService->obrirIPorta();
         $accessService->registrarAcces($matricula, true, true, $device, 'sortida');
 
+        $cotxe = Cotxe::where('matricula', $matricula)->first();
         if ($cotxe->professor) {
             $fitxatgeService->fitxar($cotxe->professor->dni);
         }
-        */
+
 
 
         return response()->json(['status' => 'Porta oberta (sortida)']);
