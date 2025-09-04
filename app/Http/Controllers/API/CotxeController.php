@@ -48,23 +48,24 @@ class CotxeController extends ApiResourceController
         $data = json_decode($request->getContent(), true);
         $matricula = strtoupper($data['license_plate'] ?? '');
         $device = $data['device_name'] ?? 'Cam_exterior';
-        Log::info("Matricula detectada: $matricula, Dispositiu: $device");
 
-        //if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
-        /*
+        if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
+
         if ($accessService->segonsDesdeUltimAcces($matricula) < 60) {
             return response()->json(['status' => 'Accés massa recent']);
         }
-        */
+        Log::info("Matricula detectada: $matricula, Dispositiu: $device");
+
+
 
         $cotxe = Cotxe::where('matricula', $matricula)->first();
         if ($cotxe->professor) {
             $accessService->obrirIPorta();
-            $accessService->registrarAcces($matricula, true, true, $device, 'sortida');
+            $accessService->registrarAcces($matricula, true, true, $device, 'eixida');
             $fitxatgeService->fitxar($cotxe->professor->dni);
         } elseif (Cotxe::plateHamming1($matricula)->exists()) {
             $accessService->obrirIPorta();
-            $accessService->registrarAcces($matricula, true, true, $device, 'sortida');
+            $accessService->registrarAcces($matricula, false, true, $device, 'eixida');
         }
 
 
