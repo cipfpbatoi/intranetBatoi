@@ -1,76 +1,112 @@
 <?php
 
+
 namespace Intranet\Http\Controllers\API;
 
-
-use Illuminate\Support\Facades\Log;
-use Intranet\Services\CotxeAccessService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\Cotxe;
+use Intranet\Services\CotxeAccessService;
 use Intranet\Services\FitxatgeService;
 
+enum Direccio: string { case Entrada = 'entrada'; case Eixida = 'eixida'; }
 
 class CotxeController extends ApiResourceController
 {
+    protected  $model = 'Cotxe';
 
-    protected $model = 'Cotxe';
+    public function __construct(
+        private CotxeAccessService $access,
+        private FitxatgeService    $fitxatge,
+    ) {}
 
-
-    public function eventEntrada(Request $request, CotxeAccessService $accessService, FitxatgeService $fitxatgeService)
+    public function eventEntrada(Request $request)
     {
-        $data = json_decode($request->getContent(), true);
-        $matricula = strtoupper($data['plate'] ?? '');
-        $device = $data['device'] ?? 'Cam_exterior';
-        Log::info("Matricula detectada: $matricula, Dispositiu: $device");
-
-        if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
-
-        $cotxe = Cotxe::where('matricula', $matricula)->first();
-        if (!$cotxe){
-            $accessService->registrarAcces($matricula, false, false, $device,'entrada');
-            return response()->json(['status' => 'No autoritzat']);
-        }
-
-        $accessService->obrirIPorta();
-        $accessService->registrarAcces($matricula, true, true, $device,'entrada');
-
-        if ($cotxe->professor) {
-            $fitxatgeService->fitxar($cotxe->professor->dni);
-        }
-
-
-        return response()->json(['status' => 'Porta oberta (entrada)']);
+        return $this->handleEvent($request, Direccio::Entrada);
     }
 
-
-    public function eventSortida(Request $request, CotxeAccessService $accessService, FitxatgeService $fitxatgeService)
+    public function eventSortida(Request $request)
     {
-        $data = json_decode($request->getContent(), true);
-        $matricula = strtoupper($data['license_plate'] ?? '');
-        $device = $data['device_name'] ?? 'Cam_exterior';
+        return $this->handleEvent($request, Direccio::Eixida);
+    }
 
-        if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
+    private function handleEvent(Request $request, Direccio $direccio)
+    {
+        [$matricula, $device] = $this->normalizePayload($request, $direccio);
 
-         if ($accessService->segonsDesdeUltimAcces($matricula) < 60) {
+        if (!$matricula) {
+            return response()->json(['error' => 'Sense matrícula'], 422);
+        }
+
+        if ($this->access->recentAccessWithin($matricula, 60)) {
             return response()->json(['status' => 'Accés massa recent']);
         }
-        Log::info("Matricula detectada: $matricula, Dispositiu: $device");
 
-
+        Log::info("Accés {$direccio->value} | Matricula: {$matricula} | Dispositiu: {$device}");
 
         $cotxe = Cotxe::where('matricula', $matricula)->first();
-        if ($cotxe->professor) {
-            $accessService->obrirIPorta();
-            $accessService->registrarAcces($matricula, true, true, $device, 'eixida');
-            $fitxatgeService->fitxar($cotxe->professor->dni);
-        } elseif (Cotxe::plateHamming1($matricula)->exists()) {
-            $accessService->obrirIPorta();
-            $accessService->registrarAcces($matricula, false, true, $device, 'eixida');
+
+        // Regles d’obertura
+        $autoritzat = false;
+        $obrir      = false;
+
+        if ($cotxe ) {
+            $autoritzat = true;
+            $obrir = true;
+        } elseif ($direccio === Direccio::Eixida && Cotxe::plateHamming1($matricula)->exists()) {
+            // Permet eixida amb coincidència Hamming-1 encara que no estiga autoritzat
+            $autoritzat = false;
+            $obrir = true;
         }
 
+        if ($obrir) {
+            $this->access->obrirIPorta();
+        }
 
+        $this->access->registrarAcces(
+            matricula:    $matricula,
+            autoritzat:   $autoritzat,
+            porta_oberta: $obrir,
+            device:       $device,
+            tipus:        $direccio->value
+        );
 
-        return response()->json(['status' => 'Porta oberta (sortida)']);
+        // Fitxatge si hi ha professor vinculat
+        if ($cotxe?->professor) {
+            $this->fitxatge->fitxar($cotxe->professor->dni);
+        }
+
+        $msg = $obrir
+            ? "Porta oberta ({$direccio->value})"
+            : ($cotxe ? 'No autoritzat' : 'No autoritzat');
+
+        return response()->json(['status' => $msg]);
     }
 
+    /**
+     * Accepta payloads heterogenis (Milesight, etc.)
+     * - Entrada:   plate / device
+     * - Eixida:    license_plate / device_name
+     */
+    private function normalizePayload(Request $request, Direccio $direccio): array
+    {
+        $data = json_decode($request->getContent() ?: '{}', true) ?: [];
+
+        // Clau matrícula possibles
+        $rawPlate = $data['plate']           ??  // alguns hooks d’entrada
+            $data['license_plate']   ??  // eixida Milesight
+            $data['licensePlate']    ??  // variant camelCase
+            $data['matricula']       ??  // peticions internes
+            '';
+
+        // Clau device possibles
+        $rawDevice = $data['device']         ??  // alguns hooks
+            $data['device_name']    ??  // Milesight
+            null;
+
+        $matricula = strtoupper(trim($rawPlate));
+        $device    = $rawDevice ?: ($direccio === Direccio::Entrada ? 'Cam_exterior' : 'Cam_interior');
+
+        return [$matricula, $device];
+    }
 }

@@ -16,16 +16,16 @@ class CotxeAccessService
     /**
      * Retorna els segons que han passat des del darrer accés
      */
-    public function segonsDesdeUltimAcces(string $matricula): ?int
+    public function recentAccessWithin(string $matricula, int $seconds): bool
     {
-        $últim = CotxeAcces::where('matricula', $matricula)
+        $ultim = CotxeAcces::where('matricula', $matricula)
             ->where('autoritzat', true)
-            ->orderByDesc('created_at')
+            ->latest('created_at')
             ->first();
 
-        if (!$últim) return null;
+        if (!$ultim) return false;
 
-        return Carbon::parse($últim->created_at)->diffInSeconds(now());
+        return Carbon::parse($ultim->created_at)->diffInSeconds(now()) < $seconds;
     }
 
     /**
