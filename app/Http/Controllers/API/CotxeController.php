@@ -51,9 +51,9 @@ class CotxeController extends ApiResourceController
 
         if (!$matricula) return response()->json(['error' => 'Sense matrícula']);
 
-        /*if ($accessService->segonsDesdeUltimAcces($matricula) < 60) {
+         if ($accessService->segonsDesdeUltimAcces($matricula) < 60) {
             return response()->json(['status' => 'Accés massa recent']);
-        }*/
+        }
         Log::info("Matricula detectada: $matricula, Dispositiu: $device");
 
 

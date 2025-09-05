@@ -25,7 +25,7 @@ class CotxeAccessService
 
         if (!$últim) return null;
 
-        return Carbon::parse($últim->data)->diffInSeconds(now());
+        return Carbon::parse($últim->created_at)->diffInSeconds(now());
     }
 
     /**
