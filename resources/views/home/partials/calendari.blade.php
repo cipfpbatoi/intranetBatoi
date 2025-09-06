@@ -13,7 +13,7 @@
 
         @foreach($mesos as $mes => $nomMes)
             @php
-                $any = ($mes >= 9) ? $anyAnterior : $anyActual;
+                $any = ($mes >= 9) ? $anyActual : $anyAnterior;
                 $primerDiaSetmana = \Carbon\Carbon::create($any, $mes, 1)->dayOfWeekIso;
                 $diesMes = \Carbon\Carbon::create($any, $mes, 1)->daysInMonth;
                 $colspan = $primerDiaSetmana - 1;
