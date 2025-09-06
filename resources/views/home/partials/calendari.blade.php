@@ -2,7 +2,7 @@
     <h2 class="text-center fw-bold mb-4"> {{ curso() }}</h2>
     <div class="row g-3">
         @php
-            $anyActual = now()->month > 9 ? now()->year + 1: now()->year;
+            $anyActual = now()->month >= 9 ? now()->year + 1: now()->year;
             $anyAnterior = $anyActual - 1;
             $mesos = [
                 9 => 'Setembre', 10 => 'Octubre', 11 => 'Novembre', 12 => 'Desembre',
