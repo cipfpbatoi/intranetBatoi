@@ -42,7 +42,7 @@ class GrupoController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo','XDual','Torn'];
+    protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo'  ,'Torn'];
     protected $parametresVista = ['modal' => [  'selAlumGrup']];
 
 
