@@ -11,6 +11,9 @@
   |
  */
 //Login
+use Illuminate\Http\Request;
+use Intranet\Entities\Profesor;
+
 Route::get('/login', ['as' => 'login', 'uses' => 'Auth\LoginController@login']);
 Route::get('/', ['as' => 'home', 'uses' => 'Auth\LoginController@login']);
 Route::get('/profesor/login', ['as' => 'profesor.login', 'uses' => 'Auth\Profesor\LoginController@showLoginForm']);
@@ -19,10 +22,8 @@ Route::post('/profesor/login', ['as' => 'profesor.postlogin', 'uses' => 'Auth\Pr
 Route::post('/alumno/login', ['as' => 'alumno.postlogin', 'uses' => 'Auth\Alumno\LoginController@plogin']);
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
-Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
-Route::get('password/reset/{token}', ['as' => 'password.reset','uses' =>'Auth\ResetPasswordController@showResetForm']);
-Route::post('password/reset', function (Request $request) {
-    $user = User::where('email', $request->input('email'))->first();
+Route::post('password/email', function (Request $request) {
+    $user =  Profesor::where('email', $request->input('email'))->first();
 
     if ($user && $user->profesor) {
         $user->profesor->update(['changePassword' => null]);
@@ -30,6 +31,8 @@ Route::post('password/reset', function (Request $request) {
 
     return redirect('/profesor/login');
 });
+Route::get('password/reset/{token}', ['as' => 'password.reset','uses' =>'Auth\ResetPasswordController@showResetForm']);
+Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 Route::post(
     '/profesor/firstLogin',
     ['as' => 'profesor.firstLogin', 'uses' => 'Auth\Profesor\LoginController@firstLogin']
