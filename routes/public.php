@@ -25,8 +25,9 @@ Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm'
 Route::post('password/email', function (Request $request) {
     $profesor =  Profesor::where('email', $request->input('email'))->first();
 
-    if ($profesor ) {
-        $profesor->update(['changePassword' => null]);
+    if ($profesor) {
+        $profesor->changePassword =  null;
+        $profesor->save() ;
     }
 
     return redirect('/profesor/login');
