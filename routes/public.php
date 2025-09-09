@@ -18,9 +18,18 @@ Route::get('/alumno/login', ['as' => 'alumno.login', 'uses' => 'Auth\Alumno\Logi
 Route::post('/profesor/login', ['as' => 'profesor.postlogin', 'uses' => 'Auth\Profesor\LoginController@plogin']);
 Route::post('/alumno/login', ['as' => 'alumno.postlogin', 'uses' => 'Auth\Alumno\LoginController@plogin']);
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
+Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
 Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
 Route::get('password/reset/{token}', ['as' => 'password.reset','uses' =>'Auth\ResetPasswordController@showResetForm']);
-Route::post('password/reset', 'Auth\ResetPasswordController@reset');
+Route::post('password/reset', function (Request $request) {
+    $user = User::where('email', $request->input('email'))->first();
+
+    if ($user && $user->profesor) {
+        $user->profesor->update(['changePassword' => null]);
+    }
+
+    return redirect('/profesor/login');
+});
 Route::post(
     '/profesor/firstLogin',
     ['as' => 'profesor.firstLogin', 'uses' => 'Auth\Profesor\LoginController@firstLogin']
