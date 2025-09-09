@@ -23,10 +23,10 @@ Route::post('/alumno/login', ['as' => 'alumno.postlogin', 'uses' => 'Auth\Alumno
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
 Route::post('password/email', function (Request $request) {
-    $user =  Profesor::where('email', $request->input('email'))->first();
+    $profesor =  Profesor::where('email', $request->input('email'))->first();
 
-    if ($user && $user->profesor) {
-        $user->profesor->update(['changePassword' => null]);
+    if ($profesor ) {
+        $profesor->update(['changePassword' => null]);
     }
 
     return redirect('/profesor/login');
