@@ -38,7 +38,7 @@ class CotxeController extends ApiResourceController
             return response()->json(['error' => 'Sense matrícula'], 422);
         }
 
-        if ($this->access->recentAccessWithin($matricula, 60)) {
+        if ($this->access->recentAccessWithin($matricula, 30)) {
             return response()->json(['status' => 'Accés massa recent']);
         }
 
