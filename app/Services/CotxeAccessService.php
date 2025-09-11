@@ -4,6 +4,7 @@ namespace Intranet\Services;
 
 
 
+use Illuminate\Support\Facades\Log;
 use Intranet\Entities\Cotxe;
 use Intranet\Entities\CotxeAcces;
 use Carbon\Carbon;
@@ -49,8 +50,13 @@ class CotxeAccessService
         $user = config('parking.porta_user');
         $pass = config('parking.porta_pass');
 
-        Http::withBasicAuth($user, $pass)
+        $response = Http::withBasicAuth($user, $pass)
             ->get("$url/api/callAction?deviceID=$id&name=turnOn");
+        try {
+            Log::info(print_r($response));
+        } catch (\Exception $e) {
+
+        }
 
         sleep(0.5);
 
