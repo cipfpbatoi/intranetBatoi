@@ -695,6 +695,8 @@ function provincia($codiPostal)
     }
 }
 
+
+
 function replaceCachitos($view)
 {
     $pos1 = strpos($view, '[');
@@ -711,6 +713,8 @@ function replaceCachitos($view)
     if (preg_match('/^[A-Za-z][A-Za-z0-9_-]*$/', $codiAInterpretrar)) {
         $codi = "@include('email.fct.cachitos." . $codiAInterpretrar . "')";
         $view = str_replace('[' . $codiAInterpretrar . ']', $codi, $view);
+    } else {
+        return $view;
     }
 
     // Si no és vàlid (p. ex. [0.75em]), el deixem literal
