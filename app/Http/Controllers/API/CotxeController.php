@@ -39,6 +39,7 @@ class CotxeController extends ApiResourceController
         }
 
         if ($this->access->recentAccessWithin($matricula, 30)) {
+            Log::alert("Accés $matricula recent");
             return response()->json(['status' => 'Accés massa recent']);
         }
 
@@ -48,7 +49,7 @@ class CotxeController extends ApiResourceController
 
         // Regles d’obertura
         $autoritzat = false;
-        $obrir      = false;
+
 
         if ($cotxe ) {
             $autoritzat = true;
@@ -68,7 +69,7 @@ class CotxeController extends ApiResourceController
             autoritzat:   $autoritzat,
             porta_oberta: $obrir,
             device:       $device,
-            tipus:        $direccio->value
+            tipus:        $direccio->value,
         );
 
         // Fitxatge si hi ha professor vinculat

@@ -20,7 +20,6 @@ class CotxeAccessService
     public function recentAccessWithin(string $matricula, int $seconds): bool
     {
         $ultim = CotxeAcces::where('matricula', $matricula)
-            ->where('autoritzat', true)
             ->latest('created_at')
             ->first();
 
@@ -32,7 +31,7 @@ class CotxeAccessService
     /**
      * Registra un nou accés al pàrquing
      */
-    public function registrarAcces(string $matricula, bool $autoritzat, bool $porta_oberta, string $device = null, string $tipus = null): void
+    public function registrarAcces(string $matricula, bool $autoritzat, bool $porta_oberta, string $device = null, string $tipus = null ): void
     {
         CotxeAcces::create([
             'matricula' => $matricula,
@@ -41,6 +40,8 @@ class CotxeAccessService
             'device' => $device,
             'tipus' => $tipus
         ]);
+
+
     }
 
     public function obrirIPorta(): void
