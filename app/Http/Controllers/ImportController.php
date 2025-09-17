@@ -278,11 +278,8 @@ class ImportController extends Seeder
             if (!esRol($role, $rolTutor)) {
                 $role *= $rolTutor;
             }
-            if ($grupo->curso == 2 && !esRol($role, $rolPracticas)) {
+            if (!esRol($role, $rolPracticas)) {
                 $role *= $rolPracticas;
-            }
-            if ($grupo->curso == 1 && esRol($role, $rolPracticas)) {
-                $role /= $rolPracticas;
             }
             return $role;
         }
