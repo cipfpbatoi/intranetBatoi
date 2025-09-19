@@ -286,6 +286,7 @@ function rolesUser($rolUsuario)
             $roles[] = $rol;
         }
     }
+
     return $roles;
 }
 

@@ -20,5 +20,13 @@ class TipoActividad extends Model
         return $this->hasMany(Actividad::class , 'tipo_actividad_id');
     }
 
+    public function departament(){
+        return $this->belongsTo(Departamento::class , 'departamento_id');
+    }
+
+    public function getDepartamentoAttribute() {
+        return $this->departament->vliteral??'CENTRE';
+    }
+
 
 }

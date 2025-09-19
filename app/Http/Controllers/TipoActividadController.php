@@ -30,7 +30,7 @@ class TipoActividadController extends ModalController
 
 
 
-    protected $gridFields = [ 'id', 'vliteral','cliteral' ];
+    protected $gridFields = [ 'id','departamento' ,'vliteral'   ];
 
 
     public function store(TipoActividadRequest $request)
@@ -38,7 +38,9 @@ class TipoActividadController extends ModalController
         $new = new TipoActividad();
 
         $new->fillAll($request);
-        $new->departamento_id = authUser()->departamento;
+        if (esRol(authUser()->rol,config('roles.rol.jefe_dpto'))) {
+            $new->departamento_id = authUser()->departamento;
+        }
         $new->save();
 
         return $this->redirect();
@@ -55,9 +57,10 @@ class TipoActividadController extends ModalController
 
     public function search()
     {
-         if (esRol(authUser()->role,config('roles.rol.jefe_dpto'))) {
+        if (esRol(authUser()->rol,config('roles.rol.jefe_dpto'))) {
             return TipoActividad::where('departamento_id',authUser()->departamento)->get();
         }
+        return TipoActividad::all();
     }
 
     protected function iniBotones()
