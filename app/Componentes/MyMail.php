@@ -181,7 +181,6 @@ class MyMail
 
     private function sendMail($elemento, $fecha)
     {
-
         $contacto = $elemento->contact??$elemento->contacto??'A qui corresponga';
         if (isset($elemento)){
             $mail = $elemento->mail??$elemento->email;
