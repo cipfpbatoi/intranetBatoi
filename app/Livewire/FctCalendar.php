@@ -21,12 +21,16 @@ class FctCalendar extends Component
     public $allowNoLectiu = false;
     public $colaboracionColors = [];
     public $resumColaboracions = [];
+    public $maxHours = 400;
 
     public function mount(Alumno $alumno)
     {
         $this->alumno = $alumno;
         $this->colaboraciones = Colaboracion::MiColaboracion()
-            ->with('Centro:id,nombre')->get();
+            ->with('Centro:id,nombre')
+            ->get()
+            ->sortBy(fn($c) => mb_strtolower($c->Centro->nombre ?? ''))
+            ->values();
 
         $this->allowNoLectiu = false;
 
@@ -63,33 +67,50 @@ class FctCalendar extends Component
     {
         FctDay::where('nia', $this->alumno->nia)->delete();
 
+        $assignades = 0; // acumulador d’hores creades
+
         foreach ($this->trams as $tram) {
             if (!$tram['inici'] || !$tram['fi']) continue;
 
             $inici = Carbon::parse($tram['inici']);
-            $fi = Carbon::parse($tram['fi']);
+            $fi    = Carbon::parse($tram['fi']);
 
             for ($date = $inici->copy(); $date->lte($fi); $date->addDay()) {
+                // Si ja hem arribat al límit, ix de TOTS els bucles
+                if ($assignades >= $this->maxHours) break 2;
+
                 $dow = $date->dayOfWeekIso;
 
-                if (!$this->allowNoLectiu && !CalendariEscolar::esLectiu($date)) continue;
+                if (!$this->allowNoLectiu && CalendariEscolar::esNoLectiu($date)) continue;
                 if (CalendariEscolar::esFestiu($date) && !$this->allowFestiu) continue;
 
-                $hores = $tram['hores_setmana'][$dow] ?? 0;
-                if ($hores > 0) {
-                    FctDay::create([
-                        'nia' => $this->alumno->nia,
-                        'dia' => $date->toDateString(),
-                        'hores_previstes' => $hores,
-                        'colaboracion_id' => $tram['colaboracion_id'] ?? null,
-                    ]);
-                }
+                $horesPlan = (float)($tram['hores_setmana'][$dow] ?? 0);
+                if ($horesPlan <= 0) continue;
+
+                $restants = max($this->maxHours - $assignades, 0.0);
+                if ($restants <= 0) break 2;
+
+                // Assigna només el que queda fins al límit
+                $horesAssignar = min($horesPlan, $restants);
+
+                FctDay::create([
+                    'nia'              => $this->alumno->nia,
+                    'dia'              => $date->toDateString(),
+                    'hores_previstes'  => $horesAssignar,
+                    'colaboracion_id'  => $tram['colaboracion_id'] ?? null,
+                ]);
+
+                $assignades += $horesAssignar;
+
+                // Si el dia planificat excedia el límit, parem igualment
+                if ($horesAssignar < $horesPlan) break 2;
             }
         }
 
         $this->loadCalendar();
         $this->showConfigForm = false;
     }
+
 
     public function deleteCalendar()
     {
@@ -124,34 +145,65 @@ class FctCalendar extends Component
 
     public function loadCalendar()
     {
-        $this->monthlyCalendar = FctDay::where('nia', $this->alumno->nia)
-            ->orderBy('dia')->get()->map(function ($day) {
-                $date = Carbon::parse($day->dia);
-                return [
-                    'id' => $day->id,
-                    'dia' => $day->dia,
-                    'colaboracion_id' => $day->colaboracion_id,
-                    'hores_previstes' => $day->hores_previstes,
-                    'mes' => $date->format('F'),
-                    'dia_numero' => $date->day,
-                    'festiu' => CalendariEscolar::esFestiu($date),
-                    'lectiu' => CalendariEscolar::esLectiu($date),
-                ];
-            })->groupBy('mes')->toArray();
-        $colabIds = FctDay::where('nia', $this->alumno->nia)
-            ->whereNotNull('colaboracion_id')
-            ->distinct()
-            ->pluck('colaboracion_id')
-            ->values();
+        $allDays = FctDay::where('nia', $this->alumno->nia)
+            ->orderBy('dia')
+            ->get();
 
-        $colors = ['#fce5cd', '#d9ead3', '#c9daf8', '#f4cccc', '#d0e0e3', '#ead1dc', '#fff2cc'];
-        $this->colaboracionColors = [];
-
-        foreach ($colabIds as $i => $id) {
-            $this->colaboracionColors[$id] = $colors[$i % count($colors)];
+        if ($allDays->isEmpty()) {
+            $this->monthlyCalendar = [];
+            $this->totalHours = 0;
+            $this->colaboracionColors = [];
+            $this->resumColaboracions = [];
+            return;
         }
 
-        $this->totalHours = FctDay::where('nia', $this->alumno->nia)->sum('hores_previstes');
+        // Map dia -> FctDay existent
+        $byDate = $allDays->keyBy('dia');
+
+        // Rang complet (del 1r al darrer mes)
+        $start = Carbon::parse($allDays->min('dia'))->startOfMonth();
+        $end   = Carbon::parse($allDays->max('dia'))->endOfMonth();
+
+        $months = [];
+
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+            $dStr = $date->toDateString();
+
+            $festiu   = CalendariEscolar::esFestiu($date)|| $date->isWeekend() ;
+            $noLectiu = CalendariEscolar::esNoLectiu($date) ;
+
+            $existing = $byDate->get($dStr);
+
+            $row = [
+                'id'              => $existing->id ?? null,
+                'dia'             => $dStr,
+                'colaboracion_id' => $existing->colaboracion_id ?? null,
+                'hores_previstes' => $existing->hores_previstes ?? 0,
+                'mes'             => $date->format('F Y'),
+                'dia_numero'      => $date->day,
+                'festiu'          => $festiu,
+                'noLectiu'        => $noLectiu,
+            ];
+
+            $months[$row['mes']][] = $row;
+        }
+
+        $this->monthlyCalendar = $months;
+
+        // Colors
+        $colabIds = $allDays->whereNotNull('colaboracion_id')
+            ->pluck('colaboracion_id')
+            ->unique()
+            ->values();
+
+        $palette = ['#fce5cd', '#d9ead3', '#c9daf8', '#f4cccc', '#d0e0e3', '#ead1dc', '#fff2cc'];
+        $this->colaboracionColors = [];
+        foreach ($colabIds as $i => $id) {
+            $this->colaboracionColors[$id] = $palette[$i % count($palette)];
+        }
+
+        // Resum i totals
+        $this->totalHours = $allDays->sum('hores_previstes');
         $colaboraciones = Colaboracion::with('Centro')->get();
 
         $this->resumColaboracions = FctDay::selectRaw('colaboracion_id, SUM(hores_previstes) as total')
@@ -166,18 +218,16 @@ class FctCalendar extends Component
                         'color' => '#eeeeee'
                     ]];
                 }
-
                 $colaboracio = $colaboraciones->firstWhere('id', $id);
                 $nom = $colaboracio && $colaboracio->Centro ? $colaboracio->Centro->nombre : 'Col·laboració #' . $id;
-
                 return [$id => [
                     'nom' => $nom,
                     'hores' => $hores,
                     'color' => $this->colaboracionColors[$id] ?? '#eeeeee'
                 ]];
             })->toArray();
-
     }
+
 
     public function updateDay($id, $hours)
     {

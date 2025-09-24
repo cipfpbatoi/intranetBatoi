@@ -11,6 +11,12 @@
                 <label for="allowFestiu" class="text-sm font-bold">Pot fer pràctiques en dies festius</label>
             </div>
         @endif
+        <div class="mt-4 flex items-center gap-3">
+            <label for="maxHours" class="text-sm font-bold">Límit d’hores FCT</label>
+            <input id="maxHours" type="number" min="0" step="0.5"
+                   class="border px-2 py-1 w-24"
+                   wire:model.number="maxHours">
+         </div>
 
         <!-- Trams -->
         <div class="mt-6">
@@ -106,7 +112,7 @@
                         @php
                             $dayData = collect($days)->firstWhere('dia_numero', $day);
                             $isFestiu = $dayData['festiu'] ?? false;
-                            $isLectiu = $dayData['lectiu'] ?? false;
+                            $isNoLectiu = $dayData['noLectiu'] ?? false;
                             $color = isset($dayData['colaboracion_id']) && isset($colaboracionColors[$dayData['colaboracion_id']])
                                         ? "background-color: {$colaboracionColors[$dayData['colaboracion_id']]};"
                                         : '';
@@ -114,14 +120,15 @@
 
                         @if ($dayData)
 
-                            <td style="padding:5px; {{ $color }} {{ $isFestiu ? 'background-color:#ffcccc;' : (!$isLectiu ? 'background-color:#fff2cc;' : '') }}"
+                            <td style="padding:5px; {{ $color }} {{ $isFestiu ? 'background-color:#ffcccc;' : ( $isNoLectiu ? 'background-color:#fff2cc;' : '') }}"
                                 class="border px-1 py-1 text-center w-6" title="{{ $resumColaboracions[$dayData['colaboracion_id']]['nom'] ?? '' }}"
                             >
 
                                     <span class="cursor-pointer"
                                           onclick="this.nextElementSibling.classList.remove('hidden'); this.classList.add('hidden')">
-                                        {{ number_format($dayData['hores_previstes'], 1) }}
+                                        {{ $dayData['hores_previstes'] > 0 ? number_format($dayData['hores_previstes'], 1) : '--' }}
                                     </span>
+
                                 <input type="number" class="hidden border w-10 text-center text-xs bg-white text-black"
                                        value="{{ $dayData['hores_previstes'] }}"
                                        onchange="this.previousElementSibling.innerText = this.value;
