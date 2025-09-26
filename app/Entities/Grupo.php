@@ -90,11 +90,22 @@ class Grupo extends Model
     public function scopeQTutor($query, $profesor = null)
     {
         $profesor = $profesor ?? authUser()->dni;
-        $sustituido = Profesor::findOrFail($profesor)->sustituye_a;
+        $sustituido = optional(Profesor::find($profesor))->sustituye_a;
 
-        return ($sustituido != ' ')?
-            $query->where('tutor', $sustituido)->orWhere('tutor', $profesor):
-            $query->where('tutor', $profesor);
+        return $query->where(function ($q) use ($profesor, $sustituido) {
+            $q->where('tutor', $profesor);
+            if ($sustituido && trim($sustituido) !== '') {
+                $q->orWhere('tutor', $sustituido);
+            }
+        });
+    }
+
+    public function scopeLargestByAlumnes($query)
+    {
+        return $query
+            ->withCount('alumnos')
+            ->orderByDesc('alumnos_count')
+            ->orderBy('codigo'); // criteri de desempat opcional
     }
 
     public function scopeMisGrupos($query, $profesor = null)
