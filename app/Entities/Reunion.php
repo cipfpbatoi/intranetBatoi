@@ -247,7 +247,7 @@ class Reunion extends Model
     }
     public function getGrupoClaseAttribute()
     {
-        return $this->Tipos()->colectivo == 'Grupo'?Grupo::QTutor($this->idProfesor)->first():null;
+        return $this->Tipos()->colectivo == 'Grupo'?Grupo::QTutor($this->idProfesor)->largestByAlumnes()->first():null;
     }
     public function getInformeAttribute()
     {
