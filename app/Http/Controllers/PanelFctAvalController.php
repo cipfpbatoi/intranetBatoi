@@ -29,6 +29,7 @@ class PanelFctAvalController extends IntranetController
     use DropZone;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
+    const ROLES_ROL_CAPAC = 'roles.rol.jefe_practicas';
 
     /**
      * @var string
@@ -56,7 +57,7 @@ class PanelFctAvalController extends IntranetController
         $todas = collect();
         foreach ($nombres as $nombre) {
             $todas->push(AlumnoFctAval::misFcts()->esAval()->where('idAlumno', $nombre['idAlumno'])
-                ->orderBy('idAlumno')
+                ->orderByDesc('idSao')
                 ->first());
         }
         return $todas;
@@ -81,7 +82,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calificacion', '!=', '1',
                         'actas', '==', 0,
-                        'asociacion', '<', 3
+                        'asociacion', '<>', 2
                     ]
                 ]
             ));
@@ -94,7 +95,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '5',
                         'calificacion', '!=', '0',
-                        'actas', '==', 0, 'asociacion', '<', 3
+                        'actas', '==', 0, 'asociacion', '<>', 2
                     ]
                 ]
             ));
@@ -120,7 +121,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '1',
                         'calificacion', '==', 0,
-                        'actas', '>', 0, 'asociacion', '<', 3
+                        'actas', '>', 0, 'asociacion', '<>', 2
                     ]
                 ]
             ));
@@ -303,11 +304,14 @@ class PanelFctAvalController extends IntranetController
      */
     private function setActaB(): void
     {
-        if (Grupo::QTutor()->first() && !Grupo::QTutor()->first()->acta_pendiente) {
-            $this->panel->setBoton(
-                'index',
-                new BotonConfirmacion("fct.acta", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]
-                ));
+        $grupo = Grupo::QTutor()->first();
+        if ($grupo && !$grupo->acta_pendiente  ) {
+            if ($grupo->curso == 2) {
+                $this->panel->setBoton(
+                    'index',
+                    new BotonConfirmacion("fct.acta", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]
+                    ));
+            }
         } else {
             Alert::message("L'acta pendent esta en procés", 'info');
         }
@@ -354,11 +358,13 @@ class PanelFctAvalController extends IntranetController
                 new BotonImg(
                     'fct.nullProyecto',
                     [
-                        'img' => 'fa-minus-circle', 'roles' => config(self::ROLES_ROL_TUTOR),
+
+                       'img' => 'fa-minus-circle', 'roles' => config(self::ROLES_ROL_TUTOR),
                         'where' => [
                             'calProyecto', '>=', '0',
                             'actas', '<', 2,
-                            'calificacion', '==', '1'
+                            'calificacion', '==', '1',
+                            'asociacion', '<>', '2'
                         ]
                     ]
                 )
@@ -374,7 +380,7 @@ class PanelFctAvalController extends IntranetController
                         'where' => [
                             'calProyecto', '<', '1',
                             'actas', '<', 2,
-                            'asociacion', '==', '3'
+                            'asociacion', '==', '2'
                         ]
                     ]
                 )
@@ -389,7 +395,7 @@ class PanelFctAvalController extends IntranetController
                         'where' => [
                             'calProyecto', '<', '0',
                             'actas', '<', 2,
-                            'asociacion', '==', '3'
+                            'asociacion', '==', '2'
                         ]
                     ]
                 )
@@ -404,7 +410,7 @@ class PanelFctAvalController extends IntranetController
                         'where' => [
                             'calProyecto', '>=', '0',
                             'actas', '<', 2,
-                            'asociacion', '==', '3'
+                            'asociacion', '==', '2'
                         ]
                     ]
                 )
@@ -452,7 +458,7 @@ class PanelFctAvalController extends IntranetController
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()],
         ];
-        if ($ara >= $inici && $ara <= $fi) {
+        if ($ara >= $inici && $ara <= $fi && userIsAllow(config(self::ROLES_ROL_CAPAC)))  {
             $botones['final'] = [
                     'link' =>"/fct/$id/upload",
                     'message' => "Este procediment l'has de fer quan tingues tota

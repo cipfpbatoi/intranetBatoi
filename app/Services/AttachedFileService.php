@@ -3,6 +3,7 @@
 
 namespace Intranet\Services;
 
+use Illuminate\Support\Facades\File;
 use Intranet\Entities\Adjunto;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\AlumnoFct;
@@ -100,12 +101,12 @@ class AttachedFileService
             $attached->size = $fileSize;
             $attached->owner = $dni;
 
-            // Crea el directori dins de "public/adjuntos"
-            Storage::makeDirectory("public/adjuntos/$route");
+
+            Storage::disk('local')->makeDirectory("public/adjuntos/$route");
 
             $destinationPath = "public/adjuntos/{$route}/{$attached->title}.{$attached->extension}";
 
-            if (Storage::move($filePath, $destinationPath)) {
+            if (File::move($filePath, storage_path('app/' . $destinationPath))) {
                 $attached->save();
                 return 1;
             }

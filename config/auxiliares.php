@@ -85,7 +85,7 @@ return [
         3=>'Acadèmiques-Professionals',
         4=>'Temes transversals'],
     'veep' => [],
-    'estadoColaboracion' => [  1=>'No sé', 2=>'Col·labora', 3=>'No col·labora'],
+    'estadoColaboracion' => [  1=>'No sé', 2=>'Col·labora', 3=>'No col·labora', 0=> 'No contactada' ],
     'incidenciasColaboracion' => [
         1=>'Envia correu contacte',
         2=>'Envia confirmació de dades',
@@ -148,7 +148,7 @@ return [
         'sync' => 'Sincronitza hores realitzades per l\'alumnat',
         'annexes' => 'Baixa Annexes signats per a l\'Intranet',
     ],
-    'precioKilometro' => [0.19,0.078,0,0,0,0,0],
+    'precioKilometro' => [0.26,0.106,0,0,0,0,0],
     'tipusFCT' => [
         1 => 'FCT',
         2 => 'Exempt',

@@ -8,6 +8,8 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
+use Intranet\Exports\PollResultsExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Response;
 use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
@@ -157,8 +159,8 @@ class   PollController extends IntranetController
         $votes['all'] = $allVotes->GroupBy('option_id');
         $modelo::aggregate($votes, $option1, $option2);
 
-
-        return view('poll.allResolts', compact('votes', 'poll', 'options_numeric'));
+        return Excel::download(new PollResultsExport($poll, $votes, $options_numeric), 'resultats_enquesta.xlsx');
+        //return view('poll.allResolts', compact('votes', 'poll', 'options_numeric'));
     }
 
 

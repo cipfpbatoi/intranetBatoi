@@ -15,10 +15,18 @@ abstract class PerfilController extends IntranetController
 
     public function update(Request $request, $new)
     {
-
         $this->validate($request, $new->getRules());
+
         if ($request->email) {
             $new->email = $request->email;
+        }
+
+        if ($request->DA) {
+            $new->DA = 1;
+        } else {
+            if (isset($new->DA)){
+                $new->DA = 0;
+            }
         }
         if ($request->emailItaca) {
             $new->emailItaca = $request->emailItaca;
@@ -60,7 +68,7 @@ abstract class PerfilController extends IntranetController
                 Alert::info('Formato no valido');
             }
         }
-        
+
         $new->save();
     }
 

@@ -20,6 +20,7 @@ return array(
 
 	
         'Alumno' => array(
+          'index' => "Listado de alumnos",
           'show' => 'Datos del Alumno',
           'edit' => 'Modificación Perfil Alumno'
         ),
@@ -131,6 +132,7 @@ return array(
             '3' => 'Impresa',
             '4' => 'Valorada',
             '1' => 'Pendiente',
+            '5' => 'Itaca',
             '0' => 'Rechazada/No comunicada'
         ),
         'TipoIncidencia' => array(
@@ -545,6 +547,12 @@ return array(
         'Cotxe' => array(
             'index' => 'Mantenimento de Vehículos',
             'create' => 'Crear Vehículo',
+        ),
+        'Tipoactividad' => array(
+            'index' => 'Gestionar Tipo Actividad Extraescolar',
+        ),
+        'TipoActividad' => array(
+            'create' => 'Crear Tipo Actividad Extraescolar',
         ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',

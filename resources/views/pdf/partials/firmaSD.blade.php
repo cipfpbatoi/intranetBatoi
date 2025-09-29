@@ -1,9 +1,9 @@
 <div class="container" style="width:90%;">
-    <br/><br/>
+    <br/>
     <p><strong>I per tal que així conste on convinga, signa el present escrit.</strong></p>
 
     <p>{{$datosInforme['poblacion']}}, {{$datosInforme['date']}} </p>
-    <br/><br/>
+    <br/>
     <div style="width:40%; float:left;  ">
         <img src="{{public_path('img/pdf/secretari-director.png')}}"  width="800px" /><br/>
     </div>

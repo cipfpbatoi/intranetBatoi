@@ -36,6 +36,9 @@ class SendAvaluacioEmails extends Command
     private function obtenToken($aR)
     {
         $grupo = $aR->Reunion->grupoClase;
+        if ($aR->token) {
+            return $aR->token;
+        }
         if ($grupo->isSemi) {
             return ($aR->capacitats == self::PROMOCIONA)?$this->generaToken():false;
         }
@@ -59,7 +62,7 @@ class SendAvaluacioEmails extends Command
             }
         } catch (\Exception $e) {
             $mensaje = 'Error : Enviant missatge Avaluació Alumne '.$aR->Alumno->fullName. ' a '.$aR->Alumno->email;
-            avisa('021652470V', $mensaje, '#', 'Servidor de correu');
+            avisa('021652470V', $mensaje.":".$e->getMessage()  , '#', 'Servidor de correu');
             avisa($aR->Reunion->idProfesor, $mensaje, '#', 'Servidor de correu');
         }
     }

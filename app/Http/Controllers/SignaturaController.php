@@ -315,7 +315,7 @@ class SignaturaController extends ModalController
             $path = 'alumnofctaval/'.$alFct->id;
             if (AttachedFileService::saveExistingFile($signature->routeFile, $path, authUser()->dni))
             {
-                $signature->delete();
+                 $signature->delete();
             }
         }
         return back();

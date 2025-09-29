@@ -47,7 +47,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <button type="submit" class="btn btn-primary pull-right">
-                                            <i class="fa fa-btn fa-envelope"></i> Envia enllaç per canviar
+                                            <i class="fa fa-btn fa-envelope"></i> Restablir contrasenya
                                         </button>
                                     </div>
                                 </div>

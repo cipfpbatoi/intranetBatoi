@@ -38,6 +38,7 @@ class ActividadController extends ModalController
     protected $gridFields = ['name', 'desde', 'hasta', 'situacion'];
     protected $formFields= [
         'id' => ['type' => 'hidden'],
+        'tipo_actividad_id' => ['type' => 'select'],
         'name' => ['type' => 'text'],
         'desde' => ['type' => 'datetime'],
         'hasta' => ['type' => 'datetime'],
@@ -329,6 +330,14 @@ class ActividadController extends ModalController
 
     public function printAutoritzats(){
         return $this->imprimir('extraescolars');
+    }
+
+    public function itaca($id)
+    {
+        $elemento = $this->class::findOrFail($id);
+        $elemento->estado = 5;
+        $elemento->save();
+        return $this->follow(4, 5);
     }
 
 

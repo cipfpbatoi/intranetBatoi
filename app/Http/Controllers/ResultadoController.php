@@ -57,9 +57,6 @@ class ResultadoController extends ModalController
         if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
             $newRes = new Resultado();
             $newRes->fillAll($request);
-            if ($request->evaluacion == 3) {
-                return $this->rellenaPropuestasMejora($modulogrupo->idModuloCiclo);
-            }
             return $this->redirect();
         }
         Alert::danger("Eixe mòdul no es dona en eixe grup");

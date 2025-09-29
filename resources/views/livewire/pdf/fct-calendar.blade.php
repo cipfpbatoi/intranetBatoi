@@ -16,10 +16,8 @@
         .page-break { page-break-after: always; }
         .month-header { background-color: #ddd; padding: 5px; text-align: center; }
     </style>
-</head>
 <body>
-
-<h2>Calendari de FCT de {{ $alumnoFct->fullName }} a {{ $alumnoFct->Fct->Colaboracion->Centro->nombre}}</h2>
+<h2>{{ $titol }}</h2>
 <p>Total d'hores previstes: <strong>{{ $totalHours }}</strong></p>
 
 <div class="container">

@@ -19,7 +19,7 @@ class AlumnoGrupoController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'AlumnoGrupo';
     protected $gridFields = ['nombre', 'telef1',  'email','poblacion','drets',
-        'extraescolars','subGrupo','posicion','telef2'];
+        'extraescolars','DA','subGrupo','posicion','telef2'];
     const FOL = 12;
     protected $modal = true;
 
@@ -89,6 +89,17 @@ class AlumnoGrupoController extends IntranetController
                 $this->panel->setBoton('grid', new BotonImg('alumnocurso.registerAlumno/' . $curso->id, ['text' => trans('messages.generic.register') . $curso->titulo, 'img' => 'fa-institution']));
             }
         }
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumno.days',
+                [
+                    'img' => 'fa-calendar',
+                    'roles' => config('roles.rol.tutor'),
+                    'text'=>'Modificar Calendari'
+                ]
+            )
+        );
         
     }
 

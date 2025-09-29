@@ -23,13 +23,13 @@ class Alumno extends Authenticatable
         'expediente', 'domicilio', 'municipio', 'provincia',
         'telef1', 'telef2', 'sexo', 'codigo_postal',
         'departamento', 'fecha_ingreso', 'fecha_matricula',
-        'fecha_nac', 'foto', 'turno', 'trabaja', 'repite'
+        'fecha_nac', 'foto', 'turno', 'trabaja', 'repite','DA'
     ];
 
     protected  $fillable = [
         'codigo', 'nombre', 'apellido1', 'apellido2', 'email',
         'telef1', 'telef2', 'foto', 'idioma',
-        'imageRightAccept', 'outOfSchoolActivityAccept'
+        'imageRightAccept', 'outOfSchoolActivityAccept', 'DA'
     ];
 
     protected array $rules = [
@@ -46,6 +46,7 @@ class Alumno extends Authenticatable
         'idioma' => ['type' => 'select'],
         'imageRightAccept' => ['disabled' => 'disabled'],
         'outOfSchoolActivityAccept' => ['disabled' => 'disabled'],
+        'DA' => ['type'=>'hidden']
     ];
 
     /*
@@ -99,6 +100,11 @@ class Alumno extends Authenticatable
     {
         return $this->belongsTo(Municipio::class, 'municipio', 'cod_municipio')
             ->where('provincias_id', $this->provincia);
+    }
+
+    public function Projecte()
+    {
+        return $this->hasOne(Projecte::class, 'idAlumne', 'nia');
     }
 
     /*
@@ -222,5 +228,13 @@ class Alumno extends Authenticatable
     public function getIdiomaOptions(): array
     {
         return config('auxiliares.idiomas');
+    }
+
+    public function scopeMisDA(Builder $query, ?string $profesor = null, bool $dual = false): Builder
+    {
+        $profesor = $profesor ?? authUser()->dni;
+        $grupos = Grupo::QTutor($profesor, $dual)->pluck('codigo')->toArray();
+        $alumnos = AlumnoGrupo::whereIn('idGrupo', $grupos)->pluck('idAlumno');
+        return $query->whereIn('nia', $alumnos)->where('DA',1);
     }
 }

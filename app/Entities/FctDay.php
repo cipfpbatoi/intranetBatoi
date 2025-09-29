@@ -17,7 +17,8 @@ class FctDay extends Model
     protected $table = 'fct_days';
 
     protected $fillable = [
-        'alumno_fct_id',
+        'nia',
+        'colaboracion_id',
         'dia',
         'hores_previstes',
         'hores_realitzades',

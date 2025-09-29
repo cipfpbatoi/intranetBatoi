@@ -19,6 +19,7 @@ return array(
 
 	
     'Alumno' => array(
+          'index' => "Llistat d'alumnes",
           'show' => "Dades de l'alumna",
           'edit' => "Modificació del perfil de l'Alumna",
         ),
@@ -129,6 +130,7 @@ return array(
             '3' => 'Impressa',
             '4' => 'Valorada',
             '1' => 'Pendent',
+            '5' => 'Itaca',
             '0' => 'Rebutjada/No comunicada'
         ),
         'TipoIncidencia' => array(
@@ -552,7 +554,12 @@ return array(
             'index' => 'Manteniment de Vehicles',
             'create' => 'Crear Vehicle',
         ),
-
+        'Tipoactividad' => array(
+            'index' => 'Gestionar Tipus Activitat Extraescolar',
+        ),
+        'TipoActividad' => array(
+            'create' => 'Crear Tipus Activitat Extraescolar',
+        ),
         'modelos' => array(
             'Comision' => 'Comissió de Servei',
             'Curso' => 'Curs',

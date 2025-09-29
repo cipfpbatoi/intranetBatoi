@@ -9,10 +9,10 @@
     @livewireStyles
 @endsection
 @section('content')
-    @livewire('fct-calendar', ['alumnoFct' => $alumnoFct])
+    @livewire('fct-calendar', ['alumno' => $alumno])
 @endsection
 @section('titulo')
-    @lang("models.fctDay.show" ,['quien'=> $alumnoFct->fullName])
+    @lang("models.fctDay.show" ,['quien'=> $alumno->fullName])
 @endsection
 @section('scripts')
     @livewireScripts

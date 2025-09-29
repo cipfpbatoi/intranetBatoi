@@ -34,6 +34,7 @@ class ProjecteController extends ModalController
         'resultats'=> ['type' => 'textarea'],
         'aplicacions' => ['type' => 'textarea'],
         'recursos' => ['type' => 'textarea'],
+
      ];
 
     public function search()

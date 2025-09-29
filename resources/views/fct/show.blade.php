@@ -42,29 +42,25 @@
         @endif
     </ul>
     <hr/>
-    @if ($fct->Colaboracion->Ciclo->TutoresFct->count() > 1)
-        Cotutor : {{$fct->Cotutor->fullName??'No hay cotutor'}}
-        <form action="{{route('fct.cotutor',$fct->id)}}" method="post">
-            @csrf
-            <select name="cotutor" id="cotutor">
-                <option value="0">No hay cotutor</option>
-                @foreach ($fct->Colaboracion->Ciclo->TutoresFct as $tutor)
-                    <option value="{{$tutor->dni}}" {{($fct->cotutor==$tutor->dni)?'selected':''}}>
-                        {{$tutor->fullName}}
-                    </option>
-                @endforeach
-            </select>
-            <input type="submit" value="Canvia" class="fa fa-user">
-        </form>
-        <hr/>
-    @else
-        <h5>Tutor : {{$fct->Tutor->fullName??'No hi ha tutor'}}</h5>
-    @endif
-
+    Cotutor : {{$fct->Cotutor->fullName??'No hay cotutor'}}
+    <form action="{{route('fct.cotutor',$fct->id)}}" method="post">
+        @csrf
+        <select name="cotutor" id="cotutor">
+            <option value="0">No hay cotutor</option>
+            @foreach ($fct->Colaboracion->Ciclo->TutoresFct as $tutor)
+                <option value="{{$tutor->dni}}" {{($fct->cotutor==$tutor->dni)?'selected':''}}>
+                    {{$tutor->fullName}}
+                </option>
+            @endforeach
+        </select>
+        <input type="submit" value="Canvia" class="fa fa-user">
+    </form>
+    <hr/>
     @if ($fct->Colaboracion->Centro->Empresa->conveniNou)
         <em class="fa fa-file-pdf-o"> A1</em><br />
     @endif
         <a href="{{ route('fct.pdf',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Inst.</a>
+    @if ($fct->correoInstructor)(Enviat Automàticament) @endif
     @if ($fct->Colaboradores->count() > 0)
         <a href="{{ route('fct.colaborador',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Col.</a>
     @endif

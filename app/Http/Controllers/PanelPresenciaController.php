@@ -9,6 +9,7 @@ use Intranet\Entities\Actividad;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Falta;
 use Illuminate\Support\Facades\Session;
+use Intranet\Services\FitxatgeService;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Horario;
 
@@ -32,11 +33,11 @@ class PanelPresenciaController extends BaseController
         $this->panel->setBoton('grid', new BotonImg('fichar.delete', [], 'direccion', $this->panel->dia));
         return $this->grid(Profesor::whereIn('dni', self::noHanFichado($dia))->get());
     }
-    
-    
-    public function deleteDia($usuario, $dia)
+
+
+    public function deleteDia($usuario, $dia, FitxatgeService $fitxatgeService)
     {
-        Falta_profesor::fichaDia($usuario, $dia);
+        $fitxatgeService->fitxaDiaManual($usuario, $dia);
         return back();
     }
 

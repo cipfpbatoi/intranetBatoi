@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Services;
 
+use Facebook\WebDriver\Exception\NoSuchElementException;
 use Facebook\WebDriver\Firefox\FirefoxOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -106,7 +107,8 @@ class SeleniumService
             $driver->findElement(WebDriverBy::xpath("//dt[contains(@class, 'error') and span[contains(text(), 'La contraseña no es válida')]]"));
             $driver->close();
             throw new IntranetException('Password no vàlid. Has de ficarl el de l\'ITACA');
-        } catch (\Exception $e) {
+        }  catch ( NoSuchElementException $e) {
+            // cap error, continua
         }
         return $driver;
     }

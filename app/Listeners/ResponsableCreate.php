@@ -33,7 +33,7 @@ class ResponsableCreate
         if (authUser()) {
             $actividad = Actividad::findOrFail($event->actividad->id);
             $actividad->profesores()->attach(authUser()->dni, ['coordinador' => 1]);
-            $grupo = Grupo::QTutor()->first();
+            $grupo = Grupo::QTutor()->largestByAlumnes()->first();
             if ($grupo) {
                 $actividad->grupos()->attach($grupo->codigo);
             }

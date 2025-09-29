@@ -344,7 +344,9 @@ Route::get('/alumnofct/{id}/A{num}',
     ['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num', '[1-3]');
 Route::get('/alumnofct/{id}/send', ['as' => 'alumnofct.send', 'uses' => 'FctAlumnoController@send']);
 Route::get('/alumnofct/{id}/importa', ['as' => 'alumnofct.importa', 'uses' => 'FctAlumnoController@importa']);
-Route::get('/alumnofct/{id}/days', ['as' => 'alumnofct.days', 'uses' => 'FctAlumnoController@days']);
+
+Route::get('/alumno/calendari', ['as' => 'alumno.calendari', 'uses' => 'CalendariFctController@index']);
+Route::get('/alumno/{id}/days', ['as' => 'alumno.days', 'uses' => 'CalendariFctController@days']);
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy', 'show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
@@ -484,6 +486,7 @@ Route::get('/expediente/{actividad}/gestor', ['as' => 'expediente.gestor', 'uses
 Route::get('/falta/{actividad}/gestor', ['as' => 'falta.gestor', 'uses' => 'FaltaController@gestor']);
 Route::get('/comision/{actividad}/gestor', ['as' => 'comision.gestor', 'uses' => 'ComisionController@gestor']);
 Route::get('/itaca/{actividad}/gestor', ['as' => 'itaca.gestor', 'uses' => 'FaltaItacaController@gestor']);
+Route::get('/actividad/{actividad}/itaca', ['as' => 'actividad.itaca', 'uses' => 'ActividadController@itaca']);
 
 //control guadira
 Route::get('/guardia/control', ['as' => 'guardia.control', 'uses' => 'PanelGuardiaController@index']);
@@ -545,16 +548,20 @@ Route::get('/signatura/a5',['as' => 'signatura.a5','uses' => 'SignaturaControlle
 
 
 Route::resource('projectes' , 'PanelProjecteController',['except'=>['update','destroy','show']]);
-Route::put('/projecte/{id}/edit', ['as' => 'projecte.update', 'uses' => 'PanelProjecteController@update']);
-Route::get('/projecte/{id}/delete', ['as' => 'projecte.delete', 'uses' => 'PanelProjecteController@destroy']);
-Route::get('/projecte/{id}/pdf', ['as' => 'projecte.pdf', 'uses' => 'PanelProjecteController@pdf']);
-Route::get('/projecte/{id}/check', ['as' => 'projecte.check', 'uses' => 'PanelProjecteController@check']);
+Route::put('/projectes/{id}/edit', ['as' => 'projectes.update', 'uses' => 'PanelProjecteController@update']);
+Route::get('/projectes/{id}/delete', ['as' => 'projectes.delete', 'uses' => 'PanelProjecteController@destroy']);
+Route::get('/projectes/{id}/pdf', ['as' => 'projectes.pdf', 'uses' => 'PanelProjecteController@pdf']);
+Route::get('/projectes/{id}/check', ['as' => 'projectes.check', 'uses' => 'PanelProjecteController@check']);
 Route::get('/projectes/actaP', ['as' => 'projectes.actaP', 'uses' => 'PanelProjecteController@acta']);
 Route::get('/projectes/sendP', ['as' => 'projectes.sendP    ', 'uses' => 'PanelProjecteController@send']);
-Route::get('/projectes/actaE', ['as' => 'projecte.actaE', 'uses' => 'PanelProjecteController@actaE']);
+Route::get('/projectes/actaE', ['as' => 'projectes.actaE', 'uses' => 'PanelProjecteController@actaE']);
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
 
 Route::resource('cotxe' , 'CotxeController',['except'=>['update','destroy','show']]);
 Route::get('/cotxe/{id}/delete', ['as' => 'cotxe.delete', 'uses' => 'CotxeController@destroy']);
 Route::put('/cotxe/{id}/edit', ['as' => 'cotxe.update', 'uses' => 'CotxeController@update']);
+
+Route::resource('tipoactividad','TipoActividadController',['except'=>['update','destroy','show']]);
+Route::put('/tipoactividad/{id}/edit', ['as' => 'tipoactividad.update', 'uses' => 'TipoActividadController@update']);
+Route::get('/tipoactividad/{id}/delete', ['as' => 'tipoactividad.delete', 'uses' => 'TipoActividadController@destroy']);
