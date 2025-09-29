@@ -53,7 +53,7 @@ return [
         'TRASLADO DE DOMICILIO HABITUAL',
         'TÉCNICAS PRENATALES',
         'ASSISTÈNCIA TRIBUNALS (Màx 2. DIES /SETMANA)',
-        'FALTA EMERGÈNCIA CLIMÀTICA (Màx 4. DIES / ANY)'
+        'PERMISO EMERGÈNCIA CLIMÀTICA (Màx 4. DIES / ANY)'
         ],
     'motivoAusenciaOld' => [
         'Baixa mèdica',
