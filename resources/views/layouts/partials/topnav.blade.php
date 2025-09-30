@@ -10,7 +10,7 @@
                 <li class="">
                     <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
                        aria-expanded="false">
-                       {{ (string) data_get(authUser(), 'nombre', '') }} {{ (string) data_get(authUser(), 'apellido1', '') }}
+                        {{ authUser()->nombre}} {{authUser()->apellido1}}
                         <span class=" fa fa-angle-down"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -33,38 +33,32 @@
                     <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown"
                        aria-expanded="false">
                         <i class="fa fa-envelope-o"></i>
-                        <span class="badge bg-green">
-                            @php($total = authUser()->unreadNotifications()->count())
-                            @if ($total) {{ $total }} @endif
-                        </span>
+                        <span class="badge bg-green">@if ($total  = count(authUser()->unreadNotifications))
+                                {{ $total }}
+                            @endif</span>
                     </a>
                     <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
                         @foreach (authUser()->unreadNotifications()->paginate(6) as $notifications)
-                            @php
-                                $d = $notifications->data ?? [];
-                                $motiu   = is_array($d['motiu']   ?? null) ? implode(', ', $d['motiu'])   : ($d['motiu']   ?? '');
-                                $emissor = is_array($d['emissor'] ?? null) ? implode(', ', $d['emissor']) : ($d['emissor'] ?? '');
-                                $enlace  = is_string($d['enlace'] ?? null) ? $d['enlace'] : '#';
-                                $fecha   = is_string($d['data']   ?? null) ? $d['data']   : (is_array($d['data'] ?? null) ? implode(' ', $d['data']) : ($d['data'] ?? ''));
-                            @endphp
-
                             <li id='{{$notifications->id}}'>
                                 <a class="papelera" href="/notification/{{$notifications->id}}/delete">
                                     <span class="image">
-                                        <img src="/img/delete.png" alt="Marcar como leida" class="iconopequeno"/>
+                                        <img src="/img/delete.png" alt="Marcar como leida"
+                                                             class="iconopequeno"/>
                                     </span>
                                 </a>
-
-                                <a href="{{ $enlace }}">
+                                <a href="{{$notifications->data['enlace']}}">
                                     <span>
-                                        <span>{{ $emissor }}</span>
-                                        <span class="time">{{ $fecha }}</span>
+                                        <span>{{$notifications->data['emissor']}}</span>
+                                        <span class="time">{{$notifications->data['data']}}</span>
                                     </span>
-
-                                    @if ($enlace !== "#")
-                                        <span class="message blue">{{ $motiu }}</span>
+                                    @if ($notifications->data['enlace'] != "#")
+                                        <span class="message blue">
+                                            {{$notifications->data['motiu']}}
+                                        </span>
                                     @else
-                                        <span class="message">{{ $motiu }}</span>
+                                        <span class="message">
+                                            {{$notifications->data['motiu']}}
+                                        </span>
                                     @endif
                                 </a>
                             </li>
