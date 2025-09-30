@@ -10,7 +10,7 @@
                 <li class="">
                     <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
                        aria-expanded="false">
-                        {{ (string) data_get(authUser(), 'nombre', '') }} {{ (string) data_get(authUser(), 'apellido1', '') }}
+                        {{ authUser()->nombre}} {{authUser()->apellido1}}
                         <span class=" fa fa-angle-down"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -33,10 +33,9 @@
                     <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown"
                        aria-expanded="false">
                         <i class="fa fa-envelope-o"></i>
-                        <span class="badge bg-green">
-                            @php($total = authUser()->unreadNotifications()->count())
-                             @if ($total) {{ $total }} @endif
-                        </span>
+                        <span class="badge bg-green">@if ($total  = count(authUser()->unreadNotifications))
+                                {{ $total }}
+                            @endif</span>
                     </a>
                     <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
                         @foreach (authUser()->unreadNotifications()->paginate(6) as $notifications)
@@ -68,7 +67,7 @@
                                     @endif
                                 </a>
                             </li>
-                        @endforeach
+                         @endforeach
                         <div class="text-center">
                             <a href="/notification">
                                 <strong>@lang("messages.buttons.seeAll")</strong>
