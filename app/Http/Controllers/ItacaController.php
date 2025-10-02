@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Facebook\WebDriver\Exception\NoSuchElementException;
 use Illuminate\Http\Request;
-use Intranet\Entities\Falta;
+use Intranet\Entities\Actividad;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Http\Requests\PasswordRequest;
 use Intranet\Services\ItacaService;
@@ -16,6 +16,56 @@ use Styde\Html\Facades\Alert;
 
 class ItacaController extends Controller
 {
+    public function extraescolars(Request $request)
+    {
+        $activitats = Actividad::where('estado', 4)->get();
+        $total = count($activitats);
+
+        if ($total == 0) {
+            Alert::info('No hi ha faltas valorades');
+            return back();
+        }
+
+        try {
+            $dni = authUser()->dni;
+            $itacaService = new ItacaService($dni, $request->password);
+
+            try {
+                $itacaService->goToLlist();
+            } catch ( NoSuchElementException $e) {
+                $itacaService->close();
+                Alert::danger('No he pogut accedir al llistat. Potser la sessió ha expirat o el login ha fallat.');
+                return back();
+            }
+        } catch (IntranetException $e) {
+            Alert::danger('No he pogut loguejar-me: ' . $e->getMessage());
+            return back();
+        }
+
+        $count = 0;
+        $failures = 0;
+
+        foreach ($activitats as $activitat) {
+            if ($itacaService->processActivitat($activitat)) {
+                $count++;
+            } else {
+                try {
+                    $itacaService->goToLlist();
+                } catch (IntranetException | \Facebook\WebDriver\Exception\NoSuchElementException $e) {
+                    Alert::danger($e->getMessage());
+                    $itacaService->close();
+                    Alert::info("$count extraescolars actualitzades, $failures errors de $total");
+                    return back();
+                }
+                $failures++;
+            }
+        }
+
+        $itacaService->close();
+        Alert::info("$count activitats actualitzades, $failures errors de $total");
+        return back();
+
+    }
 
     public function birret(Request $request)
     {

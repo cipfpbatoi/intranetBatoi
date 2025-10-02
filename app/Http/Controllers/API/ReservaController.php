@@ -35,7 +35,6 @@ class   ReservaController extends ApiBaseController
                 ->first();
             if ($reserva && $espacio=Espacio::find($reserva->idEspacio)) {
                 if ($espacio->dispositivo) {
-                    $closed = $this->checkSecuredStatus($this->getJson($espacio->dispositivo));
                     $action = $closed?'unsecure':'secure';
                     if ($this->action($action, $espacio)) {
                         return $this->sendResponse('Modificat estat Porta');
@@ -65,12 +64,16 @@ class   ReservaController extends ApiBaseController
     private function getJson($dispositivo)
     {
         $user = config('variables.domotica.user');
-        $pass =  config('variables.domotica.pass');
+        $pass = config('variables.domotica.pass');
         $link = 'http://172.16.10.74/api/devices/'.$dispositivo;
+
+        // Llança excepció si no és 2xx, així no tractem HTML/JSON d’error com si fora vàlid
         $response = Http::withBasicAuth($user, $pass)
-            ->accept('application/json')
-            ->get($link);
-        return $response->json();
+            ->acceptJson()
+            ->get($link)
+            ->throw();
+
+        return $response->json(); // array|mixed
     }
 
     private function action($action, $espacio): bool
