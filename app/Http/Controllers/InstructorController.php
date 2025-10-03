@@ -63,7 +63,7 @@ class InstructorController extends IntranetController
     {
         $instructores = [];
         foreach (Fct::misFcts()->get() as $fct) {
-            foreach ($fct->Colaboradores as $instructor) {
+            foreach ($fct->Instructor as $instructor) {
                 $instructores[] = $instructor->dni;
             }
         }
