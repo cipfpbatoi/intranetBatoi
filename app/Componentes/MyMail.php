@@ -153,7 +153,7 @@ class MyMail
             session()->put('attach', $this->attach);
         }
 
-        Log::info("📌 Dades passades a la vista (modificat):", $data);
+        //Log::info("📌 Dades passades a la vista (modificat):", $data);
 
         return view('email.view', $data);
     }
