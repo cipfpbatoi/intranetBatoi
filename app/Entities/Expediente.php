@@ -24,6 +24,7 @@ class Expediente extends Model
         'idProfesor',
         'explicacion',
         'fecha',
+        'fechatramite'
     ];
     protected $inputTypes = [
         'tipo' => ['type' => 'select'],
@@ -32,6 +33,7 @@ class Expediente extends Model
         'idProfesor' => ['type' => 'hidden'],
         'explicacion' => ['type' => 'textarea'],
         'fecha' => ['type' => 'date'],
+        'fechatramite' => ['type' => 'date'],
     ];
     protected $dispatchesEvents = [
         'created' => ActivityReport::class,
@@ -56,6 +58,17 @@ class Expediente extends Model
         $fecha = new Date($salida);
         return $fecha->format('d-m-Y');
     }
+    
+    public function getfechatramiteAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
+    }
+
+    
+
+
+
 
     public function getTipoOptions()
     {

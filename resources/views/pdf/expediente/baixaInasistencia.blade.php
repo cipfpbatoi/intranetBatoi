@@ -5,7 +5,7 @@
         @if ($grupoAlumno = \Intranet\Entities\AlumnoGrupo::where('idAlumno',$elemento->idAlumno)->first())
             @php
                 $tutor = $elemento->Profesor ?? null;
-                $fechaNoti = $elemento->fecha ? \Carbon\Carbon::parse($elemento->fecha)->format('d/m/Y') : null;
+                $fechaNoti = $elemento->fechatramite ? \Carbon\Carbon::parse($elemento->fechatramite)->format('d/m/Y') : null;
             @endphp
 
             <div class="page">

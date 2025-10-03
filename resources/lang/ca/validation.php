@@ -205,6 +205,7 @@ return array(
                 'literal' => 'Nom',
                 'tipo' => 'Tipus',
                 'fechasolucion' => 'Data Solució',
+                'fechatramite' => 'Data Comunicació alumne',
                 'explicacion' => 'Explicació',
                 'nomAlum' => "Nom de l'Alumne/a",
                 'asiste' => 'Asisteix',
