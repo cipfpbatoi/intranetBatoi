@@ -204,25 +204,21 @@ class DocumentService
      */
     private function concatenatePdfs()
     {
-        $pdfs = $this->normalizePdfPaths($this->elements);
-
-        if (empty($pdfs)) {
-            Alert::danger('No s’han trobat PDFs per concatenar');
-            return back();
+        if (is_array($this->elements)) {
+            $pdfs = array_map(fn($element) => $element->routeFile, $this->elements);
+        } elseif ($this->elements instanceof \Illuminate\Support\Collection) {
+            $pdfs = $this->elements->map(fn($element) => $element->routeFile)->all();
+        } else {
+            throw new \Exception('Format inesperat per a elements');
         }
 
-        if (!empty($this->document->zip)) {
+        if ($this->document->zip) {
             return $this->generateZip($pdfs, 'annexes_' . authUser()->dni);
         }
 
         $pdf = new PdfTk($pdfs);
         $tmpFile = "tmp/annexes_" . authUser()->dni . ".pdf";
-
-        // Opcionalment, comprovar $pdf->saveAs() i l’error de pdftk
-        if (!$pdf->saveAs(storage_path($tmpFile))) {
-            // $pdf->getError() retorna info de pdftk si falla
-            return response()->json(['error' => 'Error concatenant PDFs: '.$pdf->getError()], 400);
-        }
+        $pdf->saveAs(storage_path($tmpFile));
 
         return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
     }
@@ -235,42 +231,5 @@ class DocumentService
     private function generateZip($pdfs, $filename)
     {
         return response()->file(storage_path(ZipService::exec($pdfs, $filename)));
-    }
-
-     private function normalizePdfPaths($elements): array
-    {
-        // Converteix a array pla
-        if ($elements instanceof \Illuminate\Support\Collection) {
-            $arr = $elements->all();
-        } elseif (is_array($elements)) {
-            $arr = $elements;
-        } else {
-            throw new \Exception('Format inesperat per a elements');
-        }
-
-        // Extrau rutes: permet objecte->routeFile, array['routeFile'], o string directe
-        $paths = array_map(function ($el) {
-            if ($el === null) {
-                return null;
-            }
-            if (is_string($el)) {
-                return $el; // ja és un path
-            }
-            if (is_array($el) && isset($el['routeFile'])) {
-                return $el['routeFile'];
-            }
-            if (is_object($el)) {
-                // evita Notice si no té la propietat
-                return $el->routeFile ?? null;
-            }
-            return null;
-        }, $arr);
-
-        // Netegem nulls/buits i comprovem existència
-        $paths = array_values(array_filter($paths, function ($p) {
-            return is_string($p) && $p !== '' && file_exists($p);
-        }));
-
-        return $paths;
     }
 }
