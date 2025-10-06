@@ -129,9 +129,7 @@ class ApiResourceController extends Controller
         return $this->resource && class_exists($this->resource);
     }
 
-
-
-
+ 
     protected function sendResponse($result)
     {
         return response()->json(['success'=>true,'data'=>$result]);
