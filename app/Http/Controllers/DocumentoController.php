@@ -76,23 +76,33 @@ class DocumentoController extends IntranetController
     }
 
 
+ 
 
     public function store(Request $request, $fct = null)
     {
-        $except = ['nota'];
+       
         if ($request->has('nota') && $this->validate($request, ['nota' => 'numeric|min:1|max:11'])) {
             $this->saveNota($request->nota, $fct);
             if ($request->nota < 5) {
                 return $this->redirect();
             }
         }
-        return parent::store(
-            subsRequest(
-                $request->duplicate(null, $request->except($except)),
-                ['rol' => TipoDocumento::rol($request->tipoDocumento)]
-            )
+
+        $except = ['nota'];
+        $rol = TipoDocumento::rol($request->input('tipoDocumento'));
+        $cursoRequest = $request->input('curso')??curso();
+        $cleanRequest = $request->duplicate(
+            $request->except($except),
+            [
+                'rol'   => $rol,
+                'curso' => $cursoRequest,
+            ]
         );
+
+        return parent::store($cleanRequest);
     }
+
+
 
     private function saveNota($nota, $fct)
     {
