@@ -12,7 +12,6 @@ use Intranet\Entities\Modulo;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Espacio;
-use DB;
 use Illuminate\Database\Seeder;
 use Monolog\Logger;
 use Styde\Html\Facades\Alert;
@@ -21,6 +20,7 @@ use Intranet\Entities\Programacion;
 use Intranet\Entities\Ocupacion;
 use Illuminate\Support\Str;
 use Monolog\Handler\StreamHandler;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class ImportController
@@ -200,27 +200,48 @@ class ImportController extends Seeder
         return Str::random(60);
     }
 
-    public function hazDNI($dni, $nia)
+    public function hazDNI(string $dni, int $nia)
     {
-        // nia diferent per al mateix dni
-        $alumno = Alumno::where('dni', $dni)->where('nia', '<>', $nia)->first();
-        if ($alumno) {
-            $alumno->nia = $nia;
-            $alumno->save();
-            return $dni;
-        } else {
+        $dni = strtoupper(trim($dni));
+
+        return DB::transaction(function () use ($dni, $nia) {
+            // A) Prioritza sempre el registre trobat pel NIA importat (és la PK nova/oficial)
+            $byNia = Alumno::find($nia);
+
+            if ($byNia) {
+                // Si el DNI canvia…
+                if ($byNia->dni !== $dni && strlen($dni) <= 8) {
+                    // Si hi ha un altre alumne amb aquest DNI, l'eliminem (no hi ha FKs encara)
+                    $dupDni = Alumno::where('dni', $dni)->where('nia', '<>', $nia)->first();
+                    if ($dupDni) {
+                        $dupDni->delete();
+                    }
+                    // Actualitzem el DNI del “guanyador”
+                    $byNia->dni = $dni;
+                    $byNia->save();
+                }
+                return $byNia->dni ?: $dni;
+            }
+
+            // B) No existeix per NIA. Mirem per DNI
+            $byDni = Alumno::where('dni', $dni)->first();
+            if ($byDni) {
+                // En import inicial, podem canviar la PK sense por (no hi ha FKs)
+                // Opció 1: canviar directament la PK (si el model ho permet)
+                $byDni->nia = $nia;
+                $byDni->save();
+                return $byDni->dni;
+            }
+
+            // C) No existeix ni per NIA ni per DNI → segueix la teua regla
             if (strlen($dni) > 8) {
                 return $dni;
             }
-            $alumno = Alumno::find($nia);
-            if ($alumno) {
-                return $alumno->dni;
-            } else {
-                $dniFictici = 'F'.Str::random(9);
-                Alert::warning('Alumne amb DNI Fictici '.$dniFictici);
-                return $dniFictici;
-            }
-        }
+
+            $dniFictici = 'F' . Str::random(9);
+            Alert::warning('Alumne amb DNI fictici ' . $dniFictici);
+            return $dniFictici;
+        });
     }
 
     /**
@@ -278,11 +299,8 @@ class ImportController extends Seeder
             if (!esRol($role, $rolTutor)) {
                 $role *= $rolTutor;
             }
-            if ($grupo->curso == 2 && !esRol($role, $rolPracticas)) {
+            if (!esRol($role, $rolPracticas)) {
                 $role *= $rolPracticas;
-            }
-            if ($grupo->curso == 1 && esRol($role, $rolPracticas)) {
-                $role /= $rolPracticas;
             }
             return $role;
         }

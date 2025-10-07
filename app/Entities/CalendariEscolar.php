@@ -13,9 +13,9 @@ class CalendariEscolar extends Model
 
     protected $fillable = ['data', 'tipus', 'esdeveniment'];
 
-    public static function esLectiu($date)
+    public static function esNoLectiu($date)
     {
-        return self::where('data', $date->format('Y-m-d'))->where('tipus', 'lectiu')->exists();
+        return self::where('data', $date->format('Y-m-d'))->where('tipus', 'no lectiu')->exists();
     }
 
     public static function esFestiu($date)

@@ -93,6 +93,13 @@ class SignaturaController extends ModalController
                 ['img'=>'fa-upload up','where' => ['tipus','==','A3','signed',">=", '2']]
             )
         );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'signatura.upload',
+                ['img'=>'fa-upload up','where' => ['tipus','==','A3DUAL','signed',">=", '2']]
+            )
+        );
 
         $this->panel->setBoton(
             'index',

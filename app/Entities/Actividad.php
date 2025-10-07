@@ -18,6 +18,7 @@ class Actividad extends Model
     protected $table = 'actividades';
     protected $fillable = [
         'name',
+        'tipo_actividad_id',
         'extraescolar',
         'desde',
         'hasta',
@@ -31,7 +32,8 @@ class Actividad extends Model
         'desenvolupament',
         'valoracio',
         'aspectes',
-        'dades'
+        'dades',
+
     ];
     protected $rules = [
         'name' => 'required|between:1,75',
@@ -40,6 +42,7 @@ class Actividad extends Model
     ];
     protected $inputTypes = [
         'id' => ['type' => 'hidden'],
+        'tipo_actividad_id' => ['type' => 'select'],
         'objetivos' => ['type' => 'textarea'],
         'extraescolar' => ['type' => 'hidden'],
         'descripcion' => ['type' => 'textarea'],
@@ -89,6 +92,11 @@ class Actividad extends Model
             'id',
             'nia'
         )->withPivot('autorizado');
+    }
+
+    public function tipoActividad()
+    {
+        return $this->belongsTo(TipoActividad::class, 'tipo_actividad_id');
     }
     
 
@@ -178,6 +186,15 @@ class Actividad extends Model
     public function getRecomendadaAttribute()
     {
         return $this->recomanada?'Sí':'No';
+    }
+
+    public function getTipoActividadIdOptions()
+    {
+        return hazArray(
+            TipoActividad::where('departamento_id', authUser()->departamento)->orderBy('vliteral')->get(),
+            'id',
+            'vliteral'
+        );
     }
 
 }

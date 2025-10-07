@@ -38,7 +38,7 @@ class InstructorController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['dni', 'nombre','email','Nfcts', 'TutoresFct','Xcentros','telefono'];
+    protected $gridFields = ['dni', 'nombre','departamento','Nfcts','Xcentros','email','telefono'];
     /**
      * @var bool
      */
@@ -54,6 +54,7 @@ class InstructorController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('instructor.edit'));
         $this->panel->setBoton('grid', new BotonImg('instructor.show'));
         $this->panel->setBoton('grid', new BotonImg('instructor.pdf'));
+        $this->panel->setBoton('grid', new BotonImg('instructor.delete'));
     }
 
     /**
@@ -62,11 +63,14 @@ class InstructorController extends IntranetController
     public function search()
     {
         $instructores = [];
+       
         foreach (Fct::misFcts()->get() as $fct) {
-            foreach ($fct->Colaboradores as $instructor) {
-                $instructores[] = $instructor->dni;
+            foreach ($fct->Colaboracion->Centro->Instructores??[] as $instructor) {
+                 
+                $instructores[] = $instructor->dni??'';
             }
         }
+         
         return Instructor::whereIn('dni', $instructores)->get();
     }
 

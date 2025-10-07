@@ -352,7 +352,6 @@ class Importa
 
     public function importa(Request $request)
     {
-
         $dades = session('dades');
         $ciclo = $request->ciclo;
         foreach ($request->request as $key => $value) {
@@ -562,7 +561,7 @@ class Importa
             );
         }
         $dni = ($instructor->dni == 0) ? $dades['centre']['instructorDNI'] : $instructor->dni;
-        $centro->instructores()->syncWithoutDetaching($dni);
+        //$centro->instructores()->syncWithoutDetaching($dni);
         return $dni;
     }
 

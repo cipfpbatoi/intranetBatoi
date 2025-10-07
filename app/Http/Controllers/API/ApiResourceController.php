@@ -24,21 +24,31 @@ class ApiResourceController extends Controller
 
     public function index()
     {
-        return $this->resource::collection($this->class::all());
+        $class = $this->resolveClass();
+        $data = $class::all();
+
+        // Si tens Resource, el fem servir; si no, tornem el teu JSON clàssic
+        return $this->hasResource()
+            ? $this->resource::collection($data)
+            : $this->sendResponse($data);
     }
 
     public function destroy($id)
     {
-        $this->class::destroy($id);
+        $class = $this->resolveClass();
+        $class::destroy($id);
         return $this->sendResponse(['deleted' => true], 'OK');
     }
 
     public function store(Request $request)
     {
         try {
-            $this->class::create($request->all());
-            return $this->sendResponse(['created' => true], 'OK');
-        } catch (Exception $e) {
+            $class = $this->resolveClass();
+            $created = $class::create($request->all());
+
+            // Mantinc el teu format tradicional
+            return $this->sendResponse(['created' => true, 'id' => $created->id], 'OK');
+        } catch (\Throwable $e) {
             return $this->sendError($e->getMessage());
         }
     }
@@ -46,27 +56,80 @@ class ApiResourceController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $registro = $this->class::find($id);
+            $class = $this->resolveClass();
+            $registro = $class::find($id);
+
+            if (!$registro) {
+                return $this->sendError("Not found: {$class} #{$id}");
+            }
+
             $registro->update($request->all());
             $registro->save();
+
             return $this->sendResponse(['updated' => true], 'OK');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return $this->sendError($e->getMessage());
         }
     }
 
     public function show($id)
     {
-        return new $this->resource($this->class::find($id));
-        
+        $class = $this->resolveClass();
+        $item = $class::find($id);
+
+        if (!$item) {
+            return $this->sendError("Not found: {$class} #{$id}");
+        }
+
+        return $this->hasResource()
+            ? new $this->resource($item)
+            : $this->sendResponse($item);
     }
 
     public function edit($id)
     {
-        return $this->sendResponse($this->class::find($id));
+        $class = $this->resolveClass();
+        $item = $class::find($id);
+
+        if (!$item) {
+            return $this->sendError("Not found: {$class} #{$id}");
+        }
+
+        return $this->sendResponse($item);
+    }
+   
+    
+    protected function resolveClass(): string
+    {
+        // Si ja està resolta, usa-la
+        if ($this->class && class_exists($this->class)) {
+            return $this->class;
+        }
+
+        // Si no hi ha model configurat, aturem amb missatge clar
+        if (!$this->model) {
+            abort(500, 'API misconfigured: $model not set in '.static::class);
+        }
+
+        // Accepta FQN o nom curt
+        $candidate = ltrim($this->model, '\\');
+        if (!class_exists($candidate)) {
+            $candidate = $this->namespace.$this->model;
+        }
+        if (!class_exists($candidate)) {
+            abort(500, 'Model class not found: '.$this->model);
+        }
+
+        // Guarda i retorna
+        return $this->class = $candidate;
     }
 
+    protected function hasResource(): bool
+    {
+        return $this->resource && class_exists($this->resource);
+    }
 
+ 
     protected function sendResponse($result)
     {
         return response()->json(['success'=>true,'data'=>$result]);

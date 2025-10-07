@@ -126,6 +126,7 @@ class MyMail
 
     public function render($route)
     {
+
         $to = $this->getReceivers($this->elements);
         $editable = (count($this->elements) > 1) ? $this->editable : true;
 
@@ -148,8 +149,11 @@ class MyMail
             'template' => $this->template ?? null,
             'action' => $this->action ?? 'myMail.send',
         ];
+        if ($this->attach) {
+            session()->put('attach', $this->attach);
+        }
 
-        Log::info("📌 Dades passades a la vista (modificat):", $data);
+        //Log::info("📌 Dades passades a la vista (modificat):", $data);
 
         return view('email.view', $data);
     }

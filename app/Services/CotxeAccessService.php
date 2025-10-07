@@ -4,48 +4,34 @@ namespace Intranet\Services;
 
 
 
+use Illuminate\Support\Facades\Log;
+use Intranet\Entities\Cotxe;
 use Intranet\Entities\CotxeAcces;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class CotxeAccessService
 {
-    /**
-     * Determina si un cotxe està dins del pàrquing
-     */
-    public function estaDins(string $matricula): bool
-    {
-        $últims = CotxeAcces::where('matricula', $matricula)
-            ->where('autoritzat', true)
-            ->orderByDesc('created_at')
-            ->take(2)
-            ->get();
 
-        if ($últims->isEmpty()) return false;
-
-        // Si l'últim accés és entrada (porta oberta) i no hi ha una sortida posterior
-        return $últims->first()->porta_oberta;
-    }
 
     /**
      * Retorna els segons que han passat des del darrer accés
      */
-    public function segonsDesdeUltimAcces(string $matricula): ?int
+    public function recentAccessWithin(string $matricula, int $seconds): bool
     {
-        $últim = CotxeAcces::where('matricula', $matricula)
-            ->where('autoritzat', true)
-            ->orderByDesc('created_at')
+        $ultim = CotxeAcces::where('matricula', $matricula)
+            ->latest('created_at')
             ->first();
 
-        if (!$últim) return null;
+        if (!$ultim) return false;
 
-        return Carbon::parse($últim->data)->diffInSeconds(now());
+        return Carbon::parse($ultim->created_at)->diffInSeconds(now()) < $seconds;
     }
 
     /**
      * Registra un nou accés al pàrquing
      */
-    public function registrarAcces(string $matricula, bool $autoritzat, bool $porta_oberta, string $device = null, string $tipus = null): void
+    public function registrarAcces(string $matricula, bool $autoritzat, bool $porta_oberta, string $device = null, string $tipus = null ): void
     {
         CotxeAcces::create([
             'matricula' => $matricula,
@@ -54,6 +40,8 @@ class CotxeAccessService
             'device' => $device,
             'tipus' => $tipus
         ]);
+
+
     }
 
     public function obrirIPorta(): void
@@ -63,10 +51,15 @@ class CotxeAccessService
         $user = config('parking.porta_user');
         $pass = config('parking.porta_pass');
 
-        Http::withBasicAuth($user, $pass)
+        $response = Http::withBasicAuth($user, $pass)
             ->get("$url/api/callAction?deviceID=$id&name=turnOn");
+        try {
+            Log::info(print_r($response));
+        } catch (\Exception $e) {
 
-        sleep(2);
+        }
+
+        sleep(0.5);
 
         Http::withBasicAuth($user, $pass)
             ->get("$url/api/callAction?deviceID=$id&name=turnOff");

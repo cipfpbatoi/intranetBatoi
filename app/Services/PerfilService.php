@@ -4,6 +4,7 @@ namespace Intranet\Services;
 
 use Intranet\Entities\Actividad;
 use Intranet\Entities\AlumnoGrupo;
+use Intranet\Entities\Documento;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Task;
 use Intranet\Entities\Reunion;
