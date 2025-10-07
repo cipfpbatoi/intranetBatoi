@@ -7,6 +7,7 @@ use Intranet\Entities\Reunion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
+use Illuminate\Support\Facades\Log;
 
 class AsistentesCreate
 {
@@ -27,58 +28,102 @@ class AsistentesCreate
      * @param  ReunionCreated  $event
      * @return void
      */
-
-
-    private function queAlumnes($reunion)
+    private function queAlumnes(Reunion $reunion)
     {
-        $grupo = $reunion->GrupoClase;
+        $grupo = $reunion->GrupoClase; // pot ser null
+
+        // Si no hi ha grup, no hi ha alumnes que afegir
+        if (!$grupo) {
+            Log::warning("AsistentesCreate: Reunion {$reunion->id} sense GrupoClase; no s'assignen alumnes.");
+            return collect(); // col·lecció buida
+        }
 
         if ($reunion->extraOrdinaria) {
             if ($grupo->curso == 2) {
-                return $grupo
-                    ->Alumnos
+                return $grupo->Alumnos
                     ->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(), 'idAlumno'));
             }
             return $grupo->Alumnos;
         }
-        return [];
-    }
 
-    private function assignaAlumnes($reunion)
-    {
-        foreach ($this->queAlumnes($reunion) as $alumno) {
-            $reunion->alumnos()->attach($alumno->nia, ['capacitats' => 3]);
-        }
+        return collect();
     }
 
 
-    public function handle(ReunionCreated $event)
+    /**
+     * @param  Reunion  $reunion
+     * @return void
+     */
+    private function assignaAlumnes(Reunion $reunion): void
     {
-        if (authUser()) {
-            $reunion = $event->reunion;
-            $tipo = $reunion->Tipos();
-            switch ($tipo->colectivo) {
-                case 'Departamento' :
-                    $profesores = Profesor::Plantilla()->where('departamento', '=', authUser()->departamento)->get();
-                    break;
-                case 'Profesor' :
-                    $profesores = Profesor::Plantilla()->get();
-                    break;
-                case 'GrupoTrabajo':
-                    $profesores = Profesor::GrupoT($reunion->grupo)->get();
-                    break;
-                case 'Grupo':
-                    $profesores = Profesor::Grupo($reunion->GrupoClase->codigo)->get();
-                    $this->assignaAlumnes($reunion);
-                    break;
-                case 'Jefe' :
-                    $profesores = $this->esJefe();
-                    break;
-                default:
-                    $profesores = [];
+        foreach ($this->queAlumnes($reunion)?? [] as $alumno) {
+            // evitem duplicats al pivot
+            if (!$reunion->alumnos()->wherePivot('alumno_nia', $alumno->nia)->exists()) {
+                $reunion->alumnos()->attach($alumno->nia, ['capacitats' => 3]);
             }
-            $this->asignaProfeReunion($profesores, $reunion);
         }
+    }
+
+
+    /**
+     * Handle the event.
+     *
+     * @param  ReunionCreated  $event
+     * @return void
+     */
+
+    public function handle(ReunionCreated $event): void
+    {
+        if (!authUser()) {
+            return;
+        }
+
+        $reunion = $event->reunion;
+        $tipo = $reunion->Tipos();
+
+        if (!$tipo) {
+            Log::warning("AsistentesCreate: Reunion {$reunion->id} sense Tipos(); s'ix silenciosament.");
+            return;
+        }
+
+        switch ($tipo->colectivo) {
+            case 'Departamento':
+                $profesores = Profesor::Plantilla()
+                    ->where('departamento', '=', authUser()->departamento)
+                    ->get();
+                break;
+
+            case 'Profesor':
+                $profesores = Profesor::Plantilla()->get();
+                break;
+
+            case 'GrupoTrabajo':
+                // Ja uses $reunion->grupo ací (no relació)
+                $profesores = Profesor::GrupoT($reunion->grupo)->get();
+                break;
+
+            case 'Grupo':
+                // Si tenim relació, agafem el codi; si no, fem fallback a camp pla $reunion->grupo
+                $codigoGrupo = $reunion->GrupoClase?->codigo ?? $reunion->grupo ?? null;
+
+                if (!$codigoGrupo) {
+                    Log::warning("AsistentesCreate: Reunion {$reunion->id} 'Grupo' sense codigo de Grup; no s'assignen profes/alumnes.");
+                    $profesores = collect();
+                } else {
+                    $profesores = Profesor::Grupo($codigoGrupo)->get();
+                    $this->assignaAlumnes($reunion);
+                }
+                break;
+
+            case 'Jefe':
+                $profesores = $this->esJefe();
+                break;
+
+            default:
+                $profesores = collect();
+        }
+
+        $this->asignaProfeReunion($profesores, $reunion);
     }
 
     /**
