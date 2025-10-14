@@ -3,7 +3,7 @@
     $grupo = $datosInforme;
     $todos = $grupo->Alumnos;
 @endphp
-@if ($grupo)
+@if (isset($grupo->Ciclo))
     @section('content')
         @include('pdf.partials.cabeceraFSE')
         @if ($grupo->Ciclo->tipo < 3)
