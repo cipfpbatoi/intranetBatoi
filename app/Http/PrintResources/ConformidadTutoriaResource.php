@@ -25,7 +25,7 @@ class ConformidadTutoriaResource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         return [
             'untitled1' => "$tutor->fullName - DNI: $tutor->dni",
         'untitled2' => "$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni",
