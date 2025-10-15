@@ -27,7 +27,7 @@ class A2ENResource extends PrintResource
         $director = Profesor::find(config('avisos.director'));
         $tutor = AuthUser();
         $alumno = $this->elements->Alumno;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         $instructor = $this->elements->Fct->instructor;
 
         return [

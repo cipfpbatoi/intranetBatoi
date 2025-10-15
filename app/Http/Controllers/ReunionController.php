@@ -176,9 +176,23 @@ class ReunionController extends IntranetController
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
+
     public function borrarOrden($reunion_id, $orden_id)
     {
-        OrdenReunion::findOrFail($orden_id)->delete();
+        $orden = OrdenReunion::find($orden_id);
+
+        if (!$orden) {
+            Alert::danger("No s'ha trobat l'ordre de reunió #{$orden_id}.");
+            return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
+        }
+
+        try {
+            $orden->delete();
+            Alert::success("S'ha eliminat correctament l'ordre de reunió #{$orden_id}.");
+        } catch (\Exception $e) {
+            Alert::danger("No s'ha pogut eliminar l'ordre #{$orden_id}.");
+        }
+
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 

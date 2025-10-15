@@ -11,8 +11,8 @@
                         /{{$elemento->Alumno->Grupo->first()->nombre ?? 'Sense Grup'}}</strong>
                 <p style="text-indent: 30px">DATA: <strong>{{$elemento->fecha}}</strong> HORA: </p>
                 <p style="text-indent: 30px">LLOC: <strong></strong></p> <b/>
-                <p style="text-indent: 30px">D'acord amb el RRI del CIPFP BATOI (aprovat pel Consell Social el dia 20
-                    d'abril de 2013). Per la present queda Vè. AMONESTAT per FALTA comesa en aquest Institut i que va
+                <p style="text-indent: 30px">D'acord amb el RRI del CIPFP BATOI (aprovat pel Consell Social el dia 29
+                    d'abril de 2025). Per la present queda Vè. AMONESTAT per FALTA comesa en aquest Institut i que va
                     ser la següent: </p>
                 <p tyle="text-indent: 30px"><strong>{{$elemento->explicacion}}</strong></p>
             </div>

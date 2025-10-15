@@ -22,7 +22,7 @@ class AutorizacionDireccionGrupoResource extends PrintResource
      */
     public function toArray()
     {
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         $director = Profesor::find(config('avisos.director'))->fullName;
         $alumnes = '';
         $data_actual = new \DateTime();
