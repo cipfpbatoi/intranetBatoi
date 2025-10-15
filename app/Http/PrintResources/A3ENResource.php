@@ -25,7 +25,7 @@ class A3ENResource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         $centro = $this->elements->Fct->Colaboracion->Centro;
         $empresa = $centro->Empresa;
         $instructor = $this->elements->Fct->instructor;

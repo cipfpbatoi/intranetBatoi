@@ -4,6 +4,8 @@
 namespace Intranet\Services;
 
 
+use Google\Service\AndroidPublisher\ActivateBasePlanRequest;
+use Intranet\Entities\Actividad;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Hora;
 use Facebook\WebDriver\WebDriverBy;
@@ -37,6 +39,10 @@ class ItacaService
         $this->ss->waitAndClick("//span[contains(text(),'Listado Personal')]");
     }
 
+    public function processActivitat(Actividad $activitat): bool
+    {
+        return true;
+    }
     public function processFalta(Falta_itaca $falta): bool
     {
         try {

@@ -15,21 +15,29 @@ class AlumnoGrupoController extends ApiBaseController
 
     private function alumnos($misgrupos)
     {
-       foreach ($misgrupos as $migrupo){
-           if (isset($migrupo->idGrupo)) {
-               $alumnos = AlumnoGrupo::where('idGrupo', '=',$migrupo->idGrupo)->get();
-               foreach ($alumnos as $alumno) {
-                   $arrayAlumnos[$alumno->idAlumno] = $alumno->Alumno->nameFull;
-               }
-           }
-       }
-       asort($arrayAlumnos);
-       foreach ($arrayAlumnos as $id => $name){
-           $nalum['id']= $id;
-           $nalum['name'] = $name;
-           $misAlumnos[] = $nalum;
-       }
-       return $misAlumnos;
+        $grupoIds = collect($misgrupos)->pluck('idGrupo')->filter()->all();
+        if (empty($grupoIds)) {
+            return [];
+        }
+
+        $registres = AlumnoGrupo::with('Alumno')
+            ->whereIn('idGrupo', $grupoIds)
+            ->get()
+            ->filter(fn ($ag) => $ag->Alumno)     // fora els que no tenen alumne
+            ->unique('idAlumno');                 // evita duplicats
+
+        // Construeix [id => nom], ordena naturalment i torna format {id,name}
+        $array = [];
+        foreach ($registres as $ag) {
+            $array[$ag->idAlumno] = $ag->Alumno->nameFull;
+        }
+
+        asort($array, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return collect($array)
+            ->map(fn ($name, $id) => ['id' => $id, 'name' => $name])
+            ->values()
+            ->all();
     }
 
     public function show($cadena,$send=true)

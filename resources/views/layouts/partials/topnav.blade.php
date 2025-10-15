@@ -39,30 +39,35 @@
                     </a>
                     <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
                         @foreach (authUser()->unreadNotifications()->paginate(6) as $notifications)
+                            @php
+                                $d = $notifications->data ?? [];
+                                $motiu   = is_array($d['motiu']   ?? null) ? implode(', ', $d['motiu'])   : ($d['motiu']   ?? '');
+                                $emissor = is_array($d['emissor'] ?? null) ? implode(', ', $d['emissor']) : ($d['emissor'] ?? '');
+                                $enlace  = is_string($d['enlace'] ?? null) ? $d['enlace'] : '#';
+                                $fecha   = is_string($d['data']   ?? null) ? $d['data']   : (is_array($d['data'] ?? null) ? implode(' ', $d['data']) : ($d['data'] ?? ''));
+                            @endphp
+
                             <li id='{{$notifications->id}}'>
                                 <a class="papelera" href="/notification/{{$notifications->id}}/delete">
                                     <span class="image">
-                                        <img src="/img/delete.png" alt="Marcar como leida"
-                                                             class="iconopequeno"/>
+                                        <img src="/img/delete.png" alt="Marcar como leida" class="iconopequeno"/>
                                     </span>
                                 </a>
-                                <a href="{{$notifications->data['enlace']}}">
+
+                                <a href="{{ $enlace }}">
                                     <span>
-                                        <span>{{$notifications->data['emissor']}}</span>
-                                        <span class="time">{{$notifications->data['data']}}</span>
+                                        <span>{{ $emissor }}</span>
+                                        <span class="time">{{ $fecha }}</span>
                                     </span>
-                                    @if ($notifications->data['enlace'] != "#")
-                                        <span class="message blue">
-                                            {{$notifications->data['motiu']}}
-                                        </span>
+
+                                    @if ($enlace !== "#")
+                                        <span class="message blue">{{ $motiu }}</span>
                                     @else
-                                        <span class="message">
-                                            {{$notifications->data['motiu']}}
-                                        </span>
+                                        <span class="message">{{ $motiu }}</span>
                                     @endif
                                 </a>
                             </li>
-                        @endforeach
+                         @endforeach
                         <div class="text-center">
                             <a href="/notification">
                                 <strong>@lang("messages.buttons.seeAll")</strong>

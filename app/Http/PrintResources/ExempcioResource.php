@@ -25,7 +25,7 @@ class ExempcioResource extends PrintResource
         
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         $telefonoAlumne = ($alumno->telef1 != '')?$alumno->telef1:$alumno->telef2;
         $telefonoTutor = ($tutor->movil1 != '')?$tutor->movil1:$tutor->movil2;
         

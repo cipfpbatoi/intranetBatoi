@@ -22,7 +22,7 @@ class ConformidadAlumnadoGrupoResource extends PrintResource
     public function toArray()
     {
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         $data_actual = new \DateTime();
         $any_academic_inici = ($data_actual->format('m') < 6) ?
             $data_actual->format('Y') - 1 :

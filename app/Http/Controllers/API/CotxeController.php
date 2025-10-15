@@ -47,23 +47,32 @@ class CotxeController extends ApiResourceController
 
         $cotxe = Cotxe::where('matricula', $matricula)->first();
 
-        // Regles d’obertura
+        // Inicialitzem sempre per evitar "undefined variable"
         $autoritzat = false;
+        $obrir      = false;
 
-
-        if ($cotxe ) {
+        // Regles d’obertura
+        if ($cotxe) {
+            // Matrícula exacta registrada → autoritzat i obrim
             $autoritzat = true;
-            $obrir = true;
+            $obrir      = true;
         } elseif ($direccio === Direccio::Eixida && Cotxe::plateHamming1($matricula)->exists()) {
-            // Permet eixida amb coincidència Hamming-1 encara que no estiga autoritzat
+            // Eixida per coincidència Hamming-1 encara que no estiga autoritzat → obrim però marquem no autoritzat
             $autoritzat = false;
-            $obrir = true;
+            $obrir      = true;
         }
 
         if ($obrir) {
-            $this->access->obrirIPorta();
+            try {
+                $this->access->obrirIPorta();
+            } catch (\Throwable $e) {
+                Log::error("Error obrint la porta: {$e->getMessage()}");
+                // Tot i l’error físic, registrem l’intent amb porta_oberta=false
+                $obrir = false;
+            }
         }
 
+        // Registre d’accés (sempre)
         $this->access->registrarAcces(
             matricula:    $matricula,
             autoritzat:   $autoritzat,
@@ -72,8 +81,8 @@ class CotxeController extends ApiResourceController
             tipus:        $direccio->value,
         );
 
-        // Fitxatge si hi ha professor vinculat
-        if ($cotxe?->professor) {
+        // Fitxatge: si vols que només fitxe en entrades, afegeix condició de direcció
+        if ($cotxe?->professor /* && $direccio === Direccio::Entrada */) {
             $this->fitxatge->fitxar($cotxe->professor->dni);
         }
 
@@ -83,6 +92,7 @@ class CotxeController extends ApiResourceController
 
         return response()->json(['status' => $msg]);
     }
+
 
     /**
      * Accepta payloads heterogenis (Milesight, etc.)
@@ -105,7 +115,7 @@ class CotxeController extends ApiResourceController
             $data['device_name']    ??  // Milesight
             null;
 
-        $matricula = strtoupper(trim($rawPlate));
+        $matricula = strtoupper(preg_replace('/\s+/', '', $rawPlate));
         $device    = $rawDevice ?: ($direccio === Direccio::Entrada ? 'Cam_exterior' : 'Cam_interior');
 
         return [$matricula, $device];

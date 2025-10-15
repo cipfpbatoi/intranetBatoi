@@ -73,6 +73,7 @@ return array(
         'resum' => 'Resum',
         'tasks' => 'Tasques pendents',
         'explicacion' => 'Explicación',
+        'fechatramite' => 'Data comunicació alumne',
         'afternoon' => 'Vesprada',
         'calendari' => 'Calendari Escolar'
      ),

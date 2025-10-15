@@ -23,7 +23,7 @@ class AVIIIResource extends PrintResource
     public function toArray()
     {
         $alumno = $this->elements->Alumno;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         $secretario = Profesor::find(config('avisos.secretario'))->fullName;
         $director = Profesor::find(config('avisos.director'))->fullName;
         return [
