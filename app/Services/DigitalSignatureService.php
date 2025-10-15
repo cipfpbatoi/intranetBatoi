@@ -103,9 +103,17 @@ class DigitalSignatureService
     public function validateUserSignature($file, $dni = null): bool
     {
         if (is_null($dni)) {
-            $dni = substr(authUser()->dni, 1);
+            $user = authUser();
+
+            if (!$user) {
+                throw new \Exception('No hi ha cap usuari autenticat. No es pot validar la signatura.');
+            }
+
+            $dni = substr($user->dni, 1);
         }
+
         $signatura = ValidatePdfSignature::from($file);
+
         return isset($signatura->data['CN'][0]) && str_contains($signatura->data['CN'][0], $dni);
     }
 

@@ -1,4 +1,5 @@
 <?php
+use Intranet\Livewire\BustiaVioleta\Form as BustiaForm;
 
 Route::get('/allProgramacion/', ['as' => 'modulogrupo.all', 'uses' => 'PanelModuloGrupoController@index']);
 Route::get('/modulogrupo/{modulogrupo}/pdf', ['as' => 'modulogrupo.programacion', 'uses' =>  'PanelModuloGrupoController@pdf']);
@@ -35,5 +36,6 @@ Route::put('/projecte/{id}/edit', ['as' => 'projecte.update', 'uses' => 'Project
 Route::get('/projecte/{id}/delete', ['as' => 'projecte.delete', 'uses' => 'ProjecteController@destroy']);
 Route::get('/projecte/{id}/email', ['as' => 'projecte.email', 'uses' => 'ProjecteController@email']);
 Route::get('/projecte/{id}/pdf', ['as' => 'projecte.pdf', 'uses' => 'ProjecteController@pdf']);
-
-
+Route::view('/bustia-violeta', 'bustia.form')
+     ->name('bustia.form'); 
+ 

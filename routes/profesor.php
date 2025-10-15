@@ -3,6 +3,7 @@
 
 use Intranet\Http\Controllers\RedirectAfterAuthenticationController;
 use Intranet\Livewire\ColaboracionesLivewire;
+use Intranet\Livewire\BustiaVioleta\AdminList;
 
 Route::get('/home', ['as' => 'home.profesor', 'uses' => 'Auth\Profesor\HomeController@index']);
 Route::get('/legal', ['as' => 'legal', 'uses' => 'Auth\Profesor\HomeController@legal']);
@@ -565,3 +566,6 @@ Route::put('/cotxe/{id}/edit', ['as' => 'cotxe.update', 'uses' => 'CotxeControll
 Route::resource('tipoactividad','TipoActividadController',['except'=>['update','destroy','show']]);
 Route::put('/tipoactividad/{id}/edit', ['as' => 'tipoactividad.update', 'uses' => 'TipoActividadController@update']);
 Route::get('/tipoactividad/{id}/delete', ['as' => 'tipoactividad.delete', 'uses' => 'TipoActividadController@destroy']);
+Route::view('/bustia-admin', 'bustia.admin')
+     ->name('bustia.admin'); 
+ 

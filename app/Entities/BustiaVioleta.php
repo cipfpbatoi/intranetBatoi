@@ -2,9 +2,12 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+ 
 
-class BustiaVioleta extends BatoiModel
+class BustiaVioleta extends Model
 {
+    use BatoiModels;
+
     protected $table = 'bustia_violeta';
 
     protected $fillable = [
