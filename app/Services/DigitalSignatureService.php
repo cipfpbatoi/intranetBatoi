@@ -105,9 +105,9 @@ class DigitalSignatureService
         if (is_null($dni)) {
             $user = authUser();
 
-            if (!$user) {
-                throw new \Exception('No hi ha cap usuari autenticat. No es pot validar la signatura.');
-            }
+           if (!$user) {
+            return false;
+           }
 
             $dni = substr($user->dni, 1);
         }
