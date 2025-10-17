@@ -14,12 +14,8 @@ class SignaturaController extends ApiBaseController
     {
         $signatura = Signatura::findOrFail($cadena);
 
-        if (!$data = DigitalSignatureService::validateUserSign($signatura->routeFile)) {
-            return response()->view('errors.signatura', [
-                'missatge' => 'Has d’estar autenticat per validar la signatura.'
-            ], 403);
-        }
-
+        $data = DigitalSignatureService::validateUserSign($signatura->routeFile);
+        
         return ['data'=> $data];
     }
 }

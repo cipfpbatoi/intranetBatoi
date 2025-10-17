@@ -95,9 +95,10 @@ class DigitalSignatureService
         ]);
     }
 
-    public static function validateUserSign($file, $dni = null): bool
+    public static function validateUserSign($file)
     {
-        return (new self())->validateUserSignature($file, $dni);
+         $signatura = ValidatePdfSignature::from($file);
+         return $signatura->data;
     }
 
     public function validateUserSignature($file, $dni = null): bool
@@ -106,6 +107,7 @@ class DigitalSignatureService
             $user = authUser();
 
            if (!$user) {
+
             return false;
            }
 
@@ -134,10 +136,10 @@ class DigitalSignatureService
             $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
             file_put_contents($newFile, $signed_pdf_content);
 
-            /*
+            
             if (!$this->validateUserSignature($newFile)) {
                 throw new IntranetException("Persona que signa diferent al certificat");
-            }*/
+            }
 
 
             Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
