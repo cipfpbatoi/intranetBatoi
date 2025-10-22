@@ -35,6 +35,20 @@
                         <span class="hidden-xs"> Bústia</span>
                     </a>
                 </li>
+                @can('manage-bustia-violeta')
+                    @php
+                        $pendents = \Intranet\Entities\BustiaVioleta::pendents()->count();
+                    @endphp
+                    <li class="">
+                        <a href="{{ route('bustia.admin') }}" title="Administrar Bústies">
+                            <i class="fa fa-shield" style="color:#e67e22"></i>
+                            @if($pendents > 0)
+                                <span class="badge bg-red">{{ $pendents }}</span>
+                            @endif
+                            <span class="hidden-xs"> Admin Bústies</span>
+                        </a>
+                    </li>
+                @endcan
                 <li role="presentation" class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown"
                        aria-expanded="false">
