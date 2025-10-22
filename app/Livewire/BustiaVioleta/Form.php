@@ -16,6 +16,17 @@ class Form extends Component
     public $mensaje = '';
     public $finalitat = 'escoltar';
     public $anonimo = true;
+    protected $listeners = ['doSubmit' => 'submit'];
+
+    // En lloc d'executar submit directament, llancem confirmació al navegador
+    public function confirmAndSubmit()
+    {
+        $payload = [
+            'finalitat' => $this->finalitat,
+            'anonimo'   => (bool) $this->anonimo,
+        ];
+        $this->dispatchBrowserEvent('confirm-submit', $payload);
+    }
   
 
     public function mount()

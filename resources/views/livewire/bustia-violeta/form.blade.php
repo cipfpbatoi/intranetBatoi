@@ -6,7 +6,7 @@
         <div class="alert alert-success">{{ session('ok') }}</div>
     @endif
 
-    <form wire:submit.prevent="submit">
+    <form wire:submit.prevent="confirmAndSubmit">
        <div class="form-group mb-2">
             <label>Tipus</label>
             <select class="form-control" wire:model="tipus">
