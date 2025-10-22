@@ -29,6 +29,12 @@
                         </a>
                     </li>
                 @endif
+                <li class="">
+                    <a href="{{ route('bustia.form') }}" title="Bústia">
+                        <i class="fa fa-comments" style="color:#7e3ff2"></i>
+                        <span class="hidden-xs"> Bústia</span>
+                    </a>
+                </li>
                 <li role="presentation" class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown"
                        aria-expanded="false">
