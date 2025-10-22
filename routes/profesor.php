@@ -567,5 +567,6 @@ Route::resource('tipoactividad','TipoActividadController',['except'=>['update','
 Route::put('/tipoactividad/{id}/edit', ['as' => 'tipoactividad.update', 'uses' => 'TipoActividadController@update']);
 Route::get('/tipoactividad/{id}/delete', ['as' => 'tipoactividad.delete', 'uses' => 'TipoActividadController@destroy']);
 Route::view('/bustia-admin', 'bustia.admin')
+     ->middleware('can:manage-bustia-violeta')
      ->name('bustia.admin'); 
  

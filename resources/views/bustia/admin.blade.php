@@ -16,5 +16,16 @@ Administrador Busties
 @endsection
 @section('scripts')
     @livewireScripts
+    <script>
+  // Bootstrap 4 + Livewire
+  document.addEventListener('livewire:load', function () {
+    window.addEventListener('open-contact', function () {
+      $('#contactModal').modal('show');    // 👈 obri modal
+    });
+    window.addEventListener('close-contact', function () {
+      $('#contactModal').modal('hide');    // 👈 tanca modal
+    });
+  });
+</script>
 @endsection
 

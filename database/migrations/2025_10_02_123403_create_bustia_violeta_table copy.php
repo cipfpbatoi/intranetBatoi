@@ -22,13 +22,10 @@ return new class extends Migration {
 
             // Metadades i moderació
             $table->enum('estado', ['nou','en_revisio','tancat'])->default('nou')->index();
-            $table->boolean('publicable')->default(false); // si el centre vol publicar-ne alguns (mur intern)
-            
+           
             // Privacitat mínima: hash per a limitar abusos/duplicates sense guardar IP/DNI en clar
             $table->string('dni_hash', 64)->nullable()->index();
              
-            // Adjunt opcional
-            $table->string('adjunto_path')->nullable();
 
             $table->timestamps();
         });

@@ -1,6 +1,6 @@
 @extends('layouts.intranet')
  @section('css')
-    <title>Bustia Violeta</title>
+    <title>Bustia</title>
     <style>
         table, th, td {
             border: 1px solid;
@@ -12,7 +12,7 @@
     @livewire('bustia-violeta.form')
 @endsection
 @section('titulo')
-Bustia Violeta
+Bustia
 @endsection
 @section('scripts')
     @livewireScripts

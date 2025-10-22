@@ -12,7 +12,7 @@ return [
         'conserge' => 23,
         'orientador' => 29,
         'practicas' => 31,
-        //'dual' => 37,
+        'convivencia' => 37,
         'jefe_practicas' => 41,
         'qualitat' => 43,
         'comissio_IiC' => 47
@@ -29,7 +29,7 @@ return [
         5 => 'alumno',
         1 => 'todos',
         31 => 'practicas',
-        //37 => 'dual',
+        37 => 'convivencia',
         41 => 'jefe_practicas',
         43 => 'qualitat',
         47 => 'comissio_IiC',
