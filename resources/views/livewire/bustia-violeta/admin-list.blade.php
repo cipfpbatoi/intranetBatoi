@@ -45,7 +45,7 @@
             <tr>
                 <td>{{ $e->id }}</td>
                 <td>{{ $e->categoria }}</td>
-                <td style="max-width:420px">{{ \Illuminate\Support\Str::limit($e->mensaje, 140) }}</td>
+                <td style="max-width:420px">{{ strlen($e->mensaje) > 140 ? substr($e->mensaje, 0, 140).'…' : $e->mensaje }}</td>
                 <td>{{ $e->autor_display_name }}</td>
                 <td>{{ $e->anonimo ? 'Sí' : 'No' }}</td>
                 <td>
