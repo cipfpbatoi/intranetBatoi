@@ -42,10 +42,20 @@
         </thead>
         <tbody>
         @foreach ($entrades as $e)
+            @php
+                // Longitud segura (multibyte si està disponible)
+                $len = function_exists('mb_strlen') ? mb_strlen($e->mensaje, 'UTF-8') : strlen($e->mensaje);
+                $isLong = $len > 140;
+
+                // Tall segur
+                $snippet = $isLong
+                    ? (function_exists('mb_substr') ? mb_substr($e->mensaje, 0, 140, 'UTF-8') : substr($e->mensaje, 0, 140)) . '…'
+                    : $e->mensaje;
+            @endphp
             <tr>
                 <td>{{ $e->id }}</td>
                 <td>{{ $e->categoria }}</td>
-                <td style="max-width:420px">{{ strlen($e->mensaje) > 140 ? substr($e->mensaje, 0, 140).'…' : $e->mensaje }}</td>
+                <td style="max-width:420px">{{ $snippet }}</td>
                 <td>{{ $e->autor_display_name }}</td>
                 <td>{{ $e->anonimo ? 'Sí' : 'No' }}</td>
                 <td>
@@ -69,11 +79,13 @@
                         Eliminar
                     </button>
                     {{-- 🔵 Botó VEURE missatge complet --}}
-                    <button wire:click="viewMessage({{ $e->id }})"
-                            class="btn btn-sm btn-info"
-                            title="Veure missatge complet">
-                        <i class="fa fa-eye"></i> <span class="hidden-xs">Veure</span>
-                    </button>
+                    @if ($isLong)
+                        <button wire:click="viewMessage({{ $e->id }})"
+                                class="btn btn-sm btn-info"
+                                title="Veure missatge complet">
+                            <i class="fa fa-eye"></i> <span class="hidden-xs">Veure</span>
+                        </button>
+                    @endif
                 </td>
             </tr>
         @endforeach
