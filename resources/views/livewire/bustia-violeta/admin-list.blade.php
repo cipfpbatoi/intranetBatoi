@@ -68,6 +68,12 @@
                     <button wire:click="delete({{ $e->id }})" onclick="return confirm('Eliminar entrada #{{ $e->id }}?')" class="btn btn-sm btn-outline-danger">
                         Eliminar
                     </button>
+                    {{-- 🔵 Botó VEURE missatge complet --}}
+                    <button wire:click="viewMessage({{ $e->id }})"
+                            class="btn btn-sm btn-info"
+                            title="Veure missatge complet">
+                        <i class="fa fa-eye"></i> <span class="hidden-xs">Veure</span>
+                    </button>
                 </td>
             </tr>
         @endforeach
@@ -118,6 +124,25 @@
         <div class="modal-footer">
             <button class="btn btn-secondary" wire:click="closeContact">Tancar</button>
         </div>
+        </div>
+    </div>
+    </div>
+    {{-- Modal "Missatge complet" (només text) --}}
+    <div wire:ignore.self class="modal fade" id="messageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg"> 
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Missatge</h5>
+            </div>
+            <div class="modal-body">
+                <div class="border rounded p-2" style="white-space:pre-wrap; word-break:break-word;">
+                {{ $messageText }}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" wire:click="closeMessage" data-dismiss="modal">Tancar</button>
+            </div>
+            </div>
         </div>
     </div>
 </div>

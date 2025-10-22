@@ -30,6 +30,8 @@ class AdminList extends Component
         'grup' => null,
         'dni' => null,
     ];
+    public $showMessage = false;
+    public $messageText = '';
 
     
 
@@ -92,6 +94,21 @@ class AdminList extends Component
             'rol' => null, 'nom' => null, 'email' => null, 'telefon' => null, 'grup' => null, 'dni' => null,
         ];
         $this->dispatchBrowserEvent('close-contact');
+    }
+
+    public function viewMessage(int $id)
+    {
+        $m = \Intranet\Entities\BustiaVioleta::findOrFail($id);
+        $this->messageText = (string) $m->mensaje;   // només el text sencer
+        $this->showMessage = true;
+        $this->dispatchBrowserEvent('open-message');
+    }
+
+    public function closeMessage()
+    {
+        $this->showMessage = false;
+        $this->messageText = '';
+        $this->dispatchBrowserEvent('close-message');
     }
 
     public function setEstado(int $id, string $estado)

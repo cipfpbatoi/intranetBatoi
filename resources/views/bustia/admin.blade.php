@@ -25,6 +25,12 @@ Administrador Busties
     window.addEventListener('close-contact', function () {
       $('#contactModal').modal('hide');    // 👈 tanca modal
     });
+    window.addEventListener('open-message', function(){
+      $('#messageModal').modal('show');
+    });
+    window.addEventListener('close-message', function(){
+      $('#messageModal').modal('hide');
+    });
   });
 </script>
 @endsection
