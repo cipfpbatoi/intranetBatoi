@@ -124,6 +124,7 @@ class DigitalSignatureService
         (new self())->signDocument($file, $newFile, $coordx, $coordy, $cert);
     }
 
+
     public function signDocument($file, $newFile, $coordx, $coordy, $cert): void
     {
         try {
@@ -132,15 +133,34 @@ class DigitalSignatureService
 
             File::put($imagePath, (new SignImage())->generateFromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y'));
 
-            $pdf = new SignaturePdf($file, $cert, SignaturePdf::MODE_RESOURCE);
-            $signed_pdf_content = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
-            file_put_contents($newFile, $signed_pdf_content);
+            // 1) Escriu en temporal, no in place
+            $tmp = $newFile . '.tmp';
 
-            
-            if (!$this->validateUserSignature($newFile)) {
-                throw new IntranetException("Persona que signa diferent al certificat");
+            $pdf = new SignaturePdf($file, $cert, SignaturePdf::MODE_RESOURCE);
+            $signed = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
+
+            if (!$signed || strlen($signed) < 1000) {
+                throw new IntranetException("La llibreria no ha generat una signatura vàlida.");
             }
 
+            file_put_contents($tmp, $signed);
+
+            // 2) Valida amb try/catch per traure el missatge original
+            try {
+                if (!$this->validateUserSignature($tmp)) {
+                    throw new IntranetException("Persona que signa diferent al certificat");
+                }
+            } catch (\Throwable $e) {
+                // Ací veuràs “The file is unsigned or the signature is not compatible with the PKCS7 type”
+                Log::channel('certificate')->error('Validació de signatura fallida', [
+                    'error' => $e->getMessage(),
+                    'pdfPath' => $tmp,
+                ]);
+                throw $e instanceof IntranetException ? $e : new IntranetException($e->getMessage());
+            }
+
+            // 3) Si tot bé, substitueix l’original
+            rename($tmp, $newFile);
 
             Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
                 'signUser' => $user,
