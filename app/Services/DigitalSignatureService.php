@@ -134,7 +134,8 @@ class DigitalSignatureService
             File::put($imagePath, (new SignImage())->generateFromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y'));
 
             // 1) Escriu en temporal, no in place
-            $tmp = $newFile . '.tmp';
+            $info = pathinfo($newFile);
+            $tmp = $info['dirname'].'/'.$info['filename'].'_tmp.'.$info['extension'];
 
             $pdf = new SignaturePdf($file, $cert, SignaturePdf::MODE_RESOURCE);
             $signed = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
