@@ -18,6 +18,6 @@ return [
         'minories_religioses' => 'Situacions o conductes discriminatòries cap a minories religioses o altres cultures',     // :contentReference[oaicite:7]{index=7}
         'minories_linguistiques' => 'Situacions o conductes discriminatòries cap a minories lingüístiques de la CV ',            // :contentReference[oaicite:8]{index=8}
         'dubtes' => 'Comentar un dubte (sol·licitar informació, identificar si una conducta és discriminatòria...)',
-        'altres' => 'Comentar altres situacions o conductes que no s\'hagen inclòs anteriorment',
+
     ],
 ];
