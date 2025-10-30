@@ -17,9 +17,9 @@
         <div class="form-group mb-2">
             <label>Finalitat</label>
             <select class="form-control" wire:model="finalitat">
-                <option value="escoltar">Vull que llegiu la meua història</option>
-                <option value="visibilitzar">Vull visibilitzar el cas</option>
-                <option value="parlar">Vull parlar amb vosaltres</option>
+                <option value="escoltar">Vull que escolteu/llegiu la meua història</option>
+                <option value="parlar">Vull parlar amb vosaltres personalment</option>
+                <option value="visibilitzar">Vull visibilitzar situacions que es donen al CIPFP Batoi</option>
             </select>
             @error('finalitat') <small class="text-danger">{{ $message }}</small> @enderror
         </div>

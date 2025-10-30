@@ -12,7 +12,7 @@ class RoleMiddleware
 {
     public function handle($request, Closure $next, $role)
     {
-        $user = Auth::user();
+        $user = authUser();
         if (!$user) {
             // Redirigeix com a convidat per evitar bucles
             return redirect()->guest(route('login'))->with('error', 'Has d’iniciar sessió.');
