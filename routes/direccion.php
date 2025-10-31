@@ -59,6 +59,7 @@ Route::get('/fichar/control', ['as' => 'fichar.control', 'uses' => 'FicharContro
 Route::get('/fichar/controlDia', ['as' => 'ficharDia.control', 'uses' => 'FicharController@controlDia']);
 Route::get('/fichar/list', ['as' => 'fichar.list', 'uses' => 'PanelPresenciaController@indice']);
 Route::get('/fichar/list/{dia}', ['as' => 'fichar.list', 'uses' => 'PanelPresenciaController@indice']);
+Route::get('/fichar/{usuario}/email/{dia}', ['as' => 'fichar.email', 'uses' => 'PanelPresenciaController@email']);
 Route::get('/fichar/{usuario}/delete/{dia}', ['as' => 'fichar.borrar', 'uses' => 'PanelPresenciaController@deleteDia']);
 Route::get('/reunion/list', ['as' => 'reunion.list', 'uses' => 'ReunionController@listado']);
 Route::post('/reunion/aviso', ['as' => 'reunion.avisaFalta','uses'=>'ReunionController@avisaFaltaActa']);
