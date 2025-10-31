@@ -496,7 +496,7 @@ Route::get('/guardia/control', ['as' => 'guardia.control', 'uses' => 'PanelGuard
 Route::resource('/ppoll', 'PPollController', ['except' => ['destroy', 'update', 'show']]);
 Route::post('/ppoll/create', ['as' => 'ppoll.store', 'uses' => 'PPollController@store']);
 Route::put('/ppoll/{id}/edit', ['as' => 'ppoll.update', 'uses' => 'PPollController@update']);
-Route::get('/ppoll/{id}/slave', ['as' => 'ppoll.slave', 'uses' => 'PPollController@slave']);
+Route::get('/ppoll/{id}/show', ['as' => 'ppoll.show', 'uses' => 'PPollController@show']);
 Route::get('/ppoll/{id}/delete', ['as' => 'ppoll.delete', 'uses' => 'PPollController@destroy']);
 
 Route::resource('/option', 'OptionController', ['except' => ['destroy', 'update', 'show']]);
