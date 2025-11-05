@@ -104,7 +104,7 @@ class Grupo extends Model
     {
         return $query
             ->withCount('alumnos')
-            ->orderByAsc('alumnos_count')
+            ->orderBy('alumnos_count')
             ->orderBy('codigo'); // criteri de desempat opcional
     }
 
