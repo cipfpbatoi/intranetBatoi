@@ -100,13 +100,6 @@ class Grupo extends Model
         });
     }
 
-    public function scopeShortestByAlumnes($query)
-    {
-        return $query
-            ->withCount('alumnos')
-            ->orderBy('alumnos_count')
-            ->orderBy('codigo'); // criteri de desempat opcional
-    }
 
     public function scopeLargestByAlumnes($query)
     {

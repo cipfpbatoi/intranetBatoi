@@ -136,9 +136,18 @@ class Alumno extends Authenticatable
     public function scopeMisLOE(Builder $query, ?string $profesor = null, bool $dual = false): Builder
     {
         $profesor = $profesor ?? authUser()->dni;
-        $grupos = Grupo::QTutor($profesor, $dual)->shortestByAlumnes()->first()->pluck('codigo')->toArray();
-        $alumnos = AlumnoGrupo::whereIn('idGrupo', $grupos)->pluck('idAlumno');
-        return $query->whereIn('nia', $alumnos);
+
+        // Subconsulta dels codis de grup on sóc tutor i NO són LFP
+        $codigosTutorNoLfp = Grupo::QTutor($profesor, $dual)
+            ->select('codigo')
+            ->where('codigo', 'not like', '%LFP%');
+
+        // idAlumno de la taula pont per a eixos grups
+        $subAlumnos = AlumnoGrupo::query()
+            ->select('idAlumno')
+            ->whereIn('idGrupo', $codigosTutorNoLfp);
+
+        return $query->whereIn('nia', $subAlumnos);
     }
     /*
     |--------------------------------------------------------------------------
