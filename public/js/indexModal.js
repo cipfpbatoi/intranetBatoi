@@ -6,12 +6,12 @@ $(function () {
     $('#create').on('hidden.bs.modal', function () {
         var id=$(this).find('#id').val();
         if (id) {
-            $(id).find('.fa-edit').parents('a').attr("href", jQuery(location).attr('href')+"/"+id+"/edit");
+            $('#'.id).find('.fa-edit').parents('a').attr("href", jQuery(location).attr('href')+"/"+id+"/edit");
         }
     })
-    $("a.btn-primary.btn.txtButton").on("click", function () {
+    $("a.btn-primary.btn.txtButton").on("click", function (e) {
+        e.preventDefault();
         var formModal = $('.modal form');
-        event.preventDefault();
         $('#id').val('');
         $('.form-horizontal')[0].reset();
         formModal.attr('action',jQuery(location).attr('href').replace(/#/,""));
@@ -69,8 +69,8 @@ jQuery(document).ready(function() {
 
 
 
-jQuery("#datatable").on("click",".fa-edit" ,function () {
-    event.preventDefault();
+jQuery("#datatable").on("click",".fa-edit" ,function (e) {
+    e.preventDefault();
     var id = $(this).parents('tr').attr('id');
     $(this).parents('a').attr("data-toggle", "modal").attr("data-target", "#create").attr("href", "");
     $.ajax({
@@ -108,8 +108,8 @@ jQuery("#datatable").on("click",".fa-edit" ,function () {
     })
 });
 
-jQuery("#datatable").on("click",".fa-eye" ,function () {
-    event.preventDefault();
+jQuery("#datatable").on("click",".fa-eye" ,function (e) {
+    e.preventDefault();
     var id = $(this).parents('tr').attr('id');
     $(this).parents('a').attr("data-toggle", "modal").attr("data-target", "#show").attr("href", "");
     $.ajax({
