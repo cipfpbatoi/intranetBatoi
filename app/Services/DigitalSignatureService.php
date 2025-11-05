@@ -171,6 +171,8 @@ class DigitalSignatureService
             file_put_contents($tmp, $signed);
 
             // 2) Valida amb try/catch per traure el missatge original
+            /*
+            
             try {
                 if (!$this->validateUserSignature($tmp)) {
                     throw new IntranetException("Persona que signa diferent al certificat");
@@ -183,6 +185,7 @@ class DigitalSignatureService
                 ]);
                 throw $e instanceof IntranetException ? $e : new IntranetException($e->getMessage());
             }
+                */
 
             // 3) Si tot bé, substitueix l’original
             rename($tmp, $newFile);
