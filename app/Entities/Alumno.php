@@ -132,6 +132,14 @@ class Alumno extends Authenticatable
         return $query->whereIn('nia', $alumnos);
     }
 
+
+    public function scopeMisLOE(Builder $query, ?string $profesor = null, bool $dual = false): Builder
+    {
+        $profesor = $profesor ?? authUser()->dni;
+        $grupos = Grupo::QTutor($profesor, $dual)->shortestByAlumnes()->first()->pluck('codigo')->toArray();
+        $alumnos = AlumnoGrupo::whereIn('idGrupo', $grupos)->pluck('idAlumno');
+        return $query->whereIn('nia', $alumnos);
+    }
     /*
     |--------------------------------------------------------------------------
     | ACCESSORS & MUTATORS
