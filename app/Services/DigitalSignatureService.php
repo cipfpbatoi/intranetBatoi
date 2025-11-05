@@ -160,6 +160,8 @@ class DigitalSignatureService
             $tmp = $info['dirname'].'/'.$info['filename'].'_tmp.'.$info['extension'];
 
             $pdf = new SignaturePdf($file, $cert, SignaturePdf::MODE_RESOURCE);
+            $coordx = (float) ($coordx ?? 50);
+            $coordy = (float) ($coordy ?? 50);
             $signed = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
 
             if (!$signed || strlen($signed) < 1000) {
