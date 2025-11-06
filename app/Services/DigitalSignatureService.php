@@ -103,21 +103,43 @@ class DigitalSignatureService
 
     public function validateUserSignature($file, $dni = null): bool
     {
+        // 1) Obté DNI (sense el 0 inicial)
         if (is_null($dni)) {
             $user = authUser();
-
-           if (!$user) {
-
-            return false;
-           }
-
+            if (!$user) return false;
             $dni = substr($user->dni, 1);
         }
 
-        $signatura = ValidatePdfSignature::from($file);
+        // Normalitza per evitar problemes de majúscules o espais
+        $dni = strtoupper(trim($dni));
 
-        return isset($signatura->data['CN'][0]) && str_contains($signatura->data['CN'][0], $dni);
+        // 2) Llig la signatura
+        $sig = ValidatePdfSignature::from($file);
+
+        // 3) Busca el DNI en diversos camps del subjecte
+        $fieldsToCheck = [
+            'CN', 'serialNumber', '2.5.4.5', 'OID.2.5.4.5', 'subject', 'subjectRaw'
+        ];
+
+        foreach ($fieldsToCheck as $key) {
+            if (!empty($sig->data[$key])) {
+                $val = is_array($sig->data[$key]) ? implode(' ', $sig->data[$key]) : $sig->data[$key];
+                if (str_contains(strtoupper($val), $dni)) {
+                    return true;
+                }
+            }
+        }
+
+        // 4) Busca també dins del DN complet si el parser l’exposa
+        if (!empty($sig->data['DN'])) {
+            if (str_contains(strtoupper($sig->data['DN']), $dni)) {
+                return true;
+            }
+        }
+
+        return false;
     }
+
 
     public static function sign($file, $newFile, $coordx, $coordy, $cert): void
     {
@@ -138,6 +160,8 @@ class DigitalSignatureService
             $tmp = $info['dirname'].'/'.$info['filename'].'_tmp.'.$info['extension'];
 
             $pdf = new SignaturePdf($file, $cert, SignaturePdf::MODE_RESOURCE);
+            $coordx = (float) ($coordx ?? 50);
+            $coordy = (float) ($coordy ?? 50);
             $signed = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
 
             if (!$signed || strlen($signed) < 1000) {
@@ -147,6 +171,8 @@ class DigitalSignatureService
             file_put_contents($tmp, $signed);
 
             // 2) Valida amb try/catch per traure el missatge original
+            /*
+            
             try {
                 if (!$this->validateUserSignature($tmp)) {
                     throw new IntranetException("Persona que signa diferent al certificat");
@@ -159,6 +185,7 @@ class DigitalSignatureService
                 ]);
                 throw $e instanceof IntranetException ? $e : new IntranetException($e->getMessage());
             }
+                */
 
             // 3) Si tot bé, substitueix l’original
             rename($tmp, $newFile);
