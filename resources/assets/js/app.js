@@ -21,14 +21,14 @@ import ControlSemanaView from './components/fichar/ControlSemanaView.vue';
 import ControlGuardiaView from './components/guardias/ControlGuardiaView.vue';
 import ReservasView from './components/reservas/ReservasView.vue';
 import BirretItacaView from './components/fichar/BirretItacaView.vue';
-
+import ControlResumenDiaView from './components/fichar/ControlResumenDiaView.vue';
 
 Vue.component('control-dia-view', ControlDiaView);
 Vue.component('control-semana-view', ControlSemanaView);
 Vue.component('control-guardia-view', ControlGuardiaView);
 Vue.component('reservas-view', ReservasView);
 Vue.component('birret-itaca-view', BirretItacaView);
-//Vue.component('horas-table', require('./components/HorasTable.vue'));
+Vue.component('control-resumen-dia-view', ControlResumenDiaView);
 
 const app = new Vue({
     el: '#app'
