@@ -62,11 +62,11 @@
                     <li>1 original de l'Annex III (Centre Educatiu).</li>
                     <li>
                         Annex Declaració responsable de l'empresa de que el personal compta amb acreditació negativa
-                        del registre central de delinqüents sexuals (si van alumnes menors de 16 anys)
+                        del registre central de delinqüents sexuals.
                     </li>
                 </ul>
                 <p style="text-align:left;font-weight: bold">IMPORTANT: El termini màxim de lliurament de la
-                    documentació(també s'haurà d'ajuntar al SAO) al Departament d'FCT serà d'un MÀXIM DE 15 DIES HÀBILS
+                    documentació(també s'haurà d'ajuntar al SAO) al Departament de FCT serà d'un MÀXIM DE 10 DIES HÀBILS
                     abans que l'alumne inicie les pràctiques d'FCT.</p>
             </td>
         </tr>

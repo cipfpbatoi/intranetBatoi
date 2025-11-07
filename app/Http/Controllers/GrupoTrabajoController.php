@@ -96,11 +96,11 @@ class GrupoTrabajoController extends ModalController
     public function borrarProfesor($gtId, $profesorId)
     {
         Miembro::where('idGrupoTrabajo', '=', $gtId)
-                ->where('idProfesor', '=', $profesorId)
-                ->where('coordinador', 0)
-                ->delete();
-        
-        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupo_trabajo' => $gtId]);
+            ->where('idProfesor', '=', $profesorId)
+            ->where('coordinador', 0)
+            ->delete();
+
+        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $gtId]);
     }
 
     /**
