@@ -97,8 +97,18 @@ class DigitalSignatureService
 
     public static function validateUserSign($file)
     {
-         $signatura = ValidatePdfSignature::from($file);
-         return $signatura->data;
+         try {
+            $signatura = ValidatePdfSignature::from($file);
+            return $signatura->data; // Tot OK: retornem info de la signatura
+        } catch (\Throwable $e) {
+            if (str_contains($e->getMessage(), 'The file is unsigned or the signature is not compatible with the PKCS7 type')) {
+                // Cas normal: el PDF no està signat o no és un PKCS7 que entenem
+                return null;
+            }
+
+            // Altres errors: sí que interessa saber-los
+            throw $e;
+        }
     }
 
     public function validateUserSignature($file, $dni = null): bool
@@ -146,6 +156,7 @@ class DigitalSignatureService
         (new self())->signDocument($file, $newFile, $coordx, $coordy, $cert);
     }
 
+    /*
 
     public function signDocument($file, $newFile, $coordx, $coordy, $cert): void
     {
@@ -171,7 +182,7 @@ class DigitalSignatureService
             file_put_contents($tmp, $signed);
 
             // 2) Valida amb try/catch per traure el missatge original
-            /*
+            
             
             try {
                 if (!$this->validateUserSignature($tmp)) {
@@ -185,7 +196,7 @@ class DigitalSignatureService
                 ]);
                 throw $e instanceof IntranetException ? $e : new IntranetException($e->getMessage());
             }
-                */
+               
 
             // 3) Si tot bé, substitueix l’original
             rename($tmp, $newFile);
@@ -208,6 +219,120 @@ class DigitalSignatureService
             throw new IntranetException("Error al signar el document.: " . $th->getMessage());
         }
     }
+        */
+
+    public function signDocument($file, $newFile, $coordx, $coordy, $cert): void
+    {
+        try {
+            // 1️⃣ Primer intent normal
+            $this->signInternal($file, $newFile, $coordx, $coordy, $cert);
+            return;
+
+        } catch (Throwable $th) {
+            $message = $th->getMessage();
+
+            // 2️⃣ Si l’error és per compressió no suportada (cas Ofelia)
+            if (str_contains($message, 'compression technique which is not supported')) {
+
+                Log::channel('certificate')->warning("PDF amb compressió no suportada. Intentant normalitzar-lo.", [
+                    'intranetUser' => authUser()->fullName,
+                    'pdfPath'      => $file,
+                    'error'        => $message,
+                ]);
+
+                try {
+                    // Normalitzem el PDF i tornem a intentar
+                    $normalized = $this->normalizePdf($file);
+                    $this->signInternal($normalized, $newFile, $coordx, $coordy, $cert);
+                    return;
+
+                } catch (Throwable $e2) {
+                    Log::channel('certificate')->alert("Error al signar després de normalitzar.", [
+                        'intranetUser' => authUser()->fullName,
+                        'pdfPath'      => $file,
+                        'error'        => $e2->getMessage(),
+                    ]);
+
+                    throw new IntranetException(
+                        "No s'ha pogut signar el document: el PDF no és compatible ni després d'adaptar-lo automàticament."
+                    );
+                }
+            }
+
+            // 3️⃣ Altres errors → com abans
+            Log::channel('certificate')->alert("Error al signar el document.", [
+                'intranetUser' => authUser()->fullName,
+                'pdfPath'      => $file,
+                'error'        => $message,
+            ]);
+
+            throw new IntranetException("Error al signar el document.: " . $message);
+        }
+    }
+
+    private function signInternal($file, $newFile, $coordx, $coordy, $cert): void
+    {
+        $user = $cert->getCert()->data['subject']['commonName'];
+        $imagePath = storage_path('tmp/' . Str::orderedUuid() . '.png');
+
+        File::put(
+            $imagePath,
+            (new SignImage())->generateFromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y')
+        );
+
+        $info = pathinfo($newFile);
+        $tmp = $info['dirname'].'/'.$info['filename'].'_tmp.'.$info['extension'];
+
+        $pdf = new SignaturePdf($file, $cert, SignaturePdf::MODE_RESOURCE);
+
+        $coordx = (float) ($coordx ?? 50);
+        $coordy = (float) ($coordy ?? 50);
+
+        $signed = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
+
+        if (!$signed || strlen($signed) < 1000) {
+            throw new IntranetException("La llibreria no ha generat una signatura vàlida.");
+        }
+
+        file_put_contents($tmp, $signed);
+        rename($tmp, $newFile);
+
+        Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
+            'signUser'     => $user,
+            'intranetUser' => authUser()->fullName,
+            'pdfPath'      => $file,
+            'signedPdfPath'=> $newFile,
+            'imagePath'    => $imagePath,
+            'coordx'       => $coordx,
+            'coordy'       => $coordy,
+        ]);
+    }
+
+    private function normalizePdf(string $inputFile): string
+    {
+        $info = pathinfo($inputFile);
+        $outputFile = $info['dirname'].'/'.$info['filename'].'_norm.'.$info['extension'];
+
+        $cmd = sprintf(
+            'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dNOPAUSE -dBATCH -sOutputFile=%s %s 2>&1',
+            escapeshellarg($outputFile),
+            escapeshellarg($inputFile)
+        );
+
+        exec($cmd, $output, $returnVar);
+
+        if ($returnVar !== 0 || !file_exists($outputFile) || filesize($outputFile) === 0) {
+            Log::channel('certificate')->error('Error normalitzant PDF per a signatura', [
+                'cmd'    => $cmd,
+                'output' => $output,
+                'code'   => $returnVar,
+            ]);
+            throw new IntranetException("No s'ha pogut adaptar el PDF per a la signatura.");
+        }
+
+        return $outputFile;
+    }
+
 
     private function getEncrypter($password): Encrypter
     {
