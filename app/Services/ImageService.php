@@ -3,6 +3,7 @@
 namespace Intranet\Services;
 
 use Illuminate\Http\UploadedFile;
+use Styde\Html\Facades\Alert;
 use Styde\Html\Str;
 
 class ImageService
@@ -120,6 +121,8 @@ class ImageService
             } catch (\Throwable $e) {
                 // continua a pla B
             }
+        } else {
+            Alert::info('Imagick no està disponible al servidor.');
         }
 
         // 2) Pla B: utilitat heif-convert si està instal·lada al servidor
