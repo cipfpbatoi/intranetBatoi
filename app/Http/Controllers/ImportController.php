@@ -202,8 +202,6 @@ class ImportController extends Seeder
 
     public function hazDNI(string $dni, int $nia)
     {
-        $dni = strtoupper(trim($dni));
-
         return DB::transaction(function () use ($dni, $nia) {
             // A) Prioritza sempre el registre trobat pel NIA importat (és la PK nova/oficial)
             $byNia = Alumno::find($nia);
