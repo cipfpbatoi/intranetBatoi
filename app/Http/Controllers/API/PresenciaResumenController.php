@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace Intranet\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Services\PresenciaResumenService;
+use Intranet\Services\PresenciaResumenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Intranet\Http\Controllers\API\ApiBaseController;
 
-class PresenciaResumenController extends Controller
+class PresenciaResumenController extends ApiBaseController
 {
     public function dia(Request $request, PresenciaResumenService $svc)
     {

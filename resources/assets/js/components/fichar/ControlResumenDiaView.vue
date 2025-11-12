@@ -9,7 +9,7 @@
         <label>Departament</label>
         <select v-model="dep" class="input">
           <option value="">Tots</option>
-          <option v-for="d in departaments" :key="d" :value="d">{{ d }}</option>
+          <option v-for="d in departaments" :key="d.id" :value="d.id">{{ d.depcurt }}</option>
         </select>
       </div>
       <div style="flex:1;min-width:240px">

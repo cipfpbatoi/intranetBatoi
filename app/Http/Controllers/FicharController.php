@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 
 use \DB;
+use Intranet\Entities\Departamento;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Horario;
 use Intranet\Services\FitxatgeService;
@@ -80,6 +81,11 @@ class FicharController extends IntranetController
             ->Plantilla()
             ->get();
         return view('fichar.control', compact('profes'));
+    }
+    public function resumenDia()
+    {
+        $departaments = Departamento::where('didactico',1)->orderBy('depcurt')->get(['id','depcurt']);
+        return view('fichar.resumen-dia', compact('departaments'));
     }
 
     public function controlDia()

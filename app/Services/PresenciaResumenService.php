@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Intranet\Services;
 
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
