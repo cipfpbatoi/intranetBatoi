@@ -12,7 +12,8 @@ class PresenciaResumenService
         private int $GRACE_MINUTES = 10,       // tolerància (minuts)
         private bool $FLEX_NO_DOCENCIA = true, // flexibilitat en trams no docents
         private bool $DOCENCIA_RIGIDA = true,  // docència estricta
-        private int $MIN_CHUNK_MINUTES = 3     // fusionar estades molt properes
+        private int $MIN_CHUNK_MINUTES = 3,     // fusionar estades molt properes
+        private int $NO_SALIDA_AFTER_MIN = 30 // <— NOVETAT
     ) {}
 
     public function resumenDia(\DateTimeInterface|string $dia, ?Collection $profes = null): array
@@ -90,17 +91,19 @@ class PresenciaResumenService
         foreach ($profes as $p) {
             $dni = $p->dni;
 
+            $fichajesRows = $fitxatges->get($dni) ?? collect();
             $plan = $this->buildPlannedSlotsFromDbRows($horariRows->get($dni) ?? collect(), $date);
-            $stays = $this->buildStayIntervals($fitxatges->get($dni) ?? collect(), $date);
+            $stays = $this->buildStayIntervals($fichajesRows, $date);
             $exc   = $this->buildExceptionIntervals(
                 $actividades->get($dni) ?? collect(),
                 $comisiones->get($dni) ?? collect(),
                 $faltas->get($dni) ?? collect(),
                 $date
             );
+            $hasOpen = $this->hasOpenStay($fichajesRows); // <— NOVETAT
 
             $coverage = $this->computeCoverage($plan, $stays, $exc);
-            $status   = $this->decideStatus($coverage);
+            $status   = $this->decideStatus($coverage, $hasOpen,$plan,$date);
 
             $out[] = [
                 'dni' => $dni,
@@ -156,6 +159,18 @@ class PresenciaResumenService
         }
         return $this->mergeClose($intervals, $this->MIN_CHUNK_MINUTES);
     }
+
+    private function hasOpenStay(\Illuminate\Support\Collection $fichajesRows): bool
+    {
+        // Qualsevol registre del dia amb entrada i salida NULL
+        foreach ($fichajesRows as $r) {
+            if ($r->entrada && (is_null($r->salida) || $r->salida === '')) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private function buildExceptionIntervals(Collection $acts, Collection $coms, Collection $faltas, Carbon $day): array
     {
@@ -238,12 +253,33 @@ class PresenciaResumenService
         ];
     }
 
-    private function decideStatus(array $c): string
+    private function decideStatus(array $c, bool $hasOpenStay, array $plan, \Carbon\Carbon $date): string
     {
         $planned = $c['planned_docencia'] + $c['planned_altres'];
         $covered = $c['covered_docencia'] + $c['covered_altres'];
 
+        // Sense horari
         if ($planned === 0) return 'OFF';
+
+        // Estat NO_SALIDA:
+        // - Si el dia ja ha passat i hi ha fitxatge obert -> NO_SALIDA
+        // - Si és hui i ja ha passat l'últim tram planificat + tolerància -> NO_SALIDA
+        if ($hasOpenStay) {
+            $lastEnd = null;
+            foreach ($plan as $slot) {
+                $lastEnd = $lastEnd ? max($lastEnd, $slot['to']) : $slot['to'];
+            }
+            if (!$date->isToday()) {
+                return 'NO_SALIDA';
+            } else {
+                // Hui: combina amb el final d'horari
+                if ($lastEnd && \Carbon\Carbon::now('Europe/Madrid')->greaterThan($lastEnd->copy()->addMinutes($this->NO_SALIDA_AFTER_MIN))) {
+                    return 'NO_SALIDA';
+                }
+            }
+        }
+
+        // Resta d'estats
         if ($covered >= max(0, $planned - 1)) return 'OK';
         if ($c['covered_docencia'] === 0 && $c['covered_altres'] === 0) return 'ABSENT';
         return 'PARTIAL';
