@@ -16,8 +16,9 @@
     @if ($ajuda = existsHelp(substr(url()->current(), strlen(url('/')))))
         <li><a id="question" href="https://cipfpbatoi.github.io/intranetBatoi/{{$ajuda}}" target="_blank"><i
                         class="fa fa-question"></i></a>
-            @endif
+            
         </li>
+    @endif
 </ul>
 <div class="clearfix"></div>
 
