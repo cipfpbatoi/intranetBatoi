@@ -9,13 +9,17 @@ use Illuminate\Support\Facades\DB;
 class PresenciaResumenService
 {
     public function __construct(
-        private int $GRACE_MINUTES = 10,       // tolerància (minuts)
-        private bool $FLEX_NO_DOCENCIA = true, // flexibilitat en trams no docents
-        private bool $DOCENCIA_RIGIDA = true,  // docència estricta
-        private int $MIN_CHUNK_MINUTES = 3,     // fusionar estades molt properes
-        private int $NO_SALIDA_AFTER_MIN = 30 // <— NOVETAT
+        private int $GRACE_MINUTES = 10,          // tolerància general
+        private bool $FLEX_NO_DOCENCIA = true,    // trams no docents més flexibles
+        private bool $DOCENCIA_RIGIDA = true,     // trams docents estrictes
+        private int $MIN_CHUNK_MINUTES = 3,       // fusionar intervals molt propers
+        private int $NO_SALIDA_AFTER_MIN = 30     // després de quant temps marquem NO_SALIDA
     ) {}
 
+    /**
+     * Resum d'un dia per a un conjunt de professors.
+     * $profes: col·lecció de professors (dni, nom, etc.) ja carregats, o null per carregar-los ací.
+     */
     public function resumenDia(\DateTimeInterface|string $dia, ?Collection $profes = null): array
     {
         $date = Carbon::parse($dia)->startOfDay();
@@ -24,33 +28,38 @@ class PresenciaResumenService
         // Professors en plantilla (actius)
         $profes ??= DB::table('profesores')
             ->select('dni','nombre','apellido1','apellido2','departamento')
-            ->where('activo', 1) // si uses un altre escop, ajusta
+            ->where('activo', 1)
             ->get();
 
         $dniList = $profes->pluck('dni')->all();
 
-        // ---- HORARI DEL DIA ----
-        // horarios (dia_semana, sesion_orden, idProfesor) + horas (codigo -> hora_ini/hora_fin)
+        // HORARI DEL DIA: horarios + horas
         $horariRows = DB::table('horarios as h')
             ->join('horas as ho', 'ho.codigo', '=', 'h.sesion_orden')
-            ->select('h.idProfesor as dni','h.sesion_orden','ho.hora_ini','ho.hora_fin','h.idGrupo','h.ocupacion')
+            ->select(
+                'h.idProfesor as dni',
+                'h.sesion_orden',
+                'ho.hora_ini',
+                'ho.hora_fin',
+                'h.idGrupo',
+                'h.ocupacion'
+            )
             ->where('h.dia_semana', $weekday)
             ->whereIn('h.idProfesor', $dniList)
             ->orderBy('h.idProfesor')->orderBy('h.sesion_orden')
             ->get()
-            ->groupBy('dni'); // cada profe, trams del dia
-        // Nota: si vols decidir DOCÈNCIA/ALTRES: usa h.idGrupo/h.ocupacion per marcar tipus
+            ->groupBy('dni');
 
-        // ---- FITXATGES (estades reals) ----
+        // FITXATGES
         $fitxatges = DB::table('faltas_profesores')
             ->select('idProfesor as dni','entrada','salida')
             ->whereIn('idProfesor', $dniList)
             ->whereDate('dia', $date->toDateString())
             ->orderBy('idProfesor')->orderBy('entrada')
             ->get()
-            ->groupBy('dni'); // parelles entrada/salida del dia
+            ->groupBy('dni');
 
-        // ---- ACTIVITATS assignades (cobertura) ----
+        // ACTIVITATS
         $actividades = DB::table('actividad_profesor as ap')
             ->join('actividades as a','a.id','=','ap.idActividad')
             ->select('ap.idProfesor as dni','a.desde','a.hasta','a.fueraCentro','a.extraescolar')
@@ -62,7 +71,7 @@ class PresenciaResumenService
             ->get()
             ->groupBy('dni');
 
-        // ---- COMISSIONS (cobertura) ----
+        // COMISSIONS
         $comisiones = DB::table('comisiones')
             ->select('idProfesor as dni','desde','hasta')
             ->whereIn('idProfesor', $dniList)
@@ -73,7 +82,7 @@ class PresenciaResumenService
             ->get()
             ->groupBy('dni');
 
-        // ---- FALTES (algunes poden cobrir segons criteri) ----
+        // FALTES (les tractem com a JUSTIFIED segons el teu criteri)
         $faltas = DB::table('faltas')
             ->select('idProfesor as dni','desde','hasta','hora_ini','hora_fin','dia_completo','estado','motivos')
             ->whereIn('idProfesor', $dniList)
@@ -88,22 +97,31 @@ class PresenciaResumenService
             ->groupBy('dni');
 
         $out = [];
+
         foreach ($profes as $p) {
             $dni = $p->dni;
 
-            $fichajesRows = $fitxatges->get($dni) ?? collect();
+            // Horari planificat
             $plan = $this->buildPlannedSlotsFromDbRows($horariRows->get($dni) ?? collect(), $date);
-            $stays = $this->buildStayIntervals($fichajesRows, $date);
-            $exc   = $this->buildExceptionIntervals(
+
+            // Fitxatges
+            $fichajesRows = $fitxatges->get($dni) ?? collect();
+            $stays        = $this->buildStayIntervals($fichajesRows, $date);
+            $hasOpenStay  = $this->hasOpenStay($fichajesRows);
+
+            // Excepcions (activitats, comissions, faltes)
+            $exc = $this->buildExceptionIntervals(
                 $actividades->get($dni) ?? collect(),
                 $comisiones->get($dni) ?? collect(),
                 $faltas->get($dni) ?? collect(),
                 $date
             );
-            $hasOpen = $this->hasOpenStay($fichajesRows); // <— NOVETAT
 
+            // Cobertura
             $coverage = $this->computeCoverage($plan, $stays, $exc);
-            $status   = $this->decideStatus($coverage, $hasOpen,$plan,$date);
+
+            // Estat final (incloent NO_SALIDA)
+            $status   = $this->decideStatus($coverage, $hasOpenStay, $plan, $date);
 
             $out[] = [
                 'dni' => $dni,
@@ -124,9 +142,11 @@ class PresenciaResumenService
         return $out;
     }
 
+    // ---------- Helpers principals ----------
+
     private function weekdayLetter(Carbon $date): string
     {
-        // dl=1..dg=7 -> L,M,X,J,V
+        // dl=1..dg=7 -> L,M,X,J,V (la resta no s'usa)
         return ['','L','M','X','J','V','S','D'][$date->dayOfWeekIso] ?? 'L';
     }
 
@@ -135,34 +155,19 @@ class PresenciaResumenService
         $slots = [];
         foreach ($rows as $r) {
             if (!$r->hora_ini || !$r->hora_fin) continue;
-            $from = Carbon::parse($day->toDateString().' '.$r->hora_ini.':00');
-            $to   = Carbon::parse($day->toDateString().' '.$r->hora_fin.':00');
 
-            // Decideix tipus: si hi ha idGrupo → assumim DOCÈNCIA; si no, ALTRES (ajusta al teu criteri)
+            $from = Carbon::parse($day->toDateString().' '.$r->hora_ini.':00', 'Europe/Madrid');
+            $to   = Carbon::parse($day->toDateString().' '.$r->hora_fin.':00', 'Europe/Madrid');
+
+            // Criteri: si té idGrupo assumim DOCÈNCIA, si no ALTRES
             $tipo = $r->idGrupo ? 'DOCENCIA' : 'ALTRES';
-            // També pots usar $r->ocupacion per distingir guàrdies/reunions, etc.
-
             $slots[] = ['from'=>$from,'to'=>$to,'tipo'=>$tipo];
         }
         return $this->mergeTouchingByType($slots);
     }
 
-    private function buildStayIntervals(Collection $rows, Carbon $day): array
+    private function hasOpenStay(Collection $fichajesRows): bool
     {
-        $intervals = [];
-        foreach ($rows as $f) {
-            if (!$f->entrada) continue;
-            $from = Carbon::parse($day->toDateString().' '.$f->entrada);
-            $to   = $f->salida ? Carbon::parse($day->toDateString().' '.$f->salida) : $day->copy()->endOfDay();
-            if ($to->lessThan($from)) continue;
-            $intervals[] = ['from'=>$from,'to'=>$to];
-        }
-        return $this->mergeClose($intervals, $this->MIN_CHUNK_MINUTES);
-    }
-
-    private function hasOpenStay(\Illuminate\Support\Collection $fichajesRows): bool
-    {
-        // Qualsevol registre del dia amb entrada i salida NULL
         foreach ($fichajesRows as $r) {
             if ($r->entrada && (is_null($r->salida) || $r->salida === '')) {
                 return true;
@@ -171,35 +176,63 @@ class PresenciaResumenService
         return false;
     }
 
+    private function buildStayIntervals(Collection $fichajes, Carbon $day): array
+    {
+        $dayStart = $day->copy()->startOfDay();
+        $dayEndCap = $day->isToday()
+            ? Carbon::now('Europe/Madrid')
+            : $day->copy()->endOfDay();
+
+        $intervals = [];
+
+        foreach ($fichajes as $f) {
+            if (!$f->entrada) continue;
+
+            $from = Carbon::parse($day->toDateString().' '.($f->entrada ?? '00:00:00'), 'Europe/Madrid');
+            $to   = $f->salida
+                ? Carbon::parse($day->toDateString().' '.$f->salida, 'Europe/Madrid')
+                : $dayEndCap->copy();
+
+            if ($to->lessThan($from)) continue;
+
+            $from = $this->clampToDay($from, $dayStart, $dayEndCap);
+            $to   = $this->clampToDay($to,   $dayStart, $dayEndCap);
+            if ($to->lessThanOrEqualTo($from)) continue;
+
+            $intervals[] = ['from' => $from, 'to' => $to];
+        }
+
+        return $this->mergeOverlappingOrClose($intervals, $this->MIN_CHUNK_MINUTES);
+    }
 
     private function buildExceptionIntervals(Collection $acts, Collection $coms, Collection $faltas, Carbon $day): array
     {
         $res = [];
 
         foreach ($acts as $a) {
-            // Encara que siga fueraCentro/extraescolar, la contem com cobertura
             $res[] = [
-                'from' => Carbon::parse($a->desde),
-                'to'   => Carbon::parse($a->hasta),
+                'from' => Carbon::parse($a->desde, 'Europe/Madrid'),
+                'to'   => Carbon::parse($a->hasta, 'Europe/Madrid'),
                 'tipo' => 'ACTIVITY',
             ];
         }
 
         foreach ($coms as $c) {
             $res[] = [
-                'from' => Carbon::parse($c->desde),
-                'to'   => Carbon::parse($c->hasta),
+                'from' => Carbon::parse($c->desde, 'Europe/Madrid'),
+                'to'   => Carbon::parse($c->hasta, 'Europe/Madrid'),
                 'tipo' => 'COMMISSION',
             ];
         }
 
         foreach ($faltas as $f) {
-            // Criteri: si dia complet o tram horari → considerem JUSTIFIED.
-            // Pots filtrar per 'estado' o 'motivos' si voleu només alguns casos.
-            $from = $f->dia_completo ? $day->copy()->startOfDay()
-                                     : Carbon::parse($day->toDateString().' '.($f->hora_ini ?? '00:00:00'));
-            $to   = $f->dia_completo ? $day->copy()->endOfDay()
-                                     : Carbon::parse($day->toDateString().' '.($f->hora_fin ?? '23:59:59'));
+            $from = $f->dia_completo
+                ? $day->copy()->startOfDay()
+                : Carbon::parse($day->toDateString().' '.($f->hora_ini ?? '00:00:00'), 'Europe/Madrid');
+            $to   = $f->dia_completo
+                ? $day->copy()->endOfDay()
+                : Carbon::parse($day->toDateString().' '.($f->hora_fin ?? '23:59:59'), 'Europe/Madrid');
+
             $res[] = ['from'=>$from,'to'=>$to,'tipo'=>'JUSTIFIED'];
         }
 
@@ -213,7 +246,10 @@ class PresenciaResumenService
         $in_center   = 0;
         $excDetail   = [];
 
-        foreach ($stays as $s) $in_center += $s['to']->diffInMinutes($s['from']);
+        // minuts al centre (només fitxatges)
+        foreach ($stays as $s) {
+            $in_center += $s['to']->diffInMinutes($s['from']);
+        }
 
         foreach ($plan as $slot) {
             $mins   = $slot['to']->diffInMinutes($slot['from']);
@@ -223,16 +259,22 @@ class PresenciaResumenService
 
             $coverMinutes = 0;
 
+            // excepcions cobreixen 100% el solapament
             foreach ($exc as $e) {
                 $ov = $this->overlapMinutes($slot, $e);
                 $coverMinutes += $ov;
-                if ($ov > 0) $excDetail[] = ['tipo'=>$e['tipo'], 'minutes'=>$ov];
+                if ($ov > 0) {
+                    $excDetail[] = ['tipo'=>$e['tipo'], 'minutes'=>$ov];
+                }
             }
 
-            // Toleràncies: docència estricta o no
+            // presència real amb tolerància
             $graceStart = $this->GRACE_MINUTES;
             $graceEnd   = $this->FLEX_NO_DOCENCIA && !$isDoc ? $this->GRACE_MINUTES : 0;
-            if ($isDoc && $this->DOCENCIA_RIGIDA) { $graceStart = 0; $graceEnd = 0; }
+            if ($isDoc && $this->DOCENCIA_RIGIDA) {
+                $graceStart = 0;
+                $graceEnd   = 0;
+            }
 
             foreach ($stays as $s) {
                 $coverMinutes += $this->overlapWithGrace($slot, $s, $graceStart, $graceEnd);
@@ -253,17 +295,14 @@ class PresenciaResumenService
         ];
     }
 
-    private function decideStatus(array $c, bool $hasOpenStay, array $plan, \Carbon\Carbon $date): string
+    private function decideStatus(array $c, bool $hasOpenStay, array $plan, Carbon $date): string
     {
         $planned = $c['planned_docencia'] + $c['planned_altres'];
         $covered = $c['covered_docencia'] + $c['covered_altres'];
 
-        // Sense horari
         if ($planned === 0) return 'OFF';
 
-        // Estat NO_SALIDA:
-        // - Si el dia ja ha passat i hi ha fitxatge obert -> NO_SALIDA
-        // - Si és hui i ja ha passat l'últim tram planificat + tolerància -> NO_SALIDA
+        // NO_SALIDA: hi ha entrada sense eixida i el dia ja hauria d'estar tancat
         if ($hasOpenStay) {
             $lastEnd = null;
             foreach ($plan as $slot) {
@@ -272,20 +311,27 @@ class PresenciaResumenService
             if (!$date->isToday()) {
                 return 'NO_SALIDA';
             } else {
-                // Hui: combina amb el final d'horari
-                if ($lastEnd && \Carbon\Carbon::now('Europe/Madrid')->greaterThan($lastEnd->copy()->addMinutes($this->NO_SALIDA_AFTER_MIN))) {
+                if ($lastEnd && Carbon::now('Europe/Madrid')->greaterThan(
+                    $lastEnd->copy()->addMinutes($this->NO_SALIDA_AFTER_MIN)
+                )) {
                     return 'NO_SALIDA';
                 }
             }
         }
 
-        // Resta d'estats
         if ($covered >= max(0, $planned - 1)) return 'OK';
         if ($c['covered_docencia'] === 0 && $c['covered_altres'] === 0) return 'ABSENT';
         return 'PARTIAL';
     }
 
-    // --- utils d’intervals ---
+    // ---------- Utils intervals ----------
+
+    private function clampToDay(Carbon $t, Carbon $start, Carbon $end): Carbon
+    {
+        if ($t->lessThan($start)) return $start->copy();
+        if ($t->greaterThan($end)) return $end->copy();
+        return $t;
+    }
 
     private function overlapMinutes(array $a, array $b): int
     {
@@ -301,30 +347,41 @@ class PresenciaResumenService
         return $this->overlapMinutes(['from'=>$from,'to'=>$to], $stay);
     }
 
-    private function mergeClose(array $intervals, int $withinMinutes): array
+    private function mergeOverlappingOrClose(array $intervals, int $gapMinutes): array
     {
         if (empty($intervals)) return [];
-        usort($intervals, fn($a,$b)=>$a['from']<=>$b['from']);
-        $out = [$intervals[0]];
-        for ($i=1;$i<count($intervals);$i++){
-            $prev = &$out[count($out)-1];
-            if ($intervals[$i]['from']->diffInMinutes($prev['to']) <= $withinMinutes) {
-                if ($intervals[$i]['to']->greaterThan($prev['to'])) $prev['to'] = $intervals[$i]['to'];
+        usort($intervals, fn($a,$b)=>$a['from'] <=> $b['from']);
+
+        $out  = [];
+        $curr = $intervals[0];
+
+        foreach (array_slice($intervals, 1) as $next) {
+            $overlap = $next['from']->lte($curr['to']);
+            $gap     = $curr['to']->diffInMinutes($next['from']);
+            if ($overlap || $gap <= $gapMinutes) {
+                if ($next['to']->gt($curr['to'])) {
+                    $curr['to'] = $next['to'];
+                }
             } else {
-                $out[] = $intervals[$i];
+                $out[] = $curr;
+                $curr  = $next;
             }
         }
+        $out[] = $curr;
+
         return $out;
     }
 
     private function mergeTouchingByType(array $slots): array
     {
         if (empty($slots)) return [];
-        usort($slots, fn($a,$b)=>[$a['tipo'],$a['from']]<=>[$b['tipo'],$b['from']]);
+        usort($slots, fn($a,$b)=>[$a['tipo'],$a['from']] <=> [$b['tipo'],$b['from']]);
         $out = [];
         foreach ($slots as $s) {
-            $k = count($out)-1;
-            if ($k>=0 && $out[$k]['tipo']===$s['tipo'] && $out[$k]['to']->equalTo($s['from'])) {
+            $k = count($out) - 1;
+            if ($k >= 0 &&
+                $out[$k]['tipo'] === $s['tipo'] &&
+                $out[$k]['to']->equalTo($s['from'])) {
                 $out[$k]['to'] = $s['to'];
             } else {
                 $out[] = $s;
@@ -336,12 +393,16 @@ class PresenciaResumenService
     private function mergeByType(array $exc): array
     {
         if (empty($exc)) return [];
-        usort($exc, fn($a,$b)=>[$a['tipo'],$a['from']]<=>[$b['tipo'],$b['from']]);
+        usort($exc, fn($a,$b)=>[$a['tipo'],$a['from']] <=> [$b['tipo'],$b['from']]);
         $out = [];
         foreach ($exc as $e) {
-            $k = count($out)-1;
-            if ($k>=0 && $out[$k]['tipo']===$e['tipo'] && $out[$k]['to']->gte($e['from']->copy()->subMinute())) {
-                if ($e['to']->gt($out[$k]['to'])) $out[$k]['to'] = $e['to'];
+            $k = count($out) - 1;
+            if ($k >= 0 &&
+                $out[$k]['tipo'] === $e['tipo'] &&
+                $out[$k]['to']->gte($e['from']->copy()->subMinute())) {
+                if ($e['to']->gt($out[$k]['to'])) {
+                    $out[$k]['to'] = $e['to'];
+                }
             } else {
                 $out[] = $e;
             }

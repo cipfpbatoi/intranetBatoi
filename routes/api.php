@@ -22,8 +22,8 @@ Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 Route::get('server-time', 'GuardiaController@getServerTime' );
 Route::post('eventPortaSortida', 'CotxeController@eventSortida');
 Route::post('eventPorta', 'CotxeController@eventEntrada');
-Route::get('/presencia/resumen-dia',     'PresenciaResumenController@dia' );
 Route::get('/presencia/resumen-rango',   'PresenciaResumenController@rango' );
+ 
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('grupo/list/{id}', 'GrupoController@list');
