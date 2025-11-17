@@ -140,6 +140,7 @@ export default {
       const plannedAlt = day.planned_altres_minutes || 0;
       const coveredDoc = day.covered_docencia_minutes || 0;
       const coveredAlt = day.covered_altres_minutes || 0;
+      const inCenter   = day.in_center_minutes || 0;
 
       const plannedTotal = plannedDoc + plannedAlt;
       const coveredTotal = coveredDoc + coveredAlt;
@@ -147,7 +148,7 @@ export default {
       let label = this.tinyLabel(status);
       let cls   = this.badgeClass(status);
 
-      // Només calculem % en parcials amb algun horari planificat
+      // 1) % D'HORARI COMPLIT (ja ho teníem)
       if (status === 'PARTIAL' && plannedTotal > 0) {
         const percent = Math.round((coveredTotal * 100) / plannedTotal);
         label = `${label} ${percent}%`;
@@ -159,25 +160,25 @@ export default {
         if (missingDoc) {
           cls = 'bg-r';
         }
-        // Si NOMÉS fallen no lectives → ambre
+        // Si NOMÉS falten no lectives → ambre
         else if (missingAlt) {
           cls = 'bg-a';
         }
       }
 
+      // 2) % D'HORES "DE MÉS" AL CENTRE
+      // extra = temps real al centre - hores planificades (si és positiu)
+      if (plannedTotal > 0 && inCenter > plannedTotal) {
+        const extraMinutes = inCenter - plannedTotal;
+        const extraPercent = Math.round((extraMinutes * 100) / plannedTotal);
+
+        if (extraPercent > 0) {
+          // Afegim el +X% al label, tant si és OK com PARTIAL o altres
+          label = `${label} +${extraPercent}%`;
+        }
+      }
+
       return { label, class: cls };
-    },
-    tinyLabel(s) {
-      return ({
-        OK: 'OK',
-        PARTIAL: 'Parc',
-        ABSENT: 'Abs',
-        JUSTIFIED: 'Just',
-        ACTIVITY: 'Act',
-        COMMISSION: 'Com',
-        OFF: 'Off',
-        NO_SALIDA: 'No out'
-      }[s] || s)
     },
     badgeClass(s) {
       return ({
