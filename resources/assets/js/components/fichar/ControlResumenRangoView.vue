@@ -41,12 +41,13 @@
             </td>
             <td class="td">{{ row.departamento || '' }}</td>
             <td v-for="d in daysList" :key="d" class="td">
-              <span v-if="row.days && row.days[d]"
-                    class="badge"
-                    :class="badgeClass(row.days[d].status)">
-                {{ tinyLabel(row.days[d].status) }}
-              </span>
-              <span v-else class="badge bg-s">–</span>
+                <span v-if="row.days && row.days[d]"
+                   class="badge"
+                  :class="cellInfo(row.days[d]).class"
+                >
+                  {{ cellInfo(row.days[d]).label }}
+                </span>
+                <span v-else class="badge bg-s">–</span>
             </td>
           </tr>
           <tr v-if="!filteredRows.length">
@@ -132,6 +133,39 @@ export default {
       const wd = d.toLocaleDateString('ca-ES', { weekday: 'short' })
       const dm = d.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit' })
       return `${wd} ${dm}`
+    },
+    cellInfo(day) {
+      const status = day.status;
+      const plannedDoc = day.planned_docencia_minutes || 0;
+      const plannedAlt = day.planned_altres_minutes || 0;
+      const coveredDoc = day.covered_docencia_minutes || 0;
+      const coveredAlt = day.covered_altres_minutes || 0;
+
+      const plannedTotal = plannedDoc + plannedAlt;
+      const coveredTotal = coveredDoc + coveredAlt;
+
+      let label = this.tinyLabel(status);
+      let cls   = this.badgeClass(status);
+
+      // Només calculem % en parcials amb algun horari planificat
+      if (status === 'PARTIAL' && plannedTotal > 0) {
+        const percent = Math.round((coveredTotal * 100) / plannedTotal);
+        label = `${label} ${percent}%`;
+
+        const missingDoc = coveredDoc < plannedDoc;
+        const missingAlt = coveredAlt < plannedAlt;
+
+        // Si falla alguna lectiva → roig
+        if (missingDoc) {
+          cls = 'bg-r';
+        }
+        // Si NOMÉS fallen no lectives → ambre
+        else if (missingAlt) {
+          cls = 'bg-a';
+        }
+      }
+
+      return { label, class: cls };
     },
     tinyLabel(s) {
       return ({
