@@ -219,7 +219,7 @@ export default {
       }
 
       return { label, class: cls }
-  },
+  }},
   mounted() {
     this.fetchData()
   }
