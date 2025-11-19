@@ -71,6 +71,8 @@ class PresenciaResumenController extends ApiBaseController
                     'covered_docencia_minutes'   => $row['covered_docencia_minutes'],
                     'covered_altres_minutes'     => $row['covered_altres_minutes'],
                     'in_center_minutes'          => $row['in_center_minutes'],
+                    'has_open_stay'              => $row['has_open_stay'] ?? false,
+                    'first_entry'                => $row['first_entry'] ?? null,
                 ];
             }
 

@@ -60,7 +60,7 @@
     </div>
 
     <p class="muted" style="font-size:12px">
-      * Avisos: OK, Parcial, Abs, No out (NO_SALIDA), Just (JUSTIFIED), Act (ACTIVITY), Com (COMMISSION), Off (sense horari).
+      * Avisos: OK, Parcial, Abs, No out (NO_SALIDA), Off (sense horari).
     </p>
   </div>
 </template>
