@@ -41,14 +41,13 @@
             </td>
             <td class="td">{{ row.departamento || '' }}</td>
             <td v-for="d in daysList" :key="d" class="td">
-              <span
-                v-if="row.days && row.days[d]"
-                class="badge"
-                :class="cellInfo(row.days[d]).class"
-              >
-                {{ cellInfo(row.days[d]).label }}
-              </span>
-              <span v-else class="badge bg-s">–</span>
+                <span v-if="row.days && row.days[d]"
+                   class="badge"
+                  :class="cellInfo(row.days[d]).class"
+                >
+                  {{ cellInfo(row.days[d]).label }}
+                </span>
+                <span v-else class="badge bg-s">–</span>
             </td>
           </tr>
           <tr v-if="!filteredRows.length">
@@ -81,8 +80,8 @@ export default {
     return {
       desde: monday,
       hasta: friday,
-      dni: '',
-      rows: []
+      dni: '',   // filtre per persona
+      rows: []   // dades de l'API
     }
   },
   computed: {
@@ -114,44 +113,73 @@ export default {
       const fmt = d => d.toISOString().slice(0,10)
       return { monday: fmt(monday), friday: fmt(friday) }
     },
-
     async fetchData() {
       const url = new URL('/api/presencia/resumen-rango', window.location.origin)
       url.searchParams.set('desde', this.desde)
       url.searchParams.set('hasta', this.hasta)
       if (this.dni) url.searchParams.set('dni', this.dni)
+
       const res = await fetch(url.toString(), { credentials: 'same-origin' })
       this.rows = await res.json()
     },
-
     nomProf(p) {
       return [p.apellido1, p.apellido2, p.nombre].filter(Boolean).join(' ')
     },
-
     nomRow(r) {
       return [r.apellido1, r.apellido2, r.nombre].filter(Boolean).join(' ')
     },
-
     formatDia(s) {
       const d = new Date(s + 'T00:00:00')
       const wd = d.toLocaleDateString('ca-ES', { weekday: 'short' })
       const dm = d.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit' })
       return `${wd} ${dm}`
     },
+    cellInfo(day) {
+      const status = day.status;
+      const plannedDoc = day.planned_docencia_minutes || 0;
+      const plannedAlt = day.planned_altres_minutes || 0;
+      const coveredDoc = day.covered_docencia_minutes || 0;
+      const coveredAlt = day.covered_altres_minutes || 0;
+      const inCenter   = day.in_center_minutes || 0;
 
-    tinyLabel(s) {
-      return ({
-        OK: 'OK',
-        PARTIAL: 'Parc',
-        ABSENT: 'Abs',
-        JUSTIFIED: 'Just',
-        ACTIVITY: 'Act',
-        COMMISSION: 'Com',
-        OFF: 'Off',
-        NO_SALIDA: 'No out'
-      }[s] || s)
+      const plannedTotal = plannedDoc + plannedAlt;
+      const coveredTotal = coveredDoc + coveredAlt;
+
+      let label = this.tinyLabel(status);
+      let cls   = this.badgeClass(status);
+
+      // 1) % D'HORARI COMPLIT (ja ho teníem)
+      if (status === 'PARTIAL' && plannedTotal > 0) {
+        const percent = Math.round((coveredTotal * 100) / plannedTotal);
+        label = `${label} ${percent}%`;
+
+        const missingDoc = coveredDoc < plannedDoc;
+        const missingAlt = coveredAlt < plannedAlt;
+
+        // Si falla alguna lectiva → roig
+        if (missingDoc) {
+          cls = 'bg-r';
+        }
+        // Si NOMÉS falten no lectives → ambre
+        else if (missingAlt) {
+          cls = 'bg-a';
+        }
+      }
+
+      // 2) % D'HORES "DE MÉS" AL CENTRE
+      // extra = temps real al centre - hores planificades (si és positiu)
+      if (plannedTotal > 0 && inCenter > plannedTotal) {
+        const extraMinutes = inCenter - plannedTotal;
+        const extraPercent = Math.round((extraMinutes * 100) / plannedTotal);
+
+        if (extraPercent > 0) {
+          // Afegim el +X% al label, tant si és OK com PARTIAL o altres
+          label = `${label} +${extraPercent}%`;
+        }
+      }
+
+      return { label, class: cls };
     },
-
     badgeClass(s) {
       return ({
         OK: 'bg-g',
@@ -163,62 +191,7 @@ export default {
         OFF: 'bg-s',
         NO_SALIDA: 'bg-r'
       }[s] || 'bg-s')
-    },
-
-    // ACÍ fem el label amb % complert i % extra
-    cellInfo(day) {
-      const status = day.status
-      const plannedDoc = day.planned_docencia_minutes || 0
-      const plannedAlt = day.planned_altres_minutes || 0
-      const coveredDoc = day.covered_docencia_minutes || 0
-      const coveredAlt = day.covered_altres_minutes || 0
-      const inCenter   = day.in_center_minutes || 0
-
-      const plannedTotal = plannedDoc + plannedAlt
-      const coveredTotal = coveredDoc + coveredAlt
-
-      let label = this.tinyLabel(status)
-      let cls   = this.badgeClass(status)
-
-      // CAS ESPECIAL: NO_SALIDA
-      if (status === 'NO_SALIDA') {
-        // si backend ens passa first_entry, la mostrem
-        if (day.first_entry) {
-          const hm = day.first_entry.slice(0,5) // 'HH:MM'
-          label = `${label} (${hm})`
-        }
-        // No fem % ni extra en NO_SALIDA perquè, com dius, no tenim sortida fiable
-        return { label, class: cls }
-      }
-
-      // 1) % d'horari complit (només en PARTIAL, quan sí hi ha dades completes)
-      if (status === 'PARTIAL' && plannedTotal > 0) {
-        const percent = Math.round((coveredTotal * 100) / plannedTotal)
-        label = `${label} ${percent}%`
-
-        const missingDoc = coveredDoc < plannedDoc
-        const missingAlt = coveredAlt < plannedAlt
-
-        // Si falla alguna lectiva → roig
-        if (missingDoc) {
-          cls = 'bg-r'
-        }
-        // Si NOMÉS falten no lectives → ambre
-        else if (missingAlt) {
-          cls = 'bg-a'
-        }
-      }
-
-      // 2) % de temps extra al centre (sobre planificat) — només si NO és NO_SALIDA
-      if (plannedTotal > 0 && inCenter > plannedTotal) {
-        const extraMinutes = inCenter - plannedTotal
-        const extraPercent = Math.round((extraMinutes * 100) / plannedTotal)
-        if (extraPercent > 0) {
-          label = `${label} +${extraPercent}%`
-        }
-      }
-
-      return { label, class: cls }
+    }
   },
   mounted() {
     this.fetchData()
