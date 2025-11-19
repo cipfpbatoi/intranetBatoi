@@ -191,10 +191,6 @@ export default {
         OFF: 'bg-s',
         NO_SALIDA: 'bg-r'
       }[s] || 'bg-s')
-<<<<<<< HEAD
-    }
-  },
-=======
     },
 
     // ACÍ fem el label amb % complert i % extra
@@ -252,7 +248,6 @@ export default {
 
       return { label, class: cls }
   }},
->>>>>>> 8ea11b833aeb13371dfd3836e152787d8ab76089
   mounted() {
     this.fetchData()
   }
