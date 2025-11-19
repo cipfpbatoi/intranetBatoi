@@ -191,8 +191,68 @@ export default {
         OFF: 'bg-s',
         NO_SALIDA: 'bg-r'
       }[s] || 'bg-s')
+<<<<<<< HEAD
     }
   },
+=======
+    },
+
+    // ACÍ fem el label amb % complert i % extra
+    cellInfo(day) {
+      const status = day.status
+      const plannedDoc = day.planned_docencia_minutes || 0
+      const plannedAlt = day.planned_altres_minutes || 0
+      const coveredDoc = day.covered_docencia_minutes || 0
+      const coveredAlt = day.covered_altres_minutes || 0
+      const inCenter   = day.in_center_minutes || 0
+
+      const plannedTotal = plannedDoc + plannedAlt
+      const coveredTotal = coveredDoc + coveredAlt
+
+      let label = this.tinyLabel(status)
+      let cls   = this.badgeClass(status)
+
+      // CAS ESPECIAL: NO_SALIDA
+      if (status === 'NO_SALIDA') {
+        // si backend ens passa first_entry, la mostrem
+        if (day.first_entry) {
+          const hm = day.first_entry.slice(0,5) // 'HH:MM'
+          label = `${label} (${hm})`
+        }
+        // No fem % ni extra en NO_SALIDA perquè, com dius, no tenim sortida fiable
+        return { label, class: cls }
+      }
+
+      // 1) % d'horari complit (només en PARTIAL, quan sí hi ha dades completes)
+      if (status === 'PARTIAL' && plannedTotal > 0) {
+        const percent = Math.round((coveredTotal * 100) / plannedTotal)
+        label = `${label} ${percent}%`
+
+        const missingDoc = coveredDoc < plannedDoc
+        const missingAlt = coveredAlt < plannedAlt
+
+        // Si falla alguna lectiva → roig
+        if (missingDoc) {
+          cls = 'bg-r'
+        }
+        // Si NOMÉS falten no lectives → ambre
+        else if (missingAlt) {
+          cls = 'bg-a'
+        }
+      }
+
+      // 2) % de temps extra al centre (sobre planificat) — només si NO és NO_SALIDA
+      if (plannedTotal > 0 && inCenter > plannedTotal) {
+        const extraMinutes = inCenter - plannedTotal
+        const extraPercent = Math.round((extraMinutes * 100) / plannedTotal)
+        if (extraPercent > 0) {
+          label = `${label} +${extraPercent}%`
+        }
+      }
+
+      return { label, class: cls }
+  }},
+>>>>>>> 8ea11b833aeb13371dfd3836e152787d8ab76089
   mounted() {
     this.fetchData()
   }
