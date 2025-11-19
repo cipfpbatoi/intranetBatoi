@@ -180,7 +180,18 @@ export default {
       let label = this.tinyLabel(status)
       let cls   = this.badgeClass(status)
 
-      // 1) % d'horari complit (només en PARTIAL)
+      // CAS ESPECIAL: NO_SALIDA
+      if (status === 'NO_SALIDA') {
+        // si backend ens passa first_entry, la mostrem
+        if (day.first_entry) {
+          const hm = day.first_entry.slice(0,5) // 'HH:MM'
+          label = `${label} (${hm})`
+        }
+        // No fem % ni extra en NO_SALIDA perquè, com dius, no tenim sortida fiable
+        return { label, class: cls }
+      }
+
+      // 1) % d'horari complit (només en PARTIAL, quan sí hi ha dades completes)
       if (status === 'PARTIAL' && plannedTotal > 0) {
         const percent = Math.round((coveredTotal * 100) / plannedTotal)
         label = `${label} ${percent}%`
@@ -198,7 +209,7 @@ export default {
         }
       }
 
-      // 2) % de temps extra al centre (sobre planificat)
+      // 2) % de temps extra al centre (sobre planificat) — només si NO és NO_SALIDA
       if (plannedTotal > 0 && inCenter > plannedTotal) {
         const extraMinutes = inCenter - plannedTotal
         const extraPercent = Math.round((extraMinutes * 100) / plannedTotal)
@@ -208,7 +219,6 @@ export default {
       }
 
       return { label, class: cls }
-    }
   },
   mounted() {
     this.fetchData()

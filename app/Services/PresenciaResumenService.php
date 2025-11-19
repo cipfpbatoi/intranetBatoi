@@ -108,6 +108,7 @@ class PresenciaResumenService
             $fichajesRows = $fitxatges->get($dni) ?? collect();
             $stays        = $this->buildStayIntervals($fichajesRows, $date);
             $hasOpenStay  = $this->hasOpenStay($fichajesRows);
+            $firstEntry   = $this->firstEntry($fichajesRows);
 
             // Excepcions (activitats, comissions, faltes)
             $exc = $this->buildExceptionIntervals(
@@ -136,6 +137,8 @@ class PresenciaResumenService
                 'in_center_minutes'        => $coverage['in_center'],
                 'excepcions'               => $coverage['excepcions'],
                 'status'                   => $status,
+                'has_open_stay'            => $hasOpenStay,   // <– per saber NO_SALIDA amb interval obert
+                'first_entry'              => $firstEntry,    // <– hora d’entrada
             ];
         }
 
@@ -143,6 +146,19 @@ class PresenciaResumenService
     }
 
     // ---------- Helpers principals ----------
+
+    private function firstEntry(?Collection $fichajesRows): ?string
+    {
+        if (!$fichajesRows || $fichajesRows->isEmpty()) return null;
+
+        // ja venen ordenats per entrada
+        foreach ($fichajesRows as $f) {
+            if ($f->entrada) {
+                return $f->entrada; // 'HH:MM:SS' o 'HH:MM'
+            }
+        }
+        return null;
+    }
 
     private function weekdayLetter(Carbon $date): string
     {
