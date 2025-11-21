@@ -61,12 +61,8 @@
     </div>
 
     <p class="muted" style="font-size:12px">
-<<<<<<< HEAD
       * OK si la cobertura global (docent + no docent) està aproximadament entre el 90% i el 110%.
       Es mantenen avisos especials: Abs, No out (NO_SALIDA), Just, Act, Com, Off.
-=======
-      * Avisos: OK, Parcial, Abs, No out (NO_SALIDA),   Off (sense horari).
->>>>>>> 98af8979178d1b9ce12c24c3c539a3bdc55b4b67
     </p>
   </div>
 </template>
@@ -143,31 +139,12 @@ export default {
       const dm = d.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit' })
       return `${wd} ${dm}`
     },
-<<<<<<< HEAD
 
     cellInfo(day) {
       const status = day.status || ''
 
       // Colors base per estats especials
       const COLORS = {
-=======
-
-    tinyLabel(s) {
-      return ({
-        OK: 'OK',
-        PARTIAL: 'Parc',
-        ABSENT: 'Abs',
-        JUSTIFIED: 'Just',
-        ACTIVITY: 'Act',
-        COMMISSION: 'Com',
-        OFF: 'Off',
-        NO_SALIDA: 'No out'
-      }[s] || s)
-    },
-
-    badgeClass(s) {
-      return ({
->>>>>>> 98af8979178d1b9ce12c24c3c539a3bdc55b4b67
         OK: 'bg-g',
         PARTIAL: 'bg-a',
         ABSENT: 'bg-r',
