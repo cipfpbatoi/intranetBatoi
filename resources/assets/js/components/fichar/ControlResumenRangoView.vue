@@ -219,7 +219,7 @@ export default {
 
       // 90% - 110% -> OK en verd, mostrant %
       if (percent >= 90 && percent <= 110) {
-        return { label: `${percent}%`, class: COLORS.OK }
+        return { label: `OK`, class: COLORS.OK }
       }
 
       // > 110% -> mostrar % en verd (ha estat més temps del planificat)
