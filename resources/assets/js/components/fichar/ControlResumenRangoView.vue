@@ -210,7 +210,7 @@ export default {
 
         // OK si percentatge entre 90% i 110%
         if (percent >= 90 && percent <= 110) {
-          return { label: `${percent}%`, class: COLORS.OK }
+          return { label: `OK`, class: COLORS.OK }
         }
 
         // Percentatge BAIX (<90%) -> PARTIAL
