@@ -141,95 +141,96 @@ export default {
     },
 
     cellInfo(day) {
-        const status = day.status || ''
+      const status = day.status || ''
 
-        // Colors base
-        const COLORS = {
-          OK: 'bg-g',
-          PARTIAL: 'bg-a',
-          ABSENT: 'bg-r',
-          JUSTIFIED: 'bg-y',
-          ACTIVITY: 'bg-b',
-          COMMISSION: 'bg-p',
-          OFF: 'bg-s',
-          NO_SALIDA: 'bg-r'
+      const COLORS = {
+        OK: 'bg-g',
+        PARTIAL: 'bg-a',
+        ABSENT: 'bg-r',
+        JUSTIFIED: 'bg-y',
+        ACTIVITY: 'bg-b',
+        COMMISSION: 'bg-p',
+        OFF: 'bg-s',
+        NO_SALIDA: 'bg-r'
+      }
+
+      // ---- ESTATS ESPECIALS SENSE % ----
+      if (status === 'NO_SALIDA') {
+        let label = 'No out'
+        if (day.first_entry) {
+          const hm = day.first_entry.slice(0, 5)
+          label = `${label} (${hm})`
         }
+        return { label, class: COLORS.NO_SALIDA }
+      }
 
-        // ----- CASOS ESPECIALS (NO % global) -----
-        if (status === 'NO_SALIDA') {
-          let label = 'No out'
-          if (day.first_entry) {
-            const hm = day.first_entry.slice(0,5)
-            label = `${label} (${hm})`
-          }
-          return { label, class: COLORS.NO_SALIDA }
-        }
+      if (status === 'ABSENT') {
+        return { label: 'Abs', class: COLORS.ABSENT }
+      }
 
-        if (status === 'ABSENT') {
-          return { label: 'Abs', class: COLORS.ABSENT }
-        }
+      if (status === 'JUSTIFIED') {
+        return { label: 'Just', class: COLORS.JUSTIFIED }
+      }
 
-        if (status === 'JUSTIFIED') {
-          return { label: 'Just', class: COLORS.JUSTIFIED }
-        }
+      if (status === 'ACTIVITY') {
+        return { label: 'Act', class: COLORS.ACTIVITY }
+      }
 
-        if (status === 'ACTIVITY') {
-          return { label: 'Act', class: COLORS.ACTIVITY }
-        }
+      if (status === 'COMMISSION') {
+        return { label: 'Com', class: COLORS.COMMISSION }
+      }
 
-        if (status === 'COMMISSION') {
-          return { label: 'Com', class: COLORS.COMMISSION }
-        }
+      if (status === 'OFF') {
+        return { label: 'Off', class: COLORS.OFF }
+      }
 
-        if (status === 'OFF') {
-          return { label: 'Off', class: COLORS.OFF }
-        }
+      // ---- CÀLCUL GLOBAL PER A LA RESTA ----
+      const plannedDoc = day.planned_docencia_minutes || 0
+      const plannedAlt = day.planned_altres_minutes || 0
+      const coveredDoc = day.covered_docencia_minutes || 0
+      const coveredAlt = day.covered_altres_minutes || 0
+      const inCenter   = day.in_center_minutes || 0
 
-        // ----- CÀLCUL GLOBAL (per a OK i PARTIAL) -----
+      const plannedTotal = plannedDoc + plannedAlt
+      if (!plannedTotal) {
+        return { label: '—', class: COLORS.OFF }
+      }
 
-        const plannedDoc = day.planned_docencia_minutes || 0
-        const plannedAlt = day.planned_altres_minutes || 0
-        const coveredDoc = day.covered_docencia_minutes || 0
-        const coveredAlt = day.covered_altres_minutes || 0
+      // ara el % es fa amb el temps AL CENTRE, no només amb el cobert
+      const percent = Math.round((inCenter * 100) / plannedTotal)
 
-        const plannedTotal = plannedDoc + plannedAlt
-        const coveredTotal = coveredDoc + coveredAlt
+      // < 90% -> parcial; distingim si falla lectiva o no lectiva
+      const missingDoc = coveredDoc < plannedDoc
+      const missingAlt = coveredAlt < plannedAlt
 
-        if (!plannedTotal) {
-          return { label: '—', class: COLORS.OFF }
-        }
-
-        const percent = Math.round((coveredTotal * 100) / plannedTotal)
-
-        // ---------- NOVA NORMATIVA ----------
-        // % > 110 -> mostrar % i colorejar segons si l’excés ve de lectives o no
-        if (percent > 110) {
-          // excés → sempre mostrar %
-          return { label: `${percent}%`, class: COLORS.OK }
-        }
-
-        // OK si percentatge entre 90% i 110%
-        if (percent >= 90 && percent <= 110) {
-          return { label: `OK`, class: COLORS.OK }
-        }
-
-        // Percentatge BAIX (<90%) -> PARTIAL
-        // Nova lògica de ROIG/AMBRE
-        const missingDoc = coveredDoc < plannedDoc
-        const missingAlt = coveredAlt < plannedAlt
-
+      // si està per sota de 90%, mirem d'on ve el forat
+      if (percent < 90) {
         if (missingDoc) {
-          return { label: `${percent}%`, class: COLORS.ABSENT } // roig
+          // falla lectiva -> roig
+          return { label: `${percent}%`, class: COLORS.ABSENT }
         }
-
         if (missingAlt) {
-          return { label: `${percent}%`, class: COLORS.PARTIAL } // ambre
+          // sols falla no lectiva -> ambre
+          return { label: `${percent}%`, class: COLORS.PARTIAL }
         }
-
-        // fallback
+        // per si de cas, fallback ambre
         return { label: `${percent}%`, class: COLORS.PARTIAL }
       }
-    
+
+      // 90% - 110% -> OK en verd, mostrant %
+      if (percent >= 90 && percent <= 110) {
+        return { label: `${percent}%`, class: COLORS.OK }
+      }
+
+      // > 110% -> mostrar % en verd (ha estat més temps del planificat)
+      if (percent > 110) {
+        return { label: `${percent}%`, class: COLORS.OK }
+      }
+
+      // fallback (no hauria d'arribar ací, però per seguretat)
+      return { label: `${percent}%`, class: COLORS.OK }
+    }
+
   },
   mounted() {
     this.fetchData()
