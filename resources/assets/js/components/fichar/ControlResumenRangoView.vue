@@ -41,13 +41,14 @@
             </td>
             <td class="td">{{ row.departamento || '' }}</td>
             <td v-for="d in daysList" :key="d" class="td">
-                <span v-if="row.days && row.days[d]"
-                   class="badge"
-                  :class="cellInfo(row.days[d]).class"
-                >
-                  {{ cellInfo(row.days[d]).label }}
-                </span>
-                <span v-else class="badge bg-s">–</span>
+              <span
+                v-if="row.days && row.days[d]"
+                class="badge"
+                :class="cellInfo(row.days[d]).class"
+              >
+                {{ cellInfo(row.days[d]).label }}
+              </span>
+              <span v-else class="badge bg-s">–</span>
             </td>
           </tr>
           <tr v-if="!filteredRows.length">
@@ -60,7 +61,8 @@
     </div>
 
     <p class="muted" style="font-size:12px">
-      * Avisos: OK, Parcial, Abs, No out (NO_SALIDA), Off (sense horari).
+      * OK si la cobertura global (docent + no docent) està aproximadament entre el 90% i el 110%.
+      Es mantenen avisos especials: Abs, No out (NO_SALIDA), Just, Act, Com, Off.
     </p>
   </div>
 </template>
@@ -80,8 +82,8 @@ export default {
     return {
       desde: monday,
       hasta: friday,
-      dni: '',   // filtre per persona
-      rows: []   // dades de l'API
+      dni: '',
+      rows: []
     }
   },
   computed: {
@@ -113,75 +115,36 @@ export default {
       const fmt = d => d.toISOString().slice(0,10)
       return { monday: fmt(monday), friday: fmt(friday) }
     },
+
     async fetchData() {
       const url = new URL('/api/presencia/resumen-rango', window.location.origin)
       url.searchParams.set('desde', this.desde)
       url.searchParams.set('hasta', this.hasta)
       if (this.dni) url.searchParams.set('dni', this.dni)
-
       const res = await fetch(url.toString(), { credentials: 'same-origin' })
       this.rows = await res.json()
     },
+
     nomProf(p) {
       return [p.apellido1, p.apellido2, p.nombre].filter(Boolean).join(' ')
     },
+
     nomRow(r) {
       return [r.apellido1, r.apellido2, r.nombre].filter(Boolean).join(' ')
     },
+
     formatDia(s) {
       const d = new Date(s + 'T00:00:00')
       const wd = d.toLocaleDateString('ca-ES', { weekday: 'short' })
       const dm = d.toLocaleDateString('ca-ES', { day: '2-digit', month: '2-digit' })
       return `${wd} ${dm}`
     },
+
     cellInfo(day) {
-      const status = day.status;
-      const plannedDoc = day.planned_docencia_minutes || 0;
-      const plannedAlt = day.planned_altres_minutes || 0;
-      const coveredDoc = day.covered_docencia_minutes || 0;
-      const coveredAlt = day.covered_altres_minutes || 0;
-      const inCenter   = day.in_center_minutes || 0;
+      const status = day.status || ''
 
-      const plannedTotal = plannedDoc + plannedAlt;
-      const coveredTotal = coveredDoc + coveredAlt;
-
-      let label = this.tinyLabel(status);
-      let cls   = this.badgeClass(status);
-
-      // 1) % D'HORARI COMPLIT (ja ho teníem)
-      if (status === 'PARTIAL' && plannedTotal > 0) {
-        const percent = Math.round((coveredTotal * 100) / plannedTotal);
-        label = `${label} ${percent}%`;
-
-        const missingDoc = coveredDoc < plannedDoc;
-        const missingAlt = coveredAlt < plannedAlt;
-
-        // Si falla alguna lectiva → roig
-        if (missingDoc) {
-          cls = 'bg-r';
-        }
-        // Si NOMÉS falten no lectives → ambre
-        else if (missingAlt) {
-          cls = 'bg-a';
-        }
-      }
-
-      // 2) % D'HORES "DE MÉS" AL CENTRE
-      // extra = temps real al centre - hores planificades (si és positiu)
-      if (plannedTotal > 0 && inCenter > plannedTotal) {
-        const extraMinutes = inCenter - plannedTotal;
-        const extraPercent = Math.round((extraMinutes * 100) / plannedTotal);
-
-        if (extraPercent > 0) {
-          // Afegim el +X% al label, tant si és OK com PARTIAL o altres
-          label = `${label} +${extraPercent}%`;
-        }
-      }
-
-      return { label, class: cls };
-    },
-    badgeClass(s) {
-      return ({
+      // Colors base per estats especials
+      const COLORS = {
         OK: 'bg-g',
         PARTIAL: 'bg-a',
         ABSENT: 'bg-r',
@@ -190,64 +153,74 @@ export default {
         COMMISSION: 'bg-p',
         OFF: 'bg-s',
         NO_SALIDA: 'bg-r'
-      }[s] || 'bg-s')
-    },
+      }
 
-    // ACÍ fem el label amb % complert i % extra
-    cellInfo(day) {
-      const status = day.status
-      const plannedDoc = day.planned_docencia_minutes || 0
-      const plannedAlt = day.planned_altres_minutes || 0
-      const coveredDoc = day.covered_docencia_minutes || 0
-      const coveredAlt = day.covered_altres_minutes || 0
-      const inCenter   = day.in_center_minutes || 0
+      // ----- Estats especials que no volem resumir amb % -----
 
-      const plannedTotal = plannedDoc + plannedAlt
-      const coveredTotal = coveredDoc + coveredAlt
-
-      let label = this.tinyLabel(status)
-      let cls   = this.badgeClass(status)
-
-      // CAS ESPECIAL: NO_SALIDA
+      // No ha fitxat la eixida
       if (status === 'NO_SALIDA') {
-        // si backend ens passa first_entry, la mostrem
+        let label = 'No out'
         if (day.first_entry) {
           const hm = day.first_entry.slice(0,5) // 'HH:MM'
           label = `${label} (${hm})`
         }
-        // No fem % ni extra en NO_SALIDA perquè, com dius, no tenim sortida fiable
-        return { label, class: cls }
+        return { label, class: COLORS.NO_SALIDA }
       }
 
-      // 1) % d'horari complit (només en PARTIAL, quan sí hi ha dades completes)
-      if (status === 'PARTIAL' && plannedTotal > 0) {
-        const percent = Math.round((coveredTotal * 100) / plannedTotal)
-        label = `${label} ${percent}%`
-
-        const missingDoc = coveredDoc < plannedDoc
-        const missingAlt = coveredAlt < plannedAlt
-
-        // Si falla alguna lectiva → roig
-        if (missingDoc) {
-          cls = 'bg-r'
-        }
-        // Si NOMÉS falten no lectives → ambre
-        else if (missingAlt) {
-          cls = 'bg-a'
-        }
+      if (status === 'ABSENT') {
+        return { label: 'Abs', class: COLORS.ABSENT }
       }
 
-      // 2) % de temps extra al centre (sobre planificat) — només si NO és NO_SALIDA
-      if (plannedTotal > 0 && inCenter > plannedTotal) {
-        const extraMinutes = inCenter - plannedTotal
-        const extraPercent = Math.round((extraMinutes * 100) / plannedTotal)
-        if (extraPercent > 0) {
-          label = `${label} +${extraPercent}%`
-        }
+      if (status === 'JUSTIFIED') {
+        return { label: 'Just', class: COLORS.JUSTIFIED }
       }
 
-      return { label, class: cls }
-  }},
+      if (status === 'ACTIVITY') {
+        return { label: 'Act', class: COLORS.ACTIVITY }
+      }
+
+      if (status === 'COMMISSION') {
+        return { label: 'Com', class: COLORS.COMMISSION }
+      }
+
+      if (status === 'OFF') {
+        return { label: 'Off', class: COLORS.OFF }
+      }
+
+      // ----- Càlcul global relaxat per a la resta (OK / PARTIAL) -----
+
+      const plannedTotal = day.planned_total_minutes != null
+        ? day.planned_total_minutes
+        : (day.planned_docencia_minutes || 0) + (day.planned_altres_minutes || 0)
+
+      const coveredTotal = day.covered_total_minutes != null
+        ? day.covered_total_minutes
+        : (day.covered_docencia_minutes || 0) + (day.covered_altres_minutes || 0)
+
+      if (!plannedTotal || plannedTotal <= 0) {
+        // sense horari, però no marcat com OFF: neutre
+        return { label: '—', class: COLORS.OFF }
+      }
+
+      const percent = Math.round((coveredTotal * 100) / plannedTotal)
+
+      // Criteri: si la suma queda entre el 90% i el 110% → OK en verd
+      if (percent >= 90 && percent <= 110) {
+        return { label: 'OK', class: COLORS.OK }
+      }
+
+      // Per sobre del 110% també el considerem OK (ha estat de més)
+      if (percent > 110) {
+        return { label: 'OK', class: COLORS.OK }
+      }
+
+      // Per sota del 90% → parcial en ambre amb % per veure quant falta
+      return {
+        label: `${percent}%`,
+        class: COLORS.PARTIAL
+      }
+    }
+  },
   mounted() {
     this.fetchData()
   }

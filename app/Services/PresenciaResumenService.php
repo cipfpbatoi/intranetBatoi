@@ -139,6 +139,8 @@ class PresenciaResumenService
                 'status'                   => $status,
                 'has_open_stay'            => $hasOpenStay,   // <– per saber NO_SALIDA amb interval obert
                 'first_entry'              => $firstEntry,    // <– hora d’entrada
+                'planned_total'    => $coverage['planned_docencia'] + $coverage['planned_altres'],
+                'covered_total'    => $coverage['covered_docencia'] + $coverage['covered_altres'],
             ];
         }
 
