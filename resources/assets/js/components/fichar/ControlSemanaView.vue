@@ -14,7 +14,7 @@
                 <td v-for="m in 5" :class="estadoClase(estadoDia(profe.dni, m))">
                   {{ muestraHoras(profe.dni, m) }}
                 </td>
-                <th>{{ sumaHoras(profe.dni) }}</th>
+                <th :class="estadoClase(estadoSemana(profe.dni))">{{ sumaHoras(profe.dni) }}</th>
             </tr>
         </table>
     </div>
@@ -91,6 +91,27 @@ export default {
     estadoDia(profe, masDias) {
       const dia = this.sumaFecha(masDias);
       return this.fichajes[profe]?.[dia]?.status || '';
+    },
+    estadoSemana(profe) {
+      const prioridad = {
+        'ABSENT': 3,
+        'PARTIAL': 2,
+        'NO_SALIDA': 1,
+        'OK': 0
+      };
+      let peor = '';
+      let puntuacion = -1;
+
+      for (let dia = 1; dia <= 5; dia++) {
+        const estado = this.estadoDia(profe, dia);
+        const valor = prioridad[estado] ?? -1;
+        if (valor > puntuacion) {
+          peor = estado;
+          puntuacion = valor;
+        }
+      }
+
+      return peor;
     },
     estadoClase(status) {
       return {
