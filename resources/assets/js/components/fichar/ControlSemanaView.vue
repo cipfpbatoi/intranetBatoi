@@ -75,8 +75,8 @@ export default {
       const dia = this.sumaFecha(masDias);
       const datos = this.fichajes[profe]?.[dia];
       if (!datos) return '';
-
-      const minutos = (datos.covered_docencia_minutes || 0) + (datos.covered_altres_minutes || 0);
+      const minutos = datos.in_center_minutes || 0;
+ 
       return minsToTime(minutos);
     },
     sumaHoras(profe) {
@@ -84,7 +84,7 @@ export default {
       let totMinutos = 0;
       for (let dia in this.fichajes[profe]) {
         const datos = this.fichajes[profe][dia];
-        totMinutos += (datos.covered_docencia_minutes || 0) + (datos.covered_altres_minutes || 0);
+        totMinutos += datos.in_center_minutes || 0 ;
       }
       return minsToTime(totMinutos);
     },
