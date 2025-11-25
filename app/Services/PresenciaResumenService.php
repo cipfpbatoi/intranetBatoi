@@ -120,6 +120,10 @@ class PresenciaResumenService
 
             // Cobertura
             $coverage = $this->computeCoverage($plan, $stays, $exc);
+            if ($hasOpenStay) {
+                // Si no hi ha fitxatge d'eixida, usem les hores lectives com a presència
+                $coverage['in_center'] = $coverage['planned_docencia'];
+            }
 
             // Estat final (incloent NO_SALIDA)
             $status   = $this->decideStatus($coverage, $hasOpenStay, $plan, $date);
