@@ -105,7 +105,11 @@ class PresenciaResumenService
             $plan = $this->buildPlannedSlotsFromDbRows($horariRows->get($dni) ?? collect(), $date);
 
             // Fitxatges
-            $fichajesRows = $fitxatges->get($dni) ?? collect();
+            $fichajesRows = $this->sanitizeFichajes(
+                $fitxatges->get($dni) ?? collect(),
+                $plan,
+                $date
+            );
             $stays        = $this->buildStayIntervals($fichajesRows, $date);
             $hasOpenStay  = $this->hasOpenStay($fichajesRows);
             $firstEntry   = $this->firstEntry($fichajesRows);
@@ -186,6 +190,47 @@ class PresenciaResumenService
             $slots[] = ['from'=>$from,'to'=>$to,'tipo'=>$tipo];
         }
         return $this->mergeTouchingByType($slots);
+    }
+
+    /**
+     * El professor a vegades marca una "entrada" quan en realitat està eixint.
+     * Si l'últim fitxatge és una entrada sense eixida i arriba després
+     * d'haver finalitzat l'horari previst, el descartem per evitar NO_SALIDA falsos.
+     */
+    private function sanitizeFichajes(Collection $rows, array $plan, Carbon $day): Collection
+    {
+        if ($rows->isEmpty()) {
+            return $rows;
+        }
+
+        $last = $rows->last();
+        if (!$last->entrada || $last->salida !== null) {
+            return $rows;
+        }
+
+        $lastPlanEnd = $this->lastPlannedEnd($plan);
+        if (!$lastPlanEnd) {
+            return $rows;
+        }
+
+        $lastEntrada = Carbon::parse($day->toDateString() . ' ' . $last->entrada, 'Europe/Madrid');
+
+        // si la "entrada" és després de l'horari previst (amb una miqueta de gràcia),
+        // la ignorem perquè probablement era l'eixida real sense polsar "eixida"
+        if ($lastEntrada->greaterThan($lastPlanEnd->copy()->addMinutes($this->GRACE_MINUTES))) {
+            return $rows->slice(0, $rows->count() - 1);
+        }
+
+        return $rows;
+    }
+
+    private function lastPlannedEnd(array $plan): ?Carbon
+    {
+        $last = null;
+        foreach ($plan as $slot) {
+            $last = $last ? max($last, $slot['to']) : $slot['to'];
+        }
+        return $last;
     }
 
     private function hasOpenStay(Collection $fichajesRows): bool
