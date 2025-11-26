@@ -3,46 +3,24 @@
 namespace Intranet\Services;
 
 use Intranet\Entities\Documento;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\Document\DocumentContext;
+use Intranet\Services\Document\DocumentResponder;
+use Intranet\Services\Document\DocumentResolver;
 
 class GestorService
 {
     private $elemento;
     private $document;
-    private $link;
-    private $isFile;
+    private DocumentContext $context;
+    private DocumentResponder $responder;
 
-    public function __construct($elemento=null, $documento=null)
+    public function __construct($elemento = null, $documento = null, ?DocumentResolver $resolver = null, ?DocumentResponder $responder = null)
     {
         $this->elemento = $elemento;
-        $this->document = $documento??$this->findDocument();
-        if ($this->document) {
-            if (isset($this->document->enlace)) {
-                $this->link = $this->document->enlace;
-                $this->isFile = false;
-            }
-
-            if (isset($this->document->fichero)) {
-                $this->link = storage_path('app/' . $this->document->fichero);
-                $this->isFile = true;
-            }
-        } else {
-            $this->getFileIfExistFromModel();
-        }
-    }
-
-    private function findDocument()
-    {
-        if (isset($this->elemento)) {
-            if ($this->elemento->idDocumento) {
-                return Documento::find($this->elemento->idDocumento);
-            }
-
-            return isset($this->elemento->fichero)
-                ? Documento::where('fichero', $this->elemento->fichero)->first()
-                : null;
-        }
-        return null;
+        $resolver = $resolver ?? new DocumentResolver();
+        $this->context = $resolver->resolve($elemento, $documento);
+        $this->document = $this->context->document();
+        $this->responder = $responder ?? new DocumentResponder();
     }
 
     public function save($parametres = null)
@@ -89,19 +67,7 @@ class GestorService
 
     public function render()
     {
-        if ($this->isAllowed()) {
-            if ($this->isFile && file_exists($this->link)) {
-                return response()->file($this->link);
-            }
-            if ($this->isFile === false) {
-                return redirect($this->link);
-            }
-            Alert::warning(trans("messages.generic.nodocument"));
-
-        } else {
-            Alert::warning('Sense Permisos');
-        }
-        return back();
+        return $this->responder->respond($this->context);
     }
 
     public static function saveDocument($filePath, $tags, $descripcion = null, $supervisor = null)
@@ -123,21 +89,5 @@ class GestorService
         foreach ($parametres as $key => $valor) {
             $this->document->$key = $valor;
         }
-    }
-
-    private function getFileIfExistFromModel()
-    {
-        if (isset($this->elemento->fichero)) {
-            $this->isFile = true;
-            $this->link = storage_path('app/' . $this->elemento->fichero);
-        } else {
-            $this->isFile = false;
-            $this->link = null;
-        }
-    }
-
-    private function isAllowed()
-    {
-        return !($this->document && !in_array($this->document->rol, rolesUser(authUser()->rol)));
     }
 }
