@@ -23,7 +23,7 @@ class AVIResource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         return [
             'ALUMNO' => "ALUMNO$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni",
             'CENTRE' => config('contacto.nombre').' '.config('contacto.codi') ,

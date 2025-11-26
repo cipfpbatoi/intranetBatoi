@@ -25,6 +25,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+
+        Gate::define('manage-bustia-violeta', function () {
+            return userIsNameAllow('comissio_IiC');
+        });
+         
     }
 }

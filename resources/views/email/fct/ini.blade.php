@@ -26,9 +26,8 @@
                         href="http://fct.edu.gva.es/">http://fct.edu.gva.es/</a>.
                 El seu correct ompliment et servirà per recordar millor les teues pràctiques de FCT.
             </li>
-            <li>Una vegada al mes, ens reunirem tot el grup a l'institut per a comentar el desenvolupament de les
-                pràctiques. L'assistència a estes reunions és obligatòria i compta en el còmput total d'hores de les
-                pràctiques. Et convocaré per correu electrònic amb antelació suficient.
+            <li>Durant les pràctiques de FCT, el teu tutor d'empresa farà un seguiment de les teues activitats i
+                et donarà suport en tot moment.
             </li>
             <li>També faré visites al centre de les quals informaré el teu instructor.</li>
             <li>Tens una assegurança de responsabilitat civil i d'accident laboral. La informació la trobaràs en aquest

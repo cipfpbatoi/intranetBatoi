@@ -160,7 +160,7 @@ class FaltaController extends IntranetController
 
     protected function createWithDefaultValues($default = [])
     {
-        $data = new Date('tomorrow');
+        $data = new Date('today');
         return new Falta(['desde'=>$data,'hasta'=>$data,'idProfesor'=>AuthUser()->dni]);
     }
 

@@ -13,6 +13,7 @@ class DocumentService
     private $elements;
     private $document;
     private $zip;
+    private $finder;
 
 
 

@@ -17,6 +17,7 @@ use Intranet\Botones\BotonImg;
 use Intranet\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Hash;
+use Intranet\Entities\Poll\PPoll;
 
 class PPollController extends IntranetController
 {
@@ -24,14 +25,20 @@ class PPollController extends IntranetController
 
     protected $model = 'PPoll';
     protected $gridFields = [ 'id','title','what'];
-    protected $vista = [ 'show' => 'poll.masterslave'];
-    protected $modal = true;
+    protected $modal = true; 
     
     protected function iniBotones()
     {
         $this->panel->setBoton('index', new BotonBasico("ppoll.create",inRol('qualitat')));
         $this->panel->setBoton('grid', new BotonImg('ppoll.edit',inRol('qualitat')));
         $this->panel->setBoton('grid', new BotonImg('ppoll.delete',array_merge(inRol('qualitat'),['where' => ['remains','==','0']])));
-        $this->panel->setBoton('grid', new BotonImg('ppoll.slave',array_merge(['img'=>'fa-plus'],inRol('qualitat'))));
+        $this->panel->setBoton('grid', new BotonImg('ppoll.show',array_merge(['img'=>'fa-plus'],inRol('qualitat'))));
+    }
+
+    public function show($id)
+    {
+        $elemento = PPoll::findOrFail($id);
+        $modelo = $this->model;
+        return view('poll.masterslave', compact('elemento','modelo'));
     }
 }

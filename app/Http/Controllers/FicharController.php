@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 
 use \DB;
+use Intranet\Entities\Departamento;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Horario;
 use Intranet\Services\FitxatgeService;
@@ -82,12 +83,14 @@ class FicharController extends IntranetController
         return view('fichar.control', compact('profes'));
     }
 
+
     public function controlDia()
     {
         $horarios = $this->loadHoraries(
             $profes=Profesor::Plantilla()->orderBy('departamento')->orderBy('apellido1')->orderBy('apellido2')->get());
         return view('fichar.control-dia', compact('profes', 'horarios'));
     }
+
     private function loadHoraries($profesores){
         $horarios = array();
         foreach ($profesores as $profesor) {
@@ -97,6 +100,7 @@ class FicharController extends IntranetController
         }
         return $horarios;
     }
+
     private function loadHorary($profesor) {
         $horario = Horario::Primera($profesor->dni, FechaInglesa(Hoy()))->orderBy('sesion_orden')->get();
 
@@ -104,6 +108,19 @@ class FicharController extends IntranetController
             return $horario->first()->desde . " - " . $horario->last()->hasta;
         }
         return '';
+    }
+
+    public function resumenRango()
+    {
+        // Professors en plantilla, amb nom complet per al combo
+        $profes = Profesor::Plantilla()
+            ->select('dni', 'nombre', 'apellido1', 'apellido2')
+            ->orderBy('apellido1')
+            ->orderBy('apellido2')
+            ->orderBy('nombre')
+            ->get();
+
+        return view('fichar.resumen-rango', compact('profes'));
     }
 
 }

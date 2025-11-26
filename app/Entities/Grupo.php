@@ -100,6 +100,7 @@ class Grupo extends Model
         });
     }
 
+
     public function scopeLargestByAlumnes($query)
     {
         return $query

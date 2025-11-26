@@ -23,7 +23,7 @@ class NotificacioInspeccioResource extends PrintResource
     public function toArray()
     {
         $alumno = $this->elements->Alumno;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         $director = Profesor::find(config('avisos.director'))->fullName;
         return [
             'Texto1' => config('contacto.nombre'),

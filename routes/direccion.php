@@ -55,10 +55,13 @@ Route::post('/falta/pdf', ['as' => 'falta.pdf', 'uses' => 'MensualController@imp
 
 Route::get('/alumno/{alumno}/edit', ['as' => 'alumno.edit', 'uses' => 'AlumnoController@edit']);
 Route::get('/programacion/list', ['as' => 'programacion.list', 'uses' => 'PanelControlProgramacionController@index']);
+Route::get('/fichar/resumen-rango', ['as' => 'fichar.resumen-rango', 'uses' => 'FicharController@resumenRango']);
+
 Route::get('/fichar/control', ['as' => 'fichar.control', 'uses' => 'FicharController@control']);
 Route::get('/fichar/controlDia', ['as' => 'ficharDia.control', 'uses' => 'FicharController@controlDia']);
 Route::get('/fichar/list', ['as' => 'fichar.list', 'uses' => 'PanelPresenciaController@indice']);
 Route::get('/fichar/list/{dia}', ['as' => 'fichar.list', 'uses' => 'PanelPresenciaController@indice']);
+Route::get('/fichar/{usuario}/email/{dia}', ['as' => 'fichar.email', 'uses' => 'PanelPresenciaController@email']);
 Route::get('/fichar/{usuario}/delete/{dia}', ['as' => 'fichar.borrar', 'uses' => 'PanelPresenciaController@deleteDia']);
 Route::get('/reunion/list', ['as' => 'reunion.list', 'uses' => 'ReunionController@listado']);
 Route::post('/reunion/aviso', ['as' => 'reunion.avisaFalta','uses'=>'ReunionController@avisaFaltaActa']);

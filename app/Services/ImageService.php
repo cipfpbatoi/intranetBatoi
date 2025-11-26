@@ -3,6 +3,7 @@
 namespace Intranet\Services;
 
 use Illuminate\Http\UploadedFile;
+use Styde\Html\Facades\Alert;
 use Styde\Html\Str;
 
 class ImageService
@@ -15,18 +16,31 @@ class ImageService
      */
     private static function openGdImage($source)
     {
-        // Obtén path real
+        // 1) Obtén path real
         if ($source instanceof UploadedFile) {
             $path = $source->getRealPath();
+            $mime = $source->getMimeType();
+            $ext  = strtolower($source->getClientOriginalExtension() ?: '');
+
+            // 🔹 Detectar HEIC/HEIF i convertir-lo abans de passar per GD
+            if (in_array($mime, ['image/heic','image/heif','image/heic-sequence','image/heif-sequence'])
+                || in_array($ext, ['heic','heif'])) {
+                $path = self::convertHeicToPng($path); // <- nou mètode
+            }
         } else {
             $path = (string) $source;
+            $mime = null;
+            $ext  = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            if (in_array($ext, ['heic','heif'])) {
+                $path = self::convertHeicToPng($path);
+            }
         }
 
         if (!$path || !is_readable($path) || filesize($path) === 0) {
             throw new \RuntimeException('El fitxer d\'origen és inexistent, il·legible o buit.');
         }
 
-        // Detecció segura del tipus real
+        // 2) Detecció segura del tipus real (del fitxer ja convertit si cal)
         $info = @getimagesize($path);
         if (!$info || !isset($info[2])) {
             throw new \RuntimeException('No s\'ha pogut detectar el tipus d\'imatge.');
@@ -51,7 +65,6 @@ class ImageService
 
             case IMAGETYPE_PNG:
                 $img = @imagecreatefrompng($path);
-                // Assegura canal alfa
                 imagesavealpha($img, true);
                 imagealphablending($img, false);
                 return $img;
@@ -68,6 +81,64 @@ class ImageService
             default:
                 throw new \RuntimeException('Tipus d\'imatge no suportat (només JPEG/PNG/GIF/WebP).');
         }
+    }
+
+    private static function convertHeicToPng(string $inputPath): string
+    {
+        // 1) Primer intent: Imagick amb suport HEIC
+        if (class_exists(\Imagick::class)) {
+            try {
+                $img = new \Imagick();
+                $img->readImage($inputPath);
+                $img->setImageFormat('png');
+                $img->setImageCompressionQuality(90);
+
+                // Orientació
+                if (method_exists($img, 'getImageOrientation')) {
+                    switch ($img->getImageOrientation()) {
+                        case \Imagick::ORIENTATION_RIGHTTOP:
+                            $img->rotateImage("#000", 90);
+                            break;
+                        case \Imagick::ORIENTATION_BOTTOMRIGHT:
+                            $img->rotateImage("#000", 180);
+                            break;
+                        case \Imagick::ORIENTATION_LEFTBOTTOM:
+                            $img->rotateImage("#000", -90);
+                            break;
+                    }
+                    $img->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+                }
+
+                $outputPath = sys_get_temp_dir().'/heic_'.uniqid().'.png';
+                if (!$img->writeImage($outputPath)) {
+                    throw new \RuntimeException('No s\'ha pogut escriure la conversió HEIC→PNG.');
+                }
+
+                $img->clear();
+                $img->destroy();
+
+                return $outputPath;
+            } catch (\Throwable $e) {
+                // continua a pla B
+            }
+        } else {
+            Alert::info('Imagick no està disponible al servidor.');
+        }
+
+        // 2) Pla B: utilitat heif-convert si està instal·lada al servidor
+        $outputPath = sys_get_temp_dir().'/heic_'.uniqid().'.png';
+        $cmd = sprintf(
+            'heif-convert %s %s 2>&1',
+            escapeshellarg($inputPath),
+            escapeshellarg($outputPath)
+        );
+        exec($cmd, $out, $code);
+
+        if ($code === 0 && file_exists($outputPath) && filesize($outputPath) > 0) {
+            return $outputPath;
+        }
+
+        throw new \RuntimeException('Imatge HEIC/HEIF no suportada al servidor.');
     }
 
     /**

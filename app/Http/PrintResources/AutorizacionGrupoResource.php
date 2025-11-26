@@ -29,7 +29,7 @@ class AutorizacionGrupoResource extends PrintResource
     {
         $nomTutor = AuthUser()->fullName;
         $dni = AuthUser()->dni;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         $alumnes = '';
         $mes = mes(Hoy());
         $data_actual = new \DateTime();
