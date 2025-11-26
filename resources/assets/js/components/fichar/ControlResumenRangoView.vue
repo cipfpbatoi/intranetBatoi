@@ -30,7 +30,7 @@
       <button @click="fetchData" class="btn">Actualitza</button>
     </div>
 
-    <!-- Taula resum d'estats -->
+    <!-- Taula resum -->
     <div class="table-wrap" style="overflow:auto;border:1px solid #e5e7eb;border-radius:8px">
       <table class="min-w-full" style="width:100%;font-size:14px;border-collapse:separate;border-spacing:0">
         <thead style="background:#f9fafb;position:sticky;top:0;z-index:1">
@@ -68,56 +68,6 @@
       </table>
     </div>
 
-    <!-- Taula resum d'hores (mateix rang) -->
-    <div class="table-wrap" style="overflow:auto;border:1px solid #e5e7eb;border-radius:8px">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f9fafb">
-        <div style="font-weight:600">Resum d'hores</div>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px">
-          <input type="checkbox" v-model="showHours" />
-          Mostrar taula d'hores
-        </label>
-      </div>
-      <table v-if="showHours" class="min-w-full" style="width:100%;font-size:14px;border-collapse:separate;border-spacing:0">
-        <thead style="background:#f9fafb;position:sticky;top:0;z-index:1">
-          <tr>
-            <th class="th w-56">Professor/a</th>
-            <th class="th w-28">Dept.</th>
-            <th v-for="d in daysList" :key="d" class="th">
-              {{ formatDia(d) }}
-            </th>
-            <th class="th w-20">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in filteredRows" :key="row.dni" class="tr">
-            <td class="td">
-              {{ nomRow(row) }}<div class="muted">{{ row.dni }}</div>
-            </td>
-            <td class="td">{{ row.departamento || '' }}</td>
-            <td v-for="d in daysList" :key="d" class="td">
-              <span
-                v-if="row.days && row.days[d]"
-                class="badge"
-                :class="cellInfo(row.days[d]).class"
-              >
-                {{ horasLabel(row.days[d]) }}
-              </span>
-              <span v-else class="badge bg-s">–</span>
-            </td>
-            <td class="td">
-              <strong>{{ totalHoras(row) }}</strong>
-            </td>
-          </tr>
-          <tr v-if="showHours && !filteredRows.length">
-            <td class="td" :colspan="3 + daysList.length" style="text-align:center;color:#6b7280;padding:24px">
-              Sense resultats.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-else style="padding:12px;color:#6b7280;font-size:13px">Activa el commutador per a veure els totals d'hores.</div>
-    </div>
-
     <p class="muted" style="font-size:12px">
       * OK si la cobertura global (docent + no docent) està aproximadament entre el 90% i el 110%.
       Es mantenen avisos especials: Abs, No out (NO_SALIDA), Just, Act, Com, Off.
@@ -142,7 +92,6 @@ export default {
       hasta: friday,
       dni: '',
       hideOk: false,
-      showHours: true,
       rows: []
     }
   },
@@ -327,29 +276,6 @@ export default {
       return { label: `${percent}%`, class: COLORS.OK }
     }
 
-    // --- helpers per al resum d'hores ---
-    horasLabel(day) {
-      const mins = day.in_center_minutes || 0
-      const h = Math.floor(mins / 60)
-      const m = mins % 60
-      return `${this.fillZero(h)}:${this.fillZero(m)}`
-    },
-
-    totalHoras(row) {
-      if (!row.days) return '00:00'
-      let mins = 0
-      for (const d of this.daysList) {
-        mins += row.days[d]?.in_center_minutes || 0
-      }
-      const h = Math.floor(mins / 60)
-      const m = mins % 60
-      return `${this.fillZero(h)}:${this.fillZero(m)}`
-    },
-
-    fillZero(v) {
-      return String(v).padStart(2, '0')
-    }
-
   },
   mounted() {
     this.fetchData()
@@ -373,3 +299,92 @@ export default {
 .bg-p { background:#e9d5ff;color:#6b21a8 }
 .bg-s { background:#e5e7eb;color:#374151 }
 </style>
+cellInfo(day) {
+  const status = day.status || ''
+
+  // Colors base
+  const COLORS = {
+    OK: 'bg-g',
+    PARTIAL: 'bg-a',
+    ABSENT: 'bg-r',
+    JUSTIFIED: 'bg-y',
+    ACTIVITY: 'bg-b',
+    COMMISSION: 'bg-p',
+    OFF: 'bg-s',
+    NO_SALIDA: 'bg-r'
+  }
+
+  // ----- CASOS ESPECIALS (NO % global) -----
+  if (status === 'NO_SALIDA') {
+    let label = 'No out'
+    if (day.first_entry) {
+      const hm = day.first_entry.slice(0,5)
+      label = `${label} (${hm})`
+    }
+    return { label, class: COLORS.NO_SALIDA }
+  }
+
+  if (status === 'ABSENT') {
+    return { label: 'Abs', class: COLORS.ABSENT }
+  }
+
+  if (status === 'JUSTIFIED') {
+    return { label: 'Just', class: COLORS.JUSTIFIED }
+  }
+
+  if (status === 'ACTIVITY') {
+    return { label: 'Act', class: COLORS.ACTIVITY }
+  }
+
+  if (status === 'COMMISSION') {
+    return { label: 'Com', class: COLORS.COMMISSION }
+  }
+
+  if (status === 'OFF') {
+    return { label: 'Off', class: COLORS.OFF }
+  }
+
+  // ----- CÀLCUL GLOBAL (per a OK i PARTIAL) -----
+
+  const plannedDoc = day.planned_docencia_minutes || 0
+  const plannedAlt = day.planned_altres_minutes || 0
+  const coveredDoc = day.covered_docencia_minutes || 0
+  const coveredAlt = day.covered_altres_minutes || 0
+
+  const plannedTotal = plannedDoc + plannedAlt
+  const coveredTotal = coveredDoc + coveredAlt
+
+  if (!plannedTotal) {
+    return { label: '—', class: COLORS.OFF }
+  }
+
+  const percent = Math.round((coveredTotal * 100) / plannedTotal)
+
+  // ---------- NOVA NORMATIVA ----------
+  // % > 110 -> mostrar % i colorejar segons si l’excés ve de lectives o no
+  if (percent > 110) {
+    // excés → sempre mostrar %
+    return { label: `${percent}%`, class: COLORS.OK }
+  }
+
+  // OK si percentatge entre 90% i 110%
+  if (percent >= 90 && percent <= 110) {
+    return { label: `${percent}%`, class: COLORS.OK }
+  }
+
+  // Percentatge BAIX (<90%) -> PARTIAL
+  // Nova lògica de ROIG/AMBRE
+  const missingDoc = coveredDoc < plannedDoc
+  const missingAlt = coveredAlt < plannedAlt
+
+  if (missingDoc) {
+    return { label: `${percent}%`, class: COLORS.ABSENT } // roig
+  }
+
+  if (missingAlt) {
+    return { label: `${percent}%`, class: COLORS.PARTIAL } // ambre
+  }
+
+  // fallback
+  return { label: `${percent}%`, class: COLORS.PARTIAL }
+}
