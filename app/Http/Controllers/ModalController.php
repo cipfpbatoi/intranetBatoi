@@ -62,6 +62,15 @@ abstract class ModalController extends Controller
             new FormBuilder($this->createWithDefaultValues(), $this->formFields));
     }
 
+    /**
+     * Per a recursos amb vista modal, la ruta create redirigeix a l'índex
+     * que ja mostra el formulari d'alta dins de la taula.
+     */
+    public function create()
+    {
+        return redirect()->action($this->model . 'Controller@index');
+    }
+
 
 
     protected function createWithDefaultValues($default = []){

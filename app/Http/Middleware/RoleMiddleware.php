@@ -20,7 +20,11 @@ class RoleMiddleware
         if (userIsNameAllow($role) || isAdmin()) {
             $response = $next($request);
         } else {
-            abort(SymfonyResponse::HTTP_FORBIDDEN, 'No estàs autoritzat.');
+            // Evitem excepcions dures: redirigim amb missatge i codi 403
+            $back = url()->previous() ?: route('home');
+            return redirect($back)
+                ->with('error', 'No estàs autoritzat.')
+                ->setStatusCode(SymfonyResponse::HTTP_FORBIDDEN);
         }
 
        return $this->normalizeRedirector($response, $request);
@@ -41,4 +45,3 @@ class RoleMiddleware
 
 
 }
-
