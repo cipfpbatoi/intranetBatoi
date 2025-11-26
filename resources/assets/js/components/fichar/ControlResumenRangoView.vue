@@ -19,6 +19,14 @@
           </option>
         </select>
       </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button @click="changeWeek(-1)" class="btn btn-light" title="Setmana anterior">← Setmana</button>
+        <button @click="changeWeek(1)" class="btn btn-light" title="Setmana següent">Setmana →</button>
+      </div>
+      <label style="display:flex;align-items:center;gap:6px;margin-left:auto">
+        <input type="checkbox" v-model="hideOk">
+        Amaga els OK
+      </label>
       <button @click="fetchData" class="btn">Actualitza</button>
     </div>
 
@@ -83,6 +91,7 @@ export default {
       desde: monday,
       hasta: friday,
       dni: '',
+      hideOk: false,
       rows: []
     }
   },
@@ -100,8 +109,14 @@ export default {
       return out
     },
     filteredRows() {
-      if (!this.dni) return this.rows
-      return this.rows.filter(r => r.dni === this.dni)
+      let out = this.rows
+      if (this.dni) {
+        out = out.filter(r => r.dni === this.dni)
+      }
+      if (this.hideOk) {
+        out = out.filter(r => !this.isRowFullyOk(r))
+      }
+      return out
     }
   },
   methods: {
@@ -123,6 +138,36 @@ export default {
       if (this.dni) url.searchParams.set('dni', this.dni)
       const res = await fetch(url.toString(), { credentials: 'same-origin' })
       this.rows = await res.json()
+    },
+
+    changeWeek(delta) {
+      const base = this.startOfWeek(new Date(this.desde))
+      base.setDate(base.getDate() + delta * 7)
+      const monday = base
+      const friday = new Date(monday)
+      friday.setDate(monday.getDate() + 4) // saltem dissabte/diumenge
+      const fmt = d => d.toISOString().slice(0,10)
+      this.desde = fmt(monday)
+      this.hasta = fmt(friday)
+      this.fetchData()
+    },
+
+    startOfWeek(date) {
+      const d = new Date(date)
+      const day = d.getDay() || 7
+      d.setDate(d.getDate() - (day - 1))
+      return d
+    },
+
+    isRowFullyOk(row) {
+      if (!row.days) return false
+      const days = this.daysList
+      if (!days.length) return false
+      return days.every(d => {
+        const info = row.days[d]
+        if (!info) return false
+        return this.cellInfo(info).class === 'bg-g'
+      })
     },
 
     nomProf(p) {
