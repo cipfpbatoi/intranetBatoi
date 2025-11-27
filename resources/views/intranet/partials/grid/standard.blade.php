@@ -14,49 +14,41 @@
                        value="{{ request('search') }}"
                        placeholder="Cercar document...">
 
-                @if(!empty($panel->filterTipoOptions))
-                    <select name="tipoDocumento"
-                            class="form-select form-select-sm server-filter"
-                            style="width: 150px;"
-                            id="serverFilterTipo">
-                        <option value="">{{ __('Tipus') }}</option>
-                        @foreach(($panel->filterTipoOptions ?? []) as $key => $label)
-                            <option value="{{ $key }}" @selected(request('tipoDocumento') == $key)>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                @endif
+                <select name="tipoDocumento"
+                        class="form-select form-select-sm server-filter"
+                        style="width: 150px;"
+                        id="serverFilterTipo">
+                    <option value="">{{ __('Tipus') }}</option>
+                    @foreach(($panel->filterTipoOptions ?? []) as $key => $label)
+                        <option value="{{ $key }}" @selected(request('tipoDocumento') == $key)>{{ $label }}</option>
+                    @endforeach
+                </select>
 
-                @if(!empty($panel->filterCursoOptions))
-                    <select name="curso"
-                            class="form-select form-select-sm server-filter"
-                            style="width: 120px;"
-                            id="serverFilterCurso">
-                        <option value="">{{ __('Curs') }}</option>
-                        @foreach(($panel->filterCursoOptions ?? []) as $curso)
-                            <option value="{{ $curso }}" @selected(request('curso') == $curso)>{{ $curso }}</option>
-                        @endforeach
-                    </select>
-                @endif
+                <select name="curso"
+                        class="form-select form-select-sm server-filter"
+                        style="width: 120px;"
+                        id="serverFilterCurso">
+                    <option value="">{{ __('Curs') }}</option>
+                    @foreach(($panel->filterCursoOptions ?? []) as $curso)
+                        <option value="{{ $curso }}" @selected(request('curso') == $curso)>{{ $curso }}</option>
+                    @endforeach
+                </select>
 
-                @if(!empty($panel->filterPropietario))
-                    <input type="text"
-                           name="propietario"
-                           id="serverFilterPropietario"
-                           class="form-control form-control-sm server-filter"
-                           style="width: 160px;"
-                           value="{{ request('propietario') }}"
-                           placeholder="{{ __('Propietari') }}">
-                @endif
+                <input type="text"
+                       name="propietario"
+                       id="serverFilterPropietario"
+                       class="form-control form-control-sm server-filter"
+                       style="width: 160px;"
+                       value="{{ request('propietario') }}"
+                       placeholder="{{ __('Propietari') }}">
 
-                @if(!empty($panel->filterTags))
-                    <input type="text"
-                           name="tags"
-                           id="serverFilterTags"
-                           class="form-control form-control-sm server-filter"
-                           style="width: 160px;"
-                           value="{{ request('tags') }}"
-                           placeholder="{{ __('Tags') }}">
-                @endif
+                <input type="text"
+                       name="tags"
+                       id="serverFilterTags"
+                       class="form-control form-control-sm server-filter"
+                       style="width: 160px;"
+                       value="{{ request('tags') }}"
+                       placeholder="{{ __('Tags') }}">
             </form>
         </div>
     @endif
