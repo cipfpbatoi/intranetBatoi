@@ -31,6 +31,7 @@ class DocumentoController extends IntranetController
     protected $panel;
     protected $modal = false;
     protected $profile = false;
+    protected int $perPage = 100;
     protected $formFields = ['tipoDocumento' => ['type' => 'select'],
         'rol' => ['type' => 'hidden'],
         'propietario' => ['disabled' => 'disabled'],
@@ -53,15 +54,21 @@ class DocumentoController extends IntranetController
     }
     public function search()
     {
+        $query = Documento::query()->orderBy('curso', 'desc');
+
         if (Session::get('completa')) {
-            return Documento::whereIn('rol', RolesUser(AuthUser()->rol))
-                ->orderBy('curso', 'desc')
-                ->get();
+            $query->whereIn('rol', RolesUser(AuthUser()->rol));
+        } else {
+            // Quan no es mostra la llista completa, acotem per curs o per propietari
+            $query->where(function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('curso', Curso())
+                        ->whereIn('rol', RolesUser(AuthUser()->rol));
+                })->orWhere('propietario', AuthUser()->fullName);
+            });
         }
-        return Documento::where('curso', Curso())
-            ->whereIn('rol', RolesUser(AuthUser()->rol))
-            ->orWhere('propietario', AuthUser()->fullName)
-            ->orderBy('curso', 'desc')->get();
+
+        return $query->paginate($this->perPage);
 
     }
 

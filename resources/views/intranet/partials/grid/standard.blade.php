@@ -13,4 +13,9 @@
             @include('intranet.partials.grid.campos')
         </tfoot>
     </table>
+    @if($panel->getPaginator())
+        <div class="mt-3 d-flex justify-content-center">
+            {{ $panel->getPaginator()->links('pagination::bootstrap-4') }}
+        </div>
+    @endif
 </div>
