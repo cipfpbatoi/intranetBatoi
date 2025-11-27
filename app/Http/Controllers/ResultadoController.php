@@ -56,6 +56,10 @@ class ResultadoController extends ModalController
     {
         if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
             $newRes = new Resultado();
+            // Assegurem professor informant abans de guardar
+            if (!$request->filled('idProfesor')) {
+                $request->merge(['idProfesor' => AuthUser()->dni]);
+            }
             $newRes->fillAll($request);
             return $this->redirect();
         }

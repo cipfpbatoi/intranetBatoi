@@ -304,7 +304,11 @@ class ReunionController extends IntranetController
 
     public function pdf($id)
     {
-        $elemento = Reunion::findOrFail($id);
+        $elemento = Reunion::find($id);
+        if (!$elemento) {
+            Alert::danger("No s'ha trobat la reunió #$id");
+            return back();
+        }
         if ($elemento->fichero != '') {
             if (file_exists(storage_path('/app/' . $elemento->fichero))) {
                 return response()->file(storage_path('/app/' . $elemento->fichero));
