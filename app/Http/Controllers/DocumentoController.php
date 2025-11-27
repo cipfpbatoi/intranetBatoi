@@ -31,7 +31,7 @@ class DocumentoController extends IntranetController
     protected $panel;
     protected $modal = false;
     protected $profile = false;
-    protected int $perPage = 100;
+    protected int $perPage = 50;
     protected $formFields = ['tipoDocumento' => ['type' => 'select'],
         'rol' => ['type' => 'hidden'],
         'propietario' => ['disabled' => 'disabled'],

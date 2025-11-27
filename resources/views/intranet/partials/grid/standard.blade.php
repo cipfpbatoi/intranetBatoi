@@ -1,18 +1,15 @@
 <div class="x_content">
     @if($panel->getPaginator())
         <div class="d-flex justify-content-end mb-2">
-            <form method="get" class="d-inline-flex" style="max-width: 520px;">
-                <div class="input-group input-group-sm flex-nowrap">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">{{ __('Filtrar') }}</span>
-                    </div>
-                    <input type="text"
-                           name="search"
-                           id="serverSearchInput"
-                           class="form-control"
-                           value="{{ request('search') }}"
-                           placeholder="Cercar document...">
-                </div>
+            <form method="get" class="d-flex align-items-center gap-2 flex-nowrap" style="max-width: 520px;">
+                <label for="serverSearchInput" class="mb-0">{{ __('Filtrar') }}:</label>
+                <input type="text"
+                       name="search"
+                       id="serverSearchInput"
+                       class="form-control form-control-sm"
+                       style="min-width: 220px;"
+                       value="{{ request('search') }}"
+                       placeholder="Cercar document...">
             </form>
         </div>
     @endif
