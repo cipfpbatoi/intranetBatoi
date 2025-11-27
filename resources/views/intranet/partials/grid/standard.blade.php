@@ -1,17 +1,17 @@
 <div class="x_content">
     @if($panel->getPaginator())
         <div class="d-flex justify-content-end mb-2">
-            <form method="get" class="w-100" style="max-width: 480px;">
-                <div class="input-group input-group-sm">
+            <form method="get" class="d-inline-flex" style="max-width: 520px;">
+                <div class="input-group input-group-sm flex-nowrap">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">{{ __('Filtrar') }}</span>
+                    </div>
                     <input type="text"
                            name="search"
+                           id="serverSearchInput"
                            class="form-control"
                            value="{{ request('search') }}"
                            placeholder="Cercar document...">
-                    <button class="btn btn-primary" type="submit">{{ __('Cercar') }}</button>
-                    @if(request('search'))
-                        <a class="btn btn-outline-secondary" href="{{ url()->current() }}">{{ __('Netejar') }}</a>
-                    @endif
                 </div>
             </form>
         </div>
@@ -35,5 +35,20 @@
         <div class="mt-3 d-flex justify-content-center">
             {{ $panel->getPaginator()->links('pagination::bootstrap-4') }}
         </div>
+    @endif
+    @if($panel->getPaginator())
+        <script>
+            (function() {
+                const input = document.getElementById('serverSearchInput');
+                if (!input) return;
+                let timer;
+                input.addEventListener('input', function () {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        input.form.submit();
+                    }, 400);
+                });
+            })();
+        </script>
     @endif
 </div>

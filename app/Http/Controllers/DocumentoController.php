@@ -55,6 +55,7 @@ class DocumentoController extends IntranetController
     public function search()
     {
         $query = Documento::query()->orderBy('curso', 'desc');
+        $search = request('search');
 
         if (Session::get('completa')) {
             $query->whereIn('rol', RolesUser(AuthUser()->rol));
@@ -68,7 +69,16 @@ class DocumentoController extends IntranetController
             });
         }
 
-        return $query->paginate($this->perPage);
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('descripcion', 'like', "%{$search}%")
+                    ->orWhere('tags', 'like', "%{$search}%")
+                    ->orWhere('propietario', 'like', "%{$search}%")
+                    ->orWhere('tipoDocumento', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->paginate($this->perPage)->appends(request()->query());
 
     }
 

@@ -1,13 +1,17 @@
 $.fn.dataTable.moment( 'DD-MM-YYYY' );
 $.fn.dataTable.moment( 'DD-MM-YYYY HH:mm' );
-$('#datatable').DataTable( {
-    language: {
-        url: '/json/cattable.json',
-    },
+const table = $('#datatable');
+const serverPagination = table.data('server-pagination') === true || table.data('server-pagination') === 'true';
+
+table.DataTable({
+    language: { url: '/json/cattable.json' },
     deferRender: true,
     responsive: true,
+    paging: !serverPagination,
+    info: !serverPagination,
+    searching: !serverPagination, // evitarem incoherències amb la paginació de Laravel
     columnDefs: [
-        { responsivePriority: 1, targets: -1},
+        { responsivePriority: 1, targets: -1}
     ]
 });
 
