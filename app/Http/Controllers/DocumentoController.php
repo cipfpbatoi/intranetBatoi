@@ -50,12 +50,58 @@ class DocumentoController extends IntranetController
 
     public function index(){
         ini_set('memory_limit', '512M');
+        // Opcions de filtres (tipus i cursos disponibles)
+        $configTipos = TipoDocumento::allPestana();
+        $bdTipos = Documento::select('tipoDocumento')
+            ->distinct()
+            ->orderBy('tipoDocumento')
+            ->pluck('tipoDocumento')
+            ->filter();
+
+        $tipoOptions = [];
+        foreach ($configTipos as $key => $label) {
+            $tipoOptions[$key] = $label;
+        }
+        foreach ($bdTipos as $tipo) {
+            $tipoOptions[$tipo] = $configTipos[$tipo] ?? $tipo;
+        }
+
+        $this->panel->filterTipoOptions = $tipoOptions;
+        $this->panel->filterCursoOptions = Documento::select('curso')
+            ->distinct()
+            ->orderBy('curso', 'desc')
+            ->limit(8)
+            ->pluck('curso');
+        $this->panel->filterPropietario = true;
+        $this->panel->filterTags = true;
         return parent::index();
     }
     public function search()
     {
-        $query = Documento::query()->orderBy('curso', 'desc');
+        $query = Documento::query()
+            ->select([
+                'id',
+                'tipoDocumento',
+                'descripcion',
+                'curso',
+                'idDocumento',
+                'propietario',
+                'created_at',
+                'grupo',
+                'tags',
+                'ciclo',
+                'modulo',
+                'detalle',
+                'fichero',
+                'rol',
+                'activo',
+            ])
+            ->orderBy('curso', 'desc');
         $search = request('search');
+        $filterTipo = request('tipoDocumento');
+        $filterCurso = request('curso');
+        $filterPropietario = request('propietario');
+        $filterTags = request('tags');
 
         if (Session::get('completa')) {
             $query->whereIn('rol', RolesUser(AuthUser()->rol));
@@ -76,6 +122,22 @@ class DocumentoController extends IntranetController
                     ->orWhere('propietario', 'like', "%{$search}%")
                     ->orWhere('tipoDocumento', 'like', "%{$search}%");
             });
+        }
+
+        if ($filterTipo) {
+            $query->where('tipoDocumento', $filterTipo);
+        }
+
+        if ($filterCurso) {
+            $query->where('curso', $filterCurso);
+        }
+
+        if ($filterPropietario) {
+            $query->where('propietario', 'like', "%{$filterPropietario}%");
+        }
+
+        if ($filterTags) {
+            $query->where('tags', 'like', "%{$filterTags}%");
         }
 
         return $query->paginate($this->perPage)->appends(request()->query());
