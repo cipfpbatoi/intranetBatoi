@@ -31,6 +31,7 @@ class DocumentoController extends IntranetController
     protected $panel;
     protected $modal = false;
     protected $profile = false;
+    protected int $perPage = 50;
     protected $formFields = ['tipoDocumento' => ['type' => 'select'],
         'rol' => ['type' => 'hidden'],
         'propietario' => ['disabled' => 'disabled'],
@@ -49,19 +50,97 @@ class DocumentoController extends IntranetController
 
     public function index(){
         ini_set('memory_limit', '512M');
+        // Opcions de filtres (tipus i cursos disponibles)
+        $configTipos = TipoDocumento::allPestana();
+        $bdTipos = Documento::select('tipoDocumento')
+            ->distinct()
+            ->orderBy('tipoDocumento')
+            ->pluck('tipoDocumento')
+            ->filter();
+
+        $tipoOptions = [];
+        foreach ($configTipos as $key => $label) {
+            $tipoOptions[$key] = $label;
+        }
+        foreach ($bdTipos as $tipo) {
+            $tipoOptions[$tipo] = $configTipos[$tipo] ?? $tipo;
+        }
+
+        $this->panel->filterTipoOptions = $tipoOptions;
+        $this->panel->filterCursoOptions = Documento::select('curso')
+            ->distinct()
+            ->orderBy('curso', 'desc')
+            ->limit(8)
+            ->pluck('curso');
+        $this->panel->filterPropietario = true;
+        $this->panel->filterTags = true;
         return parent::index();
     }
     public function search()
     {
+        $query = Documento::query()
+            ->select([
+                'id',
+                'tipoDocumento',
+                'descripcion',
+                'curso',
+                'idDocumento',
+                'propietario',
+                'created_at',
+                'grupo',
+                'tags',
+                'ciclo',
+                'modulo',
+                'detalle',
+                'fichero',
+                'rol',
+                'activo',
+            ])
+            ->orderBy('curso', 'desc');
+        $search = request('search');
+        $filterTipo = request('tipoDocumento');
+        $filterCurso = request('curso');
+        $filterPropietario = request('propietario');
+        $filterTags = request('tags');
+
         if (Session::get('completa')) {
-            return Documento::whereIn('rol', RolesUser(AuthUser()->rol))
-                ->orderBy('curso', 'desc')
-                ->get();
+            $query->whereIn('rol', RolesUser(AuthUser()->rol));
+        } else {
+            // Quan no es mostra la llista completa, acotem per curs o per propietari
+            $query->where(function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('curso', Curso())
+                        ->whereIn('rol', RolesUser(AuthUser()->rol));
+                })->orWhere('propietario', AuthUser()->fullName);
+            });
         }
-        return Documento::where('curso', Curso())
-            ->whereIn('rol', RolesUser(AuthUser()->rol))
-            ->orWhere('propietario', AuthUser()->fullName)
-            ->orderBy('curso', 'desc')->get();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('descripcion', 'like', "%{$search}%")
+                    ->orWhere('tags', 'like', "%{$search}%")
+                    ->orWhere('propietario', 'like', "%{$search}%")
+                    ->orWhere('tipoDocumento', 'like', "%{$search}%");
+            });
+        }
+
+        if ($filterTipo) {
+            $query->where('tipoDocumento', $filterTipo);
+        }
+
+        if ($filterCurso) {
+            $query->where('curso', $filterCurso);
+        }
+
+        if ($filterPropietario) {
+            $query->where('propietario', 'like', "%{$filterPropietario}%");
+        }
+
+        if ($filterTags) {
+            $query->where('tags', 'like', "%{$filterTags}%");
+        }
+
+        return $query->paginate($this->perPage)->appends(request()->query());
 
     }
 
