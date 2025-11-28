@@ -48,4 +48,16 @@ class DocumentPathService
     {
         return file_exists($path);
     }
+
+    public function responseFromPath(string $path)
+    {
+        if (!$this->existsPath($path)) {
+            return null;
+        }
+
+        $mime = File::mimeType($path) ?: null;
+        $headers = $mime ? ['Content-Type' => $mime] : [];
+
+        return response()->file($path, $headers);
+    }
 }

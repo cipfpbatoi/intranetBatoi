@@ -5,6 +5,7 @@ namespace Intranet\Http\Traits;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
+use Intranet\Services\Document\DocumentPathService;
 
 trait Crud
 {
@@ -90,9 +91,13 @@ trait Crud
     public function document($id)
     {
         $elemento = $this->class::findOrFail($id);
-        if ($elemento->link) {
-            return response()->file(storage_path('app/' . $elemento->fichero));
+        $pathService = new DocumentPathService();
+        $path = $elemento->fichero ? storage_path('app/' . $elemento->fichero) : null;
+
+        if ($path && $response = $pathService->responseFromPath($path)) {
+            return $response;
         }
+
         Alert::danger(trans("messages.generic.nodocument"));
         return back();
     }
