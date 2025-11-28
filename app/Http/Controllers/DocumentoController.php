@@ -14,6 +14,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Services\FormBuilder;
 use Intranet\Services\GestorService;
+use Intranet\Services\Document\CreateOrUpdateDocumentAction;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 use function Symfony\Component\String\s;
@@ -172,13 +173,18 @@ class DocumentoController extends IntranetController
         $cursoRequest = $request->input('curso')??curso();
         $cleanRequest = $request->duplicate(
             $request->except($except),
+            $request->files->all()
+        );
+
+        (new CreateOrUpdateDocumentAction())->fromRequest(
+            $cleanRequest,
             [
-                'rol'   => $rol,
+                'rol' => $rol,
                 'curso' => $cursoRequest,
             ]
         );
 
-        return parent::store($cleanRequest);
+        return $this->redirect();
     }
 
 
