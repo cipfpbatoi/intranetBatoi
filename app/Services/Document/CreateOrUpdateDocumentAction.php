@@ -40,6 +40,18 @@ class CreateOrUpdateDocumentAction
         return $document;
     }
 
+    public function build(array $data, ?Documento $document = null, $elemento = null): Documento
+    {
+        $payload = $this->applyDefaults($data, $document, $elemento);
+        $document = $document ?? new Documento();
+
+        foreach ($payload as $key => $value) {
+            $document->$key = $value;
+        }
+
+        return $document;
+    }
+
     private function applyDefaults(array $data, ?Documento $document, $elemento = null): array
     {
         $payload = $data;
