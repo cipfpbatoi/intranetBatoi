@@ -7,10 +7,12 @@ use Styde\Html\Facades\Alert;
 class DocumentResponder
 {
     private DocumentAccessChecker $accessChecker;
+    private DocumentPathService $pathService;
 
-    public function __construct(?DocumentAccessChecker $accessChecker = null)
+    public function __construct(?DocumentAccessChecker $accessChecker = null, ?DocumentPathService $pathService = null)
     {
         $this->accessChecker = $accessChecker ?? new DocumentAccessChecker();
+        $this->pathService = $pathService ?? new DocumentPathService();
     }
 
     public function respond(DocumentContext $context)
@@ -20,8 +22,8 @@ class DocumentResponder
             return back();
         }
 
-        if ($context->isFile() && $context->link() && file_exists($context->link())) {
-            return response()->file($context->link());
+        if ($context->isFile() && $this->pathService->exists($context)) {
+            return $this->pathService->responseFile($context);
         }
 
         if ($context->isFile() === false && $context->link()) {
