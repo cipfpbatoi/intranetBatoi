@@ -86,7 +86,7 @@ class ResultadoController extends ModalController
      */
     public function listado()
     {
-        if ($grupo = Grupo::select('codigo', 'nombre')->QTutor()->first()) {
+        if ($grupo = Grupo::select('codigo', 'nombre')->QTutor()->largestByAlumnes()->first()) {
             $resultados = Resultado::QGrupo($grupo->codigo)->orderBy('idModuloGrupo')
                             ->orderBy('evaluacion')->get();
             $datosInforme = $grupo->nombre;
