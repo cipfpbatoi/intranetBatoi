@@ -114,6 +114,7 @@ class Grupo extends Model
         $profesor = $profesor ?? authUser();
         $grupos = Horario::select('idGrupo')
             ->Profesor($profesor->dni)
+            ->Lectivos()
             ->whereNotNull('idGrupo')
             ->distinct()
             ->pluck('idGrupo')
