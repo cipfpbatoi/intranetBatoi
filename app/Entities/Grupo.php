@@ -113,11 +113,12 @@ class Grupo extends Model
     {
         $profesor = $profesor ?? authUser();
         $grupos = Horario::select('idGrupo')
-                ->Profesor($profesor->dni)
-                ->whereNotNull('idGrupo')
-                ->distinct()
-                ->get()
-                ->toarray();
+            ->Profesor($profesor->dni)
+            ->whereNotNull('idGrupo')
+            ->distinct()
+            ->pluck('idGrupo')
+            ->toArray();
+
         return $query->whereIn('codigo', $grupos);
     }
     
