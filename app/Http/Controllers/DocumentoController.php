@@ -14,6 +14,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Services\FormBuilder;
 use Intranet\Services\GestorService;
+use Intranet\Services\Document\CreateOrUpdateDocumentAction;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 use function Symfony\Component\String\s;
@@ -172,13 +173,18 @@ class DocumentoController extends IntranetController
         $cursoRequest = $request->input('curso')??curso();
         $cleanRequest = $request->duplicate(
             $request->except($except),
+            $request->files->all()
+        );
+
+        (new CreateOrUpdateDocumentAction())->fromRequest(
+            $cleanRequest,
             [
-                'rol'   => $rol,
+                'rol' => $rol,
                 'curso' => $cursoRequest,
             ]
         );
 
-        return parent::store($cleanRequest);
+        return $this->redirect();
     }
 
 
@@ -195,7 +201,9 @@ class DocumentoController extends IntranetController
 
     protected function createWithDefaultValues($default=[])
     {
-        return new Documento(['curso'=>Curso(),'propietario'=>config('contacto.titulo'),'activo'=>true]);
+        return (new CreateOrUpdateDocumentAction())->build(
+            array_merge(['curso'=>Curso(),'propietario'=>config('contacto.titulo'),'activo'=>true], $default)
+        );
      }
 
     public function project($idFct)
@@ -205,14 +213,17 @@ class DocumentoController extends IntranetController
             $proyecto = $fct->Alumno->Projecte ?? null;
             $descripcion = $proyecto->titol ?? '';
             $detalle = $proyecto->descripcio ?? '';
-            $elemento = $this->createWithDefaultValues();
-            $elemento->descripcion = $descripcion;
-            $elemento->detalle = $detalle;
-            $elemento->supervisor = AuthUser()->FullName;
-            $elemento->propietario = $fct->Alumno->FullName;
-            $elemento->tipoDocumento = 'Proyecto';
-            $elemento->idDocumento = '';
-            $elemento->ciclo = Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo;
+            $elemento = (new CreateOrUpdateDocumentAction())->build([
+                'curso' => Curso(),
+                'propietario' => $fct->Alumno->FullName,
+                'supervisor' => AuthUser()->FullName,
+                'activo' => true,
+                'tipoDocumento' => 'Proyecto',
+                'idDocumento' => '',
+                'ciclo' => Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo,
+                'descripcion' => $descripcion,
+                'detalle' => $detalle,
+            ]);
             $formulario = new FormBuilder(
                 $elemento,
                 [
@@ -241,17 +252,19 @@ class DocumentoController extends IntranetController
         $profesor = Profesor::findOrFail($id);
 
         $documents = Adjunto::where('route', "profesor/$id")->get();
-        $elemento = $this->createWithDefaultValues();
-        $elemento->tipoDocumento = 'FCT';
-        $elemento->idDocumento = null;
         $grupo = Grupo::QTutor($id)->first();
-        $elemento->ciclo = $grupo->Ciclo->ciclo;
-        $elemento->grupo = $grupo->nombre;
-        $elemento->supervisor = $profesor->FullName;
-        $elemento->propietario = $elemento->supervisor;
-        $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor';
-        $elemento->descripcion = "Documentació FCT Cicle " . $grupo->Ciclo->ciclo;
-        $elemento->save();
+        $elemento = (new CreateOrUpdateDocumentAction())->fromArray([
+            'curso' => Curso(),
+            'propietario' => $profesor->FullName,
+            'supervisor' => $profesor->FullName,
+            'activo' => true,
+            'tipoDocumento' => 'FCT',
+            'idDocumento' => null,
+            'ciclo' => $grupo->Ciclo->ciclo,
+            'grupo' => $grupo->nombre,
+            'tags' => 'Fct,Entrevista,Alumnat,Instructor',
+            'descripcion' => "Documentació FCT Cicle " . $grupo->Ciclo->ciclo,
+        ]);
 
         $zip = new \ZipArchive();
         $path = "gestor/" . curso() . "/FCT/";
@@ -295,16 +308,19 @@ class DocumentoController extends IntranetController
 
     public function qualitat()
     {
-        $elemento = $this->createWithDefaultValues();
-        $elemento->tipoDocumento = 'FCT';
-        $elemento->idDocumento = '';
         $grupo = Grupo::QTutor(AuthUser()->dni)->first();
-        $elemento->ciclo = $grupo->Ciclo->ciclo;
-        $elemento->grupo = $grupo->nombre;
-        $elemento->supervisor = AuthUser()->FullName;
-        $elemento->propietario = $elemento->supervisor;
-        $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor';
-        $elemento->instrucciones = 'Pujar en un sols document comprimit: Entrevista Alumnat i Entrevista Instructor';
+        $elemento = (new CreateOrUpdateDocumentAction())->build([
+            'curso' => Curso(),
+            'propietario' => AuthUser()->FullName,
+            'supervisor' => AuthUser()->FullName,
+            'activo' => true,
+            'tipoDocumento' => 'FCT',
+            'idDocumento' => '',
+            'ciclo' => $grupo->Ciclo->ciclo,
+            'grupo' => $grupo->nombre,
+            'tags' => 'Fct,Entrevista,Alumnat,Instructor',
+            'instrucciones' => 'Pujar en un sols document comprimit: Entrevista Alumnat i Entrevista Instructor',
+        ]);
         $formulario = new FormBuilder(
             $elemento,
             [

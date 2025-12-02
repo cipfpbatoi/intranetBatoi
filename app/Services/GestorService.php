@@ -3,6 +3,7 @@
 namespace Intranet\Services;
 
 use Intranet\Entities\Documento;
+use Intranet\Services\Document\CreateOrUpdateDocumentAction;
 use Intranet\Services\Document\DocumentContext;
 use Intranet\Services\Document\DocumentResponder;
 use Intranet\Services\Document\DocumentResolver;
@@ -25,43 +26,15 @@ class GestorService
 
     public function save($parametres = null)
     {
-        if (isset($this->document)) {
-            if ($parametres) {
-                $this->update($parametres);
-            }
+        $action = new CreateOrUpdateDocumentAction();
+        $paramsArray = $parametres ?? [];
+
+        if ($parametres || !$this->document) {
+            $this->document = $action->fromArray($paramsArray, $this->document, $this->elemento);
         } else {
-            $this->document = new Documento($parametres);
-            $this->document->curso = curso();
-            if (empty($this->document->supervisor)) {
-                $this->document->supervisor = authUser()->FullName;
-            }
-            if (empty($this->document->descripcion)) {
-                $this->document->descripcion = 'Registre dia ' . hoy('d-m-Y');
-            }
-            if ($el = $this->elemento) {
-                if (empty($this->document->idDocumento)) {
-                    $primaryKey = $el->primaryKey??null;
-                    $this->document->idDocumento = $el->id ?? $el->$primaryKey ?? $this->document->tipoDocumento;
-                }
-                if (empty($this->document->propietario)) {
-                    $this->document->propietario = $el->Profesor->FullName ?? '';
-                }
-                if (empty($this->document->fichero)) {
-                    $this->document->fichero = $el->fichero;
-                }
-            } else {
-                if (empty($this->document->propietario)) {
-                    $this->document->propietario = authUser()->FullName;
-                }
-                if (empty($this->document->tags)) {
-                    $this->document->tags = 'listado llistat autorizacion autorizacio';
-                }
-                if (empty($this->document->rol)) {
-                    $this->document->rol = 2;
-                }
-            }
+            $this->document->save();
         }
-        $this->document->save();
+
         return $this->document->id;
     }
 
@@ -84,10 +57,4 @@ class GestorService
     }
 
 
-    private function update($parametres)
-    {
-        foreach ($parametres as $key => $valor) {
-            $this->document->$key = $valor;
-        }
-    }
 }

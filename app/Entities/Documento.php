@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
+use Intranet\Services\Document\DocumentPathService;
 
 
 class Documento extends Model
@@ -81,7 +82,12 @@ class Documento extends Model
     
     public function getLinkAttribute()
     {
-        return (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero)));
+        $path = isset($this->fichero) ? storage_path('app/' . $this->fichero) : null;
+        if (!$path) {
+            return false;
+        }
+
+        return (new DocumentPathService())->existsPath($path);
     }
 
 
