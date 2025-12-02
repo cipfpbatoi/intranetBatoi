@@ -17,6 +17,7 @@ class ImageService
     private static function openGdImage($source)
     {
         // 1) Obtén path real
+        $mime = null;
         if ($source instanceof UploadedFile) {
             $path = $source->getRealPath();
             $mime = $source->getMimeType();
@@ -43,10 +44,17 @@ class ImageService
         // 2) Detecció segura del tipus real (del fitxer ja convertit si cal)
         $info = @getimagesize($path);
         if (!$info || !isset($info[2])) {
-            throw new \RuntimeException('No s\'ha pogut detectar el tipus d\'imatge.');
+            // Pla B: intenta amb MIME detectat
+            $mime = $mime ?? (function_exists('mime_content_type') ? @mime_content_type($path) : null);
+            $type = self::imagetypeFromMime($mime);
+            if (!$type) {
+                throw new \RuntimeException(
+                    "No s'ha pogut detectar el tipus d'imatge (mime: " . ($mime ?? 'desconegut') . ")."
+                );
+            }
+        } else {
+            $type = $info[2]; // una de les constants IMAGETYPE_*
         }
-
-        $type = $info[2]; // una de les constants IMAGETYPE_*
 
         switch ($type) {
             case IMAGETYPE_JPEG:
@@ -81,6 +89,17 @@ class ImageService
             default:
                 throw new \RuntimeException('Tipus d\'imatge no suportat (només JPEG/PNG/GIF/WebP).');
         }
+    }
+
+    private static function imagetypeFromMime(?string $mime): ?int
+    {
+        return match ($mime) {
+            'image/jpeg', 'image/pjpeg'   => IMAGETYPE_JPEG,
+            'image/png'                   => IMAGETYPE_PNG,
+            'image/gif'                   => IMAGETYPE_GIF,
+            'image/webp'                  => defined('IMAGETYPE_WEBP') ? IMAGETYPE_WEBP : null,
+            default                       => null,
+        };
     }
 
     private static function convertHeicToPng(string $inputPath): string
