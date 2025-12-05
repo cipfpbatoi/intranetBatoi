@@ -44,10 +44,8 @@ class CotxeAccessService
 
     }
 
-    public function obrirIPorta()
+    public function obrirIPorta(): void
     {
-        
-        return null;
         $url = config('parking.porta_url');
         $id = config('parking.porta_device_id');
         $user = config('parking.porta_user');
