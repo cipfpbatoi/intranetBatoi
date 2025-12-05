@@ -62,6 +62,8 @@ class CotxeAccessService
                 Log::error('Error obrint la porta (turnOn)', [
                     'status' => $onResponse->status(),
                     'reason' => $onResponse->reason(),
+                    'user'  => $user,
+                    'pass'  => $pass,
                     'body' => substr($onResponse->body(), 0, 500),
                     'url' => $url,
                     'deviceID' => $id,
