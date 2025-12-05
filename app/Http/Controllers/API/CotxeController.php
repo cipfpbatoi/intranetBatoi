@@ -47,10 +47,9 @@ class CotxeController extends ApiResourceController
      */
     public function obrirTest()
     {
-        try {
-            $this->access->obrirIPorta();
-        } catch (\Throwable $e) {
-            Log::error("Error obrint la porta (test): {$e->getMessage()}");
+        $oberta = $this->access->obrirIPorta();
+
+        if (!$oberta) {
             return response()->json(['error' => 'No s\'ha pogut obrir la porta'], 500);
         }
 
@@ -90,12 +89,9 @@ class CotxeController extends ApiResourceController
         }
 
         if ($obrir) {
-            try {
-                $this->access->obrirIPorta();
-            } catch (\Throwable $e) {
-                Log::error("Error obrint la porta: {$e->getMessage()}");
-                // Tot i l’error físic, registrem l’intent amb porta_oberta=false
-                $obrir = false;
+            $obrir = $this->access->obrirIPorta();
+            if (!$obrir) {
+                Log::error("Error obrint la porta: resposta no satisfactòria");
             }
         }
 
