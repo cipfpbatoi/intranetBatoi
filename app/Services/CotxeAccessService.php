@@ -44,7 +44,7 @@ class CotxeAccessService
 
     }
 
-    public function obrirIPorta(): void|null
+    public function obrirIPorta()
     {
         
         return null;
