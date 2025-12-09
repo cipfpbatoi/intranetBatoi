@@ -71,7 +71,7 @@ abstract class ModalController extends Controller
         return redirect()->action($this->model . 'Controller@index');
     }
 
-    public function edit()
+    public function edit($id = null)
     {
         return redirect()->action($this->model . 'Controller@index');
     }
