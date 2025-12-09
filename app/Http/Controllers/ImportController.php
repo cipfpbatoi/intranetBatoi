@@ -202,44 +202,19 @@ class ImportController extends Seeder
 
     public function hazDNI(string $dni, int $nia)
     {
-        return DB::transaction(function () use ($dni, $nia) {
-            // A) Prioritza sempre el registre trobat pel NIA importat (és la PK nova/oficial)
-            $byNia = Alumno::find($nia);
+        $byNia = Alumno::find($nia);
 
-            if ($byNia) {
-                // Si el DNI canvia…
-                if ($byNia->dni !== $dni && strlen($dni) <= 8) {
-                    // Si hi ha un altre alumne amb aquest DNI, l'eliminem (no hi ha FKs encara)
-                    $dupDni = Alumno::where('dni', $dni)->where('nia', '<>', $nia)->first();
-                    if ($dupDni) {
-                        $dupDni->delete();
-                    }
-                    // Actualitzem el DNI del “guanyador”
-                    $byNia->dni = $dni;
-                    $byNia->save();
-                }
-                return $byNia->dni ?: $dni;
-            }
+        if (strlen($dni) <= 8 )  {
+            return $byNia ? $byNia->dni : 'F'.Str::random(9);
+        }
+    
+        if ($byNia && $byNia->dni !== $dni) {
+            // Si el DNI canvia…
+            Alumno::where('dni', $dni)->where('nia', '<>', $nia)->delete();
+            Alert::warning('Alumne amb DNI ' . $dni . ' esborrat per duplicat de nia ' . $nia);
+        }
 
-            // B) No existeix per NIA. Mirem per DNI
-            $byDni = Alumno::where('dni', $dni)->first();
-            if ($byDni) {
-                // En import inicial, podem canviar la PK sense por (no hi ha FKs)
-                // Opció 1: canviar directament la PK (si el model ho permet)
-                $byDni->nia = $nia;
-                $byDni->save();
-                return $byDni->dni;
-            }
-
-            // C) No existeix ni per NIA ni per DNI → segueix la teua regla
-            if (strlen($dni) > 8) {
-                return $dni;
-            }
-
-            $dniFictici = 'F' . Str::random(9);
-            Alert::warning('Alumne amb DNI fictici ' . $dniFictici);
-            return $dniFictici;
-        });
+        return $dni;
     }
 
     /**
