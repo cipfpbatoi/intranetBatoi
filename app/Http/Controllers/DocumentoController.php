@@ -343,7 +343,7 @@ class DocumentoController extends IntranetController
         return view($this->chooseView('create'), compact('formulario', 'modelo'));
     }
 
-    public function edit($id)
+    public function edit($id = null)
     {
         $elemento = Documento::findOrFail($id);
         $formulario = $elemento->enlace?
