@@ -83,6 +83,12 @@
     <div>
         <h2 class="text-lg font-bold mb-4">Calendari de FCT</h2>
 
+        @if (session()->has('email_status'))
+            <div class="mb-3 p-3 rounded bg-green-200 text-green-900 text-sm font-bold border-l-4 border-green-600 shadow-sm">
+                ✅ {{ session('email_status') }}
+            </div>
+        @endif
+
         <div class="flex gap-4 mb-4">
             <button wire:click="deleteCalendar"
                     class="bg-red-500 text-white px-4 py-2 rounded">
@@ -92,6 +98,10 @@
             <button wire:click="exportCalendarPdf"
                     class="bg-green-500 text-white px-4 py-2 rounded">
                 📄 Descarregar PDF
+            </button>
+            <button wire:click="sendCalendarEmails"
+                    class="bg-indigo-500 text-white px-4 py-2 rounded">
+                ✉️ Enviar per correu
             </button>
         </div>
 

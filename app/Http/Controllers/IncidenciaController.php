@@ -110,7 +110,7 @@ class IncidenciaController extends ModalController
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit($id)
+    public function edit($id=null)
     {
         $elemento = Incidencia::findOrFail($id);
         $formulario = new FormBuilder($elemento,

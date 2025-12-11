@@ -187,8 +187,12 @@ class Profesor extends Authenticatable
 
     public function scopeGrupo($query, $grupo)
     {
-        $profesores = Horario::distinct()->select('idProfesor')->Grup($grupo)->get()->toArray();
-        return $query->whereIn('dni', $profesores)->orWhereIn('sustituye_a', $profesores)->Plantilla();
+        $profesores = Horario::Grup($grupo)->distinct()->pluck('idProfesor')->toArray();
+
+        return $query->where(function ($q) use ($profesores) {
+            $q->whereIn('dni', $profesores)
+                ->orWhereIn('sustituye_a', $profesores);
+        })->Plantilla();
     }
     public function scopeGrupoT($query, $grupoT)
     {

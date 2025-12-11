@@ -52,8 +52,9 @@ class FaltaItacaController extends IntranetController
 
     private static function deleteFile(String $nomComplet)
     {
+        $pathService = new \Intranet\Services\Document\DocumentPathService();
         if ($doc = Documento::where('fichero', $nomComplet)->first()) {
-            if (file_exists(storage_path('app/' . $doc->fichero))) {
+            if ($pathService->existsPath(storage_path('app/' . $doc->fichero))) {
                 unlink(storage_path('app/' . $doc->fichero));
             }
             $doc->delete();

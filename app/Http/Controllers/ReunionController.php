@@ -76,7 +76,7 @@ class ReunionController extends IntranetController
     }
 
 
-    public function edit($id)
+    public function edit($id = null)
     {
         $elemento = Reunion::findOrFail($id);
         if ($elemento->fichero != '') {

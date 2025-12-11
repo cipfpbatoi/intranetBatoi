@@ -25,9 +25,35 @@ class CotxeController extends ApiResourceController
         return $this->handleEvent($request, Direccio::Entrada);
     }
 
+    public function obrirAutomatica(Request $request)
+    {
+        $requested = strtolower($request->input('direccio')
+            ?? $request->input('direction')
+            ?? $request->input('tipus')
+            ?? Direccio::Entrada->value);
+
+        $direccio = Direccio::tryFrom($requested) ?? Direccio::Entrada;
+
+        return $this->handleEvent($request, $direccio);
+    }
+
     public function eventSortida(Request $request)
     {
         return $this->handleEvent($request, Direccio::Eixida);
+    }
+
+    /**
+     * Obertura manual per proves: no necessita matrícula.
+     */
+    public function obrirTest()
+    {
+        $oberta = $this->access->obrirIPorta();
+
+        if (!$oberta) {
+            return response()->json(['error' => 'No s\'ha pogut obrir la porta'], 500);
+        }
+
+        return response()->json(['status' => 'Porta oberta (test)']);
     }
 
     private function handleEvent(Request $request, Direccio $direccio)
@@ -63,12 +89,9 @@ class CotxeController extends ApiResourceController
         }
 
         if ($obrir) {
-            try {
-                $this->access->obrirIPorta();
-            } catch (\Throwable $e) {
-                Log::error("Error obrint la porta: {$e->getMessage()}");
-                // Tot i l’error físic, registrem l’intent amb porta_oberta=false
-                $obrir = false;
+            $obrir = $this->access->obrirIPorta();
+            if (!$obrir) {
+                Log::error("Error obrint la porta: resposta no satisfactòria");
             }
         }
 
