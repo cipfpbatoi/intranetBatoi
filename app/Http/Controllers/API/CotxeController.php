@@ -48,7 +48,7 @@ class CotxeController extends ApiResourceController
     public function obrirTest()
     {
         $oberta = $this->access->obrirIPorta();
-        return response()->json($oberta);
+         
 
         if (!$oberta) {
             return response()->json(['error' => 'No s\'ha pogut obrir la porta'], 500);
