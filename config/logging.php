@@ -89,6 +89,11 @@ return [
             'level' => 'debug',
             'days' => 7,
         ],
+        'parking' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/parking.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];

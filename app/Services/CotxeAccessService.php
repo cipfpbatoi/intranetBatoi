@@ -46,6 +46,7 @@ class CotxeAccessService
 
     public function obrirIPorta(): bool
     {
+        $log = Log::channel('parking');
         $url = config('parking.porta_url');
         $id = config('parking.porta_device_id');
         $user = config('parking.porta_user');
@@ -59,7 +60,7 @@ class CotxeAccessService
                 ]);
 
             if (!$onResponse->successful()) {
-                Log::error('Error obrint la porta (turnOn)', [
+                $log->error('Error obrint la porta (turnOn)', [
                     'status' => $onResponse->status(),
                     'reason' => $onResponse->reason(),
                     'user'  => $user,
@@ -71,7 +72,7 @@ class CotxeAccessService
                 return false;
             }
 
-            sleep(0.5);
+            sleep(1);
 
             // Intentem apagar encara que l'obertura haja fallat
             $offResponse = Http::withBasicAuth($user, $pass)
@@ -81,7 +82,7 @@ class CotxeAccessService
                 ]);
 
             if (!$offResponse->successful()) {
-                Log::warning('Error tancant la porta (turnOff)', [
+                $log->warning('Error tancant la porta (turnOff)', [
                     'status' => $offResponse->status(),
                     'reason' => $offResponse->reason(),
                     'body' => substr($offResponse->body(), 0, 500),
@@ -92,7 +93,7 @@ class CotxeAccessService
 
             return true;
         } catch (\Throwable $e) {
-            Log::error('Excepció obrint la porta', ['message' => $e->getMessage()]);
+            $log->error('Excepció obrint la porta', ['message' => $e->getMessage()]);
             return false;
         }
     }

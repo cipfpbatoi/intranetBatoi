@@ -56,8 +56,10 @@ class CotxeController extends ApiResourceController
         return response()->json(['status' => 'Porta oberta (test)']);
     }
 
+
     private function handleEvent(Request $request, Direccio $direccio)
     {
+        $log = Log::channel('parking');
         [$matricula, $device] = $this->normalizePayload($request, $direccio);
 
         if (!$matricula) {
@@ -65,11 +67,11 @@ class CotxeController extends ApiResourceController
         }
 
         if ($this->access->recentAccessWithin($matricula, 30)) {
-            Log::alert("Accés $matricula recent");
+            $log->alert("Accés $matricula recent");
             return response()->json(['status' => 'Accés massa recent']);
         }
 
-        Log::info("Accés {$direccio->value} | Matricula: {$matricula} | Dispositiu: {$device}");
+        $log->info("Accés {$direccio->value} | Matricula: {$matricula} | Dispositiu: {$device}");
 
         $cotxe = Cotxe::where('matricula', $matricula)->first();
 
@@ -91,7 +93,7 @@ class CotxeController extends ApiResourceController
         if ($obrir) {
             $obrir = $this->access->obrirIPorta();
             if (!$obrir) {
-                Log::error("Error obrint la porta: resposta no satisfactòria");
+                $log->error("Error obrint la porta: resposta no satisfactòria");
             }
         }
 
