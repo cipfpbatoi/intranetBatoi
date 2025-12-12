@@ -68,11 +68,11 @@ class CotxeController extends ApiResourceController
         }
 
         if ($this->access->recentAccessWithin($matricula, 30)) {
-            $log->alert("Accés $matricula recent");
+            //$log->alert("Accés $matricula recent");
             return response()->json(['status' => 'Accés massa recent']);
         }
 
-        $log->info("Accés {$direccio->value} | Matricula: {$matricula} | Dispositiu: {$device}");
+        //$log->info("Accés {$direccio->value} | Matricula: {$matricula} | Dispositiu: {$device}");
 
         $cotxe = Cotxe::where('matricula', $matricula)->first();
 
@@ -99,11 +99,12 @@ class CotxeController extends ApiResourceController
         }
 
         // Registre d’accés (sempre)
-        $this->access->registrarAcces(
-            matricula:    $matricula,
-            autoritzat:   $autoritzat,
-            porta_oberta: $obrir,
-            device:       $device,
+        if ($autoritzat) {
+            $this->access->registrarAcces(
+                matricula:    $matricula,
+                autoritzat:   $autoritzat,
+                porta_oberta: $obrir,
+                device:       $device,
             tipus:        $direccio->value,
         );
 
