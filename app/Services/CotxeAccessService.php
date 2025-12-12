@@ -44,7 +44,7 @@ class CotxeAccessService
 
     }
 
-    public function obrirIPorta(): bool
+    public function obrirIPorta()
     {
         $log = Log::channel('parking');
         $url = config('parking.porta_url');
@@ -91,7 +91,7 @@ class CotxeAccessService
                 ]);
             }
 
-            return true;
+            return $onResponse;
         } catch (\Throwable $e) {
             $log->error('Excepció obrint la porta', ['message' => $e->getMessage()]);
             return false;
