@@ -115,6 +115,8 @@ class CotxeController extends ApiResourceController
             ? "Porta oberta ({$direccio->value})"
             : ($cotxe ? 'No autoritzat' : 'No autoritzat');
 
+        $log->info("Resultat accés {$direccio->value} | Matricula: {$matricula} | {$msg}");
+            
         return response()->json(['status' => $msg]);
     }
 
