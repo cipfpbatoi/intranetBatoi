@@ -387,6 +387,8 @@ class PresenciaResumenService
         }
 
         if ($covered >= max(0, $planned - 1)) return 'OK';
+        // Hi ha presència (fora d'horari) però no cobreix planificació → parcial, no absent
+        if ($covered === 0 && $c['in_center'] > 0) return 'PARTIAL';
         if ($c['covered_docencia'] === 0 && $c['covered_altres'] === 0) return 'ABSENT';
         return 'PARTIAL';
     }
