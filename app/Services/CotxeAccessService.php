@@ -54,13 +54,6 @@ class CotxeAccessService
 
         try {
 
-            $offResponse = Http::withBasicAuth($user, $pass)
-                ->get("$url/api/callAction", [
-                    'deviceID' => $id,
-                    'name' => 'turnOff',
-                ]);
-            sleep(0.5);
-
             $onResponse = Http::withBasicAuth($user, $pass)
                 ->get("$url/api/callAction", [
                     'deviceID' => $id,
