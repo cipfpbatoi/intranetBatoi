@@ -90,6 +90,7 @@ class CotxeAccessService
                     'deviceID' => $id,
                 ]);
             }
+            $log->info('Porta oberta correctament');
 
             return $onResponse;
         } catch (\Throwable $e) {
