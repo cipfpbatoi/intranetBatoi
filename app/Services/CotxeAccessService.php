@@ -72,7 +72,7 @@ class CotxeAccessService
                 return false;
             }
 
-            sleep(1);
+            sleep(2);
 
             // Intentem apagar encara que l'obertura haja fallat
             $offResponse = Http::withBasicAuth($user, $pass)
