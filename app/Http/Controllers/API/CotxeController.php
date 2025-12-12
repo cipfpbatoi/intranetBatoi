@@ -99,14 +99,16 @@ class CotxeController extends ApiResourceController
         }
 
         // Registre d’accés (sempre)
-        if ($autoritzat) {
+        if ($autoritzat){
             $this->access->registrarAcces(
-                matricula:    $matricula,
-                autoritzat:   $autoritzat,
-                porta_oberta: $obrir,
-                device:       $device,
+            matricula:    $matricula,
+            autoritzat:   $autoritzat,
+            porta_oberta: $obrir,
+            device:       $device,
             tipus:        $direccio->value,
-        );
+            );
+        }
+        
 
         // Fitxatge: si vols que només fitxe en entrades, afegeix condició de direcció
         if ($cotxe?->professor /* && $direccio === Direccio::Entrada */) {
