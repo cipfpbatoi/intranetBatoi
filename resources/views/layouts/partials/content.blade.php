@@ -8,10 +8,10 @@
                         @include('layouts.partials.titlecontent')
                     </div>
                     <div class="x_content">
-                        @yield('content')
+                        {!! Alert::render() !!}
                     </div>
                     <div class="x_content">
-                        {!! Alert::render() !!}
+                        @yield('content')
                     </div>
                 </div>
             </div>

@@ -367,7 +367,7 @@ class ReunionController extends IntranetController
                 $elemento->save();
             });
         } catch (IntranetException $e){
-            Alert::warning($e->getMessage());
+                Alert::warning($e->getMessage());
         }
         return back();
     }
