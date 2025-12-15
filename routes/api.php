@@ -20,6 +20,8 @@ Route::get('/convenio', 'EmpresaController@indexConvenio');
 Route::get('miIp', 'IPController@miIP');
 Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 Route::get('server-time', 'GuardiaController@getServerTime' );
+Route::get('porta/obrir', 'CotxeController@obrirTest');
+Route::post('porta/obrir-automatica', 'CotxeController@obrirAutomatica');
 Route::post('eventPortaSortida', 'CotxeController@eventSortida');
 Route::post('eventPorta', 'CotxeController@eventEntrada');
 Route::get('/presencia/resumen-rango',   'PresenciaResumenController@rango' );

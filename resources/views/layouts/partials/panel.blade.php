@@ -6,6 +6,9 @@
                 <div class="x_panel">
                     <x-layouts.titlebar />
                     <div class="x_content">
+                        {!! Alert::render() !!}
+                    </div>
+                    <div class="x_content">
                         <div class="" role="tabpanel" data-example-id="togglable-tabs">
                             <ul id="myTab1" class="nav nav-tabs bar_tabs right" role="tablist">
                                 @foreach ($panel->getPestanas() as $pestana)
@@ -28,9 +31,6 @@
                                 @endforeach
                             </div>
                         </div>
-                    </div>
-                    <div class="x_content">
-                        {!! Alert::render() !!}
                     </div>
                 </div>
             </div>

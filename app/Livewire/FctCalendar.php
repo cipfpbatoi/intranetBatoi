@@ -8,6 +8,8 @@ use Intranet\Entities\CalendariEscolar;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Colaboracion;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Mail;
+use ZipArchive;
 
 class FctCalendar extends Component
 {
@@ -120,22 +122,38 @@ class FctCalendar extends Component
 
         $fctDays = FctDay::where('nia', $this->alumno->nia)->get();
         if ($fctDays->isNotEmpty()) {
-            $trams = $fctDays->groupBy(function ($day) {
-                return ($day->colaboracion_id ?? 'null') . '-' . $day->created_at->format('Y-m-d');
+            $sorted = $fctDays->sortBy('dia')->values();
+            $trams = [];
+            $current = null;
 
-            })->map(function ($group) {
-                $hores = array_fill(1, 7, 0);
-                foreach ($group as $day) {
-                    $dow = Carbon::parse($day->dia)->dayOfWeekIso;
-                    $hores[$dow] = $day->hores_previstes;
+            foreach ($sorted as $day) {
+                $dow = Carbon::parse($day->dia)->dayOfWeekIso;
+                $needsNewSegment = $current !== null && (
+                    $day->colaboracion_id !== $current['colaboracion_id'] ||
+                    ($current['hores_setmana'][$dow] > 0 && $current['hores_setmana'][$dow] !== $day->hores_previstes)
+                );
+
+                if ($needsNewSegment) {
+                    $trams[] = $current;
+                    $current = null;
                 }
-                return [
-                    'inici' => $group->first()->dia,
-                    'fi' => $group->last()->dia,
-                    'colaboracion_id' => $group->first()->colaboracion_id,
-                    'hores_setmana' => $hores,
-                ];
-            })->values()->toArray();
+
+                if ($current === null) {
+                    $current = [
+                        'inici' => $day->dia,
+                        'fi' => $day->dia,
+                        'colaboracion_id' => $day->colaboracion_id,
+                        'hores_setmana' => array_fill(1, 7, 0),
+                    ];
+                }
+
+                $current['hores_setmana'][$dow] = $day->hores_previstes;
+                $current['fi'] = $day->dia;
+            }
+
+            if ($current !== null) {
+                $trams[] = $current;
+            }
 
             $this->trams = $trams;
         }
@@ -243,62 +261,257 @@ class FctCalendar extends Component
         $allDays = FctDay::where('nia', $this->alumno->nia)
             ->orderBy('dia')->get();
 
-        // Agrupar dies per mes
-        $monthlyCalendar = $allDays->map(function ($day) {
+        $colaboracions = Colaboracion::with('Centro', 'Propietario')->get();
+        $colabLegend = $this->buildLegend($allDays, $colaboracions);
+        $colorMap = collect($colabLegend)->mapWithKeys(fn ($item) => [$item['id'] => $item['color']])->toArray();
+
+        $documents = $this->buildDocuments($allDays, $colaboracions, $colabLegend, $colorMap);
+
+        // Si només hi ha un document, enviem el PDF directe
+        if (count($documents) === 1) {
+            $doc = $documents[0];
+            return response()->stream(fn () => print($doc['content']), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $doc['name'] . '"'
+            ]);
+        }
+
+        // Generem un ZIP amb tots els PDFs (alumne + empreses)
+        $zip = $this->createZipFromDocuments($documents);
+
+        return response()->download($zip['path'], $zip['name'])->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Enviar calendaris per correu des de la vista (botó).
+     */
+    public function sendCalendarEmails(): void
+    {
+        $allDays = FctDay::where('nia', $this->alumno->nia)
+            ->orderBy('dia')->get();
+
+        if ($allDays->isEmpty()) {
+            return;
+        }
+
+        $colaboracions = Colaboracion::with('Centro', 'Propietario')->get();
+        $colabLegend = $this->buildLegend($allDays, $colaboracions);
+        $colorMap = collect($colabLegend)->mapWithKeys(fn ($item) => [$item['id'] => $item['color']])->toArray();
+
+        $documents = $this->buildDocuments($allDays, $colaboracions, $colabLegend, $colorMap);
+        $this->dispatchCalendarEmails($documents, $colaboracions);
+
+        session()->flash('email_status', 'Correus enviats correctament.');
+    }
+
+    /**
+     * Retorna el calendari agrupat per mes amb any inclòs per evitar desquadres.
+     */
+    private function mapDaysToMonthlyCalendar($days, array $colorMap = []): array
+    {
+        return $days->map(function ($day) {
             $date = Carbon::parse($day->dia);
             return [
                 'dia' => $day->dia,
                 'hores_previstes' => $day->hores_previstes,
-                'mes' => $date->format('F'),
+                'mes' => $date->format('Y-m'),
                 'dia_numero' => $date->day,
+                'colaboracion_id' => $day->colaboracion_id,
             ];
+        })->map(function ($day) use ($colorMap) {
+            if ($day['colaboracion_id'] && isset($colorMap[$day['colaboracion_id']])) {
+                $day['color'] = $colorMap[$day['colaboracion_id']];
+            }
+            return $day;
         })->groupBy('mes')->toArray();
+    }
 
-        $views = [];
-
-        // 1. Vista principal (per a l'alumne)
-        $views[] = view('livewire.pdf.fct-calendar', [
+    /**
+     * Genera el contingut PDF per a un calendari concret.
+     */
+    private function renderPdfContent(array $monthlyCalendar, float $totalHours, string $titol, ?array $legend = null): string
+    {
+        $html = view('livewire.pdf.fct-calendar', [
             'monthlyCalendar' => $monthlyCalendar,
-            'totalHours' => $allDays->sum('hores_previstes'),
+            'totalHours' => $totalHours,
             'alumnoFct' => $this->alumno,
-            'titol' => 'Calendari de FCT de l\'alumne',
+            'titol' => $titol,
+            'legend' => $legend,
         ])->render();
 
-        // 2. Per a cada col·laboració amb dies
-        $colaboracions = Colaboracion::with('Centro')->get();
+        return Pdf::loadHtml($html)->output();
+    }
 
+    private function buildLegend($days, $colaboracions): array
+    {
+        $colabIds = $days->whereNotNull('colaboracion_id')->pluck('colaboracion_id')->unique()->values();
+        if ($colabIds->isEmpty()) {
+            return [];
+        }
+
+        $palette = ['#fce5cd', '#d9ead3', '#c9daf8', '#f4cccc', '#d0e0e3', '#ead1dc', '#fff2cc'];
+        $legend = [];
+
+        foreach ($colabIds as $i => $id) {
+            $colaboracio = $colaboracions->firstWhere('id', $id);
+            $nom = $colaboracio && $colaboracio->Centro ? $colaboracio->Centro->nombre : 'Col·laboració #' . $id;
+            $legend[] = [
+                'id' => $id,
+                'nom' => $nom,
+                'color' => $palette[$i % count($palette)],
+            ];
+        }
+
+        return $legend;
+    }
+
+    private function createZipFromDocuments(array $documents): array
+    {
+        $zipPath = tempnam(sys_get_temp_dir(), 'fct_cal_');
+        $zip = new ZipArchive();
+        if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            abort(500, 'No s\'ha pogut crear el fitxer ZIP del calendari.');
+        }
+
+        foreach ($documents as $doc) {
+            $zip->addFromString($doc['name'], $doc['content']);
+        }
+        $zip->close();
+
+        return [
+            'path' => $zipPath,
+            'name' => "calendari_" . $this->alumno->nia . ".zip",
+        ];
+    }
+
+    /**
+     * Genera tots els PDFs (alumne + col·laboracions).
+     */
+    private function buildDocuments($allDays, $colaboracions, $colabLegend, array $colorMap): array
+    {
+        $documents = [];
+
+        // Alumne
+        $monthlyCalendar = $this->mapDaysToMonthlyCalendar($allDays, $colorMap);
+        $documents[] = [
+            'name' => "calendari_{$this->alumno->nia}_alumne.pdf",
+            'content' => $this->renderPdfContent(
+                $monthlyCalendar,
+                $allDays->sum('hores_previstes'),
+                "Calendari de FCT de l'alumne",
+                $colabLegend
+            ),
+        ];
+
+        // Col·laboracions
         $colaboracionDays = $allDays->whereNotNull('colaboracion_id')->groupBy('colaboracion_id');
-
         foreach ($colaboracionDays as $colaboracionId => $dies) {
             $colaboracio = $colaboracions->firstWhere('id', $colaboracionId);
             $nomCentre = $colaboracio?->Centro?->nombre ?? 'Col·laboració #' . $colaboracionId;
 
-            $calendar = $dies->map(function ($day) {
-                $date = Carbon::parse($day->dia);
-                return [
-                    'dia' => $day->dia,
-                    'hores_previstes' => $day->hores_previstes,
-                    'mes' => $date->format('F'),
-                    'dia_numero' => $date->day,
-                ];
-            })->groupBy('mes')->toArray();
+            $calendar = $this->mapDaysToMonthlyCalendar($dies);
 
-            $views[] = view('livewire.pdf.fct-calendar', [
-                'monthlyCalendar' => $calendar,
-                'totalHours' => $dies->sum('hores_previstes'),
-                'alumnoFct' => $this->alumno,
-                'titol' => "Calendari de FCT a $nomCentre",
-            ])->render();
+            $documents[] = [
+                'name' => "calendari_{$this->alumno->nia}_$colaboracionId.pdf",
+                'content' => $this->renderPdfContent(
+                    $calendar,
+                    $dies->sum('hores_previstes'),
+                    "Calendari de FCT a $nomCentre"
+                ),
+            ];
         }
 
-        // Combinar totes les vistes en un PDF
-        $pdf = Pdf::loadHtml(implode('<div class="page-break"></div>', $views));
-        $nom = "calendari_" . $this->alumno->nia . ".pdf";
+        return $documents;
+    }
 
-        return response()->stream(fn () => print($pdf->output()), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . $nom . '"'
-        ]);
+    /**
+     * Envia cada PDF de forma separada (alumne i una per empresa) amb còpia a l'usuari actual.
+     */
+    private function dispatchCalendarEmails(array $documents, $colaboracions): void
+    {
+        $tutorContact = $this->getTutorContact();
+        $fromEmail = $tutorContact['email'] ?? config('mail.from.address');
+        $fromName  = $tutorContact['name']  ?? config('mail.from.name');
+        $replyToEmail = $fromEmail;
+        $replyToName  = $fromName;
+
+        foreach ($documents as $doc) {
+            $recipients = [];
+            $subjectExtra = '';
+
+            if (str_contains($doc['name'], '_alumne.pdf')) {
+                if (filter_var($this->alumno->email, FILTER_VALIDATE_EMAIL)) {
+                    $recipients[] = $this->alumno->email;
+                }
+            } else {
+                // Obté id de col·laboració des del nom
+                $parts = explode('_', $doc['name']);
+                $candidate = str_replace('.pdf', '', end($parts));
+                $colabId = is_numeric($candidate) ? (int) $candidate : null;
+
+                if ($colabId) {
+                    $colaboracio = $colaboracions->firstWhere('id', $colabId);
+                    if ($colaboracio) {
+                        $subjectExtra = ' - ' . ($colaboracio->Centro->nombre ?? 'Empresa #' . $colabId);
+                        if (filter_var($colaboracio->email, FILTER_VALIDATE_EMAIL)) {
+                            $recipients[] = $colaboracio->email;
+                        }
+                        if (filter_var($colaboracio->Propietario->email ?? null, FILTER_VALIDATE_EMAIL)) {
+                            $recipients[] = $colaboracio->Propietario->email;
+                        }
+                    }
+                }
+            }
+
+            $recipients = collect($recipients)->unique()->values()->all();
+            if (empty($recipients)) {
+                continue;
+            }
+
+            $subject = 'Calendari Formació en Empresa - ' . $this->alumno->nombre . ' ' . $this->alumno->apellido1 . $subjectExtra;
+            $body = "Hola,\n\nAdjunt tens el calendari de Formació en Empresa de {$this->alumno->nombre} {$this->alumno->apellido1}.\n\nSalutacions.";
+
+            $ccEmails = [];
+            if ($replyToEmail && !in_array($replyToEmail, $recipients, true) && filter_var($replyToEmail, FILTER_VALIDATE_EMAIL)) {
+                $ccEmails[] = $replyToEmail;
+            }
+
+            Mail::send([], [], function ($message) use ($recipients, $subject, $body, $doc, $fromEmail, $fromName, $replyToEmail, $replyToName, $ccEmails) {
+                $message->to($recipients)
+                    ->from($fromEmail, $fromName)
+                    ->replyTo($replyToEmail, $replyToName)
+                    ->subject($subject)
+                    ->html(nl2br(e($body)))
+                    ->attachData($doc['content'], $doc['name'], ['mime' => 'application/pdf']);
+
+                if (!empty($ccEmails)) {
+                    $message->cc($ccEmails);
+                }
+            });
+        }
+    }
+
+    private function getTutorContact(): array
+    {
+        $tutor = $this->alumno->tutor->first();
+        if ($tutor && filter_var($tutor->email, FILTER_VALIDATE_EMAIL)) {
+            $name = trim($tutor->nombre . ' ' . $tutor->apellido1 . ' ' . $tutor->apellido2);
+            return [
+                'email' => $tutor->email,
+                'name' => $name !== '' ? $name : $tutor->email,
+            ];
+        }
+
+        $currentUser = auth()->user();
+        if ($currentUser && filter_var($currentUser->email, FILTER_VALIDATE_EMAIL)) {
+            $name = trim(($currentUser->nombre ?? '') . ' ' . ($currentUser->apellido1 ?? ''));
+            return [
+                'email' => $currentUser->email,
+                'name' => $name !== '' ? $name : $currentUser->email,
+            ];
+        }
+
+        return [];
     }
 
 

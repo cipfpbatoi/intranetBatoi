@@ -19,14 +19,15 @@
                 </li>
                 @if (!isset(authUser()->nia))
                     <li class="">
-                        <a href="{{url('/ficha')}}">
-                            <!--                            <a href="{{url('/api/doficha?dni='.authUser()->dni.'&api_token='.authUser()->api_token)}}">-->
-                            @if ( estaDentro())
-                                {!! Html::image('img/clock-icon.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
-                            @else
-                                {!! Html::image('img/clock-icon-rojo.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
-                            @endif
-                        </a>
+                        
+                            <a href="{{url('/api/doficha?dni='.authUser()->dni.'&api_token='.authUser()->api_token)}}">
+                                @if ( estaDentro())
+                                    {!! Html::image('img/clock-icon.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
+                                @else
+                                    {!! Html::image('img/clock-icon-rojo.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
+                                @endif
+                            </a>
+                       
                     </li>
                 @endif
                 <li class="">

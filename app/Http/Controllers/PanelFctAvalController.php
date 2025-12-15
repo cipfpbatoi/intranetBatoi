@@ -454,7 +454,7 @@ class PanelFctAvalController extends IntranetController
         $modelo = strtolower('Profesor');
         $ara = new \DateTime();
         $inici = new \DateTime(date('Y') . '-06-15');
-        $fi = new \DateTime(date('Y') . '-09-07');
+        $fi = new \DateTime(date('Y') . '-08-31');
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()],
         ];

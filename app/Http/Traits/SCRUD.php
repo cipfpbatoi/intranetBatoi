@@ -52,7 +52,7 @@ trait SCRUD
         return view($this->chooseView('create'), compact('formulario', 'modelo'));
     }
 
-    public function edit($id)
+    public function edit($id=null)
     {
         $class = $this->modelClass();
         try {

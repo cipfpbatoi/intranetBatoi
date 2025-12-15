@@ -25,13 +25,42 @@ class CotxeController extends ApiResourceController
         return $this->handleEvent($request, Direccio::Entrada);
     }
 
+    public function obrirAutomatica(Request $request)
+    {
+        $requested = strtolower($request->input('direccio')
+            ?? $request->input('direction')
+            ?? $request->input('tipus')
+            ?? Direccio::Entrada->value);
+
+        $direccio = Direccio::tryFrom($requested) ?? Direccio::Entrada;
+
+        return $this->handleEvent($request, $direccio);
+    }
+
     public function eventSortida(Request $request)
     {
         return $this->handleEvent($request, Direccio::Eixida);
     }
 
+    /**
+     * Obertura manual per proves: no necessita matrícula.
+     */
+    public function obrirTest()
+    {
+        $oberta = $this->access->obrirIPorta();
+         
+
+        if (!$oberta) {
+            return response()->json(['error' => 'No s\'ha pogut obrir la porta'], 500);
+        }
+
+        return response()->json(['status' => 'Porta oberta (test)']);
+    }
+
+
     private function handleEvent(Request $request, Direccio $direccio)
     {
+        $log = Log::channel('parking');
         [$matricula, $device] = $this->normalizePayload($request, $direccio);
 
         if (!$matricula) {
@@ -39,11 +68,11 @@ class CotxeController extends ApiResourceController
         }
 
         if ($this->access->recentAccessWithin($matricula, 30)) {
-            Log::alert("Accés $matricula recent");
+            //$log->alert("Accés $matricula recent");
             return response()->json(['status' => 'Accés massa recent']);
         }
 
-        Log::info("Accés {$direccio->value} | Matricula: {$matricula} | Dispositiu: {$device}");
+        //$log->info("Accés {$direccio->value} | Matricula: {$matricula} | Dispositiu: {$device}");
 
         $cotxe = Cotxe::where('matricula', $matricula)->first();
 
@@ -63,23 +92,23 @@ class CotxeController extends ApiResourceController
         }
 
         if ($obrir) {
-            try {
-                $this->access->obrirIPorta();
-            } catch (\Throwable $e) {
-                Log::error("Error obrint la porta: {$e->getMessage()}");
-                // Tot i l’error físic, registrem l’intent amb porta_oberta=false
-                $obrir = false;
+            $obrir = $this->access->obrirIPorta();
+            if (!$obrir) {
+                $log->error("Error obrint la porta: resposta no satisfactòria");
             }
         }
 
         // Registre d’accés (sempre)
-        $this->access->registrarAcces(
+        if ($autoritzat){
+            $this->access->registrarAcces(
             matricula:    $matricula,
             autoritzat:   $autoritzat,
             porta_oberta: $obrir,
             device:       $device,
             tipus:        $direccio->value,
-        );
+            );
+        }
+        
 
         // Fitxatge: si vols que només fitxe en entrades, afegeix condició de direcció
         if ($cotxe?->professor /* && $direccio === Direccio::Entrada */) {
@@ -89,6 +118,8 @@ class CotxeController extends ApiResourceController
         $msg = $obrir
             ? "Porta oberta ({$direccio->value})"
             : ($cotxe ? 'No autoritzat' : 'No autoritzat');
+
+        $log->info("Resultat accés {$direccio->value} | Matricula: {$matricula} | {$msg}");
 
         return response()->json(['status' => $msg]);
     }

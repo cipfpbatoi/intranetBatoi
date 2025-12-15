@@ -62,7 +62,7 @@ class FctController extends IntranetController
 
 
 
-    public function edit($id)
+    public function edit($id=null)
     {
         $formulario = new FormBuilder(Fct::findOrFail($id), ['idInstructor' => ['type'=>'select']]);
         $modelo = $this->model;

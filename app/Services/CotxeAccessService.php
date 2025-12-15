@@ -44,24 +44,59 @@ class CotxeAccessService
 
     }
 
-    public function obrirIPorta(): void
+    public function obrirIPorta(): bool
     {
+        $log = Log::channel('parking');
         $url = config('parking.porta_url');
         $id = config('parking.porta_device_id');
         $user = config('parking.porta_user');
         $pass = config('parking.porta_pass');
 
-        $response = Http::withBasicAuth($user, $pass)
-            ->get("$url/api/callAction?deviceID=$id&name=turnOn");
         try {
-            Log::info(print_r($response));
-        } catch (\Exception $e) {
 
+            $onResponse = Http::withBasicAuth($user, $pass)
+                ->get("$url/api/callAction", [
+                    'deviceID' => $id,
+                    'name' => 'turnOn',
+                ]);
+
+            if (!$onResponse->successful()) {
+                $log->error('Error obrint la porta (turnOn)', [
+                    'status' => $onResponse->status(),
+                    'reason' => $onResponse->reason(),
+                    'user'  => $user,
+                    'pass'  => $pass,
+                    'body' => substr($onResponse->body(), 0, 500),
+                    'url' => $url,
+                    'deviceID' => $id,
+                ]);
+                return false;
+            }
+
+            sleep(0.5);
+
+            // Intentem apagar encara que l'obertura haja fallat
+            $offResponse = Http::withBasicAuth($user, $pass)
+                ->get("$url/api/callAction", [
+                    'deviceID' => $id,
+                    'name' => 'turnOff',
+                ]);
+
+            if (!$offResponse->successful()) {
+                $log->warning('Error tancant la porta (turnOff)', [
+                    'status' => $offResponse->status(),
+                    'reason' => $offResponse->reason(),
+                    'body' => substr($offResponse->body(), 0, 500),
+                    'url' => $url,
+                    'deviceID' => $id,
+                ]);
+            }
+            $log->info('Sennayls enviades correctament per obrir/tancar la porta');
+
+            return $onResponse->successful();
+        } catch (\Throwable $e) {
+            $log->error('Excepció obrint la porta', ['message' => $e->getMessage()]);
+            return false;
         }
-
-        sleep(0.5);
-
-        Http::withBasicAuth($user, $pass)
-            ->get("$url/api/callAction?deviceID=$id&name=turnOff");
     }
 }

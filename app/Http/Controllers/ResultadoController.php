@@ -56,6 +56,10 @@ class ResultadoController extends ModalController
     {
         if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
             $newRes = new Resultado();
+            // Assegurem professor informant abans de guardar
+            if (!$request->filled('idProfesor')) {
+                $request->merge(['idProfesor' => AuthUser()->dni]);
+            }
             $newRes->fillAll($request);
             return $this->redirect();
         }
@@ -82,7 +86,7 @@ class ResultadoController extends ModalController
      */
     public function listado()
     {
-        if ($grupo = Grupo::select('codigo', 'nombre')->QTutor()->first()) {
+        if ($grupo = Grupo::select('codigo', 'nombre')->QTutor()->largestByAlumnes()->first()) {
             $resultados = Resultado::QGrupo($grupo->codigo)->orderBy('idModuloGrupo')
                             ->orderBy('evaluacion')->get();
             $datosInforme = $grupo->nombre;

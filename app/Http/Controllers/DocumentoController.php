@@ -14,6 +14,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Services\FormBuilder;
 use Intranet\Services\GestorService;
+use Intranet\Services\Document\CreateOrUpdateDocumentAction;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 use function Symfony\Component\String\s;
@@ -31,6 +32,7 @@ class DocumentoController extends IntranetController
     protected $panel;
     protected $modal = false;
     protected $profile = false;
+    protected int $perPage = 50;
     protected $formFields = ['tipoDocumento' => ['type' => 'select'],
         'rol' => ['type' => 'hidden'],
         'propietario' => ['disabled' => 'disabled'],
@@ -49,19 +51,97 @@ class DocumentoController extends IntranetController
 
     public function index(){
         ini_set('memory_limit', '512M');
+        // Opcions de filtres (tipus i cursos disponibles)
+        $configTipos = TipoDocumento::allPestana();
+        $bdTipos = Documento::select('tipoDocumento')
+            ->distinct()
+            ->orderBy('tipoDocumento')
+            ->pluck('tipoDocumento')
+            ->filter();
+
+        $tipoOptions = [];
+        foreach ($configTipos as $key => $label) {
+            $tipoOptions[$key] = $label;
+        }
+        foreach ($bdTipos as $tipo) {
+            $tipoOptions[$tipo] = $configTipos[$tipo] ?? $tipo;
+        }
+
+        $this->panel->filterTipoOptions = $tipoOptions;
+        $this->panel->filterCursoOptions = Documento::select('curso')
+            ->distinct()
+            ->orderBy('curso', 'desc')
+            ->limit(8)
+            ->pluck('curso');
+        $this->panel->filterPropietario = true;
+        $this->panel->filterTags = true;
         return parent::index();
     }
     public function search()
     {
+        $query = Documento::query()
+            ->select([
+                'id',
+                'tipoDocumento',
+                'descripcion',
+                'curso',
+                'idDocumento',
+                'propietario',
+                'created_at',
+                'grupo',
+                'tags',
+                'ciclo',
+                'modulo',
+                'detalle',
+                'fichero',
+                'rol',
+                'activo',
+            ])
+            ->orderBy('curso', 'desc');
+        $search = request('search');
+        $filterTipo = request('tipoDocumento');
+        $filterCurso = request('curso');
+        $filterPropietario = request('propietario');
+        $filterTags = request('tags');
+
         if (Session::get('completa')) {
-            return Documento::whereIn('rol', RolesUser(AuthUser()->rol))
-                ->orderBy('curso', 'desc')
-                ->get();
+            $query->whereIn('rol', RolesUser(AuthUser()->rol));
+        } else {
+            // Quan no es mostra la llista completa, acotem per curs o per propietari
+            $query->where(function ($q) {
+                $q->where(function ($sub) {
+                    $sub->where('curso', Curso())
+                        ->whereIn('rol', RolesUser(AuthUser()->rol));
+                })->orWhere('propietario', AuthUser()->fullName);
+            });
         }
-        return Documento::where('curso', Curso())
-            ->whereIn('rol', RolesUser(AuthUser()->rol))
-            ->orWhere('propietario', AuthUser()->fullName)
-            ->orderBy('curso', 'desc')->get();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('descripcion', 'like', "%{$search}%")
+                    ->orWhere('tags', 'like', "%{$search}%")
+                    ->orWhere('propietario', 'like', "%{$search}%")
+                    ->orWhere('tipoDocumento', 'like', "%{$search}%");
+            });
+        }
+
+        if ($filterTipo) {
+            $query->where('tipoDocumento', $filterTipo);
+        }
+
+        if ($filterCurso) {
+            $query->where('curso', $filterCurso);
+        }
+
+        if ($filterPropietario) {
+            $query->where('propietario', 'like', "%{$filterPropietario}%");
+        }
+
+        if ($filterTags) {
+            $query->where('tags', 'like', "%{$filterTags}%");
+        }
+
+        return $query->paginate($this->perPage)->appends(request()->query());
 
     }
 
@@ -93,13 +173,18 @@ class DocumentoController extends IntranetController
         $cursoRequest = $request->input('curso')??curso();
         $cleanRequest = $request->duplicate(
             $request->except($except),
+            $request->files->all()
+        );
+
+        (new CreateOrUpdateDocumentAction())->fromRequest(
+            $cleanRequest,
             [
-                'rol'   => $rol,
+                'rol' => $rol,
                 'curso' => $cursoRequest,
             ]
         );
 
-        return parent::store($cleanRequest);
+        return $this->redirect();
     }
 
 
@@ -116,7 +201,9 @@ class DocumentoController extends IntranetController
 
     protected function createWithDefaultValues($default=[])
     {
-        return new Documento(['curso'=>Curso(),'propietario'=>config('contacto.titulo'),'activo'=>true]);
+        return (new CreateOrUpdateDocumentAction())->build(
+            array_merge(['curso'=>Curso(),'propietario'=>config('contacto.titulo'),'activo'=>true], $default)
+        );
      }
 
     public function project($idFct)
@@ -126,14 +213,17 @@ class DocumentoController extends IntranetController
             $proyecto = $fct->Alumno->Projecte ?? null;
             $descripcion = $proyecto->titol ?? '';
             $detalle = $proyecto->descripcio ?? '';
-            $elemento = $this->createWithDefaultValues();
-            $elemento->descripcion = $descripcion;
-            $elemento->detalle = $detalle;
-            $elemento->supervisor = AuthUser()->FullName;
-            $elemento->propietario = $fct->Alumno->FullName;
-            $elemento->tipoDocumento = 'Proyecto';
-            $elemento->idDocumento = '';
-            $elemento->ciclo = Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo;
+            $elemento = (new CreateOrUpdateDocumentAction())->build([
+                'curso' => Curso(),
+                'propietario' => $fct->Alumno->FullName,
+                'supervisor' => AuthUser()->FullName,
+                'activo' => true,
+                'tipoDocumento' => 'Proyecto',
+                'idDocumento' => '',
+                'ciclo' => Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo,
+                'descripcion' => $descripcion,
+                'detalle' => $detalle,
+            ]);
             $formulario = new FormBuilder(
                 $elemento,
                 [
@@ -162,17 +252,19 @@ class DocumentoController extends IntranetController
         $profesor = Profesor::findOrFail($id);
 
         $documents = Adjunto::where('route', "profesor/$id")->get();
-        $elemento = $this->createWithDefaultValues();
-        $elemento->tipoDocumento = 'FCT';
-        $elemento->idDocumento = null;
         $grupo = Grupo::QTutor($id)->first();
-        $elemento->ciclo = $grupo->Ciclo->ciclo;
-        $elemento->grupo = $grupo->nombre;
-        $elemento->supervisor = $profesor->FullName;
-        $elemento->propietario = $elemento->supervisor;
-        $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor';
-        $elemento->descripcion = "Documentació FCT Cicle " . $grupo->Ciclo->ciclo;
-        $elemento->save();
+        $elemento = (new CreateOrUpdateDocumentAction())->fromArray([
+            'curso' => Curso(),
+            'propietario' => $profesor->FullName,
+            'supervisor' => $profesor->FullName,
+            'activo' => true,
+            'tipoDocumento' => 'FCT',
+            'idDocumento' => null,
+            'ciclo' => $grupo->Ciclo->ciclo,
+            'grupo' => $grupo->nombre,
+            'tags' => 'Fct,Entrevista,Alumnat,Instructor',
+            'descripcion' => "Documentació FCT Cicle " . $grupo->Ciclo->ciclo,
+        ]);
 
         $zip = new \ZipArchive();
         $path = "gestor/" . curso() . "/FCT/";
@@ -216,16 +308,19 @@ class DocumentoController extends IntranetController
 
     public function qualitat()
     {
-        $elemento = $this->createWithDefaultValues();
-        $elemento->tipoDocumento = 'FCT';
-        $elemento->idDocumento = '';
         $grupo = Grupo::QTutor(AuthUser()->dni)->first();
-        $elemento->ciclo = $grupo->Ciclo->ciclo;
-        $elemento->grupo = $grupo->nombre;
-        $elemento->supervisor = AuthUser()->FullName;
-        $elemento->propietario = $elemento->supervisor;
-        $elemento->tags = 'Fct,Entrevista,Alumnat,Instructor';
-        $elemento->instrucciones = 'Pujar en un sols document comprimit: Entrevista Alumnat i Entrevista Instructor';
+        $elemento = (new CreateOrUpdateDocumentAction())->build([
+            'curso' => Curso(),
+            'propietario' => AuthUser()->FullName,
+            'supervisor' => AuthUser()->FullName,
+            'activo' => true,
+            'tipoDocumento' => 'FCT',
+            'idDocumento' => '',
+            'ciclo' => $grupo->Ciclo->ciclo,
+            'grupo' => $grupo->nombre,
+            'tags' => 'Fct,Entrevista,Alumnat,Instructor',
+            'instrucciones' => 'Pujar en un sols document comprimit: Entrevista Alumnat i Entrevista Instructor',
+        ]);
         $formulario = new FormBuilder(
             $elemento,
             [
@@ -248,7 +343,7 @@ class DocumentoController extends IntranetController
         return view($this->chooseView('create'), compact('formulario', 'modelo'));
     }
 
-    public function edit($id)
+    public function edit($id = null)
     {
         $elemento = Documento::findOrFail($id);
         $formulario = $elemento->enlace?

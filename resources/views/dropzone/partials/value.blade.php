@@ -6,8 +6,7 @@
         @csrf
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <div class="dropzone-previews" style="clear: both">
-            <div class="dz-message" style="height:200px;">
-            </div>
+            <div class="dz-message" style="height:200px;"> </div>
         </div>
         <br/>
         <br/>

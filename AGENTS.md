@@ -29,3 +29,6 @@
 ## Security & Configuration Tips
 - Never commit secrets or `.env`. Cache config/routes (`php artisan config:cache`, `route:cache`) only for releases.
 - Match queue/cache/mail drivers to `.env`; prefer Redis when available. Drop generated PDFs or logs from `storage/` before sharing artifacts.
+
+## Language
+- Valencià
