@@ -25,8 +25,7 @@ class Form extends Component
             'finalitat' => $this->finalitat,
             'anonimo'   => (bool) $this->anonimo,
         ];
-        // Livewire v3: dispatch cap al navegador
-        $this->dispatch('confirm-submit', $payload)->toBrowser();
+        $this->dispatchBrowserEvent('confirm-submit', $payload);
     }
   
 
