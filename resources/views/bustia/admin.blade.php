@@ -6,7 +6,7 @@
             border: 1px solid;
         }
     </style>
-    @livewireStyles
+    <livewire:styles />
 @endsection
 @section('content')
     @livewire('bustia-violeta.admin-list')
@@ -15,7 +15,7 @@
 Administrador Busties
 @endsection
 @section('scripts')
-    @livewireScripts
+    <livewire:scripts />
     <script>
   // Bootstrap 4 + Livewire
   document.addEventListener('livewire:load', function () {
@@ -34,4 +34,3 @@ Administrador Busties
   });
 </script>
 @endsection
-

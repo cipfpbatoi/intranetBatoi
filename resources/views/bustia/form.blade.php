@@ -6,7 +6,7 @@
             border: 1px solid;
         }
     </style>
-    @livewireStyles
+    <livewire:styles />
 @endsection
 @section('content')
     @livewire('bustia-violeta.form')
@@ -15,11 +15,11 @@
 Bustia
 @endsection
 @section('scripts')
-    @livewireScripts
+    <livewire:scripts />
     <script>
-        window.addEventListener('confirm-submit', function (e) {
-            var f = (e.detail && e.detail.finalitat) || 'escoltar';
-            var anon = !!(e.detail && e.detail.anonimo);
+        Livewire.on('confirm-submit', function (payload) {
+            var f = (payload && payload.finalitat) || 'escoltar';
+            var anon = !!(payload && payload.anonimo);
             var extra = (f === 'parlar')
                 ? "Has triat 'parlar': l'enviament no pot ser anònim."
                 : (anon ? "Enviaràs com a anònim." : "Enviaràs amb les teues dades.");
@@ -27,7 +27,5 @@ Bustia
 
             if (confirm(msg)) Livewire.emit('doSubmit');
         });
-
     </script>
 @endsection
-

@@ -12,7 +12,7 @@
                 border: 1px solid;
             }
         </style>
-        @livewireStyles
+        <livewire:styles />
     @endpush
 
     <div class="container mx-auto p-4">
@@ -28,6 +28,6 @@
     </div>
 
     @push('scripts')
-        @livewireScripts
+        <livewire:scripts />
     @endpush
 @endcomponent
