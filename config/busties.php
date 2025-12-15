@@ -1,4 +1,3 @@
-// config/busties.php
 <?php
 
 return [
