@@ -4,7 +4,9 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
-                    <x-layouts.titlebar />
+                    <x-layouts.titlebar>
+                        {{ $panel->getTitulo() }}
+                    </x-layouts.titlebar>
                     <div class="x_content">
                         {!! Alert::render() !!}
                     </div>
@@ -37,4 +39,3 @@
         </div>
     </div>
 </div>
-
