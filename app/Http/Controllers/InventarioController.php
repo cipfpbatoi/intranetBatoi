@@ -60,7 +60,7 @@ class InventarioController extends IntranetController
     }
 
 
-    public function edit($id)
+    public function edit($id = null)
     {
         $material = Inventario::findOrFail($id);
         if (isProfesor()) {

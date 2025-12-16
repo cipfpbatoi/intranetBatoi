@@ -1,15 +1,12 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Lote;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\Entities\Espacio;
 use Intranet\Entities\Material;
-use Intranet\Entities\Incidencia;
 use Intranet\Entities\MaterialBaja;
-use Intranet\Entities\TipoIncidencia;
 
 /**
  * Class MaterialController
@@ -123,4 +120,5 @@ class MaterialModController extends ModalController
 
             return redirect()->back();
         });
+    }
 }
