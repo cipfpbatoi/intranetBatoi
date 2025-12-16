@@ -7,10 +7,8 @@
             </div>
 
             <ul class="nav navbar-nav navbar-right">
-                {{-- Perfil usuari --}}
-
+                {{-- Perfil usuari --}} 
                 <x-layouts.topmenu />
-
 
                 {{-- Icona de fitxatge (només si no té NIA) --}}
                 @unless(isset($user->nia))
@@ -24,6 +22,28 @@
                         </a>
                     </li>
                 @endunless
+
+                {{-- Bústia --}}
+                <li>
+                    <a href="{{ route('bustia.form') }}" title="Bústia">
+                        <i class="fa fa-comments" style="color:#7e3ff2"></i>
+                        <span class="hidden-xs"> Bústia</span>
+                    </a>
+                </li>
+                @can('manage-bustia-violeta')
+                    @php
+                        $pendents = \Intranet\Entities\BustiaVioleta::pendents()->count();
+                    @endphp
+                    <li>
+                        <a href="{{ route('bustia.admin') }}" title="Administrar Bústies">
+                            <i class="fa fa-shield" style="color:#e67e22"></i>
+                            @if($pendents > 0)
+                                <span class="badge bg-red">{{ $pendents }}</span>
+                            @endif
+                            <span class="hidden-xs"> Admin Bústies</span>
+                        </a>
+                    </li>
+                @endcan
 
                 {{-- Notificacions --}}
                 <li class="dropdown">

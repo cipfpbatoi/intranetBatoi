@@ -13,6 +13,7 @@ class Panel
     private $titulo;    // titol
     private $elementos; // elements
     private $data = []; // array de més dades
+    private $paginator = null; // paginador opcional
     public $items = [];
 
     
@@ -192,6 +193,11 @@ class Panel
         return $elementos;
     }
 
+    public function getPaginator()
+    {
+        return $this->paginator;
+    }
+
 
     public function activaPestana($nombre)
     {
@@ -236,6 +242,13 @@ class Panel
      */
     private function feedPanel($todos, $titulo): Panel
     {
+        if ($todos instanceof \Illuminate\Contracts\Pagination\Paginator) {
+            $this->paginator = $todos;
+            $todos = collect($todos->items());
+        } else {
+            $this->paginator = null;
+        }
+
         $this->setElementos($todos);
         $this->setTitulo($titulo);
         return $this;

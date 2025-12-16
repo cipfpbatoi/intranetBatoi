@@ -165,7 +165,6 @@ trait BatoiModels
             $value = $request->$key;
             $this->$key = $this->fillField($key, $value);
         }
-
         $this->save();
         $this->refresh();
 

@@ -2,7 +2,7 @@
     <h2 class="text-center fw-bold mb-4"> {{ curso() }}</h2>
     <div class="row g-3">
         @php
-            $anyActual = now()->year;
+            $anyActual = now()->month >= 9 ? now()->year + 1: now()->year;
             $anyAnterior = $anyActual - 1;
             $mesos = [
                 9 => 'Setembre', 10 => 'Octubre', 11 => 'Novembre', 12 => 'Desembre',
@@ -13,7 +13,7 @@
 
         @foreach($mesos as $mes => $nomMes)
             @php
-                $any = ($mes >= 9) ? $anyAnterior : $anyActual;
+                $any = ($mes >= 9) ? $anyAnterior  : $anyActual;
                 $primerDiaSetmana = \Carbon\Carbon::create($any, $mes, 1)->dayOfWeekIso;
                 $diesMes = \Carbon\Carbon::create($any, $mes, 1)->daysInMonth;
                 $colspan = $primerDiaSetmana - 1;

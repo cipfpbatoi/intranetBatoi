@@ -325,7 +325,8 @@ return array(
         'Certificat' => 'Cita previa Certificado Digital',
         'afternoon' => 'Tarde',
         'Calendari' => 'Calendario Escolar',
-        'Cotxe' => 'Vehículos'
+        'Cotxe' => 'Vehículos',
+        'Tipoactividad' => 'Tipo Act. Extraescolar'
     ),
     'situations' => array(
         '0' => 'No comunicado/a',

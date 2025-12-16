@@ -7,10 +7,10 @@ class A2Finder extends Finder
 {
     public function exec()
     {
-        return Signatura::where('signed','>=','2')
+        return Signatura::where('signed', '>=', '2')
             ->where('idProfesor', apiAuthUser()->dni)
-            ->where('tipus', 'A2')
-            ->get();
+            ->whereIn('tipus', ['A2', 'A2DUAL'])
+            ->get();    
     }
 
 }

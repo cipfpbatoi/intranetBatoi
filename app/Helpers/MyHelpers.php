@@ -295,6 +295,7 @@ function rolesUser($rolUsuario)
             $roles[] = $rol;
         }
     }
+
     return $roles;
 }
 
@@ -704,26 +705,90 @@ function provincia($codiPostal)
     }
 }
 
+
+
 function replaceCachitos($view)
 {
     $pos1 = strpos($view, '[');
     $pos2 = strpos($view, ']');
-    if ($pos1 === false || $pos2 === false) {
+
+    if ($pos1 === false || $pos2 === false || $pos2 <= $pos1) {
         return $view;
     }
+
     $codiAInterpretrar = substr($view, $pos1 + 1, $pos2 - $pos1 - 1);
-    $codi = "@include('email.fct.cachitos." . $codiAInterpretrar . "')";
-    $view = str_replace('[' . $codiAInterpretrar . ']', $codi, $view);
+
+    // Només acceptem tokens "nets" → lletres, números, _ i -
+    // Han de començar per lletra (majúscula o minúscula)
+    if (preg_match('/^[A-Za-z][A-Za-z0-9_-]*$/', $codiAInterpretrar)) {
+        $codi = "@include('email.fct.cachitos." . $codiAInterpretrar . "')";
+        $view = str_replace('[' . $codiAInterpretrar . ']', $codi, $view);
+    } else {
+        return $view;
+    }
+
+    // Si no és vàlid (p. ex. [0.75em]), el deixem literal
     return replaceCachitos($view);
 }
 
-function in_substr($item, $long)
+
+function in_substr($item, int $long)
 {
-    if (strlen($item) < $long) {
-        return $item;
-    } else {
-        return mb_substr($item, 0, $long);
+    // Converteix collections a array
+    if ($item instanceof illuminate\Support\Collection) {
+        $item = $item->all();
     }
+
+    // Arrays → fem log i convertim
+    if (is_array($item)) {
+        try {
+            Illuminate\Support\Facades\Log::warning('[in_substr] Rebut array en compte de string', [
+                'url'    => request()->fullUrl() ?? null,
+                'route'  => optional(request()->route())->getName(),
+                'count'  => count($item),
+                'sample' => array_slice(array_map(
+                    fn($v) => is_scalar($v) ? (string)$v : gettype($v),
+                    $item
+                ), 0, 5),
+                // útil per a saber quina vista
+                'trace'  => collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 8))
+                                ->pluck('file')
+                                ->filter()
+                                ->implode(' | '),
+            ]);
+        } catch (\Throwable $e) {
+            // si falla el log, no trenquem res
+        }
+
+        $item = implode(', ', array_map('strval', $item));
+    }
+
+    // Dates
+    if ($item instanceof Carbon\CarbonInterface) {
+        $item = $item->toDateTimeString();
+    }
+
+    // Bools
+    if (is_bool($item)) {
+        $item = $item ? 'Sí' : 'No';
+    }
+
+    // Nulls
+    if ($item === null) {
+        $item = '';
+    }
+
+    // Altres tipus
+    if (!is_string($item)) {
+        $item = (string) $item;
+    }
+
+    // Retall multibyte
+    if (mb_strlen($item) <= $long) {
+        return $item;
+    }
+
+    return mb_substr($item, 0, $long) . '…';
 }
 
 

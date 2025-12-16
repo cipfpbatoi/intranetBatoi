@@ -12,7 +12,6 @@ use Intranet\Entities\Modulo;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Espacio;
-use DB;
 use Illuminate\Database\Seeder;
 use Monolog\Logger;
 use Styde\Html\Facades\Alert;
@@ -21,6 +20,7 @@ use Intranet\Entities\Programacion;
 use Intranet\Entities\Ocupacion;
 use Illuminate\Support\Str;
 use Monolog\Handler\StreamHandler;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class ImportController
@@ -200,27 +200,21 @@ class ImportController extends Seeder
         return Str::random(60);
     }
 
-    public function hazDNI($dni, $nia)
+    public function hazDNI(string $dni, int $nia)
     {
-        // nia diferent per al mateix dni
-        $alumno = Alumno::where('dni', $dni)->where('nia', '<>', $nia)->first();
-        if ($alumno) {
-            $alumno->nia = $nia;
-            $alumno->save();
-            return $dni;
-        } else {
-            if (strlen($dni) > 8) {
-                return $dni;
-            }
-            $alumno = Alumno::find($nia);
-            if ($alumno) {
-                return $alumno->dni;
-            } else {
-                $dniFictici = 'F'.Str::random(9);
-                Alert::warning('Alumne amb DNI Fictici '.$dniFictici);
-                return $dniFictici;
-            }
+        $byNia = Alumno::find($nia);
+
+        if (strlen($dni) <= 8 )  {
+            return $byNia ? $byNia->dni : 'F'.Str::random(9);
         }
+    
+        if ($byNia && $byNia->dni !== $dni) {
+            // Si el DNI canvia…
+            Alumno::where('dni', $dni)->where('nia', '<>', $nia)->delete();
+            Alert::warning('Alumne amb DNI ' . $dni . ' esborrat per duplicat de nia ' . $nia);
+        }
+
+        return $dni;
     }
 
     /**
@@ -278,11 +272,8 @@ class ImportController extends Seeder
             if (!esRol($role, $rolTutor)) {
                 $role *= $rolTutor;
             }
-            if ($grupo->curso == 2 && !esRol($role, $rolPracticas)) {
+            if (!esRol($role, $rolPracticas)) {
                 $role *= $rolPracticas;
-            }
-            if ($grupo->curso == 1 && esRol($role, $rolPracticas)) {
-                $role /= $rolPracticas;
             }
             return $role;
         }

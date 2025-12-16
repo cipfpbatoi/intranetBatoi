@@ -45,6 +45,10 @@ class ComisionController extends ModalController
     public function store(ComisionRequest $request)
     {
         $new = new Comision();
+        $request->merge([
+            'idProfesor' => $request->idProfesor ?? authUser()->dni,
+        ]);
+         
         $new->fillAll($request);
         if ($new->fct) {
             return $this->detalle($new->id);

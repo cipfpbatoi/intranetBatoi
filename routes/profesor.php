@@ -3,6 +3,7 @@
 
 use Intranet\Http\Controllers\RedirectAfterAuthenticationController;
 use Intranet\Livewire\ColaboracionesLivewire;
+use Intranet\Livewire\BustiaVioleta\AdminList;
 
 Route::get('/home', ['as' => 'home.profesor', 'uses' => 'Auth\Profesor\HomeController@index']);
 Route::get('/legal', ['as' => 'legal', 'uses' => 'Auth\Profesor\HomeController@legal']);
@@ -495,7 +496,7 @@ Route::get('/guardia/control', ['as' => 'guardia.control', 'uses' => 'PanelGuard
 Route::resource('/ppoll', 'PPollController', ['except' => ['destroy', 'update', 'show']]);
 Route::post('/ppoll/create', ['as' => 'ppoll.store', 'uses' => 'PPollController@store']);
 Route::put('/ppoll/{id}/edit', ['as' => 'ppoll.update', 'uses' => 'PPollController@update']);
-Route::get('/ppoll/{id}/slave', ['as' => 'ppoll.slave', 'uses' => 'PPollController@show']);
+Route::get('/ppoll/{id}/show', ['as' => 'ppoll.show', 'uses' => 'PPollController@show']);
 Route::get('/ppoll/{id}/delete', ['as' => 'ppoll.delete', 'uses' => 'PPollController@destroy']);
 
 Route::resource('/option', 'OptionController', ['except' => ['destroy', 'update', 'show']]);
@@ -561,3 +562,11 @@ Route::get('/projectes/actaE', ['as' => 'projectes.actaE', 'uses' => 'PanelProje
 Route::resource('cotxe' , 'CotxeController',['except'=>['update','destroy','show']]);
 Route::get('/cotxe/{id}/delete', ['as' => 'cotxe.delete', 'uses' => 'CotxeController@destroy']);
 Route::put('/cotxe/{id}/edit', ['as' => 'cotxe.update', 'uses' => 'CotxeController@update']);
+
+Route::resource('tipoactividad','TipoActividadController',['except'=>['update','destroy','show']]);
+Route::put('/tipoactividad/{id}/edit', ['as' => 'tipoactividad.update', 'uses' => 'TipoActividadController@update']);
+Route::get('/tipoactividad/{id}/delete', ['as' => 'tipoactividad.delete', 'uses' => 'TipoActividadController@destroy']);
+Route::view('/bustia-admin', 'bustia.admin')
+     ->middleware('can:manage-bustia-violeta')
+     ->name('bustia.admin'); 
+ 

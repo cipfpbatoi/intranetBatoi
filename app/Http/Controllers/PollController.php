@@ -121,6 +121,10 @@ class   PollController extends IntranetController
     public function lookAtMyVotes($id)
     {
         $poll = Poll::find($id);
+        if (!$poll) {
+            Alert::danger("Enquesta no trobada");
+            return back();
+        }
         $modelo = $poll->modelo;
         $myVotes = $modelo::loadVotes($id);
         if ($myVotes) {

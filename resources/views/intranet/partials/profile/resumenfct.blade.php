@@ -25,7 +25,7 @@ $grupo = $panel->getElementos($pestana)->first()->Alumno->Grupo->first();  @endp
         
         <div class="col-xs-12 bottom text-center">
             <div class="col-xs-12 col-sm-12 emphasis">
-                Tutor: {{$grupo->Tutor->FullName}}
+                Tutor: {{$grupo->Tutor->FullName??'Desconegut'}}
              </div>
         </div>
     </div>

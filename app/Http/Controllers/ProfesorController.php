@@ -86,7 +86,7 @@ use Autorizacion,
 
     public function fse()
     {
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         if (isset($grupo)) {
             return $this->hazPdf(
                 'pdf.reunion.actaFSE',

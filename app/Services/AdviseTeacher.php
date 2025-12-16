@@ -5,6 +5,7 @@ use Intranet\Componentes\Mensaje;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
+use Intranet\Entities\Profesor;
 use Intranet\Jobs\SendEmail;
 use Styde\Html\Facades\Alert;
 use Carbon\Carbon;
@@ -17,6 +18,7 @@ class AdviseTeacher
     {
         $mensaje = $mensaje ?? "No estaré en el centre des de " . $elemento->desde . " fins " . $elemento->hasta;
         $idEmisor = $idEmisor ?? $elemento->idProfesor;
+        $emisor = $emisor ?? Profesor::find($idEmisor) ?? 'Sistema';
 
         $grupos = self::gruposAfectados($elemento, $idEmisor);
         if ($grupos->isEmpty()) {
@@ -25,7 +27,7 @@ class AdviseTeacher
 
         foreach (self::profesoresAfectados($grupos, $idEmisor) as $profesor) {
             try {
-                Mensaje::send($profesor->idProfesor, $mensaje, '#', $emisor ?? 'Sistema');
+                Mensaje::send($profesor->idProfesor, $mensaje, '#', $emisor  );
             } catch (\Exception $e) {
                 Alert::danger("Error al enviar mensaje a {$profesor->idProfesor}");
             }

@@ -38,6 +38,7 @@ class ActividadController extends ModalController
     protected $gridFields = ['name', 'desde', 'hasta', 'situacion'];
     protected $formFields= [
         'id' => ['type' => 'hidden'],
+        'tipo_actividad_id' => ['type' => 'select'],
         'name' => ['type' => 'text'],
         'desde' => ['type' => 'datetime'],
         'hasta' => ['type' => 'datetime'],

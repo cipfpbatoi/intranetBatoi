@@ -3,19 +3,45 @@
 namespace Intranet\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Illuminate\Routing\Redirector;
 
 class RoleMiddleware
 {
-
     public function handle($request, Closure $next, $role)
     {
-        if (userIsNameAllow($role) || isAdmin()) {
-            return $next($request);
+        $user = authUser();
+        if (!$user) {
+            // Redirigeix com a convidat per evitar bucles
+            return redirect()->guest(route('login'))->with('error', 'Has d’iniciar sessió.');
         }
-        else {
-            abort(404, 'No estas autoritzat');
+        if (userIsNameAllow($role) || isAdmin()) {
+            $response = $next($request);
+        } else {
+            // Evitem excepcions dures: redirigim amb missatge i codi 403
+            $back = url()->previous() ?: route('home');
+            return redirect($back)
+                ->with('error', 'No estàs autoritzat.')
+                ->setStatusCode(SymfonyResponse::HTTP_FORBIDDEN);
         }
 
+       return $this->normalizeRedirector($response, $request);
     }
+
+    private function normalizeRedirector($response, $request)
+    {
+        if ($response instanceof Redirector) {
+            // Logueja per a trobar l’origen real
+            Log::warning('Redirector detectat i normalitzat en pipeline', [
+                'route' => optional($request->route())->getName(),
+                'path'  => $request->path(),
+            ]);
+            return $response->toResponse($request);
+        }
+        return $response;
+    }
+
 
 }

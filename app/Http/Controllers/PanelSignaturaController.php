@@ -93,6 +93,9 @@ class PanelSignaturaController extends BaseController
                     $signatura = Signatura::find($signature);
                     if ($signatura) {
                         $fileToSign = $signatura->routeFile;
+                        if (!file_exists($fileToSign)) {
+                            throw new IntranetException("No s'ha trobat el PDF a signar: $fileToSign");
+                        }
                         if (file_exists($file)) {
                             $x = config("signatures.files.{$signatura->tipus}.director.x");
                             $y = config("signatures.files.{$signatura->tipus}.director.y");

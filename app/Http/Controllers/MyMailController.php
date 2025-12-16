@@ -20,27 +20,39 @@ class MyMailController extends Controller
     
     public function send(Request $request)
     {
-        if ($request->file) {
-            foreach ($request->file as $key => $file) {
-                if ($file->isValid()) {
-                    $ext = $file->getClientOriginalExtension();
+        $attach = []; // sempre definida
+
+        // Si tens un input múltiple tipus name="file[]" :
+        if ($request->hasFile('file')) {
+            foreach ($request->file('file') as $key => $file) {
+                if ($file && $file->isValid()) {
+                    $ext  = $file->getClientOriginalExtension();
                     $mime = $file->getMimeType();
-                    $nom = "AdjuntCorreu$key.".$ext;
+                    $nom  = "AdjuntCorreu$key.".$ext;
+
                     $file->move(storage_path('tmp/'), $nom);
+
                     $fitxer = 'tmp/'.$nom;
                     $attach[] = [$fitxer => $mime];
                 }
             }
-        } else {
-            $attach = null;
         }
+
+        // Si no hi ha adjunts vàlids, passem null a MyMail
+        $attach = $attach ?: null;
+
         if (strlen($request->contenido) < 50 && $request->editable) {
             Alert::danger('El contingut ha de ser més de 50 caracters');
         } else {
-            $mail = new MyMail($request->to, $request->contenido, $request->toArray(), $attach);
+            $mail = new MyMail(
+                $request->to,
+                $request->contenido,
+                $request->toArray(),
+                $attach
+            );
             $mail->send();
-
         }
+
         return redirect($request->route);
     }
 

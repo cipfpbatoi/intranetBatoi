@@ -23,7 +23,10 @@ class OwnerMiddleware
 
         if (!$this->owner($registre)) {
 
-            abort(403, 'Has de ser el propietari per fer esta operació.');
+            // Evitem abort dur: redirigim enrere amb missatge i codi 403
+            return redirect()->back()
+                ->with('error', 'Has de ser el propietari per fer esta operació.')
+                ->setStatusCode(403);
         }
 
         return $next($request);

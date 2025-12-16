@@ -4,7 +4,12 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
-                    <x-layouts.titlebar />
+                    <x-layouts.titlebar>
+                        {{ $panel->getTitulo() }}
+                    </x-layouts.titlebar>
+                    <div class="x_content">
+                        {!! Alert::render() !!}
+                    </div>
                     <div class="x_content">
                         <div class="" role="tabpanel" data-example-id="togglable-tabs">
                             <ul id="myTab1" class="nav nav-tabs bar_tabs right" role="tablist">
@@ -29,12 +34,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="x_content">
-                        {!! Alert::render() !!}
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-

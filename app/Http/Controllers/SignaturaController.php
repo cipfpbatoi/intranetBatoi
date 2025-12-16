@@ -93,6 +93,13 @@ class SignaturaController extends ModalController
                 ['img'=>'fa-upload up','where' => ['tipus','==','A3','signed',">=", '2']]
             )
         );
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'signatura.upload',
+                ['img'=>'fa-upload up','where' => ['tipus','==','A3DUAL','signed',">=", '2']]
+            )
+        );
 
         $this->panel->setBoton(
             'index',
@@ -178,6 +185,15 @@ class SignaturaController extends ModalController
     protected function pdf($id)
     {
         $sig = Signatura::find($id);
+        if (!$sig || empty($sig->routeFile)) {
+            Alert::danger("No s'ha trobat el fitxer sol·licitat");
+            return back();
+        }
+        if (!file_exists($sig->routeFile)) {
+            Alert::danger("L'arxiu no està disponible al servidor");
+            return back();
+        }
+
         return response()->file($sig->routeFile);
     }
 

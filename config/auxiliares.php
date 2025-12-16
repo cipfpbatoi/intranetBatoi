@@ -52,7 +52,9 @@ return [
         'PRE.CANDI.ELECCIONES',
         'TRASLADO DE DOMICILIO HABITUAL',
         'TÉCNICAS PRENATALES',
-        'ASSISTÈNCIA TRIBUNALS (Màx 2. DIES /SETMANA)'],
+        'ASSISTÈNCIA TRIBUNALS (Màx 2. DIES /SETMANA)',
+        'PERMISO EMERGÈNCIA CLIMÀTICA (Màx 4. DIES / ANY)'
+        ],
     'motivoAusenciaOld' => [
         'Baixa mèdica',
         'LLicència per formació',
@@ -83,7 +85,7 @@ return [
         3=>'Acadèmiques-Professionals',
         4=>'Temes transversals'],
     'veep' => [],
-    'estadoColaboracion' => [  1=>'No sé', 2=>'Col·labora', 3=>'No col·labora'],
+    'estadoColaboracion' => [  1=>'No sé', 2=>'Col·labora', 3=>'No col·labora', 0=> 'No contactada' ],
     'incidenciasColaboracion' => [
         1=>'Envia correu contacte',
         2=>'Envia confirmació de dades',

@@ -23,7 +23,8 @@ class SecretariaService
     {
         try {
             $curso = substr(curso(), 0, 4);
-            $link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
+            $link = $this->link."application/2024-2025/student/".$document['dni']."/document/".$document['title'];
+            //$link = $this->link."application/".$curso."/student/".$document['dni']."/document/".$document['title'];
             $route = storage_path($document['route']);
 
             $response = Http::withToken($this->token)

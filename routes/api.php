@@ -20,9 +20,12 @@ Route::get('/convenio', 'EmpresaController@indexConvenio');
 Route::get('miIp', 'IPController@miIP');
 Route::get('actividad/{actividad}/getFiles', 'ActividadController@getFiles');
 Route::get('server-time', 'GuardiaController@getServerTime' );
+Route::get('porta/obrir', 'CotxeController@obrirTest');
+Route::post('porta/obrir-automatica', 'CotxeController@obrirAutomatica');
 Route::post('eventPortaSortida', 'CotxeController@eventSortida');
-
-
+Route::post('eventPorta', 'CotxeController@eventEntrada');
+Route::get('/presencia/resumen-rango',   'PresenciaResumenController@rango' );
+ 
 
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('grupo/list/{id}', 'GrupoController@list');
@@ -137,6 +140,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('articuloLote/{id}/materiales', 'ArticuloLoteController@getMateriales');
 
     Route::resource('cotxe', 'CotxeController');
+    Route::resource('tipoactividad', 'TipoActividadController');
     Route::post('attachFile', 'DropZoneController@attachFile');
     Route::get('getAttached/{modelo}/{id}', 'DropZoneController@getAttached');
     Route::get('getNameAttached/{modelo}/{id}/{filename}', 'DropZoneController@getNameAttached');
@@ -146,7 +150,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('tutoriagrupo/{id}','TutoriaGrupoController@show');
 
 
-
+   
 });
 
 Route::fallback(function () {

@@ -11,8 +11,10 @@
             <tr v-for="profe in profes" :key="profe.dni">
                 <th>{{ profe.depcurt }}</th>
                 <th><a :href="urlHorario(profe.dni)">{{ profe.apellido1}} {{ profe.apellido2 }}, {{ profe.nombre }}</a></th>
-                <td v-for="m in 5">{{ muestraHoras(profe.dni, m) }}</td>
-                <th>{{ sumaHoras(profe.dni) }}</th>
+                <td v-for="m in 5" :class="estadoClase(estadoDia(profe.dni, m))">
+                  {{ muestraHoras(profe.dni, m) }}
+                </td>
+                <th :class="estadoClase(estadoSemana(profe.dni))">{{ sumaHoras(profe.dni) }}</th>
             </tr>
         </table>
     </div>
@@ -35,6 +37,7 @@ export default {
     return {
       fichajes: {},
       fecha: '',
+      msg: '',
     }
   },
   methods: {
@@ -42,14 +45,24 @@ export default {
       return '/profesor/'+dni+'/horario'
     },
     getFichajes() {
-      this.fichajes={};
-      this.msg='Esperando al servidor ...';
-      axios.get('/api/faltaProfesor/horas/dia]'+this.sumaFecha(1)+'&dia['+this.sumaFecha(5)+'?api_token='+token)
-      .then(resp=>{
-        this.fichajes=resp.data.data;
-        this.msg='';
-      })
-      .catch(resp=>this.msg='ERROR del servidor '+resp.status+'('+resp.statusText+')');
+      this.fichajes = {};
+      this.msg = 'Esperando al servidor ...';
+
+      const desde = this.sumaFecha(1);
+      const hasta = this.sumaFecha(5);
+
+      axios.get('/api/presencia/resumen-rango?desde='+desde+'&hasta='+hasta+'&api_token='+token)
+        .then(resp => {
+          const map = {};
+          resp.data.forEach(p => {
+            map[p.dni] = p.days || {};
+          });
+          this.fichajes = map;
+          this.msg = '';
+        })
+        .catch(error => {
+          this.msg = 'ERROR del servidor '+(error.response?.status || '')+' ('+(error.response?.statusText || '')+')';
+        });
     },
     setDia(cambio) {
       this.fecha.add(cambio, 'days');
@@ -59,16 +72,54 @@ export default {
       return this.fecha.clone().add(dias, 'days').format('YYYY-MM-DD');
     },
     muestraHoras(profe, masDias) {
-      if (this.fichajes[profe] == undefined || this.fichajes[profe][this.sumaFecha(masDias)] == undefined)
-        return '';
-      return this.fichajes[profe][this.sumaFecha(masDias)].horas;
+      const dia = this.sumaFecha(masDias);
+      const datos = this.fichajes[profe]?.[dia];
+      if (!datos) return '';
+      const minutos = datos.in_center_minutes || 0;
+ 
+      return minsToTime(minutos);
     },
     sumaHoras(profe) {
-      let totHoras=0;
-      for (let ficha in this.fichajes[profe]) {
-        totHoras+= timeToSecs(this.fichajes[profe][ficha].horas);
+      if (!this.fichajes[profe]) return '';
+      let totMinutos = 0;
+      for (let dia in this.fichajes[profe]) {
+        const datos = this.fichajes[profe][dia];
+        totMinutos += datos.in_center_minutes || 0 ;
       }
-      return secsToTime(totHoras);
+      return minsToTime(totMinutos);
+    },
+    estadoDia(profe, masDias) {
+      const dia = this.sumaFecha(masDias);
+      return this.fichajes[profe]?.[dia]?.status || '';
+    },
+    estadoSemana(profe) {
+      const prioridad = {
+        'ABSENT': 3,
+        'PARTIAL': 2,
+        'NO_SALIDA': 1,
+        'OK': 0
+      };
+      let peor = '';
+      let puntuacion = -1;
+
+      for (let dia = 1; dia <= 5; dia++) {
+        const estado = this.estadoDia(profe, dia);
+        const valor = prioridad[estado] ?? -1;
+        if (valor > puntuacion) {
+          peor = estado;
+          puntuacion = valor;
+        }
+      }
+
+      return peor;
+    },
+    estadoClase(status) {
+      return {
+        'bg-success text-white': status === 'OK',
+        'bg-warning': status === 'PARTIAL',
+        'bg-danger text-white': status === 'ABSENT',
+        'bg-info text-white': status === 'NO_SALIDA'
+      };
     }
   },
   created() {
@@ -80,21 +131,14 @@ export default {
   }
 }
 
-function secsToTime(secs) {
-  let hours=parseInt(secs/(60*60));
-  secs-=hours*60*60;
-  let minutes=parseInt(secs/60);
-  secs-=minutes*60;
-  return fillZero(hours)+':'+fillZero(minutes)+':'+fillZero(secs);
-}
-
-function timeToSecs(time) {
-  let separatedTime=time.split(':');
-  return separatedTime[0]*60*60+separatedTime[1]*60+Number(separatedTime[2]);
-}
-
 function fillZero(value, digits=2) {
   let filled="0000000000"+value;
   return filled.substr(filled.length - digits);
+}
+
+function minsToTime(mins){
+  const hours = Math.floor(mins / 60);
+  const minutes = mins % 60;
+  return fillZero(hours)+':'+fillZero(minutes);
 }
 </script>

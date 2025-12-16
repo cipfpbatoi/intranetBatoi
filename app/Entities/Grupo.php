@@ -18,7 +18,6 @@ class Grupo extends Model
         'nombre',
         'turno',
         'tutor',
-        'tutorDual',
         'idCiclo',
         'codigo',
         'curso'
@@ -28,7 +27,6 @@ class Grupo extends Model
     protected $inputTypes = [
         'turno' => ['disabled' => 'disabled'],
         'tutor' => ['type' => 'select'],
-        'tutorDual' => ['type' => 'select'],
         'idCiclo' => ['type' => 'select'],
     ];
     protected $dispatchesEvents = [
@@ -51,10 +49,7 @@ class Grupo extends Model
         return $this->hasOne(Profesor::class, 'dni', 'tutor');
     }
 
-    public function TutorDual()
-    {
-        return $this->hasOne(Profesor::class, 'dni', 'tutorDual');
-    }
+
 
     public function Ciclo()
     {
@@ -90,32 +85,41 @@ class Grupo extends Model
                         ->get(), 'dni', ['apellido1', 'apellido2', 'nombre']):[];
     }
 
-    public function getTutorDualOptions()
+
+
+    public function scopeQTutor($query, $profesor = null)
     {
-        return $this->getTutorOptions();
+        $profesor = $profesor ?? authUser()->dni;
+        $sustituido = optional(Profesor::find($profesor))->sustituye_a;
+
+        return $query->where(function ($q) use ($profesor, $sustituido) {
+            $q->where('tutor', $profesor);
+            if ($sustituido && trim($sustituido) !== '') {
+                $q->orWhere('tutor', $sustituido);
+            }
+        });
     }
 
 
-    public function scopeQTutor($query, $profesor = null, $dual = false)
+    public function scopeLargestByAlumnes($query)
     {
-        $profesor = $profesor ?? authUser()->dni;
-        $sustituido = Profesor::findOrFail($profesor)->sustituye_a;
-
-        $searchField = $dual?'tutorDual':'tutor';
-        return ($sustituido != ' ')?
-            $query->where($searchField, $sustituido)->orWhere('tutor', $profesor):
-            $query->where($searchField, $profesor);
+        return $query
+            ->withCount('alumnos')
+            ->orderByDesc('alumnos_count')
+            ->orderBy('codigo'); // criteri de desempat opcional
     }
 
     public function scopeMisGrupos($query, $profesor = null)
     {
         $profesor = $profesor ?? authUser();
         $grupos = Horario::select('idGrupo')
-                ->Profesor($profesor->dni)
-                ->whereNotNull('idGrupo')
-                ->distinct()
-                ->get()
-                ->toarray();
+            ->Profesor($profesor->dni)
+            ->Lectivos()
+            ->whereNotNull('idGrupo')
+            ->distinct()
+            ->pluck('idGrupo')
+            ->toArray();
+
         return $query->whereIn('codigo', $grupos);
     }
     
@@ -163,10 +167,6 @@ class Grupo extends Model
     public function getXtutorAttribute()
     {
         return $this->Tutor->Sustituye->FullName ?? $this->Tutor->FullName ?? '';
-    }
-    public function getXDualAttribute()
-    {
-        return $this->TutorDual->Sustituye->FullName ?? $this->TutorDual->FullName ?? '';
     }
 
     public function getActaAttribute()

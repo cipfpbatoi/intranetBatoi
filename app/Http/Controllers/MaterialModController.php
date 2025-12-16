@@ -90,18 +90,37 @@ class MaterialModController extends ModalController
 
     public function resolve($id)
     {
-        $registro = MaterialBaja::findOrFail($id);
-        $material = Material::findOrFail($registro->idMaterial);
-        if ($registro->tipo == 0) {
-            $material->fechaBaja = Hoy();
-            $material->estado = 3;
+        return DB::transaction(function () use ($id) {
+            $registro = MaterialBaja::findOrFail($id);
+            $material = Material::findOrFail($registro->idMaterial);
+
+            if ((int)$registro->tipo === 0) {
+                // Baixa
+                $material->fechaBaja = Hoy();
+                $material->estado = 3;
+            } else {
+                // Trasllat d'espai (assumint que 'nuevoEstado' guarda l'ID d'Espacio)
+                $nuevo = $registro->nuevoEstado;
+
+                if ($nuevo === null || $nuevo === '') {
+                    throw ValidationException::withMessages([
+                        'nuevoEstado' => "Cal indicar l'espai destí.",
+                    ]);
+                }
+                if (!Espacio::whereKey($nuevo)->exists()) {
+                    throw ValidationException::withMessages([
+                        'nuevoEstado' => "L'espai destí no existeix.",
+                    ]);
+                }
+
+                $material->espacio = (int)$nuevo;
+            }
+
             $material->save();
-        } else {
-            $material->espacio = $registro->nuevoEstado;
-            $material->save();
-        }
-        $registro->estado = 1;
-        $registro->save();
-        return redirect()->back();
-    }
+
+            $registro->estado = 1;
+            $registro->save();
+
+            return redirect()->back();
+        });
 }

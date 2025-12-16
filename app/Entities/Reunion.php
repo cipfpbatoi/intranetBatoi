@@ -215,7 +215,7 @@ class Reunion extends Model
                 $grupo = Departamento::where('id', '=', $profesor->departamento)->get()->first()->cliteral;
                 break;
             case 'Grupo':
-                $grupo = Grupo::QTutor($profesor->dni)->count() ? Grupo::QTutor($profesor->dni)->first()->nombre : '';
+                $grupo = Grupo::QTutor($profesor->dni)->count() ? Grupo::QTutor($profesor->dni)->largestByAlumnes()->first()->nombre : '';
                 break;
             default:
                 $grupo = '';
@@ -247,7 +247,7 @@ class Reunion extends Model
     }
     public function getGrupoClaseAttribute()
     {
-        return $this->Tipos()->colectivo == 'Grupo'?Grupo::QTutor($this->idProfesor)->first():null;
+        return $this->Tipos()->colectivo == 'Grupo'?Grupo::QTutor($this->idProfesor)->largestByAlumnes()->first():null;
     }
     public function getInformeAttribute()
     {
