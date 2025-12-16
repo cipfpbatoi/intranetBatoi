@@ -5,6 +5,11 @@
  */
 'use strict';
 
+import jQuery from 'jquery';
+// Reutilitza jQuery global (amb plugins) si ja està carregat per Gentelella
+const $ = window.jQuery || jQuery;
+window.$ = window.jQuery = $;
+
 $(function() {
 	$(".papelera").on('click', function(event) {
 		if (!confirm('Vas a borrar el aviso de fecha '+$(this).next().find('span.time').text().trim()+':\n'+$(this).next().find('span.message').text().trim())) {
@@ -37,4 +42,3 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 	}
 });
-

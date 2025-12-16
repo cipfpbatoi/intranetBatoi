@@ -14,10 +14,7 @@ Vue.component('control-semana-view', ControlSemanaView);
 Vue.component('control-guardia-view', ControlGuardiaView);
 Vue.component('reservas-view', ReservasView);
 Vue.component('birret-itaca-view', BirretItacaView);
-<<<<<<< HEAD
-=======
-Vue.component('control-resumen-rango-view', ControlResumenRangoView)
->>>>>>> laravel10
+Vue.component('control-resumen-rango-view', ControlResumenRangoView);
 
 const app = new Vue({
     el: '#app'

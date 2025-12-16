@@ -6,20 +6,20 @@
     @endif
 
     <div class="d-flex gap-2 mb-3">
-        <input class="form-control" placeholder="Cerca…" wire:model.debounce.500ms="search">
-        <select class="form-select w-auto" wire:model="categoria">
+        <input class="form-control" placeholder="Cerca…" wire:model.live.debounce.500ms="search">
+        <select class="form-select w-auto" wire:model.live="categoria">
             <option value="">Totes categories</option>
             <option value="assetjament">Assetjament</option>
             <option value="igualtat">Igualtat</option>
             <option value="altres">Altres</option>
         </select>
-        <select class="form-select w-auto" wire:model="estado">
+        <select class="form-select w-auto" wire:model.live="estado">
             <option value="">Tots estats</option>
             <option value="nou">Nou</option>
             <option value="en_revisio">En revisió</option>
             <option value="tancat">Tancat</option>
         </select>
-        <select class="form-select w-auto" wire:model="tipus">
+        <select class="form-select w-auto" wire:model.live="tipus">
             <option value="">Totes les bústies</option>
             <option value="violeta">Violeta</option>
             <option value="convivencia">Convivència</option>

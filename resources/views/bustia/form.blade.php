@@ -25,7 +25,7 @@ Bustia
                 : (anon ? "Enviaràs com a anònim." : "Enviaràs amb les teues dades.");
             var msg = "Vols enviar la bústia ara?\n\n" + extra;
 
-            if (confirm(msg)) Livewire.emit('doSubmit');
+            if (confirm(msg)) Livewire.dispatch('doSubmit');
         });
     </script>
 @endsection
