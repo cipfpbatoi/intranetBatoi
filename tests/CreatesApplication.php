@@ -2,24 +2,18 @@
 
 namespace Tests;
 
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Contracts\Console\Kernel;
 
 trait CreatesApplication
 {
     /**
-     * Creates the application.
-     *
-     * @return \Illuminate\Foundation\Application
+     * Prepara l'aplicació de Laravel per a les proves.
      */
     public function createApplication()
     {
-        $app = require __DIR__.'/../bootstrap/app.php';
+        $app = require __DIR__ . '/../bootstrap/app.php';
 
         $app->make(Kernel::class)->bootstrap();
-
-
-        Hash::driver('bcrypt')->setRounds(4);
 
         return $app;
     }
