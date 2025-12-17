@@ -28,7 +28,7 @@ class DigitalSignatureService
         try {
             return (new ManageCert())->setPreservePfx()->fromPfx($certificat, $password);
         } catch (Throwable $th) {
-            throw new CertException("Password del certificat incorrecte");
+            throw new CertException("Password del certificat incorrecte: ".$th->getMessage());
         }
     }
 
