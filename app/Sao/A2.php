@@ -33,9 +33,11 @@ class A2
     }
     public static function setFireFoxCapabilities()
     {
+
         $profile = new FirefoxProfile();
+        $tmpDirectory = rtrim(config('variables.shareDirectory') ?? storage_path('tmp/'), '/').'/';
         $profile->setPreference('browser.download.folderList', 2);
-        $profile->setPreference('browser.download.dir', '/Users/igomis/code/intranetBatoi/storage/tmp');
+        $profile->setPreference('browser.download.dir', $tmpDirectory);
         $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
         $profile->setPreference('pdfjs.enabledCache.state', false);
         $profile->setPreference('modifyheaders.headers.count', 1);
@@ -226,6 +228,8 @@ class A2
         try {
             $driver->get($ad);
         } catch (\Throwable $exception) {
+            Log::info('TMP dir', ['tmpDirectory' => $tmpDirectory, 'tmpFile' => $tmpFile]);
+            Log::info('TMP listing', ['files' => glob($tmpDirectory.'*.pdf')]);
             if (file_exists($tmpFile)) {
                 if ($certFile) {
                     $this->digitalSignatureService->signDocument(
@@ -245,7 +249,7 @@ class A2
             }
 
             Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe II
-                  $fctAl->idSao de $tmpFile");
+                  $fctAl->idSao de $tmpFile: $anexeNum de ".$fctAl->Alumno->FullName);
             $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
             sleep(1);
         }
