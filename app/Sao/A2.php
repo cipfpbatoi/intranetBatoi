@@ -35,9 +35,9 @@ class A2
     {
 
         $profile = new FirefoxProfile();
-        $tmpDirectory = rtrim(config('variables.shareDirectory') ?? storage_path('tmp/'), '/').'/';
+        $downloadDir = '/home/intranet/Downloads'; 
         $profile->setPreference('browser.download.folderList', 2);
-        $profile->setPreference('browser.download.dir', $tmpDirectory);
+        $profile->setPreference('browser.download.dir', $downloadDir);
         $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
         $profile->setPreference('pdfjs.enabledCache.state', false);
         $profile->setPreference('modifyheaders.headers.count', 1);
