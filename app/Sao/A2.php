@@ -31,6 +31,8 @@ class A2
     {
         $this->digitalSignatureService = $digitalSignatureService;
     }
+
+    /*
     public static function setFireFoxCapabilities()
     {
 
@@ -57,6 +59,31 @@ class A2
             $caps = DesiredCapabilities::firefox();
         }
         $caps->setCapability('firefox_profile', $profile);
+        return $caps;
+    }*/
+
+    public static function setFireFoxCapabilities()
+    {
+        $options = new FirefoxOptions();
+
+        $options->setPreference('browser.download.folderList', 2);
+        $options->setPreference('browser.download.dir', '/home/seluser/Downloads');
+        $options->setPreference('browser.download.useDownloadDir', true);
+        $options->setPreference('browser.download.manager.showWhenStarting', false);
+
+        $options->setPreference('pdfjs.disabled', true);
+        $options->setPreference(
+            'browser.helperApps.neverAsk.saveToDisk',
+            'application/pdf,application/octet-stream'
+        );
+
+        if (config('services.selenium.firefox_path')) {
+            $options->setBinary(config('services.selenium.firefox_path'));
+        }
+
+        $caps = DesiredCapabilities::firefox();
+        $caps->setCapability(FirefoxOptions::CAPABILITY, $options);
+
         return $caps;
     }
 
