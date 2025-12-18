@@ -168,7 +168,24 @@ class DocumentService
 
         // Generació simple d'un PDF des d'una plantilla
         $resource = PrintResource::build($this->document->printResource, $this->elements);
-        return response()->file(FDFPrepareService::exec($resource));
+        $pdfPath = FDFPrepareService::exec($resource);
+
+        if (!$pdfPath || !file_exists($pdfPath)) {
+            Log::error('No s\'ha pogut generar el PDF des de plantilla', [
+                'resource' => $this->document->printResource,
+                'path' => $pdfPath,
+            ]);
+            Alert::danger('No s\'ha pogut generar el document. Reviseu els logs o aviseu a l\'administrador.');
+
+            $request = $this->finder->getRequest();
+            if ($request && !$request->wantsJson()) {
+                return back();
+            }
+
+            return response()->json(['error' => 'No s\'ha pogut generar el PDF'], 400);
+        }
+
+        return response()->file($pdfPath);
     }
 
     /**
