@@ -8,6 +8,7 @@ use Intranet\Componentes\Mensaje;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
+use Intranet\Entities\Profesor;
 use Intranet\Jobs\SendEmail;
 use Intranet\Services\AdviseTeacher;
 use Mockery;
@@ -26,6 +27,7 @@ class AdviseTeacherTest extends TestCase
         $this->mockHora = Mockery::mock('alias:' . Hora::class);
         $this->mockGrupo = Mockery::mock('alias:' . Grupo::class);
         $this->mockMensaje = Mockery::mock('alias:' . Mensaje::class);
+        $this->mockProfesor = Mockery::mock('alias:' . Profesor::class);
 
         $this->mockHora->shouldReceive('horasAfectadas')
             ->andReturn(collect([1, 2, 3]));
@@ -56,6 +58,11 @@ class AdviseTeacherTest extends TestCase
 
         $this->mockHorario->shouldReceive('groupBy')
             ->andReturnSelf();
+
+        $this->mockProfesor->shouldReceive('find')
+            ->andReturnUsing(function ($id) {
+                return (object)['idProfesor' => $id, 'email' => 'professor@example.com'];
+            });
     }
 
     public function test_exec_no_envia_missatges_si_no_hi_ha_grups_afectats()
@@ -72,6 +79,7 @@ class AdviseTeacherTest extends TestCase
 
         // ✅ Ara verifiquem que NO s'ha cridat `Mensaje::send()`
         $this->mockMensaje->shouldNotHaveReceived('send');
+        $this->addToAssertionCount(1);
     }
      public function test_exec_envia_missatges_si_hi_ha_professors_afectats()
     {
@@ -95,6 +103,7 @@ class AdviseTeacherTest extends TestCase
         ]));
 
         AdviseTeacher::exec($elemento);
+        $this->addToAssertionCount(1);
     }
      public function test_gruposAfectados_retornara_una_colleccio()
     {
@@ -139,5 +148,11 @@ class AdviseTeacherTest extends TestCase
 
         // Comprovem que `SendEmail` s'ha afegit a la cua
         Queue::assertPushed(SendEmail::class);
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
     }
 }

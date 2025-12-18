@@ -55,19 +55,26 @@
                     </a>
                     <ul class="dropdown-menu list-unstyled msg_list" role="menu">
                         @foreach ($notifications as $notification)
+                            @php
+                                $data = $notification->data ?? [];
+                                $motiu = is_array($data['motiu'] ?? null) ? implode(', ', $data['motiu']) : ($data['motiu'] ?? '');
+                                $emissor = is_array($data['emissor'] ?? null) ? implode(', ', $data['emissor']) : ($data['emissor'] ?? '');
+                                $enlace = is_string($data['enlace'] ?? null) ? $data['enlace'] : '#';
+                                $fecha = is_string($data['data'] ?? null) ? $data['data'] : (is_array($data['data'] ?? null) ? implode(' ', $data['data']) : ($data['data'] ?? ''));
+                            @endphp
                             <li id="{{ $notification->id }}">
                                 <a class="papelera" href="{{ url('/notification/'.$notification->id.'/delete') }}">
                                     <span class="image">
                                         <img src="{{ asset('img/delete.png') }}" alt="Marcar com a llegida" class="iconopequeno" />
                                     </span>
                                 </a>
-                                <a href="{{ $notification->data['enlace'] }}">
+                                <a href="{{ $enlace }}">
                                     <span>
-                                        <span>{{ $notification->data['emissor'] }}</span>
-                                        <span class="time">{{ $notification->data['data'] }}</span>
+                                        <span>{{ $emissor }}</span>
+                                        <span class="time">{{ $fecha }}</span>
                                     </span>
-                                    <span class="message {{ $notification->data['enlace'] != '#' ? 'blue' : '' }}">
-                                        {{ $notification->data['motiu'] }}
+                                    <span class="message {{ $enlace != '#' ? 'blue' : '' }}">
+                                        {{ $motiu }}
                                     </span>
                                 </a>
                             </li>

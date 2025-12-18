@@ -5,6 +5,8 @@ namespace Intranet\Componentes;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf as SnappyPDF;
 use Intranet\Services\ZipService;
+use Illuminate\Support\Facades\Log;
+use Styde\Html\Facades\Alert;
 use function config;
 use function env;
 use function fechaString;
@@ -79,7 +81,13 @@ class Pdf
         }
 
         // Generar el archivo zip con los PDFs generados
-        $zipPath = ZipService::exec($pdfs, $className.'_' . authUser()->dni);
+        try {
+            $zipPath = ZipService::exec($pdfs, $className.'_' . authUser()->dni);
+        } catch (\Throwable $e) {
+            Log::error('Error generant ZIP', ['message' => $e->getMessage()]);
+            Alert::danger('No s\'ha pogut generar el ZIP');
+            return null;
+        }
 
 
         // Retornar la ruta del zip generado

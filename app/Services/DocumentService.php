@@ -7,19 +7,29 @@ use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
 use Styde\Html\Facades\Alert;
 use mikehaertl\pdftk\Pdf as PdfTk;
+use Illuminate\Support\Facades\Log;
 
+/**
+ * Servei per generar documents (PDF, ZIP o correus) a partir de la configuració
+ * aportada per un Finder (vista Blade, plantilla signable o recursos ja existents).
+ */
 class DocumentService
 {
+    /** @var \Illuminate\Support\Collection|\Illuminate\Support\Collection<int, mixed> */
     private $elements;
+    /** @var object Configuració del document (vista, plantilla, opcions) */
     private $document;
+    /** @var bool Indica si cal empaquetar en ZIP */
     private $zip;
+    /** @var Finder */
     private $finder;
 
 
 
     /**
      * DocumentService constructor.
-     * @param $elements
+     *
+     * @param Finder $finder Proveeix configuració i dades per al document.
      */
     public function __construct(Finder $finder)
     {
@@ -34,11 +44,21 @@ class DocumentService
         return property_exists($this, $key) ? $this->$key : ($this->features[$key] ?? null);
     }
 
+    /**
+     * Retorna els elements carregats pel Finder.
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public function load()
     {
        return $this->elements;
     }
 
+    /**
+     * Renderitza el document segons la configuració (email o impressió).
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
+     */
     public function render()
     {
         if (isset($this->document->email)) {
@@ -49,6 +69,11 @@ class DocumentService
     }
 
 
+    /**
+     * Envia el document per correu utilitzant la configuració del Finder.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\RedirectResponse
+     */
     private function mail()
     {
         $elemento = $this->elements->first();
@@ -77,6 +102,11 @@ class DocumentService
 
     }
 
+    /**
+     * Decideix el mode d'impressió segons la configuració.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
+     */
     private function print()
     {
         if (isset($this->document->view)) {
@@ -92,6 +122,8 @@ class DocumentService
 
     /**
      * Genera un PDF a partir d'una vista Blade.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
      */
     private function generatePdfFromView()
     {
@@ -120,6 +152,8 @@ class DocumentService
 
     /**
      * Genera un PDF a partir d'una plantilla (`printResource`).
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
      */
 
     private function generatePdfFromTemplate()
@@ -139,6 +173,8 @@ class DocumentService
 
     /**
      * Genera un PDF signat si està activada la signatura digital.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
      */
     private function generateSignedPdf()
     {
@@ -172,8 +208,9 @@ class DocumentService
     }
 
 
-    /**
-     * Genera múltiples PDFs i els empaqueta en un ZIP.
+    /** Genera diversos PDFs i els empaqueta si cal.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
      */
     private function generateMultiplePdfs()
     {
@@ -204,6 +241,11 @@ class DocumentService
      * Concatenar PDFs existents.
      */
     // Substitueix el teu concatenatePdfs per aquesta versió robusta
+    /**
+     * Concatenació de PDFs existents.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|null
+     */
     private function concatenatePdfs()
     {
         $pdfs = $this->normalizePdfPaths($this->elements);
@@ -235,11 +277,35 @@ class DocumentService
      */
 
 
+    /**
+     * Genera un ZIP amb els PDFs indicats i retorna una resposta de fitxer.
+     *
+     * @param array<string> $pdfs     Rutes completes als PDFs ja generats.
+     * @param string        $filename Nom base del ZIP.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
+     */
     private function generateZip($pdfs, $filename)
     {
-        return response()->file(storage_path(ZipService::exec($pdfs, $filename)));
+        try {
+            $zipPath = ZipService::exec($pdfs, $filename);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        } catch (\Throwable $e) {
+            Log::error('Error generant ZIP', ['message' => $e->getMessage()]);
+            return response()->json(['error' => 'No s\'ha pogut generar el ZIP'], 500);
+        }
+
+        return response()->file(storage_path($zipPath));
     }
 
+    /**
+     * Normalitza un conjunt d'entrades a rutes de fitxers PDF existents.
+     *
+     * @param iterable $elements Llista d'objectes, arrays o strings amb la ruta.
+     *
+     * @return array<string> Rutes existents de fitxers PDF.
+     */
     private function normalizePdfPaths($elements): array
     {
         // Converteix a array pla

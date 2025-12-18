@@ -2,31 +2,34 @@
 
 namespace Tests;
 
-use Illuminate\Support\Facades\DB;
-use Laravel\BrowserKitTesting\TestCase as BaseTestCase;
-use ReflectionMethod;
-use ReflectionProperty;
-use function base_path;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use ReflectionClass;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication ;
+    use CreatesApplication;
 
-    protected function callProtectedMethod($object, $methodName, array $args = [])
+    /**
+     * Executa un mètode protegit o privat mitjançant reflexió.
+     */
+    protected function callProtectedMethod(object $object, string $method, array $parameters = [])
     {
-        $reflection = new ReflectionMethod($object, $methodName);
-        $reflection->setAccessible(true);
-        return $reflection->invokeArgs($object, $args);
+        $reflection = new ReflectionClass($object);
+        $methodReflection = $reflection->getMethod($method);
+        $methodReflection->setAccessible(true);
+
+        return $methodReflection->invokeArgs($object, $parameters);
     }
 
-    // Afegir funció per accedir a propietats protegides o privades
-    protected function getProtectedProperty($object, $property)
+    /**
+     * Obté el valor d'una propietat protegida o privada.
+     */
+    protected function getProtectedProperty(object $object, string $property)
     {
-        $reflection = new ReflectionProperty($object, $property);
-        $reflection->setAccessible(true);
-        return $reflection->getValue($object);
+        $reflection = new ReflectionClass($object);
+        $propertyReflection = $reflection->getProperty($property);
+        $propertyReflection->setAccessible(true);
+
+        return $propertyReflection->getValue($object);
     }
-
-
-
 }
