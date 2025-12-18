@@ -4,6 +4,9 @@ namespace Intranet\Services;
 
 use Intranet\Componentes\Mensaje;
 
+/**
+ * Servei AdviseService.
+ */
 class AdviseService
 {
     protected object $element;

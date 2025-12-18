@@ -1,6 +1,9 @@
 <?php
 namespace Intranet\Services;
 
+/**
+ * Servei ConfirmAndSend.
+ */
 class ConfirmAndSend
 {
     public static function render($model, $id, $message=null, $route=null, $back=null)

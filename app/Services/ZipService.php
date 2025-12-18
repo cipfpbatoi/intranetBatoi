@@ -1,6 +1,9 @@
 <?php
 namespace Intranet\Services;
 
+/**
+ * Servei ZipService.
+ */
 class ZipService
 {
     /**

@@ -5,6 +5,9 @@ namespace Intranet\Services;
 use Illuminate\Support\Facades\Http;
 use Intranet\Exceptions\IntranetException;
 
+/**
+ * Servei RemoteLoginService.
+ */
 class RemoteLoginService
 {
     public static function login($link,$user,$pass)

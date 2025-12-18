@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Intranet\Entities\CotxeAcces;
 
+/**
+ * Servei CotxeAccessService.
+ */
 class CotxeAccessService
 {
     /**

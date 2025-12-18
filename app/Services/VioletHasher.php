@@ -2,6 +2,9 @@
 
 namespace Intranet\Services;
 
+/**
+ * Servei VioletHasher.
+ */
 class VioletHasher
 {
     public static function dniHash(string $dni, ?string $pepper = null): string

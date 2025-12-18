@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\AlumnoFct;
 use Styde\Html\Facades\Alert;
 
+/**
+ * Servei AttachedFileService.
+ */
 class AttachedFileService
 {
     private static function safeFile($file, string $route, ?string $dni, ?string $title): int

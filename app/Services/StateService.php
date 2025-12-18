@@ -6,9 +6,14 @@ use Intranet\Entities\Documento;
 use Styde\Html\Facades\Alert;
 use function config, getClass, getClase;
 
+/**
+ * Servei StateService.
+ */
 class StateService
 {
+    /** @var mixed */
     private $element;
+    /** @var mixed */
     private $statesElement;
 
     public function __construct($class, $id = null)

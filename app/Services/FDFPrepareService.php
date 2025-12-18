@@ -6,6 +6,9 @@ use Intranet\Http\PrintResources\PrintResource;
 use mikehaertl\pdftk\Pdf;
 use Exception;
 
+/**
+ * Servei FDFPrepareService.
+ */
 class FDFPrepareService
 {
     public static function exec(PrintResource $resource, $id=null)

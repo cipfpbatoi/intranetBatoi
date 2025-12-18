@@ -12,6 +12,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use function hora, nameDay;
 
+/**
+ * Servei AdviseTeacher.
+ */
 class AdviseTeacher
 {
     public static function exec(object $elemento, ?string $mensaje = null, ?string $idEmisor = null, ?string $emisor = null): void

@@ -4,6 +4,9 @@ namespace Intranet\Services;
 
 use Intranet\Entities\Profesor;
 
+/**
+ * Servei SignaturaService.
+ */
 class SignaturaService
 {
     public static function exec($dni, $style='', $ratio=1, $notFound=null)

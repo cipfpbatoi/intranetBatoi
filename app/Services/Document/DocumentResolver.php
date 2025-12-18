@@ -4,6 +4,9 @@ namespace Intranet\Services\Document;
 
 use Intranet\Entities\Documento;
 
+/**
+ * Servei DocumentResolver.
+ */
 class DocumentResolver
 {
     public function resolve($elemento = null, $documento = null): DocumentContext

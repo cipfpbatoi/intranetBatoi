@@ -9,6 +9,9 @@ use LSNepomuceno\LaravelA1PdfSign\Exceptions\{FileNotFoundException,
     ProcessRunTimeException
 };
 use Throwable;
+/**
+ * Servei ValidatePdfMultipleSignatures.
+ */
 class ValidatePdfMultipleSignatures
 {
     private string $pdfPath, $plainTextContent, $pkcs7Path = '';

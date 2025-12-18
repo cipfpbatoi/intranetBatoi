@@ -4,6 +4,9 @@ namespace Intranet\Services\Document;
 
 use Styde\Html\Facades\Alert;
 
+/**
+ * Servei DocumentResponder.
+ */
 class DocumentResponder
 {
     private DocumentAccessChecker $accessChecker;

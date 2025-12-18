@@ -4,6 +4,9 @@ namespace Intranet\Services\Document;
 
 use Intranet\Entities\Documento;
 
+/**
+ * Servei DocumentContext.
+ */
 class DocumentContext
 {
     private ?Documento $document;

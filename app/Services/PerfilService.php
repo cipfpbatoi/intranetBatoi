@@ -13,6 +13,9 @@ use Intranet\Entities\Comision;
 use Illuminate\Support\Facades\Cache;
 
 
+/**
+ * Servei PerfilService.
+ */
 class PerfilService
 {
     public function carregarDadesProfessor(string $dni): array

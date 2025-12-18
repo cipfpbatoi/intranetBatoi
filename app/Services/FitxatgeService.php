@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 
 
+/**
+ * Servei FitxatgeService.
+ */
 class FitxatgeService
 {
     public function fitxar(string $dni = null):  Falta_profesor|bool|null

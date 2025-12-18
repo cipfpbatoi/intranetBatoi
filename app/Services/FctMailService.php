@@ -6,6 +6,9 @@ use Intranet\Finders\UniqueFinder;
 use Intranet\Finders\RequestFinder;
 use Intranet\Componentes\DocumentoFct;
 
+/**
+ * Servei FctMailService.
+ */
 class FctMailService
 {
     /**

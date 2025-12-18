@@ -5,10 +5,16 @@ namespace Intranet\Services;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+/**
+ * Servei ExcelService.
+ */
 class ExcelService
 {
+    /** @var mixed */
     protected $file;
+    /** @var mixed */
     protected $spreadsheet;
+    /** @var mixed */
     protected $cells;
 
     /**

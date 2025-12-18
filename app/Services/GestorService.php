@@ -8,9 +8,14 @@ use Intranet\Services\Document\DocumentContext;
 use Intranet\Services\Document\DocumentResponder;
 use Intranet\Services\Document\DocumentResolver;
 
+/**
+ * Servei GestorService.
+ */
 class GestorService
 {
+    /** @var mixed */
     private $elemento;
+    /** @var mixed */
     private $document;
     private DocumentContext $context;
     private DocumentResponder $responder;
