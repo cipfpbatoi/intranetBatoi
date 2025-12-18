@@ -272,7 +272,7 @@ class A2
             $printButton = $driver->findElement(WebDriverBy::xpath("//button[contains(.,'Imprimir documento')]"));
             $printButton->click();
             sleep(1);
-            self::waitForFile($tmpFile, 5);
+            self::waitForFile($tmpFile, 10);
 
             $pdf = new FPDI();
             $pageCount = $pdf->setSourceFile($tmpFile);
