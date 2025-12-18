@@ -32,15 +32,17 @@ class A2
         $this->digitalSignatureService = $digitalSignatureService;
     }
 
-    /*
+    
     public static function setFireFoxCapabilities()
     {
 
         $profile = new FirefoxProfile();
-        $downloadDir = '/home/intranet/Downloads'; 
+        
         $profile->setPreference('browser.download.folderList', 2);
-        $profile->setPreference('browser.download.dir', $downloadDir);
+        $profile->setPreference('browser.download.dir','/home/seluser/Downloads');
         $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
+        $profile->setPreference('browser.download.useDownloadDir', true);
+        $profile->setPreference('browser.download.manager.showWhenStarting', false);
         $profile->setPreference('pdfjs.enabledCache.state', false);
         $profile->setPreference('modifyheaders.headers.count', 1);
         $profile->setPreference("modifyheaders.headers.action0", "Add");
@@ -59,31 +61,6 @@ class A2
             $caps = DesiredCapabilities::firefox();
         }
         $caps->setCapability('firefox_profile', $profile);
-        return $caps;
-    }*/
-
-    public static function setFireFoxCapabilities()
-    {
-        $options = new FirefoxOptions();
-
-        $options->setPreference('browser.download.folderList', 2);
-        $options->setPreference('browser.download.dir', '/home/seluser/Downloads');
-        $options->setPreference('browser.download.useDownloadDir', true);
-        $options->setPreference('browser.download.manager.showWhenStarting', false);
-
-        $options->setPreference('pdfjs.disabled', true);
-        $options->setPreference(
-            'browser.helperApps.neverAsk.saveToDisk',
-            'application/pdf,application/octet-stream'
-        );
-
-        if (config('services.selenium.firefox_path')) {
-            $options->setBinary(config('services.selenium.firefox_path'));
-        }
-
-        $caps = DesiredCapabilities::firefox();
-        $caps->setCapability(FirefoxOptions::CAPABILITY, $options);
-
         return $caps;
     }
 
