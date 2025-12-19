@@ -71,7 +71,7 @@ return [
     |
     */
 
-    //'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
 
     /*
     |--------------------------------------------------------------------------
@@ -84,7 +84,7 @@ return [
     |
     */
 
-    'username' => 'cipfpbatoi',
+    'username' => env('MAIL_USERNAME', 'intranet@cipfpbatoi.es'),
 
     /*
     |--------------------------------------------------------------------------
@@ -97,7 +97,7 @@ return [
     |
     */
 
-    'password' => '1234',
+    'password' => env('MAIL_PASSWORD', '1234'),
 
     /*
     |--------------------------------------------------------------------------
