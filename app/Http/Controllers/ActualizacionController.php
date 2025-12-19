@@ -50,16 +50,49 @@ class ActualizacionController extends Controller
 
     private function runShell(string $command, string $label): void
     {
-        $process = Process::fromShellCommandline($command, base_path());
+        $env = str_starts_with($command, 'git ')
+            ? $this->gitEnv()
+            : null;
+
+        $process = Process::fromShellCommandline($command, base_path(), $env);
         $process->run();
 
         if (! $process->isSuccessful()) {
-            Alert::warning("$label ha fallat: ".$process->getErrorOutput());
-            return;
+            $error = $process->getErrorOutput();
+
+            // Torna a provar si git es queixa per "dubious ownership"
+            if (str_contains($error, 'detected dubious ownership')) {
+                $this->markRepoAsSafe();
+                $process = Process::fromShellCommandline($command, base_path(), $env);
+                $process->run();
+            }
+
+            if (! $process->isSuccessful()) {
+                Alert::warning("$label ha fallat: ".$process->getErrorOutput());
+                return;
+            }
         }
 
         $output = trim($process->getOutput());
         Alert::info($output !== '' ? $output : "$label completat");
+    }
+
+    private function gitEnv(): array
+    {
+        $home = storage_path('git-home');
+        File::ensureDirectoryExists($home);
+
+        return ['HOME' => $home];
+    }
+
+    private function markRepoAsSafe(): void
+    {
+        $safe = Process::fromShellCommandline(
+            'git config --global --add safe.directory '.escapeshellarg(base_path()),
+            base_path(),
+            $this->gitEnv()
+        );
+        $safe->run();
     }
 
 }
