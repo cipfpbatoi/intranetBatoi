@@ -67,6 +67,15 @@ class ActualizacionController extends Controller
                 $process->run();
             }
 
+            if (str_contains($error, '.git/FETCH_HEAD') && str_contains($error, 'Permission denied')) {
+                Alert::warning(
+                    "No puc executar $label: l'usuari del servidor no té permisos d'escriptura sobre ".
+                    base_path('.git').". Dona-li permisos (p.ex. `sudo chown -R www-data:www-data ".
+                    base_path('.git')."; sudo chmod -R g+rwX ".base_path('.git')."`)."
+                );
+                return;
+            }
+
             if (! $process->isSuccessful()) {
                 Alert::warning("$label ha fallat: ".$process->getErrorOutput());
                 return;
