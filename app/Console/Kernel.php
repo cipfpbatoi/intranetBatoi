@@ -39,16 +39,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('guards:Daily')->dailyAt('8:30');
-        $schedule->command('fct:Daily')->dailyAt('8:35');
-        $schedule->command('fault:Daily')->dailyAt('21:00');
-        $schedule->command('email:Daily')->dailyAt('21:05');
+        $schedule->command('guards:Daily')->dailyAt('7:30');
+        $schedule->command('fct:Daily')->dailyAt('7:35');
+        $schedule->command('fault:Daily')->dailyAt('21:30');
+        $schedule->command('email:Daily')->dailyAt('21:45');
         //$schedule->command('sao:annexes')->weekly()->mondays()->at('8:45');
         $schedule->command('sao:connect')->weekly()->tuesdays()->at('8:45');
         //$schedule->command('sao:annexes')->weekly()->wednesdays()->at('8:45');
         //$schedule->command('sao:annexes')->weekly()->thursdays()->at('8:45');
         $schedule->command('sao:connect')->weekly()->fridays()->at('8:45');
-        $schedule->command('cotxes:esborra-vells')->weekly()->sundays()->at('8:00');
+        $schedule->command('cotxes:esborra-vells')->dailyAt('7:00');
     }
 
     /**
