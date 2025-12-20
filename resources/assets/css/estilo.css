@@ -1,6 +1,6 @@
 body{
 	max-width: 1400px;
-	background-color: #B9E8FE;
+	background-color: #2A3F54; /* mateix to que el menú lateral */
 	font-size: 15px;
 	font-family: sans-serif;
 }
@@ -17,10 +17,17 @@ header{
 	padding: 10px 10px;
 }
 footer{
-	background-color: #F0F2F7;
+	background-color: #243447; /* to fosc per reduir contrast amb el fons */
+	color: #e6edf5;
 	text-align: left;
-        margin: 10px;
-        text-align: center;
+	margin: 10px;
+	text-align: center;
+}
+footer a{
+	color: #e6edf5;
+}
+footer strong{
+	color: #ffffff;
 }
 .iconopequeno{
 
@@ -250,4 +257,19 @@ a:hover, a:focus {
 	pointer-events: none; // Impedeix interaccions de clic
 color: grey; // Canvia el color per indicar que està desactivat
 cursor: default; // Canvia el cursor per reflectir la inactivitat
+}
+
+/* Manté el menú lateral estirat fins al peu en pantalles curtes */
+body.nav-md .container.body .col-md-3.left_col .left_col.scroll-view {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+body.nav-md .container.body #sidebar-menu {
+	flex: 1;
+}
+
+body.nav-md .container.body .sidebar-footer {
+	margin-top: auto;
 }
