@@ -273,3 +273,25 @@ body.nav-md .container.body #sidebar-menu {
 body.nav-md .container.body .sidebar-footer {
 	margin-top: auto;
 }
+
+/* Pestanyes del panell sense espai en blanc: ocupen tot l'ample i sense scroll */
+ul.bar_tabs {
+	display: flex;
+	flex-wrap: wrap;
+	overflow: visible;
+	gap: 6px 8px;
+}
+
+ul.bar_tabs > li {
+	float: none;
+	flex: 0 1 auto;
+}
+
+ul.bar_tabs > li > a {
+	display: flex;
+	align-items: center;
+	white-space: normal;
+	line-height: 1.3;
+	padding: 12px 18px;
+	min-height: 46px;
+}
