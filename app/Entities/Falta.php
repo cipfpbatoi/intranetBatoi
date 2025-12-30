@@ -29,6 +29,7 @@ class Falta extends Model
         'fichero',
         'estado'
     ];
+    
     protected $rules = [
         'idProfesor' => 'required',
         'desde' => 'required|date',

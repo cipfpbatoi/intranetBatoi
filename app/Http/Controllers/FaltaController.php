@@ -131,6 +131,7 @@ class FaltaController extends IntranetController
         return $this->redirect();
     }
 
+    
 
     /**
      * @param Request $request
