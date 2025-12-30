@@ -31,7 +31,8 @@ class NotificationController extends IntranetController
     /**
      * @var array
      */
-    protected $vista = ['show'=>'notification.show'];
+    // Use el layout de notificacions personalitzat per a la vista show
+    protected $vista = ['show' => 'notification'];
 
     /**
      * @return mixed

@@ -1,11 +1,6 @@
-@php
-    // Acceptem tant $alumno com $alumnoFct per compatibilitat amb diferents controladors
-    $student = $alumno ?? optional($alumnoFct)->Alumno;
-    $title = $student ? 'Calendari FCT de ' . $student->fullName : 'Calendari FCT';
-@endphp
-
+@php($title = 'Calendari FCT de '.$alumnoFct->fullName)
 <x-pages.livewire
-    :title="$title"
-    component="fct-calendar"
-    :params="['alumno' => $student]"
+        :title="$title"
+         component="fct-calendar"
+        :params="['alumnoFct' => $alumnoFct]"
 />
