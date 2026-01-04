@@ -84,7 +84,7 @@ class AdminList extends Component
         }
 
         $this->showContact = true;
-        $this->dispatchBrowserEvent('open-contact');
+        $this->dispatch('open-contact');
     }
 
     public function closeContact()
@@ -93,7 +93,7 @@ class AdminList extends Component
         $this->contact = [
             'rol' => null, 'nom' => null, 'email' => null, 'telefon' => null, 'grup' => null, 'dni' => null,
         ];
-        $this->dispatchBrowserEvent('close-contact');
+        $this->dispatch('close-contact');
     }
 
     public function viewMessage(int $id)
@@ -101,14 +101,14 @@ class AdminList extends Component
         $m = \Intranet\Entities\BustiaVioleta::findOrFail($id);
         $this->messageText = (string) $m->mensaje;   // només el text sencer
         $this->showMessage = true;
-        $this->dispatchBrowserEvent('open-message');
+        $this->dispatch('open-message');
     }
 
     public function closeMessage()
     {
         $this->showMessage = false;
         $this->messageText = '';
-        $this->dispatchBrowserEvent('close-message');
+        $this->dispatch('close-message');
     }
 
     public function setEstado(int $id, string $estado)

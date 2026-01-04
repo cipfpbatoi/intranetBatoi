@@ -1,6 +1,5 @@
 @extends('layouts.intranet')
- @section('css')
-    <title>Administrador Busties</title>
+@section('css')
     <style>
         table, th, td {
             border: 1px solid;
@@ -17,20 +16,12 @@ Administrador Busties
 @section('scripts')
     <livewire:scripts />
     <script>
-  // Bootstrap 4 + Livewire
-  document.addEventListener('livewire:load', function () {
-    window.addEventListener('open-contact', function () {
-      $('#contactModal').modal('show');    // 👈 obri modal
+    // Bootstrap 4 + Livewire v3
+    document.addEventListener('livewire:init', function () {
+        Livewire.on('open-contact', () => $('#contactModal').modal('show'));
+        Livewire.on('close-contact', () => $('#contactModal').modal('hide'));
+        Livewire.on('open-message', () => $('#messageModal').modal('show'));
+        Livewire.on('close-message', () => $('#messageModal').modal('hide'));
     });
-    window.addEventListener('close-contact', function () {
-      $('#contactModal').modal('hide');    // 👈 tanca modal
-    });
-    window.addEventListener('open-message', function(){
-      $('#messageModal').modal('show');
-    });
-    window.addEventListener('close-message', function(){
-      $('#messageModal').modal('hide');
-    });
-  });
-</script>
+    </script>
 @endsection
