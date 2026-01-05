@@ -1,26 +1,19 @@
-@php
-    // Acceptem tant $alumno com $alumnoFct per compatibilitat amb diferents controladors
-    $alumnoFct = $alumnoFct ?? null;
-    $student = $alumno ?? optional($alumnoFct)->Alumno;
-    $studentId = optional($student)->id;
-    $alumnoFctId = optional($alumnoFct)->id;
-    $title = $student ? 'Calendari FCT de ' . $student->fullName : 'Calendari FCT';
-@endphp
-
 @extends('layouts.intranet')
-
 @section('css')
-    <livewire:styles />
+    <title>@lang("models.fctDay.show")</title>
+    <style>
+        table, th, td {
+            border: 1px solid;
+        }
+    </style>
+    @livewireStyles
 @endsection
-
-@section('titulo')
-    {{ $title }}
-@endsection
-
 @section('content')
-    @livewire('fct-calendar', ['alumno' => $studentId, 'alumnoFct' => $alumnoFctId])
+    @livewire('fct-calendar', ['alumno' => $alumno])
 @endsection
-
+@section('titulo')
+    @lang("models.fctDay.show" ,['quien'=> $alumno->fullName])
+@endsection
 @section('scripts')
-    <livewire:scripts />
+    @livewireScripts
 @endsection

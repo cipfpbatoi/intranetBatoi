@@ -13,7 +13,7 @@ use ZipArchive;
 
 class FctCalendar extends Component
 {
-    public $alumno;
+    public string $alumnoNia;
     public $colaboraciones = [];
     public $trams = [];
     public $monthlyCalendar = [];
@@ -25,9 +25,13 @@ class FctCalendar extends Component
     public $resumColaboracions = [];
     public $maxHours = 400;
 
-    public function mount(Alumno $alumno)
+    protected ?Alumno $alumnoCache = null;
+
+    public function mount($alumno)
     {
-        $this->alumno = $alumno;
+        $model = $alumno instanceof Alumno ? $alumno : Alumno::findOrFail($alumno);
+        $this->alumnoNia = $model->nia;
+        $this->alumnoCache = $model;
         $this->colaboraciones = Colaboracion::MiColaboracion()
             ->with('Centro:id,nombre')
             ->get()
@@ -36,7 +40,7 @@ class FctCalendar extends Component
 
         $this->allowNoLectiu = false;
 
-        if (FctDay::where('nia', $alumno->nia)->exists()) {
+        if (FctDay::where('nia', $this->alumnoNia)->exists()) {
             $this->showConfigForm = false;
             $this->loadCalendar();
         } else {
@@ -47,6 +51,15 @@ class FctCalendar extends Component
                 'hores_setmana' => array_fill(1, 7, 0),
             ]];
         }
+    }
+
+    protected function alumno(): Alumno
+    {
+        if (!$this->alumnoCache) {
+            $this->alumnoCache = Alumno::findOrFail($this->alumnoNia);
+        }
+
+        return $this->alumnoCache;
     }
 
     public function addTram()
@@ -67,7 +80,7 @@ class FctCalendar extends Component
 
     public function createCalendar()
     {
-        FctDay::where('nia', $this->alumno->nia)->delete();
+        FctDay::where('nia', $this->alumnoNia)->delete();
 
         $assignades = 0; // acumulador d’hores creades
 
@@ -96,7 +109,7 @@ class FctCalendar extends Component
                 $horesAssignar = min($horesPlan, $restants);
 
                 FctDay::create([
-                    'nia'              => $this->alumno->nia,
+                    'nia'              => $this->alumnoNia,
                     'dia'              => $date->toDateString(),
                     'hores_previstes'  => $horesAssignar,
                     'colaboracion_id'  => $tram['colaboracion_id'] ?? null,
@@ -120,7 +133,7 @@ class FctCalendar extends Component
         $this->totalHours = 0;
         $this->showConfigForm = true;
 
-        $fctDays = FctDay::where('nia', $this->alumno->nia)->get();
+        $fctDays = FctDay::where('nia', $this->alumnoNia)->get();
         if ($fctDays->isNotEmpty()) {
             $sorted = $fctDays->sortBy('dia')->values();
             $trams = [];
@@ -158,12 +171,12 @@ class FctCalendar extends Component
             $this->trams = $trams;
         }
 
-        FctDay::where('nia', $this->alumno->nia)->delete();
+        FctDay::where('nia', $this->alumnoNia)->delete();
     }
 
     public function loadCalendar()
     {
-        $allDays = FctDay::where('nia', $this->alumno->nia)
+        $allDays = FctDay::where('nia', $this->alumnoNia)
             ->orderBy('dia')
             ->get();
 
@@ -225,7 +238,7 @@ class FctCalendar extends Component
         $colaboraciones = Colaboracion::with('Centro')->get();
 
         $this->resumColaboracions = FctDay::selectRaw('colaboracion_id, SUM(hores_previstes) as total')
-            ->where('nia', $this->alumno->nia)
+            ->where('nia', $this->alumnoNia)
             ->groupBy('colaboracion_id')
             ->pluck('total', 'colaboracion_id')
             ->mapWithKeys(function ($hores, $id) use ($colaboraciones) {
@@ -258,7 +271,7 @@ class FctCalendar extends Component
     public function exportCalendarPdf()
     {
         // Dies totals
-        $allDays = FctDay::where('nia', $this->alumno->nia)
+        $allDays = FctDay::where('nia', $this->alumnoNia)
             ->orderBy('dia')->get();
 
         $colaboracions = Colaboracion::with('Centro', 'Propietario')->get();
@@ -287,7 +300,7 @@ class FctCalendar extends Component
      */
     public function sendCalendarEmails(): void
     {
-        $allDays = FctDay::where('nia', $this->alumno->nia)
+        $allDays = FctDay::where('nia', $this->alumnoNia)
             ->orderBy('dia')->get();
 
         if ($allDays->isEmpty()) {
@@ -334,7 +347,7 @@ class FctCalendar extends Component
         $html = view('livewire.pdf.fct-calendar', [
             'monthlyCalendar' => $monthlyCalendar,
             'totalHours' => $totalHours,
-            'alumnoFct' => $this->alumno,
+            'alumnoFct' => $this->alumno(),
             'titol' => $titol,
             'legend' => $legend,
         ])->render();
@@ -380,7 +393,7 @@ class FctCalendar extends Component
 
         return [
             'path' => $zipPath,
-            'name' => "calendari_" . $this->alumno->nia . ".zip",
+            'name' => "calendari_" . $this->alumnoNia . ".zip",
         ];
     }
 
@@ -394,7 +407,7 @@ class FctCalendar extends Component
         // Alumne
         $monthlyCalendar = $this->mapDaysToMonthlyCalendar($allDays, $colorMap);
         $documents[] = [
-            'name' => "calendari_{$this->alumno->nia}_alumne.pdf",
+            'name' => "calendari_{$this->alumnoNia}_alumne.pdf",
             'content' => $this->renderPdfContent(
                 $monthlyCalendar,
                 $allDays->sum('hores_previstes'),
@@ -412,7 +425,7 @@ class FctCalendar extends Component
             $calendar = $this->mapDaysToMonthlyCalendar($dies);
 
             $documents[] = [
-                'name' => "calendari_{$this->alumno->nia}_$colaboracionId.pdf",
+                'name' => "calendari_{$this->alumnoNia}_$colaboracionId.pdf",
                 'content' => $this->renderPdfContent(
                     $calendar,
                     $dies->sum('hores_previstes'),
@@ -440,8 +453,9 @@ class FctCalendar extends Component
             $subjectExtra = '';
 
             if (str_contains($doc['name'], '_alumne.pdf')) {
-                if (filter_var($this->alumno->email, FILTER_VALIDATE_EMAIL)) {
-                    $recipients[] = $this->alumno->email;
+                $alumne = $this->alumno();
+                if (filter_var($alumne->email, FILTER_VALIDATE_EMAIL)) {
+                    $recipients[] = $alumne->email;
                 }
             } else {
                 // Obté id de col·laboració des del nom
@@ -468,8 +482,9 @@ class FctCalendar extends Component
                 continue;
             }
 
-            $subject = 'Calendari Formació en Empresa - ' . $this->alumno->nombre . ' ' . $this->alumno->apellido1 . $subjectExtra;
-            $body = "Hola,\n\nAdjunt tens el calendari de Formació en Empresa de {$this->alumno->nombre} {$this->alumno->apellido1}.\n\nSalutacions.";
+            $alumne = $alumne ?? $this->alumno();
+            $subject = 'Calendari Formació en Empresa - ' . $alumne->nombre . ' ' . $alumne->apellido1 . $subjectExtra;
+            $body = "Hola,\n\nAdjunt tens el calendari de Formació en Empresa de {$alumne->nombre} {$alumne->apellido1}.\n\nSalutacions.";
 
             $ccEmails = [];
             if ($replyToEmail && !in_array($replyToEmail, $recipients, true) && filter_var($replyToEmail, FILTER_VALIDATE_EMAIL)) {
@@ -493,7 +508,8 @@ class FctCalendar extends Component
 
     private function getTutorContact(): array
     {
-        $tutor = $this->alumno->tutor->first();
+        $alumne = $this->alumno();
+        $tutor = $alumne->tutor->first();
         if ($tutor && filter_var($tutor->email, FILTER_VALIDATE_EMAIL)) {
             $name = trim($tutor->nombre . ' ' . $tutor->apellido1 . ' ' . $tutor->apellido2);
             return [

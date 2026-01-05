@@ -1,3 +1,4 @@
+<div class="fct-calendar" wire:key="fct-calendar-root">
 @if($showConfigForm)
     <div>
         <!-- Autoritzacions -->
@@ -178,3 +179,4 @@
         </div>
     </div>
 @endif
+</div>
