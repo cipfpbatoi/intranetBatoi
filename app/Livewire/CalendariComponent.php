@@ -11,10 +11,16 @@ class CalendariComponent extends Component
     public $mes;
     public $dies = [];
     public $esdeveniments = [];
+    public $grid = [];
 
     public $seleccionat;
     public $tipus;
     public $esdeveniment;
+
+    private function dataCompletada(int $dia): string
+    {
+        return Carbon::create($this->any, $this->mes, $dia)->toDateString();
+    }
 
     public function mount($any = null, $mes = null)
     {
@@ -44,39 +50,79 @@ class CalendariComponent extends Component
 
     public function carregarDies()
     {
-        $primerDia = Carbon::create($this->any, $this->mes, 1);
+        $primerDia = Carbon::create($this->any, $this->mes, 1)->startOfDay();
         $ultimDia = $primerDia->copy()->endOfMonth();
         $dies = [];
-        $this->esdeveniments = []; // Reset de la llista d'esdeveniments
+        $this->esdeveniments = []; // Reset de la llista d'esdeveniments per mes
+        // Carrega tots els registres del mes en una sola consulta per evitar retards
+        $registres = CalendariEscolar::whereBetween('data', [
+            $primerDia->toDateString(),
+            $ultimDia->toDateString(),
+        ])->get()->keyBy('data');
 
+        $diaCursor = $primerDia->copy();
+        while ($diaCursor->lte($ultimDia)) {
+            $data = $diaCursor->toDateString();
+            $registre = $registres[$data] ?? null;
 
-        while ($primerDia->lte($ultimDia)) {
-            $registre = CalendariEscolar::where('data', $primerDia->toDateString())->first();
-
-            $dies[$primerDia->day] = [
-                'data' => $primerDia->toDateString(),
-                'tipus' => $registre->tipus ?? 'no definit',
+            $dies[$diaCursor->day] = [
+                'data' => $data,
+                'tipus' => $registre->tipus ?? 'lectiu',
                 'esdeveniment' => $registre->esdeveniment ?? '',
             ];
 
-            if (!empty($registre->esdeveniment)) {
+            if (!empty($registre?->esdeveniment)) {
                 $this->esdeveniments[] = [
-                    'dia' => $primerDia->day,
+                    'dia' => $diaCursor->day,
                     'esdeveniment' => $registre->esdeveniment,
                 ];
             }
 
-            $primerDia->addDay();
+            $diaCursor->addDay();
         }
 
-        $this->dies = $dies;
+        $this->dies = $dies; // Només dies del mes actual
         usort($this->esdeveniments, fn($a, $b) => $a['dia'] <=> $b['dia']);
+
+        // Construeix una graella fixa (6 setmanes) començant dilluns, per evitar salts de files
+        $iniciGraella = $primerDia->copy()->startOfWeek(Carbon::MONDAY);
+        $finalGraella = $ultimDia->copy()->endOfWeek(Carbon::SUNDAY);
+        $cursor = $iniciGraella->copy();
+        $grid = [];
+
+        while ($cursor->lte($finalGraella)) {
+            $esMesActual = $cursor->month === $this->mes;
+            $info = $esMesActual
+                ? ($dies[$cursor->day] ?? [
+                    'data' => $cursor->toDateString(),
+                    'tipus' => 'lectiu',
+                    'esdeveniment' => '',
+                ])
+                : [
+                    'data' => $cursor->toDateString(),
+                    'tipus' => 'fora',
+                    'esdeveniment' => '',
+                ];
+
+            $grid[] = array_merge($info, [
+                'numero' => $cursor->day,
+                'es_mes_actual' => $esMesActual,
+            ]);
+
+            $cursor->addDay();
+        }
+
+        $this->grid = $grid;
     }
 
     public function seleccionarDia($dia)
     {
+        if (!isset($this->dies[$dia])) {
+            return;
+        }
+
         $this->seleccionat = $dia;
-        $registre = CalendariEscolar::where('data', "{$this->any}-{$this->mes}-{$dia}")->first();
+        $registre = CalendariEscolar::where('data', $this->dataCompletada($dia))->first();
 
         $this->tipus = $registre->tipus ?? 'lectiu';
         $this->esdeveniment = $registre->esdeveniment ?? '';
@@ -84,8 +130,12 @@ class CalendariComponent extends Component
 
     public function guardarCanvis()
     {
+        if (!$this->seleccionat) {
+            return;
+        }
+
         CalendariEscolar::updateOrCreate(
-            ['data' => "{$this->any}-{$this->mes}-{$this->seleccionat}"],
+            ['data' => $this->dataCompletada($this->seleccionat)],
             ['tipus' => $this->tipus, 'esdeveniment' => $this->esdeveniment]
         );
 
@@ -113,4 +163,3 @@ class CalendariComponent extends Component
         return view('livewire.calendari-component');
     }
 }
-

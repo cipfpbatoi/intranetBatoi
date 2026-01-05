@@ -7,8 +7,20 @@
     $title = $student ? 'Calendari FCT de ' . $student->fullName : 'Calendari FCT';
 @endphp
 
-<x-pages.livewire
-    :title="$title"
-    component="fct-calendar"
-    :params="['alumno' => $studentId, 'alumnoFct' => $alumnoFctId]"
-/>
+@extends('layouts.intranet')
+
+@section('css')
+    <livewire:styles />
+@endsection
+
+@section('titulo')
+    {{ $title }}
+@endsection
+
+@section('content')
+    @livewire('fct-calendar', ['alumno' => $studentId, 'alumnoFct' => $alumnoFctId])
+@endsection
+
+@section('scripts')
+    <livewire:scripts />
+@endsection

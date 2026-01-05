@@ -48,7 +48,7 @@ class CalendariFctController extends IntranetController
     public function days($id)
     {
         $alumno  = Alumno::find($id);
-         return view('fct.days',compact('alumno'  ));
+         return view('fct.days',compact('alumno'));
     }
 
 

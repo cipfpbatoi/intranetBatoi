@@ -24,36 +24,25 @@
             </tr>
             </thead>
             <tbody>
-            @php
-                $primerDiaSetmana = \Carbon\Carbon::create($any, $mes, 1)->dayOfWeekIso;
-                $diesMes = \Carbon\Carbon::create($any, $mes, 1)->daysInMonth;
-                $colspan = $primerDiaSetmana - 1;
-            @endphp
-
-            <tr>
-                @if ($colspan > 0)
-                    <td colspan="{{ $colspan }}"></td>
-                @endif
-
-                @foreach(range(1, $diesMes) as $dia)
-                    @php
-                        $info = $dies[$dia] ?? ['tipus' => 'lectiu', 'esdeveniment' => ''];
-                        $bg = $info['esdeveniment'] ? '#00aaff'
-                            : ($info['tipus'] == 'festiu' ? '#ffadad'
-                            : ($info['tipus'] == 'no lectiu' ? '#ffd6a5' : '#caffbf'));
-                    @endphp
-
-                    <td class="p-3 border" wire:key="dia-{{ $any }}-{{ $mes }}-{{ $dia }}"
-                        wire:click="seleccionarDia({{ $dia }})"
-                        style="cursor:pointer;background-color: {{ $bg }};">
-                        <strong>{{ $dia }}</strong>
-                    </td>
-
-                    @if (($colspan + $dia) % 7 == 0)
-            </tr><tr>
-                @endif
-                @endforeach
-            </tr>
+            @foreach(array_chunk($grid, 7) as $setmana)
+                <tr>
+                    @foreach($setmana as $dia)
+                        @php
+                            $bg = $dia['esdeveniment'] ? '#00aaff'
+                                : ($dia['tipus'] == 'festiu' ? '#ffadad'
+                                : ($dia['tipus'] == 'no lectiu' ? '#ffd6a5' : '#caffbf'));
+                            if (!$dia['es_mes_actual']) {
+                                $bg = '#f1f1f1';
+                            }
+                        @endphp
+                        <td class="p-3 border {{ $dia['es_mes_actual'] ? '' : 'text-muted' }}"
+                            wire:key="dia-{{ $dia['data'] }}"
+                            @if($dia['es_mes_actual']) wire:click="seleccionarDia({{ $dia['numero'] }})" style="cursor:pointer;background-color: {{ $bg }};" @else style="background-color: {{ $bg }};" @endif>
+                            <strong>{{ $dia['numero'] }}</strong>
+                        </td>
+                    @endforeach
+                </tr>
+            @endforeach
             </tbody>
         </table>
     </div>

@@ -12,7 +12,7 @@
                 border: 1px solid;
             }
         </style>
-        <livewire:styles />
+        @livewireStyles
     @endpush
 
     <div class="container mx-auto p-4">
@@ -28,6 +28,13 @@
     </div>
 
     @push('scripts')
-        <livewire:scripts />
+        @livewireScriptConfig
+        @livewireScripts
+        <script>
+            // Si per algun motiu Livewire no arranca, força l’inici.
+            if (window.Livewire && typeof Livewire.all === 'function' && Livewire.all().length === 0 && typeof Livewire.start === 'function') {
+                Livewire.start();
+            }
+        </script>
     @endpush
 @endcomponent

@@ -68,12 +68,12 @@
             @endforeach
 
 
-            <button wire:click="addTram" class="mt-2 bg-gray-300 px-3 py-1 rounded text-sm">➕ Afegir tram</button>
+            <button type="button" wire:click="addTram" class="mt-2 bg-gray-300 px-3 py-1 rounded text-sm">➕ Afegir tram</button>
         </div>
 
         <!-- Botó generar calendari -->
         <div class="mt-6">
-            <button wire:click="createCalendar"
+            <button type="button" wire:click="createCalendar"
                     class="bg-blue-600 text-white px-4 py-2 rounded">
                 ✅ Generar Calendari
             </button>
@@ -90,16 +90,16 @@
         @endif
 
         <div class="flex gap-4 mb-4">
-            <button wire:click="deleteCalendar"
+            <button type="button" wire:click="deleteCalendar"
                     class="bg-red-500 text-white px-4 py-2 rounded">
                 🗑️ Modificar Calendari
             </button>
 
-            <button wire:click="exportCalendarPdf"
+            <button type="button" wire:click="exportCalendarPdf"
                     class="bg-green-500 text-white px-4 py-2 rounded">
                 📄 Descarregar PDF
             </button>
-            <button wire:click="sendCalendarEmails"
+            <button type="button" wire:click="sendCalendarEmails"
                     class="bg-indigo-500 text-white px-4 py-2 rounded">
                 ✉️ Enviar per correu
             </button>
@@ -128,7 +128,7 @@
                                         : '';
                         @endphp
 
-                        @if ($dayData)
+                        @if ($dayData && !empty($dayData['id']))
 
                             <td style="padding:5px; {{ $color }} {{ $isFestiu ? 'background-color:#ffcccc;' : ( $isNoLectiu ? 'background-color:#fff2cc;' : '') }}"
                                 class="border px-1 py-1 text-center w-6" title="{{ $resumColaboracions[$dayData['colaboracion_id']]['nom'] ?? '' }}"
@@ -146,6 +146,8 @@
                                                      this.previousElementSibling.classList.remove('hidden');"
                                        wire:change="updateDay({{ $dayData['id'] }}, $event.target.value)">
                             </td>
+                        @elseif($dayData)
+                            <td class="border px-1 py-1 text-center w-6">–</td>
                         @else
                             <td class="border px-1 py-1 text-center w-6">–</td>
                         @endif
