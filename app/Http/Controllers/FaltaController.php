@@ -19,8 +19,6 @@ use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\AdviseTeacher;
 use Intranet\Services\ConfirmAndSend;
-use Intranet\Services\GestorService;
-use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
 use function PHPUnit\Framework\isEmpty;
 
@@ -50,39 +48,6 @@ class FaltaController extends IntranetController
      * @var bool
      */
     protected $modal = true;
-
-    /**
-     * @param Request $request
-     * @return mixed
-     */
-    private static function findElements($desde, $hasta)
-    {
-        return Falta::where([
-            ['estado', '>', '0'],
-            ['estado', '<', '4'],
-            ['desde', '>=', $desde],
-            ['desde', '<=', $hasta]
-        ]) ->orwhere([
-                ['estado', '>', '0'],
-                ['estado', '<', '4'],
-                ['hasta', '>=', $desde],
-                ['hasta', '<=', $hasta]
-            ])
-            ->orwhere([['estado', '=', '5'],
-                ['desde', '<=', $hasta]])
-            ->orderBy('idProfesor')
-            ->orderBy('desde')
-            ->get();
-    }
-
-    /**
-     * @return array
-     */
-    private static function nameFile():string
-    {
-        return 'gestor/' . Curso() . '/informes/' . 'Falta' . new Date() . '.pdf';
-    }
-
 
     /**
      *
@@ -202,61 +167,6 @@ class FaltaController extends IntranetController
         });
         return back()->with('pestana', $elemento->estado);
     }
-
-    /**
-     * @param $hasta
-     */
-    private static function markPrinted($hasta)
-    {
-        foreach (Falta::where([
-            ['estado', '>', '0'],
-            ['estado', '<', '4'],
-            ['hasta', '<=', $hasta]
-        ])->get() as $elemento) {
-            $staSer = new StateService($elemento);
-            $staSer->_print();
-        }
-    }
-
-    /**
-     * @param Request $request
-     * @return mixed
-     */
-    public static function printReport($request)
-    {
-        $desde = new Date($request->desde);
-        $hasta = new Date($request->hasta);
-        if ($request->mensual !== 'on') {
-            return self::hazPdf(
-                "pdf.comunicacioAbsencia",
-                Falta::where('estado', '>', '0')
-                ->where('estado', '<', '5')
-                ->whereBetween('desde', [$desde, $hasta])
-                ->orWhereBetween('hasta', [$desde, $hasta])
-                ->orwhere([['estado', '=', '5'], ['desde', '<=', $hasta]])
-                ->orderBy('idProfesor')
-                ->orderBy('desde')
-                ->get()
-            )->stream();
-        }
-
-        $nomComplet = self::nameFile();
-        $gestor = new GestorService();
-        $doc = $gestor->save([
-                'fichero' => $nomComplet,
-                'tags' => "Ausència Ausencia Llistat listado Professorado Profesorat Mensual"
-        ]);
-
-        $elementos = self::findElements($desde, $hasta);
-        self::markPrinted($hasta);
-        StateService::makeLink($elementos, $doc);
-
-        return self::hazPdf("pdf.faltas", $elementos)
-            ->save(storage_path('/app/' . $nomComplet))
-            ->download($nomComplet);
-
-    }
-
 
     /**
      * @param $idProfesor
