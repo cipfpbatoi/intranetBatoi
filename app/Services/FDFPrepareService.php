@@ -79,6 +79,7 @@ class FDFPrepareService
             return null;
         }
         unlink($tmpFileName);
+        return $nameFile;
     }
 
     public static function joinPDFs($pdfs, $nameFile)
