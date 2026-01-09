@@ -238,7 +238,21 @@ class DocumentService
         $pdfs = [];
         foreach ($this->elements as $element) {
             $resource = PrintResource::build($this->document->printResource, $element);
-            $pdfs[] = FDFPrepareService::exec($resource, $element->idPrint);
+            $pdfPath = FDFPrepareService::exec($resource, $element->idPrint);
+            if ($pdfPath && file_exists($pdfPath)) {
+                $pdfs[] = $pdfPath;
+            } else {
+                Log::error('No s\'ha pogut generar un PDF en sèrie', [
+                    'resource' => $this->document->printResource,
+                    'path' => $pdfPath,
+                    'element' => $element->idPrint ?? null,
+                ]);
+            }
+        }
+
+        if (empty($pdfs)) {
+            Alert::danger('No s\'ha pogut generar cap PDF');
+            return response()->json(['error' => 'No s\'ha pogut generar cap PDF'], 400);
         }
 
         if ($this->zip && count($this->elements) > 1) {
@@ -248,7 +262,14 @@ class DocumentService
         // Si només hi ha un PDF, el retorna directament
         $pdf = new PdfTk($pdfs);
         $tmpFile = "tmp/annexes_" . authUser()->dni . ".pdf";
-        $pdf->saveAs(storage_path($tmpFile));
+        $tmpDir = dirname(storage_path($tmpFile));
+        if (!is_dir($tmpDir)) {
+            mkdir($tmpDir, 0775, true);
+        }
+        if (!$pdf->saveAs(storage_path($tmpFile))) {
+            Log::error('Error concatenant PDFs en sèrie', ['error' => $pdf->getError()]);
+            return response()->json(['error' => 'Error concatenant PDFs: '.$pdf->getError()], 400);
+        }
 
         return response()->file(storage_path($tmpFile), ['Content-Type', 'application/pdf']);
     }
