@@ -86,7 +86,7 @@ class FctController extends IntranetController
     public function certificat($id)
     {
         $fct = Fct::findOrFail($id);
-        if ($fct->asociacion == 4){
+        /*if ($fct->asociacion == 4){
             $nameFile = storage_path("tmp/Dual_AVII_{$fct->id}.zip");
             if (file_exists($nameFile)) {
                 unlink($nameFile);
@@ -97,7 +97,7 @@ class FctController extends IntranetController
             $zip->addFile(FDFPrepareService::exec(new AVIIBResource(Fct::find($id))), 'AVIIb_Certificat_instructor.pdf');
             $zip->close();
             return response()->download($nameFile);
-        }
+        }*/
 
         return response()->file(FDFPrepareService::exec(
             new CertificatInstructorResource(Fct::findOrFail($id))));
