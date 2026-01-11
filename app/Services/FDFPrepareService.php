@@ -61,6 +61,7 @@ class FDFPrepareService
     {
 
         $tmpFileName = storage_path("tmp/".str_shuffle('abcdef12').'.pdf');
+        $pdf->dropXfa()->dropXmp()->needAppearances();
         if (!$pdf->saveAs($tmpFileName)) {
             Log::error('Error temporal guardant PDF abans de stamp', [
                 'tmp' => $tmpFileName,
