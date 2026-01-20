@@ -164,6 +164,7 @@ class   PollController extends IntranetController
         $modelo::aggregate($votes, $option1, $option2);
         $stats = [
             'all' => [],
+            'grup' => [],
             'cicle' => [],
             'departament' => [],
         ];
@@ -172,6 +173,14 @@ class   PollController extends IntranetController
                 'avg' => round($optionVote->avg('value'), 1),
                 'count' => $optionVote->groupBy('user_id')->count(),
             ];
+        }
+        foreach ($votes['grup'] as $nameGroup => $grupVotes) {
+            foreach ($grupVotes as $optionId => $optionVote) {
+                $stats['grup'][$nameGroup][$optionId] = [
+                    'avg' => round($optionVote->avg('value'), 1),
+                    'count' => $optionVote->groupBy('user_id')->count(),
+                ];
+            }
         }
         foreach ($votes['cicle'] as $nameGroup => $grupVotes) {
             foreach ($grupVotes as $optionId => $optionVote) {
@@ -190,9 +199,19 @@ class   PollController extends IntranetController
             }
         }
         $hasVotes = [
+            'grup' => [],
             'cicle' => [],
             'departament' => [],
         ];
+        foreach ($stats['grup'] as $nameGroup => $grupStats) {
+            $hasVotes['grup'][$nameGroup] = false;
+            foreach ($grupStats as $stat) {
+                if ($stat['count'] > 0) {
+                    $hasVotes['grup'][$nameGroup] = true;
+                    break;
+                }
+            }
+        }
         foreach ($stats['cicle'] as $nameGroup => $grupStats) {
             $hasVotes['cicle'][$nameGroup] = false;
             foreach ($grupStats as $stat) {

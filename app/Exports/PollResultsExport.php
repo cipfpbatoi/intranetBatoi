@@ -2,10 +2,9 @@
 
 namespace Intranet\Exports;
 
-use Maatwebsite\Excel\Concerns\FromView;
-use Illuminate\Contracts\View\View;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class PollResultsExport implements FromView
+class PollResultsExport implements WithMultipleSheets
 {
     private $poll;
     private $votes;
@@ -22,14 +21,20 @@ class PollResultsExport implements FromView
         $this->stats = $stats;
     }
 
-    public function view(): View
+    public function sheets(): array
     {
-        return view('poll.partials.resolts.excel', [
+        $data = [
             'poll' => $this->poll,
             'votes' => $this->votes,
             'options_numeric' => $this->options_numeric,
             'hasVotes' => $this->hasVotes,
             'stats' => $this->stats,
-        ]);
+        ];
+
+        return [
+            new PollResultsSheet('poll.partials.resolts.excel_general', 'Resultats', $data),
+            new PollResultsSheet('poll.partials.resolts.excel_departament', 'Departaments', $data),
+            new PollResultsSheet('poll.partials.resolts.excel_grup', 'Grups', $data),
+        ];
     }
 }
