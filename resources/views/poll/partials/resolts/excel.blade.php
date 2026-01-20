@@ -1,3 +1,4 @@
+@php($colspan = $options_numeric->count() + 1)
 <table>
     <thead>
     <tr>
@@ -9,28 +10,53 @@
     </thead>
     <tbody>
     <tr>
+        <th colspan="{{ $colspan }}">Resultats agregats</th>
+    </tr>
+    <tr>
         <td>Tots</td>
-        @foreach ($votes['all'] as $optionVote)
-            <td>{{ round($optionVote->avg('value'), 1) }} / {{ $optionVote->count('value') }}</td>
+        @foreach ($votes['all'] as $optionId => $optionVote)
+            <td>
+                @if (($stats['all'][$optionId]['count'] ?? 0) > 0)
+                    {{ $stats['all'][$optionId]['avg'] }} / {{ $stats['all'][$optionId]['count'] }}
+                @endif
+            </td>
         @endforeach
     </tr>
 
+    <tr>
+        <th colspan="{{ $colspan }}">Resultats per Cicles</th>
+    </tr>
     @foreach ($votes['cicle'] as $nameGroup => $grupVotes)
-        <tr>
-            <td>{{ \Intranet\Entities\Ciclo::find($nameGroup)->ciclo }}</td>
-            @foreach ($grupVotes as $optionVote)
-                <td>{{ round($optionVote->avg('value'), 1) }} / {{ $optionVote->count('value') }}</td>
-            @endforeach
-        </tr>
+        @if ($hasVotes['cicle'][$nameGroup] ?? false)
+            <tr>
+                <td>{{ \Intranet\Entities\Ciclo::find($nameGroup)->ciclo }}</td>
+                @foreach ($grupVotes as $optionId => $optionVote)
+                    <td>
+                        @if (($stats['cicle'][$nameGroup][$optionId]['count'] ?? 0) > 0)
+                            {{ $stats['cicle'][$nameGroup][$optionId]['avg'] }} / {{ $stats['cicle'][$nameGroup][$optionId]['count'] }}
+                        @endif
+                    </td>
+                @endforeach
+            </tr>
+        @endif
     @endforeach
 
+    <tr>
+        <th colspan="{{ $colspan }}">Resultats per Departaments</th>
+    </tr>
     @foreach ($votes['departament'] as $nameGroup => $grupVotes)
-        <tr>
-            <td>{{ \Intranet\Entities\Departamento::find($nameGroup)->literal }}</td>
-            @foreach ($grupVotes as $optionVote)
-                <td>{{ round($optionVote->avg('value'), 1) }} / {{ $optionVote->count('value') }}</td>
-            @endforeach
-        </tr>
+        @if ($hasVotes['departament'][$nameGroup] ?? false)
+            <tr>
+                <td>{{ \Intranet\Entities\Departamento::find($nameGroup)->literal }}</td>
+                @foreach ($grupVotes as $optionId => $optionVote)
+                    <td>
+                        @if (($stats['departament'][$nameGroup][$optionId]['count'] ?? 0) > 0)
+                            {{ $stats['departament'][$nameGroup][$optionId]['avg'] }} / {{ $stats['departament'][$nameGroup][$optionId]['count'] }}
+                        @endif
+                    </td>
+                @endforeach
+            </tr>
+        @endif
     @endforeach
     </tbody>
 </table>

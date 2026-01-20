@@ -162,8 +162,60 @@ class   PollController extends IntranetController
         $this->initValues($votes, $options_numeric);
         $votes['all'] = $allVotes->GroupBy('option_id');
         $modelo::aggregate($votes, $option1, $option2);
+        $stats = [
+            'all' => [],
+            'cicle' => [],
+            'departament' => [],
+        ];
+        foreach ($votes['all'] as $optionId => $optionVote) {
+            $stats['all'][$optionId] = [
+                'avg' => round($optionVote->avg('value'), 1),
+                'count' => $optionVote->groupBy('user_id')->count(),
+            ];
+        }
+        foreach ($votes['cicle'] as $nameGroup => $grupVotes) {
+            foreach ($grupVotes as $optionId => $optionVote) {
+                $stats['cicle'][$nameGroup][$optionId] = [
+                    'avg' => round($optionVote->avg('value'), 1),
+                    'count' => $optionVote->groupBy('user_id')->count(),
+                ];
+            }
+        }
+        foreach ($votes['departament'] as $nameGroup => $grupVotes) {
+            foreach ($grupVotes as $optionId => $optionVote) {
+                $stats['departament'][$nameGroup][$optionId] = [
+                    'avg' => round($optionVote->avg('value'), 1),
+                    'count' => $optionVote->groupBy('user_id')->count(),
+                ];
+            }
+        }
+        $hasVotes = [
+            'cicle' => [],
+            'departament' => [],
+        ];
+        foreach ($stats['cicle'] as $nameGroup => $grupStats) {
+            $hasVotes['cicle'][$nameGroup] = false;
+            foreach ($grupStats as $stat) {
+                if ($stat['count'] > 0) {
+                    $hasVotes['cicle'][$nameGroup] = true;
+                    break;
+                }
+            }
+        }
+        foreach ($stats['departament'] as $nameGroup => $grupStats) {
+            $hasVotes['departament'][$nameGroup] = false;
+            foreach ($grupStats as $stat) {
+                if ($stat['count'] > 0) {
+                    $hasVotes['departament'][$nameGroup] = true;
+                    break;
+                }
+            }
+        }
 
-        return Excel::download(new PollResultsExport($poll, $votes, $options_numeric), 'resultats_enquesta.xlsx');
+        return Excel::download(
+            new PollResultsExport($poll, $votes, $options_numeric, $hasVotes, $stats),
+            'resultats_enquesta.xlsx'
+        );
         //return view('poll.allResolts', compact('votes', 'poll', 'options_numeric'));
     }
 
