@@ -7,9 +7,14 @@ namespace Intranet\Services;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\TipoReunion;
 
+/**
+ * Servei MeetingOrderGenerateService.
+ */
 class MeetingOrderGenerateService
 {
+    /** @var mixed */
     private $reunion;
+    /** @var mixed */
     private $tipo;
 
     public function __construct($reunion)

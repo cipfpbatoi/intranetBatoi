@@ -4,11 +4,17 @@ namespace Intranet\Services;
 
 use Illuminate\View\View;
 
+/**
+ * Servei FormBuilder.
+ */
 class FormBuilder
 {
 
+    /** @var mixed */
     private $elemento;
+    /** @var mixed */
     private $default;
+    /** @var mixed */
     private $fillable;
 
 

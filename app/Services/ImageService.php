@@ -6,6 +6,9 @@ use Illuminate\Http\UploadedFile;
 use Styde\Html\Facades\Alert;
 use Styde\Html\Str;
 
+/**
+ * Servei ImageService.
+ */
 class ImageService
 {
     const WIDTH  = 68;

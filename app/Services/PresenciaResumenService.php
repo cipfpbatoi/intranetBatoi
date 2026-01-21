@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Servei PresenciaResumenService.
+ */
 class PresenciaResumenService
 {
     public function __construct(

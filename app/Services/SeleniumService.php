@@ -14,8 +14,12 @@ use Intranet\Exceptions\SeleniumException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
+/**
+ * Servei SeleniumService.
+ */
 class SeleniumService
 {
+    /** @var mixed */
     private $driver;
 
     public function __construct( $dni, $password)

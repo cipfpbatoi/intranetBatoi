@@ -7,9 +7,14 @@ use Google_Client;
 use Google_Service_Calendar;
 use Styde\Html\Facades\Alert;
 
+/**
+ * Servei GoogleCalendarService.
+ */
 class GoogleCalendarService
 {
+    /** @var mixed */
     protected $client;
+    /** @var mixed */
     protected $events;
 
     public function __construct()

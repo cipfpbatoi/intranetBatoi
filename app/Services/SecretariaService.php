@@ -5,9 +5,14 @@ use Illuminate\Support\Facades\Http;
 use Intranet\Exceptions\IntranetException;
 
 
+/**
+ * Servei SecretariaService.
+ */
 class SecretariaService
 {
+    /** @var mixed */
     protected $link;
+    /** @var mixed */
     protected $token;
 
     public function __construct()

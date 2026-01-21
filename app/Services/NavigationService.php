@@ -5,6 +5,9 @@ namespace Intranet\Services;
 
 use Illuminate\Support\Facades\Request;
 
+/**
+ * Servei NavigationService.
+ */
 class NavigationService
 {
     public static function customBack($default = '/home')

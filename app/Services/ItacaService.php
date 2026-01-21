@@ -13,6 +13,9 @@ use Facebook\WebDriver\Interactions\WebDriverActions;
 use Intranet\Exceptions\IntranetException;
 use Styde\Html\Facades\Alert;
 
+/**
+ * Servei ItacaService.
+ */
 class ItacaService
 {
     private SeleniumService $ss;

@@ -5,6 +5,9 @@ namespace Intranet\Services;
 use Illuminate\Support\Facades\Log;
 use Styde\Html\Facades\Alert;
 
+/**
+ * Servei AlertLogger.
+ */
 class AlertLogger
 {
     public static function info($message,$channel='sao')

@@ -1,5 +1,4 @@
 <?php
-/*
 namespace Intranet\Services;
 
 use Intranet\Componentes\Pdf;
@@ -7,23 +6,33 @@ use Intranet\Finders\Finder;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 
+/**
+ * Servei PrintReportService.
+ */
 class PrintReportService
 {
+    /** @var mixed */
     private $finder;
+    /** @var mixed */
     private $document;
+    /** @var mixed */
     private $initialState;
+    /** @var mixed */
     private $finalState;
+    /** @var mixed */
     private $linked;
+    /** @var mixed */
     private $elements;
+    private string $class;
 
     /**
      * PrintReportService constructor.
-     * @param $model
-     * @param $initialState
-     * @param $finalState
-     * @param $orientation
-     * @param $linked
-
+     *
+     * @param Finder $finder
+     * @param mixed $initialState
+     * @param mixed $finalState
+     * @param bool  $linked
+     */
     public function __construct(Finder $finder, $initialState = null, $finalState = '_print', $linked = true)
     {
         $this->finder = $finder;
@@ -77,9 +86,4 @@ class PrintReportService
             }
         }
     }
-
-
-
 }
-
-*/

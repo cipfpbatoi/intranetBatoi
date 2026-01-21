@@ -4,6 +4,9 @@ namespace Intranet\Services\Document;
 
 use Illuminate\Support\Facades\File;
 
+/**
+ * Servei DocumentPathService.
+ */
 class DocumentPathService
 {
     public function resolvePath(DocumentContext $context): ?string

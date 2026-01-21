@@ -5,6 +5,9 @@ namespace Intranet\Services\Document;
 use Illuminate\Http\Request;
 use Intranet\Entities\Documento;
 
+/**
+ * Servei CreateOrUpdateDocumentAction.
+ */
 class CreateOrUpdateDocumentAction
 {
     public function fromRequest(Request $request, array $overrides = [], ?Documento $document = null, $elemento = null): Documento

@@ -2,6 +2,9 @@
 
 namespace Intranet\Services\Document;
 
+/**
+ * Servei DocumentAccessChecker.
+ */
 class DocumentAccessChecker
 {
     public function isAllowed(DocumentContext $context): bool

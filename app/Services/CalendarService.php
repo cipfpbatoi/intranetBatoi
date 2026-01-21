@@ -6,6 +6,9 @@ use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
 use DateTime;
 
+/**
+ * Servei CalendarService.
+ */
 class CalendarService
 {
 

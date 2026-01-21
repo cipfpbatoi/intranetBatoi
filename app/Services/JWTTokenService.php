@@ -9,8 +9,12 @@ use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 
+/**
+ * Servei JWTTokenService.
+ */
 class JWTTokenService
 {
+    /** @var mixed */
     protected $config;
 
     const EXPIRATION_DATE = '15 October';

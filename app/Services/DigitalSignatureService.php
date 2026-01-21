@@ -16,6 +16,9 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
+/**
+ * Servei DigitalSignatureService.
+ */
 class DigitalSignatureService
 {
     public static function readCertificat($certificat, $password): ManageCert
