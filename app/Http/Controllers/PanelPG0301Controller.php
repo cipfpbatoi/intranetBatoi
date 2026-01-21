@@ -27,7 +27,5 @@ class PanelPG0301Controller extends BaseController
         $this->titulo = ['quien' => $grupo->nombre ];
         return $grupo->codigo;
     }
-    
-    
 
 }

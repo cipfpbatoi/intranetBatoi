@@ -330,8 +330,19 @@ class AlumnoFct extends Model
     }
     public function scopeGrupo($query, $grupo)
     {
-        $alumnos = Alumno::select('nia')->QGrupo($grupo->codigo)->get()->toArray();
-        return $query->whereIn('idAlumno', $alumnos);
+        $codigo = $grupo instanceof Grupo ? $grupo->codigo : $grupo;
+        $table = $query->getModel()->getTable();
+
+        return $query->whereExists(function ($sub) use ($codigo, $table) {
+            $sub->select(DB::raw(1))
+                ->from('alumnos_grupos as ag')
+                ->join('grupos as g', 'g.codigo', '=', 'ag.idGrupo')
+                ->join('fcts as f', 'f.id', '=', $table . '.idFct')
+                ->join('colaboraciones as c', 'c.id', '=', 'f.idColaboracion')
+                ->where('g.codigo', $codigo)
+                ->whereColumn('ag.idAlumno', $table . '.idAlumno')
+                ->whereColumn('g.idCiclo', 'c.idCiclo');
+        });
     }
 
     public function getQuienAttribute()
