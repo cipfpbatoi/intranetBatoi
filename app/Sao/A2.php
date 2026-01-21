@@ -177,6 +177,7 @@ class A2
      * @param  mixed  $tmpDirectory
      * @param  bool  $signat
      * @return array
+     * https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=230861#
      */
     public function annexe1(AlumnoFct $fctAl, RemoteWebDriver $driver): bool
     {
@@ -188,7 +189,8 @@ class A2
         $saveFile = $fctAl->routeFile($annexe);
 
         try {
-            $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=$doc&centro=59&ct=$idSao");
+            $driver->get("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idSao");
+            //$driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=$doc&centro=59&ct=$idSao");
             Log::info("A1 trobat");
         } catch (\Throwable $exception) {
             Log::error("Error en la generació del PDF per $annexe: " . $exception->getMessage());
