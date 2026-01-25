@@ -61,6 +61,16 @@ class StateServiceTest extends TestCase
         $this->assertFalse($service->resolve());
     }
 
+    public function test_resolve_registra_info_si_falta_config()
+    {
+        Config::set('modelos.DummyStateElement', []);
+        Log::shouldReceive('info')->once();
+
+        $service = new StateService(new DummyStateElement());
+
+        $this->assertFalse($service->resolve());
+    }
+
     public function test_print_usa_resolve_si_es_igual()
     {
         Config::set('modelos.DummyStateElement', ['print' => 5, 'resolve' => 5]);
@@ -73,6 +83,36 @@ class StateServiceTest extends TestCase
 
         $this->assertSame(5, $result);
         $this->assertSame(hoy(), $element->fechasolucion);
+    }
+
+    public function test_print_registra_info_si_falta_config()
+    {
+        Config::set('modelos.DummyStateElement', []);
+        Log::shouldReceive('info')->once();
+
+        $service = new StateService(new DummyStateElement());
+
+        $this->assertFalse($service->_print());
+    }
+
+    public function test_put_estado_retorna_false_si_estat_invalid()
+    {
+        Config::set('modelos.DummyStateElement', []);
+        Log::shouldReceive('warning')->once();
+
+        $service = new StateService(new DummyStateElement());
+
+        $this->assertFalse($service->putEstado('x'));
+    }
+
+    public function test_put_estado_retorna_false_si_no_hi_ha_element()
+    {
+        Log::shouldReceive('warning')->once();
+        \Intranet\Entities\DummyEntity::$store = [];
+
+        $service = new StateService(\Intranet\Entities\DummyEntity::class, 999);
+
+        $this->assertFalse($service->putEstado(1));
     }
 
     public function test_make_all_modifica_estat_de_tots_els_elements()
