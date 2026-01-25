@@ -78,19 +78,43 @@ class AdviseService
         $this->link = "/$modelClass/{$this->element->id}" . ($this->element->estado < 2 ? "/edit" : "/show");
     }
 
+    public function resolveRecipients(): array
+    {
+        $recipients = [];
+
+        foreach ($this->getAdvises() as $people) {
+            $recipient = match ($people) {
+                'Creador' =>
+                    $this->element->Creador(),
+                'director', 'jefeEstudios', 'secretario', 'orientador', 'vicedirector' =>
+                    config(self::file() . $people),
+                'jefeDepartamento' =>
+                    $this->element->Profesor->dni ?? authUser()->miJefe,
+                default =>
+                    $this->element->$people ?? null,
+            };
+
+            if (!empty($recipient)) {
+                $recipients[] = $recipient;
+            }
+        }
+
+        return $recipients;
+    }
+
+    public function buildMessage(): array
+    {
+        return [
+            'explanation' => $this->explanation,
+            'link' => $this->link,
+            'recipients' => $this->resolveRecipients(),
+        ];
+    }
+
     public function send(): void
     {
-        foreach ($this->getAdvises() as $people) {
-            match ($people) {
-                'Creador' =>
-                    $this->advise($this->element->Creador()),
-                'director', 'jefeEstudios', 'secretario', 'orientador', 'vicedirector' =>
-                    $this->advise(config(self::file() . $people)),
-                'jefeDepartamento' =>
-                    $this->advise($this->element->Profesor->dni ?? authUser()->miJefe),
-                default =>
-                    !empty($this->element->$people) && $this->advise($this->element->$people),
-            };
+        foreach ($this->resolveRecipients() as $recipients) {
+            $this->advise($recipients);
         }
     }
 }
