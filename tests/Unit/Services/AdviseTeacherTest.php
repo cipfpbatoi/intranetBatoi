@@ -150,6 +150,94 @@ class AdviseTeacherTest extends TestCase
         Queue::assertPushed(SendEmail::class);
     }
 
+    public function test_exec_converteix_emisor_objecte_a_string()
+    {
+        $this->mockHorario->shouldReceive('distinct')
+            ->andReturnSelf();
+        $this->mockHorario->shouldReceive('select')
+            ->andReturnSelf();
+        $this->mockHorario->shouldReceive('Profesor')
+            ->andReturnSelf();
+        $this->mockHorario->shouldReceive('Dia')
+            ->andReturnSelf();
+        $this->mockHorario->shouldReceive('whereNotNull')
+            ->andReturnSelf();
+        $this->mockHorario->shouldReceive('whereIn')
+            ->andReturnSelf();
+        $this->mockHorario->shouldReceive('where')
+            ->andReturnSelf();
+        $this->mockHorario->shouldReceive('get')
+            ->andReturn(collect([(object)['idGrupo' => 1]]), collect([(object)['idProfesor' => 2]]));
+
+        $this->mockMensaje->shouldReceive('send')
+            ->once()
+            ->with(2, Mockery::type('string'), '#', 'Profe Prova');
+
+        $elemento = (object)[
+            'desde' => '2025-03-01',
+            'hasta' => '2025-03-01',
+            'idProfesor' => 3,
+        ];
+        $emisor = (object)['shortName' => 'Profe Prova'];
+
+        AdviseTeacher::exec($elemento, null, null, $emisor);
+        $this->addToAssertionCount(1);
+    }
+
+    public function test_sendEmailTutor_usa_email_tutor_si_no_hi_ha_sustitucio()
+    {
+        Queue::fake();
+
+        $elemento = (object)[
+            'desde' => '2025-03-01',
+            'hasta' => '2025-03-01',
+            'idProfesor' => 1,
+        ];
+
+        $this->mockHorario->shouldReceive('distinct->select->Profesor->whereNotNull->get')
+            ->andReturn(collect([(object)['idGrupo' => 1]]));
+
+        $this->mockGrupo->shouldReceive('find')
+            ->with(1)
+            ->andReturn((object)[
+                'idGrupo' => 1,
+                'Tutor' => (object)[
+                    'email' => 'tutor@example.com',
+                    'Sustituye' => null,
+                ],
+            ]);
+
+        AdviseTeacher::sendEmailTutor($elemento);
+
+        Queue::assertPushed(SendEmail::class, function ($job) {
+            $correo = new \ReflectionProperty($job, 'correo');
+            $correo->setAccessible(true);
+            return $correo->getValue($job) === 'tutor@example.com';
+        });
+    }
+
+    public function test_horariAltreGrup_filtra_grups_del_element()
+    {
+        $elemento = (object)[
+            'desde' => '2025-03-01',
+            'hasta' => '2025-03-02',
+            'idProfesor' => 1,
+            'grupos' => [
+                (object)['codigo' => 1],
+            ],
+        ];
+
+        $this->mockHorario->shouldReceive('distinct->select->Profesor->whereNotNull->get')
+            ->andReturn(collect([
+                (object)['idGrupo' => 1],
+                (object)['idGrupo' => 2],
+            ]));
+
+        $resultat = AdviseTeacher::horariAltreGrup($elemento, '1');
+
+        $this->assertSame([2], $resultat->pluck('idGrupo')->all());
+    }
+
     protected function tearDown(): void
     {
         Mockery::close();

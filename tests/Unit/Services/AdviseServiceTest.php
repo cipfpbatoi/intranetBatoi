@@ -10,6 +10,11 @@ class TestElement
 {
     public $id = 123;
     public $estado = 1;
+
+    public function Creador()
+    {
+        return '12345678A';
+    }
 }
 
 class AdviseServiceTest extends TestCase
@@ -88,5 +93,27 @@ class AdviseServiceTest extends TestCase
         $mockService->send(); // Cridem directament `send()`, ja que `exec()` crea una nova instància
     }
 
-}
+    public function testResolveRecipientsAndBuildMessage()
+    {
+        Config::set('modelos.TestElement.avisos', [
+            'Creador' => [1],
+            'director' => [1],
+            'custom' => [1],
+        ]);
+        Config::set('avisos.director', '99999999Z');
 
+        $mockElement = new TestElement();
+        $mockElement->custom = '00000000T';
+
+        $service = new AdviseService($mockElement, 'Missatge');
+        $recipients = $service->resolveRecipients();
+
+        $this->assertSame(['12345678A', '99999999Z', '00000000T'], $recipients);
+
+        $message = $service->buildMessage();
+        $this->assertSame($recipients, $message['recipients']);
+        $this->assertStringContainsString('Missatge', $message['explanation']);
+        $this->assertSame('/testelement/123/edit', $message['link']);
+    }
+
+}

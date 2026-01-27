@@ -6,11 +6,20 @@ use Intranet\Entities\Documento;
 use Styde\Html\Facades\Alert;
 use function config, getClass, getClase;
 
+/**
+ * Servei per gestionar canvis d'estat d'un model i accions associades.
+ */
 class StateService
 {
     private $element;
     private $statesElement;
 
+    /**
+     * Crea el servei amb un model o una classe.
+     *
+     * @param object|string $class Instancia de model o classe del model.
+     * @param int|null $id Id del model si es passa una classe.
+     */
     public function __construct($class, $id = null)
     {
         if (is_string($class)) {
@@ -20,12 +29,28 @@ class StateService
             $this->element = $class;
             $this->statesElement = config('modelos.' . getClase($class));
         }
+
+        $this->normalizeStatesElement();
     }
 
+    /**
+     * Canvia l'estat i executa accions associades.
+     *
+     * @param int $estado Nou estat a establir.
+     * @param string|null $mensaje Missatge opcional per guardar i avisar.
+     * @param string|null $fecha Data de resolucio (format Y-m-d).
+     * @return int|false Estat resultant o false si falla.
+     */
     public function putEstado($estado, $mensaje = null, $fecha = null)
     {
         if (!$this->element) {
+            Log::warning('StateService: element no trobat per posar estat.');
             return false; // Retornem false en lloc de JSON per facilitar la gestió d'errors
+        }
+
+        if (!is_numeric($estado)) {
+            Log::warning('StateService: estat invalid.', ['estado' => $estado]);
+            return false;
         }
 
         if ($fecha !== null) {
@@ -44,6 +69,9 @@ class StateService
         return $this->element->estado;
     }
 
+    /**
+     * Guarda el document associat si hi ha fitxer.
+     */
     private function makeDocument()
     {
         if (!isset($this->element->fichero) || empty($this->element->fichero)) {
@@ -57,6 +85,12 @@ class StateService
         ]);
     }
 
+    /**
+     * Assigna la data de resolucio i el missatge al camp configurat.
+     *
+     * @param string $fecha Data en format Y-m-d.
+     * @param string|null $mensaje Missatge a guardar.
+     */
     private function dateResolve($fecha, $mensaje)
     {
         if (isset($this->element->fechasolucion)) {
@@ -68,45 +102,118 @@ class StateService
         }
     }
 
+    /**
+     * Resol l'element segons la configuracio del model.
+     *
+     * @param string|null $mensaje Missatge opcional.
+     * @return int|false Estat resultant o false si no hi ha configuracio.
+     */
     public function resolve($mensaje = null)
     {
-        $estado = $this->statesElement['resolve'] ?? null;
-        if (!$estado) {
-            return false; // Si no hi ha estat de resolució definit, retornem false
+        $estado = $this->getConfiguredState('resolve');
+        if ($estado === null) {
+            return false;
         }
         return $this->putEstado($estado, $mensaje, hoy());
     }
 
+    /**
+     * Rebutja l'element segons la configuracio del model.
+     *
+     * @param string|null $mensaje Missatge opcional.
+     * @return int|false Estat resultant o false si no hi ha configuracio.
+     */
     public function refuse($mensaje = null)
     {
 
-        $estado = $this->statesElement['refuse'] ?? null;
-
-        if (is_null($estado)) {
+        $estado = $this->getConfiguredState('refuse');
+        if ($estado === null) {
             return false;
         }
         return $this->putEstado($estado, $mensaje);
     }
 
+    /**
+     * Marca l'element com a imprimit segons la configuracio del model.
+     *
+     * @return int|false Estat resultant o false si no hi ha configuracio.
+     */
     public function _print()
     {
-        $printState = $this->statesElement['print'] ?? null;
-        $resolveState = $this->statesElement['resolve'] ?? null;
-
-        if (!$printState) {
-            return false; // Si no hi ha estat definit per imprimir, retornem false
+        $printState = $this->getConfiguredState('print');
+        if ($printState === null) {
+            return false;
         }
 
-        if ($printState == $resolveState) {
+        $resolveState = $this->getConfiguredState('resolve');
+
+        if ($resolveState !== null && $printState == $resolveState) {
             return $this->putEstado($printState, '', hoy());
         }
 
         return $this->putEstado($printState);
     }
 
+    /**
+     * Retorna l'estat actual de l'element.
+     *
+     * @return int|null
+     */
     public function getEstado()
     {
         return $this->element ? $this->element->estado : null;
+    }
+
+    /**
+     * Normalitza la configuracio del model.
+     */
+    private function normalizeStatesElement(): void
+    {
+        $config = is_array($this->statesElement) ? $this->statesElement : [];
+
+        foreach (['resolve', 'refuse', 'print', 'completa'] as $key) {
+            if (isset($config[$key]) && is_numeric($config[$key])) {
+                $config[$key] = (int) $config[$key];
+            }
+        }
+
+        if (isset($config['estados']) && is_array($config['estados'])) {
+            $normalized = [];
+            foreach ($config['estados'] as $estado => $label) {
+                $normalized[(int) $estado] = $label;
+            }
+            $config['estados'] = $normalized;
+        }
+
+        $this->statesElement = $config;
+    }
+
+    /**
+     * Retorna un estat configurat o null si falta.
+     *
+     * @param string $key
+     * @return int|null
+     */
+    private function getConfiguredState(string $key): ?int
+    {
+        if (!isset($this->statesElement[$key])) {
+            Log::info('StateService: accio sense estat configurat.', [
+                'accio' => $key,
+                'model' => is_object($this->element) ? getClase($this->element) : null,
+            ]);
+            return null;
+        }
+
+        $estado = $this->statesElement[$key];
+        if (!is_numeric($estado)) {
+            Log::warning('StateService: estat configurat invalid.', [
+                'accio' => $key,
+                'estado' => $estado,
+            ]);
+            return null;
+        }
+
+        return (int) $estado;
     }
 
     /**
