@@ -75,6 +75,15 @@ return [
                 'y' => 250,
             ],
         ],
-    ]
+    ],
+    'jsignpdf' => [
+        'java' => env('JSIGNPDF_JAVA', 'java'),
+        'jar' => env('JSIGNPDF_JAR', storage_path('app/jsignpdf/JSignPdf.jar')),
+        'append' => (bool) env('JSIGNPDF_APPEND', true),
+        'page' => (int) env('JSIGNPDF_PAGE', 1),
+        'width' => (int) env('JSIGNPDF_WIDTH', 200),
+        'height' => (int) env('JSIGNPDF_HEIGHT', 70),
+        'output_suffix' => env('JSIGNPDF_SUFFIX', '_signed'),
+        'timeout' => (int) env('JSIGNPDF_TIMEOUT', 60),
+    ],
 ];
-

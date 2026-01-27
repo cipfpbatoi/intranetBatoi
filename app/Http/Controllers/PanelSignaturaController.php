@@ -88,7 +88,7 @@ class PanelSignaturaController extends BaseController
             try {
 
                 $file = DigitalSignatureService::decryptCertificateUser($decrypt, authUser());
-                $cert = DigitalSignatureService::readCertificat($file, $passCert);
+                DigitalSignatureService::readCertificat($file, $passCert);
                 foreach ($signatures as $signature) {
                     $signatura = Signatura::find($signature);
                     if ($signatura) {
@@ -104,7 +104,8 @@ class PanelSignaturaController extends BaseController
                                 $fileToSign,
                                 $x,
                                 $y,
-                                $cert
+                                $file,
+                                $passCert
                             );
                             $signatura->signed += 3;
                             $signatura->save();

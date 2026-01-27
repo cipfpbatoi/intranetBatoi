@@ -5,15 +5,13 @@ namespace Intranet\Services;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
-use Intranet\Componentes\SignImage;
 use Intranet\Exceptions\CertException;
 use Intranet\Exceptions\IntranetException;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
-use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
-use LSNepomuceno\LaravelA1PdfSign\Sign\SignaturePdf;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ValidatePdfSignature;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\Process\Process;
 use Throwable;
 
 class DigitalSignatureService
@@ -151,9 +149,9 @@ class DigitalSignatureService
     }
 
 
-    public static function sign($file, $newFile, $coordx, $coordy, $cert): void
+    public static function sign($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
-        (new self())->signDocument($file, $newFile, $coordx, $coordy, $cert);
+        (new self())->signDocument($file, $newFile, $coordx, $coordy, $certPath, $certPassword);
     }
 
     /*
@@ -221,11 +219,11 @@ class DigitalSignatureService
     }
         */
 
-    public function signDocument($file, $newFile, $coordx, $coordy, $cert): void
+    public function signDocument($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
         try {
             // 1️⃣ Primer intent normal
-            $this->signInternal($file, $newFile, $coordx, $coordy, $cert);
+            $this->signWithJSignPdf($file, $newFile, $coordx, $coordy, $certPath, $certPassword);
             return;
 
         } catch (Throwable $th) {
@@ -243,7 +241,7 @@ class DigitalSignatureService
                 try {
                     // Normalitzem el PDF i tornem a intentar
                     $normalized = $this->normalizePdf($file);
-                    $this->signInternal($normalized, $newFile, $coordx, $coordy, $cert);
+                    $this->signWithJSignPdf($normalized, $newFile, $coordx, $coordy, $certPath, $certPassword);
                     return;
 
                 } catch (Throwable $e2) {
@@ -270,42 +268,148 @@ class DigitalSignatureService
         }
     }
 
-    private function signInternal($file, $newFile, $coordx, $coordy, $cert): void
+    private function signWithJSignPdf($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
-        $user = $cert->getCert()->data['subject']['commonName'];
-        $imagePath = storage_path('tmp/' . Str::orderedUuid() . '.png');
+        $config = config('signatures.jsignpdf');
+        $java = $config['java'] ?? 'java';
+        $jar = $config['jar'] ?? null;
 
-        File::put(
-            $imagePath,
-            (new SignImage())->generateFromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y')
-        );
-
-        $info = pathinfo($newFile);
-        $tmp = $info['dirname'].'/'.$info['filename'].'_tmp.'.$info['extension'];
-
-        $pdf = new SignaturePdf($file, $cert, SignaturePdf::MODE_RESOURCE);
+        if (!$jar || !file_exists($jar)) {
+            throw new IntranetException("No s'ha trobat JSignPdf.jar. Configura JSIGNPDF_JAR i comprova el fitxer.");
+        }
+        if (!file_exists($certPath)) {
+            throw new IntranetException("No s'ha trobat el certificat per a signar: $certPath");
+        }
 
         $coordx = (float) ($coordx ?? 50);
         $coordy = (float) ($coordy ?? 50);
+        $width = (float) ($config['width'] ?? 200);
+        $height = (float) ($config['height'] ?? 70);
+        $page = (int) ($config['page'] ?? 1);
+        $append = (bool) ($config['append'] ?? true);
+        $timeout = (int) ($config['timeout'] ?? 60);
 
-        $signed = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
+        $outputDir = storage_path('tmp/jsignpdf_' . Str::orderedUuid());
+        File::ensureDirectoryExists($outputDir);
 
-        if (!$signed || strlen($signed) < 1000) {
-            throw new IntranetException("La llibreria no ha generat una signatura vàlida.");
+        try {
+            $command = $this->buildJSignPdfCommand(
+                $java,
+                $jar,
+                $file,
+                $outputDir,
+                $coordx,
+                $coordy,
+                $width,
+                $height,
+                $page,
+                $certPath,
+                $certPassword,
+                $append
+            );
+
+            $process = new Process($command);
+            $process->setTimeout($timeout);
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                $errorOutput = trim($process->getErrorOutput() ?: $process->getOutput());
+                throw new IntranetException("Error al signar amb JSignPdf: ".$errorOutput);
+            }
+
+            $signedPath = $this->resolveJSignPdfOutputFile($outputDir, $file);
+            if (!$signedPath || !file_exists($signedPath)) {
+                throw new IntranetException("JSignPdf no ha generat el PDF signat.");
+            }
+
+            File::ensureDirectoryExists(dirname($newFile));
+            if (!@rename($signedPath, $newFile)) {
+                File::copy($signedPath, $newFile);
+                File::delete($signedPath);
+            }
+        } finally {
+            if (is_dir($outputDir)) {
+                File::deleteDirectory($outputDir);
+            }
         }
 
-        file_put_contents($tmp, $signed);
-        rename($tmp, $newFile);
-
-        Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
-            'signUser'     => $user,
+        Log::channel('certificate')->info("S'ha signat el document amb JSignPdf.", [
             'intranetUser' => authUser()->fullName,
-            'pdfPath'      => $file,
+            'pdfPath' => $file,
             'signedPdfPath'=> $newFile,
-            'imagePath'    => $imagePath,
-            'coordx'       => $coordx,
-            'coordy'       => $coordy,
+            'coordx' => $coordx,
+            'coordy' => $coordy,
+            'width' => $width,
+            'height' => $height,
+            'page' => $page,
+            'append' => $append,
         ]);
+    }
+
+    private function buildJSignPdfCommand(
+        string $java,
+        string $jar,
+        string $inputFile,
+        string $outputDir,
+        float $coordx,
+        float $coordy,
+        float $width,
+        float $height,
+        int $page,
+        string $certPath,
+        string $certPassword,
+        bool $append
+    ): array {
+        $llx = (int) round($coordx);
+        $lly = (int) round($coordy);
+        $urx = (int) round($coordx + $width);
+        $ury = (int) round($coordy + $height);
+
+        $command = [
+            $java,
+            '-jar',
+            $jar,
+            $inputFile,
+        ];
+
+        if ($append) {
+            $command[] = '-a';
+        }
+
+        $command = array_merge($command, [
+            '-kst', 'PKCS12',
+            '-ksf', $certPath,
+            '-ksp', (string) $certPassword,
+            '-pg', (string) $page,
+            '-llx', (string) $llx,
+            '-lly', (string) $lly,
+            '-urx', (string) $urx,
+            '-ury', (string) $ury,
+            '-d', $outputDir,
+        ]);
+
+        return $command;
+    }
+
+    private function resolveJSignPdfOutputFile(string $outputDir, string $inputFile): ?string
+    {
+        $suffix = config('signatures.jsignpdf.output_suffix', '_signed');
+        $baseName = pathinfo($inputFile, PATHINFO_FILENAME);
+        $expected = $outputDir.DIRECTORY_SEPARATOR.$baseName.$suffix.'.pdf';
+        if (file_exists($expected)) {
+            return $expected;
+        }
+
+        $candidates = glob($outputDir.DIRECTORY_SEPARATOR.'*.pdf') ?: [];
+        if (empty($candidates)) {
+            return null;
+        }
+
+        usort($candidates, static function ($a, $b) {
+            return filemtime($b) <=> filemtime($a);
+        });
+
+        return $candidates[0] ?? null;
     }
 
     private function normalizePdf(string $inputFile): string

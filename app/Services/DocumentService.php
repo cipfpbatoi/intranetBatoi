@@ -203,16 +203,20 @@ class DocumentService
             try {
                 $x = config("signatures.files.".$this->document->route.".owner.x");
                 $y = config("signatures.files.".$this->document->route.".owner.y");
-                $file = DigitalSignatureService::decryptCertificateUser($this->finder->getRequest()->decrypt,
-                    authUser());
-                $cert = DigitalSignatureService::readCertificat($file, $this->finder->getRequest()->cert);
+                $file = DigitalSignatureService::decryptCertificateUser(
+                    $this->finder->getRequest()->decrypt,
+                    authUser()
+                );
+                $passCert = $this->finder->getRequest()->cert;
+                DigitalSignatureService::readCertificat($file, $passCert);
 
                 DigitalSignatureService::sign(
                     $tmp_name,
                     storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'),
                     $x,
                     $y,
-                    $cert
+                    $file,
+                    $passCert
                 );
 
                 return response()->file(storage_path('tmp/auttutor_'.authUser()->dni.'signed.pdf'));
