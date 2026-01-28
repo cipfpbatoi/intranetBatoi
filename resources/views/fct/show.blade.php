@@ -1,6 +1,11 @@
  <x-layouts.app title="FCT {{$fct->Colaboracion->Centro->nombre}} de {{$fct->Colaboracion->Ciclo->ciclo }}">
 
     <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
+        @if (!$fct->Colaboracion || !$fct->Colaboracion->Centro)
+            <div class="alert alert-warning">
+                Falta la col·laboració o el centre associat a esta FCT.
+            </div>
+        @else
         <h3>
             <a href='/empresa/{{$fct->Colaboracion->Centro->idEmpresa}}/detalle'>
                 {{$fct->Colaboracion->Centro->nombre}}
@@ -66,6 +71,7 @@
         @if ($fct->correoInstructor) (Enviat automàticament) @endif
         @if ($fct->Colaboradores->count() > 0)
             <a href="{{ route('fct.colaborador',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Col.</a>
+        @endif
         @endif
     </div>
     <div class="col-md-9 col-sm-9 col-xs-12">
