@@ -36,30 +36,12 @@
                         Cert.Alu.
                         @if ($alfct->correoAlumno)</strong> @endif
                     </a>
-                    @if ($alfct->autorizacion)
-                        <a href="{{ route('alumnofct.auth',$alfct->id) }}" class="fa fa-file-zip-o" target="_blank">
-                            Autorització
-                        </a>
-                    @endif
-                    @if ($alfct->fct->asociacion == 4)
-                        <a href="{{ route('alumnofct.AVI',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
-                            Conformitat Alumnat
-                        </a>
-                    @else
-                        <a href="{{ route('alumnofct.AEng',$alfct->id) }}" class="fa fa-file-zip-o" target="_blank">
-                            Annexos Anglès
-                        </a>
-                    @endif
-                    @if ($alfct->fct->asociacion == 4)
-                        <a href="{{ route('alumnofct.AutDual',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
-                            Autorització No Lectius
-                        </a>
-                    @else
-                        <a href="{{ route('alumnofct.Valoratiu',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
-                            Inf.Competències Adquirides
-                        </a>
-                    @endif
-
+                    <a href="{{ route('alumnofct.AEng',$alfct->id) }}" class="fa fa-file-zip-o" target="_blank">
+                        Annexos Anglès
+                    </a>
+                    <a href="{{ route('alumnofct.Valoratiu',$alfct->id) }}" class="fa fa-file-pdf-o" target="_blank">
+                        Inf.Competències Adquirides
+                    </a>
                 </div>
             </li>
         @else
