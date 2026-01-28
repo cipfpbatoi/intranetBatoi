@@ -54,9 +54,14 @@
             <input type="submit" value="Canvia" class="fa fa-user">
         </form>
         <hr/>
+        @php($conveniDate = $fct->Colaboracion->Centro->Empresa->data_signatura)
         @if ($fct->Colaboracion->Centro->Empresa->conveniNou)
-            <em class="fa fa-file-pdf-o"> A1</em><br />
+            <em class="fa fa-file-pdf-o"> A1</em>
+        @else
+            <em class="fa fa-file-pdf-o text-danger"> A1</em>
+            <span class="text-warning">Conveni no nou</span>
         @endif
+        <span class="text-muted">({{ $conveniDate ?: 'Sense data conveni' }})</span><br />
         <a href="{{ route('fct.pdf',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Inst.</a>
         @if ($fct->correoInstructor) (Enviat automàticament) @endif
         @if ($fct->Colaboradores->count() > 0)
