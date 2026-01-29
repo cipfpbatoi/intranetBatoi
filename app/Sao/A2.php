@@ -231,9 +231,11 @@ class A2
         $y = config("signatures.files.".$annexe.".owner.y");
         $ad = "https://foremp.edu.gva.es/inc/ajax/generar_pdf.php".
             "?doc=".$anexeNum."&centro=59&idFct=$fctAl->idSao";
+        $errorMessage = null;
         try {
             $driver->get($ad);
         } catch (\Throwable $exception) {
+            $errorMessage = $exception->getMessage();
             Log::info('TMP dir', ['tmpDirectory' => $tmpDirectory, 'tmpFile' => $tmpFile]);
             Log::info('TMP listing', ['files' => glob($tmpDirectory.'*.pdf')]);
         }
@@ -258,8 +260,9 @@ class A2
                 return true;
             }
 
-            Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe II
-                  $fctAl->idSao de $tmpFile: $anexeNum de ".$fctAl->Alumno->FullName);
+            Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe $anexeNum
+                  $fctAl->idSao de $tmpFile de ".$fctAl->Alumno->FullName.
+                  ($errorMessage ? " - Error: $errorMessage" : ""));
             $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
             sleep(1);
         
