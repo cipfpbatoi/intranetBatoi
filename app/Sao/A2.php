@@ -236,7 +236,11 @@ class A2
         } catch (\Throwable $exception) {
             Log::info('TMP dir', ['tmpDirectory' => $tmpDirectory, 'tmpFile' => $tmpFile]);
             Log::info('TMP listing', ['files' => glob($tmpDirectory.'*.pdf')]);
-            if (file_exists($tmpFile)) {
+        }
+
+        sleep(2);  // Esperar a que es complete la descàrrega
+
+        if (file_exists($tmpFile)) {
                 if ($certFile) {
                     $this->digitalSignatureService->signDocument(
                         $tmpFile,
@@ -258,7 +262,7 @@ class A2
                   $fctAl->idSao de $tmpFile: $anexeNum de ".$fctAl->Alumno->FullName);
             $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
             sleep(1);
-        }
+        
         return false;
     }
 
