@@ -39,7 +39,8 @@ class A2
         $profile = new FirefoxProfile();
         
         $profile->setPreference('browser.download.folderList', 2);
-        $profile->setPreference('browser.download.dir','/home/seluser/Downloads');
+        //$profile->setPreference('browser.download.dir','/home/seluser/Downloads');
+        $profile->setPreference('browser.download.dir','/Users/igomis/code/intranetBatoi/storage/tmp');
         $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
         $profile->setPreference('browser.download.useDownloadDir', true);
         $profile->setPreference('browser.download.manager.showWhenStarting', false);

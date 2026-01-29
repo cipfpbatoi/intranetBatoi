@@ -37,12 +37,12 @@ return [
         ],
         'A2DUAL' => [
             'owner' => [
-                'x' => 77 ,
-                'y' => 225,
+                'x' => 220,
+                'y' => 120,
             ],
             'director' => [
-                'x' => 18 ,
-                'y' => 225,
+                'x' => 120,
+                'y' => 120,
             ]
         ],
         'A3' => [
@@ -83,6 +83,15 @@ return [
         'page' => (int) env('JSIGNPDF_PAGE', 1),
         'width' => (int) env('JSIGNPDF_WIDTH', 200),
         'height' => (int) env('JSIGNPDF_HEIGHT', 70),
+        'bg_path' => env('JSIGNPDF_BG_PATH'),
+        'bg_scale' => env('JSIGNPDF_BG_SCALE'),
+        'img_path' => env('JSIGNPDF_IMG_PATH'),
+        'bg_transparent' => (bool) env('JSIGNPDF_BG_TRANSPARENT', false),
+        'bg_threshold' => (int) env('JSIGNPDF_BG_THRESHOLD', 245),
+        'bg_compose' => (bool) env('JSIGNPDF_BG_COMPOSE', false),
+        'logo_scale' => (float) env('JSIGNPDF_LOGO_SCALE', 0.6),
+        'logo_top' => (int) env('JSIGNPDF_LOGO_TOP', 5),
+        'logo_max_height_ratio' => (float) env('JSIGNPDF_LOGO_MAX_HEIGHT_RATIO', 0.45),
         'output_suffix' => env('JSIGNPDF_SUFFIX', '_signed'),
         'timeout' => (int) env('JSIGNPDF_TIMEOUT', 60),
     ],
