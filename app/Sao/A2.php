@@ -37,9 +37,10 @@ class A2
     {
 
         $profile = new FirefoxProfile();
-        
+        $tmpDirectory = config('variables.shareDirectory') ?? storage_path('tmp/');
+
         $profile->setPreference('browser.download.folderList', 2);
-        $profile->setPreference('browser.download.dir','/home/seluser/Downloads');
+        $profile->setPreference('browser.download.dir', $tmpDirectory);
         $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
         $profile->setPreference('browser.download.useDownloadDir', true);
         $profile->setPreference('browser.download.manager.showWhenStarting', false);
