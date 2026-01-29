@@ -3,13 +3,7 @@
 <tr class="lineaGrupo {{ $elemento->class ?? '' }}" id="{{ $elemento->getKey() }}">
     @foreach ($pestana->getRejilla() as $item)
         @php($long = str_starts_with($item, 'L') ? 200 : 100)
-        @php
-            try {
-                $valor = $elemento->$item;
-            } catch (\Throwable $e) {
-                $valor = '';
-            }
-        @endphp
+        @php($valor = rescue(fn() => $elemento->$item, ''))
         <td>
             <span class="input" name="{{ $item }}">
                 @if (!empty($elemento->leido) && !$elemento->leido)
