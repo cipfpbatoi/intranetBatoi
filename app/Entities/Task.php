@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Jenssegers\Date\Date;
+use Styde\Html\Facades\Alert;
 
 
 class Task extends Model
