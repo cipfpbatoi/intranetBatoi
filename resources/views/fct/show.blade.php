@@ -1,4 +1,4 @@
- <x-layouts.app title="FCT {{$fct->Colaboracion->Centro->nombre}} de {{$fct->Colaboracion->Ciclo->ciclo }}">
+ <x-layouts.app title="FCT {{ $fct->Colaboracion?->Centro?->nombre ?? 'Sense centre' }} de {{ $fct->Colaboracion?->Ciclo?->ciclo ?? 'Sense cicle' }}">
 
     <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
         @if (!$fct->Colaboracion || !$fct->Colaboracion->Centro)
