@@ -238,34 +238,34 @@ class A2
             $errorMessage = $exception->getMessage();
             Log::info('TMP dir', ['tmpDirectory' => $tmpDirectory, 'tmpFile' => $tmpFile]);
             Log::info('TMP listing', ['files' => glob($tmpDirectory.'*.pdf')]);
-        }
-
-        sleep(2);  // Esperar a que es complete la descàrrega
-
-        if (file_exists($tmpFile)) {
-                if ($certFile) {
-                    $this->digitalSignatureService->signDocument(
-                        $tmpFile,
-                        $saveFile,
-                        $x,
-                        $y,
-                        $certFile
-                    );
-                    Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
-                } else {
-                    copy($tmpFile, $saveFile);
-                    Firma::saveIfNotExists($annexe, $fctAl->idSao);
-                }
-                unlink($tmpFile);
-                return true;
-            }
-
-            Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe $anexeNum
-                  $fctAl->idSao de $tmpFile de ".$fctAl->Alumno->FullName.
-                  ($errorMessage ? " - Error: $errorMessage" : ""));
-            $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
-            sleep(1);
         
+
+            sleep(2);  // Esperar a que es complete la descàrrega
+
+            if (file_exists($tmpFile)) {
+                    if ($certFile) {
+                        $this->digitalSignatureService->signDocument(
+                            $tmpFile,
+                            $saveFile,
+                            $x,
+                            $y,
+                            $certFile
+                        );
+                        Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
+                    } else {
+                        copy($tmpFile, $saveFile);
+                        Firma::saveIfNotExists($annexe, $fctAl->idSao);
+                    }
+                    unlink($tmpFile);
+                    return true;
+                }
+
+                Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe $anexeNum
+                    $fctAl->idSao de $tmpFile de ".$fctAl->Alumno->FullName.
+                    ($errorMessage ? " - Error: $errorMessage" : ""));
+                $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
+                sleep(1);
+        }
         return false;
     }
 
