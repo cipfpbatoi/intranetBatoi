@@ -37,10 +37,9 @@ class A2
     {
 
         $profile = new FirefoxProfile();
-        $tmpDirectory = config('variables.shareDirectory') ?? storage_path('tmp/');
-
+        
         $profile->setPreference('browser.download.folderList', 2);
-        $profile->setPreference('browser.download.dir', $tmpDirectory);
+        $profile->setPreference('browser.download.dir','/home/seluser/Downloads');
         $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
         $profile->setPreference('browser.download.useDownloadDir', true);
         $profile->setPreference('browser.download.manager.showWhenStarting', false);
@@ -231,40 +230,33 @@ class A2
         $y = config("signatures.files.".$annexe.".owner.y");
         $ad = "https://foremp.edu.gva.es/inc/ajax/generar_pdf.php".
             "?doc=".$anexeNum."&centro=59&idFct=$fctAl->idSao";
-        $errorMessage = null;
         try {
             $driver->get($ad);
         } catch (\Throwable $exception) {
-            $errorMessage = $exception->getMessage();
             Log::info('TMP dir', ['tmpDirectory' => $tmpDirectory, 'tmpFile' => $tmpFile]);
             Log::info('TMP listing', ['files' => glob($tmpDirectory.'*.pdf')]);
-        
-
-            sleep(2);  // Esperar a que es complete la descàrrega
-
             if (file_exists($tmpFile)) {
-                    if ($certFile) {
-                        $this->digitalSignatureService->signDocument(
-                            $tmpFile,
-                            $saveFile,
-                            $x,
-                            $y,
-                            $certFile
-                        );
-                        Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
-                    } else {
-                        copy($tmpFile, $saveFile);
-                        Firma::saveIfNotExists($annexe, $fctAl->idSao);
-                    }
-                    unlink($tmpFile);
-                    return true;
+                if ($certFile) {
+                    $this->digitalSignatureService->signDocument(
+                        $tmpFile,
+                        $saveFile,
+                        $x,
+                        $y,
+                        $certFile
+                    );
+                    Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
+                } else {
+                    copy($tmpFile, $saveFile);
+                    Firma::saveIfNotExists($annexe, $fctAl->idSao);
                 }
+                unlink($tmpFile);
+                return true;
+            }
 
-                Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe $anexeNum
-                    $fctAl->idSao de $tmpFile de ".$fctAl->Alumno->FullName.
-                    ($errorMessage ? " - Error: $errorMessage" : ""));
-                $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
-                sleep(1);
+            Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe II
+                  $fctAl->idSao de $tmpFile: $anexeNum de ".$fctAl->Alumno->FullName);
+            $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
+            sleep(1);
         }
         return false;
     }
