@@ -190,21 +190,26 @@ class A2
 
         try {
             $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=$doc&centro=59&ct=$idSao");
-            Log::info("A1 trobat");
+             
         } catch (\Throwable $exception) {
-            Log::error("Error en la generació del PDF per $annexe: " . $exception->getMessage());
+             if (file_exists($tmpFile)) {
+                copy($tmpFile, $saveFile);
+                Firma::saveIfNotExists($annexe, $fctAl->idSao);
+                unlink($tmpFile);
+            } else {
+                Log::error('Error en la generació del PDF per A1: ' . $exception->getMessage() . ' ' .
+                    "https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=$doc&centro=59&ct=$idSao");
+                Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe I
+                  $fctAl->idSao de $tmpFile: $doc de ".$fctAl->Alumno->FullName);
+            }
+
+            $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
+            sleep(1);
+
+            return true;
         }
 
-        if (file_exists($tmpFile)) {
-            copy($tmpFile, $saveFile);
-            Firma::saveIfNotExists($annexe, $fctAl->idSao);
-            unlink($tmpFile);
-        }
-
-        $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
-        sleep(1);
-
-        return true;
+        
     }
 
     /**
