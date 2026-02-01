@@ -13,6 +13,7 @@ use Intranet\Exceptions\IntranetException;
 use Intranet\Exceptions\SeleniumException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Illuminate\Support\Facades\Log;
 
 class SeleniumService
 {
@@ -119,9 +120,8 @@ class SeleniumService
         $process = Process::fromShellCommandline("ssh intranet@172.16.9.10 'sudo -S /sbin/reboot'");
         try {
             $process->mustRun();
-            echo $process->getOutput();
         } catch (ProcessFailedException $exception) {
-            echo $exception->getMessage();
+            Log::error('Error reiniciant Selenium: ' . $exception->getMessage());
         }
     }
 

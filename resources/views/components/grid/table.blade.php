@@ -21,10 +21,15 @@
             @forelse($elementos as $elemento)
                 <x-grid.row :elemento="$elemento" :panel="$panel" :pestana="$pestana" />
             @empty
+                @php($cols = count($panel->getRejilla()) + 1)
                 <tr>
-                    <td colspan="{{ count($panel->getRejilla()) + 1 }}" class="text-center">
-                        @lang('No hi ha dades disponibles')
-                    </td>
+                    @for ($i = 0; $i < $cols; $i++)
+                        @if ($i === 0)
+                            <td class="text-center">@lang('No hi ha dades disponibles')</td>
+                        @else
+                            <td></td>
+                        @endif
+                    @endfor
                 </tr>
             @endforelse
             </tbody>

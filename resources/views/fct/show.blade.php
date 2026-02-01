@@ -1,6 +1,11 @@
- <x-layouts.app title="FCT {{$fct->Colaboracion->Centro->nombre}} de {{$fct->Colaboracion->Ciclo->ciclo }}">
+ <x-layouts.app title="FCT {{ $fct->Colaboracion?->Centro?->nombre ?? 'Sense centre' }} de {{ $fct->Colaboracion?->Ciclo?->ciclo ?? 'Sense cicle' }}">
 
     <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
+        @if (!$fct->Colaboracion || !$fct->Colaboracion->Centro)
+            <div class="alert alert-warning">
+                Falta la col·laboració o el centre associat a esta FCT.
+            </div>
+        @else
         <h3>
             <a href='/empresa/{{$fct->Colaboracion->Centro->idEmpresa}}/detalle'>
                 {{$fct->Colaboracion->Centro->nombre}}
@@ -54,13 +59,19 @@
             <input type="submit" value="Canvia" class="fa fa-user">
         </form>
         <hr/>
+        @php($conveniDate = $fct->Colaboracion->Centro->Empresa->data_signatura)
         @if ($fct->Colaboracion->Centro->Empresa->conveniNou)
-            <em class="fa fa-file-pdf-o"> A1</em><br />
+            <em class="fa fa-file-pdf-o"> A1</em>
+        @else
+            <em class="fa fa-file-pdf-o text-danger"> A1</em>
+            <span class="text-warning">Conveni no nou</span>
         @endif
+        <span class="text-muted">({{ $conveniDate ?: 'Sense data conveni' }})</span><br />
         <a href="{{ route('fct.pdf',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Inst.</a>
         @if ($fct->correoInstructor) (Enviat automàticament) @endif
         @if ($fct->Colaboradores->count() > 0)
             <a href="{{ route('fct.colaborador',$fct->id) }}" class="fa fa-file-pdf-o" target="_blank"> Cert.Col.</a>
+        @endif
         @endif
     </div>
     <div class="col-md-9 col-sm-9 col-xs-12">

@@ -312,7 +312,7 @@ class FctAlumnoController extends IntranetController
     public function pdf($id)
     {
         $fct = AlumnoFct::findOrFail($id);
-        if ($fct->asociacion < 2) {
+        if ($fct->asociacion === 1 || $fct->asociacion > 3) {
             return self::preparePdf($id)->stream();
         }
         if ($fct->asociacion == 2) {
@@ -321,6 +321,7 @@ class FctAlumnoController extends IntranetController
         if ($fct->asociacion == 3){
             return response()->file(FDFPrepareService::exec(new AVIIIResource(AlumnoFct::find($id))));
         }
+
     }
 
     public function Signatura($id, $num)

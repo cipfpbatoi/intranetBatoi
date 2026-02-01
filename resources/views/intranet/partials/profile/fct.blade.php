@@ -4,7 +4,7 @@
             <div id="{{$fct->id}}" class="col-sm-12 fct">
                 <div class="left col-md-6 col-xs-12">
                     <h5>
-                        {{$fct->Colaboracion->Centro->nombre}}
+                        {{ optional(optional($fct->Colaboracion)->Centro)->nombre ?? 'Sense centre' }}
                     </h5>
                     <ul class="list-unstyled">
                             @if ($fct->Instructor)
@@ -34,7 +34,7 @@
             >
                 <div class="col-xs-12 col-sm-5 emphasis">
                     <p class="ratings">
-                        {{strtoupper($fct->Colaboracion->Centro->localidad)}}<br/>
+                        {{ strtoupper(optional(optional($fct->Colaboracion)->Centro)->localidad ?? '') }}<br/>
                     </p>
                     <em class="btn-success btn btn-xs">{{count($fct->Alumnos)}}</em>
                     <a href="/fct/{{$fct->id}}/show" class="btn-success btn btn-xs" title="Mostrar Fct">
