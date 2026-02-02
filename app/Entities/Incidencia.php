@@ -105,7 +105,8 @@ class Incidencia extends Model
 
     public function getXestadoAttribute()
     {
-        return $this->getEstadoOptions()[$this->estado];
+        $estados = $this->getEstadoOptions();
+        return $estados[$this->estado] ?? '';
     }
 
     public function getXcreadorAttribute()

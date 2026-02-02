@@ -14,11 +14,14 @@ use function hora, nameDay;
 
 class AdviseTeacher
 {
-    public static function exec(object $elemento, ?string $mensaje = null, ?string $idEmisor = null, ?string $emisor = null): void
+    public static function exec(object $elemento, ?string $mensaje = null, ?string $idEmisor = null, mixed $emisor = null): void
     {
         $mensaje = $mensaje ?? "No estaré en el centre des de " . $elemento->desde . " fins " . $elemento->hasta;
         $idEmisor = $idEmisor ?? $elemento->idProfesor;
-        $emisor = $emisor ?? Profesor::find($idEmisor) ?? 'Sistema';
+        if (is_object($emisor) && isset($emisor->shortName)) {
+            $emisor = $emisor->shortName;
+        }
+        $emisor = $emisor ?? (Profesor::find($idEmisor)?->shortName ?? 'Sistema');
 
         $grupos = self::gruposAfectados($elemento, $idEmisor);
         if ($grupos->isEmpty()) {
@@ -29,7 +32,8 @@ class AdviseTeacher
             try {
                 Mensaje::send($profesor->idProfesor, $mensaje, '#', $emisor  );
             } catch (\Exception $e) {
-                Alert::danger("Error al enviar mensaje a {$profesor->idProfesor}");
+                $profesorId = $profesor->idProfesor ?? 'desconegut';
+                Alert::danger("Error al enviar mensaje a {$profesorId}");
             }
         }
     }
@@ -87,7 +91,7 @@ class AdviseTeacher
             $grupo = Grupo::find($grupoItem->idGrupo);
 
             if ($grupo && $grupo->Tutor) {
-                $correoTutor = $grupo->Tutor->Sustituye->email ?? $grupo->Tutor->email;
+                $correoTutor = $grupo->Tutor->Sustituye?->email ?? $grupo->Tutor->email;
                 $remitente = ['nombre' => 'Caporalia', 'email' => 'intranet@cipfpbatoi.es'];
 
                 SendEmail::dispatch($correoTutor, $remitente, 'email.faltaProfesor', $elemento);

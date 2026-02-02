@@ -251,26 +251,46 @@ class PanelFctAvalController extends IntranetController
      */
     public function demanarActa()
     {
-        $grupo = Grupo::QTutor()->first();
-
-        if ($grupo->acta_pendiente) {
-            Alert::message("L'acta pendent esta en procés", 'info');
+        $grupos = Grupo::QTutor()->get();
+        if ($grupos->isEmpty()) {
+            Alert::message('No tens grups assignats', 'warning');
             return back();
         }
 
-        if ($this->lookForStudents($grupo->proyecto)) {
-            $grupo->acta_pendiente = 1;
-            $grupo->save();
-            avisa(
-                config('avisos.jefeEstudios2'),
-                "Acta pendent grup $grupo->nombre",
-                config('contacto.host.web')."/direccion/$grupo->codigo/acta"
-            );
-            Alert::message('Acta demanada', 'info');
-            return back();
+        $pendents = [];
+        $demanades = [];
+        $senseAlumnes = [];
+
+        foreach ($grupos as $grupo) {
+            if ($grupo->acta_pendiente) {
+                $pendents[] = $grupo->nombre;
+                continue;
+            }
+
+            if ($this->lookForStudents($grupo->proyecto, $grupo)) {
+                $grupo->acta_pendiente = 1;
+                $grupo->save();
+                avisa(
+                    config('avisos.jefeEstudios2'),
+                    "Acta pendent grup $grupo->nombre",
+                    config('contacto.host.web')."/direccion/$grupo->codigo/acta"
+                );
+                $demanades[] = $grupo->nombre;
+            } else {
+                $senseAlumnes[] = $grupo->nombre;
+            }
         }
 
-        Alert::message('No tens nous alumnes per ser avaluats', 'warning');
+        if ($demanades) {
+            Alert::message('Acta demanada: '.implode(', ', $demanades), 'info');
+        }
+        if ($pendents) {
+            Alert::message("L'acta pendent esta en procés: ".implode(', ', $pendents), 'info');
+        }
+        if ($senseAlumnes && !$demanades) {
+            Alert::message('No tens nous alumnes per ser avaluats', 'warning');
+        }
+
         return back();
     }
 
@@ -278,10 +298,15 @@ class PanelFctAvalController extends IntranetController
      * @param $projectNeeded
      * @return bool
      */
-    private function lookForStudents($projectNeeded)
+    private function lookForStudents($projectNeeded, $grupo = null)
     {
+
         $found = false;
-        foreach (AlumnoFctAval::Avaluables()->NoAval()->get() as $fct) {
+        $query = AlumnoFctAval::Avaluables()->NoAval();
+        if ($grupo) {
+            $query->Grupo($grupo);
+        }
+        foreach ($query->get() as $fct) {
             if ($projectNeeded) {
                 if (isset($fct->calProyecto)) {
                     $fct->actas = 3;

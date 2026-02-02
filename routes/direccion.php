@@ -81,6 +81,8 @@ Route::get('simplifica', ['as' => 'direccion.simplifica', 'uses' => 'Administrac
 
 Route::get('/horarios/cambiar', ['as' => 'horarios.cambiarIndex', 'uses' => 'HorarioController@changeIndex']);
 Route::post('/horarios/cambiar', ['as' => 'horarios.cambiar', 'uses' => 'HorarioController@changeTableAll']);
+Route::get('/horario/propuestas', ['as' => 'horario.propuestas', 'uses' => 'HorarioController@propuestas']);
+Route::get('/horario/propuesta/{dni}/{id}/aceptar', ['as' => 'horario.propuesta.aceptar', 'uses' => 'HorarioController@aceptarPropuesta']);
 
 Route::get('/documento', ['as'=> 'documentosP.index','uses' => 'PanelDocumentoController@index']);
 
@@ -101,4 +103,3 @@ Route::post('/itaca/faltes', ['as'=>'itaca.faltes', 'uses'=>'ItacaController@fal
 
 Route::view('/guardia/control', 'guardias.control');
 Route::view('/calendari',  'calendari.escolar');
-

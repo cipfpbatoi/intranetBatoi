@@ -61,7 +61,8 @@ class Vote extends Model
             ->whereIn('option_id',$this->optionsPoll($id));
     }
     public function scopeAllNumericVotes($query,$id){
-        return $query->whereIn('option_id',$this->optionsNumericPoll($id));
+        return $query->where('idPoll', $id)
+            ->whereIn('option_id', $this->optionsNumericPoll($id));
     }
     public function getGrupoAttribute(){
         return $this->ModuloGrupo->Grupo->literal;
