@@ -289,7 +289,7 @@ return array(
         'Indexdocumento' => 'Gestió documentació',
         'Authhorarios' => "Autorització d'horaris",
         'Nuevocurso' => 'Esborrar Dades Curs Anterior',
-        'Changeschedule' => ' Canviar horari',
+        'Changeschedule' => 'Sol·licitar Canvi horari',
         'Auxiliar' => 'Taules auxiliars',
         'Modulociclo' => 'Mòdul / Cicle',
         'Actasfct' => 'Control Fct/Actes',
