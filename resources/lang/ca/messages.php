@@ -287,6 +287,7 @@ return array(
         'Pla' => 'Pla funcional',
         'Borrarprg' => 'Esborrar Programacions Caducades',
         'Indexdocumento' => 'Gestió documentació',
+        'Authhorarios' => "Autorització d'horaris",
         'Authpropuesta' => "Autorització d'horaris",
         'Nuevocurso' => 'Esborrar Dades Curs Anterior',
         'Changeschedule' => ' Canviar horari',
