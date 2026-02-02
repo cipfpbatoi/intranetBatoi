@@ -642,7 +642,7 @@ class DigitalSignatureService
         $signer = $signer ?: 'Signant';
         $date = now()->format('d/m/Y');
 
-        return "Signat per {$signer} en data {$date}";
+        return "Signat per {$signer} a data de {$date}";
     }
 
     private function normalizePdf(string $inputFile): string
