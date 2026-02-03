@@ -39,7 +39,8 @@ class A2
         $profile = new FirefoxProfile();
         
         $profile->setPreference('browser.download.folderList', 2);
-        $profile->setPreference('browser.download.dir','/home/seluser/Downloads');
+        //$profile->setPreference('browser.download.dir','/home/seluser/Downloads');
+        $profile->setPreference('browser.download.dir','/Users/igomis/code/intranetBatoi/storage/tmp');
         $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
         $profile->setPreference('browser.download.useDownloadDir', true);
         $profile->setPreference('browser.download.manager.showWhenStarting', false);
@@ -86,17 +87,23 @@ class A2
         $nomFitxer = storage_path('tmp/' . authUser()->fileName . '.pfx');
 
         try {
+            $certPath = null;
+            $certPassword = null;
             if (isset($decrypt)) {
                 $this->digitalSignatureService->decryptUserCertificateInstance($decrypt, authUser());
-                $cert = $this->digitalSignatureService->readCertificate($nomFitxer, $passCert);
+                $this->digitalSignatureService->readCertificate($nomFitxer, $passCert);
+                $certPath = $nomFitxer;
+                $certPassword = $passCert;
             }
 
             if ($file) {
                 $file->move(dirname($nomFitxer), basename($nomFitxer));
                 @unlink($file->getRealPath());
-                $cert = $this->digitalSignatureService->readCertificate($nomFitxer, $passCert);
+                $this->digitalSignatureService->readCertificate($nomFitxer, $passCert);
+                $certPath = $nomFitxer;
+                $certPassword = $passCert;
             }
-            $this->downloadFilesFromFcts($driver, $fcts, $cert ?? null);
+            $this->downloadFilesFromFcts($driver, $fcts, $certPath, $certPassword);
             if (file_exists($nomFitxer)) {
                 unlink($nomFitxer);
             }
@@ -121,7 +128,7 @@ class A2
 
 
 
-    public function downloadFilesFromFcts(RemoteWebDriver $driver, $fcts, $certFile=null)
+    public function downloadFilesFromFcts(RemoteWebDriver $driver, $fcts, $certPath = null, $certPassword = null)
     {
         $signat = false;
         $a1 = $a2 = $a3 = $fA1 = $a5 = false;
@@ -150,15 +157,15 @@ class A2
                     $signat = $this->annexe1($fctAl, $driver);
                 }
                 // Anexe 2
-                if ($a2 && $this->annexe23($fctAl, $driver, $certFile,2)) {
+                if ($a2 && $this->annexe23($fctAl, $driver, $certPath, $certPassword, 2)) {
                     $signat = true;
                 }
                 // Anexe 3
-                if ($a3 && $certFile){
-                    $this->annexe23($fctAl, $driver, $certFile,3);
+                if ($a3 && $certPath){
+                    $this->annexe23($fctAl, $driver, $certPath, $certPassword, 3);
                 }
                 if ($a5) {
-                    $this->annexe5($fctAl, $driver, $certFile);
+                    $this->annexe5($fctAl, $driver, $certPath, $certPassword);
                 }
             }
         }
@@ -216,7 +223,8 @@ class A2
      * @param $fctAl
      * @param  RemoteWebDriver  $driver
      * @param  mixed  $tmpDirectory
-     * @param  mixed  $certFile
+     * @param  mixed  $certPath
+     * @param  mixed  $certPassword
      * @param  bool  $signat
      * @return array
      * @throws \Intranet\Exceptions\IntranetException
@@ -224,7 +232,8 @@ class A2
     private function annexe23(
         $fctAl,
         RemoteWebDriver $driver,
-        mixed $certFile,
+        mixed $certPath,
+        mixed $certPassword,
         $anexeNum
     ): bool {
         $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
@@ -241,13 +250,14 @@ class A2
             Log::info('TMP dir', ['tmpDirectory' => $tmpDirectory, 'tmpFile' => $tmpFile]);
             Log::info('TMP listing', ['files' => glob($tmpDirectory.'*.pdf')]);
             if (file_exists($tmpFile)) {
-                if ($certFile) {
+                if ($certPath) {
                     $this->digitalSignatureService->signDocument(
                         $tmpFile,
                         $saveFile,
                         $x,
                         $y,
-                        $certFile
+                        $certPath,
+                        $certPassword
                     );
                     Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
                 } else {
@@ -266,7 +276,7 @@ class A2
         return false;
     }
 
-    private  function annexe5($fctAl, RemoteWebDriver $driver,$certFile):bool
+    private  function annexe5($fctAl, RemoteWebDriver $driver, $certPath, $certPassword): bool
     {
         $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
         $annexe = $fctAl->Fct->asociacion >= 3 ? 'A5DUAL' : 'A5' ;
@@ -330,13 +340,14 @@ class A2
         } finally {
 
             if (!$error) {
-                if ($certFile) {
+                if ($certPath) {
                     $this->digitalSignatureService->signDocument(
                         $tmp1File,
                         $saveFile,
                         $x,
                         $y,
-                        $certFile
+                        $certPath,
+                        $certPassword
                     );
                     Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
                 } else {

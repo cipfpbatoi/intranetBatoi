@@ -5,15 +5,14 @@ namespace Intranet\Services;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
-use Intranet\Componentes\SignImage;
 use Intranet\Exceptions\CertException;
 use Intranet\Exceptions\IntranetException;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
-use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
-use LSNepomuceno\LaravelA1PdfSign\Sign\SignaturePdf;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ValidatePdfSignature;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use setasign\Fpdi\Fpdi;
+use Symfony\Component\Process\Process;
 use Throwable;
 
 class DigitalSignatureService
@@ -151,9 +150,9 @@ class DigitalSignatureService
     }
 
 
-    public static function sign($file, $newFile, $coordx, $coordy, $cert): void
+    public static function sign($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
-        (new self())->signDocument($file, $newFile, $coordx, $coordy, $cert);
+        (new self())->signDocument($file, $newFile, $coordx, $coordy, $certPath, $certPassword);
     }
 
     /*
@@ -221,11 +220,11 @@ class DigitalSignatureService
     }
         */
 
-    public function signDocument($file, $newFile, $coordx, $coordy, $cert): void
+    public function signDocument($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
         try {
             // 1️⃣ Primer intent normal
-            $this->signInternal($file, $newFile, $coordx, $coordy, $cert);
+            $this->signWithJSignPdf($file, $newFile, $coordx, $coordy, $certPath, $certPassword);
             return;
 
         } catch (Throwable $th) {
@@ -243,7 +242,7 @@ class DigitalSignatureService
                 try {
                     // Normalitzem el PDF i tornem a intentar
                     $normalized = $this->normalizePdf($file);
-                    $this->signInternal($normalized, $newFile, $coordx, $coordy, $cert);
+                    $this->signWithJSignPdf($normalized, $newFile, $coordx, $coordy, $certPath, $certPassword);
                     return;
 
                 } catch (Throwable $e2) {
@@ -270,42 +269,380 @@ class DigitalSignatureService
         }
     }
 
-    private function signInternal($file, $newFile, $coordx, $coordy, $cert): void
+    private function signWithJSignPdf($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
-        $user = $cert->getCert()->data['subject']['commonName'];
-        $imagePath = storage_path('tmp/' . Str::orderedUuid() . '.png');
+        $config = config('signatures.jsignpdf');
+        $java = $config['java'] ?? 'java';
+        $jar = $config['jar'] ?? null;
 
-        File::put(
-            $imagePath,
-            (new SignImage())->generateFromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y')
-        );
-
-        $info = pathinfo($newFile);
-        $tmp = $info['dirname'].'/'.$info['filename'].'_tmp.'.$info['extension'];
-
-        $pdf = new SignaturePdf($file, $cert, SignaturePdf::MODE_RESOURCE);
+        if (!$jar || !file_exists($jar)) {
+            throw new IntranetException("No s'ha trobat JSignPdf.jar. Configura JSIGNPDF_JAR i comprova el fitxer.");
+        }
+        if (!file_exists($certPath)) {
+            throw new IntranetException("No s'ha trobat el certificat per a signar: $certPath");
+        }
 
         $coordx = (float) ($coordx ?? 50);
         $coordy = (float) ($coordy ?? 50);
+        $width = (float) ($config['width'] ?? 200);
+        $height = (float) ($config['height'] ?? 70);
+        $page = $this->getLastPageNumber($file, (int) ($config['page'] ?? 1));
+        $append = (bool) ($config['append'] ?? true);
+        $timeout = (int) ($config['timeout'] ?? 60);
+        $visibleText = $this->buildVisibleSignatureText($certPath, $certPassword);
+        $bgPath = $config['bg_path'] ?? null;
+        $bgScale = $config['bg_scale'] ?? null;
+        $imgPath = $config['img_path'] ?? null;
+        $preparedBgPath = null;
+        $bgCompose = (bool) ($config['bg_compose'] ?? env('JSIGNPDF_BG_COMPOSE', false));
+        $logoScale = (float) ($config['logo_scale'] ?? env('JSIGNPDF_LOGO_SCALE', 0.6));
+        $logoTop = (int) ($config['logo_top'] ?? env('JSIGNPDF_LOGO_TOP', 5));
+        $logoMaxHeightRatio = (float) ($config['logo_max_height_ratio'] ?? env('JSIGNPDF_LOGO_MAX_HEIGHT_RATIO', 0.45));
 
-        $signed = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
+        $outputDir = storage_path('tmp/jsignpdf_' . Str::orderedUuid());
+        File::ensureDirectoryExists($outputDir);
 
-        if (!$signed || strlen($signed) < 1000) {
-            throw new IntranetException("La llibreria no ha generat una signatura vàlida.");
+        try {
+            if (!empty($bgPath)) {
+                if (!empty($config['bg_transparent'])) {
+                    $preparedBgPath = $this->prepareBackgroundImage($bgPath, (int) ($config['bg_threshold'] ?? 245));
+                    if ($preparedBgPath) {
+                        $bgPath = $preparedBgPath;
+                    }
+                }
+                if ($bgCompose) {
+                    $composed = $this->composeLogoBackground(
+                        $bgPath,
+                        (int) round($width),
+                        (int) round($height),
+                        $logoScale,
+                        $logoTop,
+                        $logoMaxHeightRatio
+                    );
+                    if ($composed) {
+                        $preparedBgPath = $composed;
+                        $bgPath = $composed;
+                        $bgScale = '1';
+                    }
+                }
+            }
+
+            $command = $this->buildJSignPdfCommand(
+                $java,
+                $jar,
+                $file,
+                $outputDir,
+                $coordx,
+                $coordy,
+                $width,
+                $height,
+                $page,
+                $certPath,
+                $certPassword,
+                $append,
+                $visibleText,
+                $bgPath,
+                $bgScale,
+                $imgPath
+            );
+
+            Log::channel('certificate')->info('JSignPdf background settings', [
+                'bgCompose' => $bgCompose,
+                'bgScale' => $bgScale,
+                'logoScale' => $logoScale,
+                'logoTop' => $logoTop,
+                'logoMaxHeightRatio' => $logoMaxHeightRatio,
+                'bgPath' => $bgPath,
+            ]);
+
+            Log::channel('certificate')->info('JSignPdf command', [
+                'command' => $this->stringifyCommand($command),
+            ]);
+
+            $process = new Process($command);
+            $process->setTimeout($timeout);
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                $errorOutput = trim($process->getErrorOutput() ?: $process->getOutput());
+                throw new IntranetException("Error al signar amb JSignPdf: ".$errorOutput);
+            }
+
+            $signedPath = $this->resolveJSignPdfOutputFile($outputDir, $file);
+            if (!$signedPath || !file_exists($signedPath)) {
+                throw new IntranetException("JSignPdf no ha generat el PDF signat.");
+            }
+
+            File::ensureDirectoryExists(dirname($newFile));
+            if (!@rename($signedPath, $newFile)) {
+                File::copy($signedPath, $newFile);
+                File::delete($signedPath);
+            }
+        } finally {
+            if (is_dir($outputDir)) {
+                File::deleteDirectory($outputDir);
+            }
+            if ($preparedBgPath && file_exists($preparedBgPath)) {
+                @unlink($preparedBgPath);
+            }
         }
 
-        file_put_contents($tmp, $signed);
-        rename($tmp, $newFile);
-
-        Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
-            'signUser'     => $user,
+        Log::channel('certificate')->info("S'ha signat el document amb JSignPdf.", [
             'intranetUser' => authUser()->fullName,
-            'pdfPath'      => $file,
+            'pdfPath' => $file,
             'signedPdfPath'=> $newFile,
-            'imagePath'    => $imagePath,
-            'coordx'       => $coordx,
-            'coordy'       => $coordy,
+            'coordx' => $coordx,
+            'coordy' => $coordy,
+            'width' => $width,
+            'height' => $height,
+            'page' => $page,
+            'append' => $append,
         ]);
+    }
+
+    private function buildJSignPdfCommand(
+        string $java,
+        string $jar,
+        string $inputFile,
+        string $outputDir,
+        float $coordx,
+        float $coordy,
+        float $width,
+        float $height,
+        int $page,
+        string $certPath,
+        string $certPassword,
+        bool $append,
+        string $visibleText,
+        ?string $bgPath,
+        ?string $bgScale,
+        ?string $imgPath
+    ): array {
+        $llx = (int) round($coordx);
+        $lly = (int) round($coordy);
+        $urx = (int) round($coordx + $width);
+        $ury = (int) round($coordy + $height);
+
+        $command = [
+            $java,
+            '-jar',
+            $jar,
+            $inputFile,
+        ];
+
+        if ($append) {
+            $command[] = '-a';
+        }
+
+        $command = array_merge($command, [
+            '-kst', 'PKCS12',
+            '-ksf', $certPath,
+            '-ksp', (string) $certPassword,
+            '-pg', (string) $page,
+            '-llx', (string) $llx,
+            '-lly', (string) $lly,
+            '-urx', (string) $urx,
+            '-ury', (string) $ury,
+            '--l2-text', $visibleText,
+            '-V',
+            '-d', $outputDir,
+        ]);
+
+        if (!empty($bgPath)) {
+            $command[] = '--bg-path';
+            $command[] = $bgPath;
+        }
+        if (!empty($bgScale)) {
+            $command[] = '--bg-scale';
+            $command[] = (string) $bgScale;
+        }
+        if (!empty($imgPath) && empty($bgPath)) {
+            $command[] = '--img-path';
+            $command[] = $imgPath;
+        }
+
+        return $command;
+    }
+
+    private function resolveJSignPdfOutputFile(string $outputDir, string $inputFile): ?string
+    {
+        $suffix = config('signatures.jsignpdf.output_suffix', '_signed');
+        $baseName = pathinfo($inputFile, PATHINFO_FILENAME);
+        $expected = $outputDir.DIRECTORY_SEPARATOR.$baseName.$suffix.'.pdf';
+        if (file_exists($expected)) {
+            return $expected;
+        }
+
+        $candidates = glob($outputDir.DIRECTORY_SEPARATOR.'*.pdf') ?: [];
+        if (empty($candidates)) {
+            return null;
+        }
+
+        usort($candidates, static function ($a, $b) {
+            return filemtime($b) <=> filemtime($a);
+        });
+
+        return $candidates[0] ?? null;
+    }
+
+    private function stringifyCommand(array $command): string
+    {
+        return implode(' ', array_map(static function ($part) {
+            return str_contains($part, ' ') ? "'".$part."'" : $part;
+        }, $command));
+    }
+
+    private function prepareBackgroundImage(string $sourcePath, int $threshold): ?string
+    {
+        if (!file_exists($sourcePath)) {
+            return null;
+        }
+
+        $threshold = max(0, min(255, $threshold));
+        $ext = strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION));
+
+        if ($ext === 'png') {
+            $src = @imagecreatefrompng($sourcePath);
+        } elseif (in_array($ext, ['jpg', 'jpeg'], true)) {
+            $src = @imagecreatefromjpeg($sourcePath);
+        } else {
+            return null;
+        }
+
+        if (!$src) {
+            return null;
+        }
+
+        $width = imagesx($src);
+        $height = imagesy($src);
+        $dst = imagecreatetruecolor($width, $height);
+        imagealphablending($dst, false);
+        imagesavealpha($dst, true);
+        $transparent = imagecolorallocatealpha($dst, 0, 0, 0, 127);
+        imagefill($dst, 0, 0, $transparent);
+
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
+                $rgb = imagecolorat($src, $x, $y);
+                $r = ($rgb >> 16) & 0xFF;
+                $g = ($rgb >> 8) & 0xFF;
+                $b = $rgb & 0xFF;
+                if ($r >= $threshold && $g >= $threshold && $b >= $threshold) {
+                    // deixe el pixel transparent
+                    continue;
+                }
+                $color = imagecolorallocatealpha($dst, $r, $g, $b, 0);
+                imagesetpixel($dst, $x, $y, $color);
+            }
+        }
+
+        $tmpPath = storage_path('tmp/jsignpdf_bg_' . Str::orderedUuid() . '.png');
+        imagepng($dst, $tmpPath);
+        imagedestroy($src);
+        imagedestroy($dst);
+
+        return $tmpPath;
+    }
+
+    private function composeLogoBackground(
+        string $sourcePath,
+        int $boxWidth,
+        int $boxHeight,
+        float $scale,
+        int $topPadding,
+        float $maxHeightRatio
+    ): ?string {
+        if (!file_exists($sourcePath) || $boxWidth <= 0 || $boxHeight <= 0) {
+            return null;
+        }
+
+        $ext = strtolower(pathinfo($sourcePath, PATHINFO_EXTENSION));
+        if ($ext === 'png') {
+            $src = @imagecreatefrompng($sourcePath);
+        } elseif (in_array($ext, ['jpg', 'jpeg'], true)) {
+            $src = @imagecreatefromjpeg($sourcePath);
+        } else {
+            return null;
+        }
+
+        if (!$src) {
+            return null;
+        }
+
+        $srcW = imagesx($src);
+        $srcH = imagesy($src);
+        if ($srcW <= 0 || $srcH <= 0) {
+            imagedestroy($src);
+            return null;
+        }
+
+        $scale = max(0.1, min(1.0, $scale));
+        $targetW = (int) round($boxWidth * $scale);
+        $ratio = $targetW / $srcW;
+        $targetH = (int) round($srcH * $ratio);
+        $maxH = (int) round($boxHeight * max(0.1, min(0.9, $maxHeightRatio)));
+        if ($targetH > $maxH) {
+            $ratio = $maxH / $srcH;
+            $targetH = $maxH;
+            $targetW = (int) round($srcW * $ratio);
+        }
+
+        $dst = imagecreatetruecolor($boxWidth, $boxHeight);
+        imagealphablending($dst, false);
+        imagesavealpha($dst, true);
+        $transparent = imagecolorallocatealpha($dst, 0, 0, 0, 127);
+        imagefill($dst, 0, 0, $transparent);
+
+        $x = (int) max(0, floor(($boxWidth - $targetW) / 2));
+        $y = (int) max(0, $topPadding);
+        imagecopyresampled($dst, $src, $x, $y, 0, 0, $targetW, $targetH, $srcW, $srcH);
+
+        $tmpPath = storage_path('tmp/jsignpdf_bg_' . Str::orderedUuid() . '.png');
+        imagepng($dst, $tmpPath);
+        imagedestroy($src);
+        imagedestroy($dst);
+
+        return $tmpPath;
+    }
+
+    private function getLastPageNumber(string $inputFile, int $fallback): int
+    {
+        try {
+            $pdf = new Fpdi();
+            $pageCount = $pdf->setSourceFile($inputFile);
+            return max(1, (int) $pageCount);
+        } catch (Throwable $th) {
+            Log::channel('certificate')->warning("No s'ha pogut calcular l'última pàgina.", [
+                'pdfPath' => $inputFile,
+                'error' => $th->getMessage(),
+            ]);
+            return max(1, $fallback);
+        }
+    }
+
+    private function buildVisibleSignatureText(string $certPath, string $certPassword): string
+    {
+        $signer = null;
+        try {
+            $cert = $this->readCertificate($certPath, $certPassword);
+            $data = $cert->getCert()->data ?? [];
+            $subject = $data['subject'] ?? [];
+            $signer = $subject['commonName'] ?? null;
+        } catch (Throwable $th) {
+            Log::channel('certificate')->warning("No s'ha pogut obtindre el nom del certificat.", [
+                'pdfCert' => $certPath,
+                'error' => $th->getMessage(),
+            ]);
+        }
+
+        if (!$signer && function_exists('authUser') && authUser()) {
+            $signer = authUser()->fullName;
+        }
+
+        $signer = $signer ?: 'Signant';
+        $date = now()->format('d/m/Y');
+
+        return "Signat per {$signer} a data de {$date}";
     }
 
     private function normalizePdf(string $inputFile): string
