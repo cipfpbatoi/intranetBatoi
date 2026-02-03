@@ -4,25 +4,39 @@ namespace Intranet\Botones;
 
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Botó associat a un element, amb visibilitat condicionada.
+ */
 abstract class BotonElemento extends Boton
 {
+    protected array|string|null $where = null;
+    protected array|string|null $orWhere = null;
 
-    public function show($elemento = null, $key = null)
+    /**
+     * Mostra el botó si compleix les condicions de visibilitat.
+     */
+    public function show($elemento = null, $key = null): string
     {
         if ($this->isVisible($elemento)) {
             return parent::show($elemento, $key);
         }
-        return null;
+        return '';
     }
 
+    /**
+     * Retorna el botó renderitzat si compleix les condicions.
+     */
     public function render($elemento = null )
     {
         if ($this->isVisible($elemento)) {
             return parent::render($elemento );
         }
-        return null;
+        return '';
     }
 
+    /**
+     * Avalua si l'element compleix les condicions de visibilitat.
+     */
     private function isVisible($elemento)
     {
         if ($this->where != '') {
@@ -35,6 +49,9 @@ abstract class BotonElemento extends Boton
         return true;
     }
 
+    /**
+     * Extreu i avalua les condicions configurades.
+     */
     private function extractConditions($elemento, $condicio)
     {
         $condiciones = [];
@@ -52,6 +69,9 @@ abstract class BotonElemento extends Boton
         return $condiciones;
     }
 
+    /**
+     * Avalua condicions amb AND.
+     */
     private function avalAndConditions($conditions)
     {
         $result = true;
@@ -61,6 +81,9 @@ abstract class BotonElemento extends Boton
         return $result;
     }
 
+    /**
+     * Avalua condicions amb OR.
+     */
     private function avalOrConditions($conditions)
     {
         $result = true;
@@ -71,6 +94,9 @@ abstract class BotonElemento extends Boton
     }
 
 
+    /**
+     * Avalua una condició individual.
+     */
     private function avalCondition($elemento, $op, $valor)
     {
         if ($op == 'anterior') {
@@ -98,8 +124,15 @@ abstract class BotonElemento extends Boton
         if ($op == 'noExiste') {
             return !Storage::disk('local')->exists(str_replace('$', $elemento, $valor));
         }
-        $condicion = "return('$elemento' $op '$valor');";
-        return eval($condicion) ? true : false;
+        return match ($op) {
+            '==' => $elemento == $valor,
+            '!=' => $elemento != $valor,
+            '>' => $elemento > $valor,
+            '>=' => $elemento >= $valor,
+            '<' => $elemento < $valor,
+            '<=' => $elemento <= $valor,
+            default => false,
+        };
     }
 
 }

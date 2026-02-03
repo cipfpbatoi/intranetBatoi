@@ -16,7 +16,7 @@
                             @endif
                     </ul>
                     @foreach($panel->getBotones('profile') as $button)
-                        {{ $button->show($fct) }}
+                        {!! $button->show($fct) !!}
                     @endforeach
                 </div>
                 @if ($fct->asociacion === 3) <h5>-DUAL-</h5> @endif

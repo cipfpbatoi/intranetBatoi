@@ -18,7 +18,7 @@
         </x-slot>
         <x-slot name="botones">
             @foreach ($panel->getBotones('profile') as $button)
-                {{ $button->show($elemento) }}
+                {!! $button->show($elemento) !!}
             @endforeach
             <a href='#' class='btn btn-primary btn-xs' title='{{$elemento->momento}}'>{{$elemento->ahora}}</a>
         </x-slot>

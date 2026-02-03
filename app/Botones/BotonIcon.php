@@ -2,12 +2,18 @@
 
 namespace Intranet\Botones;
 
+/**
+ * Botó amb icona (font-awesome).
+ */
 class BotonIcon extends BotonElemento
 {
 
-    protected $defaultClase = 'btn-primary';
-    protected $permanentClase = 'btn btn-xs iconButton';
+    protected ?string $defaultClase = 'btn-primary';
+    protected ?string $permanentClase = 'btn btn-xs iconButton';
 
+    /**
+     * Genera el HTML del botó amb icona.
+     */
     protected function html($key = null)
     {
         return view('partials.botonIcon', [

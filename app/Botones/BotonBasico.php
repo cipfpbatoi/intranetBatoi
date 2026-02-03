@@ -2,13 +2,18 @@
 
 namespace Intranet\Botones;
 
+/**
+ * Botó bàsic amb renderització d'enllaç i icona opcional.
+ */
 class BotonBasico extends Boton
 {
 
-    protected $defaultClase = 'btn-primary';
-    protected $permanentClase = 'btn btn-round txtButton';
+    protected ?string $defaultClase = 'btn-primary';
+    protected ?string $permanentClase = 'btn btn-round txtButton';
 
-    //pinta el boto
+    /**
+     * Genera el HTML del botó bàsic.
+     */
     protected function html($key = null)
     {
         return view('partials.botonBasico', [

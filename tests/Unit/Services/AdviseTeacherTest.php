@@ -2,210 +2,308 @@
 
 namespace Tests\Unit\Services;
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
-use Intranet\Componentes\Mensaje;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Hora;
-use Intranet\Entities\Horario;
+use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
 use Intranet\Jobs\SendEmail;
+use Intranet\Notifications\mensajePanel;
 use Intranet\Services\AdviseTeacher;
-use Mockery;
 use Tests\TestCase;
-
 
 class AdviseTeacherTest extends TestCase
 {
-
     public function setUp(): void
     {
         parent::setUp();
 
-        // Mocks per evitar connexió real a BD
-        $this->mockHorario = Mockery::mock('alias:' . Horario::class);
-        $this->mockHora = Mockery::mock('alias:' . Hora::class);
-        $this->mockGrupo = Mockery::mock('alias:' . Grupo::class);
-        $this->mockMensaje = Mockery::mock('alias:' . Mensaje::class);
-        $this->mockProfesor = Mockery::mock('alias:' . Profesor::class);
+        config()->set('database.default', 'sqlite');
+        config()->set('database.connections.sqlite.database', ':memory:');
+        DB::purge('sqlite');
+        DB::reconnect('sqlite');
 
-        $this->mockHora->shouldReceive('horasAfectadas')
-            ->andReturn(collect([1, 2, 3]));
+        $schema = Schema::connection('sqlite');
+        $schema->dropIfExists('horarios');
+        $schema->dropIfExists('horas');
+        $schema->dropIfExists('grupos');
+        $schema->dropIfExists('profesores');
 
-        $this->mockHorario->shouldReceive('distinct')
-            ->andReturnSelf();
+        $schema->create('profesores', function (Blueprint $table): void {
+            $table->string('dni')->primary();
+            $table->string('nombre')->nullable();
+            $table->string('apellido1')->nullable();
+            $table->string('apellido2')->nullable();
+            $table->string('email')->nullable();
+            $table->unsignedInteger('rol')->default(3);
+            $table->string('sustituye_a')->nullable();
+            $table->timestamps();
+        });
 
-        $this->mockHorario->shouldReceive('select')
-            ->andReturnSelf();
+        $schema->create('grupos', function (Blueprint $table): void {
+            $table->string('codigo')->primary();
+            $table->string('tutor')->nullable();
+            $table->timestamps();
+        });
 
-        $this->mockHorario->shouldReceive('Profesor')
-            ->andReturnSelf();
+        $schema->create('horas', function (Blueprint $table): void {
+            $table->unsignedInteger('codigo')->primary();
+            $table->string('hora_ini');
+            $table->string('hora_fin');
+            $table->string('turno')->nullable();
+        });
 
-        $this->mockHorario->shouldReceive('Dia')
-            ->andReturnSelf();
+        $schema->create('horarios', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('idProfesor');
+            $table->string('idGrupo')->nullable();
+            $table->string('dia_semana');
+            $table->unsignedInteger('sesion_orden');
+            $table->string('ocupacion')->nullable();
+            $table->string('modulo')->nullable();
+            $table->timestamps();
+        });
 
-        $this->mockHorario->shouldReceive('GuardiaAll')
-            ->andReturnSelf();
+        DB::connection('sqlite')->table('profesores')->insert([
+            [
+                'dni' => '2',
+                'nombre' => 'Profe',
+                'apellido1' => 'Receptor',
+                'apellido2' => 'Test',
+                'email' => 'professor@example.com',
+                'rol' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'dni' => '3',
+                'nombre' => 'Profe',
+                'apellido1' => 'Emisor',
+                'apellido2' => 'Test',
+                'email' => 'emisor@example.com',
+                'rol' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'dni' => '10',
+                'nombre' => 'Tutor',
+                'apellido1' => 'Grup',
+                'apellido2' => 'Test',
+                'email' => 'tutor@example.com',
+                'rol' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
 
-        $this->mockHorario->shouldReceive('whereNotNull')
-            ->andReturnSelf();
+        DB::connection('sqlite')->table('grupos')->insert([
+            [
+                'codigo' => '1',
+                'tutor' => '10',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'codigo' => '2',
+                'tutor' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
 
-        $this->mockHorario->shouldReceive('whereIn')
-            ->andReturnSelf();
-
-        $this->mockHorario->shouldReceive('where')
-            ->andReturnSelf();
-
-        $this->mockHorario->shouldReceive('groupBy')
-            ->andReturnSelf();
-
-        $this->mockProfesor->shouldReceive('find')
-            ->andReturnUsing(function ($id) {
-                return (object)['idProfesor' => $id, 'email' => 'professor@example.com'];
-            });
+        DB::connection('sqlite')->table('horas')->insert([
+            ['codigo' => 1, 'hora_ini' => '08:00', 'hora_fin' => '09:00', 'turno' => 'M'],
+            ['codigo' => 2, 'hora_ini' => '09:00', 'hora_fin' => '10:00', 'turno' => 'M'],
+            ['codigo' => 3, 'hora_ini' => '10:00', 'hora_fin' => '11:00', 'turno' => 'M'],
+        ]);
     }
 
-    public function test_exec_no_envia_missatges_si_no_hi_ha_grups_afectats()
+    public function test_exec_no_envia_missatges_si_no_hi_ha_grups_afectats(): void
     {
-        $this->mockHorario->shouldReceive('get')
-            ->andReturn(collect([]));
+        Notification::fake();
 
         $elemento = new \stdClass();
         $elemento->desde = '2025-03-01';
         $elemento->hasta = '2025-03-01';
-        $elemento->idProfesor = 1;
+        $elemento->idProfesor = '3';
+        $elemento->dia_completo = true;
 
         AdviseTeacher::exec($elemento);
 
-        // ✅ Ara verifiquem que NO s'ha cridat `Mensaje::send()`
-        $this->mockMensaje->shouldNotHaveReceived('send');
-        $this->addToAssertionCount(1);
+        Notification::assertNothingSent();
     }
-     public function test_exec_envia_missatges_si_hi_ha_professors_afectats()
+
+    public function test_exec_envia_missatges_si_hi_ha_professors_afectats(): void
     {
-        // Simulem que hi ha grups afectats
+        Notification::fake();
 
-        // ✅ Simulem professors afectats amb `idProfesor = 1`
-        $this->mockHorario->shouldReceive('get')
-            ->andReturn(collect([(object)['idProfesor' => 1, 'idGrupo' => 1]]));
+        DB::connection('sqlite')->table('horarios')->insert([
+            [
+                'idProfesor' => '3',
+                'idGrupo' => '1',
+                'dia_semana' => 'S',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => '2',
+                'idGrupo' => '1',
+                'dia_semana' => 'S',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
 
-        // ✅ Ajustem `shouldReceive()` perquè `emisor` pugui ser `null`
-        $this->mockMensaje->shouldReceive('send')
-            ->once()
-            ->with(Mockery::on(function ($id) {
-                return $id === 1; // Assegurem-nos que és `idProfesor = 1`
-            }), Mockery::type('string'), '#', Mockery::any()); // Permetem `null` a `emisor`
-
-        $elemento = json_decode(json_encode([
+        $elemento = (object) [
             'desde' => '2025-03-01',
             'hasta' => '2025-03-01',
-            'idProfesor' => 3
-        ]));
-
-        AdviseTeacher::exec($elemento);
-        $this->addToAssertionCount(1);
-    }
-     public function test_gruposAfectados_retornara_una_colleccio()
-    {
-        $elemento = (object)[
-            'desde' => '2025-03-01',
-            'hasta' => '2025-03-01',
-            'idProfesor' => 1,
-            'idGrupo' => 1,
+            'idProfesor' => '3',
+            'dia_completo' => true,
         ];
 
-        $this->mockHorario->shouldReceive('distinct->select->Profesor->whereNotNull->get')
-            ->andReturn(collect([(object)['idGrupo' => 1]]));
+        AdviseTeacher::exec($elemento);
 
-        $resultat = AdviseTeacher::gruposAfectados($elemento, 1);
+        $receptor = Profesor::find('2');
+        Notification::assertSentTo($receptor, mensajePanel::class);
+    }
+
+    public function test_gruposAfectados_retornara_una_colleccio(): void
+    {
+        $elemento = (object) [
+            'desde' => '2025-03-01',
+            'hasta' => '2025-03-01',
+            'idProfesor' => '3',
+            'idGrupo' => '1',
+            'dia_completo' => true,
+        ];
+
+        DB::connection('sqlite')->table('horarios')->insert([
+            [
+                'idProfesor' => '3',
+                'idGrupo' => '1',
+                'dia_semana' => 'S',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $resultat = AdviseTeacher::gruposAfectados($elemento, '3');
         $this->assertInstanceOf(Collection::class, $resultat);
     }
 
-    public function test_sendEmailTutor_enviar_email_si_hi_ha_tutor()
-    {
-        Queue::fake(); // Simulem la cua de treballs
-
-        $elemento = (object)[
-            'desde' => '2025-03-01',
-            'hasta' => '2025-03-01',
-            'idProfesor' => 1,
-            'idGrupo' => 1 // ✅ Afegim aquesta propietat
-        ];
-
-        // Simulem grups afectats
-        $this->mockHorario->shouldReceive('distinct->select->Profesor->whereNotNull->get')
-            ->andReturn(collect([(object)['idGrupo' => 1]]));
-
-        // Simulem que el grup té un tutor amb email
-        $this->mockGrupo->shouldReceive('find')
-            ->with(1)
-            ->andReturn((object)[
-                'idGrupo' => 1,  // ✅ Assegurar que el grup té `idGrupo`
-                'Tutor' => (object)['email' => 'tutor@example.com']
-            ]);
-
-        AdviseTeacher::sendEmailTutor($elemento);
-
-        // Comprovem que `SendEmail` s'ha afegit a la cua
-        Queue::assertPushed(SendEmail::class);
-    }
-
-    public function test_exec_converteix_emisor_objecte_a_string()
-    {
-        $this->mockHorario->shouldReceive('distinct')
-            ->andReturnSelf();
-        $this->mockHorario->shouldReceive('select')
-            ->andReturnSelf();
-        $this->mockHorario->shouldReceive('Profesor')
-            ->andReturnSelf();
-        $this->mockHorario->shouldReceive('Dia')
-            ->andReturnSelf();
-        $this->mockHorario->shouldReceive('whereNotNull')
-            ->andReturnSelf();
-        $this->mockHorario->shouldReceive('whereIn')
-            ->andReturnSelf();
-        $this->mockHorario->shouldReceive('where')
-            ->andReturnSelf();
-        $this->mockHorario->shouldReceive('get')
-            ->andReturn(collect([(object)['idGrupo' => 1]]), collect([(object)['idProfesor' => 2]]));
-
-        $this->mockMensaje->shouldReceive('send')
-            ->once()
-            ->with(2, Mockery::type('string'), '#', 'Profe Prova');
-
-        $elemento = (object)[
-            'desde' => '2025-03-01',
-            'hasta' => '2025-03-01',
-            'idProfesor' => 3,
-        ];
-        $emisor = (object)['shortName' => 'Profe Prova'];
-
-        AdviseTeacher::exec($elemento, null, null, $emisor);
-        $this->addToAssertionCount(1);
-    }
-
-    public function test_sendEmailTutor_usa_email_tutor_si_no_hi_ha_sustitucio()
+    public function test_sendEmailTutor_enviar_email_si_hi_ha_tutor(): void
     {
         Queue::fake();
 
-        $elemento = (object)[
+        $elemento = (object) [
             'desde' => '2025-03-01',
             'hasta' => '2025-03-01',
-            'idProfesor' => 1,
+            'idProfesor' => '3',
+            'idGrupo' => '1',
+            'dia_completo' => true,
         ];
 
-        $this->mockHorario->shouldReceive('distinct->select->Profesor->whereNotNull->get')
-            ->andReturn(collect([(object)['idGrupo' => 1]]));
+        DB::connection('sqlite')->table('horarios')->insert([
+            [
+                'idProfesor' => '3',
+                'idGrupo' => '1',
+                'dia_semana' => 'S',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
 
-        $this->mockGrupo->shouldReceive('find')
-            ->with(1)
-            ->andReturn((object)[
-                'idGrupo' => 1,
-                'Tutor' => (object)[
-                    'email' => 'tutor@example.com',
-                    'Sustituye' => null,
-                ],
-            ]);
+        AdviseTeacher::sendEmailTutor($elemento);
+
+        Queue::assertPushed(SendEmail::class);
+    }
+
+    public function test_exec_converteix_emisor_objecte_a_string(): void
+    {
+        Notification::fake();
+
+        DB::connection('sqlite')->table('horarios')->insert([
+            [
+                'idProfesor' => '3',
+                'idGrupo' => '1',
+                'dia_semana' => 'S',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => '2',
+                'idGrupo' => '1',
+                'dia_semana' => 'S',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $elemento = (object) [
+            'desde' => '2025-03-01',
+            'hasta' => '2025-03-01',
+            'idProfesor' => '3',
+            'dia_completo' => true,
+        ];
+        $emisor = (object) ['shortName' => 'Profe Prova'];
+
+        AdviseTeacher::exec($elemento, null, null, $emisor);
+
+        $receptor = Profesor::find('2');
+        Notification::assertSentTo(
+            $receptor,
+            mensajePanel::class,
+            function ($notification, $channels, $notifiable) {
+                $data = $notification->toArray($notifiable);
+                return ($data['emissor'] ?? null) === 'Profe Prova';
+            }
+        );
+    }
+
+    public function test_sendEmailTutor_usa_email_tutor_si_no_hi_ha_sustitucio(): void
+    {
+        Queue::fake();
+
+        $elemento = (object) [
+            'desde' => '2025-03-01',
+            'hasta' => '2025-03-01',
+            'idProfesor' => '3',
+            'dia_completo' => true,
+        ];
+
+        DB::connection('sqlite')->table('horarios')->insert([
+            [
+                'idProfesor' => '3',
+                'idGrupo' => '1',
+                'dia_semana' => 'S',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
 
         AdviseTeacher::sendEmailTutor($elemento);
 
@@ -216,31 +314,43 @@ class AdviseTeacherTest extends TestCase
         });
     }
 
-    public function test_horariAltreGrup_filtra_grups_del_element()
+    public function test_horariAltreGrup_filtra_grups_del_element(): void
     {
-        $elemento = (object)[
+        $elemento = (object) [
             'desde' => '2025-03-01',
             'hasta' => '2025-03-02',
-            'idProfesor' => 1,
+            'idProfesor' => '3',
             'grupos' => [
-                (object)['codigo' => 1],
+                (object) ['codigo' => 1],
             ],
+            'dia_completo' => true,
         ];
 
-        $this->mockHorario->shouldReceive('distinct->select->Profesor->whereNotNull->get')
-            ->andReturn(collect([
-                (object)['idGrupo' => 1],
-                (object)['idGrupo' => 2],
-            ]));
+        DB::connection('sqlite')->table('horarios')->insert([
+            [
+                'idProfesor' => '3',
+                'idGrupo' => '1',
+                'dia_semana' => 'S',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => '3',
+                'idGrupo' => '2',
+                'dia_semana' => 'S',
+                'sesion_orden' => 2,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
 
-        $resultat = AdviseTeacher::horariAltreGrup($elemento, '1');
+        $resultat = AdviseTeacher::horariAltreGrup($elemento, '3');
 
-        $this->assertSame([2], $resultat->pluck('idGrupo')->all());
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
+        $this->assertSame(['2'], $resultat->pluck('idGrupo')->all());
     }
 }

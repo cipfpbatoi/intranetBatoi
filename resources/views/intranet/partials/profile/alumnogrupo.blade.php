@@ -26,10 +26,9 @@
             </x-slot>
             <x-slot name="botones">
                 @foreach ($panel->getBotones('profile') as $button)
-                    {{ $button->show($elemento) }}
+                    {!! $button->show($elemento) !!}
                 @endforeach
             </x-slot>
         </x-label>
     @endisset
 @endforeach
-

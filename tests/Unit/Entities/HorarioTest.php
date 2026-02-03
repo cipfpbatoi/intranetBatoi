@@ -2,42 +2,98 @@
 
 namespace Tests\Unit\Entities;
 
-
-use Tests\TestCase;
-use Mockery;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Horario;
-use Illuminate\Support\Collection;
+use Tests\TestCase;
 
 class HorarioTest extends TestCase
 {
-    public function test_horario_semanal_retorna_array_correcte()
+    protected function setUp(): void
     {
-        // Creem un "partial mock" del model Horario per a mètodes estàtics
-        $horarioMock = Mockery::mock('overload:' . Horario::class)
-            ->shouldAllowMockingProtectedMethods();
+        parent::setUp();
 
-        // Simulem el retorn de la consulta Horario::Profesor($profesor)
-        $horarioMock->shouldReceive('Profesor')
-            ->with(1)
-            ->andReturnSelf();
+        config()->set('database.default', 'sqlite');
+        config()->set('database.connections.sqlite.database', ':memory:');
+        DB::purge('sqlite');
+        DB::reconnect('sqlite');
 
-        $horarioMock->shouldReceive('with')->andReturnSelf();
-        $horarioMock->shouldReceive('get')
-            ->andReturn(new Collection([
-                (object)['dia_semana' => 'L', 'sesion_orden' => 1],
-                (object)['dia_semana' => 'M', 'sesion_orden' => 2],
-            ]));
+        $schema = Schema::connection('sqlite');
+        $schema->dropIfExists('horarios');
+        $schema->dropIfExists('horas');
+        $schema->dropIfExists('modulos');
+        $schema->dropIfExists('grupos');
+        $schema->dropIfExists('ocupaciones');
 
-        // Simulem el mètode estàtic HorarioSemanal
-        $horarioMock->shouldReceive('HorarioSemanal')
-            ->with(1)
-            ->andReturn([
-                'L' => [1 => (object)['dia_semana' => 'L', 'sesion_orden' => 1]],
-                'M' => [2 => (object)['dia_semana' => 'M', 'sesion_orden' => 2]],
-            ]);
+        $schema->create('horas', function (Blueprint $table): void {
+            $table->unsignedInteger('codigo')->primary();
+            $table->string('hora_ini')->nullable();
+            $table->string('hora_fin')->nullable();
+        });
 
-        // Cridem el mètode i comprovem el resultat
-        $result = $horarioMock->HorarioSemanal(1);
+        $schema->create('horarios', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->string('idProfesor');
+            $table->string('idGrupo')->nullable();
+            $table->string('dia_semana');
+            $table->unsignedInteger('sesion_orden');
+            $table->string('ocupacion')->nullable();
+            $table->string('modulo')->nullable();
+            $table->timestamps();
+        });
+
+        $schema->create('modulos', function (Blueprint $table): void {
+            $table->string('codigo')->primary();
+            $table->string('cliteral')->nullable();
+            $table->string('vliteral')->nullable();
+        });
+
+        $schema->create('grupos', function (Blueprint $table): void {
+            $table->string('codigo')->primary();
+            $table->string('nombre')->nullable();
+            $table->string('turno')->nullable();
+            $table->timestamps();
+        });
+
+        $schema->create('ocupaciones', function (Blueprint $table): void {
+            $table->string('codigo')->primary();
+            $table->string('nombre')->nullable();
+            $table->string('nom')->nullable();
+        });
+    }
+
+    public function test_horario_semanal_retorna_array_correcte(): void
+    {
+        DB::connection('sqlite')->table('modulos')->insert([
+            ['codigo' => 'M01', 'cliteral' => 'Modul 1', 'vliteral' => 'Modul 1'],
+            ['codigo' => 'M02', 'cliteral' => 'Modul 2', 'vliteral' => 'Modul 2'],
+        ]);
+
+        DB::connection('sqlite')->table('horarios')->insert([
+            [
+                'idProfesor' => '1',
+                'idGrupo' => 'G1',
+                'dia_semana' => 'L',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => '1',
+                'idGrupo' => 'G1',
+                'dia_semana' => 'M',
+                'sesion_orden' => 2,
+                'ocupacion' => null,
+                'modulo' => 'M02',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $result = Horario::HorarioSemanal('1');
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('L', $result);
@@ -46,60 +102,41 @@ class HorarioTest extends TestCase
         $this->assertArrayHasKey(2, $result['M']);
     }
 
-
-    public function test_horario_grupo_retorna_array_correcte()
+    public function test_horario_grupo_retorna_array_correcte(): void
     {
-        // Mock per a evitar consultes reals a la base de dades
-        $horarioMock = Mockery::mock('overload:' . Horario::class)
-            ->shouldAllowMockingProtectedMethods();
+        DB::connection('sqlite')->table('horas')->insert([
+            ['codigo' => 1],
+            ['codigo' => 2],
+        ]);
 
-        $horaMock = Mockery::mock('overload:' . Hora::class);
+        DB::connection('sqlite')->table('horarios')->insert([
+            [
+                'idProfesor' => '1',
+                'idGrupo' => '101',
+                'dia_semana' => 'L',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'MATH101',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => '1',
+                'idGrupo' => '101',
+                'dia_semana' => 'L',
+                'sesion_orden' => 2,
+                'ocupacion' => null,
+                'modulo' => 'TU01CF',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
 
-        // Simulem la consulta de totes les hores disponibles
-        $horaMock->shouldReceive('all')->andReturn(collect([
-            (object)['codigo' => 1],
-            (object)['codigo' => 2],
-        ]));
-
-        // Simulem la consulta al model Horario per grup
-        $horarioMock->shouldReceive('Grup')
-            ->with(101)
-            ->andReturnSelf();
-
-        $horarioMock->shouldReceive('Dia')
-            ->andReturnSelf();
-
-        $horarioMock->shouldReceive('where')->andReturnSelf();
-
-        $horarioMock->shouldReceive('first')
-            ->andReturnUsing(function () {
-                return (object)[
-                    'dia_semana' => 'L',
-                    'sesion_orden' => 1,
-                    'ocupacion' => null,
-                    'modulo' => 'MATH101',
-                ];
-            });
-
-        // Simulem el retorn final de `HorarioGrupo`
-        $horarioMock->shouldReceive('HorarioGrupo')
-            ->with(101)
-            ->andReturn([
-                'L' => [1 => (object)['dia_semana' => 'L', 'sesion_orden' => 1, 'modulo' => 'MATH101']],
-            ]);
-
-        // Executem la funció i comprovem el resultat esperat
-        $result = $horarioMock->HorarioGrupo(101);
+        $result = Horario::HorarioGrupo('101');
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('L', $result);
         $this->assertArrayHasKey(1, $result['L']);
         $this->assertEquals('MATH101', $result['L'][1]->modulo);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 }
