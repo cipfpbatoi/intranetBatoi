@@ -83,6 +83,7 @@ Route::get('/horarios/cambiar', ['as' => 'horarios.cambiarIndex', 'uses' => 'Hor
 Route::post('/horarios/cambiar', ['as' => 'horarios.cambiar', 'uses' => 'HorarioController@changeTableAll']);
 Route::get('/horario/propuestas', ['as' => 'horario.propuestas', 'uses' => 'HorarioController@propuestas']);
 Route::get('/horario/propuesta/{dni}/{id}/aceptar', ['as' => 'horario.propuesta.aceptar', 'uses' => 'HorarioController@aceptarPropuesta']);
+Route::get('/horario/propuesta/{dni}/{id}/rebutjar', ['as' => 'horario.propuesta.rebutjar', 'uses' => 'HorarioController@rebutjarProposta']);
 
 Route::get('/documento', ['as'=> 'documentosP.index','uses' => 'PanelDocumentoController@index']);
 

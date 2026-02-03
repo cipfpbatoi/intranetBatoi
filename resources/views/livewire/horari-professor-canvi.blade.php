@@ -2,8 +2,8 @@
     <h2>Horari del professor {{ $profesorNom }}</h2>
 
     <p>
-        Selecciona una hora ocupada i, despres, fes clic a una altra cella per moure o intercanviar.
-        No es pot passar una hora del mati a la vesprada (ni al reves).
+        Selecciona una hora ocupada i, després, fes clic a una altra cel·la per a moure-la o intercanviar-la.
+        No es pot passar una hora del matí a la vesprada (ni a l'inrevés).
     </p>
 
     @if ($error)

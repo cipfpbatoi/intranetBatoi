@@ -531,6 +531,9 @@ class HorariProfessorCanvi extends Component
             if ($excludeId && isset($data['id']) && (string) $data['id'] === $excludeId) {
                 continue;
             }
+            if (($data['estado'] ?? null) === 'Rebutjat') {
+                continue;
+            }
             $otherStart = strtotime((string) ($data['fecha_inicio'] ?? ''));
             $otherEnd = strtotime((string) ($data['fecha_fin'] ?? ''));
             if ($otherStart === false || $otherEnd === false) {
