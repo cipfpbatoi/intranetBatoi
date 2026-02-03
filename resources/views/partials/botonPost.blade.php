@@ -1,1 +1,1 @@
-<input class="{{$class}}" id="{{$id}}" {!! $data !!} type='submit'  value="{{$text}}" />
+<input class="{{$class}}" id="{{$id}}"{!! $disabled !!} {!! $data !!} type='submit'  value="{{$text}}" />

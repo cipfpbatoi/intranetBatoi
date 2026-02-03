@@ -2,6 +2,7 @@
    @isset($id) id="{{$id}}" @endisset
    class="{{$class}}"
    @isset($onclick) onclick="{{$onclick}}" @endisset
+   {!! $disabled !!}
         {!! $data !!}
 >
     @isset($icon)
@@ -9,4 +10,3 @@
     @endisset
     {{$text}}
 </a>
-

@@ -31,6 +31,7 @@ class BotonImg extends BotonElemento
             'href' => $this->href($key),
             'class' => $this->clase(),
             'id' => $this->id($key),
+            'disabled' => $this->disabledAttr(),
             'img' => $this->img??config("iconos.$this->accion"),
             'text' => $this->text
         ]);

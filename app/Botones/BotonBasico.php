@@ -21,6 +21,7 @@ class BotonBasico extends Boton
             'class' => $this->clase(),
             'data' => $this->data(),
             'id' => $this->id(),
+            'disabled' => $this->disabledAttr(),
             'icon' => $this->icon,
             'text' => $this->text,
             'onclick' => $this->onclick??null,

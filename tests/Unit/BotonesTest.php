@@ -114,6 +114,20 @@ class BotonesTest extends TestCase
         $this->assertStringContainsString("data-two='2'", $html);
     }
 
+    public function test_boton_disabled_no_te_href_actiu_i_marca_classe(): void
+    {
+        $boto = new BotonBasico('profesor.edit', [
+            'text' => 'Desactivat',
+            'roles' => 3,
+            'disabled' => true,
+        ]);
+
+        $html = $boto->render();
+
+        $this->assertStringContainsString("href=\"#\"", $html);
+        $this->assertStringContainsString("disabled", $html);
+    }
+
     public function test_boton_elemento_respecta_where(): void
     {
         $boto = new BotonIcon('profesor.edit', [

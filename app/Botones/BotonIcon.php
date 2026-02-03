@@ -20,6 +20,7 @@ class BotonIcon extends BotonElemento
             'href' => $this->href($key),
             'class' => $this->clase(),
             'id' => $this->id($key),
+            'disabled' => $this->disabledAttr(),
             'title' => $this->title,
             'icon' => $this->icon??config("iconos.$this->accion"),
             'text' => $this->text

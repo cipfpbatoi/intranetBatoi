@@ -29,6 +29,7 @@ abstract class Boton
     protected ?string $img = null;
     protected array|string|null $where = null;
     protected array|string|null $orWhere = null;
+    protected bool $disabled = false;
 
     /**
      * Resol el text del botó amb traduccions i textos per defecte.
@@ -83,6 +84,7 @@ abstract class Boton
         $this->img = $atributos['img'] ?? null;
         $this->where = $atributos['where'] ?? null;
         $this->orWhere = $atributos['orWhere'] ?? null;
+        $this->disabled = (bool) ($atributos['disabled'] ?? false);
         $this->text = $this->translateText();
       }
 
@@ -159,13 +161,22 @@ abstract class Boton
     }
 
     /**
+     * Indica si el botó està deshabilitat.
+     */
+    protected function isDisabled(): bool
+    {
+        return $this->disabled === true;
+    }
+
+    /**
      * Retorna la classe CSS final del botó.
      */
     protected function clase(): string
     {
         $clase = $this->class !== null && $this->class !== '' ? $this->class : ($this->defaultClase ?? '');
         $permanent = $this->permanentClase ?? $this->permanetClase ?? '';
-        return $this->cleanAttr(trim($clase.' '.$permanent));
+        $disabled = $this->isDisabled() ? ' disabled' : '';
+        return $this->cleanAttr(trim($clase.' '.$permanent.$disabled));
     }
 
     /**
@@ -187,6 +198,22 @@ abstract class Boton
 
         return $id === '' ? null : $id;
 
+    }
+
+    /**
+     * Retorna atributs per a desactivar el botó segons el tipus.
+     */
+    protected function disabledAttr(string $type = 'link'): string
+    {
+        if (!$this->isDisabled()) {
+            return '';
+        }
+
+        if ($type === 'button') {
+            return " disabled='disabled' aria-disabled='true'";
+        }
+
+        return " aria-disabled='true' tabindex='-1'";
     }
 
     // torna data del boto en format html
@@ -211,6 +238,9 @@ abstract class Boton
     protected function href($key = null): string
     {
         if ($this->href == '#') {
+            return '#';
+        }
+        if ($this->isDisabled()) {
             return '#';
         }
         return $this->getAdress($key, $this->getPrefix(), $this->getPostfix());

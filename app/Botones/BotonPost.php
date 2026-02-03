@@ -20,6 +20,7 @@ class BotonPost extends BotonElemento
             'class' => $this->clase(),
             'id' => $this->id(),
             'data' => $this->data(),
+            'disabled' => $this->disabledAttr('button'),
             'text' => $this->text
         ]);
 
