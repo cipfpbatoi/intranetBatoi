@@ -128,6 +128,64 @@ class BotonesTest extends TestCase
         $this->assertStringContainsString("disabled", $html);
     }
 
+    public function test_boton_basico_admet_target_rel_i_aria_label(): void
+    {
+        $boto = new BotonBasico('profesor.edit', [
+            'text' => 'Obertura',
+            'roles' => 3,
+            'target' => '_blank',
+            'rel' => 'noopener',
+            'aria-label' => 'Obrir en nova finestra',
+            'title' => 'Títol',
+        ]);
+
+        $html = $boto->render();
+
+        $this->assertStringContainsString('target="_blank"', $html);
+        $this->assertStringContainsString('rel="noopener"', $html);
+        $this->assertStringContainsString('aria-label="Obrir en nova finestra"', $html);
+        $this->assertStringContainsString('title="Títol"', $html);
+    }
+
+    public function test_boton_admet_data_confirm(): void
+    {
+        $boto = new BotonBasico('profesor.delete', [
+            'text' => 'Eliminar',
+            'roles' => 3,
+            'data-confirm' => 'Segur que vols eliminar?',
+        ]);
+
+        $html = $boto->render();
+
+        $this->assertStringContainsString("data-confirm='Segur que vols eliminar?'", $html);
+    }
+
+    public function test_boton_admet_data_loading_text(): void
+    {
+        $boto = new BotonPost('profesor.edit', [
+            'text' => 'Enviar',
+            'roles' => 3,
+            'data-loading-text' => 'Enviant...',
+        ]);
+
+        $html = $boto->render();
+
+        $this->assertStringContainsString("data-loading-text='Enviant...'", $html);
+    }
+
+    public function test_boton_admet_badge(): void
+    {
+        $boto = new BotonBasico('mensajes.index', [
+            'text' => 'Missatges',
+            'roles' => 3,
+            'badge' => 3,
+        ]);
+
+        $html = $boto->render();
+
+        $this->assertStringContainsString('<span class="badge">3</span>', $html);
+    }
+
     public function test_boton_elemento_respecta_where(): void
     {
         $boto = new BotonIcon('profesor.edit', [

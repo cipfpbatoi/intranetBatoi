@@ -55,7 +55,9 @@ class InstructorController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('instructor.edit'));
         $this->panel->setBoton('grid', new BotonImg('instructor.show'));
         $this->panel->setBoton('grid', new BotonImg('instructor.pdf'));
-        $this->panel->setBoton('grid', new BotonImg('instructor.delete'));
+        $this->panel->setBoton('grid', new BotonImg('instructor.delete', [
+            'data-confirm' => 'Segur que vols eliminar este instructor?',
+        ]));
     }
 
     /**

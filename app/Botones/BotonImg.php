@@ -32,8 +32,13 @@ class BotonImg extends BotonElemento
             'class' => $this->clase(),
             'id' => $this->id($key),
             'disabled' => $this->disabledAttr(),
+            'target' => $this->target,
+            'rel' => $this->rel,
+            'ariaLabel' => $this->ariaLabel,
+            'title' => $this->title,
             'img' => $this->img??config("iconos.$this->accion"),
-            'text' => $this->text
+            'text' => $this->text,
+            'badge' => $this->badge
         ]);
 
     }

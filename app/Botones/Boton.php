@@ -27,6 +27,10 @@ abstract class Boton
     protected ?string $title = null;
     protected ?string $onclick = null;
     protected ?string $img = null;
+    protected ?string $target = null;
+    protected ?string $rel = null;
+    protected ?string $ariaLabel = null;
+    protected ?string $badge = null;
     protected array|string|null $where = null;
     protected array|string|null $orWhere = null;
     protected bool $disabled = false;
@@ -82,6 +86,10 @@ abstract class Boton
         $this->title = $atributos['title'] ?? null;
         $this->onclick = $atributos['onclick'] ?? null;
         $this->img = $atributos['img'] ?? null;
+        $this->target = $atributos['target'] ?? null;
+        $this->rel = $atributos['rel'] ?? null;
+        $this->ariaLabel = $atributos['aria-label'] ?? ($atributos['ariaLabel'] ?? null);
+        $this->badge = isset($atributos['badge']) ? (string) $atributos['badge'] : null;
         $this->where = $atributos['where'] ?? null;
         $this->orWhere = $atributos['orWhere'] ?? null;
         $this->disabled = (bool) ($atributos['disabled'] ?? false);

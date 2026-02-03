@@ -11,6 +11,39 @@ const $ = window.jQuery || jQuery;
 window.$ = window.jQuery = $;
 
 $(function() {
+	$(document).on('click', '[data-confirm]', function(event) {
+		const message = $(this).data('confirm') || 'Segur que vols continuar?';
+		if (!confirm(message)) {
+			event.preventDefault();
+			event.stopImmediatePropagation();
+			return false;
+		}
+	});
+
+	$(document).on('click', '[data-loading-text]', function() {
+		const $btn = $(this);
+		if ($btn.data('loading')) {
+			return;
+		}
+
+		const loadingText = $btn.data('loading-text');
+		if (!loadingText) {
+			return;
+		}
+
+		$btn.data('loading', true);
+		$btn.data('original-text', $btn.is('input') ? $btn.val() : $btn.text());
+
+		if ($btn.is('input')) {
+			$btn.val(loadingText);
+			$btn.prop('disabled', true);
+		} else {
+			$btn.text(loadingText);
+			$btn.attr('aria-disabled', 'true');
+			$btn.addClass('disabled');
+		}
+	});
+
 	$(".papelera").on('click', function(event) {
 		if (!confirm('Vas a borrar el aviso de fecha '+$(this).next().find('span.time').text().trim()+':\n'+$(this).next().find('span.message').text().trim())) {
 			event.preventDefault();
