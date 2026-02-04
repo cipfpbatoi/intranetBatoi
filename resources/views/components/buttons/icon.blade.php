@@ -12,7 +12,8 @@
     'badge' => null,
 ])
 
-<a href="{{$href}}" class="{{$buttonClass}}" id="{{$id}}"
+<a href="{{$href}}" class="{{$buttonClass}}"
+   @isset($id) id="{{$id}}" @endisset
    @isset($target) target="{{$target}}" @endisset
    @isset($rel) rel="{{$rel}}" @endisset
    @isset($ariaLabel) aria-label="{{$ariaLabel}}" @endisset

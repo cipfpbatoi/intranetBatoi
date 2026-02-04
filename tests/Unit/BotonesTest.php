@@ -215,6 +215,43 @@ class BotonesTest extends TestCase
         $this->assertStringContainsString('Veure', $html);
     }
 
+    public function test_boton_elemento_orwhere_no_compleix_no_renderitza(): void
+    {
+        $boto = new BotonImg('profesor.edit', [
+            'text' => 'Veure',
+            'roles' => 3,
+            'orWhere' => ['id', '==', 2],
+        ]);
+
+        $html = $boto->render($this->makeElement(['id' => 1]));
+
+        $this->assertSame('', $html);
+    }
+
+    public function test_boton_icon_sense_id_no_pinta_id_buit(): void
+    {
+        $boto = new BotonIcon('profesor.edit', [
+            'text' => 'Editar',
+            'roles' => 3,
+        ]);
+
+        $html = $boto->render($this->makeElement(['id' => 9]));
+
+        $this->assertStringNotContainsString('id=""', $html);
+    }
+
+    public function test_boton_post_sense_id_no_pinta_id_buit(): void
+    {
+        $boto = new BotonPost('profesor.edit', [
+            'text' => 'Guardar',
+            'roles' => 3,
+        ]);
+
+        $html = $boto->render();
+
+        $this->assertStringNotContainsString('id=""', $html);
+    }
+
     private function makeElement(array $values): object
     {
         return new class($values) {

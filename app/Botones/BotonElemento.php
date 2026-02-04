@@ -86,7 +86,7 @@ abstract class BotonElemento extends Boton
      */
     private function avalOrConditions($conditions)
     {
-        $result = true;
+        $result = false;
         foreach ($conditions as $condition) {
             $result = $result || $condition;
         }
