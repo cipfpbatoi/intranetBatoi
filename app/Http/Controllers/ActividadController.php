@@ -24,7 +24,7 @@ use Intranet\Services\GestorService;
 use Intranet\Services\GoogleCalendarService;
 use Intranet\Services\StateService;
 use Jenssegers\Date\Date;
-use Response;
+use Illuminate\Support\Facades\Response;
 use Styde\Html\Facades\Alert;
 
 
