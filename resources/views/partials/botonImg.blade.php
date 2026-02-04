@@ -1,15 +1,13 @@
-<a href="{{$href}}" class="{{$class}}" id="{{$id}}"
-   @isset($target) target="{{$target}}" @endisset
-   @isset($rel) rel="{{$rel}}" @endisset
-   @isset($ariaLabel) aria-label="{{$ariaLabel}}" @endisset
-   @isset($title) title="{{$title}}" @endisset
-   {!! $disabled !!}>
-    @isset($img)
-        <em class='fa {{$img}}' alt="{{$text}}" title="{{$text}}"></em>
-    @else
-        <em>{{$text}}</em>
-    @endisset
-    @isset($badge)
-        <span class="badge">{{$badge}}</span>
-    @endisset
-</a>
+<x-buttons.img
+    :href="$href"
+    :id="$id ?? null"
+    :button-class="$class"
+    :target="$target ?? null"
+    :rel="$rel ?? null"
+    :aria-label="$ariaLabel ?? null"
+    :title="$title ?? null"
+    :disabled-attr="$disabled ?? ''"
+    :img="$img ?? null"
+    :text="$text ?? ''"
+    :badge="$badge ?? null"
+/>

@@ -1,19 +1,15 @@
-<a href="{{$href}}"
-   @isset($id) id="{{$id}}" @endisset
-   class="{{$class}}"
-   @isset($onclick) onclick="{{$onclick}}" @endisset
-   @isset($target) target="{{$target}}" @endisset
-   @isset($rel) rel="{{$rel}}" @endisset
-   @isset($ariaLabel) aria-label="{{$ariaLabel}}" @endisset
-   @isset($title) title="{{$title}}" @endisset
-   {!! $disabled !!}
-        {!! $data !!}
->
-    @isset($icon)
-        <em class='{{$icon}}'></em>
-    @endisset
-    {{$text}}
-    @isset($badge)
-        <span class="badge">{{$badge}}</span>
-    @endisset
-</a>
+<x-buttons.basic
+    :href="$href"
+    :id="$id ?? null"
+    :button-class="$class"
+    :onclick="$onclick ?? null"
+    :target="$target ?? null"
+    :rel="$rel ?? null"
+    :aria-label="$ariaLabel ?? null"
+    :title="$title ?? null"
+    :disabled-attr="$disabled ?? ''"
+    :data-attrs="$data ?? ''"
+    :icon="$icon ?? null"
+    :text="$text ?? ''"
+    :badge="$badge ?? null"
+/>
