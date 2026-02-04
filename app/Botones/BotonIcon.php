@@ -16,7 +16,7 @@ class BotonIcon extends BotonElemento
      */
     protected function html($key = null)
     {
-        return view('partials.botonIcon', [
+        return view('components.buttons.icon', [
             'href' => $this->href($key),
             'class' => $this->clase(),
             'id' => $this->id($key),

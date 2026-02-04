@@ -16,7 +16,7 @@ class BotonBasico extends Boton
      */
     protected function html($key = null)
     {
-        return view('partials.botonBasico', [
+        return view('components.buttons.basic', [
             'href' => $this->href(),
             'class' => $this->clase(),
             'data' => $this->data(),

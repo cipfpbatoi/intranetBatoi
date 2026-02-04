@@ -16,7 +16,7 @@ class BotonPost extends BotonElemento
      */
     protected function html($key = null)
     {
-        return view('partials.botonPost', [
+        return view('components.buttons.post', [
             'class' => $this->clase(),
             'id' => $this->id(),
             'data' => $this->data(),
