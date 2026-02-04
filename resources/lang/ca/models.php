@@ -356,7 +356,6 @@ return array(
             'an1' => 'Imprimir annexes I signats',
             'an2' => 'Imprimir annexes II signats',
             'an3' => 'Imprimir annexes III signats',
-            'an5' => 'Imprimir informe competències adquirides',
         ),
         'Dual' => array(
             'index' => 'FP Dual',
