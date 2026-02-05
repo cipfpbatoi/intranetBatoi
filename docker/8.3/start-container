@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+set -e
+
+export COMPOSER_HOME="/home/sail/.composer"
+
+# Si NO som root, no podem usermod/groupmod/chown ni gosu -> executem directament
+if [ "$(id -u)" -ne 0 ]; then
+  mkdir -p "$COMPOSER_HOME" || true
+  exec "$@"
+fi
+
+# A partir d'ací, sí som root
+
+# Ajust UID/GID si venen per env
+if [ -n "${WWWGROUP:-}" ]; then
+  if [ "$(id -g sail)" != "$WWWGROUP" ]; then
+    groupmod -g "$WWWGROUP" sail || true
+  fi
+fi
+
+if [ -n "${WWWUSER:-}" ]; then
+  if [ "$(id -u sail)" != "$WWWUSER" ]; then
+    usermod -u "$WWWUSER" sail
+  fi
+fi
+
+# Composer cache al HOME
+mkdir -p "$COMPOSER_HOME"
+chown -R sail:sail "$COMPOSER_HOME" || true
+chmod -R u+rwX "$COMPOSER_HOME" || true
+
+# Laravel dirs amb permisos per a sail
+mkdir -p /var/www/html/storage/framework/{sessions,views,cache/data} \
+         /var/www/html/storage/logs \
+         /var/www/html/bootstrap/cache || true
+chown -R sail:sail /var/www/html/storage /var/www/html/bootstrap/cache || true
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache || true
+
+# Executem el comando o supervisord
+if [ $# -gt 0 ]; then
+  exec gosu sail "$@"
+else
+  # Supervisord s'executa com root i baixa privilegis als programes fills
+  exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+fi

@@ -2,14 +2,15 @@ FROM ubuntu:22.04
 
 LABEL maintainer="Taylor Otwell"
 
-ARG WWWGROUP
+ARG WWWGROUP=1000
+ARG WWWUSER=1000
 ARG NODE_VERSION=18
 ARG POSTGRES_VERSION=14
 
 WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=UTC
+ENV TZ=Europe/Madrid
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -27,6 +28,7 @@ RUN apt-get update \
        php8.3-ldap \
        php8.3-msgpack php8.3-igbinary php8.3-redis php8.3-swoole \
        php8.3-memcached php8.3-pcov php8.3-xdebug \
+    && apt-get clean \
     && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && curl -sLS https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - \
     && apt-get install -y nodejs \
@@ -38,19 +40,22 @@ RUN apt-get update \
     && apt-get update \
     && apt-get install -y yarn \
     && apt-get install -y mysql-client \
-    && apt-get install -y postgresql-client-$POSTGRES_VERSION \
     && apt-get -y autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN setcap "cap_net_bind_service=+ep" /usr/bin/php8.3
 
-RUN groupadd --force -g $WWWGROUP sail
-RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
+RUN groupadd --force -g ${WWWGROUP} sail \
+ && useradd -ms /bin/bash -u ${WWWUSER} -g ${WWWGROUP} sail
+
+RUN mkdir -p /home/sail/.composer \
+ && chown -R sail:sail /home/sail/.composer
 
 COPY start-container /usr/local/bin/start-container
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY php.ini /etc/php/8.2/cli/conf.d/99-sail.ini
+
+COPY php.ini /etc/php/8.3/cli/conf.d/99-sail.ini
 COPY wkhtmltox_0.12.6.1-2.jammy_amd64.deb /home/sail/wkhtmltox_0.12.6.1-2.jammy_amd64.deb
 
 RUN apt-get update && apt-get install -y libxrender1 libjpeg-dev xfonts-75dpi xfonts-base libpq-dev libffi-dev fontconfig libfontconfig libxtst6 xz-utils
