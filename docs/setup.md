@@ -20,12 +20,6 @@ Copiem el fitxer d'entorn preparat per a Docker:
 cp .env.docker .env
 ```
 
-Si necessitem construir la imatge Docker localment (només la primera vegada o si canvia el Dockerfile):
-
-```bash
-docker compose -f docker-compose.build.yml build
-```
-
 Arranquem els contenidors:
 
 ```bash
@@ -210,3 +204,11 @@ En el xml de Itaca per a la resta d'importacions només estaran les taules en qu
 Marquem 'Assignar tutor' si hi ha nous tutors (si no, no cal) i deixem desmarcada la d'esborrar grups sense tutor.
 
 Tras esperar uns minuts...
+
+### Altres
+
+>Si necessitem construir la imatge Docker localment (només la primera vegada o si canvia el Dockerfile):
+
+```bash
+docker compose -f docker-compose.build.yml build
+```
