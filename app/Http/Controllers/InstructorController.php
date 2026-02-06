@@ -116,7 +116,15 @@ class InstructorController extends IntranetController
      */
     public function guarda(Request $request, $id, $centro)
     {
-        parent::update($request, $id);
+        try {
+            parent::update($request, $id);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (($e->errorInfo[1] ?? null) === 1062) {
+                Alert::danger("Ja existeix un instructor amb aquest DNI.");
+                return back()->withInput();
+            }
+            throw $e;
+        }
         return $this->showEmpresa(Centro::find($centro)->idEmpresa);
     }
 

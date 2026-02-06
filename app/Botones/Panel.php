@@ -14,12 +14,14 @@ class Panel
     public const BOTON_GRID = 'grid';
     public const BOTON_PROFILE = 'profile';
     public const BOTON_INFILE = 'infile';
+    public const BOTON_FCT = 'fct';
 
     private const BOTON_TYPES = [
         self::BOTON_INDEX,
         self::BOTON_GRID,
         self::BOTON_PROFILE,
         self::BOTON_INFILE,
+        self::BOTON_FCT,
     ];
 
     private array $botones = [   // botons del panel
@@ -27,6 +29,7 @@ class Panel
         'grid' => [],
         'profile' => [],
         'infile' => [],
+        'fct' => [],
     ];
     private string $model;     // model de dades
     private array $pestanas = [];  // pestanyes
