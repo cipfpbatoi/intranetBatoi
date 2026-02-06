@@ -10,6 +10,13 @@
             @if (!empty($elemento->observaciones))
                 <h5><em class="fa fa-comment-o"></em> {{$elemento->observaciones}}</h5>
             @endif
+            @if (!empty($elemento->imagen))
+                <div class="incidencia-imatge" style="margin-top: 8px;">
+                    <a href="{{ Storage::url($elemento->imagen) }}" target="_blank" rel="noopener">
+                        <img src="{{ Storage::url($elemento->imagen) }}" alt="Imatge incidència" style="max-width: 100%; height: auto;">
+                    </a>
+                </div>
+            @endif
             <div class="left col-xs-12">
                 <h5> <em class="fa fa-tag"></em> {{$elemento->Xespacio}}</h5>
                 <h5><em class="fa fa-tag"></em> {{$elemento->Tipos->literal}}</h5>

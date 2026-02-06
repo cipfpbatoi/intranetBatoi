@@ -38,7 +38,8 @@ class Incidencia extends Model
     use BatoiModels;
 
     protected $inputTypes = [
-        'fecha' => ['type' => 'date']
+        'fecha' => ['type' => 'date'],
+        'imagen' => ['type' => 'file'],
     ];
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,

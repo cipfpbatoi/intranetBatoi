@@ -2,6 +2,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Intranet\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\OrdenTrabajo;
@@ -37,6 +38,7 @@ class IncidenciaController extends ModalController
         'espacio' => ['type' => 'select'],
         'material' => ['type' => 'select'],
         'descripcion' => ['type' => 'textarea'],
+        'imagen' => ['type' => 'file'],
         'idProfesor' => ['type' => 'hidden'],
         'prioridad' => ['type' => 'select'],
         'observaciones' => ['type' => 'text'],
@@ -134,6 +136,7 @@ class IncidenciaController extends ModalController
     {
         $new = new Incidencia();
         $new->fillAll($request);
+        $this->storeImagen($new, $request);
         Incidencia::putEstado($new->id, $this->init);
         return $this->redirect();
     }
@@ -148,6 +151,7 @@ class IncidenciaController extends ModalController
         $elemento =  Incidencia::findOrFail($id);
         $tipo = $elemento->tipo;
         $elemento->fillAll($request);
+        $this->storeImagen($elemento, $request);
         if ($elemento->tipo != $tipo) {
             $elemento->responsable =  $elemento->Tipos->idProfesor;
             $explicacion = "T'han assignat una incidència: " . $elemento->descripcion;
@@ -156,6 +160,33 @@ class IncidenciaController extends ModalController
             $elemento->save();
         }
         return $this->redirect();
+    }
+
+    private function storeImagen(Incidencia $incidencia, IncidenciaRequest $request): void
+    {
+        if (!$request->hasFile('imagen')) {
+            return;
+        }
+
+        $file = $request->file('imagen');
+        if (!$file->isValid()) {
+            return;
+        }
+
+        $extension = strtolower($file->getClientOriginalExtension());
+        if (!in_array($extension, ['jpg', 'jpeg', 'png'], true)) {
+            return;
+        }
+
+        $filename = $incidencia->id . '_' . time() . '.' . $extension;
+        $path = $file->storeAs('incidencias', $filename, 'public');
+
+        if (!empty($incidencia->imagen)) {
+            Storage::disk('public')->delete($incidencia->imagen);
+        }
+
+        $incidencia->imagen = $path;
+        $incidencia->save();
     }
 
     protected function createWithDefaultValues($default = [])

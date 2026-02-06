@@ -31,6 +31,7 @@ class IncidenciaRequest extends FormRequest
                 'observaciones' => 'max:255',
                 'solucion' => 'max:255',
                 'fecha' => 'date',
+                'imagen' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
             ];
     }
 }
