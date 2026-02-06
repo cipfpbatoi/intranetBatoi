@@ -1,5 +1,49 @@
 # Cóm instal·lar la intranet
 
+## Quickstart amb Docker
+
+Requisits: [Docker](https://docs.docker.com/engine/install/) i [Docker Compose](https://docs.docker.com/compose/install/).
+
+```bash
+# 1. Clonar el repositori
+git clone https://github.com/cipfpbatoi/intranetBatoi.git
+cd intranetBatoi
+git checkout laravel11Legacy
+
+# 2. Configurar l'entorn
+cp .env.docker .env
+# Editar .env i posar el nostre UID/GID en WWWUSER i WWWGROUP (consultar amb id -u i id -g)
+
+# 3. Arrancar els contenidors
+docker compose up -d
+
+# 4. Instal·lar dependències
+docker compose exec laravel.test composer install
+docker compose exec laravel.test npm install
+
+# 5. Generar clau i preparar la BBDD
+docker compose exec laravel.test php artisan key:generate
+docker compose exec laravel.test php artisan migrate
+docker compose exec laravel.test php artisan db:seed
+
+# 6. (Opcional) Si hi ha problemes de permissos
+sudo chown -R $USER:$USER storage bootstrap/cache && chmod -R 775 storage bootstrap/cache
+```
+
+L'aplicació estarà disponible en **<https://localhost>**. L'usuari inicial és `admin@intranet.my` amb contrasenya `12345678`.
+
+Serveis disponibles:
+
+| Servei     | URL                                        |
+| ---------- | ------------------------------------------ |
+| Intranet   | <https://localhost>                        |
+| phpMyAdmin | <http://localhost:8080>                    |
+| Mailpit    | <http://localhost:8025>                    |
+
+Per a més detalls, consultar les seccions següents.
+
+---
+
 ## Configurar la màquina
 
 ### Docker (entorn de desenvolupament)
