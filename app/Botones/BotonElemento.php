@@ -96,6 +96,8 @@ abstract class BotonElemento extends Boton
      */
     private function avalCondition($elemento, $op, $valor)
     {
+        $op = is_string($op) ? trim($op) : $op;
+
         if ($op == 'anterior') {
             $elemento = fecha($elemento);
             $valor = fecha($valor);
@@ -124,6 +126,7 @@ abstract class BotonElemento extends Boton
         return match ($op) {
             '==' => $elemento == $valor,
             '!=' => $elemento != $valor,
+            '<>' => $elemento != $valor,
             '>' => $elemento > $valor,
             '>=' => $elemento >= $valor,
             '<' => $elemento < $valor,
