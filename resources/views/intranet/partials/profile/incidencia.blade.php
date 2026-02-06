@@ -12,8 +12,14 @@
             @endif
             @if (!empty($elemento->imagen))
                 <div class="incidencia-imatge" style="margin-top: 8px;">
-                    <a href="{{ Storage::url($elemento->imagen) }}" target="_blank" rel="noopener">
-                        <img src="{{ Storage::url($elemento->imagen) }}" alt="Imatge incidència" style="max-width: 100%; height: auto;">
+                    <a href="{{ Storage::url($elemento->imagen) }}"
+                       class="js-incidencia-image"
+                       data-image="{{ Storage::url($elemento->imagen) }}"
+                       aria-label="Veure imatge ampliada">
+                        <img src="{{ Storage::url($elemento->imagen) }}"
+                             alt="Imatge incidència"
+                             class="incidencia-thumb"
+                             loading="lazy">
                     </a>
                 </div>
             @endif
@@ -56,3 +62,54 @@
     </div>
 </div>
 @endforeach
+
+@once
+    <style>
+        .incidencia-thumb {
+            width: 160px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+        .incidencia-thumb:hover {
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+
+    <div class="modal fade" id="incidenciaImageModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Tancar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Imatge incidència</h4>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="incidenciaImageModalImg" src="" alt="Imatge incidència ampliada" style="max-width: 100%; height: auto;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.js-incidencia-image').forEach(function (link) {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    var src = this.getAttribute('data-image');
+                    var img = document.getElementById('incidenciaImageModalImg');
+                    if (img) {
+                        img.src = src;
+                    }
+                    if (window.jQuery && window.jQuery.fn && window.jQuery.fn.modal) {
+                        window.jQuery('#incidenciaImageModal').modal('show');
+                    } else {
+                        window.open(src, '_blank', 'noopener');
+                    }
+                });
+            });
+        });
+    </script>
+@endonce

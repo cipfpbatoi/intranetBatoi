@@ -10,6 +10,8 @@ use Intranet\Http\Requests\IncidenciaRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\FormBuilder;
+use Intranet\Services\ImageService;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -120,6 +122,7 @@ class IncidenciaController extends ModalController
             'espacio' => ['disabled' => 'disabled'],
             'material' => ['disabled' => 'disabled'],
             'descripcion' => ['type' => 'textarea'],
+            'imagen' => ['type' => 'file'],
             'idProfesor' => ['type' => 'hidden'],
             'tipo' => ['type' => 'select'],
             'prioridad' => ['type' => 'select'],
@@ -174,12 +177,36 @@ class IncidenciaController extends ModalController
         }
 
         $extension = strtolower($file->getClientOriginalExtension());
-        if (!in_array($extension, ['jpg', 'jpeg', 'png'], true)) {
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
+        if (!in_array($extension, $allowedExtensions, true)) {
+            Alert::danger(trans('messages.generic.invalidFileType'));
             return;
         }
 
-        $filename = $incidencia->id . '_' . time() . '.' . $extension;
-        $path = $file->storeAs('incidencias', $filename, 'public');
+        if (in_array($extension, ['heic', 'heif'], true)) {
+            $filename = $incidencia->id . '_' . time() . '.png';
+            $path = 'incidencias/' . $filename;
+            $tmpPath = sys_get_temp_dir() . '/incidencia_' . uniqid('', true) . '.png';
+
+            try {
+                ImageService::toPng($file, $tmpPath);
+                $stream = fopen($tmpPath, 'r');
+                Storage::disk('public')->put($path, $stream);
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+            } catch (\RuntimeException $e) {
+                Alert::danger($e->getMessage());
+                return;
+            } finally {
+                if (file_exists($tmpPath)) {
+                    @unlink($tmpPath);
+                }
+            }
+        } else {
+            $filename = $incidencia->id . '_' . time() . '.' . $extension;
+            $path = $file->storeAs('incidencias', $filename, 'public');
+        }
 
         if (!empty($incidencia->imagen)) {
             Storage::disk('public')->delete($incidencia->imagen);
