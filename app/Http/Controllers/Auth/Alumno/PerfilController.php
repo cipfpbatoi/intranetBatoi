@@ -22,8 +22,17 @@ class PerfilController extends Perfil
 
     public function update(Request $request, $id = null)
     {
+        $fotoRule = 'nullable|image|mimes:jpg,jpeg,png|max:10240';
+        $foto = $request->file('foto');
+        if ($foto) {
+            $ext = strtolower($foto->getClientOriginalExtension());
+            if (in_array($ext, ['heic', 'heif'], true)) {
+                $fotoRule = 'nullable|file|mimes:heic,heif|max:10240';
+            }
+        }
+
         $request->validate(
-            ['foto' => 'nullable|image|mimes:jpg,jpeg,png|max:10240',
+            ['foto' => $fotoRule,
                 'telef1' =>'max:14',
                 'telef2' =>'max:14',
                 'email' => 'email|max:45'

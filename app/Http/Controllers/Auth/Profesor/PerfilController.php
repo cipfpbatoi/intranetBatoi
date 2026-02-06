@@ -65,15 +65,23 @@ class PerfilController extends Perfil
 
         if ($profesor->foto) {
             // Actualitzem la foto si ja existia
-            ImageService::updatePhotoCarnet($foto, storage_path('app/public/fotos/' . $profesor->foto));
-            Alert::info('Modificació de la foto feta amb èxit');
+            try {
+                ImageService::updatePhotoCarnet($foto, storage_path('app/public/fotos/' . $profesor->foto));
+                Alert::info('Modificació de la foto feta amb èxit');
+            } catch (\RuntimeException $e) {
+                Alert::info($e->getMessage());
+            }
         } else {
             // Guardem una foto nova si no en tenia
-            $fileName = ImageService::newPhotoCarnet($foto, storage_path('app/public/fotos'));
-            $profesor->foto = $fileName;
-            $profesor->save();
+            try {
+                $fileName = ImageService::newPhotoCarnet($foto, storage_path('app/public/fotos'));
+                $profesor->foto = $fileName;
+                $profesor->save();
 
-            Alert::info('Foto nova guardada amb èxit');
+                Alert::info('Foto nova guardada amb èxit');
+            } catch (\RuntimeException $e) {
+                Alert::info($e->getMessage());
+            }
         }
     }
 

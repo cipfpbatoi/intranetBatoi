@@ -192,6 +192,13 @@ class ImageService
 
     public static function updatePhotoCarnet($fitxerOriginal, $fitxerDesti)
     {
+        $directori = dirname($fitxerDesti);
+        if (!is_dir($directori)) {
+            if (!@mkdir($directori, 0755, true) && !is_dir($directori)) {
+                throw new \RuntimeException('No s\'ha pogut crear el directori de destí per a la foto.');
+            }
+        }
+
         $dst = self::transform($fitxerOriginal);
         $ok  = imagepng($dst, $fitxerDesti);
         imagedestroy($dst);
@@ -203,6 +210,12 @@ class ImageService
 
     public static function newPhotoCarnet($fitxerOriginal, $directoriDesti): string
     {
+        if (!is_dir($directoriDesti)) {
+            if (!@mkdir($directoriDesti, 0755, true) && !is_dir($directoriDesti)) {
+                throw new \RuntimeException('No s\'ha pogut crear el directori de destí per a la foto.');
+            }
+        }
+
         $dst = self::transform($fitxerOriginal);
 
         $nomFitxer  = Str::random(40) . '.png';

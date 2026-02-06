@@ -52,17 +52,21 @@ abstract class PerfilController extends IntranetController
         if ($request->hasFile('foto')) {
             $fitxer = $request->file('foto');
             if ($fitxer->isValid()) {
-                if ($new->foto) {
-                    $success = ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos/'.$new->foto));
-                    if ($success) {
-                        Alert::info('Modificació foto feta amb exit');
+                try {
+                    if ($new->foto) {
+                        $success = ImageService::updatePhotoCarnet($fitxer, storage_path('app/public/fotos/'.$new->foto));
+                        if ($success) {
+                            Alert::info('Modificació foto feta amb exit');
+                        } else {
+                            Alert::info('Error en la modificació de la foto');
+                        }
                     } else {
-                        Alert::info('Error en la modificació de la foto');
+                        $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
+                        $new->foto = $nameFile;
+                        Alert::info('Foto nova guardada amb exit');
                     }
-                } else {
-                    $nameFile = ImageService::newPhotoCarnet($fitxer, storage_path('app/public/fotos'));
-                    $new->foto = $nameFile;
-                    Alert::info('Foto nova guardada amb exit');
+                } catch (\RuntimeException $e) {
+                    Alert::info($e->getMessage());
                 }
             } else {
                 Alert::info('Formato no valido');
