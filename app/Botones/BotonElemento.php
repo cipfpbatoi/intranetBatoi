@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Storage;
  */
 abstract class BotonElemento extends Boton
 {
-    protected array|string|null $where = null;
-    protected array|string|null $orWhere = null;
-
     /**
      * Mostra el botó si compleix les condicions de visibilitat.
      */

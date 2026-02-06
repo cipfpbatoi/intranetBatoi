@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Botones;
 
+use InvalidArgumentException;
 use Intranet\Botones\BotonBasico;
 use Intranet\Botones\BotonIcon;
 use Intranet\Botones\BotonImg;
@@ -48,6 +49,15 @@ class PanelTest extends TestCase
         $this->assertCount(1, $panel->getBotones('profile'));
         $this->assertInstanceOf(BotonImg::class, $panel->getBotones('grid')[0]);
         $this->assertInstanceOf(BotonIcon::class, $panel->getBotones('profile')[0]);
+    }
+
+    public function test_set_boton_llanca_excepcio_en_tipus_no_valid(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $panel = new Panel('profesor', null, null, false);
+        $panel->setPestana('grid', true);
+        $panel->setBoton('invalid', new BotonBasico('profesor.edit'));
     }
 
     public function test_activa_pestana_desactiva_la_resta(): void

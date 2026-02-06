@@ -9,18 +9,28 @@ use function existsTranslate;
  */
 abstract class Boton
 {
+    // Identificació i construcció de l'enllaç.
     protected ?string $modelo = null;
     protected ?string $accion = null;
     protected ?string $href = null;
-    protected ?string $text = null;
-    protected ?string $postUrl = null; // final de la ruta
-    protected array $atributos = [];
-    protected ?string $defaultClase = null;   //clase que s'aplica si no es passa classe
-    protected ?string $permanentClase = null; //clase que s'aplica sempre
-    protected ?string $permanetClase = null; // compat amb propietat antiga
-    protected bool|string $relative = false; // false ruta absoluta || true ruta relativa || prefijo
+    protected ?string $postUrl = null;
+    protected bool|string $relative = false;
 
+    // Text i atributs bruts d'entrada.
+    protected ?string $text = null;
+    protected array $atributos = [];
+
+    // Estil base i estil permanent del botó.
+    protected ?string $defaultClase = null;
+    protected ?string $permanentClase = null;
+
+    // Restriccions de permisos i de visibilitat.
     protected int|array|null $roles = null;
+    protected array|string|null $where = null;
+    protected array|string|null $orWhere = null;
+    protected bool $disabled = false;
+
+    // Atributs HTML habituals.
     protected ?string $class = null;
     protected ?string $id = null;
     protected ?string $icon = null;
@@ -31,9 +41,6 @@ abstract class Boton
     protected ?string $rel = null;
     protected ?string $ariaLabel = null;
     protected ?string $badge = null;
-    protected array|string|null $where = null;
-    protected array|string|null $orWhere = null;
-    protected bool $disabled = false;
 
     /**
      * Resol el text del botó amb traduccions i textos per defecte.
@@ -182,7 +189,7 @@ abstract class Boton
     protected function clase(): string
     {
         $clase = $this->class !== null && $this->class !== '' ? $this->class : ($this->defaultClase ?? '');
-        $permanent = $this->permanentClase ?? $this->permanetClase ?? '';
+        $permanent = $this->permanentClase ?? '';
         $disabled = $this->isDisabled() ? ' disabled' : '';
         return $this->cleanAttr(trim($clase.' '.$permanent.$disabled));
     }

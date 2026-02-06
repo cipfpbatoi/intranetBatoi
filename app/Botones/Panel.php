@@ -2,28 +2,50 @@
 
 namespace Intranet\Botones;
 
-use HTML;
+use Illuminate\Contracts\Pagination\Paginator;
+use InvalidArgumentException;
 
+/**
+ * Contenidor de pestanyes, botons i dades de vista per als panells CRUD.
+ */
 class Panel
 {
+    public const BOTON_INDEX = 'index';
+    public const BOTON_GRID = 'grid';
+    public const BOTON_PROFILE = 'profile';
+    public const BOTON_INFILE = 'infile';
 
-    private $botones;   // botons del panel
-    private $model;     // model de dades
-    private $pestanas;  // pestanyes
-    private $titulo;    // titol
-    private $elementos; // elements
-    private $data = []; // array de més dades
-    private $paginator = null; // paginador opcional
-    public $items = [];
+    private const BOTON_TYPES = [
+        self::BOTON_INDEX,
+        self::BOTON_GRID,
+        self::BOTON_PROFILE,
+        self::BOTON_INFILE,
+    ];
 
-    
+    private array $botones = [   // botons del panel
+        'index' => [],
+        'grid' => [],
+        'profile' => [],
+        'infile' => [],
+    ];
+    private string $model;     // model de dades
+    private array $pestanas = [];  // pestanyes
+    private array $titulo = [];    // titol
+    private $elementos = null; // elements
+    private array $data = [];   // array de més dades
+    private ?Paginator $paginator = null; // paginador opcional
+    public array $items = [];
+
+    /**
+     * @param string $modelo Nom base del model (p. ex. "Profesor")
+     * @param mixed $rejilla Definició de columnes de la pestanya principal
+     * @param string|null $vista Vista opcional de la pestanya principal
+     * @param bool $creaPestana Si és true crea la pestanya grid inicial
+     * @param array $include Includes de la pestanya (modals, etc.)
+     */
     public function __construct($modelo, $rejilla = null, $vista = null, $creaPestana=true, $include=[])
     {
         $this->model = $modelo;
-        $this->botones['index'] = [];
-        $this->botones['grid'] = [];
-        $this->botones['profile'] = [];
-        $this->botones['infile'] = [];
         if ($creaPestana) {
             $this->setPestana('grid', true, $vista, null, $rejilla, null, $include);
         }
@@ -31,6 +53,9 @@ class Panel
     }
 
 
+    /**
+     * Ompli el panell i retorna la vista final.
+     */
     public function render($todos, $titulo, $vista, $formulario=null)
     {
         if (!$this->countPestana()) {
@@ -44,40 +69,51 @@ class Panel
     }
 
 
-    public function setBotonera($index = [], $grid = [], $profile = [])
+    /**
+     * Crea una botonera estàndard a partir de noms d'accions.
+     */
+    public function setBotonera($index = [], $grid = [], $profile = []): void
     {
         if ($index != []) {
             foreach ($index as $btn) {
-                $this->botones['index'][] = new BotonBasico("$this->model.$btn");
+                $this->setBoton(self::BOTON_INDEX, new BotonBasico("$this->model.$btn"));
             }
         }
         if ($grid != []) {
             foreach ($grid as $btn) {
-                $this->botones['grid'][] = new BotonImg($this->model . "." . $btn);
+                $this->setBoton(self::BOTON_GRID, new BotonImg($this->model . "." . $btn));
             }
         }
         if ($profile != []) {
             foreach ($profile as $btn) {
-                $this->botones['profile'][] = new BotonIcon("$this->model.$btn");
+                $this->setBoton(self::BOTON_PROFILE, new BotonIcon("$this->model.$btn"));
             }
         }
     }
 
-    // afegix boto
-    public function setBoton($tipo,  $boton)
+    /**
+     * Afig un botó al grup indicat.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function setBoton(string $tipo, Boton $boton): void
     {
+        $this->ensureValidBotonType($tipo);
         $this->botones[$tipo][] = $boton;
     }
 
-    // ageix boto comú a grid i profile
-    public function setBothBoton($href, $atributos = [], $relative = false)
+    /**
+     * Afig el mateix botó a `grid` i `profile`.
+     */
+    public function setBothBoton($href, $atributos = [], $relative = false): void
     {
-        $this->botones['grid'][] = new BotonImg($href, $atributos, $relative);
-        $this->botones['profile'][] = new BotonIcon($href, $atributos, $relative);
+        $this->setBoton(self::BOTON_GRID, new BotonImg($href, $atributos, $relative));
+        $this->setBoton(self::BOTON_PROFILE, new BotonIcon($href, $atributos, $relative));
     }
 
-    // afeguix pestana
-    // sustituye canvia la primera pestana per l'actual
+    /**
+     * Afig una pestanya o substituïx la primera.
+     */
     public function setPestana(
         $nombre,
         $activo = false,
@@ -86,7 +122,7 @@ class Panel
         $rejilla = null,
         $sustituye = null,
         $include=[]
-    )
+    ): void
     {
         if ($activo) {
             $this->desactivaAll();
@@ -112,18 +148,24 @@ class Panel
         }
     }
 
-    public function countPestana()
+    /**
+     * Retorna el nombre de pestanyes disponibles.
+     */
+    public function countPestana(): int
     {
         return count($this->pestanas);
     }
 
-    public function setTitulo($titulo)
+    /**
+     * Guarda els placeholders de títol per a traduccions.
+     */
+    public function setTitulo($titulo): void
     {
         $this->titulo = $titulo;
     }
 
-    //Para que solo haya una pestaña activa, desactiva las demas
-    private function desactivaAll()
+    // Para que només hi haja una pestanya activa, desactiva la resta.
+    private function desactivaAll(): void
     {
         if ($this->pestanas) {
             foreach ($this->pestanas as $pestana) {
@@ -133,12 +175,18 @@ class Panel
     }
     
 
-    public function getModel()
+    /**
+     * Retorna el nom del model associat al panell.
+     */
+    public function getModel(): string
     {
         return $this->model;
     }
 
-    public function getPestanas()
+    /**
+     * Retorna totes les pestanyes del panell.
+     */
+    public function getPestanas(): array
     {
         return $this->pestanas;
     }
@@ -147,12 +195,15 @@ class Panel
     {
         return $this->pestanas[0]->getRejilla();
     }
-    public function setRejilla($grid)
+    public function setRejilla($grid): void
     {
         $this->pestanas[0]->setRejilla($grid);
     }
 
-    public function getBotones($tipo = null)
+    /**
+     * @param string|null $tipo Si es passa retorna només eixe grup.
+     */
+    public function getBotones($tipo = null): array
     {
         if (isset($tipo)) {
             return (isset($this->botones[$tipo]))?$this->botones[$tipo]:[];
@@ -160,17 +211,26 @@ class Panel
         return $this->botones;
     }
 
-    public function countBotones($tipo)
+    /**
+     * Retorna quants botons hi ha en un grup.
+     */
+    public function countBotones(string $tipo): int
     {
-        return count($this->botones[$tipo]);
+        return count($this->getBotones($tipo));
     }
 
-    public function getTitulo($que = 'index')
+    /**
+     * Resol el títol traduït segons el model i l'acció.
+     */
+    public function getTitulo($que = 'index'): string
     {
         return trans("models." . ucwords(strtolower($this->getModel())) . ".$que", $this->titulo);
     }
 
-    public function setElementos($elementos)
+    /**
+     * Assigna la col·lecció d'elements a mostrar.
+     */
+    public function setElementos($elementos): void
     {
         $this->elementos = $elementos;
     }
@@ -181,7 +241,7 @@ class Panel
     }
 
    
-    // filtra els elements d'una pestana amb condicions
+    // Filtra els elements d'una pestanya amb condicions.
     public function getElementos($pestana)
     {
         $elementos = $this->elementos;
@@ -193,13 +253,19 @@ class Panel
         return $elementos;
     }
 
-    public function getPaginator()
+    /**
+     * Retorna el paginador si la cerca original era paginada.
+     */
+    public function getPaginator(): ?Paginator
     {
         return $this->paginator;
     }
 
 
-    public function activaPestana($nombre)
+    /**
+     * Activa una pestanya pel nom i desactiva la resta.
+     */
+    public function activaPestana($nombre): void
     {
         foreach ($this->pestanas as $pestana) {
             if ($pestana->getNombre() == $nombre) {
@@ -210,7 +276,7 @@ class Panel
         }
     }
 
-    private function getView($nombre, $vista)
+    private function getView($nombre, $vista): string
     {
         if ($vista == null) {
             return 'intranet.partials.' . $nombre . "." . strtolower($this->model);
@@ -222,7 +288,7 @@ class Panel
         return 'intranet.partials.' . $vista;
     }
 
-    public function __set($name, $value)
+    public function __set($name, $value): void
     {
         $this->data[$name] = $value;
     }
@@ -234,6 +300,22 @@ class Panel
         }
     }
 
+    /**
+     * Valida que el tipus pertany a la botonera coneguda.
+     *
+     * @throws InvalidArgumentException
+     */
+    private function ensureValidBotonType(string $tipo): void
+    {
+        if (in_array($tipo, self::BOTON_TYPES, true)) {
+            return;
+        }
+
+        throw new InvalidArgumentException(
+            "Tipus de botó no vàlid '{$tipo}'. Tipus admesos: ".implode(', ', self::BOTON_TYPES)
+        );
+    }
+
 
     /**
      * @param $todos
@@ -242,7 +324,7 @@ class Panel
      */
     private function feedPanel($todos, $titulo): Panel
     {
-        if ($todos instanceof \Illuminate\Contracts\Pagination\Paginator) {
+        if ($todos instanceof Paginator) {
             $this->paginator = $todos;
             $todos = collect($todos->items());
         } else {
