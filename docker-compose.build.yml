@@ -1,0 +1,9 @@
+services:
+  laravel.test:
+    image: arturocandela/intranet:${IMAGE_TAG_DEV:-laravel11-dev}
+    build:
+      context: ./docker/8.3
+      dockerfile: Dockerfile
+      args:
+        WWWUSER: "${WWWUSER:-${UID:-1000}}"
+        WWWGROUP: "${WWWGROUP:-${GID:-1000}}"

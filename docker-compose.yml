@@ -1,12 +1,7 @@
 services:
     laravel.test:
-        build:
-            context: ./docker/8.3
-            dockerfile: Dockerfile
-            args:
-                WWWUSER: "${WWWUSER:-${UID:-1000}}"
-                WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
-        image: intranet-batoi/app
+        
+        image: arturocandela/intranet:${IMAGE_TAG_DEV:-laravel11-dev}
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         expose:
