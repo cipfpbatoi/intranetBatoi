@@ -65,7 +65,7 @@ class Panel
      * @param mixed $rejilla Definició de columnes de la pestanya principal
      * @param string|null $vista Vista opcional de la pestanya principal
      * @param bool $creaPestana Si és true crea la pestanya grid inicial
-     * @param array $include Includes de la pestanya (modals, etc.)
+     * @param array|null $include Includes de la pestanya (modals, etc.)
      */
     /**
      * @param string $modelo Nom base del model (p. ex. "Profesor")
@@ -79,12 +79,12 @@ class Panel
         ?array $rejilla = null,
         ?string $vista = null,
         bool $creaPestana = true,
-        array $include = []
+        ?array $include = []
     )
     {
         $this->model = $modelo;
         if ($creaPestana) {
-            $this->setPestana('grid', true, $vista, null, $rejilla, null, $include);
+            $this->setPestana('grid', true, $vista, null, $rejilla, null, $include ?? []);
         }
         
     }
