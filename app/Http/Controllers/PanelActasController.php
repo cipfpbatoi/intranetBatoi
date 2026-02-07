@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Componentes\Mensaje;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;

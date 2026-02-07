@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Empresa;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
 
 
 /**

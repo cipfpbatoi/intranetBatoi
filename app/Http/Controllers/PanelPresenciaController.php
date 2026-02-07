@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Actividad;

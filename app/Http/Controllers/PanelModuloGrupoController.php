@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
 
 class PanelModuloGrupoController extends BaseController

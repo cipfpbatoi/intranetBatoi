@@ -7,7 +7,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\GrupoTrabajo;
 use Intranet\Entities\Miembro;
 use Intranet\Http\Requests\GrupoTrabajoRequest;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Http\Requests\GTProfesorRequest;
 
 

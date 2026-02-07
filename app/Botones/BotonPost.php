@@ -3,29 +3,8 @@
 namespace Intranet\Botones;
 
 /**
- * Botó per a enviament de formulari (submit).
+ * @deprecated Use Intranet\UI\Botones\BotonPost
  */
-class BotonPost extends BotonElemento
+class BotonPost extends \Intranet\UI\Botones\BotonPost
 {
-
-    protected ?string $defaultClase = 'btn-success';
-    protected ?string $permanentClase = 'btn btn-xs txtButton';
-
-    /**
-     * Genera el HTML del botó tipus submit.
-     */
-    protected function html($key = null)
-    {
-        return view('components.buttons.post', [
-            'class' => $this->clase(),
-            'id' => $this->id(),
-            'data' => $this->data(),
-            'disabled' => $this->disabledAttr('button'),
-            'ariaLabel' => $this->ariaLabel,
-            'title' => $this->title,
-            'text' => $this->text
-        ]);
-
-    }
-
 }

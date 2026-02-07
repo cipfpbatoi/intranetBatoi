@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Grupo;
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\AlumnoFct;
 
 class PanelPGDualController extends BaseController

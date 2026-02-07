@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Setting;
 use Styde\Html\Facades\Alert;

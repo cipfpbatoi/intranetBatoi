@@ -7,7 +7,7 @@ use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaboracion;
 use Intranet\Http\Controllers\Auth\PerfilController;
-use Intranet\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonIcon;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Profesor;

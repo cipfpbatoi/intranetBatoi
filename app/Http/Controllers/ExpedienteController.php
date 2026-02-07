@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
 use Intranet\Http\Requests\ExpedienteRequest;

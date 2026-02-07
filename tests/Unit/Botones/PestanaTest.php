@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Botones;
 
-use Intranet\Botones\Pestana;
+use Intranet\UI\Panels\Pestana;
 use Tests\TestCase;
 
 class PestanaTest extends TestCase

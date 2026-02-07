@@ -6,11 +6,11 @@ namespace Tests\Unit;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonConfirmacion;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonPost;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonConfirmacion;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonPost;
 use Intranet\Entities\Profesor;
 use Tests\TestCase;
 

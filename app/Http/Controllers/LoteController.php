@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Articulo;
 use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Lote;

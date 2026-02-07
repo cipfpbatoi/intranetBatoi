@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use DB;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Entities\Curso;
 use Intranet\Http\Requests\CursoRequest;

@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use DB;
 use Illuminate\Http\Request;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Componentes\DocumentoFct;
 use Intranet\Componentes\MyMail;
 use Intranet\Entities\Activity;

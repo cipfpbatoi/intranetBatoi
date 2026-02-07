@@ -8,7 +8,7 @@ use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
 use Intranet\Componentes\Mensaje;
 use Illuminate\Support\Facades\Mail;

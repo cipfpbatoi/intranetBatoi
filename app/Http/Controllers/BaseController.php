@@ -4,7 +4,7 @@
  */
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\Panel;
+use Intranet\UI\Panels\Panel;
 use Illuminate\Support\Facades\Session;
 use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\FormBuilder;

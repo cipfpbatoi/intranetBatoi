@@ -3,7 +3,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\OrdenTrabajo;
 use Intranet\Http\Requests\IncidenciaRequest;

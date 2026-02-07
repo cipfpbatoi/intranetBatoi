@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Componentes\Mensaje;
 use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\Projecte;

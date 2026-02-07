@@ -2,9 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Falta;
 use Intranet\Http\Traits\Panel;
 

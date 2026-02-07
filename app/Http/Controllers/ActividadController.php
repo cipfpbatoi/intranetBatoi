@@ -4,8 +4,8 @@ namespace Intranet\Http\Controllers;
 
 use DB;
 use Illuminate\Http\Request;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Componentes\Mensaje;
 use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\Actividad;

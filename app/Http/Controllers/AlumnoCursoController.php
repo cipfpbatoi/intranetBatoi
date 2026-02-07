@@ -7,7 +7,7 @@ use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Curso;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Alumno;
 use Styde\Html\Facades\Alert;
 

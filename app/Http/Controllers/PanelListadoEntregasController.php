@@ -4,8 +4,8 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Horario;

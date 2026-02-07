@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Intranet\Entities\TutoriaGrupo;
 use Intranet\Entities\Tutoria;
-use Intranet\Botones\Panel;
+use Intranet\UI\Panels\Panel;
 
 class TutoriaGrupoController extends IntranetController
 {

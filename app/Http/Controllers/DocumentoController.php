@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Profesor;

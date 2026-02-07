@@ -3,9 +3,8 @@
 namespace Intranet\Botones;
 
 /**
- * Botó bàsic amb classe de confirmació.
+ * @deprecated Use Intranet\UI\Botones\BotonConfirmacion
  */
-class BotonConfirmacion extends BotonBasico
+class BotonConfirmacion extends \Intranet\UI\Botones\BotonConfirmacion
 {
-    protected ?string $permanentClase = 'btn txtButton confirm';
 }

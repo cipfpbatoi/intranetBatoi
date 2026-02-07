@@ -4,8 +4,8 @@
 namespace Intranet\Http\Traits;
 
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonIcon;
 use Jenssegers\Date\Date;
 
 /**
