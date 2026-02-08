@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Intranet\UI\Botones\BotonBasico;
-use Intranet\Componentes\MyMail;
+use Intranet\Services\Mail\MyMail;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Signatura;
 use Intranet\UI\Botones\BotonImg;

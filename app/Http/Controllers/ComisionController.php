@@ -6,7 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Support\Fct\DocumentoFctConfig;
-use Intranet\Componentes\MyMail;
+use Intranet\Services\Mail\MyMail;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Fct;

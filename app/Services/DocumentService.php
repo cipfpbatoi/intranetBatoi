@@ -1,7 +1,7 @@
 <?php
 namespace Intranet\Services;
 
-use Intranet\Componentes\MyMail;
+use Intranet\Services\Mail\MyMail;
 use Intranet\Componentes\Pdf;
 use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
