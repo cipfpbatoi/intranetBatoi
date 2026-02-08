@@ -8,7 +8,7 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Support\Facades\Log;
-use Intranet\Componentes\Mensaje;
+use Intranet\Services\NotificationService;
 use Intranet\Exceptions\CertException;
 use Intranet\Services\DigitalSignatureService;
 use Intranet\Entities\AlumnoFct;
@@ -112,7 +112,7 @@ class A2
                 'intranetUser' => authUser()->fullName,
             ]);
             Alert::warning($exception->getMessage());
-            Mensaje::send(
+            app(NotificationService::class)->send(
                 config('avisos.errores'),
                 $exception->getMessage() . " : " . authUser()->fullName
             );
@@ -170,7 +170,7 @@ class A2
             }
         }
         if ($signat) {
-            Mensaje::send(
+            app(NotificationService::class)->send(
                 config('avisos.director'),
                 'Tens nous documents per signar de '.authUser()->fullName,
                 '/direccion/signatures'

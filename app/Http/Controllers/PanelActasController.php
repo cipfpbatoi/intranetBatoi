@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\UI\Botones\BotonBasico;
-use Intranet\Componentes\Mensaje;
+use Intranet\Services\NotificationService;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
 use Illuminate\Support\Facades\Mail;
@@ -90,7 +90,7 @@ class PanelActasController extends BaseController
         Alert::info("$correus enviats a Alumnes");
         $grupo->acta_pendiente = 0;
         $grupo->save();
-        Mensaje::send($grupo->tutor, "Ja pots passar a arreplegar l'acta del grup $grupo->nombre", "#");
+        app(NotificationService::class)->send($grupo->tutor, "Ja pots passar a arreplegar l'acta del grup $grupo->nombre", "#");
         return back();
     }
 
@@ -104,7 +104,7 @@ class PanelActasController extends BaseController
         }
         $grupo->acta_pendiente = 0;
         $grupo->save();
-        Mensaje::send(
+        app(NotificationService::class)->send(
             $grupo->tutor,
             "S'han detectat errades en l'acta de FCT del grup $grupo->nombre. Ja pots corregir-les"
         );

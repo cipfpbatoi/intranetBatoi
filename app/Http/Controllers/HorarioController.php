@@ -10,7 +10,7 @@ use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
 use Intranet\UI\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
-use Intranet\Componentes\Mensaje;
+use Intranet\Services\NotificationService;
 use Illuminate\Support\Facades\Mail;
 
 class HorarioController extends IntranetController
@@ -183,7 +183,7 @@ class HorarioController extends IntranetController
         $data['updated_at'] = date('Y-m-d H:i:s');
         $disk->put($path, json_encode($data));
 
-        Mensaje::send($dni, "S'ha acceptat la teua proposta de canvi d'horari.", '/horario/canvi-horari-temporal?proposta=' . $id);
+        app(NotificationService::class)->send($dni, "S'ha acceptat la teua proposta de canvi d'horari.", '/horario/canvi-horari-temporal?proposta=' . $id);
         $this->sendAcceptationEmail($dni, $data, $id);
         Alert::success("Proposta del professor $dni acceptada");
         return back();
@@ -217,7 +217,7 @@ class HorarioController extends IntranetController
         $data['updated_at'] = date('Y-m-d H:i:s');
         $disk->put($path, json_encode($data));
 
-        Mensaje::send($dni, "S'ha rebutjat la teua proposta de canvi d'horari. Motiu: $motiu", '/horario/canvi-horari-temporal?proposta=' . $id);
+        app(NotificationService::class)->send($dni, "S'ha rebutjat la teua proposta de canvi d'horari. Motiu: $motiu", '/horario/canvi-horari-temporal?proposta=' . $id);
         Alert::success("Proposta del professor $dni rebutjada");
         return back();
     }

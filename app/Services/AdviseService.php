@@ -2,7 +2,7 @@
 
 namespace Intranet\Services;
 
-use Intranet\Componentes\Mensaje;
+use Intranet\Services\NotificationService;
 
 class AdviseService
 {
@@ -63,7 +63,7 @@ class AdviseService
     protected function advise($dnis): void
     {
         foreach ((array) $dnis as $dni) {
-            Mensaje::send($dni, $this->explanation, $this->link);
+            app(NotificationService::class)->send($dni, $this->explanation, $this->link);
         }
     }
 

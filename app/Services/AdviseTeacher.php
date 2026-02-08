@@ -1,7 +1,7 @@
 <?php
 namespace Intranet\Services;
 
-use Intranet\Componentes\Mensaje;
+use Intranet\Services\NotificationService;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
@@ -30,7 +30,7 @@ class AdviseTeacher
 
         foreach (self::profesoresAfectados($grupos, $idEmisor) as $profesor) {
             try {
-                Mensaje::send($profesor->idProfesor, $mensaje, '#', $emisor  );
+                app(NotificationService::class)->send($profesor->idProfesor, $mensaje, '#', $emisor  );
             } catch (\Exception $e) {
                 $profesorId = $profesor->idProfesor ?? 'desconegut';
                 Alert::danger("Error al enviar mensaje a {$profesorId}");

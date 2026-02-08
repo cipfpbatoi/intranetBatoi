@@ -1,9 +1,9 @@
 <?php
-namespace Intranet\Componentes;
+namespace Intranet\Support\Fct;
 
 use function config;
 
-class DocumentoFct
+class DocumentoFctConfig
 {
     private $features;
 
@@ -50,4 +50,3 @@ class DocumentoFct
 
 
 }
-

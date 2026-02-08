@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Intranet\UI\Botones\BotonBasico;
-use Intranet\Componentes\Mensaje;
+use Intranet\Services\NotificationService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Signatura;
@@ -118,7 +118,7 @@ class PanelSignaturaController extends BaseController
                     'intranetUser' => authUser()->fullName,
                 ]);
                 Alert::warning($exception->getMessage());
-                Mensaje::send(
+                app(NotificationService::class)->send(
                     config('avisos.errores'),
                     $exception->getMessage()." : ".authUser()->fullName
                 );
@@ -131,7 +131,7 @@ class PanelSignaturaController extends BaseController
                     'intranetUser' => authUser()->fullName,
                 ]);
                 Alert::warning($exception->getMessage());
-                Mensaje::send(
+                app(NotificationService::class)->send(
                     config('avisos.errores'),
                     $exception->getMessage()." : ".authUser()->fullName
                 );
@@ -142,7 +142,7 @@ class PanelSignaturaController extends BaseController
             }
         }
         foreach (array_keys($signed) as $dni){
-            Mensaje::send($dni,'Tens nous documents signats','/signatura');
+            app(NotificationService::class)->send($dni,'Tens nous documents signats','/signatura');
         }
         return back();
     }

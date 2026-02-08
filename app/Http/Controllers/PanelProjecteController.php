@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
-use Intranet\Componentes\Mensaje;
+use Intranet\Services\NotificationService;
 use Intranet\Componentes\Pdf as PDF;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\OrdenReunion;
