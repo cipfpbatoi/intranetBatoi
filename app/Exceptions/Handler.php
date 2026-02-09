@@ -40,7 +40,8 @@ class Handler extends ExceptionHandler
             $msg !== 'The given data was invalid.' &&
             $msg !== 'Unauthenticated.' &&
             $msg !== '' &&
-            strpos($msg, 'SRF') === false   // <-- correcció important
+            strpos($msg, 'SRF') === false &&   // <-- correcció important
+            !app()->environment('testing')
         ) {
             // Pots limitar trace en prod si vols: substr($exception->getTraceAsString(), 0, 2000)
             app(NotificationService::class)->send(config('avisos.errores'), $msg . $exception->getTraceAsString());
