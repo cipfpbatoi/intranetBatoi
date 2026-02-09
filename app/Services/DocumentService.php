@@ -2,7 +2,7 @@
 namespace Intranet\Services;
 
 use Intranet\Services\Mail\MyMail;
-use Intranet\Componentes\Pdf;
+use Intranet\Services\PdfService;
 use Intranet\Finders\Finder;
 use Intranet\Http\PrintResources\PrintResource;
 use Styde\Html\Facades\Alert;
@@ -133,7 +133,7 @@ class DocumentService
 
         if ($this->zip && $this->document->zip && count($this->elements) > 1) {
             return response()->file(
-                Pdf::hazZip(
+                app(PdfService::class)->hazZip(
                     $this->document->view,
                     $this->elements,
                     $this->document->pdf,
@@ -142,7 +142,7 @@ class DocumentService
             );
         }
 
-        return Pdf::hazPdf(
+        return app(PdfService::class)->hazPdf(
             $this->document->view,
             $this->elements,
             $this->document->pdf,

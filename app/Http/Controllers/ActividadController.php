@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\NotificationService;
-use Intranet\Componentes\Pdf as PDF;
+use Intranet\Services\PdfService;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\ActividadProfesor;
@@ -108,7 +108,7 @@ class ActividadController extends ModalController
     public function printValue($id){
         $elemento = $this->class::findOrFail($id);
         $informe = 'pdf.valoracionActividad';
-        return PDF::hazPdf($informe, $elemento, null)->stream();
+        return app(PdfService::class)->hazPdf($informe, $elemento, null)->stream();
     }
 
     private function showDetalle($id){
@@ -250,7 +250,7 @@ class ActividadController extends ModalController
             }
         }
         if ($todos->count()){
-            $pdf = PDF::hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait');
+            $pdf = app(PdfService::class)->hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait');
             return $pdf->stream();
         }
         Alert::info('No hi han menors');

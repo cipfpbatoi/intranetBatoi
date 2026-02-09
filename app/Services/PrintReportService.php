@@ -2,7 +2,7 @@
 /*
 namespace Intranet\Services;
 
-use Intranet\Componentes\Pdf;
+use Intranet\Services\PdfService;
 use Intranet\Finders\Finder;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
@@ -38,7 +38,7 @@ class PrintReportService
     public function printAndSaveGestor()
     {
         if ($this->elements->Count()) {
-            $pdf = Pdf::hazPdf($this->document->getView(), $this->elements, null, $this->document->orientation);
+            $pdf = app(PdfService::class)->hazPdf($this->document->getView(), $this->elements, null, $this->document->orientation);
             $nom = $this->document->modelo . new Date() . '.pdf';
             $nomComplet = 'gestor/' . curso() . '/informes/' . $nom;
             $gestor = new GestorService();

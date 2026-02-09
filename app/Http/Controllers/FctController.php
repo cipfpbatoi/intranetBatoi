@@ -6,7 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
-use Intranet\Componentes\Pdf;
+use Intranet\Services\PdfService;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
@@ -118,7 +118,7 @@ class FctController extends IntranetController
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName,
         ];
-        return Pdf::hazPdf('pdf.fct.certificatColaborador', $fct, $dades)->stream();
+        return app(PdfService::class)->hazPdf('pdf.fct.certificatColaborador', $fct, $dades)->stream();
     }
 
 

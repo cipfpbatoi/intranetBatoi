@@ -5,7 +5,7 @@ namespace Intranet\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Intranet\Componentes\Pdf;
+use Intranet\Services\PdfService;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FctController;
 use Illuminate\Support\Facades\Log;
@@ -75,6 +75,6 @@ class CertificatInstructorFct extends Mailable
             'director' => $director->FullName,
         ];
 
-        return Pdf::hazPdf('pdf.fct.certificatColaborador', $this->fct, $dades);
+        return app(PdfService::class)->hazPdf('pdf.fct.certificatColaborador', $this->fct, $dades);
     }
 }

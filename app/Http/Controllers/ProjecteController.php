@@ -6,7 +6,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\NotificationService;
-use Intranet\Componentes\Pdf as PDF;
+use Intranet\Services\PdfService;
 use Intranet\Entities\Projecte;
 use Intranet\Http\Requests\ProyectoRequest;
 
@@ -73,7 +73,7 @@ class ProjecteController extends ModalController
     {
         $elemento = Projecte::findOrFail($id);
         $informe = 'pdf.propostaProjecte';
-        $pdf = PDF::hazPdf($informe, $elemento, null);
+        $pdf = app(PdfService::class)->hazPdf($informe, $elemento, null);
         return $pdf->stream();
     }
 
