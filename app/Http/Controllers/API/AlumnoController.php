@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\Alumno;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Intranet\Services\ImageService;
+use Intranet\Services\Media\ImageService;
 
 class AlumnoController extends ApiBaseController
 {

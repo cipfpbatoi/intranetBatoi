@@ -9,7 +9,7 @@ use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Http\Traits\Autorizacion;
-use Intranet\Services\StateService;
+use Intranet\Services\General\StateService;
 use Styde\Html\Facades\Alert;
 
 class ProgramacionController extends IntranetController

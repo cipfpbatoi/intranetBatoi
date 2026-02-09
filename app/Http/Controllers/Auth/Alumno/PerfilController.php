@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers\Auth\Alumno;
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
-use Intranet\Services\ImageService;
+use Intranet\Services\Media\ImageService;
 use Styde\Html\Facades\Alert;
 
 class PerfilController extends Perfil
@@ -16,7 +16,7 @@ class PerfilController extends Perfil
 
     public function editar()
     {
-        $id = Auth::user('alumno')->nia;
+        $id = auth('alumno')->user()->nia;
         return parent::edit($id);
     }
 
@@ -38,8 +38,13 @@ class PerfilController extends Perfil
                 'email' => 'email|max:45'
             ]
         );
-        $nia = $id ?? Auth::user('alumno')->nia;
-        $new = $this->class::find($nia);
+        $nia = $id ?? auth('alumno')->user()->nia;
+        $class = $this->modelClass();
+        $new = $class::find($nia) ?? auth('alumno')->user();
+        if (!$new) {
+            abort(404);
+        }
+        $new->setConnection(config('database.default'));
         parent::update($request, $new);
         return redirect("/alumno/home");
     }

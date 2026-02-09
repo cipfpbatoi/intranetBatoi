@@ -6,7 +6,7 @@ use Intranet\Support\Fct\DocumentoFctConfig;
 use Intranet\Finders\MailFinders\MyA1Finder;
 use Intranet\Finders\MailFinders\MySignaturesFinder;
 use Intranet\Finders\MailFinders\SignaturesFinder;
-use Intranet\Services\DocumentService;
+use Intranet\Services\Document\DocumentService;
 
 
 class DocumentacionFCTController

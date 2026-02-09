@@ -8,7 +8,7 @@ use \DB;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Horario;
-use Intranet\Services\FitxatgeService;
+use Intranet\Services\HR\FitxatgeService;
 use Styde\Html\Facades\Alert;
 
 

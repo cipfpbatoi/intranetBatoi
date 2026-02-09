@@ -19,7 +19,7 @@ use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\TipoReunion;
 use Intranet\Http\Traits\Imprimir;
-use Intranet\Services\GestorService;
+use Intranet\Services\General\GestorService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 

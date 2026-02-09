@@ -10,7 +10,7 @@ use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
 use Intranet\UI\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
-use Intranet\Services\NotificationService;
+use Intranet\Services\Notifications\NotificationService;
 use Illuminate\Support\Facades\Mail;
 
 class HorarioController extends IntranetController

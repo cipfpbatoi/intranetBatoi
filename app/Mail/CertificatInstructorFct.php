@@ -5,12 +5,12 @@ namespace Intranet\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Intranet\Services\PdfService;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FctController;
 use Illuminate\Support\Facades\Log;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
-use Intranet\Services\FDFPrepareService;
+use Intranet\Services\Document\FDFPrepareService;
 
 
 class CertificatInstructorFct extends Mailable

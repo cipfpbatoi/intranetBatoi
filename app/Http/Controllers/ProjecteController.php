@@ -5,8 +5,8 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
-use Intranet\Services\NotificationService;
-use Intranet\Services\PdfService;
+use Intranet\Services\Notifications\NotificationService;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Projecte;
 use Intranet\Http\Requests\ProyectoRequest;
 

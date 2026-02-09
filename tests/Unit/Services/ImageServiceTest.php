@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services;
 
 use Illuminate\Http\UploadedFile;
-use Intranet\Services\ImageService;
+use Intranet\Services\Media\ImageService;
 use RuntimeException;
 use Tests\TestCase;
 

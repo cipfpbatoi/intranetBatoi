@@ -7,7 +7,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Sao\Annexes;
-use Intranet\Services\SeleniumService;
+use Intranet\Services\Automation\SeleniumService;
 
 
 class SaoAnnexes extends Command

@@ -5,7 +5,7 @@ namespace Tests\Unit\Services;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Collection;
 use Intranet\Finders\Finder;
-use Intranet\Services\DocumentService;
+use Intranet\Services\Document\DocumentService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Tests\TestCase;
 

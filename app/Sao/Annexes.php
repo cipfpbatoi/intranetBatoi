@@ -6,8 +6,8 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFctAval;
-use Intranet\Services\AlertLogger;
-use Intranet\Services\AttachedFileService;
+use Intranet\Services\UI\AlertLogger;
+use Intranet\Services\Document\AttachedFileService;
 use Intranet\Entities\Signatura;
 
 class Annexes

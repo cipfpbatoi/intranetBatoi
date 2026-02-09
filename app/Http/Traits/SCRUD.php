@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Traits;
 
-use Intranet\Services\FormBuilder;
+use Intranet\Services\UI\FormBuilder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 trait SCRUD

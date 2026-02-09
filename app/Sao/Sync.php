@@ -7,8 +7,8 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Intranet\Entities\AlumnoFctAval;
-use Intranet\Services\AlertLogger;
-use Intranet\Services\DigitalSignatureService;
+use Intranet\Services\UI\AlertLogger;
+use Intranet\Services\Signature\DigitalSignatureService;
 
 class Sync
 {

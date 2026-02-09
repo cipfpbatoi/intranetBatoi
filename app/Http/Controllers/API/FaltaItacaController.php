@@ -2,12 +2,12 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Services\NotificationService;
+use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Falta_profesor;
 use Illuminate\Http\Request;
-use Intranet\Services\StateService;
+use Intranet\Services\General\StateService;
 use Jenssegers\Date\Date;
 use function estaInstituto,sumarHoras;
 

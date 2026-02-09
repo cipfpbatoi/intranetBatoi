@@ -3,7 +3,7 @@
 namespace Intranet\Http\Traits;
 
 use Intranet\Entities\Adjunto;
-use Intranet\Services\AttachedFileService;
+use Intranet\Services\Document\AttachedFileService;
 
 
 trait DropZone

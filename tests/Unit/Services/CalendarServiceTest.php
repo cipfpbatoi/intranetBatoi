@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services;
 
 use Illuminate\Support\Facades\Config;
-use Intranet\Services\CalendarService;
+use Intranet\Services\Calendar\CalendarService;
 use Tests\TestCase;
 
 class CalendarServiceTest extends TestCase

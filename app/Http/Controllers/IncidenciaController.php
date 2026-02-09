@@ -9,8 +9,8 @@ use Intranet\Entities\OrdenTrabajo;
 use Intranet\Http\Requests\IncidenciaRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
-use Intranet\Services\FormBuilder;
-use Intranet\Services\ImageService;
+use Intranet\Services\UI\FormBuilder;
+use Intranet\Services\Media\ImageService;
 use Styde\Html\Facades\Alert;
 
 

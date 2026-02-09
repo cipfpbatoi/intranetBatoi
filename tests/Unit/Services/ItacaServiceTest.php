@@ -4,8 +4,9 @@ namespace Tests\Unit\Services;
 
 use Intranet\Entities\Falta_itaca;
 use Intranet\Exceptions\IntranetException;
-use Intranet\Services\ItacaService;
+use Intranet\Services\School\ItacaService;
 use Mockery;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Styde\Html\Facades\Alert;
 use Tests\TestCase;
 
@@ -19,23 +20,23 @@ class ItacaServiceTest extends TestCase
 
     public function test_constructor_llanca_excepcio_si_no_hi_ha_driver()
     {
-        $selenium = Mockery::mock('overload:Intranet\\Services\\SeleniumService');
+        $selenium = Mockery::mock('Intranet\\Services\\Automation\\SeleniumService');
         $selenium->shouldReceive('getDriver')->andReturn(null);
 
         $this->expectException(IntranetException::class);
 
-        new ItacaService('00000000A', 'pass');
+        new ItacaService('00000000A', 'pass', $selenium, true);
     }
 
     public function test_process_falta_retorna_false_quan_hi_ha_excepcio()
     {
-        $selenium = Mockery::mock('overload:Intranet\\Services\\SeleniumService');
-        $selenium->shouldReceive('getDriver')->andReturn(new \stdClass());
+        $selenium = Mockery::mock('Intranet\\Services\\Automation\\SeleniumService');
+        $selenium->shouldReceive('getDriver')->andReturn(Mockery::mock(RemoteWebDriver::class));
         $selenium->shouldReceive('fill')->andThrow(new \Exception('boom'));
 
         Alert::shouldReceive('danger')->once();
 
-        $service = new ItacaService('00000000A', 'pass');
+        $service = new ItacaService('00000000A', 'pass', $selenium, false);
 
         $falta = new Falta_itaca();
         $falta->idProfesor = '11111111A';
@@ -48,11 +49,11 @@ class ItacaServiceTest extends TestCase
 
     public function test_close_crida_quit()
     {
-        $selenium = Mockery::mock('overload:Intranet\\Services\\SeleniumService');
-        $selenium->shouldReceive('getDriver')->andReturn(new \stdClass());
+        $selenium = Mockery::mock('Intranet\\Services\\Automation\\SeleniumService');
+        $selenium->shouldReceive('getDriver')->andReturn(Mockery::mock(RemoteWebDriver::class));
         $selenium->shouldReceive('quit')->once();
 
-        $service = new ItacaService('00000000A', 'pass');
+        $service = new ItacaService('00000000A', 'pass', $selenium, false);
         $service->close();
         $this->addToAssertionCount(1);
     }

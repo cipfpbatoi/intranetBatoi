@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Services\PdfService;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaboracion;
 use Intranet\Http\Controllers\Auth\PerfilController;

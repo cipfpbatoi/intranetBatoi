@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Http\Requests\PasswordRequest;
-use Intranet\Services\ItacaService;
+use Intranet\Services\School\ItacaService;
 use Intranet\Exceptions\IntranetException;
 use Carbon\Carbon;
 use Facebook\WebDriver\WebDriverBy;

@@ -12,7 +12,7 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Curso;
 use Intranet\Entities\Alumno;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\UI\FormBuilder;
 
 class CalendariFctController extends IntranetController
 {

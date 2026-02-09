@@ -4,7 +4,7 @@ namespace Intranet\Livewire\BustiaVioleta;
 
 use Livewire\Component;
 use Intranet\Entities\BustiaVioleta;
-use Intranet\Services\VioletHasher;
+use Intranet\Services\Auth\VioletHasher;
 
 class Form extends Component
 {

@@ -3,9 +3,9 @@
 namespace Intranet\Http\Traits;
 
 use Illuminate\Http\Request;
-use Intranet\Services\PdfService;
-use Intranet\Services\GestorService;
-use Intranet\Services\StateService;
+use Intranet\Services\Document\PdfService;
+use Intranet\Services\General\GestorService;
+use Intranet\Services\General\StateService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 

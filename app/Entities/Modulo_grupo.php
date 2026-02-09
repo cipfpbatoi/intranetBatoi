@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Services\JWTTokenService;
+use Intranet\Services\Auth\JWTTokenService;
 use Styde\Html\Facades\Alert;
 
 class Modulo_grupo extends Model

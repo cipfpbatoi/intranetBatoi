@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use Intranet\Services\PdfService;
+use Intranet\Services\Document\PdfService;
 use Tests\TestCase;
 
 class PdfServiceTest extends TestCase

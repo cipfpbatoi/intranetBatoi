@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Intranet\UI\Botones\BotonBasico;
-use Intranet\Services\NotificationService;
+use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Signatura;
@@ -15,7 +15,7 @@ use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
 use Intranet\Exceptions\CertException;
 use Intranet\Exceptions\IntranetException;
-use Intranet\Services\DigitalSignatureService;
+use Intranet\Services\Signature\DigitalSignatureService;
 use Styde\Html\Facades\Alert;
 
 /**

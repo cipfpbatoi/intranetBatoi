@@ -3,7 +3,7 @@
 namespace Tests\Unit\Services;
 
 use Intranet\Notifications\mensajePanel;
-use Intranet\Services\NotificationService;
+use Intranet\Services\Notifications\NotificationService;
 use Mockery;
 use Tests\TestCase;
 

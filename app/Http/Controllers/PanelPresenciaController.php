@@ -10,11 +10,11 @@ use Intranet\Entities\Comision;
 use Intranet\Entities\Falta;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
-use Intranet\Services\FitxatgeService;
+use Intranet\Services\HR\FitxatgeService;
 use Jenssegers\Date\Date;
 use Carbon\Carbon;
 use Intranet\Entities\Horario;
-use Intranet\Services\PdfService;
+use Intranet\Services\Document\PdfService;
 use Styde\Html\Facades\Alert;
 
 class PanelPresenciaController extends BaseController

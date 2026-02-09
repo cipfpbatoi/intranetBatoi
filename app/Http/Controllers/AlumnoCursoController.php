@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use DB;
-use Intranet\Services\PdfService;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Curso;

@@ -3,12 +3,12 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\UI\Botones\BotonBasico;
-use Intranet\Services\NotificationService;
+use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\TitolAlumne;
-use Intranet\Services\AdviseService;
+use Intranet\Services\Notifications\AdviseService;
 use Styde\Html\Facades\Alert;
 
 /**

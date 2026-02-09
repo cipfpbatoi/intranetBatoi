@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers\API;
 
 use DB;
 use Intranet\Entities\Signatura;
-use Intranet\Services\DigitalSignatureService;
+use Intranet\Services\Signature\DigitalSignatureService;
 
 class SignaturaController extends ApiBaseController
 {

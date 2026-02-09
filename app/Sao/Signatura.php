@@ -10,8 +10,8 @@ use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 
-use Intranet\Services\SeleniumService;
-use Intranet\Services\SignaturaService;
+use Intranet\Services\Automation\SeleniumService;
+use Intranet\Services\Signature\SignaturaService;
 use Styde\Html\Facades\Alert;
 
 

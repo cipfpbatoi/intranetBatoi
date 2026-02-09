@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\IntranetController;
-use Intranet\Services\ImageService;
+use Intranet\Services\Media\ImageService;
 use Styde\Html\Facades\Alert;
 
 

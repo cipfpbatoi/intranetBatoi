@@ -19,7 +19,7 @@ use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Mail\Comunicado;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\UI\FormBuilder;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 

@@ -9,7 +9,7 @@ use Intranet\Entities\Curso;
 use Intranet\Http\Requests\CursoRequest;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Jobs\SendEmail;
-use Intranet\Services\GestorService;
+use Intranet\Services\General\GestorService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 

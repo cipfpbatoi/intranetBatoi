@@ -4,11 +4,11 @@ namespace Intranet\Http\Controllers;
 
 
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Services\NotificationService;
+use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Solicitud;
 use Intranet\Http\Requests\SolicitudRequest;
 use Intranet\Http\Traits\DropZone;
-use Intranet\Services\ConfirmAndSend;
+use Intranet\Services\Notifications\ConfirmAndSend;
 
 
 /**

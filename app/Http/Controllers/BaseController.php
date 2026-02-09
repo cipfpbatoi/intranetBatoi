@@ -6,8 +6,8 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\UI\Panels\Panel;
 use Illuminate\Support\Facades\Session;
-use Intranet\Services\ConfirmAndSend;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\Notifications\ConfirmAndSend;
+use Intranet\Services\UI\FormBuilder;
 
 
 abstract class BaseController extends Controller

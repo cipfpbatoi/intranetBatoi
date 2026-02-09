@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Services\PdfService;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Documento;
@@ -30,8 +30,8 @@ use Intranet\Http\PrintResources\NotificacioInspeccioResource;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Http\Traits\DropZone;
 use Intranet\Mail\DocumentRequest;
-use Intranet\Services\FDFPrepareService;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\Document\FDFPrepareService;
+use Intranet\Services\UI\FormBuilder;
 use Styde\Html\Facades\Alert;
 
 

@@ -57,7 +57,8 @@ class CreateOrUpdateDocumentAction
         $payload = $data;
 
         $payload['curso'] = $this->firstAvailable($data, $document, 'curso') ?? curso();
-        $payload['supervisor'] = $this->firstAvailable($data, $document, 'supervisor') ?? authUser()->FullName;
+        $payload['supervisor'] = $this->firstAvailable($data, $document, 'supervisor')
+            ?? (authUser() ? authUser()->FullName : 'Sistema');
         $payload['descripcion'] = $this->firstAvailable($data, $document, 'descripcion') ?? 'Registre dia ' . hoy('d-m-Y');
 
         if ($elemento) {

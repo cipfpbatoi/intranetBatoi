@@ -10,8 +10,8 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
-use Intranet\Services\GestorService;
-use Intranet\Services\StateService;
+use Intranet\Services\General\GestorService;
+use Intranet\Services\General\StateService;
 use Jenssegers\Date\Date;
 
 class FaltaItacaController extends IntranetController

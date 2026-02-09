@@ -6,7 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
-use Intranet\Services\PdfService;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
@@ -15,8 +15,8 @@ use Intranet\Http\PrintResources\AVIIBResource;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
 use Intranet\Http\Requests\ColaboradorRequest;
 use Intranet\Http\Traits\Imprimir;
-use Intranet\Services\FDFPrepareService;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\Document\FDFPrepareService;
+use Intranet\Services\UI\FormBuilder;
 use Styde\Html\Facades\Alert;
 
 

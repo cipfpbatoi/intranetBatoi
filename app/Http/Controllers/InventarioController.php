@@ -7,7 +7,7 @@ use Intranet\Entities\Espacio;
 use Intranet\Entities\Inventario;
 use Intranet\Entities\Material;
 use Intranet\Http\Traits\Imprimir;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\UI\FormBuilder;
 
 /**
  * Class MaterialController

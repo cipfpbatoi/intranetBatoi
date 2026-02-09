@@ -46,7 +46,7 @@
                     <td></td>
                     <td>{{ hoy('d-m-Y') }}</td>
                     <td>
-                        {!!  Intranet\Services\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.25) !!}
+                        {!!  Intranet\Services\Signature\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.25) !!}
                     </td>
                     <td></td>
                 </tr>

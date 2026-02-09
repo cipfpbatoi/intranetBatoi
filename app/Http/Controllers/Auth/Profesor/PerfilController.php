@@ -11,9 +11,9 @@ use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\PerfilFilesRequest;
-use Intranet\Services\DigitalSignatureService;
-use Intranet\Services\FormBuilder;
-use Intranet\Services\ImageService;
+use Intranet\Services\Signature\DigitalSignatureService;
+use Intranet\Services\UI\FormBuilder;
+use Intranet\Services\Media\ImageService;
 use Intranet\Services\PhotoCarnet;
 use Styde\Html\Facades\Alert;
 

@@ -5,7 +5,7 @@ namespace Intranet\View\Components\Layouts;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
-use Intranet\Services\NavigationService;
+use Intranet\Services\UI\NavigationService;
 
 class Titlebar extends Component
 {

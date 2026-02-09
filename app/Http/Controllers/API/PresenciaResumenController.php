@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers\Api;
 
-use Intranet\Services\PresenciaResumenService;
+use Intranet\Services\HR\PresenciaResumenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;

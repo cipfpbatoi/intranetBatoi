@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Services;
 
-use Intranet\Services\ZipService;
+use Intranet\Services\Document\ZipService;
 use Tests\TestCase;
 
 class ZipServiceTest extends TestCase

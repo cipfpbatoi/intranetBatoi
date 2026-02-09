@@ -4,8 +4,8 @@ namespace Intranet\Http\Controllers\Auth;
 
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Session;
-use Intranet\Services\FitxatgeService;
-use Intranet\Services\PerfilService;
+use Intranet\Services\HR\FitxatgeService;
+use Intranet\Services\Auth\PerfilService;
 
 /**
  * Description of HomeIdentifyController

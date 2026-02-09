@@ -11,7 +11,7 @@ use Intranet\Services\Mail\MyMail;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Signatura;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Services\AttachedFileService;
+use Intranet\Services\Document\AttachedFileService;
 
 
 

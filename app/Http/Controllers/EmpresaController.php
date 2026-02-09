@@ -10,7 +10,7 @@ use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Grupo;
 use Intranet\Http\PrintResources\A1Resource;
-use Intranet\Services\FDFPrepareService;
+use Intranet\Services\Document\FDFPrepareService;
 use Response;
 use Intranet\UI\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;

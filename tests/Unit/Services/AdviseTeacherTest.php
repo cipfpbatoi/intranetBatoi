@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Profesor;
 use Intranet\Jobs\SendEmail;
 use Intranet\Notifications\mensajePanel;
-use Intranet\Services\AdviseTeacher;
+use Intranet\Services\Notifications\AdviseTeacher;
 use Tests\TestCase;
 
 class AdviseTeacherTest extends TestCase

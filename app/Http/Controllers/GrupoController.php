@@ -12,7 +12,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Horario;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Jobs\SendEmail;
-use Intranet\Services\SecretariaService;
+use Intranet\Services\School\SecretariaService;
 use Jenssegers\Date\Date;
 use SebastianBergmann\Comparator\Exception;
 use Styde\Html\Facades\Alert;
