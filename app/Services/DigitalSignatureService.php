@@ -12,6 +12,8 @@ use LSNepomuceno\LaravelA1PdfSign\Sign\ValidatePdfSignature;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use setasign\Fpdi\Fpdi;
+use Intranet\Services\Signature\SignImage;
+use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
 use Symfony\Component\Process\Process;
 use Throwable;
 

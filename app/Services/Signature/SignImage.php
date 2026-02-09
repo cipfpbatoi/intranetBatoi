@@ -1,10 +1,13 @@
 <?php
-namespace Intranet\Componentes;
+namespace Intranet\Services\Signature;
 
 use Illuminate\Support\Fluent;
 use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
 use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
 
+/**
+ * Genera la imatge de segell/signatura a partir d'un certificat.
+ */
 class SignImage extends SealImage
 {
 
@@ -21,6 +24,15 @@ class SignImage extends SealImage
     ];
 
 
+    /**
+     * Genera una imatge amb informació del certificat.
+     *
+     * @param ManageCert $cert
+     * @param string $fontSize
+     * @param bool $showDueDate
+     * @param string $dueDateFormat
+     * @return string
+     */
     public function generateFromCert(
         ManageCert $cert,
         string $fontSize,
@@ -47,6 +59,12 @@ class SignImage extends SealImage
             ->generateImage();
     }
 
+    /**
+     * Configura la font per a la imatge.
+     *
+     * @param string $fontSize
+     * @return callable
+     */
     private function getFontConfig(string $fontSize): callable
     {
         return function ($font) use ($fontSize) {
@@ -56,6 +74,13 @@ class SignImage extends SealImage
         };
     }
 
+    /**
+     * Divideix el text en línies segons el tamany.
+     *
+     * @param string $text
+     * @param string $fontSize
+     * @return string
+     */
     private function breakText(string $text, string $fontSize = self::FONT_SIZE_LARGE): string
     {
         $cropSize = self::$cropSizes[$fontSize] ?? self::$cropSizes[self::FONT_SIZE_LARGE];

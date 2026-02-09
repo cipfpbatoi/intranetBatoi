@@ -14,3 +14,10 @@ yarn-error.log
 composer.lock
 /nbproject/private/
 /.DS_Store
+.phpunit.result.cache
+.phpunit.cache/
+/storage/framework/cache
+/storage/framework/views
+/storage/framework/sessions
+/bootstrap/cache
+/storage/logs
