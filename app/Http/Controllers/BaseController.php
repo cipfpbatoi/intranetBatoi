@@ -16,7 +16,7 @@ abstract class BaseController extends Controller
     protected $vista;       // vistes per defecte
     protected $panel;       // panel per a la vista
     protected $titulo = []; // paràmetres per al titol de la vista
-    protected $parametresVista = null;
+    protected $parametresVista = [];
 
     
     protected $profile = true;
