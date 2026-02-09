@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Botones;
+namespace Intranet\UI\Botones;
 
 /**
  * Botó amb icona en format imatge/font-awesome.

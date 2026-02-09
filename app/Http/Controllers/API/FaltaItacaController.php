@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Componentes\Mensaje;
+use Intranet\Services\NotificationService;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Falta_profesor;
@@ -104,7 +104,7 @@ class FaltaItacaController extends ApiBaseController
             }
         }
         if ($alta){
-            Mensaje::send(config('avisos.director'),'Oblit Birret');
+            app(NotificationService::class)->send(config('avisos.director'),'Oblit Birret');
         }
 
         

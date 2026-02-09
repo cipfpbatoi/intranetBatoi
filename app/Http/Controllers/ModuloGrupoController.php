@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Http;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Services\JWTTokenService;
 

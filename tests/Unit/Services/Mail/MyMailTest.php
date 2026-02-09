@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Componentes;
+namespace Tests\Unit\Services\Mail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
 use Mockery;
 use Tests\TestCase;
-use Intranet\Componentes\MyMail;
+use Intranet\Services\Mail\MyMail;
 use Intranet\Mail\DocumentRequest;
 
 class MyMailTest extends TestCase

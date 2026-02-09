@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\Panel;
+use Intranet\UI\Panels\Panel;
 use Intranet\Http\Traits\Searchable;
 use Intranet\Services\ConfirmAndSend;
 use Intranet\Services\FormBuilder;

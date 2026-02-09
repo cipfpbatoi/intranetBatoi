@@ -4,7 +4,7 @@ namespace Intranet\Services;
 use Illuminate\Http\JsonResponse;
 use Intranet\Finders\UniqueFinder;
 use Intranet\Finders\RequestFinder;
-use Intranet\Componentes\DocumentoFct;
+use Intranet\Support\Fct\DocumentoFctConfig;
 
 class FctMailService
 {
@@ -17,7 +17,7 @@ class FctMailService
      */
     public function getMailById(int $id, string $documento)
     {
-        $finder = new UniqueFinder(['id' => $id, 'document' => new DocumentoFct($documento)]);
+        $finder = new UniqueFinder(['id' => $id, 'document' => new DocumentoFctConfig($documento)]);
         return $this->generateMail($finder);
     }
 
@@ -30,7 +30,7 @@ class FctMailService
      */
     public function getMailByRequest($request, string $documento)
     {
-        $finder = new RequestFinder(['request' => $request, 'document' => new DocumentoFct($documento)]);
+        $finder = new RequestFinder(['request' => $request, 'document' => new DocumentoFctConfig($documento)]);
         return $this->generateMail($finder);
     }
 

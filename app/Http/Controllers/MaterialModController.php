@@ -3,7 +3,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Material;
 use Intranet\Entities\MaterialBaja;

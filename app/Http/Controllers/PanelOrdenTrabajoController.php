@@ -2,9 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonPost;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonPost;
 use Intranet\Entities\Incidencia;
 
 class PanelOrdenTrabajoController extends BaseController

@@ -11,8 +11,8 @@ use Intranet\Entities\Poll\Vote;
 use Intranet\Exports\PollResultsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Response;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
 
 class   PollController extends IntranetController

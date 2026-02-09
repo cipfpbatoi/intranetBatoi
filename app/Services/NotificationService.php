@@ -1,14 +1,14 @@
 <?php
 
-namespace Intranet\Componentes;
+namespace Intranet\Services;
 
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Profesor;
 use Intranet\Notifications\mensajePanel;
 
-class Mensaje
+class NotificationService
 {
-    private static function receptor($id)
+    private function receptor($id)
     {
         if (strlen($id) == 8) {
             return Alumno::find($id);
@@ -16,7 +16,7 @@ class Mensaje
         return Profesor::find($id);
     }
 
-    private static function emisor($emisor)
+    private function emisor($emisor)
     {
         if ($emisor) {
             return $emisor;
@@ -30,10 +30,10 @@ class Mensaje
     }
 
 
-    public static function send($id, $mensaje, $enlace = '#', $emisor = null)
+    public function send($id, $mensaje, $enlace = '#', $emisor = null)
     {
-        $emisor = self::emisor($emisor);
-        $receptor = self::receptor($id);
+        $emisor = $this->emisor($emisor);
+        $receptor = $this->receptor($id);
         $fecha = fechaString();
         if ($emisor && $receptor) {
             $receptor->notify(new mensajePanel(

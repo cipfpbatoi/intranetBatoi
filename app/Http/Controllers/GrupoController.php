@@ -3,7 +3,7 @@ namespace Intranet\Http\Controllers;
 
 use DB;
 use Illuminate\Http\Request;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Ciclo;

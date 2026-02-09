@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Botones;
+namespace Intranet\UI\Botones;
 
 use Illuminate\Support\Facades\Storage;
 

@@ -6,11 +6,11 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Intranet\Botones\BotonBasico;
-use Intranet\Componentes\MyMail;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\Services\Mail\MyMail;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Signatura;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\AttachedFileService;
 
 

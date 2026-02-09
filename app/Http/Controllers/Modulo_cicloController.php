@@ -2,8 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
 
 /**
  * Class Modulo_cicloController

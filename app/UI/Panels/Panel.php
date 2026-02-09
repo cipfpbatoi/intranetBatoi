@@ -1,8 +1,15 @@
 <?php
 
-namespace Intranet\Botones;
+namespace Intranet\UI\Panels;
 
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\View\View;
+use Intranet\UI\Botones\Boton;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
 use InvalidArgumentException;
 
 /**
@@ -15,6 +22,9 @@ class Panel
     public const BOTON_PROFILE = 'profile';
     public const BOTON_INFILE = 'infile';
     public const BOTON_FCT = 'fct';
+    public const BOTON_NOFCT = 'nofct';
+    public const BOTON_PENDIENTE = 'pendiente';
+    public const BOTON_COLABORA = 'colabora';
 
     private const BOTON_TYPES = [
         self::BOTON_INDEX,
@@ -22,19 +32,30 @@ class Panel
         self::BOTON_PROFILE,
         self::BOTON_INFILE,
         self::BOTON_FCT,
+        self::BOTON_NOFCT,
+        self::BOTON_PENDIENTE,
+        self::BOTON_COLABORA,
     ];
 
+    /** @var array<string, array<int, Boton>> */
     private array $botones = [   // botons del panel
         'index' => [],
         'grid' => [],
         'profile' => [],
         'infile' => [],
         'fct' => [],
+        'nofct' => [],
+        'pendiente' => [],
+        'colabora' => [],
     ];
     private string $model;     // model de dades
+    /** @var array<int, Pestana> */
     private array $pestanas = [];  // pestanyes
+    /** @var array<string, mixed> */
     private array $titulo = [];    // titol
+    /** @var mixed */
     private $elementos = null; // elements
+    /** @var array<string, mixed> */
     private array $data = [];   // array de més dades
     private ?Paginator $paginator = null; // paginador opcional
     public array $items = [];
@@ -44,13 +65,26 @@ class Panel
      * @param mixed $rejilla Definició de columnes de la pestanya principal
      * @param string|null $vista Vista opcional de la pestanya principal
      * @param bool $creaPestana Si és true crea la pestanya grid inicial
+     * @param array|null $include Includes de la pestanya (modals, etc.)
+     */
+    /**
+     * @param string $modelo Nom base del model (p. ex. "Profesor")
+     * @param array|null $rejilla Definició de columnes de la pestanya principal
+     * @param string|null $vista Vista opcional de la pestanya principal
+     * @param bool $creaPestana Si és true crea la pestanya grid inicial
      * @param array $include Includes de la pestanya (modals, etc.)
      */
-    public function __construct($modelo, $rejilla = null, $vista = null, $creaPestana=true, $include=[])
+    public function __construct(
+        string $modelo,
+        ?array $rejilla = null,
+        ?string $vista = null,
+        bool $creaPestana = true,
+        ?array $include = []
+    )
     {
         $this->model = $modelo;
         if ($creaPestana) {
-            $this->setPestana('grid', true, $vista, null, $rejilla, null, $include);
+            $this->setPestana('grid', true, $vista, null, $rejilla, null, $include ?? []);
         }
         
     }
@@ -59,7 +93,16 @@ class Panel
     /**
      * Ompli el panell i retorna la vista final.
      */
-    public function render($todos, $titulo, $vista, $formulario=null)
+    /**
+     * Ompli el panell i retorna la vista final.
+     *
+     * @param mixed $todos
+     * @param mixed $titulo
+     * @param string $vista
+     * @param mixed $formulario
+     * @return View|RedirectResponse
+     */
+    public function render($todos, $titulo, $vista, $formulario = null): View|RedirectResponse
     {
         if (!$this->countPestana()) {
             return redirect()->route('home');
@@ -75,7 +118,14 @@ class Panel
     /**
      * Crea una botonera estàndard a partir de noms d'accions.
      */
-    public function setBotonera($index = [], $grid = [], $profile = []): void
+    /**
+     * Crea una botonera estàndard a partir de noms d'accions.
+     *
+     * @param array<int, string> $index
+     * @param array<int, string> $grid
+     * @param array<int, string> $profile
+     */
+    public function setBotonera(array $index = [], array $grid = [], array $profile = []): void
     {
         if ($index != []) {
             foreach ($index as $btn) {
@@ -108,7 +158,7 @@ class Panel
     /**
      * Afig el mateix botó a `grid` i `profile`.
      */
-    public function setBothBoton($href, $atributos = [], $relative = false): void
+    public function setBothBoton(string $href, array $atributos = [], bool $relative = false): void
     {
         $this->setBoton(self::BOTON_GRID, new BotonImg($href, $atributos, $relative));
         $this->setBoton(self::BOTON_PROFILE, new BotonIcon($href, $atributos, $relative));
@@ -118,13 +168,13 @@ class Panel
      * Afig una pestanya o substituïx la primera.
      */
     public function setPestana(
-        $nombre,
-        $activo = false,
-        $vista = null,
-        $filtro = null,
-        $rejilla = null,
-        $sustituye = null,
-        $include=[]
+        string $nombre,
+        bool $activo = false,
+        ?string $vista = null,
+        ?array $filtro = null,
+        ?array $rejilla = null,
+        ?bool $sustituye = null,
+        array $include = []
     ): void
     {
         if ($activo) {
@@ -162,7 +212,10 @@ class Panel
     /**
      * Guarda els placeholders de títol per a traduccions.
      */
-    public function setTitulo($titulo): void
+    /**
+     * @param array<string, mixed> $titulo
+     */
+    public function setTitulo(array $titulo): void
     {
         $this->titulo = $titulo;
     }
@@ -194,11 +247,11 @@ class Panel
         return $this->pestanas;
     }
 
-    public function getRejilla()
+    public function getRejilla(): ?array
     {
         return $this->pestanas[0]->getRejilla();
     }
-    public function setRejilla($grid): void
+    public function setRejilla(?array $grid): void
     {
         $this->pestanas[0]->setRejilla($grid);
     }
@@ -206,7 +259,11 @@ class Panel
     /**
      * @param string|null $tipo Si es passa retorna només eixe grup.
      */
-    public function getBotones($tipo = null): array
+    /**
+     * @param string|null $tipo Si es passa retorna només eixe grup.
+     * @return array<int, Boton>|array<string, array<int, Boton>>
+     */
+    public function getBotones(?string $tipo = null): array
     {
         if (isset($tipo)) {
             return (isset($this->botones[$tipo]))?$this->botones[$tipo]:[];
@@ -225,19 +282,29 @@ class Panel
     /**
      * Resol el títol traduït segons el model i l'acció.
      */
-    public function getTitulo($que = 'index'): string
+    public function getTitulo(string $que = 'index'): string
     {
-        return trans("models." . ucwords(strtolower($this->getModel())) . ".$que", $this->titulo);
+        $key = "models." . ucwords(strtolower($this->getModel())) . ".$que";
+
+        return Lang::has($key)
+            ? trans($key, $this->titulo)
+            : $this->getModel();
     }
 
     /**
      * Assigna la col·lecció d'elements a mostrar.
+     */
+    /**
+     * @param mixed $elementos
      */
     public function setElementos($elementos): void
     {
         $this->elementos = $elementos;
     }
 
+    /**
+     * @return mixed
+     */
     public function getElemento()
     {
         return $this->elementos;
@@ -245,7 +312,7 @@ class Panel
 
    
     // Filtra els elements d'una pestanya amb condicions.
-    public function getElementos($pestana)
+    public function getElementos(Pestana $pestana)
     {
         $elementos = $this->elementos;
         if ($filtro = $pestana->getFiltro()) {
@@ -268,7 +335,7 @@ class Panel
     /**
      * Activa una pestanya pel nom i desactiva la resta.
      */
-    public function activaPestana($nombre): void
+    public function activaPestana(string $nombre): void
     {
         foreach ($this->pestanas as $pestana) {
             if ($pestana->getNombre() == $nombre) {
@@ -279,7 +346,7 @@ class Panel
         }
     }
 
-    private function getView($nombre, $vista): string
+    private function getView(string $nombre, ?string $vista): string
     {
         if ($vista == null) {
             return 'intranet.partials.' . $nombre . "." . strtolower($this->model);
@@ -291,12 +358,15 @@ class Panel
         return 'intranet.partials.' . $vista;
     }
 
-    public function __set($name, $value): void
+    public function __set(string $name, $value): void
     {
         $this->data[$name] = $value;
     }
 
-    public function __get($name)
+    /**
+     * @return mixed
+     */
+    public function __get(string $name)
     {
         if (array_key_exists($name, $this->data)) {
             return $this->data[$name];
@@ -325,7 +395,11 @@ class Panel
      * @param $titulo
      * @return Panel
      */
-    private function feedPanel($todos, $titulo): Panel
+    /**
+     * @param mixed $todos
+     * @param array<string, mixed> $titulo
+     */
+    private function feedPanel($todos, array $titulo): Panel
     {
         if ($todos instanceof Paginator) {
             $this->paginator = $todos;

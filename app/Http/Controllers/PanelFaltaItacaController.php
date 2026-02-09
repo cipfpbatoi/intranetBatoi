@@ -2,8 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonIcon;
 use Intranet\Http\Traits\Panel;
 
 /**

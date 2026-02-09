@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Botones;
+namespace Intranet\UI\Botones;
 
 /**
  * Botó bàsic amb classe de confirmació.

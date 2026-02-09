@@ -12,7 +12,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Services\FDFPrepareService;
 use Response;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Input;
 

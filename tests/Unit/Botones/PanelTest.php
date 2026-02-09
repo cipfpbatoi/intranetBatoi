@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Botones;
 
 use InvalidArgumentException;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\Panel;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Panels\Panel;
 use Tests\TestCase;
 
 class PanelTest extends TestCase

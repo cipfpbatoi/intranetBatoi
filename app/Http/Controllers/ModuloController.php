@@ -3,12 +3,12 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
-use Intranet\Botones\Panel;
+use Intranet\UI\Panels\Panel;
 
 /**
  * Class ModuloController

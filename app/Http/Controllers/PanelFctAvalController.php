@@ -5,8 +5,8 @@ namespace Intranet\Http\Controllers;
 
 use DB;
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonConfirmacion;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonConfirmacion;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;

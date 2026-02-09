@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Botones;
+namespace Intranet\UI\Botones;
 
 /**
  * Botó per a enviament de formulari (submit).

@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Asistencia;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Grupo;

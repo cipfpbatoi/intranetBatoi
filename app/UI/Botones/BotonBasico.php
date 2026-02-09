@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Botones;
+namespace Intranet\UI\Botones;
 
 /**
  * Botó bàsic amb renderització d'enllaç i icona opcional.
