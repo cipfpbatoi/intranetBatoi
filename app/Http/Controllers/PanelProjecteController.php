@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\NotificationService;
-use Intranet\Componentes\Pdf as PDF;
+use Intranet\Services\PdfService;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Profesor;
@@ -101,7 +101,7 @@ class PanelProjecteController extends ModalController
             ->get();
 
         // Usar hazZip para generar el zip
-        $zipPath = Pdf::hazZip('pdf.propostaProjecte', $projectes , null, 'portrait',  'idAlumne'   );
+        $zipPath = app(PdfService::class)->hazZip('pdf.propostaProjecte', $projectes , null, 'portrait',  'idAlumne'   );
 
         // Enviar el correo con el zip adjunto
         $profesores = Profesor::Grupo($miGrupo->codigo)->get();
@@ -183,7 +183,7 @@ class PanelProjecteController extends ModalController
     {
         $elemento = Projecte::findOrFail($id);
         $informe = 'pdf.propostaProjecte';
-        $pdf = PDF::hazPdf($informe, $elemento, null);
+        $pdf = app(PdfService::class)->hazPdf($informe, $elemento, null);
         return $pdf->stream();
     }
 

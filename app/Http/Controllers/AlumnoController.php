@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Componentes\Pdf as PDF;
+use Intranet\Services\PdfService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaboracion;
 use Intranet\Http\Controllers\Auth\PerfilController;
@@ -48,7 +48,7 @@ class AlumnoController extends PerfilController
      */
     public function carnet($alumno)
     {
-        return PDF::hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
+        return app(PdfService::class)->hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
     public function checkFol($id)

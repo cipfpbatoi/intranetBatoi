@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Componentes\Pdf;
+use Intranet\Services\PdfService;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Documento;
@@ -411,7 +411,7 @@ class FctAlumnoController extends IntranetController
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName
         ];
-        return Pdf::hazPdf('pdf.fct.certificatsFCT', [$fct], $dades);
+        return app(PdfService::class)->hazPdf('pdf.fct.certificatsFCT', [$fct], $dades);
     }
 
     /**

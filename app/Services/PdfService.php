@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Componentes;
+namespace Intranet\Services;
 
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Barryvdh\Snappy\Facades\SnappyPdf as SnappyPDF;
@@ -12,10 +12,19 @@ use function env;
 use function fechaString;
 
 
-class Pdf
+/**
+ * Servei de generació de PDFs i ZIPs.
+ */
+class PdfService
 {
 
-    private static function pie($informe)
+    /**
+     * Calcula el text del peu segons el document.
+     *
+     * @param string $informe
+     * @return string
+     */
+    public function footerText($informe)
     {
         $rutaDesglosada = explode('.', $informe);
         $document = end($rutaDesglosada);
@@ -26,7 +35,19 @@ class Pdf
         return "";
     }
 
-    public static function hazPdf(
+    /**
+     * Genera un PDF amb el driver indicat.
+     *
+     * @param string $informe
+     * @param mixed $todos
+     * @param mixed $datosInforme
+     * @param string $orientacion
+     * @param string|array $dimensiones
+     * @param int $marginTop
+     * @param string|null $driver
+     * @return mixed
+     */
+    public function hazPdf(
         $informe,
         $todos,
         $datosInforme = null,
@@ -39,20 +60,30 @@ class Pdf
         $driver = $driver??env('PDF_DRIVER', 'SnappyPdf');
 
         if ($driver==='DomPdf') {
-            return self::hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones);
+            return $this->hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones);
         }
         if ($driver==='SnappyPdf') {
-            return self::hazSnappyPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones, $marginTop);
+            return $this->hazSnappyPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones, $marginTop);
         }
     }
 
 
 
 
-    public static function hazZip($informe, $all, $datosInforme = null, $orientacion = 'portrait',$field ='id'  )
+    /**
+     * Genera un ZIP amb PDFs per a cada element.
+     *
+     * @param string $informe
+     * @param iterable $all
+     * @param mixed $datosInforme
+     * @param string $orientacion
+     * @param string $field
+     * @return string|null
+     */
+    public function hazZip($informe, $all, $datosInforme = null, $orientacion = 'portrait', $field = 'id')
     {
         $pdfs = [];
-        $pie = self::pie($informe);
+        $pie = $this->footerText($informe);
         $className = 'seguiments';
         $datosInforme = $datosInforme ?? fechaString(null, 'ca');
         $dimensiones = 'a4';
@@ -96,7 +127,18 @@ class Pdf
 
 
 
-    protected static function hazSnappyPdf(
+    /**
+     * Genera un PDF amb Snappy.
+     *
+     * @param string $informe
+     * @param mixed $todos
+     * @param mixed $datosInforme
+     * @param string $orientacion
+     * @param string|array $dimensiones
+     * @param int $marginTop
+     * @return mixed
+     */
+    protected function hazSnappyPdf(
         $informe,
         $todos,
         $datosInforme = null,
@@ -105,7 +147,7 @@ class Pdf
         $marginTop = 15
     )
     {
-        $pie = self::pie($informe);
+        $pie = $this->footerText($informe);
         $datosInforme = $datosInforme==null?fechaString(null, 'ca'):$datosInforme;
         if (is_string($dimensiones)) {
             return(SnappyPDF::loadView(
@@ -130,7 +172,17 @@ class Pdf
             ->setOption('page-height', $dimensiones[1]));
     }
 
-    protected static function hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones)
+    /**
+     * Genera un PDF amb DomPDF.
+     *
+     * @param string $informe
+     * @param mixed $todos
+     * @param mixed $datosInforme
+     * @param string $orientacion
+     * @param string|array $dimensiones
+     * @return mixed
+     */
+    protected function hazDomPdf($informe, $todos, $datosInforme, $orientacion, $dimensiones)
     {
 
         $datosInforme = $datosInforme==null?fechaString(null, 'ca'):$datosInforme;

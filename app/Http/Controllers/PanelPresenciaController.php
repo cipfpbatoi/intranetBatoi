@@ -14,7 +14,7 @@ use Intranet\Services\FitxatgeService;
 use Jenssegers\Date\Date;
 use Carbon\Carbon;
 use Intranet\Entities\Horario;
-use Intranet\Componentes\Pdf;
+use Intranet\Services\PdfService;
 use Styde\Html\Facades\Alert;
 
 class PanelPresenciaController extends BaseController
