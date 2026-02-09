@@ -1,8 +1,8 @@
 <?php
 
-namespace Intranet\Entities;
+namespace Intranet\Services\Document;
 
-class TipoDocumento
+class TipoDocumentoService
 {
     
     public static function allPestana()

@@ -5,7 +5,7 @@ namespace Intranet\Services\Calendar;
 
 
 use Intranet\Entities\OrdenReunion;
-use Intranet\Entities\TipoReunion;
+use Intranet\Services\Document\TipoReunionService;
 
 class MeetingOrderGenerateService
 {

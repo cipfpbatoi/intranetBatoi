@@ -9,11 +9,11 @@
             {{ csrf_field() }}
             <select id='tipo_id' name='tipo' class='form-control select' required >
                 @foreach (config('auxiliares.reunionesControlables') as $index => $howMany )
-                    <option value='{{$index}}'>{{Intranet\Entities\TipoReunion::find($index)->vliteral}}</option>
+                    <option value='{{$index}}'>{{Intranet\Services\Document\TipoReunionService::find($index)->vliteral}}</option>
                 @endforeach
             </select>
             <select id='numero_id' name='numero' class='form-control select' >
-                @foreach (Intranet\Entities\TipoReunion::find(2)->numeracion as $index => $valor))
+                @foreach (Intranet\Services\Document\TipoReunionService::find(2)->numeracion as $index => $valor))
                     <option value='{{$index}}'>{{$valor}}</option>
                 @endforeach
             </select>

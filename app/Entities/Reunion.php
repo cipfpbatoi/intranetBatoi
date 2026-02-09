@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Services\Document\TipoReunionService;
 use Illuminate\Support\Facades\App;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
@@ -129,7 +130,7 @@ class Reunion extends Model
 
     public function getTipoOptions()
     {
-        return TipoReunion::allSelect();
+        return TipoReunionService::allSelect();
     }
 
     public function getIdEspacioOptions()
@@ -178,7 +179,7 @@ class Reunion extends Model
 
     public function Tipos()
     {
-        return new TipoReunion($this->tipo);
+        return new TipoReunionService($this->tipo);
     }
 
     public function Grupos()

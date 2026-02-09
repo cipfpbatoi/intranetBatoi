@@ -1,11 +1,11 @@
 <?php
 
 
-namespace Intranet\Entities;
+namespace Intranet\Services\Document;
 
 use Illuminate\Support\Facades\App;
 
-class TipoReunion
+class TipoReunionService
 {
     private $features;
 
@@ -36,7 +36,7 @@ class TipoReunion
     }
 
     public static function find($id){
-        $tr = new TipoReunion($id);
+        $tr = new TipoReunionService($id);
         return $tr;
     }
 

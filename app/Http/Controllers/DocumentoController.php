@@ -9,7 +9,7 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Profesor;
-use Intranet\Entities\TipoDocumento;
+use Intranet\Services\Document\TipoDocumentoService;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Services\UI\FormBuilder;
@@ -52,7 +52,7 @@ class DocumentoController extends IntranetController
     public function index(){
         ini_set('memory_limit', '512M');
         // Opcions de filtres (tipus i cursos disponibles)
-        $configTipos = TipoDocumento::allPestana();
+        $configTipos = TipoDocumentoService::allPestana();
         $bdTipos = Documento::select('tipoDocumento')
             ->distinct()
             ->orderBy('tipoDocumento')
@@ -169,7 +169,7 @@ class DocumentoController extends IntranetController
         }
 
         $except = ['nota'];
-        $rol = TipoDocumento::rol($request->input('tipoDocumento'));
+        $rol = TipoDocumentoService::rol($request->input('tipoDocumento'));
         $cursoRequest = $request->input('curso')??curso();
         $cleanRequest = $request->duplicate(
             $request->except($except),

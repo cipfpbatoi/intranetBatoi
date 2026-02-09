@@ -11,7 +11,7 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Reunion;
-use Intranet\Entities\TipoReunion;
+use Intranet\Services\Document\TipoReunionService;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Requests\OrdenReunionStoreRequest;
 use Intranet\Http\Traits\Imprimir;
@@ -361,7 +361,7 @@ class ReunionController extends IntranetController
                     'fichero' => $elemento->fichero,
                     'supervisor' => $elemento->Creador->FullName,
                     'grupo' => str_replace(' ', '_', $elemento->Xgrupo),
-                    'tags' => TipoReunion::find($elemento->tipo)->vliteral,
+                    'tags' => TipoReunionService::find($elemento->tipo)->vliteral,
                     'created_at' => new Date($elemento->fecha),
                     'rol' => config('roles.rol.profesor')]);
                 $elemento->save();
@@ -420,7 +420,7 @@ class ReunionController extends IntranetController
                 ->Numero($request->numero)
                 ->Archivada()
                 ->count()) {
-                $texto = 'Et falta per fer i/o arxivar la reunio ' . TipoReunion::find($request->tipo)->vliteral . ' ';
+                $texto = 'Et falta per fer i/o arxivar la reunio ' . TipoReunionService::find($request->tipo)->vliteral . ' ';
                 $texto .= $request->numero > 0 ? config('auxiliares.numeracion')[$request->numero] : '';
                 avisa($grupo->tutor, $texto);
                 $cont++;
@@ -449,7 +449,7 @@ class ReunionController extends IntranetController
 
     private function informe($elemento)
     {
-        $tipo_reunion = TipoReunion::find($elemento->tipo);
+        $tipo_reunion = TipoReunionService::find($elemento->tipo);
         return haVencido($elemento->fecha) ?
             'pdf.reunion.'.$tipo_reunion->acta:
             'pdf.reunion.'.$tipo_reunion->convocatoria;

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\Vote;
-use Intranet\Entities\TipoReunion;
+use Intranet\Services\Document\TipoReunionService;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Reunion;
@@ -159,9 +159,9 @@ class PanelFinCursoController extends BaseController
             if ($howManyNeeded){
                 $howManyAre = Reunion::Convocante()->Tipo($tipo)->Archivada()->count();
                 if ($howManyAre >= $howManyNeeded) {
-                    $avisos[self::SUCCESS][] = "Acta ".TipoReunion::find($tipo)->vliteral." Arxivada";
+                    $avisos[self::SUCCESS][] = "Acta ".TipoReunionService::find($tipo)->vliteral." Arxivada";
                 } else {
-                    $avisos[self::DANGER][] = "Falten Actes de ".TipoReunion::find($tipo)->vliteral." per arxivar";
+                    $avisos[self::DANGER][] = "Falten Actes de ".TipoReunionService::find($tipo)->vliteral." per arxivar";
                 }
             }
         }

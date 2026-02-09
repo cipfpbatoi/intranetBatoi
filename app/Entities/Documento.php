@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
 use Intranet\Services\Document\DocumentPathService;
+use Intranet\Services\Document\TipoDocumentoService;
 
 
 class Documento extends Model
@@ -53,7 +54,7 @@ class Documento extends Model
 
     public function getTipoDocumentoOptions()
     {
-        return TipoDocumento::allPestana();
+        return TipoDocumentoService::allPestana();
     }
 
     public function getExistAttribute()

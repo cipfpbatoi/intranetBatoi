@@ -17,7 +17,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
-use Intranet\Entities\TipoReunion;
+use Intranet\Services\Document\TipoReunionService;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Services\General\GestorService;
 use Jenssegers\Date\Date;
@@ -135,7 +135,7 @@ class PanelListadoEntregasController extends BaseController
                         'fichero' => $reunion->fichero,
                         'supervisor' => $reunion->idProfesor,
                         'grupo' => str_replace(' ', '_', $reunion->Xgrupo),
-                        'tags' => TipoReunion::find($reunion->tipo)->vliteral . ',' . config('auxiliares.numeracion')[$reunion->numero],
+                        'tags' => TipoReunionService::find($reunion->tipo)->vliteral . ',' . config('auxiliares.numeracion')[$reunion->numero],
                         'created_at' => new Date($reunion->fecha),
                         'rol' => config('roles.rol.profesor')]);
 
