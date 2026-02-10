@@ -1,6 +1,20 @@
 <div>
     <h2>Horari del professor {{ $profesorNom }}</h2>
 
+    @if (!empty($plantillaOptions))
+        <div class="mb-3 no-print">
+            <label for="plantillaSelect"><strong>Horari</strong></label>
+            <select id="plantillaSelect" class="form-control" wire:model="selectedPlantilla">
+                @foreach ($plantillaOptions as $value => $label)
+                    <option value="{{ $value }}">{{ $label }}</option>
+                @endforeach
+            </select>
+            @if (count($plantillaOptions) > 1)
+                <small class="text-muted">Selecciona l'horari que vols vore.</small>
+            @endif
+        </div>
+    @endif
+
     <p>
         Selecciona una hora ocupada i, després, fes clic a una altra cel·la per a moure-la o intercanviar-la.
         No es pot passar una hora del matí a la vesprada (ni a l'inrevés).

@@ -34,6 +34,9 @@ class HorariProfessorCanvi extends Component
     public string $fechaInicio = '';
     public string $fechaFin = '';
     public ?string $propuestaId = null;
+    public array $plantillaOptions = [];
+    public ?string $selectedPlantilla = null;
+    public string $horarioProfesorId = '';
     public array $declaraciones = [
         'mantenimiento_turno' => false,
         'ausencia_alumnado' => false,
@@ -52,7 +55,60 @@ class HorariProfessorCanvi extends Component
             $this->profesorNom = $profesor->fullName;
         }
 
+        $this->horarioProfesorId = $this->resolveHorarioProfesorId();
         $this->loadHoras();
+        $this->loadPlantillas();
+        $this->loadHorario();
+        $this->loadCambios();
+    }
+
+    protected function resolveHorarioProfesorId(): string
+    {
+        if (Horario::where('idProfesor', $this->dni)->exists()) {
+            return $this->dni;
+        }
+
+        $profesor = Profesor::find($this->dni);
+        if ($profesor && !empty($profesor->sustituye_a)) {
+            return (string) $profesor->sustituye_a;
+        }
+
+        return $this->dni;
+    }
+
+    protected function loadPlantillas(): void
+    {
+        $this->plantillaOptions = [];
+        $profesorId = $this->horarioProfesorId ?: $this->resolveHorarioProfesorId();
+
+        $plantillas = Horario::where('idProfesor', $profesorId)
+            ->select('plantilla')
+            ->distinct()
+            ->orderBy('plantilla', 'desc')
+            ->pluck('plantilla')
+            ->all();
+
+        foreach ($plantillas as $plantilla) {
+            if ($plantilla === null || $plantilla === '') {
+                $this->plantillaOptions['__null__'] = 'Sense plantilla';
+                continue;
+            }
+            $key = (string) $plantilla;
+            $this->plantillaOptions[$key] = 'Plantilla ' . $plantilla;
+        }
+
+        if (!empty($this->plantillaOptions)) {
+            if ($this->selectedPlantilla === null || !array_key_exists($this->selectedPlantilla, $this->plantillaOptions)) {
+                $this->selectedPlantilla = array_key_first($this->plantillaOptions);
+            }
+        }
+    }
+
+    public function updatedSelectedPlantilla(): void
+    {
+        $this->selectedCell = null;
+        $this->error = '';
+        $this->message = '';
         $this->loadHorario();
         $this->loadCambios();
     }
@@ -79,9 +135,22 @@ class HorariProfessorCanvi extends Component
         $this->items = [];
         $this->grid = [];
 
-        $horarios = Horario::Profesor($this->dni)
-            ->with(['Modulo', 'Ocupacion', 'Grupo', 'Hora'])
-            ->get();
+        if ($this->horarioProfesorId === '') {
+            $this->horarioProfesorId = $this->resolveHorarioProfesorId();
+        }
+
+        $query = Horario::where('idProfesor', $this->horarioProfesorId)
+            ->with(['Modulo', 'Ocupacion', 'Grupo', 'Hora']);
+
+        if ($this->selectedPlantilla !== null) {
+            if ($this->selectedPlantilla === '__null__') {
+                $query->whereNull('plantilla');
+            } else {
+                $query->where('plantilla', $this->selectedPlantilla);
+            }
+        }
+
+        $horarios = $query->get();
 
         foreach ($horarios as $horario) {
             $cell = $horario->sesion_orden . '-' . $horario->dia_semana;
