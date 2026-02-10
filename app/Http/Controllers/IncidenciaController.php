@@ -220,6 +220,16 @@ class IncidenciaController extends ModalController
     {
         return new Incidencia(['idProfesor'=>AuthUser()->dni,'fecha'=>Hoy('Y-m-d')]);
     }
+
+    /*
+     * show($id) retorna vista de detall
+     */
+    public function show($id)
+    {
+        $elemento = Incidencia::findOrFail($id);
+        $modelo = $this->model;
+        return view('intranet.show', compact('elemento', 'modelo'));
+    }
     /**
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
