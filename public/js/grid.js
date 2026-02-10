@@ -10,7 +10,9 @@
     }
 
     const table = $('#datatable');
-    const serverPagination = table.data('server-pagination') === true || table.data('server-pagination') === 'true';
+    const serverPagination = table.data('server-pagination') === true
+        || table.data('server-pagination') === 'true'
+        || table.is('[data-server-pagination]');
 
     table.DataTable({
         language: { url: '/json/cattable.json' },
@@ -19,6 +21,7 @@
         paging: !serverPagination,
         info: !serverPagination,
         searching: !serverPagination, // evitarem incoherències amb la paginació de Laravel
+        ordering: !serverPagination,
         columnDefs: [
             { responsivePriority: 1, targets: -1}
         ]

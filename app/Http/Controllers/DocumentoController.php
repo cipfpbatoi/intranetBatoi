@@ -33,6 +33,7 @@ class DocumentoController extends IntranetController
     protected $modal = false;
     protected $profile = false;
     protected int $perPage = 50;
+    protected int $perPageCompleta = 200;
     protected int $maxPerPage = 500;
     protected $formFields = ['tipoDocumento' => ['type' => 'select'],
         'rol' => ['type' => 'hidden'],
@@ -86,7 +87,7 @@ class DocumentoController extends IntranetController
         }
 
         if (!request()->has('perPage') && Session::get('completa')) {
-            return null;
+            return $this->perPageCompleta;
         }
 
         $perPage = request('perPage');
