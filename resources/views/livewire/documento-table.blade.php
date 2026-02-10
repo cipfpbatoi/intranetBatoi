@@ -23,10 +23,17 @@
             </select>
         </div>
         <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
-            <input type="text"
-                   class="form-control"
-                   placeholder="Propietari"
-                   wire:model.live.debounce.500ms="propietario">
+            @if ($isDireccion)
+                <input type="text"
+                       class="form-control"
+                       placeholder="Propietari"
+                       wire:model.live.debounce.500ms="propietario">
+            @else
+                <input type="text"
+                       class="form-control"
+                       value="{{ $propietario }}"
+                       disabled>
+            @endif
         </div>
         <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
             <input type="text"
@@ -45,12 +52,18 @@
                 <option value="200">200</option>
             </select>
         </div>
-        <div class="col-md-4 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
-            <label style="display: inline-flex; align-items: center; gap: 6px;">
-                <input type="checkbox" wire:model.live="mostrarTot">
-                Mostrar totes les dades (rol permés)
-            </label>
-        </div>
+        @if ($isDireccion)
+            <div class="col-md-4 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
+                <label style="display: inline-flex; align-items: center; gap: 6px;">
+                    <input type="checkbox" wire:model.live="mostrarTot">
+                    Mostrar totes les dades (rol permés)
+                </label>
+            </div>
+        @else
+            <div class="col-md-4 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
+                <span class="text-muted">Mostrant només els teus documents</span>
+            </div>
+        @endif
         <div class="col-md-6 col-sm-12 col-xs-12 text-right" style="margin-bottom: 8px;">
             <span wire:loading class="text-muted">Carregant...</span>
         </div>

@@ -19,7 +19,7 @@ class DocumentoTable extends Component
     public string $curso = '';
     public string $propietario = '';
     public string $tags = '';
-    public int $perPage = 50;
+    public int $perPage = 25;
     public bool $mostrarTot = false;
     public int $page = 1;
 
@@ -32,13 +32,18 @@ class DocumentoTable extends Component
         'curso' => ['except' => ''],
         'propietario' => ['except' => ''],
         'tags' => ['except' => ''],
-        'perPage' => ['except' => 50],
+        'perPage' => ['except' => 25],
         'mostrarTot' => ['except' => false],
     ];
 
     public function mount(): void
     {
         $this->mostrarTot = (bool) Session::get('completa', false);
+
+        if (!$this->isDireccion()) {
+            $this->mostrarTot = false;
+            $this->propietario = AuthUser()->FullName;
+        }
 
         $configTipos = TipoDocumentoService::allPestana();
         $bdTipos = Documento::query()
@@ -94,16 +99,24 @@ class DocumentoTable extends Component
             ->orderBy('curso', 'desc');
 
         $roles = RolesUser(AuthUser()->rol);
+        $isDireccion = $this->isDireccion();
 
-        if ($this->mostrarTot) {
-            $query->whereIn('rol', $roles);
+        if ($isDireccion) {
+            if ($this->mostrarTot) {
+                $query->whereIn('rol', $roles);
+            } else {
+                $query->where(function ($q) use ($roles) {
+                    $q->where(function ($sub) use ($roles) {
+                        $sub->where('curso', Curso())
+                            ->whereIn('rol', $roles);
+                    })->orWhere('propietario', AuthUser()->fullName);
+                });
+            }
         } else {
-            $query->where(function ($q) use ($roles) {
-                $q->where(function ($sub) use ($roles) {
-                    $sub->where('curso', Curso())
-                        ->whereIn('rol', $roles);
-                })->orWhere('propietario', AuthUser()->fullName);
-            });
+            $this->mostrarTot = false;
+            $this->propietario = AuthUser()->FullName;
+            $query->where('propietario', AuthUser()->FullName)
+                ->whereIn('rol', $roles);
         }
 
         $search = trim($this->search);
@@ -123,7 +136,7 @@ class DocumentoTable extends Component
             $query->where('curso', $this->curso);
         }
 
-        if ($this->propietario !== '') {
+        if ($isDireccion && $this->propietario !== '') {
             $query->where('propietario', 'like', "%{$this->propietario}%");
         }
 
@@ -135,6 +148,7 @@ class DocumentoTable extends Component
 
         return view('livewire.documento-table', [
             'documentos' => $documentos,
+            'isDireccion' => $isDireccion,
         ]);
     }
 
@@ -154,5 +168,10 @@ class DocumentoTable extends Component
             'detalle',
             'fichero',
         ];
+    }
+
+    private function isDireccion(): bool
+    {
+        return userIsAllow(config('roles.rol.direccion'));
     }
 }
