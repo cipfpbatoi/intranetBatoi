@@ -3,6 +3,7 @@
 
 namespace Intranet\Http\Traits;
 
+use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 
