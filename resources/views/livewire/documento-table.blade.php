@@ -62,8 +62,31 @@
         </div>
     </div>
 
+    <style>
+        .documento-table .sticky-actions {
+            position: sticky;
+            right: 0;
+            background: #fff;
+            z-index: 2;
+            white-space: nowrap;
+        }
+        .documento-table thead .sticky-actions {
+            z-index: 3;
+            background: #f5f5f5;
+        }
+        .documento-table .sticky-actions::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: linear-gradient(to left, rgba(0,0,0,0.08), rgba(0,0,0,0));
+        }
+    </style>
+
     <div class="table-responsive">
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped table-bordered documento-table">
             <thead>
             <tr>
                 <th>Tipus</th>
@@ -83,7 +106,7 @@
                 <th>Tags</th>
                 <th>Detall</th>
                 <th>Fitxer</th>
-                <th>Accions</th>
+                <th class="sticky-actions">Accions</th>
             </tr>
             </thead>
             <tbody>
@@ -104,7 +127,7 @@
                     <td>{{ $documento->tags }}</td>
                     <td>{{ $documento->detalle }}</td>
                     <td>{{ $documento->fichero }}</td>
-                    <td>
+                    <td class="sticky-actions">
                         @if ($documento->link && in_array($documento->rol, RolesUser(AuthUser()->rol)))
                             <a class="btn btn-xs btn-info" href="{{ route('documento.show', $documento->id) }}" title="Veure">
                                 <i class="fa fa-eye"></i>
