@@ -4,7 +4,6 @@ namespace Intranet\Livewire;
 
 use Intranet\Entities\Documento;
 use Intranet\Services\Document\TipoDocumentoService;
-use Illuminate\Support\Facades\Session;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -20,7 +19,6 @@ class DocumentoTable extends Component
     public string $propietario = '';
     public string $tags = '';
     public int $perPage = 25;
-    public bool $mostrarTot = false;
     public int $page = 1;
 
     public array $tipoOptions = [];
@@ -33,15 +31,11 @@ class DocumentoTable extends Component
         'propietario' => ['except' => ''],
         'tags' => ['except' => ''],
         'perPage' => ['except' => 25],
-        'mostrarTot' => ['except' => false],
     ];
 
     public function mount(): void
     {
-        $this->mostrarTot = (bool) Session::get('completa', false);
-
         if (!$this->isDireccion()) {
-            $this->mostrarTot = false;
             $this->propietario = AuthUser()->FullName;
         }
 
@@ -102,18 +96,8 @@ class DocumentoTable extends Component
         $isDireccion = $this->isDireccion();
 
         if ($isDireccion) {
-            if ($this->mostrarTot) {
-                $query->whereIn('rol', $roles);
-            } else {
-                $query->where(function ($q) use ($roles) {
-                    $q->where(function ($sub) use ($roles) {
-                        $sub->where('curso', Curso())
-                            ->whereIn('rol', $roles);
-                    })->orWhere('propietario', AuthUser()->fullName);
-                });
-            }
+            $query->whereIn('rol', $roles);
         } else {
-            $this->mostrarTot = false;
             $this->propietario = AuthUser()->FullName;
             $query->where('propietario', AuthUser()->FullName)
                 ->whereIn('rol', $roles);
