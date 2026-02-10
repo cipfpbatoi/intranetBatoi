@@ -20,10 +20,28 @@ use Styde\Html\Facades\Alert;
  */
 trait Autorizacion
 {
+    /**
+     * Estat inicial per defecte quan s'executa `init()`.
+     *
+     * @var int
+     */
+    protected $init = 1;
 
-    protected $init = 1; //estat quan s'inicialitza
-    protected $notFollow = false; // quan pasa alguna cosa du a la pestana final de l'estat
+    /**
+     * Si és `true`, manté la pestanya d'origen en lloc de la final.
+     *
+     * @var bool
+     */
+    protected $notFollow = false;
+
+    /**
+     * Instància memoitzada del servei de transicions.
+     */
     private ?AutorizacionStateService $autorizacionStateService = null;
+
+    /**
+     * Instància memoitzada del servei d'impressió.
+     */
     private ?AutorizacionPrintService $autorizacionPrintService = null;
 
     /**
@@ -53,7 +71,12 @@ trait Autorizacion
         return $this->autorizacionPrintService;
     }
     
-    // cancela pasa a estat -1
+    /**
+     * Mou un element a estat de cancel·lació (`-1`).
+     *
+     * @param int|string $id Identificador de l'element.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function cancel($id)
     {
         if (!$this->getAutorizacionStateService()->cancel($id)) {
@@ -63,7 +86,12 @@ trait Autorizacion
         return back();
     }
     
-    //inicializat a init (normalment 1)
+    /**
+     * Inicialitza un element a l'estat definit en `$this->init`.
+     *
+     * @param int|string $id Identificador de l'element.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function init($id)
     {
         if (!$this->getAutorizacionStateService()->init($id, (int) $this->init)) {
@@ -73,7 +101,12 @@ trait Autorizacion
         return back();
     }
     
-    //imprimeix
+    /**
+     * Aplica la transició `_print` a un element.
+     *
+     * @param int|string $id Identificador de l'element.
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
     protected function _print($id)
     {
         if (!$this->getAutorizacionStateService()->print($id)) {
@@ -82,6 +115,14 @@ trait Autorizacion
     }
 
 
+    /**
+     * Resol l'element i opcionalment redirigeix a la pestanya d'estat resultant.
+     *
+     * @param Request $request Request amb `explicacion` opcional.
+     * @param int|string $id Identificador de l'element.
+     * @param bool $redirect Si és `true`, aplica `follow()`.
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
     protected function resolve(Request $request, $id, $redirect = true)
     {
         $result = $this->getAutorizacionStateService()->resolve($id, $request->explicacion);
@@ -95,7 +136,13 @@ trait Autorizacion
         }
     }
 
-    // estat + 1
+    /**
+     * Incrementa en una unitat l'estat actual de l'element.
+     *
+     * @param int|string $id Identificador de l'element.
+     * @param bool $redirect Si és `true`, aplica `follow()`.
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
     protected function accept($id, $redirect = true)
     {
         $result = $this->getAutorizacionStateService()->accept($id);
@@ -110,7 +157,13 @@ trait Autorizacion
     }
 
 
-    // estat -1
+    /**
+     * Decrementa en una unitat l'estat actual de l'element.
+     *
+     * @param int|string $id Identificador de l'element.
+     * @param bool $redirect Si és `true`, aplica `follow()`.
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
     protected function resign($id, $redirect = true)
     {
         $result = $this->getAutorizacionStateService()->resign($id);
@@ -124,7 +177,14 @@ trait Autorizacion
         }
     }
 
-    // refusa
+    /**
+     * Refusa l'element amb explicació opcional.
+     *
+     * @param Request $request Request amb `explicacion` opcional.
+     * @param int|string $id Identificador de l'element.
+     * @param bool $redirect Si és `true`, aplica `follow()`.
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
     protected function refuse(Request $request, $id, $redirect = true)
     {
         $result = $this->getAutorizacionStateService()->refuse($id, $request->explicacion);
@@ -140,9 +200,12 @@ trait Autorizacion
 
 
     
-    // rediriguix o no a un altra pestana
     /**
      * Tria la pestanya de retorn segons `notFollow`.
+     *
+     * @param int|string|null $inicial Pestanya inicial.
+     * @param int|string|null $final Pestanya final.
+     * @return \Illuminate\Http\RedirectResponse
      */
     private function follow($inicial, $final)
     {
@@ -159,6 +222,7 @@ trait Autorizacion
      * @param string|null $final Acció final de `StateService` o estat numèric.
      * @param string $orientacion Orientació del PDF (`portrait|landscape`).
      * @param bool $link Si és `true`, enllaça elements al document generat.
+     * @return mixed
      */
     public function imprimir($modelo = '', $inicial = null, $final = null, $orientacion='portrait', $link=true)
     {
