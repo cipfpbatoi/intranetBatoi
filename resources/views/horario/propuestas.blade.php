@@ -47,6 +47,7 @@
                             <a class="btn btn-primary" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/aceptar" onclick="return confirm('Acceptar aquesta proposta?')">Acceptar</a>
                             <a class="btn btn-danger" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/rebutjar" onclick="return rebutjarProposta('{{ $proposta['dni'] }}','{{ $proposta['id'] }}')">Rebutjar</a>
                         @endif
+                        <a class="btn btn-danger" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/esborrar" onclick="return confirm('Esborrar aquesta proposta?')">Esborrar</a>
                     </td>
                 </tr>
             @empty

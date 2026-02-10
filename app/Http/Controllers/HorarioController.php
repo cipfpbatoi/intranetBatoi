@@ -222,6 +222,21 @@ class HorarioController extends IntranetController
         return back();
     }
 
+    public function esborrarProposta($dni, $id)
+    {
+        $disk = Storage::disk('local');
+        $path = '/horarios/' . $dni . '/' . $id . '.json';
+
+        if (!$disk->exists($path)) {
+            Alert::warning("No hi ha proposta per al professor $dni");
+            return back();
+        }
+
+        $disk->delete($path);
+        Alert::success("Proposta del professor $dni esborrada");
+        return back();
+    }
+
     protected function sendAcceptationEmail(string $dni, array $data, string $id): void
     {
         $profesor = Profesor::find($dni);
