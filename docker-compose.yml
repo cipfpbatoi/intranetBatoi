@@ -21,6 +21,7 @@ services:
         depends_on:
             - mysql
             - mailpit
+            - selenium
     
     caddy:
         image: caddy:2-alpine
@@ -76,6 +77,14 @@ services:
         ports:
             - '${FORWARD_MAILPIT_PORT:-1025}:1025'
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+        networks:
+            - sail
+    selenium:
+        image: selenium/standalone-firefox:latest
+        ports:
+            - '${FORWARD_SELENIUM_PORT:-4444}:4444'
+            - '${FORWARD_SELENIUM_VNC_PORT:-7900}:7900'
+        shm_size: '2gb'
         networks:
             - sail
 networks:
