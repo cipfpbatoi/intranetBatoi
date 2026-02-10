@@ -4,10 +4,10 @@
             <input type="text"
                    class="form-control"
                    placeholder="Cercar en qualsevol camp..."
-                   wire:model.debounce.500ms="search">
+                   wire:model.live.debounce.500ms="search">
         </div>
         <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
-            <select class="form-control" wire:model="tipoDocumento">
+            <select class="form-control" wire:model.live="tipoDocumento">
                 <option value="">Tots els tipus</option>
                 @foreach ($tipoOptions as $key => $label)
                     <option value="{{ $key }}">{{ $label }}</option>
@@ -15,7 +15,7 @@
             </select>
         </div>
         <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
-            <select class="form-control" wire:model="curso">
+            <select class="form-control" wire:model.live="curso">
                 <option value="">Tots els cursos</option>
                 @foreach ($cursoOptions as $cursoOption)
                     <option value="{{ $cursoOption }}">{{ $cursoOption }}</option>
@@ -26,19 +26,19 @@
             <input type="text"
                    class="form-control"
                    placeholder="Propietari"
-                   wire:model.debounce.500ms="propietario">
+                   wire:model.live.debounce.500ms="propietario">
         </div>
         <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
             <input type="text"
                    class="form-control"
                    placeholder="Tags"
-                   wire:model.debounce.500ms="tags">
+                   wire:model.live.debounce.500ms="tags">
         </div>
     </div>
 
     <div class="row" style="margin-bottom: 12px;">
         <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
-            <select class="form-control" wire:model="perPage">
+            <select class="form-control" wire:model.live="perPage">
                 <option value="25">25</option>
                 <option value="50">50</option>
                 <option value="100">100</option>
@@ -47,7 +47,7 @@
         </div>
         <div class="col-md-4 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
             <label style="display: inline-flex; align-items: center; gap: 6px;">
-                <input type="checkbox" wire:model="mostrarTot">
+                <input type="checkbox" wire:model.live="mostrarTot">
                 Mostrar totes les dades (rol permés)
             </label>
         </div>

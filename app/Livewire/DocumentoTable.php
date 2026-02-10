@@ -21,6 +21,7 @@ class DocumentoTable extends Component
     public string $tags = '';
     public int $perPage = 50;
     public bool $mostrarTot = false;
+    public int $page = 1;
 
     public array $tipoOptions = [];
     public array $cursoOptions = [];
@@ -33,7 +34,6 @@ class DocumentoTable extends Component
         'tags' => ['except' => ''],
         'perPage' => ['except' => 50],
         'mostrarTot' => ['except' => false],
-        'page' => ['except' => 1],
     ];
 
     public function mount(): void
