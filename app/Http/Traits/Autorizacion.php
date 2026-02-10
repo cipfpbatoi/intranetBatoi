@@ -3,32 +3,72 @@
 namespace Intranet\Http\Traits;
 
 use Illuminate\Http\Request;
-use Intranet\Services\Document\PdfService;
-use Intranet\Services\General\GestorService;
-use Intranet\Services\General\StateService;
-use Jenssegers\Date\Date;
+use Intranet\Services\General\AutorizacionPrintService;
+use Intranet\Services\General\AutorizacionStateService;
 use Styde\Html\Facades\Alert;
 
 
+/**
+ * Trait de suport per a controllers amb fluxos d'autorització per estats.
+ *
+ * Contracte esperat del controller que usa el trait:
+ * - `protected string $class`: FQCN del model (ex. Intranet\Entities\Foo).
+ * - `protected string $model`: nom curt del model per a config/vistes.
+ *
+ * El trait només coordina redireccions i missatgeria; la lògica de negoci
+ * queda delegada en `AutorizacionStateService` i `AutorizacionPrintService`.
+ */
 trait Autorizacion
 {
 
     protected $init = 1; //estat quan s'inicialitza
     protected $notFollow = false; // quan pasa alguna cosa du a la pestana final de l'estat
+    private ?AutorizacionStateService $autorizacionStateService = null;
+    private ?AutorizacionPrintService $autorizacionPrintService = null;
+
+    /**
+     * Resol i memoitza el servei de transicions d'estat per al model actual.
+     */
+    private function getAutorizacionStateService(): AutorizacionStateService
+    {
+        if (!$this->autorizacionStateService) {
+            $this->autorizacionStateService = app()->makeWith(
+                AutorizacionStateService::class,
+                ['class' => $this->class]
+            );
+        }
+
+        return $this->autorizacionStateService;
+    }
+
+    /**
+     * Resol i memoitza el servei d'impressió en lot.
+     */
+    private function getAutorizacionPrintService(): AutorizacionPrintService
+    {
+        if (!$this->autorizacionPrintService) {
+            $this->autorizacionPrintService = app(AutorizacionPrintService::class);
+        }
+
+        return $this->autorizacionPrintService;
+    }
     
     // cancela pasa a estat -1
     protected function cancel($id)
     {
-        $stSrv = new StateService($this->class, $id);
-        $stSrv->putEstado(-1);
+        if (!$this->getAutorizacionStateService()->cancel($id)) {
+            return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
+        }
+
         return back();
     }
     
     //inicializat a init (normalment 1)
     protected function init($id)
     {
-        $stSrv = new StateService($this->class, $id);
-        $stSrv->putEstado(1);
+        if (!$this->getAutorizacionStateService()->init($id, (int) $this->init)) {
+            return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
+        }
 
         return back();
     }
@@ -36,10 +76,7 @@ trait Autorizacion
     //imprimeix
     protected function _print($id)
     {
-        $stSrv = new StateService($this->class, $id);
-        $result = $stSrv->_print();
-
-        if ($result === false) {
+        if (!$this->getAutorizacionStateService()->print($id)) {
             return back()->with('error', 'Error en imprimir el document.');
         }
     }
@@ -47,32 +84,28 @@ trait Autorizacion
 
     protected function resolve(Request $request, $id, $redirect = true)
     {
-        $stSrv = new StateService($this->class, $id);
-        $iniSta = $stSrv->getEstado();
-        $finSta = $stSrv->resolve($request->explicacion);
+        $result = $this->getAutorizacionStateService()->resolve($id, $request->explicacion);
 
-        if ($finSta === false) {
+        if ($result === false) {
             return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
         }
 
         if ($redirect) {
-            return $this->follow($iniSta, $finSta);
+            return $this->follow($result['initial'], $result['final']);
         }
     }
 
     // estat + 1
     protected function accept($id, $redirect = true)
     {
-        $stSrv = new StateService($this->class, $id);
-        $iniSta = $stSrv->getEstado();
-        $finSta = $stSrv->putEstado($iniSta + 1);
+        $result = $this->getAutorizacionStateService()->accept($id);
 
-        if ($finSta === false) {
+        if ($result === false) {
             return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
         }
 
         if ($redirect) {
-            return $this->follow($iniSta, $finSta);
+            return $this->follow($result['initial'], $result['final']);
         }
     }
 
@@ -80,38 +113,37 @@ trait Autorizacion
     // estat -1
     protected function resign($id, $redirect = true)
     {
-        $stSrv = new StateService($this->class, $id);
-        $iniSta = $stSrv->getEstado();
-        $finSta = $stSrv->putEstado($iniSta-1);
+        $result = $this->getAutorizacionStateService()->resign($id);
 
-        if ($finSta === false) {
+        if ($result === false) {
             return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
         }
 
         if ($redirect) {
-            return $this->follow($iniSta, $finSta);
+            return $this->follow($result['initial'], $result['final']);
         }
     }
 
     // refusa
     protected function refuse(Request $request, $id, $redirect = true)
     {
-        $stSrv = new StateService($this->class, $id);
-        $iniSta = $stSrv->getEstado();
-        $finSta = $stSrv->refuse($request->explicacion);
+        $result = $this->getAutorizacionStateService()->refuse($id, $request->explicacion);
 
-        if ($finSta === false) {
+        if ($result === false) {
             return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
         }
 
         if ($redirect) {
-            return $this->follow($iniSta, $finSta);
+            return $this->follow($result['initial'], $result['final']);
         }
     }
 
 
     
     // rediriguix o no a un altra pestana
+    /**
+     * Tria la pestanya de retorn segons `notFollow`.
+     */
     private function follow($inicial, $final)
     {
         return $this->notFollow ? back()->with('pestana', $inicial) : back()->with('pestana', $final);
@@ -119,43 +151,29 @@ trait Autorizacion
 
 
     /**
-     * @param string $modelo
-     * @param null $inicial
-     * @param null $final
-     * @param string $orientacion
-     * @param bool $link
-
+     * Genera un PDF en lot per als elements en estat inicial i aplica transició.
+     *
+     * @param string $modelo Vista de PDF sense prefix (`pdf.`). Si va buit, usa
+     *                       `strtolower($this->model) . 's'`.
+     * @param int|null $inicial Estat de filtratge inicial.
+     * @param string|null $final Acció final de `StateService` o estat numèric.
+     * @param string $orientacion Orientació del PDF (`portrait|landscape`).
+     * @param bool $link Si és `true`, enllaça elements al document generat.
      */
-
     public function imprimir($modelo = '', $inicial = null, $final = null, $orientacion='portrait', $link=true)
     {
-        $modelo = $modelo ?? strtolower($this->model) . 's';
-        $final = $final ?? '_print';
-        $inicial =  $inicial ?? config('modelos.' . getClass($this->class) . '.print') - 1;
+        $response = $this->getAutorizacionPrintService()->imprimir(
+            $this->class,
+            $this->model,
+            $modelo,
+            $inicial,
+            $final,
+            $orientacion,
+            $link
+        );
 
-        $todos = $this->class::where('estado', '=', $inicial)->get();
-
-        if ($todos->count()) {
-            // Generem el PDF
-            $pdf = app(PdfService::class)->hazPdf("pdf.$modelo", $todos, null, $orientacion);
-
-            // Nom del fitxer
-            $nom = $this->model . new Date() . '.pdf';
-            $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-            $tags = config("modelos.$this->model.documento");
-
-            // Guardem el document al gestor documental
-            $doc = GestorService::saveDocument($nomComplet, $tags);
-
-            // Modifiquem l'estat de tots els elements
-            StateService::makeAll($todos, $final);
-
-            // Enllacem els elements amb el document si cal
-            if ($link) {
-                StateService::makeLink($todos, $doc->id);
-            }
-
-            return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
+        if ($response) {
+            return $response;
         }
 
         Alert::info(trans('messages.generic.empty'));
