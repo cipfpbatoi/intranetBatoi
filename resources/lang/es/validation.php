@@ -199,6 +199,7 @@ return array(
                 'Inactivo' => 'Inactivo',
                 'idModulo' => 'Código módulo',
                 'fichero' => 'Nombre fichero',
+                'imagen' => 'Imagen (Opcional)',
                 'evaluacion' => 'Evaluación',
                 'motivos' => 'Motivos',
                 'literal' => 'Nombre',

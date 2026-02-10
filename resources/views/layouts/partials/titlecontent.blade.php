@@ -1,6 +1,6 @@
 <h2>@yield('titulo')</h2>
 <ul class="nav navbar-right panel_toolbox">
-    <li><a href="{{\Intranet\Services\NavigationService::getPreviousUrl()}}?back=true"><i class='fa fa-reply'></i></a></li>
+    <li><a href="{{\Intranet\Services\UI\NavigationService::getPreviousUrl()}}?back=true"><i class='fa fa-reply'></i></a></li>
     <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i
                     class="fa fa-wrench"></i></a>

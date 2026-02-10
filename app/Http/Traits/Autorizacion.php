@@ -3,9 +3,9 @@
 namespace Intranet\Http\Traits;
 
 use Illuminate\Http\Request;
-use Intranet\Componentes\Pdf;
-use Intranet\Services\GestorService;
-use Intranet\Services\StateService;
+use Intranet\Services\Document\PdfService;
+use Intranet\Services\General\GestorService;
+use Intranet\Services\General\StateService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 
@@ -137,7 +137,7 @@ trait Autorizacion
 
         if ($todos->count()) {
             // Generem el PDF
-            $pdf = Pdf::hazPdf("pdf.$modelo", $todos, null, $orientacion);
+            $pdf = app(PdfService::class)->hazPdf("pdf.$modelo", $todos, null, $orientacion);
 
             // Nom del fitxer
             $nom = $this->model . new Date() . '.pdf';

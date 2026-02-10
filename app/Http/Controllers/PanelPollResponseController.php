@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Fct;
 use Response;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Poll\Poll;
 
 class PanelPollResponseController extends PollController

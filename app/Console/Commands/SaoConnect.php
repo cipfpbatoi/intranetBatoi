@@ -7,9 +7,9 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Exceptions\IntranetException;
-use Intranet\Services\SeleniumService;
+use Intranet\Services\Automation\SeleniumService;
 use Intranet\Sao\Sync;
-use Intranet\Services\AlertLogger;
+use Intranet\Services\UI\AlertLogger;
 
 class SaoConnect extends Command
 {

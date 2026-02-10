@@ -6,7 +6,7 @@ use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Profesor;
 use Illuminate\Http\Request;
-use Intranet\Services\FitxatgeService;
+use Intranet\Services\HR\FitxatgeService;
 
 class FicharController extends ApiBaseController
 {

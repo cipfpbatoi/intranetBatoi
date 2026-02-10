@@ -201,6 +201,7 @@ return array(
                 'Inactivo' => 'Inactiu',
                 'idModulo' => 'Codi mòdul',
                 'fichero' => 'Nom fitxer',
+                'imagen' => 'Imatge (Opcional)',
                 'motivos' => 'Motius',
                 'literal' => 'Nom',
                 'tipo' => 'Tipus',

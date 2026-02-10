@@ -3,10 +3,10 @@
 namespace Intranet\Http\Traits;
 
 use Illuminate\Support\Facades\Response;
-use Intranet\Componentes\Pdf as PDF;
-use Intranet\Services\AdviseTeacher;
-use Intranet\Services\CalendarService;
-use Intranet\Services\GestorService;
+use Intranet\Services\Document\PdfService;
+use Intranet\Services\Notifications\AdviseTeacher;
+use Intranet\Services\Calendar\CalendarService;
+use Intranet\Services\General\GestorService;
 
 
 /**
@@ -32,7 +32,7 @@ trait Imprimir
     protected static function hazPdf($informe, $todos, $datosInforme = null, $orientacion = 'portrait', $dimensiones = 'a4',
                                      $margin_top= 15)
     {
-        return PDF::hazPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones , $margin_top );
+        return app(PdfService::class)->hazPdf($informe, $todos, $datosInforme , $orientacion , $dimensiones , $margin_top );
     }
 
     /**

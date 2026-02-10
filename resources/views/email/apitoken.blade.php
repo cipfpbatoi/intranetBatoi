@@ -26,7 +26,7 @@
                     @forelse ($moduloGrupos as $modulogrupo)
                         <li>
                             @if ($today->between($startDate, $endDate))
-                                <a href="{{\Intranet\Services\JWTTokenService::getTokenLink($modulogrupo->id, $elemento->dni)}}">
+                                <a href="{{\Intranet\Services\Auth\JWTTokenService::getTokenLink($modulogrupo->id, $elemento->dni)}}">
                                     Mòdul: {{$modulogrupo->ModuloCiclo->Modulo->literal}}
                                     (<b>{{$modulogrupo->ModuloCiclo->Ciclo->literal}}</b>)
                                 </a>

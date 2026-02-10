@@ -4,7 +4,7 @@ namespace Intranet\Exceptions;
 
 
 use Illuminate\Support\Facades\Log;
-use Intranet\Services\SeleniumService;
+use Intranet\Services\Automation\SeleniumService;
 use Intranet\Entities\Counter;
 
 class SeleniumException extends \Exception

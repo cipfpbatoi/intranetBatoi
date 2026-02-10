@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Actividad;
@@ -10,11 +10,11 @@ use Intranet\Entities\Comision;
 use Intranet\Entities\Falta;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
-use Intranet\Services\FitxatgeService;
+use Intranet\Services\HR\FitxatgeService;
 use Jenssegers\Date\Date;
 use Carbon\Carbon;
 use Intranet\Entities\Horario;
-use Intranet\Componentes\Pdf;
+use Intranet\Services\Document\PdfService;
 use Styde\Html\Facades\Alert;
 
 class PanelPresenciaController extends BaseController

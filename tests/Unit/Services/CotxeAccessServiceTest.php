@@ -4,7 +4,7 @@ namespace Tests\Unit\Services;
 
 use Illuminate\Support\Facades\Http;
 use Intranet\Entities\CotxeAcces;
-use Intranet\Services\CotxeAccessService;
+use Intranet\Services\School\CotxeAccessService;
 use Mockery;
 use Tests\TestCase;
 

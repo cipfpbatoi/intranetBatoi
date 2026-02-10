@@ -2,8 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Espacio;
 use Intranet\Http\Requests\EspacioRequest;
 use Intranet\Http\Traits\Imprimir;

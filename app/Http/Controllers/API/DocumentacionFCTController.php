@@ -2,18 +2,18 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Componentes\DocumentoFct;
+use Intranet\Support\Fct\DocumentoFctConfig;
 use Intranet\Finders\MailFinders\MyA1Finder;
 use Intranet\Finders\MailFinders\MySignaturesFinder;
 use Intranet\Finders\MailFinders\SignaturesFinder;
-use Intranet\Services\DocumentService;
+use Intranet\Services\Document\DocumentService;
 
 
 class DocumentacionFCTController
 {
     public function exec($documento)
     {
-        $documento = new DocumentoFct($documento);
+        $documento = new DocumentoFctConfig($documento);
         $finder = $documento->getFinder();
         $resource = $documento->getResource();
         $service = new DocumentService(new $finder($documento));

@@ -2,13 +2,16 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonImg;
+use Illuminate\Support\Facades\Storage;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\OrdenTrabajo;
 use Intranet\Http\Requests\IncidenciaRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\UI\FormBuilder;
+use Intranet\Services\Media\ImageService;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -37,6 +40,7 @@ class IncidenciaController extends ModalController
         'espacio' => ['type' => 'select'],
         'material' => ['type' => 'select'],
         'descripcion' => ['type' => 'textarea'],
+        'imagen' => ['type' => 'file'],
         'idProfesor' => ['type' => 'hidden'],
         'prioridad' => ['type' => 'select'],
         'observaciones' => ['type' => 'text'],
@@ -118,6 +122,7 @@ class IncidenciaController extends ModalController
             'espacio' => ['disabled' => 'disabled'],
             'material' => ['disabled' => 'disabled'],
             'descripcion' => ['type' => 'textarea'],
+            'imagen' => ['type' => 'file'],
             'idProfesor' => ['type' => 'hidden'],
             'tipo' => ['type' => 'select'],
             'prioridad' => ['type' => 'select'],
@@ -134,6 +139,7 @@ class IncidenciaController extends ModalController
     {
         $new = new Incidencia();
         $new->fillAll($request);
+        $this->storeImagen($new, $request);
         Incidencia::putEstado($new->id, $this->init);
         return $this->redirect();
     }
@@ -148,6 +154,7 @@ class IncidenciaController extends ModalController
         $elemento =  Incidencia::findOrFail($id);
         $tipo = $elemento->tipo;
         $elemento->fillAll($request);
+        $this->storeImagen($elemento, $request);
         if ($elemento->tipo != $tipo) {
             $elemento->responsable =  $elemento->Tipos->idProfesor;
             $explicacion = "T'han assignat una incidència: " . $elemento->descripcion;
@@ -156,6 +163,57 @@ class IncidenciaController extends ModalController
             $elemento->save();
         }
         return $this->redirect();
+    }
+
+    private function storeImagen(Incidencia $incidencia, IncidenciaRequest $request): void
+    {
+        if (!$request->hasFile('imagen')) {
+            return;
+        }
+
+        $file = $request->file('imagen');
+        if (!$file->isValid()) {
+            return;
+        }
+
+        $extension = strtolower($file->getClientOriginalExtension());
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
+        if (!in_array($extension, $allowedExtensions, true)) {
+            Alert::danger(trans('messages.generic.invalidFileType'));
+            return;
+        }
+
+        if (in_array($extension, ['heic', 'heif'], true)) {
+            $filename = $incidencia->id . '_' . time() . '.png';
+            $path = 'incidencias/' . $filename;
+            $tmpPath = sys_get_temp_dir() . '/incidencia_' . uniqid('', true) . '.png';
+
+            try {
+                ImageService::toPng($file, $tmpPath);
+                $stream = fopen($tmpPath, 'r');
+                Storage::disk('public')->put($path, $stream);
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+            } catch (\RuntimeException $e) {
+                Alert::danger($e->getMessage());
+                return;
+            } finally {
+                if (file_exists($tmpPath)) {
+                    @unlink($tmpPath);
+                }
+            }
+        } else {
+            $filename = $incidencia->id . '_' . time() . '.' . $extension;
+            $path = $file->storeAs('incidencias', $filename, 'public');
+        }
+
+        if (!empty($incidencia->imagen)) {
+            Storage::disk('public')->delete($incidencia->imagen);
+        }
+
+        $incidencia->imagen = $path;
+        $incidencia->save();
     }
 
     protected function createWithDefaultValues($default = [])

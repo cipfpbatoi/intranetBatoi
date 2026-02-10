@@ -2,10 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Http\Requests\TipoActividadRequest;
 use Intranet\Http\Requests\TipoActividadUpdateRequest;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\TipoActividad;
 
 

@@ -69,7 +69,7 @@
                     <tr>
                         <td style='text-align: left; vertical-align: top '>
                             <strong>Signatura Tutor:</strong>
-                            {!!  Intranet\Services\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.5) !!}
+                            {!!  Intranet\Services\Signature\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.5) !!}
                         </td>
                     </tr>
                 </table>

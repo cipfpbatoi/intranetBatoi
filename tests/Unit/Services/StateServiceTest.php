@@ -4,7 +4,7 @@ namespace Tests\Unit\Services;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use Intranet\Services\StateService;
+use Intranet\Services\General\StateService;
 use Mockery;
 use Tests\TestCase;
 

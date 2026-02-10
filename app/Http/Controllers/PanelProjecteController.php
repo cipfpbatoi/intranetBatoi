@@ -6,10 +6,10 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
-use Intranet\Componentes\Mensaje;
-use Intranet\Componentes\Pdf as PDF;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\Services\Notifications\NotificationService;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Profesor;
@@ -101,7 +101,7 @@ class PanelProjecteController extends ModalController
             ->get();
 
         // Usar hazZip para generar el zip
-        $zipPath = Pdf::hazZip('pdf.propostaProjecte', $projectes , null, 'portrait',  'idAlumne'   );
+        $zipPath = app(PdfService::class)->hazZip('pdf.propostaProjecte', $projectes , null, 'portrait',  'idAlumne'   );
 
         // Enviar el correo con el zip adjunto
         $profesores = Profesor::Grupo($miGrupo->codigo)->get();
@@ -183,7 +183,7 @@ class PanelProjecteController extends ModalController
     {
         $elemento = Projecte::findOrFail($id);
         $informe = 'pdf.propostaProjecte';
-        $pdf = PDF::hazPdf($informe, $elemento, null);
+        $pdf = app(PdfService::class)->hazPdf($informe, $elemento, null);
         return $pdf->stream();
     }
 

@@ -6,8 +6,8 @@ namespace Intranet\Http\Controllers\API;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Intranet\Entities\Cotxe;
-use Intranet\Services\CotxeAccessService;
-use Intranet\Services\FitxatgeService;
+use Intranet\Services\School\CotxeAccessService;
+use Intranet\Services\HR\FitxatgeService;
 
 enum Direccio: string { case Entrada = 'entrada'; case Eixida = 'eixida'; }
 

@@ -2,7 +2,7 @@
 namespace Tests\Unit\Services;
 
 use Illuminate\Support\Facades\Config;
-use Intranet\Services\AdviseService;
+use Intranet\Services\Notifications\AdviseService;
 use Mockery;
 use Tests\TestCase;
 

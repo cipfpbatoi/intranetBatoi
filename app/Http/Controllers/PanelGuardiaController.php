@@ -8,7 +8,7 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Falta;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonBasico;
 
 
 class PanelGuardiaController extends BaseController

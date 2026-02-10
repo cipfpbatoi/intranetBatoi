@@ -1,4 +1,4 @@
-@php $tr = new Intranet\Entities\TipoReunion($formulario->getElemento()->tipo); @endphp
+@php $tr = new Intranet\Services\Document\TipoReunionService($formulario->getElemento()->tipo); @endphp
 <div class="panel">
     <a class="panel-heading" role="tab" id="headingOne" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
         <h4 class="panel-title"><i class="fa fa-bars"></i> @lang("models.Reunion.edit")

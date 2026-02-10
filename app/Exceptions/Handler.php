@@ -7,7 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
-use Intranet\Componentes\Mensaje;
+use Intranet\Services\Notifications\NotificationService;
 use Styde\Html\Facades\Alert;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -40,10 +40,11 @@ class Handler extends ExceptionHandler
             $msg !== 'The given data was invalid.' &&
             $msg !== 'Unauthenticated.' &&
             $msg !== '' &&
-            strpos($msg, 'SRF') === false   // <-- correcció important
+            strpos($msg, 'SRF') === false &&   // <-- correcció important
+            !app()->environment('testing')
         ) {
             // Pots limitar trace en prod si vols: substr($exception->getTraceAsString(), 0, 2000)
-            Mensaje::send(config('avisos.errores'), $msg . $exception->getTraceAsString());
+            app(NotificationService::class)->send(config('avisos.errores'), $msg . $exception->getTraceAsString());
         }
 
         // Missatge visual per a errors de BD (en respostes HTML)

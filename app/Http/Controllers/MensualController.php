@@ -4,9 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Requests\DesdeHastaRequest;
 use Intranet\Http\Traits\Imprimir;
-use Intranet\Services\FaltaReportService;
-use Intranet\Services\GestorService;
-use Intranet\Services\StateService;
+use Intranet\Services\School\FaltaReportService;
+use Intranet\Services\General\GestorService;
+use Intranet\Services\General\StateService;
 use Jenssegers\Date\Date;
 
 

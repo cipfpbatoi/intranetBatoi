@@ -14,7 +14,7 @@
             @case('file')
                 <x-form.file-input
                         :name="$property"
-                        label="Fitxer Actual"
+                        :label="$params['label'] ?? __('validation.attributes.' . $property)"
                         :current-file="$elemento->$property"
                         :params="$params"
                 />

@@ -96,7 +96,7 @@
         <table border='1' style="width: 300px;height:60px">
             <tr>
                 <td valign='top' style="text-align: left;padding-left: 5px;font-size: 0.8em">Signatura del tutor: <br/>
-                    {!!  Intranet\Services\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.5) !!}
+                    {!!  Intranet\Services\Signature\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.5) !!}
                 </td>
             </tr>
         </table>

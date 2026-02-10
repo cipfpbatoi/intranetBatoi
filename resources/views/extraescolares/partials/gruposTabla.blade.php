@@ -17,6 +17,6 @@
         <input type='hidden' name='idActividad' value="{!!$Actividad->id!!}">
         {{ Form::select('idGrupo',$tGrupos,0,['id'=>'idGrupo']) }}
         <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") @lang("models.modelos.Grupo") ">
-        <a href="{{\Intranet\Services\NavigationService::getPreviousUrl()}}?back=true" class="btn btn-primary btn-round">@lang("messages.buttons.atras")</a>
+        <a href="{{\Intranet\Services\UI\NavigationService::getPreviousUrl()}}?back=true" class="btn btn-primary btn-round">@lang("messages.buttons.atras")</a>
      </form>
 </div>

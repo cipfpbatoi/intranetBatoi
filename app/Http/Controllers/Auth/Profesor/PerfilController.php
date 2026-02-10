@@ -11,9 +11,9 @@ use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\PerfilFilesRequest;
-use Intranet\Services\DigitalSignatureService;
-use Intranet\Services\FormBuilder;
-use Intranet\Services\ImageService;
+use Intranet\Services\Signature\DigitalSignatureService;
+use Intranet\Services\UI\FormBuilder;
+use Intranet\Services\Media\ImageService;
 use Intranet\Services\PhotoCarnet;
 use Styde\Html\Facades\Alert;
 
@@ -65,15 +65,23 @@ class PerfilController extends Perfil
 
         if ($profesor->foto) {
             // Actualitzem la foto si ja existia
-            ImageService::updatePhotoCarnet($foto, storage_path('app/public/fotos/' . $profesor->foto));
-            Alert::info('Modificació de la foto feta amb èxit');
+            try {
+                ImageService::updatePhotoCarnet($foto, storage_path('app/public/fotos/' . $profesor->foto));
+                Alert::info('Modificació de la foto feta amb èxit');
+            } catch (\RuntimeException $e) {
+                Alert::info($e->getMessage());
+            }
         } else {
             // Guardem una foto nova si no en tenia
-            $fileName = ImageService::newPhotoCarnet($foto, storage_path('app/public/fotos'));
-            $profesor->foto = $fileName;
-            $profesor->save();
+            try {
+                $fileName = ImageService::newPhotoCarnet($foto, storage_path('app/public/fotos'));
+                $profesor->foto = $fileName;
+                $profesor->save();
 
-            Alert::info('Foto nova guardada amb èxit');
+                Alert::info('Foto nova guardada amb èxit');
+            } catch (\RuntimeException $e) {
+                Alert::info($e->getMessage());
+            }
         }
     }
 

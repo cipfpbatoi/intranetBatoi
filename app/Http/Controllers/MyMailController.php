@@ -6,7 +6,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Componentes\MyMail;
+use Intranet\Services\Mail\MyMail;
 use Illuminate\Http\Request;
 use Styde\Html\Facades\Alert;
 

@@ -2,8 +2,8 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Http\Traits\Panel;
 
 

@@ -3,10 +3,10 @@
 namespace Intranet\Http\Controllers;
 
 
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
-use Intranet\Componentes\Mensaje;
-use Intranet\Componentes\Pdf as PDF;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\Services\Notifications\NotificationService;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Projecte;
 use Intranet\Http\Requests\ProyectoRequest;
 
@@ -65,7 +65,7 @@ class ProjecteController extends ModalController
         $projecte->estat = 1;
         $projecte->save();
         $tutor = $projecte->Grupo->Tutor;
-        Mensaje::send($tutor->dni, 'Projecte  '.$projecte->Alumno->fullname.' enviat', '#');
+        app(NotificationService::class)->send($tutor->dni, 'Projecte  '.$projecte->Alumno->fullname.' enviat', '#');
         return back();
     }
 
@@ -73,7 +73,7 @@ class ProjecteController extends ModalController
     {
         $elemento = Projecte::findOrFail($id);
         $informe = 'pdf.propostaProjecte';
-        $pdf = PDF::hazPdf($informe, $elemento, null);
+        $pdf = app(PdfService::class)->hazPdf($informe, $elemento, null);
         return $pdf->stream();
     }
 

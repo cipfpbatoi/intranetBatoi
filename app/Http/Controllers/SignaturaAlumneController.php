@@ -5,14 +5,14 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Signatura;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
-use Intranet\Services\DigitalSignatureService;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\Signature\DigitalSignatureService;
+use Intranet\Services\UI\FormBuilder;
 
 /**
  * Class PanelExpedienteController

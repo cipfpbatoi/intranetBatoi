@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Headers;
 
 /**
  * Class DocumentRequest
- * @package Intranet\MyMail
+ * @package Intranet\Services\Mail
  */
 class DocumentRequest extends Mailable
 {

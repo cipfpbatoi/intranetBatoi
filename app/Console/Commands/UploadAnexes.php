@@ -7,8 +7,8 @@ use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Jobs\UploadFiles;
-use Intranet\Services\FDFPrepareService;
-use Intranet\Services\SecretariaService;
+use Intranet\Services\Document\FDFPrepareService;
+use Intranet\Services\School\SecretariaService;
 use Styde\Html\Facades\Alert;
 
 class UploadAnexes extends Command

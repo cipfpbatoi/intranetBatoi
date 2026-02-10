@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Requests\PasswordRequest;
-use Intranet\Services\DigitalSignatureService;
-use Intranet\Services\SeleniumService;
+use Intranet\Services\Signature\DigitalSignatureService;
+use Intranet\Services\Automation\SeleniumService;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Str;
 use Throwable;

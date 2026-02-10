@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Modulo_ciclo;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonPost;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonPost;
 
 
 /**

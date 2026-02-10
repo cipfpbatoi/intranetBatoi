@@ -5,8 +5,8 @@ namespace Intranet\Http\Controllers;
 
 use DB;
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonConfirmacion;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonConfirmacion;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
@@ -15,8 +15,8 @@ use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Traits\DropZone;
-use Intranet\Services\FDFPrepareService;
-use Intranet\Services\SecretariaService;
+use Intranet\Services\Document\FDFPrepareService;
+use Intranet\Services\School\SecretariaService;
 use Styde\Html\Facades\Alert;
 
 

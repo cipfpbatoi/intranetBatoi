@@ -23,7 +23,7 @@ use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Setting;
 use Intranet\Mail\Comunicado;
-use Intranet\Services\AttachedFileService;
+use Intranet\Services\Document\AttachedFileService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;

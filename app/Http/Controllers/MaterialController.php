@@ -1,7 +1,7 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Material;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\TipoIncidencia;

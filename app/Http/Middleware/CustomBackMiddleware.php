@@ -4,7 +4,7 @@ namespace Intranet\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Intranet\Services\NavigationService;
+use Intranet\Services\UI\NavigationService;
 
 class CustomBackMiddleware
 {

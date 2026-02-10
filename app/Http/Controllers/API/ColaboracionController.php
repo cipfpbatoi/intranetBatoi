@@ -7,7 +7,7 @@ use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Fct;
-use Intranet\Services\StateService;
+use Intranet\Services\General\StateService;
 
 
 class ColaboracionController extends ApiBaseController

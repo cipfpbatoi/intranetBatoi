@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
@@ -116,7 +116,15 @@ class InstructorController extends IntranetController
      */
     public function guarda(Request $request, $id, $centro)
     {
-        parent::update($request, $id);
+        try {
+            parent::update($request, $id);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (($e->errorInfo[1] ?? null) === 1062) {
+                Alert::danger("Ja existeix un instructor amb aquest DNI.");
+                return back()->withInput();
+            }
+            throw $e;
+        }
         return $this->showEmpresa(Centro::find($centro)->idEmpresa);
     }
 

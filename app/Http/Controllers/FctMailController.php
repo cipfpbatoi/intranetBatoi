@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Services\FctMailService;
+use Intranet\Services\Mail\FctMailService;
 
 class FctMailController extends Controller
 {

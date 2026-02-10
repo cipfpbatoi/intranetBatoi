@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Services\AdviseService;
+use Intranet\Services\Notifications\AdviseService;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
@@ -38,7 +38,8 @@ class Incidencia extends Model
     use BatoiModels;
 
     protected $inputTypes = [
-        'fecha' => ['type' => 'date']
+        'fecha' => ['type' => 'date'],
+        'imagen' => ['type' => 'file'],
     ];
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,

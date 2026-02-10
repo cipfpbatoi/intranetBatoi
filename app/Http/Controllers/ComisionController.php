@@ -4,9 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use DB;
 use Illuminate\Http\Request;
-use Intranet\Botones\BotonImg;
-use Intranet\Componentes\DocumentoFct;
-use Intranet\Componentes\MyMail;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Support\Fct\DocumentoFctConfig;
+use Intranet\Services\Mail\MyMail;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Fct;
@@ -14,9 +14,9 @@ use Intranet\Http\Requests\ComisionRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
 use Intranet\Http\Traits\SCRUD;
-use Intranet\Services\CalendarService;
-use Intranet\Services\ConfirmAndSend;
-use Intranet\Services\StateService;
+use Intranet\Services\Calendar\CalendarService;
+use Intranet\Services\Notifications\ConfirmAndSend;
+use Intranet\Services\General\StateService;
 use Jenssegers\Date\Date;
 
 
@@ -160,7 +160,7 @@ class ComisionController extends ModalController
                 $elemento->Centro
             )->render());
         $attach = [ "tmp/visita_$elemento->id.ics" => 'text/calendar'];
-        $documento = new DocumentoFct('visitaComision');
+        $documento = new DocumentoFctConfig('visitaComision');
         $documento->fecha = $fecha;
         $elemento->desde = $fecha;
 

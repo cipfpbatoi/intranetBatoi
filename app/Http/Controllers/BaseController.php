@@ -4,10 +4,10 @@
  */
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\Panel;
+use Intranet\UI\Panels\Panel;
 use Illuminate\Support\Facades\Session;
-use Intranet\Services\ConfirmAndSend;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\Notifications\ConfirmAndSend;
+use Intranet\Services\UI\FormBuilder;
 
 
 abstract class BaseController extends Controller
@@ -16,7 +16,7 @@ abstract class BaseController extends Controller
     protected $vista;       // vistes per defecte
     protected $panel;       // panel per a la vista
     protected $titulo = []; // paràmetres per al titol de la vista
-    protected $parametresVista = null;
+    protected $parametresVista = [];
 
     
     protected $profile = true;

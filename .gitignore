@@ -15,3 +15,10 @@ composer.lock
 /nbproject/private/
 /.DS_Store
 package-lock.json
+.phpunit.result.cache
+.phpunit.cache/
+/storage/framework/cache
+/storage/framework/views
+/storage/framework/sessions
+/bootstrap/cache
+/storage/logs

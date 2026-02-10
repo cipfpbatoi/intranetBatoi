@@ -4,10 +4,10 @@ namespace Intranet\Http\Controllers;
 
 use DB;
 use Illuminate\Http\Request;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
-use Intranet\Componentes\Mensaje;
-use Intranet\Componentes\Pdf as PDF;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Services\Notifications\NotificationService;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\ActividadProfesor;
@@ -18,13 +18,13 @@ use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\SCRUD;
-use Intranet\Services\AdviseTeacher;
-use Intranet\Services\CalendarService;
-use Intranet\Services\GestorService;
-use Intranet\Services\GoogleCalendarService;
-use Intranet\Services\StateService;
+use Intranet\Services\Notifications\AdviseTeacher;
+use Intranet\Services\Calendar\CalendarService;
+use Intranet\Services\General\GestorService;
+use Intranet\Services\Calendar\GoogleCalendarService;
+use Intranet\Services\General\StateService;
 use Jenssegers\Date\Date;
-use Response;
+use Illuminate\Support\Facades\Response;
 use Styde\Html\Facades\Alert;
 
 
@@ -108,7 +108,7 @@ class ActividadController extends ModalController
     public function printValue($id){
         $elemento = $this->class::findOrFail($id);
         $informe = 'pdf.valoracionActividad';
-        return PDF::hazPdf($informe, $elemento, null)->stream();
+        return app(PdfService::class)->hazPdf($informe, $elemento, null)->stream();
     }
 
     private function showDetalle($id){
@@ -215,7 +215,7 @@ class ActividadController extends ModalController
         foreach ($actividad->grupos as $grupo) {
             $mensaje = "El grup {$grupo->nombre} se’n va a l’activitat {$actividad->name}.";
             foreach (Profesor::Grupo($grupo->codigo)->get() as $profesor) {
-                Mensaje::send($profesor->dni, $mensaje, '#', $coordinador->shortName);
+                app(NotificationService::class)->send($profesor->dni, $mensaje, '#', $coordinador->shortName);
             }
         }
     }
@@ -250,7 +250,7 @@ class ActividadController extends ModalController
             }
         }
         if ($todos->count()){
-            $pdf = PDF::hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait');
+            $pdf = app(PdfService::class)->hazPdf('pdf.autoritzacioMenors', $todos, $actividad, 'portrait');
             return $pdf->stream();
         }
         Alert::info('No hi han menors');

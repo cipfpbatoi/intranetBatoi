@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use DB;
 use Illuminate\Http\Request;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Asistencia;
 use Intranet\Entities\Expediente;
@@ -17,9 +17,9 @@ use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
-use Intranet\Services\AdviseTeacher;
-use Intranet\Services\ConfirmAndSend;
-use Intranet\Services\StateService;
+use Intranet\Services\Notifications\AdviseTeacher;
+use Intranet\Services\Notifications\ConfirmAndSend;
+use Intranet\Services\General\StateService;
 use Jenssegers\Date\Date;
 use function PHPUnit\Framework\isEmpty;
 

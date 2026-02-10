@@ -2,10 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
-use Intranet\Entities\TipoDocumento;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\Services\Document\TipoDocumentoService;
 use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
 
@@ -62,7 +62,7 @@ class PanelDocumentoController extends BaseController
     {
         return Documento::
             whereIn('rol', RolesUser(AuthUser()->rol))->
-            whereIn('tipoDocumento',TipoDocumento::allDocuments())->
+            whereIn('tipoDocumento',TipoDocumentoService::allDocuments())->
             whereNull('idDocumento')->get();
     }
 

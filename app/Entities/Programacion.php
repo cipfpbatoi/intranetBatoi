@@ -5,7 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
-use Intranet\Services\StateService;
+use Intranet\Services\General\StateService;
 
 class Programacion extends Model
 {
