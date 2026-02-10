@@ -10,7 +10,8 @@
     <table id="{{ $id }}"
            name="{{ $panel->getModel() }}"
            class="table table-striped table-bordered display nowrap dtr-inline collapsed"
-           style="width:100%" data-page-length="25">
+           style="width:100%" data-page-length="25"
+           @if ($panel->getPaginator()) data-server-pagination="true" @endif>
 
         <thead>
             <x-grid.header :panel="$panel" />
@@ -39,4 +40,9 @@
             <x-grid.header :panel="$panel" />
         </tfoot>
     </table>
+    @if ($panel->getPaginator())
+        <div class="text-center">
+            {{ $panel->getPaginator()->links('pagination::bootstrap-4') }}
+        </div>
+    @endif
 </div>

@@ -33,6 +33,7 @@ class DocumentoController extends IntranetController
     protected $modal = false;
     protected $profile = false;
     protected int $perPage = 50;
+    protected int $maxPerPage = 500;
     protected $formFields = ['tipoDocumento' => ['type' => 'select'],
         'rol' => ['type' => 'hidden'],
         'propietario' => ['disabled' => 'disabled'],
@@ -77,6 +78,28 @@ class DocumentoController extends IntranetController
         $this->panel->filterTags = true;
         return parent::index();
     }
+
+    private function resolvePerPage(): ?int
+    {
+        if (request()->boolean('all') || request('perPage') === 'all') {
+            return null;
+        }
+
+        if (!request()->has('perPage') && Session::get('completa')) {
+            return null;
+        }
+
+        $perPage = request('perPage');
+        if ($perPage !== null) {
+            $perPage = (int) $perPage;
+            if ($perPage > 0) {
+                return min($perPage, $this->maxPerPage);
+            }
+        }
+
+        return $this->perPage;
+    }
+
     public function search()
     {
         $query = Documento::query()
@@ -141,7 +164,12 @@ class DocumentoController extends IntranetController
             $query->where('tags', 'like', "%{$filterTags}%");
         }
 
-        return $query->paginate($this->perPage)->appends(request()->query());
+        $perPage = $this->resolvePerPage();
+        if ($perPage === null) {
+            return $query->get();
+        }
+
+        return $query->paginate($perPage)->appends(request()->query());
 
     }
 
