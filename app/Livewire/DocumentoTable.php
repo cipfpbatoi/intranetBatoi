@@ -20,6 +20,8 @@ class DocumentoTable extends Component
     public string $tags = '';
     public int $perPage = 25;
     public int $page = 1;
+    public string $sortField = 'created_at';
+    public string $sortDirection = 'desc';
 
     public array $tipoOptions = [];
     public array $cursoOptions = [];
@@ -31,6 +33,8 @@ class DocumentoTable extends Component
         'propietario' => ['except' => ''],
         'tags' => ['except' => ''],
         'perPage' => ['except' => 25],
+        'sortField' => ['except' => 'created_at'],
+        'sortDirection' => ['except' => 'desc'],
     ];
 
     public function mount(): void
@@ -67,7 +71,9 @@ class DocumentoTable extends Component
 
     public function updating($name): void
     {
-        $this->resetPage();
+        if ($name !== 'page') {
+            $this->resetPage();
+        }
     }
 
     public function render()
@@ -89,8 +95,7 @@ class DocumentoTable extends Component
                 'fichero',
                 'rol',
                 'activo',
-            ])
-            ->orderBy('curso', 'desc');
+            ]);
 
         $roles = RolesUser(AuthUser()->rol);
         $isDireccion = $this->isDireccion();
@@ -128,11 +133,17 @@ class DocumentoTable extends Component
             $query->where('tags', 'like', "%{$this->tags}%");
         }
 
+        $sortField = $this->sanitizeSortField($this->sortField);
+        $sortDirection = $this->sanitizeSortDirection($this->sortDirection);
+        $query->orderBy($sortField, $sortDirection)->orderBy('id', 'desc');
+
         $documentos = $query->paginate($this->perPage);
 
         return view('livewire.documento-table', [
             'documentos' => $documentos,
             'isDireccion' => $isDireccion,
+            'sortField' => $sortField,
+            'sortDirection' => $sortDirection,
         ]);
     }
 
@@ -152,6 +163,31 @@ class DocumentoTable extends Component
             'detalle',
             'fichero',
         ];
+    }
+
+    public function sortBy(string $field): void
+    {
+        $field = $this->sanitizeSortField($field);
+
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+
+        $this->resetPage();
+    }
+
+    private function sanitizeSortField(string $field): string
+    {
+        $allowed = ['created_at'];
+        return in_array($field, $allowed, true) ? $field : 'created_at';
+    }
+
+    private function sanitizeSortDirection(string $direction): string
+    {
+        return $direction === 'asc' ? 'asc' : 'desc';
     }
 
     private function isDireccion(): bool

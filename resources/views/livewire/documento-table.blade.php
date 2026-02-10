@@ -71,11 +71,16 @@
                 <th>Curs</th>
                 <th>ID</th>
                 <th>Propietari</th>
-                <th>Creació</th>
-                <th>Grup</th>
+                <th>
+                    <a href="#" wire:click.prevent="sortBy('created_at')">
+                        Creació
+                        @if ($sortField === 'created_at')
+                            {!! $sortDirection === 'asc' ? '&uarr;' : '&darr;' !!}
+                        @endif
+                    </a>
+                </th>
+                <th>Grup / Cicle / Mòdul</th>
                 <th>Tags</th>
-                <th>Cicle</th>
-                <th>Mòdul</th>
                 <th>Detall</th>
                 <th>Fitxer</th>
                 <th>Accions</th>
@@ -90,10 +95,13 @@
                     <td>{{ $documento->idDocumento }}</td>
                     <td>{{ $documento->propietario }}</td>
                     <td>{{ $documento->created_at }}</td>
-                    <td>{{ $documento->grupo }}</td>
+                    <td>
+                        {{ $documento->grupo }}
+                        @if (!empty($documento->ciclo) || !empty($documento->modulo))
+                            - {{ $documento->ciclo }} {{ $documento->modulo ? '- '.$documento->modulo : '' }}
+                        @endif
+                    </td>
                     <td>{{ $documento->tags }}</td>
-                    <td>{{ $documento->ciclo }}</td>
-                    <td>{{ $documento->modulo }}</td>
                     <td>{{ $documento->detalle }}</td>
                     <td>{{ $documento->fichero }}</td>
                     <td>
@@ -122,6 +130,6 @@
     </div>
 
     <div class="text-center">
-        {{ $documentos->links('pagination::bootstrap-4') }}
+        {{ $documentos->links() }}
     </div>
 </div>
