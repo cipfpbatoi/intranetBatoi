@@ -3,10 +3,8 @@
 
 namespace Intranet\Http\Traits;
 
-use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
-use Jenssegers\Date\Date;
 
 /**
  * Trait traitPanel
@@ -44,15 +42,6 @@ trait Panel
 
         $orden = $this->orden ?? 'desde';
         $query = $this->class::where('estado', '>', 0)->orderBy($orden, 'desc');
-
-        if (!Session::get('completa', false)) {
-            $fecha = Date::now()->subDays(config('variables.diasNoCompleta'));
-            $query->where(function ($q) use ($orden, $fecha) {
-                $q->where('estado', '!=', config("modelos.{$this->model}.resolve"))
-                    ->where('estado', '!=', config("modelos.{$this->model}.completa"))
-                    ->orWhere($orden, '>', $fecha->toDateString());
-            });
-        }
 
         return $query->get();
     }

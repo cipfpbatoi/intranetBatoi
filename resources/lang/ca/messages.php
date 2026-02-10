@@ -63,8 +63,6 @@ return array(
         'empty' => 'No hi han registres',
         'change' => 'Accedir com a eixa persona',
         'backChange' => 'Tornar al meu rol',
-        'completa' => 'Vore les dades completes',
-        'simplifica' => 'Vore les últimes dades',
         'resempresa' => 'Inserció laboral',
         'faltas' => 'Absències',
         'reuniones' => 'Reunions',

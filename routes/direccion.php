@@ -77,7 +77,6 @@ Route::get('/{grupo}/rejectActa', ['as' => 'fct.rejectActa', 'uses' => 'PanelAct
 Route::get('/{grupo}/fol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificados']);
 Route::get('/{alumno}/aFol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificado']);
 
-Route::get('simplifica', ['as' => 'direccion.simplifica', 'uses' => 'AdministracionController@simplifica']);
 
 Route::get('/horarios/cambiar', ['as' => 'horarios.cambiarIndex', 'uses' => 'HorarioController@changeIndex']);
 Route::post('/horarios/cambiar', ['as' => 'horarios.cambiar', 'uses' => 'HorarioController@changeTableAll']);

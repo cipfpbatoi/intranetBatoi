@@ -20,16 +20,6 @@
                 </a>
             </li>
 
-            {{-- Opció per a Direcció --}}
-            @if ($isDireccio)
-                <li>
-                    <a href="/direccion/simplifica">
-                        <i class="fa {{ $simplifica ? 'fa-user' : 'fa-users' }} pull-right"></i>
-                        {!! trans("messages.generic." . ($simplifica ? 'simplifica' : 'completa')) !!}
-                    </a>
-                </li>
-            @endif
-
             {{-- Menú definit per configuració --}}
             {!! Intranet\Entities\Menu::make('topmenu') !!}
         @else

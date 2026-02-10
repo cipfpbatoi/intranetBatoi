@@ -45,19 +45,6 @@ class AdministracionController extends Controller
     const DIRECTORIO_GESTOR = 'gestor/Empresa/';
 
     /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function simplifica()
-    {
-        if (Session::get('completa')) {
-            Session::forget('completa');
-        } else {
-            Session::put('completa', 1);
-        }
-        return back();
-    }
-
-    /**
      * @param $lang
      * @return \Illuminate\Http\RedirectResponse
      */
