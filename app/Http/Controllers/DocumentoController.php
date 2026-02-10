@@ -4,8 +4,6 @@ namespace Intranet\Http\Controllers;
 
 
 use Illuminate\Http\Request;
-use DB;
-use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Profesor;
@@ -17,24 +15,12 @@ use Intranet\Services\General\GestorService;
 use Intranet\Services\Document\CreateOrUpdateDocumentAction;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
-use function Symfony\Component\String\s;
 
 
 class DocumentoController extends IntranetController
 {
 
-    protected $gridFields = ['tipoDocumento', 'descripcion', 'curso', 'idDocumento', 'propietario', 'created_at',
-        'grupo', 'tags', 'ciclo', 'modulo','detalle','fichero'
-    //    ,'situacion'
-    ];
     protected $model = 'Documento';
-    protected $directorio = '/Ficheros/';
-    protected $panel;
-    protected $modal = false;
-    protected $profile = false;
-    protected int $perPage = 50;
-    protected int $perPageCompleta = 200;
-    protected int $maxPerPage = 500;
     protected $formFields = ['tipoDocumento' => ['type' => 'select'],
         'rol' => ['type' => 'hidden'],
         'propietario' => ['disabled' => 'disabled'],
@@ -51,137 +37,13 @@ class DocumentoController extends IntranetController
     ];
 
 
-    public function index(){
-        ini_set('memory_limit', '512M');
-        // Opcions de filtres (tipus i cursos disponibles)
-        $configTipos = TipoDocumentoService::allPestana();
-        $bdTipos = Documento::select('tipoDocumento')
-            ->distinct()
-            ->orderBy('tipoDocumento')
-            ->pluck('tipoDocumento')
-            ->filter();
-
-        $tipoOptions = [];
-        foreach ($configTipos as $key => $label) {
-            $tipoOptions[$key] = $label;
-        }
-        foreach ($bdTipos as $tipo) {
-            $tipoOptions[$tipo] = $configTipos[$tipo] ?? $tipo;
-        }
-
-        $this->panel->filterTipoOptions = $tipoOptions;
-        $this->panel->filterCursoOptions = Documento::select('curso')
-            ->distinct()
-            ->orderBy('curso', 'desc')
-            ->limit(8)
-            ->pluck('curso');
-        $this->panel->filterPropietario = true;
-        $this->panel->filterTags = true;
-        return parent::index();
-    }
-
-    private function resolvePerPage(): ?int
+    protected function redirect()
     {
-        if (request()->boolean('all') || request('perPage') === 'all') {
-            return null;
+        if (Session::get('redirect')) {
+            return redirect()->action(Session::get('redirect'));
         }
 
-        if (!request()->has('perPage') && Session::get('completa')) {
-            return $this->perPageCompleta;
-        }
-
-        $perPage = request('perPage');
-        if ($perPage !== null) {
-            $perPage = (int) $perPage;
-            if ($perPage > 0) {
-                return min($perPage, $this->maxPerPage);
-            }
-        }
-
-        return $this->perPage;
-    }
-
-    public function search()
-    {
-        $query = Documento::query()
-            ->select([
-                'id',
-                'tipoDocumento',
-                'descripcion',
-                'curso',
-                'idDocumento',
-                'propietario',
-                'created_at',
-                'grupo',
-                'tags',
-                'ciclo',
-                'modulo',
-                'detalle',
-                'fichero',
-                'rol',
-                'activo',
-            ])
-            ->orderBy('curso', 'desc');
-        $search = request('search');
-        $filterTipo = request('tipoDocumento');
-        $filterCurso = request('curso');
-        $filterPropietario = request('propietario');
-        $filterTags = request('tags');
-
-        if (Session::get('completa')) {
-            $query->whereIn('rol', RolesUser(AuthUser()->rol));
-        } else {
-            // Quan no es mostra la llista completa, acotem per curs o per propietari
-            $query->where(function ($q) {
-                $q->where(function ($sub) {
-                    $sub->where('curso', Curso())
-                        ->whereIn('rol', RolesUser(AuthUser()->rol));
-                })->orWhere('propietario', AuthUser()->fullName);
-            });
-        }
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('descripcion', 'like', "%{$search}%")
-                    ->orWhere('tags', 'like', "%{$search}%")
-                    ->orWhere('propietario', 'like', "%{$search}%")
-                    ->orWhere('tipoDocumento', 'like', "%{$search}%");
-            });
-        }
-
-        if ($filterTipo) {
-            $query->where('tipoDocumento', $filterTipo);
-        }
-
-        if ($filterCurso) {
-            $query->where('curso', $filterCurso);
-        }
-
-        if ($filterPropietario) {
-            $query->where('propietario', 'like', "%{$filterPropietario}%");
-        }
-
-        if ($filterTags) {
-            $query->where('tags', 'like', "%{$filterTags}%");
-        }
-
-        $perPage = $this->resolvePerPage();
-        if ($perPage === null) {
-            return $query->get();
-        }
-
-        return $query->paginate($perPage)->appends(request()->query());
-
-    }
-
-    protected function iniBotones()
-    {
-        $this->panel->setBothBoton(
-            'documento.show',
-            ['where' => ['rol', 'in', RolesUser(AuthUser()->rol),'link','==',1]]
-        );
-        $this->panel->setBoton('grid', new BotonImg('documento.delete', ['roles' => config('roles.rol.direccion')]));
-        $this->panel->setBoton('grid', new BotonImg('documento.edit', ['roles' => config('roles.rol.direccion')]));
+        return redirect()->route('documento.index');
     }
 
 

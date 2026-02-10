@@ -350,7 +350,7 @@ Route::get('/alumnofct/{id}/importa', ['as' => 'alumnofct.importa', 'uses' => 'F
 Route::get('/alumno/calendari', ['as' => 'alumno.calendari', 'uses' => 'CalendariFctController@index']);
 Route::get('/alumno/{id}/days', ['as' => 'alumno.days', 'uses' => 'CalendariFctController@days']);
 
-Route::view('/documento-live', 'documento.livewire')->name('documento.livewire');
+Route::view('/documento', 'documento.livewire')->name('documento.index');
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy', 'show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
