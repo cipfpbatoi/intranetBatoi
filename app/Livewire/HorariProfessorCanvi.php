@@ -34,9 +34,8 @@ class HorariProfessorCanvi extends Component
     public string $fechaInicio = '';
     public string $fechaFin = '';
     public ?string $propuestaId = null;
-    public array $plantillaOptions = [];
-    public ?string $selectedPlantilla = null;
-    public string $horarioProfesorId = '';
+    public array $propuestaOptions = [];
+    public ?string $selectedPropuestaId = null;
     public array $declaraciones = [
         'mantenimiento_turno' => false,
         'ausencia_alumnado' => false,
@@ -55,57 +54,78 @@ class HorariProfessorCanvi extends Component
             $this->profesorNom = $profesor->fullName;
         }
 
-        $this->horarioProfesorId = $this->resolveHorarioProfesorId();
         $this->loadHoras();
-        $this->loadPlantillas();
+        $this->loadPropuestasDisponibles();
         $this->loadHorario();
         $this->loadCambios();
     }
 
-    protected function resolveHorarioProfesorId(): string
+    protected function loadPropuestasDisponibles(): void
     {
-        if (Horario::where('idProfesor', $this->dni)->exists()) {
-            return $this->dni;
+        $this->propuestaOptions = [];
+        $disk = Storage::disk('local');
+        $dir = '/horarios/' . $this->dni;
+
+        if ($disk->exists($dir)) {
+            $files = $disk->allFiles($dir);
+            $items = [];
+
+            foreach ($files as $file) {
+                if (!str_ends_with($file, '.json')) {
+                    continue;
+                }
+                $raw = $disk->get($file);
+                $data = json_decode($raw, true);
+                if (!is_array($data)) {
+                    continue;
+                }
+                $id = (string) ($data['id'] ?? basename($file, '.json'));
+                $estado = (string) ($data['estado'] ?? 'Pendiente');
+                $inicio = (string) ($data['fecha_inicio'] ?? '');
+                $fin = (string) ($data['fecha_fin'] ?? '');
+                $updated = (string) ($data['updated_at'] ?? '');
+
+                $rango = trim($inicio . ' → ' . $fin, ' →');
+                $label = $estado;
+                if ($rango !== '') {
+                    $label .= ' · ' . $rango;
+                } elseif ($updated !== '') {
+                    $label .= ' · ' . $updated;
+                } else {
+                    $label .= ' · ' . $id;
+                }
+
+                $items[] = [
+                    'id' => $id,
+                    'label' => $label,
+                    'updated' => $updated,
+                ];
+            }
+
+            usort($items, function ($a, $b) {
+                return strcmp($b['updated'], $a['updated']);
+            });
+
+            foreach ($items as $item) {
+                $this->propuestaOptions[$item['id']] = $item['label'];
+            }
         }
 
-        $profesor = Profesor::find($this->dni);
-        if ($profesor && !empty($profesor->sustituye_a)) {
-            return (string) $profesor->sustituye_a;
+        $requested = request()->get('proposta');
+        if ($requested && array_key_exists($requested, $this->propuestaOptions)) {
+            $this->selectedPropuestaId = $requested;
         }
-
-        return $this->dni;
     }
 
-    protected function loadPlantillas(): void
+    public function updatedSelectedPropuestaId(): void
     {
-        $this->plantillaOptions = [];
-        $profesorId = $this->horarioProfesorId ?: $this->resolveHorarioProfesorId();
-
-        $plantillas = Horario::where('idProfesor', $profesorId)
-            ->select('plantilla')
-            ->distinct()
-            ->orderBy('plantilla', 'desc')
-            ->pluck('plantilla')
-            ->all();
-
-        foreach ($plantillas as $plantilla) {
-            if ($plantilla === null || $plantilla === '') {
-                $this->plantillaOptions['__null__'] = 'Sense plantilla';
-                continue;
-            }
-            $key = (string) $plantilla;
-            $this->plantillaOptions[$key] = 'Plantilla ' . $plantilla;
+        if ($this->selectedPropuestaId === null || $this->selectedPropuestaId === '') {
+            $this->selectedPropuestaId = null;
+            $this->loadHorario();
+            $this->novaProposta();
+            return;
         }
 
-        if (!empty($this->plantillaOptions)) {
-            if ($this->selectedPlantilla === null || !array_key_exists($this->selectedPlantilla, $this->plantillaOptions)) {
-                $this->selectedPlantilla = array_key_first($this->plantillaOptions);
-            }
-        }
-    }
-
-    public function updatedSelectedPlantilla(): void
-    {
         $this->selectedCell = null;
         $this->error = '';
         $this->message = '';
@@ -135,22 +155,9 @@ class HorariProfessorCanvi extends Component
         $this->items = [];
         $this->grid = [];
 
-        if ($this->horarioProfesorId === '') {
-            $this->horarioProfesorId = $this->resolveHorarioProfesorId();
-        }
-
-        $query = Horario::where('idProfesor', $this->horarioProfesorId)
-            ->with(['Modulo', 'Ocupacion', 'Grupo', 'Hora']);
-
-        if ($this->selectedPlantilla !== null) {
-            if ($this->selectedPlantilla === '__null__') {
-                $query->whereNull('plantilla');
-            } else {
-                $query->where('plantilla', $this->selectedPlantilla);
-            }
-        }
-
-        $horarios = $query->get();
+        $horarios = Horario::Profesor($this->dni)
+            ->with(['Modulo', 'Ocupacion', 'Grupo', 'Hora'])
+            ->get();
 
         foreach ($horarios as $horario) {
             $cell = $horario->sesion_orden . '-' . $horario->dia_semana;
@@ -192,8 +199,14 @@ class HorariProfessorCanvi extends Component
 
     protected function loadCambios(): void
     {
+        if ($this->selectedPropuestaId) {
+            $this->loadPropuestaById($this->selectedPropuestaId);
+            return;
+        }
+
         $propostaId = request()->get('proposta');
         if ($propostaId) {
+            $this->selectedPropuestaId = (string) $propostaId;
             $this->loadPropuestaById((string) $propostaId);
             return;
         }
@@ -225,12 +238,17 @@ class HorariProfessorCanvi extends Component
             return;
         }
 
+        $this->selectedPropuestaId = $id;
+
         $this->applyPropuestaData($data);
     }
 
     protected function applyPropuestaData(array $data): void
     {
         $this->propuestaId = isset($data['id']) ? (string) $data['id'] : null;
+        if ($this->selectedPropuestaId === null && $this->propuestaId) {
+            $this->selectedPropuestaId = $this->propuestaId;
+        }
         $this->estado = (string) ($data['estado'] ?? $this->estado);
         $this->obs = (string) ($data['obs'] ?? '');
         $this->fechaInicio = (string) ($data['fecha_inicio'] ?? '');
@@ -400,6 +418,7 @@ class HorariProfessorCanvi extends Component
     {
         $this->resetCanvis();
         $this->propuestaId = null;
+        $this->selectedPropuestaId = null;
         $this->estado = 'Nova';
         $this->editable = true;
         $this->obs = '';
@@ -487,6 +506,8 @@ class HorariProfessorCanvi extends Component
 
         $this->estado = $estadoGuardar;
         $this->propuestaId = $propuestaId;
+        $this->selectedPropuestaId = $propuestaId;
+        $this->loadPropuestasDisponibles();
         $this->editable = $this->isDireccion || !in_array($this->estado, ['Aceptado', 'Guardado'], true);
         $this->message = $estadoGuardar === 'Aceptado'
             ? 'Canvis guardats per direccio.'
