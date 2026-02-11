@@ -429,6 +429,32 @@ class HorariProfessorCanvi extends Component
         }
     }
 
+    public function esborrarProposta(): void
+    {
+        $this->error = '';
+        $this->message = '';
+
+        if (!$this->propuestaId) {
+            $this->error = 'No hi ha proposta seleccionada.';
+            return;
+        }
+
+        if (in_array($this->estado, ['Aceptado', 'Guardado'], true)) {
+            $this->error = 'No es pot esborrar una proposta acceptada.';
+            return;
+        }
+
+        $disk = Storage::disk('local');
+        $path = '/horarios/' . $this->dni . '/' . $this->propuestaId . '.json';
+        if ($disk->exists($path)) {
+            $disk->delete($path);
+        }
+
+        $this->loadPropuestasDisponibles();
+        $this->novaProposta();
+        $this->message = 'Proposta esborrada.';
+    }
+
     public function guardarProposta(): void
     {
         $this->error = '';

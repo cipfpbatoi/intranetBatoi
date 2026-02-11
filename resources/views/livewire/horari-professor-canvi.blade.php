@@ -46,6 +46,10 @@
         <button class="btn btn-default" type="button" wire:click="novaProposta">
             Nova proposta
         </button>
+        <button class="btn btn-danger" type="button" wire:click="esborrarProposta"
+            @if(!$propuestaId || in_array($estado, ['Aceptado', 'Guardado'], true)) disabled @endif>
+            Esborrar proposta
+        </button>
     </div>
 
     <div class="mb-3 no-print">
