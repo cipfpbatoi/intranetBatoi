@@ -10,6 +10,7 @@ use Intranet\Http\Traits\Autorizacion;
 use Intranet\Services\General\AutorizacionPrintService;
 use Intranet\Services\General\AutorizacionStateService;
 use Mockery;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 class AutorizacionTraitTest extends TestCase
@@ -116,6 +117,28 @@ class AutorizacionTraitTest extends TestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
     }
+
+    public function test_accept_fa_abort_quan_class_no_es_valida(): void
+    {
+        $controller = new DummyAutorizacionController();
+        $controller->setClassValue('Classe\\Inexistent');
+
+        $this->expectException(HttpException::class);
+        $this->expectExceptionMessage("L'atribut 'class' no és una classe vàlida");
+
+        $this->callProtectedMethod($controller, 'accept', [10, false]);
+    }
+
+    public function test_imprimir_fa_abort_quan_falta_model(): void
+    {
+        $controller = new DummyAutorizacionController();
+        $controller->setModelValue('');
+
+        $this->expectException(HttpException::class);
+        $this->expectExceptionMessage("L'atribut 'model' no està definit");
+
+        $controller->imprimir();
+    }
 }
 
 class DummyAutorizacionController
@@ -135,5 +158,15 @@ class DummyAutorizacionController
     public function setNotFollowValue(bool $value): void
     {
         $this->notFollow = $value;
+    }
+
+    public function setClassValue(string $value): void
+    {
+        $this->class = $value;
+    }
+
+    public function setModelValue(string $value): void
+    {
+        $this->model = $value;
     }
 }

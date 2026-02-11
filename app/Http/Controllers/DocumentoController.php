@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Adjunto;

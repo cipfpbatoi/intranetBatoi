@@ -1,6 +1,8 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\PPoll;

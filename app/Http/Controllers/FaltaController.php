@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use DB;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
@@ -16,7 +18,7 @@ use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
 use Intranet\Http\Traits\Autorizacion;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\Notifications\AdviseTeacher;
 use Intranet\Services\Notifications\ConfirmAndSend;
 use Intranet\Services\General\StateService;

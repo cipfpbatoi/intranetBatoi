@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Intranet\Http\Controllers\BaseController;
+use Intranet\Http\Controllers\Core\BaseController;
 use Tests\TestCase;
 
 class BaseControllerTest extends TestCase

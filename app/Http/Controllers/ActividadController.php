@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use DB;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonIcon;

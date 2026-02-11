@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -10,8 +12,8 @@ use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
 use Intranet\Http\Requests\ExpedienteRequest;
 use Intranet\Http\Traits\Autorizacion;
-use Intranet\Http\Traits\Imprimir;
-use Intranet\Http\Traits\DropZone;
+use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\General\StateService;
 use Styde\Html\Facades\Alert;

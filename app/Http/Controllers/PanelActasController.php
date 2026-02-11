@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\BaseController;
+
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Grupo;

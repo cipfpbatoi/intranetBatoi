@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\Adjunto;
-use Intranet\Http\Traits\DropZone;
+use Intranet\Http\Traits\Core\DropZone;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 

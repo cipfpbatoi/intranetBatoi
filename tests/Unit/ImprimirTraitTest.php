@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Illuminate\Http\RedirectResponse;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\Document\PdfService;
 use Mockery;
 use Symfony\Component\HttpKernel\Exception\HttpException;

@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
@@ -12,7 +14,7 @@ use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Activity;
-use Intranet\Http\Traits\Panel;
+use Intranet\Http\Traits\Core\Panel;
 use Styde\Html\Facades\Alert;
 
 /**

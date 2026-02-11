@@ -37,7 +37,7 @@ class StateServiceTest extends TestCase
         $element->fechasolucion = null;
         $element->fichero = 'doc.pdf';
 
-        $gestor = Mockery::mock('overload:Intranet\\Services\\GestorService');
+        $gestor = Mockery::mock('overload:Intranet\\Services\\General\\GestorService');
         $gestor->shouldReceive('save')
             ->once()
             ->with(Mockery::subset([

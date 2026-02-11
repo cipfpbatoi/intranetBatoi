@@ -49,6 +49,8 @@ trait Autorizacion
      */
     private function getAutorizacionStateService(): AutorizacionStateService
     {
+        $this->guardAutorizacionContract();
+
         if (!$this->autorizacionStateService) {
             $this->autorizacionStateService = app()->makeWith(
                 AutorizacionStateService::class,
@@ -226,6 +228,8 @@ trait Autorizacion
      */
     public function imprimir($modelo = '', $inicial = null, $final = null, $orientacion='portrait', $link=true)
     {
+        $this->guardAutorizacionContract(true);
+
         $response = $this->getAutorizacionPrintService()->imprimir(
             $this->class,
             $this->model,
@@ -242,6 +246,27 @@ trait Autorizacion
 
         Alert::info(trans('messages.generic.empty'));
         return back();
+    }
+
+    /**
+     * Valida que el controller definisca el contracte mínim del trait.
+     *
+     * @param bool $requireModel Si és `true`, també exigeix `$model`.
+     * @return void
+     */
+    private function guardAutorizacionContract(bool $requireModel = false): void
+    {
+        if (!isset($this->class) || !is_string($this->class) || $this->class === '') {
+            abort(500, "L'atribut 'class' no està definit en la classe que usa el trait Autorizacion.");
+        }
+
+        if (!class_exists($this->class)) {
+            abort(500, "L'atribut 'class' no és una classe vàlida en el trait Autorizacion.");
+        }
+
+        if ($requireModel && (!isset($this->model) || !is_string($this->model) || $this->model === '')) {
+            abort(500, "L'atribut 'model' no està definit en la classe que usa el trait Autorizacion.");
+        }
     }
 
 

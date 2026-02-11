@@ -2,9 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Colaboracion;
-use Intranet\Http\Traits\Panel;
+use Intranet\Http\Traits\Core\Panel;
 use Styde\Html\Facades\Alert;
 
 

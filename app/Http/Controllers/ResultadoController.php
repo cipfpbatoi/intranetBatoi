@@ -2,13 +2,15 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Http\Requests\ResultadoStoreRequest;
 use Intranet\Http\Requests\ResultadoUpdateRequest;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Styde\Html\Facades\Alert;
 
 

@@ -1,6 +1,8 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Lote;
 use Illuminate\Support\Facades\Auth;

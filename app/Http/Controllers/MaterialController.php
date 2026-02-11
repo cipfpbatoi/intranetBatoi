@@ -1,6 +1,8 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Material;
 use Intranet\Entities\Incidencia;

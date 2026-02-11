@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -10,7 +12,7 @@ use Intranet\Entities\Centro;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
 use Intranet\Entities\Profesor;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Jenssegers\Date\Date;
 use Illuminate\Support\Collection;
 use Response;

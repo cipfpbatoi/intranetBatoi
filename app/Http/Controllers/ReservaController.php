@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Hora;
 use Illuminate\Http\Request;

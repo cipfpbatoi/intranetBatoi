@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 
 use Intranet\Entities\Cotxe;
 use Intranet\Http\Requests\CotxeRequest;

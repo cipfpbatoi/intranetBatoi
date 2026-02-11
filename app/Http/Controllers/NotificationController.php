@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Intranet\Entities\Notification;
 use Intranet\UI\Botones\BotonImg;
 use Jenssegers\Date\Date;

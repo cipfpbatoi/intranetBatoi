@@ -2,8 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
-use Intranet\Http\Controllers\BaseController;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use Styde\Html\Facades\Alert;

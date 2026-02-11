@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Http\Traits;
+namespace Intranet\Http\Traits\Core;
 
 use Illuminate\Support\Facades\Response;
 use Intranet\Services\Document\PdfService;

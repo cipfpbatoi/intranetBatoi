@@ -1,6 +1,8 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Lote;
 use Illuminate\Database\Eloquent\Builder;

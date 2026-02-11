@@ -5,12 +5,19 @@ namespace Intranet\Http\Controllers\Core;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Http\Controllers\Controller;
-use Intranet\UI\Panels\Panel;
 use Intranet\Services\Notifications\ConfirmAndSend;
 use Intranet\Services\UI\FormBuilder;
+use Intranet\UI\Panels\Panel;
 
-
-
+/**
+ * Controlador base per a recursos amb UX modal.
+ *
+ * Responsabilitats:
+ * - renderitzar el grid + formulari modal en `index`,
+ * - cercar registres del model amb filtre opcional per `idProfesor`,
+ * - redirigir `create/edit` cap a `index`,
+ * - oferir utilitats comunes de destrucció i confirmació.
+ */
 abstract class ModalController extends Controller
 {
     /**
@@ -20,13 +27,53 @@ abstract class ModalController extends Controller
      */
     private static array $searchColumnCache = [];
 
-    protected $gridFields = null;  // campos que ixen en la rejilla
-    protected $panel;       // panel per a la vista
-    protected $parametresVista = []; // paràmetres per a la vista
-    protected $vista = null;       // vistes per defecte
-    protected $titulo = []; // paràmetres per al titol de la vista
-    protected $profile = true; // se mostra profile o no
-    protected $redirect = null;  // pàgina a la que redirigir després de inserció o modificat
+    /**
+     * Camps visibles en grid.
+     *
+     * @var array|null
+     */
+    protected $gridFields = null;
+    /**
+     * Instància de panell de UI.
+     *
+     * @var mixed
+     */
+    protected $panel;
+    /**
+     * Paràmetres extra de vista.
+     *
+     * @var array
+     */
+    protected $parametresVista = [];
+    /**
+     * Vista configurada (string o array per acció).
+     *
+     * @var mixed
+     */
+    protected $vista = null;
+    /**
+     * Paràmetres de títol.
+     *
+     * @var array
+     */
+    protected $titulo = [];
+    /**
+     * Indica si es mostra pestanya `profile`.
+     *
+     * @var bool
+     */
+    protected $profile = true;
+    /**
+     * Acció preferida de redirecció post-operació.
+     *
+     * @var string|null
+     */
+    protected $redirect = null;
+    /**
+     * Config de camps de formulari.
+     *
+     * @var array|null
+     */
     protected $formFields = null;
 
     /*
@@ -55,18 +102,32 @@ abstract class ModalController extends Controller
 
     }
 
+    /**
+     * Renderitza la vista modal amb grid i formulari d'alta.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
     protected function grid()
     {
-        if (is_array($this->vista)) {
-            $vista = $this->vista['index'] ??'intranet.indexModal';
-        } else {
-            $vista = $this->vista ??'intranet.indexModal';
-        }
         return $this->panel->render(
             $this->search(),
             $this->titulo,
-            $vista ,
+            $this->resolveIndexView(),
             new FormBuilder($this->createWithDefaultValues(), $this->formFields));
+    }
+
+    /**
+     * Resol la vista d'index del modal.
+     *
+     * @return string
+     */
+    protected function resolveIndexView(): string
+    {
+        if (is_array($this->vista)) {
+            return $this->vista['index'] ?? 'intranet.indexModal';
+        }
+
+        return $this->vista ?? 'intranet.indexModal';
     }
 
     /**
@@ -76,29 +137,48 @@ abstract class ModalController extends Controller
      */
     protected function search()
     {
-        if (!isset($this->class)) {
-            abort(500, "L'atribut 'class' no està definit en la classe modal.");
-        }
+        $modelClass = $this->resolveModelClass();
 
-        $query = $this->class::query();
+        $query = $modelClass::query();
 
-        if ($this->hasModelColumn('idProfesor')) {
+        if ($this->hasModelColumn($modelClass, 'idProfesor')) {
             $query->where('idProfesor', '=', AuthUser()->dni);
         }
 
         return $query->get();
     }
 
-    private function hasModelColumn(string $column): bool
+    /**
+     * Comprova si la taula del model té una columna.
+     *
+     * @param string $modelClass
+     * @param string $column
+     * @return bool
+     */
+    private function hasModelColumn(string $modelClass, string $column): bool
     {
-        $cacheKey = $this->class . ':' . $column;
+        $cacheKey = $modelClass . ':' . $column;
 
         if (!array_key_exists($cacheKey, self::$searchColumnCache)) {
-            $table = (new $this->class)->getTable();
+            $table = (new $modelClass)->getTable();
             self::$searchColumnCache[$cacheKey] = Schema::hasColumn($table, $column);
         }
 
         return self::$searchColumnCache[$cacheKey];
+    }
+
+    /**
+     * Resol la classe de model del controlador modal.
+     *
+     * @return string
+     */
+    private function resolveModelClass(): string
+    {
+        if (empty($this->class) || !class_exists($this->class)) {
+            abort(500, "L'atribut 'class' no està definit o no és vàlid en la classe modal.");
+        }
+
+        return $this->class;
     }
 
     /**
@@ -117,8 +197,16 @@ abstract class ModalController extends Controller
 
 
 
-    protected function createWithDefaultValues($default = []){
-        return new $this->class($default);
+    /**
+     * Crea una instància buida del model per al formulari modal.
+     *
+     * @param array $default
+     * @return mixed
+     */
+    protected function createWithDefaultValues($default = [])
+    {
+        $modelClass = $this->resolveModelClass();
+        return new $modelClass($default);
     }
 
     /*
@@ -128,7 +216,8 @@ abstract class ModalController extends Controller
    */
     public function destroy($id)
     {
-        $elemento = $this->class::find($id);
+        $modelClass = $this->resolveModelClass();
+        $elemento = $modelClass::find($id);
 
         if (!$elemento) {
             return redirect()->back()->with('error', 'Element no trobat');
@@ -148,6 +237,12 @@ abstract class ModalController extends Controller
     }
 
 
+    /**
+     * Retorna la vista de confirmació per al model.
+     *
+     * @param int|string $id
+     * @return mixed
+     */
     public function confirm($id){
         return ConfirmAndSend::render($this->model,$id);
     }
@@ -161,6 +256,11 @@ abstract class ModalController extends Controller
 
     }
 
+    /**
+     * Inicialitza pestanyes per defecte.
+     *
+     * @return void
+     */
     protected function iniPestanas()
     {
         // Pestana per al profile
@@ -169,6 +269,11 @@ abstract class ModalController extends Controller
         }
     }
 
+    /**
+     * Resol redirecció de retorn en fluxos modal.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function redirect()
     {
         if (Session::get('redirect')) {

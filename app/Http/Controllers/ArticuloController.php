@@ -1,6 +1,8 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Illuminate\Support\Facades\Storage;
 use Intranet\Http\Requests\ArticuloRequest;
 use Intranet\Entities\Articulo;

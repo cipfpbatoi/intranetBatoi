@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use DB;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
@@ -12,7 +14,7 @@ use Intranet\Entities\Comision;
 use Intranet\Entities\Fct;
 use Intranet\Http\Requests\ComisionRequest;
 use Intranet\Http\Traits\Autorizacion;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Http\Traits\Core\SCRUD;
 use Intranet\Services\Calendar\CalendarService;
 use Intranet\Services\Notifications\ConfirmAndSend;

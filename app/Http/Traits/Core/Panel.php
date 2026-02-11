@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Intranet\Http\Traits;
+namespace Intranet\Http\Traits\Core;
 
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;

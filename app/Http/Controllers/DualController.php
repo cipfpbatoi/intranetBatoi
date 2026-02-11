@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -17,7 +19,7 @@ use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Requests\DualRequest;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Jenssegers\Date\Date;
 use mikehaertl\pdftk\Pdf;
 use Styde\Html\Facades\Alert;

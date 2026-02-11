@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Http\Traits;
+namespace Intranet\Http\Traits\Core;
 
 use Intranet\Entities\Adjunto;
 use Intranet\Services\Document\AttachedFileService;

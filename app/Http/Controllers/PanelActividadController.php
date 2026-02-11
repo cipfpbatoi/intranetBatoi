@@ -2,9 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\BaseController;
+
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Http\Traits\Panel;
+use Intranet\Http\Traits\Core\Panel;
 
 
 /**

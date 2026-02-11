@@ -1,6 +1,8 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Intranet\UI\Botones\BotonImg;
