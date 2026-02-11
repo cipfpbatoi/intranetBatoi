@@ -3,7 +3,7 @@
 
     <div class="mb-3 no-print">
         <label for="propostaSelect"><strong>Proposta</strong></label>
-        <select id="propostaSelect" class="form-control" wire:model="selectedPropostaId">
+        <select id="propostaSelect" class="form-control" wire:model="selectedPropuestaId">
             <option value="">Nova proposta</option>
             @foreach ($propuestaOptions as $value => $label)
                 <option value="{{ $value }}">{{ $label }}</option>
