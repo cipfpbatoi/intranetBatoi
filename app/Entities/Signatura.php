@@ -9,6 +9,9 @@ class Signatura extends Model
 
     use BatoiModels;
 
+    public $mail = null;
+    public $contact = null;
+
     protected $table = 'signatures';
     protected $fillable = [
         'tipus',
