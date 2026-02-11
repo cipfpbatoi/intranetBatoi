@@ -23,7 +23,12 @@
 - Run the suite before PRs and add regression tests with every bug fix.
 
 ## Commit & Pull Request Guidelines
-- Write imperative, specific commit titles (e.g., `Add calendar export to events`); keep related changes together.
+- Prefix commit titles with a tag that categorizes the change:
+  - `[MOD]` – Modification of existing code or files.
+  - `[ADD]` – Addition of new files or features.
+  - `[DEL]` – Deletion of files or code.
+  - `[FIX]` – Bug fix or error correction.
+- Write imperative, specific commit titles after the tag (e.g., `[ADD] Calendar export to events`, `[FIX] Null pointer in user login`); keep related changes together.
 - PRs should summarize intent, link issues/tasks, and list tests run (`phpunit`, `npm run production` when assets change). Add screenshots for UI updates and call out migrations or new env vars.
 
 ## Security & Configuration Tips
