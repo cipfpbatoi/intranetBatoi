@@ -1,6 +1,6 @@
 <?php
 
-namespace Intranet\Http\Traits;
+namespace Intranet\Http\Traits\Core;
 
 use Intranet\Services\UI\FormBuilder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

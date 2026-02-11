@@ -13,7 +13,7 @@ use Intranet\Entities\Fct;
 use Intranet\Http\Requests\ComisionRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Imprimir;
-use Intranet\Http\Traits\SCRUD;
+use Intranet\Http\Traits\Core\SCRUD;
 use Intranet\Services\Calendar\CalendarService;
 use Intranet\Services\Notifications\ConfirmAndSend;
 use Intranet\Services\General\StateService;

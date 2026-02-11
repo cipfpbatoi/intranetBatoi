@@ -17,7 +17,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
 use Intranet\Http\Traits\Autorizacion;
-use Intranet\Http\Traits\SCRUD;
+use Intranet\Http\Traits\Core\SCRUD;
 use Intranet\Services\Notifications\AdviseTeacher;
 use Intranet\Services\Calendar\CalendarService;
 use Intranet\Services\General\GestorService;

@@ -9,7 +9,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\Factory as ViewFactory;
-use Intranet\Http\Traits\SCRUD;
+use Intranet\Http\Traits\Core\SCRUD;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 

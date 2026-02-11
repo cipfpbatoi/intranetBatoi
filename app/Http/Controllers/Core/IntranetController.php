@@ -6,7 +6,7 @@ namespace Intranet\Http\Controllers\Core;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Intranet\Http\Traits\SCRUD;
+use Intranet\Http\Traits\Core\SCRUD;
 use Intranet\Services\Document\DocumentPathService;
 use Styde\Html\Facades\Alert;
 
