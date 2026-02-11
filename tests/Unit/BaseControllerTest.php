@@ -9,6 +9,13 @@ namespace Intranet\Http\Controllers {
     }
 }
 
+namespace Intranet\Http\Controllers\Core {
+    function AuthUser(): object
+    {
+        return (object) ['dni' => '111A'];
+    }
+}
+
 namespace Tests\Unit {
 
 use Illuminate\Database\Eloquent\Model;
