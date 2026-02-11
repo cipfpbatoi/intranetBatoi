@@ -10,7 +10,7 @@ use Intranet\Services\General\StateService;
 class Programacion extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
     
     public $fileField = 'idModulo';
     protected $table = "programaciones";

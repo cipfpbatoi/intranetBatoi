@@ -12,7 +12,7 @@ class Grupo extends Model
     protected $keyType = 'string';
     public $timestamps = true;
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $fillable = [
         'nombre',

@@ -14,7 +14,7 @@ use Intranet\Events\ReunionCreated;
 class Reunion extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'reuniones';
     protected $fillable = [

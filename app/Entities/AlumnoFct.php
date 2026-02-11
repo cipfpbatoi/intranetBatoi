@@ -11,7 +11,7 @@ use Intranet\Events\FctAlDeleted;
 class AlumnoFct extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $fillable = ['id', 'desde', 'hasta', 'horas', 'beca', 'autorizacion', 'flexible', 'valoracio'];
 

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Colaborador extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'colaboradores';
     protected $fillable = [

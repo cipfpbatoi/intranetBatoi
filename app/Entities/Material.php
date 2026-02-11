@@ -25,7 +25,7 @@ class Material extends Model
         'articulo_lote_id'
     ];
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $rules = [
         'descripcion' => 'required',

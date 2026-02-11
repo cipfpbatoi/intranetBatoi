@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class BustiaVioleta extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'bustia_violeta';
 

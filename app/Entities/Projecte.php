@@ -9,7 +9,7 @@ use Jenssegers\Date\Date;
 
 class Projecte extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $fillable = [
         'idAlumne',

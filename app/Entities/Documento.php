@@ -12,7 +12,7 @@ use Intranet\Services\Document\TipoDocumentoService;
 class Documento extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'documentos';
     protected $fillable = ['tipoDocumento', 'rol', 'curso', 'propietario', 'supervisor', 'descripcion'

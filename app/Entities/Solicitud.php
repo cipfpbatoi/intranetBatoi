@@ -8,7 +8,7 @@ use Jenssegers\Date\Date;
 class Solicitud extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     public $timestamps = false;
     public $table = 'solicitudes';

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Cache;
 class Menu extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     public $timestamps = false;
     protected $fillable = [

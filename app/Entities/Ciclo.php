@@ -11,7 +11,7 @@ use Jenssegers\Date\Date;
 class Ciclo extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
     
     protected $table = "ciclos";
     public $timestamps = false;

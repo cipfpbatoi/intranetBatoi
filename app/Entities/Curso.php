@@ -12,7 +12,7 @@ use Intranet\Events\ActivityReport;
 class Curso extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $nombre = 'Cursos';
     protected $fillable = [

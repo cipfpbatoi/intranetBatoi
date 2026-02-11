@@ -1,14 +1,18 @@
 <?php
 
-namespace Intranet\Entities;
+namespace Intranet\Entities\Concerns;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Styde\Html\Facades\Alert;
 
 /**
- * Trait BatoiModels
- * @package Intranet\Entities
+ * Utilitats comunes de model per a formularis, validació i càrrega de fitxers.
+ *
+ * Aquest trait centralitza:
+ * - regles (`rules`) i tipus d'input (`inputTypes`),
+ * - emplenat de camps des de Request (`fillAll`),
+ * - gestió de fitxers associats (`fillFile`).
  */
 trait BatoiModels
 {
@@ -35,7 +39,7 @@ trait BatoiModels
      */
     public function isRequired($campo)
     {
-        return isset($this->rules[$campo]) && strpos($this->rules[$campo], 'equired');
+        return isset($this->rules[$campo]) && strpos($this->rules[$campo], 'required') !== false;
     }
 
     /**
@@ -66,12 +70,23 @@ trait BatoiModels
      */
     public function addFillable($field, $first=false)
     {
+        if (in_array($field, $this->fillable, true)) {
+            return;
+        }
+
+        if (empty($this->fillable)) {
+            $this->fillable[] = $field;
+            return;
+        }
+
         if ($first) {
             array_unshift($this->fillable, $field);
         } else {
             $ultimo = array_pop($this->fillable);
             $this->fillable[] = $field;
-            $this->fillable[] = $ultimo;
+            if ($ultimo !== null) {
+                $this->fillable[] = $ultimo;
+            }
         }
     }
 
@@ -103,6 +118,11 @@ trait BatoiModels
         return isset($this->inputTypes[$campo]) ? $this->inputTypes[$campo] : ['type' => 'text'];
     }
 
+    /**
+     * Retorna la definició completa de tipus d'input del model.
+     *
+     * @return array
+     */
     public function getInputTypes()
     {
         return $this->inputTypes;
@@ -129,8 +149,14 @@ trait BatoiModels
      */
     public function isTypeDate($type)
     {
-        return isset($type['type']) && (strpos($type['type'], 'ate') || strpos($type['type'],
-                    'ime') || strpos($type['type'], 'ag'));
+        if (!isset($type['type']) || !is_string($type['type'])) {
+            return false;
+        }
+
+        $inputType = strtolower($type['type']);
+        return strpos($inputType, 'ate') !== false
+            || strpos($inputType, 'ime') !== false
+            || strpos($inputType, 'ag') !== false;
     }
 
     /*
@@ -155,14 +181,29 @@ trait BatoiModels
         return $this->$primaryKey;
     }
     */
-
-
+    /**
+     * Emplena i persisteix els camps `fillable` des d'un request.
+     *
+     * Regles especials:
+     * - camps absents no es sobreescriuen (excepte `checkbox`),
+     * - `checkbox` absent es normalitza a `0`,
+     * - si arriba `fichero`, es valida i guarda.
+     *
+     * @param Request $request
+     * @return mixed Valor de la clau primària del registre.
+     */
     public function fillAll(Request $request)
     {
         $fillable = $this->notFillable?array_diff($this->fillable, $this->notFillable):$this->fillable;
 
         foreach ($fillable as $key) {
-            $value = $request->$key;
+            $type = $this->inputTypes[$key]['type'] ?? null;
+
+            if (!$request->exists($key) && $type !== 'checkbox') {
+                continue;
+            }
+
+            $value = $request->input($key);
             $this->$key = $this->fillField($key, $value);
         }
         $this->save();
@@ -178,22 +219,32 @@ trait BatoiModels
         return $this->$primaryKey;
     }
 
+    /**
+     * Normalitza i transforma el valor d'un camp segons el seu tipus d'input.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return mixed
+     */
     private function fillField($key, $value)
     {
         $type = $this->inputTypes[$key]['type'] ?? null;
 
         return match ($type) {
-            'date' => Carbon::parse($value)->format('Y-m-d'),
-            'datetime' => Carbon::parse($value)->format('Y-m-d H:i'),
+            'date' => blank($value) ? null : Carbon::parse($value)->format('Y-m-d'),
+            'datetime' => blank($value) ? null : Carbon::parse($value)->format('Y-m-d H:i'),
             'select' => $value == '' ? null : $value,
             'file' => request()->hasFile($key) ? $this->fillFile(request()->file($key)) : $this->$key,
             'checkbox' => $value==null ? 0 : 1,
             default => $value,
         };
     }
-
-
-
+    /**
+     * Valida i guarda un fitxer annex retornant la ruta final.
+     *
+     * @param \Illuminate\Http\UploadedFile $file
+     * @return string|null
+     */
     public function fillFile($file)
     {
 
@@ -223,11 +274,24 @@ trait BatoiModels
 
     }
 
+    /**
+     * Construeix el directori de destí del fitxer segons curs i classe.
+     *
+     * @param string $clase
+     * @return string
+     */
     private function getDirectory($clase)
     {
         return 'gestor/' . curso() . '/' . $clase;
     }
 
+    /**
+     * Construeix el nom final del fitxer pujat.
+     *
+     * @param string $extension
+     * @param string $clase
+     * @return string
+     */
     private function getFileName($extension, $clase)
     {
         $nombre = $this->id ? $this->id . '_' : '';
@@ -256,7 +320,13 @@ trait BatoiModels
     {
         return isset($this->fichero) && file_exists(storage_path('app/'.$this->fichero));
     }
-
+    /**
+     * Guarda dades bàsiques de contacte en el model.
+     *
+     * @param string|null $contacto
+     * @param string|null $email
+     * @return bool
+     */
     public function saveContact($contacto, $email)
     {
         $this->contacto = $contacto;
@@ -264,6 +334,11 @@ trait BatoiModels
         return $this->save();
     }
 
+    /**
+     * Retorna el model serialitzat per a pantalles de confirmació.
+     *
+     * @return array
+     */
     public function showConfirm()
     {
         return $this->toArray();

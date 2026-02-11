@@ -9,7 +9,7 @@ use Intranet\Events\ActivityReport;
 class Centro extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'centros';
     protected $fillable = [

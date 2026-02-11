@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class TipoActividad extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'tipo_actividad';
 

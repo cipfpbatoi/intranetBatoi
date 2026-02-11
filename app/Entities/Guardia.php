@@ -9,7 +9,7 @@ use Intranet\Events\ActivityReport;
 class Guardia extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $fillable = ['idProfesor', 'dia', 'hora', 'realizada', 'observaciones', 'obs_personal'];
     protected $hidden = ['created_at', 'updated_at'];

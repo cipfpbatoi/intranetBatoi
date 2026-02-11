@@ -7,7 +7,7 @@ use \Illuminate\Database\Eloquent\Model;
 class AlumnoGrupo extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     public $primaryKey = 'idAlumno';
     protected $keyType = 'string';

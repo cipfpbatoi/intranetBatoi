@@ -11,7 +11,7 @@ use Intranet\Providers\AuthServiceProvider;
 class Colaboracion extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'colaboraciones';
     protected $fillable = [

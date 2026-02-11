@@ -12,7 +12,7 @@ class ArticuloLote extends Model
     public $timestamps = false;
     protected $fillable = ['lote_id', 'articulo_id', 'marca', 'modelo', 'unidades'];
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $rules = [
         'articulo_id' => 'required',

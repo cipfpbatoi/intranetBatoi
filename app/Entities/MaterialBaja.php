@@ -18,7 +18,7 @@ class MaterialBaja extends Model
         'tipo'
     ];
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     public function Profesor()
     {

@@ -12,7 +12,7 @@ use Illuminate\Support\Arr;
 
 class Fct extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     
     protected $table = 'fcts';

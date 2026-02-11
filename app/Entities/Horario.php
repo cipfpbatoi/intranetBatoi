@@ -11,7 +11,7 @@ use Intranet\Events\ActivityReport;
 class Horario extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
     
     protected $primaryKey = 'id';
     protected $fillable = ['idProfesor', 'modulo', 'idGrupo', 'ocupacion','aula','dia_semana','sesion_orden','plantilla'];

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Comision extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'comisiones';
     protected $fillable = [
