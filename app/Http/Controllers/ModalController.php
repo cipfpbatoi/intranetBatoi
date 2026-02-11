@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Schema;
 use Intranet\UI\Panels\Panel;
-use Intranet\Http\Traits\Searchable;
 use Intranet\Services\Notifications\ConfirmAndSend;
 use Intranet\Services\UI\FormBuilder;
 
@@ -12,7 +12,13 @@ use Intranet\Services\UI\FormBuilder;
 
 abstract class ModalController extends Controller
 {
-    use Searchable;
+    /**
+     * Cache local per evitar consultar schema repetidament.
+     *
+     * @var array<string, bool>
+     */
+    private static array $searchColumnCache = [];
+
     protected $gridFields = null;  // campos que ixen en la rejilla
     protected $panel;       // panel per a la vista
     protected $parametresVista = []; // paràmetres per a la vista
@@ -60,6 +66,38 @@ abstract class ModalController extends Controller
             $this->titulo,
             $vista ,
             new FormBuilder($this->createWithDefaultValues(), $this->formFields));
+    }
+
+    /**
+     * Cerca per defecte del modal:
+     * - retorna tots els registres del model
+     * - si existeix `idProfesor`, filtra pel professor autenticat.
+     */
+    protected function search()
+    {
+        if (!isset($this->class)) {
+            abort(500, "L'atribut 'class' no està definit en la classe modal.");
+        }
+
+        $query = $this->class::query();
+
+        if ($this->hasModelColumn('idProfesor')) {
+            $query->where('idProfesor', '=', AuthUser()->dni);
+        }
+
+        return $query->get();
+    }
+
+    private function hasModelColumn(string $column): bool
+    {
+        $cacheKey = $this->class . ':' . $column;
+
+        if (!array_key_exists($cacheKey, self::$searchColumnCache)) {
+            $table = (new $this->class)->getTable();
+            self::$searchColumnCache[$cacheKey] = Schema::hasColumn($table, $column);
+        }
+
+        return self::$searchColumnCache[$cacheKey];
     }
 
     /**
