@@ -74,12 +74,23 @@ trait SCRUD
 
     protected function chooseView($view)
     {
-        if (isset($this->vista[$view])){
-            $vista = $this->vista[$view].".$view";
-            if (view()->exists($vista)) {
-                 return $vista;
+        if (!isset($this->vista)) {
+            return 'intranet.'.$view;
+        }
+
+        if (is_array($this->vista) && isset($this->vista[$view])) {
+            $configured = strtolower($this->vista[$view]);
+
+            if (strpos($configured, '.') !== false && view()->exists($configured)) {
+                return $configured;
+            }
+
+            $candidate = $configured.'.'.$view;
+            if (view()->exists($candidate)) {
+                return $candidate;
             }
         }
+
         return 'intranet.'.$view;
     }
 }
