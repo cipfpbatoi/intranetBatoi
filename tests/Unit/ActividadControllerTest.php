@@ -41,7 +41,9 @@ class ActividadControllerTest extends TestCase
     protected function tearDown(): void
     {
         Schema::connection('sqlite')->dropIfExists('autorizaciones');
+        Schema::connection('sqlite')->dropIfExists('actividad_grupo');
         Schema::connection('sqlite')->dropIfExists('actividad_profesor');
+        Schema::connection('sqlite')->dropIfExists('grupos');
         Schema::connection('sqlite')->dropIfExists('alumnos');
         Schema::connection('sqlite')->dropIfExists('profesores');
         Schema::connection('sqlite')->dropIfExists('actividades');
@@ -86,6 +88,58 @@ class ActividadControllerTest extends TestCase
         $this->assertInstanceOf(RedirectResponse::class, $response);
     }
 
+    public function test_detalle_filtra_selects_sense_elements_ja_assignats(): void
+    {
+        $actividad = ActividadLite::create([
+            'name' => 'Jornada',
+        ]);
+
+        DB::table('profesores')->insert([
+            [
+                'dni' => 'P001',
+                'nombre' => 'Ana',
+                'apellido1' => 'Alfa',
+                'apellido2' => 'A',
+                'fecha_baja' => null,
+                'activo' => 1,
+            ],
+            [
+                'dni' => 'P002',
+                'nombre' => 'Bernat',
+                'apellido1' => 'Beta',
+                'apellido2' => 'B',
+                'fecha_baja' => null,
+                'activo' => 1,
+            ],
+        ]);
+
+        DB::table('grupos')->insert([
+            ['codigo' => 'G1', 'nombre' => 'Grup 1'],
+            ['codigo' => 'G2', 'nombre' => 'Grup 2'],
+        ]);
+
+        DB::table('actividad_profesor')->insert([
+            ['idActividad' => $actividad->id, 'idProfesor' => 'P001', 'coordinador' => 1],
+        ]);
+
+        DB::table('actividad_grupo')->insert([
+            ['idActividad' => $actividad->id, 'idGrupo' => 'G1'],
+        ]);
+
+        $controller = new DummyActividadController();
+        $view = $controller->detalle($actividad->id);
+
+        $this->assertSame('extraescolares.edit', $view->name());
+        $data = $view->getData();
+
+        $this->assertArrayHasKey('tProfesores', $data);
+        $this->assertArrayHasKey('tGrupos', $data);
+        $this->assertArrayNotHasKey('P001', $data['tProfesores']);
+        $this->assertArrayHasKey('P002', $data['tProfesores']);
+        $this->assertArrayNotHasKey('G1', $data['tGrupos']);
+        $this->assertArrayHasKey('G2', $data['tGrupos']);
+    }
+
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('actividades')) {
@@ -103,6 +157,17 @@ class ActividadControllerTest extends TestCase
             Schema::connection('sqlite')->create('profesores', function (Blueprint $table) {
                 $table->string('dni', 10)->primary();
                 $table->string('nombre')->nullable();
+                $table->string('apellido1')->nullable();
+                $table->string('apellido2')->nullable();
+                $table->date('fecha_baja')->nullable();
+                $table->boolean('activo')->default(true);
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('grupos')) {
+            Schema::connection('sqlite')->create('grupos', function (Blueprint $table) {
+                $table->string('codigo', 5)->primary();
+                $table->string('nombre')->nullable();
             });
         }
 
@@ -111,6 +176,13 @@ class ActividadControllerTest extends TestCase
                 $table->unsignedBigInteger('idActividad');
                 $table->string('idProfesor', 10);
                 $table->boolean('coordinador')->default(false);
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('actividad_grupo')) {
+            Schema::connection('sqlite')->create('actividad_grupo', function (Blueprint $table) {
+                $table->unsignedBigInteger('idActividad');
+                $table->string('idGrupo', 5);
             });
         }
 

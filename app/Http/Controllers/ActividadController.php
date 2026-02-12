@@ -175,8 +175,33 @@ class ActividadController extends ModalController
         // Assignem professors i grups associats a l'activitat
         $sProfesores = $Actividad->profesores;
         $sGrupos = $Actividad->grupos;
+        $coordinador = $sProfesores->firstWhere('coordinador', 1);
 
-        return view('extraescolares.edit', compact('Actividad', 'tProfesores', 'tGrupos', 'sGrupos', 'sProfesores'));
+        $coordinadorNom = $coordinador
+            ? trim("{$coordinador->apellido1} {$coordinador->apellido2}, {$coordinador->nombre}")
+            : 'Sense assignar';
+
+        $desdeRaw = $Actividad->getRawOriginal('desde');
+        $hastaRaw = $Actividad->getRawOriginal('hasta');
+        $desdeVal = $desdeRaw ? fechaString($desdeRaw, 'ca') . ' ' . hora($desdeRaw) : '-';
+        $hastaVal = $hastaRaw ? fechaString($hastaRaw, 'ca') . ' ' . hora($hastaRaw) : '-';
+
+        $tipoActividad = $Actividad->complementaria ? 'Complementaria' : 'No complementaria';
+        if ($Actividad->fueraCentro) {
+            $tipoActividad .= ' / Extraescolar';
+        }
+
+        return view('extraescolares.edit', compact(
+            'Actividad',
+            'tProfesores',
+            'tGrupos',
+            'sGrupos',
+            'sProfesores',
+            'coordinadorNom',
+            'desdeVal',
+            'hastaVal',
+            'tipoActividad'
+        ));
     }
 
 
