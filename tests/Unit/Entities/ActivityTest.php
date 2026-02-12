@@ -1,32 +1,43 @@
 <?php
 
 namespace Tests\Unit\Entities;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Tests\TestCase;
+
+use Illuminate\Database\Eloquent\Model;
 use Intranet\Entities\Activity;
-use Illuminate\Support\Facades\Auth;
-use Mockery;
+use Styde\Html\Facades\Alert;
+use Tests\TestCase;
 
 class ActivityTest extends TestCase
 {
-    use WithoutModelEvents;
-    public function testRecordMethodCreatesActivityInstance()
+    public function test_record_crea_instancia_sense_usuari_autenticat(): void
     {
-        // Simulem un usuari autenticat
-        $mockUser = Mockery::mock('alias:App\Models\User');
-        Auth::shouldReceive('user')->andReturn($mockUser);
-        $mockUser->shouldReceive('Activity->save')->andReturn(true);
-
-        // Mock d'Activity per al mètode estàtic record()
-        $mockActivity = Mockery::mock('alias:' . Activity::class);
-        $mockActivity->shouldAllowMockingMethod('record');
-        $mockActivity->shouldReceive('record')->once()->andReturn(true);
-
-        // Cridem la funció
         $result = Activity::record('create', null, 'Comentari de prova');
 
-        // Verifiquem que es crida correctament
-        $this->assertTrue($result);
+        $this->assertInstanceOf(Activity::class, $result);
+        $this->assertSame('create', $result->action);
+        $this->assertSame('Comentari de prova', $result->comentari);
+        $this->assertNull($result->model_class);
+        $this->assertNull($result->model_id);
+        $this->assertFalse($result->exists);
     }
 
+    public function test_record_emplena_model_i_mostra_alerta_quan_hi_ha_model(): void
+    {
+        Alert::shouldReceive('success')->once();
+
+        $model = new ActivityRecordDummyModel();
+        $model->id = 99;
+
+        $result = Activity::record('update', $model, 'Canvi');
+
+        $this->assertInstanceOf(Activity::class, $result);
+        $this->assertSame(ActivityRecordDummyModel::class, $result->model_class);
+        $this->assertSame(99, $result->model_id);
+        $this->assertSame('Canvi', $result->comentari);
+    }
+}
+
+class ActivityRecordDummyModel extends Model
+{
+    protected $table = 'dummy_activity_records';
 }
