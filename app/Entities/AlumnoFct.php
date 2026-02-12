@@ -43,6 +43,7 @@ class AlumnoFct extends Model
     private const BG_ORANGE = 'bg-orange';
     private const BG_BLUE_SKY = 'bg-blue-sky';
     private const BG_GREEN = 'bg-green';
+    private ?\Illuminate\Support\Collection $annexesCache = null;
 
     // ===========================
     // 📌 RELACIONS
@@ -109,12 +110,12 @@ class AlumnoFct extends Model
 
     public function scopeTotesFcts($query, $profesor = null)
     {
-        return $this->scopeMisFcts($query, $profesor);
+        return $query->misFcts($profesor);
     }
 
     public function scopeMisProyectos($query, $profesor = null)
     {
-        return $this->scopeMisFcts($query, $profesor)
+        return $query->misFcts($profesor)
             ->esAval()
             ->whereNull('calProyecto');
     }
@@ -149,25 +150,25 @@ class AlumnoFct extends Model
 
     public function scopeEsErasmus($query)
     {
-        $fcts = Fct::select('id')->esErasmus()->get()->toArray();
+        $fcts = Fct::select('id')->esErasmus()->pluck('id');
         return $query->whereIn('idFct', $fcts);
     }
 
     public function scopeEsExempt($query)
     {
-        $fcts = Fct::select('id')->esExempt()->get()->toArray();
+        $fcts = Fct::select('id')->esExempt()->pluck('id');
         return $query->whereIn('idFct', $fcts);
     }
 
     public function scopeEstaSao($query)
     {
-        $fcts = Fct::select('id')->esExempt()->get()->toArray();
+        $fcts = Fct::select('id')->esExempt()->pluck('id');
         return $query->whereNotIn('idFct', $fcts);
     }
 
     public function scopeActiva($query)
     {
-       return $query->whereNull('calificacion')->where('correoAlumno', 0)->where('horas', '>', 'realizadas');
+       return $query->whereNull('calificacion')->where('correoAlumno', 0)->whereColumn('horas', '>', 'realizadas');
     }
 
     public function scopeHaEmpezado($query)
@@ -259,9 +260,7 @@ class AlumnoFct extends Model
 
     public function getAdjuntosAttribute()
     {
-        return DB::table('adjuntos')
-            ->where('route', 'LIKE', 'alumnofctaval/' . $this->id)
-            ->exists();
+        return $this->getAnnexesCollection()->isNotEmpty();
     }
 
     public function routeFile($anexe)
@@ -271,6 +270,10 @@ class AlumnoFct extends Model
 
     public function getSignAttribute()
     {
+        if ($this->relationLoaded('Signatures')) {
+            return $this->Signatures->isNotEmpty();
+        }
+
         return $this->Signatures()->exists();
     }
     
@@ -352,22 +355,22 @@ class AlumnoFct extends Model
 
     public function getSaoAnnexesAttribute()
     {
-        return Adjunto::where('size', 1024)->where('route', 'alumnofctaval/'.$this->id)->count();
+        return $this->getAnnexesCollection()->where('size', 1024)->count();
     }
 
     public function getA2Attribute()
     {
-        return Signatura::where('idSao', $this->idSao)->where('tipus', 'A2')->where('signed', true)->get()->first();
+        return $this->findSignature('A2', true);
     }
 
     public function getA1Attribute()
     {
-        return Signatura::where('idSao', $this->idSao)->where('tipus', 'A1')->where('signed', true)->get()->first();
+        return $this->findSignature('A1', true);
     }
 
     public function getA3Attribute()
     {
-        return Signatura::where('idSao', $this->idSao)->where('tipus', 'A3')->get()->first();
+        return $this->findSignature('A3');
     }
 
 
@@ -375,6 +378,36 @@ class AlumnoFct extends Model
     public function getIdPrintAttribute()
     {
         return $this->idFct.'-'.$this->nombre;
+    }
+
+    private function getAnnexesCollection(): \Illuminate\Support\Collection
+    {
+        if ($this->annexesCache !== null) {
+            return $this->annexesCache;
+        }
+
+        $this->annexesCache = Adjunto::where('route', 'alumnofctaval/' . $this->id)->get();
+
+        return $this->annexesCache;
+    }
+
+    private function findSignature(string $tipus, ?bool $signed = null): ?Signatura
+    {
+        if ($this->relationLoaded('Signatures')) {
+            $query = $this->Signatures->where('tipus', $tipus);
+            if ($signed !== null) {
+                $query = $query->where('signed', $signed);
+            }
+
+            return $query->first();
+        }
+
+        $query = Signatura::where('idSao', $this->idSao)->where('tipus', $tipus);
+        if ($signed !== null) {
+            $query->where('signed', $signed);
+        }
+
+        return $query->first();
     }
 
 

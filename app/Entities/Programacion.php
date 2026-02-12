@@ -53,6 +53,11 @@ class Programacion extends Model
         return $this->hasOneThrough(Modulo::class, Modulo_ciclo::class,'id','codigo','idModuloCiclo','idModulo');
     }
 
+    public function Profesor()
+    {
+        return $this->belongsTo(Profesor::class, 'Profesor', 'dni');
+    }
+
     public function Grupo()
     {
         return $this->hasOneThrough(Grupo::class, Modulo_grupo::class,'id','codigo','idModuloCiclo','idGrupo');
@@ -70,9 +75,15 @@ class Programacion extends Model
                 ->get();
         $todos = [];
         foreach ($horas as $hora) {
+            if (!$hora->Grupo) {
+                continue;
+            }
             $mc = Modulo_ciclo::where('idModulo', $hora->modulo)
                     ->where('idCiclo',$hora->Grupo->idCiclo)
                     ->first();
+            if (!$mc) {
+                continue;
+            }
             $todos[$mc->id] = $mc->Xmodulo.' - '.$mc->Xciclo;
         }
         return $todos;
@@ -85,10 +96,13 @@ class Programacion extends Model
                 ->distinct()
                 ->whereNotIn('modulo', config('constants.modulosSinProgramacion'))
                 ->Profesor($profesor)
-                ->where('modulo', '!=', null)
+                ->whereNotNull('modulo')
                 ->get();
         $modulos = [];
         foreach ($horas as $hora){
+            if (!$hora->Grupo) {
+                continue;
+            }
             if ($mc = Modulo_ciclo::where('idModulo', $hora->modulo)
                     ->where('idCiclo', $hora->Grupo->idCiclo)
                     ->first()) {
@@ -96,14 +110,17 @@ class Programacion extends Model
             }
         }
 
-        return $query->whereIn('idModuloCiclo', $modulos);
+        return $query->whereIn('idModuloCiclo', array_values(array_unique($modulos)));
     }
 
-    public function scopeDepartamento($query)
+    public function scopeDepartamento($query, $departamento = null)
     {
+        $departamento = $departamento ?? authUser()->departamento;
+
         return $query->whereIn(
             'idModuloCiclo',
-            hazArray(Modulo_ciclo::where('idDepartamento', authUser()->departamento)->get(), 'id', 'id'));
+            hazArray(Modulo_ciclo::where('idDepartamento', $departamento)->get(), 'id', 'id')
+        );
     }
     
     public function nomFichero()
@@ -146,8 +163,8 @@ class Programacion extends Model
 
     public static function resolve($id, $mensaje = null)
     {
-        Programacion::find($id);
-        $staServ = new StateService(Programacion::find($id));
+        $programacion = Programacion::find($id);
+        $staServ = new StateService($programacion);
         return $staServ->putEstado( config('modelos.' . getClass(static::class) . '.resolve'), $mensaje);
     }
     

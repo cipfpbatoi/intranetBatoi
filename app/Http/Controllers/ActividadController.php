@@ -462,19 +462,6 @@ class ActividadController extends ModalController
     }
 
     /**
-     * Compatibilitat temporal amb crides/rutes antigues.
-     *
-     * @deprecated Usa `ics()` del trait Imprimir.
-     *
-     * @param int|string $id
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
-     */
-    public function i_c_s($id)
-    {
-        return $this->ics($id, 'name', 'descripcion');
-    }
-
-    /**
      * Alterna l'estat d'autorització d'un alumne menor.
      *
      * @param string $nia

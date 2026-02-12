@@ -18,6 +18,12 @@ class ActividadParticipantsService
 {
     /**
      * Afig un grup sense desassignar els existents.
+     *
+     * @param int|string $actividadId
+     * @param string $groupId
+     * @return void
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function addGroup(int|string $actividadId, string $groupId): void
     {
@@ -27,6 +33,12 @@ class ActividadParticipantsService
 
     /**
      * Esborra un grup del pivot.
+     *
+     * @param int|string $actividadId
+     * @param string $groupId
+     * @return void
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function removeGroup(int|string $actividadId, string $groupId): void
     {
@@ -36,6 +48,12 @@ class ActividadParticipantsService
 
     /**
      * Afig un professor sense duplicar pivots.
+     *
+     * @param int|string $actividadId
+     * @param string $profesorId
+     * @return void
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function addProfesor(int|string $actividadId, string $profesorId): void
     {
@@ -46,7 +64,11 @@ class ActividadParticipantsService
     /**
      * Esborra un professor i, si era coordinador, en reassigna un de nou.
      *
+     * @param int|string $actividadId
+     * @param string $profesorId
      * @return bool `false` quan només quedava un professor i no es pot esborrar.
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function removeProfesor(int|string $actividadId, string $profesorId): bool
     {
@@ -82,7 +104,11 @@ class ActividadParticipantsService
     /**
      * Marca un únic coordinador per a l'activitat.
      *
+     * @param int|string $actividadId
+     * @param string $profesorId
      * @return bool `false` si el professor no participa en l'activitat.
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
      */
     public function assignCoordinator(int|string $actividadId, string $profesorId): bool
     {
@@ -100,4 +126,3 @@ class ActividadParticipantsService
         return true;
     }
 }
-

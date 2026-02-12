@@ -271,6 +271,114 @@ class ActividadControllerTest extends TestCase
             ->value('idProfesor'));
     }
 
+    public function test_coordinador_torna_back_si_professor_no_participa(): void
+    {
+        $actividadId = DB::table('actividades')->insertGetId([
+            'name' => 'Conferencia',
+            'extraescolar' => 1,
+            'estado' => 0,
+        ]);
+
+        DB::table('profesores')->insert([
+            [
+                'dni' => 'P410',
+                'nombre' => 'Eva',
+                'apellido1' => 'Epsilon',
+                'apellido2' => 'U',
+                'fecha_baja' => null,
+                'activo' => 1,
+            ],
+            [
+                'dni' => 'P411',
+                'nombre' => 'Ferran',
+                'apellido1' => 'Zeta',
+                'apellido2' => 'V',
+                'fecha_baja' => null,
+                'activo' => 1,
+            ],
+        ]);
+
+        DB::table('actividad_profesor')->insert([
+            ['idActividad' => $actividadId, 'idProfesor' => 'P410', 'coordinador' => 1],
+        ]);
+
+        $this->bindRequestWithReferer('/activitat/' . $actividadId . '/detalle');
+        Alert::shouldReceive('warning')->once();
+
+        $controller = new DummyActividadController();
+        $response = $controller->coordinador($actividadId, 'P411');
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame(1, (int) DB::table('actividad_profesor')
+            ->where('idActividad', $actividadId)
+            ->where('idProfesor', 'P410')
+            ->value('coordinador'));
+    }
+
+    public function test_borrar_profesor_torna_back_si_es_lultim(): void
+    {
+        $actividadId = DB::table('actividades')->insertGetId([
+            'name' => 'Sortida curta',
+            'extraescolar' => 1,
+            'estado' => 0,
+        ]);
+
+        DB::table('profesores')->insert([
+            'dni' => 'P420',
+            'nombre' => 'Guillem',
+            'apellido1' => 'Eta',
+            'apellido2' => 'W',
+            'fecha_baja' => null,
+            'activo' => 1,
+        ]);
+
+        DB::table('actividad_profesor')->insert([
+            ['idActividad' => $actividadId, 'idProfesor' => 'P420', 'coordinador' => 1],
+        ]);
+
+        $this->bindRequestWithReferer('/activitat/' . $actividadId . '/detalle');
+        Alert::shouldReceive('info')->once();
+
+        $controller = new DummyActividadController();
+        $response = $controller->borrarProfesor($actividadId, 'P420');
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame(1, DB::table('actividad_profesor')
+            ->where('idActividad', $actividadId)
+            ->count());
+    }
+
+    public function test_alta_grupo_no_duplica_en_pivot(): void
+    {
+        $actividadId = DB::table('actividades')->insertGetId([
+            'name' => 'Eixida teatre',
+            'extraescolar' => 1,
+            'estado' => 0,
+        ]);
+
+        DB::table('grupos')->insert([
+            'codigo' => 'G31',
+            'nombre' => '3r ESO A',
+        ]);
+
+        DB::table('actividad_grupo')->insert([
+            'idActividad' => $actividadId,
+            'idGrupo' => 'G31',
+        ]);
+
+        $controller = new DummyActividadController();
+        $response = $controller->altaGrupo(
+            new Request(['idGrupo' => 'G31']),
+            $actividadId
+        );
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame(1, DB::table('actividad_grupo')
+            ->where('idActividad', $actividadId)
+            ->where('idGrupo', 'G31')
+            ->count());
+    }
+
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('actividades')) {
