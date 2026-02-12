@@ -29,6 +29,9 @@
   - `[DEL]` – Deletion of files or code.
   - `[FIX]` – Bug fix or error correction.
 - Write imperative, specific commit titles after the tag (e.g., `[ADD] Calendar export to events`, `[FIX] Null pointer in user login`); keep related changes together.
+- **Before committing**: Check if there are related GitHub issues using `gh issue list` or `gh issue status`. If your changes address or relate to an issue, reference it in the commit message using `#issue_number` for traceability (e.g., `[FIX] Null pointer in user login #42`).
+- For multiple related issues, include all references (e.g., `[MOD] Refactor authentication flow #15 #23`).
+- **Do not include** `Co-Authored-By: Claude` or similar AI attribution in commit messages.
 - PRs should summarize intent, link issues/tasks, and list tests run (`phpunit`, `npm run production` when assets change). Add screenshots for UI updates and call out migrations or new env vars.
 
 ## Security & Configuration Tips
