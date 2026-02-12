@@ -10,7 +10,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\View\View;
 use Intranet\Http\Controllers\ComisionController;
+use Intranet\Entities\Profesor;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
 
@@ -21,6 +23,8 @@ class ComisionControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        config(['auth.defaults.guard' => 'profesor']);
 
         $this->sqlitePath = storage_path('comision_controller_testing.sqlite');
         if (file_exists($this->sqlitePath)) {
@@ -41,8 +45,12 @@ class ComisionControllerTest extends TestCase
     protected function tearDown(): void
     {
         Schema::connection('sqlite')->dropIfExists('comision_fcts');
+        Schema::connection('sqlite')->dropIfExists('alumno_fcts');
         Schema::connection('sqlite')->dropIfExists('fcts');
+        Schema::connection('sqlite')->dropIfExists('colaboraciones');
+        Schema::connection('sqlite')->dropIfExists('centros');
         Schema::connection('sqlite')->dropIfExists('comisiones');
+        Schema::connection('sqlite')->dropIfExists('profesores');
 
         if (file_exists($this->sqlitePath)) {
             @unlink($this->sqlitePath);
@@ -150,6 +158,60 @@ class ComisionControllerTest extends TestCase
             ->count());
     }
 
+    public function test_detalle_deduplica_per_centre_i_ordena_select_per_nom(): void
+    {
+        $comisionId = $this->seedComision(1);
+
+        DB::table('profesores')->insert([
+            'dni' => 'P001',
+            'nombre' => 'Prova',
+            'apellido1' => 'Tutor',
+            'apellido2' => 'Unit',
+            'email' => 'p001@test.local',
+            'rol' => config('roles.rol.profesor'),
+            'activo' => 1,
+        ]);
+
+        DB::table('centros')->insert([
+            ['id' => 100, 'nombre' => 'Zeta Center'],
+            ['id' => 200, 'nombre' => 'Alfa Center'],
+        ]);
+
+        DB::table('colaboraciones')->insert([
+            ['id' => 1, 'idCentro' => 100],
+            ['id' => 2, 'idCentro' => 100],
+            ['id' => 3, 'idCentro' => 200],
+        ]);
+
+        DB::table('fcts')->insert([
+            ['id' => 10, 'idColaboracion' => 1, 'asociacion' => 1, 'cotutor' => 'P001'],
+            ['id' => 11, 'idColaboracion' => 2, 'asociacion' => 1, 'cotutor' => 'P001'],
+            ['id' => 12, 'idColaboracion' => 3, 'asociacion' => 1, 'cotutor' => 'P001'],
+            ['id' => 13, 'idColaboracion' => 3, 'asociacion' => 2, 'cotutor' => 'P001'], // no esFct
+        ]);
+        DB::table('alumno_fcts')->insert([
+            ['id' => 1, 'idProfesor' => 'P001', 'idFct' => 10],
+            ['id' => 2, 'idProfesor' => 'P001', 'idFct' => 11],
+            ['id' => 3, 'idProfesor' => 'P001', 'idFct' => 12],
+        ]);
+
+        $usuario = Profesor::findOrFail('P001');
+        $this->actingAs($usuario, 'profesor');
+
+        $controller = new RealComisionController();
+        $response = $controller->detalle($comisionId);
+
+        $this->assertInstanceOf(View::class, $response);
+        $this->assertSame('comision.detalle', $response->name());
+
+        $data = $response->getData();
+        $this->assertArrayHasKey('allFcts', $data);
+        $this->assertSame([
+            12 => 'Alfa Center',
+            11 => 'Zeta Center',
+        ], $data['allFcts']);
+    }
+
     private function seedComision(int $estado): int
     {
         return (int) DB::table('comisiones')->insertGetId([
@@ -199,6 +261,7 @@ class ComisionControllerTest extends TestCase
             Schema::connection('sqlite')->create('fcts', function (Blueprint $table): void {
                 $table->id();
                 $table->unsignedInteger('idColaboracion')->nullable();
+                $table->string('cotutor', 10)->nullable();
                 $table->unsignedTinyInteger('asociacion')->default(1);
             });
         }
@@ -209,6 +272,42 @@ class ComisionControllerTest extends TestCase
                 $table->unsignedBigInteger('idFct');
                 $table->time('hora_ini')->nullable();
                 $table->unsignedTinyInteger('aviso')->default(0);
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('profesores')) {
+            Schema::connection('sqlite')->create('profesores', function (Blueprint $table): void {
+                $table->string('dni', 10)->primary();
+                $table->string('nombre')->nullable();
+                $table->string('apellido1')->nullable();
+                $table->string('apellido2')->nullable();
+                $table->string('email')->nullable();
+                $table->unsignedInteger('rol')->default(3);
+                $table->string('sustituye_a', 10)->nullable();
+                $table->date('fecha_baja')->nullable();
+                $table->boolean('activo')->default(true);
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('alumno_fcts')) {
+            Schema::connection('sqlite')->create('alumno_fcts', function (Blueprint $table): void {
+                $table->id();
+                $table->string('idProfesor', 10)->nullable();
+                $table->unsignedBigInteger('idFct')->nullable();
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('centros')) {
+            Schema::connection('sqlite')->create('centros', function (Blueprint $table): void {
+                $table->id();
+                $table->string('nombre')->nullable();
+            });
+        }
+
+        if (!Schema::connection('sqlite')->hasTable('colaboraciones')) {
+            Schema::connection('sqlite')->create('colaboraciones', function (Blueprint $table): void {
+                $table->id();
+                $table->unsignedBigInteger('idCentro')->nullable();
             });
         }
     }
@@ -230,5 +329,13 @@ class DummyComisionController extends ComisionController
     public function detalle($id)
     {
         return response('ok');
+    }
+}
+
+class RealComisionController extends ComisionController
+{
+    public function __construct()
+    {
+        // Evitem inicialització de panel/UI en proves unitàries.
     }
 }

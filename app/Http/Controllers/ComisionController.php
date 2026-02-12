@@ -229,23 +229,23 @@ class ComisionController extends ModalController
 
     public function detalle($id)
     {
-        $comision = Comision::find($id);
+        $comision = Comision::findOrFail($id);
         $all = Fct::esFct()
-            ->misFcts()
-            ->orWhere('cotutor', authUser()->dni)
+            ->where(function ($query): void {
+                $query->misFcts()->orWhere('cotutor', authUser()->dni);
+            })
             ->with('Colaboracion')
-            ->distinct()
             ->orderBy('id')
             ->get();
-        $allFcts = collect();
-        foreach ($all as $fct) {
-            if (!$fct->Colaboracion) {
-                continue;
-            }
-            $allFcts[$fct->Colaboracion->idCentro] = $fct;
-        }
-        $allFcts = hazArray($allFcts, 'id', 'Centro');
-        asort($allFcts);
+
+        // Manté un únic FCT per centre (l'últim per id), i prepara el select ordenat per nom.
+        $allFcts = $all
+            ->filter(fn (Fct $fct) => (bool) $fct->Colaboracion)
+            ->keyBy(fn (Fct $fct) => (string) $fct->Colaboracion->idCentro)
+            ->mapWithKeys(fn (Fct $fct) => [$fct->id => $fct->Centro])
+            ->sort()
+            ->all();
+
         return view('comision.detalle', compact('comision', 'allFcts'));
     }
 
