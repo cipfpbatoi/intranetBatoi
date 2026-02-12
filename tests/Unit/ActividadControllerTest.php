@@ -140,6 +140,137 @@ class ActividadControllerTest extends TestCase
         $this->assertArrayHasKey('G2', $data['tGrupos']);
     }
 
+    public function test_alta_profesor_no_duplica_en_pivot(): void
+    {
+        $actividadId = DB::table('actividades')->insertGetId([
+            'name' => 'Sortida',
+            'extraescolar' => 1,
+            'estado' => 0,
+        ]);
+
+        DB::table('profesores')->insert([
+            'dni' => 'P100',
+            'nombre' => 'Paula',
+            'apellido1' => 'Primer',
+            'apellido2' => 'Test',
+            'fecha_baja' => null,
+            'activo' => 1,
+        ]);
+
+        DB::table('actividad_profesor')->insert([
+            'idActividad' => $actividadId,
+            'idProfesor' => 'P100',
+            'coordinador' => 1,
+        ]);
+
+        $controller = new DummyActividadController();
+        $response = $controller->altaProfesor(
+            new Request(['idProfesor' => 'P100']),
+            $actividadId
+        );
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame(1, DB::table('actividad_profesor')
+            ->where('idActividad', $actividadId)
+            ->where('idProfesor', 'P100')
+            ->count());
+    }
+
+    public function test_coordinador_deixa_exactament_un_responsable(): void
+    {
+        $actividadId = DB::table('actividades')->insertGetId([
+            'name' => 'Museu',
+            'extraescolar' => 1,
+            'estado' => 0,
+        ]);
+
+        DB::table('profesores')->insert([
+            [
+                'dni' => 'P200',
+                'nombre' => 'Ada',
+                'apellido1' => 'Alpha',
+                'apellido2' => 'Uno',
+                'fecha_baja' => null,
+                'activo' => 1,
+            ],
+            [
+                'dni' => 'P201',
+                'nombre' => 'Biel',
+                'apellido1' => 'Beta',
+                'apellido2' => 'Dos',
+                'fecha_baja' => null,
+                'activo' => 1,
+            ],
+        ]);
+
+        DB::table('actividad_profesor')->insert([
+            ['idActividad' => $actividadId, 'idProfesor' => 'P200', 'coordinador' => 1],
+            ['idActividad' => $actividadId, 'idProfesor' => 'P201', 'coordinador' => 0],
+        ]);
+
+        $controller = new DummyActividadController();
+        $response = $controller->coordinador($actividadId, 'P201');
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame(1, DB::table('actividad_profesor')
+            ->where('idActividad', $actividadId)
+            ->where('coordinador', 1)
+            ->count());
+        $this->assertSame(1, DB::table('actividad_profesor')
+            ->where('idActividad', $actividadId)
+            ->where('idProfesor', 'P201')
+            ->value('coordinador'));
+    }
+
+    public function test_borrar_coordinador_reassigna_a_un_altre_professor(): void
+    {
+        $actividadId = DB::table('actividades')->insertGetId([
+            'name' => 'Teatre',
+            'extraescolar' => 1,
+            'estado' => 0,
+        ]);
+
+        DB::table('profesores')->insert([
+            [
+                'dni' => 'P300',
+                'nombre' => 'Cris',
+                'apellido1' => 'Gamma',
+                'apellido2' => 'Tres',
+                'fecha_baja' => null,
+                'activo' => 1,
+            ],
+            [
+                'dni' => 'P301',
+                'nombre' => 'Dani',
+                'apellido1' => 'Delta',
+                'apellido2' => 'Quatre',
+                'fecha_baja' => null,
+                'activo' => 1,
+            ],
+        ]);
+
+        DB::table('actividad_profesor')->insert([
+            ['idActividad' => $actividadId, 'idProfesor' => 'P300', 'coordinador' => 1],
+            ['idActividad' => $actividadId, 'idProfesor' => 'P301', 'coordinador' => 0],
+        ]);
+
+        $controller = new DummyActividadController();
+        $response = $controller->borrarProfesor($actividadId, 'P300');
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame(1, DB::table('actividad_profesor')
+            ->where('idActividad', $actividadId)
+            ->count());
+        $this->assertSame(1, DB::table('actividad_profesor')
+            ->where('idActividad', $actividadId)
+            ->where('coordinador', 1)
+            ->count());
+        $this->assertSame('P301', DB::table('actividad_profesor')
+            ->where('idActividad', $actividadId)
+            ->where('coordinador', 1)
+            ->value('idProfesor'));
+    }
+
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('actividades')) {
