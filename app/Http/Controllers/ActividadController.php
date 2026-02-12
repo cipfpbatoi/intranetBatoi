@@ -4,36 +4,33 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use DB;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Services\Notifications\NotificationService;
+use Intranet\Services\Notifications\ActividadNotificationService;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\ActividadGrupo;
-use Intranet\Entities\ActividadProfesor;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
 use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Http\Traits\Core\SCRUD;
-use Intranet\Services\Notifications\AdviseTeacher;
-use Intranet\Services\Calendar\CalendarService;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\Calendar\GoogleCalendarService;
 use Intranet\Services\General\StateService;
+use Intranet\Services\School\ActividadParticipantsService;
 use Jenssegers\Date\Date;
-use Illuminate\Support\Facades\Response;
 use Styde\Html\Facades\Alert;
 
 
 class ActividadController extends ModalController
 {
 
-    use Autorizacion, SCRUD;
+    use Autorizacion, SCRUD, Imprimir;
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';
@@ -142,6 +139,14 @@ class ActividadController extends ModalController
     }
 
     /**
+     * Retorna el servei de gestió de participants/coordinador d'activitats.
+     */
+    private function participantsService(): ActividadParticipantsService
+    {
+        return app(ActividadParticipantsService::class);
+    }
+
+    /**
      * Mostra el detall d'una activitat amb professors i grups associats.
      *
      * @param int|string $id
@@ -214,25 +219,8 @@ class ActividadController extends ModalController
      */
     public function altaGrupo(Request $request, $actividad_id)
     {
-        $actividad = Actividad::findOrFail($actividad_id);
-        $actividad->grupos()->syncWithoutDetaching([$request->idGrupo]);
+        $this->participantsService()->addGroup($actividad_id, (string) $request->idGrupo);
         return $this->showDetalle($actividad_id);
-    }
-
-    /**
-     * Desassigna una relació many-to-many de l'activitat.
-     *
-     * @param int|string $actividad_id
-     * @param string $relation
-     * @param int|string $id
-     * @return void
-     */
-    private function desassignar($actividad_id, $relation, $id)
-    {
-        $actividad = Actividad::findOrFail($actividad_id);
-        $actividad->$relation()->detach($id);
-
-
     }
 
     /**
@@ -244,7 +232,7 @@ class ActividadController extends ModalController
      */
     public function borrarGrupo($actividad_id, $grupo_id)
     {
-        $this->desassignar($actividad_id, 'grupos', $grupo_id);
+        $this->participantsService()->removeGroup($actividad_id, (string) $grupo_id);
         return $this->showDetalle($actividad_id);
     }
 
@@ -257,8 +245,7 @@ class ActividadController extends ModalController
      */
     public function altaProfesor(Request $request, $actividad_id)
     {
-        $actividad = Actividad::findOrFail($actividad_id);
-        $actividad->profesores()->syncWithoutDetaching([$request->idProfesor]);
+        $this->participantsService()->addProfesor($actividad_id, (string) $request->idProfesor);
         return $this->showDetalle($actividad_id);
     }
 
@@ -272,26 +259,9 @@ class ActividadController extends ModalController
      */
     public function borrarProfesor($actividad_id, $profesor_id)
     {
-        $actividad = Actividad::findOrFail($actividad_id);
-        if ($actividad->profesores()->count() == 1) {
+        if (!$this->participantsService()->removeProfesor($actividad_id, $profesor_id)) {
             Alert::info('No es pot donar de baixa el últim profesor');
             return back();
-        }
-
-        $eraCoordinador = $actividad->profesores()
-            ->where('dni', $profesor_id)
-            ->wherePivot('coordinador', 1)
-            ->exists();
-
-        $this->desassignar($actividad_id, 'profesores', $profesor_id);
-
-        if ($eraCoordinador) {
-            ActividadProfesor::where('idActividad', $actividad_id)->update(['coordinador' => 0]);
-
-            $nuevoCoordinador = $actividad->profesores()->first();
-            if ($nuevoCoordinador) {
-                $actividad->profesores()->updateExistingPivot($nuevoCoordinador->dni, ['coordinador' => 1]);
-            }
         }
 
         return $this->showDetalle($actividad_id);
@@ -307,17 +277,10 @@ class ActividadController extends ModalController
      */
     public function coordinador($actividad_id, $profesor_id)
     {
-        $actividad = Actividad::findOrFail($actividad_id);
-
-        if (!$actividad->profesores()->where('dni', $profesor_id)->exists()) {
+        if (!$this->participantsService()->assignCoordinator($actividad_id, $profesor_id)) {
             Alert::warning('El professor seleccionat no participa en l’activitat.');
             return back();
         }
-
-        DB::transaction(function () use ($actividad_id, $actividad, $profesor_id): void {
-            ActividadProfesor::where('idActividad', $actividad_id)->update(['coordinador' => 0]);
-            $actividad->profesores()->updateExistingPivot($profesor_id, ['coordinador' => 1]);
-        });
 
         return $this->showDetalle($actividad_id);
     }
@@ -337,44 +300,9 @@ class ActividadController extends ModalController
             return back();
         }
 
-        $this->notificarGrupos($actividad, $coordinador);
-        $this->notificarProfessors($actividad);
+        app(ActividadNotificationService::class)->notifyActivity($actividad, $coordinador);
 
         return back();
-    }
-
-    /**
-     * Envia missatge als professors dels grups inclosos en l'activitat.
-     *
-     * @param Actividad $actividad
-     * @param Profesor $coordinador
-     * @return void
-     */
-    private function notificarGrupos($actividad, $coordinador)
-    {
-        foreach ($actividad->grupos as $grupo) {
-            $mensaje = "El grup {$grupo->nombre} se’n va a l’activitat {$actividad->name}.";
-            foreach (Profesor::Grupo($grupo->codigo)->get() as $profesor) {
-                app(NotificationService::class)->send($profesor->dni, $mensaje, '#', $coordinador->shortName);
-            }
-        }
-    }
-
-    /**
-     * Envia avís als professors participants de la pròpia activitat.
-     *
-     * @param Actividad $actividad
-     * @return void
-     */
-    private function notificarProfessors($actividad)
-    {
-        $mensaje = "Els grups: " . $actividad->grupos->implode('nombre', ', ') .
-            " van a l’activitat {$actividad->name} i jo me’n vaig amb ells. " .
-            "Estarem fora des de {$actividad->desde} fins {$actividad->hasta}.";
-
-        foreach ($actividad->profesores as $profesor) {
-            AdviseTeacher::exec($actividad, $mensaje, $profesor->dni, $profesor->shortName);
-        }
     }
 
     /**
@@ -533,19 +461,17 @@ class ActividadController extends ModalController
         return $this->follow(4, 5);
     }
 
-
     /**
-     * Genera la resposta ICS de l'activitat.
+     * Compatibilitat temporal amb crides/rutes antigues.
+     *
+     * @deprecated Usa `ics()` del trait Imprimir.
      *
      * @param int|string $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
     public function i_c_s($id)
     {
-        $elemento = $this->class::findOrFail($id);
-        $vCalendar = CalendarService::build($elemento,'name','descripcion');
-        return Response::view('ics', compact('vCalendar'))->header('Content-Type', 'text/calendar');
-
+        return $this->ics($id, 'name', 'descripcion');
     }
 
     /**

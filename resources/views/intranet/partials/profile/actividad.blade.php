@@ -28,7 +28,7 @@
                     @else
                         {{$profesor->nombre}} {{$profesor->apellido1}}
                     @endif
-                    @foreach (\Intranet\Services\Notifications\AdviseTeacher::horariAltreGrup($elemento,$profesor->dni) as $grup)
+                    @foreach (app(\Intranet\Services\Notifications\AdviseTeacher::class)->horarioAltreGrup($elemento, $profesor->dni) as $grup)
                         <span class="label label-danger"><em style="font-size: smaller">{{$grup['idGrupo']}}</em></span>
                     @endforeach
                 </li>

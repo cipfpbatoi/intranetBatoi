@@ -12,7 +12,7 @@ use Jenssegers\Date\Date;
 
 class Alumno extends Authenticatable
 {
-    use Notifiable, BatoiModels;
+    use Notifiable, \Intranet\Entities\Concerns\BatoiModels;
 
     public $primaryKey = 'nia';
     public $keyType = 'string';

@@ -51,6 +51,23 @@ class ImprimirTraitTest extends TestCase
         $this->assertStringContainsString('No existeixen els camps', (string) $response->getSession()->get('error'));
     }
 
+    public function test_ics_funciona_quan_camps_existixen_pero_valen_null(): void
+    {
+        DummyImprimirModel::$record = (object) [
+            'descripcion' => null,
+            'objetivos' => null,
+            'fecha' => '2026-02-10 10:00:00',
+        ];
+
+        $controller = new DummyImprimirController();
+        $response = $controller->ics(12);
+
+        $this->assertSame('text/calendar', (string) $response->headers->get('Content-Type'));
+        $content = $response->getContent();
+        $this->assertIsString($content);
+        $this->assertStringContainsString('BEGIN:VCALENDAR', $content);
+    }
+
     public function test_ics_fa_abort_si_falta_class_en_controller(): void
     {
         $this->expectException(HttpException::class);

@@ -141,7 +141,7 @@ class FaltaController extends IntranetController
     {
         $elemento = Falta::findOrFail($id);
         if (esMayor($elemento->desde, Hoy('Y/m/d'))) {
-            AdviseTeacher::sendEmailTutor($elemento);
+            app(AdviseTeacher::class)->sendTutorEmail($elemento);
         }
         $stSrv = new StateService($elemento);
         if ($elemento->fichero) {

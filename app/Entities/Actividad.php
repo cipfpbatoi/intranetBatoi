@@ -19,7 +19,7 @@ use Intranet\Events\PreventAction;
 class Actividad extends Model
 {
 
-    use BatoiModels ;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'actividades';
     protected $fillable = [

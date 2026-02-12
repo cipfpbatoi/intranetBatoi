@@ -26,7 +26,7 @@ trait Imprimir
     protected function notify($id)
     {
         $this->guardPrintableContract();
-        AdviseTeacher::exec($this->class::findOrFail($id));
+        app(AdviseTeacher::class)->advise($this->class::findOrFail($id));
         return back();
     }
 
@@ -60,7 +60,7 @@ trait Imprimir
         $this->guardPrintableContract();
         $elemento = $this->class::findOrFail($id);
 
-        if (!isset($elemento->$descripcion) || !isset($elemento->$objetivos)) {
+        if (!$this->hasField($elemento, $descripcion) || !$this->hasField($elemento, $objetivos)) {
             return back()->with(
                 'error',
                 "No existeixen els camps '$descripcion' i/o '$objetivos' per generar l'arxiu iCalendar."
@@ -91,6 +91,26 @@ trait Imprimir
         if (!isset($this->class)) {
             abort(500, "L'atribut 'class' no està definit en la classe que usa el trait Imprimir.");
         }
+    }
+
+    /**
+     * Comprova si un camp existeix encara que el valor siga `null`.
+     */
+    private function hasField(object $elemento, string $field): bool
+    {
+        if ($field === '') {
+            return false;
+        }
+
+        if (property_exists($elemento, $field)) {
+            return true;
+        }
+
+        if ($elemento instanceof \Illuminate\Database\Eloquent\Model) {
+            return array_key_exists($field, $elemento->getAttributes());
+        }
+
+        return isset($elemento->$field);
     }
 
 }
