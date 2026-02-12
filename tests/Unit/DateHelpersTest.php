@@ -10,6 +10,12 @@ use Tests\TestCase;
 
 class DateHelpersTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        config(['curso.fct.2.inici' => '2026-03-01']);
+    }
+
     public function test_fechasao_transforma_dd_mm_yyyy_a_yyyy_mm_dd(): void
     {
         $this->assertSame('2026-02-11', fechaSao('11/02/2026'));
@@ -61,5 +67,23 @@ class DateHelpersTest extends TestCase
 
         $this->assertSame(3, sesion('10:30'));
     }
-}
 
+    public function test_periode_practiques_compara_amb_data_limit(): void
+    {
+        $this->assertSame(1, periodePractiques('2026-02-15'));
+        $this->assertSame(1, periodePractiques('2026-03-01'));
+        $this->assertSame(2, periodePractiques('2026-03-02'));
+    }
+
+    public function test_sumar_i_restar_hores(): void
+    {
+        $this->assertSame('11:45:00', sumarHoras('10:30:00', '01:15:00'));
+        $this->assertSame('01:15:00', restarHoras('10:30:00', '11:45:00'));
+    }
+
+    public function test_hores_torna_format_decimal(): void
+    {
+        $this->assertSame(10.5, horas('10:30:00'));
+        $this->assertEquals(8.0, horas('08:00:00'));
+    }
+}

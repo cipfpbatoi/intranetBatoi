@@ -7,8 +7,9 @@ use Jenssegers\Date\Date;
 function periodePractiques($fecha = null)
 {
     $inici = $fecha ? new Date($fecha) : new Date(hoy());
-    $inici->format('Y-m-d');
-    if ($inici <= config('curso.fct.2')['inici']) {
+    $iniciLimit = new Date(config('curso.fct.2')['inici']);
+
+    if ($inici <= $iniciLimit) {
         return 1;
     } else {
         return 2;
