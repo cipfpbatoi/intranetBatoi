@@ -12,6 +12,7 @@ use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Departamento;
+use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
@@ -62,22 +63,51 @@ use Autorizacion,
     public function departamento()
     {
         Session::forget('redirect');
+        $departamentos = Departamento::where('didactico', 1)
+            ->where('id', '!=', 99)
+            ->orderBy('depcurt')
+            ->get();
+
+        $departamentosIds = $departamentos->pluck('id')->all();
+        $sesionActual = sesion(Hora(now()));
+        $diaActual = config("auxiliares.diaSemana." . now()->format('w'));
+
         $todos = Profesor::orderBy('apellido1')
-                ->with('Departamento')
-                ->with('Horari.Ocupacion')
-                ->with('Horari.Modulo')
-                ->Activo()
-                ->get();
-        $departamentos = Departamento::where('didactico',1)->get();
+            ->whereIn('departamento', $departamentosIds)
+            ->with('Departamento')
+            ->with([
+                'Horari' => function ($query) use ($diaActual, $sesionActual) {
+                    $query->where('dia_semana', $diaActual)
+                        ->where('sesion_orden', $sesionActual)
+                        ->with('Ocupacion')
+                        ->with('Modulo')
+                        ->with('Grupo');
+                },
+            ])
+            ->Activo()
+            ->get();
+
+        $fichajesHoy = Falta_profesor::query()
+            ->select('idProfesor', 'id', 'salida')
+            ->where('dia', hoy())
+            ->orderBy('id')
+            ->get()
+            ->groupBy('idProfesor')
+            ->map(function ($fichajes) {
+                $ultim = $fichajes->last();
+                return $ultim !== null && $ultim->salida === null;
+            });
+
+        foreach ($todos as $profesor) {
+            $profesor->inside = (bool) ($fichajesHoy[$profesor->dni] ?? false);
+        }
 
         foreach ($departamentos as $departamento) {
-            if ($departamento->id != 99 ) {
-                if($departamento->id == AuthUser()->departamento) {
-                    $this->panel->setPestana($departamento->depcurt, true, self::PROFILE_PROFESOR, ['Xdepartamento', $departamento->depcurt], null, 1, $this->parametresVista);
-                }
-                else {
-                    $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
-                }
+            if($departamento->id == AuthUser()->departamento) {
+                $this->panel->setPestana($departamento->depcurt, true, self::PROFILE_PROFESOR, ['Xdepartamento', $departamento->depcurt], null, 1, $this->parametresVista);
+            }
+            else {
+                $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
             }
         }
         $this->iniProfileBotones();
