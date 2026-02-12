@@ -16,6 +16,7 @@ use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\General\StateService;
+use Intranet\Services\School\ExpedienteWorkflowService;
 use Styde\Html\Facades\Alert;
 
 
@@ -77,7 +78,7 @@ class ExpedienteController extends ModalController
      */
     public function autorizar()
     {
-        StateService::makeAll(Expediente::where('estado', '1')->get(), 2);
+        app(ExpedienteWorkflowService::class)->authorizePending();
         return back();
     }
 
@@ -89,15 +90,10 @@ class ExpedienteController extends ModalController
      */
     protected function init($id)
     {
-        $expediente = Expediente::find($id);
-        $staSrv = new StateService($expediente);
-            // orientacion
-        if ($expediente->tipoExpediente->orientacion >= 1){
-            $mensaje = $expediente->explicacion.' .Grup '.$expediente->Alumno->Grupo->first()->nombre;
-            $staSrv->putEstado(4, $mensaje);
-        } else {
-            $staSrv->putEstado(1);
+        if (!app(ExpedienteWorkflowService::class)->init($id)) {
+            return back()->with('error', 'Expedient no trobat.');
         }
+
         return back();
     }
 
@@ -112,22 +108,17 @@ class ExpedienteController extends ModalController
      */
     protected function pasaOrientacion($id)
     {
-        $expediente = Expediente::find($id);
-        $staSrv = new StateService($expediente);
-        $staSrv->putEstado(5);
-        $expediente->fechasolucion = Hoy();
-        $expediente->save();
+        if (!app(ExpedienteWorkflowService::class)->passToOrientation($id)) {
+            return back()->with('error', 'Expedient no trobat.');
+        }
 
         return back();
     }
 
     protected function assigna($id,Request $request){
-        $expediente = Expediente::find($id);
-        $staSrv = new StateService($expediente);
-        $expediente->idAcompanyant = $request->idAcompanyant;
-        $expediente->fechasolucion = Hoy();
-        $expediente->save();
-        $staSrv->putEstado(5,"Assignat professor Acompanyant ".$expediente->Acompanyant->fullName);
+        if (!app(ExpedienteWorkflowService::class)->assignCompanion($id, $request->idAcompanyant)) {
+            return back()->with('error', 'Expedient no trobat.');
+        }
 
         return back();
     }

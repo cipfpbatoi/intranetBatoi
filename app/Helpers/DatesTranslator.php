@@ -2,32 +2,10 @@
 
 namespace Intranet\Helpers;
 
-use Jenssegers\Date\Date;
-
+/**
+ * @deprecated Use \Intranet\Support\Concerns\DatesTranslator.
+ */
 trait DatesTranslator
 {
-
-    public function getCreatedAttribute($date)
-    {
-        return new Date($date);
-    }
-
-    public function getUpdatedAttribute($date)
-    {
-        return new Date($date);
-    }
-
-    public function getSalidaAttribute($date)
-    {
-        return new Date($date);
-    }
-
-    public function getEntradaAttribute($date)
-    {
-        return new Date($date);
-    }
-
+    use \Intranet\Support\Concerns\DatesTranslator;
 }
-
-// use app\Helpers\DatesTranslator
-// use DatesTranslator
