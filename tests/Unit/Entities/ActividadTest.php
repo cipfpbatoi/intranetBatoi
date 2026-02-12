@@ -5,6 +5,8 @@ namespace Tests\Unit\Entities;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Collection;
 use Intranet\Entities\Actividad;
 use Mockery;
@@ -50,19 +52,25 @@ class ActividadTest extends TestCase
 
     public function test_scope_profesor()
     {
+        if (!Schema::hasTable('actividad_profesor')) {
+            Schema::create('actividad_profesor', function ($table) {
+                $table->unsignedBigInteger('idActividad');
+                $table->string('idProfesor', 10);
+                $table->boolean('coordinador')->default(false);
+            });
+        }
+
+        DB::table('actividad_profesor')->where('idProfesor', '12345678X')->delete();
+        DB::table('actividad_profesor')->insert([
+            ['idActividad' => 1, 'idProfesor' => '12345678X', 'coordinador' => false],
+            ['idActividad' => 2, 'idProfesor' => '12345678X', 'coordinador' => false],
+            ['idActividad' => 3, 'idProfesor' => '12345678X', 'coordinador' => true],
+        ]);
+
         $query = Mockery::mock('Illuminate\Database\Eloquent\Builder');
 
-        // Mock de la relació ActividadProfesor perquè no busque en la BD
-        $actividadProfesor = Mockery::mock('alias:Intranet\Entities\ActividadProfesor');
-        $actividadProfesor->shouldReceive('where')
-            ->with('idProfesor', '12345678X')
-            ->andReturnSelf();
-        $actividadProfesor->shouldReceive('pluck')
-            ->with('idActividad')
-            ->andReturn(collect([1, 2, 3])); // Simulem IDs d'activitats
-
         $query->shouldReceive('whereIn')
-            ->with('id', [1, 2, 3]) // ✅ Ara esperem un array, no un Collection
+            ->with('id', [1, 2, 3])
             ->once()
             ->andReturnSelf();
 

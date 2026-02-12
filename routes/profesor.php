@@ -29,11 +29,11 @@ Route::post('/actividad/create', ['as' => 'actividad.store', 'uses' => 'Activida
 Route::put('/actividad/{actividad}/edit', ['as' => 'actividad.update', 'uses' => 'ActividadController@update']);
 Route::get('/actividad/{actividad}/detalle', ['as' => 'actividad.detalle', 'uses' => 'ActividadController@detalle']);
 Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.gestor', 'uses' => 'ActividadController@gestor']);
-Route::post('/actividad/{actividad}/nuevoGrupo', 'ActividadController@altaGrupo');
-Route::get('/actividad/{actividad}/borrarGrupo/{grupo}', 'ActividadController@borrarGrupo');
-Route::post('/actividad/{actividad}/nuevoProfesor', 'ActividadController@altaProfesor');
-Route::get('/actividad/{actividad}/borrarProfesor/{profesor}', 'ActividadController@borrarProfesor');
-Route::get('/actividad/{actividad}/coordinador/{profesor}', 'ActividadController@Coordinador');
+Route::post('/actividad/{actividad}/nuevoGrupo', ['as' => 'actividad.grupo.store', 'uses' => 'ActividadController@altaGrupo']);
+Route::delete('/actividad/{actividad}/grupo/{grupo}', ['as' => 'actividad.grupo.destroy', 'uses' => 'ActividadController@borrarGrupo']);
+Route::post('/actividad/{actividad}/nuevoProfesor', ['as' => 'actividad.profesor.store', 'uses' => 'ActividadController@altaProfesor']);
+Route::delete('/actividad/{actividad}/profesor/{profesor}', ['as' => 'actividad.profesor.destroy', 'uses' => 'ActividadController@borrarProfesor']);
+Route::post('/actividad/{actividad}/coordinador/{profesor}', ['as' => 'actividad.profesor.coordinador', 'uses' => 'ActividadController@Coordinador']);
 Route::get('actividad/campo/{campo}', 'ActividadController@includegrid');
 Route::get('/actividad/{actividad}/init', ['as' => 'actividad.init', 'uses' => 'ActividadController@init']);
 Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => 'ActividadController@show']);

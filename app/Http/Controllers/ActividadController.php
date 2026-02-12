@@ -97,26 +97,56 @@ class ActividadController extends ModalController
     }
 
 
+    /**
+     * Mostra la pantalla de valoració d'una activitat.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Contracts\View\View
+     */
     public function showValue($id){
         $Actividad = Actividad::find($id);
         return view('extraescolares.showValue', compact('Actividad'));
     }
 
+    /**
+     * Mostra el formulari per omplir la valoració.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Contracts\View\View
+     */
     public function value($id){
         $Actividad = Actividad::find($id);
         return view('extraescolares.value', compact('Actividad'));
     }
 
+    /**
+     * Genera el PDF de la valoració d'una activitat.
+     *
+     * @param int|string $id
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function printValue($id){
         $elemento = $this->class::findOrFail($id);
         $informe = 'pdf.valoracionActividad';
         return app(PdfService::class)->hazPdf($informe, $elemento, null)->stream();
     }
 
+    /**
+     * Redirigix al detall de l'activitat.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     private function showDetalle($id){
         return redirect()->route('actividad.detalle', ['actividad' => $id]);
     }
 
+    /**
+     * Mostra el detall d'una activitat amb professors i grups associats.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Contracts\View\View
+     */
     public function detalle($id)
     {
         $Actividad = Actividad::with(['profesores' => function ($query) {
@@ -125,8 +155,12 @@ class ActividadController extends ModalController
                 ->orderBy('apellido2');
         }, 'grupos:codigo,nombre'])->findOrFail($id);
 
+        $assignedProfesores = $Actividad->profesores->pluck('dni')->all();
+        $assignedGrupos = $Actividad->grupos->pluck('codigo')->all();
+
         // Obtenir tots els professors actius i estructurar-los en un array associatiu
         $tProfesores = Profesor::Activo()
+            ->whereNotIn('dni', $assignedProfesores)
             ->orderBy('apellido1')
             ->orderBy('apellido2')
             ->get()
@@ -134,7 +168,9 @@ class ActividadController extends ModalController
             ->toArray();
 
         // Llista de tots els grups disponibles
-        $tGrupos = Grupo::pluck('nombre', 'codigo')->toArray();
+        $tGrupos = Grupo::whereNotIn('codigo', $assignedGrupos)
+            ->pluck('nombre', 'codigo')
+            ->toArray();
 
         // Assignem professors i grups associats a l'activitat
         $sProfesores = $Actividad->profesores;
@@ -144,13 +180,28 @@ class ActividadController extends ModalController
     }
 
 
+    /**
+     * Afig un grup a una activitat sense esborrar els existents.
+     *
+     * @param Request $request
+     * @param int|string $actividad_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function altaGrupo(Request $request, $actividad_id)
     {
-        $actividad = Actividad::find($actividad_id);
+        $actividad = Actividad::findOrFail($actividad_id);
         $actividad->grupos()->syncWithoutDetaching([$request->idGrupo]);
         return $this->showDetalle($actividad_id);
     }
 
+    /**
+     * Desassigna una relació many-to-many de l'activitat.
+     *
+     * @param int|string $actividad_id
+     * @param string $relation
+     * @param int|string $id
+     * @return void
+     */
     private function desassignar($actividad_id, $relation, $id)
     {
         $actividad = Actividad::findOrFail($actividad_id);
@@ -159,52 +210,107 @@ class ActividadController extends ModalController
 
     }
 
+    /**
+     * Esborra un grup assignat a l'activitat.
+     *
+     * @param int|string $actividad_id
+     * @param int|string $grupo_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function borrarGrupo($actividad_id, $grupo_id)
     {
         $this->desassignar($actividad_id, 'grupos', $grupo_id);
         return $this->showDetalle($actividad_id);
     }
 
+    /**
+     * Afig un professor participant a l'activitat.
+     *
+     * @param Request $request
+     * @param int|string $actividad_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function altaProfesor(Request $request, $actividad_id)
     {
-        $actividad = Actividad::find($actividad_id);
+        $actividad = Actividad::findOrFail($actividad_id);
         $actividad->profesores()->syncWithoutDetaching([$request->idProfesor]);
         return $this->showDetalle($actividad_id);
     }
 
+    /**
+     * Esborra un professor participant.
+     * Si era el coordinador, en promou un altre per garantir que n'hi haja exactament un.
+     *
+     * @param int|string $actividad_id
+     * @param string $profesor_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function borrarProfesor($actividad_id, $profesor_id)
     {
-        $actividad = Actividad::find($actividad_id);
+        $actividad = Actividad::findOrFail($actividad_id);
         if ($actividad->profesores()->count() == 1) {
             Alert::info('No es pot donar de baixa el últim profesor');
             return back();
         }
+
+        $eraCoordinador = $actividad->profesores()
+            ->where('dni', $profesor_id)
+            ->wherePivot('coordinador', 1)
+            ->exists();
+
         $this->desassignar($actividad_id, 'profesores', $profesor_id);
 
-        $nuevo_coord = $actividad->profesores()->wherePivot('coordinador', 0)->first();
-        if ($nuevo_coord) {
-            $actividad->profesores()->updateExistingPivot($nuevo_coord->dni, ['coordinador' => 1]);
+        if ($eraCoordinador) {
+            ActividadProfesor::where('idActividad', $actividad_id)->update(['coordinador' => 0]);
+
+            $nuevoCoordinador = $actividad->profesores()->first();
+            if ($nuevoCoordinador) {
+                $actividad->profesores()->updateExistingPivot($nuevoCoordinador->dni, ['coordinador' => 1]);
+            }
         }
+
         return $this->showDetalle($actividad_id);
     }
 
+    /**
+     * Assigna el coordinador de l'activitat.
+     * Primer reinicia tots els coordinadors a 0 i després marca el professor seleccionat.
+     *
+     * @param int|string $actividad_id
+     * @param string $profesor_id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function coordinador($actividad_id, $profesor_id)
     {
-        $actividad = Actividad::find($actividad_id);
-        $coordActual = ActividadProfesor::where('idActividad', '=', $actividad_id)
-                ->where('coordinador', '=', '1')
-                ->first();
-        if ($coordActual){
-            $actividad->profesores()->updateExistingPivot($coordActual->idProfesor, ['coordinador' => 0]);
+        $actividad = Actividad::findOrFail($actividad_id);
+
+        if (!$actividad->profesores()->where('dni', $profesor_id)->exists()) {
+            Alert::warning('El professor seleccionat no participa en l’activitat.');
+            return back();
         }
-        $actividad->profesores()->updateExistingPivot($profesor_id, ['coordinador' => 1]);
+
+        DB::transaction(function () use ($actividad_id, $actividad, $profesor_id): void {
+            ActividadProfesor::where('idActividad', $actividad_id)->update(['coordinador' => 0]);
+            $actividad->profesores()->updateExistingPivot($profesor_id, ['coordinador' => 1]);
+        });
+
         return $this->showDetalle($actividad_id);
     }
 
+    /**
+     * Notifica a professorat afectat i tutors dels grups de l'activitat.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function notify($id)
     {
         $actividad = Actividad::findOrFail($id);
         $coordinador = Profesor::find($actividad->Creador());
+        if (!$coordinador) {
+            Alert::warning('No hi ha cap coordinador assignat per a esta activitat.');
+            return back();
+        }
 
         $this->notificarGrupos($actividad, $coordinador);
         $this->notificarProfessors($actividad);
@@ -212,6 +318,13 @@ class ActividadController extends ModalController
         return back();
     }
 
+    /**
+     * Envia missatge als professors dels grups inclosos en l'activitat.
+     *
+     * @param Actividad $actividad
+     * @param Profesor $coordinador
+     * @return void
+     */
     private function notificarGrupos($actividad, $coordinador)
     {
         foreach ($actividad->grupos as $grupo) {
@@ -222,6 +335,12 @@ class ActividadController extends ModalController
         }
     }
 
+    /**
+     * Envia avís als professors participants de la pròpia activitat.
+     *
+     * @param Actividad $actividad
+     * @return void
+     */
     private function notificarProfessors($actividad)
     {
         $mensaje = "Els grups: " . $actividad->grupos->implode('nombre', ', ') .
@@ -233,6 +352,12 @@ class ActividadController extends ModalController
         }
     }
 
+    /**
+     * Genera/mostra l'autorització de menors i crea registres si encara no existixen.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function autorizacion($id)
     {
         $grups = [];
@@ -259,6 +384,12 @@ class ActividadController extends ModalController
         return back();
     }
 
+    /**
+     * Mostra la pantalla de control d'autoritzacions de menors.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     */
     public function autorize($id){
         $actividad = Actividad::findOrFail($id);
         if ($actividad->menores()->count()) {
@@ -268,6 +399,11 @@ class ActividadController extends ModalController
         return back();
     }
 
+    /**
+     * Inicialitza la botonera del grid i perfil.
+     *
+     * @return void
+     */
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create']);
@@ -292,6 +428,11 @@ class ActividadController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('actividad.ics', ['img' => 'fa-calendar', 'where' => ['desde', 'posterior', Date::yesterday()]]));
     }
 
+    /**
+     * Autoritza activitats en estat 1 i, si hi ha credencials, les exporta a calendari.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function autorizar()
     {
         $activitats = Actividad::where('estado', '1')->get();
@@ -314,6 +455,13 @@ class ActividadController extends ModalController
     }
 
 
+    /**
+     * Accepta l'activitat incrementant estat i sincronitzant calendari extern.
+     *
+     * @param int|string $id
+     * @param bool $redirect
+     * @return mixed
+     */
     protected function accept($id, $redirect = true)
     {
         $stSrv = new StateService($this->class, $id);
@@ -337,10 +485,21 @@ class ActividadController extends ModalController
         }
     }
 
+    /**
+     * Imprimeix el llistat d'autoritzats.
+     *
+     * @return mixed
+     */
     public function printAutoritzats(){
         return $this->imprimir('extraescolars');
     }
 
+    /**
+     * Marca l'activitat com a tramitada en ITACA.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function itaca($id)
     {
         $elemento = $this->class::findOrFail($id);
@@ -350,6 +509,12 @@ class ActividadController extends ModalController
     }
 
 
+    /**
+     * Genera la resposta ICS de l'activitat.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Http\Response
+     */
     public function i_c_s($id)
     {
         $elemento = $this->class::findOrFail($id);
@@ -358,9 +523,22 @@ class ActividadController extends ModalController
 
     }
 
+    /**
+     * Alterna l'estat d'autorització d'un alumne menor.
+     *
+     * @param string $nia
+     * @param int|string $id
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     */
     public function menorAuth($nia,$id){
         $actividad = Actividad::findOrFail($id);
-        if ($actividad->menores()->where('nia',$nia)->first()->pivot->autorizado){
+        $alumno = $actividad->menores()->where('nia', $nia)->first();
+        if (!$alumno) {
+            Alert::warning('L’alumne no està associat a esta activitat.');
+            return back();
+        }
+
+        if ($alumno->pivot->autorizado){
             $autorizado = 0;
         } else {
             $autorizado = 1;
@@ -369,6 +547,12 @@ class ActividadController extends ModalController
         return view('extraescolares.autorizados',compact('actividad'));
     }
 
+    /**
+     * Renderitza el document associat a l'activitat amb GestorService.
+     *
+     * @param int|string $id
+     * @return mixed
+     */
     public function gestor($id)
     {
         return (new GestorService(Actividad::findOrFail($id)))->render();
