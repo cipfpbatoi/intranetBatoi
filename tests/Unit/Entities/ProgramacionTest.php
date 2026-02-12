@@ -3,6 +3,7 @@
 namespace Tests\Unit\Entities;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Programacion;
@@ -70,6 +71,18 @@ class ProgramacionTest extends TestCase
         $this->assertSame([1], $ids);
     }
 
+    public function test_filefield_es_idmodulociclo(): void
+    {
+        $programacion = new Programacion();
+        $this->assertSame('idModuloCiclo', $programacion->fileField);
+    }
+
+    public function test_resolve_llanca_excepcio_si_no_existix_la_programacio(): void
+    {
+        $this->expectException(ModelNotFoundException::class);
+        Programacion::resolve(999999);
+    }
+
     private function createSchema(): void
     {
         $schema = Schema::connection('sqlite');
@@ -117,4 +130,3 @@ class ProgramacionTest extends TestCase
         });
     }
 }
-

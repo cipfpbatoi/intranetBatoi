@@ -28,15 +28,15 @@ class ProgramacionController extends IntranetController
     protected function search()
     {
         return Programacion::misProgramaciones()
-            ->with('Ciclo')
-            ->with('Modulo')
+            ->with(['Ciclo', 'Modulo'])
+            ->orderBy('idModuloCiclo')
             ->get();
     }
     
     //inicializat a init (normalment 1)
     protected function init($id)
     {
-        $prg = Programacion::find($id);
+        $prg = Programacion::findOrFail($id);
         $staSrv = new StateService($prg);
         $staSrv->putEstado($this->init);
         $prg->Profesor = AuthUser()->dni;
