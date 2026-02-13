@@ -15,16 +15,17 @@ cp .env.docker .env
 # Editar .env i posar el nostre UID/GID en WWWUSER i WWWGROUP (consultar amb id -u i id -g)
 
 # 3. Arrancar els contenidors
-docker compose up -d
-
+./vendor/bin/sail up -d
+./vendor/bin/sail shell
 # 4. Instal·lar dependències
-docker compose exec laravel.test composer install
-docker compose exec laravel.test npm install
+php composer install
+php npm install
+php npm run production
 
 # 5. Generar clau i preparar la BBDD
-docker compose exec laravel.test php artisan key:generate
-docker compose exec laravel.test php artisan migrate
-docker compose exec laravel.test php artisan db:seed
+  php artisan key:generate
+  php artisan migrate
+  php artisan db:seed
 
 # 6. (Opcional) Si hi ha problemes de permissos
 sudo chown -R $USER:$USER storage bootstrap/cache && chmod -R 775 storage bootstrap/cache
