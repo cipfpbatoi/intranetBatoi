@@ -6,7 +6,6 @@ use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
@@ -14,10 +13,8 @@ use Intranet\Entities\Ciclo;
 use Intranet\Entities\Grupo;
 use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Services\Document\FDFPrepareService;
-use Response;
 use Intranet\UI\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\Input;
 
 class EmpresaController extends IntranetController
 {
@@ -82,17 +79,17 @@ class EmpresaController extends IntranetController
 
     public function store(Request $request)
     {
-        $dades = $request->except('cif');
-        $dades['cif'] = strtoupper($request->cif);
-        if (Empresa::where('cif', strtoupper($request->cif))->count()) {
+        $cif = strtoupper((string) $request->cif);
+        if (Empresa::where('cif', $cif)->exists()) {
             return back()->withInput($request->all())->withErrors('CIF duplicado');
         }
 
-        $id = $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]));
+        $id = $this->realStore(subsRequest($request, ['cif' => $cif]));
 
         $idCentro = $this->createCenter($id, $request);
-        if (isset(Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo)) {
-            $this->createColaboration($idCentro, $request);
+        $idCicloTutoria = Grupo::query()->QTutor(AuthUser()->dni)->value('idCiclo');
+        if ($idCicloTutoria) {
+            $this->createColaboration($idCentro, $request, $idCicloTutoria);
         }
 
         return redirect()->action('EmpresaController@show', ['empresa' => $id]);
@@ -100,7 +97,7 @@ class EmpresaController extends IntranetController
 
 
 
-    private function createCenter($id, $request)
+    private function createCenter($id, Request $request)
     {
         $centro = new Centro();
         $centro->idEmpresa = $id;
@@ -110,7 +107,7 @@ class EmpresaController extends IntranetController
         $centro->save();
         return $centro->id;
     }
-    private function createColaboration($id, $request)
+    private function createColaboration($id, Request $request, $idCicloTutoria)
     {
         $colaboracion = new Colaboracion();
         $colaboracion->idCentro = $id;
@@ -118,7 +115,7 @@ class EmpresaController extends IntranetController
         $colaboracion->email = $request->email;
         $colaboracion->puestos = 1;
         $colaboracion->tutor = AuthUser()->FullName;
-        $colaboracion->idCiclo = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo;
+        $colaboracion->idCiclo = $idCicloTutoria;
         $colaboracion->save();
         return $colaboracion->id;
     }
@@ -138,8 +135,8 @@ class EmpresaController extends IntranetController
     {
         $elemento = Empresa::find($this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]), $id));
 
-        $touched = false;
         foreach ($elemento->centros as $centro) {
+            $touched = false;
             if ($centro->direccion == '') {
                 $centro->direccion = $elemento->direccion;
                 $touched = true;
@@ -152,9 +149,9 @@ class EmpresaController extends IntranetController
                 $centro->nombre = $elemento->nombre;
                 $touched = true;
             }
-        }
-        if ($touched) {
-            $centro->save();
+            if ($touched) {
+                $centro->save();
+            }
         }
         return redirect()->action('EmpresaController@show', ['empresa' => $elemento->id]);
     }

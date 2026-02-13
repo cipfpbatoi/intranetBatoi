@@ -63,12 +63,13 @@ use Autorizacion,
     public function departamento()
     {
         Session::forget('redirect');
-        $departamentos = Departamento::where('didactico', 1)
+        $departamentos = Departamento::query()
+            ->where('didactico', 1)
             ->where('id', '!=', 99)
             ->orderBy('depcurt')
             ->get();
-
         $departamentosIds = $departamentos->pluck('id')->all();
+
         $sesionActual = sesion(Hora(now()));
         $diaActual = config("auxiliares.diaSemana." . now()->format('w'));
 
@@ -303,13 +304,10 @@ use Autorizacion,
         $horarios = [];
         $observaciones = [];
         foreach ($profesores as $profesor){
-            if (Storage::disk('local')->exists('/horarios/'.$profesor->dni.'.json')){
-                    if (isset(json_decode(Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json'))->obs)) {
-                        $observaciones[$profesor->dni] = json_decode(Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json'))->obs;
-                    }
-                    else {
-                        $observaciones[$profesor->dni] = '';
-                    }
+            $ruta = '/horarios/'.$profesor->dni.'.json';
+            if (Storage::disk('local')->exists($ruta)){
+                    $json = json_decode(Storage::disk('local')->get($ruta));
+                    $observaciones[$profesor->dni] = $json->obs ?? '';
                     $horarios[$profesor->dni] = Horario::HorarioSemanal($profesor->dni);
             }
         }
@@ -321,13 +319,27 @@ use Autorizacion,
     //-------------------------------
     protected function change($idProfesor)
     {
+        $profesor = Profesor::find($idProfesor);
+        if (!$profesor) {
+            Alert::danger('Professor no trobat');
+            return back();
+        }
+
         Session::put('userChange', AuthUser()->dni);
-        Auth::login(Profesor::find($idProfesor));
+        Auth::login($profesor);
         return redirect('/');
     }
     protected function backChange()
     {
-        Auth::login(Profesor::find(Session::get('userChange')));
+        $dniOriginal = Session::get('userChange');
+        $profesor = $dniOriginal ? Profesor::find($dniOriginal) : null;
+        if (!$profesor) {
+            Session::forget('userChange');
+            Alert::danger('No s\'ha pogut restaurar la sessió original');
+            return redirect('/');
+        }
+
+        Auth::login($profesor);
         Session::forget('userChange');
         return redirect('/');
     }

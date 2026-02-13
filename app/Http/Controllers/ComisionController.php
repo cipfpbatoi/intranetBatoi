@@ -4,7 +4,6 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use DB;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Support\Fct\DocumentoFctConfig;
@@ -201,9 +200,7 @@ class ComisionController extends ModalController
      */
     public function paid($id)
     {
-        $elemento = Comision::findOrFail($id);
-        $elemento->estado = 5;
-        $elemento->save();
+        $this->setEstado($id, 5);
     }
 
     /**
@@ -212,9 +209,7 @@ class ComisionController extends ModalController
      */
     public function unpaid($id)
     {
-        $elemento = Comision::findOrFail($id);
-        $elemento->estado = 4;
-        $elemento->save();
+        $this->setEstado($id, 4);
         return back();
     }
 
@@ -230,28 +225,14 @@ class ComisionController extends ModalController
     public function detalle($id)
     {
         $comision = Comision::findOrFail($id);
-        $all = Fct::esFct()
-            ->where(function ($query): void {
-                $query->misFcts()->orWhere('cotutor', authUser()->dni);
-            })
-            ->with('Colaboracion')
-            ->orderBy('id')
-            ->get();
-
-        // Manté un únic FCT per centre (l'últim per id), i prepara el select ordenat per nom.
-        $allFcts = $all
-            ->filter(fn (Fct $fct) => (bool) $fct->Colaboracion)
-            ->keyBy(fn (Fct $fct) => (string) $fct->Colaboracion->idCentro)
-            ->mapWithKeys(fn (Fct $fct) => [$fct->id => $fct->Centro])
-            ->sort()
-            ->all();
+        $allFcts = $this->buildFctOptions();
 
         return view('comision.detalle', compact('comision', 'allFcts'));
     }
 
     public function createFct(Request $request, $comisionId)
     {
-        $comision = Comision::find($comisionId);
+        $comision = Comision::findOrFail($comisionId);
         $aviso = isset($request->aviso)?1:0;
         $comision->fcts()
             ->syncWithoutDetaching([$request->idFct => ['hora_ini' => $request->hora_ini ,'aviso' => $aviso]]);
@@ -260,9 +241,40 @@ class ComisionController extends ModalController
 
     public function deleteFct($comisionId, $fctId)
     {
-        $comision = Comision::find($comisionId);
+        $comision = Comision::findOrFail($comisionId);
         $comision->fcts()->detach($fctId);
         return $this->detalle($comisionId);
+    }
+
+    private function setEstado($id, int $estado): void
+    {
+        $elemento = Comision::findOrFail($id);
+        $elemento->estado = $estado;
+        $elemento->save();
+    }
+
+    /**
+     * Retorna opcions de FCT per al selector de detall:
+     * una per centre (l'última per id), ordenades pel nom de centre.
+     *
+     * @return array<int, string>
+     */
+    private function buildFctOptions(): array
+    {
+        $all = Fct::esFct()
+            ->where(function ($query): void {
+                $query->misFcts()->orWhere('cotutor', authUser()->dni);
+            })
+            ->with('Colaboracion')
+            ->orderBy('id')
+            ->get();
+
+        return $all
+            ->filter(fn (Fct $fct) => (bool) $fct->Colaboracion)
+            ->keyBy(fn (Fct $fct) => (string) $fct->Colaboracion->idCentro)
+            ->mapWithKeys(fn (Fct $fct) => [$fct->id => $fct->Centro])
+            ->sort()
+            ->all();
     }
 
 }

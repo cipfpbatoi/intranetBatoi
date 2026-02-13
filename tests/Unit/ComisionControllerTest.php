@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -135,6 +136,20 @@ class ComisionControllerTest extends TestCase
             ->where('idComision', $comisionId)
             ->where('idFct', 1002)
             ->value('aviso'));
+    }
+
+    public function test_createfct_llanca_excepcio_si_comissio_no_existix(): void
+    {
+        DB::table('fcts')->insert(['id' => 1010, 'idColaboracion' => 1, 'asociacion' => 1]);
+
+        $controller = new DummyComisionController();
+
+        $this->expectException(ModelNotFoundException::class);
+        $controller->createFct(new Request([
+            'idFct' => 1010,
+            'hora_ini' => '09:00:00',
+            'aviso' => 'on',
+        ]), 999999);
     }
 
     public function test_deletefct_elimina_relacio_del_pivot(): void
