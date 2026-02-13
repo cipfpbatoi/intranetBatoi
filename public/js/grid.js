@@ -10,14 +10,37 @@
     }
 
     const table = $('#datatable');
+    if (!table.length) {
+        return;
+    }
+    if ($.fn.dataTable.isDataTable(table)) {
+        return;
+    }
 
-    table.DataTable({
+    // Evita salts visuals mentre DataTables calcula amplades.
+    table.css('visibility', 'hidden');
+
+    const dataTable = table.DataTable({
         language: { url: '/json/cattable.json' },
         deferRender: true,
         responsive: true,
+        autoWidth: false,
         columnDefs: [
             { responsivePriority: 1, targets: -1}
-        ]
+        ],
+        initComplete: function () {
+            const api = this.api();
+            api.columns.adjust();
+            $(api.table().node()).css('visibility', 'visible');
+        }
+    });
+
+    table.on('draw.dt responsive-resize.dt', function () {
+        dataTable.columns.adjust();
+    });
+
+    $(window).on('resize', function () {
+        dataTable.columns.adjust();
     });
 
     $(function(){

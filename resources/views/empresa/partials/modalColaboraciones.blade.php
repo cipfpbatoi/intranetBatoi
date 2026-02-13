@@ -1,5 +1,4 @@
 <!-- Modal -->
-@php($ciclos = \Intranet\Entities\Ciclo::where('departamento',authUser()->departamento)->get())
 <x-modal
         name="AddColaboration"
         title='Afegir Colaboració'
@@ -10,10 +9,10 @@
     <div class="form-group row">
         <label class="control-label" for="idCiclo">Cicle</label>
         <select id='idCiclo' name='idCiclo' class="form-control">
-                @foreach ($ciclos as $cicle)
+                @foreach ($ciclosDepartamento as $cicle)
                     <option
                             value='{{ $cicle->id }}'
-                            {{ old("idCiclo") == $cicle->id  ? "selected" : ($cicle->id == $ciclo ? 'selected' :  '')}}
+                            {{ old("idCiclo") == $cicle->id  ? "selected" : ($cicle->id == $cicloTutoria ? 'selected' :  '')}}
                     >
                         {!! $cicle->ciclo !!}
                     </option>

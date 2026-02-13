@@ -10,6 +10,7 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
+use Intranet\Entities\Ciclo;
 use Intranet\Entities\Grupo;
 use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Services\Document\FDFPrepareService;
@@ -26,6 +27,14 @@ class EmpresaController extends IntranetController
     protected $gridFields = ['concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad'];
     protected $vista = ['show' => 'empresa','index'=>'vacia'];
 
+    protected function search()
+    {
+        return Empresa::query()
+            ->select(['id', 'concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad'])
+            ->orderBy('nombre')
+            ->get();
+    }
+
     
     public function create($default=[])
     {
@@ -35,10 +44,35 @@ class EmpresaController extends IntranetController
     public function show($id)
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 2;
-        $elemento = Empresa::findOrFail($id);
+        $elemento = Empresa::with([
+            'centros.colaboraciones.ciclo',
+            'centros.instructores',
+        ])->findOrFail($id);
         $modelo = 'Empresa';
-        $misColaboraciones = Grupo::find(AuthUser()->GrupoTutoria)->Ciclo->Colaboraciones??collect();
-        return view('empresa.show' , compact('elemento', 'modelo', 'activa', 'misColaboraciones'));
+
+        $cicloTutoria = optional(Grupo::find(AuthUser()->GrupoTutoria))->idCiclo;
+        $misColaboracionesIds = collect();
+        if ($cicloTutoria) {
+            $misColaboracionesIds = Colaboracion::query()
+                ->where('idCiclo', $cicloTutoria)
+                ->whereIn('idCentro', $elemento->centros->pluck('id'))
+                ->pluck('id');
+        }
+
+        $ciclosDepartamento = Ciclo::query()
+            ->where('departamento', authUser()->departamento)
+            ->get();
+        $ciclosDepartamentoIds = $ciclosDepartamento->pluck('id')->all();
+
+        return view('empresa.show', compact(
+            'elemento',
+            'modelo',
+            'activa',
+            'misColaboracionesIds',
+            'cicloTutoria',
+            'ciclosDepartamento',
+            'ciclosDepartamentoIds'
+        ));
     }
     
     protected function iniBotones()
