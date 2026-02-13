@@ -1,10 +1,12 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\BaseController;
+
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Http\Traits\Panel;
+use Intranet\Http\Traits\Core\Panel;
 
 
 class   PanelIncidenciaController extends BaseController

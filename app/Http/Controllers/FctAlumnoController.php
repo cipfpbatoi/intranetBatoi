@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 
 use DB;
 use Illuminate\Http\Request;
@@ -27,8 +29,8 @@ use Intranet\Http\PrintResources\ConformidadAlumnadoResource;
 use Intranet\Http\PrintResources\ConformidadTutoriaResource;
 use Intranet\Http\PrintResources\ExempcioResource;
 use Intranet\Http\PrintResources\NotificacioInspeccioResource;
-use Intranet\Http\Traits\Imprimir;
-use Intranet\Http\Traits\DropZone;
+use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Mail\DocumentRequest;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\UI\FormBuilder;

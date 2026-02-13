@@ -1,12 +1,11 @@
 <?php
 
-namespace Intranet\Helpers;
+namespace Intranet\Support\Concerns;
 
 use Jenssegers\Date\Date;
 
 trait DatesTranslator
 {
-
     public function getCreatedAttribute($date)
     {
         return new Date($date);
@@ -26,8 +25,4 @@ trait DatesTranslator
     {
         return new Date($date);
     }
-
 }
-
-// use app\Helpers\DatesTranslator
-// use DatesTranslator

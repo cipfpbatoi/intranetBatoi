@@ -10,7 +10,7 @@ use Styde\Html\Facades\Alert;
 class Articulo extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected   $table = 'articulos';
     public      $timestamps = false;

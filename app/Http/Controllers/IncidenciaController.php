@@ -1,6 +1,8 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Intranet\UI\Botones\BotonImg;
@@ -8,7 +10,7 @@ use Intranet\Entities\Incidencia;
 use Intranet\Entities\OrdenTrabajo;
 use Intranet\Http\Requests\IncidenciaRequest;
 use Intranet\Http\Traits\Autorizacion;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\Media\ImageService;
 use Styde\Html\Facades\Alert;
@@ -219,6 +221,16 @@ class IncidenciaController extends ModalController
     protected function createWithDefaultValues($default = [])
     {
         return new Incidencia(['idProfesor'=>AuthUser()->dni,'fecha'=>Hoy('Y-m-d')]);
+    }
+
+    /*
+     * show($id) retorna vista de detall
+     */
+    public function show($id)
+    {
+        $elemento = Incidencia::findOrFail($id);
+        $modelo = $this->model;
+        return view('intranet.show', compact('elemento', 'modelo'));
     }
     /**
      * @param $id

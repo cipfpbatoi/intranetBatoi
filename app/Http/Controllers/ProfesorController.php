@@ -17,7 +17,7 @@ use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\Http\Traits\Autorizacion;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Mail\Comunicado;
 use Intranet\Services\UI\FormBuilder;
 use Jenssegers\Date\Date;

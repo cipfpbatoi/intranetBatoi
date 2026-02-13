@@ -3,11 +3,13 @@
 
 namespace Tests\Unit\Entities;
 
+use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Signatura;
 
 
 
@@ -140,6 +142,22 @@ class AlumnoFctTest extends TestCase
         $this->assertEquals('bg-orange', $alumnoFct->class);
 
 
+    }
+
+    /** @test */
+    public function accessors_signatures_reutilitzen_relacio_carregada(): void
+    {
+        $sigA1 = new Signatura(['tipus' => 'A1', 'signed' => true]);
+        $sigA2 = new Signatura(['tipus' => 'A2', 'signed' => true]);
+        $sigA3 = new Signatura(['tipus' => 'A3', 'signed' => false]);
+
+        $alumnoFct = new AlumnoFct();
+        $alumnoFct->setRelation('Signatures', new Collection([$sigA1, $sigA2, $sigA3]));
+
+        $this->assertTrue($alumnoFct->sign);
+        $this->assertSame($sigA1, $alumnoFct->a1);
+        $this->assertSame($sigA2, $alumnoFct->a2);
+        $this->assertSame($sigA3, $alumnoFct->a3);
     }
 
     protected function tearDown(): void

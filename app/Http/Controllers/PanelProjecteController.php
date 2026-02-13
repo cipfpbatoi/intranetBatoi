@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;

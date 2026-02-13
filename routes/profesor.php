@@ -29,18 +29,18 @@ Route::post('/actividad/create', ['as' => 'actividad.store', 'uses' => 'Activida
 Route::put('/actividad/{actividad}/edit', ['as' => 'actividad.update', 'uses' => 'ActividadController@update']);
 Route::get('/actividad/{actividad}/detalle', ['as' => 'actividad.detalle', 'uses' => 'ActividadController@detalle']);
 Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.gestor', 'uses' => 'ActividadController@gestor']);
-Route::post('/actividad/{actividad}/nuevoGrupo', 'ActividadController@altaGrupo');
-Route::get('/actividad/{actividad}/borrarGrupo/{grupo}', 'ActividadController@borrarGrupo');
-Route::post('/actividad/{actividad}/nuevoProfesor', 'ActividadController@altaProfesor');
-Route::get('/actividad/{actividad}/borrarProfesor/{profesor}', 'ActividadController@borrarProfesor');
-Route::get('/actividad/{actividad}/coordinador/{profesor}', 'ActividadController@Coordinador');
+Route::post('/actividad/{actividad}/nuevoGrupo', ['as' => 'actividad.grupo.store', 'uses' => 'ActividadController@altaGrupo']);
+Route::delete('/actividad/{actividad}/grupo/{grupo}', ['as' => 'actividad.grupo.destroy', 'uses' => 'ActividadController@borrarGrupo']);
+Route::post('/actividad/{actividad}/nuevoProfesor', ['as' => 'actividad.profesor.store', 'uses' => 'ActividadController@altaProfesor']);
+Route::delete('/actividad/{actividad}/profesor/{profesor}', ['as' => 'actividad.profesor.destroy', 'uses' => 'ActividadController@borrarProfesor']);
+Route::post('/actividad/{actividad}/coordinador/{profesor}', ['as' => 'actividad.profesor.coordinador', 'uses' => 'ActividadController@Coordinador']);
 Route::get('actividad/campo/{campo}', 'ActividadController@includegrid');
 Route::get('/actividad/{actividad}/init', ['as' => 'actividad.init', 'uses' => 'ActividadController@init']);
 Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => 'ActividadController@show']);
 Route::get('/actividad/{actividad}/notification', ['as' => 'actividad.notificar', 'uses' => 'ActividadController@notify']);
 Route::get('/actividad/{actividad}/autorizacion', ['as' => 'actividad.autorizacion', 'uses' => 'ActividadController@autorizacion']);
 Route::get('/actividad/{actividad}/autorize', ['as' => 'actividad.autorize', 'uses' => 'ActividadController@autorize']);
-Route::get('/actividad/{actividad}/ics', ['as' => 'actividad.ics', 'uses' => 'ActividadController@i_c_s']);
+Route::get('/actividad/{actividad}/ics', ['as' => 'actividad.ics', 'uses' => 'ActividadController@ics']);
 Route::get('/actividadOrientacion', ['as' => 'actividad.orientacion', 'uses' => 'PanelActividadOrientacionController@index']);
 Route::get('/actividadorientacion/create', ['as' => 'actividad.createOrientacion', 'uses' => 'PanelActividadOrientacionController@create']);
 Route::post('/actividadorientacion/create', ['as' => 'actividad.storeOrientacion', 'uses' => 'ActividadController@store']);
@@ -349,6 +349,8 @@ Route::get('/alumnofct/{id}/importa', ['as' => 'alumnofct.importa', 'uses' => 'F
 
 Route::get('/alumno/calendari', ['as' => 'alumno.calendari', 'uses' => 'CalendariFctController@index']);
 Route::get('/alumno/{id}/days', ['as' => 'alumno.days', 'uses' => 'CalendariFctController@days']);
+
+Route::view('/documento', 'documento.livewire')->name('documento.index');
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy', 'show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);

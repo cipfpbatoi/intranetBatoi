@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\BaseController;
+
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Ciclo;

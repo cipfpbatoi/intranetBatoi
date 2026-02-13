@@ -100,6 +100,7 @@ return array(
         'Incidencia' => array(
             'index' => 'Gestionar incidències',
             'create' => 'Incidència',
+            'show' => 'Mostra incidència',
             '3' => 'Resolta',
             '2' => 'En procés',
             '1' => 'Assignada',

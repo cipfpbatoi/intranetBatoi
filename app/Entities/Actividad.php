@@ -10,10 +10,16 @@ use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
 
 
+/**
+ * Model d'activitats extraescolars/complementàries.
+ *
+ * Inclou relacions amb grups, professors i autoritzacions de menors,
+ * i accessors de presentació per a dates i situació.
+ */
 class Actividad extends Model
 {
 
-    use BatoiModels ;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'actividades';
     protected $fillable = [
@@ -120,18 +126,36 @@ class Actividad extends Model
         return $query->whereIn('id', $actividades);
     }
 
+    /**
+     * Accessor de `desde` en format de visualització.
+     *
+     * @param string|null $entrada
+     * @return string|null
+     */
     public function getDesdeAttribute($entrada)
     {
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y H:i');
     }
 
+    /**
+     * Accessor de `hasta` en format de visualització.
+     *
+     * @param string|null $salida
+     * @return string|null
+     */
     public function getHastaAttribute($salida)
     {
         $fecha = new Date($salida);
         return $fecha->format('d-m-Y H:i');
     }
 
+    /**
+     * Filtra activitats futures.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeNext($query)
     {
         $today = time();
@@ -139,11 +163,27 @@ class Actividad extends Model
         return $query->where('desde', '>', $ahora);
     }
 
+    /**
+     * Filtra activitats autoritzades o no extraescolars.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeAuth($query)
     {
-        return $query->where('estado', '>=', 2)->orWhere('extraescolar', 0);
+        return $query->where(function ($q) {
+            $q->where('estado', '>=', 2)
+                ->orWhere('extraescolar', 0);
+        });
     }
 
+    /**
+     * Filtra activitats que cauen en un dia concret.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $dia Format Y-m-d
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeDia($query, $dia)
     {
         $antes = $dia . " 23:59:59";
@@ -152,12 +192,24 @@ class Actividad extends Model
                         ->where('hasta', '>=', $despues);
     }
 
+    /**
+     * Filtra per departament a través dels grups de l'activitat.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param mixed $dep
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeDepartamento($query, $dep)
     {
         $actividades = ActividadGrupo::select('idActividad')->Departamento($dep)->get()->toarray();
         return $query->whereIn('id', $actividades);
     }
 
+    /**
+     * Relació de professor coordinador de l'activitat.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function Tutor()
     {
         return $this->belongsToMany(
@@ -167,15 +219,30 @@ class Actividad extends Model
             'idProfesor'
         )->wherePivot('coordinador', 1);
     }
+    /**
+     * Accessor booleà per saber si l'usuari autenticat és coordinador.
+     *
+     * @return int
+     */
     public function getcoordAttribute()
     {
         return ($this->Creador() === authUser()->dni)?1:0;
     }
+    /**
+     * Accessor de text de situació segons estat.
+     *
+     * @return string
+     */
     public function getsituacionAttribute()
     {
         return trans('models.Actividad.' . $this->estado);
     }
 
+    /**
+     * Carrega activitats de poll dels grups de l'usuari.
+     *
+     * @return \Illuminate\Support\Collection
+     */
     public static function loadPoll()
     {
         return authUser()->Grupo->flatMap(fn($grupo) =>
@@ -183,11 +250,21 @@ class Actividad extends Model
         );
     }
 
+    /**
+     * Accessor de "recomanada" en format Sí/No.
+     *
+     * @return string
+     */
     public function getRecomendadaAttribute()
     {
         return $this->recomanada?'Sí':'No';
     }
 
+    /**
+     * Opcions de tipus d'activitat segons departament de l'usuari.
+     *
+     * @return array
+     */
     public function getTipoActividadIdOptions()
     {
         return hazArray(

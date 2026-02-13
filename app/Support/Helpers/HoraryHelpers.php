@@ -25,7 +25,12 @@ function horarioAhora($dni)
 
         $horaActual = $horasDentro->where('sesion_orden', $hora)->first();
         if ($horaActual) {
-            if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre) {
+            if (
+                $horaActual->modulo != null
+                && isset($horaActual->Modulo->literal)
+                && isset($horaActual->Grupo)
+                && isset($horaActual->Grupo->nombre)
+            ) {
                 return [
                     'momento' => $horaActual->Grupo->nombre,
                     'ahora' => $horaActual->Modulo->literal . ' (' . $horaActual->aula . ')'];
@@ -51,7 +56,9 @@ function horarioAhora($dni)
  */
 function estaDentro($profesor = null)
 {
-    $ultimo = Intranet\Entities\Falta_profesor::Hoy($profesor ?? authUser()->dni)->get()->last();
+    $ultimo = Intranet\Entities\Falta_profesor::Hoy($profesor ?? authUser()->dni)
+        ->latest('id')
+        ->first();
     if ($profesor == null) {
         session(['ultimoFichaje' => $ultimo]);
     }
@@ -95,11 +102,10 @@ function estaInstituto($profesor, $dia, $hora)
 
 function estaGuardia($idProfesor, $diaSemana, $sesion):bool
 {
-
-    return (Intranet\Entities\Guardia::where('idProfesor', $idProfesor)
+    return Intranet\Entities\Guardia::where('idProfesor', $idProfesor)
         ->where('dia', $diaSemana)
         ->where('hora', $sesion)
-        ->first())?true:false;
+        ->exists();
 }
 
 function profesoresGuardia($diaSemana, $sesion)

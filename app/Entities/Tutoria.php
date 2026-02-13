@@ -8,7 +8,7 @@ use Intranet\Events\ActivityReport;
 
 class Tutoria extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'tutorias';
     public $timestamps = false;

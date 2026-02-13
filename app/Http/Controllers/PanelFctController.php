@@ -2,13 +2,15 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 
 use DB;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\Entities\Fct;
-use Intranet\Http\Traits\Panel;
+use Intranet\Http\Traits\Core\Panel;
 
 
 /**

@@ -1,6 +1,19 @@
 <div>
     <h2>Horari del professor {{ $profesorNom }}</h2>
 
+    <div class="mb-3 no-print">
+        <label for="propostaSelect"><strong>Proposta</strong></label>
+        <select id="propostaSelect" class="form-control" wire:model.live="selectedPropuestaId">
+            <option value="">Nova proposta</option>
+            @foreach ($propuestaOptions as $value => $label)
+                <option value="{{ $value }}">{{ $label }}</option>
+            @endforeach
+        </select>
+        @if (!empty($propuestaOptions))
+            <small class="text-muted">Selecciona la proposta que vols vore.</small>
+        @endif
+    </div>
+
     <p>
         Selecciona una hora ocupada i, després, fes clic a una altra cel·la per a moure-la o intercanviar-la.
         No es pot passar una hora del matí a la vesprada (ni a l'inrevés).
@@ -32,6 +45,10 @@
         </button>
         <button class="btn btn-default" type="button" wire:click="novaProposta">
             Nova proposta
+        </button>
+        <button class="btn btn-danger" type="button" wire:click="esborrarProposta"
+            @if(!$propuestaId || in_array($estado, ['Aceptado', 'Guardado'], true)) disabled @endif>
+            Esborrar proposta
         </button>
     </div>
 

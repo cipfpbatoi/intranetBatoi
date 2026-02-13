@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Intranet\UI\Botones\BotonBasico;
@@ -10,7 +12,7 @@ use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Lote;
 use Intranet\Entities\Material;
 use Intranet\Http\Requests\LoteRequest;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 
 /**
  * Class LoteController

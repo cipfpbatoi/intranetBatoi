@@ -3,13 +3,13 @@
 namespace Intranet\Entities\Poll;
 
 
-use Intranet\Entities\BatoiModels;
+use Intranet\Entities\Concerns\BatoiModels;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\ActivityReport;
 
 class PPoll extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'ppolls';
     protected $fillable = ['title','what','anonymous','remains'];

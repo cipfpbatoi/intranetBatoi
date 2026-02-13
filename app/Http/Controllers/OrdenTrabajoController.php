@@ -1,9 +1,11 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\StateService;
 
 /**

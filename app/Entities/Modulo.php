@@ -13,7 +13,7 @@ class Modulo extends Model
     public $timestamps = false;
     public $keyType = 'string';
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $fillable = [
         'cliteral',

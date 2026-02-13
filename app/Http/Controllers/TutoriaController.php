@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Response;
 use Intranet\Entities\Tutoria;
 use Intranet\Entities\TutoriaGrupo;

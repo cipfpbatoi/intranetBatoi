@@ -96,7 +96,7 @@ class Profesor extends Authenticatable
     ];
 
     use Notifiable;
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
     use \Illuminate\Auth\Passwords\CanResetPassword;
 
     public function Comision()

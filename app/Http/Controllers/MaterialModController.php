@@ -1,6 +1,8 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Intranet\UI\Botones\BotonImg;
@@ -97,20 +99,20 @@ class MaterialModController extends ModalController
                 $material->estado = 3;
             } else {
                 // Trasllat d'espai (assumint que 'nuevoEstado' guarda l'ID d'Espacio)
-                $nuevo = $registro->nuevoEstado;
+                $nuevo = trim((string) $registro->nuevoEstado);
 
-                if ($nuevo === null || $nuevo === '') {
+                if ($nuevo === '' || $nuevo === '0') {
                     throw ValidationException::withMessages([
-                        'nuevoEstado' => "Cal indicar l'espai destí.",
+                        'nuevoEstado' => "Cal indicar l'espai destí (no pot ser 0 ni buit).",
                     ]);
                 }
                 if (!Espacio::whereKey($nuevo)->exists()) {
                     throw ValidationException::withMessages([
-                        'nuevoEstado' => "L'espai destí no existeix.",
+                        'nuevoEstado' => "L'espai destí \"$nuevo\" no existeix.",
                     ]);
                 }
 
-                $material->espacio = (int)$nuevo;
+                $material->espacio = $nuevo;
             }
 
             $material->save();

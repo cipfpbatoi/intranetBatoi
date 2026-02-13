@@ -1,6 +1,8 @@
 <?php
 
 namespace Intranet\Http\Controllers;
+
+use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Documento;
 use Intranet\Services\Document\TipoDocumentoService;

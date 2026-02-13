@@ -2,8 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
-use Intranet\Http\Controllers\BaseController;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use Styde\Html\Facades\Alert;
@@ -219,6 +220,21 @@ class HorarioController extends IntranetController
 
         app(NotificationService::class)->send($dni, "S'ha rebutjat la teua proposta de canvi d'horari. Motiu: $motiu", '/horario/canvi-horari-temporal?proposta=' . $id);
         Alert::success("Proposta del professor $dni rebutjada");
+        return back();
+    }
+
+    public function esborrarProposta($dni, $id)
+    {
+        $disk = Storage::disk('local');
+        $path = '/horarios/' . $dni . '/' . $id . '.json';
+
+        if (!$disk->exists($path)) {
+            Alert::warning("No hi ha proposta per al professor $dni");
+            return back();
+        }
+
+        $disk->delete($path);
+        Alert::success("Proposta del professor $dni esborrada");
         return back();
     }
 

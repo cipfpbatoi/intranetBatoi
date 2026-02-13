@@ -1,10 +1,15 @@
 <?php
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Session;
+use Jenssegers\Date\Date;
+
 function periodePractiques($fecha = null)
 {
     $inici = $fecha ? new Date($fecha) : new Date(hoy());
-    $inici->format('Y-m-d');
-    if ($inici <= config('curso.fct.2')['inici']) {
+    $iniciLimit = new Date(config('curso.fct.2')['inici']);
+
+    if ($inici <= $iniciLimit) {
         return 1;
     } else {
         return 2;
@@ -25,12 +30,25 @@ function fecha($fecha)
 function fechaSao($fecha)
 {
     $descp = explode('/', $fecha);
+    if (count($descp) !== 3) {
+        return $fecha;
+    }
     return $descp[2].'-'.$descp[1].'-'.$descp[0];
 }
 
+/**
+ * Converteix una data curta (`dd-mm-yy` o `dd/mm/yy`) a format SQL (`YYYY-mm-dd`).
+ *
+ * @param string $fecha
+ * @param string $separator
+ * @return string
+ */
 function fechaInglesaCurta($fecha, $separator='-')
 {
     $date = explode($separator, $fecha);
+    if (count($date) !== 3) {
+        return $fecha;
+    }
     return '20'.$date[2].'-'.$date[1].'-'.$date[0];
 }
 
@@ -50,7 +68,7 @@ function buildFecha($fecha, $hora)
 {
     $date = new Date($fecha);
     $str = $date->format('Y-m-d');
-    return new DateTime($str." ".$hora.":00");
+    return new \DateTime($str." ".$hora.":00");
 
 }
 function fechaString($fecha = null, $idioma = null)
@@ -99,6 +117,13 @@ function manana($format = null)
     $fecha->addDay(1);
     return $format ? $fecha->format($format) : $fecha->toDateString();
 }
+
+/**
+ * Retorna una instància de data amb el dia de demà.
+ *
+ * @return Date
+ */
+function mananaDate()
 {
     $fecha = new Date();
     $fecha->addDay(1);
@@ -116,7 +141,7 @@ function fechaPosterior($fecha1, $fecha2 = null)
 
 function haVencido($fecha)
 {
-    return hoy() >= fecha($fecha) ? true : false;
+    return hoy() >= fecha($fecha);
 }
 
 function vigente($fecha1, $fecha2)
@@ -129,7 +154,7 @@ function esMismoDia($ini, $fin)
     $fec1 = new Date($ini);
     $fec2 = new Date($fin);
 
-    return $fec1->isSameDay($fec2) ? true : false;
+    return $fec1->isSameDay($fec2);
 }
 
 function esMayor($ini, $fin)
@@ -137,7 +162,7 @@ function esMayor($ini, $fin)
     $fec1 = new Date($ini);
     $fec2 = new Date($fin);
 
-    return $fec1 > $fec2 ? true : false;
+    return $fec1 > $fec2;
 }
 
 /**
@@ -211,13 +236,20 @@ function hora($fecha = null)
     return $fc1->format('H:i');
 }
 
+/**
+ * Retorna la sessió lectiva que correspon a una hora concreta.
+ *
+ * El resultat es cacheja per hora durant 1 minut.
+ *
+ * @param string $hora
+ * @return int
+ */
 function sesion($hora)
 {
-    return
-        Illuminate\Support\Facades\Cache::remember('HoraSes', now()->addMinutes(1), function () use ($hora) {
+    return Cache::remember('HoraSes:'.$hora, now()->addMinutes(1), function () use ($hora) {
             $now = \Intranet\Entities\Hora::where('hora_ini', '<=', $hora)->where('hora_fin', '>=', $hora)->first();
             return isset($now->codigo) ? $now->codigo : 0;
-        });
+    });
 }
 
 /**
@@ -288,4 +320,3 @@ function horas($hora)
 
     return $horai + $mini / 60;
 }
-

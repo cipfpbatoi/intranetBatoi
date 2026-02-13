@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Http\Requests\TipoActividadRequest;
 use Intranet\Http\Requests\TipoActividadUpdateRequest;

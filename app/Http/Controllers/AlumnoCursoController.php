@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use DB;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\AlumnoCurso;

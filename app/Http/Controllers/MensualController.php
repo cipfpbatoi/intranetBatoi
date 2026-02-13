@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Requests\DesdeHastaRequest;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\School\FaltaReportService;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\General\StateService;

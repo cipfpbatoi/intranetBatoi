@@ -12,7 +12,7 @@ use Illuminate\Support\Arr;
 
 class FctDay extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'fct_days';
 

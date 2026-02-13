@@ -1,9 +1,11 @@
 <?php
 
 namespace Intranet\Http\Controllers;
+
+use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
-use Intranet\Http\Traits\Panel;
+use Intranet\Http\Traits\Core\Panel;
 
 /**
  * Class PanelExpedienteController

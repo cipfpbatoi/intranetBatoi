@@ -231,7 +231,18 @@ class StateService
 
         foreach ($todos as $element) {
             $stateService = new self(get_class($element), $element->id);
-            $result = is_string($accio) ? $stateService->$accio(false) : $stateService->putEstado($accio);
+            if (is_numeric($accio)) {
+                $result = $stateService->putEstado((int) $accio);
+            } elseif (is_string($accio) && method_exists($stateService, $accio)) {
+                $result = $stateService->$accio(false);
+            } else {
+                Log::warning('StateService: accio massiva invalida.', [
+                    'accio' => $accio,
+                    'model' => get_class($element),
+                    'id' => $element->id,
+                ]);
+                $result = false;
+            }
 
             if ($result === false) {
                 Alert::danger("Error en processar {$element->id}.");

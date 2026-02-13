@@ -2,11 +2,13 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Falta;
-use Intranet\Http\Traits\Panel;
+use Intranet\Http\Traits\Core\Panel;
 
 /**
  * Class PanelFaltaController

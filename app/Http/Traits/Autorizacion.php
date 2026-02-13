@@ -3,115 +3,212 @@
 namespace Intranet\Http\Traits;
 
 use Illuminate\Http\Request;
-use Intranet\Services\Document\PdfService;
-use Intranet\Services\General\GestorService;
-use Intranet\Services\General\StateService;
-use Jenssegers\Date\Date;
+use Intranet\Services\General\AutorizacionPrintService;
+use Intranet\Services\General\AutorizacionStateService;
 use Styde\Html\Facades\Alert;
 
 
+/**
+ * Trait de suport per a controllers amb fluxos d'autorització per estats.
+ *
+ * Contracte esperat del controller que usa el trait:
+ * - `protected string $class`: FQCN del model (ex. Intranet\Entities\Foo).
+ * - `protected string $model`: nom curt del model per a config/vistes.
+ *
+ * El trait només coordina redireccions i missatgeria; la lògica de negoci
+ * queda delegada en `AutorizacionStateService` i `AutorizacionPrintService`.
+ */
 trait Autorizacion
 {
+    /**
+     * Estat inicial per defecte quan s'executa `init()`.
+     *
+     * @var int
+     */
+    protected $init = 1;
 
-    protected $init = 1; //estat quan s'inicialitza
-    protected $notFollow = false; // quan pasa alguna cosa du a la pestana final de l'estat
+    /**
+     * Si és `true`, manté la pestanya d'origen en lloc de la final.
+     *
+     * @var bool
+     */
+    protected $notFollow = false;
+
+    /**
+     * Instància memoitzada del servei de transicions.
+     */
+    private ?AutorizacionStateService $autorizacionStateService = null;
+
+    /**
+     * Instància memoitzada del servei d'impressió.
+     */
+    private ?AutorizacionPrintService $autorizacionPrintService = null;
+
+    /**
+     * Resol i memoitza el servei de transicions d'estat per al model actual.
+     */
+    private function getAutorizacionStateService(): AutorizacionStateService
+    {
+        $this->guardAutorizacionContract();
+
+        if (!$this->autorizacionStateService) {
+            $this->autorizacionStateService = app()->makeWith(
+                AutorizacionStateService::class,
+                ['class' => $this->class]
+            );
+        }
+
+        return $this->autorizacionStateService;
+    }
+
+    /**
+     * Resol i memoitza el servei d'impressió en lot.
+     */
+    private function getAutorizacionPrintService(): AutorizacionPrintService
+    {
+        if (!$this->autorizacionPrintService) {
+            $this->autorizacionPrintService = app(AutorizacionPrintService::class);
+        }
+
+        return $this->autorizacionPrintService;
+    }
     
-    // cancela pasa a estat -1
+    /**
+     * Mou un element a estat de cancel·lació (`-1`).
+     *
+     * @param int|string $id Identificador de l'element.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function cancel($id)
     {
-        $stSrv = new StateService($this->class, $id);
-        $stSrv->putEstado(-1);
+        if (!$this->getAutorizacionStateService()->cancel($id)) {
+            return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
+        }
+
         return back();
     }
     
-    //inicializat a init (normalment 1)
+    /**
+     * Inicialitza un element a l'estat definit en `$this->init`.
+     *
+     * @param int|string $id Identificador de l'element.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     protected function init($id)
     {
-        $stSrv = new StateService($this->class, $id);
-        $stSrv->putEstado(1);
+        if (!$this->getAutorizacionStateService()->init($id, (int) $this->init)) {
+            return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
+        }
 
         return back();
     }
     
-    //imprimeix
+    /**
+     * Aplica la transició `_print` a un element.
+     *
+     * @param int|string $id Identificador de l'element.
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
     protected function _print($id)
     {
-        $stSrv = new StateService($this->class, $id);
-        $result = $stSrv->_print();
-
-        if ($result === false) {
+        if (!$this->getAutorizacionStateService()->print($id)) {
             return back()->with('error', 'Error en imprimir el document.');
         }
     }
 
 
+    /**
+     * Resol l'element i opcionalment redirigeix a la pestanya d'estat resultant.
+     *
+     * @param Request $request Request amb `explicacion` opcional.
+     * @param int|string $id Identificador de l'element.
+     * @param bool $redirect Si és `true`, aplica `follow()`.
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
     protected function resolve(Request $request, $id, $redirect = true)
     {
-        $stSrv = new StateService($this->class, $id);
-        $iniSta = $stSrv->getEstado();
-        $finSta = $stSrv->resolve($request->explicacion);
+        $result = $this->getAutorizacionStateService()->resolve($id, $request->explicacion);
 
-        if ($finSta === false) {
+        if ($result === false) {
             return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
         }
 
         if ($redirect) {
-            return $this->follow($iniSta, $finSta);
+            return $this->follow($result['initial'], $result['final']);
         }
     }
 
-    // estat + 1
+    /**
+     * Incrementa en una unitat l'estat actual de l'element.
+     *
+     * @param int|string $id Identificador de l'element.
+     * @param bool $redirect Si és `true`, aplica `follow()`.
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
     protected function accept($id, $redirect = true)
     {
-        $stSrv = new StateService($this->class, $id);
-        $iniSta = $stSrv->getEstado();
-        $finSta = $stSrv->putEstado($iniSta + 1);
+        $result = $this->getAutorizacionStateService()->accept($id);
 
-        if ($finSta === false) {
+        if ($result === false) {
             return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
         }
 
         if ($redirect) {
-            return $this->follow($iniSta, $finSta);
+            return $this->follow($result['initial'], $result['final']);
         }
     }
 
 
-    // estat -1
+    /**
+     * Decrementa en una unitat l'estat actual de l'element.
+     *
+     * @param int|string $id Identificador de l'element.
+     * @param bool $redirect Si és `true`, aplica `follow()`.
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
     protected function resign($id, $redirect = true)
     {
-        $stSrv = new StateService($this->class, $id);
-        $iniSta = $stSrv->getEstado();
-        $finSta = $stSrv->putEstado($iniSta-1);
+        $result = $this->getAutorizacionStateService()->resign($id);
 
-        if ($finSta === false) {
+        if ($result === false) {
             return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
         }
 
         if ($redirect) {
-            return $this->follow($iniSta, $finSta);
+            return $this->follow($result['initial'], $result['final']);
         }
     }
 
-    // refusa
+    /**
+     * Refusa l'element amb explicació opcional.
+     *
+     * @param Request $request Request amb `explicacion` opcional.
+     * @param int|string $id Identificador de l'element.
+     * @param bool $redirect Si és `true`, aplica `follow()`.
+     * @return \Illuminate\Http\RedirectResponse|null
+     */
     protected function refuse(Request $request, $id, $redirect = true)
     {
-        $stSrv = new StateService($this->class, $id);
-        $iniSta = $stSrv->getEstado();
-        $finSta = $stSrv->refuse($request->explicacion);
+        $result = $this->getAutorizacionStateService()->refuse($id, $request->explicacion);
 
-        if ($finSta === false) {
+        if ($result === false) {
             return back()->with('error', 'No s\'ha pogut actualitzar l\'estat.');
         }
 
         if ($redirect) {
-            return $this->follow($iniSta, $finSta);
+            return $this->follow($result['initial'], $result['final']);
         }
     }
 
 
     
-    // rediriguix o no a un altra pestana
+    /**
+     * Tria la pestanya de retorn segons `notFollow`.
+     *
+     * @param int|string|null $inicial Pestanya inicial.
+     * @param int|string|null $final Pestanya final.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     private function follow($inicial, $final)
     {
         return $this->notFollow ? back()->with('pestana', $inicial) : back()->with('pestana', $final);
@@ -119,47 +216,57 @@ trait Autorizacion
 
 
     /**
-     * @param string $modelo
-     * @param null $inicial
-     * @param null $final
-     * @param string $orientacion
-     * @param bool $link
-
+     * Genera un PDF en lot per als elements en estat inicial i aplica transició.
+     *
+     * @param string $modelo Vista de PDF sense prefix (`pdf.`). Si va buit, usa
+     *                       `strtolower($this->model) . 's'`.
+     * @param int|null $inicial Estat de filtratge inicial.
+     * @param string|null $final Acció final de `StateService` o estat numèric.
+     * @param string $orientacion Orientació del PDF (`portrait|landscape`).
+     * @param bool $link Si és `true`, enllaça elements al document generat.
+     * @return mixed
      */
-
     public function imprimir($modelo = '', $inicial = null, $final = null, $orientacion='portrait', $link=true)
     {
-        $modelo = $modelo ?? strtolower($this->model) . 's';
-        $final = $final ?? '_print';
-        $inicial =  $inicial ?? config('modelos.' . getClass($this->class) . '.print') - 1;
+        $this->guardAutorizacionContract(true);
 
-        $todos = $this->class::where('estado', '=', $inicial)->get();
+        $response = $this->getAutorizacionPrintService()->imprimir(
+            $this->class,
+            $this->model,
+            $modelo,
+            $inicial,
+            $final,
+            $orientacion,
+            $link
+        );
 
-        if ($todos->count()) {
-            // Generem el PDF
-            $pdf = app(PdfService::class)->hazPdf("pdf.$modelo", $todos, null, $orientacion);
-
-            // Nom del fitxer
-            $nom = $this->model . new Date() . '.pdf';
-            $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
-            $tags = config("modelos.$this->model.documento");
-
-            // Guardem el document al gestor documental
-            $doc = GestorService::saveDocument($nomComplet, $tags);
-
-            // Modifiquem l'estat de tots els elements
-            StateService::makeAll($todos, $final);
-
-            // Enllacem els elements amb el document si cal
-            if ($link) {
-                StateService::makeLink($todos, $doc->id);
-            }
-
-            return $pdf->save(storage_path('/app/' . $nomComplet))->download($nom);
+        if ($response) {
+            return $response;
         }
 
         Alert::info(trans('messages.generic.empty'));
         return back();
+    }
+
+    /**
+     * Valida que el controller definisca el contracte mínim del trait.
+     *
+     * @param bool $requireModel Si és `true`, també exigeix `$model`.
+     * @return void
+     */
+    private function guardAutorizacionContract(bool $requireModel = false): void
+    {
+        if (!isset($this->class) || !is_string($this->class) || $this->class === '') {
+            abort(500, "L'atribut 'class' no està definit en la classe que usa el trait Autorizacion.");
+        }
+
+        if (!class_exists($this->class)) {
+            abort(500, "L'atribut 'class' no és una classe vàlida en el trait Autorizacion.");
+        }
+
+        if ($requireModel && (!isset($this->model) || !is_string($this->model) || $this->model === '')) {
+            abort(500, "L'atribut 'model' no està definit en la classe que usa el trait Autorizacion.");
+        }
     }
 
 

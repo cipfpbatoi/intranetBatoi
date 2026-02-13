@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\App;
 
 class Departamento extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     public $primaryKey = 'id';
     public $timestamps = false;

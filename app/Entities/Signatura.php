@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Signatura extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
+
+    public $mail = null;
+    public $contact = null;
 
     protected $table = 'signatures';
     protected $fillable = [

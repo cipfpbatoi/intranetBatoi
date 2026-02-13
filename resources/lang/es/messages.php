@@ -62,8 +62,6 @@ return array(
         'empty' => 'No hay registros',
         'change' => 'Acceder como ese Usuario',
         'backChange' => 'Volver a mi usuario',
-        'completa' => 'Ver todos los datos',
-        'simplifica' => 'Ver los últimos datos',
         'falta' => 'Ausencias',
         'desde' => 'Desde',
         'hasta' => 'Hasta',

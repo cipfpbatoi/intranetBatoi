@@ -2,26 +2,19 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use DB;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Asistencia;
-use Intranet\Entities\Expediente;
 use Intranet\Entities\Falta;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Programacion;
-use Intranet\Entities\Resultado;
-use Intranet\Entities\Reunion;
 use Intranet\Http\Traits\Autorizacion;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\Notifications\AdviseTeacher;
 use Intranet\Services\Notifications\ConfirmAndSend;
 use Intranet\Services\General\StateService;
+use Intranet\Services\School\TeacherSubstitutionService;
 use Jenssegers\Date\Date;
-use function PHPUnit\Framework\isEmpty;
 
 
 /**
@@ -70,15 +63,18 @@ class FaltaController extends IntranetController
     public function store(Request $request)
     {
 
-        $request->baja = isset($request->baja)?$request->baja:0;
+        $request->merge(['baja' => $request->boolean('baja') ? 1 : 0]);
+
         if ($request->baja) {
             DB::transaction(function () use ($request) {
-                $request->hora_ini = null;
-                $request->hora_fin = null;
-                $request->hasta = '';
-                $request->dia_completo = 1;
-                $request->estado = 5;
-                self::tramitaBajaProfesor($request->idProfesor, $request->desde);
+                $request->merge([
+                    'hora_ini' => null,
+                    'hora_fin' => null,
+                    'hasta' => '',
+                    'dia_completo' => 1,
+                    'estado' => 5,
+                ]);
+                app(TeacherSubstitutionService::class)->markLeave($request->idProfesor, $request->desde);
                 parent::realStore($request);
             });
         } else {
@@ -139,7 +135,7 @@ class FaltaController extends IntranetController
     {
         $elemento = Falta::findOrFail($id);
         if (esMayor($elemento->desde, Hoy('Y/m/d'))) {
-            AdviseTeacher::sendEmailTutor($elemento);
+            app(AdviseTeacher::class)->sendTutorEmail($elemento);
         }
         $stSrv = new StateService($elemento);
         if ($elemento->fichero) {
@@ -163,79 +159,9 @@ class FaltaController extends IntranetController
             $elemento->hasta = new Date();
             $elemento->baja = 0;
             $elemento->save();
-            // quita la  baja del profesor
-            self::tramitaAltaProfesor($elemento->idProfesor);
+            // LLeva la baixa del professor.
+            app(TeacherSubstitutionService::class)->reactivate($elemento->idProfesor);
         });
         return back()->with('pestana', $elemento->estado);
-    }
-
-    /**
-     * @param $idProfesor
-     * @param $fecha
-     */
-    private static function tramitaBajaProfesor($idProfesor, $fecha)
-    {
-        $profe = Profesor::find($idProfesor);
-        $profe->fecha_baja = new Date($fecha);
-        $profe->save();
-    }
-
-    /**
-     * @param $idProfesor
-     */
-    private static function tramitaAltaProfesor($idProfesor)
-    {
-        DB::transaction(function () use ($idProfesor) {
-            $original = Profesor::find($idProfesor);
-            $original->fecha_baja = null;
-            $profesor = $original;
-            while ($profesor->Sustituye) {
-                self::changeWithSubstitute($original, $profesor->Sustituye);
-                $profesor = $profesor->Sustituye;
-            }
-            $original->save();
-        });
-    }
-
-    /**
-     * @param $profesorAlta
-     * @param $sustituto
-     */
-    private static function changeWithSubstitute($profesorAlta, $sustituto)
-    {
-            //canvi d'horari
-            if (Horario::profesor($profesorAlta->dni)->count()==0) {
-                Horario::where('idProfesor', $sustituto->dni)->update(['idProfesor'=> $profesorAlta->dni]);
-            } else {
-                Horario::where('idProfesor', $sustituto->dni)->delete();
-            }
-
-            // asistència a reunions
-            foreach (Asistencia::where('idProfesor', $sustituto->dni)->get() as $asistencia) {
-                self::markAssistenceMeetings($profesorAlta->dni, $asistencia);
-            }
-            // tota la feina del substitut pasa al subtituit
-            Reunion::where('idProfesor', $sustituto->dni)->update(['idProfesor'=>$profesorAlta->dni]);
-            Grupo::where('tutor', $sustituto->dni)->update(['tutor'=>$profesorAlta->dni]);
-            Programacion::where('profesor', $sustituto->dni)->update(['profesor' => $profesorAlta->dni]);
-            Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
-            Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
-            AlumnoFct::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
-
-            $sustituto->sustituye_a = ' ';
-            $sustituto->activo = 0;
-            $sustituto->save();
-
-    }
-
-    /**
-     * @param $dniProfesor
-     * @param $meeting
-     */
-    private static function markAssistenceMeetings($dniProfesor, $meeting)
-    {
-        if (Asistencia::where('idProfesor', $dniProfesor)->where('idReunion', $meeting->idReunion)->count() == 0) {
-            Reunion::find($meeting->idReunion)->profesores()->syncWithoutDetaching([$dniProfesor=>['asiste'=>0]]);
-        }
     }
 }

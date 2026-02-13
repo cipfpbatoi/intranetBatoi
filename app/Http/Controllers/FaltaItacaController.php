@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Documento;
@@ -9,7 +11,7 @@ use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Hora;
 use Intranet\Entities\Horario;
 use Intranet\Http\Traits\Autorizacion;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\General\StateService;
 use Jenssegers\Date\Date;

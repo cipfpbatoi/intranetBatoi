@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 
 use DB;
 use Illuminate\Support\Facades\Session;
@@ -14,7 +16,7 @@ use Intranet\Entities\Documento;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Exceptions\IntranetException;
-use Intranet\Http\Traits\DropZone;
+use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\School\SecretariaService;
 use Styde\Html\Facades\Alert;

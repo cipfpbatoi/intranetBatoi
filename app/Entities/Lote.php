@@ -14,7 +14,7 @@ class Lote extends Model
     public $timestamps = false;
     protected $fillable = ['registre',  'proveedor','factura','procedencia','fechaAlta','departamento_id' ];
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $inputTypes = [
         'registre' => ['type' => 'text'],

@@ -2,12 +2,14 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Solicitud;
 use Intranet\Http\Requests\SolicitudRequest;
-use Intranet\Http\Traits\DropZone;
+use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Notifications\ConfirmAndSend;
 
 

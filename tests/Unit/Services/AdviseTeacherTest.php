@@ -131,7 +131,7 @@ class AdviseTeacherTest extends TestCase
         $elemento->idProfesor = '3';
         $elemento->dia_completo = true;
 
-        AdviseTeacher::exec($elemento);
+        app(AdviseTeacher::class)->advise($elemento);
 
         Notification::assertNothingSent();
     }
@@ -170,7 +170,7 @@ class AdviseTeacherTest extends TestCase
             'dia_completo' => true,
         ];
 
-        AdviseTeacher::exec($elemento);
+        app(AdviseTeacher::class)->advise($elemento);
 
         $receptor = Profesor::find('2');
         Notification::assertSentTo($receptor, mensajePanel::class);
@@ -199,7 +199,7 @@ class AdviseTeacherTest extends TestCase
             ],
         ]);
 
-        $resultat = AdviseTeacher::gruposAfectados($elemento, '3');
+        $resultat = app(AdviseTeacher::class)->affectedGroups($elemento, '3');
         $this->assertInstanceOf(Collection::class, $resultat);
     }
 
@@ -228,7 +228,7 @@ class AdviseTeacherTest extends TestCase
             ],
         ]);
 
-        AdviseTeacher::sendEmailTutor($elemento);
+        app(AdviseTeacher::class)->sendTutorEmail($elemento);
 
         Queue::assertPushed(SendEmail::class);
     }
@@ -268,7 +268,7 @@ class AdviseTeacherTest extends TestCase
         ];
         $emisor = (object) ['shortName' => 'Profe Prova'];
 
-        AdviseTeacher::exec($elemento, null, null, $emisor);
+        app(AdviseTeacher::class)->advise($elemento, null, null, $emisor);
 
         $receptor = Profesor::find('2');
         Notification::assertSentTo(
@@ -305,7 +305,7 @@ class AdviseTeacherTest extends TestCase
             ],
         ]);
 
-        AdviseTeacher::sendEmailTutor($elemento);
+        app(AdviseTeacher::class)->sendTutorEmail($elemento);
 
         Queue::assertPushed(SendEmail::class, function ($job) {
             $correo = new \ReflectionProperty($job, 'correo');
@@ -349,7 +349,7 @@ class AdviseTeacherTest extends TestCase
             ],
         ]);
 
-        $resultat = AdviseTeacher::horariAltreGrup($elemento, '3');
+        $resultat = app(AdviseTeacher::class)->horarioAltreGrup($elemento, '3');
 
         $this->assertSame(['2'], $resultat->pluck('idGrupo')->all());
     }

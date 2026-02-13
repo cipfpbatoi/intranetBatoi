@@ -42,11 +42,20 @@
                         @endif
                     </td>
                     <td>
-                        <a class="btn btn-default" href="/profesor/{{ $proposta['dni'] }}/horario-cambiar?proposta={{ $proposta['id'] }}">Veure</a>
+                        <a class="btn btn-default" href="/profesor/{{ $proposta['dni'] }}/horario-cambiar?proposta={{ $proposta['id'] }}" title="Veure" aria-label="Veure">
+                            <i class="fa fa-eye" aria-hidden="true"></i>
+                        </a>
                         @if (($proposta['estado'] ?? 'Pendiente') === 'Pendiente')
-                            <a class="btn btn-primary" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/aceptar" onclick="return confirm('Acceptar aquesta proposta?')">Acceptar</a>
-                            <a class="btn btn-danger" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/rebutjar" onclick="return rebutjarProposta('{{ $proposta['dni'] }}','{{ $proposta['id'] }}')">Rebutjar</a>
+                            <a class="btn btn-primary" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/aceptar" onclick="return confirm('Acceptar aquesta proposta?')" title="Acceptar" aria-label="Acceptar">
+                                <i class="fa fa-check" aria-hidden="true"></i>
+                            </a>
+                            <a class="btn btn-danger" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/rebutjar" onclick="return rebutjarProposta('{{ $proposta['dni'] }}','{{ $proposta['id'] }}')" title="Rebutjar" aria-label="Rebutjar">
+                                <i class="fa fa-times" aria-hidden="true"></i>
+                            </a>
                         @endif
+                        <a class="btn btn-danger" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/esborrar" onclick="return confirm('Esborrar aquesta proposta?')" title="Esborrar" aria-label="Esborrar">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </a>
                     </td>
                 </tr>
             @empty

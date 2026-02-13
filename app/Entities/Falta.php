@@ -11,7 +11,7 @@ use Intranet\Events\PreventAction;
 class Falta extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     public $primaryKey = 'id';
     public $descriptionField = 'desde';

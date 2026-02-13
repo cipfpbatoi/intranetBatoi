@@ -77,13 +77,13 @@ Route::get('/{grupo}/rejectActa', ['as' => 'fct.rejectActa', 'uses' => 'PanelAct
 Route::get('/{grupo}/fol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificados']);
 Route::get('/{alumno}/aFol', ['as' => 'grupo.fol', 'uses' => 'GrupoController@certificado']);
 
-Route::get('simplifica', ['as' => 'direccion.simplifica', 'uses' => 'AdministracionController@simplifica']);
 
 Route::get('/horarios/cambiar', ['as' => 'horarios.cambiarIndex', 'uses' => 'HorarioController@changeIndex']);
 Route::post('/horarios/cambiar', ['as' => 'horarios.cambiar', 'uses' => 'HorarioController@changeTableAll']);
 Route::get('/horario/propuestas', ['as' => 'horario.propuestas', 'uses' => 'HorarioController@propuestas']);
 Route::get('/horario/propuesta/{dni}/{id}/aceptar', ['as' => 'horario.propuesta.aceptar', 'uses' => 'HorarioController@aceptarPropuesta']);
 Route::get('/horario/propuesta/{dni}/{id}/rebutjar', ['as' => 'horario.propuesta.rebutjar', 'uses' => 'HorarioController@rebutjarProposta']);
+Route::get('/horario/propuesta/{dni}/{id}/esborrar', ['as' => 'horario.propuesta.esborrar', 'uses' => 'HorarioController@esborrarProposta']);
 
 Route::get('/documento', ['as'=> 'documentosP.index','uses' => 'PanelDocumentoController@index']);
 

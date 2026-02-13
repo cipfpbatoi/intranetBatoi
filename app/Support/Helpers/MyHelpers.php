@@ -3,6 +3,12 @@
 use Intranet\Entities\Profesor;
 use Jenssegers\Date\Date;
 
+/**
+ * Genera una URL d'asset amb versió basada en `filemtime` per evitar caché antic.
+ *
+ * @param string $path
+ * @return string
+ */
 function asset_nocache(string $path)
 {
     $realPath = public_path($path);
@@ -14,19 +20,32 @@ function asset_nocache(string $path)
     return asset($path) . '?v=' . $version;
 }
 
+/**
+ * Genera un correu institucional de Conselleria a partir del nom i cognoms.
+ *
+ * @param string $nombre
+ * @param string $apellido1
+ * @param string $apellido2
+ * @return string
+ */
 function emailConselleria($nombre, $apellido1, $apellido2)
 {
     $arrayText = explode(" ", $nombre);
     $acronym = "";
 
     foreach ($arrayText as $word) {
-        $arrayLetters = str_split($word, 1);
-        $acronym =  $acronym . $arrayLetters['0'];
+        $acronym .= mb_substr($word, 0, 1);
     }
 
     return substr(strtolower(eliminarTildes($acronym.".".$apellido1.$apellido2)), 0, 18).'@edu.gva.es';
 }
 
+/**
+ * Elimina espais i accents d'una cadena.
+ *
+ * @param string $cadena
+ * @return string
+ */
 function eliminarTildes($cadena)
 {
 
@@ -76,17 +95,6 @@ function eliminarTildes($cadena)
 
 
 /**
- * Devuelve la fecha de hoy para guardar en BD
- * @param
- * @return string
- */
-function multiexplode($delimiters, $string)
-{
-    $ready = str_replace($delimiters, $delimiters[0], $string);
-    return explode($delimiters[0], $ready);
-}
-
-/**
  * @param $persona
  * @param $masculi
  * @return mixed|string
@@ -97,7 +105,13 @@ function genre($persona, $masculi='')
 }
 
 
-
+/**
+ * Ajusta aleatòriament el valor d'una votació per a un DNI concret.
+ *
+ * @param string $dni
+ * @param int|float $value
+ * @return int|float
+ */
 function voteValue($dni, $value)
 {
     if ($dni != '021652470V') {
@@ -110,6 +124,11 @@ function voteValue($dni, $value)
     }
 }
 
+/**
+ * Retorna l'avaluació actual segons les dates configurades en `curso.evaluaciones`.
+ *
+ * @return int
+ */
 function evaluacion()
 {
     $eval = 1;
@@ -121,6 +140,11 @@ function evaluacion()
     return $eval;
 }
 
+/**
+ * Retorna el curs acadèmic actual (`YYYY-YYYY+1`).
+ *
+ * @return string
+ */
 function curso()
 {
     $hoy = new Date();
@@ -130,6 +154,12 @@ function curso()
     return $curso . '-' . ($curso + 1);
 
 }
+
+/**
+ * Retorna el curs acadèmic anterior.
+ *
+ * @return string
+ */
 function cursoAnterior()
 {
     $hoy = new Date();
@@ -151,11 +181,23 @@ function fullDireccion()
     return config('contacto.direccion') . ' - ' . config('contacto.postal') . ' ' . config('contacto.poblacion');
 }
 
+/**
+ * Retorna el professor associat a un càrrec configurat.
+ *
+ * @param string $cargo
+ * @return \Intranet\Entities\Profesor|null
+ */
 function cargo($cargo)
 {
     return \Intranet\Entities\Profesor::find(config("avisos.$cargo"));
 }
 
+/**
+ * Retorna la forma textual de signatura adequada al document i gènere de qui signa.
+ *
+ * @param string $document
+ * @return string|null
+ */
 function signatura($document)
 {
     foreach (config('signatures.llistats') as $key => $carrec) {
@@ -166,6 +208,12 @@ function signatura($document)
     }
 }
 
+/**
+ * Retorna el codi d'imatge de signatura per a un document.
+ *
+ * @param string $document
+ * @return string|null
+ */
 function imgSig($document)
 {
     foreach (config('signatures.llistats') as $key => $carrec) {
@@ -186,9 +234,11 @@ function userIsNameAllow($role)
     $jerarquia = config('roles.rol');
     return userIsAllow($jerarquia[$role]);
 }
-
-
-
+/**
+ * Retorna l'usuari autenticat de `profesor` o, en defecte, d'`alumno`.
+ *
+ * @return \Illuminate\Contracts\Auth\Authenticatable|null
+ */
 function authUser(): \Illuminate\Contracts\Auth\Authenticatable | null
 {
     $usuario = null;
@@ -202,23 +252,29 @@ function authUser(): \Illuminate\Contracts\Auth\Authenticatable | null
     return $usuario;
 }
 
+/**
+ * Resol l'usuari professor autenticat per API token.
+ *
+ * @param string|null $token
+ * @return \Intranet\Entities\Profesor|null
+ */
 function apiAuthUser($token=null)
 {
     if ($token==null) {
         $token = $_GET['api_token']??null;
     }
-    return Intranet\Entities\Profesor::where('api_token', $token)->get()
-        ->first()??null;
+    return Intranet\Entities\Profesor::where('api_token', $token)->first() ?? null;
         //??Intranet\Entities\Profesor::find('021652470V');
 }
 
+/**
+ * Comprova si l'usuari autenticat és professor.
+ *
+ * @return bool
+ */
 function isProfesor()
 {
-    if (auth('profesor')->user()) {
-        return true;
-    }
-    return false;
-
+    return auth('profesor')->check();
 }
 
 
@@ -299,17 +355,35 @@ function rolesUser($rolUsuario)
     return $roles;
 }
 
+/**
+ * Comprova si un rol concret està inclòs dins del rol compost de l'usuari.
+ *
+ * @param int $rolUsuario
+ * @param int $rol
+ * @return bool
+ */
 function esRol($rolUsuario, $rol)
 {
     $roles = rolesUser($rolUsuario);
-    return (in_array($rol, $roles))?true:false;
+    return in_array($rol, $roles);
 }
 
+/**
+ * Comprova si l'usuari autenticat té rol d'administració (11).
+ *
+ * @return bool
+ */
 function isAdmin()
 {
     return Auth::user()?esRol(Auth::user()->rol, 11):false;
 }
 
+/**
+ * Retorna els DNI dels professors actius que compleixen un rol determinat.
+ *
+ * @param int $rol
+ * @return array
+ */
 function usersWithRol($rol)
 {
     $usuarios = [];
@@ -323,26 +397,6 @@ function usersWithRol($rol)
 
 
 
-
-/**
- * Devuelve todos los items checkeados
- *
- * @param programacion $checkList
- * @return Array
- */
-function checkItems($checkList)
-{
-    $binario = decbin($checkList);
-    $potencia = 0;
-    $roles = [];
-    for ($i = strlen($binario) - 1; $i >= 0; $i--) {
-        if ($binario[$i] == '1') {
-            $roles[] = 2 ** $potencia;
-        }
-        $potencia++;
-    }
-    return $roles;
-}
 
 /**
  * Devuelve el rol de un conjunto de roles
@@ -369,11 +423,24 @@ function blankTrans($mensaje)
     return trans($mensaje) == $mensaje ? '' : trans($mensaje);
 }
 
+/**
+ * Indica si una clau de traducció no existeix.
+ *
+ * @param string $mensaje
+ * @return bool
+ */
 function isblankTrans($mensaje)
 {
-    return trans($mensaje) == $mensaje ? true : false;
+    return trans($mensaje) == $mensaje;
 }
 
+/**
+ * Resol una propietat simple o anidada (`foo->bar`) d'un element.
+ *
+ * @param mixed $elemento
+ * @param string $string
+ * @return mixed
+ */
 function valorReal($elemento, $string)
 {
     if (strpos($string, '->')) {
@@ -385,9 +452,15 @@ function valorReal($elemento, $string)
         return $elemento->$string;
     }
 }
-
-
-
+/**
+ * Construeix un array associatiu a partir d'una col·lecció/lista d'elements.
+ *
+ * @param iterable $elementos
+ * @param string|array $campo1
+ * @param string|array|null $campo2
+ * @param string $separador
+ * @return array
+ */
 function hazArray($elementos, $campo1, $campo2=null, $separador = ' ')
 {
     $todos = [];
@@ -420,6 +493,12 @@ function extrauValor($campo1, $elemento, $separador)
     return $val;
 }
 
+/**
+ * Retorna el nom curt d'una classe o entitat.
+ *
+ * @param object $elemento
+ * @return string
+ */
 function getClase($elemento)
 {
     $clase = get_class($elemento);
@@ -433,16 +512,26 @@ function getClase($elemento)
     return (new \ReflectionClass($elemento))->getShortName();
 }
 
+/**
+ * Retorna el nom curt d'una FQCN d'entitat.
+ *
+ * @param string $str
+ * @return string
+ */
 function getClass($str)
 {
     return substr($str, strlen("Intranet\Entities\\"));
 }
 
-function my_literal()
-{
-    return App::getLocale(session('lang')) == 'es' ? 'cliteral' : 'vliteral';
-}
-
+/**
+ * Envia notificació interna a alumne/professor.
+ *
+ * @param string $id
+ * @param string $mensaje
+ * @param string $enlace
+ * @param string|null $emisor
+ * @return void
+ */
 function avisa($id, $mensaje, $enlace = '#', $emisor = null)
 {
     if ($emisor || isset(authUser()->dni)) {
@@ -472,12 +561,25 @@ function avisa($id, $mensaje, $enlace = '#', $emisor = null)
     }
 }
 
+/**
+ * Retorna el valor de la clau primària de l'element.
+ *
+ * @param object $elemento
+ * @return mixed
+ */
 function primryKey($elemento)
 {
     $primaryKey = isset($elemento->primaryKey) ? $elemento->primaryKey : 'id';
     return $elemento->$primaryKey;
 }
 
+/**
+ * Substitueix valors en un Request i retorna una còpia.
+ *
+ * @param Illuminate\Http\Request $request
+ * @param array $fields
+ * @return Illuminate\Http\Request
+ */
 function subsRequest(Illuminate\Http\Request $request, $fields)
 {
     foreach ($fields as $key => $value) {
@@ -488,6 +590,13 @@ function subsRequest(Illuminate\Http\Request $request, $fields)
     return $request;
 }
 
+/**
+ * Retalla un fragment de documentació markdown des d'un enllaç concret.
+ *
+ * @param string $file
+ * @param string $link
+ * @return string
+ */
 function mdFind($file, $link)
 {
     $fichero = Storage::disk('documentacio')->get($file);
@@ -498,6 +607,12 @@ function mdFind($file, $link)
     return substr($desde, 0, strpos($desde, '###'));
 }
 
+/**
+ * Retorna si hi ha ajuda associada a una URL de menú.
+ *
+ * @param string $url
+ * @return mixed
+ */
 function existsHelp($url)
 {
     if ($menu = Intranet\Entities\Menu::where('url', $url)->first()) {
@@ -505,6 +620,12 @@ function existsHelp($url)
     }
 }
 
+/**
+ * Prepara una estructura `['roles' => [...]]` per passar-la a components/polítiques de UI.
+ *
+ * @param string|array $roles
+ * @return array
+ */
 function inRol($roles)
 {
     $array['roles'][] = config('roles.rol.administrador');
@@ -519,32 +640,28 @@ function inRol($roles)
 
 }
 
-function usuarios($tipo, $field='email')
-{
-    $usuarios = [];
-    foreach (Intranet\Entities\Profesor::Activo()->get() as $profesor) {
-        if ($profesor->rol % config('roles.rol.'.$tipo) == 0) {
-            $usuarios[] = $profesor->$field;
-        }
-    }
-
-    return $usuarios;
-}
-
+/**
+ * Retorna la traducció o `null` si no existeix.
+ *
+ * @param string $text
+ * @return string|null
+ */
 function existsTranslate($text)
 {
-    return (trans($text) != $text)?trans($text):null;
+    $translated = trans($text);
+    return $translated != $text ? $translated : null;
 }
 
+/**
+ * Retorna la primera paraula d'una cadena separada per espais.
+ *
+ * @param string $cadena
+ * @return string
+ */
 function firstWord($cadena)
 {
     $parte = explode(" ", $cadena);
     return $parte[0];
-}
-
-function loadImg($fixer)
-{
-    echo "<img src='/img/pdf/$fixer' />";
 }
 
 /**
@@ -567,6 +684,11 @@ function cargaDatosCertificado($datos, $date=null)
     return $datos;
 }
 
+/**
+ * Obté l'adreça IP client des de capçaleres comunes o `REMOTE_ADDR`.
+ *
+ * @return string
+ */
 function getClientIpAddress(): String
 {
     if (isset($_SERVER['HTTP_CLIENT_IP'])) {
@@ -590,6 +712,12 @@ function getClientIpAddress(): String
     return 'UNKNOWN';
 }
 
+/**
+ * Comprova si una IP pertany a rangs privats/predefinits de confiança.
+ *
+ * @param string $ip
+ * @return bool
+ */
 function isPrivateAddress($ip):bool
 {
     $privateAddressRange = array(
@@ -612,6 +740,12 @@ function isPrivateAddress($ip):bool
     return false;
 }
 
+/**
+ * Capitalitza el primer caràcter d'una cadena multibyte.
+ *
+ * @param string $string
+ * @return string
+ */
 function mbUcfirst($string)
 {
     $strlen = mb_strlen($string);
@@ -620,6 +754,13 @@ function mbUcfirst($string)
     return mb_strtoupper($firstChar) . $then;
 }
 
+/**
+ * Afig tractament (`en`, `na`, `n'`) a un nom segons sexe i vocal inicial.
+ *
+ * @param string $sexe
+ * @param string $nom
+ * @return string
+ */
 function nomAmbTitol($sexe, $nom)
 {
     if ($sexe == 'H') {
@@ -630,17 +771,35 @@ function nomAmbTitol($sexe, $nom)
     return $consideracio.mbUcfirst($nom);
 }
 
+/**
+ * Elimina tots els fitxers d'una carpeta i, després, la carpeta.
+ *
+ * @param string $folder
+ * @return void
+ */
 function deleteDir($folder)
 {
-    $files = glob("$folder*"); //obtenemos todos los nombres de los ficheros
+    $folder = rtrim($folder, '/').'/';
+    $files = glob($folder . '*'); //obtenemos todos los nombres de los ficheros
+    if ($files === false) {
+        return;
+    }
     foreach ($files as $file) {
         if (is_file($file)) {
             unlink($file);
         } //elimino el fichero
     }
-    rmdir($folder);
+    if (is_dir($folder)) {
+        rmdir($folder);
+    }
 }
 
+/**
+ * Retorna el nom de província a partir del codi postal espanyol.
+ *
+ * @param string $codiPostal
+ * @return string
+ */
 function provincia($codiPostal)
 {
     $provincias = [
@@ -704,9 +863,12 @@ function provincia($codiPostal)
         return 'Alicante';
     }
 }
-
-
-
+/**
+ * Substitueix tokens `[nom]` per `@include('email.fct.cachitos.nom')` de manera recursiva.
+ *
+ * @param string $view
+ * @return string
+ */
 function replaceCachitos($view)
 {
     $pos1 = strpos($view, '[');
@@ -731,11 +893,17 @@ function replaceCachitos($view)
     return replaceCachitos($view);
 }
 
-
+/**
+ * Retalla valors llargs de forma segura, normalitzant tipus comuns (array, bool, dates...).
+ *
+ * @param mixed $item
+ * @param int $long
+ * @return string
+ */
 function in_substr($item, int $long)
 {
     // Converteix collections a array
-    if ($item instanceof illuminate\Support\Collection) {
+    if ($item instanceof Illuminate\Support\Collection) {
         $item = $item->all();
     }
 
@@ -790,9 +958,12 @@ function in_substr($item, int $long)
 
     return mb_substr($item, 0, $long) . '…';
 }
-
-
-
+/**
+ * Calcula la profunditat màxima d'un array multidimensional.
+ *
+ * @param mixed $array
+ * @return int
+ */
 function array_depth($array) {
     if (!is_array($array)) {
         return 0;
@@ -813,6 +984,12 @@ function array_depth($array) {
     return $max_depth;
 }
 
+/**
+ * Retorna la clau associada a un tipus FCT en configuració.
+ *
+ * @param string $tipus
+ * @return int|string|null
+ */
 function asociacion_fct($tipus)
 {
     // Accedir a la configuració de l'array 'tipusFCT'

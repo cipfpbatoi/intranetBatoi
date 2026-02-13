@@ -9,18 +9,39 @@ use Illuminate\Support\Facades\Schema;
 
 class NotificationService
 {
+    /** @var callable */
+    private $findAlumno;
+    /** @var callable */
+    private $findProfesor;
+    /** @var callable */
+    private $hasTable;
+    /** @var callable */
+    private $fechaProvider;
+
+    public function __construct(
+        ?callable $findAlumno = null,
+        ?callable $findProfesor = null,
+        ?callable $hasTable = null,
+        ?callable $fechaProvider = null
+    ) {
+        $this->findAlumno = $findAlumno ?? static fn ($id) => Alumno::find($id);
+        $this->findProfesor = $findProfesor ?? static fn ($id) => Profesor::find($id);
+        $this->hasTable = $hasTable ?? static fn (string $table) => Schema::hasTable($table);
+        $this->fechaProvider = $fechaProvider ?? static fn () => fechaString();
+    }
+
     private function receptor($id)
     {
         if (strlen($id) == 8) {
-            if (!Schema::hasTable('alumnos')) {
+            if (!(($this->hasTable)('alumnos'))) {
                 return null;
             }
-            return Alumno::find($id);
+            return ($this->findAlumno)($id);
         }
-        if (!Schema::hasTable('profesores')) {
+        if (!(($this->hasTable)('profesores'))) {
             return null;
         }
-        return Profesor::find($id);
+        return ($this->findProfesor)($id);
     }
 
     private function emisor($emisor)
@@ -41,7 +62,7 @@ class NotificationService
     {
         $emisor = $this->emisor($emisor);
         $receptor = $this->receptor($id);
-        $fecha = fechaString();
+        $fecha = ($this->fechaProvider)();
         if ($emisor && $receptor) {
             $receptor->notify(new mensajePanel(
                 ['motiu' => $mensaje,
@@ -49,7 +70,7 @@ class NotificationService
                     'data' => $fecha,
                     'enlace' => $enlace]));
         } else {
-            if (Schema::hasTable('profesores') && $user = Profesor::find($emisor)) {
+            if ((($this->hasTable)('profesores')) && $user = ($this->findProfesor)($emisor)) {
                 $user->notify(new mensajePanel(
                     [
                         'motiu' => "No trobe usuari $id",

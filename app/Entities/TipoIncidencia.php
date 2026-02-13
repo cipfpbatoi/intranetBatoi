@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\App;
 
 class TipoIncidencia extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'tipoincidencias';
     public $incrementing = false;

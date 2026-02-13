@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class Cotxe extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $fillable = ['matricula', 'marca'    ];
 

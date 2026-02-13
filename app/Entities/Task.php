@@ -10,7 +10,7 @@ use Styde\Html\Facades\Alert;
 
 class Task extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
     protected $fillable = [
         'descripcion',
         'vencimiento',

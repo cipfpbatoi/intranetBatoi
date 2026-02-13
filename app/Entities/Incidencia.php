@@ -35,7 +35,7 @@ class Incidencia extends Model
     ];
     protected $descriptionField = 'descripcion';
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $inputTypes = [
         'fecha' => ['type' => 'date'],

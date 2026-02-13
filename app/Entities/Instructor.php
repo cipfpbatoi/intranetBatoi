@@ -9,7 +9,7 @@ use Intranet\Entities\Centro;
 class Instructor extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'instructores';
     protected $primaryKey = 'dni';

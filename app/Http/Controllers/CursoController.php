@@ -2,12 +2,14 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use DB;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Entities\Curso;
 use Intranet\Http\Requests\CursoRequest;
-use Intranet\Http\Traits\Imprimir;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Jobs\SendEmail;
 use Intranet\Services\General\GestorService;
 use Jenssegers\Date\Date;

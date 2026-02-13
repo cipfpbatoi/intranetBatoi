@@ -9,10 +9,6 @@ use Tests\TestCase;
 
 class NotificationServiceTest extends TestCase
 {
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
     public function testSendNotifiesReceptorWhenFound()
     {
         $receptor = Mockery::mock();
@@ -20,37 +16,28 @@ class NotificationServiceTest extends TestCase
             ->once()
             ->with(Mockery::type(mensajePanel::class));
 
-        $alumno = Mockery::mock('alias:Intranet\\Entities\\Alumno');
-        $alumno->shouldReceive('find')
-            ->with('12345678')
-            ->andReturn($receptor);
-
-        $service = new NotificationService();
+        $service = new NotificationService(
+            findAlumno: static fn ($id) => $id === '12345678' ? $receptor : null,
+            findProfesor: static fn () => null,
+            hasTable: static fn () => true,
+            fechaProvider: static fn () => '10 de febrer de 2026'
+        );
         $service->send('12345678', 'Hola', '#', 'Emisor');
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
     public function testSendNotifiesEmisorWhenReceptorMissing()
     {
-        $alumno = Mockery::mock('alias:Intranet\\Entities\\Alumno');
-        $alumno->shouldReceive('find')
-            ->with('12345678')
-            ->andReturn(null);
-
         $emisorUser = Mockery::mock();
         $emisorUser->shouldReceive('notify')
             ->once()
             ->with(Mockery::type(mensajePanel::class));
 
-        $profesor = Mockery::mock('alias:Intranet\\Entities\\Profesor');
-        $profesor->shouldReceive('find')
-            ->with('P123')
-            ->andReturn($emisorUser);
-
-        $service = new NotificationService();
+        $service = new NotificationService(
+            findAlumno: static fn () => null,
+            findProfesor: static fn ($id) => $id === 'P123' ? $emisorUser : null,
+            hasTable: static fn () => true,
+            fechaProvider: static fn () => '10 de febrer de 2026'
+        );
         $service->send('12345678', 'Hola', '#', 'P123');
     }
 }

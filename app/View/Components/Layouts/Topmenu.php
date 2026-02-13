@@ -11,8 +11,6 @@ class Topmenu extends Component
 {
     public $user;
     public $isAlumno;
-    public $isDireccio;
-    public $simplifica;
     public $userChange;
 
     /**
@@ -22,8 +20,6 @@ class Topmenu extends Component
     {
         $this->user = authUser();
         $this->isAlumno = isset($this->user->nia);
-        $this->isDireccio = esRol($this->user->rol, config('roles.rol.direccion'));
-        $this->simplifica = Session::get('completa');
         $this->userChange = Session::get('userChange');
     }
 

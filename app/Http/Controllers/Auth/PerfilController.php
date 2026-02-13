@@ -2,8 +2,9 @@
 
 namespace Intranet\Http\Controllers\Auth;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
-use Intranet\Http\Controllers\IntranetController;
 use Intranet\Services\Media\ImageService;
 use Styde\Html\Facades\Alert;
 

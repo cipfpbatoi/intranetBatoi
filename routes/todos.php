@@ -11,7 +11,7 @@ Route::get('/notification/readAll', ['as' => 'notificacion.readAll', 'uses' => '
 Route::get('/notification/{notification}/delete', ['as' => 'notification.delete', 'uses' => 'NotificationController@destroy']);
 Route::get('/notification/deleteAll', ['as' => 'notificacion.deleteAll', 'uses' => 'NotificationController@deleteAll']);
 
-Route::resource('/documento', 'DocumentoController', ['except' => ['destroy', 'update']]);
+Route::resource('/documento', 'DocumentoController', ['except' => ['destroy', 'update', 'index']]);
 Route::get('/documento/{documento}/delete', ['as' => 'documento.destroy', 'uses' => 'DocumentoController@destroy']);
 Route::post('/documento/create', ['as' => 'documento.store', 'uses' => 'DocumentoController@store']);
 Route::put('/documento/{documento}/edit', ['as' => 'documento.update', 'uses' => 'DocumentoController@update']);
@@ -37,5 +37,3 @@ Route::get('/projecte/{id}/delete', ['as' => 'projecte.delete', 'uses' => 'Proje
 Route::get('/projecte/{id}/email', ['as' => 'projecte.email', 'uses' => 'ProjecteController@email']);
 Route::get('/projecte/{id}/pdf', ['as' => 'projecte.pdf', 'uses' => 'ProjecteController@pdf']);
 Route::view('/bustia', 'bustia/form')->name('bustia.form');
-
-

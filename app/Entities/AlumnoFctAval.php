@@ -2,11 +2,6 @@
 
 namespace Intranet\Entities;
 
-use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Alumno;
-use Jenssegers\Date\Date;
-use Intranet\Entities\AlumnoFct;
-
 class AlumnoFctAval extends AlumnoFct
 {
 
@@ -62,7 +57,7 @@ class AlumnoFctAval extends AlumnoFct
      public function scopeMisFcts($query, $profesor= null)
      {
          $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
-         $fcts = Fct::select('id')->esDual()->get()->toArray();
+         $fcts = Fct::select('id')->esDual()->pluck('id');
          return $query->whereIn('idProfesor', $profesor)->whereNotIn('idFct', $fcts);
     }
 
@@ -89,7 +84,7 @@ class AlumnoFctAval extends AlumnoFct
     {
         return $this->correoAlumno ?
             $this->horas :
-            AlumnoFctAval::where('idAlumno', $this->idAlumno)
+            static::where('idAlumno', $this->idAlumno)
             ->where('correoAlumno', 0)
             ->sum('horas');
     }
