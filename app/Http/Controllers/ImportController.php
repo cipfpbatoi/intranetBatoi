@@ -4,12 +4,16 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Intranet\Application\Import\Concerns\SharedImportFieldTransformers;
 use Intranet\Application\Import\GeneralImportExecutionService;
 use Intranet\Application\Import\ImportSchemaProvider;
 use Intranet\Application\Import\ImportService;
 use Intranet\Application\Import\ImportWorkflowService;
 use Intranet\Application\Import\ImportXmlHelperService;
+use Intranet\Entities\ImportRun;
+use Intranet\Jobs\RunImportJob;
 use Styde\Html\Facades\Alert;
 
 class ImportController extends Seeder
@@ -39,15 +43,87 @@ class ImportController extends Seeder
             return back();
         }
 
-        $this->imports()->runWithExtendedTimeout(function ($importFile, $importRequest): void {
-            $this->run($importFile, $importRequest);
-        }, $file, $request);
-
-        if ($this->imports()->isFirstImport($request)) {
-            $this->asignarTutores();
+        $mode = $this->resolveImportMode($request);
+        if ($mode === 'create_only') {
+            return $this->executeSyncImport($file, $request);
         }
 
-        return view('seeder.store');
+        return $this->storeAsync($request, $file);
+    }
+
+    public function storeAsync(Request $request, mixed $validatedFile = null)
+    {
+        $file = $validatedFile ?? $this->imports()->resolveXmlFile($request);
+        if ($file === null) {
+            return back();
+        }
+
+        $mode = $this->resolveImportMode($request);
+        if ($mode === 'create_only') {
+            return $this->executeSyncImport($file, $request);
+        }
+
+        if (!Schema::hasTable('import_runs')) {
+            return $this->executeSyncImport($file, $request);
+        }
+
+        $storedPath = Storage::disk('local')->putFileAs(
+            'imports',
+            $file,
+            uniqid('general_', true) . '.xml'
+        );
+
+        $importRun = ImportRun::create([
+            'type' => 'general',
+            'status' => 'pending',
+            'file_path' => $storedPath,
+            'options' => [
+                'primera' => $request->primera,
+                'mode' => $mode,
+            ],
+            'progress' => 0,
+            'message' => 'Importació en cua',
+        ]);
+
+        if (config('queue.default') === 'database' && !Schema::hasTable((string) config('queue.connections.database.table', 'jobs'))) {
+            RunImportJob::dispatchSync($importRun->id);
+        } else {
+            RunImportJob::dispatch($importRun->id);
+        }
+
+        Alert::info('Importació encolada. ID: ' . $importRun->id);
+
+        return view('seeder.store', ['importRunId' => $importRun->id]);
+    }
+
+    public function history()
+    {
+        if (!Schema::hasTable('import_runs')) {
+            Alert::warning('No existeix la taula import_runs.');
+            return view('seeder.history', ['runs' => collect()]);
+        }
+
+        $runs = ImportRun::query()->latest('id')->limit(100)->get();
+
+        return view('seeder.history', ['runs' => $runs]);
+    }
+
+    public function status(int $importRunId)
+    {
+        $run = ImportRun::findOrFail($importRunId);
+
+        return response()->json([
+            'id' => $run->id,
+            'type' => $run->type,
+            'status' => $run->status,
+            'progress' => $run->progress,
+            'message' => $run->message,
+            'error' => $run->error,
+            'started_at' => optional($run->started_at)->toDateTimeString(),
+            'finished_at' => optional($run->finished_at)->toDateTimeString(),
+            'failed_at' => optional($run->failed_at)->toDateTimeString(),
+            'created_at' => optional($run->created_at)->toDateTimeString(),
+        ]);
     }
 
     public function asignarTutores()
@@ -66,13 +142,14 @@ class ImportController extends Seeder
             function ($clase, $xml) use ($execution): void {
                 $execution->handlePreImport($clase, $xml);
             },
-            function ($xmltable, $table) use ($execution): void {
+            function ($xmltable, $table) use ($execution, $request): void {
                 $execution->importTable(
                     $xmltable,
                     $table,
                     fn ($atrxml, $llave, $func = 1) => $this->sacaCampos($atrxml, $llave, $func),
                     fn ($filtro, $campos) => $this->filtro($filtro, $campos),
                     fn ($required, $campos) => $this->required($required, $campos),
+                    $this->resolveImportMode($request),
                 );
             },
             function ($clase, $xml, $firstImport) use ($execution): void {
@@ -157,5 +234,25 @@ class ImportController extends Seeder
         }
 
         return $this->camposBdXml;
+    }
+
+    private function executeSyncImport(mixed $file, Request $request)
+    {
+        $this->imports()->runWithExtendedTimeout(function ($importFile, $importRequest): void {
+            $this->run($importFile, $importRequest);
+        }, $file, $request);
+
+        if ($this->imports()->isFirstImport($request)) {
+            $this->asignarTutores();
+        }
+
+        return view('seeder.store');
+    }
+
+    private function resolveImportMode(Request $request): string
+    {
+        $mode = (string) $request->input('mode', 'full');
+
+        return in_array($mode, ['full', 'create_only'], true) ? $mode : 'full';
     }
 }

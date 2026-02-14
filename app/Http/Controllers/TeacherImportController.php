@@ -4,12 +4,16 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Intranet\Application\Import\Concerns\SharedImportFieldTransformers;
 use Intranet\Application\Import\ImportSchemaProvider;
 use Intranet\Application\Import\ImportService;
 use Intranet\Application\Import\ImportWorkflowService;
 use Intranet\Application\Import\ImportXmlHelperService;
 use Intranet\Application\Import\TeacherImportExecutionService;
+use Intranet\Entities\ImportRun;
+use Intranet\Jobs\RunImportJob;
 use Styde\Html\Facades\Alert;
 
 class TeacherImportController extends Seeder
@@ -39,11 +43,59 @@ class TeacherImportController extends Seeder
             return back();
         }
 
-        $this->imports()->runWithExtendedTimeout(function ($importFile, $importRequest): void {
-            $this->run($importFile, $importRequest);
-        }, $file, $request);
+        $mode = $this->resolveImportMode($request);
+        if ($mode === 'create_only') {
+            return $this->executeSyncImport($file, $request);
+        }
 
-        return view('seeder.store');
+        return $this->storeAsync($request, $file);
+    }
+
+    public function storeAsync(Request $request, mixed $validatedFile = null)
+    {
+        $file = $validatedFile ?? $this->imports()->resolveXmlFile($request);
+        if ($file === null) {
+            return back();
+        }
+
+        $mode = $this->resolveImportMode($request);
+        if ($mode === 'create_only') {
+            return $this->executeSyncImport($file, $request);
+        }
+
+        if (!Schema::hasTable('import_runs')) {
+            return $this->executeSyncImport($file, $request);
+        }
+
+        $storedPath = Storage::disk('local')->putFileAs(
+            'imports',
+            $file,
+            uniqid('teacher_', true) . '.xml'
+        );
+
+        $importRun = ImportRun::create([
+            'type' => 'teacher',
+            'status' => 'pending',
+            'file_path' => $storedPath,
+            'options' => [
+                'idProfesor' => (string) $request->idProfesor,
+                'horari' => (bool) $request->horari,
+                'lost' => (bool) $request->lost,
+                'mode' => $mode,
+            ],
+            'progress' => 0,
+            'message' => 'Importació professorat en cua',
+        ]);
+
+        if (config('queue.default') === 'database' && !Schema::hasTable((string) config('queue.connections.database.table', 'jobs'))) {
+            RunImportJob::dispatchSync($importRun->id);
+        } else {
+            RunImportJob::dispatch($importRun->id);
+        }
+
+        Alert::info('Importació professorat encolada. ID: ' . $importRun->id);
+
+        return view('seeder.store', ['importRunId' => $importRun->id]);
     }
 
     public function run($fxml, Request $request)
@@ -58,7 +110,7 @@ class TeacherImportController extends Seeder
             $fxml,
             $this->camposBdXml(),
             $request->idProfesor,
-            function ($xmltable, $table, $idProfesor) use ($execution): void {
+            function ($xmltable, $table, $idProfesor) use ($execution, $request): void {
                 $execution->importTable(
                     $xmltable,
                     $table,
@@ -66,6 +118,7 @@ class TeacherImportController extends Seeder
                     fn ($atrxml, $llave, $func = 1) => $this->saca_campos($atrxml, $llave, $func),
                     fn ($filtro, $campos) => $this->filtro($filtro, $campos),
                     fn ($required, $campos) => $this->required($required, $campos),
+                    $this->resolveImportMode($request),
                 );
             }
         );
@@ -147,5 +200,21 @@ class TeacherImportController extends Seeder
         }
 
         return $this->camposBdXml;
+    }
+
+    private function executeSyncImport(mixed $file, Request $request)
+    {
+        $this->imports()->runWithExtendedTimeout(function ($importFile, $importRequest): void {
+            $this->run($importFile, $importRequest);
+        }, $file, $request);
+
+        return view('seeder.store');
+    }
+
+    private function resolveImportMode(Request $request): string
+    {
+        $mode = (string) $request->input('mode', 'full');
+
+        return in_array($mode, ['full', 'create_only'], true) ? $mode : 'full';
     }
 }

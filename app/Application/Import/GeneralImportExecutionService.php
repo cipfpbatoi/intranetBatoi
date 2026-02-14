@@ -99,7 +99,8 @@ class GeneralImportExecutionService
         array $tabla,
         callable $extractField,
         callable $passesFilter,
-        callable $requiredCheck
+        callable $requiredCheck,
+        string $mode = 'full'
     ): void {
         if (is_file(storage_path() . '/logs/import.log')) {
             unlink(storage_path() . '/logs/import.log');
@@ -110,6 +111,8 @@ class GeneralImportExecutionService
 
         $guard = "\\Intranet\\Entities\\{$tabla['nombreclase']}::unguard";
         call_user_func($guard);
+        $clase = "\\Intranet\\Entities\\{$tabla['nombreclase']}";
+        $existingRecords = $this->preloadExistingRecords($xmltable, $tabla, $extractField, $clase);
 
         foreach ($xmltable->children() as $registroxml) {
             $atributosxml = $registroxml->attributes();
@@ -125,20 +128,27 @@ class GeneralImportExecutionService
                 continue;
             }
 
-            $clase = "\\Intranet\\Entities\\{$tabla['nombreclase']}";
             $clave = $extractField($atributosxml, $tabla['id'], 0);
             if (!is_array($clave) && $this->log !== null) {
                 $this->log->info("Processant {$clase}: {$clave}");
             }
 
-            $record = $clase::find($clave);
+            $cacheKey = $this->normalizeCacheKey($clave);
+            $record = $cacheKey !== null ? ($existingRecords[$cacheKey] ?? null) : $clase::find($clave);
             if ($record) {
+                if ($mode === 'create_only' && in_array((string) $tabla['nombreclase'], ['Alumno', 'Profesor'], true)) {
+                    continue;
+                }
+
                 foreach ($tabla['update'] as $keybd => $keyxml) {
                     $record->{$keybd} = $extractField($atributosxml, $keyxml, 1);
                 }
 
                 try {
                     $record->save();
+                    if ($cacheKey !== null) {
+                        $existingRecords[$cacheKey] = $record;
+                    }
                 } catch (\Illuminate\Database\QueryException $e) {
                     Alert::error($e->getMessage());
                 }
@@ -152,7 +162,10 @@ class GeneralImportExecutionService
             }
 
             try {
-                $this->createRecordByClass((string) $tabla['nombreclase'], $arrayDatos);
+                $created = $this->createRecordByClass((string) $tabla['nombreclase'], $arrayDatos);
+                if ($cacheKey !== null && $created !== null) {
+                    $existingRecords[$cacheKey] = $created;
+                }
             } catch (\Illuminate\Database\QueryException $e) {
                 Alert::error($e->getMessage());
             }
@@ -164,34 +177,29 @@ class GeneralImportExecutionService
     /**
      * @param array<string, mixed> $arrayDatos
      */
-    private function createRecordByClass(string $className, array $arrayDatos): void
+    private function createRecordByClass(string $className, array $arrayDatos): mixed
     {
         switch ($className) {
             case 'Horario':
                 $this->createHorario($arrayDatos);
-                break;
+                return null;
             case 'Alumno':
-                Alumno::create($arrayDatos);
-                break;
+                return Alumno::create($arrayDatos);
             case 'Profesor':
-                $this->profesorService->create($arrayDatos);
-                break;
+                return $this->profesorService->create($arrayDatos);
             case 'Modulo':
-                Modulo::create($arrayDatos);
-                break;
+                return Modulo::create($arrayDatos);
             case 'Ocupacion':
-                Ocupacion::create($arrayDatos);
-                break;
+                return Ocupacion::create($arrayDatos);
             case 'AlumnoGrupo':
-                AlumnoGrupo::create($arrayDatos);
-                break;
+                return AlumnoGrupo::create($arrayDatos);
             case 'Grupo':
-                Grupo::create($arrayDatos);
-                break;
+                return Grupo::create($arrayDatos);
             case 'Espacio':
-                Espacio::create($arrayDatos);
-                break;
+                return Espacio::create($arrayDatos);
         }
+
+        return null;
     }
 
     /**
@@ -214,52 +222,95 @@ class GeneralImportExecutionService
 
     private function createModuloCicloAndGrupoFromHorarios(): void
     {
-        foreach ($this->horarioService->forProgramacionImport() as $horario) {
+        $horarios = $this->horarioService->forProgramacionImport();
+        $validHorarios = [];
+        $pairsByKey = [];
+        $grupos = [];
+        $profesoresDni = [];
+
+        foreach ($horarios as $horario) {
             if (!isset($horario->Grupo->idCiclo)) {
-                Alert::danger($horario->Grupo->id . ' sin ciclo');
+                Alert::danger(($horario->idGrupo ?? 'GRUP DESCONEGUT') . ' sin ciclo');
                 continue;
             }
 
-            $moduloCiclo = Modulo_ciclo::where('idModulo', $horario->modulo)
-                ->where('idCiclo', $horario->Grupo->idCiclo)
-                ->first();
+            $validHorarios[] = $horario;
+            $pairKey = $horario->modulo . '|' . $horario->Grupo->idCiclo;
+            $pairsByKey[$pairKey] = ['idModulo' => $horario->modulo, 'idCiclo' => $horario->Grupo->idCiclo];
+            $grupos[(string) $horario->idGrupo] = true;
+            $profesoresDni[(string) $horario->idProfesor] = true;
+        }
+
+        if ($validHorarios === []) {
+            return;
+        }
+
+        $departamentoByProfesor = $this->profesorService
+            ->byDnis(array_keys($profesoresDni))
+            ->pluck('departamento', 'dni')
+            ->all();
+
+        $modulos = array_values(array_unique(array_column($pairsByKey, 'idModulo')));
+        $ciclos = array_values(array_unique(array_column($pairsByKey, 'idCiclo')));
+        $moduloCiclos = Modulo_ciclo::query()
+            ->whereIn('idModulo', $modulos)
+            ->whereIn('idCiclo', $ciclos)
+            ->get();
+
+        $moduloCicloByPair = [];
+        foreach ($moduloCiclos as $moduloCiclo) {
+            $pairKey = $moduloCiclo->idModulo . '|' . $moduloCiclo->idCiclo;
+            $moduloCicloByPair[$pairKey] = $moduloCiclo;
+        }
+
+        $moduloGrupoPairs = [];
+        if ($moduloCiclos->isNotEmpty()) {
+            $existingModuloGrupos = Modulo_grupo::query()
+                ->whereIn('idModuloCiclo', $moduloCiclos->pluck('id')->all())
+                ->whereIn('idGrupo', array_keys($grupos))
+                ->get(['idModuloCiclo', 'idGrupo']);
+
+            foreach ($existingModuloGrupos as $moduloGrupo) {
+                $moduloGrupoPairs[$moduloGrupo->idModuloCiclo . '|' . $moduloGrupo->idGrupo] = true;
+            }
+        }
+
+        foreach ($validHorarios as $horario) {
+            $pairKey = $horario->modulo . '|' . $horario->Grupo->idCiclo;
+            $moduloCiclo = $moduloCicloByPair[$pairKey] ?? null;
+            $departamentoProfesor = $departamentoByProfesor[(string) $horario->idProfesor] ?? null;
 
             if (!$moduloCiclo) {
-                $moduloCiclo = $this->createModuloCiclo($horario);
-            } else {
-                $this->updateDepartamentoIfNeeded($moduloCiclo, (string) $horario->idProfesor);
+                $moduloCiclo = $this->createModuloCiclo($horario, $departamentoProfesor);
+                $moduloCicloByPair[$pairKey] = $moduloCiclo;
+            } elseif ((string) $moduloCiclo->idDepartamento === '99' && $departamentoProfesor !== null && (string) $departamentoProfesor !== '99') {
+                $moduloCiclo->idDepartamento = $departamentoProfesor;
+                $moduloCiclo->save();
             }
 
-            if (Modulo_grupo::where('idModuloCiclo', $moduloCiclo->id)->where('idGrupo', $horario->idGrupo)->count() === 0) {
-                $nuevo = new Modulo_grupo();
-                $nuevo->idModuloCiclo = $moduloCiclo->id;
-                $nuevo->idGrupo = $horario->idGrupo;
-                $nuevo->save();
+            $moduloGrupoKey = $moduloCiclo->id . '|' . $horario->idGrupo;
+            if (isset($moduloGrupoPairs[$moduloGrupoKey])) {
+                continue;
             }
+
+            $nuevo = new Modulo_grupo();
+            $nuevo->idModuloCiclo = $moduloCiclo->id;
+            $nuevo->idGrupo = $horario->idGrupo;
+            $nuevo->save();
+            $moduloGrupoPairs[$moduloGrupoKey] = true;
         }
     }
 
-    private function createModuloCiclo(mixed $horario): Modulo_ciclo
+    private function createModuloCiclo(mixed $horario, mixed $departamentoProfesor = null): Modulo_ciclo
     {
         $moduloCiclo = new Modulo_ciclo();
         $moduloCiclo->idModulo = $horario->modulo;
         $moduloCiclo->idCiclo = $horario->Grupo->idCiclo;
         $moduloCiclo->curso = $horario->Grupo->curso;
-
-        $profesor = $this->profesorService->find((string) $horario->idProfesor);
-        $moduloCiclo->idDepartamento = isset($profesor->departamento) ? $profesor->departamento : '99';
+        $moduloCiclo->idDepartamento = $departamentoProfesor ?? '99';
         $moduloCiclo->save();
 
         return $moduloCiclo;
-    }
-
-    private function updateDepartamentoIfNeeded(Modulo_ciclo $moduloCiclo, string $dniProfesor): void
-    {
-        $profesor = $this->profesorService->find($dniProfesor);
-        if (isset($profesor->departamento) && (string) $moduloCiclo->idDepartamento === '99') {
-            $moduloCiclo->idDepartamento = $profesor->departamento;
-            $moduloCiclo->save();
-        }
     }
 
     private function markAllAlumnosAsBaja(): void
@@ -269,8 +320,22 @@ class GeneralImportExecutionService
 
     private function cleanupSustituciones(): void
     {
-        foreach ($this->profesorService->withSustituyeAssigned() as $sustituto) {
-            $sustituido = $this->profesorService->find((string) $sustituto->sustituye_a);
+        $sustitutos = $this->profesorService->withSustituyeAssigned();
+        $sustituidosDni = [];
+        foreach ($sustitutos as $sustituto) {
+            $dni = trim((string) $sustituto->sustituye_a);
+            if ($dni !== '') {
+                $sustituidosDni[$dni] = true;
+            }
+        }
+
+        if ($sustituidosDni === []) {
+            return;
+        }
+
+        $sustituidos = $this->profesorService->byDnis(array_keys($sustituidosDni))->keyBy('dni');
+        foreach ($sustitutos as $sustituto) {
+            $sustituido = $sustituidos->get((string) $sustituto->sustituye_a);
             if ($sustituido && $sustituido->fecha_baja === null) {
                 $sustituto->sustituye_a = '';
                 $sustituto->save();
@@ -280,15 +345,49 @@ class GeneralImportExecutionService
 
     private function assignDepartamentoByHorario(): void
     {
-        foreach ($this->profesorService->byDepartamento(99) as $profesor) {
-            $horario = $this->horarioService->firstForDepartamentoAsignacion((string) $profesor->dni);
-            if (!$horario) {
+        $profesores = $this->profesorService->byDepartamento(99);
+        if ($profesores->isEmpty()) {
+            return;
+        }
+
+        $profesoresDni = $profesores->pluck('dni')->all();
+        $horarios = DB::table('horarios')
+            ->select('idProfesor', 'modulo', 'id')
+            ->whereIn('idProfesor', $profesoresDni)
+            ->whereNull('ocupacion')
+            ->where('modulo', '!=', 'TU02CF')
+            ->where('modulo', '!=', 'TU01CF')
+            ->orderBy('id')
+            ->get();
+
+        $firstModuloByProfesor = [];
+        foreach ($horarios as $horario) {
+            if (!isset($firstModuloByProfesor[$horario->idProfesor])) {
+                $firstModuloByProfesor[$horario->idProfesor] = $horario->modulo;
+            }
+        }
+
+        if ($firstModuloByProfesor === []) {
+            return;
+        }
+
+        $departamentoByModulo = DB::table('modulo_ciclos')
+            ->join('ciclos', 'modulo_ciclos.idCiclo', '=', 'ciclos.id')
+            ->whereIn('modulo_ciclos.idModulo', array_values(array_unique(array_values($firstModuloByProfesor))))
+            ->select('modulo_ciclos.idModulo', 'ciclos.departamento')
+            ->get()
+            ->pluck('departamento', 'idModulo')
+            ->all();
+
+        foreach ($profesores as $profesor) {
+            $modulo = $firstModuloByProfesor[$profesor->dni] ?? null;
+            if ($modulo === null) {
                 continue;
             }
 
-            $modulo = Modulo_ciclo::where('idModulo', $horario->modulo)->first();
-            if ($modulo) {
-                $profesor->departamento = $modulo->Ciclo->departamento;
+            $departamento = $departamentoByModulo[$modulo] ?? null;
+            if ($departamento !== null) {
+                $profesor->departamento = $departamento;
                 $profesor->save();
             }
         }
@@ -378,6 +477,51 @@ class GeneralImportExecutionService
     {
         $value = $enabled ? '1' : '0';
         DB::statement("SET FOREIGN_KEY_CHECKS= {$value};");
+    }
+
+    /**
+     * @param callable(mixed, mixed, int): mixed $extractField
+     * @return array<string, mixed>
+     */
+    private function preloadExistingRecords(mixed $xmltable, array $tabla, callable $extractField, string $class): array
+    {
+        if (($tabla['id'] ?? '') === '') {
+            return [];
+        }
+
+        $keys = [];
+        foreach ($xmltable->children() as $registroxml) {
+            $attributes = $registroxml->attributes();
+            $rawKey = $extractField($attributes, $tabla['id'], 0);
+            $cacheKey = $this->normalizeCacheKey($rawKey);
+            if ($cacheKey !== null) {
+                $keys[$cacheKey] = true;
+            }
+        }
+
+        if ($keys === []) {
+            return [];
+        }
+
+        $model = new $class();
+        $keyName = $model->getKeyName();
+        $records = [];
+        foreach (array_chunk(array_keys($keys), 500) as $chunk) {
+            foreach ($class::query()->whereIn($keyName, $chunk)->get() as $record) {
+                $records[(string) $record->getKey()] = $record;
+            }
+        }
+
+        return $records;
+    }
+
+    private function normalizeCacheKey(mixed $key): ?string
+    {
+        if (is_array($key) || $key === '' || $key === null) {
+            return null;
+        }
+
+        return (string) $key;
     }
 
     public function loadEstadoFromHorarioJson(): void

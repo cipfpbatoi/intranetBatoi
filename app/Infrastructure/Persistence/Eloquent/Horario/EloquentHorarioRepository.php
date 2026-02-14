@@ -179,6 +179,7 @@ class EloquentHorarioRepository implements HorarioRepositoryInterface
             ->whereNotNull('modulo')
             ->whereNotNull('idProfesor')
             ->whereNotIn('modulo', config('constants.modulosSinProgramacion'))
+            ->with('Grupo')
             ->get();
     }
 

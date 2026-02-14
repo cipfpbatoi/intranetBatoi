@@ -13,8 +13,12 @@ Route::get('/menu/{menu}/down', ['as' => 'menu.down', 'uses' => 'MenuController@
 //importació
 Route::get('/import', ['as' => 'import.create', 'uses' => 'ImportController@create']);
 Route::post('/import', ['as' => 'import.store', 'uses' => 'ImportController@store']);
+Route::post('/import/async', ['as' => 'import.storeAsync', 'uses' => 'ImportController@storeAsync']);
+Route::get('/import/status/{importRunId}', ['as' => 'import.status', 'uses' => 'ImportController@status']);
+Route::get('/import/runs', ['as' => 'import.history', 'uses' => 'ImportController@history']);
 Route::get('/teacherImport', ['as' => 'teacherImport.create', 'uses' => 'TeacherImportController@create']);
 Route::post('/teacherImport', ['as' => 'teacherImport.store', 'uses' => 'TeacherImportController@store']);
+Route::post('/teacherImport/async', ['as' => 'teacherImport.storeAsync', 'uses' => 'TeacherImportController@storeAsync']);
 Route::get('/importEmail', ['as' => 'importEmail.create', 'uses' => 'Deprecated\ImportEmailController@create']);
 Route::post('/importEmail', ['as' => 'importEmail.store', 'uses' => 'Deprecated\ImportEmailController@store']);
 

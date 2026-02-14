@@ -45,10 +45,13 @@ class TeacherImportExecutionService
         string $idProfesor,
         callable $extractField,
         callable $passesFilter,
-        callable $requiredCheck
+        callable $requiredCheck,
+        string $mode = 'full'
     ): void {
         $guard = "\\Intranet\\Entities\\{$tabla['nombreclase']}::unguard";
         call_user_func($guard);
+        $clase = "\\Intranet\\Entities\\{$tabla['nombreclase']}";
+        $existingRecords = $this->preloadExistingRecords($xmltable, $tabla, $extractField, $clase);
 
         foreach ($xmltable->children() as $registroxml) {
             $atributosxml = $registroxml->attributes();
@@ -64,15 +67,22 @@ class TeacherImportExecutionService
                 continue;
             }
 
-            $clase = "\\Intranet\\Entities\\{$tabla['nombreclase']}";
             $clave = $extractField($atributosxml, $tabla['id'], 0);
-            $record = $clase::find($clave);
+            $cacheKey = $this->normalizeCacheKey($clave);
+            $record = $cacheKey !== null ? ($existingRecords[$cacheKey] ?? null) : $clase::find($clave);
 
             if ($record) {
+                if ($mode === 'create_only' && (string) $tabla['nombreclase'] === 'Profesor') {
+                    continue;
+                }
+
                 foreach ($tabla['update'] as $keybd => $keyxml) {
                     $record->{$keybd} = $extractField($atributosxml, $keyxml, 1);
                 }
                 $record->save();
+                if ($cacheKey !== null) {
+                    $existingRecords[$cacheKey] = $record;
+                }
                 continue;
             }
 
@@ -82,7 +92,10 @@ class TeacherImportExecutionService
             }
 
             try {
-                $this->createRecordByClass((string) $tabla['nombreclase'], $arrayDatos, $idProfesor);
+                $created = $this->createRecordByClass((string) $tabla['nombreclase'], $arrayDatos, $idProfesor);
+                if ($cacheKey !== null && $created !== null) {
+                    $existingRecords[$cacheKey] = $created;
+                }
             } catch (\Illuminate\Database\QueryException $e) {
                 Alert::error($e->getMessage());
             }
@@ -94,7 +107,7 @@ class TeacherImportExecutionService
     /**
      * @param array<string, mixed> $arrayDatos
      */
-    private function createRecordByClass(string $className, array $arrayDatos, string $idProfesor): void
+    private function createRecordByClass(string $className, array $arrayDatos, string $idProfesor): mixed
     {
         switch ($className) {
             case 'Horario':
@@ -107,13 +120,60 @@ class TeacherImportExecutionService
                         $this->horarioService->create($arrayDatos);
                     }
                 }
-                break;
+                return null;
 
             case 'Profesor':
                 if (($arrayDatos['dni'] ?? null) === $idProfesor) {
-                    $this->profesorService->create($arrayDatos);
+                    return $this->profesorService->create($arrayDatos);
                 }
-                break;
+                return null;
         }
+
+        return null;
+    }
+
+    /**
+     * @param callable(mixed, mixed, int): mixed $extractField
+     * @return array<string, mixed>
+     */
+    private function preloadExistingRecords(mixed $xmltable, array $tabla, callable $extractField, string $class): array
+    {
+        if (($tabla['id'] ?? '') === '') {
+            return [];
+        }
+
+        $keys = [];
+        foreach ($xmltable->children() as $registroxml) {
+            $attributes = $registroxml->attributes();
+            $rawKey = $extractField($attributes, $tabla['id'], 0);
+            $cacheKey = $this->normalizeCacheKey($rawKey);
+            if ($cacheKey !== null) {
+                $keys[$cacheKey] = true;
+            }
+        }
+
+        if ($keys === []) {
+            return [];
+        }
+
+        $model = new $class();
+        $keyName = $model->getKeyName();
+        $records = [];
+        foreach (array_chunk(array_keys($keys), 500) as $chunk) {
+            foreach ($class::query()->whereIn($keyName, $chunk)->get() as $record) {
+                $records[(string) $record->getKey()] = $record;
+            }
+        }
+
+        return $records;
+    }
+
+    private function normalizeCacheKey(mixed $key): ?string
+    {
+        if (is_array($key) || $key === '' || $key === null) {
+            return null;
+        }
+
+        return (string) $key;
     }
 }
