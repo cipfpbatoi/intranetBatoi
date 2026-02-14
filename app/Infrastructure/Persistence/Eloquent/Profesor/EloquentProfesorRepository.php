@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Intranet\Domain\Profesor\ProfesorRepositoryInterface;
 use Intranet\Entities\Profesor;
 
+/**
+ * Implementació Eloquent del repositori de professorat.
+ */
 class EloquentProfesorRepository implements ProfesorRepositoryInterface
 {
     public function plantillaOrderedWithDepartamento(): EloquentCollection

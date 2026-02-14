@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 use Intranet\Domain\Comision\ComisionRepositoryInterface;
 use Intranet\Entities\Comision;
 
+/**
+ * Implementació Eloquent del repositori de comissions.
+ */
 class EloquentComisionRepository implements ComisionRepositoryInterface
 {
     public function find(int $id): ?Comision

@@ -7,6 +7,9 @@ namespace Intranet\Domain\Profesor;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Intranet\Entities\Profesor;
 
+/**
+ * Contracte de persistència per a l'agregat Profesor.
+ */
 interface ProfesorRepositoryInterface
 {
     /**

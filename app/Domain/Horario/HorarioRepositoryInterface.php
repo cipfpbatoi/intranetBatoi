@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Intranet\Entities\Horario;
 
+/**
+ * Contracte de persistència per a l'agregat Horario.
+ */
 interface HorarioRepositoryInterface
 {
     /**

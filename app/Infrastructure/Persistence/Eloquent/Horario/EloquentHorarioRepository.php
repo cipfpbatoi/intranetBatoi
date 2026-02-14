@@ -9,6 +9,9 @@ use Illuminate\Support\Collection;
 use Intranet\Domain\Horario\HorarioRepositoryInterface;
 use Intranet\Entities\Horario;
 
+/**
+ * Implementació Eloquent del repositori d'horaris.
+ */
 class EloquentHorarioRepository implements HorarioRepositoryInterface
 {
     public function semanalByProfesor(string $dni): array

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Intranet\Domain\Profesor\ProfesorRepositoryInterface;
 use Intranet\Entities\Profesor;
 
+/**
+ * Casos d'ús d'aplicació per al domini de professorat.
+ */
 class ProfesorService
 {
     public function __construct(private readonly ProfesorRepositoryInterface $profesorRepository)

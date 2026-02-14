@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Intranet\Domain\Comision\ComisionRepositoryInterface;
 use Intranet\Entities\Comision;
 
+/**
+ * Casos d'ús d'aplicació per al domini de comissions.
+ */
 class ComisionService
 {
     public function __construct(private readonly ComisionRepositoryInterface $comisionRepository)

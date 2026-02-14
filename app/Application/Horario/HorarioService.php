@@ -9,6 +9,9 @@ use Illuminate\Support\Collection;
 use Intranet\Domain\Horario\HorarioRepositoryInterface;
 use Intranet\Entities\Horario;
 
+/**
+ * Casos d'ús d'aplicació per al domini d'horaris.
+ */
 class HorarioService
 {
     public function __construct(private readonly HorarioRepositoryInterface $horarioRepository)
