@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\View\View;
 use Intranet\Http\Controllers\ImportController;
-use Intranet\Http\Controllers\ImportEmailController;
+use Intranet\Http\Controllers\Deprecated\ImportEmailController;
 use Intranet\Http\Controllers\TeacherImportController;
 use Intranet\Http\Middleware\RoleMiddleware;
 use Intranet\Http\Middleware\VerifyCsrfToken;

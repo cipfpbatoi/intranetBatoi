@@ -159,6 +159,18 @@ class EloquentProfesorRepository implements ProfesorRepositoryInterface
         return Profesor::where('codigo', $codigo)->count();
     }
 
+    /**
+     * @return array<int, int>
+     */
+    public function usedCodigosBetween(int $min, int $max): array
+    {
+        return Profesor::whereNotNull('codigo')
+            ->whereBetween('codigo', [(string) $min, (string) $max])
+            ->pluck('codigo')
+            ->map(static fn ($codigo): int => (int) $codigo)
+            ->all();
+    }
+
     public function create(array $data): Profesor
     {
         return Profesor::create($data);

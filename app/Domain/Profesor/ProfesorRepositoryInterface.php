@@ -101,6 +101,11 @@ interface ProfesorRepositoryInterface
     public function countByCodigo(int|string $codigo): int;
 
     /**
+     * @return array<int, int>
+     */
+    public function usedCodigosBetween(int $min, int $max): array;
+
+    /**
      * @param array<string, mixed> $data
      */
     public function create(array $data): Profesor;

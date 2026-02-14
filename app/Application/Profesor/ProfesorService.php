@@ -172,6 +172,14 @@ class ProfesorService
     }
 
     /**
+     * @return array<int, int>
+     */
+    public function usedCodigosBetween(int $min, int $max): array
+    {
+        return $this->profesorRepository->usedCodigosBetween($min, $max);
+    }
+
+    /**
      * @param array<string, mixed> $data
      */
     public function create(array $data): Profesor

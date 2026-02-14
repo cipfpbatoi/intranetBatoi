@@ -15,8 +15,8 @@ Route::get('/import', ['as' => 'import.create', 'uses' => 'ImportController@crea
 Route::post('/import', ['as' => 'import.store', 'uses' => 'ImportController@store']);
 Route::get('/teacherImport', ['as' => 'teacherImport.create', 'uses' => 'TeacherImportController@create']);
 Route::post('/teacherImport', ['as' => 'teacherImport.store', 'uses' => 'TeacherImportController@store']);
-Route::get('/importEmail', ['as' => 'importEmail.create', 'uses' => 'ImportEmailController@create']);
-Route::post('/importEmail', ['as' => 'importEmail.store', 'uses' => 'ImportEmailController@store']);
+Route::get('/importEmail', ['as' => 'importEmail.create', 'uses' => 'Deprecated\ImportEmailController@create']);
+Route::post('/importEmail', ['as' => 'importEmail.store', 'uses' => 'Deprecated\ImportEmailController@store']);
 
 //manteniment taula mòduls
 Route::resource('/modulo', 'ModuloController', ['except' => ['destroy', 'update', 'show']]);
@@ -95,4 +95,3 @@ Route::put('/ipguardia/{comision}/edit', ['as' => 'ipguardia.update', 'uses' => 
 Route::resource('/setting', 'SettingController', ['except' => ['destroy', 'update', 'edit']]);
 Route::get('/setting/{id}/delete', ['as' => 'settings.destroy', 'uses' => 'SettingController@destroy']);
 Route::put('/setting/{comision}/edit', ['as' => 'settings.update', 'uses' => 'SettingController@update']);
-
