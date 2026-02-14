@@ -3,8 +3,8 @@
     <title>{{$panel->getTitulo()}}</title>
 @endsection
 @section('grid')
-    <div class='centrado'>@include('intranet.partials.components.buttons',['tipo' => 'index'])</div><br/>
-    @include('intranet.partials.grid.vacia')
+    <x-botones :panel="$panel" tipo="index" :elemento="$elemento ?? null" /><br/>
+    <x-grid.table :panel="$panel" :mostrarBody="false" />
 @endsection
 @section('titulo')
     {{$panel->getTitulo()}}

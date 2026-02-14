@@ -3,7 +3,7 @@
             id="{{$elemento->dni}}"
             cab1="{{ $elemento->FullName }}"
             cab2="{{ $elemento->Departamento->literal}}"
-            title="{{ asset('storage/'.$elemento->foto) }}"
+            title="{{ asset('storage/fotos/'.$elemento->foto) }}"
             view="people"
     >
             @if (isset(authUser()->codigo))
@@ -30,7 +30,7 @@
             </x-slot>
             <x-slot name="botones">
                 @foreach ($panel->getBotones('profile') as $button)
-                    {{ $button->show($elemento) }}
+                    {!! $button->show($elemento) !!}
                 @endforeach
                 @if ($elemento->ahora)
                     <a href='#' class='btn btn-primary btn-xs'>{{$elemento->ahora}}</a>

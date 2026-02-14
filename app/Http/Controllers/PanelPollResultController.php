@@ -2,8 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Poll\Poll;
+use Intranet\Entities\Poll\PPoll;
 
 class PanelPollResultController extends PollController
 {
@@ -16,16 +17,15 @@ class PanelPollResultController extends PollController
 
     protected function search()
     {
-        $polls = Poll::all();
-        if (esRol(AuthUser()->rol, config('roles.rol.practicas'))) {
-            $practiques = $polls->where('modelo', '==', 'Intranet\Entities\Poll\AlumnoFct');
-            $practiques = $practiques->union($polls->where('modelo', '==', 'Intranet\Entities\Poll\Fct'));
+        if (esRol(AuthUser()->rol, config('roles.rol.tutor'))) {
+            $ppolls = hazArray(PPoll::all(),'id','id');
         }
         else {
-            $practiques = [];
+            $ppolls = hazArray(PPoll::where('what', 'Profesor')->get(),'id','id');
         }
-        $professorat = $polls->where('state','Finalizada')->where('modelo','Intranet\Entities\Poll\Profesor');
-        return $professorat->union($practiques);
+        return Poll::whereIn('idPPoll', $ppolls)
+            ->where('hasta', '<=', now())
+            ->get();
     }
 
 

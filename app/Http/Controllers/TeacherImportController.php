@@ -3,24 +3,13 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-Use Intranet\Entities\Alumno;
-Use Intranet\Entities\Profesor;
+use Intranet\Entities\Profesor;
 use Intranet\Entities\Horario;
-use Intranet\Entities\AlumnoGrupo;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Modulo;
-use Intranet\Entities\Modulo_ciclo;
-use Intranet\Entities\Modulo_grupo;
-use Intranet\Entities\Espacio;
-use DB;
 use Illuminate\Database\Seeder;
-use ImportTableSeeder;
-use Illuminate\Support\Facades\Artisan;
 use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\Storage;
-use Intranet\Entities\Programacion;
-use Intranet\Entities\Ocupacion;
+
 
 /**
  * Class ImportController
@@ -151,7 +140,7 @@ class TeacherImportController extends Seeder
     {
         $xml = simplexml_load_file($fxml);
         if ($request->horari) {
-            $this->esborraHoraris($request->idProfesor);
+            $this->esborraHoraris($request->idProfesor,$request->lost);
         }
         foreach ($this->campos_bd_xml as $table) {
             $this->manageTable($xml->{$table['nombrexml']}, $table, $request->idProfesor);
@@ -177,17 +166,21 @@ class TeacherImportController extends Seeder
      * @param $clase
      * @param $xml
      */
-    private function esborraHoraris($idProfesor)
-    {
-        if (isset(DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla)) {
-            $this->plantilla = DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla;
-        }
-        else {
-            $this->plantilla = 0;
-        }
-        DB::table('horarios')->where('idProfesor',$idProfesor)->delete();
 
+    private function esborraHoraris($idProfesor, $lost = false)
+    {
+        if (!$lost) {
+            $this->plantilla = DB::table('horarios')->orderBy('plantilla', 'desc')->value('plantilla') ?? 0;
+        } else {
+            $this->plantilla = DB::table('horarios')
+                ->where('idProfesor', $idProfesor)
+                ->orderBy('plantilla', 'desc')
+                ->value('plantilla') ?? 0;
+        }
+
+        DB::table('horarios')->where('idProfesor', $idProfesor)->delete();
     }
+
 
     /**
      * @param $fecha
@@ -199,9 +192,9 @@ class TeacherImportController extends Seeder
         $fecha2 = date_create_from_format('j-m-Y', $fecha);
         if (!$fecha2) {
             return null;
-        } else {
-            return $fecha2->format('Y-m-d');
         }
+
+        return $fecha2->format('Y-m-d');
     }
 
     /**
@@ -283,21 +276,18 @@ class TeacherImportController extends Seeder
             if (isset($atrxml[$llave])) {
                 return (mb_convert_encoding($atrxml[$llave], 'utf8'));
             }
-            else {
-                return ($llave);
-            }
+
+            return ($llave);
         }
-        else {
-            for ($i = $func; $i < count($lista); $i++) {
-                $params[$i - $func] = mb_convert_encoding($atrxml[$lista[$i]], 'utf8');
-            }
-            if ($func) {
-                return (call_user_func_array(array($this, $lista[0]), $params));
-            }
-            else {
-                return ($params);
-            }
+
+        for ($i = $func; $i < count($lista); $i++) {
+            $params[$i - $func] = mb_convert_encoding($atrxml[$lista[$i]], 'utf8');
         }
+        if ($func) {
+            return (call_user_func_array(array($this, $lista[0]), $params));
+        }
+
+        return ($params);
     }
 
     /**
@@ -322,7 +312,7 @@ class TeacherImportController extends Seeder
     {
         $pasa = true;
         foreach ($required as $key) {
-            if ($campos[$key] == ' ') {
+            if ($campos[$key] === ' ') {
                 $pasa = false;
             }
         }

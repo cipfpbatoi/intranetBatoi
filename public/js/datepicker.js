@@ -1,4 +1,13 @@
 $(document).ready(function () {
+        if (!$.fn.datetimepicker) {
+            console.warn('Bootstrap datetimepicker no està disponible: datepicker.js no s’inicialitza.');
+            return;
+        }
+        if (typeof moment === 'undefined') {
+            console.warn('Moment.js no està disponible: datepicker.js no s’inicialitza.');
+            return;
+        }
+
         /*$.fn.datepicker.dates['ca'] = {
             days: ["diumenge", "dilluns", "dimarts", "dimecres", "dijous", "divendres", "dissabte"],
             daysShort: ["dg.",  "dl.", "dt.", "dc.", "dj.", "dv.", "ds."],

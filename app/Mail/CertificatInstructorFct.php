@@ -5,12 +5,12 @@ namespace Intranet\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Intranet\Componentes\Pdf;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FctController;
 use Illuminate\Support\Facades\Log;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
-use Intranet\Services\FDFPrepareService;
+use Intranet\Services\Document\FDFPrepareService;
 
 
 class CertificatInstructorFct extends Mailable
@@ -26,9 +26,10 @@ class CertificatInstructorFct extends Mailable
      *
      * @return void
      */
-    public function __construct($fct)
+    public function __construct($fct,$emitent)
     {
         $this->fct = $fct;
+        $this->emitent = $emitent;
     }
 
     /**
@@ -41,6 +42,8 @@ class CertificatInstructorFct extends Mailable
         $pdf = FDFPrepareService::exec(
             new CertificatInstructorResource($this->fct));
         $view = $this->view("email.fct.certificadoInstructor")
+            ->from($this->emitent->email, $this->emitent->fullName)
+            ->replyTo($this->emitent->email, $this->emitent->fullName)
             ->attach($pdf, ['as'=>'certificadoInstructor.pdf','mime' => 'application/pdf']);
         if (count($this->fct->Colaboradores)) {
             $id = $this->fct->id;
@@ -60,8 +63,8 @@ class CertificatInstructorFct extends Mailable
 
     public function certificatColaboradors()
     {
-        $secretario = Profesor::find(config(fileContactos().'.secretario'));
-        $director = Profesor::find(config(fileContactos().'.director'));
+        $secretario = Profesor::find(config('avisos.secretario'));
+        $director = Profesor::find(config('avisos.director'));
         $dades = ['date' => FechaString(hoy(), 'ca'),
             'fecha' => FechaString(hoy(), 'es'),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
@@ -72,6 +75,6 @@ class CertificatInstructorFct extends Mailable
             'director' => $director->FullName,
         ];
 
-        return Pdf::hazPdf('pdf.fct.certificatColaborador', $this->fct, $dades);
+        return app(PdfService::class)->hazPdf('pdf.fct.certificatColaborador', $this->fct, $dades);
     }
 }

@@ -9,7 +9,7 @@ use Intranet\Entities\Centro;
 class Instructor extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'instructores';
     protected $primaryKey = 'dni';
@@ -37,6 +37,11 @@ class Instructor extends Model
     ];
     
     
+    public function Fcts()
+    {
+        return $this->belongsTo(Fct::class, 'dni', 'idInstructor');
+    }
+
     public function Centros()
     {
         return $this->belongsToMany(Centro::class, 'centros_instructores', 'idInstructor', 'idCentro', 'dni', 'id');
@@ -53,30 +58,16 @@ class Instructor extends Model
     }
     public function getXNcentrosAttribute()
     {
-        return $this->Centros->count();
+        return $this->Centros->count()??0;
     }
     public function getNfctsAttribute()
     {
-        return $this->Fcts->count();
+        return $this->relationLoaded('Fcts')
+            ? $this->Fcts->count()
+            : $this->Fcts()->count();
     }
-    public function getTutoresFctAttribute()
-    {
-        $tutors = [];
-        foreach ($this->Fcts as $fct) {
-            $dni = isset($fct->Alumno->Grupo->first()->Tutor->dni)?
-                $fct->Alumno->Grupo->first()->Tutor->dni:
-                authUser()->dni;
-            if (!in_array($dni, $tutors)
-                &&(authUser()->dni != $dni)) {
-                $tutors[] = $dni;
-            }
-        }
-        $todos = '';
-        foreach ($tutors as $tutor) {
-            $todos .= '- '.Profesor::find($tutor)->ShortName.' -';
-        }
-        return $todos;
-    }
+
+    
     
     public function getNombreAttribute()
     {

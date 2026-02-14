@@ -2,8 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\BaseController;
+
 use Intranet\Entities\Documento;
-use Intranet\Entities\TipoDocumento;
+use Intranet\Services\Document\TipoDocumentoService;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 
@@ -43,8 +45,9 @@ class PanelDocAgrupadosController extends BaseController
     {
         return Documento::whereIn('rol', RolesUser(AuthUser()
             ->rol))
-            ->whereIn('tipoDocumento',TipoDocumento::allDocuments())
+            ->whereIn('tipoDocumento',TipoDocumentoService::allDocuments())
             ->whereNull('idDocumento')
+            ->where('activo',1)
             ->orderBy('curso','desc')->get();
     }
 
@@ -54,7 +57,7 @@ class PanelDocAgrupadosController extends BaseController
     protected function iniPestanas($grupo= null)
     {
         $first = false;
-        foreach (TipoDocumento::allRol($grupo) as $key => $role) {
+        foreach (TipoDocumentoService::allRol($grupo) as $key => $role) {
             if (UserisAllow($role)){
                 if ($first)  {
                     $this->panel->setPestana($key, true, 'profile.documento', ['tipoDocumento', $key]);

@@ -2,10 +2,13 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Espacio;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
 use Intranet\Http\Requests\EspacioRequest;
+use Intranet\Http\Traits\Core\Imprimir;
 
 /**
  * Class EspacioController
@@ -13,7 +16,7 @@ use Intranet\Http\Requests\EspacioRequest;
  */
 class EspacioController extends ModalController
 {
-    use traitImprimir;
+    use Imprimir;
 
     const DIRECCION = 'roles.rol.direccion';
 

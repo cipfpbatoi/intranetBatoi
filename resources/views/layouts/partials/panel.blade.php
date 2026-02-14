@@ -4,8 +4,11 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
-                    <div class="x_title">
-                        @include('layouts.partials.titlecontent')
+                    <x-layouts.titlebar>
+                        {{ $panel->getTitulo() }}
+                    </x-layouts.titlebar>
+                    <div class="x_content">
+                        {!! Alert::render() !!}
                     </div>
                     <div class="x_content">
                         <div class="" role="tabpanel" data-example-id="togglable-tabs">
@@ -31,14 +34,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="x_content">
-                        {!! Alert::render() !!}
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- /page content -->
-

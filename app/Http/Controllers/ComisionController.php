@@ -2,19 +2,23 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Controllers\Core\ModalController;
+
 use DB;
-use Intranet\Botones\BotonImg;
-use Intranet\Componentes\DocumentoFct;
-use Intranet\Componentes\MyMail;
-use Intranet\Http\Requests\ComisionRequest;
-use Intranet\Services\CalendarService;
-use Intranet\Services\ConfirmAndSend;
-use Intranet\Services\StateService;
-use \PDF;
+use Illuminate\Http\Request;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Support\Fct\DocumentoFctConfig;
+use Intranet\Services\Mail\MyMail;
+use Intranet\Entities\Activity;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Fct;
-use Intranet\Entities\Activity;
+use Intranet\Http\Requests\ComisionRequest;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Http\Traits\Core\SCRUD;
+use Intranet\Services\Calendar\CalendarService;
+use Intranet\Services\Notifications\ConfirmAndSend;
+use Intranet\Services\General\StateService;
 use Jenssegers\Date\Date;
 
 
@@ -25,8 +29,8 @@ use Jenssegers\Date\Date;
 class ComisionController extends ModalController
 {
 
-    use traitImprimir,  traitSCRUD,
-        traitAutorizar;
+    use Imprimir,  SCRUD,
+        Autorizacion;
 
 
     /**
@@ -43,12 +47,15 @@ class ComisionController extends ModalController
     public function store(ComisionRequest $request)
     {
         $new = new Comision();
+        $request->merge([
+            'idProfesor' => $request->idProfesor ?? authUser()->dni,
+        ]);
+         
         $new->fillAll($request);
         if ($new->fct) {
             return $this->detalle($new->id);
-        } else {
-            return $this->confirm($new->id);
         }
+        return $this->confirm($new->id);
     }
 
     public function update(ComisionRequest $request, $id)
@@ -61,10 +68,9 @@ class ComisionController extends ModalController
     {
         $comision = Comision::findOrFail($id);
         if ($comision->estado == 0) {
-            return ConfirmAndSend::render($this->model, $id,'Enviar a direcció i correus confirmació');
-        } else {
-            return $this->redirect();
+            return ConfirmAndSend::render($this->model, $id, 'Enviar a direcció i correus confirmació');
         }
+        return $this->redirect();
     }
 
 
@@ -76,12 +82,24 @@ class ComisionController extends ModalController
      {
          $this->panel->setBotonera(['create']);
          $this->panel->setBothBoton('comision.detalle', ['where' => ['estado', '<', '2','fct','==',1,'estado','>',-1]]);
-         $this->panel->setBoton('grid', new BotonImg('comision.edit', ['where' => ['estado', '>=', '0', 'estado', '<', '2']]));
-         $this->panel->setBoton('grid', new BotonImg('comision.delete', ['where' => ['estado', '>=', '0', 'estado', '<', '2']]));
-         $this->panel->setBothBoton('comision.cancel', ['class'=>'confirm','where' => ['estado', '>=', '2', 'estado', '<', '4']]);
+         $this->panel->setBoton(
+             'grid',
+             new BotonImg('comision.edit', ['where' => ['estado', '>=', '0', 'estado', '<', '2']])
+         );
+         $this->panel->setBoton(
+             'grid',
+             new BotonImg('comision.delete', ['where' => ['estado', '>=', '0', 'estado', '<', '2']])
+         );
+         $this->panel->setBothBoton(
+             'comision.cancel',
+             ['class'=>'confirm','where' => ['estado', '>=', '2', 'estado', '<', '4']]
+         );
          $this->panel->setBothBoton('comision.unpaid', ['where' => ['estado', '==', '3','total','>',0]]);
          $this->panel->setBothBoton('comision.init', ['where' => ['estado', '==', '0','desde','posterior',Hoy()]]);
-         $this->panel->setBothBoton('comision.notification', ['where' => ['estado', '>', '0', 'hasta', 'posterior', Hoy()]]);
+         $this->panel->setBothBoton(
+             'comision.notification',
+             ['where' => ['estado', '>', '0', 'hasta', 'posterior', Hoy()]]
+         );
     }
 
 
@@ -89,11 +107,10 @@ class ComisionController extends ModalController
     {
         $manana = new Date('tomorrow');
         $manana->addHours(8);
-        if (Fct::misFcts()->count()){
+        if (Fct::misFcts()->count()) {
             $fct = 1;
             $servicio = "Visita a Empreses per FCT: ";
-        }
-        else{
+        } else {
             $fct = 0;
             $servicio = "Visita a Empreses: ";
         }
@@ -107,16 +124,17 @@ class ComisionController extends ModalController
         if (!$fct) {
             $comision->deleteInputType('fct');
         }
-        if (AuthUser()->dni == config('contacto.director')) {
+        if (AuthUser()->dni == config('avisos.director')) {
             $comision->setInputType('idProfesor', ["type" => "select"]);
         }
         return $comision;
     }
 
-    private function enviarCorreos($comision){
-        foreach ($comision->Fcts as $fct){
-            if ($fct->pivot->aviso){
-                $this->sendEmail($fct,$comision->desde);
+    private function enviarCorreos($comision)
+    {
+        foreach ($comision->Fcts as $fct) {
+            if ($fct->pivot->aviso) {
+                $this->sendEmail($fct, $comision->desde);
             }
             Activity::record('visita', $fct, null, $comision->desde, 'Visita Empresa');
         }
@@ -125,7 +143,8 @@ class ComisionController extends ModalController
 
     private function sendEmail($elemento, $fecha)
     {
-        if (file_exists(storage_path("tmp/visita_$elemento->id.ics"))){
+
+        if (file_exists(storage_path("tmp/visita_$elemento->id.ics"))) {
             unlink(storage_path("tmp/visita_$elemento->id.ics"));
         }
 
@@ -143,11 +162,12 @@ class ComisionController extends ModalController
                 $elemento->Centro
             )->render());
         $attach = [ "tmp/visita_$elemento->id.ics" => 'text/calendar'];
-        $documento = new DocumentoFct('visitaComision');
+        $documento = new DocumentoFctConfig('visitaComision');
         $documento->fecha = $fecha;
+        $elemento->desde = $fecha;
 
 
-        $mail = new MyMail($elemento, $documento->view, $documento->email, $attach,'visita');
+        $mail = new MyMail($elemento, $documento->view, $documento->email, $attach, 'visita');
         $mail->send($fecha);
 
     }
@@ -168,7 +188,7 @@ class ComisionController extends ModalController
      */
     public function payment()
     {
-        return $this->imprimir('payments',4,5,'landscape',false);
+        return $this->imprimir('payments', 6, 5, 'landscape', false);
     }
 
     public function printAutoritzats()
@@ -203,37 +223,46 @@ class ComisionController extends ModalController
      */
     public function autorizar()
     {
-        $this->makeAll(Comision::where('estado','1')->get(),2 );
+        StateService::makeAll(Comision::where('estado', '1')->get(), 2);
         return back();
     }
 
     public function detalle($id)
     {
-        $comision = Comision::find($id);
-        $all = Fct::esFct()->misFcts()->orWhere('cotutor', authUser()->dni)->distinct()->orderBy('id')->get();
-        $allFcts = collect();
-        foreach ($all as $fct){
-            $allFcts[$fct->Colaboracion->idCentro] = $fct;
-        }
-        $allFcts = hazArray($allFcts, 'id', 'Centro');
-        asort($allFcts);
+        $comision = Comision::findOrFail($id);
+        $all = Fct::esFct()
+            ->where(function ($query): void {
+                $query->misFcts()->orWhere('cotutor', authUser()->dni);
+            })
+            ->with('Colaboracion')
+            ->orderBy('id')
+            ->get();
+
+        // Manté un únic FCT per centre (l'últim per id), i prepara el select ordenat per nom.
+        $allFcts = $all
+            ->filter(fn (Fct $fct) => (bool) $fct->Colaboracion)
+            ->keyBy(fn (Fct $fct) => (string) $fct->Colaboracion->idCentro)
+            ->mapWithKeys(fn (Fct $fct) => [$fct->id => $fct->Centro])
+            ->sort()
+            ->all();
+
         return view('comision.detalle', compact('comision', 'allFcts'));
     }
 
-    public function createFct(Request $request, $comision_id)
+    public function createFct(Request $request, $comisionId)
     {
-        $comision = Comision::find($comision_id);
+        $comision = Comision::find($comisionId);
         $aviso = isset($request->aviso)?1:0;
         $comision->fcts()
             ->syncWithoutDetaching([$request->idFct => ['hora_ini' => $request->hora_ini ,'aviso' => $aviso]]);
-        return $this->detalle($comision_id);
+        return $this->detalle($comisionId);
     }
 
-    public function deleteFct($comision_id, $fct_id)
+    public function deleteFct($comisionId, $fctId)
     {
-        $comision = Comision::find($comision_id);
-        $comision->fcts()->detach($fct_id);
-        return $this->detalle($comision_id);
+        $comision = Comision::find($comisionId);
+        $comision->fcts()->detach($fctId);
+        return $this->detalle($comisionId);
     }
 
 }

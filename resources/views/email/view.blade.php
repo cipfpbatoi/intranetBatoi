@@ -105,7 +105,7 @@
     <div id="area" class="editor-wrapper">{!! $contenido !!} </div>
     <div class="form-group">
             {!! Form::label('file', 'Adjunt') !!}
-            {!! Form::file('file') !!}
+            {!! Form::file('file[]', ['multiple'=>true]) !!}
     </div>
     {!! Form::submit('Submit', ['class' => 'btn btn-info']) !!}
     {!! Form::close() !!}

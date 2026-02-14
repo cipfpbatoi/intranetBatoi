@@ -2,39 +2,34 @@
 
 namespace Tests;
 
-use Intranet\Entities\Profesor;
-
-use Laravel\BrowserKitTesting\TestCase as BaseTestCase;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use ReflectionClass;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
-    
-    public $baseUrl = 'http://localhost';
-    
-    public function direccionUser(){
-        return Profesor::find('007864107Q');
-    }
-    public function defaultUser(){
-        return Profesor::find('021652470V');
-    }  
-    public function defaultTutor(){
-        return Profesor::find('021652470V');
-    }
-    public function siguiente($tabla){
-       $ultim = DB::select("SELECT `AUTO_INCREMENT` AS ultimo FROM  INFORMATION_SCHEMA.TABLES
-            WHERE TABLE_SCHEMA = 'intranet' AND TABLE_NAME   = '$tabla'");
-       return $ultim[0]->ultimo;
-    }
-    public function newModel($model,array $fields)
+
+    /**
+     * Executa un mètode protegit o privat mitjançant reflexió.
+     */
+    protected function callProtectedMethod(object $object, string $method, array $parameters = [])
     {
-        $modelo = new $model;
-        foreach ($fields as $name => $value){
-            $modelo->$name = $value;
-        }
-        return $modelo;
+        $reflection = new ReflectionClass($object);
+        $methodReflection = $reflection->getMethod($method);
+        $methodReflection->setAccessible(true);
+
+        return $methodReflection->invokeArgs($object, $parameters);
+    }
+
+    /**
+     * Obté el valor d'una propietat protegida o privada.
+     */
+    protected function getProtectedProperty(object $object, string $property)
+    {
+        $reflection = new ReflectionClass($object);
+        $propertyReflection = $reflection->getProperty($property);
+        $propertyReflection->setAccessible(true);
+
+        return $propertyReflection->getValue($object);
     }
 }

@@ -3,21 +3,25 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Grupo;
-use Intranet\Http\Controllers\Auth\PerfilController;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Alumno;
 use Illuminate\Support\Facades\Auth;
-use Jenssegers\Date\Date;
-use Intranet\Entities\Departamento;
-use Intranet\Entities\Horario;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\Alumno;
+use Intranet\Entities\Departamento;
+use Intranet\Entities\Grupo;
+use Intranet\Entities\Horario;
+use Intranet\Entities\Profesor;
+use Intranet\Http\Controllers\Auth\PerfilController;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Mail\Comunicado;
+use Intranet\Services\UI\FormBuilder;
+use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
-use Intranet\Jobs\SendEmail;
 
 
 class ProfesorController extends PerfilController
@@ -31,8 +35,8 @@ class ProfesorController extends PerfilController
      * gridfields -> los campos que se muestran en el listado de la vista index
      */
 
-use traitAutorizar,
-    traitImprimir;
+use Autorizacion,
+    Imprimir;
 
     const PROFILE_PROFESOR = 'profile.profesor';
     protected $model = 'Profesor';
@@ -40,6 +44,7 @@ use traitAutorizar,
     protected $gridFields = ['Xdepartamento', 'FullName', 'Xrol','fecha_baja','Substitut'];
     protected $perfil = 'profesor';
     protected $parametresVista = ['modal' => ['detalle','aviso']];
+
 
     public function index()
     {
@@ -51,6 +56,8 @@ use traitAutorizar,
         $this->iniBotones();
         return $this->grid($todos);
     }
+
+
 
     public function departamento()
     {
@@ -79,7 +86,7 @@ use traitAutorizar,
 
     public function fse()
     {
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         if (isset($grupo)) {
             return $this->hazPdf(
                 'pdf.reunion.actaFSE',
@@ -162,7 +169,11 @@ use traitAutorizar,
     public function miApiToken()
     {
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
-        dispatch(new SendEmail(AuthUser()->email, $remitente, 'email.apitoken', Profesor::find(AuthUser()->dni)));
+        $user = AuthUser();
+        $profesor = Profesor::find($user->dni);
+
+        Mail::to($user->email)->send(new Comunicado($remitente, $profesor, 'email.apitoken'));
+
         Alert::info('Correu enviat');
         return back();
     }
@@ -203,15 +214,15 @@ use traitAutorizar,
         $cargo = 'Professorat';
         if (esRol($profesor->rol, config('roles.rol.direccion'))) {
             switch ($profesor->dni) {
-                case config(fileContactos().'.director'): $cargo = 'Director';
+                case config('avisos.director'): $cargo = 'Director';
                     break;
-                case config(fileContactos().'.secretario'): $cargo = 'Secretària';
+                case config('avisos.secretario'): $cargo = 'Secretària';
                     break;
-                case config(fileContactos().'vicedirector'): $cargo = 'ViceDirector';
+                case config('avisos.vicedirector'): $cargo = 'ViceDirector';
                     break;
-                case config(fileContactos().'jefeEstudios'): $cargo = "Cap d'Estudis";
+                case config('avisos.jefeEstudios'): $cargo = "Cap d'Estudis";
                     break;
-                case config(fileContactos().'jefeEstudios2'): $cargo = "Cap d'Estudis";
+                case config('avisos.jefeEstudios2'): $cargo = "Cap d'Estudis";
                     break;
                 default: $cargo = 'Professorat';
             }

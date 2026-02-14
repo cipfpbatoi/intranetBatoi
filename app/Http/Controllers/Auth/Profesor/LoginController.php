@@ -41,6 +41,7 @@ use AuthenticatesUsers;
         // check if the value is a validate email address and assign the field name accordingly
         $field = filter_var($username, FILTER_VALIDATE_EMAIL) ? 'email' : $this->username();
 
+        
         // return the credentials to be used to attempt login
         return [
             $field => $request->get($this->username()),

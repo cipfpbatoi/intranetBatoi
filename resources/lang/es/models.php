@@ -20,6 +20,7 @@ return array(
 
 	
         'Alumno' => array(
+          'index' => "Listado de alumnos",
           'show' => 'Datos del Alumno',
           'edit' => 'Modificación Perfil Alumno'
         ),
@@ -60,6 +61,7 @@ return array(
                 '2' => 'Justificada',
                 '1' => 'Sin justificante',
                 '5' => 'Larga Duración',
+                '6' => 'Itaca',
                 '0' => 'No enviada/autorizada'
                 
              ),
@@ -69,11 +71,8 @@ return array(
                 'index' => 'Listado Profesores',
                 'list' => 'Profesores Ausentes',
                 'horario-cambiar' => 'Cambiar horario Profesor',
-                'titulo' => 'Entrevistas FCTs de :quien',
-
-        ),
-        'profesor' => array(
-            'files' => "Ficheros del usuario",
+                'titulo' => 'Documentación Adicional Prácticas de :quien',
+                'files' => "Ficheros del usuario",
         ),
         'Menu' => array(
                 'index' => 'Elementos del menú',
@@ -101,6 +100,7 @@ return array(
         'Incidencia' => array(
             'index' => 'Gestionar incidencias',
             'create' => 'Incidencia',
+            'show' => 'Mostrar incidencia',
             '3' => 'Resuelta',
             '2' => 'En proceso',
             '1' => 'Asignada',
@@ -124,10 +124,13 @@ return array(
             'autorizar' => 'Autorizar todas actividades',
             'notification' => 'Avisar profesorado',
             'value' => 'Valorar actividad',
+            'pdfVal' => 'Imprimir Valoración',
+            'showVal' => 'Mostrar valoración',
             '2' => 'Autorizada',
             '3' => 'Impresa',
             '4' => 'Valorada',
             '1' => 'Pendiente',
+            '5' => 'Itaca',
             '0' => 'Rechazada/No comunicada'
         ),
         'TipoIncidencia' => array(
@@ -336,7 +339,9 @@ return array(
             'pg0301' => 'Hoja Control Servicio',
             'pr0402' => 'Entrevista Alumnado',
             'pr0401' => 'Entrevista Final Instructor',
-            'pasqua' => 'Hoja Vacaciones',
+            'autTutor' => 'Autorización Tutor Situación Excepcional',
+            'autDireccio' => 'Autorización Dirección Situación Excepcional',
+            'autAlumnat' => 'Conformidad Alumnado Situación Excepcional',
             'print' => 'Informes',
             'list' => 'Acta Grupo :quien',
             'acta' => 'Pedir acta de evaluación',
@@ -344,9 +349,18 @@ return array(
             'send' => 'Enviar Correo Inicial Alumnos',
             'default' => 'x Empresa',
             'link' => 'Adjuntar ficheros',
-            'an1' => 'Imprimir anexos I',
-            'an2' => 'Imprimir anexos II',
-            'an3' => 'Imprimir anexos III',
+            'an1' => 'Imprimir anexos I firmados',
+            'an2' => 'Imprimir anexos II firmados',
+            'an3' => 'Imprimir anexos III firmados',
+            'an5' => 'Imprimir comptencias adquiridas'
+        ),
+        'Ipguardia' => array(
+            'index' => 'Control IP',
+        ),
+        'Setting' => array(
+            'index' => 'Variables de Configuración',
+            'edit' => 'Editar Configuración',
+            'create' => 'Crear Configuración',
         ),
         'Dual' => array(
             'index' => 'FP Dual',
@@ -411,7 +425,8 @@ return array(
             '0' => 'No comunicada',
             '1' => 'Pendiente',
             '2' => 'Justificada',
-            '3' => 'Rechazada'
+            '3' => 'Rechazada',
+            '4' => 'Itaca'
         ),
         'Instructor' => array(
           'index' => 'Consulta de instructores',
@@ -431,6 +446,9 @@ return array(
             'edit' => 'Edita Horario',
             'cambiar' => "Canviar funciones horario",
         ),
+        'Modulo_grupo' => array(
+            'index' => 'Listado de módulos',
+        ),
         'Alumnofct' => array(
             'index' => 'Fct x Alumno',
             'convalidacion' => 'FCT Convalidada/Exento',
@@ -442,9 +460,9 @@ return array(
             'pg0301' => "Entregada documentación",
             'default' => 'x Alumne',
             'selecciona' => 'Alumno/a',
-            'A5' => 'Informe valoratiu A5',
             'delete' => 'Borra fct',
             'unlink' => 'Borra conexión con el SAO',
+            'importa' => 'Importa anexos dual año anterior'
 
         ),
         'AlumnoFct' => array(
@@ -453,11 +471,20 @@ return array(
         ),
         'Alumnofctaval' => array(
           'index' => 'Avaluació FCT i projecte',
-            'titulo' => "Anexos SAO :quien"
+            'list' => "Listado pendientes de evaluación del grupo :quien",
+            'titulo' => "Anexos FCT/DUAL de :quien"
         ),
         'Fctcap' => array(
             'index' => 'Control Fct :quien',
             'check' => 'Control documentación'
+
+        ),
+        'Fctdual' => array(
+            'index' => 'Control Dual :quien',
+            'check' => 'Control documentacióN'
+        ),
+        'FctDay' => array(
+            'show' => 'Calendario prácticas :quien',
 
         ),
         'Poll' => array(
@@ -484,18 +511,23 @@ return array(
             'show' => 'Ver Materiales'
         ),
         'Articulo' => array(
-            'index' => 'Mostra Articulos',
-            'edit' => 'Editar Articulo',
-            'show' => 'Mostrar Articulo',
-            'delete' => 'Eliminar Articulo'
+            'index' => 'Mostra Artículos',
+            'edit' => 'Editar Artículo',
+            'show' => 'Mostrar Artículo',
+            'delete' => 'Eliminar Artículo',
+            'create' => 'Crear Artículo'
         ),
         'Sao' => array(
             'post' => 'Conexión SAO',
         ),
-        'Signatura' => array(
-            'post' => 'Firma Anexos',
-            'index' => 'Lista de Firmas pendientes',
-        ),
+    'Signatura' => array(
+        'post' => 'Firma  Anexos',
+        'index' => 'Listado de firmas pendientes de :quien',
+        'show' => 'Ver Estado Firmas',
+        'pdf' => 'Imprimir Fichero',
+        'delete' => 'Borrar Fichero',
+        'send' => "Enviar al instructor"
+    ),
         'Solicitud' => array(
             'index' => "Derivaciones al departamento de Orientación",
             'create' => "Cuestionario de derivación",
@@ -509,6 +541,16 @@ return array(
             '2' => 'En proceso',
             '3' => 'Resuelta',
 
+        ),
+        'Cotxe' => array(
+            'index' => 'Mantenimento de Vehículos',
+            'create' => 'Crear Vehículo',
+        ),
+        'Tipoactividad' => array(
+            'index' => 'Gestionar Tipo Actividad Extraescolar',
+        ),
+        'TipoActividad' => array(
+            'create' => 'Crear Tipo Actividad Extraescolar',
         ),
         'modelos' => array(
             'Comision' => 'Comisión de Servicio',
@@ -550,7 +592,9 @@ return array(
             'ArticuloLote' => 'Articulo de Factura',
             'Articulo' => 'Articulo',
             'Incidencia' => 'Incidencia',
-            'Fctcap' => 'Revisión FCT'
+            'Fctcap' => 'Revisión FCT',
+            'Signatura' => 'Firmas Digitales',
+            'Cotxe' => 'Vehículos'
         ),
         'resign' => array(
             'Falta' => 'El documento no justifica la baja',

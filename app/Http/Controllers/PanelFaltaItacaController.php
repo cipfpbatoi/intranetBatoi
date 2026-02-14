@@ -2,7 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonIcon;
+use Intranet\Http\Controllers\Core\BaseController;
+
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\Http\Traits\Core\Panel;
 
 /**
  * Class PanelFaltaItacaController
@@ -10,8 +14,9 @@ use Intranet\Botones\BotonIcon;
  */
 class PanelFaltaItacaController extends BaseController
 {
-    use traitPanel;
+    use Panel;
 
+    const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
     /**
      * @var string
      */
@@ -35,16 +40,36 @@ class PanelFaltaItacaController extends BaseController
     /**
      * @var array
      */
-    protected $parametresVista = ['modal' => ['explicacion']];
+    protected $parametresVista = ['modal' => ['explicacion','loading','ItacaPassword']];
 
     /**
      *
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('profile', new BotonIcon("$this->model.resolve", ['class' => 'btn-success authorize', 'where' => ['estado', '!=', '2']], true));
-        $this->panel->setBoton('profile', new BotonIcon("$this->model.refuse", ['class' => 'btn-danger refuse', 'where' => ['estado', '>', '0','estado','<','3']], true));
-        $this->panel->setBothBoton('itaca.gestor',['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                "direccion.itaca.birret",
+                ['class' => 'btn-info convalidacion', 'roles' => config(self::ROLES_ROL_DIRECCION)]
+            ));
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                "$this->model.resolve",
+                ['class' => 'btn-success authorize', 'where' => ['estado', '!=', '2']],
+                true
+            )
+        );
+        $this->panel->setBoton(
+            'profile',
+            new BotonIcon(
+                "$this->model.refuse",
+                ['class' => 'btn-danger refuse', 'where' => ['estado', '>', '0','estado','<','3']],
+                true
+            )
+        );
+        $this->panel->setBothBoton('itaca.gestor', ['img' => 'fa-eye', 'where'=>['idDocumento','!=',null]]);
         
     }
     

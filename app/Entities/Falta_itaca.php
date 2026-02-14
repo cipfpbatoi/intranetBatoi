@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Services\AdviseService;
+use Intranet\Services\Notifications\AdviseService;
 use Jenssegers\Date\Date;
 
 class Falta_itaca extends Model
@@ -28,7 +28,7 @@ class Falta_itaca extends Model
     
     public function getNombreAttribute()
     {
-        return $this->Profesor->nameFull;
+        return $this->Profesor->nameFull??'';
     }
     public function getHorasAttribute()
     {

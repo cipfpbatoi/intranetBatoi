@@ -9,7 +9,7 @@ use Intranet\Events\ActivityReport;
 class Centro extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'centros';
     protected $fillable = [
@@ -20,7 +20,8 @@ class Centro extends Model
         'horarios',
         'observaciones',
         'idioma',
-        'codiPostal'];
+        'codiPostal',
+        'idSao'];
     protected $rules = [
         'idEmpresa' => 'required',
         'nombre' => 'required',

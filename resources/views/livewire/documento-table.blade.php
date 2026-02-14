@@ -1,0 +1,158 @@
+<div>
+    <div class="row" style="margin-bottom: 12px;">
+        <div class="col-md-4 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Cercar en qualsevol camp..."
+                   wire:model.live.debounce.500ms="search">
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
+            <select class="form-control" wire:model.live="tipoDocumento">
+                <option value="">Tots els tipus</option>
+                @foreach ($tipoOptions as $key => $label)
+                    <option value="{{ $key }}">{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
+            <select class="form-control" wire:model.live="curso">
+                <option value="">Tots els cursos</option>
+                @foreach ($cursoOptions as $cursoOption)
+                    <option value="{{ $cursoOption }}">{{ $cursoOption }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
+            @if ($isDireccion)
+                <input type="text"
+                       class="form-control"
+                       placeholder="Propietari"
+                       wire:model.live.debounce.500ms="propietario">
+            @else
+                <input type="text"
+                       class="form-control"
+                       value="{{ $propietario }}"
+                       disabled>
+            @endif
+        </div>
+        <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Tags"
+                   wire:model.live.debounce.500ms="tags">
+        </div>
+    </div>
+
+    <div class="row" style="margin-bottom: 12px;">
+        <div class="col-md-2 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
+            <select class="form-control" wire:model.live="perPage">
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="200">200</option>
+            </select>
+        </div>
+        @if (!$isDireccion)
+            <div class="col-md-4 col-sm-6 col-xs-12" style="margin-bottom: 8px;">
+                <span class="text-muted">Mostrant només els teus documents</span>
+            </div>
+        @endif
+        <div class="col-md-6 col-sm-12 col-xs-12 text-right" style="margin-bottom: 8px;">
+            <span wire:loading class="text-muted">Carregant...</span>
+        </div>
+    </div>
+
+    <style>
+        .documento-table .sticky-actions {
+            position: sticky;
+            right: 0;
+            background: #fff;
+            z-index: 2;
+            white-space: nowrap;
+        }
+        .documento-table thead .sticky-actions {
+            z-index: 3;
+            background: #f5f5f5;
+        }
+        .documento-table .sticky-actions::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            bottom: 0;
+            width: 6px;
+            background: linear-gradient(to left, rgba(0,0,0,0.08), rgba(0,0,0,0));
+        }
+    </style>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered documento-table">
+            <thead>
+            <tr>
+                <th>Tipus</th>
+                <th>Descripció</th>
+                <th>Curs</th>
+                <th>ID</th>
+                <th>Propietari</th>
+                <th>
+                    <a href="#" wire:click.prevent="sortBy('created_at')">
+                        Creació
+                        @if ($sortField === 'created_at')
+                            {!! $sortDirection === 'asc' ? '&uarr;' : '&darr;' !!}
+                        @endif
+                    </a>
+                </th>
+                <th>Grup / Cicle / Mòdul</th>
+                <th>Tags</th>
+                <th>Detall</th>
+                <th>Fitxer</th>
+                <th class="sticky-actions">Accions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @forelse ($documentos as $documento)
+                <tr>
+                    <td>{{ $documento->tipoDocumento }}</td>
+                    <td>{{ $documento->descripcion }}</td>
+                    <td>{{ $documento->curso }}</td>
+                    <td>{{ $documento->idDocumento }}</td>
+                    <td>{{ $documento->propietario }}</td>
+                    <td>{{ $documento->created_at }}</td>
+                    <td>
+                        {{ $documento->grupo }}
+                        @if (!empty($documento->ciclo) || !empty($documento->modulo))
+                            - {{ $documento->ciclo }} {{ $documento->modulo ? '- '.$documento->modulo : '' }}
+                        @endif
+                    </td>
+                    <td>{{ $documento->tags }}</td>
+                    <td>{{ $documento->detalle }}</td>
+                    <td>{{ $documento->fichero }}</td>
+                    <td class="sticky-actions">
+                        @if ($documento->link && in_array($documento->rol, RolesUser(AuthUser()->rol)))
+                            <a class="btn btn-xs btn-info" href="{{ route('documento.show', $documento->id) }}" title="Veure">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                        @endif
+                        @if (userIsAllow(config('roles.rol.direccion')))
+                            <a class="btn btn-xs btn-warning" href="{{ route('documento.edit', $documento->id) }}" title="Editar">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a class="btn btn-xs btn-danger" href="{{ route('documento.destroy', $documento->id) }}" title="Eliminar">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        @endif
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="13" class="text-center text-muted">No hi ha dades disponibles</td>
+                </tr>
+            @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center">
+        {{ $documentos->links() }}
+    </div>
+</div>

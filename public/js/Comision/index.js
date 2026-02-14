@@ -13,6 +13,59 @@ $(function() {
 	$("#formDialogo").on("submit", function(){
 		$(this).attr("action","/direccion/comision/"+id+"/refuse");
 	});
+	$(".paid").click(function() {
+		// Comprovem si alguna casella de selecció amb la classe 'user' està seleccionada
+		event.preventDefault();
+		var token = $("#_token").text();
+
+		var selectedCheckboxes = $(".user:checked");
+
+		if (selectedCheckboxes.length > 0) {
+
+			var completedRequests = 0;
+
+			selectedCheckboxes.each(function(i,checkbox) {
+				var url = "/api/comision/"+checkbox.name+"/prePay";
+				$.ajax({
+					url: url, // Ajusta la URL de la teva API
+					type: "PUT",
+					data: {
+						api_token: token,
+					},
+					success: function(data) {
+						console.log("Petició PUT per " + name + " enviada amb èxit.");
+						// Incrementem el comptador de peticions completades
+						completedRequests++;
+
+						// Comprovem si totes les peticions s'han completat
+						if (completedRequests === selectedCheckboxes.length) {
+							// Totes les peticions han acabat, processa l'enllaç aquí
+							console.log("Totes les peticions PUT han acabat, processant l'enllaç...");
+							// Aquí pots posar el codi per processar l'enllaç
+						} else {
+							alert("Algunes peticions no ha sigut processades.");
+						}
+						$(location).attr('href', '/direccion/comision/paid');
+					},
+					error: function() {
+						console.error("Hi ha hagut un error en l'enviament de la petició PUT per " + name + ".");
+						// Incrementem el comptador de peticions completades
+						completedRequests++;
+
+						// Comprovem si totes les peticions s'han completat
+						if (completedRequests === selectedCheckboxes.length) {
+							// Totes les peticions han acabat, processa l'enllaç aquí
+							console.log("Totes les peticions PUT han acabat, processant l'enllaç...");
+							// Aquí pots posar el codi per processar l'enllaç
+						}
+						alert("S'ha produit una errada en el processament.");
+					}
+				});
+			});
+		} else {
+			alert("No hi ha cap casella de selecció seleccionada.");
+		}
+	});
 })
 
 function getToken() {

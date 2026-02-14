@@ -2,16 +2,22 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
 
-use Intranet\Botones\BotonImg;
-use Intranet\Http\Requests\ExpedienteRequest;
-use Intranet\Services\GestorService;
-use Intranet\Services\StateService;
-use Jenssegers\Date\Date;
-use Intranet\Entities\Expediente;
-use Styde\Html\Facades\Alert;
-use Intranet\Entities\TipoExpediente;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\Expediente;
+use Intranet\Entities\TipoExpediente;
+use Intranet\Http\Requests\ExpedienteRequest;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Http\Traits\Core\DropZone;
+use Intranet\Services\General\GestorService;
+use Intranet\Services\General\StateService;
+use Intranet\Services\School\ExpedienteWorkflowService;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -21,8 +27,8 @@ use Illuminate\Http\Request;
 class ExpedienteController extends ModalController
 {
 
-    use traitImprimir,traitDropZone,
-        traitAutorizar;
+    use Imprimir,DropZone,
+        Autorizacion;
 
     /**
      * @var array
@@ -72,7 +78,7 @@ class ExpedienteController extends ModalController
      */
     public function autorizar()
     {
-        $this->makeAll(Expediente::where('estado', '1')->get(), 2);
+        app(ExpedienteWorkflowService::class)->authorizePending();
         return back();
     }
 
@@ -84,15 +90,10 @@ class ExpedienteController extends ModalController
      */
     protected function init($id)
     {
-        $expediente = Expediente::find($id);
-        $staSrv = new StateService($expediente);
-            // orientacion
-        if ($expediente->tipoExpediente->orientacion >= 1){
-            $mensaje = $expediente->explicacion.' .Grup '.$expediente->Alumno->Grupo->first()->nombre;
-            $staSrv->putEstado(4, $mensaje);
-        } else {
-            $staSrv->putEstado(1);
+        if (!app(ExpedienteWorkflowService::class)->init($id)) {
+            return back()->with('error', 'Expedient no trobat.');
         }
+
         return back();
     }
 
@@ -107,22 +108,17 @@ class ExpedienteController extends ModalController
      */
     protected function pasaOrientacion($id)
     {
-        $expediente = Expediente::find($id);
-        $staSrv = new StateService($expediente);
-        $staSrv->putEstado(5);
-        $expediente->fechasolucion = Hoy();
-        $expediente->save();
+        if (!app(ExpedienteWorkflowService::class)->passToOrientation($id)) {
+            return back()->with('error', 'Expedient no trobat.');
+        }
 
         return back();
     }
 
     protected function assigna($id,Request $request){
-        $expediente = Expediente::find($id);
-        $staSrv = new StateService($expediente);
-        $expediente->idAcompanyant = $request->idAcompanyant;
-        $expediente->fechasolucion = Hoy();
-        $expediente->save();
-        $staSrv->putEstado(5,"Assignat professor Acompanyant ".$expediente->Acompanyant->fullName);
+        if (!app(ExpedienteWorkflowService::class)->assignCompanion($id, $request->idAcompanyant)) {
+            return back()->with('error', 'Expedient no trobat.');
+        }
 
         return back();
     }
@@ -147,29 +143,43 @@ class ExpedienteController extends ModalController
      */
     public function imprimir()
     {
-        $expendientes = Expediente::listos()->get();
-        if ($expendientes->Count()){
+        $expedientes = Expediente::listos()->get();
+
+        if ($expedientes->count()) {
             foreach (TipoExpediente::all() as $tipo) {
-                $todos = $expendientes->where('tipo', $tipo->id);
-                if ($todos->Count()) {
-                    $pdf = $this->hazPdf("pdf.expediente.$tipo->vista", $todos);
-                    $nom = $this->model . new Date() . '.pdf';
+                $todos = $expedientes->where('tipo', $tipo->id);
+
+                if ($todos->count()) {
+                    // Generem el PDF
+                    $pdf = self::hazPdf("pdf.expediente.$tipo->vista", $todos);
+
+                    // Nom del fitxer
+                    //$nom = "Expediente_" . $tipo->titulo . "_" . now()->format('Ymd_His') . ".pdf";
+                    $nom = "Expediente_" . Str::slug($tipo->titulo, '_') . "_" . now()->format('Ymd_His') . ".pdf";
+
                     $nomComplet = 'gestor/' . Curso() . '/informes/' . $nom;
+                    $tags = "listado llistat expediente expedient $tipo->titulo";
+
+                    // Guardem el document
                     $gestor = new GestorService();
-                    $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => "listado llistat expediente expedient $tipo->titulo"]);
-                    $this->makeAll($todos, '_print');
-                    $this->makeLink($todos,$doc);
+                    $doc = $gestor->save(['fichero' => $nomComplet, 'tags' => $tags]);
+
+                    // Modifiquem l'estat de tots els elements
+                    StateService::makeAll($todos, '_print');
+
+                    // Enllacem els elements amb el document
+                    StateService::makeLink($todos, $doc);
+                     // Guardem i descarreguem el PDF
                     $pdf->save(storage_path('/app/' . $nomComplet));
                     return response()->download(storage_path('/app/' . $nomComplet), $nom);
                 }
-            } 
+            }
         }
-        else 
-        {
-            Alert::info(trans('messages.generic.empty'));
-            return back();
-        }
+
+        Alert::info(trans('messages.generic.empty'));
+        return back();
     }
+
 
     /*
     * show($id) return vista

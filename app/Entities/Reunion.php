@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Services\Document\TipoReunionService;
 use Illuminate\Support\Facades\App;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
@@ -13,7 +14,7 @@ use Intranet\Events\ReunionCreated;
 class Reunion extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'reuniones';
     protected $fillable = [
@@ -129,7 +130,7 @@ class Reunion extends Model
 
     public function getTipoOptions()
     {
-        return TipoReunion::allSelect();
+        return TipoReunionService::allSelect();
     }
 
     public function getIdEspacioOptions()
@@ -178,7 +179,7 @@ class Reunion extends Model
 
     public function Tipos()
     {
-        return new TipoReunion($this->tipo);
+        return new TipoReunionService($this->tipo);
     }
 
     public function Grupos()
@@ -215,7 +216,7 @@ class Reunion extends Model
                 $grupo = Departamento::where('id', '=', $profesor->departamento)->get()->first()->cliteral;
                 break;
             case 'Grupo':
-                $grupo = Grupo::QTutor($profesor->dni)->count() ? Grupo::QTutor($profesor->dni)->first()->nombre : '';
+                $grupo = Grupo::QTutor($profesor->dni)->count() ? Grupo::QTutor($profesor->dni)->largestByAlumnes()->first()->nombre : '';
                 break;
             default:
                 $grupo = '';
@@ -247,8 +248,7 @@ class Reunion extends Model
     }
     public function getGrupoClaseAttribute()
     {
-        return $this->Tipos()->colectivo == 'Grupo'?Grupo::QTutor($this->idProfesor)->first():null;
-
+        return $this->Tipos()->colectivo == 'Grupo'?Grupo::QTutor($this->idProfesor)->largestByAlumnes()->first():null;
     }
     public function getInformeAttribute()
     {

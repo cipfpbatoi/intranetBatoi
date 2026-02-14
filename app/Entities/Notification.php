@@ -14,6 +14,7 @@ class Notification extends Model
         'id',
         'data',
         'read_at',
+        'created_at',
     ];
     protected $fillable = [
         'id',
@@ -32,8 +33,7 @@ class Notification extends Model
     }
     public function getFechaAttribute()
     {
-        $json = json_decode($this->data, true);
-        return $json['data'];
+        return $this->created_at->format('Y-m-d');
     }
     public function getLeidoAttribute()
     {

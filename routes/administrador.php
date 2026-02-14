@@ -32,8 +32,14 @@ Route::put('/ciclo/{ciclo}/edit', ['as' => 'ciclo.update', 'uses' => 'CicloContr
 Route::get('/ciclo/{ciclo}/delete', ['as' => 'ciclo.destroy', 'uses' => 'CicloController@destroy']);
 
 Route::resource('/departamento', 'DepartamentoController', ['except' => ['destroy', 'update', 'edit']]);
-Route::put('/departamento/{departamento}/edit', ['as' => 'departamento.update', 'uses' => 'DepartamentoController@update']);
-Route::get('/departamento/{departamento}/delete', ['as' => 'departamento.destroy', 'uses' => 'DepartamentoController@destroy']);
+Route::put(
+    '/departamento/{departamento}/edit',
+    ['as' => 'departamento.update', 'uses' => 'DepartamentoController@update']
+);
+Route::get(
+    '/departamento/{departamento}/delete',
+    ['as' => 'departamento.destroy', 'uses' => 'DepartamentoController@destroy']
+);
 
 Route::resource('/task', 'TaskController', ['except' => ['destroy', 'update', 'edit']]);
 Route::put('/task/{task}/edit', ['as' => 'task.update', 'uses' => 'TaskController@update']);
@@ -51,6 +57,8 @@ Route::get('/alumno/{idAlumne}/change', ['as' =>'alumno.change','uses' => 'Alumn
 // esborra taules canvi de curs
 Route::get('/nuevoCurso', ['as' => 'curso.nuevo.index', 'uses' => 'AdministracionController@nuevoCursoIndex']);
 Route::post('/nuevoCurso', ['as' => 'curso.nuevo', 'uses' => 'AdministracionController@nuevoCurso']);
+
+
 
 // modificar funcions en l'horari
 Route::resource('/horario', 'HorarioController', ['except' => ['destroy', 'update','create']]);
@@ -79,3 +87,12 @@ Route::post('/secure', ['as' => 'secure.door','uses' => 'AdministracionControlle
 
 Route::get('/consulta', 'AdministracionController@consulta');
 Route::post('centro/{id}/empresa/create', 'CentroController@empresaCreateCentro');
+
+Route::resource('/ipguardia', 'IpGuardiaController', ['except' => ['destroy', 'update', 'edit']]);
+Route::get('/ipguardia/{id}/delete', ['as' => 'ipguardia.destroy', 'uses' => 'IpGuardiaController@destroy']);
+Route::put('/ipguardia/{comision}/edit', ['as' => 'ipguardia.update', 'uses' => 'IpGuardiaController@update']);
+
+Route::resource('/setting', 'SettingController', ['except' => ['destroy', 'update', 'edit']]);
+Route::get('/setting/{id}/delete', ['as' => 'settings.destroy', 'uses' => 'SettingController@destroy']);
+Route::put('/setting/{comision}/edit', ['as' => 'settings.update', 'uses' => 'SettingController@update']);
+

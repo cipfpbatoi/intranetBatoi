@@ -5,11 +5,12 @@ namespace Intranet\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailables\Headers;
+
 
 /**
  * Class DocumentRequest
- * @package Intranet\MyMail
+ * @package Intranet\Services\Mail
  */
 class DocumentRequest extends Mailable
 {
@@ -38,6 +39,16 @@ class DocumentRequest extends Mailable
         $this->attach = $attach;
     }
 
+    /*
+    public function headers(): Headers
+    {
+        return new Headers(
+            text: [
+                'Disposition-Notification-To' => $this->mail->from??$this->mail['from'],
+            ],
+        );
+    }
+    */
     /**
      * Build the message.
      *
@@ -55,9 +66,18 @@ class DocumentRequest extends Mailable
             $this->mail->subject??$this->mail['subject']
         )->view($this->view);
 
+
         if (isset($this->attach)) {
-            foreach ($this->attach as $index => $value) {
-                $vista = $vista->attach(storage_path($index), ['mime' => $value]);
+            if (array_depth($this->attach) > 1) {
+                foreach ($this->attach as $file) {
+                    foreach ($file as $index => $value) {
+                        $vista = $vista->attach(storage_path($index), ['mime' => $value]);
+                    }
+                }
+            } else {
+                foreach ($this->attach as $index => $value) {
+                    $vista = $vista->attach(storage_path($index), ['mime' => $value]);
+                }
             }
         }
         return $vista;

@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Entities\Empresa;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
 
 
 /**
@@ -30,14 +30,14 @@ class PanelErasmusController extends PanelEmpresaSCController
            'grid',
            new BotonImg(
                'empresa.detalle',
-               ['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]
+               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
            )
        );
        $this->panel->setBoton(
            'grid',
            new BotonImg(
                'empresa.delete',
-               ['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]
+               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
            )
        );
     }

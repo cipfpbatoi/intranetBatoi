@@ -8,45 +8,49 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.3|^8.0",
-        "barryvdh/laravel-dompdf": "^0.8.6",
-        "barryvdh/laravel-snappy": "^0.4.7",
-        "doctrine/dbal": "^2.6",
+        "php": "^8.2",
+        "ext-gd": "*",
+        "barryvdh/laravel-dompdf": "^3.0",
+        "barryvdh/laravel-snappy": "^1.0.0",
+        "doctrine/dbal": "^3",
         "eluceo/ical": "^0.13.0",
-        "fedeisas/laravel-mail-css-inliner": "^4.0",
-        "fideloper/proxy": "^4.0",
-        "graham-campbell/markdown": "^13.1.1",
+        "fedeisas/laravel-mail-css-inliner": "^5.0",
+        "google/apiclient": "^2.0",
         "guzzlehttp/guzzle": "^7.4",
         "h4cc/wkhtmltopdf-amd64": "^0.12.4",
-        "izi-dev/nova-conditional-field": "^2.1",
+        "igomis/laravel-html": "*",
         "jenssegers/date": "^4.0.0@beta",
-        "laravel/framework": "^8.0",
-        "laravel/nova": "*",
+        "laravel/framework": "^11.0",
         "laravel/socialite": "^5.0",
         "laravel/tinker": "^2.4.1",
-        "laravel/ui": "^2.0",
-        "laravelcollective/html": "^6.0",
-        "livewire/livewire": "^2.10",
-        "lsnepomuceno/laravel-a1-pdf-sign": "^0.0.18",
+        "laravel/ui": "^4.0",
+        "lcobucci/jwt": "^5.3",
+        "livewire/livewire": "3.7.3",
+        "lsnepomuceno/laravel-a1-pdf-sign": "1.1.2",
+        "maatwebsite/excel": "*",
         "mikehaertl/php-pdftk": "^0.8.1",
         "php-webdriver/webdriver": "^1.13",
         "phpoffice/phpspreadsheet": "^1.26",
         "predis/predis": "^1.1",
+        "setasign/fpdf": "^1.8",
+        "setasign/fpdi": "^2.6",
         "simplesoftwareio/simple-qrcode": "~4",
         "smalot/pdfparser": "^2.1",
-        "styde/html": "~1.9"
+        "symfony/http-client": "^7.0",
+        "symfony/mailgun-mailer": "^7.0",
+        "symfony/process": "^7.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
-        "composer/composer": "^1.9",
+        "fakerphp/faker": "*",
         "filp/whoops": "^2.0",
-        "laravel/browser-kit-testing": "^6.2",
-        "laravel/dusk": "^6.25",
+        "laravel/browser-kit-testing": "^7.0",
+        "laravel/sail": "^1.21",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^5.0",
-        "phpunit/phpunit": "^9.0",
-        "symfony/css-selector": "^5.0",
-        "symfony/dom-crawler": "^5.0"
+        "nunomaduro/collision": "^8.0@beta",
+        "phpunit/phpunit": "^10.0",
+        "symfony/css-selector": "^6.2",
+        "symfony/dom-crawler": "^6.2"
     },
     "autoload": {
         "psr-4": {
@@ -63,7 +67,11 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./nova"
+            "url": "packages/html"
+        },
+        {
+            "type": "path",
+            "url": "packages/laravelcollective/html"
         }
     ],
     "extra": {
@@ -87,7 +95,10 @@
     "config": {
         "preferred-install": "dist",
         "sort-packages": true,
-        "optimize-autoloader": true
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "8.3.1"
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

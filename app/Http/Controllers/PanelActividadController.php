@@ -2,8 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
+use Intranet\Http\Controllers\Core\BaseController;
+
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Http\Traits\Core\Panel;
 
 
 /**
@@ -13,7 +16,7 @@ use Intranet\Botones\BotonImg;
 class PanelActividadController extends BaseController
 {
 
-    use traitPanel;
+    use Panel;
 
     /**
      * @var string
@@ -38,8 +41,11 @@ class PanelActividadController extends BaseController
      */
     protected function iniBotones()
     {
-        $this->panel->setBothBoton('actividad.detalle');
-        $this->panel->setBoton('grid', new BotonImg('notificacion', ['where'=>['estado','<','3']]));
+        $this->panel->setBothBoton('actividad.detalle',
+            [
+                'where' => ['estado', '<', '4']
+            ]
+        );
         $this->panel->setBoton('grid', new BotonImg('actividad.edit', ['where'=>['estado','<','3']]));
         $this->panel->setBoton('grid', new BotonImg('actividad.delete', ['where'=>['estado','<','3']]));
         $this->panel->setBoton(
@@ -53,26 +59,37 @@ class PanelActividadController extends BaseController
                 true
             )
         );
-        $this->panel->setBothBoton('actividad.gestor', ['img' => 'fa-archive', 'where'=>['idDocumento','!=',null]]);
+        $this->panel->setBothBoton(
+            'actividad.gestor',
+            [
+                'img' => 'fa-archive',
+                'icon' => 'fa-archive',
+                'where'=>['idDocumento','!=',null ]
+            ]
+        );
+        $this->panel->setBothBoton(
+            'actividad.itaca',
+            [
+                'img' => 'fa-bullseye',
+                'icon' => 'fa-bullseye',
+                'where'=>['estado','==',4]
+            ]
+        );
         $this->panel->setBoton(
             'grid',
             new BotonImg(
                 'actividad.pdfVal',
                 [
                     'img'=>'fa-file-pdf-o',
-                    'where' => ['estado', '==', '4','hasta','anterior',Hoy()]
+                    'where' => ['estado', '>=', '4','hasta','anterior',Hoy()]
                 ]
             )
         );
-        $this->panel->setBoton(
-            'grid',
-            new BotonImg(
-                'actividad.showVal',
-                [
-                    'img'=>'fa-eye-slash',
-                    'where' => ['estado', '==', '4','hasta','anterior',Hoy()]
-                ]
-            )
+        $this->panel->setBothBoton('actividad.showVal',
+            [
+                'img'=>'fa-eye-slash',
+                'where' => ['estado', '>=', '4','hasta','anterior',Hoy()]
+            ]
         );
 
         $this->setAuthBotonera();

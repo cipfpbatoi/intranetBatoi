@@ -12,7 +12,7 @@ use Intranet\Entities\Modulo;
 class Expediente extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     public $timestamps = false;
 
@@ -24,6 +24,7 @@ class Expediente extends Model
         'idProfesor',
         'explicacion',
         'fecha',
+        'fechatramite'
     ];
     protected $inputTypes = [
         'tipo' => ['type' => 'select'],
@@ -32,6 +33,7 @@ class Expediente extends Model
         'idProfesor' => ['type' => 'hidden'],
         'explicacion' => ['type' => 'textarea'],
         'fecha' => ['type' => 'date'],
+        'fechatramite' => ['type' => 'date'],
     ];
     protected $dispatchesEvents = [
         'created' => ActivityReport::class,
@@ -56,10 +58,27 @@ class Expediente extends Model
         $fecha = new Date($salida);
         return $fecha->format('d-m-Y');
     }
+    
+    public function getfechatramiteAttribute($entrada)
+    {
+        $fecha = new Date($entrada);
+        return $fecha->format('d-m-Y');
+    }
+
+    
+
+
+
 
     public function getTipoOptions()
     {
-        return hazArray(TipoExpediente::all(), 'id', 'titulo');
+        $array = [];
+        foreach (TipoExpediente::all() as $tipo) {
+            if (esRol(AuthUser()->rol, $tipo->rol)) {
+                $array[$tipo->id] = $tipo->titulo;
+            }
+        }
+        return $array;
     }
     
     public function getIdModuloOptions()
@@ -104,6 +123,11 @@ class Expediente extends Model
     public function getNomAlumAttribute()
     {
         return $this->Alumno->FullName;
+    }
+
+    public function getNomProfeAttribute()
+    {
+        return $this->Profesor->FullName;
     }
     public function getSituacionAttribute()
     {

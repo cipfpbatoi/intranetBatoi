@@ -1,1 +1,1 @@
-{!!  Intranet\Services\SignaturaService::peu(authUser()->dni) !!}
+{!!  Intranet\Services\Signature\SignaturaService::peu(authUser()->dni) !!}

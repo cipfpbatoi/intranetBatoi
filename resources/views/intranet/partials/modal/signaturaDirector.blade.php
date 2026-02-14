@@ -3,7 +3,7 @@
          message='Selecciona'>
     <table id="tableSignatura"></table>
     <br/>
-    @if(file_exists(storage_path('app/certificats/'.authUser()->fileName.'.tmp')))
+    @if(file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp')))
         <div style="border: 1px solid black;background-color:#ddd" >
             <h3 style="text-align: center">Signatura Digital</h3>
             <label class="control-label" for="password">Introduir Password Intranet:</label>
@@ -13,5 +13,7 @@
         </div>
     @endif
     <br/>
-    @include('layouts.partials.error')
+    <x-ui.errors />
+
 </x-modal>
+{{ Html::script("/js/taulaCheck.js") }}

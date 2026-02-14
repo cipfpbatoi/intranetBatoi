@@ -2,10 +2,12 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\BaseController;
+
 
 use Intranet\Entities\Grupo;
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\AlumnoFct;
 
 class PanelPG0301Controller extends BaseController
@@ -27,7 +29,5 @@ class PanelPG0301Controller extends BaseController
         $this->titulo = ['quien' => $grupo->nombre ];
         return $grupo->codigo;
     }
-    
-    
 
 }

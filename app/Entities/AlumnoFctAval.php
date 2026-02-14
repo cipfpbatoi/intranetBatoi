@@ -2,16 +2,9 @@
 
 namespace Intranet\Entities;
 
-use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Alumno;
-use Jenssegers\Date\Date;
-use Intranet\Entities\AlumnoFct;
-
 class AlumnoFctAval extends AlumnoFct
 {
 
-   
-    
     protected $table = 'alumno_fcts';
     protected $fillable = ['id','idFct','idAlumno', 'calificacion','calProyecto'];
     
@@ -43,10 +36,10 @@ class AlumnoFctAval extends AlumnoFct
      {
          return $query->where('actas', '=', 2);
      }
-     public function scopePendienteNotificar($query, array $alumnos)
+     public function scopePendienteNotificar($query )
      {
-         return $query->whereIn('idAlumno', $alumnos)
-             ->where('correoAlumno', false);
+         return $query->where('calificacion',1)
+             ->where('correoAlumno', 0);
      }
      public function scopeCalificados($query)
      {
@@ -63,53 +56,35 @@ class AlumnoFctAval extends AlumnoFct
      
      public function scopeMisFcts($query, $profesor= null)
      {
-        $profesor = $profesor?$profesor:authUser()->dni;
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
-        if (count($alumnos)) {
-            $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
-            $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
-            $fcts = Fct::select('id')->whereIn('idColaboracion', $colaboraciones)
-                ->orWhere('asociacion', 2)
-                ->orWhere('asociacion', 3)
-                ->get()
-                ->toArray();
-            return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
-        }
-        return $query->whereIn('idAlumno', $alumnos);
+         $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+         $fcts = Fct::select('id')->esDual()->pluck('id');
+         return $query->whereIn('idProfesor', $profesor)->whereNotIn('idFct', $fcts);
     }
 
     public function scopeRealFcts($query, $profesor= null)
     {
-        $profesor = $profesor?$profesor:authUser()->dni;
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
-        if (count($alumnos)) {
-            $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
-            $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
-            $fcts = Fct::select('id')->whereIn('idColaboracion', $colaboraciones)
-                ->orWhere('asociacion', 2)
-                ->get()
-                ->toArray();
-            return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
-        }
-        return $query->whereIn('idAlumno', $alumnos);
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor)->estaSao();
     }
+
+    public function scopeAvaluables($query, $profesor= null)
+    {
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor)->esAval();
+    }
+
 
     public function scopeMisErasmus($query, $profesor= null)
     {
-        $profesor = $profesor?$profesor:authUser()->dni;
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
-        if (count($alumnos)) {
-            $fcts = Fct::select('id')->where('asociacion', 2)->get()->toArray();
-            return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
-        }
-        return $query->whereIn('idAlumno', $alumnos);
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor)->esErasmus();
     }
 
     public function getHorasTotalAttribute()
     {
         return $this->correoAlumno ?
             $this->horas :
-            AlumnoFctAval::where('idAlumno', $this->idAlumno)
+            static::where('idAlumno', $this->idAlumno)
             ->where('correoAlumno', 0)
             ->sum('horas');
     }

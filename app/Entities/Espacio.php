@@ -16,7 +16,7 @@ class Espacio extends Model
         'reservable' => ['type' => 'checkbox'],
     ];
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
 
 

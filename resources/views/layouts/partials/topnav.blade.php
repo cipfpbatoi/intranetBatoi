@@ -19,16 +19,37 @@
                 </li>
                 @if (!isset(authUser()->nia))
                     <li class="">
-                        <a href="{{url('/ficha')}}">
-                            <!--                            <a href="{{url('/api/doficha?dni='.authUser()->dni.'&api_token='.authUser()->api_token)}}">-->
-                            @if ( estaDentro())
-                                {!! Html::image('img/clock-icon.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
-                            @else
-                                {!! Html::image('img/clock-icon-rojo.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
-                            @endif
-                        </a>
+                        
+                            <a href="{{url('/api/doficha?dni='.authUser()->dni.'&api_token='.authUser()->api_token)}}">
+                                @if ( estaDentro())
+                                    {!! Html::image('img/clock-icon.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
+                                @else
+                                    {!! Html::image('img/clock-icon-rojo.png' ,'reloj',array('class' => 'iconomediano', 'id' => 'imgFitxar')) !!}
+                                @endif
+                            </a>
+                       
                     </li>
                 @endif
+                <li class="">
+                    <a href="{{ route('bustia.form') }}" title="Bústia">
+                        <i class="fa fa-comments" style="color:#7e3ff2"></i>
+                        <span class="hidden-xs"> Bústia</span>
+                    </a>
+                </li>
+                @can('manage-bustia-violeta')
+                    @php
+                        $pendents = \Intranet\Entities\BustiaVioleta::pendents()->count();
+                    @endphp
+                    <li class="">
+                        <a href="{{ route('bustia.admin') }}" title="Administrar Bústies">
+                            <i class="fa fa-shield" style="color:#e67e22"></i>
+                            @if($pendents > 0)
+                                <span class="badge bg-red">{{ $pendents }}</span>
+                            @endif
+                            <span class="hidden-xs"> Admin Bústies</span>
+                        </a>
+                    </li>
+                @endcan
                 <li role="presentation" class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown"
                        aria-expanded="false">
@@ -39,29 +60,41 @@
                     </a>
                     <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
                         @foreach (authUser()->unreadNotifications()->paginate(6) as $notifications)
+                            @php
+                                $d = $notifications->data ?? [];
+                                $motiu   = is_array($d['motiu']   ?? null) ? implode(', ', $d['motiu'])   : ($d['motiu']   ?? '');
+                                $emissor = is_array($d['emissor'] ?? null) ? implode(', ', $d['emissor']) : ($d['emissor'] ?? '');
+                                $enlace  = is_string($d['enlace'] ?? null) ? $d['enlace'] : '#';
+                                $fecha   = is_string($d['data']   ?? null) ? $d['data']   : (is_array($d['data'] ?? null) ? implode(' ', $d['data']) : ($d['data'] ?? ''));
+                            @endphp
+
                             <li id='{{$notifications->id}}'>
                                 <a class="papelera" href="/notification/{{$notifications->id}}/delete">
-                                    <span class="image"><img src="/img/delete.png" alt="Marcar como leida"
-                                                             class="iconopequeno"/></span>
+                                    <span class="image">
+                                        <img src="/img/delete.png" alt="Marcar como leida" class="iconopequeno"/>
+                                    </span>
                                 </a>
-                                <a href="#">
-                                <span>
-                                    <span>{{$notifications->data['emissor']}}</span>
-                                    <span class="time">{{$notifications->data['data']}}</span>
-                                </span>
-                                    <span class="message">
-                                    {{$notifications->data['motiu']}}
-                                </span>
+
+                                <a href="{{ $enlace }}">
+                                    <span>
+                                        <span>{{ $emissor }}</span>
+                                        <span class="time">{{ $fecha }}</span>
+                                    </span>
+
+                                    @if ($enlace !== "#")
+                                        <span class="message blue">{{ $motiu }}</span>
+                                    @else
+                                        <span class="message">{{ $motiu }}</span>
+                                    @endif
                                 </a>
                             </li>
-                        @endforeach
+                         @endforeach
                         <div class="text-center">
                             <a href="/notification">
                                 <strong>@lang("messages.buttons.seeAll")</strong>
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         </div>
-                        </li>
                     </ul>
                 </li>
             </ul>

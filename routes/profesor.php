@@ -1,6 +1,10 @@
 <?php
 
 
+use Intranet\Http\Controllers\RedirectAfterAuthenticationController;
+use Intranet\Livewire\ColaboracionesLivewire;
+use Intranet\Livewire\BustiaVioleta\AdminList;
+
 Route::get('/home', ['as' => 'home.profesor', 'uses' => 'Auth\Profesor\HomeController@index']);
 Route::get('/legal', ['as' => 'legal', 'uses' => 'Auth\Profesor\HomeController@legal']);
 Route::get('/logout', ['as' => 'logout', 'uses' => 'Auth\Profesor\LoginController@logout']);
@@ -13,6 +17,7 @@ Route::get('/files', ['as' => 'files.edit', 'uses' => 'Auth\Profesor\PerfilContr
 Route::put('/files', ['as' => 'files.update', 'uses' => 'Auth\Profesor\PerfilController@updateFiles']);
 
 Route::get('/materialbaja/{id}/delete', ['as' => 'material.delete', 'uses' => 'MaterialBajaController@delete']);
+Route::get('/materialbaja/{id}/recover', ['as' => 'material.recover', 'uses' => 'MaterialBajaController@recover']);
 Route::get('/materialbaja/{id}/resolve', ['as' => 'materialBaja.resolve', 'uses' => 'MaterialModController@resolve']);
 Route::get('/materialbaja/{id}/refuse', ['as' => 'materialBaja.refuse', 'uses' => 'MaterialModController@refuse']);
 
@@ -24,18 +29,18 @@ Route::post('/actividad/create', ['as' => 'actividad.store', 'uses' => 'Activida
 Route::put('/actividad/{actividad}/edit', ['as' => 'actividad.update', 'uses' => 'ActividadController@update']);
 Route::get('/actividad/{actividad}/detalle', ['as' => 'actividad.detalle', 'uses' => 'ActividadController@detalle']);
 Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.gestor', 'uses' => 'ActividadController@gestor']);
-Route::post('/actividad/{actividad}/nuevoGrupo', 'ActividadController@altaGrupo');
-Route::get('/actividad/{actividad}/borrarGrupo/{grupo}', 'ActividadController@borrarGrupo');
-Route::post('/actividad/{actividad}/nuevoProfesor', 'ActividadController@altaProfesor');
-Route::get('/actividad/{actividad}/borrarProfesor/{profesor}', 'ActividadController@borrarProfesor');
-Route::get('/actividad/{actividad}/coordinador/{profesor}', 'ActividadController@Coordinador');
+Route::post('/actividad/{actividad}/nuevoGrupo', ['as' => 'actividad.grupo.store', 'uses' => 'ActividadController@altaGrupo']);
+Route::delete('/actividad/{actividad}/grupo/{grupo}', ['as' => 'actividad.grupo.destroy', 'uses' => 'ActividadController@borrarGrupo']);
+Route::post('/actividad/{actividad}/nuevoProfesor', ['as' => 'actividad.profesor.store', 'uses' => 'ActividadController@altaProfesor']);
+Route::delete('/actividad/{actividad}/profesor/{profesor}', ['as' => 'actividad.profesor.destroy', 'uses' => 'ActividadController@borrarProfesor']);
+Route::post('/actividad/{actividad}/coordinador/{profesor}', ['as' => 'actividad.profesor.coordinador', 'uses' => 'ActividadController@Coordinador']);
 Route::get('actividad/campo/{campo}', 'ActividadController@includegrid');
 Route::get('/actividad/{actividad}/init', ['as' => 'actividad.init', 'uses' => 'ActividadController@init']);
 Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => 'ActividadController@show']);
 Route::get('/actividad/{actividad}/notification', ['as' => 'actividad.notificar', 'uses' => 'ActividadController@notify']);
 Route::get('/actividad/{actividad}/autorizacion', ['as' => 'actividad.autorizacion', 'uses' => 'ActividadController@autorizacion']);
 Route::get('/actividad/{actividad}/autorize', ['as' => 'actividad.autorize', 'uses' => 'ActividadController@autorize']);
-Route::get('/actividad/{actividad}/ics', ['as' => 'actividad.ics', 'uses' => 'ActividadController@i_c_s']);
+Route::get('/actividad/{actividad}/ics', ['as' => 'actividad.ics', 'uses' => 'ActividadController@ics']);
 Route::get('/actividadOrientacion', ['as' => 'actividad.orientacion', 'uses' => 'PanelActividadOrientacionController@index']);
 Route::get('/actividadorientacion/create', ['as' => 'actividad.createOrientacion', 'uses' => 'PanelActividadOrientacionController@create']);
 Route::post('/actividadorientacion/create', ['as' => 'actividad.storeOrientacion', 'uses' => 'ActividadController@store']);
@@ -82,7 +87,7 @@ Route::get('/grupotrabajo/{grupotrabajo}/coordinador/{profesor}', 'GrupoTrabajoC
 Route::resource('/curso', 'CursoController', ['except' => ['destroy', 'update']]);
 Route::get('/curso/{curso}/delete', ['as' => 'curso.destroy', 'uses' => 'CursoController@destroy']);
 Route::post('/curso/create', ['as' => 'curso.store', 'uses' => 'CursoController@store']);
-Route::put('/curso/{curso}/edit', ['as' => 'comision.update', 'uses' => 'CursoController@update']);
+Route::put('/curso/{curso}/edit', ['as' => 'curso.update', 'uses' => 'CursoController@update']);
 Route::get('/curso/{curso}/detalle', ['as' => 'curso.detalle', 'uses' => 'CursoController@detalle']);
 Route::get('/alumnocurso/{grupo}', ['as' => 'alumnocurso.show', 'uses' => 'AlumnoCursoController@indice']);
 Route::get('/alumnocurso/{id}/delete', ['as' => 'alumnocurso.delete', 'uses' => 'AlumnoCursoController@destroy']);
@@ -120,6 +125,8 @@ Route::get('/grupo/{grupo}/pdf', ['as' => 'grupo.pdf', 'uses' => 'GrupoControlle
 Route::get('/grupo/{grupo}/edit', ['as' => 'grupo.edit', 'uses' => 'GrupoController@edit']);
 Route::put('/grupo/{grupo}/edit', ['as' => 'grupo.update', 'uses' => 'GrupoController@update']);
 Route::get('/grupo/{grupo}/carnet', ['as' => 'grupo.carnet', 'uses' => 'GrupoController@carnet']);
+Route::post('grupo/list',['as' => 'grupo.list', 'uses' => 'GrupoController@list']);
+// Route::get('/grupo/{grupo}/list', ['as' => 'grupo.list', 'uses' => 'GrupoController@list']);
 Route::get('/fse/acta', ['as' => 'profesor.fse', 'uses' => 'ProfesorController@fse']);
 
 Route::resource('/alumno_grupo', 'AlumnoGrupoController', ['except' => ['destroy', 'update']]);
@@ -153,8 +160,10 @@ Route::get('/profesor/{profesor}/tarjeta', ['as' => 'profesor.tarjeta', 'uses' =
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'profesor.mensaje', 'uses' => 'ProfesorController@alerta']);
 Route::post('/profesor/colectivo', ['as' => 'profesor.colectivo', 'uses' => 'ProfesorController@avisaColectivo']);
 Route::get('/horario/change', ['as' => 'horario.change', 'uses' => 'HorarioController@horarioCambiar']);
+Route::get('/horario/canvi-horari-temporal', ['as' => 'horario.canvi.temporal', 'uses' => 'HorarioController@horarioCambiar']);
 Route::get('/profesor/{profesor}/horario-aceptar', ['as' => 'horario.aceptar', 'uses' => 'HorarioController@changeTable']);
 Route::get('/profesor/{profesor}/horario-cambiar', ['as' => 'horario.profesor.change', 'uses' => 'HorarioController@horarioCambiar']);
+
 
 Route::get('/ficha', ['as' => 'fichar.ficha', 'uses' => 'FicharController@ficha']);
 
@@ -175,12 +184,15 @@ Route::resource('/expediente', 'ExpedienteController', ['except' => ['destroy', 
 Route::get('/expediente/{expediente}/delete', ['as' => 'expediente.destroy', 'uses' => 'ExpedienteController@destroy']);
 Route::get('/expediente/{expediente}/show', ['as' => 'expediente.show', 'uses' => 'ExpedienteController@show']);
 Route::post('/expediente/create', ['as' => 'expediente.store', 'uses' => 'ExpedienteController@store']);
-Route::put('/expediente/{expediente}/assigna', ['as' => 'expediente.assigna', 'uses' => 'ExpedienteController@assigna']);
+Route::put('/expediente/{expediente}/assigna',
+    ['as' => 'expediente.assigna', 'uses' => 'ExpedienteController@assigna']);
 Route::put('/expediente/{expediente}/edit', ['as' => 'expediente.update', 'uses' => 'ExpedienteController@update']);
 Route::get('/expediente/{expediente}/pdf', ['as' => 'expediente.pdf', 'uses' => 'ExpedienteController@pdf']);
-Route::get('/expediente/{expediente}/notification', ['as' => 'expediente.notificar', 'uses' => 'ExpedienteController@notify']);
+Route::get('/expediente/{expediente}/notification',
+    ['as' => 'expediente.notificar', 'uses' => 'ExpedienteController@notify']);
 Route::get('/expediente/{expediente}/init', ['as' => 'expediente.init', 'uses' => 'ExpedienteController@init']);
-Route::get('/expediente/{expediente}/active', ['as' => 'expediente.active', 'uses' => 'ExpedienteController@orientacion']);
+Route::get('/expediente/{expediente}/active',
+    ['as' => 'expediente.active', 'uses' => 'ExpedienteController@orientacion']);
 
 
 Route::get('/procedimento', ['as'=> 'procedimiento.all', 'uses'=>'PanelProcedimientoController@index']);
@@ -221,9 +233,11 @@ Route::get('/empresa/{empresa}/detalle', ['as' => 'empresa.detalle', 'uses' => '
 Route::get('/empresa/{empresa}/document', ['as' => 'empresa.document', 'uses' => 'EmpresaController@document']);
 Route::get('/empresaSC', ['as'=>'empresaSC.index', 'uses'=>'PanelEmpresaSCController@index']);
 Route::get('/empresaEr', ['as'=>'empresaEr.index', 'uses'=>'PanelErasmusController@index']);
+Route::get('/empresa/{empresa}/A1', ['as'=>'empresa.A1', 'uses'=>'EmpresaController@A1']);
 
 Route::get('/colaboracion', ['as' => 'colaboracion.index', 'uses' => 'ColaboracionController@index']);
 Route::get('/misColaboraciones', ['as' => 'colaboracion.mias', 'uses' => 'PanelColaboracionController@index']);
+Route::get('/liveColaboraciones', ['as' => 'colaboracion.live', 'uses' => 'PanelColaboracionController@live']);
 
 Route::get(
     '/documentacionFCT/{id}/{documento}',
@@ -299,8 +313,8 @@ Route::put('/fct/upload', ['as' => 'qualitat.update', 'uses' => 'DocumentoContro
 Route::get('/fct/{document}/insercio', ['as' => 'fct.insercio', 'uses' => 'PanelFctAvalController@empresa']);
 Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFctAvalController@edit']);
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
-
-
+Route::get('/fct/estadisticas',['as' => 'fct.stat', 'uses' => 'PanelFctAvalController@estadistiques']);
+/*
 Route::resource('dual', 'DualController', ['except' => ['destroy', 'update', 'show', 'edit']]);
 Route::get('/dual/{id}/edit', ['as' => 'dual.edit', 'uses' => 'DualController@edit']);
 Route::put('/dual/{id}/edit', ['as' => 'dual.update', 'uses' => 'DualController@update']);
@@ -313,6 +327,9 @@ Route::get('/dual/{id}/informe', ['as' => 'dual.informe', 'uses' => 'DualControl
 Route::post('/dual/{id}/informe', ['as' => 'dual.firma', 'uses' => 'DualController@putInforme']);
 Route::get('/dual/anexeVI', ['as'=>'dual.anexevi', 'uses'=>'DualController@printAnexeVI']);
 Route::get('/dual/anexeXIV', ['as'=>'dual.anexexiv', 'uses'=>'DualController@printAnexeXIV']);
+*/
+Route::get('/alumnofct/{id}/AVI', ['as' => 'alumnofct.AVI', 'uses' => 'FctAlumnoController@AVI']);
+Route::get('/alumnofct/{id}/AutDual', ['as' => 'alumnofct.AutDual', 'uses' => 'FctAlumnoController@AutDual']);
 
 Route::resource('/alumnofct', 'FctAlumnoController', ['except' => ['destroy', 'update', 'show']]);
 Route::put('/alumnofct/{id}/edit', ['as' => 'alumnofct.update', 'uses' => 'FctAlumnoController@update']);
@@ -325,9 +342,15 @@ Route::get('/alumnofct/{id}/auth', ['as' => 'alumnofct.auth', 'uses' => 'FctAlum
 Route::get('/alumnofct/{id}/Valoratiu', ['as' => 'alumnofct.Valoratiu', 'uses' => 'FctAlumnoController@Valoratiu']);
 Route::get('/alumnofct/{id}/AEng', ['as' => 'alumnofct.AEng', 'uses' => 'FctAlumnoController@AEng']);
 Route::get('/alumnofct/{id}/email', ['as' => 'alumnofct.email', 'uses' => 'FctAlumnoController@email']);
-Route::get('/alumnofct/{id}/unlink', ['as' => 'alumnofct.unlink', 'uses' => 'FctAlumnoController@unlink']);
-Route::get('/alumnofct/{id}/A{num}',['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num','[1-3]');
+Route::get('/alumnofct/{id}/A{num}',
+    ['as' => 'alumnofct.signatura', 'uses' => 'FctAlumnoController@signatura'])->where('num', '[1-3]');
 Route::get('/alumnofct/{id}/send', ['as' => 'alumnofct.send', 'uses' => 'FctAlumnoController@send']);
+Route::get('/alumnofct/{id}/importa', ['as' => 'alumnofct.importa', 'uses' => 'FctAlumnoController@importa']);
+
+Route::get('/alumno/calendari', ['as' => 'alumno.calendari', 'uses' => 'CalendariFctController@index']);
+Route::get('/alumno/{id}/days', ['as' => 'alumno.days', 'uses' => 'CalendariFctController@days']);
+
+Route::view('/documento', 'documento.livewire')->name('documento.index');
 
 Route::resource('/instructor', 'InstructorController', ['except' => ['destroy', 'show']]);
 Route::get('/instructor/{instructor}/show', ['as' => 'instructor.show', 'uses' => 'InstructorController@show']);
@@ -355,16 +378,11 @@ Route::get('/lote', ['as' => 'lote.index', 'uses'=>'PanelLoteController@index'])
 
 //RUTAS INVENTARIO
 Route::get('/inventario', ['as' => 'inventario.index', 'uses' => 'InventarioController@index']);
-Route::get('/inventario/{material}/edit', ['as' => 'inventario.edit', 'uses' => 'InventarioController@edit']);
 Route::get('/inventario/{material}/delete', ['as' => 'inventario.delete', 'uses' => 'InventarioController@destroy']);
 Route::put('/inventario/{material}/edit', ['as' => 'inventario.update', 'uses' => 'InventarioController@update']);
 Route::post('/inventario/barcode', 'InventarioController@barcode');
 Route::get('/inventaria', ['as'=>'inventariar.index', 'uses'=>'ArticuloLoteController@index']);
 Route::get('/lote/{espacio}/barcode/{posicion?}', ['as' => 'lote.barcode', 'uses'=> 'PanelLoteController@barcode']);
-
-
-
-
 
 //RUTAS INCIDENCIAS
 Route::resource('/incidencia', 'IncidenciaController', ['except' => ['destroy', 'update', 'show']]);
@@ -373,7 +391,6 @@ Route::get('/incidencia/{incidencia}/delete', ['as' => 'incidencia.destroy', 'us
 Route::post('/incidencia/create', ['as' => 'incidencia.store', 'uses' => 'IncidenciaController@store']);
 Route::put('/incidencia/{incidencia}/edit', ['as' => 'incidencia.update', 'uses' => 'IncidenciaController@update']);
 Route::get('/incidencia/{incidencia}/notification', ['as' => 'incidencia.notification', 'uses' => 'IncidenciaController@notify']);
-
 
 //RUTAS ESPACIOS
 Route::resource('/espacio', 'EspacioController', ['except' => ['destroy', 'update', 'show']]);
@@ -393,6 +410,8 @@ Route::get(
     '/programacion/{programacion}/advise',
     ['as' => 'programacion.advise', 'uses' => 'ProgramacionController@advise']
 );
+Route::get('/modulogrupo',['as'=>'modulogrupo.index','uses'=>'ModuloGrupoController@index']);
+Route::get('/modulo_grupo/{id}/link',['as'=>'modulogrupo.link','uses'=>'ModuloGrupoController@link']);
 
 //RUTAS TUTORIAS
 Route::resource('/tutoria', 'TutoriaController', ['except' => ['destroy', 'update']]);
@@ -415,11 +434,12 @@ Route::post(
 );
 Route::put('/tutoriagrupo/{id}', ['as' => 'tutoriagrupo.update', 'uses' => 'TutoriaGrupoController@update']);
 Route::get('/tutoriagrupo/indice/{id}', ['as' => 'tutoriagrupo.indice', 'uses' => 'TutoriaGrupoController@indice']);
+Route::get('/tutoriagrupo/{id}/show', ['as' => 'tutoriagrupo.show', 'uses' => 'TutoriaGrupoController@show']);
+
 
 Route::get('/guardia', ['as' => 'guardia.index', 'uses' => 'GuardiaController@index']);
 Route::get('/reserva', ['as' => 'reserva.index', 'uses' => 'ReservaController@index']);
-
-//API_TOKENF
+ //API_TOKENF
 Route::get('/myApiToken', ['as' => 'profesor.miapiToken', 'uses' => 'ProfesorController@miApiToken']);
 //Documentaci
 Route::get('/readme', ['as' => 'documentacio.miapiToken', 'uses' => 'ProfesorController@readme']);
@@ -458,8 +478,11 @@ Route::get('/itaca', ['as' => 'itaca.birret', 'uses' => 'FaltaItacaController@in
 Route::get('/profesor/backChange', ['as' =>'profesor.backChange', 'uses' => 'ProfesorController@backChange']);
 
 //Jefa de practicas
-Route::get('/fctcap/{grupo}/check', ['as' => 'fct.acta', 'uses' => 'PanelPG0301Controller@indice']);
+Route::get('/fctcap/{grupo}/check', ['as' => 'fctcap.acta', 'uses' => 'PanelPG0301Controller@indice']);
+Route::get('/fctcap/{grupo}/dual', ['as' => 'fctcap.dual', 'uses' => 'PanelPGDualController@indice']);
+Route::get('/fctcap/{grupo}/show', ['as' => 'fctcap.show', 'uses' => 'PanelPracticasController@show']);
 Route::get('/controlFct', ['as'=> 'controlFct.index', 'uses' => 'PanelPracticasController@index']);
+Route::get('/controlDual',['as'=> 'controlDual.index', 'uses' => 'PanelDualController@index']);
 
 //gestor documental
 Route::get('/actividad/{actividad}/gestor', ['as' => 'actividad.gestor', 'uses' => 'ActividadController@gestor']);
@@ -467,6 +490,7 @@ Route::get('/expediente/{actividad}/gestor', ['as' => 'expediente.gestor', 'uses
 Route::get('/falta/{actividad}/gestor', ['as' => 'falta.gestor', 'uses' => 'FaltaController@gestor']);
 Route::get('/comision/{actividad}/gestor', ['as' => 'comision.gestor', 'uses' => 'ComisionController@gestor']);
 Route::get('/itaca/{actividad}/gestor', ['as' => 'itaca.gestor', 'uses' => 'FaltaItacaController@gestor']);
+Route::get('/actividad/{actividad}/itaca', ['as' => 'actividad.itaca', 'uses' => 'ActividadController@itaca']);
 
 //control guadira
 Route::get('/guardia/control', ['as' => 'guardia.control', 'uses' => 'PanelGuardiaController@index']);
@@ -475,7 +499,7 @@ Route::get('/guardia/control', ['as' => 'guardia.control', 'uses' => 'PanelGuard
 Route::resource('/ppoll', 'PPollController', ['except' => ['destroy', 'update', 'show']]);
 Route::post('/ppoll/create', ['as' => 'ppoll.store', 'uses' => 'PPollController@store']);
 Route::put('/ppoll/{id}/edit', ['as' => 'ppoll.update', 'uses' => 'PPollController@update']);
-Route::get('/ppoll/{id}/slave', ['as' => 'ppoll.slave', 'uses' => 'PPollController@show']);
+Route::get('/ppoll/{id}/show', ['as' => 'ppoll.show', 'uses' => 'PPollController@show']);
 Route::get('/ppoll/{id}/delete', ['as' => 'ppoll.delete', 'uses' => 'PPollController@destroy']);
 
 Route::resource('/option', 'OptionController', ['except' => ['destroy', 'update', 'show']]);
@@ -516,10 +540,36 @@ Route::post('/externalAuth', RedirectAfterAuthenticationController::class);
 Route::post('/sao/importa', [Intranet\Sao\Importa::class,'importa']);
 Route::post('/sao/compara', [Intranet\Sao\Compara::class,'compara']);
 
-
-//Route::get('/itaca/login', ['as'=>'itaca.login', 'uses'=>'ItacaController@login']);
 Route::get('/readFileByName/{name}', ['as'=>'adjunto.readFile','uses'=>'DocumentoController@readFile']);
 
+Route::get('/signatura',['as' => 'signatura.index','uses' => 'SignaturaController@index']);
+Route::post('/signatura',['as' => 'signatura.post','uses' => 'SignaturaController@store']);
+Route::get('/signatura/{id}/delete', ['as' => 'signatura.destroy', 'uses' => 'SignaturaController@destroy']);
+Route::get('/signatura/{id}/send', ['as' => 'signatura.send', 'uses' => 'SignaturaController@sendUnique']);
+Route::post('/signatura/{tipus}/send', ['as' => 'signatura.send', 'uses' => 'SignaturaController@sendMultiple']);
+Route::get('/signatura/deleteAll', ['as' => 'signatura.deleteAll', 'uses' => 'SignaturaController@deleteAll']);
+Route::get('/signatura/a5',['as' => 'signatura.a5','uses' => 'SignaturaController@a5']);
 
+
+Route::resource('projectes' , 'PanelProjecteController',['except'=>['update','destroy','show']]);
+Route::put('/projectes/{id}/edit', ['as' => 'projectes.update', 'uses' => 'PanelProjecteController@update']);
+Route::get('/projectes/{id}/delete', ['as' => 'projectes.delete', 'uses' => 'PanelProjecteController@destroy']);
+Route::get('/projectes/{id}/pdf', ['as' => 'projectes.pdf', 'uses' => 'PanelProjecteController@pdf']);
+Route::get('/projectes/{id}/check', ['as' => 'projectes.check', 'uses' => 'PanelProjecteController@check']);
+Route::get('/projectes/actaP', ['as' => 'projectes.actaP', 'uses' => 'PanelProjecteController@acta']);
+Route::get('/projectes/sendP', ['as' => 'projectes.sendP    ', 'uses' => 'PanelProjecteController@send']);
+Route::get('/projectes/actaE', ['as' => 'projectes.actaE', 'uses' => 'PanelProjecteController@actaE']);
 //Route::get('/ocr', ['as'=>'ocr.index', 'uses'=>'OcrController@index']);
 //Route::view('/tasks', 'tasks.index');
+
+Route::resource('cotxe' , 'CotxeController',['except'=>['update','destroy','show']]);
+Route::get('/cotxe/{id}/delete', ['as' => 'cotxe.delete', 'uses' => 'CotxeController@destroy']);
+Route::put('/cotxe/{id}/edit', ['as' => 'cotxe.update', 'uses' => 'CotxeController@update']);
+
+Route::resource('tipoactividad','TipoActividadController',['except'=>['update','destroy','show']]);
+Route::put('/tipoactividad/{id}/edit', ['as' => 'tipoactividad.update', 'uses' => 'TipoActividadController@update']);
+Route::get('/tipoactividad/{id}/delete', ['as' => 'tipoactividad.delete', 'uses' => 'TipoActividadController@destroy']);
+Route::view('/bustia-admin', 'bustia.admin')
+     ->middleware('can:manage-bustia-violeta')
+     ->name('bustia.admin'); 
+ 

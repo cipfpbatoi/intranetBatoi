@@ -59,12 +59,12 @@
             <td>2</td>
             <td>3</td>
         </tr>
-        @foreach ($todos??[] as $alumno)
-            @isset ($alumno)
+        @foreach ($todos ?? [] as $alumno)
+            @isset($alumno)
                 <tr>
                     <td style="text-align:left;width:9.938cm;padding-left: 5px;font-size: 0.8em ">
-                        <strong>{{ $alumno->Alumno->FullName }}</strong>
-                        ({{ $alumno->Fct->Colaboracion->Centro->nombre }})
+                        <strong>{{ $alumno->Alumno->FullName ?? 'Sense nom' }}</strong>
+                        ({{ $alumno->Fct?->Colaboracion?->Centro?->nombre ?? 'Sense centre' }})
                     </td>
                     <td style="text-align:left;width:5.493cm; "></td>
                     <td></td>
@@ -82,7 +82,7 @@
                 </tr>
             @endisset
         @endforeach
-    </table>
+     </table>
     <br/>
     <div style="float:left;width: 600px;">
         <ol style="list-style-type: upper-latin;font-size: xx-small; font-weight: bold ">
@@ -96,6 +96,7 @@
         <table border='1' style="width: 300px;height:60px">
             <tr>
                 <td valign='top' style="text-align: left;padding-left: 5px;font-size: 0.8em">Signatura del tutor: <br/>
+                    {!!  Intranet\Services\Signature\SignaturaService::exec(authUser()->dni,"width:100%;float:left",0.5) !!}
                 </td>
             </tr>
         </table>

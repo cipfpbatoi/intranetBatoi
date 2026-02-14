@@ -10,7 +10,7 @@ class AlumnoResultado extends Model
     protected $table = 'alumno_resultados';
     public $timestamps = false;
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $fillable = [
         'idAlumno',

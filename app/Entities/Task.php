@@ -5,11 +5,12 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Jenssegers\Date\Date;
+use Styde\Html\Facades\Alert;
 
 
 class Task extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
     protected $fillable = [
         'descripcion',
         'vencimiento',
@@ -93,7 +94,8 @@ class Task extends Model
 
     public function getDestinoAttribute()
     {
-        return config('roles.lor')[$this->destinatario];
+        $roles = config('roles.lor');
+        return $roles[$this->destinatario] ?? ('Desconegut (' . $this->destinatario . ')');
     }
 
     public function getDestinatarioOptions()
@@ -108,7 +110,7 @@ class Task extends Model
 
     public function getAccioAttribute()
     {
-        return $this->action?config('roles.actions')[$this->action]:'';
+        return $this->action ? (config('roles.actions')[$this->action] ?? '') : '';
     }
 
     /**

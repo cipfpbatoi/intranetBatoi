@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-Use Intranet\Entities\Alumno;
-Use Intranet\Entities\Profesor;
+use Intranet\Entities\Alumno;
+use Intranet\Entities\Profesor;
 use Intranet\Entities\Horario;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Grupo;
@@ -12,7 +12,6 @@ use Intranet\Entities\Modulo;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Espacio;
-use DB;
 use Illuminate\Database\Seeder;
 use Monolog\Logger;
 use Styde\Html\Facades\Alert;
@@ -21,6 +20,7 @@ use Intranet\Entities\Programacion;
 use Intranet\Entities\Ocupacion;
 use Illuminate\Support\Str;
 use Monolog\Handler\StreamHandler;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class ImportController
@@ -54,8 +54,6 @@ class ImportController extends Seeder
                 'codigo_postal' => 'cod_postal',
                 'provincia' => 'provincia',
                 'municipio' => 'municipio',
-                'telef1' => 'digitos,telefono1',
-                'telef2' => 'digitos,telefono2',
                 'fecha_ingreso' => 'getFechaFormatoIngles,fecha_ingreso_centro',
                 'fecha_matricula' => 'getFechaFormatoIngles,fecha_matricula',
                 'repite' => 'repite',
@@ -65,7 +63,9 @@ class ImportController extends Seeder
                 'baja' => null,
             ),
             'create' => array(
-                'email' => 'email1'
+                'email' => 'email1',
+                'telef1' => 'digitos,telefono1',
+                'telef2' => 'digitos,telefono2',
             )),
         array('nombrexml' => 'docentes',
             'nombreclase' => 'Profesor',
@@ -77,8 +77,6 @@ class ImportController extends Seeder
                 'sexo' => 'sexo',
                 'codigo_postal' => 'cod_postal',
                 'domicilio' => 'domicilio',
-                'movil1' => 'digitos,telefono1',
-                'movil2' => 'digitos,telefono2',
                 'emailItaca' => 'email1',
                 'sustituye_a' => 'titular_sustituido',
                 'fecha_nac' => 'getFechaFormatoIngles,fecha_nac',
@@ -87,9 +85,11 @@ class ImportController extends Seeder
                 'activo' => true,
             ),
             'create' => array(
-                'codigo' => 'crea_codigo_profesor,0',
+                'codigo' => 'creaCodigoProfesor,0',
                 'dni' => 'documento',
                 'email' => 'email2',
+                'movil1' => 'digitos,telefono1',
+                'movil2' => 'digitos,telefono2',
                 'departamento' => '99',
                 'password' => 'cifrar,documento',
                 'api_token' => 'aleatorio,60'
@@ -187,10 +187,9 @@ class ImportController extends Seeder
      * @param $apellido
      * @return string
      */
-    public function email($nombre, $apellido1,$apellido2)
+    public function email($nombre, $apellido1, $apellido2)
     {
-        return emailConselleria($nombre, $apellido1,$apellido2);
-        //return strtolower(substr($nombre, 0, 1) . $apellido . '@' . config('contacto.host.dominio'));
+        return emailConselleria($nombre, $apellido1, $apellido2);
     }
 
     /**
@@ -201,23 +200,21 @@ class ImportController extends Seeder
         return Str::random(60);
     }
 
-    public function hazDNI($dni,$nia){
-        // nia diferent per al mateix dni
-        $alumno = Alumno::where('dni',$dni)->where('nia','<>',$nia)->first();
-        if ($alumno){
-            $alumno->nia = $nia;
-            $alumno->save();
-            return $dni;
-        } else {
-            if (strlen($dni) > 8) return $dni;
-            $alumno = Alumno::find($nia);
-            if ($alumno) return $alumno->dni;
-            else {
-                $dniFictici = 'F'.Str::random(9);
-                Alert::warning('Alumne amb DNI Fictici '.$dniFictici);
-                return $dniFictici;
-            }
+    public function hazDNI(string $dni, int $nia)
+    {
+        $byNia = Alumno::find($nia);
+
+        if (strlen($dni) <= 8 )  {
+            return $byNia ? $byNia->dni : 'F'.Str::random(9);
         }
+    
+        if ($byNia && $byNia->dni !== $dni) {
+            // Si el DNI canvia…
+            Alumno::where('dni', $dni)->where('nia', '<>', $nia)->delete();
+            Alert::warning('Alumne amb DNI ' . $dni . ' esborrat per duplicat de nia ' . $nia);
+        }
+
+        return $dni;
     }
 
     /**
@@ -236,7 +233,8 @@ class ImportController extends Seeder
             return back();
         }
 
-        ini_set('max_execution_time', 360);
+
+        ini_set('max_execution_time', 500);
         $this->run($request->file('fichero'), $request);
         ini_set('max_execution_time', 30);
 
@@ -254,7 +252,7 @@ class ImportController extends Seeder
     public function asignarTutores()
     {
         foreach (Profesor::all() as $profesor) {
-            $profesor->rol = $this->assignRole(Grupo::QTutor($profesor->dni)->first(),$profesor->rol);
+            $profesor->rol = $this->assignRole(Grupo::QTutor($profesor->dni)->first(), $profesor->rol);
             $profesor->save();
         }
         Alert:info('Tutors assignats');
@@ -266,18 +264,16 @@ class ImportController extends Seeder
      * @param $role
      * @return bool|\Illuminate\Config\Repository|mixed
      */
-    private function assignRole($grupo, $role){
+    private function assignRole($grupo, $role)
+    {
         $rolTutor=  config('roles.rol.tutor');
         $rolPracticas = config('roles.rol.practicas');
         if ($grupo) {
             if (!esRol($role, $rolTutor)) {
                 $role *= $rolTutor;
             }
-            if ($grupo->curso == 2 && !esRol($role, $rolPracticas)) {
+            if (!esRol($role, $rolPracticas)) {
                 $role *= $rolPracticas;
-            }
-            if ($grupo->curso == 1 && esRol($role, $rolPracticas)) {
-                $role /= $rolPracticas;
             }
             return $role;
         }
@@ -308,7 +304,8 @@ class ImportController extends Seeder
      * @param $table
      * @param $firstImport
      */
-    private function manageTable($xmltable, $table, $firstImport){
+    private function manageTable($xmltable, $table, $firstImport)
+    {
         if (count($xmltable)) {
             $this->pre($table['nombreclase'], $table['nombrexml']);
             $this->in($xmltable, $table);
@@ -347,8 +344,7 @@ class ImportController extends Seeder
                 // cerca la darrera actualizacio (camp plantilla de l'itaca)
                 if (isset(DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla)) {
                     $this->plantilla = DB::table('horarios')->orderBy('plantilla', 'desc')->first()->plantilla;
-                }
-                else {
+                } else {
                     $this->plantilla = 0;
                 }
                 // esborra la taula
@@ -382,7 +378,7 @@ class ImportController extends Seeder
                 if ($firstImport) {
                     $this->bajaGrupos();
                 }
-                // si no te tutor ho indica
+                 // si no te tutor ho indica
                 $this->removeTutor();
                 break;
             case 'AlumnoGrupo' :
@@ -396,7 +392,7 @@ class ImportController extends Seeder
                     $this->eliminarHorarios();
                     // crea taula moduls_cicles, moduls_grups i programacions
                     if ($firstImport) {
-                        $this->crea_modulosCiclos();
+                        $this->creaModulosCiclos();
                     }
                 }
                 break;
@@ -404,22 +400,13 @@ class ImportController extends Seeder
         }
     }
 
-    /**
-     * @return string
-     */
-    private static function getLinkSchedule(){
-        if (Storage::exists('public/programacions.txt')) {
-            $fichero = explode("\n", Storage::get('public/programacions.txt'));
-            $indice = Modulo_ciclo::max('id') ? Modulo_ciclo::max('id') : 0;
-            return $fichero[$indice];
-        }
-        return '';
-    }
+
 
     /**
      * @return mixed
      */
-    private static function getHoraris(){
+    private static function getHoraris()
+    {
         return Horario::distinct()->whereNotNull('idGrupo')
             ->whereNotNull('modulo')->whereNotNull('idProfesor')
             ->whereNotIn('modulo', config('constants.modulosSinProgramacion'))->get();
@@ -428,13 +415,15 @@ class ImportController extends Seeder
     /**
      *
      */
-    private static function newModuloCiclo($horario){
+    private static function newModuloCiclo($horario)
+    {
         $mc = new Modulo_ciclo();
         $mc->idModulo = $horario->modulo;
         $mc->idCiclo = $horario->Grupo->idCiclo;
-        $mc->curso = substr($horario->idGrupo, 0, 1);
-        $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento) ? Profesor::find($horario->idProfesor)->departamento : '99';
-        $mc->enlace = self::getLinkSchedule();
+        $mc->curso = $horario->Grupo->curso;
+        $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento)
+                ? Profesor::find($horario->idProfesor)->departamento
+                : '99';
         $mc->save();
         return $mc;
     }
@@ -453,74 +442,37 @@ class ImportController extends Seeder
     }
 
     /**
-     * @param $mc
-     */
-    function newProgramacion($mc,$idProfesor)
-    {
-        $prg = New Programacion();
-        $prg->idModuloCiclo = $mc->id;
-        $prg->fichero = $mc->enlace;
-        $prg->curso = Curso();
-
-        if ($antigua = Programacion::where('idModuloCiclo', $mc->id)->first()) {
-            $prg->criterios = $antigua->criterios;
-            $prg->metodologia = $antigua->metodologia;
-            $prg->propuestas = $antigua->propuestas;
-
-        }
-
-        $prg->save();
-        return $prg;
-
-    }
-
-    /**
      *
      */
-    private function crea_modulosCiclos()
+    private function creaModulosCiclos()
     {
-        foreach (self::getHoraris() as $horario){
+        foreach (self::getHoraris() as $horario) {
             if (isset($horario->Grupo->idCiclo)) {
-                if (! $mc = Modulo_ciclo::where('idModulo', $horario->modulo)->where('idCiclo', $horario->Grupo->idCiclo)->first() ){
+                if (! $mc = Modulo_ciclo::where('idModulo', $horario->modulo)
+                    ->where('idCiclo', $horario->Grupo->idCiclo)
+                    ->first()){
                     $mc = self::newModuloCiclo($horario);
-                }
-                else {
+                } else {
                     if ((isset(Profesor::find($horario->idProfesor)->departamento)) && ($mc->idDepartamento == 99)) {
                         $mc->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
                         $mc->save();
                     }
-                    if (!$mc->enlace){
-                        $mc->enlace = self::getLinkSchedule();
-                        $mc->save();
-                    }
                 }
-                if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo', $horario->idGrupo)->count() == 0){
+                if (Modulo_grupo::where('idModuloCiclo', $mc->id)->where('idGrupo', $horario->idGrupo)->count() == 0) {
                     self::newModuloGrupo($mc->id, $horario->idGrupo);
-                }
-                if (!Programacion::where('idModuloCiclo', $mc->id)->where('curso', Curso())->first()){
-                    self::newProgramacion($mc,$horario->idProfesor);
                 }
             } else {
                 Alert::danger($horario->Grupo->id.' sin ciclo');
             }
         }
-
-
     }
 
-
-/**
- *
- */
     private function alumnosBaja()
     {
         $hoy = Hoy();
         DB::table('alumnos')->whereNull('baja')->update(['baja' => $hoy]);
     }
 
-    /**
-     *
-     */
     private function noSustituye()
     {
         foreach (Profesor::where('sustituye_a', '>', ' ')->get() as $sustituto) {
@@ -535,10 +487,13 @@ class ImportController extends Seeder
     private function asignaDepartamento()
     {
         foreach (Profesor::where('departamento', 99)->get() as $profesor) {
-            $horario = Horario::where('idProfesor',$profesor->dni)->whereNull('ocupacion')->where('modulo','!=','TU02CF')
-                ->where('modulo','!=','TU01CF')->first();
+            $horario = Horario::where('idProfesor', $profesor->dni)
+                ->whereNull('ocupacion')
+                ->where('modulo', '!=', 'TU02CF')
+                ->where('modulo', '!=', 'TU01CF')
+                ->first();
             if ($horario) {
-                $modulo = Modulo_ciclo::where('idModulo',$horario->modulo)->first();
+                $modulo = Modulo_ciclo::where('idModulo', $horario->modulo)->first();
                 if ($modulo) {
                     $profesor->departamento = $modulo->Ciclo->departamento;
                     $profesor->save();
@@ -548,44 +503,29 @@ class ImportController extends Seeder
         }
     }
 
-    /**
-     *
-     */
     private function profesoresBaja()
     {
         DB::table('profesores')->update(['activo' => false, 'sustituye_a' => '']);
     }
 
-    /**
-     *
-     */
     private function bajaAlumnos()
     {
         DB::table('alumnos_grupos')->join('alumnos', 'idAlumno', '=', 'nia')->whereNotNull('alumnos.baja')->delete();
     }
 
-    /**
-     *
-     */
     private function gruposBaja()
     {
         DB::table('grupos')->update(['tutor' => 'BAJA']);
     }
 
-    /**
-     *
-     */
     private function bajaGrupos()
     {
         DB::table('grupos')->where('tutor', '=', 'BAJA')->delete();
     }
 
-    /**
-     *
-     */
     private function removeTutor()
     {
-         DB::table('grupos')->where('tutor','=',' ')->update(['tutor' => 'SIN TUTOR']);
+         DB::table('grupos')->where('tutor', '=', ' ')->update(['tutor' => 'SIN TUTOR']);
     }
 
     /**
@@ -598,9 +538,8 @@ class ImportController extends Seeder
         $fecha2 = date_create_from_format('j-m-Y', $fecha);
         if (!$fecha2) {
             return null;
-        } else {
-            return $fecha2->format('Y-m-d');
         }
+        return $fecha2->format('Y-m-d');
     }
 
     /**
@@ -615,14 +554,14 @@ class ImportController extends Seeder
     /**
      * @return int
      */
-    private function crea_codigo_profesor()
+    private function creaCodigoProfesor()
     {
         $tots = 1;
         do {
             $azar = rand(1050, 9000);
             $tots = Profesor::where('codigo', $azar)->get()->count();
         } while ($tots > 0);
-        return($azar);
+        return $azar;
     }
 
     /**
@@ -666,7 +605,7 @@ class ImportController extends Seeder
         if ($letra != "") {
             $domic .= "-" . $letra;
         }
-        return ($domic);
+        return $domic;
     }
 
     /**
@@ -675,26 +614,23 @@ class ImportController extends Seeder
      * @param int $func
      * @return false|mixed|string|string[]|null
      */
-    private function saca_campos($atrxml, $llave, $func = 1)
+    private function sacaCampos($atrxml, $llave, $func = 1)
     {
         $lista = explode(",", $llave, 99);
         if (count($lista) == 1) {
             if (isset($atrxml[$llave])) {
-                return (mb_convert_encoding($atrxml[$llave], 'utf8'));
+                return mb_convert_encoding($atrxml[$llave], 'utf8');
+            } else {
+                return $llave;
             }
-            else {
-                return ($llave);
-            }
-        }
-        else {
+        } else {
             for ($i = $func; $i < count($lista); $i++) {
                 $params[$i - $func] = mb_convert_encoding($atrxml[$lista[$i]], 'utf8');
             }
             if ($func) {
-                return (call_user_func_array(array($this, $lista[0]), $params));
-            }
-            else {
-                return ($params);
+                return call_user_func_array(array($this, $lista[0]), $params);
+            } else {
+                return $params;
             }
         }
     }
@@ -738,8 +674,7 @@ class ImportController extends Seeder
      */
     private function in($xmltable, $tabla)
     {
-        if(is_file(storage_path().'/logs/import.log'))
-        {
+        if (is_file(storage_path().'/logs/import.log')) {
             unlink(storage_path().'/logs/import.log');
         }
         $this->log = new Logger('Import');
@@ -757,13 +692,13 @@ class ImportController extends Seeder
             }
             if ($pasa) {
                 $clase = "\Intranet\Entities\\" . $tabla['nombreclase']; //busco si ya existe en la bd
-                $clave = $this->saca_campos($atributosxml, $tabla['id'], 0);
-                if (!is_array($clave)){
+                $clave = $this->sacaCampos($atributosxml, $tabla['id'], 0);
+                if (!is_array($clave)) {
                     $this->log->info("Processant $clase: $clave");
                 }
                 if ($pt = $this->encuentra($clase, $clave)) {   //Update
                     foreach ($tabla['update'] as $keybd => $keyxml) {
-                        $pt->$keybd = $this->saca_campos($atributosxml, $keyxml);
+                        $pt->$keybd = $this->sacaCampos($atributosxml, $keyxml);
                     }
                     try {
                         $pt->save();
@@ -777,7 +712,7 @@ class ImportController extends Seeder
                         unset($arrayDatos);
                     }
                     foreach ($tabla['update'] + $tabla['create'] as $keybd => $keyxml) {
-                        $arrayDatos[$keybd] = $this->saca_campos($atributosxml, $keyxml);
+                        $arrayDatos[$keybd] = $this->sacaCampos($atributosxml, $keyxml);
                     }
                     try {
                         switch ($tabla['nombreclase']) {
@@ -835,9 +770,11 @@ class ImportController extends Seeder
         return $clase::find($clave);
     }
 
-    private function getEstadoFromJsonFile(){
-        foreach (Profesor::activo()->get() as $profesor){
-            if (Storage::disk('local')->exists('/horarios/'.$profesor->dni.'.json') && $fichero = Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json')) {
+    private function getEstadoFromJsonFile()
+    {
+        foreach (Profesor::activo()->get() as $profesor) {
+            if (Storage::disk('local')->exists('/horarios/'.$profesor->dni.'.json') &&
+                $fichero = Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json')) {
                 if (json_decode($fichero)->estado == 'Guardado') {
                     session([$profesor->dni => 1]);
                 }
@@ -877,11 +814,12 @@ class ImportController extends Seeder
         DB::table($table)->where($columna, '=', '')->delete();
     }
 
-    private function restauraCopia(){
+    private function restauraCopia()
+    {
         $tmpAll = DB::select("select * from tmp_alumnos_grupos where subGrupo IS NOT NULL");
-        foreach ($tmpAll as $registro){
-            $find = AlumnoGrupo::where('idAlumno',$registro->idAlumno)
-                ->where('idGrupo',$registro->idGrupo)->first();
+        foreach ($tmpAll as $registro) {
+            $find = AlumnoGrupo::where('idAlumno', $registro->idAlumno)
+                ->where('idGrupo', $registro->idGrupo)->first();
             if ($find) {
                 $find->subGrupo = $registro->subGrupo;
                 $find->posicion = $registro->posicion;
@@ -891,16 +829,25 @@ class ImportController extends Seeder
         DB::statement('DROP table IF exists tmp_alumnos_grupos');
     }
 
-    /**
-     *
-     */
     private function eliminarHorarios()
     {
         $ultimoHorario =  DB::table('horarios')->orderBy('plantilla', 'desc')->first();
         if ($ultimoHorario){
             $ultimPlantilla =  $ultimoHorario->plantilla;
-            DB::table('horarios')->where('plantilla', '<>',$ultimPlantilla)->delete();
+            DB::table('horarios')->where('plantilla', '<>', $ultimPlantilla)->delete();
         }
+
+        //chatgpt per a esborrar duplicats
+        /*DB::table('horarios')
+            ->whereIn('id', function ($query) {
+                $query->select(DB::raw('id'))
+                    ->from('horarios as h1')
+                    ->whereRaw('id NOT IN (
+                    SELECT MIN(id) FROM horarios 
+                    GROUP BY idProfesor, dia_semana, sesion_orden
+                )');
+            })
+            ->delete();*/
 
 
     }

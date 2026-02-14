@@ -3,13 +3,13 @@
 namespace Intranet\Entities\Poll;
 
 
-use Intranet\Entities\BatoiModels;
+use Intranet\Entities\Concerns\BatoiModels;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\ActivityReport;
 
 class PPoll extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'ppolls';
     protected $fillable = ['title','what','anonymous','remains'];
@@ -23,10 +23,13 @@ class PPoll extends Model
         'remains' => ['type'=>'checkbox']
     ];
     public $timestamps = false;
-    protected $dispatchesEvents = [
-        'saved' => ActivityReport::class,
-        'deleted' => ActivityReport::class,
-    ];
+
+
+    public function polls()
+    {
+        return $this->hasMany(Poll::class, 'idPPoll');
+    }
+
     
     /**
      * A poll has many options related to

@@ -7,7 +7,7 @@ use Intranet\Entities\Adjunto;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\Controller;
 use Intranet\Http\Controllers\API\ApiBaseController;
-use Intranet\Services\AttachedFileService;
+use Intranet\Services\Document\AttachedFileService;
 
 class DropZoneController extends ApiBaseController
 {

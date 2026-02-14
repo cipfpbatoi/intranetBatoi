@@ -1,12 +1,19 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Incidencia;
-use Intranet\Botones\BotonImg;
-use Intranet\Http\Requests\IncidenciaRequest;
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\Incidencia;
 use Intranet\Entities\OrdenTrabajo;
-use Intranet\Services\FormBuilder;
+use Intranet\Http\Requests\IncidenciaRequest;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Services\UI\FormBuilder;
+use Intranet\Services\Media\ImageService;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -16,7 +23,7 @@ use Intranet\Services\FormBuilder;
 class IncidenciaController extends ModalController
 {
 
-    use traitImprimir,traitAutorizar;
+    use Imprimir,Autorizacion;
 
     /**
      * @var string
@@ -35,6 +42,7 @@ class IncidenciaController extends ModalController
         'espacio' => ['type' => 'select'],
         'material' => ['type' => 'select'],
         'descripcion' => ['type' => 'textarea'],
+        'imagen' => ['type' => 'file'],
         'idProfesor' => ['type' => 'hidden'],
         'prioridad' => ['type' => 'select'],
         'observaciones' => ['type' => 'text'],
@@ -108,7 +116,7 @@ class IncidenciaController extends ModalController
      * @param $id
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit($id)
+    public function edit($id=null)
     {
         $elemento = Incidencia::findOrFail($id);
         $formulario = new FormBuilder($elemento,
@@ -116,6 +124,7 @@ class IncidenciaController extends ModalController
             'espacio' => ['disabled' => 'disabled'],
             'material' => ['disabled' => 'disabled'],
             'descripcion' => ['type' => 'textarea'],
+            'imagen' => ['type' => 'file'],
             'idProfesor' => ['type' => 'hidden'],
             'tipo' => ['type' => 'select'],
             'prioridad' => ['type' => 'select'],
@@ -132,6 +141,7 @@ class IncidenciaController extends ModalController
     {
         $new = new Incidencia();
         $new->fillAll($request);
+        $this->storeImagen($new, $request);
         Incidencia::putEstado($new->id, $this->init);
         return $this->redirect();
     }
@@ -146,6 +156,7 @@ class IncidenciaController extends ModalController
         $elemento =  Incidencia::findOrFail($id);
         $tipo = $elemento->tipo;
         $elemento->fillAll($request);
+        $this->storeImagen($elemento, $request);
         if ($elemento->tipo != $tipo) {
             $elemento->responsable =  $elemento->Tipos->idProfesor;
             $explicacion = "T'han assignat una incidència: " . $elemento->descripcion;
@@ -156,9 +167,70 @@ class IncidenciaController extends ModalController
         return $this->redirect();
     }
 
+    private function storeImagen(Incidencia $incidencia, IncidenciaRequest $request): void
+    {
+        if (!$request->hasFile('imagen')) {
+            return;
+        }
+
+        $file = $request->file('imagen');
+        if (!$file->isValid()) {
+            return;
+        }
+
+        $extension = strtolower($file->getClientOriginalExtension());
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif'];
+        if (!in_array($extension, $allowedExtensions, true)) {
+            Alert::danger(trans('messages.generic.invalidFileType'));
+            return;
+        }
+
+        if (in_array($extension, ['heic', 'heif'], true)) {
+            $filename = $incidencia->id . '_' . time() . '.png';
+            $path = 'incidencias/' . $filename;
+            $tmpPath = sys_get_temp_dir() . '/incidencia_' . uniqid('', true) . '.png';
+
+            try {
+                ImageService::toPng($file, $tmpPath);
+                $stream = fopen($tmpPath, 'r');
+                Storage::disk('public')->put($path, $stream);
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+            } catch (\RuntimeException $e) {
+                Alert::danger($e->getMessage());
+                return;
+            } finally {
+                if (file_exists($tmpPath)) {
+                    @unlink($tmpPath);
+                }
+            }
+        } else {
+            $filename = $incidencia->id . '_' . time() . '.' . $extension;
+            $path = $file->storeAs('incidencias', $filename, 'public');
+        }
+
+        if (!empty($incidencia->imagen)) {
+            Storage::disk('public')->delete($incidencia->imagen);
+        }
+
+        $incidencia->imagen = $path;
+        $incidencia->save();
+    }
+
     protected function createWithDefaultValues($default = [])
     {
         return new Incidencia(['idProfesor'=>AuthUser()->dni,'fecha'=>Hoy('Y-m-d')]);
+    }
+
+    /*
+     * show($id) retorna vista de detall
+     */
+    public function show($id)
+    {
+        $elemento = Incidencia::findOrFail($id);
+        $modelo = $this->model;
+        return view('intranet.show', compact('elemento', 'modelo'));
     }
     /**
      * @param $id

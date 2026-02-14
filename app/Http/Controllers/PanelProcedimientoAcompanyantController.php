@@ -2,9 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\BaseController;
+
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 
 /**
  * Class PanelExpedienteOrientacionController

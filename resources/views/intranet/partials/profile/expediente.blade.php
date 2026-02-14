@@ -29,11 +29,10 @@
                 </p>
             </div>
             <div class="col-xs-12 col-sm-8 emphasis">
-                @include ('intranet.partials.components.buttons',['tipo' => 'profile'])
-            </div>
+                <x-botones :panel="$panel" tipo="profile" :elemento="$elemento ?? null" /><br/>
+             </div>
         </div>
     </div>
 </div>
 @endforeach
 @include('intranet.partials.modal.explicacion')
-

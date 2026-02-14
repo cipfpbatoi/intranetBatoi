@@ -2,8 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\Http\Controllers\Core\ModalController;
+
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Departamento;
 use Intranet\Http\Requests\DepartamentoRequest;
 

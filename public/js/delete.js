@@ -31,6 +31,7 @@ $(function() {
 	});
 })
 
+
 jQuery("#datatable").on("click",".fa-eraser" ,function () {
 	let titles=$(this).parents('table').find('thead').find('th');
 	let info="\n";
@@ -43,6 +44,7 @@ jQuery("#datatable").on("click",".fa-eraser" ,function () {
 		event.preventDefault();
 	}
 })
+	
 
 jQuery("#datatable").on("click",".fa-envelope" ,function () {
 	let titles=$(this).parents('table').find('thead').find('th');

@@ -10,7 +10,7 @@ use Styde\Html\Facades\Alert;
 class Articulo extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected   $table = 'articulos';
     public      $timestamps = false;
@@ -26,21 +26,41 @@ class Articulo extends Model
 
     public function getMiniaturaAttribute()
     {
-        if ($this->fichero) {
-            return "<img src='" . asset('/storage/' . $this->fichero) . "' heigth='40px' width='60px'/>";
-        } else {
-            return "Sense imatge";
+        // Ruta on busquem fitxers que comencen per l'id del model i tinga qualsevol extensió
+        $pattern = storage_path('app/public/Articulos/' . $this->id . '.*');
+
+        // Llista de fitxers que coincideixen
+        $files = glob($pattern);
+
+        if (!empty($files)) {
+            // Ens quedem amb el primer fitxer trobat
+            $fileFullPath = $files[0];
+            // Nom del fitxer (sense directori)
+            $fileName = basename($fileFullPath);
+
+            // Retornem el codi HTML de la miniatura
+            return "<img src='" . asset('storage/Articulos/' . $fileName) . "' height='40' width='60' />";
         }
+
+        // Si no hi ha cap fitxer
+        return "Sense imatge";
     }
 
-    public function fillFile($file){
-        if (!$file->isValid()){
+    public function fillFile($file)
+    {
+        // 1) Primer validem
+        if (!$file->isValid()) {
             Alert::danger(trans('messages.generic.invalidFormat'));
-            return ;
+            return;
         }
-        $this->fichero = $file->storeAs('Articulos'
-            ,$this->id.'.'.$file->getClientOriginalExtension(),'public');
-        $this->save();
+
+
+        // 3) Definim el nom del fitxer. Suposant que 'id' sempre existeix ja.
+        $filename = $this->id . '.' . $file->getClientOriginalExtension();
+
+        // 4) Emmagatzemem el fitxer en 'storage/app/public/Articulos'
+        $file->storeAs('Articulos', $filename, 'public');
+
     }
 
     public function setDescripcionAttribute($value){

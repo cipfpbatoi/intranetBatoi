@@ -4,6 +4,7 @@ namespace Intranet\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Intranet\Console\Commands\DeleteOldCotxeAccessos;
 use Intranet\Console\Commands\SaoAnnexes;
 use Intranet\Console\Commands\SaoConnect;
 use Intranet\Console\Commands\SendDailyEmails;
@@ -26,7 +27,8 @@ class Kernel extends ConsoleKernel
         SendFctEmails::class,
         UploadAnexes::class,
         SaoConnect::class,
-        SaoAnnexes::class
+        SaoAnnexes::class,
+        DeleteOldCotxeAccessos::class
     ];
 
     /**
@@ -37,18 +39,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('fault:Daily')
-                ->dailyAt('23:00');
-        $schedule->command('email:Daily')
-                ->dailyAt('23:30');
-        $schedule->command('guard:Daily')
-                ->dailyAt('07:00');
-        $schedule->command('fct:Daily')
-                ->dailyAt('06:50');
-        $schedule->command('sao:connect')->weekly()->fridays()->at('7:00');
-        $schedule->command('sao:connect')->weekly()->tuesdays()->at('7:00');
-        $schedule->command('sao:annexes')
-            ->weeklyOn(1, '6:30');
+        $schedule->command('guards:Daily')->dailyAt('7:30');
+        $schedule->command('fct:Daily')->dailyAt('7:35');
+        $schedule->command('fault:Daily')->dailyAt('21:30');
+        $schedule->command('email:Daily')->dailyAt('21:45');
+        //$schedule->command('sao:annexes')->weekly()->mondays()->at('8:45');
+        $schedule->command('sao:connect')->weekly()->tuesdays()->at('8:45');
+        //$schedule->command('sao:annexes')->weekly()->wednesdays()->at('8:45');
+        //$schedule->command('sao:annexes')->weekly()->thursdays()->at('8:45');
+        $schedule->command('sao:connect')->weekly()->fridays()->at('8:45');
+        $schedule->command('cotxes:esborra-vells')->dailyAt('7:00');
     }
 
     /**

@@ -23,6 +23,15 @@ class IncidenciaRequest extends FormRequest
      */
     public function rules()
     {
+        $imagenRule = 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120';
+        $file = $this->file('imagen');
+        if ($file) {
+            $ext = strtolower($file->getClientOriginalExtension());
+            if (in_array($ext, ['heic', 'heif'], true)) {
+                $imagenRule = 'nullable|file|mimes:heic,heif|max:5120';
+            }
+        }
+
         return [
                 'descripcion' => 'required',
                 'tipo' => 'required',
@@ -31,6 +40,7 @@ class IncidenciaRequest extends FormRequest
                 'observaciones' => 'max:255',
                 'solucion' => 'max:255',
                 'fecha' => 'date',
+                'imagen' => $imagenRule,
             ];
     }
 }

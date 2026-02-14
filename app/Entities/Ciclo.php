@@ -11,15 +11,17 @@ use Jenssegers\Date\Date;
 class Ciclo extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
     
     protected $table = "ciclos";
     public $timestamps = false;
-    protected $fillable = [ 'ciclo','vliteral','cliteral', 'departamento','tipo','normativa','titol','rd','rd2','horasFct','acronim','llocTreball','dataSignaturaDual'];
+    protected $fillable = [ 'ciclo','vliteral','cliteral', 'departamento','tipo','normativa','titol','rd','rd2','horasFct','acronim','llocTreball','dataSignaturaDual','competencies'];
+    protected $notFillable = ['competencies'];
     protected $inputTypes = [
         'departamento' => ['type' => 'select'],
         'tipo' => ['type' => 'select'],
-        'dataSignaturaDual' => ['type' => 'date']
+        'dataSignaturaDual' => ['type' => 'date'],
+        'competencies' => ['type' => 'file'],
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,

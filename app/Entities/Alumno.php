@@ -4,55 +4,39 @@ namespace Intranet\Entities;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany};
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Jenssegers\Date\Date;
-
 
 class Alumno extends Authenticatable
 {
-
-    use Notifiable,
-        BatoiModels;
+    use Notifiable, \Intranet\Entities\Concerns\BatoiModels;
 
     public $primaryKey = 'nia';
     public $keyType = 'string';
     protected static $tabla = 'alumnos';
+
     protected $visible = [
-        'nia',
-        'dni',
-        'nombre',
-        'apellido1',
-        'apellido2',
-        'email',
-        'expediente',
-        'domicilio',
-        'municipio',
-        'provincia',
-        'telef1',
-        'telef2',
-        'sexo',
-        'codigo_postal',
-        'departamento',
-        'fecha_ingreso',
-        'fecha_matricula',
-        'fecha_nac',
-        'foto',
-        'turno',
-        'trabaja',
-        'repite'
+        'nia', 'dni', 'nombre', 'apellido1', 'apellido2', 'email',
+        'expediente', 'domicilio', 'municipio', 'provincia',
+        'telef1', 'telef2', 'sexo', 'codigo_postal',
+        'departamento', 'fecha_ingreso', 'fecha_matricula',
+        'fecha_nac', 'foto', 'turno', 'trabaja', 'repite','DA'
     ];
-    protected $fillable = [
-        'codigo',
-        'nombre',
-        'apellido1',
-        'apellido2',
-        'email',
-        'foto',
-        'idioma',
+
+    protected  $fillable = [
+        'codigo', 'nombre', 'apellido1', 'apellido2', 'email',
+        'telef1', 'telef2', 'foto', 'idioma',
+        'imageRightAccept', 'outOfSchoolActivityAccept', 'DA'
     ];
-    protected $rules = [
+
+    protected array $rules = [
         'email' => 'required|email',
     ];
-    protected $inputTypes = [
+
+    protected array $inputTypes = [
         'codigo' => ['type' => 'hidden'],
         'nombre' => ['disabled' => 'disabled'],
         'apellido1' => ['disabled' => 'disabled'],
@@ -60,182 +44,214 @@ class Alumno extends Authenticatable
         'foto' => ['type' => 'file'],
         'email' => ['type' => 'email'],
         'idioma' => ['type' => 'select'],
+        'imageRightAccept' => ['disabled' => 'disabled'],
+        'outOfSchoolActivityAccept' => ['disabled' => 'disabled'],
+        'DA' => ['type'=>'hidden']
     ];
 
-    public function Curso()
+    /*
+    |--------------------------------------------------------------------------
+    | RELACIONS
+    |--------------------------------------------------------------------------
+    */
+    public function Curso(): BelongsToMany
     {
         return $this->belongsToMany(Curso::class, 'alumnos_cursos', 'idAlumno', 'idCurso', 'nia', 'id')
-                ->withPivot(['registrado','finalizado']);
+            ->withPivot(['registrado', 'finalizado']);
     }
-    public function Colaboracion()
+
+    public function Colaboracion(): BelongsToMany
     {
         return $this->belongsToMany(Colaboracion::class, 'colaboraciones', 'idAlumno', 'idColaboracion');
     }
 
-    public function Grupo()
+    public function Grupo(): BelongsToMany
     {
         return $this->belongsToMany(Grupo::class, 'alumnos_grupos', 'idAlumno', 'idGrupo');
     }
 
-    public function Fcts()
+    public function Fcts(): BelongsToMany
     {
-        return $this->belongsToMany(
-            Fct::class,
-            'alumno_fcts',
-            'idAlumno',
-            'idFct',
-            'nia',
-            'id'
-        )->withPivot(['calificacion','calProyecto','actas','insercion']);
-    }
-    public function AlumnoFct()
-    {
-        return $this->HasMany(AlumnoFct::class, 'idAlumno', 'nia');
+        return $this->belongsToMany(Fct::class, 'alumno_fcts', 'idAlumno', 'idFct', 'nia', 'id')
+            ->withPivot(['calificacion', 'calProyecto', 'actas', 'insercion']);
     }
 
-    public function FctsColaboracion($colaboracion)
+    public function AlumnoFct(): HasMany
     {
-        return $this->belongsToMany(
-            Fct::class,
-            'alumno_fcts',
-            'idAlumno',
-            'idFct',
-            'nia',
-            'id'
-        )->where('idColaboracion', $colaboracion);
+        return $this->hasMany(AlumnoFct::class, 'idAlumno', 'nia');
     }
 
-    public function AlumnoResultado()
+    public function FctsColaboracion(int $colaboracion): BelongsToMany
     {
-        return $this->HasMany(AlumnoResultado::class, 'idAlumno', 'nia');
+        return $this->Fcts()->wherePivot('idColaboracion', $colaboracion);
     }
-    
-    public function Provincia()
+
+    public function AlumnoResultado(): HasMany
+    {
+        return $this->hasMany(AlumnoResultado::class, 'idAlumno', 'nia');
+    }
+
+    public function Provincia(): BelongsTo
     {
         return $this->belongsTo(Provincia::class, 'provincia', 'id');
     }
 
-
-    public function Municipio()
+    public function Municipio(): BelongsTo
     {
-        return $this->belongsTo(
-            Municipio::class,
-            'municipio',
-            'cod_municipio'
-        )->where('provincias_id', $this->provincia);
+        return $this->belongsTo(Municipio::class, 'municipio', 'cod_municipio')
+            ->where('provincias_id', $this->provincia);
     }
 
-    public function scopeQGrupo($query, $grupo)
+    public function Projecte()
     {
-        if (is_string($grupo)) {
-            $alumnos = AlumnoGrupo::select('idAlumno')->where('idGrupo', '=', $grupo)->get()->toarray();
-        } else {
-            $alumnos = AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupo)->get()->toarray();
-        }
+        return $this->hasOne(Projecte::class, 'idAlumne', 'nia');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
+    public function scopeQGrupo(Builder $query, string|array $grupo): Builder
+    {
+        $alumnos = AlumnoGrupo::whereIn('idGrupo', (array) $grupo)->pluck('idAlumno');
         return $query->whereIn('nia', $alumnos);
     }
 
-
-
-    public function scopeMenor($query, $fecha = null)
+    public function scopeMenor(Builder $query, ?string $fecha = null): Builder
     {
-        $hoy = $fecha ? new Date($fecha) : new Date();
-        $hace18 = $hoy->subYears(18)->toDateString();
-        return $query->where('fecha_nac', '>', $hace18);
+        $fechaLimite = ($fecha ? new Date($fecha) : new Date())->subYears(18)->toDateString();
+        return $query->where('fecha_nac', '>', $fechaLimite);
     }
-    public function scopeMisAlumnos($query, $profesor=null, $dual=false)
+
+    public function scopeMisAlumnos(Builder $query, ?string $profesor = null, bool $dual = false): Builder
     {
         $profesor = $profesor ?? authUser()->dni;
-        $gruposC = Grupo::select('codigo')->QTutor($profesor, $dual)->get();
-        $grupos = $gruposC->count()>0?$gruposC->toarray():[];
-        $alumnos = hazArray(AlumnoGrupo::select('idAlumno')->whereIn('idGrupo', $grupos)->get(), 'idAlumno', 'idAlumno');
+        $grupos = Grupo::QTutor($profesor, $dual)->pluck('codigo')->toArray();
+        $alumnos = AlumnoGrupo::whereIn('idGrupo', $grupos)->pluck('idAlumno');
         return $query->whereIn('nia', $alumnos);
-        
     }
 
 
+    public function scopeMisLOE(Builder $query, ?string $profesor = null, bool $dual = false): Builder
+    {
+        $profesor = $profesor ?? authUser()->dni;
 
-    public function getDepartamentoAttribute()
-    {
-        return $this->Grupo->first()->Ciclo->departamento??'99';
+        // Subconsulta dels codis de grup on sóc tutor i NO són LFP
+        $codigosTutorNoLfp = Grupo::QTutor($profesor, $dual)
+            ->select('codigo')
+            ->where('codigo', 'not like', '%LFP%');
+
+        // idAlumno de la taula pont per a eixos grups
+        $subAlumnos = AlumnoGrupo::query()
+            ->select('idAlumno')
+            ->whereIn('idGrupo', $codigosTutorNoLfp);
+
+        return $query->whereIn('nia', $subAlumnos);
     }
-    
-    public function getTutorAttribute()
+    /*
+    |--------------------------------------------------------------------------
+    | ACCESSORS & MUTATORS
+    |--------------------------------------------------------------------------
+    */
+    public function getIdGrupoAttribute(): ?string
     {
-        if ($this->Grupo->count() == 0) {
-            return [];
-        }
-        foreach ($this->Grupo as $grupo) {
-            $tutor[] = $grupo->Tutor;
-        }
-        return $tutor;
+        return optional($this->Grupo->first())->codigo;
     }
-    
-    public function getIdiomaOptions()
-    {
-        return config('auxiliares.idiomas');
-    }
-    public function getFullNameAttribute()
-    {
-        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1 . ' ' . $this->apellido2, 'UTF-8'));
-    }
-    public function getShortNameAttribute()
-    {
-        return ucwords(mb_strtolower($this->nombre . ' ' . $this->apellido1, 'UTF-8'));
-    }
-    public function getNameFullAttribute()
-    {
-        return ucwords(mb_strtolower($this->apellido1 . ' ' . $this->apellido2.' , '.$this->nombre, 'UTF-8'));
-    }
-    public function getDualNameAttribute()
-    {
-        return ucfirst(mb_strtolower($this->apellido1)).ucfirst(mb_strtolower($this->nombre));
-    }
-    public function getIdGrupoAttribute()
-    {
-        return $this->Grupo->first()->codigo;
-    }
-    public function getHorasFctAttribute()
-    {
-        $horas = 0;
-        foreach ($this->AlumnoFct as $fct) {
-            $horas += $fct->horas;
-        }
-        return $horas;
-    }
-    public function getFechaNacAttribute($entrada)
-    {
-        $fecha = new Date($entrada);
-        return $fecha->format('d-m-Y');
-    }
-    public function getContactoAttribute()
-    {
-        return $this->getFullNameAttribute();
-    }
-    public function getIdAttribute()
+
+    public function getIdAttribute(): ?string
     {
         return $this->nia;
     }
-    public function saveContact($contacto, $email)
+
+    public function getHorasFctAttribute(): int
     {
-        $this->email = $email;
-        $this->save();
+        return $this->AlumnoFct->sum('horas');
     }
-    public function getPoblacionAttribute()
+
+    public function getDepartamentoAttribute(): string
     {
-        return $this->Municipio->municipio??'NO TROBAT';
+        return optional($this->Grupo->first()?->Ciclo)->departamento ?? '99';
     }
-    public function getesMenorAttribute()
+
+    public function getTutorAttribute()
     {
-        $hoy = new Date();
-        $hace18 = $hoy->subYears(18)->toDateString();
-        return $this->fecha_nac > $hace18 ;
+        if ($this->Grupo->isEmpty()) {
+            return collect(); // Retorna una col·lecció buida
+        }
+
+        return $this->Grupo->map(fn($grupo) => $grupo->Tutor)->flatten()->unique();
     }
-    public function getEdatAttribute()
+
+    public function getFechaNacAttribute(?string $entrada): ?string
     {
-        $nac = new Date($this->fecha_nac);
-        return $nac->age;
+        return $entrada ? (new Date($entrada))->format('d-m-Y') : null;
+    }
+
+    public function getPoblacionAttribute(): string
+    {
+        return optional($this->Municipio)->municipio ?? 'NO TROBAT';
+    }
+
+    public function getEsMenorAttribute(): bool
+    {
+        return $this->fecha_nac ? (new Date($this->fecha_nac))->gt((new Date())->subYears(18)) : false;
+    }
+
+    public function esMenorEdat($fecha)
+    {
+        $dataNaixement = new \Jenssegers\Date\Date($this->fecha_nac);
+        $dataComparacio = new \Jenssegers\Date\Date($fecha);
+
+        return $dataNaixement->diffInYears($dataComparacio) < 18;
+    }
+
+    public function getEdatAttribute(): ?int
+    {
+        return $this->fecha_nac ? (new Date($this->fecha_nac))->age : null;
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return ucwords(mb_strtolower(trim("{$this->nombre} {$this->apellido1} {$this->apellido2}"), 'UTF-8'));
+    }
+
+    public function getShortNameAttribute(): string
+    {
+        return ucwords(mb_strtolower(trim("{$this->nombre} {$this->apellido1}"), 'UTF-8'));
+    }
+
+    public function getNameFullAttribute(): string
+    {
+        return ucwords(mb_strtolower(trim("{$this->apellido1} {$this->apellido2}, {$this->nombre}"), 'UTF-8'));
+    }
+
+    public function getDualNameAttribute(): string
+    {
+        return ucfirst(mb_strtolower($this->apellido1 ?? '')) . ucfirst(mb_strtolower($this->nombre ?? ''));
     }
 
 
+    /*
+    |--------------------------------------------------------------------------
+    | MÈTODES UTILS
+    |--------------------------------------------------------------------------
+    */
+    public function saveContact(string $contacto, string $email): void
+    {
+        $this->update(['email' => $email]);
+    }
+
+    public function getIdiomaOptions(): array
+    {
+        return config('auxiliares.idiomas');
+    }
+
+    public function scopeMisDA(Builder $query, ?string $profesor = null, bool $dual = false): Builder
+    {
+        $profesor = $profesor ?? authUser()->dni;
+        $grupos = Grupo::QTutor($profesor, $dual)->pluck('codigo')->toArray();
+        $alumnos = AlumnoGrupo::whereIn('idGrupo', $grupos)->pluck('idAlumno');
+        return $query->whereIn('nia', $alumnos)->where('DA',1);
+    }
 }

@@ -2,10 +2,12 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
-use Intranet\Entities\TipoDocumento;
+use Intranet\Http\Controllers\Core\BaseController;
+
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\Services\Document\TipoDocumentoService;
 use Intranet\Entities\Documento;
 use Illuminate\Support\Facades\Session;
 
@@ -47,7 +49,9 @@ class PanelDocumentoController extends BaseController
      */
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('documento.create', ['roles' => config('roles.rol.direccion')]));
+        $this->panel->setBoton('index',
+            new BotonBasico('documento.create', ['roles' => config('roles.rol.direccion')])
+        );
         $this->panel->setBothBoton('documento.show', ['where' => ['link','==',1]]);
         $this->panel->setBoton('grid', new BotonImg('documento.edit'));
         $this->panel->setBoton('grid', new BotonImg('documento.delete'));
@@ -58,7 +62,10 @@ class PanelDocumentoController extends BaseController
      */
     public function search()
     {
-        return Documento::whereIn('rol', RolesUser(AuthUser()->rol))->whereIn('tipoDocumento',TipoDocumento::allDocuments())->whereNull('idDocumento')->get();
+        return Documento::
+            whereIn('rol', RolesUser(AuthUser()->rol))->
+            whereIn('tipoDocumento',TipoDocumentoService::allDocuments())->
+            whereNull('idDocumento')->get();
     }
 
 }

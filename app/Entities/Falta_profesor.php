@@ -43,12 +43,15 @@ class Falta_profesor extends Model
 
             if ($ultimo != null) {
                 $now = new Date();
-                if ($ultimo->salida != null)
+                if ($ultimo->salida != null) {
                     $last = new Date($ultimo->salida);
-                else
+                } else {
                     $last = new Date($ultimo->entrada);
+                }
                 $diff = $now->diffInMinutes($last);
-                if ($diff < 10) return null;
+                if ($diff < 10) {
+                    return null;
+                }
             }
 
             if (($ultimo == null) || ($ultimo->salida != null)) {

@@ -1,9 +1,8 @@
 <?php
 
-namespace Database\Seeder;
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 
 class DatabaseSeeder extends Seeder
@@ -15,9 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        //$this->call(ImportTableSeeder::class);
-        //$this->call(newProject::class);
-        //$this->call(ModifyEmpresas::class);
-        //$this->call(Inventari::class);
+        $this->call(NewProject::class);
+        $this->call(DefaultUser::class);
     }
 }

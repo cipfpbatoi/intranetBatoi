@@ -2,14 +2,16 @@
 
 namespace Intranet\Console\Commands;
 
+use ErrorException;
+use Exception;
 use Illuminate\Console\Command;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Mail\CertificatAlumneFct;
 use Intranet\Mail\CertificatInstructorFct;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\AvalFct;
-use Intranet\Entities\Profesor;
-use Styde\Html\Facades\Alert;
+use Intranet\Entities\Fct;
+
 use Swift_RfcComplianceException;
 use Swift_TransportException;
 
@@ -38,42 +40,84 @@ class SendFctEmails extends Command
      */
     public function handle()
     {
-        if (config('curso.enquestesAutomatiques')) {
-            $alumnosAprobados = hazArray(AlumnoFctAval::aprobados()->get(), 'idAlumno');
-            $alumnosPendientes = AlumnoFctAval::pendienteNotificar($alumnosAprobados)->get();
+
+            $alumnosPendientes = AlumnoFctAval::pendienteNotificar()->get();
 
             foreach ($alumnosPendientes as $alumno) {
                 $fct = $alumno->Fct;
-                $tutor = Profesor::find($fct->Colaboracion->tutor);
 
                 try {
-                    Mail::to($alumno->Alumno->email)->send(new CertificatAlumneFct($alumno));
+                    Mail::to($alumno->Alumno->email, $alumno->Alumno->fullName)
+                        ->cc($alumno->Tutor->email)
+                        ->send(new CertificatAlumneFct($alumno));
+                    avisa($alumno->Tutor->dni,
+                        'El correu amb el certificat de FCT de ' . $alumno->Alumno->fullName . " ha estat enviat a l'adreça " . $alumno->Alumno->email,
+                        '#', 'Servidor de correu');
                     $alumno->correoAlumno = 1;
                     $alumno->save();
-                } catch (Swift_RfcComplianceException $e) {
-                    //
-                } catch (Swift_TransportException $e) {
-                    dd($alumno->Alumno->email);
+                } catch (Exception  $e) {
+                    $mensaje = "Error : Enviant certificats a l'alumne:  ".$e->getMessage().".".
+                        $alumno->Alumno->fullName.' al email '.
+                        $alumno->Alumno->email;
+                    avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
+                    if ($alumno->Tutor != null) {
+                        avisa($alumno->Tutor->dni, $mensaje, '#', 'Servidor de correu');
+                    }
+
                 }
 
                 if ($fct->correoInstructor == 0 && isset($fct->Instructor->email)) {
-                    try {
-                        Mail::to($fct->Instructor->email, 'Intranet Batoi')
-                            ->send(new AvalFct($fct, 'instructor'));
-                        Mail::to($fct->Instructor->email, 'Secretaria CIPFP Batoi')
-                            ->send(new CertificatInstructorFct($fct));
-                        if ($tutor) {
-                            Mail::to($tutor->email, 'Intranet CIFP Batoi')->send(new CertificatInstructorFct($fct));
-                        }
-                        $fct->correoInstructor = 1;
-                        $fct->save();
-                    } catch (Swift_RfcComplianceException $e) {
-
-                    } catch (Swift_TransportException $e) {
-
-                    }
+                    $this->correuInstructor($fct);
+                }
+            }
+            $fcts = Fct::where('correoInstructor', 0)->get();
+            foreach ($fcts as $fct) {
+                $first = $fct->AlFct->first();
+                if ( isset($fct->Instructor->email) && $first->correoAlumno) {
+                    $this->correuInstructor($fct);
                 }
             }
         }
+
+    /**
+     * @param $fct
+     * @return array
+     */
+    private function correuInstructor($fct): int
+    {
+        try {
+            $encarregat = $fct->Encarregat;
+
+            if (!$encarregat && $fct->AlFct && $fct->AlFct->first()) {
+                $encarregat = $fct->AlFct->first()->Tutor;
+            }
+
+            if (!$encarregat) {
+                throw new \ErrorException('No hi ha tutor assignat a la FCT ni encarregat directe.');
+            }
+            Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
+                ->cc($encarregat->email)
+                ->send(new AvalFct($fct, 'instructor'));
+            Mail::to($fct->Instructor->email, $fct->Instructor->nombre)
+                ->cc($encarregat->email)
+                ->send(new CertificatInstructorFct($fct, $encarregat));
+            avisa($encarregat->dni,
+                'El correu amb el certificat de FCT de '.$fct->Instructor->nombre." ha estat enviat a l'adreça ".$fct->Instructor->email,
+                '#', 'Servidor de correu');
+            $fct->correoInstructor = 1;
+            $fct->save();
+            return 1;
+        } catch (\Exception $e) {
+            $mensaje = 'Error : Enviant certificats al Instructor: '.
+                $fct->Instructor->nombre.' al email '.
+                $fct->Instructor->email.':'.$e->getMessage();
+            avisa(config('avisos.errores'), $mensaje, '#', 'Servidor de correu');
+            if ($fct->Encarregat != null) {
+                avisa($fct->Encarregat->dni, $mensaje, '#', 'Servidor de correu');
+            }
+            return 0;
+        }
     }
+
+
 }

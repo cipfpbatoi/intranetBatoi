@@ -2,12 +2,14 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\BaseController;
+
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\Panel;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Panels\Panel;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 
 
 /**

@@ -2,12 +2,15 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
 
-use Intranet\Botones\BotonImg;
-use Intranet\Componentes\Mensaje;
+
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Solicitud;
 use Intranet\Http\Requests\SolicitudRequest;
-use Intranet\Services\ConfirmAndSend;
+use Intranet\Http\Traits\Core\DropZone;
+use Intranet\Services\Notifications\ConfirmAndSend;
 
 
 /**
@@ -17,7 +20,7 @@ use Intranet\Services\ConfirmAndSend;
 class SolicitudController extends ModalController
 {
 
-    use traitDropZone;
+    use DropZone;
 
     /**
      * @var array
@@ -79,7 +82,7 @@ class SolicitudController extends ModalController
         $expediente = Solicitud::find($id);
         $expediente->estado = 1;
         $expediente->save();
-        Mensaje::send($expediente->idOrientador, "T'he remes un cas per al seu estudi", '#', AuthUser()->fullName);
+        app(NotificationService::class)->send($expediente->idOrientador, "T'he remes un cas per al seu estudi", '#', AuthUser()->fullName);
 
         return back();
     }

@@ -2,8 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Colaboracion;
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Colaboracion;
+use Intranet\Http\Traits\Core\Panel;
 use Styde\Html\Facades\Alert;
 
 
@@ -13,10 +16,9 @@ use Styde\Html\Facades\Alert;
  */
 class ColaboracionAlumnoController extends IntranetController
 {
-    use traitPanel;
+    use Panel;
 
-    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
-    const FCT_EMAILS_REQUEST = 'fctEmails.request';
+     const FCT_EMAILS_REQUEST = 'fctEmails.request';
     /**
      * @var array
      */
@@ -35,8 +37,7 @@ class ColaboracionAlumnoController extends IntranetController
     public function index()
     {
         $todos = $this->search();
-
-        $this->crea_pestanas(
+        $this->setTabs(
             config('modelos.'.$this->model.'.estados'),
             "profile.".strtolower($this->model),
             3,

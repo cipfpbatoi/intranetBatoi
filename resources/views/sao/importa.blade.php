@@ -1,19 +1,16 @@
-@extends('layouts.intranet')
-@section('css')
-    <title>Selecció Fcts</title>
-@endsection
-@section('content')
+<x-layouts.app title="Gestió Importació Sao">
     <div class='x-content'>
         <div class='form_box'>
             <form method="POST" action='/sao/importa' class='form-horizontal form-label-left'>
                 {{ csrf_field() }}
-                <input name="ciclo" type="hidden" value="{{$ciclo}}" />
+                <input name="ciclo" type="hidden" value="{{$ciclo}}"/>
                 @foreach ($dades as $key => $fct)
                     @php
                         $alumno = Intranet\Entities\Alumno::find($fct['nia']);
                     @endphp
-                    @if($fct['erasmus'] == 'No')
-                        <div class="form-check">
+                    @isset ($alumno)
+                        @if($fct['erasmus'] === 'No')
+                            <div class="form-check">
                                 <input
                                         class="form-check-input"
                                         type="checkbox"
@@ -29,32 +26,32 @@
                                     @endisset
                                     - {{ $alumno->fullName }} => {{ $fct['hores'] }}
                                 </label>
-                        </div>
+                            </div>
+                        @else
+                            <div class="form-check">
+                                <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="{{$key}}"
+                                        id="{{$key}}flexRadio"
+                                        checked
+                                >
+                                <label class="form-check-label" for="flexRadioDefault1">
+                                    Erasmus -
+                                    {{ $alumno->fullName }} =>
+                                    {{ $fct['hores'] }}
+                                </label>
+                            </div>
+                        @endif
                     @else
-                        <div class="form-check">
-                            <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    name="{{$key}}"
-                                    id="{{$key}}flexRadio"
-                                    checked
-                            >
-                            <label class="form-check-label" for="flexRadioDefault1">
-                                Erasmus -
-                                {{ $alumno->fullName }} =>
-                                {{ $fct['hores'] }}
-                            </label>
-                        </div>
+                        No trobat alumne amb nia {{$fct['nia']}}
                     @endisset
                 @endforeach
                 <br/>
-                <input type='submit' class='btn btn-success'value='Enviar'/>
+                <input type='submit' class='btn btn-success' value='Enviar'/>
                 <a href="{{route('alumnofct.index')}}" class='btn btn-danger'>Cancelar</a>
             </form>
 
         </div>
     </div>
-@endsection
-@section('titulo')
-    Gestió Importació SAO
-@endsection
+ </x-layouts.app>

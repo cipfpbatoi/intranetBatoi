@@ -2,31 +2,33 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonImg;
+use Intranet\Http\Controllers\Core\BaseController;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\Actividad;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Horario;
-use Intranet\Entities\Profesor;
-use Intranet\Services\GestorService;
-use Styde\Html\Facades\Alert;
-use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Modulo_ciclo;
+use Intranet\Entities\Modulo_grupo;
+use Intranet\Entities\OrdenReunion;
+use Intranet\Entities\Poll\Vote;
+use Intranet\Entities\Profesor;
+use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
-use Illuminate\Http\Request;
-use Intranet\Entities\OrdenReunion;
-use Intranet\Entities\TipoReunion;
-use Intranet\Entities\Actividad;
-use Intranet\Entities\Documento;
-use Intranet\Entities\Programacion;
-use Illuminate\Support\Facades\DB;
+use Intranet\Services\Document\TipoReunionService;
+use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Services\General\GestorService;
 use Jenssegers\Date\Date;
-use Intranet\Entities\Poll\Vote;
+use Styde\Html\Facades\Alert;
 
 
 class PanelListadoEntregasController extends BaseController
 {
-    use traitImprimir;
+    use Imprimir;
 
     const ROLES_ROL_JEFE_DPTO = 'roles.rol.jefe_dpto';
     protected $model = 'Modulo_grupo';
@@ -35,6 +37,7 @@ class PanelListadoEntregasController extends BaseController
 
     public function search()
     {
+        // Obtenim els mòduls rellevants
         $modulos = hazArray(
             Modulo_ciclo::whereIn(
                 'idModulo',
@@ -46,10 +49,13 @@ class PanelListadoEntregasController extends BaseController
             'id'
         );
 
-        return Modulo_grupo::with('Grupo')
-            ->with('resultados')
-            ->with('ModuloCiclo')
-            ->whereIn('idModuloCiclo',$modulos)->get();
+        // Retornem només aquells modulo_grupo que tenen alumnes
+        return Modulo_grupo::with('Grupo', 'resultados', 'ModuloCiclo')
+            ->whereIn('idModuloCiclo', $modulos)
+            ->whereHas('Grupo', function ($query) {
+                $query->whereHas('Alumnos'); // Comprovar que el grupo té alumnes
+            })
+            ->get();
     }
 
     public function iniBotones()
@@ -131,7 +137,7 @@ class PanelListadoEntregasController extends BaseController
                         'fichero' => $reunion->fichero,
                         'supervisor' => $reunion->idProfesor,
                         'grupo' => str_replace(' ', '_', $reunion->Xgrupo),
-                        'tags' => TipoReunion::find($reunion->tipo)->vliteral . ',' . config('auxiliares.numeracion')[$reunion->numero],
+                        'tags' => TipoReunionService::find($reunion->tipo)->vliteral . ',' . config('auxiliares.numeracion')[$reunion->numero],
                         'created_at' => new Date($reunion->fecha),
                         'rol' => config('roles.rol.profesor')]);
 
@@ -316,19 +322,24 @@ class PanelListadoEntregasController extends BaseController
 
     private function faltan()
     {
-        $empty = 0;
-        foreach (Modulo_grupo::whereIn(
-            'idModuloCiclo',
-            hazArray(
-                Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(),
-                'id',
-                'id'
-            )
-        )->get() as $modulo) {
-            if ($modulo->seguimiento == 0) {
-                $empty++;
-            }
-        }
+        // Obtenim els ID dels Modulo_ciclo rellevants
+        $moduloCicloIds = hazArray(
+            Modulo_ciclo::where('idDepartamento', AuthUser()->departamento)->get(),
+            'id',
+            'id'
+        );
+
+        // Recuperem els Modulo_grupo i filtrem en memòria
+        $empty = Modulo_grupo::whereIn('idModuloCiclo', $moduloCicloIds)
+            ->whereHas('Grupo', function ($query) {
+                $query->whereHas('Alumnos'); // Assegurem que el grup té almenys un alumne
+            })
+            ->get()
+            ->filter(function ($modulo) {
+                return $modulo->seguimiento == false; // Utilitzem l'accessor calculat aquí
+            })
+            ->count();
+
         return $empty;
     }
 }

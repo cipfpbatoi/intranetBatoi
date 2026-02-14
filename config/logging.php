@@ -76,6 +76,24 @@ return [
             'driver' => 'errorlog',
             'level' => 'debug',
         ],
+
+        'certificate' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/certificate.log'),
+            'level' => 'debug',
+            'days' => 30,  // nombre de dies per retenir
+        ],
+        'sao' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/sao.log'),
+            'level' => 'debug',
+            'days' => 7,
+        ],
+        'parking' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/parking.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];

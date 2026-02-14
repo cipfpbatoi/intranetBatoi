@@ -8,7 +8,6 @@ use Facebook\WebDriver\WebDriverBy;
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
-use Intranet\Services\SeleniumService;
 use Styde\Html\Facades\Alert;
 
 

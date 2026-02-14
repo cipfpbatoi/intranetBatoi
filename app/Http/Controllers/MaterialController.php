@@ -1,7 +1,9 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonBasico;
+use Intranet\Http\Controllers\Core\IntranetController;
+
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Material;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\TipoIncidencia;
@@ -47,7 +49,13 @@ class MaterialController extends IntranetController
      */
     public function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico('material.create', ['roles' => [config('roles.rol.direccion'), config('roles.rol.mantenimiento')]]));
+        $this->panel->setBoton(
+            'index',
+            new BotonBasico(
+                'material.create',
+                ['roles' => [config('roles.rol.direccion'), config('roles.rol.mantenimiento')]]
+            )
+        );
     }
 
 

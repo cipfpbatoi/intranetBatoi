@@ -23,7 +23,7 @@ class ConformidadAlumnadoResource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
         return [
             'untitled2' => "$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni",
             'untitled3' => config('contacto.nombre').' '.config('contacto.codi') ,

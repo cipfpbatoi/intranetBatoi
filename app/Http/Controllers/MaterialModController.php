@@ -1,15 +1,14 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Lote;
-use Illuminate\Support\Facades\Auth;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\Http\Controllers\Core\ModalController;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\Espacio;
 use Intranet\Entities\Material;
-use Intranet\Entities\Incidencia;
 use Intranet\Entities\MaterialBaja;
-use Intranet\Entities\TipoIncidencia;
 
 /**
  * Class MaterialController
@@ -27,7 +26,16 @@ class MaterialModController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = [ 'idMaterial','tipus', 'descripcion', 'espacio','fechaBaja','solicitante', 'motivo','nuevo' ];
+    protected $gridFields = [
+        'idMaterial',
+        'tipus',
+        'descripcion',
+        'espacio',
+        'fechaBaja',
+        'solicitante',
+        'motivo',
+        'nuevo'
+    ];
     /**
      * @var array
      */
@@ -81,17 +89,38 @@ class MaterialModController extends ModalController
 
     public function resolve($id)
     {
-        $registro = MaterialBaja::findOrFail($id);
-        $material = Material::findOrFail($registro->idMaterial);
-        if ($registro->tipo == 0) {
-            $material->estado = 3;
+        return DB::transaction(function () use ($id) {
+            $registro = MaterialBaja::findOrFail($id);
+            $material = Material::findOrFail($registro->idMaterial);
+
+            if ((int)$registro->tipo === 0) {
+                // Baixa
+                $material->fechaBaja = Hoy();
+                $material->estado = 3;
+            } else {
+                // Trasllat d'espai (assumint que 'nuevoEstado' guarda l'ID d'Espacio)
+                $nuevo = trim((string) $registro->nuevoEstado);
+
+                if ($nuevo === '' || $nuevo === '0') {
+                    throw ValidationException::withMessages([
+                        'nuevoEstado' => "Cal indicar l'espai destí (no pot ser 0 ni buit).",
+                    ]);
+                }
+                if (!Espacio::whereKey($nuevo)->exists()) {
+                    throw ValidationException::withMessages([
+                        'nuevoEstado' => "L'espai destí \"$nuevo\" no existeix.",
+                    ]);
+                }
+
+                $material->espacio = $nuevo;
+            }
+
             $material->save();
-        } else {
-            $material->espacio = $registro->nuevo;
-            $material->save();
-        }
-        $registro->estado = 1;
-        $registro->save();
-        return redirect()->back();
+
+            $registro->estado = 1;
+            $registro->save();
+
+            return redirect()->back();
+        });
     }
 }

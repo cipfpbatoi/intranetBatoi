@@ -2,21 +2,24 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
 
-use Intranet\Botones\BotonConfirmacion;
-use Intranet\Botones\BotonImg;
+
+use DB;
+use Illuminate\Support\Facades\Session;
+use Intranet\UI\Botones\BotonConfirmacion;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
-use DB;
-use Intranet\Exceptions\IntranetException;
-use Intranet\Services\FDFPrepareService;
-use Intranet\Services\SecretariaService;
-use Styde\Html\Facades\Alert;
 use Intranet\Entities\Documento;
-use Illuminate\Support\Facades\Session;
+use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
+use Intranet\Exceptions\IntranetException;
+use Intranet\Http\Traits\Core\DropZone;
+use Intranet\Services\Document\FDFPrepareService;
+use Intranet\Services\School\SecretariaService;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -25,9 +28,10 @@ use Intranet\Entities\Profesor;
  */
 class PanelFctAvalController extends IntranetController
 {
-    use traitDropZone;
+    use DropZone;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
+    const ROLES_ROL_CAPAC = 'roles.rol.jefe_practicas';
 
     /**
      * @var string
@@ -55,7 +59,7 @@ class PanelFctAvalController extends IntranetController
         $todas = collect();
         foreach ($nombres as $nombre) {
             $todas->push(AlumnoFctAval::misFcts()->esAval()->where('idAlumno', $nombre['idAlumno'])
-                ->orderBy('idAlumno')
+                ->orderByDesc('idSao')
                 ->first());
         }
         return $todas;
@@ -80,7 +84,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calificacion', '!=', '1',
                         'actas', '==', 0,
-                        'asociacion', '<', 3
+                        'asociacion', '<>', 2
                     ]
                 ]
             ));
@@ -93,7 +97,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '5',
                         'calificacion', '!=', '0',
-                        'actas', '==', 0, 'asociacion', '<', 3
+                        'actas', '==', 0, 'asociacion', '<>', 2
                     ]
                 ]
             ));
@@ -119,7 +123,7 @@ class PanelFctAvalController extends IntranetController
                     'where' => [
                         'calProyecto', '<', '1',
                         'calificacion', '==', 0,
-                        'actas', '>', 0, 'asociacion', '<', 3
+                        'actas', '>', 0, 'asociacion', '<>', 2
                     ]
                 ]
             ));
@@ -249,26 +253,46 @@ class PanelFctAvalController extends IntranetController
      */
     public function demanarActa()
     {
-        $grupo = Grupo::QTutor()->first();
-
-        if ($grupo->acta_pendiente) {
-            Alert::message("L'acta pendent esta en procés", 'info');
+        $grupos = Grupo::QTutor()->get();
+        if ($grupos->isEmpty()) {
+            Alert::message('No tens grups assignats', 'warning');
             return back();
         }
 
-        if ($this->lookForStudents($grupo->proyecto)) {
-            $grupo->acta_pendiente = 1;
-            $grupo->save();
-            avisa(
-                config('contacto.jefeEstudios2'),
-                "Acta pendent grup $grupo->nombre",
-                config('contacto.host.web')."/direccion/$grupo->codigo/acta"
-            );
-            Alert::message('Acta demanada', 'info');
-            return back();
+        $pendents = [];
+        $demanades = [];
+        $senseAlumnes = [];
+
+        foreach ($grupos as $grupo) {
+            if ($grupo->acta_pendiente) {
+                $pendents[] = $grupo->nombre;
+                continue;
+            }
+
+            if ($this->lookForStudents($grupo->proyecto, $grupo)) {
+                $grupo->acta_pendiente = 1;
+                $grupo->save();
+                avisa(
+                    config('avisos.jefeEstudios2'),
+                    "Acta pendent grup $grupo->nombre",
+                    config('contacto.host.web')."/direccion/$grupo->codigo/acta"
+                );
+                $demanades[] = $grupo->nombre;
+            } else {
+                $senseAlumnes[] = $grupo->nombre;
+            }
         }
 
-        Alert::message('No tens nous alumnes per ser avaluats', 'warning');
+        if ($demanades) {
+            Alert::message('Acta demanada: '.implode(', ', $demanades), 'info');
+        }
+        if ($pendents) {
+            Alert::message("L'acta pendent esta en procés: ".implode(', ', $pendents), 'info');
+        }
+        if ($senseAlumnes && !$demanades) {
+            Alert::message('No tens nous alumnes per ser avaluats', 'warning');
+        }
+
         return back();
     }
 
@@ -276,10 +300,15 @@ class PanelFctAvalController extends IntranetController
      * @param $projectNeeded
      * @return bool
      */
-    private function lookForStudents($projectNeeded)
+    private function lookForStudents($projectNeeded, $grupo = null)
     {
+
         $found = false;
-        foreach (AlumnoFctAval::MisFcts()->NoAval()->get() as $fct) {
+        $query = AlumnoFctAval::Avaluables()->NoAval();
+        if ($grupo) {
+            $query->Grupo($grupo);
+        }
+        foreach ($query->get() as $fct) {
             if ($projectNeeded) {
                 if (isset($fct->calProyecto)) {
                     $fct->actas = 3;
@@ -292,7 +321,6 @@ class PanelFctAvalController extends IntranetController
                     $found = true;
             }
         }
-
         return $found;
     }
 
@@ -303,11 +331,14 @@ class PanelFctAvalController extends IntranetController
      */
     private function setActaB(): void
     {
-        if (Grupo::QTutor()->first() && !Grupo::QTutor()->first()->acta_pendiente) {
-            $this->panel->setBoton(
-                'index',
-                new BotonConfirmacion("fct.acta", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]
-                ));
+        $grupo = Grupo::QTutor()->first();
+        if ($grupo && !$grupo->acta_pendiente  ) {
+            if ($grupo->curso == 2) {
+                $this->panel->setBoton(
+                    'index',
+                    new BotonConfirmacion("fct.acta", ['class' => 'btn-info', 'roles' => config(self::ROLES_ROL_TUTOR)]
+                    ));
+            }
         } else {
             Alert::message("L'acta pendent esta en procés", 'info');
         }
@@ -354,11 +385,13 @@ class PanelFctAvalController extends IntranetController
                 new BotonImg(
                     'fct.nullProyecto',
                     [
-                        'img' => 'fa-minus-circle', 'roles' => config(self::ROLES_ROL_TUTOR),
+
+                       'img' => 'fa-minus-circle', 'roles' => config(self::ROLES_ROL_TUTOR),
                         'where' => [
                             'calProyecto', '>=', '0',
                             'actas', '<', 2,
-                            'calificacion', '==', '1'
+                            'calificacion', '==', '1',
+                            'asociacion', '<>', '2'
                         ]
                     ]
                 )
@@ -374,7 +407,7 @@ class PanelFctAvalController extends IntranetController
                         'where' => [
                             'calProyecto', '<', '1',
                             'actas', '<', 2,
-                            'asociacion', '==', '3'
+                            'asociacion', '==', '2'
                         ]
                     ]
                 )
@@ -389,7 +422,7 @@ class PanelFctAvalController extends IntranetController
                         'where' => [
                             'calProyecto', '<', '0',
                             'actas', '<', 2,
-                            'asociacion', '==', '3'
+                            'asociacion', '==', '2'
                         ]
                     ]
                 )
@@ -404,7 +437,7 @@ class PanelFctAvalController extends IntranetController
                         'where' => [
                             'calProyecto', '>=', '0',
                             'actas', '<', 2,
-                            'asociacion', '==', '3'
+                            'asociacion', '==', '2'
                         ]
                     ]
                 )
@@ -446,15 +479,20 @@ class PanelFctAvalController extends IntranetController
         $registre = Profesor::findOrFail($id);
         $quien = $registre->fullName;
         $modelo = strtolower('Profesor');
+        $ara = new \DateTime();
+        $inici = new \DateTime(date('Y') . '-06-15');
+        $fi = new \DateTime(date('Y') . '-08-31');
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()],
-            'final' => [
-                'link' =>"/fct/$id/upload",
-                'message' => "Este procediment l'has de fer quan tingues tota
+        ];
+        if ($ara >= $inici && $ara <= $fi && userIsAllow(config(self::ROLES_ROL_CAPAC)))  {
+            $botones['final'] = [
+                    'link' =>"/fct/$id/upload",
+                    'message' => "Este procediment l'has de fer quan tingues tota
                      la documentació de totes les FCT completes.
                       Una vegada fet no es pot tornar arrere."
-                ]
-        ];
+                ];
+        }
         return view('dropzone.index', compact('modelo', 'id', 'quien', 'botones'));
 
     }
@@ -518,4 +556,30 @@ class PanelFctAvalController extends IntranetController
 
         return back();
     }
+
+    public function estadistiques()
+    {
+        $grupos = Grupo::where('curso',2)->orderBy('idCiclo')->get();
+        $ciclos = [];
+        foreach ($grupos as $grupo) {
+            $ciclo = $grupo->idCiclo;
+            $ciclos[$ciclo]['matriculados'] =
+                isset($ciclos[$ciclo]['matriculados']) ?
+                $ciclos[$ciclo]['matriculados'] + $grupo->matriculados : $grupo->matriculados;
+            $ciclos[$ciclo]['resfct'] = isset($ciclos[$ciclo]['resfct']) ?
+                $ciclos[$ciclo]['resfct'] + $grupo->AprobFct : $grupo->AprobFct;
+            $ciclos[$ciclo]['exentos'] = isset($ciclos[$ciclo]['exentos']) ?
+                $ciclos[$ciclo]['exentos'] + $grupo->exentos : $grupo->exentos;
+            $ciclos[$ciclo]['respro'] = isset($ciclos[$ciclo]['respro']) ?
+                $ciclos[$ciclo]['respro'] + $grupo->AprobPro : $grupo->AprobPro;
+            $ciclos[$ciclo]['avalpro'] = isset($ciclos[$ciclo]['avalpro']) ?
+                $ciclos[$ciclo]['avalpro'] + $grupo->AvalPro : $grupo->AvalPro;
+            $ciclos[$ciclo]['resempresa'] = isset($ciclos[$ciclo]['resempresa']) ?
+                $ciclos[$ciclo]['resempresa'] + $grupo->colocados : $grupo->colocados;
+            $ciclos[$ciclo]['avalfct'] = isset($ciclos[$ciclo]['avalfct']) ?
+                $ciclos[$ciclo]['avalfct'] + $grupo->avalFct : $grupo->avalFct;
+        }
+        return view('fct.estadisticas', compact('ciclos', 'grupos'));
+    }
+
 }

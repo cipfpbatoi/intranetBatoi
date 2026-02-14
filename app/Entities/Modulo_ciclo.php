@@ -13,7 +13,7 @@ class Modulo_ciclo extends Model
     protected $table = 'modulo_ciclos';
     public $timestamps = false;
     
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $fillable = [
         'idModulo',

@@ -2,8 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\Http\Controllers\Core\ModalController;
+
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Ciclo;
 use Intranet\Http\Requests\CicloRequest;
 
@@ -22,7 +24,7 @@ class CicloController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = [ 'ciclo','literal','Xdepartamento','Xtipo'];
+    protected $gridFields = [ 'id','ciclo','literal','Xdepartamento','Xtipo'];
 
 
     protected function iniBotones()
@@ -43,6 +45,12 @@ class CicloController extends ModalController
     public function update(CicloRequest $request, $id)
     {
         Ciclo::findOrFail($id)->fillAll($request);
+        if ($file = $request->file('competencies')) {
+            $file->storeAs(
+                'public/Ciclos',
+                $id.'.txt'
+            );
+        }
         return $this->redirect();
     }
 

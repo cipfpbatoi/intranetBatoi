@@ -2,23 +2,26 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\Http\Controllers\Core\ModalController;
+
+use DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Dual;
+use Intranet\Entities\Fct;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
-use DB;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Requests\DualRequest;
-use mikehaertl\pdftk\Pdf;
+use Intranet\Http\Traits\Core\Imprimir;
 use Jenssegers\Date\Date;
-use Intranet\Entities\Fct;
+use mikehaertl\pdftk\Pdf;
 use Styde\Html\Facades\Alert;
 
 
@@ -28,7 +31,7 @@ use Styde\Html\Facades\Alert;
  */
 class DualController extends ModalController
 {
-    use traitImprimir;
+    use Imprimir;
 
     const CONTACTO_NOMBRE = 'contacto.nombre';
     const CONTACTO_CODI = 'contacto.codi';
@@ -41,7 +44,7 @@ class DualController extends ModalController
     /**
      * @var string
      */
-    protected $model = 'Dual';
+    protected $model = 'Fct';
     /**
      * @var array
      */
@@ -65,6 +68,10 @@ class DualController extends ModalController
         'hasta' => ['type' => 'date'],
         'horas' => ['type' => 'text'],
         'beca' => ['type' => 'text']];
+
+
+
+
     /**
      * @return mixed
      */
@@ -83,10 +90,16 @@ class DualController extends ModalController
         if ($grupo){
             $ciclo = $grupo->ciclo;
             if ($ciclo->CompleteDual){
-                $this->panel->setBoton('index',new BotonBasico('cicloDual.edit',['text'=>'Edita Paràmetres de Cicle','class' => 'btn-info']));
+                $this->panel->setBoton(
+                    'index',
+                    new BotonBasico('cicloDual.edit', ['text'=>'Edita Paràmetres de Cicle', 'class' => 'btn-info'])
+                );
             }
             else {
-                $this->panel->setBoton('index',new BotonBasico('cicloDual.edit',['text'=>'Edita Paràmetres de Cicle','class' => 'btn-warning']));
+                $this->panel->setBoton(
+                    'index',
+                    new BotonBasico('cicloDual.edit', ['text'=>'Edita Paràmetres de Cicle', 'class' => 'btn-warning'])
+                );
             }
         }
 
@@ -168,8 +181,8 @@ class DualController extends ModalController
         $id = is_object($fct)?$fct->id:$fct;
         $fct = is_object($fct)?$fct:AlumnoFct::findOrFail($id);
         $informe = 'dual.'.$informe;
-        $secretario = Profesor::find(config(fileContactos().'.secretario'));
-        $director = Profesor::find(config(fileContactos().'.director'));
+        $secretario = Profesor::find(config('avisos.secretario'));
+        $director = Profesor::find(config('avisos.director'));
         $fechaDocument = $data??FechaPosterior($fct->hasta);
         $dades = ['date' => $fechaDocument,
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
@@ -530,7 +543,7 @@ class DualController extends ModalController
 
     private function makeArrayPdfAnexoXIII($fct,$data)
     {
-        $array[1] = Profesor::find(config(fileContactos().'.secretario'))->fullName;
+        $array[1] = Profesor::find(config('avisos.secretario'))->fullName;
         $array[2] = config(self::CONTACTO_NOMBRE);
         $array[3] = config(self::CONTACTO_CODI);
         $array[4] = $fct->Alumno->fullName;
@@ -557,7 +570,7 @@ class DualController extends ModalController
         $array[29] = $fc1->format('F');
         $array[30] = $fc1->format('Y');
         $array[31] = $array[1];
-        $array[32] = Profesor::find(config(fileContactos().'.director'))->fullName;
+        $array[32] = Profesor::find(config('avisos.director'))->fullName;
 
         $array[33] = $array[1];
         $array[34] = config(self::CONTACTO_NOMBRE);
@@ -586,7 +599,7 @@ class DualController extends ModalController
         $array[55] = $fc1->format('F');
         $array[56] = $fc1->format('Y');
         $array[57] = $array[1];
-        $array[58] = Profesor::find(config(fileContactos().'.director'))->fullName;
+        $array[58] = Profesor::find(config('avisos.director'))->fullName;
 
         return $array;
     }
@@ -617,7 +630,7 @@ class DualController extends ModalController
         $array['Texto10'] = config(self::CONTACTO_PROVINCIA);
         $array['Texto11'] = config('contacto.postal');
         $array['Texto4'] = config('contacto.email');
-        $array['Texto12'] = Profesor::find(config(fileContactos().'.director'))->fullName;
+        $array['Texto12'] = Profesor::find(config('avisos.director'))->fullName;
         $array['Grupo1'] = self::OPCIÓN_1;
         $array['Texto13'] = $fct->Fct->Colaboracion->Ciclo->vliteral;
         $array['Texto14'] = substr($fct->Fct->Colaboracion->Ciclo->Departament->vliteral,12);
@@ -785,7 +798,11 @@ class DualController extends ModalController
         $iguales = 0;
         $diferentes = 0;
         foreach ($duales as $index => $dual) {
-            if ($dual->Alumno->sexo == 'H') $dualH++; else $dualM++;
+            if ($dual->Alumno->sexo == 'H') {
+                $dualH++;
+            } else {
+                $dualM++;
+            }
             $array[66 + $index * 6] = $index + 1;
             $array[67 + $index * 6] = $dual->Alumno->FullName;
             $array[68 + $index * 6] = $dual->Fct->Colaboracion->Centro->Empresa->nombre;
@@ -799,19 +816,35 @@ class DualController extends ModalController
                 $array[70 + $index * 6] = $fct->Fct->Colaboracion->Centro->Empresa->nombre;
                 $array[71 + $index * 6] = $fct->horas;
                 $totalHorasFct += $fct->horas;
-                if ($fct->Fct->Colaboracion->Centro->Empresa->europa) $europa++;
-                if ($array[68 + $index * 6] == $array[70 + $index * 6]) $iguales++; else $diferentes++;
+                if ($fct->Fct->Colaboracion->Centro->Empresa->europa) {
+                    $europa++;
+                }
+                if ($array[68 + $index * 6] == $array[70 + $index * 6]) {
+                    $iguales++;
+                } else {
+                    $diferentes++;
+                }
                 if ($fct->Alumno->sexo == 'H') {
-                    if ($fct->FCT->asociacion == 2) $exeH++;
-                    else {
+                    if ($fct->FCT->asociacion == 2) {
+                        $exeH++;
+                    } else {
                         $fctH++;
-                        if ($fct->calificacion) $OKH++; else $NOH++;
+                        if ($fct->calificacion) {
+                            $OKH++;
+                        } else {
+                            $NOH++;
+                        }
                     }
                 } else {
-                    if ($fct->FCT->asociacion == 2) $exeM++;
-                    else {
+                    if ($fct->FCT->asociacion == 2) {
+                        $exeM++;
+                    } else {
                         $fctM++;
-                        if ($fct->calificacion) $OKM++; else $NOM++;
+                        if ($fct->calificacion) {
+                            $OKM++;
+                        } else {
+                            $NOM++;
+                        }
                     }
                 }
             }

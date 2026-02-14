@@ -2,21 +2,20 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonIcon;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
-use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Grupo;
-use Intranet\Finders\UniqueFinder;
-use Intranet\Componentes\DocumentoFct;
-use Intranet\Finders\RequestFinder;
-use Intranet\Services\DocumentService;
-use Illuminate\Http\Request;
+use Intranet\Entities\Activity;
+use Intranet\Http\Traits\Core\Panel;
 use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class PanelColaboracionController
@@ -24,9 +23,9 @@ use Illuminate\Support\Facades\DB;
  */
 class PanelColaboracionController extends IntranetController
 {
-    use traitPanel;
+    use Panel;
 
-    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
+    const ROLES_ROL_TUTOR= 'roles.rol.tutor';
     const FCT_EMAILS_REQUEST = 'fctEmails.request';
     /**
      * @var string
@@ -47,12 +46,11 @@ class PanelColaboracionController extends IntranetController
     {
         $todos = $this->search();
 
-        $this->crea_pestanas(
-            config('modelos.'.$this->model.'.estados'),
-            "profile.".strtolower($this->model),
-            3,
+        $this->setTabs(
+            config('modelos.Colaboracion.estados'),
+            "profile.colaboracion",
             1,
-            'situation'
+        'situation'
         );
         $this->iniBotones();
         Session::put('redirect', 'PanelColaboracionController@index');
@@ -69,7 +67,7 @@ class PanelColaboracionController extends IntranetController
             new BotonIcon(
                 'colaboracion.switch',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-warning switch',
                     'icon' => 'fa-user',
                     'where' => ['tutor', '<>', AuthUser()->dni]
@@ -81,9 +79,9 @@ class PanelColaboracionController extends IntranetController
             new BotonIcon(
                 'colaboracion.unauthorize',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-primary unauthorize estado',
-                    'where' => ['tutor', '==', AuthUser()->dni, 'estado', '!=', '1']
+                    'where' => [  'estado', '!=', '1']
                 ]
             )
         );
@@ -92,9 +90,9 @@ class PanelColaboracionController extends IntranetController
             new BotonIcon(
                 'colaboracion.resolve',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-success resolve estado',
-                    'where' => ['tutor', '==', AuthUser()->dni, 'estado', '!=', '2']
+                    'where' => [  'estado', '!=', '2']
                 ]
             )
         );
@@ -103,9 +101,9 @@ class PanelColaboracionController extends IntranetController
             new BotonIcon(
                 'colaboracion.refuse',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-danger refuse estado',
-                    'where' => ['tutor', '==', AuthUser()->dni, 'estado', '!=', '3']
+                    'where' => [  'estado', '!=', '3']
                 ]
             )
         );
@@ -114,7 +112,7 @@ class PanelColaboracionController extends IntranetController
             new BotonIcon(
                 'colaboracion.book',
                 [
-                    'roles' => config(self::ROLES_ROL_PRACTICAS),
+                    'roles' => config(self::ROLES_ROL_TUTOR),
                     'class' => 'btn-primary informe book',
                     'text' => '',
                     'title' => 'Contacte previ',
@@ -149,6 +147,7 @@ class PanelColaboracionController extends IntranetController
     /**
      * @return mixed
      */
+    /*
     public function search()
     {
         $colaboracions = Colaboracion::with('propietario')
@@ -159,8 +158,96 @@ class PanelColaboracionController extends IntranetController
         if (count($colaboracions)) {
             $this->titulo = ['quien' => $colaboracions->first()->Ciclo->literal];
         }
-        return $colaboracions->sortBy('tutor')->sortBy('empresa');
+        return $colaboracions->sortBy('empresa');
+    }*/
+
+
+public function search()
+{
+    // 1) Les teues col·laboracions
+    $meves = Colaboracion::query()
+        ->MiColaboracion()
+        ->with(['Propietario', 'Centro', 'Centro.Empresa', 'Ciclo'])
+        ->get();
+
+    if ($meves->isEmpty()) {
+        return $meves;
     }
+    $this->titulo = ['quien' => optional($meves->first()->Ciclo)->literal];
+
+    // clau parella: centre|departament-del-cicle
+    $pairKey = fn($c) => $c->idCentro.'|'.optional($c->Ciclo)->departamento;
+
+    // parelles úniques (centre, departament del cicle)
+    $parelles = $meves->filter(fn($c) => optional($c->Ciclo)->departamento)
+        ->map(fn($c) => ['idCentro' => $c->idCentro, 'departamento' => $c->Ciclo->departamento])
+        ->unique(fn($p) => $p['idCentro'].'|'.$p['departamento'])
+        ->values();
+
+    // 2) Col·laboracions relacionades: mateix centre+dept (via Ciclo), però d’un altre cicle
+    $relacionades = Colaboracion::query()
+        ->with(['Ciclo', 'Propietario'])
+        ->whereNotIn('id', $meves->pluck('id'))
+        ->where(function ($q) use ($parelles) {
+            foreach ($parelles as $p) {
+                $q->orWhere(function ($qq) use ($p) {
+                    $qq->where('idCentro', $p['idCentro'])
+                       ->whereHas('Ciclo', function ($qh) use ($p) {
+                           $qh->where('departamento', $p['departamento']);
+                       });
+                });
+            }
+        })
+        ->get();
+
+    // filtre: d’un altre cicle
+    $relacionades = $relacionades->filter(function ($r) use ($meves) {
+        // si tens 'ciclo_id' en lloc de 'idCiclo', canvia-ho
+        $rIdCiclo = $r->idCiclo ?? $r->ciclo_id;
+        // hi ha almenys una "teva" en el mateix parell amb cicle diferent?
+        return $meves->contains(function ($c) use ($r, $rIdCiclo) {
+            $cIdCiclo = $c->idCiclo ?? $c->ciclo_id;
+            return $c->idCentro == $r->idCentro
+                && optional($c->Ciclo)->departamento === optional($r->Ciclo)->departamento
+                && $cIdCiclo !== $rIdCiclo;
+        });
+    })->values();
+
+    // 3) Tots els Activity d'eixes relacionades, d’una tacada, i agrupats
+    $relIds = $relacionades->pluck('id')->all();
+
+    $activitiesByColab = Activity::query()
+        ->modelo('Colaboracion')
+        ->notUpdate()
+        ->whereIn('model_id', $relIds)     // <-- CANVIA 'target_id' pel camp que realment usa el teu scope id($id)
+        ->orderBy('created_at')
+        ->get()
+        ->groupBy('model_id');             // <-- CANVIA igualment si cal
+
+    // Agrupem relacionades per parella centre|dept
+    $relacionadesPerParella = $relacionades->groupBy($pairKey);
+
+    // Enganxem a cada "teva" les relacionades + els seus contactes
+    $meves->each(function ($c) use ($pairKey, $relacionadesPerParella, $activitiesByColab) {
+        $llista = $relacionadesPerParella->get($pairKey($c), collect());
+
+        // assignem els contactes (activities) a cada relacionada
+        $llista->each(function ($rel) use ($activitiesByColab) {
+            $rel->contactos = $activitiesByColab->get($rel->id, collect());
+        });
+
+        $c->relacionadas = $llista->values();
+    });
+
+    // ordenació opcional
+    return $meves->sortBy(function ($c) {
+        return $c->empresa
+            ?? optional(optional($c->Centro)->Empresa)->nombre
+            ?? optional($c->Centro)->nombre
+            ?? '';
+    })->values();
+}
+
 
 
 
@@ -239,6 +326,11 @@ class PanelColaboracionController extends IntranetController
 
         Session::put('pestana', 1);
         return $this->showEmpresa($empresa);
+    }
+
+    public function live()
+    {
+        return view('colaboraciones.panel');
     }
 
 

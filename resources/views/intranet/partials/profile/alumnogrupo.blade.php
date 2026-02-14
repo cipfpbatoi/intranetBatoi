@@ -5,7 +5,7 @@
                 id="{{$alumno->nia}}"
                 cab1="{{ $alumno->nia }}"
                 cab2="{{ $alumno->dni }}"
-                title="{{ asset('storage/'.$alumno->foto) }}"
+                title="{{ asset('storage/fotos/'.$alumno->foto) }}?v={{ time() }}"
                 subtitle="{{ $alumno->fullName }}"
                 view="alumno"
         >
@@ -26,10 +26,9 @@
             </x-slot>
             <x-slot name="botones">
                 @foreach ($panel->getBotones('profile') as $button)
-                    {{ $button->show($elemento) }}
+                    {!! $button->show($elemento) !!}
                 @endforeach
             </x-slot>
         </x-label>
     @endisset
 @endforeach
-

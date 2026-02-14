@@ -2,50 +2,27 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Validator;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonBasico;
-use Intranet\Entities\Centro;
-use Intranet\Entities\Colaboracion;
-use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Grupo;
-use Intranet\Finders\UniqueFinder;
-use Intranet\Componentes\DocumentoFct;
-use Intranet\Finders\RequestFinder;
-use Intranet\Services\DocumentService;
 use Illuminate\Http\Request;
-use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\DB;
+use Intranet\Services\Mail\FctMailService;
 
-/**
- * Class PanelColaboracionController
- * @package Intranet\Http\Controllers
- */
 class FctMailController extends Controller
 {
+    protected $fctMailService;
 
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-
-
-    public function showMailbyId($id, $documento)
+    public function __construct(FctMailService $fctMailService)
     {
-        $document = new DocumentoFct($documento);
-        $parametres = array('id' => $id, 'document' => $document);
-        $service = new DocumentService(new UniqueFinder($parametres));
-
-        return $service->render();
+        parent::__construct();
+        $this->fctMailService = $fctMailService;
     }
 
-
-    protected function showMailbyRequest(Request $request, $documento)
+    public function showMailById($id, $documento)
     {
-        $documento = new DocumentoFct($documento);
-        $parametres = array('request' => $request, 'document' => $documento);
-        $service = new DocumentService(new RequestFinder($parametres));
-        return $service->render();
+        return $this->fctMailService->getMailById($id, $documento);
     }
 
+    public function showMailByRequest(Request $request, $documento)
+    {
+        return $this->fctMailService->getMailByRequest($request, $documento);
+    }
 }
+

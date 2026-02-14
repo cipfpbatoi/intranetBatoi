@@ -2,19 +2,24 @@
 
 namespace Intranet\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use DB;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Session;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Profesor;
-use Illuminate\Support\Facades\Session;
+use Intranet\Http\PrintResources\AVIIAResource;
+use Intranet\Http\PrintResources\AVIIBResource;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
 use Intranet\Http\Requests\ColaboradorRequest;
-use Intranet\Services\FDFPrepareService;
-use Intranet\Services\FormBuilder;
+use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Services\Document\FDFPrepareService;
+use Intranet\Services\UI\FormBuilder;
 use Styde\Html\Facades\Alert;
-use Intranet\Componentes\Pdf;
-
 
 
 /**
@@ -23,9 +28,6 @@ use Intranet\Componentes\Pdf;
  */
 class FctController extends IntranetController
 {
-
-    const ROLES_ROL_TUTOR = 'roles.rol.tutor';
-    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
 
 
     /**
@@ -47,7 +49,9 @@ class FctController extends IntranetController
     /**
      * @var array
      */
-    protected $vista = ['show' => 'fct'];
+
+    protected $parametresVista = ['modal' => ['contactoAl']];
+
 
 
 
@@ -56,11 +60,11 @@ class FctController extends IntranetController
      */
     protected $modal = false;
 
-    use traitImprimir;
+    use Imprimir;
 
 
 
-    public function edit($id)
+    public function edit($id=null)
     {
         $formulario = new FormBuilder(Fct::findOrFail($id), ['idInstructor' => ['type'=>'select']]);
         $modelo = $this->model;
@@ -83,15 +87,30 @@ class FctController extends IntranetController
 
     public function certificat($id)
     {
+        $fct = Fct::findOrFail($id);
+        /*if ($fct->asociacion == 4){
+            $nameFile = storage_path("tmp/Dual_AVII_{$fct->id}.zip");
+            if (file_exists($nameFile)) {
+                unlink($nameFile);
+            }
+            $zip = new \ZipArchive();
+            $zip->open($nameFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+            $zip->addFile(FDFPrepareService::exec(new AVIIAResource(Fct::find($id))), 'AVIIa_Certificat_empresa.pdf');
+            $zip->addFile(FDFPrepareService::exec(new AVIIBResource(Fct::find($id))), 'AVIIb_Certificat_instructor.pdf');
+            $zip->close();
+            return response()->download($nameFile);
+        }*/
+
         return response()->file(FDFPrepareService::exec(
             new CertificatInstructorResource(Fct::findOrFail($id))));
+
     }
 
     public static function certificatColaboradores($id)
     {
         $fct = Fct::findOrFail($id);
-        $secretario = Profesor::find(config(fileContactos().'.secretario'));
-        $director = Profesor::find(config(fileContactos().'.director'));
+        $secretario = Profesor::find(config('avisos.secretario'));
+        $director = Profesor::find(config('avisos.director'));
         $dades = ['date' => FechaString(hoy(), 'ca'),
             'fecha' => FechaString(hoy(), 'es'),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
@@ -101,7 +120,7 @@ class FctController extends IntranetController
             'provincia' => config('contacto.provincia'),
             'director' => $director->FullName,
         ];
-        return Pdf::hazPdf('pdf.fct.certificatColaborador', $fct, $dades)->stream();
+        return app(PdfService::class)->hazPdf('pdf.fct.certificatColaborador', $fct, $dades)->stream();
     }
 
 
@@ -157,8 +176,11 @@ class FctController extends IntranetController
         Session::put('pestana', 1);
         $fct = Fct::findOrFail($id);
         $instructores = $fct->Colaboradores->pluck('dni');
-        return view($this->chooseView('show'), compact('fct', 'activa', 'instructores'));
+
+        return view('fct.show', compact('fct', 'activa', 'instructores'));
     }
+
+
 
 
     /**
@@ -172,9 +194,9 @@ class FctController extends IntranetController
             parent::destroy($id);
             Session::put('pestana', 3);
             return redirect()->action('EmpresaController@show', ['empresa' => $empresa]);
-        } else {
-            return parent::destroy($id);
         }
+
+        return parent::destroy($id);
     }
 
     /**
@@ -276,11 +298,21 @@ class FctController extends IntranetController
 
     public function cotutor(Request $request, $idFct)
     {
-        $fct = Fct::find($idFct);
-        if ($fct) {
-            $fct->cotutor = $request->cotutor;
-            $fct->save();
-        }
+        DB::transaction(function () use ($request, $idFct){
+            // Desactiva les restriccions de clau forana
+            Schema::disableForeignKeyConstraints();
+
+            // Realitza les operacions de guardat aquí
+            $fct = Fct::find($idFct);
+            if ($fct) {
+                $fct->cotutor = $request->cotutor??null;
+                $fct->save();
+            }
+
+            // Reactiva les restriccions de clau forana
+            Schema::enableForeignKeyConstraints();
+        });
+
         return back();
     }
 

@@ -4,9 +4,9 @@
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="x_panel">
-                    <div class="x_title">
-                        @include('layouts.partials.titlecontent')
-                    </div>
+                    <x-layouts.titlebar>
+                       @yield('titulo')
+                    </x-layouts.titlebar>
                     <div class="x_content">
                         @yield('content')
                     </div>

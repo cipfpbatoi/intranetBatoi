@@ -2,14 +2,19 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Grupo;
+use Intranet\Http\PrintResources\A1Resource;
+use Intranet\Services\Document\FDFPrepareService;
 use Response;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Input;
 
@@ -19,7 +24,7 @@ class EmpresaController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'Empresa';
     protected $gridFields = ['concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad'];
-    protected $vista = ['show' => 'empresa','grid'=>'vacia'];
+    protected $vista = ['show' => 'empresa','index'=>'vacia'];
 
     
     public function create($default=[])
@@ -33,12 +38,12 @@ class EmpresaController extends IntranetController
         $elemento = Empresa::findOrFail($id);
         $modelo = 'Empresa';
         $misColaboraciones = Grupo::find(AuthUser()->GrupoTutoria)->Ciclo->Colaboraciones??collect();
-        return view($this->chooseView('show'), compact('elemento', 'modelo', 'activa', 'misColaboraciones'));
+        return view('empresa.show' , compact('elemento', 'modelo', 'activa', 'misColaboraciones'));
     }
     
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config('roles.rol.practicas')]));
+        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config('roles.rol.tutor')]));
      }
 
     public function store(Request $request)
@@ -133,6 +138,11 @@ class EmpresaController extends IntranetController
         }
         Alert::danger(trans("messages.generic.nodocument"));
         return back();
+    }
+
+    public function A1($id)
+    {
+        return response()->file(FDFPrepareService::exec(new A1Resource(Empresa::find($id))));
     }
 
 }

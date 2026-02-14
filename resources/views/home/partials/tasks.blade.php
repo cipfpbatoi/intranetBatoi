@@ -1,6 +1,6 @@
 <ul class="messages">
     @foreach ($tasks as $task)
-        @if (!$task->valid || $task->vencimiento > hoy())
+        @if (!$task->valid || fechaInglesa($task->vencimiento) > hoy())
             <x-llist image="{{$task->image}}" date="{{$task->vencimiento}}">
                 <a href="{{$task->link}}" title="Més Informació">
                     {{$task->descripcion}}&nbsp;&nbsp;&nbsp;&nbsp;

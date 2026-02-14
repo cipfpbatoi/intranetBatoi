@@ -33,7 +33,7 @@ class FctDelete
     {
         if (authUser()) {
             $fct= Fct::findOrFail($event->fct->id);
-            if ($fct->Alumnos->Count() == 1) {
+            if ($fct->Alumnos->Count() == 0) {
                 $fct->delete();
             }
         }

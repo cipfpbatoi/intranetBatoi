@@ -2,15 +2,17 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Illuminate\Http\Request;
-use Intranet\Botones\BotonBasico;
 use Illuminate\Support\Facades\DB;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Articulo;
 use Intranet\Entities\ArticuloLote;
+use Intranet\Entities\Lote;
 use Intranet\Entities\Material;
 use Intranet\Http\Requests\LoteRequest;
-use Intranet\Entities\Lote;
-use Jenssegers\Date\Date;
+use Intranet\Http\Traits\Core\Imprimir;
 
 /**
  * Class LoteController
@@ -19,7 +21,7 @@ use Jenssegers\Date\Date;
 class LoteController extends ModalController
 {
 
-    use traitImprimir;
+    use Imprimir;
 
     /**
      * @var string

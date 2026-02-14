@@ -12,7 +12,7 @@ use Illuminate\Support\Arr;
 
 class Fct extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     
     protected $table = 'fcts';
@@ -20,7 +20,7 @@ class Fct extends Model
 
     protected $fillable = ['idAlumno',
         'idColaboracion','idInstructor','desde', 'hasta',
-        'horas','asociacion','autorizacion'
+        'horas','asociacion','autorizacion','erasmus'
         ];
     protected $notFillable = ['desde','hasta','idAlumno','horas','autorizacion'];
 
@@ -105,6 +105,20 @@ class Fct extends Model
             'pg0301'
         ]);
     }
+
+    public function AlumnosActivos()
+    {
+        return $this->belongsToMany(
+            Alumno::class,
+            'alumno_fcts',
+            'idFct',
+            'idAlumno',
+            'id',
+            'nia'
+        )->withPivot([
+            'calificacion'
+        ])->whereNull('calificacion');
+    }
     public function AlFct()
     {
         return $this->hasMany(AlumnoFct::class, 'idFct');
@@ -116,6 +130,19 @@ class Fct extends Model
     public function cotutor()
     {
         return $this->belongsTo(Profesor::class, 'cotutor', 'dni');
+    }
+
+    public function hasSignatures()
+    {
+        $signatures = $this->AlFct()->with('signatures')->get()->pluck('signatures')->collapse();
+
+        return $signatures->isNotEmpty();
+    }
+
+
+    public function tutor()
+    {
+        return $this->hasOneThrough(Profesor::class, Colaboracion::class, 'id', 'dni', 'idColaboracion', 'tutor');
     }
     
     public function scopeCentro($query, $centro)
@@ -131,56 +158,74 @@ class Fct extends Model
         return $query->whereIn('idColaboracion', $colaboracion);
     }
     
-    public function scopeMisFcts($query, $profesor=null, $dual=false)
+    public function scopeMisFcts($query, $profesor=null)
     {
-        $profesor = $profesor??authUser()->dni;
-        $cicloC =  Grupo::QTutor($profesor, $dual)->first()->idCiclo??null;
+        $profesor = Profesor::getSubstituts($profesor??authUser()->dni);
+        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idProfesor', $profesor)->get()->toArray();
+        return $query->whereIn('id', $alumnosFct);
+    }
 
-        $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
+    public function scopeWithCotutor($query, $cotutor=null)
+    {
+        $cotutor = $cotutor??authUser()->dni;
+        return $query->whereHas('AlFct', function ($query) use ($cotutor) {
+            $query->where('cotutor', $cotutor);
+        });
+    }
 
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor, $dual)->get()->toArray();
-        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idAlumno', $alumnos)->get()->toArray();
-
-        return $query->whereIn('id', $alumnosFct)->whereIn('idColaboracion', $colaboraciones);
+    public function getEncarregatAttribute()
+    {
+        return $this->Cotutor??$this->Tutor ;
     }
 
 
-
-
-    public function scopeMisFctsColaboracion($query, $profesor=null)
+    public function scopeMisFctsColaboracion($query, $profesor = null, $cotutor = null)
     {
-        $dni = $profesor??authUser()->dni;
-        $colaboraciones = hazArray(Colaboracion::where('tutor', $dni)->get(), 'id', 'id');
-        return $query->whereIn('idColaboracion', $colaboraciones);
+        $profesor = Profesor::getSubstituts($profesor ?? authUser()->dni);
+        $cotutor = $cotutor ?? authUser()->dni;
+
+        // Obtener IDs de alumnos FCT del profesor
+        $alumnosFct = AlumnoFct::select('idFct')->distinct()->whereIn('idProfesor', $profesor)->get()->toArray();
+
+        // Aplicar condiciones 'or' para ambas scopes
+        return $query->where(function($query) use ($alumnosFct, $cotutor) {
+            $query->whereIn('id', $alumnosFct)
+                ->orWhereHas('AlFct', function ($query) use ($cotutor) {
+                    $query->where('cotutor', $cotutor);
+                });
+        });
     }
 
     public function scopeEsExempt($query)
     {
-        return $query->where('asociacion', '=', 3);
+        return $query->where('asociacion', '=', 2);
     }
 
     public function scopeEsErasmus($query)
     {
-        return $query->where('asociacion', '=', 2);
+        return $query->where('erasmus', '=', 1);
     }
-    
+
     public function scopeEsFct($query)
     {
-        return $query->where('asociacion', '<', 3);
+        return $query->whereIn('asociacion', [1, 4, 5]);
     }
     public function scopeEsAval($query)
     {
-        return $query->where('asociacion', '<', 4);
+        return $query->where('asociacion', '<', 3);
     }
     public function scopeEsDual($query)
     {
-        return $query->where('asociacion', 4);
+        return $query->where('asociacion', 3);
     }
 
     public function scopeNoAval($query)
     {
         return $query->where('correoInstructor', 0);
     }
+
+
+
    
 
    
@@ -225,34 +270,30 @@ class Fct extends Model
 
     public function getTipusAttribute()
     {
-        return config('auxiliares.asociacionEmpresa')[$this->asociacion];
+        return config('auxiliares.tipusFCT')[$this->asociacion];
     }
     public function getDesdeAttribute($entrada)
     {
-        $fecha = new Date($entrada);
-        return $fecha->format('d-m-Y');
+        return (new Date($entrada))->format('d-m-Y');
     }
 
-    public function getErasmusAttribute()
-    {
-        return $this->Colaboracion->Centro->Empresa->europa;
-    }
+
     public function getDualAttribute()
     {
-        return $this->asociacion == 4;
+        return $this->asociacion == 3;
     }
     public function getExentoAttribute()
     {
-        return $this->asociacion == 3;
+        return $this->asociacion == 2;
     }
     
     public function getCentroAttribute()
     {
         if (isset($this->Colaboracion->Centro->nombre)) {
             return $this->Colaboracion->Centro->nombre;
-        } else {
-            return 'Convalidada/Exent';
         }
+
+        return 'Convalidada/Exent';
     }
 
     public function getCicloAttribute()

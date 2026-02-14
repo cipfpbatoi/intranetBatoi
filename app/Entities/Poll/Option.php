@@ -2,12 +2,12 @@
 
 namespace Intranet\Entities\Poll;
 
-use Intranet\Entities\BatoiModels;
+use Intranet\Entities\Concerns\BatoiModels;
 use Illuminate\Database\Eloquent\Model;
 
 class Option extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
     
     protected $fillable = ['question','scala','ppoll_id' ];
     protected $rules = [

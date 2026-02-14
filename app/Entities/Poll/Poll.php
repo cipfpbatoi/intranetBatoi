@@ -3,14 +3,14 @@
 namespace Intranet\Entities\Poll;
 
 
-use Intranet\Entities\BatoiModels;
+use Intranet\Entities\Concerns\BatoiModels;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
 
 
 class Poll extends Model
 {
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
     
     protected $fillable = ['title','desde','hasta','idPPoll'];
     protected $rules = [
@@ -43,7 +43,7 @@ class Poll extends Model
         }
         $fin = new Date($this->hasta);
         if (hoy()>$fin->format('Y-m-d')) {
-            return 'Finalizada';
+            return 'Finalitzada';
         }
         return 'No activa';
     }

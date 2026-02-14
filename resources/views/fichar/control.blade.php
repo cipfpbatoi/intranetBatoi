@@ -1,18 +1,13 @@
-@extends('layouts.intranet')
-@section('css')
-<title>@lang("models.Fichar.control")</title>
-@endsection
-@section('content')
+<x-layouts.app title="Control setmanal fitxages">
+
 <div id="app">
     <control-semana-view 
       :profes="{{ json_encode($profes) }}"
     ></control-semana-view>
 </div>
-@endsection
-@section('titulo')
-@lang("models.Fichar.control")
-@endsection
-@section('scripts')
+
+@push('scripts')
     {{ Html::script('/js/components/app.js') }}
 <!--      {{ Html::script('/js/Fichar/control.js') }} -->
-@endsection
+@endpush
+</x-layouts.app>

@@ -23,7 +23,7 @@ class ComisionRequest extends FormRequest
      */
     public function rules()
     {
-        $dia = authUser()->dni == config('contacto.director')?'today':'tomorrow';
+        $dia = authUser()->dni == config('avisos.director')?'today':'tomorrow';
         return [
             'servicio' => 'required',
             'kilometraje' => 'required|integer',

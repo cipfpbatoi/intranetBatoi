@@ -41,16 +41,16 @@ class NotifyDailyFaults extends Command
     {
         if (config('variables.controlDiario')) {
             $guardias = hazArray(
-                Guardia::where('dia', hoy()->where('realizada', -1)->get()),
+                Guardia::where('dia', hoy())->where('realizada', -1)->get(),
                 'idProfesor',
                 'idProfesor'
             );
             $profesores = $this->noHanFichado(hoy());
             foreach ($profesores as $profesor) {
-                avisa($profesor, 'No has fixat hui dia '.hoy('d-m-Y'), '#', 'Sistema');
+                avisa($profesor, 'No has fitxat hui dia '.hoy('d-m-Y'), '#', 'Sistema');
             }
             foreach ($guardias as $guardia) {
-                avisa($guardia, 'No has fixat la guardia  hui dia '.hoy('d-m-Y'), '#', 'Sistema');
+                avisa($guardia, 'No has fixtat la guàrdia  hui dia '.hoy('d-m-Y'), '#', 'Sistema');
             }
         }
     }

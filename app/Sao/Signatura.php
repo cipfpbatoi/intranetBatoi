@@ -9,9 +9,9 @@ use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\RemoteWebElement;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
-use Intranet\Http\Controllers\AlumnoFct;
-use Intranet\Services\SeleniumService;
-use Intranet\Services\SignaturaService;
+
+use Intranet\Services\Automation\SeleniumService;
+use Intranet\Services\Signature\SignaturaService;
 use Styde\Html\Facades\Alert;
 
 
@@ -24,8 +24,6 @@ class Signatura
 
     private function closeWindows(RemoteWebDriver $driver, $window)
     {
-        var_dump($driver->getWindowHandles());
-
         return $driver;
     }
 
@@ -63,17 +61,17 @@ class Signatura
         if (!SignaturaService::exists(AuthUser()->dni)) {
             Alert::danger('No tens cap signatura associada. Ves al perfil i afegeix-la');
             return redirect(route('alumnofct.index'));
-        } else {
-            $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
-            try {
-                $this->signa($driver);
-                $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
-                sleep(1);
-                $this->signa($driver);
-                $driver->quit();
-            } catch (Exception $e) {
-                $driver->quit();
-            }
+        }
+
+        $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
+        try {
+            $this->signa($driver);
+            $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
+            sleep(1);
+            $this->signa($driver);
+            $driver->quit();
+        } catch (Exception $e) {
+            $driver->quit();
         }
         return redirect(route('alumnofct.index'));
     }

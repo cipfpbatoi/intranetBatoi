@@ -2,23 +2,26 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\AlumnoGrupo;
 use Illuminate\Support\Facades\Auth;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Curso;
 use Intranet\Entities\Alumno;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\UI\FormBuilder;
 
 class AlumnoGrupoController extends IntranetController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoGrupo';
-    protected $gridFields = ['nombre', 'telef1',  'email','poblacion','subGrupo','posicion','telef2'];
+    protected $gridFields = ['nombre', 'telef1',  'email','poblacion','drets',
+        'extraescolars','DA','subGrupo','posicion','telef2'];
     const FOL = 12;
     protected $modal = true;
 
@@ -78,7 +81,7 @@ class AlumnoGrupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('alumno.carnet', ['where' => ['idGrupo', '==',  $grupoTutoria]]));
         $this->panel->setBoton('profile', new BotonIcon('alumno.carnet', ['where' => ['idGrupo', '==',  $grupoTutoria]]));
         $this->panel->setBoton('grid', new BotonImg('direccion.aFol', ['img' => 'fa-file-word-o','roles' => config('roles.rol.direccion')]));
-        if (AuthUser()->departamento == self::FOL && date('Y-m-d')>config('curso.certificatFol')) {
+        if (AuthUser()->departamento == self::FOL && date('Y-m-d')>config('variables.certificatFol')) {
             $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-square-o', 'where' => ['fol', '==', 0]]));
             $this->panel->setBoton('grid', new BotonImg('alumno.checkFol', ['img' => 'fa-check', 'where' => ['fol', '==', 1]]));
         }
@@ -88,6 +91,17 @@ class AlumnoGrupoController extends IntranetController
                 $this->panel->setBoton('grid', new BotonImg('alumnocurso.registerAlumno/' . $curso->id, ['text' => trans('messages.generic.register') . $curso->titulo, 'img' => 'fa-institution']));
             }
         }
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'alumno.days',
+                [
+                    'img' => 'fa-calendar',
+                    'roles' => config('roles.rol.tutor'),
+                    'text'=>'Modificar Calendari'
+                ]
+            )
+        );
         
     }
 

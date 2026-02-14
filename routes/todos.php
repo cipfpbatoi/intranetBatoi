@@ -1,13 +1,8 @@
 <?php
+use Intranet\Http\Livewire\BustiaVioleta\Form as BustiaForm;
 
-Route::get('/allProgramacion/', ['as' => 'programacion.all', 'uses' => 'PanelProgramacionAllController@index']);
-//Route::get('/programaciones/', ['as' => 'programacion.all', 'uses' => 'PanelProgramacionesController@index']);
-
-Route::get('/programacion/{programacion}/show', ['as' => 'programacion.show', 'uses' => 'ProgramacionController@show']);
-Route::get('/programacion/{programacion}/anexo', ['as' => 'programacion.anexo', 'uses' => 'ProgramacionController@anexo']);
-Route::get('/programacion/{programacion}/document', ['as' => 'programacion.document', 'uses' => 'ProgramacionController@document']);
-Route::get('/programacion/{programacion}/link', ['as' => 'programacion.link', 'uses' => 'ProgramacionController@link']);
-Route::get('/programacion/{programacion}/veranexo/{anexo}', ['as' => 'programacion.veranexo', 'uses' => 'ProgramacionController@veranexo']);
+Route::get('/allProgramacion/', ['as' => 'modulogrupo.all', 'uses' => 'PanelModuloGrupoController@index']);
+Route::get('/modulogrupo/{modulogrupo}/pdf', ['as' => 'modulogrupo.programacion', 'uses' =>  'PanelModuloGrupoController@pdf']);
 
 Route::get('/notification', ['as' => 'notificacion.index', 'uses' => 'NotificationController@index']);
 Route::get('/notification/{notification}/show', ['as' => 'notification.show', 'uses' => 'NotificationController@show']);
@@ -16,7 +11,7 @@ Route::get('/notification/readAll', ['as' => 'notificacion.readAll', 'uses' => '
 Route::get('/notification/{notification}/delete', ['as' => 'notification.delete', 'uses' => 'NotificationController@destroy']);
 Route::get('/notification/deleteAll', ['as' => 'notificacion.deleteAll', 'uses' => 'NotificationController@deleteAll']);
 
-Route::resource('/documento', 'DocumentoController', ['except' => ['destroy', 'update']]);
+Route::resource('/documento', 'DocumentoController', ['except' => ['destroy', 'update', 'index']]);
 Route::get('/documento/{documento}/delete', ['as' => 'documento.destroy', 'uses' => 'DocumentoController@destroy']);
 Route::post('/documento/create', ['as' => 'documento.store', 'uses' => 'DocumentoController@store']);
 Route::put('/documento/{documento}/edit', ['as' => 'documento.update', 'uses' => 'DocumentoController@update']);
@@ -26,8 +21,19 @@ Route::get('/documento/{grupo}/acta', ['as' => 'documento.acta', 'uses' => 'Pane
 Route::get('/proyecto', ['as' => 'documento.proyecto', 'uses' => 'PanelProyectoController@index']);
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'profesor.mensaje', 'uses' => 'ProfesorController@alerta']);
 
-Route::get('/help/{fichero}/{enlace}',['as' => 'help' ,'uses' => 'AdministracionController@help']);
+Route::get('/help/{fichero}/{enlace}', ['as' => 'help' ,'uses' => 'AdministracionController@help']);
 
 Route::get('/poll/{id}/do', ['as' => 'enquesta', 'uses' => 'PollController@preparaEnquesta']);
 Route::post('/poll/{id}/do', ['as' => 'enquesta.post', 'uses' => 'PollController@guardaEnquesta']);
-Route::get('/doPoll',['as' => 'enquesta.do', 'uses' => 'PanelPollResponseController@index']);
+Route::get('/doPoll', ['as' => 'enquesta.do', 'uses' => 'PanelPollResponseController@index']);
+
+Route::post('/signatura/{id}/upload', ['as' => 'signatura.upload', 'uses' => 'SignaturaController@upload']);
+Route::get('/A3', ['as' => 'signaturaAlumno.index', 'uses' => 'SignaturaAlumneController@index']);
+Route::get('/signatura/{id}/pdf', ['as' => 'signatura.pdf', 'uses' => 'SignaturaController@pdf']);
+
+Route::resource('projecte' , 'ProjecteController',['except'=>['update','destroy']]);
+Route::put('/projecte/{id}/edit', ['as' => 'projecte.update', 'uses' => 'ProjecteController@update']);
+Route::get('/projecte/{id}/delete', ['as' => 'projecte.delete', 'uses' => 'ProjecteController@destroy']);
+Route::get('/projecte/{id}/email', ['as' => 'projecte.email', 'uses' => 'ProjecteController@email']);
+Route::get('/projecte/{id}/pdf', ['as' => 'projecte.pdf', 'uses' => 'ProjecteController@pdf']);
+Route::view('/bustia', 'bustia/form')->name('bustia.form');

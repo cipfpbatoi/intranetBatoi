@@ -2,90 +2,235 @@
 
 namespace Intranet\Http\Controllers;
 
-
-use Facebook\WebDriver\Remote\DesiredCapabilities;
-use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Facebook\WebDriver\WebDriverBy;
-use DB;
-use Intranet\Exceptions\IntranetException;
-use Styde\Html\Facades\Alert;
+use Facebook\WebDriver\Exception\NoSuchElementException;
 use Illuminate\Http\Request;
+use Intranet\Entities\Actividad;
+use Intranet\Entities\Falta_itaca;
+use Intranet\Http\Requests\PasswordRequest;
+use Intranet\Services\School\ItacaService;
+use Intranet\Exceptions\IntranetException;
+use Carbon\Carbon;
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\Interactions\WebDriverActions;
+use Styde\Html\Facades\Alert;
 
-
-/**
- * Class AdministracionController
- * @package Intranet\Http\Controllers
- */
 class ItacaController extends Controller
 {
-
-    protected $serverUrl;
-    protected $driver;
-    const WEB = 'https://acces.edu.gva.es/sso/login.xhtml';
-
-    public function __construct()
+    public function extraescolars(Request $request)
     {
-        //$this->serverUrl = env('SELENIUM_URL', 'http://172.16.9.10:4444');
-        $this->serverUrl = env('SELENIUM_URL', 'http://192.168.56.1:4444');
-        $this->driver = RemoteWebDriver::create($this->serverUrl, DesiredCapabilities::firefox());
+        $activitats = Actividad::where('estado', 4)->get();
+        $total = count($activitats);
 
-        return parent::__construct();
-    }
-
-
-    public function post(Request $request)
-    {
-        $accion = $request->accion;
-        return redirect()->route('sao.'.$accion, ['password' => $request->password]);
-    }
-
-
-    /**
-     * @param  RemoteWebDriver  $driver
-     * @return void
-     * @throws \Facebook\WebDriver\Exception\UnknownErrorException
-     */
-    public function login($password='eiclmp5_A'): void
-    {
-        $this->driver->get($this::WEB);
-        $dni = substr(AuthUser()->dni, -9);
-        $this->driver->findElement(WebDriverBy::id('form1:j_username')) // find usuario
-        ->sendKeys($dni);
-        $this->driver->findElement(WebDriverBy::id('form1:j_password'))
-            ->sendKeys($password);
-        $this->driver->findElement(WebDriverBy::name('form1:j_id47'))
-            ->click();
-        sleep(1);
-        $this->driver->get('https://docent.edu.gva.es/md-front/www/#moduldocent/centres');
-        sleep(3);
-        $this->driver->get('https://docent.edu.gva.es/md-front/www/#centre/03012165/horari');
-        sleep(3);
-        $ul = $this->driver->findElement(
-                WebDriverBy::cssSelector('ul.imc-horari-dies li.imc-horari-dia:nth-child(1)')
-            );
-        $data = $ul->findElement(WebDriverBy::cssSelector('h2.imc-dia'))->getAttribute('data-data');
-        if ($data == date('Y-m-d')) {
-            $inici = $ul->findElement(WebDriverBy::cssSelector('ul.imc-horari-sessions'));
-            $dies = $inici->findElements(WebDriverBy::cssSelector('li'));
-            foreach ($dies as $dia) {
-                $grupsid = $dia->getAttribute('data-grupsid');
-                $horari = $dia->getAttribute('data-horari');
-                $sessio = $dia->getAttribute('data-sessio');
-                $desde = $dia->getAttribute('data-desde');
-                $link = "https://docent.edu.gva.es/md-front/www/#centre/03012165/grup/{$grupsid},/tasques/diaries/perSessio/sessio/{$sessio};{$horari},;{$data};{$desde}/desdeHorari";
-                dd($link);
-                $this->driver->get($link);
-                sleep(1);
-                //https://docent.edu.gva.es/md-front/www/#centre/03012165/grup/2937520721,/tasques/diaries/perSessio/sessio/1165779796;1165782976,;2023-03-03;11:00/desdeHorari
-            }
-
-        } else {
-            Alert::info('No hay horario para hoy');
+        if ($total == 0) {
+            Alert::info('No hi ha faltas valorades');
+            return back();
         }
 
+        try {
+            $dni = authUser()->dni;
+            $itacaService = new ItacaService($dni, $request->password);
 
-        $this->driver->close();
+            try {
+                $itacaService->goToLlist();
+            } catch ( NoSuchElementException $e) {
+                $itacaService->close();
+                Alert::danger('No he pogut accedir al llistat. Potser la sessió ha expirat o el login ha fallat.');
+                return back();
+            }
+        } catch (IntranetException $e) {
+            Alert::danger('No he pogut loguejar-me: ' . $e->getMessage());
+            return back();
+        }
+
+        $count = 0;
+        $failures = 0;
+
+        foreach ($activitats as $activitat) {
+            if ($itacaService->processActivitat($activitat)) {
+                $count++;
+            } else {
+                try {
+                    $itacaService->goToLlist();
+                } catch (IntranetException | \Facebook\WebDriver\Exception\NoSuchElementException $e) {
+                    Alert::danger($e->getMessage());
+                    $itacaService->close();
+                    Alert::info("$count extraescolars actualitzades, $failures errors de $total");
+                    return back();
+                }
+                $failures++;
+            }
+        }
+
+        $itacaService->close();
+        Alert::info("$count activitats actualitzades, $failures errors de $total");
+        return back();
+
     }
 
+    public function birret(Request $request)
+    {
+        $faltas = Falta_itaca::where('estado', 2)->whereMonth('dia', $request->month)->get();
+        $total = count($faltas);
+
+        if ($total == 0) {
+            Alert::info('No hi ha faltas pendents');
+            return back();
+        }
+
+        try {
+            $dni = authUser()->dni;
+            $itacaService = new ItacaService($dni, $request->password);
+
+            try {
+                $itacaService->goToLlist();
+            } catch ( NoSuchElementException $e) {
+                $itacaService->close();
+                Alert::danger('No he pogut accedir al llistat. Potser la sessió ha expirat o el login ha fallat.');
+                return back();
+            }
+        } catch (IntranetException $e) {
+            Alert::danger('No he pogut loguejar-me: ' . $e->getMessage());
+            return back();
+        }
+
+        $count = 0;
+        $failures = 0;
+
+        foreach ($faltas as $falta) {
+            if ($itacaService->processFalta($falta)) {
+                $count++;
+            } else {
+                try {
+                    $itacaService->goToLlist();
+                } catch (IntranetException | \Facebook\WebDriver\Exception\NoSuchElementException $e) {
+                    Alert::danger($e->getMessage());
+                    $itacaService->close();
+                    Alert::info("$count faltas actualizadas, $failures errores de $total");
+                    return back();
+                }
+                $failures++;
+            }
+        }
+
+        $itacaService->close();
+        Alert::info("$count faltas actualizadas, $failures errores de $total");
+        return back();
+    }
+
+
+    public function faltes(PasswordRequest $request)
+    {
+        try {
+            $itacaService = new ItacaService(authUser()->dni, $request->password);
+        } catch (IntranetException $e) {
+            Alert::danger($e->getMessage());
+            return back();
+        }
+
+        $count = 0;
+        $failures = 0;
+
+        try {
+            $list1 = Falta::where('estado', 3)
+                ->where('itaca', 0)
+                ->where('dia_completo', 1)
+                ->whereColumn('desde', 'hasta')
+                ->whereMonth('hasta', $request->month)
+                ->get();
+
+            $list2 = Falta::where('estado', 3)
+                ->where('itaca', 0)
+                ->where('dia_completo', 1)
+                ->whereRaw('DATEDIFF(hasta, desde) BETWEEN 1 AND 3')
+                ->whereMonth('hasta', $request->month)
+                ->get();
+
+            foreach ($list1 as $falta) {
+                $fecha = Carbon::parse($falta->desde)->format('d-m-Y');
+                $itacaService->goToLlist();
+                if ($this->tryOne($itacaService, $falta, $fecha)) {
+                    $count++;
+                } else {
+                    $failures++;
+                }
+            }
+
+            foreach ($list2 as $falta) {
+                $desde = Carbon::parse($falta->desde);
+                $hasta = Carbon::parse($falta->hasta);
+                $diferenciaDias = $desde->diffInDays($hasta);
+                for ($i = 0; $i <= $diferenciaDias; $i++) {
+                    $fecha = $desde->copy()->addDays($i)->format('d-m-Y');
+                    $itacaService->goToLlist();
+                    if ($this->tryOne($itacaService, $falta, $fecha)) {
+                        $count++;
+                    } else {
+                        $failures++;
+                    }
+                }
+                $falta->itaca = 1;
+                $falta->save();
+            }
+        } catch (IntranetException $e) {
+            Alert::danger($e->getMessage());
+        }
+
+        $itacaService->close();
+        Alert::info("$count faltas actualizadas, $failures errores");
+        return back();
+    }
+
+    private function tryOne(ItacaService $itacaService, mixed $falta, $fecha): int
+    {
+        try {
+            sleep(1);
+            $driver = $itacaService->getDriver();
+            $itacaService->goToLlist();
+            $itacaService->fill(WebDriverBy::cssSelector('.itaca-grid.texto-busqueda.z-textbox'), $falta->idProfesor);
+            $itacaService->waitAndClick("//button[contains(text(),'Buscar')]");
+            sleep(2);
+            $element = $driver->findElement(WebDriverBy::xpath("//div[contains(text(),'{$falta->idProfesor}')]"));
+            (new WebDriverActions($driver))->contextClick($element)->perform();
+            $itacaService->waitAndClick("//span[contains(text(),'Faltas docente')]");
+            $desde = str_replace('-', '/', $fecha);
+            sleep(1);
+            $itacaService->fill(WebDriverBy::cssSelector('input.z-datebox-input'), $desde);
+            $itacaService->waitAndClick(WebDriverBy::xpath('//button[text()="Cambiar Fecha"]'));
+            sleep(1);
+
+            if ($falta->dia_completo) {
+                $itacaService->waitAndClick(WebDriverBy::xpath('//button[text()="Vista diaria"]'));
+                sleep(1);
+                $elemento = $driver->findElement(WebDriverBy::cssSelector('.z-calevent-t1'));
+                $atributoStyle = $elemento->getAttribute('style');
+                $colorFondo = substr($atributoStyle, strpos($atributoStyle, '#') + 1);
+                if ($colorFondo === 'ff5d00') {
+                    $itacaService->waitAndClick(WebDriverBy::className('z-icon-times'));
+                    Alert::info('Falta ja actualizada');
+                    $falta->itaca = true;
+                    $falta->save();
+                } else {
+                    $itacaService->waitAndClick(WebDriverBy::xpath('//button[text()="Seleccionar todos"]'));
+                    $itacaService->waitAndClick(WebDriverBy::xpath('//button[text()=" Nueva Falta"]'));
+                    sleep(2);
+                    $checkbox = $driver->findElement(WebDriverBy::cssSelector("span.z-checkbox[data-id='justificada'] input"));
+                    if (!$checkbox->isSelected()) {
+                        $checkbox->click();
+                    }
+                    $input = $driver->findElement(WebDriverBy::cssSelector("span.z-combobox[data-id='cbJustificacion'] input"));
+                    $input->sendKeys($falta->motivo);
+                    $driver->findElement(WebDriverBy::cssSelector("button.z-button[data-tooltip='Guardar']"))->click();
+                    Alert::info('Falta actualizada');
+                    $falta->itaca = true;
+                    $falta->save();
+                }
+                return 1;
+            }
+        } catch (\Exception $e) {
+            Alert::danger($e->getMessage());
+            return 0;
+        }
+        return 1;
+    }
 
 }

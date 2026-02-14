@@ -3,32 +3,60 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Requests\PasswordRequest;
-use Intranet\Services\SeleniumService;
+use Intranet\Services\Signature\DigitalSignatureService;
+use Intranet\Services\Automation\SeleniumService;
 use Styde\Html\Facades\Alert;
-
+use Illuminate\Support\Str;
+use Throwable;
+use ReflectionMethod;
+use Exception;
 
 class RedirectAfterAuthenticationController extends Controller
 {
-    /**
-     * Provision a new web server.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function __invoke(PasswordRequest $request)
     {
-        $class = 'Intranet\Sao\\'. ucfirst($request->accion);
-        if (method_exists($class, 'setFireFoxCapabilities')) {
-            $caps = $class::setFireFoxCapabilities();
+        $className = $this->resolveClassName($request->accion);
+
+        if (!class_exists($className)) {
+            throw new Exception("La classe $className no existeix.");
         }
+
+        $caps = method_exists($className, 'setFireFoxCapabilities')
+            ? $className::setFireFoxCapabilities()
+            : null;
+
+        $driver = null;
+
         try {
-            $driver = SeleniumService::loginSAO(AuthUser()->dni, $request->password, $caps??null);
-            return $class::index($driver, $request->toArray());
-        } catch (\Throwable $exception) {
+            $driver = SeleniumService::loginSAO(authUser()->dni, $request->password, $caps);
+            return $this->executeAction($className, $driver, $request);
+        } catch (Throwable $exception) {
             Alert::info($exception->getMessage());
-            if (isset($driver)) {
+        } finally {
+            if ($driver) {
                 $driver->close();
             }
-            return back();
         }
+        return back();
+
+    }
+
+    private function resolveClassName(string $action): string
+    {
+        return 'Intranet\\Sao\\' . Str::ucfirst($action);
+    }
+
+    private function executeAction(string $className, $driver, PasswordRequest $request)
+    {
+        $reflection = new ReflectionMethod($className, 'index');
+        $ds = new DigitalSignatureService();
+        $parameters = [$driver, $request->toArray()];
+
+        if ($request->hasFile('file')) {
+            $parameters[] = $request->file('file');
+        }
+        return $reflection->isStatic()
+            ? $className::index(...$parameters)
+            : (new $className($ds))->index(...$parameters);
     }
 }

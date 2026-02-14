@@ -2,8 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonIcon;
+use Intranet\Http\Controllers\Core\BaseController;
+
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonIcon;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Ciclo;
 use Illuminate\Support\Facades\Session;

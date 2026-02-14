@@ -3,6 +3,7 @@
 namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TipoIncidenciaRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class TipoIncidenciaRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|numeric|max:99|unique:tipoincidencias,id',
+            'id' => ['required','numeric','max:99', Rule::unique('tipoincidencias')->ignore($this->id)],
             'nombre' => 'required|max:40',
             'nom' => 'required|max:40',
             'idProfesor' => 'required|exists:profesores,dni',

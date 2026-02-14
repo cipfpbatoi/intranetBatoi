@@ -2,18 +2,21 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
+use DB;
 use Illuminate\Http\Request;
-use Intranet\Entities\Instructor;
+use Illuminate\Support\Facades\Session;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Instructor;
 use Intranet\Entities\Profesor;
-use Response;
-use DB;
-use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonImg;
+use Intranet\Http\Traits\Core\Imprimir;
 use Jenssegers\Date\Date;
-
+use Illuminate\Support\Collection;
+use Response;
+use Styde\Html\Facades\Alert;
 
 
 /**
@@ -38,13 +41,13 @@ class InstructorController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['dni', 'nombre','email','Nfcts', 'TutoresFct','Xcentros','telefono'];
+    protected $gridFields = ['dni', 'nombre','departamento','Nfcts','Xcentros','email','telefono'];
     /**
      * @var bool
      */
     protected $modal = false;
     
-    use traitImprimir;
+    use Imprimir;
 
     /**
      *
@@ -54,6 +57,9 @@ class InstructorController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('instructor.edit'));
         $this->panel->setBoton('grid', new BotonImg('instructor.show'));
         $this->panel->setBoton('grid', new BotonImg('instructor.pdf'));
+        $this->panel->setBoton('grid', new BotonImg('instructor.delete', [
+            'data-confirm' => 'Segur que vols eliminar este instructor?',
+        ]));
     }
 
     /**
@@ -62,11 +68,14 @@ class InstructorController extends IntranetController
     public function search()
     {
         $instructores = [];
+       
         foreach (Fct::misFcts()->get() as $fct) {
-            foreach ($fct->Colaboradores as $instructor) {
-                $instructores[] = $instructor->dni;
+            foreach ($fct->Colaboracion->Centro->Instructores??[] as $instructor) {
+                 
+                $instructores[] = $instructor->dni??'';
             }
         }
+         
         return Instructor::whereIn('dni', $instructores)->get();
     }
 
@@ -109,7 +118,15 @@ class InstructorController extends IntranetController
      */
     public function guarda(Request $request, $id, $centro)
     {
-        parent::update($request, $id);
+        try {
+            parent::update($request, $id);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if (($e->errorInfo[1] ?? null) === 1062) {
+                Alert::danger("Ja existeix un instructor amb aquest DNI.");
+                return back()->withInput();
+            }
+            throw $e;
+        }
         return $this->showEmpresa(Centro::find($centro)->idEmpresa);
     }
 
@@ -203,53 +220,75 @@ class InstructorController extends IntranetController
      * @param $id
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function pdf($id)
+   public function pdf($id)
     {
         $instructor = Instructor::findOrFail($id);
-        if ($instructor->surnames != '') {
-            $fcts = $instructor->Fcts;
-            $fecha = $this->ultimaFecha($fcts);
-            $secretario = Profesor::find(config(fileContactos().'.secretario'));
-            $director = Profesor::find(config(fileContactos().'.director'));
-            $dades = ['date' => FechaString($fecha, 'ca'),
-                'fecha' => FechaString($fecha, 'es'),
-                'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
-                'secretario' => $secretario->FullName,
-                'centro' => config('contacto.nombre'),
-                'poblacion' => config('contacto.poblacion'),
-                'provincia' => config('contacto.provincia'),
-                'director' => $director->FullName,
-                'instructor' => $instructor
-            ];
-            if ($fcts->count()==1) {
-                $pdf = $this->hazPdf('pdf.fct.instructor', $fcts->first(), $dades);
-            } else {
-                $centros = [];
-                foreach ($fcts as $fct) {
-                    if (!in_array($fct->Colaboracion->idCentro, $centros)) {
-                        $centros[] = $fct->Colaboracion->idCentro;
-                    }
-                }
-                $pdf = $this->hazPdf('pdf.fct.instructors', $centros, $dades);
-            }
-            return $pdf->stream();
+
+        if ($instructor->surnames == '') {
+            Alert::danger("Completa les dades de l'instructor");
+            return redirect("/instructor");
         }
 
-        Alert::danger("Completa les dades de l'instructor");
-        return redirect("/instructor");
+        // 🔒 Assegura Collection (mai null) i evita N+1 per a Colaboracion
+        $fcts = $instructor->Fcts()->with('Colaboracion')->get();
 
+        if ($fcts->isEmpty()) {
+            Alert::danger("Aquest instructor no té cap FCT associada.");
+            return redirect("/instructor");
+        }
+
+        // 🔒 Calcula la data posterior de forma segura
+        $fecha = $this->ultimaFecha($fcts) ?? new Date(); // fallback si totes tenen 'hasta' buit
+
+        $secretario = Profesor::find(config('avisos.secretario'));
+        $director   = Profesor::find(config('avisos.director'));
+
+        $dades = [
+            'date'         => FechaString($fecha, 'ca'),
+            'fecha'        => FechaString($fecha, 'es'),
+            'consideracion'=> ($secretario && $secretario->sexo === 'H') ? 'En' : 'Na',
+            'secretario'   => $secretario?->FullName ?? '',
+            'centro'       => config('contacto.nombre'),
+            'poblacion'    => config('contacto.poblacion'),
+            'provincia'    => config('contacto.provincia'),
+            'director'     => $director?->FullName ?? '',
+            'instructor'   => $instructor,
+        ];
+
+        if ($fcts->count() == 1) {
+            $pdf = $this->hazPdf('pdf.fct.instructor', $fcts->first(), $dades);
+        } else {
+            // 🔒 Conjunt de centres únics
+            $centros = $fcts->pluck('Colaboracion.idCentro')->filter()->unique()->values()->all();
+            $pdf = $this->hazPdf('pdf.fct.instructors', $centros, $dades);
+        }
+
+        return $pdf->stream();
     }
 
     /**
-     * @param $fcts
-     * @return \Date|Date|null
+     * Retorna la data més tardana de $fcts->hasta o null si no n'hi ha cap.
+     * Accepta Collection, array o null.
      */
-    private function ultimaFecha($fcts)
+    private function ultimaFecha($fcts): ?Date
     {
-        $posterior = new Date();
-        foreach ($fcts as $fct) {
+        $fcts = $fcts instanceof Collection ? $fcts : collect($fcts);
+
+        // Queda't només amb les FCT que tinguen 'hasta'
+        $conHasta = $fcts->filter(fn ($fct) => !empty($fct->hasta));
+
+        if ($conHasta->isEmpty()) {
+            return null;
+        }
+
+        // Inicialitza amb la primera 'hasta' vàlida
+        $primer = $conHasta->first();
+        $posterior = new Date($primer->hasta);
+
+        foreach ($conHasta as $fct) {
             $posterior = FechaPosterior($fct->hasta, $posterior);
         }
+
         return $posterior;
     }
 

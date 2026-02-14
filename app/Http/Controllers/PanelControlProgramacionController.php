@@ -2,9 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\BaseController;
+
 use Intranet\Entities\Modulo_ciclo;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonPost;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonPost;
 
 
 /**
@@ -45,7 +47,7 @@ class PanelControlProgramacionController extends BaseController
 
     protected function iniBotones()
     {
-        $this->panel->setBothBoton('programacion.advise',['img' => 'fa-bell', 'where'=>['estado','==',0]]);
+        $this->panel->setBothBoton('programacion.advise', ['img' => 'fa-bell', 'where'=>['estado','==',0]]);
     }
 
 }

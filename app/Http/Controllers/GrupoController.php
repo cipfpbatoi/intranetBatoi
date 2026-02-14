@@ -1,17 +1,24 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
+use DB;
+use Illuminate\Http\Request;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoGrupo;
+use Intranet\Entities\Ciclo;
+use Intranet\Entities\Curso;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Horario;
-use Intranet\Entities\Ciclo;
-use DB;
-use Intranet\Botones\BotonImg;
-use Intranet\Entities\Alumno;
-use Jenssegers\Date\Date;
-use Intranet\Entities\Curso;
-use Styde\Html\Facades\Alert;
+use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Jobs\SendEmail;
+use Intranet\Services\School\SecretariaService;
+use Jenssegers\Date\Date;
+use SebastianBergmann\Comparator\Exception;
+use Styde\Html\Facades\Alert;
+
 /**
  * Class GrupoController
  * @package Intranet\Http\Controllers
@@ -21,9 +28,10 @@ class GrupoController extends IntranetController
 
     const DIRECCION ='roles.rol.direccion';
     const TUTOR ='roles.rol.tutor';
+    const ORIENTADOR ='roles.rol.orientador';
 
 
-    use traitImprimir;
+    use Imprimir;
 
     /**
      * @var string
@@ -36,7 +44,10 @@ class GrupoController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo','XDual','Torn'];
+    protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo'  ,'Torn'];
+    protected $parametresVista = ['modal' => [  'selAlumGrup']];
+
+
 
 
 
@@ -45,8 +56,8 @@ class GrupoController extends IntranetController
      */
     protected function search(){
 
-        return esRol(AuthUser()->rol,config(self::DIRECCION)) ?
-                Grupo::with('Ciclo')->with('Tutor')->with('TutorDual')->with('Tutor.Sustituye')->get():
+        return esRol(AuthUser()->rol,config(self::DIRECCION)) || esRol(AuthUser()->rol,config(self::ORIENTADOR))  ?
+                Grupo::with('Ciclo')->with('Tutor')->with('Tutor.Sustituye')->get():
                 Grupo::with('Ciclo')->MisGrupos()->get();
     }
 
@@ -71,8 +82,20 @@ class GrupoController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('grupo.carnet', ['roles' => config(self::TUTOR),'where'=>['tutor','==',AuthUser()->dni]]));
         $this->panel->setBoton('grid', new BotonImg('grupo.edit', ['roles' => config(self::DIRECCION)]));
         $this->panel->setBoton('grid',new BotonImg('equipo.grupo',['img' => 'fa-graduation-cap']));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'grupo.list',
+                    [
+                         'img' => 'fa-file-excel-o',
+                        'class' => 'selecciona',
+                     ]
+            )
+        );
 
-        if (AuthUser()->xdepartamento == 'Fol' && date('Y-m-d') > config('curso.certificatFol')){
+
+
+        if (AuthUser()->xdepartamento === 'Fol' && date('Y-m-d') > config('variables.certificatFol')) {
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-square-o','where'=>['fol','==', 0]]));
             $this->panel->setBoton('grid',new BotonImg('grupo.fol',['img' => 'fa-check','where'=>['fol','==', 1]]));
         }
@@ -149,26 +172,85 @@ class GrupoController extends IntranetController
             ->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
+    public function list(Request $request)
+    {
+        // Cerca el grup i els alumnes associats
+        $ids = array( );
+        foreach ($request->toArray() as $nia => $value){
+             if ($value === 'on') {
+                $ids[] = $nia;
+            }
+        }
+        $alumnos =  Alumno::whereIn('nia',$ids)->get()->sortBy( 'nameFull');
+        $alumnes = hazArray($alumnos,'nameFull');
+
+        // Combina el nom del grup amb els noms dels alumnes
+        $nomsAlumnes = implode('; ', $alumnes);
+
+
+        // Retorna la llista d'alumnes separada per ;
+        return response($nomsAlumnes, 200)
+            ->header('Content-Type', 'text/plain');
+    }
+
+    /*
+    public function list($idGrupo)
+    {
+        $grupo = Grupo::find($idGrupo);
+        $alumnos = hazArray($grupo->Alumnos->sortBy('nameFull'),'nameFull');
+        $gr = array('grupo' => $grupo->codigo.' - '.$grupo->nombre);
+        $columna = array_merge($gr,$alumnos);
+        $xls = new ExcelService(storage_path('/tmp/'.$idGrupo.'.xlsx'));
+        $xls->render($columna);
+        return response()->download(
+            storage_path('/tmp/'.$idGrupo.'.xlsx'), // Ajusta el camí segons la teva estructura
+            'alumnes_'.$idGrupo.'.xlsx', // Aquest serà el nom del fitxer per al client
+            ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'] // Aquest és el Content-Type per a fitxers .xlsx
+        );
+    }
+    */
+
     /**
      * @param $grupo
      * @return mixed
      */
     public function certificados($grupo)
     {
+        try {
+            $sService = new SecretariaService();
+        } catch (\Exception $e) {
+            echo 'No hi ha connexió amb el servidor de matrícules';
+            exit();
+        }
         $grupo = Grupo::find($grupo);
         $datos['ciclo'] = $grupo->Ciclo;
         $remitente = ['email' => cargo('secretario')->email, 'nombre' => cargo('secretario')->FullName];
         $count = 0;
+
         foreach ($grupo->Alumnos as $alumno){
             if ($alumno->fol == 1){
-                $id = $alumno->nia;
-                if (file_exists(storage_path("tmp/fol_$id.pdf"))){
-                    unlink(storage_path("tmp/fol_$id.pdf"));
+
+                try {
+                    $id = $alumno->nia;
+                    if (file_exists(storage_path("tmp/fol_$id.pdf"))) {
+                        unlink(storage_path("tmp/fol_$id.pdf"));
+                    }
+                    self::hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa, [$alumno], cargaDatosCertificado($datos),
+                        'portrait')->save(storage_path("tmp/fol_$id.pdf"));
+                    $attach = ["tmp/fol_$id.pdf" => 'application/pdf'];
+                    $document = array();
+                    $document['title'] = 15;
+                    $document['dni'] = $alumno->dni;
+                    $document['alumne'] = trim($alumno->shortName);
+                    $document['route'] = "tmp/fol_$id.pdf";
+                    $document['name'] = "fol_$id.pdf";
+                    $document['size'] = filesize(storage_path("tmp/fol_$id.pdf"));
+                    $sService->uploadFile($document);
+                    dispatch(new SendEmail($alumno->email, $remitente, 'email.fol', $alumno, $attach));
+                    $count++;
+                } catch (\Exception $e){
+                    Alert::danger($e->getMessage());
                 }
-                self::hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,[$alumno],cargaDatosCertificado($datos),'portrait')->save(storage_path("tmp/fol_$id.pdf"));
-                $attach = ["tmp/fol_$id.pdf" => 'application/pdf'];
-                dispatch(new SendEmail($alumno->email, $remitente, 'email.fol', $alumno , $attach));
-                $count++;
             }
         }
         $grupo->fol = 2;
@@ -189,7 +271,7 @@ class GrupoController extends IntranetController
     {
         $grupo = Alumno::findOrFail($alumno)->Grupo->first();
         $datos['ciclo'] = $grupo->Ciclo;  
-        return $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa,Alumno::where('nia',$alumno)->get(),cargaDatosCertificado($datos),'portrait')->stream();
+        return $this->hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa, Alumno::where('nia',$alumno)->get(),cargaDatosCertificado($datos),'portrait')->stream();
     }
 
     public function checkFol($id)

@@ -14,7 +14,7 @@ class GrupoTrabajo extends Model
     protected $table = 'grupos_trabajo';
     public $timestamps = false;
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $fillable = [
         'literal',

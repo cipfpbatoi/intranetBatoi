@@ -2,12 +2,14 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use DB;
-use Intranet\Componentes\Pdf as PDF;
+use Intranet\Services\Document\PdfService;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Curso;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Alumno;
 use Styde\Html\Facades\Alert;
 
@@ -50,7 +52,7 @@ class AlumnoCursoController extends IntranetController
         $actual = AlumnoCurso::where('id', $id)->first();
         $curso = Curso::find($actual->first()->idCurso);
         if (haVencido($curso->fecha_fin)) {
-            return PDF::hazPdf('pdf.alumnos.manipulador', $actual, $curso)->stream();
+            return app(PdfService::class)->hazPdf('pdf.alumnos.manipulador', $actual, $curso)->stream();
         }
         else {
             return back();

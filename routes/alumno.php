@@ -13,5 +13,9 @@ Route::get('/alumnocurso/{curso}/unregister', ['as' => 'alumnocurso.unregister',
 Route::get('/equipo', ['as' => 'alumno.equipo', 'uses' => 'AlumnoController@equipo']);
 Route::get('/empresas',['as' => 'alumno.empresa', 'uses' => 'ColaboracionAlumnoController@index']);
 
+Route::get('/A3',['as' => 'signatura.alumne','uses' => 'SignaturaAlumneController@index']);
+Route::post('/A3/upload',['as' => 'signatura.upload','uses' => 'SignaturaAlumneController@uploadPost']);
+
 Route::post('/profesor/{profesor}/mensaje', ['as' => 'alumno.mensaje', 'uses' => 'AlumnoController@alerta']);
+
 

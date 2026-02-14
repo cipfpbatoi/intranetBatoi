@@ -2,12 +2,14 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
 use Intranet\Entities\Poll\Option;
 use Response;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 
 /**
  * Class OptionController

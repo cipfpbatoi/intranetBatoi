@@ -2,19 +2,22 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Illuminate\Http\Request;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\GrupoTrabajo;
 use Intranet\Entities\Miembro;
-use Response;
-use Intranet\Botones\BotonImg;
+use Intranet\Http\Requests\GrupoTrabajoRequest;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Http\Requests\GTProfesorRequest;
 
 
 /**
  * Class GrupoTrabajoController
  * @package Intranet\Http\Controllers
  */
-class GrupoTrabajoController extends IntranetController
+class GrupoTrabajoController extends ModalController
 {
     const GRUPOTRABAJO_DETALLE = 'grupotrabajo.detalle';
 
@@ -30,10 +33,19 @@ class GrupoTrabajoController extends IntranetController
      * @var array
      */
     protected $gridFields = ['literal',  'objetivos'];
-    /**
-     * @var bool
-     */
-    protected $modal = true;
+
+
+    public function store(GrupoTrabajoRequest $request)
+    {
+        $new = new GrupoTrabajo();
+        $new->fillAll($request);
+        return $this->redirect();
+    }
+    public function update(GrupoTrabajoRequest $request, $id)
+    {
+        GrupoTrabajo::findOrFail($id)->fillAll($request);
+        return $this->redirect();
+    }
 
 
     /**
@@ -58,7 +70,10 @@ class GrupoTrabajoController extends IntranetController
         }
 
         $Gt = GrupoTrabajo::find($id);
-        $sProfesores = $Gt->profesores()->orderBy('apellido1')->orderBy('apellido2')->get(['dni', 'apellido1', 'apellido2', 'nombre', 'coordinador']);
+        $sProfesores = $Gt->profesores()
+            ->orderBy('apellido1')
+            ->orderBy('apellido2')
+            ->get(['dni', 'apellido1', 'apellido2', 'nombre', 'coordinador']);
 
 
         return view('grupotrabajo.miembros', compact('Gt', 'tProfesores', 'sProfesores'));
@@ -69,10 +84,10 @@ class GrupoTrabajoController extends IntranetController
      * @param $gt_id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function altaProfesor(Request $request, $gt_id)
+    public function altaProfesor(GTProfesorRequest $request, $gtId)
     {
         Miembro::create($request->all());
-        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $gt_id]);
+        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $gtId]);
     }
 
     /**
@@ -80,14 +95,14 @@ class GrupoTrabajoController extends IntranetController
      * @param $profesor_id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function borrarProfesor($gt_id, $profesor_id)
+    public function borrarProfesor($gtId, $profesorId)
     {
-        Miembro::where('idGrupoTrabajo', '=', $gt_id)
-                ->where('idProfesor', '=', $profesor_id)
-                ->where('coordinador',0)
-                ->delete();
-        
-        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupo_trabajo' => $gt_id]);
+        Miembro::where('idGrupoTrabajo', '=', $gtId)
+            ->where('idProfesor', '=', $profesorId)
+            ->where('coordinador', 0)
+            ->delete();
+
+        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $gtId]);
     }
 
     /**
@@ -95,22 +110,22 @@ class GrupoTrabajoController extends IntranetController
      * @param $profesor_id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function coordinador($grupo_id, $profesor_id)
+    public function coordinador($grupoId, $profesorId)
     {
-        if ($this->removeCoord($grupo_id)) {
-            $this->addCoord($grupo_id, $profesor_id);
+        if ($this->removeCoord($grupoId)) {
+            $this->addCoord($grupoId, $profesorId);
         }
 
-        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $grupo_id]);
+        return redirect()->route(self::GRUPOTRABAJO_DETALLE, ['grupotrabajo' => $grupoId]);
     }
 
     /**
      * @param $grupo_id
      * @return bool
      */
-    private function removeCoord($grupo_id)
+    private function removeCoord($grupoId)
     {
-        $coord = Miembro::where('idGrupoTrabajo', '=', $grupo_id)
+        $coord = Miembro::where('idGrupoTrabajo', '=', $grupoId)
             ->where('coordinador', '=', '1')
             ->first();
         if ($coord) {
@@ -125,9 +140,10 @@ class GrupoTrabajoController extends IntranetController
      * @param $grupo_id
      * @param $profesor_id
      */
-    private function addCoord($grupo_id, $profesor_id){
-        $coord = Miembro::where('idGrupoTrabajo', '=', $grupo_id)
-            ->where('idProfesor', '=', $profesor_id)
+    private function addCoord($grupoId, $profesorId)
+    {
+        $coord = Miembro::where('idGrupoTrabajo', '=', $grupoId)
+            ->where('idProfesor', '=', $profesorId)
             ->first();
         $coord->coordinador = 1;
         $coord->save();
@@ -139,8 +155,14 @@ class GrupoTrabajoController extends IntranetController
     protected function iniBotones()
     {
         $this->panel->setBotonera(['create'], ['delete']);
-        $this->panel->setBoton('grid', new BotonImg('#', ['img' => 'fa-pencil', 'class' => 'editGrupo', 'text' => 'edita']));
-        $this->panel->setBoton('grid', new BotonImg(self::GRUPOTRABAJO_DETALLE, ['img' => 'fa-group', 'text' => 'participantes']));
+        $this->panel->setBoton('grid', new BotonImg('grupotrabajo.edit'));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                self::GRUPOTRABAJO_DETALLE,
+                ['img' => 'fa-group', 'text' => 'participantes']
+            )
+        );
     }
 
 }

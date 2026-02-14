@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Grupo;
 use Intranet\Http\Requests\CicloDualRequest;
-use Intranet\Services\FormBuilder;
+use Intranet\Services\UI\FormBuilder;
 use Styde\Html\Facades\Alert;
 
 /**

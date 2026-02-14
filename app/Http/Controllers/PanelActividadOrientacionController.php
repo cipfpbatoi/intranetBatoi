@@ -1,10 +1,12 @@
 <?php
 
 namespace Intranet\Http\Controllers;
+
+use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Http\Controllers\ActividadController;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Actividad;
 use Jenssegers\Date\Date;
 
@@ -68,7 +70,7 @@ class PanelActividadOrientacionController extends IntranetController
      */
     protected function createWithDefaultValues($default=[])
     {
-        return new Actividad(['extraescolar' => 0,'fueraCentro'=>0]);
+        return new Actividad(['extraescolar' => 0,'fueraCentro'=>0,'complementaria'=>0]);
     }
     
     

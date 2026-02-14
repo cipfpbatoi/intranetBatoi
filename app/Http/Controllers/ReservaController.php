@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Hora;
 use Illuminate\Http\Request;
@@ -36,10 +38,10 @@ class ReservaController extends IntranetController
             $profes = Profesor::Activo()->orderBy('apellido1')->get();
         } else
         {
-            $profes = Profesor::where('dni',AuthUser()->dni)->get();
+            $profes = Profesor::where('dni', AuthUser()->dni)->get();
         }
 
-        return view('reservas.reserva', compact('espacios', 'horas','profes'));
+        return view('reservas.reserva', compact('espacios', 'horas', 'profes'));
     }
 
 

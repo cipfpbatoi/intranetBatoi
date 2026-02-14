@@ -23,8 +23,8 @@ class AutorizacionDireccionResource extends PrintResource
     public function toArray()
     {
         $alumno = $this->elements->Alumno;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->first();
-        $director = Profesor::find(config('contacto.director'))->fullName;
+        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $director = Profesor::find(config('avisos.director'))->fullName;
         return [
             'untitled1' => config('contacto.nombre').' '.config('contacto.codi'),
             'untitled2' => $grupo->Ciclo->vliteral ,

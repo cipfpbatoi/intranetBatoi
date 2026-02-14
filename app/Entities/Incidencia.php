@@ -3,7 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Services\AdviseService;
+use Intranet\Services\Notifications\AdviseService;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
@@ -24,12 +24,22 @@ class Incidencia extends Model
         'observaciones',
         'fecha'
     ];
+
+    protected $visible = [
+        'tipo',
+        'descripcion',
+        'observaciones',
+        'solucion',
+        'fechasolucion'
+
+    ];
     protected $descriptionField = 'descripcion';
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $inputTypes = [
-        'fecha' => ['type' => 'date']
+        'fecha' => ['type' => 'date'],
+        'imagen' => ['type' => 'file'],
     ];
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
@@ -96,7 +106,8 @@ class Incidencia extends Model
 
     public function getXestadoAttribute()
     {
-        return $this->getEstadoOptions()[$this->estado];
+        $estados = $this->getEstadoOptions();
+        return $estados[$this->estado] ?? '';
     }
 
     public function getXcreadorAttribute()

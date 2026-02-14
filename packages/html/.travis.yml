@@ -1,0 +1,16 @@
+
+language: php
+
+php:
+  - 7.2
+
+sudo: false
+
+install:
+  composer install
+
+script:
+  - vendor/bin/phpspec
+
+matrix:
+  fast_finish: true

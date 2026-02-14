@@ -1,13 +1,15 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Inventario;
 use Intranet\Entities\Material;
-use Intranet\Services\FormBuilder;
-use Jenssegers\Date\Date;
+use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Services\UI\FormBuilder;
 
 /**
  * Class MaterialController
@@ -15,7 +17,7 @@ use Jenssegers\Date\Date;
  */
 class InventarioController extends IntranetController
 {
-    use traitImprimir;
+    use Imprimir;
     /**
      * @var string
      */
@@ -48,38 +50,38 @@ class InventarioController extends IntranetController
     ];
 
 
-    public function search()
-    {
-        // empty
-    }
-
-    function barcode(Request $request)
+    public function barcode(Request $request)
     {
         $materiales = collect();
-        $ids = explode(',',$request->ids);
-        foreach ($ids as $id){
+        $ids = explode(',', $request->ids);
+        foreach ($ids as $id) {
             $materiales->add(Material::find($id));
         }
-        return $this->hazPdf('pdf.inventario.lote',$materiales,$request->posicion,'portrait',[210,297],5)->stream();
+        return $this->hazPdf('pdf.inventario.lote', $materiales, $request->posicion, 'portrait', [210, 297], 5)->stream();
 
     }
 
 
-    public function edit($id)
+    public function edit($id = null)
     {
         $material = Inventario::findOrFail($id);
-        if ($material->espacio == 'INVENT'){
-            $formulario = new FormBuilder($material,[
-                'descripcion' => ['disabled' => 'disabled'],
-                'marca' => ['disabled' => 'disabled'],
-                'modelo' => ['disabled' => 'disabled'],
-                'nserieprov' => ['type' => 'text'],
-                'espacio' => ['type' => 'select']]);
-            $modelo =  $this->model;
-            return view('intranet.edit',compact('formulario','modelo'));
-        } else {
+        if (isProfesor()) {
+            if ($material->espacio === 'INVENT') {
+                $formulario = new FormBuilder($material, [
+                    'descripcion' => ['disabled' => 'disabled'],
+                    'marca' => ['disabled' => 'disabled'],
+                    'modelo' => ['disabled' => 'disabled'],
+                    'nserieprov' => ['type' => 'text'],
+                    'espacio' => ['type' => 'select']
+                ]);
+                $modelo = $this->model;
+                return view('intranet.edit', compact('formulario', 'modelo'));
+            }
+
             return parent::edit($id);
         }
+
+        return view('inventario.show', compact('material'));
     }
 
     /**
@@ -88,11 +90,9 @@ class InventarioController extends IntranetController
      */
     public function espacio($espacio)
     {
-        if (Espacio::find($espacio)) {
-            $this->vista = ['index' => 'Espai'];
-        } else {
-            $this->vista = ['index' => 'Articulo'];
-        }
+        $this->vista = [
+            'index' => Espacio::find($espacio) ? 'espai' : 'articulo'
+        ];
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniPestanas();
 

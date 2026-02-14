@@ -4,10 +4,12 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Styde\Html\Facades\Alert;
 
 class Adjunto extends Model
 {
-    use HasFactory;
 
     const CARPETA = "/app/public/adjuntos/";
 
@@ -37,7 +39,12 @@ class Adjunto extends Model
 
     public function getPathAttribute()
     {
-        return storage_path().self::CARPETA.$this->route.'/'.$this->name;
+        return storage_path().self::CARPETA.$this->route.'/'.$this->title.'.'.$this->extension;
+    }
+
+    public function getFileAttribute()
+    {
+        return $this->route.'/'.$this->title.'.'.$this->extension;
     }
 
     public function getDirectoryAttribute()
@@ -50,8 +57,11 @@ class Adjunto extends Model
         return explode('/', $this->path)[0];
     }
 
-    public function getModelo_idAttribute()
+    public function getModeloIdAttribute()
     {
-        return explode('/', $this->path)[1];
+        $parts = explode('/', $this->path ?? '');
+        return $parts[1] ?? null;
     }
+
+
 }

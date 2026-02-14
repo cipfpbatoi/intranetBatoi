@@ -5,16 +5,18 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
+use Intranet\Services\Document\DocumentPathService;
+use Intranet\Services\Document\TipoDocumentoService;
 
 
 class Documento extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'documentos';
     protected $fillable = ['tipoDocumento', 'rol', 'curso', 'propietario', 'supervisor', 'descripcion'
-        , 'ciclo', 'grupo', 'detalle','enlace', 'fichero', 'tags'];
+        , 'ciclo', 'grupo', 'detalle','enlace', 'fichero', 'tags', 'activo'];
     protected $rules = [
         'tipoDocumento' => 'required',
         'descripcion' => 'required|max:200',
@@ -29,7 +31,8 @@ class Documento extends Model
         'grupo' => ['type' => 'select'],
         'supervisor' => ['type' => 'hidden'],
         'ciclo' => ['type' => 'hidden'],
-        'detalle' => ['type' => 'textarea']
+        'detalle' => ['type' => 'textarea'],
+        'activo' => ['type' => 'checkbox'],
     ];
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
@@ -51,7 +54,7 @@ class Documento extends Model
 
     public function getTipoDocumentoOptions()
     {
-        return TipoDocumento::allPestana();
+        return TipoDocumentoService::allPestana();
     }
 
     public function getExistAttribute()
@@ -80,7 +83,12 @@ class Documento extends Model
     
     public function getLinkAttribute()
     {
-        return (isset($this->fichero) && file_exists(storage_path('app/' . $this->fichero)));
+        $path = isset($this->fichero) ? storage_path('app/' . $this->fichero) : null;
+        if (!$path) {
+            return false;
+        }
+
+        return (new DocumentPathService())->existsPath($path);
     }
 
 

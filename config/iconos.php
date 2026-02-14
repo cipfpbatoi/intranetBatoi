@@ -37,5 +37,7 @@ return [
         'valoracion' => 'fa-file-pdf-o',
         'link' => 'fa-paperclip',
         'confirm' => 'fa-envelope',
-        'archive' => 'fa-archive'
+        'archive' => 'fa-archive',
+        'showVal' => 'fa-eye-slash',
+        'pdfVal' => 'fa-file-pdf-o',
     ];

@@ -44,7 +44,7 @@
             <td style="font-size:20px;text-align: left">Tutor/a</td>
             <td style="font-size:20px;text-align: left"><strong>{{$grupo->Tutor->FullName}}</strong></td>
             <td style="font-size:20px;text-align: left">
-                Signatura: {!! Intranet\Services\SignaturaService::exec($grupo->Tutor->dni,'margin-left:100px',0.6,"<br/><br/><br/><br/>") !!}</td>
+                Signatura: {!! Intranet\Services\Signature\SignaturaService::exec($grupo->Tutor->dni,'margin-left:100px',0.6,"<br/><br/><br/><br/>") !!}</td>
         </tr>
     </table>
     <p style="font-size: 20px">S'ha facilitat la informació sobre el finançament pel Fons Social Europeu dels cicles de

@@ -11,7 +11,7 @@ use Intranet\Providers\AuthServiceProvider;
 class Colaboracion extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'colaboraciones';
     protected $fillable = [
@@ -87,12 +87,12 @@ class Colaboracion extends Model
     {
         $dni = $dni??authUser()->dni;
         $cicloC = Grupo::select('idCiclo')->QTutor($dni)->get();
-        $ciclo = $cicloC->count()>0?$cicloC->toarray():[];
+        $ciclo = $cicloC->count()>0?hazArray($cicloC,'idCiclo') :[];
+
         if ($empresa) {
             return $query->whereIn('idCiclo', $ciclo)->Empresa($empresa);
-        } else {
-            return $query->whereIn('idCiclo', $ciclo);
         }
+        return $query->whereIn('idCiclo', $ciclo);
     }
 
     public function getEmpresaAttribute()
@@ -125,6 +125,19 @@ class Colaboracion extends Model
     {
         return config('auxiliares.estadoColaboracion');
     }
+
+    public function getAnotacioAttribute()
+    {
+        $contactos = '';
+        foreach  (Activity::modelo('Colaboracion')
+            ->id($this->id)
+            ->where('action','book')
+            ->orderBy('created_at')
+            ->get() as $contacto) {
+            $contactos  .= $contacto->comentari  ;
+        }
+        return $contactos;
+    }
     public function getProfesorAttribute()
     {
         return $this->Propietario->fullName??'';
@@ -143,7 +156,7 @@ class Colaboracion extends Model
 
     public function getSituationAttribute()
     {
-        if ($this->tutor != $this->dniTutor()) {
+        if ($this->tutor == '' && $this->estado == 1) {
             return 1;
         }
         if ($this->estado == 1 || $this->estado == 3) {

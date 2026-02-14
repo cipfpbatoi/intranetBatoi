@@ -6,7 +6,7 @@ return [
             'subject' => "Sol·licitud Pràctiques de FCT",
             'toPeople' => 'A/A de Recursos Humans',
             'editable' => true,
-            'register' => true
+            'register' => 'Sol·licitud Pràctiques de FCT'
         ],
         'modelo' => 'Colaboracion',
         'view' => 'email.fct.contact',
@@ -21,7 +21,7 @@ return [
             'subject' => 'Revisió Documentació Pràctiques',
             'toPeople' => 'A/A de Recursos Humans',
             'editable' => false,
-            'register' => true
+            'register' => 'Revisió Documentació Pràctiques'
         ],
         'modelo' => 'Colaboracion',
         'view' => 'email.fct.request',
@@ -37,10 +37,24 @@ return [
             'subject' => "Recordatori inici de pràctiques",
             'toPeople' => 'Instructor',
             'editable' => true,
-            'register' => true
+            'register' => "Recordatori inici de pràctiques"
         ],
         'modelo' => 'Fct',
+        'finder' => 'FctActiva',
         'template' =>'email.fct.info',
+        'route' => 'fct',
+        'fcts' => 1,
+        'unique' => 1,
+    ],
+    'finEmpresa' => [
+        'email' => [
+            'subject' => "Finalització de pràctiques",
+            'toPeople' => 'Instructor',
+            'editable' => true,
+            'register' => "Seguiment Pràctiques de FCT",
+        ],
+        'modelo' => 'Fct',
+        'template' =>'email.fct.finish',
         'route' => 'fct',
         'fcts' => 1,
         'unique' => 1,
@@ -50,7 +64,7 @@ return [
             'subject' => "Informació relativa a l'inici de les Pràctiques de FCT",
             'toPeople' => "Alumnat",
             'editable' => false,
-            'register' => true
+            'register' => "Informació relativa a l'inici de les Pràctiques de FCT",
         ],
         'modelo'=> 'AlumnoFct',
         'finder' => 'AlumnoNoFct',
@@ -66,10 +80,11 @@ return [
             'subject' => "Seguiment Pràctiques de FCT",
             'toPeople' => 'Instructor',
             'editable' => true,
-            'register' => true
+            'register' => "Seguiment Pràctiques de FCT",
         ],
         'modelo' => 'Fct',
         'template' =>  'email.fct.follow',
+        'finder' => 'FctActiva',
         'route' => 'fct',
         'fcts' => 1,
         'unique' => 0,
@@ -81,11 +96,12 @@ return [
             'subject' => "Concertar visita de FCT",
             'toPeople' => 'Instructor',
             'editable' => true,
-            'register' => true
+            'register' => "Concertar visita de FCT",
         ],
         'modelo' => 'Fct',
         'template' => 'email.fct.visit',
         'route' => 'fct',
+        'finder' => 'FctActiva',
         'fcts' => 1,
         'unique' => 0,
         'default' => 'Les pràctiques es desenvolupen amb normalitat',
@@ -95,7 +111,6 @@ return [
             'subject' => "Citar alumnes per seguiment de FCT",
             'toPeople' => 'Alumno',
             'editable' => true,
-            'register' => false
         ],
         'modelo' => 'AlumnoFct',
         'finder' => 'AlumnoEnFct',
@@ -108,60 +123,9 @@ return [
         'email' => [
             'subject' => "Visita Empresa",
             'toPeople' => 'Instructor',
-            'register' => false,
             'editable' => false
         ],
         'modelo' => 'Fct',
         'view' => 'email.fct.confirm',
     ],
-    'pg0301' => [
-        'pdf' => [
-            'descripcion' => 'FULL DE CONTROL DE SERVEI',
-            'orientacion' => 'portrait'],
-        'modelo' => 'AlumnoFct',
-        'finder' => 'AlumnoNoFct',
-        'route' => 'alumnofct',
-        'view' => 'pdf.fct.controlServei',
-    ],
-    'pr0401' => [
-        'pdf' => [
-            'descripcion' => "ENTREVISTA DEL TUTOR AMB L'INSTRUCTOR DE L'EMPRESA",
-            'orientacion' => 'landscape'
-        ],
-        'modelo' => 'Fct',
-        'finder' => 'Fct',
-        'route' => 'alumnofct',
-        'view' => 'pdf.fct.seguimentInstructor',
-    ],
-    'pr0402' => [
-        'pdf' => [
-            'descripcion' => "ENTREVISTA DEL TUTOR AMB L'ALUMNAT",
-            'orientacion' => 'landscape'
-        ],
-        'modelo' => 'AlumnoFct',
-        'finder' => 'AlumnoEnFct',
-        'route' => 'alumnofct',
-        'view' => 'pdf.fct.seguimentAlumnes',
-    ],
-    'pasqua' => [
-        'printResource' => 'AutorizacionGrupoResource',
-        'modelo' => 'AlumnoFct',
-        'route' => 'alumnofct',
-        'finder' => 'AlumnoEnFct',
-    ],
-    'A1' => [
-        'modelo' => 'Signatura',
-        'route' => 'alumnofct',
-        'finder' => 'A1',
-    ],
-    'A2' => [
-        'modelo' => 'Signatura',
-        'route' => 'alumnofct',
-        'finder' => 'A2',
-    ],
-    'A3' => [
-        'modelo' => 'Signatura',
-        'route' => 'alumnofct',
-        'finder' => 'A3',
-    ],
-];
+ ];

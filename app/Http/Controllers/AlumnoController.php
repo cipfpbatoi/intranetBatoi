@@ -3,9 +3,11 @@
 namespace Intranet\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Intranet\Componentes\Pdf as PDF;
+use Intranet\Services\Document\PdfService;
+use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\Colaboracion;
 use Intranet\Http\Controllers\Auth\PerfilController;
-use Intranet\Botones\BotonIcon;
+use Intranet\UI\Botones\BotonIcon;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Profesor;
@@ -34,7 +36,9 @@ class AlumnoController extends PerfilController
     public function update(Request $request, $id)
     {
         $new = Alumno::find($id);
+
         parent::update($request, $new);
+
         return redirect("/alumno_grupo/" . $new->Grupo()->first()->codigo . "/show");
     }
 
@@ -44,7 +48,7 @@ class AlumnoController extends PerfilController
      */
     public function carnet($alumno)
     {
-        return PDF::hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
+        return app(PdfService::class)->hazPdf('pdf.carnet', Alumno::where('nia', $alumno)->get(), [Date::now()->format('Y'), 'Alumnat - Student'], 'portrait', [85.6, 53.98])->stream();
     }
 
     public function checkFol($id)
@@ -104,6 +108,8 @@ class AlumnoController extends PerfilController
         avisa($id, $request->explicacion != '' ? $request->explicacion : 'Te ha dado un toque.');
         return back();
     }
+
+
 
 
 

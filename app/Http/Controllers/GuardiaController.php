@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
 use Intranet\Entities\Guardia;
 use Intranet\Entities\Hora;
@@ -34,8 +36,9 @@ class GuardiaController extends IntranetController
         $ip = getClientIpAddress();
         if ($ip) {
             $horas = Hora::all();
-
             return view('guardias.guardia',compact('horas'));
         }
     }
+
+
 }

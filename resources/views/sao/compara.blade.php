@@ -1,9 +1,5 @@
-@extends('layouts.intranet')
-@section('css')
-    <title>Compara Dades Intranet/SAO</title>
-@endsection
-@section('content')
-    <div class='x-content'>
+<x-layouts.app  title="Compara Dades Intranet/SAO">
+     <div class='x-content'>
         <div class='form_box'>
             <form method="POST" action='/sao/compara' class='form-horizontal form-label-left'>
                 <table>
@@ -85,7 +81,4 @@
 
         </div>
     </div>
-@endsection
-@section('titulo')
-    Gestió Importació SAO
-@endsection
+</x-layouts.app>

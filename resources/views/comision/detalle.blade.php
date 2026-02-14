@@ -18,14 +18,12 @@
             </tr>
             @foreach ($comision->Fcts as $fct)
                 <tr class="lineaGrupo">
-                    <td style="font-style: oblique;font-weight: bold">{!! $fct->Colaboracion->Centro->nombre !!}</td>
-                    <td style="font-style: oblique;font-weight: bold">{!! $fct->pivot->hora_ini !!}</td>
-                    <td style="font-style: oblique;font-weight: bold">@if ($fct->pivot->aviso)
-                            Sí
-                        @else
-                            No
-                        @endif</td>
-                    <td><a href="/comision/{!!$comision->id!!}/deleteFct/{!! $fct->id !!}" class="delGrupo">
+                    <td style="font-style: oblique;font-weight: bold">{{ $fct->Colaboracion->Centro->nombre }}</td>
+                    <td style="font-style: oblique;font-weight: bold">{{ $fct->pivot->hora_ini }}</td>
+                    <td style="font-style: oblique;font-weight: bold">{{ $fct->pivot->aviso ? 'Sí' : 'No' }}</td>
+                    <td><a href="{{ route('comision.fct.delete', ['comision' => $comision->id, 'fct' => $fct->id]) }}"
+                           class="delGrupo"
+                           onclick="return confirm('Segur que vols eliminar esta visita?');">
                             {!! Html::image(
                                     'img/delete.png',
                                     trans("messages.buttons.delete"),
@@ -37,7 +35,8 @@
                 </tr>
             @endforeach
         </table>
-        <a href="/comision/{!!$comision->id!!}/confirm" class="btn btn-success">@lang("messages.buttons.acabar") </a>
+        <a href="{{ route('comision.confirm', ['comision' => $comision->id]) }}"
+           class="btn btn-success">@lang("messages.buttons.acabar")</a>
     </div>
     <div class="col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
         <br/>
@@ -51,15 +50,15 @@
                 <th>@lang("validation.attributes.aviso")</th>
                 <th></th>
             </tr>
-            <form method="POST" class="agua" action="/comision/{!!$comision->id!!}/createFct">
-                {{ csrf_field() }}
+            <form method="POST" class="agua" action="{{ route('comision.fct.create', ['comision' => $comision->id]) }}">
+                @csrf
                 <input type='hidden' name='idComision' value="{!!$comision->id!!}">
                 <tr>
-                    <td>{{ Form::select('idFct',$allFcts,0,['id'=>'idGrupo']) }}</td>
-                    <td>{{ Form::text('hora_ini',hora($comision->desde),['class'=>'time']) }}</td>
-                    <td>{{ Form::checkbox('aviso',null,1) }}</td>
+                    <td>{{ Form::select('idFct',$allFcts,0,['id' => 'idFct']) }}</td>
+                    <td>{{ Form::text('hora_ini',hora($comision->desde),['class' => 'time']) }}</td>
+                    <td>{{ Form::checkbox('aviso',1,true) }}</td>
                     <td>
-                        <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") visita ">
+                        <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") visita">
                     </td>
                 </tr>
             </form>

@@ -24,4 +24,8 @@
         {{ Form::select('idProfesor',$tProfesores,0,['id'=>'idProfesor']) }}
         <input id="submit" class="boton" type="submit" value="@lang("messages.generic.anadir") @lang("models.modelos.Profesor") ">
     </form>
+    <br/>
 </div>
+<x-ui.errors />
+
+

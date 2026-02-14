@@ -3,12 +3,13 @@
     <title>{{$panel->getTitulo()}}</title>
 @endsection
 @foreach ($panel->getPestanas() as $pestana)
-    @section($pestana->getNombre())
+    @php ($nombre = $pestana->getNombre())
+    @section($nombre)
         @include('intranet.partials.components.loadBefores')
         <div class="centrado">
-            @include('intranet.partials.components.buttons',['tipo' => 'index'])
-            @if ($pestana->getNombre() <> 'grid' && $pestana->getNombre() <> 'profile')
-                @include('intranet.partials.components.buttons',['tipo' => $pestana->getNombre()])
+            <x-botones :panel="$panel" tipo="index" :elemento="$elemento ?? null"/>
+            @if ($nombre !== 'grid' && $nombre !== 'profile')
+                <x-botones :panel="$panel" :tipo="$nombre" :elemento="$elemento ?? null"/>
             @endif
         </div><br/>
         @include($pestana->getVista(),$pestana->getFiltro())
@@ -23,7 +24,7 @@
              message='Guardar' clase='modal-lg'>
     </x-modal>
     <x-modal name="materiales" title=''
-             message='Guardar' >
+             message='Guardar'>
     </x-modal>
     {{ Html::script("/js/barcode.js") }}
 @endsection

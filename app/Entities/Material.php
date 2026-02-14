@@ -25,7 +25,7 @@ class Material extends Model
         'articulo_lote_id'
     ];
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $rules = [
         'descripcion' => 'required',
@@ -71,6 +71,16 @@ class Material extends Model
     public function getEspacioOptions()
     {
         return hazArray(Espacio::all(), 'aula', 'descripcion');
+    }
+
+    public function getEspaiAttribute()
+    {
+        $materialBaja = MaterialBaja::where('idMaterial',$this->id)->first();
+        if ($materialBaja && $materialBaja->tipo) {
+            return 'Proposta Nova Ubicació';
+        } else {
+            return $this->espacio;
+        }
     }
 
     public function getProcedenciaOptions()

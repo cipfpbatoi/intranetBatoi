@@ -1,13 +1,13 @@
-@extends('layouts.intranet')
-@section('css')
-<title>@lang("models.Programacion.seguimiento")</title>
-@endsection
-@section('content')
-@include('programacion.partials.formCreate')
-@endsection
-@section('titulo')
-@lang("models.Programacion.seguimiento") 
-@endsection
-@section('scripts')
-@endsection
+<x-layouts.app  :title="__('models.Programacion.seguimiento')">
+    <x-form.dynamic-model-form
+            :model="$elemento"
+            method="PUT"
+            :fillable="[]"
+            :defaults="[]"
+    >
+        {!! Field::radios('criterios', ['1','2','3','4','5'], $elemento->criterios, ['inline']) !!}
+        {!! Field::radios('metodologia', ['1','2','3','4','5'], $elemento->metodologia, ['inline']) !!}
+        {!! Field::textarea('propuestas', $elemento->propuestas) !!}
+    </x-form.dynamic-model-form>
+</x-layouts.app>
 

@@ -11,7 +11,7 @@ use Intranet\Events\PreventAction;
 class Falta extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     public $primaryKey = 'id';
     public $descriptionField = 'desde';
@@ -29,7 +29,9 @@ class Falta extends Model
         'fichero',
         'estado'
     ];
+    
     protected $rules = [
+        'idProfesor' => 'required',
         'desde' => 'required|date',
         'hasta' => 'date',
         'motivos' => 'required',
@@ -45,8 +47,8 @@ class Falta extends Model
         'hasta' => ['type' => 'date'],
         'baja' => ['type' => 'hidden'],
         'dia_completo' => ['type' => 'checkbox'],
-        'hora_ini' => ['type' => 'time'],
-        'hora_fin' => ['type' => 'time'],
+        'hora_ini' => ['type' => 'select'],
+        'hora_fin' => ['type' => 'select'],
         'motivos' => ['type' => 'select'],
         'fecha' => ['type' => 'date'],
         'fichero' => ['type' => 'file']
@@ -132,6 +134,9 @@ class Falta extends Model
     }
     public function getMotivoAttribute()
     {
+        if (fechaInglesa($this->desde) <= '2024-02-29' && $this->motivos < 8) {
+            return config('auxiliares.motivoAusenciaOld')[$this->motivos];
+        }
         return config('auxiliares.motivoAusencia')[$this->motivos];
     }
 
@@ -154,6 +159,28 @@ class Falta extends Model
         }
 
         return $falta;
+    }
+
+    public function getHoraIniOptions()
+    {
+        $horas = Hora::all();
+        $arrayHoras = [];
+        foreach ($horas as $hora) {
+            $stringHora = $hora->hora_ini.':00';
+            $arrayHoras[$stringHora] = $hora->hora_ini;
+        }
+        return $arrayHoras;
+    }
+
+    public function getHoraFinOptions()
+    {
+        $horas = Hora::all();
+        $arrayHoras = [];
+        foreach ($horas as $hora) {
+            $stringHora = $hora->hora_fin.':00';
+            $arrayHoras[$stringHora] = $hora->hora_fin;
+        }
+        return $arrayHoras;
     }
 
 }

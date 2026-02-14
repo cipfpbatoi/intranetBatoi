@@ -2,29 +2,25 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
+use Illuminate\Http\Request;
+use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Programacion;
-use Intranet\Botones\BotonIcon;
-use Intranet\Botones\BotonPost;
-use Intranet\Botones\BotonImg;
-use Intranet\Botones\BotonBasico;
-use Illuminate\Http\Request;
-use Intranet\Services\StateService;
+use Intranet\Http\Traits\Autorizacion;
+use Intranet\Services\General\StateService;
 use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\Session;
-use Intranet\Jobs\SendEmail;
 
 class ProgramacionController extends IntranetController
 {
 
-    use traitAutorizar,traitCheckList;
+    use Autorizacion;
 
     protected $model = 'Programacion';
-    protected $gridFields = ['Xciclo','XModulo', 'curso', 'situacion'];
-    protected $vista = ['seguimiento' => 'programacion.seguimiento'];
+    protected $gridFields = ['Xciclo','XModulo', 'situacion'];
     protected $modal = false;
     protected $items = 6;
     
@@ -52,7 +48,7 @@ class ProgramacionController extends IntranetController
     protected function seguimiento($id)
     {
         $elemento = Programacion::findOrFail($id);
-        return view($this->chooseView('seguimiento'), compact('elemento'));
+        return view('programacion.seguimiento', compact('elemento'));
     }
 
 
@@ -68,12 +64,13 @@ class ProgramacionController extends IntranetController
         return back();
     }
 
-    protected function advise($id){
+    protected function advise($id)
+    {
         $elemento = Modulo_ciclo::findOrFail($id);
         if (isset($elemento->Modulo->codigo)){
-            $horario = Horario::where('modulo',$elemento->Modulo->codigo)
+            $horario = Horario::where('modulo', $elemento->Modulo->codigo)
                 ->first();
-            if ($horario){
+            if ($horario) {
                 avisa($horario->idProfesor, 'Et falta entregar la programacio de '.$elemento->Modulo->vliteral);
                 Alert::danger("El professor ".$horario->Mestre->FullName." del mòdul ".$elemento->Modulo->vliteral." ha estat avisat.");
             } else {
@@ -83,8 +80,8 @@ class ProgramacionController extends IntranetController
         return back();
     }
     
-    protected function updateSeguimiento(Request $request,$id){
-        $elemento = Programacion::findOrFail($id); 
+    protected function updateSeguimiento(Request $request, $id){
+        $elemento = Programacion::findOrFail($id);
         $elemento->criterios = $request->criterios;
         $elemento->metodologia = $request->metodologia;
         $elemento->propuestas = $request->propuestas;
@@ -98,20 +95,19 @@ class ProgramacionController extends IntranetController
         $elemento = Programacion::findOrFail($id);
         return redirect()->away($elemento->fichero);
     }
-
-    protected function createWithDefaultValues( $default=[]){
-        return new Programacion(['curso'=>Curso()]);
-    }
-
-    
     
     
     protected function iniBotones()
     {
         $this->panel->setBotonera();
         $this->panel->setBoton('grid', new BotonImg('programacion.link', ['img' => 'fa-link']));
-        $this->panel->setBoton('grid', new BotonImg('programacion.init', ['where' => ['estado', '==', 0]]));
-        $this->panel->setBoton('grid', new BotonImg('programacion.seguimiento', ['img' => 'fa-binoculars','orWhere' => ['estado', '==', 0,'estado', '==', 3]]));
+        $this->panel->setBoton(
+            'grid',
+            new BotonImg(
+                'programacion.seguimiento',
+                ['img' => 'fa-binoculars','orWhere' => ['estado', '==', 0,'estado', '==', 3]]
+            )
+        );
 
     }
     

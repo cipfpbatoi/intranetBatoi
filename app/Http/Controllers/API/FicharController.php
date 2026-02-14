@@ -3,29 +3,34 @@
 namespace Intranet\Http\Controllers\API;
 
 use Intranet\Entities\Falta_profesor;
+use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Profesor;
 use Illuminate\Http\Request;
+use Intranet\Services\HR\FitxatgeService;
 
 class FicharController extends ApiBaseController
 {
 
     protected $model = 'Falta_profesor';
 
-    public function fichar(Request $datosProfesor)
+
+    public function fichar(Request $request, FitxatgeService $fitxatgeService)
     {
-        $profesor = Profesor::find($datosProfesor->dni);
-        if ($datosProfesor->api_token === $profesor->api_token) {
-            $ultimo = Falta_profesor::fichar($profesor->dni);
-            return response()->view('ficha', compact('ultimo'), 200)->header('Content-type', 'text/html');
+        $profesor = Profesor::find($request->dni);
+
+        if (!$profesor || $request->api_token !== $profesor->api_token) {
+            return $this->sendResponse(['updated' => false], 'Profesor no identificat');
         }
-        return $this->sendResponse(['updated' => false], 'Profesor no identificado');
+
+        $ultimo = $fitxatgeService->fitxar($profesor->dni);
+
+        return response()
+            ->view('ficha', compact('ultimo'), 200)
+            ->header('Content-Type', 'text/html');
     }
 
-    public function ip()
-    {
-        return $this->sendResponse(config('variables.ipGuardias'),'OK');
-        
-    }
+
+
 
     public function entrefechas(Request $datos)
     {
@@ -36,13 +41,16 @@ class FicharController extends ApiBaseController
         foreach ($registros as $registro) {
             if ($registro->salida != null) {
                 if (isset($dias[$registro->dia])) {
-                    $dias[$registro->dia]['horas'] = sumarHoras($dias[$registro->dia]['horas'], restarHoras($registro->entrada, $registro->salida));
+                    $dias[$registro->dia]['horas'] =
+                        sumarHoras(
+                            $dias[$registro->dia]['horas'],
+                            restarHoras($registro->entrada, $registro->salida)
+                        );
                 } else {
                     $dias[$registro->dia] = array('fecha' => $registro->dia, 'horas' =>
                         restarHoras($registro->entrada, $registro->salida));
                 }
-            }
-            else {
+            } else {
                 if (isset($dias[$registro->dia])) {
                     $dias[$registro->dia]['horas'] = sumarHoras($dias[$registro->dia]['horas'], "01:00:00");
                 } else {
@@ -54,9 +62,6 @@ class FicharController extends ApiBaseController
             $dia['horas'] = number_format(Horas($dia['horas']), 1);
             $def[] = $dia;
         }
-
         return $this->sendResponse(['ok'], $def);
     }
-    
-
 }

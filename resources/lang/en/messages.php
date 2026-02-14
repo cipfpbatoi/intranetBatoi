@@ -246,6 +246,8 @@ return array(
         'Actualizacion' => 'Update',
         'Dual' => 'FP Dual',
         'Poll' => 'Polls',
+        'A3' => 'FCT',
+
     ),
     'situations' => array(
         '0' => 'Not notified',

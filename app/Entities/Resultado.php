@@ -14,7 +14,7 @@ use Intranet\Entities\Modulo_ciclo;
 class Resultado extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $table = 'resultados';
     public $timestamps = false;

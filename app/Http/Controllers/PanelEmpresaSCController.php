@@ -2,9 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\BaseController;
+
 use Intranet\Entities\Empresa;
-use Intranet\Botones\BotonBasico;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonBasico;
+use Intranet\UI\Botones\BotonImg;
 
 
 /**
@@ -13,7 +15,7 @@ use Intranet\Botones\BotonImg;
  */
 class PanelEmpresaSCController extends BaseController
 {
-    const ROLES_ROL_PRACTICAS = 'roles.rol.practicas';
+    const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     const ROLES_ROL_DUAL = 'roles.rol.dual';
 
     /**
@@ -27,7 +29,7 @@ class PanelEmpresaSCController extends BaseController
     /**
      * @var array
      */
-    protected $gridFields = ['nombre', 'direccion', 'localidad', 'telefono', 'email', 'actividad','cicles'];
+    protected $gridFields = ['nombre', 'direccion', 'localidad', 'telefono', 'email', 'actividad','cicles','concierto'];
     /**
      * @var array
      */
@@ -51,21 +53,21 @@ class PanelEmpresaSCController extends BaseController
            'index',
            new BotonBasico(
                "empresa.create",
-               ['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]
+               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
            )
        );
        $this->panel->setBoton(
            'grid',
            new BotonImg(
                'empresa.detalle',
-               ['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]
+               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
            )
        );
        $this->panel->setBoton(
            'grid',
            new BotonImg(
                'empresa.delete',
-               ['roles' => [config(self::ROLES_ROL_PRACTICAS),config(self::ROLES_ROL_DUAL)]]
+               ['roles' => [config(self::ROLES_ROL_TUTOR),config(self::ROLES_ROL_DUAL)]]
            )
        );
     }

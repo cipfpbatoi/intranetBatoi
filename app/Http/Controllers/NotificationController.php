@@ -2,8 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Intranet\Entities\Notification;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
@@ -23,7 +25,7 @@ class NotificationController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['emisor', 'motivo', 'fecha'];
+    protected $gridFields = ['fecha','emisor', 'motivo'];
     /**
      * @var
      */
@@ -31,7 +33,8 @@ class NotificationController extends IntranetController
     /**
      * @var array
      */
-    protected $vista = ['show'=>'notification.show'];
+    // Use el layout de notificacions personalitzat per a la vista show
+    protected $vista = ['show' => 'notification'];
 
     /**
      * @return mixed

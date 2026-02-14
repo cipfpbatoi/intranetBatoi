@@ -3,10 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Ciclo;
-use Intranet\Entities\Modulo;
-use Intranet\Events\ActivityReport;
-use Intranet\Entities\Profesor;
+use Intranet\Services\Auth\JWTTokenService;
 use Styde\Html\Facades\Alert;
 
 class Modulo_grupo extends Model
@@ -81,6 +78,18 @@ class Modulo_grupo extends Model
     public function getXModuloAttribute(){
         return $this->ModuloCiclo->Xmodulo;
     }
+
+    public function getXcicloAttribute(){
+        return $this->ModuloCiclo->Xciclo;
+    }
+
+    public function getXdepartamentoAttribute(){
+        return $this->ModuloCiclo->Departamento->literal;
+    }
+
+    public function getXtornAttribute(){
+        return $this->Grupo->turno === 'S'?'half-presential':'presential';
+    }
     public function getliteralAttribute(){
         return $this->XGrupo.'-'.$this->XModulo;
     }
@@ -93,7 +102,8 @@ class Modulo_grupo extends Model
         $quants = $this->resultados->where('evaluacion',$trimestre)->count();
         if ($quants){
             return true;
-        }elseif (count($this->profesores())) {
+        }
+        if (count($this->profesores())) {
             return false;
         }
         return true;
@@ -106,5 +116,23 @@ class Modulo_grupo extends Model
         }
         return $a;
     }
+    public function getProgramacioLinkAttribute(){
+        $centerId = config('contacto.codi');
+        $cycleId = $this->ModuloCiclo->idCiclo;
+        $moduleCode = $this->ModuloCiclo->idModulo;
+        $turn = $this->Xtorn;
+
+        // Construye la URL
+        return "https://pcompetencies.cipfpbatoi.es/public/syllabus/{$centerId}/{$cycleId}/{$moduleCode}/{$turn}";
+
+    }
+
+    /*
+    public function getTokenLinkAttribute(){
+        $service = new JWTTokenService();
+        $token = $service->createTokenProgramacio($this->id);
+        return "https://pcompetencies.cipfpbatoi.es/login/auth/{$token}";
+    }
+    */
     
 }

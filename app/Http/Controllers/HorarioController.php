@@ -2,14 +2,17 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\IntranetController;
+
 use Illuminate\Http\Request;
-use Intranet\Http\Controllers\BaseController;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Profesor;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Storage;
-use Intranet\Botones\BotonImg;
+use Intranet\UI\Botones\BotonImg;
 use Illuminate\Support\Facades\Session;
+use Intranet\Services\Notifications\NotificationService;
+use Illuminate\Support\Facades\Mail;
 
 class HorarioController extends IntranetController
 {
@@ -105,6 +108,166 @@ class HorarioController extends IntranetController
      */
     public function changeIndex() {
         return view('horario.change');
+    }
+
+    public function propuestas(Request $request)
+    {
+        $disk = Storage::disk('local');
+        $files = $disk->allFiles('/horarios');
+        $propuestas = [];
+
+        foreach ($files as $file) {
+            if (str_contains($file, 'horariosCambiados/')) {
+                continue;
+            }
+            if (!str_ends_with($file, '.json')) {
+                continue;
+            }
+            $parts = explode('/', trim($file, '/'));
+            if (count($parts) < 3) {
+                continue;
+            }
+            $dni = $parts[count($parts) - 2] ?? null;
+            if (!$dni || $dni === 'horarios') {
+                continue;
+            }
+            $raw = $disk->get($file);
+            $data = json_decode($raw, true);
+            if (!is_array($data)) {
+                continue;
+            }
+
+            $propuestas[] = [
+                'dni' => $dni,
+                'id' => $data['id'] ?? basename($file, '.json'),
+                'profesor' => Profesor::find($dni),
+                'estado' => $data['estado'] ?? 'Pendiente',
+                'obs' => $data['obs'] ?? '',
+                'motiu_rebuig' => $data['motiu_rebuig'] ?? '',
+                'fecha_inicio' => $data['fecha_inicio'] ?? '',
+                'fecha_fin' => $data['fecha_fin'] ?? '',
+                'cambios' => is_array($data['cambios'] ?? null) ? $data['cambios'] : [],
+            ];
+        }
+
+        $estado = $request->get('estado', 'Pendiente');
+        if ($estado !== 'Todos') {
+            $propuestas = array_values(array_filter($propuestas, function ($p) use ($estado) {
+                return ($p['estado'] ?? 'Pendiente') === $estado;
+            }));
+        }
+
+        return view('horario.propuestas', [
+            'propuestas' => $propuestas,
+            'estado' => $estado,
+        ]);
+    }
+
+    public function aceptarPropuesta($dni, $id)
+    {
+        $disk = Storage::disk('local');
+        $path = '/horarios/' . $dni . '/' . $id . '.json';
+
+        if (!$disk->exists($path)) {
+            Alert::warning("No hi ha proposta per al professor $dni");
+            return back();
+        }
+
+        $raw = $disk->get($path);
+        $data = json_decode($raw, true);
+        if (!is_array($data)) {
+            Alert::warning("La proposta del professor $dni no es valida");
+            return back();
+        }
+
+        $data['estado'] = 'Aceptado';
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        $disk->put($path, json_encode($data));
+
+        app(NotificationService::class)->send($dni, "S'ha acceptat la teua proposta de canvi d'horari.", '/horario/canvi-horari-temporal?proposta=' . $id);
+        $this->sendAcceptationEmail($dni, $data, $id);
+        Alert::success("Proposta del professor $dni acceptada");
+        return back();
+    }
+
+    public function rebutjarProposta(Request $request, $dni, $id)
+    {
+        $disk = Storage::disk('local');
+        $path = '/horarios/' . $dni . '/' . $id . '.json';
+
+        if (!$disk->exists($path)) {
+            Alert::warning("No hi ha proposta per al professor $dni");
+            return back();
+        }
+
+        $raw = $disk->get($path);
+        $data = json_decode($raw, true);
+        if (!is_array($data)) {
+            Alert::warning("La proposta del professor $dni no es valida");
+            return back();
+        }
+
+        $motiu = trim((string) $request->get('motiu', ''));
+        if ($motiu === '') {
+            Alert::warning("Has d'indicar un motiu de rebuig");
+            return back();
+        }
+
+        $data['estado'] = 'Rebutjat';
+        $data['motiu_rebuig'] = $motiu;
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        $disk->put($path, json_encode($data));
+
+        app(NotificationService::class)->send($dni, "S'ha rebutjat la teua proposta de canvi d'horari. Motiu: $motiu", '/horario/canvi-horari-temporal?proposta=' . $id);
+        Alert::success("Proposta del professor $dni rebutjada");
+        return back();
+    }
+
+    public function esborrarProposta($dni, $id)
+    {
+        $disk = Storage::disk('local');
+        $path = '/horarios/' . $dni . '/' . $id . '.json';
+
+        if (!$disk->exists($path)) {
+            Alert::warning("No hi ha proposta per al professor $dni");
+            return back();
+        }
+
+        $disk->delete($path);
+        Alert::success("Proposta del professor $dni esborrada");
+        return back();
+    }
+
+    protected function sendAcceptationEmail(string $dni, array $data, string $id): void
+    {
+        $profesor = Profesor::find($dni);
+        if (!$profesor || empty($profesor->email)) {
+            return;
+        }
+
+        $lines = [];
+        $cambios = is_array($data['cambios'] ?? null) ? $data['cambios'] : [];
+        foreach ($cambios as $cambio) {
+            if (!isset($cambio['de'], $cambio['a'])) {
+                continue;
+            }
+            $lines[] = "- {$cambio['de']} -> {$cambio['a']}";
+        }
+
+        $body = "S'ha acceptat la teua proposta de canvi d'horari.\n";
+        $body .= "Professor/a: {$profesor->fullName}\n";
+        $body .= "Dates: ".($data['fecha_inicio'] ?? '')." a ".($data['fecha_fin'] ?? '')."\n";
+        if (!empty($data['obs'])) {
+            $body .= "Observacions: {$data['obs']}\n";
+        }
+        $body .= "Canvis acceptats:\n";
+        $body .= empty($lines) ? "- (sense canvis)\n" : implode("\n", $lines)."\n";
+        $body .= "Pots consultar la proposta ací: ".url('/horario/canvi-horari-temporal?proposta='.$id)."\n";
+
+        Mail::raw($body, function ($message) use ($profesor) {
+            $message->to($profesor->email, $profesor->fullName)
+                ->subject('Proposta d\'horari acceptada');
+        });
     }
 
     /**

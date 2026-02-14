@@ -2,72 +2,104 @@
 
 namespace Intranet\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Intranet\Componentes\Mensaje;
+use Illuminate\Validation\ValidationException;
+use Intranet\Services\Notifications\NotificationService;
 use Styde\Html\Facades\Alert;
+use Symfony\Component\HttpFoundation\Response as HttpResponse;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 use function config;
 
-
 class Handler extends ExceptionHandler
 {
-    /**
-     * A list of the exception types that are not reported.
-     *
-     * @var array
-     */
     protected $dontReport = [
-        \Illuminate\Auth\AuthenticationException::class,
-        \Illuminate\Auth\Access\AuthorizationException::class,
+        AuthenticationException::class,
+        AuthorizationException::class,
         \Symfony\Component\HttpKernel\Exception\HttpException::class,
-        \Illuminate\Database\Eloquent\ModelNotFoundException::class,
+        ModelNotFoundException::class,
         \Illuminate\Session\TokenMismatchException::class,
-        \Illuminate\Validation\ValidationException::class,
+        ValidationException::class,
     ];
 
-    /**
-     * A list of the inputs that are never flashed for validation exceptions.
-     *
-     * @var array
-     */
+    protected $dontFlash = ['password','password_confirmation'];
 
-    protected $dontFlash = [
-        'password',
-        'password_confirmation',
-    ];
-
-
-    /**
-      Render an exception into an HTTP response.
-
-      @param  \Illuminate\Http\Request  $request
-      @param  \Exception  $exception
-      @return \Illuminate\Http\Response
-     */
     public function render($request, Throwable $exception)
     {
-        if ($exception->getMessage()!='The given data was invalid.'&&
-               $exception->getMessage()!='Unauthenticated.'&&
-               $exception->getMessage()!='' &&
-               !strpos($exception->getMessage(),'SRF')) {
-            Mensaje::send(config('avisos.errores'),$exception->getMessage().$exception->getTraceAsString());
+        // Envia avís només si el missatge és “informatiu” i no és SRF
+        $msg = (string) $exception->getMessage();
+        $isValidation = $exception instanceof ValidationException;
+
+        if (
+            !$isValidation &&
+            $msg !== 'The given data was invalid.' &&
+            $msg !== 'Unauthenticated.' &&
+            $msg !== '' &&
+            strpos($msg, 'SRF') === false &&   // <-- correcció important
+            !app()->environment('testing')
+        ) {
+            // Pots limitar trace en prod si vols: substr($exception->getTraceAsString(), 0, 2000)
+            app(NotificationService::class)->send(config('avisos.errores'), $msg . $exception->getTraceAsString());
         }
-        if ($exception instanceof \PDOException){
-            Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a :".$exception->getMessage().". Si no ho entens possat en contacte amb l'administrador");
+
+        // Missatge visual per a errors de BD (en respostes HTML)
+        if ($exception instanceof \PDOException) {
+            Alert::danger("Error en la base de dades. No s'ha pogut completar l'operació degut a: "
+                . $exception->getMessage()
+                . ". Si no ho entens, posa't en contacte amb l'administrador.");
         }
-        if ($request->wantsJson()) {
-            return response()->json(['message' => $exception->getMessage()], $exception->getCode());
+
+        // JSON / API
+        if ($request->expectsJson()) {
+            // 1) Tria codi si és una HttpException
+            $status = ($exception instanceof HttpExceptionInterface)
+                ? $exception->getStatusCode()
+                : null;
+
+            // 2) Mapejos habituals
+            if ($exception instanceof ValidationException) {
+                $status = 422;
+                return response()->json([
+                    'message' => 'The given data was invalid.',
+                    'errors'  => $exception->errors(),
+                ], $status);
+            }
+
+            if ($exception instanceof AuthenticationException) {
+                $status = 401;
+            } elseif ($exception instanceof AuthorizationException) {
+                $status = 403;
+            } elseif ($exception instanceof ModelNotFoundException || $exception instanceof NotFoundHttpException) {
+                $status = 404;
+            } elseif ($exception instanceof MethodNotAllowedHttpException) {
+                $status = 405;
+            }
+
+            // 3) Fallback segur
+            if (!is_int($status) || $status < 100 || $status > 599) {
+                $status = 500;
+            }
+
+            // 4) Missatge segons entorn
+            $payloadMsg = config('app.debug')
+                ? ($msg ?: (HttpResponse::$statusTexts[$status] ?? 'Server Error'))
+                : (HttpResponse::$statusTexts[$status] ?? 'Server Error');
+
+            return response()->json([
+                'message' => $payloadMsg,
+            ], $status);
         }
-        if ($exception instanceof AuthenticationException){
+
+        // HTML: redirecció login per a auth
+        if ($exception instanceof AuthenticationException) {
             return redirect()->guest('login');
         }
 
-
         return parent::render($request, $exception);
     }
-
-
-
 }

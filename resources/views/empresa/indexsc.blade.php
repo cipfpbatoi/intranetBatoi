@@ -4,7 +4,7 @@
 @endsection
 @foreach ($panel->getPestanas() as $pestana)
     @section($pestana->getNombre())
-        <div class="centrado">@include('intranet.partials.components.buttons',['tipo' => 'index'])</div><br/>
+        <x-botones :panel="$panel" tipo="index" :elemento="$elemento ?? null" /><br/>
         @include($pestana->getVista(),$pestana->getFiltro())
     @endsection
 @endforeach

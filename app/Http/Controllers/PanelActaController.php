@@ -1,9 +1,11 @@
 <?php
 
 namespace Intranet\Http\Controllers;
+
+use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Documento;
-use Intranet\Entities\TipoDocumento;
+use Intranet\Services\Document\TipoDocumentoService;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 
@@ -49,7 +51,7 @@ class PanelActaController extends BaseController
         $roles = RolesUser(AuthUser()->rol);
         $profe = Profesor::find(AuthUser()->dni);
         return Documento::whereIn('rol', $roles)
-                ->whereIn('tipoDocumento', TipoDocumento::all($grupo))
+                ->whereIn('tipoDocumento', TipoDocumentoService::all($grupo))
                 ->whereIn('grupo', $profe->grupos())
                 ->orderBy('curso','desc')
                 ->get();
@@ -81,7 +83,7 @@ class PanelActaController extends BaseController
         $profe = Profesor::find(AuthUser()->dni);
         $grupos = Documento::select('grupo')
                 ->whereIn('rol', $roles)
-                ->whereIn('tipoDocumento', TipoDocumento::all($grupo))
+                ->whereIn('tipoDocumento', TipoDocumentoService::all($grupo))
                 ->whereIn('grupo', $profe->grupos())
                 ->distinct()
                 ->get();

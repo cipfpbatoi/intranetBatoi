@@ -7,7 +7,7 @@ use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Fct;
-use Intranet\Services\StateService;
+use Intranet\Services\General\StateService;
 
 
 class ColaboracionController extends ApiBaseController
@@ -71,6 +71,18 @@ class ColaboracionController extends ApiBaseController
             $request->explicacion,
             null,
             'Seguiment telefònic'
+        );
+        return $this->sendResponse($activity, 'OK');
+    }
+
+    public function alumnat($id, Request $request)
+    {
+        $activity = Activity::record(
+            'review',
+            Fct::find($id),
+            $request->explicacion,
+            null,
+            'Seguiment Alumnat'
         );
         return $this->sendResponse($activity, 'OK');
     }

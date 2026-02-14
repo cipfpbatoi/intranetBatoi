@@ -6,7 +6,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Componentes\MyMail;
+use Intranet\Services\Mail\MyMail;
 use Illuminate\Http\Request;
 use Styde\Html\Facades\Alert;
 
@@ -20,23 +20,39 @@ class MyMailController extends Controller
     
     public function send(Request $request)
     {
-        if ($request->hasFile('file') && $request->file('file')->isValid()) {
-            $ext = $request->file('file')->getClientOriginalExtension();
-            $mime = $request->file('file')->getMimeType();
-            $nom = "AdjuntCorreu.".$ext;
-            $request->file('file')->move(storage_path('tmp/'), $nom);
-            $fitxer = 'tmp/'.$nom;
-            $attach = [$fitxer => $mime];
-        } else {
-            $attach = null;
+        $attach = []; // sempre definida
+
+        // Si tens un input múltiple tipus name="file[]" :
+        if ($request->hasFile('file')) {
+            foreach ($request->file('file') as $key => $file) {
+                if ($file && $file->isValid()) {
+                    $ext  = $file->getClientOriginalExtension();
+                    $mime = $file->getMimeType();
+                    $nom  = "AdjuntCorreu$key.".$ext;
+
+                    $file->move(storage_path('tmp/'), $nom);
+
+                    $fitxer = 'tmp/'.$nom;
+                    $attach[] = [$fitxer => $mime];
+                }
+            }
         }
+
+        // Si no hi ha adjunts vàlids, passem null a MyMail
+        $attach = $attach ?: null;
+
         if (strlen($request->contenido) < 50 && $request->editable) {
             Alert::danger('El contingut ha de ser més de 50 caracters');
         } else {
-            $mail = new MyMail($request->to, $request->contenido, $request->toArray(), $attach);
+            $mail = new MyMail(
+                $request->to,
+                $request->contenido,
+                $request->toArray(),
+                $attach
+            );
             $mail->send();
-
         }
+
         return redirect($request->route);
     }
 

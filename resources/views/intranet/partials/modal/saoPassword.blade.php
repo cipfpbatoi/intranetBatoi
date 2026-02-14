@@ -10,7 +10,7 @@
     <br/>
     <label class="control-label" for="password">Introduir Password SAO:</label>
     <input type="password" id="password" name="password" class="form-control"/>
-    @if(file_exists(storage_path('app/certificats/'.authUser()->fileName.'.tmp')))
+    @if(file_exists(storage_path('app/zip/'.authUser()->fileName.'.tmp')))
         <div id="decrypt" hidden>
             <label class="control-label" for="password">Introduir Password Intranet:</label>
             <input type="password" id="decrypt" name="decrypt" class="form-control"/>
@@ -18,5 +18,6 @@
             <input type="password" id="cert" name="cert" class="form-control"/>
         </div>
     @endif
-    @include('layouts.partials.error')
+    <x-ui.errors />
+
 </x-modal>

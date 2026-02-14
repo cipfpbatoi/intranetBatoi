@@ -2,7 +2,7 @@
 @section('body')
     <table style='text-align: center'>
         <tr>
-            <th>Matricula curs 2022/23</th>
+            <th>Matricula curs 2024/25</th>
         </tr>
     </table>
     <div>
@@ -14,7 +14,7 @@
     </div>
     <div class="container" style="font-size: 1.3em; line-height: 1.3em">
         <h2>Darrera oportunitat</h2>
-        <p>Hola, des del CIPFP Batoi, volem informar-te que el procediment per a realitzar la matrícula per al <strong>curs 2021-22</strong>
+        <p>Hola, des del CIPFP Batoi, volem informar-te que el procediment per a realitzar la matrícula per al <strong>curs 2024-25</strong>
             es farà de la següent forma:</p>
         <ul>
             <li style=" margin-top: 1.3em">La data de matrícula serà del <strong>3 al 5 de setembre</strong> (ambdós inclosos, des de les 9 del matí).</li>

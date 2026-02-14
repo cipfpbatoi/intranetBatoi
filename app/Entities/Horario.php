@@ -11,7 +11,7 @@ use Intranet\Events\ActivityReport;
 class Horario extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
     
     protected $primaryKey = 'id';
     protected $fillable = ['idProfesor', 'modulo', 'idGrupo', 'ocupacion','aula','dia_semana','sesion_orden','plantilla'];
@@ -53,12 +53,9 @@ class Horario extends Model
 
     public function scopeProfesor($query, $profesor)
     {
-        if (Horario::where('idProfesor',$profesor)->count())
-        {
+        if (Horario::where('idProfesor', $profesor)->count()) {
             return $query->where('idProfesor', $profesor);
-        }
-        else
-        {
+        } else {
             return $query->where('idProfesor', Profesor::findOrFail($profesor)->sustituye_a);
         }
     }
@@ -80,22 +77,22 @@ class Horario extends Model
 
     public function scopeGuardia($query)
     {
-        return $query->where('ocupacion', config('variables.ocupacionesGuardia.normal'));
+        return $query->where('ocupacion', config('constants.ocupacionesGuardia.normal'));
     }
 
     public function scopeGuardiaBiblio($query)
     {
-        return $query->where('ocupacion', config('variables.ocupacionesGuardia.biblio'));
+        return $query->where('ocupacion', config('constants.ocupacionesGuardia.biblio'));
     }
 
     public function scopeGuardiaAll($query)
     {
-        return $query->whereIn('ocupacion',config('variables.ocupacionesGuardia'));
+        return $query->whereIn('ocupacion', config('constants.ocupacionesGuardia'));
     }
 
     public function scopeLectivos($query)
     {
-        return $query->whereNotIn('modulo',config('constants.modulosNoLectivos'));
+        return $query->whereNotIn('modulo', config('constants.modulosNoLectivos'));
     }
 
     public function scopePrimera($query, $profesor, $date = null)
@@ -104,16 +101,7 @@ class Horario extends Model
         return $query->Profesor($profesor)->Dia($dia);
     }
 
-    /**
-     * Devuelve un array con el horario del profesor
-     * 
-     * @param profesor
-     * @return array[][]
-     */
-
-
-
-    public static function HorarioSemanal($profesor)
+       public static function HorarioSemanal($profesor)
     {
         $horario = static::Profesor($profesor)
             ->with('Modulo')
@@ -127,56 +115,67 @@ class Horario extends Model
         return $semana;
     }
 
+    // 🔹 Funció optimitzada: Obtindre l'horari d'un grup
     public static function HorarioGrupo($grupo)
     {
-        $horas = Hora::all();
-        $dias_semana = array('L', 'M', 'X', 'J', 'V');
+        // Obtenim totes les hores
+        $horas = Hora::all()->pluck('codigo');
+
+        // Agafem totes les entrades d'horari en una sola consulta
+        $horario = self::Grup($grupo)
+            ->whereIn('sesion_orden', $horas)
+            ->whereNull('ocupacion')
+            ->whereNotIn('modulo', ['TU01CF', 'TU02CF'])
+            ->get();
+
+        // Reestructurem l'array per [dia_semana][sesion_orden]
         $semana = [];
-        foreach ($dias_semana as $dia) {
-            foreach ($horas as $hora) {
-                $queHace = static::Grup($grupo)
-                        ->Dia($dia)
-                        ->where('sesion_orden', '=', $hora->codigo)
-                        ->where('ocupacion', '=', null)
-                        ->where('modulo', '!=', 'TU01CF')
-                        ->where('modulo', '!=', 'TU02CF')
-                        ->first();
-                if ($queHace)
-                {
-                    $semana[$dia][$hora->codigo] = $queHace;
-                }
-            }
+
+        foreach ($horario as $hora) {
+            $semana[$hora->dia_semana][$hora->sesion_orden] = $hora;
         }
+
         return $semana;
     }
-    
-    protected function getProfesorAttribute(){
+
+ 
+
+    protected function getProfesorAttribute()
+    {
         return $this->Mestre->ShortName;
     }
-    protected function getXGrupoAttribute(){
+    protected function getXGrupoAttribute()
+    {
         return $this->Grupo->nombre??'';
     }
     
-    protected function getXModuloAttribute(){
+    protected function getXModuloAttribute()
+    {
         return$this->Modulo->literal??'';
     }
-    protected function getXOcupacionAttribute(){
+    protected function getXOcupacionAttribute()
+    {
         return $this->Ocupacion->nom??$this->Grupo->nombre;
     }
-    protected function getDesdeAttribute(){
+    protected function getDesdeAttribute()
+    {
         return $this->Hora->hora_ini??'';
     }
-    protected function getHastaAttribute(){
+    protected function getHastaAttribute()
+    {
         return $this->Hora->hora_fin??'';
     }
     
-    public function getModuloOptions(){
+    public function getModuloOptions()
+    {
         return hazArray(Modulo::All(), 'codigo', 'literal');
     }
-    public function getIdGrupoOptions(){
+    public function getIdGrupoOptions()
+    {
         return hazArray(Grupo::All(), 'codigo', 'nombre');
     }
-    public function getOcupacionOptions(){
+    public function getOcupacionOptions()
+    {
         return hazArray(Ocupacion::All(), 'codigo', 'nom');
     }
 }

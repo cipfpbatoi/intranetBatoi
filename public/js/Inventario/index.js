@@ -53,11 +53,11 @@ const mesesCaduca=6;
             { "search": article},
             null,
             null,
-            { "search": espai }
+            null,
         ],
         ajax : {
             method: "GET",
-            url: '/api/inventario',
+            url: '/api/inventario/'+espai,
             data: {
                 api_token: token},
         },
@@ -186,10 +186,10 @@ $(function () {
                 {id: "Espacios", type: "select"},
                 {id: "Explicacion", type: "textarea"},
             ];
-            $(".modal-title").text("Cambiar unidades");
+            $(".modal-title").text("Canviar Ubicació");
             $(".modal-body").html(htmlDialog(dlgControls));
             $(".modal-footer").find("button[type=button]").text("Cancelar");
-            $(".modal-footer").find("button[type=submit]").show().one("click", function() {
+            $(".modal-footer").find("button[type=submit]").off("click").show().one("click", function() {
                 $.ajax({
                     method: "PUT",
                     url: "/api/material/cambiarUbicacion",

@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Grupo;
 use Illuminate\Http\Request;
+use Intranet\Http\Resources\AlumnoFctControlResource;
 use Intranet\Http\Resources\AlumnoFctResource;
 use Intranet\Http\Resources\SelectAlumnoFctResource;
 
@@ -17,20 +18,23 @@ class AlumnoFctController extends ApiBaseController
     public function indice($grupo)
     {
         $grup = Grupo::findOrFail($grupo);
-        $data = AlumnoFct::Grupo($grup)->esFct()->get();
-        foreach ($data as $dato) {
-            if ($dato->Fct->idColaboracion) {
-                $dato->centro = $dato->Fct->Colaboracion->Centro->nombre;
-                $dato->nombre = $dato->Alumno->fullName;
-            }
-        }
+        $data = AlumnoFctControlResource::collection(AlumnoFct::Grupo($grup)->esFct()->get());
+
+        return $this->sendResponse($data, 'OK');
+    }
+
+    public function dual($grupo)
+    {
+        $grup = Grupo::findOrFail($grupo);
+        $data = AlumnoFctControlResource::collection(AlumnoFct::Grupo($grup)->esDual()->get());
+
         return $this->sendResponse($data, 'OK');
     }
 
     public function update(Request $request, $id)
     {
         $registro = AlumnoFct::findOrFail($id);
-        if (isset($request->pg0301)){
+        if (isset($request->pg0301)) {
             $registro->pg0301 = $request->pg0301==='true'?1:0;
         }
         if (isset($request->a56)) {

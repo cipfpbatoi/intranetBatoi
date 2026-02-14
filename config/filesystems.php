@@ -58,12 +58,13 @@ return [
             //'visibility' => 'public',
         ],
         'documentacio' => [
-            //'driver' => 'local',
-            //'root' => storage_path('app/public'),
-            //'url' => env('APP_URL').'/storage',
-            //'visibility' => 'public',
             'driver' => 'local',
             'root' => base_path('docs'),
+            'visibility' => 'public',
+        ],
+        'tmpFCT' => [
+            'driver' => 'local',
+            'root' => '/srv/documentsFct',
             'visibility' => 'public',
         ],
 

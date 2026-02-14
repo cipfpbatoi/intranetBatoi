@@ -2,12 +2,15 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Http\Controllers\Core\ModalController;
+
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Http\Requests\ResultadoStoreRequest;
 use Intranet\Http\Requests\ResultadoUpdateRequest;
+use Intranet\Http\Traits\Core\Imprimir;
 use Styde\Html\Facades\Alert;
 
 
@@ -18,7 +21,7 @@ use Styde\Html\Facades\Alert;
 class ResultadoController extends ModalController
 {
 
-    use traitImprimir;
+    use Imprimir;
 
     /**
      * @var string
@@ -47,7 +50,7 @@ class ResultadoController extends ModalController
     }
 
     private function rellenaPropuestasMejora($idModulo){
-        $programacion = Programacion::where('idModuloCiclo', $idModulo)->where('curso', Curso())->first()->id;
+        $programacion = Programacion::where('idModuloCiclo', $idModulo)->first()->id;
         return redirect("/programacion/$programacion/seguimiento");
     }
 
@@ -55,10 +58,11 @@ class ResultadoController extends ModalController
     {
         if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
             $newRes = new Resultado();
-            $newRes->fillAll($request);
-            if ($request->evaluacion == 3) {
-                return $this->rellenaPropuestasMejora($modulogrupo->idModuloCiclo);
+            // Assegurem professor informant abans de guardar
+            if (!$request->filled('idProfesor')) {
+                $request->merge(['idProfesor' => AuthUser()->dni]);
             }
+            $newRes->fillAll($request);
             return $this->redirect();
         }
         Alert::danger("Eixe mòdul no es dona en eixe grup");
@@ -84,7 +88,7 @@ class ResultadoController extends ModalController
      */
     public function listado()
     {
-        if ($grupo = Grupo::select('codigo', 'nombre')->QTutor()->first()) {
+        if ($grupo = Grupo::select('codigo', 'nombre')->QTutor()->largestByAlumnes()->first()) {
             $resultados = Resultado::QGrupo($grupo->codigo)->orderBy('idModuloGrupo')
                             ->orderBy('evaluacion')->get();
             $datosInforme = $grupo->nombre;

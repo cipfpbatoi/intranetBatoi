@@ -8,7 +8,7 @@ use Jenssegers\Date\Date;
 class Solicitud extends Model
 {
 
-    use BatoiModels;
+    use \Intranet\Entities\Concerns\BatoiModels;
 
     public $timestamps = false;
     public $table = 'solicitudes';
@@ -43,9 +43,10 @@ class Solicitud extends Model
         return $fecha->format('d-m-Y');
     }
 
-    public function getIdOrientadorOptions(){
+    public function getIdOrientadorOptions()
+    {
         $orientador = [];
-        foreach (config('contacto.orientador') as $dni){
+        foreach (usersWithRol(config('roles.rol.orientador')) as $dni) {
             $orientador[$dni] = Profesor::find($dni)->fullName;
         }
         return $orientador;
@@ -55,8 +56,7 @@ class Solicitud extends Model
     {
         $misAlumnos = [];
         $migrupos = Grupo::MisGrupos()->get();
-        foreach ($migrupos as $migrupo)
-        {
+        foreach ($migrupos as $migrupo) {
             if (isset($migrupo->codigo)) {
                 $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->codigo)->get();
 
@@ -83,21 +83,28 @@ class Solicitud extends Model
         return $this->belongsTo(Alumno::class, 'idAlumno', 'nia');
     }
 
-    public function getNomAlumAttribute(){
+    public function getNomAlumAttribute()
+    {
         return $this->Alumno->FullName;
     }
-    public function getSituacionAttribute(){
-        return isblankTrans('models.Solicitud.'.$this->estado) ? trans('messages.situations.'.$this->estado) : trans('models.Solicitud.' . $this->estado);
+    public function getSituacionAttribute()
+    {
+        return isblankTrans('models.Solicitud.'.$this->estado)
+            ? trans('messages.situations.'.$this->estado)
+            : trans('models.Solicitud.' . $this->estado);
     }
 
-    public function getMotiuAttribute(){
-        return substr($this->text1,0,75);
+    public function getMotiuAttribute()
+    {
+        return substr($this->text1, 0, 75);
 }
-    public function getQuienAttribute(){
+    public function getQuienAttribute()
+    {
         return $this->nomAlumn;
     }
-    public function scopeListos($query){
-        return $query->where('estado',2);
+    public function scopeListos($query)
+    {
+        return $query->where('estado', 2);
     }
 
 }

@@ -6,12 +6,12 @@ $(function () {
     $('#create').on('hidden.bs.modal', function () {
         var id=$(this).find('#id').val();
         if (id) {
-            $(id).find('.fa-edit').parents('a').attr("href", jQuery(location).attr('href')+"/"+id+"/edit");
+            $('#'.id).find('.fa-edit').parents('a').attr("href", jQuery(location).attr('href')+"/"+id+"/edit");
         }
     })
-    $("a.btn-primary.btn.txtButton").on("click", function () {
+    $("a.btn-primary.btn.txtButton").on("click", function (e) {
+        e.preventDefault();
         var formModal = $('.modal form');
-        event.preventDefault();
         $('#id').val('');
         $('.form-horizontal')[0].reset();
         formModal.attr('action',jQuery(location).attr('href').replace(/#/,""));
@@ -29,7 +29,7 @@ $(function () {
         if (!cur_modal) {
             cur_modal = '#create';
         } else {
-            localStorage.removeItem("curl_modal");
+            localStorage.removeItem("cur_modal");
         }
         $(cur_modal).modal('show');
     }
@@ -43,21 +43,34 @@ $(function () {
     });
 })
 
-jQuery(document).ready(function () {
-    //Disable part of page
-    jQuery(".fa-edit").on("contextmenu",function(e){
-        return false;
-    });
-});
 jQuery(document).on('auxclick', '.fa-edit', function (e) {
     if (e.which === 2) { //middle Click
         return false;
     }
     return true;
 });
+jQuery(document).ready(function() {
+    // Temporalment deshabilitar enllaços amb la classe `.fa-edit` afegint-los una classe `disabled-link`
+    jQuery('.fa-edit').addClass('disabled-link').on('click', function(e) {
+        // Prevenir l'acció per defecte dels enllaços si tenen la classe `disabled-link`
+        if (jQuery(this).hasClass('disabled-link')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    jQuery(".fa-edit").on("contextmenu",function(e){
+        return false;
+    });
+    // Una vegada la pàgina estigui completament carregada, reactivar els enllaços eliminant la classe `disabled-link`
+    jQuery(window).on('load', function() {
+        jQuery('.fa-edit').removeClass('disabled-link');
+    });
+});
 
-jQuery("#datatable").on("click",".fa-edit" ,function () {
-    event.preventDefault();
+
+
+jQuery("#datatable").on("click",".fa-edit" ,function (e) {
+    e.preventDefault();
     var id = $(this).parents('tr').attr('id');
     $(this).parents('a').attr("data-toggle", "modal").attr("data-target", "#create").attr("href", "");
     $.ajax({
@@ -95,8 +108,8 @@ jQuery("#datatable").on("click",".fa-edit" ,function () {
     })
 });
 
-jQuery("#datatable").on("click",".fa-eye" ,function () {
-    event.preventDefault();
+jQuery("#datatable").on("click",".fa-eye" ,function (e) {
+    e.preventDefault();
     var id = $(this).parents('tr').attr('id');
     $(this).parents('a').attr("data-toggle", "modal").attr("data-target", "#show").attr("href", "");
     $.ajax({

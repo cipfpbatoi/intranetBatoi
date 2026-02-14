@@ -7,34 +7,33 @@
 namespace Intranet\Http\Controllers;
 
 
+use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
-use Intranet\Entities\Activity;
-use Intranet\Entities\Comision;
+use Illuminate\Support\Facades\Mail;
+use Intranet\Entities\Alumno;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Material;
+use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Poll\Poll;
-use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\DB;
-use Intranet\Services\ExcelService;
-use MongoDB\Driver\Exception\ExecutionTimeoutException;
+use Intranet\Entities\Setting;
+use Intranet\Mail\Comunicado;
+use Intranet\Services\Document\AttachedFileService;
 use Styde\Html\Facades\Alert;
 use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
-use Intranet\Jobs\SendEmail;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Entities\Fct;
 use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
-use Intranet\Entities\Instructor;
-use Intranet\Entities\MaterialBaja;
-
+use Symfony\Component\Mime\Exception\RfcComplianceException;
 
 
 /**
@@ -44,35 +43,6 @@ use Intranet\Entities\MaterialBaja;
 class AdministracionController extends Controller
 {
     const DIRECTORIO_GESTOR = 'gestor/Empresa/';
-
-/*
-    public function actualizaLang(){
-        $valencia = config('messages');
-        $angles = config('messagesAngles');
-        foreach ($valencia as $keyArray => $Array){
-            foreach ($Array as $key => $value){
-                if (!isset($angles[$keyArray][$key])){
-                    $angles[$keyArray][$key] = $value;
-                }
-            }
-        }
-        $fp = fopen('message.txt', 'w');
-        fwrite($fp, var_export($angles, true));
-        fclose($fp);
-    }
-*/
-    /**
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function simplifica()
-    {
-        if (Session::get('completa')) {
-            Session::forget('completa');
-        } else {
-            Session::put('completa', 1);
-        }
-        return back();
-    }
 
     /**
      * @param $lang
@@ -91,7 +61,10 @@ class AdministracionController extends Controller
     {
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
         foreach (Profesor::Activo()->get() as $profesor) {
-            dispatch(new SendEmail($profesor->email, $remitente, 'email.apitoken', $profesor));
+             try {
+                Mail::to($profesor->email)->send(new Comunicado(  $remitente, $profesor,'email.apitoken'  ));
+            } catch (RfcComplianceException $e) {
+            }
         }
         Alert::info('Correus enviats');
         return back();
@@ -131,7 +104,8 @@ class AdministracionController extends Controller
     private function ferVotsPermanents()
     {
         foreach (Vote::all() as $vote) {
-            if ($fct = Fct::find($vote->idOption1)) {
+            if ($vote->idPoll == 13 && $fct = Fct::find($vote->idOption1)) {
+
                 $newVote = new VoteAnt([
                     'option_id' => $vote->option_id,
                     'idColaboracion' => $fct->idColaboracion,
@@ -147,42 +121,62 @@ class AdministracionController extends Controller
     /**
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function nuevoCurso()
+
+
+
+    protected function nuevoCurso(Request $request)
     {
-
-
-        Colaboracion::where('tutor', '!=',  '')->update(['tutor'=>'']);
-        Colaboracion::where('estado', '>',  1)->update(['estado' => 1]);
-        Fct::where('asociacion', '!=', 3)->delete();
-        Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
-
-        $this->esborrarEnquestes();
-        $this->ferVotsPermanents();
-
-        foreach (AlumnoGrupo::with('Grupo')->with('Alumno')->get() as $algr) {
-            if ($algr->curso == 2 && $algr->fol > 0) {
-                $alumno = $algr->Alumno;
-                $alumno->fol = 0;
-                $alumno->save();
+         if ($request->Vots) {
+            $this->ferVotsPermanents();
+        }
+        if ($request->Auxiliars){
+            $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
+                'grupos_trabajo', 'guardias',  'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
+                'resultados',   'tutorias_grupos', 'activities',
+                'autorizaciones', 'votes' , 'activities', 'failed_jobs'   ];
+            foreach ($tables as $tabla) {
+                DB::table($tabla)->delete();
             }
         }
-        foreach (Grupo::all() as $grupo) {
-            $grupo->fol = 0;
-            $grupo->save();
+
+        if ($request->Dual) {
+            // inicialitza dels col·laboracions
+            Colaboracion::where('tutor', '!=', '')->update(['tutor'=>'']);
+            Colaboracion::where('estado', '>', 1)->update(['estado' => 1]);
+
+            // inicialitza professors
+            Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
+
+            //$this->esborrarEnquestes();
+
+
+            // certificats de fol
+            foreach (AlumnoGrupo::with('Grupo')->with('Alumno')->get() as $algr) {
+                if ($algr->curso == 2 && $algr->fol > 0) {
+                    $alumno = $algr->Alumno;
+                    $alumno->fol = 0;
+                    $alumno->save();
+                }
+            }
+            foreach (Grupo::all() as $grupo) {
+                $grupo->fol = 0;
+                $grupo->save();
+            }
+
+            // preservar dual
+            AttachedFileService::moveAndPreserveDualFiles();
         }
 
-
-        $tables = ['actividades', 'comisiones', 'cursos', 'expedientes', 'faltas', 'faltas_itaca', 'faltas_profesores',
-            'grupos_trabajo', 'guardias', 'horarios', 'incidencias', 'notifications', 'ordenes_trabajo', 'reservas',
-            'resultados', 'reuniones', 'tutorias_grupos', 'activities','alumno_resultados','alumnos_grupos',
-            'polls','autorizaciones'];
-        foreach ($tables as $tabla) {
-            DB::table($tabla)->delete();
+        if ($request->Esborrat){
+            $tables = [
+                  'horarios', 'reuniones',  'alumno_resultados','alumnos_grupos',
+                 'alumno_fcts','fcts'  ];
+            foreach ($tables as $tabla) {
+                DB::table($tabla)->delete();
+            }
         }
-        $this->esborrarProgramacions();
 
-
-        return back();
+         return back();
     }
 
     /**
@@ -208,17 +202,80 @@ class AdministracionController extends Controller
     }
 
 
-    public static function v2_50()
+    public static function v3_00()
     {
-        Alert::info('Version 2.50');
-        foreach (Comision::all() as $comision) {
-            if ($comision->medio > 0) {
-                $comision->medio += 2;
-            } else {
-                $comision->medio = 0;
+        Alert::info('Version 3.00');
+        $a = config('contacto');
+        foreach ($a as $key => $value) {
+            if ($value != '') {
+                if (is_array($value)) {
+                    foreach ($value as $k => $v) {
+                        $set = new Setting(['collection' => 'contacto','key' => $key.'.'.$k, 'value' => $v]);
+                        $set->save();
+                    }
+                } else {
+                    $set = new Setting(['collection' => 'contacto','key' => $key, 'value' => $value]);
+                    $set->save();
+                }
             }
-            $comision->save();
         }
+        $a = config('avisos');
+        foreach ($a as $key => $value) {
+            if (! is_array($value) && $value != '') {
+                $set = new Setting(['collection' => 'avisos','key' => $key, 'value' => $value]);
+                $set->save();
+            }
+        }
+        $a = config('variables');
+        foreach ($a as $key => $value) {
+            if ( $value != '') {
+                if (is_array($value) && $key == 'ipGuardias') {
+                    foreach ($value as $k => $v) {
+                        $ip = new IpGuardia(['ip' => $v['ip'],'codOcup' => $v['codOcup']]);
+                        $ip->save();
+                    }
+                } else {
+                    $set = new Setting(['collection' => 'variables', 'key' => $key, 'value' => $value]);
+                    $set->save();
+                }
+            }
+        }
+        return back();
+    }
+
+    public static function v3_01()
+    {
+       $fcts = AlumnoFct::all();
+       foreach ($fcts as $fct) {
+           $grupo = $fct->Alumno->Grupo->first() ?? null;
+           if ($grupo) {
+               if ($grupo->curso == 2) {
+                   $fct->idProfesor = $grupo->tutor;
+               } else {
+                   $fct->idProfesor = $grupo->tutorDual;
+               }
+               $fct->save();
+           }
+       }
+        Alert::info('Version 3.01');
+    }
+
+    public function consulta() {
+        $alumnos = Alumno::all();
+        $success = 0;
+
+        foreach ($alumnos as $alumno) {
+            // Eliminar el prefix si cal
+            if (strpos($alumno->foto, 'fotos/') === 0) {
+                 $alumno->foto = substr($alumno->foto, strlen('fotos/'));
+                 $alumno->save();
+                 $success++;
+            }
+        }
+
+        return response()->json([
+            'message' => "$success canvis "
+        ]);
     }
 
 
@@ -290,8 +347,8 @@ class AdministracionController extends Controller
 
     public function secure(Request $request)
     {
-        $user = env('USER_DOMOTICA');
-        $pass =  env('PASS_DOMOTICA');
+        $user = config('variables.domotica.user');
+        $pass =  config('variables.domotica.pass');
         if (esrol(AuthUser()->rol, config('roles.rol.administrador'))) {
             $link = str_replace('{dispositivo}', $request->dispositivo, config('variables.ipDomotica')).'/secure';
             $response = Http::withBasicAuth($user, $pass)->accept('application/json')->post($link, ['args'=>[]]);
@@ -307,16 +364,19 @@ class AdministracionController extends Controller
         return view('espai.show', compact('missatge', 'doors'));
     }
 
-    public function consulta()
+    /*public function consulta()
     {
-        foreach (Material::where('inventariable', 1)->where('estado', 3)->get() as $material) {
-            $materialBaja = new MaterialBaja(
-                ['idMaterial' => $material->id, 'motivo' => 'Desconegut','estado' => 0 ]
-            );
-            $material->estado = 1;
-            $material->save();
-            $materialBaja->save();
-        }
-        return back();
+        $alumnosPendientes = AlumnoFct::esErasmus()->get();
+
+            foreach ($alumnosPendientes as $alumno) {
+                try {
+                    Mail::to($alumno->Alumno->email)->send(new CertificatAlumneFct($alumno));
+                    $alumno->correoAlumno = 1;
+                    $alumno->save();
+                } catch (Exception $e) {
+                    Alert::info($e->getMessage());
+                }
+            }
     }
+    */
 }

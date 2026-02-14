@@ -1,9 +1,11 @@
 <?php
 
 namespace Intranet\Http\Controllers;
-use Intranet\Botones\BotonImg;
+
+use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
+use Intranet\Http\Traits\Core\Panel;
 
 /**
  * Class PanelExpedienteController
@@ -11,12 +13,12 @@ use Intranet\Entities\TipoExpediente;
  */
 class PanelExpedienteController extends BaseController
 {
-    use traitPanel;
+    use Panel;
 
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nomAlum', 'fecha', 'Xtipo', 'Xmodulo', 'situacion'];
+    protected $gridFields = ['id', 'nomAlum','nomProfe', 'fecha', 'Xtipo', 'Xmodulo', 'situacion'   ];
     /**
      * @var string
      */
