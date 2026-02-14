@@ -4,13 +4,23 @@ namespace Intranet\Http\Controllers\API;
 
 
 use Illuminate\Http\Request;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Fct;
-use Intranet\Entities\Profesor;
 use Intranet\Http\Resources\AlumnoFctControlResource;
 
 class FctController extends ApiBaseController
 {
+        private ?ProfesorService $profesorService = null;
+
+        private function profesores(): ProfesorService
+        {
+            if ($this->profesorService === null) {
+                $this->profesorService = app(ProfesorService::class);
+            }
+
+            return $this->profesorService;
+        }
 
         public function llist($id)
         {
@@ -23,7 +33,7 @@ class FctController extends ApiBaseController
 
         public function seguimiento($id,Request $request)
         {
-            $user = Profesor::where('api_token',$request->api_token)->first();
+            $user = $this->profesores()->findByApiToken((string) $request->api_token);
             $activity = new Activity();
             $activity->model_id = $id;
             $activity->action = 'review';

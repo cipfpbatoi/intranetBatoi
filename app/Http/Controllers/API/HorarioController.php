@@ -3,19 +3,38 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use Intranet\Http\Controllers\Controller;
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\API\ApiBaseController;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
 
 class HorarioController extends ApiBaseController
 {
 
     protected $model = 'Horario';
-    
-    
-     public function show($cadena, $send=true)
+
+    private ?HorarioService $horarioService = null;
+    private ?ProfesorService $profesorService = null;
+
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
+
+    public function show($cadena, $send=true)
     {
         if (!strpos($cadena, '=')&&
             !strpos($cadena, '>')&&
@@ -56,7 +75,8 @@ class HorarioController extends ApiBaseController
                                     case '=' :
                                     {
                                         if ($value == 'idProfesor') {
-                                            if (($sustituto = Profesor::findOrFail($key)->sustituye_a) != ' ') {
+                                            $sustituto = $this->profesores()->findOrFail((string) $key)->sustituye_a;
+                                            if ($sustituto != ' ') {
                                                 return $filtro->$value == $key || $filtro->$value == $sustituto;
                                             } else {
                                                 return $filtro->$value == $key;
@@ -97,15 +117,15 @@ class HorarioController extends ApiBaseController
 
     public function guardia($idProfesor)
     {
-        return $this->sendResponse(Horario::Profesor($idProfesor)->GuardiaAll()->get(), 'OK');
+        return $this->sendResponse($this->horarios()->guardiaAllByProfesor((string) $idProfesor), 'OK');
     }
     
     public function HorariosDia($fecha)
     {
         $data = [];
-        $profes = Profesor::select('dni')->Activo()->get();
+        $profes = $this->profesores()->activos();
         foreach ($profes as $profe) {
-            $horario = Horario::Primera($profe->dni, $fecha)->orderBy('sesion_orden')->get();
+            $horario = $this->horarios()->primeraByProfesorAndDateOrdered((string) $profe->dni, (string) $fecha);
             if (isset($horario->first()->desde)) {
                 $data[$profe->dni] = $horario->first()->desde . " - " . $horario->last()->hasta;
             } else {

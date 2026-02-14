@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Http\Request;
@@ -164,11 +165,8 @@ class ActividadController extends ModalController
         $assignedGrupos = $Actividad->grupos->pluck('codigo')->all();
 
         // Obtenir tots els professors actius i estructurar-los en un array associatiu
-        $tProfesores = Profesor::Activo()
+        $tProfesores = app(ProfesorService::class)->activosOrdered()
             ->whereNotIn('dni', $assignedProfesores)
-            ->orderBy('apellido1')
-            ->orderBy('apellido2')
-            ->get()
             ->mapWithKeys(fn($p) => [$p->dni => "$p->apellido1 $p->apellido2, $p->nombre"])
             ->toArray();
 
@@ -294,7 +292,7 @@ class ActividadController extends ModalController
     public function notify($id)
     {
         $actividad = Actividad::findOrFail($id);
-        $coordinador = Profesor::find($actividad->Creador());
+        $coordinador = app(ProfesorService::class)->find((string) $actividad->Creador());
         if (!$coordinador) {
             Alert::warning('No hi ha cap coordinador assignat per a esta activitat.');
             return back();

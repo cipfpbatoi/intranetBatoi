@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
@@ -9,7 +10,6 @@ use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Falta_itaca;
 use Intranet\Entities\Hora;
-use Intranet\Entities\Horario;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\GestorService;
@@ -19,16 +19,27 @@ use Jenssegers\Date\Date;
 class FaltaItacaController extends IntranetController
 {
     use Autorizacion,Imprimir;
+
+    private ?HorarioService $horarioService = null;
     
     protected $perfil = 'profesor';
     protected $model = 'Falta_itaca';
+
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
 
 
     public function index()
     {
         Session::forget('redirect');
         $profesor = AuthUser();
-        $horarios = Horario::Profesor($profesor->dni)->get();
+        $horarios = $this->horarios()->byProfesor((string) $profesor->dni);
         $horas = Hora::all();
         return view('falta.itaca', compact('profesor', 'horarios', 'horas'));
     }

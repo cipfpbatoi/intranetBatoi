@@ -3,7 +3,6 @@
 namespace Intranet\Http\PrintResources;
 
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
 
 class AutorizacionDireccionResource extends PrintResource
 {
@@ -24,7 +23,7 @@ class AutorizacionDireccionResource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
-        $director = Profesor::find(config('avisos.director'))->fullName;
+        $director = cargo('director')->fullName;
         return [
             'untitled1' => config('contacto.nombre').' '.config('contacto.codi'),
             'untitled2' => $grupo->Ciclo->vliteral ,

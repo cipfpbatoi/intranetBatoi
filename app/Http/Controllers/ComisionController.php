@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Comision\ComisionService;
+use Intranet\Domain\Comision\ComisionRepositoryInterface;
 use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Http\Request;
@@ -41,6 +43,33 @@ class ComisionController extends ModalController
      */
     protected $model = 'Comision';
 
+    private ?ComisionRepositoryInterface $comisionRepository = null;
+    private ?ComisionService $comisionService = null;
+
+    public function __construct(?ComisionRepositoryInterface $comisionRepository = null, ?ComisionService $comisionService = null)
+    {
+        parent::__construct();
+        $this->comisionRepository = $comisionRepository;
+        $this->comisionService = $comisionService;
+    }
+
+    private function comisions(): ComisionRepositoryInterface
+    {
+        if ($this->comisionRepository === null) {
+            $this->comisionRepository = app(ComisionRepositoryInterface::class);
+        }
+
+        return $this->comisionRepository;
+    }
+
+    private function comisionService(): ComisionService
+    {
+        if ($this->comisionService === null) {
+            $this->comisionService = app(ComisionService::class);
+        }
+
+        return $this->comisionService;
+    }
 
 
     public function store(ComisionRequest $request)
@@ -59,13 +88,13 @@ class ComisionController extends ModalController
 
     public function update(ComisionRequest $request, $id)
     {
-        Comision::findOrFail($id)->fillAll($request);
+        $this->comisions()->findOrFail((int) $id)->fillAll($request);
         return $this->redirect();
     }
 
     public function confirm($id)
     {
-        $comision = Comision::findOrFail($id);
+        $comision = $this->comisions()->findOrFail((int) $id);
         if ($comision->estado == 0) {
             return ConfirmAndSend::render($this->model, $id, 'Enviar a direcció i correus confirmació');
         }
@@ -173,7 +202,10 @@ class ComisionController extends ModalController
 
     protected function init($id)
     {
-        $comision = Comision::find($id);
+        $comision = $this->comisions()->find((int) $id);
+        if (!$comision) {
+            return $this->redirect();
+        }
         $this->enviarCorreos($comision);
         $stSrv = new StateService($comision);
         $stSrv->putEstado($this->init);
@@ -218,13 +250,13 @@ class ComisionController extends ModalController
      */
     public function autorizar()
     {
-        StateService::makeAll(Comision::where('estado', '1')->get(), 2);
+        StateService::makeAll($this->comisionService()->pendingAuthorization(), 2);
         return back();
     }
 
     public function detalle($id)
     {
-        $comision = Comision::findOrFail($id);
+        $comision = $this->comisions()->findOrFail((int) $id);
         $allFcts = $this->buildFctOptions();
 
         return view('comision.detalle', compact('comision', 'allFcts'));
@@ -232,25 +264,24 @@ class ComisionController extends ModalController
 
     public function createFct(Request $request, $comisionId)
     {
-        $comision = Comision::findOrFail($comisionId);
-        $aviso = isset($request->aviso)?1:0;
-        $comision->fcts()
-            ->syncWithoutDetaching([$request->idFct => ['hora_ini' => $request->hora_ini ,'aviso' => $aviso]]);
+        $this->comisionService()->attachFct(
+            (int) $comisionId,
+            (int) $request->idFct,
+            (string) $request->hora_ini,
+            isset($request->aviso)
+        );
         return $this->detalle($comisionId);
     }
 
     public function deleteFct($comisionId, $fctId)
     {
-        $comision = Comision::findOrFail($comisionId);
-        $comision->fcts()->detach($fctId);
+        $this->comisionService()->detachFct((int) $comisionId, (int) $fctId);
         return $this->detalle($comisionId);
     }
 
     private function setEstado($id, int $estado): void
     {
-        $elemento = Comision::findOrFail($id);
-        $elemento->estado = $estado;
-        $elemento->save();
+        $this->comisionService()->setEstado((int) $id, $estado);
     }
 
     /**

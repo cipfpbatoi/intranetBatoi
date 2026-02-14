@@ -17,7 +17,6 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Fct;
 use Intranet\Entities\FctConvalidacion;
-use Intranet\Entities\Profesor;
 use Intranet\Http\PrintResources\A1ENResource;
 use Intranet\Http\PrintResources\A2ENResource;
 use Intranet\Http\PrintResources\A3ENResource;
@@ -402,8 +401,8 @@ class FctAlumnoController extends IntranetController
     public static function preparePdf($id)
     {
         $fct = AlumnoFct::findOrFail($id);
-        $secretario = Profesor::find(config('avisos.secretario'));
-        $director = Profesor::find(config('avisos.director'));
+        $secretario = cargo('secretario');
+        $director = cargo('director');
         $dades = [
             'date' => FechaString($fct->hasta),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',

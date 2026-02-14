@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Session;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
-use Intranet\Entities\Profesor;
 use Intranet\Http\PrintResources\AVIIAResource;
 use Intranet\Http\PrintResources\AVIIBResource;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
@@ -109,8 +108,8 @@ class FctController extends IntranetController
     public static function certificatColaboradores($id)
     {
         $fct = Fct::findOrFail($id);
-        $secretario = Profesor::find(config('avisos.secretario'));
-        $director = Profesor::find(config('avisos.director'));
+        $secretario = cargo('secretario');
+        $director = cargo('director');
         $dades = ['date' => FechaString(hoy(), 'ca'),
             'fecha' => FechaString(hoy(), 'es'),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',

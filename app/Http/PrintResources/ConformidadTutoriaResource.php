@@ -3,7 +3,6 @@
 namespace Intranet\Http\PrintResources;
 
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
 
 class ConformidadTutoriaResource extends PrintResource
 {

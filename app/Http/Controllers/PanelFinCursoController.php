@@ -2,13 +2,13 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Comision\ComisionService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Incidencia;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
-use Intranet\Entities\Comision;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\PPoll;
@@ -45,7 +45,7 @@ class PanelFinCursoController extends BaseController
     public function index($profesor=null)
     {
         $avisos = [];
-        $teacher = Profesor::find($profesor)??AuthUser();
+        $teacher = app(ProfesorService::class)->find((string) $profesor) ?? AuthUser();
         foreach (config('roles.rol') as $nomRol => $rol){
             if (($teacher->rol % $rol == 0) && method_exists($this, $nomRol)) {
                 $avisos[$nomRol] = $this::$nomRol();
@@ -247,14 +247,10 @@ class PanelFinCursoController extends BaseController
 
     private static function lookUnPaidBills(&$avisos)
     {
-        if (Comision::Actual()->where('estado', '<', 4)
-            ->where('estado', '>', 0)
-            ->where(function($query) {
-                $query->where('comida', '>', 0)
-                    ->orWhere('gastos', '>', 0)
-                    ->orWhere('alojamiento', '>', 0)
-                    ->orWhere('kilometraje', '>', 0);
-            })->count()) {
+        $hasPending = app(ComisionService::class)
+            ->hasPendingUnpaidByProfesor(AuthUser()->dni);
+
+        if ($hasPending) {
             $avisos['alert'][] = "Tens comissions de servei pendents de cobrar";
         } else {
             $avisos[self::SUCCESS][] = 'Comissions correctes';

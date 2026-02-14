@@ -2,9 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 Use Intranet\Entities\Alumno;
-Use Intranet\Entities\Profesor;
 use Styde\Html\Facades\Alert;
 
 
@@ -51,15 +51,6 @@ class ImportEmailController extends Controller
     {
         if (!$request->hasFile('fichero') || !file_exists($request->file('fichero'))) {
             Alert::danger(trans('messages.generic.noFile'));
-            /**
-            foreach (Profesor::all() as $profesor){
-                $profesor->email = trim($profesor->email);
-                $profesor->save();
-            }
-            foreach (Alumno::all() as $alumno){
-                $alumno->email = trim($alumno->email);
-                $alumno->save();
-            }*/
             return back();
         }
         $extension = $request->file('fichero')->getClientOriginalExtension();
@@ -91,7 +82,7 @@ class ImportEmailController extends Controller
         $long = strlen($key);
         if ($long == 9){
             $key = '0'.$key;
-            if ($profesor = Profesor::find($key)){
+            if ($profesor = app(ProfesorService::class)->find((string) $key)){
                 $profesor->email = trim($email);
                 $profesor->save();
                 Alert::success("Professor: Email $email incorporat a DNI $key");

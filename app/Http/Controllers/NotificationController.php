@@ -2,12 +2,12 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Intranet\Entities\Notification;
 use Intranet\UI\Botones\BotonImg;
 use Jenssegers\Date\Date;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;
 use Styde\Html\Facades\Alert;
 
@@ -17,6 +17,7 @@ use Styde\Html\Facades\Alert;
  */
 class NotificationController extends IntranetController
 {
+    private ?ProfesorService $profesorService = null;
 
     /**
      * @var string
@@ -35,6 +36,15 @@ class NotificationController extends IntranetController
      */
     // Use el layout de notificacions personalitzat per a la vista show
     protected $vista = ['show' => 'notification'];
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
 
     /**
      * @return mixed
@@ -66,9 +76,12 @@ class NotificationController extends IntranetController
     {
         $userKey = AuthUser()->primaryKey;
         if ($userKey == 'dni') {
-            $user = Profesor::find(AuthUser()->$userKey);
+            $user = $this->profesores()->find((string) AuthUser()->$userKey);
         } else {
             $user = Alumno::find(AuthUser()->$userKey);
+        }
+        if (!$user) {
+            return back();
         }
         $user->unreadNotifications->markAsRead();
 
@@ -82,9 +95,12 @@ class NotificationController extends IntranetController
     {
         $userKey = AuthUser()->primaryKey;
         if ($userKey == 'dni') {
-            $user = Profesor::find(AuthUser()->$userKey);
+            $user = $this->profesores()->find((string) AuthUser()->$userKey);
         } else {
             $user = Alumno::find(AuthUser()->$userKey);
+        }
+        if (!$user) {
+            return back();
         }
         $user->notifications()->delete();
 

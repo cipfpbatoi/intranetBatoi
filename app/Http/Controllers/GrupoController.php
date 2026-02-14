@@ -1,6 +1,7 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use DB;
@@ -11,7 +12,6 @@ use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Curso;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Horario;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Jobs\SendEmail;
 use Intranet\Services\School\SecretariaService;
@@ -25,6 +25,7 @@ use Styde\Html\Facades\Alert;
  */
 class GrupoController extends IntranetController
 {
+    private ?HorarioService $horarioService = null;
 
     const DIRECCION ='roles.rol.direccion';
     const TUTOR ='roles.rol.tutor';
@@ -47,6 +48,14 @@ class GrupoController extends IntranetController
     protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo'  ,'Torn'];
     protected $parametresVista = ['modal' => [  'selAlumGrup']];
 
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
 
 
 
@@ -117,7 +126,7 @@ class GrupoController extends IntranetController
      */
     protected function horario($id)
     {
-        $horario = Horario::HorarioGrupo($id);
+        $horario = $this->horarios()->semanalByGrupo((string) $id);
         $titulo = Grupo::findOrFail($id)->nombre;
         return view('horario.grupo', compact('horario', 'titulo'));
     }

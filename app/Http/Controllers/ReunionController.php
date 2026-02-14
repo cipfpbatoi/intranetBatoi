@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
@@ -11,7 +12,6 @@ use Intranet\Entities\Asistencia;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\OrdenReunion;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Reunion;
 use Intranet\Services\Document\TipoReunionService;
 use Intranet\Exceptions\IntranetException;
@@ -86,11 +86,7 @@ class ReunionController extends IntranetController
         }
 
         $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
-        $activos = Profesor::select('dni', 'apellido1', 'apellido2', 'nombre')
-                ->OrderBy('apellido1')
-                ->OrderBy('apellido2')
-                ->where('activo', '=', 1)
-                ->get();
+        $activos = app(ProfesorService::class)->activosOrdered();
         $tProfesores = hazArray($activos, 'dni', 'FullName');
         $sProfesores = $elemento
             ->profesores()

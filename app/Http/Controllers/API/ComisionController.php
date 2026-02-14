@@ -2,9 +2,7 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Entities\Comision;
-use Illuminate\Http\Request;
-use \DB;
+use Intranet\Application\Comision\ComisionService;
 
 class ComisionController extends ApiBaseController
 {
@@ -18,25 +16,23 @@ class ComisionController extends ApiBaseController
         'matricula' => 'required_with:marca'
     ];
 
+    private ComisionService $comisionService;
+
+    public function __construct(ComisionService $comisionService)
+    {
+        parent::__construct();
+        $this->comisionService = $comisionService;
+    }
+
     public function autorizar()
     {
-        $data = Comision::join('profesores', 'idProfesor', '=', 'dni')
-                ->select('comisiones.*', DB::raw('CONCAT(apellido1," ",apellido2,",",nombre) AS nombre'))
-                ->whereIn('estado', [1, 2])
-                ->whereNull('deleted_at')
-                ->get();
+        $data = $this->comisionService->authorizationApiList();
         return $this->sendResponse($data, 'OK');
     }
 
     public function prePay($dni)
     {
-        $data = Comision::where('idProfesor', $dni)
-                ->where('estado', 4)
-                ->get();
-        foreach ($data as $item) {
-            $item->estado = 6;
-            $item->save();
-        }
+        $data = $this->comisionService->prePayByProfesor((string) $dni);
         return $this->sendResponse($data, 'OK');
     }
 

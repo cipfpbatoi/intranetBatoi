@@ -2,11 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Horario;
 use Illuminate\Database\Seeder;
 use Styde\Html\Facades\Alert;
 
@@ -214,7 +214,7 @@ class TeacherImportController extends Seeder
         $tots = 1;
         do {
             $azar = rand(1050, 9000);
-            $tots = Profesor::where('codigo', $azar)->get()->count();
+            $tots = app(ProfesorService::class)->countByCodigo($azar);
         } while ($tots > 0);
         return($azar);
     }
@@ -363,16 +363,16 @@ class TeacherImportController extends Seeder
                                 if ($arrayDatos['plantilla'] >= $this->plantilla && $arrayDatos['idProfesor']==$idProfesor) {
                                     $this->plantilla = $arrayDatos['plantilla'];
                                     try {
-                                        Horario::create($arrayDatos);
+                                        app(HorarioService::class)->create($arrayDatos);
                                     } catch (\Illuminate\Database\QueryException $e) {
                                         unset($arrayDatos['aula']);
-                                        Horario::create($arrayDatos);
+                                        app(HorarioService::class)->create($arrayDatos);
                                     }
                                 }
                                 break;
                             case 'Profesor':
                                 if ($arrayDatos['dni']==$idProfesor) {
-                                    Profesor::create($arrayDatos);
+                                    app(ProfesorService::class)->create($arrayDatos);
                                 }
                                 break;
                         }

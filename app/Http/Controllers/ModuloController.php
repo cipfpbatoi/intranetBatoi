@@ -49,7 +49,7 @@ class ModuloController extends IntranetController
 //        $todos = Modulo::all();
 //        foreach ($todos as $uno) {
 //            if ($uno->idCiclo == NULL){
-//                $grupo = Horario::select('idGrupo')
+//                $grupo = model de grup per horari
 //                        ->where('modulo', '=', $uno->codigo)
 //                        ->first();
 //                if ($grupo) {
@@ -74,7 +74,7 @@ class ModuloController extends IntranetController
 //                    case 'Inglés Técnico II-S / Horario reservado para la docencia en inglés':
 //                    case 'Inglés'   : $uno->departamento = 1; break;
 //                    default : 
-//                        $grupo = Horario::select('idGrupo')
+//                        $grupo = model de grup per horari
 //                            ->where('modulo', '=', $uno->codigo)
 //                            ->first();
 //                        if ($grupo) {

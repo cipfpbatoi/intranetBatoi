@@ -2,13 +2,13 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
-use Intranet\Entities\Profesor;
 use Intranet\Services\Document\TipoDocumentoService;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
@@ -142,7 +142,7 @@ class DocumentoController extends IntranetController
 
     public function qualitatUpload($id)
     {
-        $profesor = Profesor::findOrFail($id);
+        $profesor = app(ProfesorService::class)->findOrFail((string) $id);
 
         $documents = Adjunto::where('route', "profesor/$id")->get();
         $grupo = Grupo::QTutor($id)->first();

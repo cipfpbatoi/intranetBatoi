@@ -4,18 +4,28 @@ namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
 use Intranet\Entities\Actividad;
-use Intranet\Entities\Comision;
+use Intranet\Application\Comision\ComisionService;
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Falta;
 use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\Guardia;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Profesor;
-use Intranet\Http\Controllers\FicharController;
 use Jenssegers\Date\Date;
 
 
 class NotifyDailyFaults extends Command
 {
+    private ComisionService $comisionService;
+    private ProfesorService $profesorService;
+    private HorarioService $horarioService;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->comisionService = app(ComisionService::class);
+        $this->profesorService = app(ProfesorService::class);
+        $this->horarioService = app(HorarioService::class);
+    }
 
     /**
      * The name and signature of the console command.
@@ -85,10 +95,10 @@ class NotifyDailyFaults extends Command
      */
     private function profeSinFichar($dia, array &$noHanFichado): void
     {
-        $profesores = Profesor::select('dni')->Activo()->get();
+        $profesores = $this->profesorService->activosOrdered();
         foreach ($profesores as $profesor) {
             if (Falta_profesor::haFichado($dia, $profesor->dni)->count() == 0 &&
-                Horario::Profesor($profesor->dni)->Dia(nameDay(new Date($dia)))->count() > 1) {
+                $this->horarioService->countByProfesorAndDay((string) $profesor->dni, nameDay(new Date($dia))) > 1) {
                 $noHanFichado[$profesor->dni] = $profesor->dni;
             }
         }
@@ -118,7 +128,7 @@ class NotifyDailyFaults extends Command
      */
     private function profesoresDeComision($dia, array &$noHanFichado): void
     {
-        $comisiones = Comision::Dia($dia)->get();
+        $comisiones = $this->comisionService->byDay($dia);
         foreach ($comisiones as $comision) {
             if (in_array($comision->idProfesor, $noHanFichado)) {
                 unset($noHanFichado[$comision->idProfesor]);

@@ -14,7 +14,7 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Document\FDFPrepareService;
@@ -476,7 +476,7 @@ class PanelFctAvalController extends IntranetController
 
     public function linkQuality($id)
     {
-        $registre = Profesor::findOrFail($id);
+        $registre = app(ProfesorService::class)->findOrFail((string) $id);
         $quien = $registre->fullName;
         $modelo = strtolower('Profesor');
         $ara = new \DateTime();

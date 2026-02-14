@@ -2,9 +2,8 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Falta_profesor;
-use Intranet\Entities\IpGuardia;
-use Intranet\Entities\Profesor;
 use Illuminate\Http\Request;
 use Intranet\Services\HR\FitxatgeService;
 
@@ -12,11 +11,21 @@ class FicharController extends ApiBaseController
 {
 
     protected $model = 'Falta_profesor';
+    private ?ProfesorService $profesorService = null;
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
 
 
     public function fichar(Request $request, FitxatgeService $fitxatgeService)
     {
-        $profesor = Profesor::find($request->dni);
+        $profesor = $this->profesores()->find((string) $request->dni);
 
         if (!$profesor || $request->api_token !== $profesor->api_token) {
             return $this->sendResponse(['updated' => false], 'Profesor no identificat');

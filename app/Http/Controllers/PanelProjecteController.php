@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
 
@@ -14,7 +15,6 @@ use Intranet\Services\Notifications\NotificationService;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\OrdenReunion;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Projecte;
 use Intranet\Entities\Reunion;
 use Intranet\Http\Requests\ProyectoRequest;
@@ -25,6 +25,7 @@ use Intranet\Http\Requests\ProyectoRequest;
  */
 class PanelProjecteController extends ModalController
 {
+    private ?ProfesorService $profesorService = null;
     const TUTOR = 'roles.rol.tutor';
     /**
      * @var string
@@ -48,6 +49,15 @@ class PanelProjecteController extends ModalController
         'hora_defensa' => ['type' => 'time'],
      ];
     protected $parametresVista = ['modal' => ['defensa']];
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
 
 
 
@@ -106,7 +116,7 @@ class PanelProjecteController extends ModalController
         $zipPath = app(PdfService::class)->hazZip('pdf.propostaProjecte', $projectes , null, 'portrait',  'idAlumne'   );
 
         // Enviar el correo con el zip adjunto
-        $profesores = Profesor::Grupo($miGrupo->codigo)->get();
+        $profesores = $this->profesores()->byGrupo((string) $miGrupo->codigo);
         $professorsEmails = [];
         foreach ($profesores as $profesor) {
             $professorsEmails[] = $profesor->email;

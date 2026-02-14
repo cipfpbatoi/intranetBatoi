@@ -2,11 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
@@ -23,6 +23,16 @@ class ProgramacionController extends IntranetController
     protected $gridFields = ['Xciclo','XModulo', 'situacion'];
     protected $modal = false;
     protected $items = 6;
+    private ?HorarioService $horarioService = null;
+
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
     
     
     protected function search()
@@ -68,8 +78,7 @@ class ProgramacionController extends IntranetController
     {
         $elemento = Modulo_ciclo::findOrFail($id);
         if (isset($elemento->Modulo->codigo)){
-            $horario = Horario::where('modulo', $elemento->Modulo->codigo)
-                ->first();
+            $horario = $this->horarios()->firstByModulo((string) $elemento->Modulo->codigo);
             if ($horario) {
                 avisa($horario->idProfesor, 'Et falta entregar la programacio de '.$elemento->Modulo->vliteral);
                 Alert::danger("El professor ".$horario->Mestre->FullName." del mòdul ".$elemento->Modulo->vliteral." ha estat avisat.");

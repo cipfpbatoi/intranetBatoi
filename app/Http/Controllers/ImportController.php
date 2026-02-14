@@ -2,10 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Horario;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
@@ -251,7 +251,7 @@ class ImportController extends Seeder
      */
     public function asignarTutores()
     {
-        foreach (Profesor::all() as $profesor) {
+        foreach (app(ProfesorService::class)->all() as $profesor) {
             $profesor->rol = $this->assignRole(Grupo::QTutor($profesor->dni)->first(), $profesor->rol);
             $profesor->save();
         }
@@ -407,9 +407,7 @@ class ImportController extends Seeder
      */
     private static function getHoraris()
     {
-        return Horario::distinct()->whereNotNull('idGrupo')
-            ->whereNotNull('modulo')->whereNotNull('idProfesor')
-            ->whereNotIn('modulo', config('constants.modulosSinProgramacion'))->get();
+        return app(HorarioService::class)->forProgramacionImport();
     }
 
     /**
@@ -421,8 +419,9 @@ class ImportController extends Seeder
         $mc->idModulo = $horario->modulo;
         $mc->idCiclo = $horario->Grupo->idCiclo;
         $mc->curso = $horario->Grupo->curso;
-        $mc->idDepartamento = isset(Profesor::find($horario->idProfesor)->departamento)
-                ? Profesor::find($horario->idProfesor)->departamento
+        $profesor = app(ProfesorService::class)->find((string) $horario->idProfesor);
+        $mc->idDepartamento = isset($profesor->departamento)
+                ? $profesor->departamento
                 : '99';
         $mc->save();
         return $mc;
@@ -453,8 +452,9 @@ class ImportController extends Seeder
                     ->first()){
                     $mc = self::newModuloCiclo($horario);
                 } else {
-                    if ((isset(Profesor::find($horario->idProfesor)->departamento)) && ($mc->idDepartamento == 99)) {
-                        $mc->idDepartamento = Profesor::find($horario->idProfesor)->departamento;
+                    $profesor = app(ProfesorService::class)->find((string) $horario->idProfesor);
+                    if ((isset($profesor->departamento)) && ($mc->idDepartamento == 99)) {
+                        $mc->idDepartamento = $profesor->departamento;
                         $mc->save();
                     }
                 }
@@ -475,8 +475,8 @@ class ImportController extends Seeder
 
     private function noSustituye()
     {
-        foreach (Profesor::where('sustituye_a', '>', ' ')->get() as $sustituto) {
-            $sustituido = Profesor::find($sustituto->sustituye_a);
+        foreach (app(ProfesorService::class)->withSustituyeAssigned() as $sustituto) {
+            $sustituido = app(ProfesorService::class)->find((string) $sustituto->sustituye_a);
             if ($sustituido && $sustituido->fecha_baja == NULL) {
                 $sustituto->sustituye_a = '';
                 $sustituto->save();
@@ -486,12 +486,8 @@ class ImportController extends Seeder
 
     private function asignaDepartamento()
     {
-        foreach (Profesor::where('departamento', 99)->get() as $profesor) {
-            $horario = Horario::where('idProfesor', $profesor->dni)
-                ->whereNull('ocupacion')
-                ->where('modulo', '!=', 'TU02CF')
-                ->where('modulo', '!=', 'TU01CF')
-                ->first();
+        foreach (app(ProfesorService::class)->byDepartamento(99) as $profesor) {
+            $horario = app(HorarioService::class)->firstForDepartamentoAsignacion((string) $profesor->dni);
             if ($horario) {
                 $modulo = Modulo_ciclo::where('idModulo', $horario->modulo)->first();
                 if ($modulo) {
@@ -559,7 +555,7 @@ class ImportController extends Seeder
         $tots = 1;
         do {
             $azar = rand(1050, 9000);
-            $tots = Profesor::where('codigo', $azar)->get()->count();
+            $tots = app(ProfesorService::class)->countByCodigo($azar);
         } while ($tots > 0);
         return $azar;
     }
@@ -720,10 +716,10 @@ class ImportController extends Seeder
                                 if ($arrayDatos['plantilla'] >= $this->plantilla) {
                                     $this->plantilla = $arrayDatos['plantilla'];
                                     try {
-                                        Horario::create($arrayDatos);
+                                        app(HorarioService::class)->create($arrayDatos);
                                     } catch (\Illuminate\Database\QueryException $e) {
                                         unset($arrayDatos['aula']);
-                                        Horario::create($arrayDatos);
+                                        app(HorarioService::class)->create($arrayDatos);
                                     }
                                 }
                                 break;
@@ -731,7 +727,7 @@ class ImportController extends Seeder
                                 Alumno::create($arrayDatos);
                                 break;
                             case 'Profesor':
-                                Profesor::create($arrayDatos);
+                                app(ProfesorService::class)->create($arrayDatos);
                                 break;
                             case 'Modulo':
                                 Modulo::create($arrayDatos);
@@ -772,7 +768,7 @@ class ImportController extends Seeder
 
     private function getEstadoFromJsonFile()
     {
-        foreach (Profesor::activo()->get() as $profesor) {
+        foreach (app(ProfesorService::class)->activos() as $profesor) {
             if (Storage::disk('local')->exists('/horarios/'.$profesor->dni.'.json') &&
                 $fichero = Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json')) {
                 if (json_decode($fichero)->estado == 'Guardado') {

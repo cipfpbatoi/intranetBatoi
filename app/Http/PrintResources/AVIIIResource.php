@@ -3,7 +3,6 @@
 namespace Intranet\Http\PrintResources;
 
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
 
 class AVIIIResource extends PrintResource
 {
@@ -24,8 +23,8 @@ class AVIIIResource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
-        $secretario = Profesor::find(config('avisos.secretario'))->fullName;
-        $director = Profesor::find(config('avisos.director'))->fullName;
+        $secretario = cargo('secretario')->fullName;
+        $director = cargo('director')->fullName;
         return [
             'SECRET 1' => $secretario,
             'ALUMNE' => $alumno->fullName,
