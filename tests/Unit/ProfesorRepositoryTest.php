@@ -91,6 +91,21 @@ class ProfesorRepositoryTest extends TestCase
         $this->assertSame('P011', (string) $substituto->dni);
     }
 
+    public function test_used_codigos_between_retornar_llista_de_codis_ocupats(): void
+    {
+        $this->seedProfesor('P020', 'Nom', 'A', 'A', 1, null, '1049');
+        $this->seedProfesor('P021', 'Nom', 'B', 'B', 1, null, '1050');
+        $this->seedProfesor('P022', 'Nom', 'C', 'C', 1, null, '3333');
+        $this->seedProfesor('P023', 'Nom', 'D', 'D', 1, null, '9000');
+        $this->seedProfesor('P024', 'Nom', 'E', 'E', 1, null, '9001');
+
+        $repo = $this->app->make(ProfesorRepositoryInterface::class);
+        $used = $repo->usedCodigosBetween(1050, 9000);
+
+        sort($used);
+        $this->assertSame([1050, 3333, 9000], $used);
+    }
+
     public function test_plantilla_i_departamentos_amb_horari(): void
     {
         DB::table('departamentos')->insert([
@@ -201,4 +216,3 @@ class ProfesorRepositoryTest extends TestCase
         ]);
     }
 }
-
