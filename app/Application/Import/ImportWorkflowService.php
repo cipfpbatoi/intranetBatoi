@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Import;
 
+use Illuminate\Http\UploadedFile;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Grupo;
+use RuntimeException;
+use SplFileInfo;
 use Styde\Html\Facades\Alert;
 
 /**
@@ -25,10 +28,32 @@ class ImportWorkflowService
      */
     public function executeXmlImport(mixed $fxml, array $camposBdXml, mixed $firstImport, callable $tableHandler): void
     {
-        $xml = simplexml_load_file($fxml);
+        $xmlPath = $this->resolveXmlPath($fxml);
+        $xml = simplexml_load_file($xmlPath);
+        if ($xml === false) {
+            throw new RuntimeException("No s'ha pogut carregar l'XML: {$xmlPath}");
+        }
+
         foreach ($camposBdXml as $table) {
             $tableHandler($xml->{$table['nombrexml']}, $table, $firstImport);
         }
+    }
+
+    private function resolveXmlPath(mixed $fxml): string
+    {
+        if (is_string($fxml)) {
+            return $fxml;
+        }
+
+        if ($fxml instanceof UploadedFile) {
+            return $fxml->getRealPath() ?: $fxml->getPathname();
+        }
+
+        if ($fxml instanceof SplFileInfo) {
+            return $fxml->getRealPath() ?: $fxml->getPathname();
+        }
+
+        throw new RuntimeException('Format de fitxer XML no suportat.');
     }
 
     /**
@@ -87,20 +112,40 @@ class ImportWorkflowService
 
     public function assignTutores(): void
     {
-        foreach ($this->profesorService->all() as $profesor) {
-            $profesor->rol = $this->applyTutorRoleRules(Grupo::QTutor($profesor->dni)->first(), $profesor->rol);
+        $profesores = $this->profesorService->all();
+        $tutores = Grupo::query()
+            ->whereNotNull('tutor')
+            ->where('tutor', '<>', '')
+            ->pluck('tutor')
+            ->map(static fn ($dni): string => trim((string) $dni))
+            ->filter(static fn (string $dni): bool => $dni !== '' && $dni !== 'BAJA' && $dni !== 'SIN TUTOR')
+            ->values()
+            ->all();
+
+        $tutorSet = array_fill_keys($tutores, true);
+        $substitucions = $profesores
+            ->whereNotNull('sustituye_a')
+            ->mapWithKeys(static fn ($profesor): array => [trim((string) $profesor->dni) => trim((string) $profesor->sustituye_a)])
+            ->all();
+
+        foreach ($profesores as $profesor) {
+            $dni = trim((string) $profesor->dni);
+            $sustitueA = $substitucions[$dni] ?? null;
+            $isTutor = isset($tutorSet[$dni]) || ($sustitueA !== null && $sustitueA !== '' && isset($tutorSet[$sustitueA]));
+
+            $profesor->rol = $this->applyTutorRoleRules($isTutor, $profesor->rol);
             $profesor->save();
         }
 
         Alert::info('Tutors assignats');
     }
 
-    private function applyTutorRoleRules(mixed $grupo, mixed $role): mixed
+    private function applyTutorRoleRules(bool $isTutor, mixed $role): mixed
     {
         $rolTutor = config('roles.rol.tutor');
         $rolPracticas = config('roles.rol.practicas');
 
-        if ($grupo) {
+        if ($isTutor) {
             if (!esRol($role, $rolTutor)) {
                 $role *= $rolTutor;
             }
