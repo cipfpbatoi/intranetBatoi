@@ -13,21 +13,33 @@ use Intranet\Entities\AlumnoFct;
  */
 class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function all(): EloquentCollection
     {
         return AlumnoFct::all();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function totesFcts(?string $profesor = null): EloquentCollection
     {
         return AlumnoFct::query()->totesFcts($profesor)->get();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function find(int|string $id): ?AlumnoFct
     {
         return AlumnoFct::find($id);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function findOrFail(int|string $id): AlumnoFct
     {
         /** @var AlumnoFct $registro */
@@ -36,6 +48,9 @@ class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
         return $registro;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function firstByIdSao(int|string $idSao): ?AlumnoFct
     {
         return AlumnoFct::query()
@@ -43,6 +58,9 @@ class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
             ->first();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function byAlumno(string $nia): EloquentCollection
     {
         return AlumnoFct::query()
@@ -50,6 +68,9 @@ class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
             ->get();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function byAlumnoWithA56(string $nia): EloquentCollection
     {
         return AlumnoFct::query()
@@ -58,6 +79,9 @@ class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
             ->get();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function byGrupoEsFct(string $grupo): EloquentCollection
     {
         return AlumnoFct::query()
@@ -66,6 +90,9 @@ class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
             ->get();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function byGrupoEsDual(string $grupo): EloquentCollection
     {
         return AlumnoFct::query()
@@ -74,6 +101,9 @@ class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
             ->get();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function reassignProfesor(string $fromDni, string $toDni): int
     {
         return AlumnoFct::query()

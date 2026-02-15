@@ -18,6 +18,8 @@ class AlumnoFctService
     }
 
     /**
+     * Recupera tots els registres d'alumnat en FCT.
+     *
      * @return EloquentCollection<int, AlumnoFct>
      */
     public function all(): EloquentCollection
@@ -26,6 +28,8 @@ class AlumnoFctService
     }
 
     /**
+     * Recupera les FCT visibles per al tutor indicat.
+     *
      * @return EloquentCollection<int, AlumnoFct>
      */
     public function totesFcts(?string $profesor = null): EloquentCollection
@@ -33,22 +37,33 @@ class AlumnoFctService
         return $this->alumnoFctRepository->totesFcts($profesor);
     }
 
+    /**
+     * Cerca un registre per identificador.
+     */
     public function find(int|string $id): ?AlumnoFct
     {
         return $this->alumnoFctRepository->find($id);
     }
 
+    /**
+     * Cerca un registre per identificador o llança excepció.
+     */
     public function findOrFail(int|string $id): AlumnoFct
     {
         return $this->alumnoFctRepository->findOrFail($id);
     }
 
+    /**
+     * Recupera el primer registre associat a un id SAO.
+     */
     public function firstByIdSao(int|string $idSao): ?AlumnoFct
     {
         return $this->alumnoFctRepository->firstByIdSao($idSao);
     }
 
     /**
+     * Llista tots els registres d'un alumne.
+     *
      * @return EloquentCollection<int, AlumnoFct>
      */
     public function byAlumno(string $nia): EloquentCollection
@@ -57,6 +72,8 @@ class AlumnoFctService
     }
 
     /**
+     * Llista registres d'un alumne amb annex A56 en curs.
+     *
      * @return EloquentCollection<int, AlumnoFct>
      */
     public function byAlumnoWithA56(string $nia): EloquentCollection
@@ -65,6 +82,8 @@ class AlumnoFctService
     }
 
     /**
+     * Llista registres d'un grup que són FCT.
+     *
      * @return EloquentCollection<int, AlumnoFct>
      */
     public function byGrupoEsFct(string $grupo): EloquentCollection
@@ -73,6 +92,8 @@ class AlumnoFctService
     }
 
     /**
+     * Llista registres d'un grup que són dual.
+     *
      * @return EloquentCollection<int, AlumnoFct>
      */
     public function byGrupoEsDual(string $grupo): EloquentCollection
@@ -80,6 +101,9 @@ class AlumnoFctService
         return $this->alumnoFctRepository->byGrupoEsDual($grupo);
     }
 
+    /**
+     * Reassigna en bloc el tutor responsable.
+     */
     public function reassignProfesor(string $fromDni, string $toDni): int
     {
         return $this->alumnoFctRepository->reassignProfesor($fromDni, $toDni);
