@@ -2,8 +2,8 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Grupo;
 use Illuminate\Http\Request;
 use Intranet\Http\Resources\AlumnoFctControlResource;
 use Intranet\Http\Resources\AlumnoFctResource;
@@ -12,12 +12,28 @@ use Intranet\Http\Resources\SelectAlumnoFctResource;
 
 class AlumnoFctController extends ApiBaseController
 {
+    private ?GrupoService $grupoService = null;
 
     protected $model = 'AlumnoFct';
 
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
     public function indice($grupo)
     {
-        $grup = Grupo::findOrFail($grupo);
+        $grup = $this->grupos()->find((string) $grupo);
+        abort_unless($grup !== null, 404);
         $data = AlumnoFctControlResource::collection(AlumnoFct::Grupo($grup)->esFct()->get());
 
         return $this->sendResponse($data, 'OK');
@@ -25,7 +41,8 @@ class AlumnoFctController extends ApiBaseController
 
     public function dual($grupo)
     {
-        $grup = Grupo::findOrFail($grupo);
+        $grup = $this->grupos()->find((string) $grupo);
+        abort_unless($grup !== null, 404);
         $data = AlumnoFctControlResource::collection(AlumnoFct::Grupo($grup)->esDual()->get());
 
         return $this->sendResponse($data, 'OK');

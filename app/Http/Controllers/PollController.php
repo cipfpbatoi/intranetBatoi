@@ -2,11 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Departamento;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\Vote;
@@ -19,9 +19,26 @@ use Styde\Html\Facades\Alert;
 
 class   PollController extends IntranetController
 {
+    private ?GrupoService $grupoService = null;
+
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
     protected $model = 'Poll';
     protected $gridFields = [ 'id','title','state'];
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
     protected function iniBotones()
     {
@@ -244,7 +261,7 @@ class   PollController extends IntranetController
 
     private function initValues(&$votes, $options)
     {
-        $grupos = Grupo::all();
+        $grupos = $this->grupos()->all();
         $ciclos = Ciclo::all();
         $departamentos = Departamento::all();
         foreach ($options as $value) {

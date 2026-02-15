@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
@@ -13,7 +14,6 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Services\Document\PdfService;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Projecte;
 use Intranet\Entities\Reunion;
@@ -26,6 +26,7 @@ use Intranet\Http\Requests\ProyectoRequest;
 class PanelProjecteController extends ModalController
 {
     private ?ProfesorService $profesorService = null;
+    private ?GrupoService $grupoService = null;
     const TUTOR = 'roles.rol.tutor';
     /**
      * @var string
@@ -59,18 +60,38 @@ class PanelProjecteController extends ModalController
         return $this->profesorService;
     }
 
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    private function myTutorGroup()
+    {
+        return $this->grupos()->byTutorOrSubstitute(AuthUser()->dni, AuthUser()->sustituye_a);
+    }
+
 
 
     public function search()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->first();
+        $miGrupo = $this->myTutorGroup();
+        if ($miGrupo === null) {
+            return collect();
+        }
         $alumnos = hazArray($miGrupo->Alumnos,'nia','nia');
         return Projecte::whereIn('idAlumne', $alumnos)->get();
     }
 
     public function store(ProyectoRequest $request)
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->first();
+        $miGrupo = $this->myTutorGroup();
+        if ($miGrupo === null) {
+            return back()->withErrors('No tens grup assignat');
+        }
         $new = new Projecte();
         $request->request->add(['grup' => $miGrupo->codigo,'estat'=>1]);
         $new->fillAll($request);
@@ -103,9 +124,10 @@ class PanelProjecteController extends ModalController
 
     public function send()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)
-            ->orWhere('tutor', '=', authUser()->sustituye_a)
-            ->first();
+        $miGrupo = $this->myTutorGroup();
+        if ($miGrupo === null) {
+            return back()->withErrors('No tens grup assignat');
+        }
 
         $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
         $projectes = Projecte::whereIn('idAlumne', $alumnos)
@@ -137,9 +159,10 @@ class PanelProjecteController extends ModalController
 
     public function acta()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)
-            ->orWhere('tutor', '=', authUser()->sustituye_a)
-            ->first();
+        $miGrupo = $this->myTutorGroup();
+        if ($miGrupo === null) {
+            return back()->withErrors('No tens grup assignat');
+        }
 
         $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
         $projectes = Projecte::whereIn('idAlumne', $alumnos)
@@ -164,9 +187,10 @@ class PanelProjecteController extends ModalController
 
     public function actaE()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)
-            ->orWhere('tutor', '=', authUser()->sustituye_a)
-            ->first();
+        $miGrupo = $this->myTutorGroup();
+        if ($miGrupo === null) {
+            return back()->withErrors('No tens grup assignat');
+        }
 
         $alumnos = hazArray($miGrupo->Alumnos, 'nia', 'nia');
         $projectes = Projecte::whereIn('idAlumne', $alumnos)

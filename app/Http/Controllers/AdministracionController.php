@@ -10,13 +10,13 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\VoteAnt;
@@ -42,7 +42,23 @@ use Symfony\Component\Mime\Exception\RfcComplianceException;
  */
 class AdministracionController extends Controller
 {
+    private ?GrupoService $grupoService = null;
+
     const DIRECTORIO_GESTOR = 'gestor/Empresa/';
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
     /**
      * @param $lang
@@ -158,7 +174,7 @@ class AdministracionController extends Controller
                     $alumno->save();
                 }
             }
-            foreach (Grupo::all() as $grupo) {
+            foreach ($this->grupos()->all() as $grupo) {
                 $grupo->fol = 0;
                 $grupo->save();
             }

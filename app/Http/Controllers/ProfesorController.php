@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\UI\Botones\BotonBasico;
@@ -15,7 +16,6 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Falta_profesor;
-use Intranet\Entities\Grupo;
 use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
@@ -48,12 +48,18 @@ use Autorizacion,
 
     private ?ProfesorService $profesorService = null;
     private ?HorarioService $horarioService = null;
+    private ?GrupoService $grupoService = null;
 
-    public function __construct(?ProfesorService $profesorService = null, ?HorarioService $horarioService = null)
+    public function __construct(
+        ?ProfesorService $profesorService = null,
+        ?HorarioService $horarioService = null,
+        ?GrupoService $grupoService = null
+    )
     {
         parent::__construct();
         $this->profesorService = $profesorService;
         $this->horarioService = $horarioService;
+        $this->grupoService = $grupoService;
     }
 
     private function profesores(): ProfesorService
@@ -72,6 +78,15 @@ use Autorizacion,
         }
 
         return $this->horarioService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
     }
 
 
@@ -129,7 +144,7 @@ use Autorizacion,
 
     public function fse()
     {
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $grupo = $this->grupos()->largestByTutor(AuthUser()->dni);
         if (isset($grupo)) {
             return $this->hazPdf(
                 'pdf.reunion.actaFSE',

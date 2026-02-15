@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
@@ -10,7 +11,6 @@ use Intranet\Entities\Empresa;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Ciclo;
-use Intranet\Entities\Grupo;
 use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\UI\Botones\BotonBasico;
@@ -18,11 +18,27 @@ use Styde\Html\Facades\Alert;
 
 class EmpresaController extends IntranetController
 {
+    private ?GrupoService $grupoService = null;
 
     protected $perfil = 'profesor';
     protected $model = 'Empresa';
     protected $gridFields = ['concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad'];
     protected $vista = ['show' => 'empresa','index'=>'vacia'];
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
     protected function search()
     {
@@ -47,7 +63,7 @@ class EmpresaController extends IntranetController
         ])->findOrFail($id);
         $modelo = 'Empresa';
 
-        $cicloTutoria = optional(Grupo::find(AuthUser()->GrupoTutoria))->idCiclo;
+        $cicloTutoria = $this->grupos()->find((string) AuthUser()->GrupoTutoria)?->idCiclo;
         $misColaboracionesIds = collect();
         if ($cicloTutoria) {
             $misColaboracionesIds = Colaboracion::query()
@@ -87,7 +103,7 @@ class EmpresaController extends IntranetController
         $id = $this->realStore(subsRequest($request, ['cif' => $cif]));
 
         $idCentro = $this->createCenter($id, $request);
-        $idCicloTutoria = Grupo::query()->QTutor(AuthUser()->dni)->value('idCiclo');
+        $idCicloTutoria = $this->grupos()->firstByTutor(AuthUser()->dni)?->idCiclo;
         if ($idCicloTutoria) {
             $this->createColaboration($idCentro, $request, $idCicloTutoria);
         }

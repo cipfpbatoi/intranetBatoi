@@ -1,9 +1,9 @@
 <?php
 namespace Intranet\Services\Notifications;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Hora;
 use Intranet\Jobs\SendEmail;
 use Styde\Html\Facades\Alert;
@@ -16,11 +16,13 @@ class AdviseTeacher
     public function __construct(
         private ?NotificationService $notificationService = null,
         private ?ProfesorService $profesorService = null,
-        private ?HorarioService $horarioService = null
+        private ?HorarioService $horarioService = null,
+        private ?GrupoService $grupoService = null
     ) {
         $this->notificationService = $notificationService ?? app(NotificationService::class);
         $this->profesorService = $profesorService ?? app(ProfesorService::class);
         $this->horarioService = $horarioService ?? app(HorarioService::class);
+        $this->grupoService = $grupoService ?? app(GrupoService::class);
     }
 
     /**
@@ -70,7 +72,7 @@ class AdviseTeacher
     {
         $idEmisor = $elemento->idProfesor;
         foreach ($this->affectedGroups($elemento, $idEmisor) as $grupoItem) {
-            $grupo = Grupo::find($grupoItem->idGrupo);
+            $grupo = $this->grupoService?->find((string) $grupoItem->idGrupo);
 
             if ($grupo && $grupo->Tutor) {
                 $correoTutor = $grupo->Tutor->Sustituye?->email ?? $grupo->Tutor->email;

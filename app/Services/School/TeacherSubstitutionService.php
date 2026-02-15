@@ -3,12 +3,12 @@
 namespace Intranet\Services\School;
 
 use Illuminate\Support\Facades\DB;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Asistencia;
 use Intranet\Entities\Expediente;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
@@ -22,11 +22,17 @@ class TeacherSubstitutionService
 {
     private ProfesorService $profesorService;
     private HorarioService $horarioService;
+    private GrupoService $grupoService;
 
-    public function __construct(?ProfesorService $profesorService = null, ?HorarioService $horarioService = null)
+    public function __construct(
+        ?ProfesorService $profesorService = null,
+        ?HorarioService $horarioService = null,
+        ?GrupoService $grupoService = null
+    )
     {
         $this->profesorService = $profesorService ?? app(ProfesorService::class);
         $this->horarioService = $horarioService ?? app(HorarioService::class);
+        $this->grupoService = $grupoService ?? app(GrupoService::class);
     }
 
     /**
@@ -96,7 +102,7 @@ class TeacherSubstitutionService
 
         // Tota la feina del substitut passa al substituït.
         Reunion::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
-        Grupo::where('tutor', $sustituto->dni)->update(['tutor' => $profesorAlta->dni]);
+        $this->grupoService->reassignTutor($sustituto->dni, $profesorAlta->dni);
         Programacion::where('profesor', $sustituto->dni)->update(['profesor' => $profesorAlta->dni]);
         Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
         Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);

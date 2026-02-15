@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\ModalController;
 
@@ -15,7 +16,6 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Dual;
 use Intranet\Entities\Fct;
-use Intranet\Entities\Grupo;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Requests\DualRequest;
 use Intranet\Http\Traits\Core\Imprimir;
@@ -31,6 +31,8 @@ use Styde\Html\Facades\Alert;
 class DualController extends ModalController
 {
     use Imprimir;
+
+    private ?GrupoService $grupoService = null;
 
     const CONTACTO_NOMBRE = 'contacto.nombre';
     const CONTACTO_CODI = 'contacto.codi';
@@ -79,13 +81,22 @@ class DualController extends ModalController
         return AlumnoFct::misDual()->orderBy('idAlumno')->orderBy('desde')->get();
     }
 
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
     /**
      *
      */
     protected function iniBotones()
     {
         $user = AuthUser()->dni;
-        $grupo = Grupo::where('tutorDual',AuthUser()->dni)->first();
+        $grupo = $this->grupos()->firstByTutorDual(AuthUser()->dni);
         if ($grupo){
             $ciclo = $grupo->ciclo;
             if ($ciclo->CompleteDual){

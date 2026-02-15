@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Comision\ComisionService;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Documento;
@@ -15,7 +16,6 @@ use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Services\Document\TipoReunionService;
 use Intranet\Entities\AlumnoFctAval;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Reunion;
 use function PHPUnit\Framework\isNull;
 
@@ -111,7 +111,7 @@ class PanelFinCursoController extends BaseController
 
     private static function lookForCheckFol(&$avisos)
     {
-        foreach (Grupo::misGrupos()->get() as $grupo) {
+        foreach (app(GrupoService::class)->misGrupos() as $grupo) {
             if ($grupo->fol == 0) {
                 $avisos[self::DANGER][] = "FOL Grupo no revisado : ".$grupo->nombre;
             }
@@ -126,7 +126,7 @@ class PanelFinCursoController extends BaseController
 
     private static function lookForActesPendents(&$avisos)
     {
-        foreach (Grupo::where('acta_pendiente', '>', 0)->get() as $grupo) {
+        foreach (app(GrupoService::class)->withActaPendiente() as $grupo) {
             $avisos[self::DANGER][] = "Acta pendent del grup : ".$grupo->nombre;
         }
 
@@ -186,7 +186,10 @@ class PanelFinCursoController extends BaseController
 
     private static function lookAtFctsProjects(&$avisos)
     {
-        $grupo = Grupo::QTutor()->first();
+        $grupo = app(GrupoService::class)->firstByTutor(AuthUser()->dni);
+        if ($grupo === null) {
+            return;
+        }
         $alumnes = AlumnoFctAval::select('idAlumno')->distinct()->misFcts()->esAval()->get()->toArray();
         foreach ($alumnes as $alumne) {
             $fctAval = AlumnoFctAval::esAval()->where('idAlumno', $alumne['idAlumno'])->orderBy('idAlumno')->first();

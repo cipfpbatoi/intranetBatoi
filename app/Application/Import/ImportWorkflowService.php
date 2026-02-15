@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Intranet\Application\Import;
 
 use Illuminate\Http\UploadedFile;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
-use Intranet\Entities\Grupo;
 use RuntimeException;
 use SplFileInfo;
 use Styde\Html\Facades\Alert;
@@ -16,7 +16,10 @@ use Styde\Html\Facades\Alert;
  */
 class ImportWorkflowService
 {
-    public function __construct(private readonly ProfesorService $profesorService)
+    public function __construct(
+        private readonly ProfesorService $profesorService,
+        private readonly GrupoService $grupoService
+    )
     {
     }
 
@@ -113,14 +116,7 @@ class ImportWorkflowService
     public function assignTutores(): void
     {
         $profesores = $this->profesorService->all();
-        $tutores = Grupo::query()
-            ->whereNotNull('tutor')
-            ->where('tutor', '<>', '')
-            ->pluck('tutor')
-            ->map(static fn ($dni): string => trim((string) $dni))
-            ->filter(static fn (string $dni): bool => $dni !== '' && $dni !== 'BAJA' && $dni !== 'SIN TUTOR')
-            ->values()
-            ->all();
+        $tutores = $this->grupoService->tutoresDniList();
 
         $tutorSet = array_fill_keys($tutores, true);
         $substitucions = $profesores

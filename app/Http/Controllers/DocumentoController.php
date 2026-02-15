@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
@@ -10,7 +11,6 @@ use Illuminate\Http\Request;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
 use Intranet\Services\Document\TipoDocumentoService;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\General\GestorService;
@@ -21,6 +21,7 @@ use Styde\Html\Facades\Alert;
 
 class DocumentoController extends IntranetController
 {
+    private ?GrupoService $grupoService = null;
 
     protected $model = 'Documento';
     protected $formFields = ['tipoDocumento' => ['type' => 'select'],
@@ -37,6 +38,21 @@ class DocumentoController extends IntranetController
         'activo' => ['type' => 'checkbox'],
         'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']],
     ];
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
 
     protected function redirect()
@@ -102,6 +118,8 @@ class DocumentoController extends IntranetController
     public function project($idFct)
     {
         if ($fct = AlumnoFct::findOrFail($idFct)) {
+            $grupoTutor = $this->grupos()->firstByTutor(AuthUser()->dni);
+            $ciclo = $grupoTutor?->Ciclo?->ciclo ?? '';
 
             $proyecto = $fct->Alumno->Projecte ?? null;
             $descripcion = $proyecto->titol ?? '';
@@ -113,7 +131,7 @@ class DocumentoController extends IntranetController
                 'activo' => true,
                 'tipoDocumento' => 'Proyecto',
                 'idDocumento' => '',
-                'ciclo' => Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo,
+                'ciclo' => $ciclo,
                 'descripcion' => $descripcion,
                 'detalle' => $detalle,
             ]);
@@ -145,7 +163,11 @@ class DocumentoController extends IntranetController
         $profesor = app(ProfesorService::class)->findOrFail((string) $id);
 
         $documents = Adjunto::where('route', "profesor/$id")->get();
-        $grupo = Grupo::QTutor($id)->first();
+        $grupo = $this->grupos()->firstByTutor((string) $id);
+        if (!$grupo) {
+            Alert::danger('No hi ha grup de tutoria assignat');
+            return back();
+        }
         $elemento = (new CreateOrUpdateDocumentAction())->fromArray([
             'curso' => Curso(),
             'propietario' => $profesor->FullName,
@@ -201,7 +223,11 @@ class DocumentoController extends IntranetController
 
     public function qualitat()
     {
-        $grupo = Grupo::QTutor(AuthUser()->dni)->first();
+        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
+        if (!$grupo) {
+            Alert::danger('No hi ha grup de tutoria assignat');
+            return back();
+        }
         $elemento = (new CreateOrUpdateDocumentAction())->build([
             'curso' => Curso(),
             'propietario' => AuthUser()->FullName,

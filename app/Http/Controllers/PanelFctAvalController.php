@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 
@@ -13,7 +14,6 @@ use Intranet\Entities\Adjunto;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Documento;
-use Intranet\Entities\Grupo;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Traits\Core\DropZone;
@@ -29,6 +29,8 @@ use Styde\Html\Facades\Alert;
 class PanelFctAvalController extends IntranetController
 {
     use DropZone;
+
+    private ?GrupoService $grupoService = null;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     const ROLES_ROL_CAPAC = 'roles.rol.jefe_practicas';
@@ -49,6 +51,21 @@ class PanelFctAvalController extends IntranetController
      * @var bool
      */
     protected $profile = false;
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
     /**
      * @return \Illuminate\Support\Collection|mixed
@@ -160,11 +177,11 @@ class PanelFctAvalController extends IntranetController
      */
     protected function noApte($id)
     {
-        $grupo = Grupo::QTutor()->first();
+        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
 
         $fct = AlumnoFctAval::find($id);
         $fct->calificacion = 0;
-        $fct->calProyecto = $grupo->proyecto?0:null;
+        $fct->calProyecto = $grupo?->proyecto ? 0 : null;
         $fct->save();
 
         return back();
@@ -253,7 +270,7 @@ class PanelFctAvalController extends IntranetController
      */
     public function demanarActa()
     {
-        $grupos = Grupo::QTutor()->get();
+        $grupos = $this->grupos()->qTutor(AuthUser()->dni);
         if ($grupos->isEmpty()) {
             Alert::message('No tens grups assignats', 'warning');
             return back();
@@ -331,7 +348,7 @@ class PanelFctAvalController extends IntranetController
      */
     private function setActaB(): void
     {
-        $grupo = Grupo::QTutor()->first();
+        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
         if ($grupo && !$grupo->acta_pendiente  ) {
             if ($grupo->curso == 2) {
                 $this->panel->setBoton(
@@ -349,7 +366,8 @@ class PanelFctAvalController extends IntranetController
      */
     private function setProjectB(): void
     {
-        if (Grupo::QTutor()->first() && Grupo::QTutor()->first()->proyecto) {
+        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
+        if ($grupo && $grupo->proyecto) {
             // Aprovats
             $this->panel->setBoton(
                 'grid',
@@ -559,7 +577,7 @@ class PanelFctAvalController extends IntranetController
 
     public function estadistiques()
     {
-        $grupos = Grupo::where('curso',2)->orderBy('idCiclo')->get();
+        $grupos = $this->grupos()->byCurso(2)->sortBy('idCiclo')->values();
         $ciclos = [];
         foreach ($grupos as $grupo) {
             $ciclo = $grupo->idCiclo;

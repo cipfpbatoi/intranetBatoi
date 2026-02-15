@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
@@ -13,7 +14,6 @@ use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
@@ -30,6 +30,7 @@ use Styde\Html\Facades\Alert;
 
 class ActividadController extends ModalController
 {
+    private ?GrupoService $grupoService = null;
 
     use Autorizacion, SCRUD, Imprimir;
 
@@ -147,6 +148,15 @@ class ActividadController extends ModalController
         return app(ActividadParticipantsService::class);
     }
 
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
     /**
      * Mostra el detall d'una activitat amb professors i grups associats.
      *
@@ -171,7 +181,8 @@ class ActividadController extends ModalController
             ->toArray();
 
         // Llista de tots els grups disponibles
-        $tGrupos = Grupo::whereNotIn('codigo', $assignedGrupos)
+        $tGrupos = $this->grupos()->all()
+            ->whereNotIn('codigo', $assignedGrupos)
             ->pluck('nombre', 'codigo')
             ->toArray();
 

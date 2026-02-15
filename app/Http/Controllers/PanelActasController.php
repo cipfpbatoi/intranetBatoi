@@ -2,11 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\BaseController;
 
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Notifications\NotificationService;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\AlumnoFctAval;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\TitolAlumne;
@@ -19,6 +19,7 @@ use Styde\Html\Facades\Alert;
  */
 class PanelActasController extends BaseController
 {
+    private ?GrupoService $grupoService = null;
 
     /**
      * @var string
@@ -37,13 +38,30 @@ class PanelActasController extends BaseController
      */
     protected $vista = ['index' => 'intranet.list'] ;
 
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
 
     /**
      *
      */
     protected function iniBotones()
     {
-        if (Grupo::findOrFail($this->search)->acta_pendiente) {
+        $grupo = $this->grupos()->find((string) $this->search);
+        abort_unless($grupo !== null, 404);
+        if ($grupo->acta_pendiente) {
             $this->panel->setBoton(
                 'index',
                 new BotonBasico("direccion.$this->search.finActa", ['text' => 'acta'])
@@ -60,7 +78,8 @@ class PanelActasController extends BaseController
      */
     protected function search()
     {
-        $grupo = Grupo::findOrFail($this->search);
+        $grupo = $this->grupos()->find((string) $this->search);
+        abort_unless($grupo !== null, 404);
         $this->titulo = ['quien' => $grupo->nombre ];
         if ($grupo->acta_pendiente) {
             return AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
@@ -75,7 +94,8 @@ class PanelActasController extends BaseController
      */
     public function finActa($idGrupo)
     {
-        $grupo = Grupo::findOrFail($idGrupo);
+        $grupo = $this->grupos()->find((string) $idGrupo);
+        abort_unless($grupo !== null, 404);
         $fcts = AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
         $correus = 0;
         foreach ($fcts as $fct) {
@@ -98,7 +118,8 @@ class PanelActasController extends BaseController
 
     public function rejectActa($idGrupo)
     {
-        $grupo = Grupo::findOrFail($idGrupo);
+        $grupo = $this->grupos()->find((string) $idGrupo);
+        abort_unless($grupo !== null, 404);
         $fcts = AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
         foreach ($fcts as $fct) {
             $fct->actas = 0;
