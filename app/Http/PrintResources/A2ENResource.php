@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Grupo;
+use Intranet\Application\Grupo\GrupoService;
 
 
 class A2ENResource extends PrintResource
@@ -26,7 +26,7 @@ class A2ENResource extends PrintResource
         $director = cargo('director');
         $tutor = AuthUser();
         $alumno = $this->elements->Alumno;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
         $instructor = $this->elements->Fct->instructor;
 
         return [

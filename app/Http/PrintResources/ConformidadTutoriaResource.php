@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Grupo;
+use Intranet\Application\Grupo\GrupoService;
 
 class ConformidadTutoriaResource extends PrintResource
 {
@@ -24,7 +24,7 @@ class ConformidadTutoriaResource extends PrintResource
     {
         $alumno = $this->elements->Alumno;
         $tutor = AuthUser();
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
         return [
             'untitled1' => "$tutor->fullName - DNI: $tutor->dni",
         'untitled2' => "$alumno->fullName - NIA: $alumno->nia - DNI: $alumno->dni",

@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Events\ActivityReport;
 use Intranet\Providers\AuthServiceProvider;
@@ -86,8 +87,12 @@ class Colaboracion extends Model
     public function scopeMiColaboracion($query, $empresa=null, $dni=null)
     {
         $dni = $dni??authUser()->dni;
-        $cicloC = Grupo::select('idCiclo')->QTutor($dni)->get();
-        $ciclo = $cicloC->count()>0?hazArray($cicloC,'idCiclo') :[];
+        $ciclo = app(GrupoService::class)->qTutor((string) $dni)
+            ->pluck('idCiclo')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
         if ($empresa) {
             return $query->whereIn('idCiclo', $ciclo)->Empresa($empresa);

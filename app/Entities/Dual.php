@@ -2,6 +2,7 @@
 
 namespace Intranet\Entities;
 
+use Intranet\Application\Grupo\GrupoService;
 
 class Dual extends Fct
 {
@@ -44,8 +45,10 @@ class Dual extends Fct
     
     public function getIdColaboracionOptions()
     {
-        $cicloC = Grupo::select('idCiclo')->QTutor(authUser()->dni, true)->get();
-        $ciclo = $cicloC->count()>0?$cicloC->first()->idCiclo:'';
+        $ciclo = app(GrupoService::class)->firstByTutor(authUser()->dni)?->idCiclo;
+        if (!$ciclo) {
+            return [];
+        }
         $colaboraciones = Colaboracion::where('idCiclo', $ciclo)->get();
         $todos = [];
         

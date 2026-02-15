@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Grupo;
+use Intranet\Application\Grupo\GrupoService;
 
 class NotificacioInspeccioResource extends PrintResource
 {
@@ -22,7 +22,7 @@ class NotificacioInspeccioResource extends PrintResource
     public function toArray()
     {
         $alumno = $this->elements->Alumno;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
         $director = cargo('director')->fullName;
         return [
             'Texto1' => config('contacto.nombre'),

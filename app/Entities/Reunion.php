@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Services\Document\TipoReunionService;
 use Illuminate\Support\Facades\App;
 use Jenssegers\Date\Date;
@@ -216,7 +217,7 @@ class Reunion extends Model
                 $grupo = Departamento::where('id', '=', $profesor->departamento)->get()->first()->cliteral;
                 break;
             case 'Grupo':
-                $grupo = Grupo::QTutor($profesor->dni)->count() ? Grupo::QTutor($profesor->dni)->largestByAlumnes()->first()->nombre : '';
+                $grupo = app(GrupoService::class)->largestByTutor($profesor->dni)?->nombre ?? '';
                 break;
             default:
                 $grupo = '';
@@ -226,7 +227,7 @@ class Reunion extends Model
 
     public function getCicloAttribute()
     {
-        return Grupo::QTutor($this->idProfesor)->count()?Grupo::QTutor($this->idProfesor)->first()->Ciclo->ciclo:'';
+        return app(GrupoService::class)->firstByTutor($this->idProfesor)?->Ciclo->ciclo ?? '';
     }
 
     public function getXtipoAttribute()
@@ -248,7 +249,9 @@ class Reunion extends Model
     }
     public function getGrupoClaseAttribute()
     {
-        return $this->Tipos()->colectivo == 'Grupo'?Grupo::QTutor($this->idProfesor)->largestByAlumnes()->first():null;
+        return $this->Tipos()->colectivo == 'Grupo'
+            ? app(GrupoService::class)->largestByTutor($this->idProfesor)
+            : null;
     }
     public function getInformeAttribute()
     {

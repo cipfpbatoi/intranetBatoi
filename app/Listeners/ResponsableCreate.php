@@ -2,11 +2,11 @@
 
 namespace Intranet\Listeners;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Events\ActividadCreated;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Intranet\Entities\Actividad;
-use Intranet\Entities\Grupo;
 use Illuminate\Support\Facades\Auth;
 
 class ResponsableCreate
@@ -33,7 +33,7 @@ class ResponsableCreate
         if (authUser()) {
             $actividad = Actividad::findOrFail($event->actividad->id);
             $actividad->profesores()->attach(authUser()->dni, ['coordinador' => 1]);
-            $grupo = Grupo::QTutor()->largestByAlumnes()->first();
+            $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
             if ($grupo) {
                 $actividad->grupos()->attach($grupo->codigo);
             }

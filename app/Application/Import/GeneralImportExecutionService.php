@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Import;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Espacio;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
@@ -29,6 +29,7 @@ class GeneralImportExecutionService
     public function __construct(
         private readonly HorarioService $horarioService,
         private readonly ProfesorService $profesorService,
+        private readonly GrupoService $grupoService,
     ) {
     }
 
@@ -194,7 +195,7 @@ class GeneralImportExecutionService
             case 'AlumnoGrupo':
                 return AlumnoGrupo::create($arrayDatos);
             case 'Grupo':
-                return Grupo::create($arrayDatos);
+                return $this->grupoService->create($arrayDatos);
             case 'Espacio':
                 return Espacio::create($arrayDatos);
         }

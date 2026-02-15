@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Poll\Vote;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
@@ -231,8 +232,10 @@ class Fct extends Model
    
     public function getIdColaboracionOptions()
     {
-        $cicloC = Grupo::select('idCiclo')->QTutor(authUser()->dni)->get();
-        $ciclo = $cicloC->count()>0?$cicloC->first()->idCiclo:'';
+        $ciclo = app(GrupoService::class)->firstByTutor(authUser()->dni)?->idCiclo;
+        if (!$ciclo) {
+            return [];
+        }
         $colaboraciones = Colaboracion::where('idCiclo', $ciclo)->get();
         $todos = [];
         

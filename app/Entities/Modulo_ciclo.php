@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Modulo;
 use Intranet\Events\ActivityReport;
@@ -99,14 +100,19 @@ class Modulo_ciclo extends Model
     public function scopeMisModulos($query, $profesor = null)
     {
         $profesor = $profesor ? $profesor : authUser();
+        $dni = is_object($profesor) ? (string) $profesor->dni : (string) $profesor;
+
         $modulos = Modulo_ciclo::select('id')
                 ->distinct()
                 ->misModulos($profesor)
                 ->get()->toArray();
-        $ciclos = Grupo::select('idCiclo')
-                ->distinct()
-                ->misGrupos($profesor)
-                ->get()->toArray();
+        $ciclos = app(GrupoService::class)
+            ->misGruposByProfesor($dni)
+            ->pluck('idCiclo')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
         
         return $query->whereIn('idModulo', $modulos)->whereIn('idCiclo',$ciclos);
     }

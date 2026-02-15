@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
 
@@ -59,7 +60,10 @@ class Empresa extends Model
     
     public function scopeCiclo($query, $tutor)
     {
-        $ciclo = Grupo::QTutor($tutor)->first()->idCiclo;
+        $ciclo = app(GrupoService::class)->firstByTutor((string) $tutor)?->idCiclo;
+        if (!$ciclo) {
+            return $query->whereRaw('1 = 0');
+        }
         $centros = Colaboracion::select('idCentro')->Ciclo($ciclo)->get()->toArray();
         $empreses = Centro::select('idEmpresa')->distinct()->whereIn('id', $centros)->get()->toArray();
         return $query->whereIn('id', $empreses);

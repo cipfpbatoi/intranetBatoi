@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Hora;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
@@ -172,7 +173,7 @@ class Horario extends Model
     }
     public function getIdGrupoOptions()
     {
-        return hazArray(Grupo::All(), 'codigo', 'nombre');
+        return hazArray(app(GrupoService::class)->all(), 'codigo', 'nombre');
     }
     public function getOcupacionOptions()
     {

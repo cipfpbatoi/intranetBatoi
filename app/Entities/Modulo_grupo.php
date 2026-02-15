@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Services\Auth\JWTTokenService;
 use Styde\Html\Facades\Alert;
 
@@ -69,7 +70,11 @@ class Modulo_grupo extends Model
     
     public function scopeCurso($query,$curso)
     {
-        return $query->whereIn('idGrupo',hazArray(Grupo::Curso($curso)->get(),'codigo','codigo'));
+        $codigos = app(GrupoService::class)->byCurso((int) $curso)
+            ->pluck('codigo')
+            ->all();
+
+        return $query->whereIn('idGrupo', $codigos);
     }
     public function getXGrupoAttribute(){
 

@@ -87,7 +87,7 @@ class AlumnoFct extends Model
         $profesor = $profesor?$profesor:authUser()->dni;
         $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
 
-        $cicloC = Grupo::select('idCiclo')->QTutor($profesor)->first()->idCiclo;
+        $cicloC = app(\Intranet\Application\Grupo\GrupoService::class)->firstByTutor($profesor)?->idCiclo;
         $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
 
         $fcts = Fct::select('id')
