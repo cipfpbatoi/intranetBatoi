@@ -3,10 +3,10 @@
 namespace Intranet\Services\School;
 
 use Illuminate\Support\Facades\DB;
+use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Asistencia;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\Programacion;
@@ -23,16 +23,19 @@ class TeacherSubstitutionService
     private ProfesorService $profesorService;
     private HorarioService $horarioService;
     private GrupoService $grupoService;
+    private AlumnoFctService $alumnoFctService;
 
     public function __construct(
         ?ProfesorService $profesorService = null,
         ?HorarioService $horarioService = null,
-        ?GrupoService $grupoService = null
+        ?GrupoService $grupoService = null,
+        ?AlumnoFctService $alumnoFctService = null
     )
     {
         $this->profesorService = $profesorService ?? app(ProfesorService::class);
         $this->horarioService = $horarioService ?? app(HorarioService::class);
         $this->grupoService = $grupoService ?? app(GrupoService::class);
+        $this->alumnoFctService = $alumnoFctService ?? app(AlumnoFctService::class);
     }
 
     /**
@@ -106,7 +109,7 @@ class TeacherSubstitutionService
         Programacion::where('profesor', $sustituto->dni)->update(['profesor' => $profesorAlta->dni]);
         Expediente::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
         Resultado::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
-        AlumnoFct::where('idProfesor', $sustituto->dni)->update(['idProfesor' => $profesorAlta->dni]);
+        $this->alumnoFctService->reassignProfesor($sustituto->dni, $profesorAlta->dni);
 
         $sustituto->sustituye_a = ' ';
         $sustituto->activo = 0;

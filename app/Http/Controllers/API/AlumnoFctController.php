@@ -2,23 +2,24 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Application\Grupo\GrupoService;
-use Intranet\Entities\AlumnoFct;
 use Illuminate\Http\Request;
 use Intranet\Http\Resources\AlumnoFctControlResource;
 use Intranet\Http\Resources\AlumnoFctResource;
-use Intranet\Http\Resources\SelectAlumnoFctResource;
 
 
 class AlumnoFctController extends ApiBaseController
 {
     private ?GrupoService $grupoService = null;
+    private ?AlumnoFctService $alumnoFctService = null;
 
     protected $model = 'AlumnoFct';
 
-    public function __construct(?GrupoService $grupoService = null)
+    public function __construct(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null)
     {
         $this->grupoService = $grupoService;
+        $this->alumnoFctService = $alumnoFctService;
     }
 
     private function grupos(): GrupoService
@@ -30,11 +31,20 @@ class AlumnoFctController extends ApiBaseController
         return $this->grupoService;
     }
 
+    private function alumnoFcts(): AlumnoFctService
+    {
+        if ($this->alumnoFctService === null) {
+            $this->alumnoFctService = app(AlumnoFctService::class);
+        }
+
+        return $this->alumnoFctService;
+    }
+
     public function indice($grupo)
     {
         $grup = $this->grupos()->find((string) $grupo);
         abort_unless($grup !== null, 404);
-        $data = AlumnoFctControlResource::collection(AlumnoFct::Grupo($grup)->esFct()->get());
+        $data = AlumnoFctControlResource::collection($this->alumnoFcts()->byGrupoEsFct((string) $grup->codigo));
 
         return $this->sendResponse($data, 'OK');
     }
@@ -43,14 +53,14 @@ class AlumnoFctController extends ApiBaseController
     {
         $grup = $this->grupos()->find((string) $grupo);
         abort_unless($grup !== null, 404);
-        $data = AlumnoFctControlResource::collection(AlumnoFct::Grupo($grup)->esDual()->get());
+        $data = AlumnoFctControlResource::collection($this->alumnoFcts()->byGrupoEsDual((string) $grup->codigo));
 
         return $this->sendResponse($data, 'OK');
     }
 
     public function update(Request $request, $id)
     {
-        $registro = AlumnoFct::findOrFail($id);
+        $registro = $this->alumnoFcts()->findOrFail((int) $id);
         if (isset($request->pg0301)) {
             $registro->pg0301 = $request->pg0301==='true'?1:0;
         }
@@ -63,7 +73,7 @@ class AlumnoFctController extends ApiBaseController
 
     public function show($id, $send=true)
     {
-        $registro = AlumnoFct::findOrFail($id);
+        $registro = $this->alumnoFcts()->findOrFail((int) $id);
         return $this->sendResponse(new AlumnoFctResource($registro), 'OK');
     }
 

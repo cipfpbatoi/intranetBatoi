@@ -10,10 +10,10 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
@@ -43,12 +43,14 @@ use Symfony\Component\Mime\Exception\RfcComplianceException;
 class AdministracionController extends Controller
 {
     private ?GrupoService $grupoService = null;
+    private ?AlumnoFctService $alumnoFctService = null;
 
     const DIRECTORIO_GESTOR = 'gestor/Empresa/';
 
-    public function __construct(?GrupoService $grupoService = null)
+    public function __construct(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null)
     {
         $this->grupoService = $grupoService;
+        $this->alumnoFctService = $alumnoFctService;
     }
 
     private function grupos(): GrupoService
@@ -58,6 +60,15 @@ class AdministracionController extends Controller
         }
 
         return $this->grupoService;
+    }
+
+    private function alumnoFcts(): AlumnoFctService
+    {
+        if ($this->alumnoFctService === null) {
+            $this->alumnoFctService = app(AlumnoFctService::class);
+        }
+
+        return $this->alumnoFctService;
     }
 
     /**
@@ -261,7 +272,7 @@ class AdministracionController extends Controller
 
     public static function v3_01()
     {
-       $fcts = AlumnoFct::all();
+       $fcts = app(AlumnoFctService::class)->all();
        foreach ($fcts as $fct) {
            $grupo = $fct->Alumno->Grupo->first() ?? null;
            if ($grupo) {
@@ -382,7 +393,7 @@ class AdministracionController extends Controller
 
     /*public function consulta()
     {
-        $alumnosPendientes = AlumnoFct::esErasmus()->get();
+        $alumnosPendientes = app(AlumnoFctService::class)->all()->filter(fn ($fct) => $fct->erasmus);
 
             foreach ($alumnosPendientes as $alumno) {
                 try {

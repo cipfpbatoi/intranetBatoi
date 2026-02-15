@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 
@@ -13,7 +14,6 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Adjunto;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Fct;
 use Intranet\Entities\FctConvalidacion;
@@ -40,6 +40,8 @@ class FctAlumnoController extends IntranetController
 {
     use Imprimir,DropZone;
 
+    private ?AlumnoFctService $alumnoFctService = null;
+
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     protected $perfil = 'profesor';
     protected $model = 'AlumnoFct';
@@ -50,11 +52,24 @@ class FctAlumnoController extends IntranetController
     protected $parametresVista = ['modal' => ['extended', 'saoPassword', 'loading','signatura']];
     protected $modal = true;
 
+    public function __construct(?AlumnoFctService $alumnoFctService = null)
+    {
+        $this->alumnoFctService = $alumnoFctService;
+    }
+
+    private function alumnoFcts(): AlumnoFctService
+    {
+        if ($this->alumnoFctService === null) {
+            $this->alumnoFctService = app(AlumnoFctService::class);
+        }
+
+        return $this->alumnoFctService;
+    }
+
 
     public function search()
     {
-
-        return AlumnoFct::totesFcts()->get();
+        return $this->alumnoFcts()->totesFcts();
     }
 
     protected function iniBotones()
@@ -245,7 +260,7 @@ class FctAlumnoController extends IntranetController
 
     public function days($id)
     {
-        $alumnoFct = AlumnoFct::find($id);
+        $alumnoFct = $this->alumnoFcts()->find((int) $id);
 
         return view('fct.days',compact('alumnoFct'));
     }
@@ -267,7 +282,8 @@ class FctAlumnoController extends IntranetController
 
     public function unlink($id)
     {
-        $elemento = AlumnoFct::find($id);
+        $elemento = $this->alumnoFcts()->find((int) $id);
+        abort_unless($elemento !== null, 404);
         $elemento->idSao = null;
         $elemento->save();
         return redirect()->back();
@@ -306,40 +322,40 @@ class FctAlumnoController extends IntranetController
 
     public function show($id)
     {
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         return redirect("/fct/$fct->idFct/show");
     }
 
     public function pdf($id)
     {
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         if ($fct->asociacion === 1 || $fct->asociacion > 3) {
             return self::preparePdf($id)->stream();
         }
         if ($fct->asociacion == 2) {
-            return response()->file(FDFPrepareService::exec(new ExempcioResource(AlumnoFct::find($id))));
+            return response()->file(FDFPrepareService::exec(new ExempcioResource($fct)));
         }
         if ($fct->asociacion == 3){
-            return response()->file(FDFPrepareService::exec(new AVIIIResource(AlumnoFct::find($id))));
+            return response()->file(FDFPrepareService::exec(new AVIIIResource($fct)));
         }
 
     }
 
     public function Signatura($id, $num)
     {
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         return response()->file($fct->routeFile($num));
     }
 
     public function Valoratiu($id)
     {
-        return response()->file(FDFPrepareService::exec(new A5Resource(AlumnoFct::find($id))));
+        return response()->file(FDFPrepareService::exec(new A5Resource($this->alumnoFcts()->findOrFail((int) $id))));
     }
 
 
     public function AVI($id)
     {
-        return response()->file(FDFPrepareService::exec(new AVIResource(AlumnoFct::find($id))));
+        return response()->file(FDFPrepareService::exec(new AVIResource($this->alumnoFcts()->findOrFail((int) $id))));
     }
 
 
@@ -347,16 +363,16 @@ class FctAlumnoController extends IntranetController
     public function AEng($id)
     {
 
-        $fct = AlumnoFct::find($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $nameFile = storage_path("tmp/AN_EN{$fct->Alumno->shorName}.zip");
         if (file_exists($nameFile)) {
             unlink($nameFile);
         }
         $zip = new \ZipArchive();
         $zip->open($nameFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
-        $zip->addFile(FDFPrepareService::exec(new A1ENResource(AlumnoFct::find($id))), 'AIEN.pdf');
-        $zip->addFile(FDFPrepareService::exec(new A2ENResource(AlumnoFct::find($id))), 'AIIEN.pdf');
-        $zip->addFile(FDFPrepareService::exec(new A3ENResource(AlumnoFct::find($id))), 'AIIIEN.pdf');
+        $zip->addFile(FDFPrepareService::exec(new A1ENResource($fct)), 'AIEN.pdf');
+        $zip->addFile(FDFPrepareService::exec(new A2ENResource($fct)), 'AIIEN.pdf');
+        $zip->addFile(FDFPrepareService::exec(new A3ENResource($fct)), 'AIIIEN.pdf');
         $zip->close();
         return response()->download($nameFile);
     }
@@ -364,7 +380,7 @@ class FctAlumnoController extends IntranetController
 
     public function auth($id)
     {
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $folder = storage_path("tmp/auth$id/");
         $zipFile = storage_path("tmp/auth_".$fct->Alumno->dualName.".zip");
         if (!file_exists($folder)) {
@@ -395,12 +411,12 @@ class FctAlumnoController extends IntranetController
 
     public function AutDual($id)
     {
-        return response()->file(FDFPrepareService::exec(new NotificacioInspeccioResource(AlumnoFct::findOrFail($id))));
+        return response()->file(FDFPrepareService::exec(new NotificacioInspeccioResource($this->alumnoFcts()->findOrFail((int) $id))));
     }
 
     public static function preparePdf($id)
     {
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = app(AlumnoFctService::class)->findOrFail((int) $id);
         $secretario = cargo('secretario');
         $director = cargo('director');
         $dades = [
@@ -437,7 +453,7 @@ class FctAlumnoController extends IntranetController
 
     public function pg0301($id)
     {
-        $fct = AlumnoFct::find($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $fct->pg0301 = $fct->pg0301 ? 0 : 1;
         $fct->save();
         return redirect()->action('PanelPG0301Controller@indice', ['id' => $fct->Grup]);
@@ -445,7 +461,7 @@ class FctAlumnoController extends IntranetController
 
     public function email($id)
     {
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $alumno = $fct->Alumno;
         Mail::to($alumno->email)
             ->bcc(authUser()->email)
@@ -463,7 +479,7 @@ class FctAlumnoController extends IntranetController
     }
 
     public function importa($id){
-        $fct = AlumnoFct::findOrFail($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $dni = $fct->Alumno->dni;
         $annexos = Adjunto::where('route', 'like', "dual/$dni")->get();
         if ($annexos->isEmpty()){

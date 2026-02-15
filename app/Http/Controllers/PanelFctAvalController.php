@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
@@ -11,7 +12,6 @@ use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonConfirmacion;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Documento;
 use Intranet\Application\Profesor\ProfesorService;
@@ -31,6 +31,7 @@ class PanelFctAvalController extends IntranetController
     use DropZone;
 
     private ?GrupoService $grupoService = null;
+    private ?AlumnoFctService $alumnoFctService = null;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     const ROLES_ROL_CAPAC = 'roles.rol.jefe_practicas';
@@ -52,10 +53,11 @@ class PanelFctAvalController extends IntranetController
      */
     protected $profile = false;
 
-    public function __construct(?GrupoService $grupoService = null)
+    public function __construct(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null)
     {
         parent::__construct();
         $this->grupoService = $grupoService;
+        $this->alumnoFctService = $alumnoFctService;
     }
 
     private function grupos(): GrupoService
@@ -65,6 +67,15 @@ class PanelFctAvalController extends IntranetController
         }
 
         return $this->grupoService;
+    }
+
+    private function alumnoFcts(): AlumnoFctService
+    {
+        if ($this->alumnoFctService === null) {
+            $this->alumnoFctService = app(AlumnoFctService::class);
+        }
+
+        return $this->alumnoFctService;
     }
 
     /**
@@ -520,13 +531,13 @@ class PanelFctAvalController extends IntranetController
     {
         $document = array();
 
-        $fct = AlumnoFct::findOrFail($id); //cerque el que toca
+        $fct = $this->alumnoFcts()->findOrFail((int) $id); //cerque el que toca
         $document['title'] = 10;
         $document['dni'] = $fct->Alumno->dni;
         $document['alumne'] = trim($fct->Alumno->shortName);
 
 
-        $fcts = AlumnoFct::where('idAlumno', $fct->idAlumno)->where('a56', '>', 0)->get(); //mira tots els de l'alumne
+        $fcts = $this->alumnoFcts()->byAlumnoWithA56((string) $fct->idAlumno); //mira tots els de l'alumne
 
         foreach ($fcts as $key => $fct) {  // cerque els adjunts
             $adjuntos[$key] = Adjunto::where('route', 'alumnofctaval/'.$fct->id)
