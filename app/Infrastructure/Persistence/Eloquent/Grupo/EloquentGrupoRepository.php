@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Intranet\Domain\Grupo\GrupoRepositoryInterface;
 use Intranet\Entities\Grupo;
 
+/**
+ * Implementació Eloquent del repositori de Grupo.
+ */
 class EloquentGrupoRepository implements GrupoRepositoryInterface
 {
     public function create(array $attributes): Grupo
@@ -96,6 +99,9 @@ class EloquentGrupoRepository implements GrupoRepositoryInterface
             ->get();
     }
 
+    /**
+     * Cerca el primer grup associat al tutor o al professor substituït.
+     */
     public function byTutorOrSubstitute(string $dni, ?string $sustituyeA): ?Grupo
     {
         return Grupo::query()
@@ -129,6 +135,9 @@ class EloquentGrupoRepository implements GrupoRepositoryInterface
             ->get();
     }
 
+    /**
+     * Retorna tots els grups amb relacions bàsiques per a llistats de direcció.
+     */
     public function allWithTutorAndCiclo(): EloquentCollection
     {
         return Grupo::query()
@@ -136,6 +145,9 @@ class EloquentGrupoRepository implements GrupoRepositoryInterface
             ->get();
     }
 
+    /**
+     * Retorna els grups del professor amb la relació de cicle carregada.
+     */
     public function misGruposWithCiclo(): EloquentCollection
     {
         return Grupo::query()

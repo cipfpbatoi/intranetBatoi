@@ -7,6 +7,11 @@ namespace Intranet\Domain\Grupo;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Intranet\Entities\Grupo;
 
+/**
+ * Contracte d'accés a dades de l'agregat Grupo.
+ *
+ * Separa els casos d'ús de la implementació Eloquent.
+ */
 interface GrupoRepositoryInterface
 {
     /**
@@ -62,6 +67,12 @@ interface GrupoRepositoryInterface
      */
     public function withActaPendiente(): EloquentCollection;
 
+    /**
+     * Retorna el primer grup on el professor és tutor o tutor substituït.
+     *
+     * @param string $dni DNI del professor autenticat
+     * @param string|null $sustituyeA DNI del professor substituït
+     */
     public function byTutorOrSubstitute(string $dni, ?string $sustituyeA): ?Grupo;
 
     /**

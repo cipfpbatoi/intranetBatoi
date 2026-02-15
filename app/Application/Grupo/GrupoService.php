@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Intranet\Domain\Grupo\GrupoRepositoryInterface;
 use Intranet\Entities\Grupo;
 
+/**
+ * Servei d'aplicació per a casos d'ús relacionats amb grups.
+ *
+ * Manté controladors i entitats desacoblats de la capa de persistència.
+ */
 class GrupoService
 {
     public function __construct(private readonly GrupoRepositoryInterface $grupoRepository)
@@ -106,6 +111,9 @@ class GrupoService
         return $this->grupoRepository->withActaPendiente();
     }
 
+    /**
+     * Retorna el primer grup on el professor és tutor o substitueix al tutor.
+     */
     public function byTutorOrSubstitute(string $dni, ?string $sustituyeA): ?Grupo
     {
         return $this->grupoRepository->byTutorOrSubstitute($dni, $sustituyeA);
@@ -143,6 +151,9 @@ class GrupoService
 
     /**
      * @return EloquentCollection<int, Grupo>
+     */
+    /**
+     * Retorna els grups del professor amb la relació de cicle carregada.
      */
     public function misGruposWithCiclo(): EloquentCollection
     {
