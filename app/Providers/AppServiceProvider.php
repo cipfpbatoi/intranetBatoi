@@ -4,10 +4,12 @@ namespace Intranet\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Blade;
+use Intranet\Domain\AlumnoFct\AlumnoFctRepositoryInterface;
 use Intranet\Domain\Comision\ComisionRepositoryInterface;
 use Intranet\Domain\Grupo\GrupoRepositoryInterface;
 use Intranet\Domain\Horario\HorarioRepositoryInterface;
 use Intranet\Domain\Profesor\ProfesorRepositoryInterface;
+use Intranet\Infrastructure\Persistence\Eloquent\AlumnoFct\EloquentAlumnoFctRepository;
 use Intranet\Infrastructure\Persistence\Eloquent\Comision\EloquentComisionRepository;
 use Intranet\Infrastructure\Persistence\Eloquent\Grupo\EloquentGrupoRepository;
 use Intranet\Infrastructure\Persistence\Eloquent\Horario\EloquentHorarioRepository;
@@ -36,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind(AlumnoFctRepositoryInterface::class, EloquentAlumnoFctRepository::class);
         $this->app->bind(ComisionRepositoryInterface::class, EloquentComisionRepository::class);
         $this->app->bind(ProfesorRepositoryInterface::class, EloquentProfesorRepository::class);
         $this->app->bind(HorarioRepositoryInterface::class, EloquentHorarioRepository::class);
