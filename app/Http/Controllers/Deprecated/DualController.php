@@ -120,7 +120,7 @@ class DualController extends ModalController
         $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info','id' => 'anexoVI']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeXIV", ['class' => 'btn-info','id' => 'anexoXIV']));
 
-        Session::put('redirect', 'DualController@index');
+        Session::put('redirect', 'Deprecated\\DualController@index');
     }
         //
 
