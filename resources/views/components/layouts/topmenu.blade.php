@@ -21,9 +21,9 @@
             </li>
 
             {{-- Menú definit per configuració --}}
-            {!! Intranet\Entities\Menu::make('topmenu') !!}
+            {!! app(\Intranet\Application\Menu\MenuService::class)->make('topmenu') !!}
         @else
-            {!! Intranet\Entities\Menu::make('topalumno') !!}
+            {!! app(\Intranet\Application\Menu\MenuService::class)->make('topalumno') !!}
         @endif
 
         {{-- Opció per tornar si s'ha fet canvi d'usuari --}}
