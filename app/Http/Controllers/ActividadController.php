@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Presentation\Crud\ActividadCrudSchema;
 
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonIcon;
@@ -36,23 +37,8 @@ class ActividadController extends ModalController
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';
-    protected $gridFields = ['name', 'desde', 'hasta', 'situacion'];
-    protected $formFields= [
-        'id' => ['type' => 'hidden'],
-        'tipo_actividad_id' => ['type' => 'select'],
-        'name' => ['type' => 'text'],
-        'desde' => ['type' => 'datetime'],
-        'hasta' => ['type' => 'datetime'],
-        'poll' => ['type' => 'hidden'],
-        'complementaria' => ['type' => 'checkbox'],
-        'fueraCentro' => ['type' => 'checkbox'],
-        'transport' => ['type' => 'checkbox'],
-        'descripcion' => ['type' => 'textarea'],
-        'objetivos' => ['type' => 'textarea'],
-        'extraescolar' => ['type' => 'hidden'],
-        'comentarios' => ['type' => 'textarea'],
-        'recomanada' => ['type' => 'hidden']
-    ];
+    protected $gridFields = ActividadCrudSchema::GRID_FIELDS;
+    protected $formFields = ActividadCrudSchema::FORM_FIELDS;
     
     protected function search()
     {
