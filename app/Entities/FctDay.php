@@ -25,6 +25,12 @@ class FctDay extends Model
         'descripcio',
     ];
 
+    protected $casts = [
+        'colaboracion_id' => 'integer',
+        'hores_previstes' => 'float',
+        'hores_realitzades' => 'float',
+    ];
+
     /**
      * Relació amb AlumnoFct (molts a un)
      */
@@ -35,6 +41,14 @@ class FctDay extends Model
     public function getHorariAttribute()
     {
         return $this->alumnoFct->Fct->Colaboracion->Centro->horarios ?? null;
+    }
+
+    /**
+     * Normalitza valors buits perquè la BBDD no reba '' en una FK integer nullable.
+     */
+    public function setColaboracionIdAttribute($value): void
+    {
+        $this->attributes['colaboracion_id'] = ($value === '' || $value === null) ? null : (int) $value;
     }
 
 }

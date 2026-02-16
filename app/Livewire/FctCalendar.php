@@ -112,7 +112,7 @@ class FctCalendar extends Component
                     'nia'              => $this->alumnoNia,
                     'dia'              => $date->toDateString(),
                     'hores_previstes'  => $horesAssignar,
-                    'colaboracion_id'  => $tram['colaboracion_id'] ?? null,
+                    'colaboracion_id'  => $this->normalizeNullableInt($tram['colaboracion_id'] ?? null),
                 ]);
 
                 $assignades += $horesAssignar;
@@ -297,6 +297,19 @@ class FctCalendar extends Component
         }
 
         return $value;
+    }
+
+    private function normalizeNullableInt($value): ?int
+    {
+        if ($value === '' || $value === null) {
+            return null;
+        }
+
+        if (!is_numeric($value)) {
+            return null;
+        }
+
+        return (int) $value;
     }
 
     public function exportCalendarPdf()
