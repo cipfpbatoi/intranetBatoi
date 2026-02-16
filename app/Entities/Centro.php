@@ -3,7 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
 
 class Centro extends Model
