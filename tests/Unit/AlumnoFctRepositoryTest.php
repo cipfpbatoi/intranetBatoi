@@ -38,6 +38,7 @@ class AlumnoFctRepositoryTest extends TestCase
 
     protected function tearDown(): void
     {
+        Schema::connection('sqlite')->dropIfExists('profesores');
         Schema::connection('sqlite')->dropIfExists('alumnos_grupos');
         Schema::connection('sqlite')->dropIfExists('grupos');
         Schema::connection('sqlite')->dropIfExists('colaboraciones');
@@ -119,8 +120,36 @@ class AlumnoFctRepositoryTest extends TestCase
         $this->assertSame([1, 2], $byAlumnoA56);
     }
 
+    public function test_aval_helpers_filtren_per_tutor_i_grup(): void
+    {
+        DB::table('alumno_fcts')->where('id', 1)->update(['actas' => 0, 'idProfesor' => 'P1']);
+        DB::table('alumno_fcts')->where('id', 2)->update(['actas' => 0, 'idProfesor' => 'P1']);
+        DB::table('alumno_fcts')->where('id', 3)->update(['actas' => 1, 'idProfesor' => 'P1']);
+
+        $repo = $this->app->make(AlumnoFctRepositoryInterface::class);
+
+        $alumnos = $repo->avalDistinctAlumnoIdsByProfesor('P1');
+        sort($alumnos);
+        $this->assertSame(['A1', 'A2'], $alumnos);
+
+        $latestA1 = $repo->latestAvalByAlumnoAndProfesor('A1', 'P1');
+        $this->assertNotNull($latestA1);
+        $this->assertSame(1, (int) $latestA1->id);
+
+        $avaluables = $repo->avaluablesNoAval('P1')->pluck('id')->sort()->values()->all();
+        $this->assertSame([1, 3], $avaluables);
+
+        $avaluablesG1 = $repo->avaluablesNoAval('P1', 'G1')->pluck('id')->values()->all();
+        $this->assertSame([1], $avaluablesG1);
+    }
+
     private function createSchema(): void
     {
+        Schema::connection('sqlite')->create('profesores', function (Blueprint $table): void {
+            $table->string('dni')->primary();
+            $table->string('sustituye_a')->nullable();
+        });
+
         Schema::connection('sqlite')->create('alumno_fcts', function (Blueprint $table): void {
             $table->increments('id');
             $table->string('idAlumno');
@@ -128,6 +157,7 @@ class AlumnoFctRepositoryTest extends TestCase
             $table->string('idProfesor')->nullable();
             $table->string('idSao')->nullable();
             $table->unsignedTinyInteger('a56')->default(0);
+            $table->unsignedTinyInteger('actas')->default(0);
         });
 
         Schema::connection('sqlite')->create('fcts', function (Blueprint $table): void {
@@ -155,6 +185,10 @@ class AlumnoFctRepositoryTest extends TestCase
 
     private function seedData(): void
     {
+        DB::table('profesores')->insert([
+            ['dni' => 'P1', 'sustituye_a' => null],
+        ]);
+
         DB::table('grupos')->insert([
             ['codigo' => 'G1', 'idCiclo' => 10],
             ['codigo' => 'G2', 'idCiclo' => 20],

@@ -110,4 +110,49 @@ class EloquentAlumnoFctRepository implements AlumnoFctRepositoryInterface
             ->where('idProfesor', $fromDni)
             ->update(['idProfesor' => $toDni]);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function avalDistinctAlumnoIdsByProfesor(?string $profesor = null): array
+    {
+        return AlumnoFct::query()
+            ->misFcts($profesor)
+            ->esAval()
+            ->distinct()
+            ->pluck('idAlumno')
+            ->map(static fn ($id): string => (string) $id)
+            ->values()
+            ->all();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function latestAvalByAlumnoAndProfesor(string $idAlumno, ?string $profesor = null): ?AlumnoFct
+    {
+        return AlumnoFct::query()
+            ->misFcts($profesor)
+            ->esAval()
+            ->where('idAlumno', $idAlumno)
+            ->orderByDesc('idSao')
+            ->first();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function avaluablesNoAval(?string $profesor = null, mixed $grupo = null): EloquentCollection
+    {
+        $query = AlumnoFct::query()
+            ->misFcts($profesor)
+            ->esAval()
+            ->where('actas', '<', 2);
+
+        if ($grupo !== null) {
+            $query->Grupo($grupo);
+        }
+
+        return $query->get();
+    }
 }

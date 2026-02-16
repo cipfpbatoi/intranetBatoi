@@ -73,4 +73,23 @@ interface AlumnoFctRepositoryInterface
      * Reassigna tutor responsable en bloc.
      */
     public function reassignProfesor(string $fromDni, string $toDni): int;
+
+    /**
+     * Recupera els identificadors d'alumnat amb FCT avaluable del tutor.
+     *
+     * @return array<int, string>
+     */
+    public function avalDistinctAlumnoIdsByProfesor(?string $profesor = null): array;
+
+    /**
+     * Recupera l'últim registre avaluable d'un alumne per tutor.
+     */
+    public function latestAvalByAlumnoAndProfesor(string $idAlumno, ?string $profesor = null): ?AlumnoFct;
+
+    /**
+     * Recupera registres avaluables que encara no estan tancats en acta.
+     *
+     * @return EloquentCollection<int, AlumnoFct>
+     */
+    public function avaluablesNoAval(?string $profesor = null, mixed $grupo = null): EloquentCollection;
 }

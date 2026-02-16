@@ -108,4 +108,32 @@ class AlumnoFctService
     {
         return $this->alumnoFctRepository->reassignProfesor($fromDni, $toDni);
     }
+
+    /**
+     * Recupera identificadors d'alumnes amb FCT avaluable del tutor.
+     *
+     * @return array<int, string>
+     */
+    public function avalDistinctAlumnoIdsByProfesor(?string $profesor = null): array
+    {
+        return $this->alumnoFctRepository->avalDistinctAlumnoIdsByProfesor($profesor);
+    }
+
+    /**
+     * Recupera l'últim registre avaluable d'un alumne per tutor.
+     */
+    public function latestAvalByAlumnoAndProfesor(string $idAlumno, ?string $profesor = null): ?AlumnoFct
+    {
+        return $this->alumnoFctRepository->latestAvalByAlumnoAndProfesor($idAlumno, $profesor);
+    }
+
+    /**
+     * Recupera registres avaluables no tancats en acta.
+     *
+     * @return EloquentCollection<int, AlumnoFct>
+     */
+    public function avaluablesNoAval(?string $profesor = null, mixed $grupo = null): EloquentCollection
+    {
+        return $this->alumnoFctRepository->avaluablesNoAval($profesor, $grupo);
+    }
 }

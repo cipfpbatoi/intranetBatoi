@@ -2,6 +2,11 @@
 
 namespace Intranet\Entities;
 
+/**
+ * @deprecated Model temporal per al CRUD històric d'avaluació de FCT.
+ *
+ * Es recomana migrar casos d'ús cap a AlumnoFctService.
+ */
 class AlumnoFctAval extends AlumnoFct
 {
 

@@ -33,10 +33,6 @@ class AlumnoFctSignatureService
      */
     public function findByType(AlumnoFct $alumnoFct, string $tipus, ?bool $signed = null): ?Signatura
     {
-        if (empty($alumnoFct->idSao)) {
-            return null;
-        }
-
         if ($alumnoFct->relationLoaded('Signatures')) {
             $query = $alumnoFct->Signatures->where('tipus', $tipus);
             if ($signed !== null) {
@@ -44,6 +40,10 @@ class AlumnoFctSignatureService
             }
 
             return $query->first();
+        }
+
+        if (empty($alumnoFct->idSao)) {
+            return null;
         }
 
         $query = Signatura::query()
@@ -66,4 +66,3 @@ class AlumnoFctSignatureService
         return storage_path("app/annexes/{$prefix}_{$alumnoFct->idSao}.pdf");
     }
 }
-

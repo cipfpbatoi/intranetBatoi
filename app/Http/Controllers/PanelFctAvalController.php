@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Presentation\Crud\AlumnoFctAvalCrudSchema;
 
 
 use DB;
@@ -12,7 +13,6 @@ use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonConfirmacion;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Adjunto;
-use Intranet\Entities\AlumnoFctAval;
 use Intranet\Entities\Documento;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Exceptions\IntranetException;
@@ -47,7 +47,8 @@ class PanelFctAvalController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['Nombre', 'Qualificacio', 'Projecte', 'hasta'];
+    protected $gridFields = AlumnoFctAvalCrudSchema::GRID_FIELDS;
+    protected $formFields = AlumnoFctAvalCrudSchema::FORM_FIELDS;
     /**
      * @var bool
      */
@@ -83,12 +84,13 @@ class PanelFctAvalController extends IntranetController
      */
     public function search()
     {
-        $nombres = AlumnoFctAval::select('idAlumno')->distinct()->misFcts()->esAval()->get()->toArray();
+        $nombres = $this->alumnoFcts()->avalDistinctAlumnoIdsByProfesor(AuthUser()->dni);
         $todas = collect();
         foreach ($nombres as $nombre) {
-            $todas->push(AlumnoFctAval::misFcts()->esAval()->where('idAlumno', $nombre['idAlumno'])
-                ->orderByDesc('idSao')
-                ->first());
+            $fct = $this->alumnoFcts()->latestAvalByAlumnoAndProfesor((string) $nombre, AuthUser()->dni);
+            if ($fct !== null) {
+                $todas->push($fct);
+            }
         }
         return $todas;
         
@@ -175,7 +177,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function apte($id)
     {
-        $fct = AlumnoFctAval::find($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $fct->calificacion = 1;
         $fct->save();
 
@@ -190,7 +192,7 @@ class PanelFctAvalController extends IntranetController
     {
         $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
 
-        $fct = AlumnoFctAval::find($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $fct->calificacion = 0;
         $fct->calProyecto = $grupo?->proyecto ? 0 : null;
         $fct->save();
@@ -204,7 +206,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function noAval($id)
     {
-        $fct = AlumnoFctAval::find($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $fct->calificacion = null;
         $fct->calProyecto = null;
         $fct->actas = 0;
@@ -219,7 +221,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function noProyecto($id)
     {
-        $fct = AlumnoFctAval::find($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $fct->calProyecto = 0;
         $fct->save();
 
@@ -233,7 +235,7 @@ class PanelFctAvalController extends IntranetController
     protected function nullProyecto($id)
     {
         DB::transaction(function () use ($id) {
-            $fct = AlumnoFctAval::find($id);
+            $fct = $this->alumnoFcts()->findOrFail((int) $id);
             $fct->calProyecto = null;
             $fct->save();
 
@@ -256,7 +258,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function nuevoProyecto($id)
     {
-        $fct = AlumnoFctAval::find($id);
+        $fct = $this->alumnoFcts()->findOrFail((int) $id);
         $fct->calProyecto = null;
         $fct->actas = 1;
         $fct->save();
@@ -270,7 +272,7 @@ class PanelFctAvalController extends IntranetController
      */
     public function empresa($id)
     {
-       $fct = AlumnoFctAval::find($id);
+       $fct = $this->alumnoFcts()->findOrFail((int) $id);
        $fct->insercion = $fct->insercion?0:1;
        $fct->save();
        return $this->redirect();
@@ -332,11 +334,7 @@ class PanelFctAvalController extends IntranetController
     {
 
         $found = false;
-        $query = AlumnoFctAval::Avaluables()->NoAval();
-        if ($grupo) {
-            $query->Grupo($grupo);
-        }
-        foreach ($query->get() as $fct) {
+        foreach ($this->alumnoFcts()->avaluablesNoAval(AuthUser()->dni, $grupo) as $fct) {
             if ($projectNeeded) {
                 if (isset($fct->calProyecto)) {
                     $fct->actas = 3;
