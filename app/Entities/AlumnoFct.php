@@ -2,6 +2,7 @@
 
 namespace Intranet\Entities;
 
+use Intranet\Application\AlumnoFct\AlumnoFctSignatureService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Date\Date;
@@ -245,16 +246,12 @@ class AlumnoFct extends Model
 
     public function routeFile($anexe)
     {
-        return storage_path("app/annexes/" . (strlen($anexe) > 1 ? "{$anexe}_{$this->idSao}.pdf" : "A{$anexe}_{$this->idSao}.pdf"));
+        return $this->signatureService()->routeFile($this, (string) $anexe);
     }
 
     public function getSignAttribute()
     {
-        if ($this->relationLoaded('Signatures')) {
-            return $this->Signatures->isNotEmpty();
-        }
-
-        return $this->Signatures()->exists();
+        return $this->signatureService()->hasAnySignature($this);
     }
     
 
@@ -340,17 +337,17 @@ class AlumnoFct extends Model
 
     public function getA2Attribute()
     {
-        return $this->findSignature('A2', true);
+        return $this->signatureService()->findByType($this, 'A2', true);
     }
 
     public function getA1Attribute()
     {
-        return $this->findSignature('A1', true);
+        return $this->signatureService()->findByType($this, 'A1', true);
     }
 
     public function getA3Attribute()
     {
-        return $this->findSignature('A3');
+        return $this->signatureService()->findByType($this, 'A3');
     }
 
 
@@ -371,23 +368,9 @@ class AlumnoFct extends Model
         return $this->annexesCache;
     }
 
-    private function findSignature(string $tipus, ?bool $signed = null): ?Signatura
+    private function signatureService(): AlumnoFctSignatureService
     {
-        if ($this->relationLoaded('Signatures')) {
-            $query = $this->Signatures->where('tipus', $tipus);
-            if ($signed !== null) {
-                $query = $query->where('signed', $signed);
-            }
-
-            return $query->first();
-        }
-
-        $query = Signatura::where('idSao', $this->idSao)->where('tipus', $tipus);
-        if ($signed !== null) {
-            $query->where('signed', $signed);
-        }
-
-        return $query->first();
+        return app(AlumnoFctSignatureService::class);
     }
 
 
