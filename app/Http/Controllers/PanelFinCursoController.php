@@ -15,7 +15,7 @@ use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Services\Document\TipoReunionService;
-use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Reunion;
 use function PHPUnit\Framework\isNull;
 
@@ -190,9 +190,9 @@ class PanelFinCursoController extends BaseController
         if ($grupo === null) {
             return;
         }
-        $alumnes = AlumnoFctAval::select('idAlumno')->distinct()->misFcts()->esAval()->get()->toArray();
+        $alumnes = AlumnoFct::select('idAlumno')->distinct()->misFcts()->esAval()->get()->toArray();
         foreach ($alumnes as $alumne) {
-            $fctAval = AlumnoFctAval::esAval()->where('idAlumno', $alumne['idAlumno'])->orderBy('idAlumno')->first();
+            $fctAval = AlumnoFct::esAval()->where('idAlumno', $alumne['idAlumno'])->orderBy('idAlumno')->first();
 
             if (( !isNull($fctAval->calificacion)  || $fctAval->actas < 2) && $fctAval->asociacion == 1) {
                 $avisos[self::DANGER][] = "Fct de l'alumne ".$fctAval->Nombre.' no avaluada';

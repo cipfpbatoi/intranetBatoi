@@ -144,6 +144,60 @@ class AlumnoFct extends Model
         return $query->whereIn('idProfesor', $profesor)->esExempt();
     }
 
+    public function scopeNoAval($query)
+    {
+        return $query->where('actas', '<', 2);
+    }
+
+    public function scopePendiente($query)
+    {
+        return $query->where('actas', '=', 3);
+    }
+
+    public function scopeAval($query)
+    {
+        return $query->where('actas', '=', 2);
+    }
+
+    public function scopePendienteNotificar($query)
+    {
+        return $query->where('calificacion', 1)
+            ->where('correoAlumno', 0);
+    }
+
+    public function scopeCalificados($query)
+    {
+        return $query->whereNotNull('calificacion');
+    }
+
+    public function scopeAprobados($query)
+    {
+        return $query->where('calificacion', 1);
+    }
+
+    public function scopeTitulan($query)
+    {
+        return $query->where('calificacion', '>', 0)->where('calProyecto', '>', 4);
+    }
+
+    public function scopeRealFcts($query, $profesor = null)
+    {
+        $profesor = Profesor::getSubstituts($profesor ?? authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor)->estaSao();
+    }
+
+    public function scopeAvaluables($query, $profesor = null)
+    {
+        $profesor = Profesor::getSubstituts($profesor ?? authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor)->esAval();
+    }
+
+    public function scopeMisErasmus($query, $profesor = null)
+    {
+        $profesor = Profesor::getSubstituts($profesor ?? authUser()->dni);
+        return $query->whereIn('idProfesor', $profesor)->esErasmus();
+    }
+
 
     public function scopeEsErasmus($query)
     {
@@ -267,6 +321,16 @@ class AlumnoFct extends Model
     public function getHorasRealizadasAttribute()
     {
         return $this->presenter()->completedHoursLabel();
+    }
+
+    public function getHorasTotalAttribute()
+    {
+        return $this->correoAlumno
+            ? $this->horas
+            : static::query()
+                ->where('idAlumno', $this->idAlumno)
+                ->where('correoAlumno', 0)
+                ->sum('horas');
     }
 
     public function getPeriodeAttribute()

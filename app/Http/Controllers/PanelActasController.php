@@ -7,7 +7,7 @@ use Intranet\Http\Controllers\Core\BaseController;
 
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Notifications\NotificationService;
-use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\AlumnoFct;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\TitolAlumne;
 use Intranet\Services\Notifications\AdviseService;
@@ -28,7 +28,7 @@ class PanelActasController extends BaseController
     /**
      * @var string
      */
-    protected $model = 'AlumnoFctAval';
+    protected $model = 'AlumnoFct';
     /**
      * @var array
      */
@@ -82,7 +82,7 @@ class PanelActasController extends BaseController
         abort_unless($grupo !== null, 404);
         $this->titulo = ['quien' => $grupo->nombre ];
         if ($grupo->acta_pendiente) {
-            return AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
+            return AlumnoFct::Grupo($grupo)->Pendiente()->get();
         }
 
         return [];
@@ -96,7 +96,7 @@ class PanelActasController extends BaseController
     {
         $grupo = $this->grupos()->find((string) $idGrupo);
         abort_unless($grupo !== null, 404);
-        $fcts = AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
+        $fcts = AlumnoFct::Grupo($grupo)->Pendiente()->get();
         $correus = 0;
         foreach ($fcts as $fct) {
             $fct->actas = 2;
@@ -120,7 +120,7 @@ class PanelActasController extends BaseController
     {
         $grupo = $this->grupos()->find((string) $idGrupo);
         abort_unless($grupo !== null, 404);
-        $fcts = AlumnoFctAval::Grupo($grupo)->Pendiente()->get();
+        $fcts = AlumnoFct::Grupo($grupo)->Pendiente()->get();
         foreach ($fcts as $fct) {
             $fct->actas = 0;
             $fct->save();

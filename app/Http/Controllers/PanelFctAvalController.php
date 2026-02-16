@@ -43,7 +43,7 @@ class PanelFctAvalController extends IntranetController
     /**
      * @var string
      */
-    protected $model = 'AlumnoFctAval';
+    protected $model = 'AlumnoFct';
     /**
      * @var array
      */

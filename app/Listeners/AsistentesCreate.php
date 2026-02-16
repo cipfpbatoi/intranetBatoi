@@ -6,7 +6,7 @@ use Intranet\Events\ReunionCreated;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\AlumnoFct;
 use Illuminate\Support\Facades\Log;
 
 class AsistentesCreate
@@ -42,7 +42,7 @@ class AsistentesCreate
         if ($reunion->extraOrdinaria) {
             if ($grupo->curso == 2) {
                 return $grupo->Alumnos
-                    ->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(), 'idAlumno'));
+                    ->whereNotIn('nia', hazArray(AlumnoFct::misFcts()->titulan()->get(), 'idAlumno'));
             }
             return $grupo->Alumnos;
         }
