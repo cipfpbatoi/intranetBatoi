@@ -33,7 +33,7 @@ class MenuController extends IntranetController
         'url',
         'Xrol',
         'Xactivo',
-        'ajuda'
+        'Xajuda'
     ];
 
     /**

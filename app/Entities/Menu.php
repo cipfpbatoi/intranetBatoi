@@ -109,4 +109,12 @@ class Menu extends Model
         return trans("messages.menu.".ucwords($this->nombre));
     }
 
+    /**
+     * Versió segura de l'ajuda per al grid (sense HTML).
+     */
+    public function getXajudaAttribute()
+    {
+        return trim(strip_tags((string) $this->attributes['ajuda']));
+    }
+
 }
