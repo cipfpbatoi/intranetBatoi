@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Jenssegers\Date\Date;
 use Intranet\Events\FctAlDeleted;
+use Intranet\Presentation\AlumnoFct\AlumnoFctPresenter;
 
 
 class AlumnoFct extends Model
@@ -38,11 +39,6 @@ class AlumnoFct extends Model
         'deleted' => FctAlDeleted::class,
     ];
 
-    // 🎨 Constants per a estils de fons (background)
-    private const BG_PURPLE = 'bg-purple';
-    private const BG_ORANGE = 'bg-orange';
-    private const BG_BLUE_SKY = 'bg-blue-sky';
-    private const BG_GREEN = 'bg-green';
     private ?\Illuminate\Support\Collection $annexesCache = null;
 
     // ===========================
@@ -191,18 +187,18 @@ class AlumnoFct extends Model
 
     public function getCentroAttribute()
     {
-        return substr($this->Fct?->Centro ?? '', 0, 30);
+        return $this->presenter()->centerName(30);
     }
 
 
     public function getNombreAttribute()
     {
-        return $this->Alumno->ShortName ?? '';
+        return $this->presenter()->studentShortName();
     }
 
     public function getNomEdatAttribute()
     {
-        return $this->Alumno->ShortName . ($this->Alumno->esMenorEdat($this->desde) ? "<em class='fa fa-child'></em>" : '');
+        return $this->presenter()->studentNameWithMinorIcon();
     }
 
     public function getQualificacioAttribute()
@@ -229,33 +225,17 @@ class AlumnoFct extends Model
 
     public function getFinPracticasAttribute()
     {
-        if (!$this->horas_diarias) return '??';
-        $dies = ($this->horas - $this->realizadas) / $this->horas_diarias;
-        return floor($dies / 5) . ' Setmanes - ' . ($dies % 5) . ' Dia';
+        return $this->presenter()->remainingPracticeTimeLabel();
     }
 
     public function getClassAttribute()
     {
-        return match ($this->asociacion) {
-            2 => self::BG_PURPLE,
-            3 => self::BG_ORANGE,
-            default => $this->determinarFonsPerData(),
-        };
+        return $this->presenter()->cssClass();
     }
 
-    private function determinarFonsPerData()
+    public function presenter(): AlumnoFctPresenter
     {
-        $hoy = Date::now();
-        $fechaHasta = new Date($this->hasta);
-        $fechaDesde = new Date($this->desde);
-
-        if ($fechaHasta->format('Y-m-d') <= $hoy->format('Y-m-d')) {
-            return self::BG_BLUE_SKY;
-        }
-        if ($this->adjuntos && $fechaDesde->format('Y-m-d') > $hoy->format('Y-m-d')) {
-            return self::BG_GREEN;
-        }
-        return '';
+        return new AlumnoFctPresenter($this);
     }
 
     public function getAdjuntosAttribute()
@@ -280,16 +260,16 @@ class AlumnoFct extends Model
 
     public function getContactoAttribute()
     {
-        return $this->Alumno->NameFull;
+        return $this->presenter()->contactName();
     }
 
     public function getFullNameAttribute()
     {
-        return $this->Alumno->fullName;
+        return $this->presenter()->fullName();
     }
     public function getHorasRealizadasAttribute()
     {
-        return $this->realizadas.'/'.$this->horas.' '.$this->actualizacion;
+        return $this->presenter()->completedHoursLabel();
     }
 
     public function getPeriodeAttribute()
@@ -314,11 +294,11 @@ class AlumnoFct extends Model
 
     public function getMiniCentroAttribute()
     {
-        return substr($this->Fct->Centro, 0, 15);
+        return $this->presenter()->centerName(15);
     }
     public function getInstructorAttribute()
     {
-        return substr($this->Fct->XInstructor, 0, 30);
+        return $this->presenter()->instructorName(30);
     }
     
 
@@ -377,7 +357,7 @@ class AlumnoFct extends Model
 
     public function getIdPrintAttribute()
     {
-        return $this->idFct.'-'.$this->nombre;
+        return $this->presenter()->printableId();
     }
 
     private function getAnnexesCollection(): \Illuminate\Support\Collection
