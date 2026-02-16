@@ -10,11 +10,21 @@ use Styde\Html\Facades\Alert;
 
 /**
  * Servei d'aplicació per al registre d'activitat d'usuari.
+ *
+ * Manté la lògica de creació/persistència i la notificació UI
+ * fora del model Eloquent `Activity`.
  */
 class ActivityService
 {
     /**
      * Crea un registre d'activitat i, si hi ha usuari autenticat, el persistix associat a l'autor.
+     *
+     * @param string $action Acció registrada (`create`, `update`, `email`, ...).
+     * @param Model|null $model Model afectat (opcional).
+     * @param string|null $comentari Text lliure associat a l'acció.
+     * @param string|null $fecha Data textual legacy (es transforma amb `fechaInglesaLarga`).
+     * @param string|null $document Context documental opcional.
+     * @return Activity
      */
     public function record(
         string $action,
@@ -42,6 +52,9 @@ class ActivityService
         return $activity;
     }
 
+    /**
+     * Mostra una alerta de confirmació quan el registre està vinculat a un model.
+     */
     private function notifyUser(Activity $activity): void
     {
         if ($activity->model_class) {
@@ -51,4 +64,3 @@ class ActivityService
         }
     }
 }
-

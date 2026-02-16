@@ -78,23 +78,7 @@ class AlumnoFct extends Model
     }
 
 
-    /*
-    public function scopeMisFcts($query, $profesor=null)
-    {
-        $profesor = $profesor?$profesor:authUser()->dni;
-        $alumnos = Alumno::select('nia')->misAlumnos($profesor)->get()->toArray();
-
-        $cicloC = app(\Intranet\Application\Grupo\GrupoService::class)->firstByTutor($profesor)?->idCiclo;
-        $colaboraciones = Colaboracion::select('id')->where('idCiclo', $cicloC)->get()->toArray();
-
-        $fcts = Fct::select('id')
-            ->whereIn('idColaboracion', $colaboraciones)
-            ->where('asociacion', '<', 3)
-            ->get()
-            ->toArray();
-        return $query->whereIn('idAlumno', $alumnos)->whereIn('idFct', $fcts);
-    }
-    */
+     
 
     // ===========================
     // 📌 SCOPES

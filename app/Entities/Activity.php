@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Activity extends Model
 {
+    /**
+     * @var array<int, string>
+     */
     protected $fillable = ['action', 'model_class', 'model_id', 'comentari', 'document', 'author_id', 'created_at'];
 
     /**
@@ -33,6 +36,9 @@ class Activity extends Model
         return $query->where('author_id', $profesor);
     }
 
+    /**
+     * Filtra per classe de model emmagatzemada en format FQCN.
+     */
     public function scopeModelo($query, $modelo)
     {
         return $query->where('model_class', 'Intranet\Entities\\' . $modelo);
@@ -61,6 +67,8 @@ class Activity extends Model
     public function scopeRelationId($query, $id)
     {
         $colaboracion = Fct::find($id)?->idColaboracion;
+
+        // Agrupat per evitar que l'OR trenque altres condicions del query extern.
         return $query->where(function ($inner) use ($id, $colaboracion) {
             $inner->where('model_id', $id);
             if ($colaboracion !== null) {

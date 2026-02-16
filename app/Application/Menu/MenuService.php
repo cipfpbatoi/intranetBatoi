@@ -10,6 +10,11 @@ use Styde\Html\Facades\Menu as StydeMenu;
 
 /**
  * Servei d'aplicació per construir i cachejar menús de navegació.
+ *
+ * Responsabilitats:
+ * - generar l'arbre de menú (amb filtres de rol),
+ * - encapsular cache per usuari/menú,
+ * - invalidar cache després de canvis CRUD.
  */
 class MenuService
 {
@@ -18,9 +23,11 @@ class MenuService
     /**
      * Construeix el menú per nom i usuari.
      *
-     * @param string $nom
-     * @param bool $array
-     * @param object|null $user
+     * Si no hi ha usuari autenticat, retorna menú buit.
+     *
+     * @param string $nom Nom funcional del menú (p. ex. `general`, `topmenu`).
+     * @param bool $array Si és `true`, retorna array; si és `false`, objecte renderitzable StydeMenu.
+     * @param object|null $user Usuari explícit per tests o contextos no HTTP.
      * @return mixed
      */
     public function make(string $nom, bool $array = false, $user = null)
@@ -45,6 +52,9 @@ class MenuService
 
     /**
      * Neteja el cache de menú (global o filtrat per nom/dni).
+     *
+     * @param string|null $nom
+     * @param string|null $dni
      */
     public function clearCache(?string $nom = null, ?string $dni = null): void
     {
@@ -72,6 +82,8 @@ class MenuService
     }
 
     /**
+     * Construeix l'estructura de menú a partir dels registres actius.
+     *
      * @param string $nom
      * @param object $user
      * @return array<string, mixed>
@@ -119,17 +131,26 @@ class MenuService
         return $menu;
     }
 
+    /**
+     * Determina si una URL és externa o interna per a StydeMenu.
+     */
     private function tipoUrl($url): string
     {
         $url = trim((string) $url);
         return preg_match('#^(https?:)?//#i', $url) === 1 ? 'full-url' : 'url';
     }
 
+    /**
+     * Compon la clau de cache per menú i usuari.
+     */
     private function cacheKey(string $nom, string $dni): string
     {
         return "menu:$nom:$dni";
     }
 
+    /**
+     * Registra la clau en l'índex global per permetre invalidació selectiva.
+     */
     private function registerCacheKey(string $key): void
     {
         $keys = Cache::get(self::CACHE_KEYS_INDEX, []);
@@ -143,6 +164,9 @@ class MenuService
         }
     }
 
+    /**
+     * Comprovació local de rol admin sobre l'usuari rebut.
+     */
     private function isAdminUser(object $user): bool
     {
         return isset($user->rol) && esRol((int) $user->rol, 11);
