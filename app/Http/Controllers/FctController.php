@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Presentation\Crud\FctCrudSchema;
 
 use DB;
 use Illuminate\Http\Request;
@@ -40,7 +41,8 @@ class FctController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['Centro','Contacto','Lalumnes','Nalumnes','sendCorreo'];
+    protected $gridFields = FctCrudSchema::GRID_FIELDS;
+    protected $formFields = FctCrudSchema::FORM_FIELDS;
     /**
      * @var
      */

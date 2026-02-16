@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Presentation\Crud\HorarioCrudSchema;
 
 use Illuminate\Http\Request;
 use Styde\Html\Facades\Alert;
@@ -18,7 +19,8 @@ class HorarioController extends IntranetController
 
     protected $model = 'Horario';
     protected $perfil = 'profesor';
-    protected $gridFields = ['XModulo','XOcupacion' ,'dia_semana', 'desde', 'aula'];
+    protected $gridFields = HorarioCrudSchema::GRID_FIELDS;
+    protected $formFields = HorarioCrudSchema::FORM_FIELDS;
     protected $modal = true;
 
     private ?HorarioService $horarioService = null;

@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Presentation\Crud\AlumnoFctCrudSchema;
 
 
 use DB;
@@ -46,7 +47,8 @@ class FctAlumnoController extends IntranetController
     protected $perfil = 'profesor';
     protected $model = 'AlumnoFct';
     protected $redirect = 'FctAlumnoController@index';
-    protected $gridFields = ['NomEdat', 'Centro', 'Instructor', 'desde',  'horasRealizadas','hasta', 'finPracticas'];
+    protected $gridFields = AlumnoFctCrudSchema::GRID_FIELDS;
+    protected $formFields = AlumnoFctCrudSchema::FORM_FIELDS;
     protected $profile = false;
     protected $titulo = [];
     protected $parametresVista = ['modal' => ['extended', 'saoPassword', 'loading','signatura']];
@@ -54,6 +56,7 @@ class FctAlumnoController extends IntranetController
 
     public function __construct(?AlumnoFctService $alumnoFctService = null)
     {
+        parent::__construct();
         $this->alumnoFctService = $alumnoFctService;
     }
 

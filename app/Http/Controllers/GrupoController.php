@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Presentation\Crud\GrupoCrudSchema;
 
 use DB;
 use Illuminate\Http\Request;
@@ -47,7 +48,8 @@ class GrupoController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo'  ,'Torn'];
+    protected $gridFields = GrupoCrudSchema::GRID_FIELDS;
+    protected $formFields = GrupoCrudSchema::FORM_FIELDS;
     protected $parametresVista = ['modal' => [  'selAlumGrup']];
 
     private function horarios(): HorarioService
