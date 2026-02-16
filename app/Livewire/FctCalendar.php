@@ -262,10 +262,41 @@ class FctCalendar extends Component
 
     public function updateDay($id, $hours)
     {
+        $normalized = $this->normalizeHours($hours);
+        if ($normalized === null) {
+            return;
+        }
+
         if ($day = FctDay::find($id)) {
-            $day->update(['hores_previstes' => $hours]);
+            $day->update(['hores_previstes' => $normalized]);
             $this->loadCalendar();
         }
+    }
+
+    private function normalizeHours($hours): ?float
+    {
+        if (is_string($hours)) {
+            $hours = trim($hours);
+            if ($hours === '') {
+                return 0.0;
+            }
+            $hours = str_replace(',', '.', $hours);
+        }
+
+        if (!is_numeric($hours)) {
+            return null;
+        }
+
+        $value = round((float) $hours, 2);
+        if ($value < 0) {
+            $value = 0.0;
+        }
+
+        if ($value > 99.99) {
+            return null;
+        }
+
+        return $value;
     }
 
     public function exportCalendarPdf()
