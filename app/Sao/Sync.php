@@ -22,7 +22,7 @@ class Sync
 
     }
 
-    public function execute($driver, callable $queryCallback = null)
+    public function execute($driver, ?callable $queryCallback = null)
     {
         $this->queryCallback = $queryCallback;
         return $this->index($driver);
