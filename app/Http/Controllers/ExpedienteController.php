@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Expediente\ExpedienteService;
 use Intranet\Http\Controllers\Core\ModalController;
 
 
@@ -9,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Expediente;
-use Intranet\Entities\TipoExpediente;
 use Intranet\Http\Requests\ExpedienteRequest;
 use Intranet\Presentation\Crud\ExpedienteCrudSchema;
 use Intranet\Http\Traits\Autorizacion;
@@ -27,6 +27,7 @@ use Styde\Html\Facades\Alert;
  */
 class ExpedienteController extends ModalController
 {
+    private ?ExpedienteService $expedienteService = null;
 
     use Imprimir,DropZone,
         Autorizacion;
@@ -42,19 +43,31 @@ class ExpedienteController extends ModalController
     protected $profile = false;
     protected $formFields = ExpedienteCrudSchema::FORM_FIELDS;
 
+    public function __construct(?ExpedienteService $expedienteService = null)
+    {
+        parent::__construct();
+        $this->expedienteService = $expedienteService;
+    }
 
+    private function expedients(): ExpedienteService
+    {
+        if ($this->expedienteService === null) {
+            $this->expedienteService = app(ExpedienteService::class);
+        }
+
+        return $this->expedienteService;
+    }
 
     public function store(ExpedienteRequest $request)
     {
-        $new = new Expediente();
-        $new->fillAll($request);
+        $this->expedients()->createFromRequest($request);
         return $this->redirect();
     }
 
 
     public function update(ExpedienteRequest $request, $id)
     {
-        Expediente::findOrFail($id)->fillAll($request);
+        $this->expedients()->updateFromRequest($id, $request);
         return $this->redirect();
     }
 
@@ -131,7 +144,7 @@ class ExpedienteController extends ModalController
      */
     public function pdf($id)
     {
-        $expediente = Expediente::find($id);
+        $expediente = $this->expedients()->findOrFail($id);
         $dades[] = $expediente;
         $vista = $expediente->TipoExpediente->vista;
 
@@ -145,10 +158,10 @@ class ExpedienteController extends ModalController
      */
     public function imprimir()
     {
-        $expedientes = Expediente::listos()->get();
+        $expedientes = $this->expedients()->readyToPrint();
 
         if ($expedientes->count()) {
-            foreach (TipoExpediente::all() as $tipo) {
+            foreach ($this->expedients()->allTypes() as $tipo) {
                 $todos = $expedientes->where('tipo', $tipo->id);
 
                 if ($todos->count()) {
@@ -190,7 +203,7 @@ class ExpedienteController extends ModalController
 
     public function show($id)
     {
-        $elemento = Expediente::findOrFail($id);
+        $elemento = $this->expedients()->findOrFail($id);
         $modelo = $this->model;
         return view('expediente.show', compact('elemento', 'modelo'));
     }
