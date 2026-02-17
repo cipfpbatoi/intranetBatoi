@@ -40,5 +40,32 @@ final class FctCrudSchema
         'autorizacion' => ['type' => 'checkbox'],
         'erasmus' => ['type' => 'checkbox'],
     ];
-}
 
+    /**
+     * Tipus d'input per a persistència/normalització en model legacy.
+     *
+     * @var array<string, array<string, mixed>>
+     */
+    public const INPUT_TYPES = [
+        'idAlumno' => ['type' => 'select'],
+        'idColaboracion' => ['type' => 'select'],
+        'idInstructor' => ['type' => 'select'],
+        'asociacion' => ['type' => 'hidden'],
+        'desde' => ['type' => 'date'],
+        'hasta' => ['type' => 'date'],
+        'autorizacion' => ['type' => 'checkbox'],
+    ];
+
+    /**
+     * Regles de validació de FCT.
+     *
+     * @var array<string, string>
+     */
+    public const RULES = [
+        'idAlumno' => 'sometimes|required',
+        'idColaboracion' => 'sometimes|required',
+        'idInstructor' => 'sometimes|required',
+        'desde' => 'sometimes|required|date',
+        'hasta' => 'sometimes|required|date',
+    ];
+}
