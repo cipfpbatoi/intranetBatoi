@@ -11,6 +11,7 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\TipoExpediente;
 use Intranet\Http\Requests\ExpedienteRequest;
+use Intranet\Presentation\Crud\ExpedienteCrudSchema;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Http\Traits\Core\DropZone;
@@ -33,12 +34,13 @@ class ExpedienteController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nomAlum', 'fecha', 'Xtipo', 'Xmodulo', 'situacion'];
+    protected $gridFields = ExpedienteCrudSchema::GRID_FIELDS;
     /**
      * @var string
      */
     protected $model = 'Expediente';
     protected $profile = false;
+    protected $formFields = ExpedienteCrudSchema::FORM_FIELDS;
 
 
 
