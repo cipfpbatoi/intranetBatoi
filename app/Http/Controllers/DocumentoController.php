@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\AlumnoFct\AlumnoFctService;
+use Intranet\Application\Documento\DocumentoLifecycleService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
@@ -11,6 +12,7 @@ use Intranet\Http\Controllers\Core\IntranetController;
 use Illuminate\Http\Request;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
+use Intranet\Presentation\Crud\DocumentoCrudSchema;
 use Intranet\Services\Document\TipoDocumentoService;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\General\GestorService;
@@ -23,28 +25,21 @@ class DocumentoController extends IntranetController
 {
     private ?GrupoService $grupoService = null;
     private ?AlumnoFctService $alumnoFctService = null;
+    private ?DocumentoLifecycleService $documentoLifecycleService = null;
 
     protected $model = 'Documento';
-    protected $formFields = ['tipoDocumento' => ['type' => 'select'],
-        'rol' => ['type' => 'hidden'],
-        'propietario' => ['disabled' => 'disabled'],
-        'grupo' => ['type' => 'select'],
-        'supervisor' => ['type' => 'hidden'],
-        'ciclo' => ['type' => 'hidden'],
-        'detalle' => ['type' => 'textarea'],
-        'curso' => ['disabled'=> 'disabled'],
-        'descripcion' => ['type' => 'text'],
-        'enlace' => ['type' => 'text'],
-        'fichero' => ['type' => 'file'],
-        'activo' => ['type' => 'checkbox'],
-        'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']],
-    ];
+    protected $formFields = DocumentoCrudSchema::FORM_FIELDS;
 
-    public function __construct(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null)
+    public function __construct(
+        ?GrupoService $grupoService = null,
+        ?AlumnoFctService $alumnoFctService = null,
+        ?DocumentoLifecycleService $documentoLifecycleService = null
+    )
     {
         parent::__construct();
         $this->grupoService = $grupoService;
         $this->alumnoFctService = $alumnoFctService;
+        $this->documentoLifecycleService = $documentoLifecycleService;
     }
 
     private function grupos(): GrupoService
@@ -63,6 +58,15 @@ class DocumentoController extends IntranetController
         }
 
         return $this->alumnoFctService;
+    }
+
+    private function documentos(): DocumentoLifecycleService
+    {
+        if ($this->documentoLifecycleService === null) {
+            $this->documentoLifecycleService = app(DocumentoLifecycleService::class);
+        }
+
+        return $this->documentoLifecycleService;
     }
 
 
@@ -148,18 +152,7 @@ class DocumentoController extends IntranetController
             ]);
             $formulario = new FormBuilder(
                 $elemento,
-                [
-                    'tipoDocumento' => ['disabled' => 'disabled'],
-                    'propietario' => ['disabled' => 'disabled'],
-                    'curso' => ['disabled'=> 'disabled'],
-                    'supervisor' => ['type' => 'hidden'],
-                    'ciclo' => ['type' => 'hidden'],
-                    'descripcion' => ['type' => 'text'],
-                    'detalle' => ['type' => 'textarea'],
-                    'nota' => ['type' => 'text'],
-                    'fichero' => ['type' => 'file'],
-                    'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
-                ]
+                DocumentoCrudSchema::projectFormFields()
             );
             $modelo = $this->model;
             Session::put('redirect', 'PanelFctAvalController@index');
@@ -253,20 +246,7 @@ class DocumentoController extends IntranetController
         ]);
         $formulario = new FormBuilder(
             $elemento,
-            [
-                'tipoDocumento' => ['disabled' => 'disabled'],
-                'instrucciones' => ['disabled' => 'disabled'],
-                'curso' => ['disabled'=> 'disabled'],
-                'rol' => ['type' => 'hidden'],
-                'propietario' => ['disabled' => 'disabled'],
-                'grupo' => ['disabled' => 'disabled'],
-                'supervisor' => ['type' => 'hidden'],
-                'ciclo' => ['type' => 'hidden'],
-                'detalle' => ['type' => 'textarea'],
-                'descripcion' => ['type' => 'text'],
-                'fichero' => ['type' => 'file'],
-                'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
-            ]
+            DocumentoCrudSchema::qualitatFormFields()
         );
         $modelo = $this->model;
         Session::put('redirect', 'FctController@index');
@@ -276,41 +256,7 @@ class DocumentoController extends IntranetController
     public function edit($id = null)
     {
         $elemento = Documento::findOrFail($id);
-        $formulario = $elemento->enlace?
-            new FormBuilder(
-                $elemento,
-                [
-                    'tipoDocumento' => ['type' => 'select'],
-                    'propietario' => ['disabled' => 'disabled'],
-                    'supervisor' => ['type' => 'hidden'],
-                    'rol' => ['type' => 'hidden'],
-                    'ciclo' => ['type' => 'hidden'],
-                    'detalle' => ['type' => 'textarea'],
-                    'curso' => ['disabled' => 'disabled'],
-                    'grupo' => ['disabled' => 'disabled'],
-                    'descripcion' => ['type' => 'text'],
-                    'enlace' => ['type' => 'text'],
-                    'activo' => ['type' => 'checkbox'],
-                    'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
-                ]
-            ):
-            new FormBuilder(
-                $elemento,
-                [
-                    'tipoDocumento' => ['type' => 'select'],
-                    'propietario' => ['disabled' => 'disabled'],
-                    'rol' => ['type' => 'hidden'],
-                    'supervisor' => ['type' => 'hidden'],
-                    'detalle' => ['type' => 'textarea'],
-                    'curso' => ['disabled' => 'disabled'],
-                    'grupo' => ['disabled' => 'disabled'],
-                    'ciclo' => ['type' => 'hidden'],
-                    'descripcion' => ['type' => 'text'],
-                    'fichero' => ['type' => 'file'],
-                    'activo' => ['type' => 'checkbox'],
-                    'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']]
-                ]
-            );
+        $formulario = new FormBuilder($elemento, DocumentoCrudSchema::editFormFields((bool) $elemento->enlace));
         $modelo = $this->model;
         return view($this->chooseView('edit'), compact('formulario', 'modelo'));
     }
@@ -324,12 +270,7 @@ class DocumentoController extends IntranetController
     public function destroy($id)
     {
         $borrar = Documento::findOrFail($id);
-        if ($borrar) {
-            if ($borrar->link && !$borrar->exist) {
-                unlink(storage_path('app/' . $borrar->fichero));
-            }
-            $borrar->delete();
-        }
+        $this->documentos()->delete($borrar);
         return $this->redirect();
     }
 
