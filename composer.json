@@ -90,6 +90,15 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover",
             "@php artisan vendor:publish --force --tag=livewire:assets --ansi"
+        ],
+        "test:focus": [
+            "@php -d max_execution_time=300 artisan test --stop-on-failure --filter=Expediente"
+        ],
+        "test:quick": [
+            "@php -d max_execution_time=300 artisan test --stop-on-failure --filter=Expediente|Empresa|Comision"
+        ],
+        "test:full": [
+            "@php -d max_execution_time=1000 artisan test --stop-on-failure"
         ]
     },
     "config": {
