@@ -11,6 +11,7 @@ use Intranet\Entities\Ciclo;
 use Intranet\Entities\Colaboracion;
 use Intranet\Http\Requests\ColaboracionRequest;
 use Intranet\Http\Traits\Autorizacion;
+use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 use Jenssegers\Date\Date;
 use mikehaertl\pdftk\Pdf;
 use Response;
@@ -33,35 +34,13 @@ class ColaboracionController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = [
-        'short',
-        'Xciclo',
-        'puestos',
-        'Xestado',
-        'localidad',
-        'contacto',
-        'email',
-        'telefono',
-        'horari',
-        'profesor',
-        'ultimo',
-        'anotacio'
-    ];
+    protected $gridFields = ColaboracionCrudSchema::GRID_FIELDS;
     /**
      * @var array
      */
     protected $titulo = [];
     protected $profile = false;
-    protected $formFields= [
-        'idCentro' => ['type' => 'hidden'],
-        'idCiclo' => ['type' => 'hidden'],
-        'contacto' => ['type' => 'text'],
-        'telefono' => ['type'=>'number'],
-        'email' => ['type'=>'email'],
-        'puestos' => ['type' => 'text'],
-        'estado' => ['type' => 'select'],
-        'anotacio' => ['type' => 'textarea'],
-    ];
+    protected $formFields = ColaboracionCrudSchema::FORM_FIELDS;
 
 
     /**
@@ -112,13 +91,29 @@ class ColaboracionController extends ModalController
     public function search()
     {
         $this->titulo = ['quien' => AuthUser()->Departamento->literal ];
-        $ciclos = Ciclo::select('id')->where('departamento', AuthUser()->departamento)->get()->toArray();
-        $colaboraciones = Colaboracion::whereIn('idCiclo', $ciclos)->with('Centro')->get();
-        return $colaboraciones->filter(function ($colaboracion) {
-            return $colaboracion->Centro->Empresa->concierto;
-        });
+        $ciclos = Ciclo::query()
+            ->where('departamento', AuthUser()->departamento)
+            ->pluck('id')
+            ->all();
+
+        return Colaboracion::query()
+            ->whereIn('idCiclo', $ciclos)
+            ->whereHas('Centro.Empresa', static function ($query): void {
+                $query->where('concierto', 1);
+            })
+            ->with(['Centro.Empresa'])
+            ->get();
     }
 
+    /**
+     * Actualitza una col·laboració des del formulari específic de panell.
+     *
+     * Manté el flux legacy: escriu estat/tutor i registra anotació en Activity.
+     *
+     * @param ColaboracionRequest $request
+     * @param int|string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(ColaboracionRequest $request, $id)
     {
         $colaboracion = Colaboracion::findOrFail($id);
