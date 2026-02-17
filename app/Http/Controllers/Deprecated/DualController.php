@@ -27,6 +27,11 @@ use Styde\Html\Facades\Alert;
 /**
  * Class DualAlumnoController
  * @package Intranet\Http\Controllers
+ *
+ * @deprecated Flux legacy de FP Dual.
+ *
+ * Es manté només per compatibilitat de consulta/gestió antiga.
+ * La creació de nous registres s'ha deshabilitat.
  */
 class DualController extends ModalController
 {
@@ -116,7 +121,6 @@ class DualController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('dual.delete'));
         $this->panel->setBoton('grid', new BotonImg('dual.edit'));
         $this->panel->setBoton('grid', new BotonImg('dual.informe',['img'=>'fa-file-zip-o']));
-        $this->panel->setBoton('index', new BotonBasico("dual.create", ['class' => 'btn-primary']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeVI", ['class' => 'btn-info','id' => 'anexoVI']));
         $this->panel->setBoton('index', new BotonBasico("dual.anexeXIV", ['class' => 'btn-info','id' => 'anexoXIV']));
 
@@ -163,14 +167,19 @@ class DualController extends ModalController
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
+    public function create()
+    {
+        Alert::warning('Dual està deprecated: no es permet crear nous registres.');
+        return $this->redirect();
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(DualRequest $request)
     {
-        DB::transaction(function() use ($request) {
-            $idAlumno = $request['idAlumno'];
-            $elemento = new Dual();
-            $elemento->fillAll($request);
-            $elemento->Alumnos()->attach($idAlumno, ['desde' => FechaInglesa($request->desde), 'hasta' => FechaInglesa($request->hasta), 'horas' => $request->horas, 'beca' => $request->beca]);
-        });
+        Alert::warning('Dual està deprecated: no es permet crear nous registres.');
         return $this->redirect();
     }
 
