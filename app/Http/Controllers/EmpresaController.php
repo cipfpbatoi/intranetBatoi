@@ -6,11 +6,11 @@ use Intranet\Application\Empresa\EmpresaService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
-use Intranet\Http\Requests\EmpresaRequest;
 use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Presentation\Crud\EmpresaCrudSchema;
 use Intranet\Services\Document\FDFPrepareService;
@@ -91,7 +91,7 @@ class EmpresaController extends IntranetController
         $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config('roles.rol.tutor')]));
      }
 
-    public function store(EmpresaRequest $request)
+    public function store(Request $request)
     {
         $id = $this->realStore($request);
 
@@ -106,7 +106,7 @@ class EmpresaController extends IntranetController
 
 
 
-    private function createCenter($id, EmpresaRequest $request)
+    private function createCenter($id, Request $request)
     {
         $centro = new Centro();
         $centro->idEmpresa = $id;
@@ -116,7 +116,7 @@ class EmpresaController extends IntranetController
         $centro->save();
         return $centro->id;
     }
-    private function createColaboration($id, EmpresaRequest $request, $idCicloTutoria)
+    private function createColaboration($id, Request $request, $idCicloTutoria)
     {
         $colaboracion = new Colaboracion();
         $colaboracion->idCentro = $id;
@@ -129,13 +129,16 @@ class EmpresaController extends IntranetController
         return $colaboracion->id;
     }
     
-    protected function realStore(EmpresaRequest $request, $id = null)
+    protected function realStore(Request $request, $id = null)
     {
+        $request = $this->normalitzaEmpresaRequest($request);
+        $this->validate($request, EmpresaCrudSchema::requestRules($id));
+
         $elemento = $id ? Empresa::findOrFail($id) : new Empresa(); //busca si hi ha
         return $elemento->fillAll($request);        // ompli i guarda
     }
     
-    public function update(EmpresaRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $elemento = Empresa::find($this->realStore($request, $id));
 
@@ -158,6 +161,24 @@ class EmpresaController extends IntranetController
             }
         }
         return redirect()->action('EmpresaController@show', ['empresa' => $elemento->id]);
+    }
+
+    private function normalitzaEmpresaRequest(Request $request): Request
+    {
+        $checkboxes = ['europa', 'sao', 'dual', 'delitos', 'menores'];
+        $normalized = [];
+
+        foreach ($checkboxes as $field) {
+            $normalized[$field] = $request->boolean($field);
+        }
+
+        if ($request->filled('cif')) {
+            $normalized['cif'] = strtoupper((string) $request->input('cif'));
+        }
+
+        $request->merge($normalized);
+
+        return $request;
     }
 
     /*
