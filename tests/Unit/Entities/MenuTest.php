@@ -119,6 +119,38 @@ class MenuTest extends TestCase
         $this->assertSame('/new', $refreshed['Intern']['url']);
     }
 
+    public function test_manté_comportament_legacy_els_fills_no_es_filtren_per_rol(): void
+    {
+        DB::table('menus')->insert([
+            [
+                'nombre' => 'Orientacio',
+                'url' => '',
+                'class' => 'fa-compass',
+                'rol' => 2, // visible per a professor
+                'menu' => 'general',
+                'submenu' => '',
+                'activo' => 1,
+                'orden' => 1,
+            ],
+            [
+                'nombre' => 'Actes',
+                'url' => '/actes',
+                'class' => null,
+                'rol' => 99, // rol que no correspon a l'usuari de prova
+                'menu' => 'general',
+                'submenu' => 'Orientacio',
+                'activo' => 1,
+                'orden' => 1,
+            ],
+        ]);
+
+        $menu = $this->menus()->make('general', true, (object) ['dni' => 'U3', 'rol' => 2]);
+
+        $this->assertArrayHasKey('Orientacio', $menu);
+        $this->assertArrayHasKey('submenu', $menu['Orientacio']);
+        $this->assertSame('/actes', $menu['Orientacio']['submenu']['Actes']['url']);
+    }
+
     public function test_xajuda_accessor_és_robust_i_neteja_html(): void
     {
         $menu = new Menu(['ajuda' => '<b>Text</b><script>x</script>']);

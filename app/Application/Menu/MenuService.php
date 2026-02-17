@@ -92,21 +92,28 @@ class MenuService
     {
         $menu = [];
 
-        $itemsQuery = Menu::query()
+        // Manté comportament legacy: filtrem per rol només en nivell pare.
+        $parentsQuery = Menu::query()
             ->where('menu', '=', $nom)
+            ->where('submenu', '=', '')
             ->where('activo', '=', 1)
-            ->orderBy('submenu')
             ->orderBy('orden');
 
         if ($this->isAdminUser($user)) {
-            $itemsQuery->where('rol', '<>', 5);
+            $parentsQuery->where('rol', '<>', 5);
         } else {
-            $itemsQuery->whereIn('rol', rolesUser($user->rol));
+            $parentsQuery->whereIn('rol', rolesUser($user->rol));
         }
 
-        $items = $itemsQuery->get();
-        $submenus = $items->where('submenu', '')->values();
-        $childrenBySubmenu = $items->where('submenu', '!=', '')->groupBy('submenu');
+        $submenus = $parentsQuery->get();
+
+        $childrenBySubmenu = Menu::query()
+            ->where('menu', '=', $nom)
+            ->where('activo', '=', 1)
+            ->where('submenu', '!=', '')
+            ->orderBy('orden')
+            ->get()
+            ->groupBy('submenu');
 
         foreach ($submenus as $sitem) {
             if ((string) $sitem->url === '') {
