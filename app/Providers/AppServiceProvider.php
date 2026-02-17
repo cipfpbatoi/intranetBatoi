@@ -8,6 +8,7 @@ use Intranet\Domain\AlumnoFct\AlumnoFctRepositoryInterface;
 use Intranet\Domain\Comision\ComisionRepositoryInterface;
 use Intranet\Domain\Empresa\EmpresaRepositoryInterface;
 use Intranet\Domain\Expediente\ExpedienteRepositoryInterface;
+use Intranet\Domain\FaltaProfesor\FaltaProfesorRepositoryInterface;
 use Intranet\Domain\Grupo\GrupoRepositoryInterface;
 use Intranet\Domain\Horario\HorarioRepositoryInterface;
 use Intranet\Domain\Profesor\ProfesorRepositoryInterface;
@@ -15,6 +16,7 @@ use Intranet\Infrastructure\Persistence\Eloquent\AlumnoFct\EloquentAlumnoFctRepo
 use Intranet\Infrastructure\Persistence\Eloquent\Comision\EloquentComisionRepository;
 use Intranet\Infrastructure\Persistence\Eloquent\Empresa\EloquentEmpresaRepository;
 use Intranet\Infrastructure\Persistence\Eloquent\Expediente\EloquentExpedienteRepository;
+use Intranet\Infrastructure\Persistence\Eloquent\FaltaProfesor\EloquentFaltaProfesorRepository;
 use Intranet\Infrastructure\Persistence\Eloquent\Grupo\EloquentGrupoRepository;
 use Intranet\Infrastructure\Persistence\Eloquent\Horario\EloquentHorarioRepository;
 use Intranet\Infrastructure\Persistence\Eloquent\Profesor\EloquentProfesorRepository;
@@ -49,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(GrupoRepositoryInterface::class, EloquentGrupoRepository::class);
         $this->app->bind(EmpresaRepositoryInterface::class, EloquentEmpresaRepository::class);
         $this->app->bind(ExpedienteRepositoryInterface::class, EloquentExpedienteRepository::class);
+        $this->app->bind(FaltaProfesorRepositoryInterface::class, EloquentFaltaProfesorRepository::class);
     }
 
 }

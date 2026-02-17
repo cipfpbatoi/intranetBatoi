@@ -5,9 +5,9 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Falta_itaca;
-use Intranet\Entities\Falta_profesor;
 use Illuminate\Http\Request;
 use Intranet\Services\General\StateService;
+use Intranet\Services\HR\FitxatgeService;
 use Jenssegers\Date\Date;
 use function estaInstituto,sumarHoras;
 
@@ -16,6 +16,7 @@ class FaltaItacaController extends ApiBaseController
 
     protected $model = 'Falta_itaca';
     private ?HorarioService $horarioService = null;
+    private ?FitxatgeService $fitxatgeService = null;
 
     private function horarios(): HorarioService
     {
@@ -26,10 +27,19 @@ class FaltaItacaController extends ApiBaseController
         return $this->horarioService;
     }
 
+    private function fitxatge(): FitxatgeService
+    {
+        if ($this->fitxatgeService === null) {
+            $this->fitxatgeService = app(FitxatgeService::class);
+        }
+
+        return $this->fitxatgeService;
+    }
+
     public function potencial($dia, $idProfesor)
     {
 
-        if (!config('variables.controlDiario') || Falta_profesor::haFichado($dia, $idProfesor)->count()) {
+        if (!config('variables.controlDiario') || $this->fitxatge()->hasFichado($dia, (string) $idProfesor)) {
             $horas = $this->horarios()->lectivasByProfesorAndDayOrdered((string) $idProfesor, nameDay($dia));
             $horasJ = [];
 
