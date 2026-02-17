@@ -57,7 +57,7 @@ class CicloDualController extends Controller
         $ciclo->llocTreball = $request->llocTreball;
         $ciclo->dataSignaturaDual = $request->dataSignaturaDual;
         $ciclo->save();
-        return redirect()->route('dual.index');
+        return redirect()->route('controlDual.index');
     }
 
 }
