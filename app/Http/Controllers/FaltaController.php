@@ -8,6 +8,7 @@ use DB;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Falta;
+use Intranet\Presentation\Crud\FaltaCrudSchema;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\Notifications\AdviseTeacher;
@@ -37,7 +38,7 @@ class FaltaController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'desde', 'hasta', 'motivo', 'situacion','observaciones'];
+    protected $gridFields = FaltaCrudSchema::GRID_FIELDS;
     /**
      * @var bool
      */

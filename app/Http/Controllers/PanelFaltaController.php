@@ -8,6 +8,7 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Falta;
+use Intranet\Presentation\Crud\FaltaCrudSchema;
 use Intranet\Http\Traits\Core\Panel;
 
 /**
@@ -31,7 +32,7 @@ class PanelFaltaController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nombre', 'desde', 'hasta', 'motivo', 'situacion'];
+    protected $gridFields = FaltaCrudSchema::PANEL_GRID_FIELDS;
 
 
     /**
@@ -42,20 +43,7 @@ class PanelFaltaController extends ModalController
      * @var array
      */
     protected $parametresVista = ['modal' => ['explicacion','loading','ItacaPassword']];
-    protected $formFields = [
-        'idProfesor' => ['type' => 'select'],
-        'estado' => ['type' => 'hidden'],
-        'desde' => ['type' => 'date'],
-        'hasta' => ['type' => 'date'],
-        'baja' => ['type' => 'checkbox'],
-        'dia_completo' => ['type' => 'checkbox'],
-        'hora_ini' => ['type' => 'time'],
-        'hora_fin' => ['type' => 'time'],
-        'motivos' => ['type' => 'select'],
-        'observaciones' => ['type' => 'text'],
-        'fichero' => ['type' => 'file'],
-
-    ];
+    protected $formFields = FaltaCrudSchema::FORM_FIELDS;
 
     protected function search()
     {
