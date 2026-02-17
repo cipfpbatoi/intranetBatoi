@@ -3,7 +3,6 @@
     <title>Empresa {{$elemento->nombre}}</title>
 @endsection
 @php($centros = $elemento->centros->count())
-@php($ciclo = \Intranet\Entities\Grupo::find(authUser()->GrupoTutoria)->idCiclo??'')
 @section('content')
     <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
         <h3>{{$elemento->nombre}}</h3>
@@ -142,16 +141,14 @@
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
-                @foreach ($elemento->Centros as $centro)
+                @foreach ($elemento->centros as $centro)
                     <div class="col-md-12 col-sm-12">
                         <div class="x_panel" style="height: auto;">
                             <div class="x_title">
                                 <h2>
                                     <em class="fa fa-align-left"></em>
-                                    @if ($existeColaboracion = $misColaboraciones->where('idCentro',$centro->id)
-                                    ->where('idCiclo',$ciclo)
-                                    ->count()
-                                    )
+                                    @php($existeColaboracion = $centro->colaboraciones->contains('idCiclo', $cicloTutoria))
+                                    @if ($existeColaboracion)
                                         <strong>{{ $centro->nombre }} / {{ $centro->localidad }} <br/></strong>
                                     @else
                                         {{ $centro->nombre }} / {{ $centro->localidad }} <br/>
@@ -182,7 +179,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        @if (count($centro->colaboraciones)==0)
+                                        @if ($centro->colaboraciones->count() == 0)
                                             <a href="/centro/{!!$centro->id!!}/delete">
                                                 <em class="fa fa-trash"></em>
                                             </a>

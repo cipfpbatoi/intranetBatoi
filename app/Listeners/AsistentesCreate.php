@@ -3,23 +3,24 @@
 namespace Intranet\Listeners;
 
 use Intranet\Events\ReunionCreated;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Reunion;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\AlumnoFct;
 use Illuminate\Support\Facades\Log;
 
 class AsistentesCreate
 {
+    private ProfesorService $profesorService;
 
     /**
      * Create the event listener.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(?ProfesorService $profesorService = null)
     {
-        //
+        $this->profesorService = $profesorService ?? app(ProfesorService::class);
     }
 
     /**
@@ -41,7 +42,7 @@ class AsistentesCreate
         if ($reunion->extraOrdinaria) {
             if ($grupo->curso == 2) {
                 return $grupo->Alumnos
-                    ->whereNotIn('nia', hazArray(AlumnoFctAval::misFcts()->titulan()->get(), 'idAlumno'));
+                    ->whereNotIn('nia', hazArray(AlumnoFct::misFcts()->titulan()->get(), 'idAlumno'));
             }
             return $grupo->Alumnos;
         }
@@ -88,18 +89,16 @@ class AsistentesCreate
 
         switch ($tipo->colectivo) {
             case 'Departamento':
-                $profesores = Profesor::Plantilla()
-                    ->where('departamento', '=', authUser()->departamento)
-                    ->get();
+                $profesores = $this->profesorService->plantillaByDepartamento((string) authUser()->departamento);
                 break;
 
             case 'Profesor':
-                $profesores = Profesor::Plantilla()->get();
+                $profesores = $this->profesorService->plantilla();
                 break;
 
             case 'GrupoTrabajo':
                 // Ja uses $reunion->grupo ací (no relació)
-                $profesores = Profesor::GrupoT($reunion->grupo)->get();
+                $profesores = $this->profesorService->byGrupoTrabajo((string) $reunion->grupo);
                 break;
 
             case 'Grupo':
@@ -110,7 +109,7 @@ class AsistentesCreate
                     Log::warning("AsistentesCreate: Reunion {$reunion->id} 'Grupo' sense codigo de Grup; no s'assignen profes/alumnes.");
                     $profesores = collect();
                 } else {
-                    $profesores = Profesor::Grupo($codigoGrupo)->get();
+                    $profesores = $this->profesorService->byGrupo((string) $codigoGrupo);
                     $this->assignaAlumnes($reunion);
                 }
                 break;
@@ -132,7 +131,7 @@ class AsistentesCreate
     private function esJefe(): array
     {
         $profesores = [];
-        foreach (Profesor::Activo()->get() as $profesor) {
+        foreach ($this->profesorService->activos() as $profesor) {
             if ($profesor->rol % config('roles.rol.jefe_dpto') == 0 ||
                 $profesor->rol % config('roles.rol.direccion') == 0) {
                 $profesores[] = $profesor;

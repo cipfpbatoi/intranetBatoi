@@ -2,7 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Presentation\Crud\ActividadCrudSchema;
 
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonIcon;
@@ -12,7 +15,6 @@ use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\ActividadGrupo;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\ActividadRequest;
 use Intranet\Http\Requests\ValoracionRequest;
@@ -29,28 +31,14 @@ use Styde\Html\Facades\Alert;
 
 class ActividadController extends ModalController
 {
+    private ?GrupoService $grupoService = null;
 
     use Autorizacion, SCRUD, Imprimir;
 
     protected $perfil = 'profesor';
     protected $model = 'Actividad';
-    protected $gridFields = ['name', 'desde', 'hasta', 'situacion'];
-    protected $formFields= [
-        'id' => ['type' => 'hidden'],
-        'tipo_actividad_id' => ['type' => 'select'],
-        'name' => ['type' => 'text'],
-        'desde' => ['type' => 'datetime'],
-        'hasta' => ['type' => 'datetime'],
-        'poll' => ['type' => 'hidden'],
-        'complementaria' => ['type' => 'checkbox'],
-        'fueraCentro' => ['type' => 'checkbox'],
-        'transport' => ['type' => 'checkbox'],
-        'descripcion' => ['type' => 'textarea'],
-        'objetivos' => ['type' => 'textarea'],
-        'extraescolar' => ['type' => 'hidden'],
-        'comentarios' => ['type' => 'textarea'],
-        'recomanada' => ['type' => 'hidden']
-    ];
+    protected $gridFields = ActividadCrudSchema::GRID_FIELDS;
+    protected $formFields = ActividadCrudSchema::FORM_FIELDS;
     
     protected function search()
     {
@@ -146,6 +134,15 @@ class ActividadController extends ModalController
         return app(ActividadParticipantsService::class);
     }
 
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
     /**
      * Mostra el detall d'una activitat amb professors i grups associats.
      *
@@ -164,16 +161,14 @@ class ActividadController extends ModalController
         $assignedGrupos = $Actividad->grupos->pluck('codigo')->all();
 
         // Obtenir tots els professors actius i estructurar-los en un array associatiu
-        $tProfesores = Profesor::Activo()
+        $tProfesores = app(ProfesorService::class)->activosOrdered()
             ->whereNotIn('dni', $assignedProfesores)
-            ->orderBy('apellido1')
-            ->orderBy('apellido2')
-            ->get()
             ->mapWithKeys(fn($p) => [$p->dni => "$p->apellido1 $p->apellido2, $p->nombre"])
             ->toArray();
 
         // Llista de tots els grups disponibles
-        $tGrupos = Grupo::whereNotIn('codigo', $assignedGrupos)
+        $tGrupos = $this->grupos()->all()
+            ->whereNotIn('codigo', $assignedGrupos)
             ->pluck('nombre', 'codigo')
             ->toArray();
 
@@ -294,7 +289,7 @@ class ActividadController extends ModalController
     public function notify($id)
     {
         $actividad = Actividad::findOrFail($id);
-        $coordinador = Profesor::find($actividad->Creador());
+        $coordinador = app(ProfesorService::class)->find((string) $actividad->Creador());
         if (!$coordinador) {
             Alert::warning('No hi ha cap coordinador assignat per a esta activitat.');
             return back();

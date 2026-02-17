@@ -2,8 +2,7 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
+use Intranet\Application\Grupo\GrupoService;
 
 
 class A2ENResource extends PrintResource
@@ -24,10 +23,10 @@ class A2ENResource extends PrintResource
     public function toArray()
     {
         $empresa = $this->elements->Fct->Colaboracion->Centro->Empresa;
-        $director = Profesor::find(config('avisos.director'));
+        $director = cargo('director');
         $tutor = AuthUser();
         $alumno = $this->elements->Alumno;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
         $instructor = $this->elements->Fct->instructor;
 
         return [

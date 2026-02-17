@@ -10,7 +10,6 @@ use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
 use Intranet\Http\Requests\EmpresaCentroRequest;
-use Response;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 
@@ -68,13 +67,15 @@ class CentroController extends IntranetController
      */
     public function destroy($id)
     {
-        $centro = Centro::find($id);
-        $empresa = Centro::find($id)->idEmpresa;
-        $misColaboraciones =Colaboracion::Micolaboracion($empresa)->count();
-        if (rolesUser(config('roles.rol.administrador'))) {
+        $centro = Centro::findOrFail($id);
+        $empresa = $centro->idEmpresa;
+
+        if (isAdmin()) {
             parent::destroy($id);
         } else {
-            if ($centro->Colaboraciones->count() == $misColaboraciones){
+            $misColaboraciones = Colaboracion::MiColaboracion($empresa)->count();
+
+            if ($centro->colaboraciones()->count() == $misColaboraciones){
                 try {
                     parent::destroy($id);
                 } catch (QueryException $exception){

@@ -2,9 +2,6 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Entities\Comision;
-use Illuminate\Http\Request;
-use \DB;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Notification;
 

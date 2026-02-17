@@ -1,4 +1,5 @@
-'use strict';
+(function ($) {
+    'use strict';
 
 const PRACTICAS=31;
 const DUAL=37;
@@ -21,9 +22,19 @@ const COLUMNS=[
 const ID = 'id';
 const TABLA ='Empresa';
     
-//$(function () {
+if ($.fn.dataTable && $.fn.dataTable.isDataTable('#datatable')) {
+    // Ja inicialitzada per una altra capa.
+} else {
+    const table = $('#datatable');
+    if (!table.length) {
+        return;
+    }
+
+    // Evita salts visuals mentre es calculen les amplades.
+    table.css('visibility', 'hidden');
+
     var token = $("#_token").text();
-    $('#datatable').DataTable({
+    const dataTable = table.DataTable({
         language: {
             url: '/json/cattable.json'
         },
@@ -33,7 +44,7 @@ const TABLA ='Empresa';
             data: { api_token: token},
         },
         deferRender: true,
-        dataSrc: 'data',
+        autoWidth: false,
         columns: COLUMNS,
         rowId : ID,
         responsive: true,
@@ -46,14 +57,27 @@ const TABLA ='Empresa';
             {
                 responsivePriority: 1,
                 targets: COLUMNS.length-1,
-                "render": function ( data,autorizado ) {
+                "render": function () {
                         if (autorizado){
                             return  `<a href="#" class="shown"><i class="fa fa-plus" title="Mostrar"></i></a>`;
                         }
                 }
             },
         ],
+        initComplete: function () {
+            const api = this.api();
+            api.columns.adjust();
+            $(api.table().node()).css('visibility', 'visible');
+        }
     });
+    table.on('draw.dt responsive-resize.dt', function () {
+        dataTable.columns.adjust();
+    });
+
+    $(window).on('resize', function () {
+        dataTable.columns.adjust();
+    });
+
     $('#datatable').on('click', 'a.delete', function (event) {
         let info="\n";
         let titles=$(this).parents('table').find('thead').find('th');
@@ -75,4 +99,5 @@ const TABLA ='Empresa';
     $('#datatable').on('click', 'a.document', function (event) {
         $(this).attr("href","/"+TABLA.toLowerCase()+"/"+$(this).parent().parent().attr('id')+"/document");
     })
-//});
+}
+})(jQuery);

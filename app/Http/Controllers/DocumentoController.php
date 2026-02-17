@@ -2,16 +2,16 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\AlumnoFct\AlumnoFctService;
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
-use Intranet\Entities\Profesor;
 use Intranet\Services\Document\TipoDocumentoService;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\General\GestorService;
 use Intranet\Services\Document\CreateOrUpdateDocumentAction;
@@ -21,6 +21,8 @@ use Styde\Html\Facades\Alert;
 
 class DocumentoController extends IntranetController
 {
+    private ?GrupoService $grupoService = null;
+    private ?AlumnoFctService $alumnoFctService = null;
 
     protected $model = 'Documento';
     protected $formFields = ['tipoDocumento' => ['type' => 'select'],
@@ -37,6 +39,31 @@ class DocumentoController extends IntranetController
         'activo' => ['type' => 'checkbox'],
         'tags' => ['type' => 'tag', 'params' => ['class' => 'tags']],
     ];
+
+    public function __construct(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+        $this->alumnoFctService = $alumnoFctService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    private function alumnoFcts(): AlumnoFctService
+    {
+        if ($this->alumnoFctService === null) {
+            $this->alumnoFctService = app(AlumnoFctService::class);
+        }
+
+        return $this->alumnoFctService;
+    }
 
 
     protected function redirect()
@@ -84,7 +111,7 @@ class DocumentoController extends IntranetController
 
     private function saveNota($nota, $fct)
     {
-        $fctAl = AlumnoFct::findOrFail($fct);
+        $fctAl = $this->alumnoFcts()->findOrFail((int) $fct);
         $fctAl->calProyecto = $nota;
         if ($fctAl->calificacion < 1) {
             $fctAl->calificacion = 1;
@@ -101,7 +128,9 @@ class DocumentoController extends IntranetController
 
     public function project($idFct)
     {
-        if ($fct = AlumnoFct::findOrFail($idFct)) {
+        if ($fct = $this->alumnoFcts()->findOrFail((int) $idFct)) {
+            $grupoTutor = $this->grupos()->firstByTutor(AuthUser()->dni);
+            $ciclo = $grupoTutor?->Ciclo?->ciclo ?? '';
 
             $proyecto = $fct->Alumno->Projecte ?? null;
             $descripcion = $proyecto->titol ?? '';
@@ -113,7 +142,7 @@ class DocumentoController extends IntranetController
                 'activo' => true,
                 'tipoDocumento' => 'Proyecto',
                 'idDocumento' => '',
-                'ciclo' => Grupo::QTutor(AuthUser()->dni)->first()->Ciclo->ciclo,
+                'ciclo' => $ciclo,
                 'descripcion' => $descripcion,
                 'detalle' => $detalle,
             ]);
@@ -142,10 +171,14 @@ class DocumentoController extends IntranetController
 
     public function qualitatUpload($id)
     {
-        $profesor = Profesor::findOrFail($id);
+        $profesor = app(ProfesorService::class)->findOrFail((string) $id);
 
         $documents = Adjunto::where('route', "profesor/$id")->get();
-        $grupo = Grupo::QTutor($id)->first();
+        $grupo = $this->grupos()->firstByTutor((string) $id);
+        if (!$grupo) {
+            Alert::danger('No hi ha grup de tutoria assignat');
+            return back();
+        }
         $elemento = (new CreateOrUpdateDocumentAction())->fromArray([
             'curso' => Curso(),
             'propietario' => $profesor->FullName,
@@ -201,7 +234,11 @@ class DocumentoController extends IntranetController
 
     public function qualitat()
     {
-        $grupo = Grupo::QTutor(AuthUser()->dni)->first();
+        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
+        if (!$grupo) {
+            Alert::danger('No hi ha grup de tutoria assignat');
+            return back();
+        }
         $elemento = (new CreateOrUpdateDocumentAction())->build([
             'curso' => Curso(),
             'propietario' => AuthUser()->FullName,

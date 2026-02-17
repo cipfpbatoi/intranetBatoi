@@ -2,8 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Ciclo;
-use Intranet\Entities\Grupo;
 use Intranet\Http\Requests\CicloDualRequest;
 use Intranet\Services\UI\FormBuilder;
 use Styde\Html\Facades\Alert;
@@ -14,11 +14,27 @@ use Styde\Html\Facades\Alert;
  */
 class CicloDualController extends Controller
 {
+    private ?GrupoService $grupoService = null;
+
     protected $model = 'Ciclo';
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
     public function edit(){
         $user = AuthUser()->dni;
-        $ciclo = Grupo::where('tutorDual',AuthUser()->dni)->first()->ciclo;
+        $ciclo = $this->grupos()->firstByTutorDual(AuthUser()->dni)?->ciclo;
         if ($ciclo) {
             $formulario = new FormBuilder($ciclo, [
                 'id' => ['type'=>'hidden'],

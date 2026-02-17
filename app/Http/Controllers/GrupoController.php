@@ -1,7 +1,10 @@
 <?php
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Presentation\Crud\GrupoCrudSchema;
 
 use DB;
 use Illuminate\Http\Request;
@@ -11,7 +14,6 @@ use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Curso;
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Horario;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Jobs\SendEmail;
 use Intranet\Services\School\SecretariaService;
@@ -25,6 +27,8 @@ use Styde\Html\Facades\Alert;
  */
 class GrupoController extends IntranetController
 {
+    private ?HorarioService $horarioService = null;
+    private ?GrupoService $grupoService = null;
 
     const DIRECCION ='roles.rol.direccion';
     const TUTOR ='roles.rol.tutor';
@@ -44,9 +48,27 @@ class GrupoController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['codigo', 'nombre', 'Xtutor', 'Xciclo'  ,'Torn'];
+    protected $gridFields = GrupoCrudSchema::GRID_FIELDS;
+    protected $formFields = GrupoCrudSchema::FORM_FIELDS;
     protected $parametresVista = ['modal' => [  'selAlumGrup']];
 
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
 
 
@@ -57,8 +79,8 @@ class GrupoController extends IntranetController
     protected function search(){
 
         return esRol(AuthUser()->rol,config(self::DIRECCION)) || esRol(AuthUser()->rol,config(self::ORIENTADOR))  ?
-                Grupo::with('Ciclo')->with('Tutor')->with('Tutor.Sustituye')->get():
-                Grupo::with('Ciclo')->MisGrupos()->get();
+                $this->grupos()->allWithTutorAndCiclo():
+                $this->grupos()->misGruposWithCiclo();
     }
 
     /**
@@ -117,8 +139,10 @@ class GrupoController extends IntranetController
      */
     protected function horario($id)
     {
-        $horario = Horario::HorarioGrupo($id);
-        $titulo = Grupo::findOrFail($id)->nombre;
+        $horario = $this->horarios()->semanalByGrupo((string) $id);
+        $grupo = $this->grupos()->find((string) $id);
+        abort_unless($grupo !== null, 404);
+        $titulo = $grupo->nombre;
         return view('horario.grupo', compact('horario', 'titulo'));
     }
 
@@ -127,7 +151,7 @@ class GrupoController extends IntranetController
      */
     public function asigna()
     {
-        $todos = Grupo::all();
+        $todos = $this->grupos()->all();
         foreach ($todos as $uno) {
             if ($uno->ciclo == ''){
                 $ciclo = Ciclo::select('id')
@@ -148,7 +172,11 @@ class GrupoController extends IntranetController
      */
     public function pdf($grupo)
     {
-        return $this->hazPdf('pdf.alumnos.fotoAlumnos',AlumnoGrupo::where('idGrupo',$grupo)->orderBy('subGrupo')->orderBy('posicion','desc')->get()->groupBy('subGrupo'), Grupo::find($grupo))->stream();
+        return $this->hazPdf(
+            'pdf.alumnos.fotoAlumnos',
+            AlumnoGrupo::where('idGrupo', $grupo)->orderBy('subGrupo')->orderBy('posicion', 'desc')->get()->groupBy('subGrupo'),
+            $this->grupos()->find((string) $grupo)
+        )->stream();
     }
 
     /**
@@ -157,7 +185,7 @@ class GrupoController extends IntranetController
 
     public function fse($grupo)
     {
-        return $this->hazPdf('pdf.reunion.actaFSE',$this->alumnos($grupo), Grupo::find($grupo) )->stream();
+        return $this->hazPdf('pdf.reunion.actaFSE',$this->alumnos($grupo), $this->grupos()->find((string) $grupo))->stream();
     }*/
 
     /**
@@ -196,7 +224,7 @@ class GrupoController extends IntranetController
     /*
     public function list($idGrupo)
     {
-        $grupo = Grupo::find($idGrupo);
+        $grupo = $this->grupos()->find((string) $idGrupo);
         $alumnos = hazArray($grupo->Alumnos->sortBy('nameFull'),'nameFull');
         $gr = array('grupo' => $grupo->codigo.' - '.$grupo->nombre);
         $columna = array_merge($gr,$alumnos);
@@ -222,7 +250,11 @@ class GrupoController extends IntranetController
             echo 'No hi ha connexió amb el servidor de matrícules';
             exit();
         }
-        $grupo = Grupo::find($grupo);
+        $grupo = $this->grupos()->find((string) $grupo);
+        if (!$grupo) {
+            Alert::danger('Grup no trobat');
+            return back();
+        }
         $datos['ciclo'] = $grupo->Ciclo;
         $remitente = ['email' => cargo('secretario')->email, 'nombre' => cargo('secretario')->FullName];
         $count = 0;
@@ -276,7 +308,8 @@ class GrupoController extends IntranetController
 
     public function checkFol($id)
     {
-        $grupo = Grupo::findOrFail($id);
+        $grupo = $this->grupos()->find((string) $id);
+        abort_unless($grupo !== null, 404);
         $grupo->fol = ($grupo->fol==0)?1:0;
         $grupo->save();
         return back();

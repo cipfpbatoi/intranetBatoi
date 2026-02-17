@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\PerfilFilesRequest;
 use Intranet\Services\Signature\DigitalSignatureService;
@@ -23,6 +24,16 @@ class PerfilController extends Perfil
 
     protected $model = 'Profesor';
     protected $perfil = 'profesor';
+    private ?ProfesorService $profesorService = null;
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
 
     public function editar()
     {
@@ -39,7 +50,7 @@ class PerfilController extends Perfil
 
     public function updateFiles(PerfilFilesRequest $request)
     {
-        $profesor = Profesor::findOrFail(Auth::user('profesor')->dni);
+        $profesor = $this->profesores()->findOrFail((string) Auth::user('profesor')->dni);
 
         // Processa cada fitxer o acció en mètodes separats
         $this->updatePhoto($request, $profesor);
@@ -161,7 +172,10 @@ class PerfilController extends Perfil
 
     public function update(Request $request, $id=null)
     {
-        $new = Profesor::find(Auth::user('profesor')->dni);
+        $new = $this->profesores()->find((string) Auth::user('profesor')->dni);
+        if (!$new) {
+            return redirect("/home");
+        }
         if (isset($request->mostrar)) {
             $new->mostrar = $request->mostrar;
         } else {

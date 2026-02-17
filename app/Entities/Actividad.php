@@ -4,6 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Presentation\Crud\ActividadCrudSchema;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActividadCreated;
 use Intranet\Events\ActivityReport;
@@ -46,21 +47,7 @@ class Actividad extends Model
         'desde' => 'required|date',
         'hasta' => 'required|date|after:desde',
     ];
-    protected $inputTypes = [
-        'id' => ['type' => 'hidden'],
-        'tipo_actividad_id' => ['type' => 'select'],
-        'objetivos' => ['type' => 'textarea'],
-        'extraescolar' => ['type' => 'hidden'],
-        'descripcion' => ['type' => 'textarea'],
-        'comentarios' => ['type' => 'textarea'],
-        'desde' => ['type' => 'datetime'],
-        'hasta' => ['type' => 'datetime'],
-        //'poll' => ['type' => 'checkbox'],
-        'fueraCentro' => ['type' => 'checkbox'],
-        'transport' => ['type' => 'checkbox'],
-        'complementaria' => ['type' => 'checkbox'],
-
-    ];
+    protected $inputTypes = ActividadCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
         'updating' => PreventAction::class,

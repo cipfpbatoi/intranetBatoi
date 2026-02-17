@@ -2,7 +2,7 @@
 
 namespace Intranet\Entities\Poll;
 
-use Intranet\Entities\Grupo;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Departamento;
 
@@ -34,8 +34,9 @@ class Profesor extends ModelPoll
 
     public static function loadGroupVotes($id)
     {
-        foreach (Grupo::misGrupos()->get() as $grup) {
-            $modulos = hazArray(Grupo::find($grup->codigo)->Modulos, 'id');
+        $myGroupsVotes = [];
+        foreach (app(GrupoService::class)->misGrupos() as $grup) {
+            $modulos = hazArray($grup->Modulos, 'id');
             $myGroupsVotes[$grup->codigo] = Vote::myGroupVotes($id, $modulos)->get();
         }
         return $myGroupsVotes;
@@ -59,7 +60,7 @@ class Profesor extends ModelPoll
      */
     private static function aggregateGrupo($option1, &$votes): void
     {
-        foreach (Grupo::all() as $grupo) {
+        foreach (app(GrupoService::class)->all() as $grupo) {
             foreach ($grupo->Modulos as $modulo) {
                 if (isset($option1[$modulo->id])) {
                     foreach ($option1[$modulo->id] as $key => $optionVotes) {

@@ -52,11 +52,7 @@ class AlumnoResultado extends Model
         return hazArray($this->ModuloGrupo->Grupo->Alumnos->whereNotIn('nia',$alumnos_rellenos),'nia','fullName');
     }
 
-    /**
-    public function getNotaStringAttribute()
-    {
-        return config('auxiliares.notas')[$this->nota];
-    }*/
+   
 
     public function getValoracionAttribute()
     {

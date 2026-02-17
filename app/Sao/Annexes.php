@@ -5,7 +5,7 @@ use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Intranet\Entities\Adjunto;
-use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Services\UI\AlertLogger;
 use Intranet\Services\Document\AttachedFileService;
 use Intranet\Entities\Signatura;
@@ -21,7 +21,7 @@ class Annexes
 
     }
 
-    public function execute($driver,callable $queryCallback = null)
+    public function execute($driver, ?callable $queryCallback = null)
     {
         $this->queryCallback = $queryCallback;
         return $this->index($driver);
@@ -59,7 +59,7 @@ class Annexes
             return call_user_func($this->queryCallback)->get();
         }
 
-        return AlumnoFctAval::realFcts()
+        return AlumnoFct::realFcts()
             ->where('beca', 0)
             ->whereNotNull('idSao')
             ->activa()

@@ -11,7 +11,6 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
-use Intranet\Entities\Profesor;
 use Intranet\Http\Traits\Core\Imprimir;
 use Jenssegers\Date\Date;
 use Illuminate\Support\Collection;
@@ -240,8 +239,8 @@ class InstructorController extends IntranetController
         // 🔒 Calcula la data posterior de forma segura
         $fecha = $this->ultimaFecha($fcts) ?? new Date(); // fallback si totes tenen 'hasta' buit
 
-        $secretario = Profesor::find(config('avisos.secretario'));
-        $director   = Profesor::find(config('avisos.director'));
+        $secretario = cargo('secretario');
+        $director   = cargo('director');
 
         $dades = [
             'date'         => FechaString($fecha, 'ca'),

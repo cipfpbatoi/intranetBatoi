@@ -3,9 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Providers\AuthServiceProvider;
-use Styde\Html\Facades\Menu as StydeMenu;
-use Illuminate\Support\Facades\Cache;
 
 class Menu extends Model
 {
@@ -32,62 +29,6 @@ class Menu extends Model
         
     ];
 
-    private static function tipoUrl($url)
-    {
-        if (strpos($url, 'ttp::')) {
-            return 'full-url';
-        } else {
-            return 'url';
-        }
-    }
-
-    public static function make($nom, $array = false)
-    {
-        $menu = Cache::remember('menu'.$nom.authUser()->dni, now()->addDay(), function () use ($nom) {
-           return self::build($nom);
-        });
-        if ($array) {
-            return $menu;
-        }
-        return StydeMenu::make($menu);
-    }
-
-    private static function build($nom)
-    {
-        $submenus = Menu::where([['menu', '=', $nom], ['submenu', '=', ''],['activo', '=', 1]]);
-        if (!isAdmin()) {
-            $submenus = $submenus->whereIn('rol', rolesUser(authUser()->rol));
-        } else {
-            $submenus = $submenus->where('rol', '<>', 5);
-        }
-        $submenus = $submenus->orderby('orden')->get();
-        foreach ($submenus as $sitem) {
-            if ($sitem->url == '') {
-                $items = Menu::where([['menu', '=', $nom], ['submenu', '=', $sitem->nombre], ['activo', '=', 1]])
-                        ->orderBy('orden')
-                        ->get();
-                $menu[$sitem->nombre]['class'] = $sitem->class;
-                foreach ($items as $item) {
-                    $menu[$sitem->nombre]['submenu'][$item->nombre] =
-                        array(
-                            self::tipoUrl($item->url) => $item->url,
-                            'img' => $item->img,
-                            'roles' => $item->rol,
-                            'secure'=> true
-                        );
-                }
-            } else {
-                $menu[$sitem->nombre] =
-                    array(
-                        self::tipoUrl($sitem->url) => $sitem->url,
-                        'class' => $sitem->class,
-                        'secure'=> true
-                    );
-            }
-        }
-        return $menu;
-    }
-    
     public function getXrolAttribute()
     {
         return implode(',', nameRolesUser($this->rol));
@@ -107,6 +48,14 @@ class Menu extends Model
     public function getDescripcionAttribute()
     {
         return trans("messages.menu.".ucwords($this->nombre));
+    }
+
+    /**
+     * Versió segura de l'ajuda per al grid (sense HTML).
+     */
+    public function getXajudaAttribute()
+    {
+        return trim(strip_tags((string) ($this->attributes['ajuda'] ?? '')));
     }
 
 }

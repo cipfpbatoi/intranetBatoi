@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Jenssegers\Date\Date;
 
 class Solicitud extends Model
@@ -55,7 +56,7 @@ class Solicitud extends Model
     public function getIdAlumnoOptions()
     {
         $misAlumnos = [];
-        $migrupos = Grupo::MisGrupos()->get();
+        $migrupos = app(GrupoService::class)->misGrupos();
         foreach ($migrupos as $migrupo) {
             if (isset($migrupo->codigo)) {
                 $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->codigo)->get();

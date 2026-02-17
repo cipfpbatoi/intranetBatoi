@@ -2,14 +2,12 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
 
-use \DB;
-use Intranet\Entities\Departamento;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Horario;
 use Intranet\Services\HR\FitxatgeService;
 use Styde\Html\Facades\Alert;
 
@@ -22,6 +20,27 @@ class FicharController extends IntranetController
     protected $gridFields = ['Xdepartamento', 'FullName', 'Horario', 'Entrada', 'Salida'];
     protected $parametresVista = ['before' => ['formulario']];
     protected $amount= 200;
+
+    private ?ProfesorService $profesorService = null;
+    private ?HorarioService $horarioService = null;
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
+
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
 
     public function ficha(FitxatgeService $fitxatgeService)
     {
@@ -36,7 +55,7 @@ class FicharController extends IntranetController
     
     public function search()
     {
-        return Profesor::activo()->get();
+        return $this->profesores()->activos();
     }
 
 
@@ -45,9 +64,7 @@ class FicharController extends IntranetController
     {
         $fitxatgeService = app( FitxatgeService::class);
 
-        $profesor = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2')
-            ->where('codigo', '=', $request->codigo)
-            ->first();
+        $profesor = $this->profesores()->findByCodigo((string) $request->codigo);
 
         if (!$profesor) {
             Alert::danger(trans('messages.generic.nocodigo'));
@@ -77,11 +94,7 @@ class FicharController extends IntranetController
 
     public function control()
     {
-        $profes = Profesor::select('dni', 'nombre', 'apellido1', 'apellido2', 'departamento')->orderBy('departamento')
-            ->orderBy('apellido1')
-            ->orderBy('apellido2')
-            ->Plantilla()
-            ->get();
+        $profes = $this->profesores()->plantillaOrderedByDepartamento();
         return view('fichar.control', compact('profes'));
     }
 
@@ -89,7 +102,7 @@ class FicharController extends IntranetController
     public function controlDia()
     {
         $horarios = $this->loadHoraries(
-            $profes=Profesor::Plantilla()->orderBy('departamento')->orderBy('apellido1')->orderBy('apellido2')->get());
+            $profes=$this->profesores()->plantillaOrderedByDepartamento());
         return view('fichar.control-dia', compact('profes', 'horarios'));
     }
 
@@ -104,7 +117,7 @@ class FicharController extends IntranetController
     }
 
     private function loadHorary($profesor) {
-        $horario = Horario::Primera($profesor->dni, FechaInglesa(Hoy()))->orderBy('sesion_orden')->get();
+        $horario = $this->horarios()->primeraByProfesorAndDateOrdered((string) $profesor->dni, FechaInglesa(Hoy()));
 
         if (isset($horario->first()->desde)) {
             return $horario->first()->desde . " - " . $horario->last()->hasta;
@@ -115,12 +128,7 @@ class FicharController extends IntranetController
     public function resumenRango()
     {
         // Professors en plantilla, amb nom complet per al combo
-        $profes = Profesor::Plantilla()
-            ->select('dni', 'nombre', 'apellido1', 'apellido2')
-            ->orderBy('apellido1')
-            ->orderBy('apellido2')
-            ->orderBy('nombre')
-            ->get();
+        $profes = $this->profesores()->plantillaForResumen();
 
         return view('fichar.resumen-rango', compact('profes'));
     }

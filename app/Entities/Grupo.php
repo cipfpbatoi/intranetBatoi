@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Events\ActivityReport;
 
 class Grupo extends Model
@@ -69,7 +70,7 @@ class Grupo extends Model
 
     public function getTodosOptions()
     {
-        return hazArray(Grupo::all(), 'codigo', 'nombre');
+        return hazArray(app(GrupoService::class)->all(), 'codigo', 'nombre');
     }
 
     public function getIdCicloOptions()

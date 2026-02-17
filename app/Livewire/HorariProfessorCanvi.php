@@ -3,13 +3,16 @@
 namespace Intranet\Livewire;
 
 use Livewire\Component;
-use Intranet\Entities\Horario;
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Hora;
-use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
 
 class HorariProfessorCanvi extends Component
 {
+    private ?ProfesorService $profesorService = null;
+    private ?HorarioService $horarioService = null;
+
     public string $dni = '';
     public string $profesorNom = '';
     public bool $isDireccion = false;
@@ -49,7 +52,7 @@ class HorariProfessorCanvi extends Component
         $this->dni = $dni ?: (AuthUser()->dni ?? AuthUser()->id);
         $this->isDireccion = AuthUser() ? esRol(AuthUser()->rol, config('roles.rol.direccion')) : false;
 
-        $profesor = Profesor::find($this->dni);
+        $profesor = $this->profesores()->find((string) $this->dni);
         if ($profesor) {
             $this->profesorNom = $profesor->fullName;
         }
@@ -155,9 +158,7 @@ class HorariProfessorCanvi extends Component
         $this->items = [];
         $this->grid = [];
 
-        $horarios = Horario::Profesor($this->dni)
-            ->with(['Modulo', 'Ocupacion', 'Grupo', 'Hora'])
-            ->get();
+        $horarios = $this->horarios()->byProfesorWithRelations((string) $this->dni, ['Modulo', 'Ocupacion', 'Grupo', 'Hora']);
 
         foreach ($horarios as $horario) {
             $cell = $horario->sesion_orden . '-' . $horario->dia_semana;
@@ -677,5 +678,23 @@ class HorariProfessorCanvi extends Component
     public function render()
     {
         return view('livewire.horari-professor-canvi');
+    }
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
+
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
     }
 }

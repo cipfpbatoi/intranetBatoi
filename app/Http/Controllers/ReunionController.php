@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
@@ -9,9 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Asistencia;
 use Intranet\Entities\Documento;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\OrdenReunion;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Reunion;
 use Intranet\Services\Document\TipoReunionService;
 use Intranet\Exceptions\IntranetException;
@@ -29,6 +29,7 @@ use function dispatch;
 
 class ReunionController extends IntranetController
 {
+    private ?GrupoService $grupoService = null;
 
     use Imprimir;
 
@@ -38,6 +39,21 @@ class ReunionController extends IntranetController
     protected $gridFields = ['XGrupo', 'XTipo', 'Xnumero', 'descripcion', 'fecha', 'curso', 'id'];
     protected $modal = true;
     protected $parametresVista = [  'modal' => ['password']];
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
     /**
      * @param $elemento
@@ -86,11 +102,7 @@ class ReunionController extends IntranetController
         }
 
         $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
-        $activos = Profesor::select('dni', 'apellido1', 'apellido2', 'nombre')
-                ->OrderBy('apellido1')
-                ->OrderBy('apellido2')
-                ->where('activo', '=', 1)
-                ->get();
+        $activos = app(ProfesorService::class)->activosOrdered();
         $tProfesores = hazArray($activos, 'dni', 'FullName');
         $sProfesores = $elemento
             ->profesores()
@@ -398,7 +410,7 @@ class ReunionController extends IntranetController
 
     public function listado($dia = null)
     {
-        foreach (Grupo::all() as $grupo) {
+        foreach ($this->grupos()->all() as $grupo) {
             foreach (config('auxiliares.reunionesControlables') as $tipo => $howMany) {
                 $reuniones[$grupo->nombre][$tipo] = Reunion::Convocante($grupo->tutor)->Tipo($tipo)->Archivada()->get();
             }
@@ -410,10 +422,10 @@ class ReunionController extends IntranetController
     {
         $cont = 0;
         if ($request->quien) {
-            $grupos = Grupo::where('curso', $request->quien)->get();
+            $grupos = $this->grupos()->byCurso((int) $request->quien);
         }
         else {
-            $grupos = Grupo::all();
+            $grupos = $this->grupos()->all();
         }
         
         foreach ($grupos as $grupo) {

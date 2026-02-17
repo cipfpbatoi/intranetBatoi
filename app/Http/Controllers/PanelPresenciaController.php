@@ -2,29 +2,42 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Comision\ComisionService;
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Falta_profesor;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Actividad;
-use Intranet\Entities\Comision;
 use Intranet\Entities\Falta;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Services\HR\FitxatgeService;
 use Jenssegers\Date\Date;
 use Carbon\Carbon;
-use Intranet\Entities\Horario;
-use Intranet\Services\Document\PdfService;
 use Styde\Html\Facades\Alert;
 
 class PanelPresenciaController extends BaseController
 {
-    
     protected $model = 'Profesor';
     protected $gridFields = ['Xdepartamento', 'NameFull', 'email'];
     protected $vista = ['index' => 'llist.ausencia'];
+
+    private static function comisions(): ComisionService
+    {
+        return app(ComisionService::class);
+    }
+
+    private static function profesores(): ProfesorService
+    {
+        return app(ProfesorService::class);
+    }
+
+    private static function horarios(): HorarioService
+    {
+        return app(HorarioService::class);
+    }
     
     
     public function indice($dia = null)
@@ -38,13 +51,13 @@ class PanelPresenciaController extends BaseController
         $this->panel->setBoton('grid', new BotonImg('fichar.delete', [], 'direccion', $this->panel->dia));
         $this->panel->setBoton('grid', new BotonImg('fichar.email', [], 'direccion', $this->panel->dia));
         
-        return $this->grid(Profesor::whereIn('dni', self::noHanFichado($dia))->get());
+        return $this->grid(self::profesores()->byDnis(array_values(self::noHanFichado($dia))));
     }
 
     public function email($usuario, $dia)
     {
         // Busca el/la professor/a pel DNI
-        $profesor = Profesor::where('dni', $usuario)->first();
+        $profesor = self::profesores()->find((string) $usuario);
 
         if (!$profesor || empty($profesor->email)) {
             Alert::warning('No s\'ha pogut enviar el correu. El professor no existeix o no té correu electrònic assignat.');
@@ -84,13 +97,13 @@ class PanelPresenciaController extends BaseController
 
     public static function noHanFichado($dia)
     {
-        $profesores = Profesor::select('dni')->Activo()->get();
+        $profesores = self::profesores()->activosOrdered();
         
         // mira qui no ha fitxat
         $noHanFichado = [];
         foreach ($profesores as $profesor) {
             if (Falta_profesor::haFichado($dia, $profesor->dni)->count() == 0) {
-                if (Horario::Profesor($profesor->dni)->Dia(nameDay(new Date($dia)))->count() > 1) {
+                if (self::horarios()->countByProfesorAndDay((string) $profesor->dni, nameDay(new Date($dia))) > 1) {
                     $noHanFichado[$profesor->dni] = $profesor->dni;
                 }
             }
@@ -108,7 +121,7 @@ class PanelPresenciaController extends BaseController
         }
 
         // comprova que no està de comissió
-        $comisiones = Comision::Dia($dia)->get();
+        $comisiones = self::comisions()->byDay($dia);
         foreach ($comisiones as $comision) {
             if (in_array($comision->idProfesor, $noHanFichado)) {
                 unset($noHanFichado[$comision->idProfesor]);

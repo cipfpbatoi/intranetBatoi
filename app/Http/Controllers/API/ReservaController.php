@@ -2,9 +2,9 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Reserva;
-use Intranet\Entities\Profesor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -12,6 +12,16 @@ class   ReservaController extends ApiBaseController
 {
 
     protected $model = 'Reserva';
+    private ?ProfesorService $profesorService = null;
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
     
     public function show($cadena, $send=true)
     {
@@ -27,7 +37,7 @@ class   ReservaController extends ApiBaseController
 
     public function unsecure(Request $datosProfesor)
     {
-        $profesor = Profesor::find($datosProfesor->dni);
+        $profesor = $this->profesores()->find((string) $datosProfesor->dni);
         if (!$profesor || $datosProfesor->api_token !== $profesor->api_token) {
             return $this->sendError('Persona no identificada', 401);
         }

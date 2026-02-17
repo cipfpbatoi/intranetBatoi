@@ -2,6 +2,7 @@
 
 namespace Intranet\Entities;
 
+use Intranet\Application\Grupo\GrupoService;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -127,7 +128,7 @@ class Alumno extends Authenticatable
     public function scopeMisAlumnos(Builder $query, ?string $profesor = null, bool $dual = false): Builder
     {
         $profesor = $profesor ?? authUser()->dni;
-        $grupos = Grupo::QTutor($profesor, $dual)->pluck('codigo')->toArray();
+        $grupos = app(GrupoService::class)->qTutor((string) $profesor)->pluck('codigo')->toArray();
         $alumnos = AlumnoGrupo::whereIn('idGrupo', $grupos)->pluck('idAlumno');
         return $query->whereIn('nia', $alumnos);
     }
@@ -138,9 +139,11 @@ class Alumno extends Authenticatable
         $profesor = $profesor ?? authUser()->dni;
 
         // Subconsulta dels codis de grup on sóc tutor i NO són LFP
-        $codigosTutorNoLfp = Grupo::QTutor($profesor, $dual)
-            ->select('codigo')
-            ->where('codigo', 'not like', '%LFP%');
+        $codigosTutorNoLfp = app(GrupoService::class)
+            ->qTutor((string) $profesor)
+            ->where('codigo', 'not like', '%LFP%')
+            ->pluck('codigo')
+            ->all();
 
         // idAlumno de la taula pont per a eixos grups
         $subAlumnos = AlumnoGrupo::query()
@@ -250,7 +253,7 @@ class Alumno extends Authenticatable
     public function scopeMisDA(Builder $query, ?string $profesor = null, bool $dual = false): Builder
     {
         $profesor = $profesor ?? authUser()->dni;
-        $grupos = Grupo::QTutor($profesor, $dual)->pluck('codigo')->toArray();
+        $grupos = app(GrupoService::class)->qTutor((string) $profesor)->pluck('codigo')->toArray();
         $alumnos = AlumnoGrupo::whereIn('idGrupo', $grupos)->pluck('idAlumno');
         return $query->whereIn('nia', $alumnos)->where('DA',1);
     }

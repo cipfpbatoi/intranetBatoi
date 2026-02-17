@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Activity;
 use Intranet\Entities\Fct;
 use Intranet\Services\General\StateService;
@@ -14,6 +14,16 @@ class ColaboracionController extends ApiBaseController
 {
 
     protected $model = 'Colaboracion';
+    private ?ProfesorService $profesorService = null;
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
 
     public function instructores($id)
     {
@@ -49,7 +59,7 @@ class ColaboracionController extends ApiBaseController
     public function switch($id)
     {
         $colaboracion = Colaboracion::find($id);
-        $profesor = Profesor::where('api_token', $_GET['api_token'])->first();
+        $profesor = $this->profesores()->findByApiToken((string) ($_GET['api_token'] ?? ''));
         $colaboracion->tutor = $profesor->dni;
         $colaboracion->save();
         return $this->sendResponse($profesor, 'OK');

@@ -1,7 +1,17 @@
 <?php
 
-use Intranet\Entities\Profesor;
+use Intranet\Application\Profesor\ProfesorService;
 use Jenssegers\Date\Date;
+
+/**
+ * Resol el servei de professorat per als helpers globals.
+ *
+ * @return ProfesorService
+ */
+function profesorService(): ProfesorService
+{
+    return app(ProfesorService::class);
+}
 
 /**
  * Genera una URL d'asset amb versió basada en `filemtime` per evitar caché antic.
@@ -189,7 +199,7 @@ function fullDireccion()
  */
 function cargo($cargo)
 {
-    return \Intranet\Entities\Profesor::find(config("avisos.$cargo"));
+    return profesorService()->find((string) config("avisos.$cargo"));
 }
 
 /**
@@ -202,8 +212,12 @@ function signatura($document)
 {
     foreach (config('signatures.llistats') as $key => $carrec) {
         if (array_search($document, $carrec) !== false) {
-            return config("signatures.genere.$key")
-                    [Intranet\Entities\Profesor::find(config("avisos.$key"))->sexo];
+            $profesor = profesorService()->find((string) config("avisos.$key"));
+            if (!$profesor) {
+                return null;
+            }
+
+            return config("signatures.genere.$key")[$profesor->sexo];
         }
     }
 }
@@ -263,8 +277,7 @@ function apiAuthUser($token=null)
     if ($token==null) {
         $token = $_GET['api_token']??null;
     }
-    return Intranet\Entities\Profesor::where('api_token', $token)->first() ?? null;
-        //??Intranet\Entities\Profesor::find('021652470V');
+    return $token ? profesorService()->findByApiToken((string) $token) : null;
 }
 
 /**
@@ -387,7 +400,7 @@ function isAdmin()
 function usersWithRol($rol)
 {
     $usuarios = [];
-    foreach (Profesor::activo()->get() as $usuario) {
+    foreach (profesorService()->activos() as $usuario) {
         if (esRol($usuario->rol, $rol)) {
             $usuarios[] = $usuario->dni;
         }
@@ -541,7 +554,7 @@ function avisa($id, $mensaje, $enlace = '#', $emisor = null)
         if (strlen($id) == 8) {
             $quien = \Intranet\Entities\Alumno::find($id);
         } else {
-            $quien = \Intranet\Entities\Profesor::find($id);
+            $quien = profesorService()->find((string) $id);
         }
         if ($quien) {
             $quien->notify(new \Intranet\Notifications\mensajePanel(
@@ -671,8 +684,11 @@ function firstWord($cadena)
 
 function cargaDatosCertificado($datos, $date=null)
 {
-    $secretario = Profesor::find(config('avisos.secretario'));
-    $director = Profesor::find(config('avisos.director'));
+    $secretario = profesorService()->find((string) config('avisos.secretario'));
+    $director = profesorService()->find((string) config('avisos.director'));
+    if (!$secretario || !$director) {
+        return $datos;
+    }
     $datos['fecha'] = fechaString($date, 'ca');
     $datos['secretario']['titulo'] = $secretario->sexo == 'H'?'En':'Na';
     $datos['secretario']['articulo'] = $secretario->sexo == 'H'?'El':'La';

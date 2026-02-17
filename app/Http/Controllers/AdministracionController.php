@@ -10,12 +10,13 @@ namespace Intranet\Http\Controllers;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Intranet\Application\AlumnoFct\AlumnoFctService;
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\Empresa;
 use Illuminate\Support\Facades\Session;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\VoteAnt;
@@ -25,7 +26,6 @@ use Intranet\Entities\Setting;
 use Intranet\Mail\Comunicado;
 use Intranet\Services\Document\AttachedFileService;
 use Styde\Html\Facades\Alert;
-use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Storage;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Colaboracion;
@@ -42,7 +42,34 @@ use Symfony\Component\Mime\Exception\RfcComplianceException;
  */
 class AdministracionController extends Controller
 {
+    private ?GrupoService $grupoService = null;
+    private ?AlumnoFctService $alumnoFctService = null;
+
     const DIRECTORIO_GESTOR = 'gestor/Empresa/';
+
+    public function __construct(?GrupoService $grupoService = null, ?AlumnoFctService $alumnoFctService = null)
+    {
+        $this->grupoService = $grupoService;
+        $this->alumnoFctService = $alumnoFctService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    private function alumnoFcts(): AlumnoFctService
+    {
+        if ($this->alumnoFctService === null) {
+            $this->alumnoFctService = app(AlumnoFctService::class);
+        }
+
+        return $this->alumnoFctService;
+    }
 
     /**
      * @param $lang
@@ -60,7 +87,7 @@ class AdministracionController extends Controller
     public function allApiToken()
     {
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
-        foreach (Profesor::Activo()->get() as $profesor) {
+        foreach (app(ProfesorService::class)->activos() as $profesor) {
              try {
                 Mail::to($profesor->email)->send(new Comunicado(  $remitente, $profesor,'email.apitoken'  ));
             } catch (RfcComplianceException $e) {
@@ -145,7 +172,7 @@ class AdministracionController extends Controller
             Colaboracion::where('estado', '>', 1)->update(['estado' => 1]);
 
             // inicialitza professors
-            Profesor::whereNotNull('fecha_baja')->update(['fecha_baja' => null]);
+            app(ProfesorService::class)->clearFechaBaja();
 
             //$this->esborrarEnquestes();
 
@@ -158,7 +185,7 @@ class AdministracionController extends Controller
                     $alumno->save();
                 }
             }
-            foreach (Grupo::all() as $grupo) {
+            foreach ($this->grupos()->all() as $grupo) {
                 $grupo->fol = 0;
                 $grupo->save();
             }
@@ -245,7 +272,7 @@ class AdministracionController extends Controller
 
     public static function v3_01()
     {
-       $fcts = AlumnoFct::all();
+       $fcts = app(AlumnoFctService::class)->all();
        foreach ($fcts as $fct) {
            $grupo = $fct->Alumno->Grupo->first() ?? null;
            if ($grupo) {
@@ -366,7 +393,7 @@ class AdministracionController extends Controller
 
     /*public function consulta()
     {
-        $alumnosPendientes = AlumnoFct::esErasmus()->get();
+        $alumnosPendientes = app(AlumnoFctService::class)->all()->filter(fn ($fct) => $fct->erasmus);
 
             foreach ($alumnosPendientes as $alumno) {
                 try {

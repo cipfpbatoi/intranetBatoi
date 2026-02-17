@@ -2,20 +2,20 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Comision\ComisionService;
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Incidencia;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
-use Intranet\Entities\Comision;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Services\Document\TipoReunionService;
-use Intranet\Entities\AlumnoFctAval;
-use Intranet\Entities\Grupo;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Reunion;
 use function PHPUnit\Framework\isNull;
 
@@ -45,7 +45,7 @@ class PanelFinCursoController extends BaseController
     public function index($profesor=null)
     {
         $avisos = [];
-        $teacher = Profesor::find($profesor)??AuthUser();
+        $teacher = app(ProfesorService::class)->find((string) $profesor) ?? AuthUser();
         foreach (config('roles.rol') as $nomRol => $rol){
             if (($teacher->rol % $rol == 0) && method_exists($this, $nomRol)) {
                 $avisos[$nomRol] = $this::$nomRol();
@@ -111,7 +111,7 @@ class PanelFinCursoController extends BaseController
 
     private static function lookForCheckFol(&$avisos)
     {
-        foreach (Grupo::misGrupos()->get() as $grupo) {
+        foreach (app(GrupoService::class)->misGrupos() as $grupo) {
             if ($grupo->fol == 0) {
                 $avisos[self::DANGER][] = "FOL Grupo no revisado : ".$grupo->nombre;
             }
@@ -126,7 +126,7 @@ class PanelFinCursoController extends BaseController
 
     private static function lookForActesPendents(&$avisos)
     {
-        foreach (Grupo::where('acta_pendiente', '>', 0)->get() as $grupo) {
+        foreach (app(GrupoService::class)->withActaPendiente() as $grupo) {
             $avisos[self::DANGER][] = "Acta pendent del grup : ".$grupo->nombre;
         }
 
@@ -186,10 +186,13 @@ class PanelFinCursoController extends BaseController
 
     private static function lookAtFctsProjects(&$avisos)
     {
-        $grupo = Grupo::QTutor()->first();
-        $alumnes = AlumnoFctAval::select('idAlumno')->distinct()->misFcts()->esAval()->get()->toArray();
+        $grupo = app(GrupoService::class)->firstByTutor(AuthUser()->dni);
+        if ($grupo === null) {
+            return;
+        }
+        $alumnes = AlumnoFct::select('idAlumno')->distinct()->misFcts()->esAval()->get()->toArray();
         foreach ($alumnes as $alumne) {
-            $fctAval = AlumnoFctAval::esAval()->where('idAlumno', $alumne['idAlumno'])->orderBy('idAlumno')->first();
+            $fctAval = AlumnoFct::esAval()->where('idAlumno', $alumne['idAlumno'])->orderBy('idAlumno')->first();
 
             if (( !isNull($fctAval->calificacion)  || $fctAval->actas < 2) && $fctAval->asociacion == 1) {
                 $avisos[self::DANGER][] = "Fct de l'alumne ".$fctAval->Nombre.' no avaluada';
@@ -247,14 +250,10 @@ class PanelFinCursoController extends BaseController
 
     private static function lookUnPaidBills(&$avisos)
     {
-        if (Comision::Actual()->where('estado', '<', 4)
-            ->where('estado', '>', 0)
-            ->where(function($query) {
-                $query->where('comida', '>', 0)
-                    ->orWhere('gastos', '>', 0)
-                    ->orWhere('alojamiento', '>', 0)
-                    ->orWhere('kilometraje', '>', 0);
-            })->count()) {
+        $hasPending = app(ComisionService::class)
+            ->hasPendingUnpaidByProfesor(AuthUser()->dni);
+
+        if ($hasPending) {
             $avisos['alert'][] = "Tens comissions de servei pendents de cobrar";
         } else {
             $avisos[self::SUCCESS][] = 'Comissions correctes';

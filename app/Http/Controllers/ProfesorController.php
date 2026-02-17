@@ -7,14 +7,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\Departamento;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Profesor;
+use Intranet\Entities\Falta_profesor;
 use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
@@ -45,14 +46,54 @@ use Autorizacion,
     protected $perfil = 'profesor';
     protected $parametresVista = ['modal' => ['detalle','aviso']];
 
+    private ?ProfesorService $profesorService = null;
+    private ?HorarioService $horarioService = null;
+    private ?GrupoService $grupoService = null;
+
+    public function __construct(
+        ?ProfesorService $profesorService = null,
+        ?HorarioService $horarioService = null,
+        ?GrupoService $grupoService = null
+    )
+    {
+        parent::__construct();
+        $this->profesorService = $profesorService;
+        $this->horarioService = $horarioService;
+        $this->grupoService = $grupoService;
+    }
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
+
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
 
     public function index()
     {
         Session::forget('redirect');
-        $todos = Profesor::orderBy('apellido1')
-                ->with('Departamento')
-                ->Plantilla()
-                ->get();
+        $todos = $this->profesores()->plantillaOrderedWithDepartamento();
         $this->iniBotones();
         return $this->grid($todos);
     }
@@ -62,22 +103,39 @@ use Autorizacion,
     public function departamento()
     {
         Session::forget('redirect');
-        $todos = Profesor::orderBy('apellido1')
-                ->with('Departamento')
-                ->with('Horari.Ocupacion')
-                ->with('Horari.Modulo')
-                ->Activo()
-                ->get();
-        $departamentos = Departamento::where('didactico',1)->get();
+        $departamentos = Departamento::query()
+            ->where('didactico', 1)
+            ->where('id', '!=', 99)
+            ->orderBy('depcurt')
+            ->get();
+        $departamentosIds = $departamentos->pluck('id')->all();
+
+        $sesionActual = sesion(Hora(now()));
+        $diaActual = config("auxiliares.diaSemana." . now()->format('w'));
+
+        $todos = $this->profesores()->activosByDepartamentosWithHorario($departamentosIds, $diaActual, $sesionActual);
+
+        $fichajesHoy = Falta_profesor::query()
+            ->select('idProfesor', 'id', 'salida')
+            ->where('dia', hoy())
+            ->orderBy('id')
+            ->get()
+            ->groupBy('idProfesor')
+            ->map(function ($fichajes) {
+                $ultim = $fichajes->last();
+                return $ultim !== null && $ultim->salida === null;
+            });
+
+        foreach ($todos as $profesor) {
+            $profesor->inside = (bool) ($fichajesHoy[$profesor->dni] ?? false);
+        }
 
         foreach ($departamentos as $departamento) {
-            if ($departamento->id != 99 ) {
-                if($departamento->id == AuthUser()->departamento) {
-                    $this->panel->setPestana($departamento->depcurt, true, self::PROFILE_PROFESOR, ['Xdepartamento', $departamento->depcurt], null, 1, $this->parametresVista);
-                }
-                else {
-                    $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
-                }
+            if($departamento->id == AuthUser()->departamento) {
+                $this->panel->setPestana($departamento->depcurt, true, self::PROFILE_PROFESOR, ['Xdepartamento', $departamento->depcurt], null, 1, $this->parametresVista);
+            }
+            else {
+                $this->panel->setPestana($departamento->depcurt, false, 'profile.profesorRes', ['Xdepartamento', $departamento->depcurt],null,null,$this->parametresVista);
             }
         }
         $this->iniProfileBotones();
@@ -86,7 +144,7 @@ use Autorizacion,
 
     public function fse()
     {
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $grupo = $this->grupos()->largestByTutor(AuthUser()->dni);
         if (isset($grupo)) {
             return $this->hazPdf(
                 'pdf.reunion.actaFSE',
@@ -138,10 +196,7 @@ use Autorizacion,
                 ['icon' => 'fa-user', 'class' => 'btn-success']
             )
         );
-        $todos = Profesor::Activo()
-            ->orderBy('apellido1', 'asc')
-            ->orderBy('apellido2', 'asc')
-            ->get();
+        $todos = $this->profesores()->activosOrdered();
         return $todos->filter(function ($item) use ($rol) {
             if (esRol($item->rol, $rol)) {
                 return $item;
@@ -155,13 +210,12 @@ use Autorizacion,
         $this->panel->setBoton('index', new BotonBasico("profesor.colectivo", ['class' => 'colectivo btn btn-primary'], true));
         $this->panel->setBoton('profile', new BotonIcon('profesor.mensaje', ['icon' => 'fa-bell', 'class' => 'mensaje btn-success']));
         Session::put('colectivo', $grupo);
-        return $this->grid(Profesor::orderBy('apellido1', 'asc')->orderBy('apellido2', 'asc')
-                ->Grupo($grupo)->get());
+        return $this->grid($this->profesores()->byGrupo($grupo));
     }
     
     public function update(Request $request, $id)
     {
-        $new = Profesor::find($id);
+        $new = $this->profesores()->find((string) $id);
         parent::update($request, $new);
         return back();
     }
@@ -170,7 +224,7 @@ use Autorizacion,
     {
         $remitente = ['nombre' => 'Intranet', 'email' => config('contacto.host.email')];
         $user = AuthUser();
-        $profesor = Profesor::find($user->dni);
+        $profesor = $this->profesores()->find($user->dni);
 
         Mail::to($user->email)->send(new Comunicado($remitente, $profesor, 'email.apitoken'));
 
@@ -183,11 +237,11 @@ use Autorizacion,
     {
         if (Session::get('colectivo')) {
             if (strlen(Session::get('colectivo'))<4) {
-                foreach (Profesor::where('departamento', "=", Session::get('colectivo'))->get() as $profesor) {
+                foreach ($this->profesores()->byDepartamento(Session::get('colectivo')) as $profesor) {
                     avisa($profesor->dni, $request->explicacion != '' ? $request->explicacion : 'Te ha dado un toque.');
                 }
             } else {
-                foreach (Profesor::Grupo(Session::get('colectivo'))->get() as $profesor) {
+                foreach ($this->profesores()->byGrupo(Session::get('colectivo')) as $profesor) {
                     avisa($profesor->dni, $request->explicacion != '' ? $request->explicacion : 'Te ha dado un toque.');
                 }
             }
@@ -205,12 +259,14 @@ use Autorizacion,
 
     public function carnet($profesor)
     {
-        return $this->hazPdf('pdf.carnet', Profesor::where('dni',$profesor)->get(), [Date::now()->format('Y'), 'Professorat - Teacher'], 'portrait', [85.6, 53.98])->stream();
+        $record = $this->profesores()->find((string) $profesor);
+        $profesores = $record ? collect([$record]) : collect();
+        return $this->hazPdf('pdf.carnet', $profesores, [Date::now()->format('Y'), 'Professorat - Teacher'], 'portrait', [85.6, 53.98])->stream();
     }
 
     public function tarjeta($profesor)
     {
-        $profesor = Profesor::findOrFail($profesor);
+        $profesor = $this->profesores()->findOrFail((string) $profesor);
         $cargo = 'Professorat';
         if (esRol($profesor->rol, config('roles.rol.direccion'))) {
             switch ($profesor->dni) {
@@ -259,8 +315,8 @@ use Autorizacion,
 
     protected function horario($id)
     {
-        $horario = Horario::HorarioSemanal($id);
-        $profesor = Profesor::findOrFail($id);
+        $horario = $this->horarios()->semanalByProfesor((string) $id);
+        $profesor = $this->profesores()->findOrFail((string) $id);
         return view('horario.profesor', compact('horario', 'profesor'));
     }
 
@@ -269,18 +325,15 @@ use Autorizacion,
     //-----------------------------
     protected function imprimirHorarios()
     {
-        $profesores = Profesor::Activo()->get();
+        $profesores = $this->profesores()->activosOrdered();
         $horarios = [];
         $observaciones = [];
         foreach ($profesores as $profesor){
-            if (Storage::disk('local')->exists('/horarios/'.$profesor->dni.'.json')){
-                    if (isset(json_decode(Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json'))->obs)) {
-                        $observaciones[$profesor->dni] = json_decode(Storage::disk('local')->get('/horarios/'.$profesor->dni.'.json'))->obs;
-                    }
-                    else {
-                        $observaciones[$profesor->dni] = '';
-                    }
-                    $horarios[$profesor->dni] = Horario::HorarioSemanal($profesor->dni);
+            $ruta = '/horarios/'.$profesor->dni.'.json';
+            if (Storage::disk('local')->exists($ruta)){
+                    $json = json_decode(Storage::disk('local')->get($ruta));
+                    $observaciones[$profesor->dni] = $json->obs ?? '';
+                    $horarios[$profesor->dni] = $this->horarios()->semanalByProfesor((string) $profesor->dni);
             }
         }
         return $this->hazPdf('pdf.horarios', $horarios,$observaciones)->stream();
@@ -291,13 +344,27 @@ use Autorizacion,
     //-------------------------------
     protected function change($idProfesor)
     {
+        $profesor = $this->profesores()->find((string) $idProfesor);
+        if (!$profesor) {
+            Alert::danger('Professor no trobat');
+            return back();
+        }
+
         Session::put('userChange', AuthUser()->dni);
-        Auth::login(Profesor::find($idProfesor));
+        Auth::login($profesor);
         return redirect('/');
     }
     protected function backChange()
     {
-        Auth::login(Profesor::find(Session::get('userChange')));
+        $dniOriginal = Session::get('userChange');
+        $profesor = $dniOriginal ? $this->profesores()->find((string) $dniOriginal) : null;
+        if (!$profesor) {
+            Session::forget('userChange');
+            Alert::danger('No s\'ha pogut restaurar la sessió original');
+            return redirect('/');
+        }
+
+        Auth::login($profesor);
         Session::forget('userChange');
         return redirect('/');
     }

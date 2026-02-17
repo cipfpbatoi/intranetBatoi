@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
@@ -12,7 +13,6 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Activity;
 use Intranet\Http\Traits\Core\Panel;
 use Styde\Html\Facades\Alert;
@@ -24,6 +24,8 @@ use Styde\Html\Facades\Alert;
 class PanelColaboracionController extends IntranetController
 {
     use Panel;
+
+    private ?GrupoService $grupoService = null;
 
     const ROLES_ROL_TUTOR= 'roles.rol.tutor';
     const FCT_EMAILS_REQUEST = 'fctEmails.request';
@@ -37,6 +39,21 @@ class PanelColaboracionController extends IntranetController
     protected $model = 'Colaboracion';
 
     protected $parametresVista = ['modal' => ['contacto',  'seleccion']];
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
 
     /**
@@ -293,9 +310,11 @@ public function search()
         Session::put('pestana', 1);
         $copia = new Colaboracion();
         $copia->fill($elemento->toArray());
-        $copia->idCiclo = Grupo::QTutor($profesor)->get()->count() > 0
-            ? Grupo::QTutor($profesor)->first()->idCiclo
-            : Grupo::QTutor($profesor, true)->first()->idCiclo;
+        $grupoTutor = $this->grupos()->firstByTutor($profesor);
+        if (!$grupoTutor) {
+            return back()->withErrors('No s\'ha trobat grup de tutoria');
+        }
+        $copia->idCiclo = $grupoTutor->idCiclo;
         $copia->tutor = AuthUser()->FullName;
 
         // para no generar más de uno por ciclo

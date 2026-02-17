@@ -11,7 +11,25 @@ class EmpresaController extends ApiBaseController
     
     public function indexConvenio()
     {
-        $data = EmpresaResource::collection(Empresa::where('concierto', '>', 0)->where('europa', 0)->get());
+        $data = EmpresaResource::collection(
+            Empresa::query()
+                ->select([
+                    'id',
+                    'concierto',
+                    'nombre',
+                    'direccion',
+                    'localidad',
+                    'telefono',
+                    'email',
+                    'cif',
+                    'actividad',
+                    'fichero',
+                ])
+                ->where('concierto', '>', 0)
+                ->where('europa', 0)
+                ->orderBy('nombre')
+                ->get()
+        );
         return $this->sendResponse($data, 'OK');
     }
 }

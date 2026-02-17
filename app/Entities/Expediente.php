@@ -3,10 +3,10 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Events\ActivityReport;
 use Jenssegers\Date\Date;
 use Illuminate\Support\Facades\Auth;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
 
 class Expediente extends Model
@@ -89,7 +89,7 @@ class Expediente extends Model
     public function getIdAlumnoOptions()
     {
         $misAlumnos = [];
-        $migrupos = Grupo::MisGrupos()->get();
+        $migrupos = app(GrupoService::class)->misGrupos();
         foreach ($migrupos as $migrupo) {
             if (isset($migrupo->codigo)) {
                 $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->codigo)->get();

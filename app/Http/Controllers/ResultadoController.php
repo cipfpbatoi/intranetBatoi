@@ -2,9 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
@@ -22,6 +22,8 @@ class ResultadoController extends ModalController
 {
 
     use Imprimir;
+
+    private ?GrupoService $grupoService = null;
 
     /**
      * @var string
@@ -47,6 +49,21 @@ class ResultadoController extends ModalController
     {
         $this->panel->setBotonera(['create'], ['delete', 'edit']);
 
+    }
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
     }
 
     private function rellenaPropuestasMejora($idModulo){
@@ -88,7 +105,7 @@ class ResultadoController extends ModalController
      */
     public function listado()
     {
-        if ($grupo = Grupo::select('codigo', 'nombre')->QTutor()->largestByAlumnes()->first()) {
+        if ($grupo = $this->grupos()->largestByTutor(AuthUser()->dni)) {
             $resultados = Resultado::QGrupo($grupo->codigo)->orderBy('idModuloGrupo')
                             ->orderBy('evaluacion')->get();
             $datosInforme = $grupo->nombre;

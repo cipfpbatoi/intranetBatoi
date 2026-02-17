@@ -2,6 +2,7 @@
 
 namespace Intranet\Entities;
 
+use Intranet\Application\Grupo\GrupoService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
@@ -181,7 +182,12 @@ class Profesor extends Authenticatable
 
     public function scopeTutoresFCT($query)
     {
-        $grupos = hazArray(Grupo::where('curso', 2)->get(), 'tutor', 'tutor');
+        $grupos = app(GrupoService::class)->byCurso(2)
+            ->pluck('tutor')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
         return $query->Plantilla()->whereIn('dni', $grupos);
     }
 
@@ -342,12 +348,12 @@ class Profesor extends Authenticatable
 
     public function getGrupoTutoriaAttribute()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->get();
-        if (isset($miGrupo->first()->codigo)) {
-            return $miGrupo->first()->codigo;
+        $miGrupo = app(GrupoService::class)->byTutorOrSubstitute(authUser()->dni, authUser()->sustituye_a);
+        if (isset($miGrupo?->codigo)) {
+            return $miGrupo->codigo;
         }
-        $miGrupo = Grupo::where('tutorDual', '=', authUser()->dni)->get();
-        return isset($miGrupo->first()->codigo) ? $miGrupo->first()->codigo : '';
+        $miGrupoDual = app(GrupoService::class)->firstByTutorDual(authUser()->dni);
+        return $miGrupoDual->codigo ?? '';
      }
 
     public function getFileNameAttribute()

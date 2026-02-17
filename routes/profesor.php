@@ -315,18 +315,18 @@ Route::get('/fct/{id}/modificaNota', ['as' => 'fct.editNota', 'uses' => 'PanelFc
 Route::put('/fct/{id}/modificaNota', ['as' => 'fct.updateNota', 'uses' => 'PanelFctAvalController@update']);
 Route::get('/fct/estadisticas',['as' => 'fct.stat', 'uses' => 'PanelFctAvalController@estadistiques']);
 /*
-Route::resource('dual', 'DualController', ['except' => ['destroy', 'update', 'show', 'edit']]);
-Route::get('/dual/{id}/edit', ['as' => 'dual.edit', 'uses' => 'DualController@edit']);
-Route::put('/dual/{id}/edit', ['as' => 'dual.update', 'uses' => 'DualController@update']);
-Route::get('/dual/create', ['as' => 'dual.create', 'uses' => 'DualController@create']);
-Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'DualController@store']);
-Route::get('/dual/{id}/pdf/{informe}', ['as' => 'dual.pdf', 'uses' => 'DualController@informe']);
-Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'DualController@destroy']);
-Route::get('/dual/{id}/anexeXIII', ['as' => 'dual.anexeXIII', 'uses' => 'DualController@printAnexeXIII']);
-Route::get('/dual/{id}/informe', ['as' => 'dual.informe', 'uses' => 'DualController@getInforme']);
-Route::post('/dual/{id}/informe', ['as' => 'dual.firma', 'uses' => 'DualController@putInforme']);
-Route::get('/dual/anexeVI', ['as'=>'dual.anexevi', 'uses'=>'DualController@printAnexeVI']);
-Route::get('/dual/anexeXIV', ['as'=>'dual.anexexiv', 'uses'=>'DualController@printAnexeXIV']);
+Route::resource('dual', 'Deprecated\\DualController', ['except' => ['destroy', 'update', 'show', 'edit']]);
+Route::get('/dual/{id}/edit', ['as' => 'dual.edit', 'uses' => 'Deprecated\\DualController@edit']);
+Route::put('/dual/{id}/edit', ['as' => 'dual.update', 'uses' => 'Deprecated\\DualController@update']);
+Route::get('/dual/create', ['as' => 'dual.create', 'uses' => 'Deprecated\\DualController@create']);
+Route::post('/dual/create', ['as' => 'dual.store', 'uses' => 'Deprecated\\DualController@store']);
+Route::get('/dual/{id}/pdf/{informe}', ['as' => 'dual.pdf', 'uses' => 'Deprecated\\DualController@informe']);
+Route::get('/dual/{id}/delete', ['as' => 'dual.destroy', 'uses' => 'Deprecated\\DualController@destroy']);
+Route::get('/dual/{id}/anexeXIII', ['as' => 'dual.anexeXIII', 'uses' => 'Deprecated\\DualController@printAnexeXIII']);
+Route::get('/dual/{id}/informe', ['as' => 'dual.informe', 'uses' => 'Deprecated\\DualController@getInforme']);
+Route::post('/dual/{id}/informe', ['as' => 'dual.firma', 'uses' => 'Deprecated\\DualController@putInforme']);
+Route::get('/dual/anexeVI', ['as'=>'dual.anexevi', 'uses'=>'Deprecated\\DualController@printAnexeVI']);
+Route::get('/dual/anexeXIV', ['as'=>'dual.anexexiv', 'uses'=>'Deprecated\\DualController@printAnexeXIV']);
 */
 Route::get('/alumnofct/{id}/AVI', ['as' => 'alumnofct.AVI', 'uses' => 'FctAlumnoController@AVI']);
 Route::get('/alumnofct/{id}/AutDual', ['as' => 'alumnofct.AutDual', 'uses' => 'FctAlumnoController@AutDual']);

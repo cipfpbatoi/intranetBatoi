@@ -2,29 +2,51 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Grupo;
+use Intranet\Entities\Ciclo;
 use Intranet\Http\PrintResources\A1Resource;
 use Intranet\Services\Document\FDFPrepareService;
-use Response;
 use Intranet\UI\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\Input;
 
 class EmpresaController extends IntranetController
 {
+    private ?GrupoService $grupoService = null;
 
     protected $perfil = 'profesor';
     protected $model = 'Empresa';
     protected $gridFields = ['concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad'];
     protected $vista = ['show' => 'empresa','index'=>'vacia'];
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    protected function search()
+    {
+        return Empresa::query()
+            ->select(['id', 'concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad'])
+            ->orderBy('nombre')
+            ->get();
+    }
 
     
     public function create($default=[])
@@ -35,10 +57,35 @@ class EmpresaController extends IntranetController
     public function show($id)
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 2;
-        $elemento = Empresa::findOrFail($id);
+        $elemento = Empresa::with([
+            'centros.colaboraciones.ciclo',
+            'centros.instructores',
+        ])->findOrFail($id);
         $modelo = 'Empresa';
-        $misColaboraciones = Grupo::find(AuthUser()->GrupoTutoria)->Ciclo->Colaboraciones??collect();
-        return view('empresa.show' , compact('elemento', 'modelo', 'activa', 'misColaboraciones'));
+
+        $cicloTutoria = $this->grupos()->find((string) AuthUser()->GrupoTutoria)?->idCiclo;
+        $misColaboracionesIds = collect();
+        if ($cicloTutoria) {
+            $misColaboracionesIds = Colaboracion::query()
+                ->where('idCiclo', $cicloTutoria)
+                ->whereIn('idCentro', $elemento->centros->pluck('id'))
+                ->pluck('id');
+        }
+
+        $ciclosDepartamento = Ciclo::query()
+            ->where('departamento', authUser()->departamento)
+            ->get();
+        $ciclosDepartamentoIds = $ciclosDepartamento->pluck('id')->all();
+
+        return view('empresa.show', compact(
+            'elemento',
+            'modelo',
+            'activa',
+            'misColaboracionesIds',
+            'cicloTutoria',
+            'ciclosDepartamento',
+            'ciclosDepartamentoIds'
+        ));
     }
     
     protected function iniBotones()
@@ -48,17 +95,17 @@ class EmpresaController extends IntranetController
 
     public function store(Request $request)
     {
-        $dades = $request->except('cif');
-        $dades['cif'] = strtoupper($request->cif);
-        if (Empresa::where('cif', strtoupper($request->cif))->count()) {
+        $cif = strtoupper((string) $request->cif);
+        if (Empresa::where('cif', $cif)->exists()) {
             return back()->withInput($request->all())->withErrors('CIF duplicado');
         }
 
-        $id = $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]));
+        $id = $this->realStore(subsRequest($request, ['cif' => $cif]));
 
         $idCentro = $this->createCenter($id, $request);
-        if (isset(Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo)) {
-            $this->createColaboration($idCentro, $request);
+        $idCicloTutoria = $this->grupos()->firstByTutor(AuthUser()->dni)?->idCiclo;
+        if ($idCicloTutoria) {
+            $this->createColaboration($idCentro, $request, $idCicloTutoria);
         }
 
         return redirect()->action('EmpresaController@show', ['empresa' => $id]);
@@ -66,7 +113,7 @@ class EmpresaController extends IntranetController
 
 
 
-    private function createCenter($id, $request)
+    private function createCenter($id, Request $request)
     {
         $centro = new Centro();
         $centro->idEmpresa = $id;
@@ -76,7 +123,7 @@ class EmpresaController extends IntranetController
         $centro->save();
         return $centro->id;
     }
-    private function createColaboration($id, $request)
+    private function createColaboration($id, Request $request, $idCicloTutoria)
     {
         $colaboracion = new Colaboracion();
         $colaboracion->idCentro = $id;
@@ -84,7 +131,7 @@ class EmpresaController extends IntranetController
         $colaboracion->email = $request->email;
         $colaboracion->puestos = 1;
         $colaboracion->tutor = AuthUser()->FullName;
-        $colaboracion->idCiclo = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo;
+        $colaboracion->idCiclo = $idCicloTutoria;
         $colaboracion->save();
         return $colaboracion->id;
     }
@@ -104,8 +151,8 @@ class EmpresaController extends IntranetController
     {
         $elemento = Empresa::find($this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]), $id));
 
-        $touched = false;
         foreach ($elemento->centros as $centro) {
+            $touched = false;
             if ($centro->direccion == '') {
                 $centro->direccion = $elemento->direccion;
                 $touched = true;
@@ -118,9 +165,9 @@ class EmpresaController extends IntranetController
                 $centro->nombre = $elemento->nombre;
                 $touched = true;
             }
-        }
-        if ($touched) {
-            $centro->save();
+            if ($touched) {
+                $centro->save();
+            }
         }
         return redirect()->action('EmpresaController@show', ['empresa' => $elemento->id]);
     }

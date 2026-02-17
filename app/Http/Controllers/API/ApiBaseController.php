@@ -2,9 +2,9 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 use InfyOm\Generator\Utils\ResponseUtil;
-use Intranet\Entities\Profesor;
 use Response;
 use Exception;
 use Intranet\Http\Controllers\Controller;
@@ -17,6 +17,7 @@ class ApiBaseController extends Controller
     protected $class;
     protected $rules;
     protected $guard='api';
+    private ?ProfesorService $profesorService = null;
 
     public function __construct()
     {
@@ -46,7 +47,11 @@ class ApiBaseController extends Controller
     }
 
     public function ApiUser(Request $request){
-        return Profesor::where('api_token',$request->api_token)->get()->first();
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService->findByApiToken((string) $request->api_token);
     }
 
     public function update(Request $request, $id)

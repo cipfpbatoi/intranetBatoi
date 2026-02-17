@@ -2,16 +2,16 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\BaseController;
 
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Ciclo;
 
 class PanelDualController extends BaseController
 {
+    private ?GrupoService $grupoService = null;
 
     protected $perfil = 'profesor';
     protected $model = 'Grupo';
@@ -21,6 +21,21 @@ class PanelDualController extends BaseController
         'EnDual',
         'XDual'
     ];
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
     
     protected function iniBotones()
     {
@@ -50,13 +65,13 @@ class PanelDualController extends BaseController
                 $grups[$grupo] = $grupo;
             }
         }
-        return Grupo::whereIn('codigo',$grups)
-            ->get();
+        return $this->grupos()->byCodes(array_values($grups));
     }
 
     protected function show($id)
     {
-        $grupo = Grupo::find($id);
+        $grupo = $this->grupos()->find((string) $id);
+        abort_unless($grupo !== null, 404);
         return redirect()->route('fct.linkQuality',['dni'=>$grupo->tutor]);
     }
 

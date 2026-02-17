@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\IntranetController;
-use Intranet\Http\Controllers\ActividadController;
+use Intranet\Presentation\Crud\ActividadCrudSchema;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
@@ -29,7 +29,8 @@ class PanelActividadOrientacionController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['name', 'desde', 'hasta'];
+    protected $gridFields = ActividadCrudSchema::ORIENTACION_GRID_FIELDS;
+    protected $formFields = ActividadCrudSchema::FORM_FIELDS;
     /**
      * @var bool
      */

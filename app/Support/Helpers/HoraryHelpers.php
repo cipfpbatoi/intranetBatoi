@@ -2,6 +2,7 @@
 
 // segun horari on està el professor
 
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Entities\Hora;
 
 function horarioAhora($dni)
@@ -10,10 +11,7 @@ function horarioAhora($dni)
     $hora = sesion(Hora($ahora));
     $dia = config("auxiliares.diaSemana." . $ahora->format('w'));
 
-    $horasDentro = Intranet\Entities\Horario::Dia($dia)
-            ->Profesor($dni)
-            ->orderBy('sesion_orden')
-            ->get();
+    $horasDentro = app(HorarioService::class)->byProfesorDiaOrdered((string) $dni, (string) $dia);
     if (count($horasDentro) > 0) {
         if ($horasDentro->last()->sesion_orden < $hora) {
             return ['momento' => $horasDentro->last()->hasta, 'ahora' => trans('messages.generic.home')];

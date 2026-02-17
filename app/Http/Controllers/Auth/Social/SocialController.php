@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers\Auth\Social;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Profesor;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Alumno;
 use Auth;
 use Socialite;
@@ -12,10 +12,20 @@ use Intranet\Http\Controllers\Controller;
 
 class SocialController extends Controller
 {
+    private ?ProfesorService $profesorService = null;
 
     public function __construct()
     {
         $this->middleware('guest');
+    }
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
     }
 
     public function getSocialAuth($token=null)
@@ -27,7 +37,7 @@ class SocialController extends Controller
             return Socialite::driver('google')->redirect();
         }
         else{
-            $profesor = Profesor::where('api_token',$token)->first();
+            $profesor = $this->profesores()->findByApiToken((string) $token);
             if ($profesor) {
                 return Socialite::driver('google')->with(["login_hint" => $profesor->email])->redirect();
             }
@@ -56,7 +66,7 @@ class SocialController extends Controller
     public function getSocialAuthCallback(Request $request)
     {
         if ($user = Socialite::driver('google')->user()) {
-            if ($the_user = Profesor::where('email', $user->email)->first()) {
+            if ($the_user = $this->profesores()->findByEmail((string) $user->email)) {
                 if (isPrivateAddress(getClientIpAddress())){
                     return $this->successloginProfesor($the_user);
                 }

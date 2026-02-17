@@ -2,10 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Http\Request;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\GrupoTrabajo;
 use Intranet\Entities\Miembro;
 use Intranet\Http\Requests\GrupoTrabajoRequest;
@@ -62,10 +62,7 @@ class GrupoTrabajoController extends ModalController
      */
     public function detalle($id)
     {
-        foreach (Profesor::select('apellido1', 'apellido2', 'nombre', 'dni')
-                     ->OrderBy('apellido1')
-                     ->OrderBy('apellido2')
-                     ->get() as $profesor) {
+        foreach (app(ProfesorService::class)->allOrderedBySurname() as $profesor) {
             $tProfesores[$profesor->dni] = $profesor->nameFull;
         }
 

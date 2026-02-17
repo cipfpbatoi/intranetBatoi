@@ -2,16 +2,31 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\AlumnoGrupo;
-use Intranet\Entities\Grupo;
 use Illuminate\Http\Request;
 use Intranet\Entities\Modulo_grupo;
 
 
 class AlumnoGrupoController extends ApiBaseController
 {
+    private ?GrupoService $grupoService = null;
 
     protected $model = 'AlumnoGrupo';
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
     private function alumnos($misgrupos)
     {
@@ -45,7 +60,7 @@ class AlumnoGrupoController extends ApiBaseController
             if (strlen($cadena)==8){
                 return $this->sendResponse(AlumnoGrupo::where('idAlumno',$cadena)->first(),'OK');
             } else {
-                $migrupo = Grupo::Qtutor($cadena)->get();
+                $migrupo = $this->grupos()->qTutor((string) $cadena);
                 return $this->alumnos($migrupo);
             }
     }
@@ -54,7 +69,7 @@ class AlumnoGrupoController extends ApiBaseController
 
     
     public function getModulo($dni,$modulo){
-        //$migrupo = Grupo::miGrupoModulo($dni,$modulo)->get();
+        //$migrupo = $this->grupos()->miGrupoModulo($dni,$modulo);
         $misgrupos = Modulo_grupo::misModulos($dni,$modulo);
         return $this->alumnos($misgrupos);
     }

@@ -2,9 +2,9 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Falta_itaca;
-use Intranet\Entities\Horario;
 use Intranet\Entities\Falta_profesor;
 use Illuminate\Http\Request;
 use Intranet\Services\General\StateService;
@@ -15,17 +15,22 @@ class FaltaItacaController extends ApiBaseController
 {
 
     protected $model = 'Falta_itaca';
+    private ?HorarioService $horarioService = null;
+
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
 
     public function potencial($dia, $idProfesor)
     {
 
         if (!config('variables.controlDiario') || Falta_profesor::haFichado($dia, $idProfesor)->count()) {
-            $horas = Horario::Profesor($idProfesor)
-                    ->Dia(nameDay($dia))
-                    ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
-                    ->whereNull('ocupacion')
-                    ->orderBy('sesion_orden')
-                    ->get();
+            $horas = $this->horarios()->lectivasByProfesorAndDayOrdered((string) $idProfesor, nameDay($dia));
             $horasJ = [];
 
             foreach ($horas as $hora) {

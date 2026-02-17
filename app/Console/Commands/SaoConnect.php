@@ -5,7 +5,7 @@ namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Services\Automation\SeleniumService;
 use Intranet\Sao\Sync;
@@ -30,7 +30,7 @@ class SaoConnect extends Command
             );
 
             (new Sync())->execute($driver,function () {
-                return AlumnoFctAval::whereNotNull('idSao')
+                return AlumnoFct::whereNotNull('idSao')
                     ->noHaAcabado()
                     ->haEmpezado()
                     ->activa();
