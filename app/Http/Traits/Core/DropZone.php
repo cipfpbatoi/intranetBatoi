@@ -57,7 +57,9 @@ trait DropZone
 
         $registre = $this->class::findOrFail($id);
         $quien = $registre->quien ?? $registre->fullName ?? $registre->nombre ?? "#$id";
-        $modelo = strtolower($this->model);
+        $modelo = isset($this->dropzoneModel)
+            ? strtolower((string) $this->dropzoneModel)
+            : strtolower($this->model);
 
         $botones = [
             'volver' => ['link' => url()->previous()]
