@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Falta\FaltaService;
+use Intranet\Entities\Falta;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
