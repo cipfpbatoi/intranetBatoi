@@ -3,18 +3,13 @@
 namespace Intranet\Http\Controllers\API;
 
 use Intranet\Application\Comision\ComisionService;
+use Intranet\Presentation\Crud\ComisionCrudSchema;
 
 class ComisionController extends ApiBaseController
 {
 
     protected $model = 'Comision';
-    protected $rules = [
-        'kilometraje' => 'Integer',
-        'profesor' => 'required',
-        'servicio' => 'required',
-        'entrada' => 'after:salida',
-        'matricula' => 'required_with:marca'
-    ];
+    protected $rules = ComisionCrudSchema::API_RULES;
 
     private ComisionService $comisionService;
 

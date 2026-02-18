@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Presentation\Crud\CursoCrudSchema;
 
 use DB;
 use Intranet\UI\Botones\BotonImg;
@@ -32,7 +33,8 @@ class CursoController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'titulo', 'estado', 'fecha_inicio','NAlumnos'];
+    protected $gridFields = CursoCrudSchema::GRID_FIELDS;
+    protected $formFields = CursoCrudSchema::FORM_FIELDS;
 
 
     public function store(CursoRequest $request)

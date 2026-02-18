@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
+use Intranet\Presentation\Crud\FaltaCrudSchema;
 
 class Falta extends Model
 {
@@ -30,29 +31,8 @@ class Falta extends Model
         'estado'
     ];
     
-    protected $rules = [
-        'idProfesor' => 'required',
-        'desde' => 'required|date',
-        'hasta' => 'date',
-        'motivos' => 'required',
-        'observaciones' => 'max:200',
-        'hora_ini' => 'required_if:dia_completo,0',
-        'hora_fin' => 'required_if:dia_completo,0',
-        'fichero' => 'mimes:pdf,jpg,jpeg,png'
-    ];
-    protected $inputTypes = [
-        'idProfesor' => ['type' => 'hidden'],
-        'estado' => ['type' => 'hidden'],
-        'desde' => ['type' => 'date'],
-        'hasta' => ['type' => 'date'],
-        'baja' => ['type' => 'hidden'],
-        'dia_completo' => ['type' => 'checkbox'],
-        'hora_ini' => ['type' => 'select'],
-        'hora_fin' => ['type' => 'select'],
-        'motivos' => ['type' => 'select'],
-        'fecha' => ['type' => 'date'],
-        'fichero' => ['type' => 'file']
-    ];
+    protected $rules = FaltaCrudSchema::RULES;
+    protected $inputTypes = FaltaCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
         'updating' => PreventAction::class,

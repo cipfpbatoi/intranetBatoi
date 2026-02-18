@@ -8,7 +8,6 @@ use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\Falta_profesor;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Falta;
 use Illuminate\Support\Facades\Session;
@@ -97,12 +96,13 @@ class PanelPresenciaController extends BaseController
 
     public static function noHanFichado($dia)
     {
+        $fitxatgeService = app(FitxatgeService::class);
         $profesores = self::profesores()->activosOrdered();
         
         // mira qui no ha fitxat
         $noHanFichado = [];
         foreach ($profesores as $profesor) {
-            if (Falta_profesor::haFichado($dia, $profesor->dni)->count() == 0) {
+            if (!$fitxatgeService->hasFichado($dia, (string) $profesor->dni)) {
                 if (self::horarios()->countByProfesorAndDay((string) $profesor->dni, nameDay(new Date($dia))) > 1) {
                     $noHanFichado[$profesor->dni] = $profesor->dni;
                 }

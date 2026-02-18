@@ -8,6 +8,7 @@ use Intranet\Events\ActivityReport;
 use Jenssegers\Date\Date;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Entities\Modulo;
+use Intranet\Presentation\Crud\ExpedienteCrudSchema;
 
 class Expediente extends Model
 {
@@ -26,15 +27,7 @@ class Expediente extends Model
         'fecha',
         'fechatramite'
     ];
-    protected $inputTypes = [
-        'tipo' => ['type' => 'select'],
-        'idModulo' => ['type'=>'select'],
-        'idAlumno' => ['type' => 'select'],
-        'idProfesor' => ['type' => 'hidden'],
-        'explicacion' => ['type' => 'textarea'],
-        'fecha' => ['type' => 'date'],
-        'fechatramite' => ['type' => 'date'],
-    ];
+    protected $inputTypes = ExpedienteCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'created' => ActivityReport::class,
         'deleted' => ActivityReport::class,
@@ -153,7 +146,7 @@ class Expediente extends Model
     }
     public function getQuienAttribute()
     {
-        return $this->nomAlumn;
+        return $this->nomAlum;
     }
     public function scopeListos($query)
     {

@@ -3,8 +3,8 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Comision\ComisionService;
-use Intranet\Domain\Comision\ComisionRepositoryInterface;
 use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Presentation\Crud\ComisionCrudSchema;
 
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
@@ -37,29 +37,19 @@ class ComisionController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'descripcion', 'desde','total', 'situacion'];
+    protected $gridFields = ComisionCrudSchema::GRID_FIELDS;
+    protected $formFields = ComisionCrudSchema::FORM_FIELDS;
     /**
      * @var string
      */
     protected $model = 'Comision';
 
-    private ?ComisionRepositoryInterface $comisionRepository = null;
     private ?ComisionService $comisionService = null;
 
-    public function __construct(?ComisionRepositoryInterface $comisionRepository = null, ?ComisionService $comisionService = null)
+    public function __construct(?ComisionService $comisionService = null)
     {
         parent::__construct();
-        $this->comisionRepository = $comisionRepository;
         $this->comisionService = $comisionService;
-    }
-
-    private function comisions(): ComisionRepositoryInterface
-    {
-        if ($this->comisionRepository === null) {
-            $this->comisionRepository = app(ComisionRepositoryInterface::class);
-        }
-
-        return $this->comisionRepository;
     }
 
     private function comisionService(): ComisionService
@@ -88,13 +78,13 @@ class ComisionController extends ModalController
 
     public function update(ComisionRequest $request, $id)
     {
-        $this->comisions()->findOrFail((int) $id)->fillAll($request);
+        $this->comisionService()->findOrFail((int) $id)->fillAll($request);
         return $this->redirect();
     }
 
     public function confirm($id)
     {
-        $comision = $this->comisions()->findOrFail((int) $id);
+        $comision = $this->comisionService()->findOrFail((int) $id);
         if ($comision->estado == 0) {
             return ConfirmAndSend::render($this->model, $id, 'Enviar a direcció i correus confirmació');
         }
@@ -202,7 +192,7 @@ class ComisionController extends ModalController
 
     protected function init($id)
     {
-        $comision = $this->comisions()->find((int) $id);
+        $comision = $this->comisionService()->find((int) $id);
         if (!$comision) {
             return $this->redirect();
         }
@@ -256,7 +246,7 @@ class ComisionController extends ModalController
 
     public function detalle($id)
     {
-        $comision = $this->comisions()->findOrFail((int) $id);
+        $comision = $this->comisionService()->findOrFail((int) $id);
         $allFcts = $this->buildFctOptions();
 
         return view('comision.detalle', compact('comision', 'allFcts'));

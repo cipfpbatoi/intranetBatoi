@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Colaboracion\ColaboracionService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
@@ -13,7 +14,6 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Activity;
 use Intranet\Http\Traits\Core\Panel;
 use Styde\Html\Facades\Alert;
 
@@ -26,6 +26,7 @@ class PanelColaboracionController extends IntranetController
     use Panel;
 
     private ?GrupoService $grupoService = null;
+    private ?ColaboracionService $colaboracionService = null;
 
     const ROLES_ROL_TUTOR= 'roles.rol.tutor';
     const FCT_EMAILS_REQUEST = 'fctEmails.request';
@@ -40,10 +41,11 @@ class PanelColaboracionController extends IntranetController
 
     protected $parametresVista = ['modal' => ['contacto',  'seleccion']];
 
-    public function __construct(?GrupoService $grupoService = null)
+    public function __construct(?GrupoService $grupoService = null, ?ColaboracionService $colaboracionService = null)
     {
         parent::__construct();
         $this->grupoService = $grupoService;
+        $this->colaboracionService = $colaboracionService;
     }
 
     private function grupos(): GrupoService
@@ -53,6 +55,15 @@ class PanelColaboracionController extends IntranetController
         }
 
         return $this->grupoService;
+    }
+
+    private function colaboraciones(): ColaboracionService
+    {
+        if ($this->colaboracionService === null) {
+            $this->colaboracionService = app(ColaboracionService::class);
+        }
+
+        return $this->colaboracionService;
     }
 
 
@@ -179,91 +190,26 @@ class PanelColaboracionController extends IntranetController
     }*/
 
 
-public function search()
-{
-    // 1) Les teues col·laboracions
-    $meves = Colaboracion::query()
-        ->MiColaboracion()
-        ->with(['Propietario', 'Centro', 'Centro.Empresa', 'Ciclo'])
-        ->get();
+    /**
+     * Carrega les col·laboracions del tutor i les relacionades per centre/departament.
+     *
+     * A cada col·laboració "meua" li adjunta:
+     * - `relacionadas`: col·laboracions del mateix centre i departament,
+     *   però d'un altre cicle.
+     * - `contactos`: activitats de seguiment associades a cada relacionada.
+     *
+     * @return \Illuminate\Support\Collection<int, \Intranet\Entities\Colaboracion>
+     */
+    public function search()
+    {
+        $colaboraciones = $this->colaboraciones()->panelListingByTutor((string) AuthUser()->dni);
+        $title = $this->colaboraciones()->resolvePanelTitle($colaboraciones);
+        if ($title !== null) {
+            $this->titulo = ['quien' => $title];
+        }
 
-    if ($meves->isEmpty()) {
-        return $meves;
+        return $colaboraciones;
     }
-    $this->titulo = ['quien' => optional($meves->first()->Ciclo)->literal];
-
-    // clau parella: centre|departament-del-cicle
-    $pairKey = fn($c) => $c->idCentro.'|'.optional($c->Ciclo)->departamento;
-
-    // parelles úniques (centre, departament del cicle)
-    $parelles = $meves->filter(fn($c) => optional($c->Ciclo)->departamento)
-        ->map(fn($c) => ['idCentro' => $c->idCentro, 'departamento' => $c->Ciclo->departamento])
-        ->unique(fn($p) => $p['idCentro'].'|'.$p['departamento'])
-        ->values();
-
-    // 2) Col·laboracions relacionades: mateix centre+dept (via Ciclo), però d’un altre cicle
-    $relacionades = Colaboracion::query()
-        ->with(['Ciclo', 'Propietario'])
-        ->whereNotIn('id', $meves->pluck('id'))
-        ->where(function ($q) use ($parelles) {
-            foreach ($parelles as $p) {
-                $q->orWhere(function ($qq) use ($p) {
-                    $qq->where('idCentro', $p['idCentro'])
-                       ->whereHas('Ciclo', function ($qh) use ($p) {
-                           $qh->where('departamento', $p['departamento']);
-                       });
-                });
-            }
-        })
-        ->get();
-
-    // filtre: d’un altre cicle
-    $relacionades = $relacionades->filter(function ($r) use ($meves) {
-        // si tens 'ciclo_id' en lloc de 'idCiclo', canvia-ho
-        $rIdCiclo = $r->idCiclo ?? $r->ciclo_id;
-        // hi ha almenys una "teva" en el mateix parell amb cicle diferent?
-        return $meves->contains(function ($c) use ($r, $rIdCiclo) {
-            $cIdCiclo = $c->idCiclo ?? $c->ciclo_id;
-            return $c->idCentro == $r->idCentro
-                && optional($c->Ciclo)->departamento === optional($r->Ciclo)->departamento
-                && $cIdCiclo !== $rIdCiclo;
-        });
-    })->values();
-
-    // 3) Tots els Activity d'eixes relacionades, d’una tacada, i agrupats
-    $relIds = $relacionades->pluck('id')->all();
-
-    $activitiesByColab = Activity::query()
-        ->modelo('Colaboracion')
-        ->notUpdate()
-        ->whereIn('model_id', $relIds)     // <-- CANVIA 'target_id' pel camp que realment usa el teu scope id($id)
-        ->orderBy('created_at')
-        ->get()
-        ->groupBy('model_id');             // <-- CANVIA igualment si cal
-
-    // Agrupem relacionades per parella centre|dept
-    $relacionadesPerParella = $relacionades->groupBy($pairKey);
-
-    // Enganxem a cada "teva" les relacionades + els seus contactes
-    $meves->each(function ($c) use ($pairKey, $relacionadesPerParella, $activitiesByColab) {
-        $llista = $relacionadesPerParella->get($pairKey($c), collect());
-
-        // assignem els contactes (activities) a cada relacionada
-        $llista->each(function ($rel) use ($activitiesByColab) {
-            $rel->contactos = $activitiesByColab->get($rel->id, collect());
-        });
-
-        $c->relacionadas = $llista->values();
-    });
-
-    // ordenació opcional
-    return $meves->sortBy(function ($c) {
-        return $c->empresa
-            ?? optional(optional($c->Centro)->Empresa)->nombre
-            ?? optional($c->Centro)->nombre
-            ?? '';
-    })->values();
-}
 
 
 

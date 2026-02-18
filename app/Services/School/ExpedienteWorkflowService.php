@@ -2,7 +2,7 @@
 
 namespace Intranet\Services\School;
 
-use Intranet\Entities\Expediente;
+use Intranet\Application\Expediente\ExpedienteService;
 use Intranet\Services\General\StateService;
 
 /**
@@ -10,6 +10,22 @@ use Intranet\Services\General\StateService;
  */
 class ExpedienteWorkflowService
 {
+    private ?ExpedienteService $expedienteService = null;
+
+    public function __construct(?ExpedienteService $expedienteService = null)
+    {
+        $this->expedienteService = $expedienteService;
+    }
+
+    private function expedients(): ExpedienteService
+    {
+        if ($this->expedienteService === null) {
+            $this->expedienteService = app(ExpedienteService::class);
+        }
+
+        return $this->expedienteService;
+    }
+
     /**
      * Autoritza en lot tots els expedients pendents (estat 1 -> 2).
      *
@@ -17,7 +33,7 @@ class ExpedienteWorkflowService
      */
     public function authorizePending(): void
     {
-        StateService::makeAll(Expediente::where('estado', '1')->get(), 2);
+        StateService::makeAll($this->expedients()->pendingAuthorization(), 2);
     }
 
     /**
@@ -31,7 +47,7 @@ class ExpedienteWorkflowService
      */
     public function init(int|string $id): bool
     {
-        $expediente = Expediente::find($id);
+        $expediente = $this->expedients()->find($id);
         if (!$expediente) {
             return false;
         }
@@ -57,7 +73,7 @@ class ExpedienteWorkflowService
      */
     public function passToOrientation(int|string $id): bool
     {
-        $expediente = Expediente::find($id);
+        $expediente = $this->expedients()->find($id);
         if (!$expediente) {
             return false;
         }
@@ -79,7 +95,7 @@ class ExpedienteWorkflowService
      */
     public function assignCompanion(int|string $id, ?string $idAcompanyant): bool
     {
-        $expediente = Expediente::find($id);
+        $expediente = $this->expedients()->find($id);
         if (!$expediente) {
             return false;
         }
@@ -95,4 +111,3 @@ class ExpedienteWorkflowService
         return true;
     }
 }
-

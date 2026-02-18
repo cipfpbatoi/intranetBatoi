@@ -15,6 +15,11 @@ class HoraryHelpersTest extends TestCase
     {
         parent::setUp();
 
+        config()->set('database.default', 'sqlite');
+        config()->set('database.connections.sqlite.database', ':memory:');
+        DB::purge('sqlite');
+        DB::reconnect('sqlite');
+
         $schema = Schema::connection('sqlite');
         $schema->dropIfExists('faltas_profesores');
         $schema->dropIfExists('guardias');

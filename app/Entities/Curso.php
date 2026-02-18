@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
 use Intranet\Entities\AlumnoCurso;
 use Intranet\Events\ActivityReport;
+use Intranet\Presentation\Crud\CursoCrudSchema;
 
 // antigua manipuladores
 
@@ -28,16 +29,7 @@ class Curso extends Model
         'hora_fin',
         'aforo'
     ];
-    protected $inputTypes = [
-        'tipo' => ['type' => 'hidden'],
-        'comentario' => ['type' => 'textarea'],
-        'profesorado' => ['type' => 'textarea'],
-        'activo' => ['type' => 'radios', 'default' => [1 => 'Activo', 0 => 'Inactivo'], 'inline' => 'inline'],
-        'fecha_inicio' => ['type' => 'date'],
-        'fecha_fin' => ['type' => 'date'],
-        'hora_ini' => ['type' => 'time'],
-        'hora_fin' => ['type' => 'time'],
-    ];
+    protected $inputTypes = CursoCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
