@@ -45,19 +45,31 @@ trait DropZone
      * @param int $id Identificador del registre.
      * @return \Illuminate\Contracts\View\View
      */
-    public function link(int $id)
+    public function link($id)
     {
         if (!isset($this->model)) {
             abort(500, "L'atribut 'model' no està definit en la classe que usa el trait DropZone.");
         }
 
-        if (!isset($this->class)) {
-            abort(500, "L'atribut 'class' no està definit en la classe que usa el trait DropZone.");
+        $class = null;
+        if (isset($this->class) && class_exists($this->class)) {
+            $class = $this->class;
+        } elseif (property_exists($this, 'namespace') && isset($this->namespace)) {
+            $candidate = $this->namespace . $this->model;
+            if (class_exists($candidate)) {
+                $class = $candidate;
+            }
         }
 
-        $registre = $this->class::findOrFail($id);
+        if ($class === null) {
+            abort(500, "No s'ha pogut resoldre la classe del model en DropZone.");
+        }
+
+        $registre = $class::findOrFail($id);
         $quien = $registre->quien ?? $registre->fullName ?? $registre->nombre ?? "#$id";
-        $modelo = strtolower($this->model);
+        $modelo = isset($this->dropzoneModel)
+            ? strtolower((string) $this->dropzoneModel)
+            : strtolower($this->model);
 
         $botones = [
             'volver' => ['link' => url()->previous()]

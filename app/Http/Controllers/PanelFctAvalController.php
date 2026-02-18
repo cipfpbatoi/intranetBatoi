@@ -44,6 +44,7 @@ class PanelFctAvalController extends IntranetController
      * @var string
      */
     protected $model = 'AlumnoFct';
+    protected $dropzoneModel = 'alumnofctaval';
     /**
      * @var array
      */
