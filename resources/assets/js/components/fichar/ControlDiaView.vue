@@ -7,16 +7,16 @@
     <div>
         <table id="tabla-datos" border="1">
             <tr id="profe-title">
-              <th>Dep</th><th>Profesor</th><th>Horario</th><th>Fichajes</th>
+              <th>Departament</th><th>Professorat</th><th>Horari</th><th>Fitxatges</th>
             </tr>
-            <tr v-for="profe in profes" :key="profe.dni" :id="profe.dni">
+            <tr v-for="profe in sortedProfes" :key="profe.dni" :id="profe.dni">
                 <th>{{ profe.departamento }}</th>
                 <th>{{ profe.apellido1 }} {{ profe.apellido2 }}, {{ profe.nombre }}</th>
                 <td>   
                     <span class="fichaje">{{ horarios[profe.dni] }}</span>
                     <a :href="urlHorario(profe.dni)" class="btn-success btn btn-xs iconButton"><i class="fa fa-table"></i></a>
                 </td>
-                <td><span class="fichaje" v-html="fichajes[profe.dni]"></span></td>
+                <td><span class="fichaje" v-html="fichajeByDni(profe.dni)"></span></td>
             </tr>
         </table>
     </div>
@@ -29,42 +29,110 @@ import axios from 'axios'
 import ControlNav from '../utils/ControlNav.vue';
 import FechaPicker from "../utils/FechaPicker";
 
-const token=document.getElementById('_token').innerHTML;
+const tokenNode = document.getElementById('_token');
+const token = tokenNode ? tokenNode.innerHTML : '';
 
 export default {
   components: {
     ControlNav,FechaPicker
   },
-  props: ['profes', 'horarioInicial'],
+  props: {
+    profes: {
+      type: Array,
+      default: () => []
+    },
+    horarioInicial: {
+      type: Object,
+      default: () => ({})
+    }
+  },
   data() {
     return {
       fichajes: {},
       horarios: {},
+      localProfes: [],
       fecha: '',
       fechaEsp: '',
       msg: '',
     }
   },
+  computed: {
+    sortedProfes() {
+      return [...this.localProfes].sort((a, b) => {
+        const aKey = `${a.apellido1 || ''} ${a.apellido2 || ''} ${a.nombre || ''}`.toLowerCase();
+        const bKey = `${b.apellido1 || ''} ${b.apellido2 || ''} ${b.nombre || ''}`.toLowerCase();
+        return aKey.localeCompare(bKey, 'ca');
+      });
+    }
+  },
   methods: {
+    normalizeProfes(input) {
+      let source = [];
+      if (Array.isArray(input)) {
+        source = input;
+      } else if (input && typeof input === 'object') {
+        source = Object.values(input);
+      }
+
+      return source.map(item => ({
+        dni: this.normalizeDni(item.dni),
+        nombre: item.nombre || '',
+        apellido1: item.apellido1 || '',
+        apellido2: item.apellido2 || '',
+        departamento: item.departamento_label || '',
+      })).filter(item => item.dni !== '');
+    },
+    normalizeDni(value) {
+      return String(value || '').trim().toUpperCase();
+    },
+    fichajeByDni(dni) {
+      return this.fichajes[this.normalizeDni(dni)] || '';
+    },
     urlHorario(dni) {
       return '/profesor/'+dni+'/horario'
     },
+    loadProfesFallback() {
+      if (this.localProfes.length > 0 || !token) {
+        return;
+      }
+
+      axios.get('/api/profesor?api_token=' + token)
+        .then(resp => {
+          const data = (resp && resp.data && resp.data.data) ? resp.data.data : [];
+          // Fallback només per no deixar la taula buida.
+          this.localProfes = data.map(item => ({
+            dni: this.normalizeDni(item.dni),
+            nombre: item.nombre || '',
+            apellido1: item.apellido1 || '',
+            apellido2: item.apellido2 || '',
+            departamento: '',
+          }));
+        })
+        .catch(() => {});
+    },
     getFichajes() {
       this.fichajes={};
-      this.msg='Esperando al servidor ...';
-      axios.get('/api/faltaProfesor/dia='+this.fecha.format('YYYY-MM-DD')+'?api_token='+token)
+      this.msg='Esperant resposta del servidor...';
+      const queryToken = token ? ('?api_token=' + token) : '';
+      axios.get('/api/faltaProfesor/dia=' + this.fecha.format('YYYY-MM-DD') + queryToken)
         .then(resp=>{
-          this.msg='Datos recibidos';
+          this.msg='Dades rebudes';
+          const fichajesMap = {};
           for (var i in resp.data.data) {
             let ficha = resp.data.data[i];
-            if (this.fichajes[ficha.idProfesor]==undefined)
-              this.fichajes[ficha.idProfesor]=ficha.entrada+'->'+ficha.salida;
+            const key = this.normalizeDni(ficha.idProfesor);
+            if (fichajesMap[key]==undefined)
+              fichajesMap[key]=ficha.entrada+'->'+ficha.salida;
             else
-              this.fichajes[ficha.idProfesor]+='<br>'+ficha.entrada+'->'+ficha.salida;
+              fichajesMap[key]+='<br>'+ficha.entrada+'->'+ficha.salida;
           }
+          this.fichajes = fichajesMap;
           this.msg='';
         })
-        .catch(resp=>console.error(resp));
+        .catch(error => {
+          this.msg = "No s'han pogut carregar els fitxatges";
+          console.error(error);
+        });
     },
     getHorario() {
       this.horarios={};
@@ -87,10 +155,11 @@ export default {
   },
   mounted() {
     this.fecha = moment();  
-    this.fecha.locale('es');
+    this.fecha.locale('ca');
     this.fechaEsp=this.fecha.format('dddd, DD-MMM-YYYY');
-
+    this.localProfes = this.normalizeProfes(this.profes);
     this.horarios=this.horarioInicial;
+    this.loadProfesFallback();
     this.getFichajes();
   }
 }
