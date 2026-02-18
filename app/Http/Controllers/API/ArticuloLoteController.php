@@ -6,10 +6,9 @@ use Illuminate\Http\Request;
 use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Articulo;
 use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Http\Resources\InventariableResource;
 
-class ArticuloLoteController extends ApiBaseController
+class ArticuloLoteController extends ApiResourceController
 {
 
     protected $model = 'ArticuloLote';
