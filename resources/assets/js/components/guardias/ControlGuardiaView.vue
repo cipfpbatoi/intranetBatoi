@@ -57,7 +57,13 @@ export default {
     getGuardias() {
       this.borraFichajes();
       this.msg='Esperando al servidor ...';
-      axios.get('/api/guardia/dia]'+this.sumaFecha(1)+'&dia['+this.sumaFecha(5)+'?api_token='+token)
+      axios.get('/api/guardia/range', {
+        params: {
+          desde: this.sumaFecha(1),
+          hasta: this.sumaFecha(5),
+          api_token: token
+        }
+      })
       .then(resp=>{
         // Organizamos los datos en un objeto de horas->días->profes
         for (let i in resp.data.data) {
