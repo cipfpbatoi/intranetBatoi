@@ -76,6 +76,7 @@ class FaltaController extends IntranetController
      */
     public function store(Request $request)
     {
+        $this->validateAll($request, new Falta());
         $id = $this->faltas()->create($request);
 
         if (!$request->boolean('baja') && UserisAllow(config('roles.rol.direccion'))) {
@@ -96,6 +97,7 @@ class FaltaController extends IntranetController
      */
     public function update(Request $request, $id)
     {
+        $this->validateAll($request, Falta::findOrFail($id));
         $this->faltas()->update($id, $request);
         return $this->redirect();
     }

@@ -159,7 +159,7 @@ class Profesor extends Authenticatable
 
     public function scopeActivo($query)
     {
-        return $query->where('fecha_baja', null)->where('activo', 1);
+        return $query->whereNull('fecha_baja')->where('activo', 1);
     }
 
 
