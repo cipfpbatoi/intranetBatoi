@@ -6,7 +6,7 @@
                 <em class="fa fa-credit-card"></em> {{$cab2}}
             </h4>
             <div class="left col-xs-8">
-                <p>{{ $subtitle }}</p>
+                <p><strong>{{ $subtitle }}</strong></p>
                 <ul class="list-unstyled">
                     {{ $slot }}
                 </ul>
