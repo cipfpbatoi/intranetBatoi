@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Controller;
 
@@ -13,6 +14,7 @@ class ApiResourceController extends Controller
     protected $class;
     protected $resource;
     protected $guard='api';
+    private ?ProfesorService $profesorService = null;
 
     public function __construct()
     {
@@ -135,6 +137,20 @@ class ApiResourceController extends Controller
     protected function sendError($error, $code = 404)
     {
         return response()->json(['success'=>false,'message'=>$error], $code);
+    }
+
+    protected function sendFail($error, $code = 400)
+    {
+        return response()->json($error, $code);
+    }
+
+    public function ApiUser(Request $request)
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService->findByApiToken((string) $request->api_token);
     }
 
 }

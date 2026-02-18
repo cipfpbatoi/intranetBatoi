@@ -10,7 +10,7 @@ use Intranet\Http\Resources\MaterialResource;
 use Jenssegers\Date\Date;
 use Yajra\DataTables\DataTables;
 
-class MaterialController extends ApiBaseController
+class MaterialController extends ApiResourceController
 {
     const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
     protected $model = 'Material';

@@ -10,7 +10,7 @@ use Intranet\Entities\Fct;
 use Intranet\Services\General\StateService;
 
 
-class ColaboracionController extends ApiBaseController
+class ColaboracionController extends ApiResourceController
 {
 
     protected $model = 'Colaboracion';

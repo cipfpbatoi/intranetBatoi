@@ -6,7 +6,7 @@ use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 use Intranet\Services\HR\FitxatgeService;
 
-class FicharController extends ApiBaseController
+class FicharController extends ApiResourceController
 {
 
     protected $model = 'Falta_profesor';
