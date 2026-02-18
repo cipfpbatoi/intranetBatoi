@@ -75,6 +75,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('materialbaja', 'MaterialBajaController', ['except' => [ 'create']]);
 
     Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
+    Route::get('guardia/range', 'GuardiaController@range');
     Route::resource('guardia', 'GuardiaController');
     Route::resource('departamento', 'DepartamentoController');
     Route::resource('reserva', 'ReservaController');
