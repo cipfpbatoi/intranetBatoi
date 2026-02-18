@@ -3,9 +3,6 @@
 namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use InfyOm\Generator\Utils\ResponseUtil;
-use Response;
-use Exception;
 use Intranet\Http\Controllers\Controller;
 
 class ApiResourceController extends Controller
@@ -130,14 +127,14 @@ class ApiResourceController extends Controller
     }
 
  
-    protected function sendResponse($result)
+    protected function sendResponse($result, $message = null)
     {
         return response()->json(['success'=>true,'data'=>$result]);
     }
 
     protected function sendError($error, $code = 404)
     {
-        return response()->json(['success'=>false,'message'=>$error]);
+        return response()->json(['success'=>false,'message'=>$error], $code);
     }
 
 }
