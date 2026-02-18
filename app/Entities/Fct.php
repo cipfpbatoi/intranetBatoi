@@ -338,12 +338,4 @@ class Fct extends Model
     }
 
 
-    public function saveContact($contacto, $email)
-    {
-        $instructor = $this->Instructor;
-        $instructor->email = $email;
-        $instructor->name = '';
-        $instructor->surnames = $contacto;
-        $instructor->save();
-    }
 }

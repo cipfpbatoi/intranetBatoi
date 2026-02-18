@@ -240,11 +240,6 @@ class Alumno extends Authenticatable
     | MÈTODES UTILS
     |--------------------------------------------------------------------------
     */
-    public function saveContact(string $contacto, string $email): void
-    {
-        $this->update(['email' => $email]);
-    }
-
     public function getIdiomaOptions(): array
     {
         return config('auxiliares.idiomas');
