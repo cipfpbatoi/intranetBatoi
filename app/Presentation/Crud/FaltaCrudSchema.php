@@ -72,8 +72,8 @@ final class FaltaCrudSchema
         'hasta' => 'date',
         'motivos' => 'required',
         'observaciones' => 'max:200',
-        'hora_ini' => 'required_if:dia_completo,0',
-        'hora_fin' => 'required_if:dia_completo,0',
+        'hora_ini' => 'exclude_if:baja,1|required_unless:dia_completo,1,true,on',
+        'hora_fin' => 'exclude_if:baja,1|required_unless:dia_completo,1,true,on',
         'fichero' => 'mimes:pdf,jpg,jpeg,png',
     ];
 }

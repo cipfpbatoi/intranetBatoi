@@ -11,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FaltaController;
 use Tests\TestCase;
@@ -175,6 +176,104 @@ class FaltaControllerTest extends TestCase
 
         $this->assertSame(1, (int) DB::table('faltas')->where('id', $idSenseFitxer)->value('estado'));
         $this->assertSame(2, (int) DB::table('faltas')->where('id', $idAmbFitxer)->value('estado'));
+    }
+
+    public function test_store_falla_si_no_hay_motivos(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'P903',
+            'rol' => config('roles.rol.profesor'),
+            'activo' => 1,
+            'fecha_baja' => null,
+            'sustituye_a' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $request = new Request([
+            'idProfesor' => 'P903',
+            'desde' => '2026-02-12',
+            'observaciones' => 'Sense motiu',
+            'dia_completo' => 'on',
+        ]);
+
+        $controller = new DummyFaltaController();
+
+        $this->expectException(ValidationException::class);
+        $controller->store($request);
+    }
+
+    public function test_store_exige_horas_quan_no_es_dia_complet(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'P904',
+            'rol' => config('roles.rol.profesor'),
+            'activo' => 1,
+            'fecha_baja' => null,
+            'sustituye_a' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $request = new Request([
+            'idProfesor' => 'P904',
+            'desde' => '2026-02-12',
+            'hasta' => '2026-02-12',
+            'motivos' => 1,
+            'observaciones' => 'Sense hores',
+        ]);
+
+        $controller = new DummyFaltaController();
+
+        try {
+            $controller->store($request);
+            $this->fail('S\'esperava ValidationException en faltar hores.');
+        } catch (ValidationException $e) {
+            $errors = $e->errors();
+            $this->assertArrayHasKey('hora_ini', $errors);
+            $this->assertArrayHasKey('hora_fin', $errors);
+        }
+    }
+
+    public function test_update_no_exige_horas_quan_dia_completo_esta_marcat(): void
+    {
+        DB::table('profesores')->insert([
+            'dni' => 'P905',
+            'rol' => config('roles.rol.profesor'),
+            'activo' => 1,
+            'fecha_baja' => null,
+            'sustituye_a' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $faltaId = DB::table('faltas')->insertGetId([
+            'idProfesor' => 'P905',
+            'desde' => '2026-02-10',
+            'hasta' => '2026-02-10',
+            'hora_ini' => '09:00:00',
+            'hora_fin' => '10:00:00',
+            'motivos' => 1,
+            'baja' => 0,
+            'dia_completo' => 0,
+            'estado' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $request = new Request([
+            'idProfesor' => 'P905',
+            'desde' => '2026-02-10',
+            'hasta' => '2026-02-10',
+            'motivos' => 2,
+            'observaciones' => 'Canviat a dia complet',
+            'dia_completo' => 'on',
+        ]);
+
+        $controller = new DummyFaltaController();
+        $response = $controller->update($request, $faltaId);
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
     }
 
     private function createSchema(): void
