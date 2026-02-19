@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Controller;
+use Throwable;
 
 class ApiResourceController extends Controller
 {
@@ -43,12 +44,14 @@ class ApiResourceController extends Controller
     {
         try {
             $class = $this->resolveClass();
-            $created = $class::create($request->all());
+            $payload = $this->validatedPayloadForStore($request);
+            $created = $class::create($payload);
 
             // Mantinc el teu format tradicional
             return $this->sendResponse(['created' => true, 'id' => $created->id], 'OK');
-        } catch (\Throwable $e) {
-            return $this->sendError($e->getMessage());
+        } catch (Throwable $e) {
+            report($e);
+            return $this->sendError('Internal server error', 500);
         }
     }
 
@@ -59,15 +62,17 @@ class ApiResourceController extends Controller
             $registro = $class::find($id);
 
             if (!$registro) {
-                return $this->sendError("Not found: {$class} #{$id}");
+                return $this->sendNotFound("Not found: {$class} #{$id}");
             }
 
-            $registro->update($request->all());
+            $payload = $this->validatedPayloadForUpdate($request);
+            $registro->update($payload);
             $registro->save();
 
             return $this->sendResponse(['updated' => true], 'OK');
-        } catch (\Throwable $e) {
-            return $this->sendError($e->getMessage());
+        } catch (Throwable $e) {
+            report($e);
+            return $this->sendError('Internal server error', 500);
         }
     }
 
@@ -77,7 +82,7 @@ class ApiResourceController extends Controller
         $item = $class::find($id);
 
         if (!$item) {
-            return $this->sendError("Not found: {$class} #{$id}");
+            return $this->sendNotFound("Not found: {$class} #{$id}");
         }
 
         return $this->hasResource()
@@ -91,7 +96,7 @@ class ApiResourceController extends Controller
         $item = $class::find($id);
 
         if (!$item) {
-            return $this->sendError("Not found: {$class} #{$id}");
+            return $this->sendNotFound("Not found: {$class} #{$id}");
         }
 
         return $this->sendResponse($item);
@@ -128,15 +133,90 @@ class ApiResourceController extends Controller
         return $this->resource && class_exists($this->resource);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    protected function validatedPayloadForStore(Request $request): array
+    {
+        $rules = $this->storeRules();
+        if (!empty($rules)) {
+            return $request->validate($rules);
+        }
+
+        return $this->filterMutationPayload($request);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function validatedPayloadForUpdate(Request $request): array
+    {
+        $rules = $this->updateRules();
+        if (!empty($rules)) {
+            return $request->validate($rules);
+        }
+
+        return $this->filterMutationPayload($request);
+    }
+
+    /**
+     * Sobrescriu en controladors concrets quan necessites validació en create.
+     *
+     * @return array<string, mixed>
+     */
+    protected function storeRules(): array
+    {
+        return [];
+    }
+
+    /**
+     * Sobrescriu en controladors concrets quan necessites validació en update.
+     *
+     * @return array<string, mixed>
+     */
+    protected function updateRules(): array
+    {
+        return [];
+    }
+
+    /**
+     * Permet limitar camps mutables per endpoint sense tocar el model.
+     * Retorna null per mantindre compatibilitat total.
+     *
+     * @return array<int, string>|null
+     */
+    protected function mutableFields(): ?array
+    {
+        return null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function filterMutationPayload(Request $request): array
+    {
+        $fields = $this->mutableFields();
+        if ($fields === null) {
+            return $request->all();
+        }
+
+        return $request->only($fields);
+    }
+
  
     protected function sendResponse($result, $message = null)
     {
         return response()->json(['success'=>true,'data'=>$result]);
     }
 
-    protected function sendError($error, $code = 404)
+    protected function sendError($error, $code = 400)
     {
         return response()->json(['success'=>false,'message'=>$error], $code);
+    }
+
+    protected function sendNotFound(string $error = 'Not found')
+    {
+        return $this->sendError($error, 404);
     }
 
     protected function sendFail($error, $code = 400)
