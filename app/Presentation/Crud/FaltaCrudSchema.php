@@ -68,8 +68,8 @@ final class FaltaCrudSchema
      */
     public const RULES = [
         'idProfesor' => 'required',
-        'desde' => 'required|date',
-        'hasta' => 'date',
+        'desde' => 'exclude_if:baja,1|required|date',
+        'hasta' => 'exclude_if:baja,1|date',
         'motivos' => 'required',
         'observaciones' => 'max:200',
         'hora_ini' => 'exclude_if:baja,1|required_unless:dia_completo,1,true,on',
