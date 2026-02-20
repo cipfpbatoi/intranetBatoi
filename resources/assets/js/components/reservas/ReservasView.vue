@@ -38,10 +38,13 @@
 import axios from 'axios'
 const ruta='/api/reserva/';
 
-const token=document.getElementById('_token').innerHTML;
+const tokenNode = document.getElementById('_token');
+const token = tokenNode ? tokenNode.innerHTML : '';
 const rolDirecc=2;
-const esDirecc=((document.getElementById('rol').innerHTML%rolDirecc)==0);
-const idProfesor = document.getElementById('dni').innerHTML;
+const rolNode = document.getElementById('rol');
+const esDirecc=((Number(rolNode ? rolNode.innerHTML : 0)%rolDirecc)==0);
+const dniNode = document.getElementById('dni');
+const idProfesor = dniNode ? dniNode.innerHTML : '';
 
 const maxDiasReserva=30;
 
@@ -76,7 +79,8 @@ const maxDiasReserva=30;
               this.reservas=[];
               return;
             }
-            axios.get(ruta+'idEspacio='+this.espacio+'&dia='+this.fechaIni+'?api_token='+token)
+            const queryToken = token ? ('?api_token=' + token) : '';
+            axios.get(ruta + 'idEspacio=' + this.espacio + '&dia=' + this.fechaIni + queryToken)
               .then(resp=>this.reservas=resp.data.data)
               .catch(resp=>console.error(resp));
           },

@@ -6,10 +6,9 @@ use Illuminate\Http\Request;
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Services\Document\AttachedFileService;
 
-class DropZoneController extends ApiBaseController
+class DropZoneController extends ApiResourceController
 {
     public function getAttached($modelo, $id)
     {
@@ -39,7 +38,10 @@ class DropZoneController extends ApiBaseController
 
     public function removeAttached($modelo, $id, $file)
     {
-        $user = apiAuthUser();
+        $user = $this->ApiUser(request()) ?? apiAuthUser();
+        if (!$user) {
+            return $this->sendFail("Persona no identificada", 401);
+        }
         $path = "$modelo/$id";
         $adjunto = Adjunto::findByName($path, $file)->first();
         if (!$adjunto) {

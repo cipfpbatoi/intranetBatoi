@@ -11,7 +11,7 @@ use Intranet\Services\HR\FitxatgeService;
 use Jenssegers\Date\Date;
 use function estaInstituto,sumarHoras;
 
-class FaltaItacaController extends ApiBaseController
+class FaltaItacaController extends ApiResourceController
 {
 
     protected $model = 'Falta_itaca';

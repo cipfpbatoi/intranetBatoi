@@ -9,7 +9,7 @@ use Intranet\Entities\AlumnoReunion;
 use Illuminate\Http\Request;
 use Intranet\Mail\MatriculaAlumne;
 
-class AlumnoReunionController extends ApiBaseController
+class AlumnoReunionController extends ApiResourceController
 {
 
     const NOPROMOCIONA = 3;

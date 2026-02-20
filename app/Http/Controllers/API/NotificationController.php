@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Notification;
 
-class NotificationController extends ApiBaseController
+class NotificationController extends ApiResourceController
 {
 
     protected $model = 'Notification';

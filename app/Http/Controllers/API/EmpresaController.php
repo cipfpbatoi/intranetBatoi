@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Application\Empresa\EmpresaService;
 use Intranet\Http\Resources\EmpresaResource;
 
-class EmpresaController extends ApiBaseController
+class EmpresaController extends ApiResourceController
 {
     private ?EmpresaService $empresaService = null;
 

@@ -1,14 +1,19 @@
 <x-layouts.app title="Control diari fitxages">
 
-    <div id="app">
-        <control-dia-view
-                :profes="{{ json_encode($profes) }}"
-                :horario-inicial="{{ json_encode($horarios) }}"
-        ></control-dia-view>
-    </div>
+    @push('styles')
+        @livewireStyles
+    @endpush
+
+    @livewire(\Intranet\Livewire\FicharControlDia::class)
 
     @push('scripts')
-        {{ Html::script('/js/components/app.js') }}
-        <!--      {{ Html::script('/js/Fichar/controlDia.js') }} -->
+        @livewireScriptConfig
+        @livewireScripts
+        <script>
+            if (window.Livewire && typeof Livewire.all === 'function' && Livewire.all().length === 0 && typeof Livewire.start === 'function') {
+                Livewire.start();
+            }
+        </script>
     @endpush
+
 </x-layouts.app>

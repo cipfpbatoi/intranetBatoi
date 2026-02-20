@@ -9,7 +9,7 @@ use Intranet\Http\Resources\AlumnoFctControlResource;
 use Intranet\Http\Resources\AlumnoFctResource;
 
 
-class AlumnoFctController extends ApiBaseController
+class AlumnoFctController extends ApiResourceController
 {
     private ?GrupoService $grupoService = null;
     private ?AlumnoFctService $alumnoFctService = null;

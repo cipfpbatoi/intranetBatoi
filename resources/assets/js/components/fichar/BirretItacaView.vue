@@ -41,8 +41,10 @@ import axios from 'axios'
 import AppMsg from '../utils/AppMsg.vue';
 import FechaPicker from "../utils/FechaPicker";
 
-const token=document.getElementById('_token').innerHTML;
-const idProfesor = document.getElementById('dni').innerHTML;
+const tokenNode = document.getElementById('_token');
+const token = tokenNode ? tokenNode.innerHTML : '';
+const dniNode = document.getElementById('dni');
+const idProfesor = dniNode ? dniNode.innerHTML : '';
 
 export default {
 
@@ -63,7 +65,14 @@ export default {
     },
     watch: {
         dia: function(val) {
-            axios.get('/api/itaca/' + val + '/' + idProfesor + '?api_token=' + token)
+            if (!idProfesor) {
+                this.msgs.push({ estate: 'ok', msg: "No s'ha identificat el professor" });
+                this.horario = [];
+                return;
+            }
+
+            const queryToken = token ? ('?api_token=' + token) : '';
+            axios.get('/api/itaca/' + val + '/' + idProfesor + queryToken)
             .then((response) => {
                 this.horario = response.data.data;
             }, (error) => {
@@ -95,6 +104,11 @@ export default {
             }
         },
         confirmar: function () {
+            if (!token) {
+                this.msgs.push({ estate: 'ok', msg: 'No hi ha token API' });
+                return;
+            }
+
             let req = {
                 url: '/api/itaca?api_token=' + token,
                 method: 'POST',

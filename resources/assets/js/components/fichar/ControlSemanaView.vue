@@ -26,7 +26,8 @@
 import axios from 'axios'
 import ControlNav from '../utils/ControlNav.vue';
 
-const token=document.getElementById('_token').innerHTML;
+const tokenNode = document.getElementById('_token');
+const token = tokenNode ? tokenNode.innerHTML : '';
 
 export default {
   components: {
@@ -51,7 +52,8 @@ export default {
       const desde = this.sumaFecha(1);
       const hasta = this.sumaFecha(5);
 
-      axios.get('/api/presencia/resumen-rango?desde='+desde+'&hasta='+hasta+'&api_token='+token)
+      const queryToken = token ? ('&api_token=' + token) : '';
+      axios.get('/api/presencia/resumen-rango?desde=' + desde + '&hasta=' + hasta + queryToken)
         .then(resp => {
           const map = {};
           resp.data.forEach(p => {

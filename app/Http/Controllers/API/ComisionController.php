@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Application\Comision\ComisionService;
 use Intranet\Presentation\Crud\ComisionCrudSchema;
 
-class ComisionController extends ApiBaseController
+class ComisionController extends ApiResourceController
 {
 
     protected $model = 'Comision';
