@@ -2,8 +2,8 @@
 
 namespace Intranet\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Blade;
+use Illuminate\Support\ServiceProvider;
 use Intranet\Domain\AlumnoFct\AlumnoFctRepositoryInterface;
 use Intranet\Domain\Comision\ComisionRepositoryInterface;
 use Intranet\Domain\Empresa\EmpresaRepositoryInterface;

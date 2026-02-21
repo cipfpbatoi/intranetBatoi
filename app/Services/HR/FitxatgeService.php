@@ -50,6 +50,61 @@ class FitxatgeService
         return $this->faltaProfesorRepository->hasFichadoOnDay($dia, $dni);
     }
 
+    public function isInside(?string $dni = null, bool $storeInSession = true): bool
+    {
+        $dni = $dni ?? Auth::user()->dni;
+        $ultimo = $this->faltaProfesorRepository->lastTodayByProfesor($dni);
+
+        if ($storeInSession) {
+            session(['ultimoFichaje' => $ultimo]);
+        }
+
+        return $ultimo !== null && $ultimo->salida === null;
+    }
+
+    public function sessionEntry(): ?string
+    {
+        $registro = session('ultimoFichaje');
+        if (!$registro && Auth::check()) {
+            $this->isInside(Auth::user()->dni, true);
+            $registro = session('ultimoFichaje');
+        }
+
+        if (isset($registro->entrada)) {
+            return substr((string) $registro->entrada, 0, 5);
+        }
+
+        return null;
+    }
+
+    public function sessionExit(): ?string
+    {
+        $registro = session('ultimoFichaje');
+        if (!$registro && Auth::check()) {
+            $this->isInside(Auth::user()->dni, true);
+            $registro = session('ultimoFichaje');
+        }
+
+        if (isset($registro->salida)) {
+            return substr((string) $registro->salida, 0, 5);
+        }
+
+        return null;
+    }
+
+    public function wasInsideAt(string $dni, string $dia, string $hora): bool
+    {
+        $fichadas = $this->faltaProfesorRepository->byDayAndProfesor($dia, $dni);
+
+        foreach ($fichadas as $ficha) {
+            if ($ficha->salida && $hora >= $ficha->entrada && $hora < $ficha->salida) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @return EloquentCollection<int, Falta_profesor>
      */

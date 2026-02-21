@@ -7,10 +7,14 @@ namespace Tests\Unit;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Intranet\Entities\Guardia;
+use Intranet\Services\HR\FitxatgeService;
 use Tests\TestCase;
 
 class HoraryHelpersTest extends TestCase
 {
+    private FitxatgeService $fitxatgeService;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -43,6 +47,8 @@ class HoraryHelpersTest extends TestCase
             $table->string('obs_personal')->nullable();
             $table->timestamps();
         });
+
+        $this->fitxatgeService = app(FitxatgeService::class);
     }
 
     public function test_estadentro_torna_true_si_ultima_fitxa_no_te_salida(): void
@@ -56,12 +62,12 @@ class HoraryHelpersTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $this->assertTrue(estaDentro('P001'));
+        $this->assertTrue($this->fitxatgeService->isInside('P001', false));
     }
 
     public function test_estadentro_torna_false_si_no_hi_ha_fitxes_o_esta_eixit(): void
     {
-        $this->assertFalse(estaDentro('P002'));
+        $this->assertFalse($this->fitxatgeService->isInside('P002', false));
 
         DB::connection('sqlite')->table('faltas_profesores')->insert([
             'idProfesor' => 'P002',
@@ -72,7 +78,7 @@ class HoraryHelpersTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $this->assertFalse(estaDentro('P002'));
+        $this->assertFalse($this->fitxatgeService->isInside('P002', false));
     }
 
     public function test_entrada_i_salida_lixen_ultim_fichatge_de_sessio(): void
@@ -84,8 +90,8 @@ class HoraryHelpersTest extends TestCase
             ],
         ]);
 
-        $this->assertSame('08:12', Entrada());
-        $this->assertSame('14:34', Salida());
+        $this->assertSame('08:12', $this->fitxatgeService->sessionEntry());
+        $this->assertSame('14:34', $this->fitxatgeService->sessionExit());
     }
 
     public function test_estainstituto_evalua_interval_obert_per_lhora_de_salida(): void
@@ -99,9 +105,9 @@ class HoraryHelpersTest extends TestCase
             'updated_at' => now(),
         ]);
 
-        $this->assertTrue(estaInstituto('P003', '2026-02-12', '09:00:00'));
-        $this->assertFalse(estaInstituto('P003', '2026-02-12', '10:00:00'));
-        $this->assertFalse(estaInstituto('P003', '2026-02-12', '07:59:59'));
+        $this->assertTrue($this->fitxatgeService->wasInsideAt('P003', '2026-02-12', '09:00:00'));
+        $this->assertFalse($this->fitxatgeService->wasInsideAt('P003', '2026-02-12', '10:00:00'));
+        $this->assertFalse($this->fitxatgeService->wasInsideAt('P003', '2026-02-12', '07:59:59'));
     }
 
     public function test_estaguardia_i_profesoresguardia(): void
@@ -125,10 +131,18 @@ class HoraryHelpersTest extends TestCase
             ],
         ]);
 
-        $this->assertTrue(estaGuardia('P010', 2, 3));
-        $this->assertFalse(estaGuardia('P010', 2, 4));
+        $this->assertTrue(
+            Guardia::query()->Profesor('P010')->DiaHora(2, 3)->exists()
+        );
+        $this->assertFalse(
+            Guardia::query()->Profesor('P010')->DiaHora(2, 4)->exists()
+        );
 
-        $ids = profesoresGuardia(2, 3)->pluck('idProfesor')->all();
+        $ids = Guardia::query()
+            ->DiaHora(2, 3)
+            ->select('idProfesor')
+            ->pluck('idProfesor')
+            ->all();
         sort($ids);
         $this->assertSame(['P010', 'P011'], $ids);
     }

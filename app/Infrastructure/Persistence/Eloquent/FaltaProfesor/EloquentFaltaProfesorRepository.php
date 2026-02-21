@@ -47,6 +47,14 @@ class EloquentFaltaProfesorRepository implements FaltaProfesorRepositoryInterfac
         return $fichaje;
     }
 
+    public function byDayAndProfesor(string $dia, string $dni): EloquentCollection
+    {
+        return Falta_profesor::query()
+            ->where('dia', $dia)
+            ->where('idProfesor', $dni)
+            ->get();
+    }
+
     public function rangeByProfesor(string $dni, string $desde, string $hasta): EloquentCollection
     {
         return Falta_profesor::query()
@@ -56,4 +64,3 @@ class EloquentFaltaProfesorRepository implements FaltaProfesorRepositoryInterfac
             ->get();
     }
 }
-

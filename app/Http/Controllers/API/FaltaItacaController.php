@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Intranet\Services\General\StateService;
 use Intranet\Services\HR\FitxatgeService;
 use Jenssegers\Date\Date;
-use function estaInstituto,sumarHoras;
+use function sumarHoras;
 
 class FaltaItacaController extends ApiResourceController
 {
@@ -64,7 +64,7 @@ class FaltaItacaController extends ApiResourceController
                     $horasT['checked'] = FALSE;
                     $horasT['estado'] = 0;
                     $horasT['justificacion'] = '';
-                    if (estaInstituto($idProfesor, $dia, sumarHoras($hora->desde, '00:30:00'))) {
+                    if ($this->fitxatge()->wasInsideAt((string) $idProfesor, (string) $dia, (string) sumarHoras($hora->desde, '00:30:00'))) {
                         $horasT['enCentro'] = TRUE;
                     }
                     else {

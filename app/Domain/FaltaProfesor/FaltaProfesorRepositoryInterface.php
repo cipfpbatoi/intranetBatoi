@@ -23,6 +23,10 @@ interface FaltaProfesorRepositoryInterface
     /**
      * @return EloquentCollection<int, Falta_profesor>
      */
+    public function byDayAndProfesor(string $dia, string $dni): EloquentCollection;
+
+    /**
+     * @return EloquentCollection<int, Falta_profesor>
+     */
     public function rangeByProfesor(string $dni, string $desde, string $hasta): EloquentCollection;
 }
-

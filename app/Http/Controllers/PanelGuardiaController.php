@@ -11,6 +11,7 @@ use Intranet\Entities\Hora;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Falta;
 use Intranet\UI\Botones\BotonBasico;
+use Intranet\Services\HR\FitxatgeService;
 
 
 class PanelGuardiaController extends BaseController
@@ -34,6 +35,11 @@ class PanelGuardiaController extends BaseController
     private function horarios(): HorarioService
     {
         return app(HorarioService::class);
+    }
+
+    private function fitxatge(): FitxatgeService
+    {
+        return app(FitxatgeService::class);
     }
 
     protected function iniBotones()
@@ -85,7 +91,7 @@ class PanelGuardiaController extends BaseController
                     $horario->donde = 'No ha fitxat';
                     continue;
                 }
-                if (estaDentro($profesor->dni))
+                if ($this->fitxatge()->isInside((string) $profesor->dni, false))
                     $horario->donde = 'Al centre';
                 else {
                     $comision = $comisionesHui->firstWhere('idProfesor', $profesor->dni);

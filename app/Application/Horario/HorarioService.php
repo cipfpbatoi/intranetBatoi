@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Intranet\Domain\Horario\HorarioRepositoryInterface;
 use Intranet\Entities\Horario;
+use Jenssegers\Date\Date;
 
 /**
  * Casos d'ús d'aplicació per al domini d'horaris.
@@ -194,5 +195,53 @@ class HorarioService
     public function firstForDepartamentoAsignacion(string $dni): ?Horario
     {
         return $this->horarioRepository->firstForDepartamentoAsignacion($dni);
+    }
+
+    /**
+     * Retorna la situació actual del professor segons el seu horari.
+     *
+     * @return array{momento:string,ahora:string}|null
+     */
+    public function situacionAhora(string $dni): ?array
+    {
+        $ahora = Date::now();
+        $sesionActual = sesion(Hora($ahora));
+        $dia = (string) config("auxiliares.diaSemana." . $ahora->format('w'));
+        $horasDentro = $this->byProfesorDiaOrdered($dni, $dia);
+
+        if ($horasDentro->isEmpty()) {
+            return ['momento' => trans('messages.generic.notoday'), 'ahora' => trans('messages.generic.home')];
+        }
+
+        if ((int) $horasDentro->last()->sesion_orden < (int) $sesionActual) {
+            return ['momento' => (string) $horasDentro->last()->hasta, 'ahora' => trans('messages.generic.home')];
+        }
+
+        if ((int) $horasDentro->first()->sesion_orden > (int) $sesionActual) {
+            return ['momento' => (string) $horasDentro->first()->desde, 'ahora' => trans('messages.generic.home')];
+        }
+
+        $horaActual = $horasDentro->where('sesion_orden', $sesionActual)->first();
+        if (!$horaActual) {
+            return ['momento' => trans('messages.generic.patio'), 'ahora' => trans('messages.generic.patio')];
+        }
+
+        if (
+            $horaActual->modulo !== null
+            && isset($horaActual->Modulo->literal)
+            && isset($horaActual->Grupo)
+            && isset($horaActual->Grupo->nombre)
+        ) {
+            return [
+                'momento' => (string) $horaActual->Grupo->nombre,
+                'ahora' => (string) $horaActual->Modulo->literal . ' (' . (string) $horaActual->aula . ')',
+            ];
+        }
+
+        if ($horaActual->ocupacion !== null && isset($horaActual->Ocupacion->literal)) {
+            return ['momento' => '', 'ahora' => (string) $horaActual->Ocupacion->literal];
+        }
+
+        return null;
     }
 }
