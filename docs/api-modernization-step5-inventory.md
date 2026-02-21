@@ -163,3 +163,59 @@ Data de verificació: 2026-02-21
 1. Els contractes moderns nous estan implementats per a filtres d'igualtat (`camp=valor`), però no cobrixen encara comparadors legacy (`] [ ! > <`) en query-string.
 2. Poden existir clients externs no inventariats (scripts o apps) consumint legacy.
 3. `alumnogrupo/{id}` és un contracte amb semàntica implícita i alt risc de trencament si es lleva sense endpoint equivalent.
+
+## Seguiment en 2-4 setmanes (pendent)
+
+Data prevista de revisió: 2026-03-21 a 2026-04-04
+
+### Checklist de revisió
+
+1. Validar ús legacy real en logs (`API legacy contract consumed`):
+- `reserva.show.filter-path`
+- `horario.show.filter-path`
+- `faltaProfesor.show.filter-path`
+- `guardia.show.range-path`
+- `guardia.show.filter-path`
+
+2. Confirmar migració de front reserves:
+- `resources/assets/js/components/reservas/ReservasView.vue` usa modern com a principal (fet).
+- Decidir si es pot eliminar fallback legacy.
+
+3. Validar impacte extern:
+- Revisar `user_agent`, IP i usuari en logs.
+- Detectar possibles integracions externes no inventariades.
+
+4. Decisió de retirada:
+- Si ús legacy ~= 0 durant el període, aprovar retirada fasejada.
+- Si encara hi ha ús, comunicar data límit i continuar monitorització.
+
+### Què falta per fer (execució tècnica)
+
+1. Frontend
+- Eliminar fallback legacy en `ReservasView.vue`:
+  - llevar crida a `/api/reserva/idEspacio=...&dia=...`.
+
+2. Backend legacy parser (per endpoint)
+- `ReservaController`: eliminar branca legacy de `show` + helpers legacy.
+- `HorarioController`: eliminar branca legacy de `show` + helpers legacy.
+- `FaltaProfesorController`: eliminar branca legacy de `show` + helpers legacy.
+- `GuardiaController`: retirar format `dia]...&dia[...]` quan no hi haja consum.
+
+3. Tests
+- Substituir tests legacy per tests de contracte modern definitiu.
+- Mantindre tests de regressió de negoci (no depenents de format legacy).
+
+4. Documentació
+- Actualitzar este document amb data real de retirada.
+- Documentar contracte final i eliminar referències legacy.
+
+### Criteri GO/NO-GO per retirar legacy
+
+GO:
+1. Zero (o residual justificat) en logs legacy durant 2-4 setmanes.
+2. Front intern sense fallback legacy.
+3. Suite de tests moderna en verd.
+
+NO-GO:
+1. Consum extern actiu sense pla de migració.
+2. Errors funcionals en endpoints moderns.
