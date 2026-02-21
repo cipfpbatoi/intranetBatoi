@@ -192,4 +192,77 @@ class GrupoTest extends TestCase
 
         $this->assertSame(['GL'], $codigos);
     }
+
+    public function test_accessor_proyecto_retorna_false_si_no_hi_ha_cicle(): void
+    {
+        $grupo = new Grupo();
+        $grupo->curso = 2;
+        $grupo->idCiclo = null;
+
+        $this->assertFalse($grupo->proyecto);
+    }
+
+    public function test_accessor_xtutor_retorna_buit_si_no_hi_ha_tutor(): void
+    {
+        $grupo = new Grupo();
+        $grupo->tutor = null;
+
+        $this->assertSame('', $grupo->xtutor);
+    }
+
+    public function test_scope_matriculado_filtra_per_id_alumne(): void
+    {
+        DB::table('grupos')->insert([
+            ['codigo' => 'GM1', 'nombre' => 'Matriculat 1', 'tutor' => null, 'idCiclo' => 1, 'curso' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['codigo' => 'GM2', 'nombre' => 'Matriculat 2', 'tutor' => null, 'idCiclo' => 1, 'curso' => 1, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        DB::table('alumnos_grupos')->insert([
+            ['idAlumno' => 'AX1', 'idGrupo' => 'GM1'],
+            ['idAlumno' => 'AX2', 'idGrupo' => 'GM2'],
+        ]);
+
+        $codigos = Grupo::query()->Matriculado('AX1')->pluck('codigo')->all();
+
+        $this->assertSame(['GM1'], $codigos);
+    }
+
+    public function test_scope_mi_grupo_modulo_filtra_grups_per_professor_i_modul(): void
+    {
+        DB::table('profesores')->insert([
+            ['dni' => 'PZ', 'sustituye_a' => null, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        DB::table('grupos')->insert([
+            ['codigo' => 'MG1', 'nombre' => 'M1', 'tutor' => null, 'idCiclo' => 1, 'curso' => 1, 'created_at' => now(), 'updated_at' => now()],
+            ['codigo' => 'MG2', 'nombre' => 'M2', 'tutor' => null, 'idCiclo' => 1, 'curso' => 1, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        DB::table('horarios')->insert([
+            [
+                'idProfesor' => 'PZ',
+                'idGrupo' => 'MG1',
+                'dia_semana' => 'L',
+                'sesion_orden' => 1,
+                'ocupacion' => null,
+                'modulo' => 'M01',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => 'PZ',
+                'idGrupo' => 'MG2',
+                'dia_semana' => 'L',
+                'sesion_orden' => 2,
+                'ocupacion' => null,
+                'modulo' => 'M02',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $codigos = Grupo::query()->MiGrupoModulo('PZ', 'M01')->pluck('codigo')->all();
+
+        $this->assertSame(['MG1'], $codigos);
+    }
 }

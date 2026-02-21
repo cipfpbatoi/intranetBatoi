@@ -31,13 +31,7 @@ class FctDay extends Model
         'hores_realitzades' => 'float',
     ];
 
-    /**
-     * Relació amb AlumnoFct (molts a un)
-     */
-    public function alumnoFct()
-    {
-        return $this->belongsTo(AlumnoFct::class, 'alumno_fct_id');
-    }
+    
     public function getHorariAttribute()
     {
         return $this->alumnoFct->Fct->Colaboracion->Centro->horarios ?? null;
