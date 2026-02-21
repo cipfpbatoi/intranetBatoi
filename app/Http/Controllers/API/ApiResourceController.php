@@ -5,6 +5,8 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class ApiResourceController extends Controller
@@ -211,7 +213,10 @@ class ApiResourceController extends Controller
 
     protected function sendError($error, $code = 400)
     {
-        return response()->json(['success'=>false,'message'=>$error], $code);
+        return response()->json([
+            'success' => false,
+            'message' => is_string($error) ? $error : 'Request error',
+        ], $code);
     }
 
     protected function sendNotFound(string $error = 'Not found')
@@ -221,7 +226,18 @@ class ApiResourceController extends Controller
 
     protected function sendFail($error, $code = 400)
     {
-        return response()->json($error, $code);
+        if (is_array($error)) {
+            $success = (bool) ($error['success'] ?? false);
+            $message = (string) ($error['message'] ?? 'Request error');
+            $payload = ['success' => $success, 'message' => $message];
+            if (array_key_exists('errors', $error)) {
+                $payload['errors'] = $error['errors'];
+            }
+
+            return response()->json($payload, $code);
+        }
+
+        return $this->sendError((string) $error, $code);
     }
 
     public function ApiUser(Request $request)
@@ -231,6 +247,32 @@ class ApiResourceController extends Controller
         }
 
         return $this->profesorService->findByApiToken((string) $request->api_token);
+    }
+
+    /**
+     * Marca resposta d'endpoint legacy per facilitar deprecació controlada.
+     */
+    protected function markLegacyUsage(
+        JsonResponse $response,
+        string $legacyContract,
+        ?string $replacementHint = null
+    ): JsonResponse {
+        $response->headers->set('Deprecation', 'true');
+        $response->headers->set('Sunset', 'Wed, 31 Dec 2026 23:59:59 GMT');
+        if ($replacementHint !== null && $replacementHint !== '') {
+            $response->headers->set('X-API-Replacement', $replacementHint);
+        }
+
+        Log::info('API legacy contract consumed', [
+            'contract' => $legacyContract,
+            'path' => request()->path(),
+            'query' => request()->query(),
+            'user' => auth()->guard('api')->id(),
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
+
+        return $response;
     }
 
 }

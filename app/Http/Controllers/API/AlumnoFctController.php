@@ -71,7 +71,7 @@ class AlumnoFctController extends ApiResourceController
         return $this->sendResponse(['updated' => true], 'OK');
     }
 
-    public function show($id, $send=true)
+    public function show($id)
     {
         $registro = $this->alumnoFcts()->findOrFail((int) $id);
         return $this->sendResponse(new AlumnoFctResource($registro), 'OK');

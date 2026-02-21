@@ -51,8 +51,12 @@ trait DropZone
             abort(500, "L'atribut 'model' no està definit en la classe que usa el trait DropZone.");
         }
 
+        if (!isset($this->class)) {
+            abort(500, "L'atribut 'class' no està definit en la classe que usa el trait DropZone.");
+        }
+
         $class = null;
-        if (isset($this->class) && class_exists($this->class)) {
+        if (class_exists($this->class)) {
             $class = $this->class;
         } elseif (property_exists($this, 'namespace') && isset($this->namespace)) {
             $candidate = $this->namespace . $this->model;

@@ -119,6 +119,40 @@ class ApiFaltaProfesorControllerFeatureTest extends TestCase
         $response->assertJsonPath('data.0.dia', '2026-02-22');
     }
 
+    public function test_index_modern_filtra_per_query_dia(): void
+    {
+        $this->insertProfesor('PFP12');
+        $user = Profesor::on('sqlite')->findOrFail('PFP12');
+        $this->actingAs($user, 'api');
+
+        DB::table('faltas_profesores')->insert([
+            [
+                'idProfesor' => 'PFP12',
+                'dia' => '2026-02-24',
+                'entrada' => '09:00:00',
+                'salida' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => 'PFP12',
+                'dia' => '2026-02-25',
+                'entrada' => '09:30:00',
+                'salida' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $response = $this->getJson('/api/faltaProfesor?dia=2026-02-24');
+
+        $response->assertOk();
+        $response->assertHeaderMissing('Deprecation');
+        $response->assertJsonPath('success', true);
+        $response->assertJsonCount(1, 'data');
+        $response->assertJsonPath('data.0.dia', '2026-02-24');
+    }
+
     private function createSchema(): void
     {
         if (!Schema::connection('sqlite')->hasTable('profesores')) {

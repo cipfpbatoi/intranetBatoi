@@ -59,7 +59,7 @@ class ApiBaseController extends ApiResourceController
 
     protected function sendFail($error, $code = 400)
     {
-        return response()->json($error, $code);
+        return parent::sendFail($error, $code);
     }
 
     private function isLegacyFilterExpression(string $cadena): bool
