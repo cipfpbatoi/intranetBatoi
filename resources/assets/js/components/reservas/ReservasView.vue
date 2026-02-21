@@ -36,7 +36,8 @@
 
 <script>
 import axios from 'axios'
-const ruta='/api/reserva/';
+const ruta='/api/reserva';
+const rutaLegacy='/api/reserva/';
 
 const tokenNode = document.getElementById('_token');
 const token = tokenNode ? tokenNode.innerHTML : '';
@@ -73,16 +74,36 @@ const maxDiasReserva=30;
           },
         },
         methods: {
-          getReservas() {
+          async getReservas() {
             console.log('pido '+(this.fechaIni=='' || this.espacio=='0'));
             if (this.fechaIni=='' || this.espacio=='0') {
               this.reservas=[];
               return;
             }
-            const queryToken = token ? ('?api_token=' + token) : '';
-            axios.get(ruta + 'idEspacio=' + this.espacio + '&dia=' + this.fechaIni + queryToken)
-              .then(resp=>this.reservas=resp.data.data)
-              .catch(resp=>console.error(resp));
+            const params = {
+              idEspacio: this.espacio,
+              dia: this.fechaIni,
+            };
+            if (token) {
+              params.api_token = token;
+            }
+
+            try {
+              const resp = await axios.get(ruta, { params });
+              this.reservas = resp.data.data;
+            } catch (errorModern) {
+              try {
+                const legacyQueryToken = token ? ('?api_token=' + token) : '';
+                const respLegacy = await axios.get(
+                  rutaLegacy + 'idEspacio=' + this.espacio + '&dia=' + this.fechaIni + legacyQueryToken
+                );
+                this.reservas = respLegacy.data.data;
+              } catch (errorLegacy) {
+                console.error(errorModern);
+                console.error(errorLegacy);
+                this.reservas = [];
+              }
+            }
           },
           idTd(codigo) {
             return 'hora-'+codigo;

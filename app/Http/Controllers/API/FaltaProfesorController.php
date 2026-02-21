@@ -2,12 +2,42 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Illuminate\Http\Request;
 use Intranet\Entities\Falta_profesor;
 
-class FaltaProfesorController extends ApiBaseController
+class FaltaProfesorController extends ApiResourceController
 {
 
     protected $model = 'Falta_profesor';
+
+    public function index()
+    {
+        $request = request();
+        $filters = $this->extractQueryFilters($request);
+        if (empty($filters)) {
+            return parent::index();
+        }
+
+        return $this->sendResponse(
+            $this->queryByRequestFilters($filters),
+            'OK'
+        );
+    }
+
+    public function show($id)
+    {
+        $cadena = (string) $id;
+
+        if ($this->isLegacyFilterExpression($cadena)) {
+            return $this->markLegacyUsage(
+                $this->sendResponse($this->queryByLegacyConditions($cadena), 'OK'),
+                'faltaProfesor.show.filter-path',
+                '/api/faltaProfesor?dia=YYYY-MM-DD'
+            );
+        }
+
+        return parent::show($cadena);
+    }
     
     public function horas($cadena)
     {
@@ -43,6 +73,35 @@ class FaltaProfesorController extends ApiBaseController
         }
 
         return $query->get();
+    }
+
+    private function queryByRequestFilters(array $filters)
+    {
+        $query = Falta_profesor::query();
+        foreach ($filters as $field => $value) {
+            $query->where((string) $field, '=', (string) $value);
+        }
+
+        return $query->get();
+    }
+
+    private function extractQueryFilters(Request $request): array
+    {
+        return array_filter(
+            $request->query(),
+            static fn ($value): bool => $value !== null && $value !== ''
+        );
+    }
+
+    private function isLegacyFilterExpression(string $cadena): bool
+    {
+        foreach (['=', '>', '<', ']', '[', '!'] as $operator) {
+            if (strpos($cadena, $operator) !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function applyLegacyCondition($query, string $filter): void

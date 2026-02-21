@@ -4,11 +4,10 @@ namespace Intranet\Http\Controllers\API;
 
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\AlumnoGrupo;
-use Illuminate\Http\Request;
 use Intranet\Entities\Modulo_grupo;
 
 
-class AlumnoGrupoController extends ApiBaseController
+class AlumnoGrupoController extends ApiResourceController
 {
     private ?GrupoService $grupoService = null;
 
@@ -31,6 +30,9 @@ class AlumnoGrupoController extends ApiBaseController
     private function alumnos($misgrupos)
     {
         $grupoIds = collect($misgrupos)->pluck('idGrupo')->filter()->all();
+        if (empty($grupoIds)) {
+            $grupoIds = collect($misgrupos)->pluck('codigo')->filter()->all();
+        }
         if (empty($grupoIds)) {
             return [];
         }
@@ -55,8 +57,9 @@ class AlumnoGrupoController extends ApiBaseController
             ->all();
     }
 
-    public function show($cadena,$send=true)
+    public function show($id)
     {
+            $cadena = (string) $id;
             if (strlen($cadena)==8){
                 return $this->sendResponse(AlumnoGrupo::where('idAlumno',$cadena)->first(),'OK');
             } else {

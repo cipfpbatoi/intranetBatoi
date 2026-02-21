@@ -4,9 +4,8 @@ namespace Intranet\Http\Controllers\API;
 
 
 use Intranet\Entities\Activity;
-use Intranet\Entities\Fct;
 
-class ActivityController extends ApiBaseController
+class ActivityController extends ApiResourceController
 {
 
     protected $model = 'Activity';

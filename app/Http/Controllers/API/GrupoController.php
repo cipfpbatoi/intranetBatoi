@@ -3,12 +3,8 @@
 namespace Intranet\Http\Controllers\API;
 
 use Intranet\Application\Grupo\GrupoService;
-use Illuminate\Http\Request;
-use Intranet\Http\Requests;
-use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
 
-class GrupoController extends ApiBaseController
+class GrupoController extends ApiResourceController
 {
     private ?GrupoService $grupoService = null;
 

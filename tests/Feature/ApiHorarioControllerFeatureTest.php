@@ -111,6 +111,64 @@ class ApiHorarioControllerFeatureTest extends TestCase
         $response->assertJsonFragment(['idProfesor' => 'PBASE1']);
     }
 
+    public function test_index_modern_filtra_per_query_i_sustitucio(): void
+    {
+        $this->insertProfesor('PBASE2', sustituyeA: ' ');
+        $this->insertProfesor('PSUB02', sustituyeA: 'PBASE2');
+        $this->insertProfesor('PALT02', sustituyeA: ' ');
+
+        $user = Profesor::on('sqlite')->findOrFail('PSUB02');
+        $this->actingAs($user, 'api');
+
+        DB::table('horarios')->insert([
+            [
+                'idProfesor' => 'PSUB02',
+                'dia_semana' => 'L',
+                'sesion_orden' => 1,
+                'modulo' => 'M1',
+                'idGrupo' => 'G1',
+                'ocupacion' => null,
+                'aula' => 'A1',
+                'plantilla' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => 'PBASE2',
+                'dia_semana' => 'M',
+                'sesion_orden' => 2,
+                'modulo' => 'M2',
+                'idGrupo' => 'G1',
+                'ocupacion' => null,
+                'aula' => 'A2',
+                'plantilla' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'idProfesor' => 'PALT02',
+                'dia_semana' => 'X',
+                'sesion_orden' => 3,
+                'modulo' => 'M3',
+                'idGrupo' => 'G2',
+                'ocupacion' => null,
+                'aula' => 'A3',
+                'plantilla' => 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $response = $this->getJson('/api/horario?idProfesor=PSUB02');
+
+        $response->assertOk();
+        $response->assertHeaderMissing('Deprecation');
+        $response->assertJsonPath('success', true);
+        $response->assertJsonCount(2, 'data');
+        $response->assertJsonFragment(['idProfesor' => 'PSUB02']);
+        $response->assertJsonFragment(['idProfesor' => 'PBASE2']);
+    }
+
     public function test_horario_change_guarda_i_getchange_ho_retorna(): void
     {
         Storage::fake('local');
@@ -189,4 +247,3 @@ class ApiHorarioControllerFeatureTest extends TestCase
         ]);
     }
 }
-

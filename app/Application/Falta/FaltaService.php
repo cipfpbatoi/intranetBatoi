@@ -38,7 +38,7 @@ class FaltaService
             });
         }
 
-        $diaCompleto = isset($request->dia_completo) ? 1 : null;
+        $diaCompleto = $request->boolean('dia_completo') ? 1 : 0;
         $request->hora_ini = $diaCompleto ? null : $request->hora_ini;
         $request->hora_fin = $diaCompleto ? null : $request->hora_fin;
         $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
@@ -49,7 +49,7 @@ class FaltaService
 
     public function update(int|string $id, Request $request): Falta
     {
-        $diaCompleto = $request->has('dia_completo') ? 1 : 0;
+        $diaCompleto = $request->boolean('dia_completo') ? 1 : 0;
 
         $request->merge([
             'hora_ini' => $diaCompleto ? null : $request->hora_ini,
@@ -103,4 +103,3 @@ class FaltaService
         return $falta->fresh();
     }
 }
-
