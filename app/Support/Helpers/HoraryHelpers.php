@@ -100,16 +100,16 @@ function estaInstituto($profesor, $dia, $hora)
 
 function estaGuardia($idProfesor, $diaSemana, $sesion):bool
 {
-    return Intranet\Entities\Guardia::where('idProfesor', $idProfesor)
-        ->where('dia', $diaSemana)
-        ->where('hora', $sesion)
+    return Intranet\Entities\Guardia::query()
+        ->Profesor($idProfesor)
+        ->DiaHora($diaSemana, $sesion)
         ->exists();
 }
 
 function profesoresGuardia($diaSemana, $sesion)
 {
-    return Intranet\Entities\Guardia::where('dia', $diaSemana)
-        ->where('hora', $sesion)
+    return Intranet\Entities\Guardia::query()
+        ->DiaHora($diaSemana, $sesion)
         ->select('idProfesor')
         ->get();
 }
