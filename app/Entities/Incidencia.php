@@ -7,6 +7,7 @@ use Intranet\Services\Notifications\AdviseService;
 use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
+use Intranet\Presentation\Crud\IncidenciaCrudSchema;
 use function authUser;
 
 class Incidencia extends Model
@@ -37,10 +38,7 @@ class Incidencia extends Model
 
     use \Intranet\Entities\Concerns\BatoiModels;
 
-    protected $inputTypes = [
-        'fecha' => ['type' => 'date'],
-        'imagen' => ['type' => 'file'],
-    ];
+    protected $inputTypes = IncidenciaCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
         'saving' => PreventAction::class,

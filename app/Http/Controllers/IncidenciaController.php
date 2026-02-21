@@ -11,6 +11,7 @@ use Intranet\Entities\OrdenTrabajo;
 use Intranet\Http\Requests\IncidenciaRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Presentation\Crud\IncidenciaCrudSchema;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\Media\ImageService;
 use Styde\Html\Facades\Alert;
@@ -32,22 +33,12 @@ class IncidenciaController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id','Xestado', 'DesCurta', 'Xespacio', 'XResponsable', 'Xtipo', 'fecha'];
+    protected $gridFields = IncidenciaCrudSchema::GRID_FIELDS;
     /**
      * @var string
      */
     protected $descriptionField = 'descripcion';
-    protected $formFields = [
-        'tipo' => ['type' => 'select'],
-        'espacio' => ['type' => 'select'],
-        'material' => ['type' => 'select'],
-        'descripcion' => ['type' => 'textarea'],
-        'imagen' => ['type' => 'file'],
-        'idProfesor' => ['type' => 'hidden'],
-        'prioridad' => ['type' => 'select'],
-        'observaciones' => ['type' => 'text'],
-        'fecha' => ['type' => 'date']
-    ];
+    protected $formFields = IncidenciaCrudSchema::FORM_FIELDS;
 
 
     protected function search()
@@ -124,19 +115,7 @@ class IncidenciaController extends ModalController
         $elemento = Incidencia::findOrFail($id);
         $this->guardIncidenciaOwnerOrResponsible($elemento);
 
-        $formulario = new FormBuilder($elemento,
-            [
-            'espacio' => ['disabled' => 'disabled'],
-            'material' => ['disabled' => 'disabled'],
-            'descripcion' => ['type' => 'textarea'],
-            'imagen' => ['type' => 'file'],
-            'idProfesor' => ['type' => 'hidden'],
-            'tipo' => ['type' => 'select'],
-            'prioridad' => ['type' => 'select'],
-            'observaciones' => ['type' => 'text'],
-            'fecha' => ['type' => 'date']
-            ]
-        );
+        $formulario = new FormBuilder($elemento, IncidenciaCrudSchema::editFormFields());
         $modelo = $this->model;
         return view('intranet.edit', compact('formulario',   'modelo'));
     }
