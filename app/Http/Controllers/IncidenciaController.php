@@ -65,6 +65,8 @@ class IncidenciaController extends ModalController
     protected function generarOrden($id)
     {
         $incidencia = Incidencia::findOrFail($id);
+        $this->guardIncidenciaOwnerOrResponsible($incidencia);
+
         $orden = OrdenTrabajo::where('tipo', $incidencia->tipo)
                 ->where('estado', 0)
                 ->where('idProfesor', AuthUser()->dni)
@@ -106,6 +108,7 @@ class IncidenciaController extends ModalController
     public function removeOrden($id)
     {
         $incidencia = Incidencia::findOrFail($id);
+        $this->guardIncidenciaOwnerOrResponsible($incidencia);
         $incidencia->orden = null;
         $incidencia->save();
         return back();
@@ -119,6 +122,8 @@ class IncidenciaController extends ModalController
     public function edit($id=null)
     {
         $elemento = Incidencia::findOrFail($id);
+        $this->guardIncidenciaOwnerOrResponsible($elemento);
+
         $formulario = new FormBuilder($elemento,
             [
             'espacio' => ['disabled' => 'disabled'],
@@ -140,6 +145,7 @@ class IncidenciaController extends ModalController
     public function store(IncidenciaRequest $request)
     {
         $new = new Incidencia();
+        $request->merge(['idProfesor' => AuthUser()->dni]);
         $new->fillAll($request);
         $this->storeImagen($new, $request);
         Incidencia::putEstado($new->id, $this->init);
@@ -154,6 +160,8 @@ class IncidenciaController extends ModalController
     public function update(IncidenciaRequest $request, $id)
     {
         $elemento =  Incidencia::findOrFail($id);
+        $this->guardIncidenciaOwnerOrResponsible($elemento);
+
         $tipo = $elemento->tipo;
         $elemento->fillAll($request);
         $this->storeImagen($elemento, $request);
@@ -229,6 +237,7 @@ class IncidenciaController extends ModalController
     public function show($id)
     {
         $elemento = Incidencia::findOrFail($id);
+        $this->guardIncidenciaOwnerOrResponsible($elemento);
         $modelo = $this->model;
         return view('intranet.show', compact('elemento', 'modelo'));
     }
@@ -239,6 +248,8 @@ class IncidenciaController extends ModalController
     protected function notify($id)
     {
         $elemento = Incidencia::findOrFail($id);
+        $this->guardIncidenciaOwnerOrResponsible($elemento);
+
         if ($elemento->responsable) {
             $explicacion = "T'han assignat una incidència: " . $elemento->descripcion;
             $enlace = "/incidencia/" . $id . "/edit";
@@ -259,6 +270,30 @@ class IncidenciaController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('incidencia.delete', ['where' => ['estado', '<', '2']]));
         $this->panel->setBoton('grid', new BotonImg('incidencia.notification', ['where' => ['estado', '<', '1']]));
 
+    }
+
+    public function destroy($id)
+    {
+        $elemento = Incidencia::findOrFail($id);
+        $this->guardIncidenciaOwnerOrResponsible($elemento);
+
+        if (!empty($elemento->imagen)) {
+            Storage::disk('public')->delete($elemento->imagen);
+        }
+
+        $elemento->delete();
+
+        return $this->redirect();
+    }
+
+    private function guardIncidenciaOwnerOrResponsible(Incidencia $incidencia): void
+    {
+        $dni = (string) AuthUser()->dni;
+        if ($incidencia->idProfesor === $dni || (string) ($incidencia->responsable ?? '') === $dni) {
+            return;
+        }
+
+        abort(403);
     }
 
 
