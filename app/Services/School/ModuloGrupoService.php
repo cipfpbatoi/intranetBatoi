@@ -2,6 +2,7 @@
 
 namespace Intranet\Services\School;
 
+use Illuminate\Support\Collection;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
@@ -16,7 +17,7 @@ class ModuloGrupoService
             ->all();
     }
 
-    public function profesorIds(Modulo_grupo $moduloGrupo)
+    public function profesorIds(Modulo_grupo $moduloGrupo): Collection
     {
         $moduloCiclo = $moduloGrupo->ModuloCiclo;
         if (!$moduloCiclo) {
@@ -32,9 +33,8 @@ class ModuloGrupoService
             ->filter();
     }
 
-    public function misModulos(?string $dni = null, ?string $modulo = null): array
+    public function misModulos(string $dni, ?string $modulo = null): array
     {
-        $dni = $dni ?? authUser()->dni;
         $horarios = Horario::query()
             ->Profesor($dni)
             ->whereNotNull('idGrupo')

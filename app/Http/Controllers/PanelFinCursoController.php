@@ -227,7 +227,7 @@ class PanelFinCursoController extends BaseController
 
     private static function lookForMyResults(&$avisos)
     {
-        foreach (app(ModuloGrupoService::class)->misModulos() as $modulo) {
+        foreach (app(ModuloGrupoService::class)->misModulos(AuthUser()->dni) as $modulo) {
             if (!$modulo->resultados->where('evaluacion', 3)) {
                 $avisos[self::DANGER][] = "Falta resultats finals del modul ".$modulo->literal;
             } else{

@@ -32,7 +32,7 @@ class Modulo_grupo extends Model
     
     public static function MisModulos($dni=null,$modulo=null)
     {
-        return app(ModuloGrupoService::class)->misModulos($dni, $modulo);
+        return app(ModuloGrupoService::class)->misModulos($dni ?? authUser()->dni, $modulo);
     }
     
     public function scopeCurso($query,$curso)

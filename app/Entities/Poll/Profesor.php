@@ -30,7 +30,7 @@ class Profesor extends ModelPoll
     public static function loadVotes($id)
     {
         $myVotes = array();
-        foreach (app(ModuloGrupoService::class)->misModulos() as $modulo) {
+        foreach (app(ModuloGrupoService::class)->misModulos(AuthUser()->dni) as $modulo) {
             $myVotes[$modulo->ModuloCiclo->Modulo->literal][$modulo->Grupo->codigo]
                 = Vote::myVotes($id, $modulo->id)->get();
         }

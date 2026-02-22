@@ -111,7 +111,7 @@ class TaskController extends ModalController
 
     private function SegAval()
     {
-        foreach (app(ModuloGrupoService::class)->misModulos() as $modulo) {
+        foreach (app(ModuloGrupoService::class)->misModulos(AuthUser()->dni) as $modulo) {
             if (!$modulo->resultados->where('evaluacion','<=',evaluacion())){
                 return 0;
             }
