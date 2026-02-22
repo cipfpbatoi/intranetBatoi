@@ -125,9 +125,15 @@ class ActividadTest extends TestCase
             'nombre' => 'Nom',
             'apellido1' => 'Cognom1',
             'apellido2' => 'Cognom2',
+            'email' => '12345678x@test.local',
+            'emailItaca' => '12345678x@itaca.local',
+            'rol' => config('roles.rol.profesor'),
+            'api_token' => bin2hex(random_bytes(20)),
             'password' => bcrypt('test-password'),
             'fecha_baja' => null,
             'activo' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('actividad_profesor')->where('idProfesor', '12345678X')->delete();
