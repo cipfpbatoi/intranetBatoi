@@ -31,7 +31,17 @@ class PanelLoteController extends ModalController
 
     protected function search()
     {
-        return Lote::where('departamento_id',AuthUser()->departamento)->get();
+        return Lote::query()
+            ->where('departamento_id', AuthUser()->departamento)
+            ->with('Departamento')
+            ->withCount([
+                'ArticuloLote',
+                'Materiales',
+                'Materiales as materiales_invent_count' => static function ($query) {
+                    $query->where('espacio', 'INVENT');
+                },
+            ])
+            ->get();
     }
 
     protected function iniBotones()

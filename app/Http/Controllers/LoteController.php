@@ -34,6 +34,20 @@ class LoteController extends ModalController
 
     protected $gridFields = [ 'registre', 'proveedor','factura','procedencia', 'estado','fechaAlta','departamento'];
 
+    protected function search()
+    {
+        return Lote::query()
+            ->with('Departamento')
+            ->withCount([
+                'ArticuloLote',
+                'Materiales',
+                'Materiales as materiales_invent_count' => static function ($query) {
+                    $query->where('espacio', 'INVENT');
+                },
+            ])
+            ->get();
+    }
+
 
 
     public function store(LoteRequest $request)
