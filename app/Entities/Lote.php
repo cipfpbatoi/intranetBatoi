@@ -112,14 +112,13 @@ class Lote extends Model
             ];
         }
 
-        $stats = $this->Materiales()
-            ->selectRaw('COUNT(*) as total')
-            ->selectRaw("SUM(CASE WHEN espacio = 'INVENT' THEN 1 ELSE 0 END) as invent_total")
-            ->first();
+        $materialesQuery = $this->Materiales();
+        $total = (clone $materialesQuery)->count();
+        $inventTotal = (clone $materialesQuery)->where('espacio', 'INVENT')->count();
 
         return [
-            (int) ($stats->total ?? 0),
-            (int) ($stats->invent_total ?? 0),
+            (int) $total,
+            (int) $inventTotal,
         ];
     }
 

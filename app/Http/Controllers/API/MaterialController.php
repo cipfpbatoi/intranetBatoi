@@ -8,7 +8,6 @@ use Intranet\Entities\MaterialBaja;
 
 use Intranet\Http\Resources\MaterialResource;
 use Jenssegers\Date\Date;
-use Yajra\DataTables\DataTables;
 
 class MaterialController extends ApiResourceController
 {
@@ -21,9 +20,14 @@ class MaterialController extends ApiResourceController
         return response()->json(Material::where('espacio', $espacio)->get());
     }
 
-    private function getInventario($espai = null)
+    private function getInventario(Request $request, $espai = null)
     {
-        if (esRol(apiAuthUser($_GET['api_token'])->rol, config(self::ROLES_ROL_DIRECCION))) {
+        $user = $this->resolveApiUser($request);
+        if (!$user) {
+            return $this->sendError('Unauthorized', 401);
+        }
+
+        if (esRol($user->rol, config(self::ROLES_ROL_DIRECCION))) {
             $data = Material::where('inventariable', 1)
                 ->where('espacio', '<>', 'INVENT')
                 ->where('estado', '<', 3)
@@ -33,8 +37,8 @@ class MaterialController extends ApiResourceController
                 })
                 ->get();
         } else {
-            $data = Material::whereHas('espacios', function ($query) {
-                $query->where('idDepartamento', apiAuthUser($_GET['api_token'])->departamento);
+            $data = Material::whereHas('espacios', function ($query) use ($user) {
+                $query->where('idDepartamento', $user->departamento);
             })->where('inventariable', 1)
                 ->where('espacio', '<>', 'INVENT')
                 ->where('estado', '<', 3)
@@ -48,14 +52,14 @@ class MaterialController extends ApiResourceController
         return $this->sendResponse(MaterialResource::collection($data), 'OK');
     }
 
-    public function espai($espai)
+    public function espai(Request $request, $espai)
     {
-        return $this->getInventario($espai);
+        return $this->getInventario($request, $espai);
     }
 
-    public function inventario()
+    public function inventario(Request $request)
     {
-        return $this->getInventario();
+        return $this->getInventario($request);
     }
 
     function index()
@@ -171,9 +175,22 @@ class MaterialController extends ApiResourceController
         return $this->sendResponse(['updated' => $missatge], 'OK');
     }
 
-    private function isAdministrator()
+    private function resolveApiUser(Request $request)
     {
-        return apiAuthUser()->hasRole('admin');
+        $guardUser = $request->user('api');
+        if ($guardUser) {
+            return $guardUser;
+        }
+
+        $token = (string) ($request->query('api_token')
+            ?? $request->input('api_token')
+            ?? '');
+
+        if ($token === '') {
+            return null;
+        }
+
+        return apiAuthUser($token);
     }
 
     public function putInventario(Request $request)
