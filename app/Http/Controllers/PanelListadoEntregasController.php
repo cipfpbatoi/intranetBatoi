@@ -22,6 +22,7 @@ use Intranet\Entities\Reunion;
 use Intranet\Services\Document\TipoReunionService;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\GestorService;
+use Intranet\Services\School\ModuloGrupoService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 
@@ -197,10 +198,10 @@ class PanelListadoEntregasController extends BaseController
     public function avisaFaltaEntrega($id)
     {
         $modulo = Modulo_grupo::find($id);
-        foreach ($modulo->profesores() as $profesor) {
+        foreach (app(ModuloGrupoService::class)->profesorIds($modulo) as $profesorId) {
                 $texto = "Et falta per omplir el seguiment de l'avaluacio '" .
                         "' del mòdul '$modulo->Xmodulo' del Grup '$modulo->Xgrupo'";
-                avisa($profesor['idProfesor'], $texto);
+                avisa($profesorId, $texto);
         }
         Alert::info('Aviss enviat');
         return back();

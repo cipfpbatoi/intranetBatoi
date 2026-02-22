@@ -4,18 +4,20 @@ namespace Intranet\Http\Controllers\API;
 
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\AlumnoGrupo;
-use Intranet\Entities\Modulo_grupo;
+use Intranet\Services\School\ModuloGrupoService;
 
 
 class AlumnoGrupoController extends ApiResourceController
 {
     private ?GrupoService $grupoService = null;
+    private ?ModuloGrupoService $moduloGrupoService = null;
 
     protected $model = 'AlumnoGrupo';
 
-    public function __construct(?GrupoService $grupoService = null)
+    public function __construct(?GrupoService $grupoService = null, ?ModuloGrupoService $moduloGrupoService = null)
     {
         $this->grupoService = $grupoService;
+        $this->moduloGrupoService = $moduloGrupoService;
     }
 
     private function grupos(): GrupoService
@@ -25,6 +27,15 @@ class AlumnoGrupoController extends ApiResourceController
         }
 
         return $this->grupoService;
+    }
+
+    private function moduloGrupos(): ModuloGrupoService
+    {
+        if ($this->moduloGrupoService === null) {
+            $this->moduloGrupoService = app(ModuloGrupoService::class);
+        }
+
+        return $this->moduloGrupoService;
     }
 
     private function alumnos($misgrupos)
@@ -73,7 +84,7 @@ class AlumnoGrupoController extends ApiResourceController
     
     public function getModulo($dni,$modulo){
         //$migrupo = $this->grupos()->miGrupoModulo($dni,$modulo);
-        $misgrupos = Modulo_grupo::misModulos($dni,$modulo);
+        $misgrupos = $this->moduloGrupos()->misModulos($dni, $modulo);
         return $this->alumnos($misgrupos);
     }
 

@@ -4,8 +4,7 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Application\Grupo\GrupoService;
-use Intranet\Services\Auth\JWTTokenService;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\School\ModuloGrupoService;
 
 class Modulo_grupo extends Model
 {
@@ -28,49 +27,12 @@ class Modulo_grupo extends Model
     
     public function Profesores()
     {
-        return Horario::select('idProfesor')->distinct()->where('idGrupo',$this->idGrupo)
-                ->where('modulo',$this->ModuloCiclo->idModulo)->get()->toArray();
+        return app(ModuloGrupoService::class)->profesoresArray($this);
     }
     
     public static function MisModulos($dni=null,$modulo=null)
     {
-        $dni = $dni??authUser()->dni;
-        if ($modulo) {
-            $modulos = Horario::select('modulo', 'idGrupo')
-                ->Profesor($dni)
-                ->whereNotNull('idGrupo')
-                ->where('modulo', $modulo)
-                ->distinct()
-                ->get();
-        }
-        else {
-            $modulos = Horario::select('modulo', 'idGrupo')
-                ->Profesor($dni)
-                ->whereNotNull('idGrupo')
-                ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
-                ->distinct()
-                ->get();
-        }
-        $todos = [];
-        foreach ($modulos as $modulo){
-            $grupo = $modulo->Grupo;
-            if (!$grupo) {
-                continue;
-            }
-
-            if ($mc = Modulo_ciclo::where('idModulo',$modulo->modulo)
-                    ->where('idCiclo',$grupo->idCiclo)->first()) {
-                if ($mg = Modulo_grupo::where('idGrupo', $modulo->idGrupo)
-                    ->where('idModuloCiclo', $mc->id)->first()) {
-                    {
-                        $todos[] = $mg;
-                    }
-                }
-            } else {
-                Alert::danger('No se encuentra el ciclo para el modulo ' . $modulo->modulo);
-            }
-        }
-       return $todos;
+        return app(ModuloGrupoService::class)->misModulos($dni, $modulo);
     }
     
     public function scopeCurso($query,$curso)
@@ -86,19 +48,19 @@ class Modulo_grupo extends Model
         return $this->Grupo->nombre??$this->idGrupo;
     }
     public function getXModuloAttribute(){
-        return $this->ModuloCiclo->Xmodulo;
+        return $this->ModuloCiclo->Xmodulo ?? '';
     }
 
     public function getXcicloAttribute(){
-        return $this->ModuloCiclo->Xciclo;
+        return $this->ModuloCiclo->Xciclo ?? '';
     }
 
     public function getXdepartamentoAttribute(){
-        return $this->ModuloCiclo->Departamento->literal;
+        return $this->ModuloCiclo->Departamento->literal ?? '';
     }
 
     public function getXtornAttribute(){
-        return $this->Grupo->turno === 'S'?'half-presential':'presential';
+        return $this->Grupo && $this->Grupo->turno === 'S' ? 'half-presential' : 'presential';
     }
     public function getliteralAttribute(){
         return $this->XGrupo.'-'.$this->XModulo;
@@ -120,13 +82,31 @@ class Modulo_grupo extends Model
     }
 
     public function getprofesorAttribute(){
-        $a = '';
-        foreach ($this->profesores() as $profesor){
-            $a .= Profesor::find($profesor['idProfesor'])->FullName.' ';
+        $profesorIds = app(ModuloGrupoService::class)->profesorIds($this)->values()->all();
+        if ($profesorIds === []) {
+            return '';
         }
-        return $a;
+
+        $profesores = Profesor::query()
+            ->whereIn('dni', $profesorIds)
+            ->get()
+            ->keyBy('dni');
+
+        $nombres = [];
+        foreach ($profesorIds as $dni) {
+            $profesor = $profesores->get($dni);
+            if ($profesor) {
+                $nombres[] = $profesor->FullName;
+            }
+        }
+
+        return $nombres === [] ? '' : implode(' ', $nombres) . ' ';
     }
     public function getProgramacioLinkAttribute(){
+        if (!$this->ModuloCiclo) {
+            return '';
+        }
+
         $centerId = config('contacto.codi');
         $cycleId = $this->ModuloCiclo->idCiclo;
         $moduleCode = $this->ModuloCiclo->idModulo;

@@ -8,13 +8,13 @@ use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Incidencia;
-use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Poll\Poll;
 use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Poll\Vote;
 use Intranet\Services\Document\TipoReunionService;
+use Intranet\Services\School\ModuloGrupoService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Reunion;
 use function PHPUnit\Framework\isNull;
@@ -227,7 +227,7 @@ class PanelFinCursoController extends BaseController
 
     private static function lookForMyResults(&$avisos)
     {
-        foreach (Modulo_grupo::misModulos() as $modulo){
+        foreach (app(ModuloGrupoService::class)->misModulos() as $modulo) {
             if (!$modulo->resultados->where('evaluacion', 3)) {
                 $avisos[self::DANGER][] = "Falta resultats finals del modul ".$modulo->literal;
             } else{

@@ -94,4 +94,38 @@ class ModuloGrupoTest extends TestCase
         $this->assertCount(1, $result);
         $this->assertSame(10, $result[0]->id);
     }
+
+    public function test_mis_modulos_no_duplica_resultats_amb_horaris_repetits(): void
+    {
+        DB::table('modulo_ciclos')->insert([
+            'id' => 2,
+            'idModulo' => 'MREP',
+            'idCiclo' => 1,
+        ]);
+
+        DB::table('grupos')->insert([
+            'codigo' => 'GR',
+            'idCiclo' => 1,
+            'nombre' => 'Grup Repetit',
+            'turno' => 'M',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('modulo_grupos')->insert([
+            'id' => 20,
+            'idModuloCiclo' => 2,
+            'idGrupo' => 'GR',
+        ]);
+
+        DB::table('horarios')->insert([
+            ['idProfesor' => 'P2', 'modulo' => 'MREP', 'idGrupo' => 'GR'],
+            ['idProfesor' => 'P2', 'modulo' => 'MREP', 'idGrupo' => 'GR'],
+        ]);
+
+        $result = Modulo_grupo::MisModulos('P2');
+
+        $this->assertCount(1, $result);
+        $this->assertSame(20, $result[0]->id);
+    }
 }

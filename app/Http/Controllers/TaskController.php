@@ -8,10 +8,10 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Documento;
-use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Task;
+use Intranet\Services\School\ModuloGrupoService;
 
 use Intranet\Http\Requests\TaskRequest;
 
@@ -111,7 +111,7 @@ class TaskController extends ModalController
 
     private function SegAval()
     {
-        foreach (Modulo_grupo::misModulos() as $modulo){
+        foreach (app(ModuloGrupoService::class)->misModulos() as $modulo) {
             if (!$modulo->resultados->where('evaluacion','<=',evaluacion())){
                 return 0;
             }
