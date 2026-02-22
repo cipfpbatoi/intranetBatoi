@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Log;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Signatura;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Expediente;

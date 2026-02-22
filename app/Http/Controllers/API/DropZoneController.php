@@ -4,8 +4,6 @@ namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Adjunto;
-use Intranet\Entities\Profesor;
-use Intranet\Http\Controllers\Controller;
 use Intranet\Services\Document\AttachedFileService;
 
 class DropZoneController extends ApiResourceController
