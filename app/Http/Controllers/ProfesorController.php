@@ -110,8 +110,8 @@ use Autorizacion,
             ->get();
         $departamentosIds = $departamentos->pluck('id')->all();
 
-        $sesionActual = sesion(Hora(now()));
-        $diaActual = config("auxiliares.diaSemana." . now()->format('w'));
+        $sesionActual = (int) (sesion(Hora(now())) ?? 1);
+        $diaActual = (string) (nameDay(hoy()) ?? 'L');
 
         $todos = $this->profesores()->activosByDepartamentosWithHorario($departamentosIds, $diaActual, $sesionActual);
 
