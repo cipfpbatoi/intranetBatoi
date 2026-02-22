@@ -13,7 +13,11 @@ class NotificationController extends ApiResourceController
     public function leer($id)
     {
         $notification = Notification::find($id);
-        $notification->read_at = New Date('now');
+        if (!$notification) {
+            return $this->sendResponse(['updated' => false], 'Notificació no trobada');
+        }
+
+        $notification->read_at = new Date('now');
         $notification->save();
         return $this->sendResponse(['updated' => true], 'OK');
     }
