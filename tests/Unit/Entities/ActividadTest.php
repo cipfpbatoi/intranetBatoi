@@ -119,7 +119,7 @@ class ActividadTest extends TestCase
         ]);
 
         DB::table('profesores')->where('dni', '12345678X')->delete();
-        DB::table('profesores')->insert([
+        $profesorPayload = [
             'dni' => '12345678X',
             'codigo' => 12345,
             'nombre' => 'Nom',
@@ -145,7 +145,9 @@ class ActividadTest extends TestCase
             'activo' => 1,
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ];
+        $profesorColumns = Schema::getColumnListing('profesores');
+        DB::table('profesores')->insert(array_intersect_key($profesorPayload, array_flip($profesorColumns)));
 
         DB::table('actividad_profesor')->where('idProfesor', '12345678X')->delete();
         DB::table('actividad_profesor')->insert([

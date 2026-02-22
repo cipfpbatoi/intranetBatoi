@@ -3,12 +3,8 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\AlumnoGrupo;
-use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Services\School\ModuloGrupoService;
 
@@ -97,7 +93,7 @@ class Resultado extends Model
     
     public function getModuloAttribute()
     {
-        return $this->ModuloGrupo->literal;
+        return $this->ModuloGrupo->literal ?? '';
     }
     public function getXEvaluacionAttribute()
     {
@@ -105,7 +101,7 @@ class Resultado extends Model
     }
     public function getXProfesorAttribute()
     {
-        return Profesor::find($this->idProfesor)->shortName;
+        return $this->Profesor->shortName ?? '';
     }
 
 }
