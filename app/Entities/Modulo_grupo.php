@@ -25,11 +25,17 @@ class Modulo_grupo extends Model
         return $this->hasMany(Resultado::class,'idModuloGrupo', 'id');
     }
     
+    /**
+     * @deprecated Usa Intranet\Services\School\ModuloGrupoService::profesoresArray()
+     */
     public function Profesores()
     {
         return app(ModuloGrupoService::class)->profesoresArray($this);
     }
     
+    /**
+     * @deprecated Usa Intranet\Services\School\ModuloGrupoService::misModulos()
+     */
     public static function MisModulos($dni=null,$modulo=null)
     {
         return app(ModuloGrupoService::class)->misModulos($dni ?? authUser()->dni, $modulo);

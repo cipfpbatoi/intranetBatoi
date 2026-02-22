@@ -10,6 +10,7 @@ use Intranet\Entities\Profesor;
 use Intranet\Entities\AlumnoGrupo;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
+use Intranet\Services\School\ModuloGrupoService;
 
 class Resultado extends Model
 {
@@ -57,7 +58,7 @@ class Resultado extends Model
     public function getIdModuloGrupoOptions()
     {
         $todos = [];
-        foreach (Modulo_grupo::MisModulos() as $uno) {
+        foreach (app(ModuloGrupoService::class)->misModulos(authUser()->dni) as $uno) {
             $todos[$uno->id] = $uno->Grupo->nombre . ' - ' . $uno->ModuloCiclo->Modulo->literal;
         }
         return $todos;
