@@ -125,6 +125,7 @@ class ActividadTest extends TestCase
             'nombre' => 'Nom',
             'apellido1' => 'Cognom1',
             'apellido2' => 'Cognom2',
+            'password' => bcrypt('test-password'),
             'fecha_baja' => null,
             'activo' => 1,
         ]);
