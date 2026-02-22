@@ -53,8 +53,13 @@ class Modulo_grupo extends Model
         }
         $todos = [];
         foreach ($modulos as $modulo){
+            $grupo = $modulo->Grupo;
+            if (!$grupo) {
+                continue;
+            }
+
             if ($mc = Modulo_ciclo::where('idModulo',$modulo->modulo)
-                    ->where('idCiclo',$modulo->Grupo->idCiclo)->first()) {
+                    ->where('idCiclo',$grupo->idCiclo)->first()) {
                 if ($mg = Modulo_grupo::where('idGrupo', $modulo->idGrupo)
                     ->where('idModuloCiclo', $mc->id)->first()) {
                     {
