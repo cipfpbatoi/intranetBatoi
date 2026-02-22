@@ -11,6 +11,7 @@ use Intranet\Entities\Resultado;
 use Intranet\Http\Requests\ResultadoStoreRequest;
 use Intranet\Http\Requests\ResultadoUpdateRequest;
 use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Services\School\ModuloGrupoService;
 use Styde\Html\Facades\Alert;
 
 
@@ -97,7 +98,8 @@ class ResultadoController extends ModalController
      */
     public function search()
     {
-        return Resultado::whereIn('idModuloGrupo', hazArray(Modulo_Grupo::MisModulos(), 'id', 'id'))->get();
+        $misModulos = app(ModuloGrupoService::class)->misModulos(AuthUser()->dni);
+        return Resultado::whereIn('idModuloGrupo', hazArray($misModulos, 'id', 'id'))->get();
     }
 
     /**

@@ -8,6 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Entities\Modulo_grupo;
+use Intranet\Services\School\ModuloGrupoService;
 use Tests\TestCase;
 
 class ModuloGrupoAccessorsTest extends TestCase
@@ -103,7 +104,7 @@ class ModuloGrupoAccessorsTest extends TestCase
         $this->assertSame('', $registro->Xdepartamento);
         $this->assertSame('presential', $registro->Xtorn);
         $this->assertSame('', $registro->ProgramacioLink);
-        $this->assertSame([], $registro->Profesores());
+        $this->assertSame([], app(ModuloGrupoService::class)->profesorIds($registro)->all());
     }
 
     public function test_profesor_accessor_resol_noms_en_una_consulta_i_ordre_horari(): void

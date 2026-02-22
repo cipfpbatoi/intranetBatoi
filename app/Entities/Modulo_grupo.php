@@ -25,22 +25,6 @@ class Modulo_grupo extends Model
         return $this->hasMany(Resultado::class,'idModuloGrupo', 'id');
     }
     
-    /**
-     * @deprecated Usa Intranet\Services\School\ModuloGrupoService::profesoresArray()
-     */
-    public function Profesores()
-    {
-        return app(ModuloGrupoService::class)->profesoresArray($this);
-    }
-    
-    /**
-     * @deprecated Usa Intranet\Services\School\ModuloGrupoService::misModulos()
-     */
-    public static function MisModulos($dni=null,$modulo=null)
-    {
-        return app(ModuloGrupoService::class)->misModulos($dni ?? authUser()->dni, $modulo);
-    }
-    
     public function scopeCurso($query,$curso)
     {
         $codigos = app(GrupoService::class)->byCurso((int) $curso)
@@ -73,54 +57,15 @@ class Modulo_grupo extends Model
     }
     
     public function getseguimientoAttribute(){
-        $tr = evaluacion() - 1??1;
-        $tipoCiclo = $this->ModuloCiclo->Ciclo->tipo??1;
-        $curso = $this->ModuloCiclo->curso??1;
-        $trimestre = config("curso.trimestres.$tipoCiclo.$tr.$curso");
-        $quants = $this->resultados->where('evaluacion',$trimestre)->count();
-        if ($quants){
-            return true;
-        }
-        if (count($this->profesores())) {
-            return false;
-        }
-        return true;
+        return app(ModuloGrupoService::class)->hasSeguimiento($this);
     }
 
     public function getprofesorAttribute(){
-        $profesorIds = app(ModuloGrupoService::class)->profesorIds($this)->values()->all();
-        if ($profesorIds === []) {
-            return '';
-        }
-
-        $profesores = Profesor::query()
-            ->whereIn('dni', $profesorIds)
-            ->get()
-            ->keyBy('dni');
-
-        $nombres = [];
-        foreach ($profesorIds as $dni) {
-            $profesor = $profesores->get($dni);
-            if ($profesor) {
-                $nombres[] = $profesor->FullName;
-            }
-        }
-
-        return $nombres === [] ? '' : implode(' ', $nombres) . ' ';
+        return app(ModuloGrupoService::class)->profesorNombres($this);
     }
+    
     public function getProgramacioLinkAttribute(){
-        if (!$this->ModuloCiclo) {
-            return '';
-        }
-
-        $centerId = config('contacto.codi');
-        $cycleId = $this->ModuloCiclo->idCiclo;
-        $moduleCode = $this->ModuloCiclo->idModulo;
-        $turn = $this->Xtorn;
-
-        // Construye la URL
-        return "https://pcompetencies.cipfpbatoi.es/public/syllabus/{$centerId}/{$cycleId}/{$moduleCode}/{$turn}";
-
+        return app(ModuloGrupoService::class)->programacioLink($this);
     }
 
     /*

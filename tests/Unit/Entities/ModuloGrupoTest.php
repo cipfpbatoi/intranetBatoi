@@ -7,7 +7,7 @@ namespace Tests\Unit\Entities;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Intranet\Entities\Modulo_grupo;
+use Intranet\Services\School\ModuloGrupoService;
 use Tests\TestCase;
 
 class ModuloGrupoTest extends TestCase
@@ -89,7 +89,7 @@ class ModuloGrupoTest extends TestCase
             ['idProfesor' => 'P1', 'modulo' => 'MTEST', 'idGrupo' => 'G1'],
         ]);
 
-        $result = Modulo_grupo::MisModulos('P1');
+        $result = app(ModuloGrupoService::class)->misModulos('P1');
 
         $this->assertCount(1, $result);
         $this->assertSame(10, $result[0]->id);
@@ -123,7 +123,7 @@ class ModuloGrupoTest extends TestCase
             ['idProfesor' => 'P2', 'modulo' => 'MREP', 'idGrupo' => 'GR'],
         ]);
 
-        $result = Modulo_grupo::MisModulos('P2');
+        $result = app(ModuloGrupoService::class)->misModulos('P2');
 
         $this->assertCount(1, $result);
         $this->assertSame(20, $result[0]->id);

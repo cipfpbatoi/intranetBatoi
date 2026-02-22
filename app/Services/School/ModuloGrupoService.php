@@ -6,15 +6,60 @@ use Illuminate\Support\Collection;
 use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
+use Intranet\Entities\Profesor;
 
 class ModuloGrupoService
 {
-    public function profesoresArray(Modulo_grupo $moduloGrupo): array
+    public function hasSeguimiento(Modulo_grupo $moduloGrupo): bool
     {
-        return $this->profesorIds($moduloGrupo)
-            ->map(static fn ($idProfesor) => ['idProfesor' => $idProfesor])
-            ->values()
-            ->all();
+        $tr = evaluacion() - 1 ?? 1;
+        $tipoCiclo = $moduloGrupo->ModuloCiclo->Ciclo->tipo ?? 1;
+        $curso = $moduloGrupo->ModuloCiclo->curso ?? 1;
+        $trimestre = config("curso.trimestres.$tipoCiclo.$tr.$curso");
+        $quants = $moduloGrupo->resultados->where('evaluacion', $trimestre)->count();
+
+        if ($quants) {
+            return true;
+        }
+
+        return $this->profesorIds($moduloGrupo)->isEmpty();
+    }
+
+    public function profesorNombres(Modulo_grupo $moduloGrupo): string
+    {
+        $profesorIds = $this->profesorIds($moduloGrupo)->values()->all();
+        if ($profesorIds === []) {
+            return '';
+        }
+
+        $profesores = Profesor::query()
+            ->whereIn('dni', $profesorIds)
+            ->get()
+            ->keyBy('dni');
+
+        $nombres = [];
+        foreach ($profesorIds as $dni) {
+            $profesor = $profesores->get($dni);
+            if ($profesor) {
+                $nombres[] = $profesor->FullName;
+            }
+        }
+
+        return $nombres === [] ? '' : implode(' ', $nombres) . ' ';
+    }
+
+    public function programacioLink(Modulo_grupo $moduloGrupo): string
+    {
+        if (!$moduloGrupo->ModuloCiclo) {
+            return '';
+        }
+
+        return $this->buildProgramacioUrl(
+            (string) config('contacto.codi'),
+            (string) $moduloGrupo->ModuloCiclo->idCiclo,
+            (string) $moduloGrupo->ModuloCiclo->idModulo,
+            (string) $moduloGrupo->Xtorn
+        );
     }
 
     public function profesorIds(Modulo_grupo $moduloGrupo): Collection
@@ -117,5 +162,10 @@ class ModuloGrupoService
             ->filter(static fn ($mg) => isset($targetPairs[$mg->idGrupo . '|' . $mg->idModuloCiclo]))
             ->values()
             ->all();
+    }
+
+    private function buildProgramacioUrl(string $centerId, string $cycleId, string $moduleCode, string $turn): string
+    {
+        return "https://pcompetencies.cipfpbatoi.es/public/syllabus/{$centerId}/{$cycleId}/{$moduleCode}/{$turn}";
     }
 }

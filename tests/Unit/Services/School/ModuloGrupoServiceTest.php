@@ -53,7 +53,7 @@ class ModuloGrupoServiceTest extends TestCase
         });
     }
 
-    public function test_profesor_ids_i_array_legacy_son_consistents(): void
+    public function test_profesor_ids_son_uniques_i_filtren_nuls(): void
     {
         DB::table('modulo_ciclos')->insert([
             'id' => 1,
@@ -78,9 +78,5 @@ class ModuloGrupoServiceTest extends TestCase
         $service = app(ModuloGrupoService::class);
 
         $this->assertSame(['P1', 'P2'], $service->profesorIds($registro)->values()->all());
-        $this->assertSame(
-            [['idProfesor' => 'P1'], ['idProfesor' => 'P2']],
-            $service->profesoresArray($registro)
-        );
     }
 }
