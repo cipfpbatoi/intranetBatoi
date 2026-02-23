@@ -3,10 +3,9 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 use Intranet\Presentation\Crud\TaskCrudSchema;
 use Jenssegers\Date\Date;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\School\TaskFileService;
 
 
 class Task extends Model
@@ -122,22 +121,9 @@ class Task extends Model
         return $this->action ? (config('roles.actions')[$this->action] ?? '') : '';
     }
 
-    /**
-     * @param Request $request
-     */
     public function fillFile($file)
     {
-        if (!$file->isValid()) {
-            Alert::danger(trans('messages.generic.invalidFormat'));
-            return ;
-        }
-        $this->fichero = $file->storeAs(
-            'Eventos',
-            str_shuffle('abcdefgh123456').'.'.$file->getClientOriginalExtension(),
-            'public'
-        );
-        $this->save();
-
+        return app(TaskFileService::class)->store($file, $this);
     }
 
 
