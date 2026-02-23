@@ -115,8 +115,8 @@ class ReunionController extends ModalController
             ->get(['dni', 'apellido1', 'apellido2', 'nombre']);
         $formulario = new FormBuilder($elemento,[
             'idProfesor' => ['type' => 'hidden'],
-            'numero' => ['type' => 'select'],
             'tipo' => ['type' => 'hidden'],
+            'numero' => ['type' => 'select'],
             'grupo' => ['type' => 'hidden'],
             'curso' => ['disabled' => 'disabled'],
             'fecha' => ['type' => 'datetime'],
