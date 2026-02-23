@@ -224,6 +224,7 @@ class PanelColaboracionController extends IntranetController
 
     public function update(Request $request, $id)
     {
+        $this->authorizeMutation();
         $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
         parent::update($request, $id);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
@@ -237,6 +238,7 @@ class PanelColaboracionController extends IntranetController
      */
     public function store(Request $request)
     {
+        $this->authorizeMutation();
         $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
         parent::store($request);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
@@ -247,6 +249,11 @@ class PanelColaboracionController extends IntranetController
     private function showEmpresa($id)
     {
         return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+    }
+
+    private function authorizeMutation(): void
+    {
+        abort_unless(userIsAllow(config(self::ROLES_ROL_TUTOR)), 403);
     }
 
     /**

@@ -10,9 +10,6 @@ use Intranet\Presentation\Crud\FctCrudSchema;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Intranet\Entities\Colaborador;
-use Intranet\Entities\Fct;
-use Intranet\Http\PrintResources\AVIIAResource;
-use Intranet\Http\PrintResources\AVIIBResource;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
 use Intranet\Http\Requests\ColaboradorRequest;
 use Intranet\Http\Requests\FctStoreRequest;
@@ -29,6 +26,10 @@ use Styde\Html\Facades\Alert;
  */
 class FctController extends IntranetController
 {
+    private const ROLES_ROL_TUTOR = 'roles.rol.tutor';
+    private const ROLES_ROL_PRACTIQUES = 'roles.rol.practicas';
+    private const ROLES_ROL_JEFE_PRACTIQUES = 'roles.rol.jefe_practicas';
+
     private ?FctCertificateService $fctCertificateService = null;
     private ?FctService $fctService = null;
 
@@ -105,6 +106,7 @@ class FctController extends IntranetController
      */
     public function update(Request $request, $id)
     {
+        $this->authorizeMutation();
         $this->validate($request, (new FctUpdateRequest())->rules());
         $this->fcts()->setInstructor($id, (string) $request->idInstructor);
         return $this->redirect();
@@ -148,6 +150,7 @@ class FctController extends IntranetController
      */
     public function store(Request $request)
     {
+        $this->authorizeMutation();
         $this->validate($request, (new FctStoreRequest())->rules());
         try {
             $fct = $this->fcts()->findBySignature(
@@ -287,6 +290,14 @@ class FctController extends IntranetController
         return back();
     }
 
+    private function authorizeMutation(): void
+    {
+        abort_unless(userIsAllow([
+            config(self::ROLES_ROL_TUTOR),
+            config(self::ROLES_ROL_PRACTIQUES),
+            config(self::ROLES_ROL_JEFE_PRACTIQUES),
+        ]), 403);
+    }
 
 
 }

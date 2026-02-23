@@ -16,6 +16,10 @@ use Styde\Html\Facades\Alert;
 
 class EmpresaController extends IntranetController
 {
+    private const ROLES_ROL_TUTOR = 'roles.rol.tutor';
+    private const ROLES_ROL_JEFE_PRACTICAS = 'roles.rol.jefe_practicas';
+    private const ROLES_ROL_DIRECCION = 'roles.rol.direccion';
+
     private ?GrupoService $grupoService = null;
     private ?EmpresaService $empresaService = null;
 
@@ -85,11 +89,12 @@ class EmpresaController extends IntranetController
     
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config(self::ROLES_ROL_TUTOR)]));
      }
 
     public function store(Request $request)
     {
+        $this->authorizeMutation();
         $id = $this->empreses()->saveFromRequest($request);
 
         $idCentro = $this->empreses()->createCenter($id, $request);
@@ -103,6 +108,7 @@ class EmpresaController extends IntranetController
     
     public function update(Request $request, $id)
     {
+        $this->authorizeMutation();
         $elemento = Empresa::findOrFail($this->empreses()->saveFromRequest($request, $id));
         $this->empreses()->fillMissingCenterData($elemento);
         return redirect()->action('EmpresaController@show', ['empresa' => $elemento->id]);
@@ -126,6 +132,15 @@ class EmpresaController extends IntranetController
     public function A1($id)
     {
         return response()->file(FDFPrepareService::exec(new A1Resource(Empresa::find($id))));
+    }
+
+    private function authorizeMutation(): void
+    {
+        abort_unless(userIsAllow([
+            config(self::ROLES_ROL_TUTOR),
+            config(self::ROLES_ROL_JEFE_PRACTICAS),
+            config(self::ROLES_ROL_DIRECCION),
+        ]), 403);
     }
 
 }

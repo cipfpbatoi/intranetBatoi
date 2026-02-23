@@ -8,7 +8,7 @@ class ImportStoreRequest extends FormRequest
 {
     public function authorize()
     {
-        return true;
+        return userIsAllow(config('roles.rol.administrador'));
     }
 
     public function rules()

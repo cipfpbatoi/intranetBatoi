@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Instructor;
 
-use DB;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;

@@ -13,9 +13,20 @@ Objectiu: acabar la migració de validació a `FormRequest` i deixar controlador
 - [ ] 1.4 Tests de regressió dels fluxos migrats
 
 ### Sprint 2
-- [ ] 2.1 Revisar autorització (rols/polítiques) en fluxos crítics
-- [ ] 2.2 Cobrir `Application/*WorkflowService` amb tests unitaris
-- [ ] 2.3 Neteja final (imports, codi mort, signatures incoherents)
+- [x] 2.1 Revisar autorització (rols/polítiques) en fluxos crítics
+- [x] 2.2 Cobrir `Application/*WorkflowService` amb tests unitaris
+- [x] 2.3 Neteja final (imports, codi mort, signatures incoherents)
+- [x] 2.1.a Autorització explícita de mutacions en `EmpresaController` i `FctController` (rols de tutor/pràctiques/direcció)
+- [x] 2.1.b Autorització explícita de mutacions en `PanelColaboracionController` (rol tutor)
+- [x] 2.1.c Autorització explícita en fluxos d'importació (`ImportController` i `TeacherImportController`) + `FormRequest` d'importació
+- [x] 2.2.a Tests unitaris inicials de `ImportWorkflowService` (pipeline XML i assignació de tutors)
+- [x] 2.2.b Tests unitaris de `InstructorWorkflowService` (upsert/attach, detach/delete, última data)
+- [x] 2.2.c Tests unitaris de `FaltaItacaWorkflowService` (filtrat, esborrat d'informe, casos no trobats)
+- [x] 2.2.d Tests unitaris de `GrupoWorkflowService` (assignació de cicle i selecció d'alumnat)
+- [x] 2.2.e Tests unitaris de `PollWorkflowService` (prepare/save/myVotes i casos no trobats)
+- [x] 2.3.a Neteja d'imports no usats en `FctController`
+- [x] 2.3.b Coherència de signatures en importació: patró híbrid (`Request` + regles de `FormRequest`) i autorització compatible amb execució en cua (`RunImportJob`)
+- [x] 2.3.c Coherència de nomenclatura i imports: `sacaCampos` en `TeacherImportController` i `use Illuminate\Support\Facades\DB` en `InstructorWorkflowService`
 
 ---
 
