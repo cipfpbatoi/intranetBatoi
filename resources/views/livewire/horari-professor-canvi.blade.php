@@ -50,6 +50,18 @@
             @if(!$propuestaId || in_array($estado, ['Aceptado', 'Guardado'], true)) disabled @endif>
             Esborrar proposta
         </button>
+        @php
+            $puedeAceptar = $propuestaId && !in_array($estado, ['Aceptado', 'Guardado'], true);
+        @endphp
+        @if ($isDireccion && $puedeAceptar)
+            <a class="btn btn-primary" href="/direccion/horario/propuesta/{{ $dni }}/{{ $propuestaId }}/aceptar"
+                onclick="return confirm('Acceptar aquesta proposta?')">
+                Acceptar
+            </a>
+            <button class="btn btn-danger" type="button" onclick="return rebutjarProposta('{{ $dni }}', '{{ $propuestaId }}')">
+                Rebutjar
+            </button>
+        @endif
     </div>
 
     <div class="mb-3 no-print">
@@ -139,8 +151,7 @@
                             $isMoved = $item ? ($item['cell'] !== $item['orig']) : false;
                         @endphp
                         <td
-                            class="{{ $item ? ($item['tipo'] === 'ocupacio' ? 'warning' : 'active') : '' }} {{ $isSelected ? 'info' : '' }}"
-                            style="cursor: {{ $editable ? (($item && $item['is_guardia']) ? 'not-allowed' : 'pointer') : 'default' }}"
+                            class="{{ $item ? ($item['tipo'] === 'ocupacio' ? 'warning' : 'active') : '' }} {{ $isSelected ? 'info' : '' }} {{ $editable ? (($item && $item['is_guardia']) ? 'cursor-not-allowed' : 'cursor-pointer') : 'cursor-default' }}"
                             wire:click="cellClicked('{{ $cell }}')"
                             wire:key="cell-{{ $cell }}"
                             data-cell="{{ $cell }}"
@@ -176,6 +187,18 @@
 
         .movido {
             color: #b94a48;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .cursor-not-allowed {
+            cursor: not-allowed;
+        }
+
+        .cursor-default {
+            cursor: default;
         }
 
         @media print {
@@ -223,6 +246,14 @@
         }
     </style>
     <script>
+        function rebutjarProposta(dni, id) {
+            var motiu = prompt('Motiu del rebuig?');
+            if (!motiu) return false;
+            var url = '/direccion/horario/propuesta/' + dni + '/' + id + '/rebutjar?motiu=' + encodeURIComponent(motiu);
+            window.location.href = url;
+            return false;
+        }
+
         function horariDragStart(ev) {
             var cell = ev.currentTarget && ev.currentTarget.dataset ? ev.currentTarget.dataset.cell : null;
             if (!cell || ev.currentTarget.getAttribute('draggable') !== 'true') {
