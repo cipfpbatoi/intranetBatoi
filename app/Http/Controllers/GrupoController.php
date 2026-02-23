@@ -2,23 +2,18 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Grupo\GrupoWorkflowService;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Presentation\Crud\GrupoCrudSchema;
 
-use DB;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Alumno;
 use Intranet\Entities\AlumnoGrupo;
-use Intranet\Entities\Ciclo;
 use Intranet\Entities\Curso;
-use Intranet\Entities\Grupo;
 use Intranet\Http\Traits\Core\Imprimir;
-use Intranet\Jobs\SendEmail;
-use Intranet\Services\School\SecretariaService;
 use Jenssegers\Date\Date;
-use SebastianBergmann\Comparator\Exception;
 use Styde\Html\Facades\Alert;
 
 /**
@@ -27,6 +22,7 @@ use Styde\Html\Facades\Alert;
  */
 class GrupoController extends IntranetController
 {
+    private ?GrupoWorkflowService $grupoWorkflowService = null;
     private ?HorarioService $horarioService = null;
     private ?GrupoService $grupoService = null;
 
@@ -68,6 +64,15 @@ class GrupoController extends IntranetController
         }
 
         return $this->grupoService;
+    }
+
+    private function workflows(): GrupoWorkflowService
+    {
+        if ($this->grupoWorkflowService === null) {
+            $this->grupoWorkflowService = app(GrupoWorkflowService::class);
+        }
+
+        return $this->grupoWorkflowService;
     }
 
 
@@ -151,18 +156,7 @@ class GrupoController extends IntranetController
      */
     public function asigna()
     {
-        $todos = $this->grupos()->all();
-        foreach ($todos as $uno) {
-            if ($uno->ciclo == ''){
-                $ciclo = Ciclo::select('id')
-                        ->where('codigo', '=', substr($uno->codigo, 1, 4))
-                        ->first();
-                if ($ciclo) {
-                    $uno->idCiclo = $ciclo->id;
-                    $uno->save();
-                }
-            }
-        }
+        $this->workflows()->assignMissingCiclo();
         return back();
     }
 
@@ -202,22 +196,7 @@ class GrupoController extends IntranetController
 
     public function list(Request $request)
     {
-        // Cerca el grup i els alumnes associats
-        $ids = array( );
-        foreach ($request->toArray() as $nia => $value){
-             if ($value === 'on') {
-                $ids[] = $nia;
-            }
-        }
-        $alumnos =  Alumno::whereIn('nia',$ids)->get()->sortBy( 'nameFull');
-        $alumnes = hazArray($alumnos,'nameFull');
-
-        // Combina el nom del grup amb els noms dels alumnes
-        $nomsAlumnes = implode('; ', $alumnes);
-
-
-        // Retorna la llista d'alumnes separada per ;
-        return response($nomsAlumnes, 200)
+        return response($this->workflows()->selectedStudentsPlainText($request->toArray()), 200)
             ->header('Content-Type', 'text/plain');
     }
 
@@ -244,51 +223,35 @@ class GrupoController extends IntranetController
      */
     public function certificados($grupo)
     {
-        try {
-            $sService = new SecretariaService();
-        } catch (\Exception $e) {
-            echo 'No hi ha connexió amb el servidor de matrícules';
-            exit();
-        }
-        $grupo = $this->grupos()->find((string) $grupo);
-        if (!$grupo) {
+        $grupoModel = $this->grupos()->find((string) $grupo);
+        if (!$grupoModel) {
             Alert::danger('Grup no trobat');
             return back();
         }
-        $datos['ciclo'] = $grupo->Ciclo;
-        $remitente = ['email' => cargo('secretario')->email, 'nombre' => cargo('secretario')->FullName];
-        $count = 0;
 
-        foreach ($grupo->Alumnos as $alumno){
-            if ($alumno->fol == 1){
-
-                try {
-                    $id = $alumno->nia;
-                    if (file_exists(storage_path("tmp/fol_$id.pdf"))) {
-                        unlink(storage_path("tmp/fol_$id.pdf"));
-                    }
-                    self::hazPdf('pdf.alumnos.'.$grupo->Ciclo->normativa, [$alumno], cargaDatosCertificado($datos),
-                        'portrait')->save(storage_path("tmp/fol_$id.pdf"));
-                    $attach = ["tmp/fol_$id.pdf" => 'application/pdf'];
-                    $document = array();
-                    $document['title'] = 15;
-                    $document['dni'] = $alumno->dni;
-                    $document['alumne'] = trim($alumno->shortName);
-                    $document['route'] = "tmp/fol_$id.pdf";
-                    $document['name'] = "fol_$id.pdf";
-                    $document['size'] = filesize(storage_path("tmp/fol_$id.pdf"));
-                    $sService->uploadFile($document);
-                    dispatch(new SendEmail($alumno->email, $remitente, 'email.fol', $alumno, $attach));
-                    $count++;
-                } catch (\Exception $e){
-                    Alert::danger($e->getMessage());
+        try {
+            $result = $this->workflows()->sendFolCertificates(
+                $grupoModel,
+                function ($alumno, $datos, $tmpPath) use ($grupoModel): void {
+                    self::hazPdf(
+                        'pdf.alumnos.' . $grupoModel->Ciclo->normativa,
+                        [$alumno],
+                        cargaDatosCertificado($datos),
+                        'portrait'
+                    )->save($tmpPath);
                 }
-            }
+            );
+        } catch (\Exception) {
+            echo 'No hi ha connexió amb el servidor de matrícules';
+            exit();
         }
-        $grupo->fol = 2;
-        $grupo->save();
-        if ($count){
-            Alert::info("$count Correus enviats");
+
+        foreach ($result['errors'] as $error) {
+            Alert::danger($error);
+        }
+
+        if ($result['sent']) {
+            Alert::info("{$result['sent']} Correus enviats");
         } else {
             Alert::info("Cap Correu enviat");
         }
