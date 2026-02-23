@@ -9,6 +9,8 @@ use Intranet\Presentation\Crud\AlumnoFctCrudSchema;
 
 use DB;
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\AlumnoFctUpdateRequest;
+use Intranet\Http\Requests\FctConvalidacionStoreRequest;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;
@@ -290,7 +292,7 @@ class FctAlumnoController extends ModalController
         return redirect()->back();
     }
 
-    public function storeConvalidacion(Request $request)
+    public function storeConvalidacion(FctConvalidacionStoreRequest $request)
     {
         DB::transaction(function () use ($request) {
             $idAlumno = $request['idAlumno'];
@@ -300,7 +302,6 @@ class FctAlumnoController extends ModalController
             $elemento = $elementos->first() ?? null;
             if (!$elemento) {
                 $elemento = new FctConvalidacion();
-                $this->validateByModelRules($request, $elemento);
                 $elemento->fillAll($request);
             }
 
@@ -321,10 +322,8 @@ class FctAlumnoController extends ModalController
         return $this->redirect();
     }
 
-    public function update(Request $request, $id)
+    public function update(AlumnoFctUpdateRequest $request, $id)
     {
-        $elemento = $this->alumnoFcts()->findOrFail((int) $id);
-        $this->validateByModelRules($request, $elemento);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -333,14 +332,6 @@ class FctAlumnoController extends ModalController
     {
         $fct = $this->alumnoFcts()->findOrFail((int) $id);
         return redirect("/fct/$fct->idFct/show");
-    }
-
-    private function validateByModelRules(Request $request, $elemento): void
-    {
-        $rules = method_exists($elemento, 'getRules') ? $elemento->getRules() : [];
-        if (!empty($rules)) {
-            $this->validate($request, $rules);
-        }
     }
 
     public function pdf($id)
