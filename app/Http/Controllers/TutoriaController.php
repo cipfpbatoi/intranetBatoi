@@ -8,6 +8,7 @@ use Intranet\Http\Controllers\Core\IntranetController;
 use Response;
 use Intranet\Entities\Tutoria;
 use Intranet\Entities\TutoriaGrupo;
+use Intranet\Presentation\Crud\TutoriaCrudSchema;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Session;
 
@@ -17,7 +18,7 @@ class TutoriaController extends IntranetController
 
     protected $perfil = 'profesor';
     protected $model = 'Tutoria';
-    protected $gridFields = ['descripcion','tipos','hasta', 'Xobligatoria','Grupo','feedBack'];
+    protected $gridFields = TutoriaCrudSchema::GRID_FIELDS;
 
     public function __construct(?GrupoService $grupoService = null)
     {
