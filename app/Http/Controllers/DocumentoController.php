@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\AlumnoFct\AlumnoFctService;
+use Intranet\Application\Documento\DocumentoFormService;
 use Intranet\Application\Documento\DocumentoLifecycleService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
@@ -23,6 +24,7 @@ use Styde\Html\Facades\Alert;
 
 class DocumentoController extends IntranetController
 {
+    private ?DocumentoFormService $documentoFormService = null;
     private ?GrupoService $grupoService = null;
     private ?AlumnoFctService $alumnoFctService = null;
     private ?DocumentoLifecycleService $documentoLifecycleService = null;
@@ -69,6 +71,15 @@ class DocumentoController extends IntranetController
         return $this->documentoLifecycleService;
     }
 
+    private function forms(): DocumentoFormService
+    {
+        if ($this->documentoFormService === null) {
+            $this->documentoFormService = app(DocumentoFormService::class);
+        }
+
+        return $this->documentoFormService;
+    }
+
 
     protected function redirect()
     {
@@ -86,7 +97,7 @@ class DocumentoController extends IntranetController
     {
        
         if ($request->has('nota') && $this->validate($request, ['nota' => 'numeric|min:1|max:11'])) {
-            $this->saveNota($request->nota, $fct);
+            $this->forms()->updateNota($this->alumnoFcts(), (int) $fct, $request->nota);
             if ($request->nota < 5) {
                 return $this->redirect();
             }
@@ -110,19 +121,6 @@ class DocumentoController extends IntranetController
 
         return $this->redirect();
     }
-
-
-
-    private function saveNota($nota, $fct)
-    {
-        $fctAl = $this->alumnoFcts()->findOrFail((int) $fct);
-        $fctAl->calProyecto = $nota;
-        if ($fctAl->calificacion < 1) {
-            $fctAl->calificacion = 1;
-        }
-        $fctAl->save();
-    }
-
     protected function createWithDefaultValues($default=[])
     {
         return (new CreateOrUpdateDocumentAction())->build(
@@ -135,21 +133,9 @@ class DocumentoController extends IntranetController
         if ($fct = $this->alumnoFcts()->findOrFail((int) $idFct)) {
             $grupoTutor = $this->grupos()->firstByTutor(AuthUser()->dni);
             $ciclo = $grupoTutor?->Ciclo?->ciclo ?? '';
-
-            $proyecto = $fct->Alumno->Projecte ?? null;
-            $descripcion = $proyecto->titol ?? '';
-            $detalle = $proyecto->descripcio ?? '';
-            $elemento = (new CreateOrUpdateDocumentAction())->build([
-                'curso' => Curso(),
-                'propietario' => $fct->Alumno->FullName,
-                'supervisor' => AuthUser()->FullName,
-                'activo' => true,
-                'tipoDocumento' => 'Proyecto',
-                'idDocumento' => '',
-                'ciclo' => $ciclo,
-                'descripcion' => $descripcion,
-                'detalle' => $detalle,
-            ]);
+            $elemento = (new CreateOrUpdateDocumentAction())->build(
+                $this->forms()->projectDefaults($fct, $ciclo, AuthUser()->FullName)
+            );
             $formulario = new FormBuilder(
                 $elemento,
                 DocumentoCrudSchema::projectFormFields()
@@ -233,16 +219,7 @@ class DocumentoController extends IntranetController
             return back();
         }
         $elemento = (new CreateOrUpdateDocumentAction())->build([
-            'curso' => Curso(),
-            'propietario' => AuthUser()->FullName,
-            'supervisor' => AuthUser()->FullName,
-            'activo' => true,
-            'tipoDocumento' => 'FCT',
-            'idDocumento' => '',
-            'ciclo' => $grupo->Ciclo->ciclo,
-            'grupo' => $grupo->nombre,
-            'tags' => 'Fct,Entrevista,Alumnat,Instructor',
-            'instrucciones' => 'Pujar en un sols document comprimit: Entrevista Alumnat i Entrevista Instructor',
+            ...$this->forms()->qualitatDefaults($grupo, AuthUser()->FullName),
         ]);
         $formulario = new FormBuilder(
             $elemento,

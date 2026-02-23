@@ -2,13 +2,13 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Fct\FctCertificateService;
 use Intranet\Application\Fct\FctService;
 use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Presentation\Crud\FctCrudSchema;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Colaborador;
 use Intranet\Entities\Fct;
 use Intranet\Http\PrintResources\AVIIAResource;
@@ -27,6 +27,7 @@ use Styde\Html\Facades\Alert;
  */
 class FctController extends IntranetController
 {
+    private ?FctCertificateService $fctCertificateService = null;
     private ?FctService $fctService = null;
 
 
@@ -78,6 +79,15 @@ class FctController extends IntranetController
         return $this->fctService;
     }
 
+    private function certificates(): FctCertificateService
+    {
+        if ($this->fctCertificateService === null) {
+            $this->fctCertificateService = app(FctCertificateService::class);
+        }
+
+        return $this->fctCertificateService;
+    }
+
 
     public function edit($id=null)
     {
@@ -122,18 +132,7 @@ class FctController extends IntranetController
     public static function certificatColaboradores($id)
     {
         $fct = app(FctService::class)->findOrFail($id);
-        $secretario = cargo('secretario');
-        $director = cargo('director');
-        $dades = ['date' => FechaString(hoy(), 'ca'),
-            'fecha' => FechaString(hoy(), 'es'),
-            'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',
-            'secretario' => $secretario->FullName,
-            'centro' => config('contacto.nombre'),
-            'poblacion' => config('contacto.poblacion'),
-            'provincia' => config('contacto.provincia'),
-            'director' => $director->FullName,
-        ];
-        return app(PdfService::class)->hazPdf('pdf.fct.certificatColaborador', $fct, $dades)->stream();
+        return app(FctCertificateService::class)->streamColaboradorCertificate($fct);
     }
 
 
