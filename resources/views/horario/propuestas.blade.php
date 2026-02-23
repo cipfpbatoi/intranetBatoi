@@ -10,6 +10,10 @@
         <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Todos') btn-primary @endif" href="{{ route('horario.propuestas', ['estado' => 'Todos']) }}">Totes</a>
     </div>
 
+    @php
+        $isDireccion = authUser() && esRol(authUser()->rol, config('roles.rol.direccion'));
+    @endphp
+
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -28,7 +32,12 @@
                         {{ $proposta['profesor']->fullName ?? $proposta['dni'] }}
                         <div class="text-muted">{{ $proposta['dni'] }}</div>
                     </td>
-                    <td>{{ $proposta['estado'] }}</td>
+                    <td>
+                        {{ $proposta['estado'] }}
+                        @if (($proposta['estado'] ?? '') === 'Guardado')
+                            <div class="text-muted">Ja aplicat, no es pot acceptar</div>
+                        @endif
+                    </td>
                     <td>
                         {{ $proposta['fecha_inicio'] ?: '-' }}
                         <br>
@@ -45,7 +54,11 @@
                         <a class="btn btn-default" href="{{ route('horario.profesor.change', ['profesor' => $proposta['dni'], 'proposta' => $proposta['id']]) }}" title="Veure" aria-label="Veure">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                         </a>
-                        @if (($proposta['estado'] ?? 'Pendiente') === 'Pendiente')
+                        @php
+                            $estadoProposta = $proposta['estado'] ?? 'Pendiente';
+                            $puedeAceptar = !in_array($estadoProposta, ['Aceptado', 'Guardado'], true);
+                        @endphp
+                        @if ($isDireccion && $puedeAceptar)
                             <a class="btn btn-primary" href="{{ route('horario.propuesta.aceptar', ['dni' => $proposta['dni'], 'id' => $proposta['id']]) }}" onclick="return confirm('Acceptar aquesta proposta?')" title="Acceptar" aria-label="Acceptar">
                                 <i class="fa fa-check" aria-hidden="true"></i>
                             </a>
