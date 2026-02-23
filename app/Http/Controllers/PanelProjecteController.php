@@ -92,16 +92,15 @@ class PanelProjecteController extends ModalController
         if ($miGrupo === null) {
             return back()->withErrors('No tens grup assignat');
         }
-        $new = new Projecte();
         $request->request->add(['grup' => $miGrupo->codigo,'estat'=>1]);
-        $new->fillAll($request);
+        $this->persist($request);
 
         return back();
     }
 
     public function update(ProyectoRequest $request, $id)
     {
-        Projecte::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return back();
     }
 

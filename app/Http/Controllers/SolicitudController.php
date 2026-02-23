@@ -37,15 +37,14 @@ class SolicitudController extends ModalController
 
     public function store(SolicitudRequest $request)
     {
-        $new = new Solicitud();
-        $new->fillAll($request);
-        return $this->confirm($new->id);
+        $id = $this->persist($request);
+        return $this->confirm($id);
     }
 
 
     public function update(SolicitudRequest $request, $id)
     {
-        Solicitud::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

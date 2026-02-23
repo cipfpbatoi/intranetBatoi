@@ -39,16 +39,14 @@ class SettingController extends ModalController
 
     public function store(Request $request)
     {
-        $new = new Setting();
-        $new->fillAll($request);
-        $new->save();
+        $this->persist($request);
         Alert::info(system('php ./../artisan cache:clear'));
         return back();
     }
 
     public function update(Request $request, $id)
     {
-        Setting::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         Alert::info(system('php ./../artisan cache:clear'));
         return back();
     }

@@ -45,15 +45,13 @@ class IpGuardiaController extends ModalController
 
     public function store(Request $request)
     {
-        $new = new IpGuardia();
-        $new->fillAll($request);
-        $new->save();
+        $this->persist($request);
         return back();
     }
 
     public function update(Request $request, $id)
     {
-        IpGuardia::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return back();
     }
 
