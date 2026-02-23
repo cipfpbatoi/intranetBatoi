@@ -28,7 +28,7 @@ return new class extends Migration
             $table->dropColumn(['nia', 'colaboracion_id']);
 
             $table->unsignedInteger('alumno_fct_id');
-            $table->foreign('alumno_fct_id')->references('id')->on('alumno_fct')->onDelete('cascade');
+            $table->foreign('alumno_fct_id')->references('id')->on('alumno_fcts')->onDelete('cascade');
         });
     }
 

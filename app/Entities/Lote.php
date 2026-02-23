@@ -54,12 +54,7 @@ class Lote extends Model
             'id'
         );
     }
-    public function colaboraciones()
-    {
-        return $this->hasManyThrough(Colaboracion::class, Centro::class, 'idEmpresa', 'idCentro', 'id');
-    }
-
-
+     
     public function getOrigenAttribute()
     {
         return $this->procedencia?
@@ -69,16 +64,62 @@ class Lote extends Model
 
     public function getEstadoAttribute()
     {
-        if ($this->articuloLote()->count()) {
-            if ($this->materiales()->count()) {
-              if ($this->materiales()->where('espacio', 'INVENT')->count()) {
-                  return 2;
-              }
-              return 3;
-            }
+        if ($this->resolveArticuloLoteCount() === 0) {
+            return 0;
+        }
+
+        [$materialesTotal, $materialesInvent] = $this->resolveMaterialesStats();
+
+        if ($materialesTotal === 0) {
             return 1;
         }
-        return 0;
+
+        return $materialesInvent > 0 ? 2 : 3;
+    }
+
+    private function resolveArticuloLoteCount(): int
+    {
+        if (array_key_exists('articulo_lote_count', $this->attributes)) {
+            return (int) $this->attributes['articulo_lote_count'];
+        }
+
+        if ($this->relationLoaded('ArticuloLote')) {
+            return $this->getRelation('ArticuloLote')->count();
+        }
+
+        return $this->ArticuloLote()->count();
+    }
+
+    /**
+     * @return array{0:int,1:int}
+     */
+    private function resolveMaterialesStats(): array
+    {
+        if (array_key_exists('materiales_count', $this->attributes)
+            && array_key_exists('materiales_invent_count', $this->attributes)) {
+            return [
+                (int) $this->attributes['materiales_count'],
+                (int) $this->attributes['materiales_invent_count'],
+            ];
+        }
+
+        if ($this->relationLoaded('Materiales')) {
+            $materiales = $this->getRelation('Materiales');
+
+            return [
+                $materiales->count(),
+                $materiales->where('espacio', 'INVENT')->count(),
+            ];
+        }
+
+        $materialesQuery = $this->Materiales();
+        $total = (clone $materialesQuery)->count();
+        $inventTotal = (clone $materialesQuery)->where('espacio', 'INVENT')->count();
+
+        return [
+            (int) $total,
+            (int) $inventTotal,
+        ];
     }
 
     public function getEstatAttribute()

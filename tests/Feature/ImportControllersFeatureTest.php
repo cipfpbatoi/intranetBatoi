@@ -92,7 +92,7 @@ class ImportControllersFeatureTest extends TestCase
 XML;
 
         $file = UploadedFile::fake()->createWithContent('import.xml', $xml);
-        $request = Request::create('/import', 'POST', ['primera' => 'on'], [], ['fichero' => $file]);
+        $request = Request::create('/import', 'POST', ['primera' => 'on', 'mode' => 'create_only'], [], ['fichero' => $file]);
 
         $view = $controller->store($request);
 
@@ -117,7 +117,7 @@ XML;
 XML;
 
         $file = UploadedFile::fake()->createWithContent('import.xml', $xml);
-        $request = Request::create('/import', 'POST', ['primera' => 'off'], [], ['fichero' => $file]);
+        $request = Request::create('/import', 'POST', ['primera' => 'off', 'mode' => 'create_only'], [], ['fichero' => $file]);
 
         $view = $controller->store($request);
 
@@ -163,7 +163,7 @@ XML;
 XML;
 
         $file = UploadedFile::fake()->createWithContent('teacher_import.xml', $xml);
-        $request = Request::create('/teacherImport', 'POST', ['horari' => false], [], ['fichero' => $file]);
+        $request = Request::create('/teacherImport', 'POST', ['horari' => false, 'mode' => 'create_only'], [], ['fichero' => $file]);
 
         $view = $controller->store($request);
 

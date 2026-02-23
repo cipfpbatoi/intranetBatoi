@@ -7,11 +7,9 @@ use Intranet\Http\Controllers\Core\ModalController;
 
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\Documento;
-use Intranet\Entities\Modulo_grupo;
-use Intranet\Entities\Programacion;
-use Intranet\Entities\Reunion;
 use Intranet\Entities\Task;
+use Intranet\Presentation\Crud\TaskCrudSchema;
+use Intranet\Services\School\TaskValidationService;
 
 use Intranet\Http\Requests\TaskRequest;
 
@@ -23,10 +21,8 @@ use Intranet\Http\Requests\TaskRequest;
 class TaskController extends ModalController
 {
     private $tarea;
-    const ACTA_DELEGADO = 5;
-    const ACTA_AVAL = 7;
-    const ACTA_FSE = 9;
     const ADMINISTRADOR = 'roles.rol.administrador';
+    private ?TaskValidationService $taskValidationService = null;
 
     /**
      * @var string
@@ -35,18 +31,24 @@ class TaskController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = [ 'id','descripcion','vencimiento','destino','activa','accio'];
+    protected $gridFields = TaskCrudSchema::GRID_FIELDS;
 
-    protected $formFields= [
-        'descripcion' => ['type' => 'text'],
-        'vencimiento' => ['type' => 'date'],
-        'fichero' => ['type' => 'file'],
-        'enlace' => ['type' => 'text'],
-        'destinatario' => ['type' => 'select'],
-        'informativa' => ['type' => 'checkbox'],
-        'activa' => ['type' => 'checkbox'],
-        'action' => ['type' => 'select'],
-    ];
+    protected $formFields = TaskCrudSchema::FORM_FIELDS;
+
+    public function __construct(?TaskValidationService $taskValidationService = null)
+    {
+        parent::__construct();
+        $this->taskValidationService = $taskValidationService;
+    }
+
+    private function validationService(): TaskValidationService
+    {
+        if ($this->taskValidationService === null) {
+            $this->taskValidationService = app(TaskValidationService::class);
+        }
+
+        return $this->taskValidationService;
+    }
 
     protected function iniBotones()
     {
@@ -78,75 +80,10 @@ class TaskController extends ModalController
         if ($taskTeacher) {
             $this->tarea->Profesores()->detach(AuthUser()->dni);
         } else {
-            $funcion = $this->tarea->action;
-            if ($funcion) {
-                $valid = $this->$funcion();
-            } else {
-                $valid = 0;
-            }
+            $valid = $this->validationService()->resolve($this->tarea->action, AuthUser()->dni);
             $this->tarea->Profesores()->attach(AuthUser()->dni, ['check'=>1,'valid'=>$valid]);
         }
        return back();
-    }
-
-    private function AvalPrg()
-    {
-        foreach (Programacion::misProgramaciones()->get() as $programacion) {
-            if (is_null($programacion->propuestas) || $programacion->propuestas == '') {
-                return 0;
-            }
-        }
-        return 1;
-    }
-
-    private function EntrPrg()
-    {
-        foreach (Programacion::misProgramaciones()->get() as $programacion) {
-            if ($programacion->estado == 0) {
-                return 0;
-            }
-        }
-        return 1;
-    }
-
-    private function SegAval()
-    {
-        foreach (Modulo_grupo::misModulos() as $modulo){
-            if (!$modulo->resultados->where('evaluacion','<=',evaluacion())){
-                return 0;
-            }
-        }
-        return 1;
-    }
-
-    private function ActAval()
-    {
-        $howManyAre = Reunion::Convocante()->Tipo(self::ACTA_AVAL)->Archivada()->count();
-        if ($howManyAre >= evaluacion()) {
-            return 1;
-        } else
-        {
-            return 0;
-        }
-    }
-
-    private function ActaDel()
-    {
-        return Reunion::Convocante()->Tipo(self::ACTA_DELEGADO)->Archivada()->count();
-    }
-
-    private function ActaFSE()
-    {
-        return Reunion::Convocante()->Tipo(self::ACTA_FSE)->Archivada()->count();
-    }
-
-    private function InfDept()
-    {
-        if (Documento::where('propietario', AuthUser()->FullName)->where('tipoDocumento', 'Acta')
-                ->where('curso', Curso())->where('descripcion', 'Informe Trimestral')->count()>=evaluacion()) {
-            return 1;
-        }
-        return 0;
     }
 
 }

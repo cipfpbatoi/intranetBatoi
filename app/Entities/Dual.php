@@ -4,6 +4,12 @@ namespace Intranet\Entities;
 
 use Intranet\Application\Grupo\GrupoService;
 
+/**
+ * @deprecated Model legacy de FP Dual.
+ *
+ * Mantingut temporalment per compatibilitat amb fluxos antics.
+ * No afegir noves funcionalitats ni nous punts d'entrada.
+ */
 class Dual extends Fct
 {
     

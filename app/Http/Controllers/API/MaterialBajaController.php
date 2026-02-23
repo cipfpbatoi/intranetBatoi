@@ -7,11 +7,11 @@ use Intranet\Entities\MaterialBaja;
 use Intranet\Http\Resources\MaterialBajaResource;
 
 
-class MaterialBajaController extends ApiBaseController
+class MaterialBajaController extends ApiResourceController
 {
     protected $model = 'MaterialBaja';
 
-    public function show($id, $send = true)
+    public function show($id)
     {
         $registro = MaterialBaja::findOrFail($id);
         return $this->sendResponse(new MaterialBajaResource($registro), 'OK');

@@ -10,13 +10,13 @@
             <li>
                 <a href="javascript:;">
                     <i class="fa fa-clock-o pull-right"></i>
-                    {!! trans("messages.generic.entrada") !!} -> {!! Entrada() !!}
+                    {!! trans("messages.generic.entrada") !!} -> {!! $entrada !!}
                 </a>
             </li>
             <li>
                 <a href="javascript:;">
                     <i class="fa fa-clock-o pull-right"></i>
-                    {!! trans("messages.generic.salida") !!} -> {!! Salida() !!}
+                    {!! trans("messages.generic.salida") !!} -> {!! $salida !!}
                 </a>
             </li>
 

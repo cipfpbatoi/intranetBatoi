@@ -14,7 +14,7 @@
                 @unless(isset($user->nia))
                     <li>
                         <a href="{{ url('/ficha') }}">
-                            @if (estaDentro())
+                            @if ($inside)
                                 <img src="{{ asset('img/clock-icon.png') }}" alt="reloj" class="iconomediano" id="imgFitxar">
                             @else
                                 <img src="{{ asset('img/clock-icon-rojo.png') }}" alt="reloj" class="iconomediano" id="imgFitxar">

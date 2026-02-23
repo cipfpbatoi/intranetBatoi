@@ -64,6 +64,9 @@ class NotificationController extends IntranetController
     public function read($id)
     {
         $notification = Notification::find($id);
+        if (!$notification) {
+            return back();
+        }
         $notification->read_at = new Date('now');
         $notification->save();
         return back();

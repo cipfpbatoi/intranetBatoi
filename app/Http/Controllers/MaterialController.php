@@ -7,6 +7,7 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\Material;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\TipoIncidencia;
+use Intranet\Presentation\Crud\MaterialCrudSchema;
 
 /**
  * Class MaterialController
@@ -30,7 +31,8 @@ class MaterialController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'descripcion', 'Estado', 'espacio', 'unidades'];
+    protected $gridFields = MaterialCrudSchema::GRID_FIELDS;
+    protected $formFields = MaterialCrudSchema::FORM_FIELDS;
     /**
      * @var array
      */
@@ -66,7 +68,7 @@ class MaterialController extends IntranetController
      */
     public function copy($id)
     {
-        $elemento = Material::find($id);
+        $elemento = Material::findOrFail($id);
         $copia = new Material;
         $copia->fill($elemento->toArray());
         $copia->save();
@@ -79,8 +81,8 @@ class MaterialController extends IntranetController
      */
     public function incidencia($id)
     {
-        $tipo = TipoIncidencia::where('tipus',1)->first();
-        $elemento = Material::find($id);
+        $elemento = Material::findOrFail($id);
+        $tipo = TipoIncidencia::where('tipus',1)->firstOrFail();
         $incidencia = new Incidencia(['tipo'=> $tipo->id,
             'material' => $id,
             'estado' => 0,

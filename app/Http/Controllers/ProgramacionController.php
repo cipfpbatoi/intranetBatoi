@@ -12,6 +12,7 @@ use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Services\General\StateService;
+use Intranet\Services\School\ModuloGrupoService;
 use Styde\Html\Facades\Alert;
 
 class ProgramacionController extends IntranetController
@@ -65,10 +66,10 @@ class ProgramacionController extends IntranetController
     public function avisaFaltaEntrega($id)
     {
         $modulo = Modulo_grupo::find($id);
-        foreach ($modulo->profesores() as $profesor){
+        foreach (app(ModuloGrupoService::class)->profesorIds($modulo) as $profesorId) {
             $texto = "Et falta per omplir el seguiment de l'avaluacio '" .
                 "' del mòdul '$modulo->Xmodulo' del Grup '$modulo->Xgrupo'";
-            avisa($profesor['idProfesor'], $texto);
+            avisa($profesorId, $texto);
         }
         Alert::info('Aviss enviat');
         return back();

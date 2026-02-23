@@ -9,7 +9,7 @@ use Intranet\Http\Resources\AlumnoFctControlResource;
 use Intranet\Http\Resources\AlumnoFctResource;
 
 
-class AlumnoFctController extends ApiBaseController
+class AlumnoFctController extends ApiResourceController
 {
     private ?GrupoService $grupoService = null;
     private ?AlumnoFctService $alumnoFctService = null;
@@ -71,7 +71,7 @@ class AlumnoFctController extends ApiBaseController
         return $this->sendResponse(['updated' => true], 'OK');
     }
 
-    public function show($id, $send=true)
+    public function show($id)
     {
         $registro = $this->alumnoFcts()->findOrFail((int) $id);
         return $this->sendResponse(new AlumnoFctResource($registro), 'OK');

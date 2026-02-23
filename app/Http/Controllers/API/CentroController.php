@@ -4,12 +4,11 @@ namespace Intranet\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use DB;
 
-class CentroController extends ApiBaseController
+class CentroController extends ApiResourceController
 {
 
     protected $model = 'Centro';

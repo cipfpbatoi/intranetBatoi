@@ -46,7 +46,7 @@ class FicharController extends IntranetController
     {
         $fitxatgeService->fitxar(); // usa l’usuari autenticat per defecte
 
-        if (!estaDentro()) {
+        if (!$fitxatgeService->isInside(null, true)) {
             return redirect('/logout');
         }
 
@@ -101,15 +101,12 @@ class FicharController extends IntranetController
 
     public function controlDia()
     {
-        $horarios = $this->loadHoraries(
-            $profes=$this->profesores()->plantillaOrderedByDepartamento());
-        return view('fichar.control-dia', compact('profes', 'horarios'));
+        return view('fichar.control-dia');
     }
 
     private function loadHoraries($profesores){
         $horarios = array();
         foreach ($profesores as $profesor) {
-            $profesor->departamento = $profesor->Departamento ?  $profesor->Departamento->depcurt : '';
             $horarios[$profesor->dni] = $this->loadHorary($profesor);
 
         }

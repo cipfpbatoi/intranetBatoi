@@ -3,11 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Poll\Vote;
-use Jenssegers\Date\Date;
-use Intranet\Events\ActivityReport;
-use Intranet\Events\FctCreated;
-use Illuminate\Support\Arr;
 
 
 class FctDay extends Model
@@ -31,16 +26,15 @@ class FctDay extends Model
         'hores_realitzades' => 'float',
     ];
 
-    /**
-     * Relació amb AlumnoFct (molts a un)
-     */
-    public function alumnoFct()
+    public function Colaboracion()
     {
-        return $this->belongsTo(AlumnoFct::class, 'alumno_fct_id');
+        return $this->belongsTo(Colaboracion::class, 'colaboracion_id', 'id');
     }
+
+    
     public function getHorariAttribute()
     {
-        return $this->alumnoFct->Fct->Colaboracion->Centro->horarios ?? null;
+        return $this->Colaboracion?->Centro?->horarios ?? null;
     }
 
     /**

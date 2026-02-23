@@ -11,6 +11,7 @@ use Intranet\Entities\Solicitud;
 use Intranet\Http\Requests\SolicitudRequest;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Notifications\ConfirmAndSend;
+use Intranet\Presentation\Crud\SolicitudCrudSchema;
 
 
 /**
@@ -25,7 +26,7 @@ class SolicitudController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nomAlum', 'fecha', 'situacion'];
+    protected $gridFields = SolicitudCrudSchema::GRID_FIELDS;
     /**
      * @var string
      */

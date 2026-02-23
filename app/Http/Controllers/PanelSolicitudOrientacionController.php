@@ -7,6 +7,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Solicitud;
+use Intranet\Presentation\Crud\SolicitudCrudSchema;
 
 
 /**
@@ -20,7 +21,7 @@ class PanelSolicitudOrientacionController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nomAlum', 'fecha', 'motiu','situacion'];
+    protected $gridFields = SolicitudCrudSchema::ORIENTACION_GRID_FIELDS;
     /**
      * @var string
      */

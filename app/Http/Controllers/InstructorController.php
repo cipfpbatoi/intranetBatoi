@@ -12,6 +12,7 @@ use Intranet\Entities\Centro;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Instructor;
 use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Presentation\Crud\InstructorCrudSchema;
 use Jenssegers\Date\Date;
 use Illuminate\Support\Collection;
 use Response;
@@ -40,7 +41,8 @@ class InstructorController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['dni', 'nombre','departamento','Nfcts','Xcentros','email','telefono'];
+    protected $gridFields = InstructorCrudSchema::GRID_FIELDS;
+    protected $formFields = InstructorCrudSchema::FORM_FIELDS;
     /**
      * @var bool
      */

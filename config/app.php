@@ -163,6 +163,7 @@ return [
          * Application Service Providers...
          */
         Intranet\Providers\AppServiceProvider::class,
+        Intranet\Providers\ViewComposerServiceProvider::class,
         Intranet\Providers\AuthServiceProvider::class,
         Intranet\Providers\EventServiceProvider::class,
         Intranet\Providers\RouteServiceProvider::class,

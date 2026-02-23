@@ -125,6 +125,7 @@ class EloquentProfesorRepository implements ProfesorRepositoryInterface
     public function plantillaOrderedByDepartamento(): EloquentCollection
     {
         return Profesor::Plantilla()
+            ->with('Departamento')
             ->orderBy('departamento')
             ->orderBy('apellido1')
             ->orderBy('apellido2')

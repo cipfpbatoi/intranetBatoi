@@ -3,11 +3,10 @@
 namespace Intranet\Http\Controllers\API;
 
 use Intranet\Application\Profesor\ProfesorService;
-use Intranet\Entities\Falta_profesor;
 use Illuminate\Http\Request;
 use Intranet\Services\HR\FitxatgeService;
 
-class FicharController extends ApiBaseController
+class FicharController extends ApiResourceController
 {
 
     protected $model = 'Falta_profesor';
@@ -43,10 +42,11 @@ class FicharController extends ApiBaseController
 
     public function entrefechas(Request $datos)
     {
-        $registros = Falta_profesor::where('dia', '>=', $datos->desde)
-                ->where('dia', '<=', $datos->hasta)
-                ->where('idProfesor', '=', $datos->profesor)
-                ->get();
+        $registros = app(FitxatgeService::class)->registrosEntreFechas(
+            (string) $datos->profesor,
+            (string) $datos->desde,
+            (string) $datos->hasta
+        );
         foreach ($registros as $registro) {
             if ($registro->salida != null) {
                 if (isset($dias[$registro->dia])) {

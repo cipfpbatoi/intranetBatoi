@@ -10,6 +10,7 @@ use Jenssegers\Date\Date;
 use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\ReunionCreated;
+use Intranet\Presentation\Crud\ReunionCrudSchema;
 
 
 class Reunion extends Model
@@ -30,25 +31,8 @@ class Reunion extends Model
         'idEspacio',
         'fichero'
     ];
-    protected $rules = [
-        'tipo' => 'required',
-        'curso' => 'required',
-        'fecha' => 'required|date',
-        'descripcion' => 'required|between:0,120',
-        'idProfesor' => 'required',
-        'idEspacio' => 'required',
-    ];
-    protected $inputTypes = [
-        'idProfesor' => ['type' => 'hidden'],
-        'numero' => ['type' => 'select'],
-        'tipo' => ['type' => 'select'],
-        'grupo' => ['type' => 'select'],
-        'curso' => ['disabled' => 'disabled'],
-        'fecha' => ['type' => 'datetime'],
-        'objetivos' => ['type' => 'textarea'],
-        'idEspacio' => ['type' => 'select'],
-        'fichero' => ['type' => 'file'],
-    ];
+    protected $rules = ReunionCrudSchema::RULES;
+    protected $inputTypes = ReunionCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'deleting' => PreventAction::class,
         'updating' => PreventAction::class,
@@ -95,18 +79,23 @@ class Reunion extends Model
 
     public function scopeMisReuniones($query)
     {
-        $reuniones = Asistencia::select('idReunion')
-                ->where('idProfesor', '=', authUser()->dni)
-                ->orWhere('idProfesor', '=', authUser()->sustituye_a)
-                ->get()
-                ->toarray();
+        $reuniones = Asistencia::query()
+                ->whereIn('idProfesor', array_filter([authUser()->dni, authUser()->sustituye_a]))
+                ->pluck('idReunion')
+                ->all();
         return $query->whereIn('id', $reuniones)->orWhere('idProfesor', authUser()->dni);
     }
     public function scopeConvocante($query, $dni=null)
     {
         $dni = $dni??authUser()->dni;
-        $sustituye = Profesor::find($dni)->sustituye_a??null;
-        return $query->where('idProfesor', $dni)->orWhere('idProfesor', $sustituye);
+        $sustituye = Profesor::query()->find($dni)?->sustituye_a;
+
+        return $query->where(function ($innerQuery) use ($dni, $sustituye) {
+            $innerQuery->where('idProfesor', $dni);
+            if (!empty($sustituye)) {
+                $innerQuery->orWhere('idProfesor', $sustituye);
+            }
+        });
     }
     public function scopeTipo($query, $tipo)
     {
@@ -155,7 +144,7 @@ class Reunion extends Model
 
     public function getDepartamentoAttribute()
     {
-        return $this->Departament->literal;
+        return $this->Departament->literal ?? '';
     }
     public function getAvaluacioAttribute()
     {
@@ -201,10 +190,13 @@ class Reunion extends Model
     public function getXgrupoAttribute()
     {
         if ($this->grupo) {
-            return ($this->Grupos->literal);
+            return $this->Grupos->literal ?? '';
         }
         $colectivo =$this->Tipos()->colectivo;
-        $profesor = Profesor::where('dni', '=', $this->idProfesor)->get()->first();
+        $profesor = Profesor::query()->find($this->idProfesor);
+        if (!$profesor) {
+            return '';
+        }
         $grupo = '';
         switch ($colectivo) {
             case 'Profesor':
@@ -214,7 +206,7 @@ class Reunion extends Model
                 $grupo='COCOPE';
                 break;
             case 'Departamento':
-                $grupo = Departamento::where('id', '=', $profesor->departamento)->get()->first()->cliteral;
+                $grupo = Departamento::query()->where('id', $profesor->departamento)->value('cliteral') ?? '';
                 break;
             case 'Grupo':
                 $grupo = app(GrupoService::class)->largestByTutor($profesor->dni)?->nombre ?? '';
@@ -262,7 +254,7 @@ class Reunion extends Model
     }
     public function getIsSemiAttribute()
     {
-        return $this->GrupoClase->isSemi;
+        return (bool) ($this->GrupoClase->isSemi ?? false);
     }
 
     public function scopeNext($query)

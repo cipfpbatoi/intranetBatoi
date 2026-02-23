@@ -6,7 +6,7 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\Actividad;
 
 
-class ActividadController extends ApiBaseController
+class ActividadController extends ApiResourceController
 {
 
     protected $model = 'Actividad';

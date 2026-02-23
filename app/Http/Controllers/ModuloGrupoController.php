@@ -4,11 +4,9 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\IntranetController;
 
-use Illuminate\Support\Facades\Http;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\UI\Botones\BotonBasico;
-use Intranet\Entities\Modulo_grupo;
 use Intranet\Services\Auth\JWTTokenService;
+use Intranet\Services\School\ModuloGrupoService;
 
 /**
  * Class Modulo_cicloController
@@ -50,7 +48,7 @@ class ModuloGrupoController extends IntranetController
 
     protected function search()
     {
-        return Modulo_grupo::MisModulos();
+        return app(ModuloGrupoService::class)->misModulos(AuthUser()->dni);
     }
 
     protected function link($id)

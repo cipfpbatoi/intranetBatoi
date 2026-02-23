@@ -25,6 +25,16 @@ class ComisionService
         return $this->comisionRepository->pendingAuthorization();
     }
 
+    public function find(int $id): ?Comision
+    {
+        return $this->comisionRepository->find($id);
+    }
+
+    public function findOrFail(int $id): Comision
+    {
+        return $this->comisionRepository->findOrFail($id);
+    }
+
     /**
      * @return EloquentCollection<int, Comision>
      */

@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers\API;
 
 use Intranet\Application\Profesor\ProfesorService;
 
-class ProfesorController extends ApiBaseController
+class ProfesorController extends ApiResourceController
 {
 
     protected $model = 'Profesor';

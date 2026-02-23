@@ -6,12 +6,11 @@ use Illuminate\Http\Request;
 use Intranet\Entities\Lote;
 use Intranet\Entities\Material;
 use Intranet\Http\Controllers\Controller;
-use Intranet\Http\Controllers\API\ApiBaseController;
 use Intranet\Http\Resources\LoteResource;
 use Intranet\Http\Resources\ArticuloLoteResource;
 
 
-class LoteController extends ApiBaseController
+class LoteController extends ApiResourceController
 {
 
     protected $model = 'Lote';
@@ -28,18 +27,36 @@ class LoteController extends ApiBaseController
     }
 
     function getArticulos($lote){
-        $lote = Lote::find($lote);
+        $loteId = $lote;
+        $lote = Lote::find($loteId);
+
+        if (!$lote) {
+            return $this->sendNotFound("Not found: Lote #{$loteId}");
+        }
+
         return response()->json(['data' => ArticuloLoteResource::collection($lote->ArticuloLote),'lote'=> $lote->registre]);
     }
 
 
     function putArticulos(Request $request,$lote)
     {
-        $lote = Lote::find($lote);
+        $loteId = $lote;
+        $lote = Lote::find($loteId);
+
+        if (!$lote) {
+            return $this->sendNotFound("Not found: Lote #{$loteId}");
+        }
+
         if ($request->inventariar){
             $texto = "Tens material pendent d'inventariar:";
             foreach ($lote->ArticuloLote as $articulo){
-                for ($i=0;$i<$articulo->unidades;$i++){
+                $existingInventUnits = Material::where('articulo_lote_id', $articulo->id)
+                    ->where('espacio', 'INVENT')
+                    ->count();
+
+                $pendingUnits = max(0, (int) $articulo->unidades - $existingInventUnits);
+
+                for ($i=0; $i < $pendingUnits; $i++){
                     $material = new Material(
                         [   'descripcion'=>$articulo->descripcion,
                             'marca' => $articulo->marca??null,

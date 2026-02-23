@@ -9,7 +9,7 @@ use Intranet\Entities\Activity;
 use Intranet\Entities\Fct;
 use Intranet\Http\Resources\AlumnoFctControlResource;
 
-class FctController extends ApiBaseController
+class FctController extends ApiResourceController
 {
         private ?ProfesorService $profesorService = null;
 

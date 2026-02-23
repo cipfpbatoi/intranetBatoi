@@ -14,9 +14,11 @@ class MaterialResource extends JsonResource
      */
     public function toArray($request)
     {
+        $articulo = $this->LoteArticulo?->Articulo?->descripcion ?? '';
+
         return [
             'id' => $this->id,
-            'articulo' => $this->LoteArticulo->Articulo->descripcion,
+            'articulo' => $articulo,
             'descripcion' => $this->descripcion($this->descripcion, $this->modelo, $this->marca),
             'estado' => config('auxiliares.estadoMaterial')[$this->estado],
             'espacio' => $this->Espai,
@@ -35,5 +37,4 @@ class MaterialResource extends JsonResource
         return $descripcion;
     }
 }
-
 

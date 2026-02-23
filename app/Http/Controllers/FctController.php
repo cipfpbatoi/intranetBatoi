@@ -2,12 +2,11 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Fct\FctService;
 use Intranet\Http\Controllers\Core\IntranetController;
 use Intranet\Presentation\Crud\FctCrudSchema;
 
-use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\Colaborador;
@@ -28,6 +27,7 @@ use Styde\Html\Facades\Alert;
  */
 class FctController extends IntranetController
 {
+    private ?FctService $fctService = null;
 
 
     /**
@@ -63,11 +63,25 @@ class FctController extends IntranetController
 
     use Imprimir;
 
+    public function __construct(?FctService $fctService = null)
+    {
+        parent::__construct();
+        $this->fctService = $fctService;
+    }
+
+    private function fcts(): FctService
+    {
+        if ($this->fctService === null) {
+            $this->fctService = app(FctService::class);
+        }
+
+        return $this->fctService;
+    }
 
 
     public function edit($id=null)
     {
-        $formulario = new FormBuilder(Fct::findOrFail($id), ['idInstructor' => ['type'=>'select']]);
+        $formulario = new FormBuilder($this->fcts()->findOrFail($id), ['idInstructor' => ['type'=>'select']]);
         $modelo = $this->model;
         return view($this->chooseView('edit'), compact('formulario', 'modelo'));
     }
@@ -79,16 +93,14 @@ class FctController extends IntranetController
      */
     public function update(Request $request, $id)
     {
-        $fct = Fct::findOrFail($id);
-        $fct->idInstructor = $request->idInstructor;
-        $fct->save();
+        $this->fcts()->setInstructor($id, (string) $request->idInstructor);
         return $this->redirect();
     }
 
 
     public function certificat($id)
     {
-        $fct = Fct::findOrFail($id);
+        $fct = $this->fcts()->findOrFail($id);
         /*if ($fct->asociacion == 4){
             $nameFile = storage_path("tmp/Dual_AVII_{$fct->id}.zip");
             if (file_exists($nameFile)) {
@@ -103,13 +115,13 @@ class FctController extends IntranetController
         }*/
 
         return response()->file(FDFPrepareService::exec(
-            new CertificatInstructorResource(Fct::findOrFail($id))));
+            new CertificatInstructorResource($this->fcts()->findOrFail($id))));
 
     }
 
     public static function certificatColaboradores($id)
     {
-        $fct = Fct::findOrFail($id);
+        $fct = app(FctService::class)->findOrFail($id);
         $secretario = cargo('secretario');
         $director = cargo('director');
         $dades = ['date' => FechaString(hoy(), 'ca'),
@@ -134,35 +146,23 @@ class FctController extends IntranetController
      */
     public function store(Request $request)
     {
-
-        DB::transaction(function () use ($request) {
-            $idAlumno = $request['idAlumno'];
-            $fct = Fct::where('idColaboracion', $request->idColaboracion)
-                    ->where('asociacion', $request->asociacion)
-                    ->where('idInstructor', $request->idInstructor)
-                    ->first();
+        try {
+            $fct = $this->fcts()->findBySignature(
+                (string) $request->idColaboracion,
+                (string) $request->asociacion,
+                (string) $request->idInstructor
+            );
 
             if (!$fct) {
-                $fct = new Fct();
-                $this->validateAll($request, $fct);
-                $fct->fillAll($request);
-            }
-            try {
-                $fct->Alumnos()->attach(
-                    $idAlumno,
-                    [
-                        'desde'=> FechaInglesa($request->desde),
-                        'hasta'=>FechaInglesa($request->hasta),
-                        'horas'=>$request->horas,
-                        'autorizacion'=>$request->autorizacion??0
-                    ]
-                );
-            } catch (\Exception $e) {
-               Alert::warning("L'alumne $idAlumno ja té una Fct oberta amb eixa empresa ");
+                $model = new Fct();
+                $this->validateAll($request, $model);
+                $fct = $this->fcts()->createFromRequest($request);
             }
 
-            return $fct;
-        });
+            $this->fcts()->attachAlumnoFromStoreRequest($fct, $request);
+        } catch (\Exception $e) {
+            Alert::warning("L'alumne {$request['idAlumno']} ja té una Fct oberta amb eixa empresa ");
+        }
         
         return $this->redirect();
     }
@@ -175,7 +175,7 @@ class FctController extends IntranetController
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 1;
         Session::put('pestana', 1);
-        $fct = Fct::findOrFail($id);
+        $fct = $this->fcts()->findOrFail($id);
         $instructores = $fct->Colaboradores->pluck('dni');
 
         return view('fct.show', compact('fct', 'activa', 'instructores'));
@@ -191,8 +191,8 @@ class FctController extends IntranetController
     public function destroy($id)
     {
         if (Session::get('pestana')) {
-            $empresa = Fct::find($id)->Colaboracion->Centro->idEmpresa;
-            parent::destroy($id);
+            $empresa = $this->fcts()->empresaIdByFct($id);
+            $this->fcts()->deleteFct($id);
             Session::put('pestana', 3);
             return redirect()->action('EmpresaController@show', ['empresa' => $empresa]);
         }
@@ -207,20 +207,7 @@ class FctController extends IntranetController
      */
     public function nouAlumno($idFct, Request $request)
     {
-        
-        $fct = Fct::find($idFct);
-        $fct->Alumnos()->attach(
-            $request->idAlumno,
-            [
-                'calificacion'=>0,
-                'calProyecto'=>0,
-                'actas'=>0,
-                'insercion'=>0,
-                'desde'=> FechaInglesa($request->desde),
-                'hasta'=> FechaInglesa($request->hasta),
-                'horas'=>$request->horas
-            ]
-        );
+        $this->fcts()->attachAlumnoSimple($idFct, $request);
         
         return back();
     }
@@ -253,8 +240,7 @@ class FctController extends IntranetController
             'name'=>$request->name,
             'horas'=> $request->horas
         ]);
-       $fct = Fct::find($idFct);
-       $fct->Colaboradores()->save($colaborador);
+       $this->fcts()->addColaborador($idFct, $colaborador);
        Session::put('pestana', 5);
        return back();
     }
@@ -266,7 +252,7 @@ class FctController extends IntranetController
      */
     public function deleteInstructor($idFct, $idInstructor)
     {
-       Colaborador::where('idFct', $idFct)->where('idInstructor', $idInstructor)->delete();
+       $this->fcts()->deleteColaborador($idFct, $idInstructor);
        Session::put('pestana', 5);
        return back();
     }
@@ -278,8 +264,7 @@ class FctController extends IntranetController
      */
     public function alumnoDelete($idFct, $idAlumno)
     {
-       $fct = Fct::find($idFct);
-       $fct->Alumnos()->detach($idAlumno);
+       $this->fcts()->detachAlumno($idFct, $idAlumno);
        return back();
     }
 
@@ -290,29 +275,13 @@ class FctController extends IntranetController
      */
     public function modificaHoras($idFct, Request $request)
     {
-        $fct = Fct::find($idFct);
-        foreach ($request->except('_token') as $dni => $horas) {
-            $fct->Colaboradores()->where('idInstructor', $dni)->update(['horas'=>$horas]);
-        }
+        $this->fcts()->updateColaboradorHoras($idFct, $request->except('_token'));
         return back();
     }
 
     public function cotutor(Request $request, $idFct)
     {
-        DB::transaction(function () use ($request, $idFct){
-            // Desactiva les restriccions de clau forana
-            Schema::disableForeignKeyConstraints();
-
-            // Realitza les operacions de guardat aquí
-            $fct = Fct::find($idFct);
-            if ($fct) {
-                $fct->cotutor = $request->cotutor??null;
-                $fct->save();
-            }
-
-            // Reactiva les restriccions de clau forana
-            Schema::enableForeignKeyConstraints();
-        });
+        $this->fcts()->setCotutor($idFct, $request->cotutor ?? null);
 
         return back();
     }

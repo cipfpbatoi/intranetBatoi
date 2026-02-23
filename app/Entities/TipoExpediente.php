@@ -11,6 +11,6 @@ class TipoExpediente extends Model
     public $timestamps = false;
 
     public function expedientes(){
-        return $this->hasMany(Expediente::class,'id','tipo');
+        return $this->hasMany(Expediente::class, 'tipo', 'id');
     }
 }

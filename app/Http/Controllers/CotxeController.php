@@ -7,13 +7,15 @@ use Intranet\Http\Controllers\Core\ModalController;
 
 use Intranet\Entities\Cotxe;
 use Intranet\Http\Requests\CotxeRequest;
+use Intranet\Presentation\Crud\CotxeCrudSchema;
 
 class CotxeController extends ModalController
 {
     /**
      * @var array
      */
-    protected $gridFields = ['matricula' ,'marca' ];
+    protected $gridFields = CotxeCrudSchema::GRID_FIELDS;
+    protected $formFields = CotxeCrudSchema::FORM_FIELDS;
     /**
      * @var string
      */

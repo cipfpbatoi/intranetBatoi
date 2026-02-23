@@ -11,18 +11,31 @@ class Ocupacion extends Model
     public $primaryKey = 'codigo';
     protected $table = 'ocupaciones';
     public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'codigo',
         'nombre',
         'nom'
     ];
 
+    public function Horarios()
+    {
+        return $this->hasMany(Horario::class, 'ocupacion', 'codigo');
+    }
+
+    // Legacy alias per compatibilitat amb crides antigues.
     public function Ocupacion()
     {
-        return $this->hasMany(Horario::class, 'codigo', 'ocupacion');
+        return $this->Horarios();
     }
     public function getliteralAttribute()
     {
-        return App::getLocale(session('lang')) == 'es' ? $this->nombre : $this->nom;
+        $lang = session('lang', App::getLocale());
+        if ($lang === 'es') {
+            return $this->nombre ?? $this->nom ?? '';
+        }
+
+        return $this->nom ?? $this->nombre ?? '';
     }
 }

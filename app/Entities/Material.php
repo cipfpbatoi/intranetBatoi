@@ -4,10 +4,12 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Events\ActivityReport;
-
+use Intranet\Presentation\Crud\MaterialCrudSchema;
+ 
 class Material extends Model
 {
-
+    use \Intranet\Entities\Concerns\BatoiModels;
+ 
     protected $table = 'materiales';
     public $timestamps = false;
     protected $fillable = [
@@ -25,20 +27,9 @@ class Material extends Model
         'articulo_lote_id'
     ];
 
-    use \Intranet\Entities\Concerns\BatoiModels;
-
-    protected $rules = [
-        'descripcion' => 'required',
-        'espacio' => 'required',
-        'unidades' => 'numeric',
-    ];
-    protected $inputTypes = [
-        'espacio' => ['type' => 'select'],
-        'procedencia' => ['type' => 'select'],
-        'inventariable' => ['type' => 'checkbox'],
-        'estado' => ['type' => 'select'],
-        'articulo_id' => ['type' => 'hidden'],
-    ];
+   
+    protected $rules = MaterialCrudSchema::RULES;
+    protected $inputTypes = MaterialCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,

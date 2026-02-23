@@ -2,34 +2,33 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Entities\Empresa;
+use Intranet\Application\Empresa\EmpresaService;
 use Intranet\Http\Resources\EmpresaResource;
 
-class EmpresaController extends ApiBaseController
+class EmpresaController extends ApiResourceController
 {
+    private ?EmpresaService $empresaService = null;
+
     protected $model = 'Empresa';
+
+    public function __construct(?EmpresaService $empresaService = null)
+    {
+        parent::__construct();
+        $this->empresaService = $empresaService;
+    }
+
+    private function empreses(): EmpresaService
+    {
+        if ($this->empresaService === null) {
+            $this->empresaService = app(EmpresaService::class);
+        }
+
+        return $this->empresaService;
+    }
     
     public function indexConvenio()
     {
-        $data = EmpresaResource::collection(
-            Empresa::query()
-                ->select([
-                    'id',
-                    'concierto',
-                    'nombre',
-                    'direccion',
-                    'localidad',
-                    'telefono',
-                    'email',
-                    'cif',
-                    'actividad',
-                    'fichero',
-                ])
-                ->where('concierto', '>', 0)
-                ->where('europa', 0)
-                ->orderBy('nombre')
-                ->get()
-        );
+        $data = EmpresaResource::collection($this->empreses()->convenioList());
         return $this->sendResponse($data, 'OK');
     }
 }

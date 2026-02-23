@@ -3,8 +3,8 @@
 namespace Intranet\Entities\Poll;
 
 use Intranet\Application\Grupo\GrupoService;
-use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Departamento;
+use Intranet\Services\School\ModuloGrupoService;
 
 class Profesor extends ModelPoll
 {
@@ -14,9 +14,14 @@ class Profesor extends ModelPoll
             return null;
         }
         $modulos = collect();
+        $moduloGrupoService = app(ModuloGrupoService::class);
         foreach (authUser()->Grupo as $grupo) {
             foreach ($grupo->Modulos as $modulo) {
-                $modulos->push(['option1'=>$modulo,'option2'=>$modulo->Profesores()]);
+                $modulos->push([
+                    'option1' => $modulo,
+                    // Manté el format esperat pel wizard de polls (array de llistes de DNIs).
+                    'option2' => [$moduloGrupoService->profesorIds($modulo)->values()->all()],
+                ]);
             }
         }
         return $modulos;
@@ -25,7 +30,7 @@ class Profesor extends ModelPoll
     public static function loadVotes($id)
     {
         $myVotes = array();
-        foreach (Modulo_grupo::misModulos() as $modulo) {
+        foreach (app(ModuloGrupoService::class)->misModulos(AuthUser()->dni) as $modulo) {
             $myVotes[$modulo->ModuloCiclo->Modulo->literal][$modulo->Grupo->codigo]
                 = Vote::myVotes($id, $modulo->id)->get();
         }

@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Notification;
 
-class NotificationController extends ApiBaseController
+class NotificationController extends ApiResourceController
 {
 
     protected $model = 'Notification';
@@ -13,7 +13,11 @@ class NotificationController extends ApiBaseController
     public function leer($id)
     {
         $notification = Notification::find($id);
-        $notification->read_at = New Date('now');
+        if (!$notification) {
+            return $this->sendResponse(['updated' => false], 'Notificació no trobada');
+        }
+
+        $notification->read_at = new Date('now');
         $notification->save();
         return $this->sendResponse(['updated' => true], 'OK');
     }

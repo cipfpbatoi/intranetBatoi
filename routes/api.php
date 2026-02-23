@@ -30,7 +30,6 @@ Route::get('/presencia/resumen-rango',   'PresenciaResumenController@rango' );
 Route::group(['middleware' => 'auth:api'], function () {
     Route::get('grupo/list/{id}', 'GrupoController@list');
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual');
-    Route::resource('dual', 'DualController', ['except' => [ 'create']]);
     Route::get('fct/{id}/alFct', 'FctController@llist');
     Route::post('fct/{id}/alFct', 'FctController@seguimiento');
     Route::get('misAlumnosFct', 'AlumnoFctController@misAlumnos');
@@ -76,6 +75,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('materialbaja', 'MaterialBajaController', ['except' => [ 'create']]);
 
     Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
+    Route::get('guardia/range', 'GuardiaController@range');
     Route::resource('guardia', 'GuardiaController');
     Route::resource('departamento', 'DepartamentoController');
     Route::resource('reserva', 'ReservaController');

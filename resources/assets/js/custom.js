@@ -1842,6 +1842,42 @@ if (typeof NProgress != 'undefined') {
 		});
 	  
 	  };
+
+	  function init_falta_baja_dates() {
+		var $baja = $('#baja_id');
+		var $desde = $('#desde_id');
+		var $hasta = $('#hasta_id');
+
+		if (!$baja.length || (!$desde.length && !$hasta.length)) {
+			return;
+		}
+
+		var toggleRequired = function($input, required) {
+			if (!$input.length) {
+				return;
+			}
+
+			if (required) {
+				$input.attr('required', 'required');
+			} else {
+				$input.removeAttr('required');
+			}
+
+			var fieldId = $input.attr('id');
+			if (fieldId) {
+				$('#field_' + fieldId).find('span.required').toggle(required);
+			}
+		};
+
+		var syncRequired = function() {
+			var required = !$baja.is(':checked');
+			toggleRequired($desde, required);
+			toggleRequired($hasta, required);
+		};
+
+		$baja.on('change', syncRequired);
+		syncRequired();
+	};
 	   
 	  	/* PNotify */
 			
@@ -5060,6 +5096,7 @@ if (typeof NProgress != 'undefined') {
 		init_morris_charts();
 		init_skycons();
 		init_select2();
+		init_falta_baja_dates();
 		init_validator();
 		init_DataTables();
 		init_chart_doughnut();

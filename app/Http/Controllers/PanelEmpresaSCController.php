@@ -2,9 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Empresa\EmpresaService;
 use Intranet\Http\Controllers\Core\BaseController;
 
-use Intranet\Entities\Empresa;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 
@@ -17,6 +17,7 @@ class PanelEmpresaSCController extends BaseController
 {
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
     const ROLES_ROL_DUAL = 'roles.rol.dual';
+    private ?EmpresaService $empresaService = null;
 
     /**
      * @var string
@@ -35,13 +36,27 @@ class PanelEmpresaSCController extends BaseController
      */
     protected $vista = ['index' => 'empresa.indexSC'];
 
+    public function __construct(?EmpresaService $empresaService = null)
+    {
+        parent::__construct();
+        $this->empresaService = $empresaService;
+    }
+
+    protected function empreses(): EmpresaService
+    {
+        if ($this->empresaService === null) {
+            $this->empresaService = app(EmpresaService::class);
+        }
+
+        return $this->empresaService;
+    }
 
     /**
      * @return mixed
      */
     public function search()
     {
-        return Empresa::whereNull('concierto')->get();
+        return $this->empreses()->socialConcertList();
     }
 
     /**
