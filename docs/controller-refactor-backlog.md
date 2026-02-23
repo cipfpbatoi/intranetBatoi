@@ -7,7 +7,7 @@ Objectiu: acabar la migració de validació a `FormRequest` i deixar controlador
 
 ### Sprint 1
 - [x] 1.1 Inventari real de `store/update` sense `FormRequest`
-- [ ] 1.2 Crear/ajustar `FormRequest` pendents
+- [x] 1.2 Crear/ajustar `FormRequest` pendents
 - [x] 1.2.a Lot 1 aplicat (`EmpresaController`, `DocumentoController`, `FctController`, `FaltaController`)
 - [ ] 1.3 Eliminar validació dispersa de controlador/model on ja hi haja `FormRequest`
 - [ ] 1.4 Tests de regressió dels fluxos migrats
@@ -30,23 +30,23 @@ Resum:
 
 - [x] `app/Http/Controllers/AlumnoController.php` (`update`)
 - [x] `app/Http/Controllers/AlumnoGrupoController.php` (`update`)
-- [ ] `app/Http/Controllers/Auth/Alumno/PerfilController.php` (`update`)
-- [ ] `app/Http/Controllers/Auth/PerfilController.php` (`update`)
-- [ ] `app/Http/Controllers/Auth/Profesor/PerfilController.php` (`update`)
-- [ ] `app/Http/Controllers/ColaboracionController.php` (`update` - hi ha també versió amb `ColaboracionRequest`)
+- [x] `app/Http/Controllers/Auth/Alumno/PerfilController.php` (`update`)
+- [x] `app/Http/Controllers/Auth/PerfilController.php` (`update`)
+- [x] `app/Http/Controllers/Auth/Profesor/PerfilController.php` (`update`)
+- [x] `app/Http/Controllers/ColaboracionController.php` (`update`)
 - [x] `app/Http/Controllers/DocumentoController.php` (`store`)
 - [x] `app/Http/Controllers/EmpresaController.php` (`store`, `update`)
 - [x] `app/Http/Controllers/FaltaController.php` (`store`, `update`)
 - [x] `app/Http/Controllers/FctController.php` (`store`, `update`)
-- [ ] `app/Http/Controllers/FicharController.php` (`store`)
+- [x] `app/Http/Controllers/FicharController.php` (`store`)
 - [x] `app/Http/Controllers/HorarioController.php` (`update`)
-- [ ] `app/Http/Controllers/ImportController.php` (`store`)
-- [ ] `app/Http/Controllers/MyMailController.php` (`store`)
+- [x] `app/Http/Controllers/ImportController.php` (`store`)
+- [x] `app/Http/Controllers/MyMailController.php` (`store`)
 - [x] `app/Http/Controllers/PanelColaboracionController.php` (`store`, `update`)
 - [x] `app/Http/Controllers/PanelSeguimientoAlumnosController.php` (`store`)
 - [x] `app/Http/Controllers/ProfesorController.php` (`update`)
-- [ ] `app/Http/Controllers/SendAvaluacioEmailController.php` (`store`)
-- [ ] `app/Http/Controllers/TeacherImportController.php` (`store`)
+- [x] `app/Http/Controllers/SendAvaluacioEmailController.php` (`store`)
+- [x] `app/Http/Controllers/TeacherImportController.php` (`store`)
 
 ## Proposta d'ordre per al 1.2
 

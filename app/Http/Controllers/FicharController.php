@@ -7,6 +7,7 @@ use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\FicharStoreRequest;
 
 use Intranet\Services\HR\FitxatgeService;
 use Styde\Html\Facades\Alert;
@@ -62,6 +63,7 @@ class FicharController extends IntranetController
 
     public function store(Request $request )
     {
+        $this->validate($request, (new FicharStoreRequest())->rules());
         $fitxatgeService = app( FitxatgeService::class);
 
         $profesor = $this->profesores()->findByCodigo((string) $request->codigo);

@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Intranet\Application\Import\Concerns\SharedImportFieldTransformers;
 use Intranet\Application\Import\ImportSchemaProvider;
 use Intranet\Application\Import\ImportService;
@@ -13,6 +14,7 @@ use Intranet\Application\Import\ImportWorkflowService;
 use Intranet\Application\Import\ImportXmlHelperService;
 use Intranet\Application\Import\TeacherImportExecutionService;
 use Intranet\Entities\ImportRun;
+use Intranet\Http\Requests\TeacherImportStoreRequest;
 use Intranet\Jobs\RunImportJob;
 use Styde\Html\Facades\Alert;
 
@@ -38,6 +40,7 @@ class TeacherImportController extends Seeder
 
     public function store(Request $request)
     {
+        Validator::make($request->all(), (new TeacherImportStoreRequest())->rules())->validate();
         $file = $this->imports()->resolveXmlFile($request);
         if ($file === null) {
             return back();
