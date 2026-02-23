@@ -1,8 +1,9 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
+use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
 use Intranet\Http\Traits\Core\Imprimir;
@@ -12,7 +13,7 @@ use Intranet\Services\General\StateService;
  * Class OrdenTrabajoController
  * @package Intranet\Http\Controllers
  */
-class OrdenTrabajoController extends IntranetController
+class OrdenTrabajoController extends ModalController
 {
 
     use Imprimir;
@@ -34,12 +35,6 @@ class OrdenTrabajoController extends IntranetController
      */
     protected $descriptionField = 'descripcion';
     /**
-     * @var bool
-     */
-    protected $modal = true;
-
-
-    /**
      *
      */
     protected function iniBotones()
@@ -59,6 +54,18 @@ class OrdenTrabajoController extends IntranetController
     public function destroy($id){
         Incidencia::where('orden',$id)->get();
         return parent::destroy($id);
+    }
+
+    public function store(Request $request)
+    {
+        $this->persist($request);
+        return $this->redirect();
+    }
+
+    public function update(Request $request, $id)
+    {
+        $this->persist($request, $id);
+        return $this->redirect();
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\Departamento;
@@ -21,13 +21,12 @@ use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Hash;
 use Intranet\Entities\Poll\PPoll;
 
-class PPollController extends IntranetController
+class PPollController extends ModalController
 {
     protected $namespace = 'Intranet\Entities\Poll\\'; //string on es troben els models de dades
 
     protected $model = 'PPoll';
     protected $gridFields = [ 'id','title','what'];
-    protected $modal = true; 
     
     protected function iniBotones()
     {
@@ -42,5 +41,17 @@ class PPollController extends IntranetController
         $elemento = PPoll::findOrFail($id);
         $modelo = $this->model;
         return view('poll.masterslave', compact('elemento','modelo'));
+    }
+
+    public function store(Request $request)
+    {
+        $this->persist($request);
+        return $this->redirect();
+    }
+
+    public function update(Request $request, $id)
+    {
+        $this->persist($request, $id);
+        return $this->redirect();
     }
 }
