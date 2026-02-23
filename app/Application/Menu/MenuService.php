@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Intranet\Application\Menu;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Intranet\Entities\Menu;
 use Styde\Html\Facades\Menu as StydeMenu;
@@ -79,6 +80,98 @@ class MenuService
 
         $remaining = array_values(array_diff($keys, $toForget));
         Cache::forever(self::CACHE_KEYS_INDEX, $remaining);
+    }
+
+    /**
+     * Retorna menús ordenats per al grid, normalitzant ordres abans.
+     */
+    public function listForGrid()
+    {
+        $this->sortForGrid();
+        return Menu::all();
+    }
+
+    /**
+     * Persisteix un menú des del request.
+     */
+    public function saveFromRequest(Request $request, $id = null): Menu
+    {
+        $elemento = $id ? Menu::findOrFail($id) : new Menu();
+        $elemento->fillAll($request);
+        $elemento->save();
+        $this->clearCache();
+
+        return $elemento;
+    }
+
+    /**
+     * Duplica un menú dins del mateix grup/submenú.
+     */
+    public function copy(int|string $id): Menu
+    {
+        $elemento = Menu::findOrFail($id);
+        $copia = new Menu();
+        $copia->fill($elemento->toArray());
+        $copia->orden = Menu::where('menu', $elemento->menu)
+            ->where('submenu', $elemento->submenu)
+            ->max('orden') + 1;
+        $copia->activo = false;
+        $copia->save();
+        $this->clearCache();
+
+        return $copia;
+    }
+
+    /**
+     * Mou un menú cap amunt dins del bloc actual.
+     */
+    public function moveUp(int|string $id): void
+    {
+        $elemento = Menu::findOrFail($id);
+        $inicial = $elemento->orden;
+        $orden = $elemento->orden;
+        $find = false;
+
+        while (!$find && $orden > 1) {
+            $find = Menu::where('orden', --$orden)
+                ->where('menu', $elemento->menu)
+                ->where('submenu', $elemento->submenu)
+                ->first();
+        }
+
+        if ($find) {
+            $find->orden = $inicial;
+            $elemento->orden = $orden;
+            $find->save();
+            $elemento->save();
+            $this->clearCache();
+        }
+    }
+
+    /**
+     * Mou un menú cap avall dins del bloc actual.
+     */
+    public function moveDown(int|string $id): void
+    {
+        $elemento = Menu::findOrFail($id);
+        $inicial = $elemento->orden;
+        $orden = $elemento->orden;
+        $find = false;
+
+        while (!$find && $orden < 100) {
+            $find = Menu::where('orden', ++$orden)
+                ->where('menu', $elemento->menu)
+                ->where('submenu', $elemento->submenu)
+                ->first();
+        }
+
+        if ($find) {
+            $find->orden = $inicial;
+            $elemento->orden = $orden;
+            $find->save();
+            $elemento->save();
+            $this->clearCache();
+        }
     }
 
     /**
@@ -177,5 +270,35 @@ class MenuService
     private function isAdminUser(object $user): bool
     {
         return isset($user->rol) && esRol((int) $user->rol, 11);
+    }
+
+    /**
+     * Reordena pares i fills per mantindre seqüència contínua.
+     */
+    private function sortForGrid(): void
+    {
+        $anterior = '';
+        foreach (Menu::where('submenu', '')->orderBy('menu')->orderBy('orden')->get() as $menu) {
+            if ($anterior != $menu->menu) {
+                $orden = 1;
+                $anterior = $menu->menu;
+            }
+            if ((int) $menu->orden !== $orden) {
+                $menu->orden = $orden;
+                $menu->save();
+            }
+            $orden++;
+        }
+
+        foreach (Menu::where('submenu', '')->orderBy('menu')->orderBy('orden')->get() as $menu) {
+            $orden = 1;
+            foreach (Menu::where('submenu', $menu->nombre)->orderBy('orden')->get() as $submenu) {
+                if ((int) $submenu->orden !== $orden) {
+                    $submenu->orden = $orden;
+                    $submenu->save();
+                }
+                $orden++;
+            }
+        }
     }
 }
