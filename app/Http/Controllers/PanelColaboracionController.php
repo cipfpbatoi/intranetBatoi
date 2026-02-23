@@ -15,6 +15,7 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
+use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 use Intranet\Http\Traits\Core\Panel;
 use Styde\Html\Facades\Alert;
 
@@ -267,7 +268,7 @@ class PanelColaboracionController extends IntranetController
         $copia->tutor = AuthUser()->FullName;
 
         // para no generar más de uno por ciclo
-        $validator = Validator::make($copia->toArray(), $copia->getRules());
+        $validator = Validator::make($copia->toArray(), ColaboracionCrudSchema::RULES);
         if ($validator->fails()) {
             return Redirect::back()->withInput()->withErrors($validator);
         }
