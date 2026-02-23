@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Services\School\SignaturaStatusService;
 
 class Signatura extends Model
 {
@@ -19,6 +20,10 @@ class Signatura extends Model
         'idSao',
         'sendTo',
         'signed'
+    ];
+    protected $casts = [
+        'sendTo' => 'integer',
+        'signed' => 'integer',
     ];
 
     public function Fct()
@@ -44,37 +49,32 @@ class Signatura extends Model
 
     public static function saveIfNotExists($anexe, $idSao , $signat = 0)
     {
-        $sig = Signatura::where('tipus', $anexe)->where('idSao', $idSao)->get()->first();
-        if (!$sig) {
-            $sig = new Signatura([
+        return static::query()->updateOrCreate(
+            [
                 'tipus' => $anexe,
-                'idProfesor' => authUser()->dni,
                 'idSao' => $idSao,
+            ],
+            [
+                'idProfesor' => authUser()->dni,
                 'sendTo' => false,
-                'signed' => $signat
-            ]);
-            $sig->save();
-        } else {
-            $sig->signed = $signat;
-            $sig->sendTo = false;
-            $sig->save();
-        }
-        return $sig;
+                'signed' => $signat,
+            ]
+        );
     }
 
     public function getProfesorAttribute()
     {
-        return $this->Teacher->shortName;
+        return $this->Teacher->shortName ?? '';
     }
 
     public function getAlumneAttribute()
     {
-        return $this->Fct->Alumno->shortName;
+        return $this->Fct->Alumno->shortName ?? '';
     }
 
     public function getCentreAttribute()
     {
-        return $this->Fct->Fct->Colaboracion->Centro->nombre;
+        return $this->Fct->Fct->Colaboracion->Centro->nombre ?? '';
     }
     public function getPathAttribute()
     {
@@ -97,106 +97,45 @@ class Signatura extends Model
 
     public function getEmailAttribute()
     {
-        return $this->Fct->Fct->Instructor->email;
+        return $this->Fct->Fct->Instructor->email ?? '';
     }
     public function getContactoAttribute()
     {
-        return $this->Fct->Fct->Instructor->contacto;
+        return $this->Fct->Fct->Instructor->contacto ?? '';
     }
 
     public function getSignAttribute()
     {
-        return $this->signed ? 'Sí' : 'No';
+        return $this->statusService()->yesNo((int) $this->signed > 0);
     }
 
     public function getSendAttribute()
     {
-        return $this->sendTo ? 'Sí' : 'No';
+        return $this->statusService()->yesNo((int) $this->sendTo > 0);
     }
 
     public function getEstatAttribute()
     {
-        $tipus = substr($this->tipus, 0,2);
-        $nameFunction = 'getEstat'.$tipus;
-        return self::$nameFunction($this);
-    }
-
-    private static function getEstatA1(Signatura $sig)
-    {
-        if ($sig->sendTo){
-            return "Enviat a l'instructor";
-        }
-        if ($sig->signed == 3) {
-            return 'Signatura Direcció completada';
-        }
-        return 'Pendent Signatura Direcció';
-    }
-
-    private static function getEstatA2(Signatura $sig)
-    {
-        if ($sig->sendTo) {
-            return 'Enviat a l\'instructor';
-        }
-        if ($sig->signed > 2 ){
-            return 'Signatura Direcció completada';
-        }
-        return 'Pendent de Signatura Direcció';
-    }
-
-    private static function getEstatA3(Signatura $sig)
-    {
-        if ($sig->sendTo > 0) {
-            if ($sig->signed == 3) {
-                return "Enviat a l'instructor";
-            }
-            if ($sig->signed == 2 && $sig->sendTo == 2) {
-                return "Enviat a l'instructor sense la signatura de l'alumne";
-            }
-            return "Enviat a l'alumne";
-        } else {
-            if ($sig->signed == 2) {
-                return "Pendent enviar a l'alumne";
-            } else {
-                return "Pendent enviar a l'instructor";
-            }
-        }
-    }
-
-    private function getEstatA5()
-    {
-        return 'Complet';
+        return $this->statusService()->estat($this);
     }
 
     public function getClassAttribute()
     {
-        $tipus = substr($this->tipus, 0,2);
-        if ($tipus == 'A3' && $this->sendTo == 1 && $this->signed == 2){
-            return 'bg-orange';
-        }
-        if ($this->signed >= 3) {
-            if ($this->sendTo >= 1) {
-                return 'bg-blue-sky';
-            } else {
-                return 'bg-green';
-            }
-        }
-        return ($this->signed >= 3) ? 'bg-blue-sky':'bg-red';
+        return $this->statusService()->cssClass($this);
     }
 
     public function getFctOptions()
     {
         $user = AuthUser();
-        $alumnos  = AlumnoFct::misFcts($user->dni)->get()->map(function ($fct) {
-             return [  $fct->idSao  => $fct->Alumno->fullName];
-        });
-        $array = array();
-
-        foreach ($alumnos->toArray() as $tmp) {
-            foreach ($tmp as $key => $value) {
-                $array[$key] = $value;
-            }
+        if (!$user) {
+            return [];
         }
-        return $array;
+
+        return AlumnoFct::misFcts($user->dni)
+            ->get()
+            ->filter(fn ($fct) => $fct->Alumno !== null)
+            ->mapWithKeys(fn ($fct) => [$fct->idSao => $fct->Alumno->fullName])
+            ->all();
     }
 
     public function getTipusOptions()
@@ -207,5 +146,10 @@ class Signatura extends Model
             'A3' => 'A3',
             'A5' => 'A5',
         ];
+    }
+
+    private function statusService(): SignaturaStatusService
+    {
+        return app(SignaturaStatusService::class);
     }
 }
