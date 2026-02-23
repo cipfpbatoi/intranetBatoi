@@ -10,6 +10,10 @@
         <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Todos') btn-primary @endif" href="/direccion/horario/propuestas?estado=Todos">Totes</a>
     </div>
 
+    @php
+        $isDireccion = authUser() && esRol(authUser()->rol, config('roles.rol.direccion'));
+    @endphp
+
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -28,7 +32,12 @@
                         {{ $proposta['profesor']->fullName ?? $proposta['dni'] }}
                         <div class="text-muted">{{ $proposta['dni'] }}</div>
                     </td>
-                    <td>{{ $proposta['estado'] }}</td>
+                    <td>
+                        {{ $proposta['estado'] }}
+                        @if (($proposta['estado'] ?? '') === 'Guardado')
+                            <div class="text-muted">Ja aplicat, no es pot acceptar</div>
+                        @endif
+                    </td>
                     <td>
                         {{ $proposta['fecha_inicio'] ?: '-' }}
                         <br>
@@ -45,11 +54,15 @@
                         <a class="btn btn-default" href="/profesor/{{ $proposta['dni'] }}/horario-cambiar?proposta={{ $proposta['id'] }}" title="Veure" aria-label="Veure">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                         </a>
-                        @if (($proposta['estado'] ?? 'Pendiente') === 'Pendiente')
+                        @php
+                            $estadoProposta = $proposta['estado'] ?? 'Pendiente';
+                            $puedeAceptar = !in_array($estadoProposta, ['Aceptado', 'Guardado'], true);
+                        @endphp
+                        @if ($isDireccion && $puedeAceptar)
                             <a class="btn btn-primary" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/aceptar" onclick="return confirm('Acceptar aquesta proposta?')" title="Acceptar" aria-label="Acceptar">
                                 <i class="fa fa-check" aria-hidden="true"></i>
                             </a>
-                            <a class="btn btn-danger" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/rebutjar" onclick="return rebutjarProposta('{{ $proposta['dni'] }}','{{ $proposta['id'] }}')" title="Rebutjar" aria-label="Rebutjar">
+                            <a class="btn btn-danger" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/rebutjar" data-dni="{{ $proposta['dni'] }}" data-id="{{ $proposta['id'] }}" onclick="return rebutjarProposta(this.dataset.dni, this.dataset.id)" title="Rebutjar" aria-label="Rebutjar">
                                 <i class="fa fa-times" aria-hidden="true"></i>
                             </a>
                         @endif
