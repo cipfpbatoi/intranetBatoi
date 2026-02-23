@@ -1,7 +1,7 @@
 <?php
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
 use Intranet\Entities\ArticuloLote;
 use Intranet\Entities\Lote;
@@ -13,7 +13,7 @@ use Intranet\UI\Botones\BotonImg;
  * Class MaterialController
  * @package Intranet\Http\Controllers
  */
-class ArticuloLoteController extends IntranetController
+class ArticuloLoteController extends ModalController
 {
     /**
      * @var string
