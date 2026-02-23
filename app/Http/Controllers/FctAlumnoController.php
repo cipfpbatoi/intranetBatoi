@@ -3,7 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\AlumnoFct\AlumnoFctService;
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Presentation\Crud\AlumnoFctCrudSchema;
 
 
@@ -37,7 +37,7 @@ use Intranet\Services\UI\FormBuilder;
 use Styde\Html\Facades\Alert;
 
 
-class FctAlumnoController extends IntranetController
+class FctAlumnoController extends ModalController
 {
     use Imprimir,DropZone;
 
@@ -52,8 +52,6 @@ class FctAlumnoController extends IntranetController
     protected $profile = false;
     protected $titulo = [];
     protected $parametresVista = ['modal' => ['extended', 'saoPassword', 'loading','signatura']];
-    protected $modal = true;
-
     public function __construct(?AlumnoFctService $alumnoFctService = null)
     {
         parent::__construct();
@@ -280,7 +278,7 @@ class FctAlumnoController extends IntranetController
             ]
         );
         $modelo = $this->model;
-        return view($this->chooseView('create'), compact('formulario', 'modelo'));
+        return view('intranet.create', compact('formulario', 'modelo'));
     }
 
     public function unlink($id)
@@ -302,7 +300,7 @@ class FctAlumnoController extends IntranetController
             $elemento = $elementos->first() ?? null;
             if (!$elemento) {
                 $elemento = new FctConvalidacion();
-                $this->validateAll($request, $elemento);
+                $this->validateByModelRules($request, $elemento);
                 $elemento->fillAll($request);
             }
 
@@ -323,10 +321,26 @@ class FctAlumnoController extends IntranetController
         return $this->redirect();
     }
 
+    public function update(Request $request, $id)
+    {
+        $elemento = $this->alumnoFcts()->findOrFail((int) $id);
+        $this->validateByModelRules($request, $elemento);
+        $this->persist($request, $id);
+        return $this->redirect();
+    }
+
     public function show($id)
     {
         $fct = $this->alumnoFcts()->findOrFail((int) $id);
         return redirect("/fct/$fct->idFct/show");
+    }
+
+    private function validateByModelRules(Request $request, $elemento): void
+    {
+        $rules = method_exists($elemento, 'getRules') ? $elemento->getRules() : [];
+        if (!empty($rules)) {
+            $this->validate($request, $rules);
+        }
     }
 
     public function pdf($id)

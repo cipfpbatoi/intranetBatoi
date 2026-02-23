@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Presentation\Crud\HorarioCrudSchema;
 
 use Illuminate\Http\Request;
@@ -13,16 +13,15 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Session;
 use Intranet\Services\Notifications\NotificationService;
 use Illuminate\Support\Facades\Mail;
+use Intranet\Services\UI\FormBuilder;
 
-class HorarioController extends IntranetController
+class HorarioController extends ModalController
 {
 
     protected $model = 'Horario';
     protected $perfil = 'profesor';
     protected $gridFields = HorarioCrudSchema::GRID_FIELDS;
     protected $formFields = HorarioCrudSchema::FORM_FIELDS;
-    protected $modal = true;
-
     private ?HorarioService $horarioService = null;
     private ?ProfesorService $profesorService = null;
 
@@ -318,6 +317,13 @@ class HorarioController extends IntranetController
         return $this->modificarHorario(Session::get('horarioProfesor'));
     }
 
+    public function update(Request $request, $id)
+    {
+        $this->validateByModelRules($request);
+        $this->persist($request, $id);
+        return $this->redirect();
+    }
+
     /**
      * @param $idProfesor
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
@@ -327,6 +333,19 @@ class HorarioController extends IntranetController
         Session::put('horarioProfesor',$idProfesor);
         $this->titulo = ['quien' => $this->profesores()->find((string) $idProfesor)->fullName]; // paràmetres per al titol de la vista
         $this->iniBotones();
-        return $this->grid($this->horarios()->byProfesor((string) $idProfesor));
+        return $this->panel->render(
+            $this->horarios()->byProfesor((string) $idProfesor),
+            $this->titulo,
+            'intranet.indexModal',
+            new FormBuilder($this->createWithDefaultValues(), $this->formFields)
+        );
+    }
+
+    private function validateByModelRules(Request $request): void
+    {
+        $rules = (new \Intranet\Entities\Horario())->getRules();
+        if (!empty($rules)) {
+            $this->validate($request, $rules);
+        }
     }
 }

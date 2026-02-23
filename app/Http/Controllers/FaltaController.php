@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\Falta;
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
@@ -19,7 +19,7 @@ use Jenssegers\Date\Date;
  * Class FaltaController
  * @package Intranet\Http\Controllers
  */
-class FaltaController extends IntranetController
+class FaltaController extends ModalController
 {
     private ?FaltaService $faltaService = null;
 
@@ -37,11 +37,6 @@ class FaltaController extends IntranetController
      * @var array
      */
     protected $gridFields = FaltaCrudSchema::GRID_FIELDS;
-    /**
-     * @var bool
-     */
-    protected $modal = true;
-
     public function __construct(?FaltaService $faltaService = null)
     {
         parent::__construct();
@@ -76,7 +71,7 @@ class FaltaController extends IntranetController
      */
     public function store(Request $request)
     {
-        $this->validateAll($request, new Falta());
+        $this->validate($request, FaltaCrudSchema::RULES);
 
         $id = $this->faltas()->create($request);
 
@@ -98,7 +93,7 @@ class FaltaController extends IntranetController
      */
     public function update(Request $request, $id)
     {
-        $this->validateAll($request, Falta::findOrFail($id));
+        $this->validate($request, FaltaCrudSchema::RULES);
 
         $this->faltas()->update($id, $request);
         return $this->redirect();

@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -16,16 +16,13 @@ use Intranet\Entities\Curso;
 use Intranet\Entities\Alumno;
 use Intranet\Services\UI\FormBuilder;
 
-class AlumnoGrupoController extends IntranetController
+class AlumnoGrupoController extends ModalController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoGrupo';
     protected $gridFields = ['nombre', 'telef1',  'email','poblacion','drets',
         'extraescolars','DA','subGrupo','posicion','telef2'];
     const FOL = 12;
-    protected $modal = true;
-
-
     public function search()
     {
         $this->titulo = ['quien' => $this->search];
@@ -56,7 +53,7 @@ class AlumnoGrupoController extends IntranetController
     public function updateModal(Request $request, $grupo, $alumno)
     {
         $elemento = AlumnoGrupo::where('idAlumno', $alumno)->where('idGrupo', $grupo)->first(); //busca si hi ha
-        $this->validateAll($request, $elemento);    // valida les dades
+        $this->validateByModelRules($request, $elemento);
         $elemento->fillAll($request);        // ompli i guarda
         return $this->redirect();
     }
@@ -65,9 +62,15 @@ class AlumnoGrupoController extends IntranetController
     {
         $grupoTutoria = AuthUser()->grupoTutoria;
         $elemento = AlumnoGrupo::where('idAlumno', $id)->where('idGrupo', $grupoTutoria)->first(); //busca si hi ha
-        $this->validateAll($request, $elemento);    // valida les dades
+        $this->validateByModelRules($request, $elemento);
 
         return $elemento->fillAll($request);        // ompli i guarda
+    }
+
+    public function update(Request $request, $id)
+    {
+        $this->realStore($request, $id);
+        return $this->redirect();
     }
 
     protected function iniBotones()
@@ -103,6 +106,18 @@ class AlumnoGrupoController extends IntranetController
             )
         );
         
+    }
+
+    private function validateByModelRules(Request $request, $elemento): void
+    {
+        if (!$elemento) {
+            abort(404);
+        }
+
+        $rules = method_exists($elemento, 'getRules') ? $elemento->getRules() : [];
+        if (!empty($rules)) {
+            $this->validate($request, $rules);
+        }
     }
 
 }
