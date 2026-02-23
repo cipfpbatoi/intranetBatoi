@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\PPollRequest;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
@@ -43,13 +43,13 @@ class PPollController extends ModalController
         return view('poll.masterslave', compact('elemento','modelo'));
     }
 
-    public function store(Request $request)
+    public function store(PPollRequest $request)
     {
         $this->persist($request);
         return $this->redirect();
     }
 
-    public function update(Request $request, $id)
+    public function update(PPollRequest $request, $id)
     {
         $this->persist($request, $id);
         return $this->redirect();

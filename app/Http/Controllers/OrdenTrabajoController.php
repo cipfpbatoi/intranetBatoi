@@ -3,7 +3,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\OrdenTrabajoRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Incidencia;
 use Intranet\Http\Traits\Core\Imprimir;
@@ -56,13 +56,13 @@ class OrdenTrabajoController extends ModalController
         return parent::destroy($id);
     }
 
-    public function store(Request $request)
+    public function store(OrdenTrabajoRequest $request)
     {
         $this->persist($request);
         return $this->redirect();
     }
 
-    public function update(Request $request, $id)
+    public function update(OrdenTrabajoRequest $request, $id)
     {
         $this->persist($request, $id);
         return $this->redirect();

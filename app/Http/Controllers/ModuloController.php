@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\ModuloRequest;
 use Illuminate\Support\Facades\Auth;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
@@ -40,7 +40,7 @@ class ModuloController extends ModalController
         $this->panel->setBoton('grid', new BotonImg('modulo.edit', ['roles' => config('roles.rol.administrador')]));
     }
 
-    public function update(Request $request, $id)
+    public function update(ModuloRequest $request, $id)
     {
         $this->persist($request, $id);
         return $this->redirect();
