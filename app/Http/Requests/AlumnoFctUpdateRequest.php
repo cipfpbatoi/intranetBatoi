@@ -14,10 +14,8 @@ class AlumnoFctUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'desde' => 'date',
-            'hasta' => 'date',
-            'horas' => 'required|numeric',
+            'desde' => 'required|date',
+            'hasta' => 'required|date|after:desde',
         ];
     }
 }
-
