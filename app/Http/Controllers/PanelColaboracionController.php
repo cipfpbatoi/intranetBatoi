@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Colaboracion\ColaboracionService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Requests\ColaboracionRequest;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -222,6 +223,7 @@ class PanelColaboracionController extends IntranetController
 
     public function update(Request $request, $id)
     {
+        $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
         parent::update($request, $id);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
         Session::put('pestana', 1);
@@ -234,6 +236,7 @@ class PanelColaboracionController extends IntranetController
      */
     public function store(Request $request)
     {
+        $this->validate($request, (new ColaboracionRequest())->rules(), (new ColaboracionRequest())->messages());
         parent::store($request);
         $empresa = Centro::find($request->idCentro)->idEmpresa;
         Session::put('pestana', 1);

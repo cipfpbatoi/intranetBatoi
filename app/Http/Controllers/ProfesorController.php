@@ -17,6 +17,7 @@ use Intranet\Entities\Alumno;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Falta_profesor;
 use Intranet\Http\Controllers\Auth\PerfilController;
+use Intranet\Http\Requests\ProfesorUpdateRequest;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Mail\Comunicado;
@@ -215,6 +216,7 @@ use Autorizacion,
     
     public function update(Request $request, $id)
     {
+        $this->validate($request, (new ProfesorUpdateRequest())->rules());
         $new = $this->profesores()->find((string) $id);
         parent::update($request, $new);
         return back();

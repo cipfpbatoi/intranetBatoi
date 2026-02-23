@@ -15,6 +15,8 @@ use Intranet\Http\PrintResources\AVIIAResource;
 use Intranet\Http\PrintResources\AVIIBResource;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
 use Intranet\Http\Requests\ColaboradorRequest;
+use Intranet\Http\Requests\FctStoreRequest;
+use Intranet\Http\Requests\FctUpdateRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\UI\FormBuilder;
@@ -103,6 +105,7 @@ class FctController extends IntranetController
      */
     public function update(Request $request, $id)
     {
+        $this->validate($request, (new FctUpdateRequest())->rules());
         $this->fcts()->setInstructor($id, (string) $request->idInstructor);
         return $this->redirect();
     }
@@ -145,6 +148,7 @@ class FctController extends IntranetController
      */
     public function store(Request $request)
     {
+        $this->validate($request, (new FctStoreRequest())->rules());
         try {
             $fct = $this->fcts()->findBySignature(
                 (string) $request->idColaboracion,
@@ -153,8 +157,6 @@ class FctController extends IntranetController
             );
 
             if (!$fct) {
-                $model = new Fct();
-                $this->validateAll($request, $model);
                 $fct = $this->fcts()->createFromRequest($request);
             }
 

@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Http\Requests\HorarioUpdateRequest;
 use Intranet\Presentation\Crud\HorarioCrudSchema;
 
 use Illuminate\Http\Request;
@@ -317,9 +318,8 @@ class HorarioController extends ModalController
         return $this->modificarHorario(Session::get('horarioProfesor'));
     }
 
-    public function update(Request $request, $id)
+    public function update(HorarioUpdateRequest $request, $id)
     {
-        $this->validateByModelRules($request);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -341,11 +341,4 @@ class HorarioController extends ModalController
         );
     }
 
-    private function validateByModelRules(Request $request): void
-    {
-        $rules = (new \Intranet\Entities\Horario())->getRules();
-        if (!empty($rules)) {
-            $this->validate($request, $rules);
-        }
-    }
 }

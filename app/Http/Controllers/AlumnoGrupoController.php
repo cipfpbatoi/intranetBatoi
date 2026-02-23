@@ -3,18 +3,12 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Http\Requests\AlumnoGrupoUpdateRequest;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Intranet\Entities\AlumnoGrupo;
-use Illuminate\Support\Facades\Auth;
-use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Curso;
-use Intranet\Entities\Alumno;
-use Intranet\Services\UI\FormBuilder;
 
 class AlumnoGrupoController extends ModalController
 {
@@ -50,24 +44,28 @@ class AlumnoGrupoController extends ModalController
         return redirect()->action('AlumnoGrupoController@indice',['grupo'=>$grupoTutoria]);
     }
 
-    public function updateModal(Request $request, $grupo, $alumno)
+    public function updateModal(AlumnoGrupoUpdateRequest $request, $grupo, $alumno)
     {
         $elemento = AlumnoGrupo::where('idAlumno', $alumno)->where('idGrupo', $grupo)->first(); //busca si hi ha
-        $this->validateByModelRules($request, $elemento);
+        if (!$elemento) {
+            abort(404);
+        }
         $elemento->fillAll($request);        // ompli i guarda
         return $this->redirect();
     }
 
-    protected function realStore(Request $request, $id = null)
+    protected function realStore(AlumnoGrupoUpdateRequest $request, $id = null)
     {
         $grupoTutoria = AuthUser()->grupoTutoria;
         $elemento = AlumnoGrupo::where('idAlumno', $id)->where('idGrupo', $grupoTutoria)->first(); //busca si hi ha
-        $this->validateByModelRules($request, $elemento);
+        if (!$elemento) {
+            abort(404);
+        }
 
         return $elemento->fillAll($request);        // ompli i guarda
     }
 
-    public function update(Request $request, $id)
+    public function update(AlumnoGrupoUpdateRequest $request, $id)
     {
         $this->realStore($request, $id);
         return $this->redirect();
@@ -106,18 +104,6 @@ class AlumnoGrupoController extends ModalController
             )
         );
         
-    }
-
-    private function validateByModelRules(Request $request, $elemento): void
-    {
-        if (!$elemento) {
-            abort(404);
-        }
-
-        $rules = method_exists($elemento, 'getRules') ? $elemento->getRules() : [];
-        if (!empty($rules)) {
-            $this->validate($request, $rules);
-        }
     }
 
 }

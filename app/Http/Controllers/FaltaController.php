@@ -5,8 +5,8 @@ namespace Intranet\Http\Controllers;
 use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\Falta;
 use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Http\Requests\FaltaRequest;
 
-use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Presentation\Crud\FaltaCrudSchema;
 use Intranet\Http\Traits\Autorizacion;
@@ -69,10 +69,8 @@ class FaltaController extends ModalController
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(FaltaRequest $request)
     {
-        $this->validate($request, FaltaCrudSchema::RULES);
-
         $id = $this->faltas()->create($request);
 
         if (!$request->boolean('baja') && UserisAllow(config('roles.rol.direccion'))) {
@@ -91,10 +89,8 @@ class FaltaController extends ModalController
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(FaltaRequest $request, $id)
     {
-        $this->validate($request, FaltaCrudSchema::RULES);
-
         $this->faltas()->update($id, $request);
         return $this->redirect();
     }

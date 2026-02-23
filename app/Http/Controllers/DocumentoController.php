@@ -8,9 +8,9 @@ use Intranet\Application\Documento\DocumentoLifecycleService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\IntranetController;
-
-
+use Intranet\Http\Requests\DocumentoStoreRequest;
 use Illuminate\Http\Request;
+
 use Intranet\Entities\Adjunto;
 use Intranet\Entities\Documento;
 use Intranet\Presentation\Crud\DocumentoCrudSchema;
@@ -95,8 +95,9 @@ class DocumentoController extends IntranetController
 
     public function store(Request $request, $fct = null)
     {
+        $this->validate($request, (new DocumentoStoreRequest())->rules());
        
-        if ($request->has('nota') && $this->validate($request, ['nota' => 'numeric|min:1|max:11'])) {
+        if ($request->filled('nota')) {
             $this->forms()->updateNota($this->alumnoFcts(), (int) $fct, $request->nota);
             if ($request->nota < 5) {
                 return $this->redirect();
