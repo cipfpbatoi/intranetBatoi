@@ -13,6 +13,23 @@ use Tests\TestCase;
  */
 class SignaturaPolicyTest extends TestCase
 {
+    public function test_manage_direction_panel_permet_direccio_o_admin(): void
+    {
+        $policy = new SignaturaPolicy();
+
+        $this->assertTrue($policy->manageDirectionPanel(
+            (object) ['dni' => 'DIR001', 'rol' => (int) config('roles.rol.direccion')]
+        ));
+        $this->assertTrue($policy->manageDirectionPanel(
+            (object) ['dni' => 'ADM001', 'rol' => (int) config('roles.rol.administrador')]
+        ));
+        $this->assertFalse($policy->manageDirectionPanel(
+            (object) ['dni' => 'PRF001', 'rol' => (int) config('roles.rol.profesor')]
+        ));
+        $this->assertFalse($policy->manageDirectionPanel((object) []));
+        $this->assertFalse($policy->manageDirectionPanel(null));
+    }
+
     public function test_manage_i_create_permeten_professor_amb_dni(): void
     {
         $policy = new SignaturaPolicy();

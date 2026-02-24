@@ -39,7 +39,7 @@ class PanelDualController extends BaseController
     
     protected function iniBotones()
     {
-        Gate::authorize('manageDualControl', Fct::class);
+        Gate::authorize('manageFctControl', Fct::class);
         $this->panel->setBoton('grid',new BotonImg(
                 'fctcap.dual',
                 [
@@ -59,7 +59,7 @@ class PanelDualController extends BaseController
     }
     protected function search()
     {
-        Gate::authorize('manageDualControl', Fct::class);
+        Gate::authorize('manageFctControl', Fct::class);
         $duals = Fct::esDual()->get();
         $grups = [];
         foreach ($duals as $dual){
@@ -73,7 +73,7 @@ class PanelDualController extends BaseController
 
     protected function show($id)
     {
-        Gate::authorize('manageDualControl', Fct::class);
+        Gate::authorize('manageFctControl', Fct::class);
         $grupo = $this->grupos()->find((string) $id);
         abort_unless($grupo !== null, 404);
         return redirect()->route('fct.linkQuality',['dni'=>$grupo->tutor]);

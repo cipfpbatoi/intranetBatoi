@@ -7,9 +7,11 @@ use Intranet\Application\Horario\HorarioService;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 
+use Illuminate\Support\Facades\Gate;
 use Intranet\Entities\Hora;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Falta;
+use Intranet\Entities\Profesor;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\HR\FitxatgeService;
 
@@ -44,11 +46,13 @@ class PanelGuardiaController extends BaseController
 
     protected function iniBotones()
     {
+        Gate::authorize('manageAttendance', Profesor::class);
         $this->panel->setBoton('index', new BotonBasico('guardia.', ['text' => 'Tornar Guàrdia']));
     }
 
     public function search()
     {
+        Gate::authorize('manageAttendance', Profesor::class);
         $sesion = sesion(hora());
         $dia_semana = nameDay(Hoy());
 

@@ -35,13 +35,13 @@ class PanelPGDualController extends BaseController
     
     protected function iniBotones()
     {
-        Gate::authorize('manageDualControl', Fct::class);
+        Gate::authorize('manageFctControl', Fct::class);
         Session::put('redirect', 'PanelPGDualController@indice');
     }
     
     protected function search()
     {
-        Gate::authorize('manageDualControl', Fct::class);
+        Gate::authorize('manageFctControl', Fct::class);
         $grupo = $this->grupos()->find((string) $this->search);
         abort_unless($grupo !== null, 404);
         $this->titulo = ['quien' => $grupo->nombre ];

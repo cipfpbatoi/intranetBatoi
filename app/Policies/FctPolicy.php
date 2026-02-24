@@ -112,7 +112,7 @@ class FctPolicy
      *
      * @param mixed $user
      */
-    public function manageDualControl($user): bool
+    public function manageFctControl($user): bool
     {
         if (!is_object($user) || !isset($user->rol)) {
             return false;

@@ -100,11 +100,11 @@ class FctPolicyTest extends TestCase
         $jefePractiques = (object) ['rol' => (int) config('roles.rol.jefe_practicas')];
         $tutor = (object) ['rol' => (int) config('roles.rol.tutor')];
 
-        $this->assertTrue($policy->manageDualControl($direccio));
-        $this->assertTrue($policy->manageDualControl($admin));
-        $this->assertTrue($policy->manageDualControl($jefePractiques));
-        $this->assertFalse($policy->manageDualControl($tutor));
-        $this->assertFalse($policy->manageDualControl((object) []));
-        $this->assertFalse($policy->manageDualControl(null));
+        $this->assertTrue($policy->manageFctControl($direccio));
+        $this->assertTrue($policy->manageFctControl($admin));
+        $this->assertTrue($policy->manageFctControl($jefePractiques));
+        $this->assertFalse($policy->manageFctControl($tutor));
+        $this->assertFalse($policy->manageFctControl((object) []));
+        $this->assertFalse($policy->manageFctControl(null));
     }
 }

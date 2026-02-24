@@ -13,6 +13,17 @@ class SignaturaPolicy
     use InteractsWithProfesorOwnership;
 
     /**
+     * Determina si l'usuari pot accedir al panell de signatures de direcció.
+     *
+     * @param mixed $user
+     */
+    public function manageDirectionPanel($user): bool
+    {
+        return $this->hasRole($user, 'roles.rol.direccion')
+            || $this->hasRole($user, 'roles.rol.administrador');
+    }
+
+    /**
      * Determina si l'usuari pot gestionar fluxos globals de signatures.
      *
      * @param mixed $user
