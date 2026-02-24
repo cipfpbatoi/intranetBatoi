@@ -16,6 +16,7 @@ services:
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
             - '.:/var/www/html'
+            - selenium-downloads:/srv/documentsFct
         networks:
             - sail
         depends_on:
@@ -87,6 +88,8 @@ services:
         shm_size: '2gb'
         networks:
             - sail
+        volumes:
+          - selenium-downloads:/home/seluser/Downloads
 networks:
     sail:
         driver: bridge
@@ -95,3 +98,5 @@ volumes:
         driver: local
     caddy_data:
     caddy_config:
+    selenium-downloads:
+        driver: local
