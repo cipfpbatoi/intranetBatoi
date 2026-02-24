@@ -57,6 +57,7 @@ class ActividadControllerFeatureTest extends TestCase
     {
         $actividadId = $this->insertActividad();
         $this->insertProfesor('P401', 'Anna');
+        $this->authenticateAsProfesor('P401');
 
         DB::table('actividad_profesor')->insert([
             'idActividad' => $actividadId,
@@ -81,6 +82,7 @@ class ActividadControllerFeatureTest extends TestCase
         $actividadId = $this->insertActividad();
         $this->insertProfesor('P501', 'Biel');
         $this->insertProfesor('P502', 'Carla');
+        $this->authenticateAsProfesor('P501');
 
         DB::table('actividad_profesor')->insert([
             ['idActividad' => $actividadId, 'idProfesor' => 'P501', 'coordinador' => 1],
@@ -107,6 +109,7 @@ class ActividadControllerFeatureTest extends TestCase
         $actividadId = $this->insertActividad();
         $this->insertProfesor('P601', 'Dani');
         $this->insertProfesor('P602', 'Elena');
+        $this->authenticateAsProfesor('P601');
 
         DB::table('actividad_profesor')->insert([
             ['idActividad' => $actividadId, 'idProfesor' => 'P601', 'coordinador' => 1],
@@ -130,6 +133,8 @@ class ActividadControllerFeatureTest extends TestCase
     public function test_alta_i_baixa_grup_per_ruta(): void
     {
         $actividadId = $this->insertActividad();
+        $this->insertProfesor('P650', 'Irene');
+        $this->authenticateAsProfesor('P650');
 
         DB::table('grupos')->insert([
             'codigo' => 'GX1',
@@ -374,5 +379,11 @@ class ActividadControllerFeatureTest extends TestCase
                 'ajuda' => null,
             ],
         ]);
+    }
+
+    private function authenticateAsProfesor(string $dni): void
+    {
+        $profesor = Profesor::on('sqlite')->findOrFail($dni);
+        $this->actingAs($profesor, 'profesor');
     }
 }

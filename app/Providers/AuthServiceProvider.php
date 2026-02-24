@@ -4,6 +4,7 @@ namespace Intranet\Providers;
 
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Actividad;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\ImportRun;
 use Intranet\Entities\Profesor;
@@ -11,6 +12,7 @@ use Intranet\Entities\Reunion;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Colaboracion;
 use Intranet\Policies\ColaboracionPolicy;
+use Intranet\Policies\ActividadPolicy;
 use Intranet\Policies\DocumentoPolicy;
 use Intranet\Policies\EmpresaPolicy;
 use Intranet\Policies\FctPolicy;
@@ -38,6 +40,7 @@ class AuthServiceProvider extends ServiceProvider
         Profesor::class => ProfesorPolicy::class,
         Reunion::class => ReunionPolicy::class,
         Documento::class => DocumentoPolicy::class,
+        Actividad::class => ActividadPolicy::class,
     ];
 
     /**

@@ -55,12 +55,15 @@ class ActividadController extends ModalController
 
     public function store(ActividadRequest $request)
     {
+        $this->authorize('create', Actividad::class);
         $id = $this->persist($request);
         return $this->showDetalle(Actividad::findOrFail($id));
     }
 
     public function update(ActividadRequest $request, $id)
     {
+        $actividad = Actividad::findOrFail($id);
+        $this->authorize('update', $actividad);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -68,6 +71,7 @@ class ActividadController extends ModalController
     public function valoracion(ValoracionRequest $request)
     {
         $actividad = Actividad::findOrFail($request->idActividad);
+        $this->authorize('update', $actividad);
         $actividad->desenvolupament = $request->desenvolupament;
         $actividad->valoracio = $request->valoracio;
         $actividad->dades = $request->dades;
@@ -88,6 +92,8 @@ class ActividadController extends ModalController
      */
     public function showValue($id){
         $Actividad = Actividad::find($id);
+        abort_if($Actividad === null, 404);
+        $this->authorize('view', $Actividad);
         return view('extraescolares.showValue', compact('Actividad'));
     }
 
@@ -99,6 +105,8 @@ class ActividadController extends ModalController
      */
     public function value($id){
         $Actividad = Actividad::find($id);
+        abort_if($Actividad === null, 404);
+        $this->authorize('update', $Actividad);
         return view('extraescolares.value', compact('Actividad'));
     }
 
@@ -110,6 +118,7 @@ class ActividadController extends ModalController
      */
     public function printValue($id){
         $elemento = $this->class::findOrFail($id);
+        $this->authorize('view', $elemento);
         $informe = 'pdf.valoracionActividad';
         return app(PdfService::class)->hazPdf($informe, $elemento, null)->stream();
     }
@@ -154,6 +163,7 @@ class ActividadController extends ModalController
                 ->orderBy('apellido1')
                 ->orderBy('apellido2');
         }, 'grupos:codigo,nombre'])->findOrFail($id);
+        $this->authorize('view', $Actividad);
 
         $assignedProfesores = $Actividad->profesores->pluck('dni')->all();
         $assignedGrupos = $Actividad->grupos->pluck('codigo')->all();
@@ -212,6 +222,7 @@ class ActividadController extends ModalController
      */
     public function altaGrupo(Request $request, $actividad_id)
     {
+        $this->authorize('manageParticipants', Actividad::findOrFail($actividad_id));
         $this->participantsService()->addGroup($actividad_id, (string) $request->idGrupo);
         return $this->showDetalle($actividad_id);
     }
@@ -225,6 +236,7 @@ class ActividadController extends ModalController
      */
     public function borrarGrupo($actividad_id, $grupo_id)
     {
+        $this->authorize('manageParticipants', Actividad::findOrFail($actividad_id));
         $this->participantsService()->removeGroup($actividad_id, (string) $grupo_id);
         return $this->showDetalle($actividad_id);
     }
@@ -238,6 +250,7 @@ class ActividadController extends ModalController
      */
     public function altaProfesor(Request $request, $actividad_id)
     {
+        $this->authorize('manageParticipants', Actividad::findOrFail($actividad_id));
         $this->participantsService()->addProfesor($actividad_id, (string) $request->idProfesor);
         return $this->showDetalle($actividad_id);
     }
@@ -252,6 +265,7 @@ class ActividadController extends ModalController
      */
     public function borrarProfesor($actividad_id, $profesor_id)
     {
+        $this->authorize('manageParticipants', Actividad::findOrFail($actividad_id));
         if (!$this->participantsService()->removeProfesor($actividad_id, $profesor_id)) {
             Alert::info('No es pot donar de baixa el últim profesor');
             return back();
@@ -270,6 +284,7 @@ class ActividadController extends ModalController
      */
     public function coordinador($actividad_id, $profesor_id)
     {
+        $this->authorize('manageParticipants', Actividad::findOrFail($actividad_id));
         if (!$this->participantsService()->assignCoordinator($actividad_id, $profesor_id)) {
             Alert::warning('El professor seleccionat no participa en l’activitat.');
             return back();
@@ -287,6 +302,7 @@ class ActividadController extends ModalController
     public function notify($id)
     {
         $actividad = Actividad::findOrFail($id);
+        $this->authorize('notify', $actividad);
         $coordinador = app(ProfesorService::class)->find((string) $actividad->Creador());
         if (!$coordinador) {
             Alert::warning('No hi ha cap coordinador assignat per a esta activitat.');
@@ -308,6 +324,7 @@ class ActividadController extends ModalController
     {
         $grups = [];
         $actividad = Actividad::findOrFail($id);
+        $this->authorize('view', $actividad);
         $grups = ActividadGrupo::where('idActividad', $id)->pluck('idGrupo')->toArray();
         $todos = Alumno::join('alumnos_grupos', 'idAlumno', '=', 'nia')
                 ->select('alumnos.*', 'idGrupo')
@@ -338,6 +355,7 @@ class ActividadController extends ModalController
      */
     public function autorize($id){
         $actividad = Actividad::findOrFail($id);
+        $this->authorize('view', $actividad);
         if ($actividad->menores()->count()) {
             return view('extraescolares.autorizados', compact('actividad'));
         }
