@@ -91,7 +91,9 @@ class FctController extends IntranetController
 
     public function edit($id=null)
     {
-        $formulario = new FormBuilder($this->fcts()->findOrFail($id), ['idInstructor' => ['type'=>'select']]);
+        $fct = $this->fcts()->findOrFail($id);
+        $this->authorize('update', $fct);
+        $formulario = new FormBuilder($fct, ['idInstructor' => ['type'=>'select']]);
         $modelo = $this->model;
         return view($this->chooseView('edit'), compact('formulario', 'modelo'));
     }
@@ -113,6 +115,7 @@ class FctController extends IntranetController
     public function certificat($id)
     {
         $fct = $this->fcts()->findOrFail($id);
+        $this->authorize('update', $fct);
         /*if ($fct->asociacion == 4){
             $nameFile = storage_path("tmp/Dual_AVII_{$fct->id}.zip");
             if (file_exists($nameFile)) {
@@ -177,6 +180,7 @@ class FctController extends IntranetController
         $activa = Session::get('pestana') ? Session::get('pestana') : 1;
         Session::put('pestana', 1);
         $fct = $this->fcts()->findOrFail($id);
+        $this->authorize('update', $fct);
         $instructores = $fct->Colaboradores->pluck('dni');
 
         return view('fct.show', compact('fct', 'activa', 'instructores'));
@@ -191,6 +195,8 @@ class FctController extends IntranetController
      */
     public function destroy($id)
     {
+        $fct = $this->fcts()->findOrFail($id);
+        $this->authorize('delete', $fct);
         if (Session::get('pestana')) {
             $empresa = $this->fcts()->empresaIdByFct($id);
             $this->fcts()->deleteFct($id);
@@ -208,6 +214,7 @@ class FctController extends IntranetController
      */
     public function nouAlumno($idFct, Request $request)
     {
+        $this->authorize('update', $this->fcts()->findOrFail($idFct));
         $this->fcts()->attachAlumnoSimple($idFct, $request);
         
         return back();
@@ -236,6 +243,7 @@ class FctController extends IntranetController
      */
     public function nouInstructor($idFct, ColaboradorRequest $request)
     {
+        $this->authorize('update', $this->fcts()->findOrFail($idFct));
         $colaborador = new Colaborador([
             'idInstructor'=>$request->idInstructor,
             'name'=>$request->name,
@@ -253,6 +261,7 @@ class FctController extends IntranetController
      */
     public function deleteInstructor($idFct, $idInstructor)
     {
+       $this->authorize('update', $this->fcts()->findOrFail($idFct));
        $this->fcts()->deleteColaborador($idFct, $idInstructor);
        Session::put('pestana', 5);
        return back();
@@ -265,6 +274,7 @@ class FctController extends IntranetController
      */
     public function alumnoDelete($idFct, $idAlumno)
     {
+       $this->authorize('update', $this->fcts()->findOrFail($idFct));
        $this->fcts()->detachAlumno($idFct, $idAlumno);
        return back();
     }
@@ -276,12 +286,14 @@ class FctController extends IntranetController
      */
     public function modificaHoras($idFct, Request $request)
     {
+        $this->authorize('update', $this->fcts()->findOrFail($idFct));
         $this->fcts()->updateColaboradorHoras($idFct, $request->except('_token'));
         return back();
     }
 
     public function cotutor(Request $request, $idFct)
     {
+        $this->authorize('update', $this->fcts()->findOrFail($idFct));
         $this->fcts()->setCotutor($idFct, $request->cotutor ?? null);
 
         return back();

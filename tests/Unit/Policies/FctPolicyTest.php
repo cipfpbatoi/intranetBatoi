@@ -36,4 +36,13 @@ class FctPolicyTest extends TestCase
         $this->assertTrue($policy->update((object) ['rol' => (int) config('roles.rol.practicas')], $fct));
         $this->assertFalse($policy->update((object) ['rol' => (int) config('roles.rol.alumno')], $fct));
     }
+
+    public function test_delete_aplica_la_mateixa_regla_que_create(): void
+    {
+        $policy = new FctPolicy();
+        $fct = new Fct();
+
+        $this->assertTrue($policy->delete((object) ['rol' => (int) config('roles.rol.jefe_practicas')], $fct));
+        $this->assertFalse($policy->delete((object) ['rol' => (int) config('roles.rol.alumno')], $fct));
+    }
 }
