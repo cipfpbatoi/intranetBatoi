@@ -64,7 +64,7 @@
                         <input type='hidden' name='idReunion' value="{!!$formulario->getElemento()->id!!}">
                         <tr>
                             <td><input type='text' required name='orden' class="form-control"></td>
-                            <td><input type='text' required name='descripcion' class="form-control"></td>
+                            <td><textarea rows="1" required name='descripcion' class="form-control"></textarea></td>
                             <td><textarea  rows="1"  name='resumen'class="form-control" ></textarea></td>
                             <td>
                                 <input id="submit"
