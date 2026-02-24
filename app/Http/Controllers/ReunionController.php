@@ -31,6 +31,9 @@ use Response;
 use Styde\Html\Facades\Alert;
 use function dispatch;
 
+/**
+ * Controlador de gestió de reunions i assistències.
+ */
 class ReunionController extends ModalController
 {
     private ?GrupoService $grupoService = null;
@@ -81,6 +84,8 @@ class ReunionController extends ModalController
 
     public function store(ReunionStoreRequest $request)
     {
+        $this->authorize('create', Reunion::class);
+
         $elemento = DB::transaction(function() use ($request) {
             $id = $this->persist($request);
             $elemento = Reunion::findOrFail($id);
@@ -99,6 +104,7 @@ class ReunionController extends ModalController
     public function edit($id = null)
     {
         $elemento = Reunion::findOrFail($id);
+        $this->authorize('update', $elemento);
         if ($elemento->fichero != '') {
             $formulario = new FormBuilder($elemento, $this->formFields);
             $modelo = $this->model;
@@ -150,6 +156,8 @@ class ReunionController extends ModalController
 
     public function update(ReunionUpdateRequest $request, $id)
     {
+        $elemento = Reunion::findOrFail($id);
+        $this->authorize('update', $elemento);
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -163,6 +171,7 @@ class ReunionController extends ModalController
     public function altaProfesor(Request $request, $reunion_id)
     {
         $reunion = Reunion::findOrFail($reunion_id);
+        $this->authorize('manageParticipants', $reunion);
         $this->reunionService()->addProfesor($reunion, (string) $request->idProfesor);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
@@ -171,6 +180,7 @@ class ReunionController extends ModalController
     {
 
         $reunion = Reunion::findOrFail($reunion_id);
+        $this->authorize('manageParticipants', $reunion);
         $this->reunionService()->removeProfesor($reunion, (string) $profesor_id);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
@@ -179,6 +189,7 @@ class ReunionController extends ModalController
     {
 
         $reunion = Reunion::findOrFail($reunion_id);
+        $this->authorize('manageParticipants', $reunion);
         $this->reunionService()->removeAlumno($reunion, (string) $alumno_id);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
@@ -186,12 +197,16 @@ class ReunionController extends ModalController
     public function altaAlumno(Request $request, $reunion_id)
     {
         $reunion = Reunion::findOrFail($reunion_id);
+        $this->authorize('manageParticipants', $reunion);
         $this->reunionService()->addAlumno($reunion, (string) $request->idAlumno, (int) $request->capacitats);
         return redirect()->route(self::REUNION_UPDATE, ['reunion' => $reunion_id]);
     }
 
     public function altaOrden(OrdenReunionStoreRequest $request, $reunion_id)
     {
+        $reunion = Reunion::findOrFail($reunion_id);
+        $this->authorize('manageOrder', $reunion);
+
         if (!is_numeric($request->orden )) {
             $max = OrdenReunion::where('idReunion', '=', $reunion_id)->max('orden');
             $request->merge(['orden' => $max + 1]);
@@ -203,6 +218,9 @@ class ReunionController extends ModalController
 
     public function borrarOrden($reunion_id, $orden_id)
     {
+        $reunion = Reunion::findOrFail($reunion_id);
+        $this->authorize('manageOrder', $reunion);
+
         $orden = OrdenReunion::find($orden_id);
 
         if (!$orden) {
@@ -223,6 +241,7 @@ class ReunionController extends ModalController
     public function notify($id)
     {
         $elemento = Reunion::findOrFail($id);
+        $this->authorize('notify', $elemento);
         $this->reunionService()->notify($elemento);
         return back();
     }
@@ -232,6 +251,7 @@ class ReunionController extends ModalController
     public function email($id)
     {
         $elemento = Reunion::findOrFail($id);
+        $this->authorize('notify', $elemento);
         //esborra fitxer si ja estaven
         if (file_exists(storage_path("tmp/Reunion_$id.pdf"))) {
             unlink(storage_path("tmp/Reunion_$id.pdf"));
