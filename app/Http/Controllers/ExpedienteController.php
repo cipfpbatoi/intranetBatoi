@@ -60,6 +60,7 @@ class ExpedienteController extends ModalController
 
     public function store(ExpedienteRequest $request)
     {
+        $this->authorize('create', Expediente::class);
         $this->expedients()->createFromRequest($request);
         return $this->redirect();
     }
@@ -67,6 +68,7 @@ class ExpedienteController extends ModalController
 
     public function update(ExpedienteRequest $request, $id)
     {
+        $this->authorize('update', $this->expedients()->findOrFail($id));
         $this->expedients()->updateFromRequest($id, $request);
         return $this->redirect();
     }
@@ -105,6 +107,7 @@ class ExpedienteController extends ModalController
      */
     protected function init($id)
     {
+        $this->authorize('update', $this->expedients()->findOrFail($id));
         if (!app(ExpedienteWorkflowService::class)->init($id)) {
             return back()->with('error', 'Expedient no trobat.');
         }
@@ -123,6 +126,7 @@ class ExpedienteController extends ModalController
      */
     protected function pasaOrientacion($id)
     {
+        $this->authorize('update', $this->expedients()->findOrFail($id));
         if (!app(ExpedienteWorkflowService::class)->passToOrientation($id)) {
             return back()->with('error', 'Expedient no trobat.');
         }
@@ -131,6 +135,7 @@ class ExpedienteController extends ModalController
     }
 
     protected function assigna($id,Request $request){
+        $this->authorize('update', $this->expedients()->findOrFail($id));
         if (!app(ExpedienteWorkflowService::class)->assignCompanion($id, $request->idAcompanyant)) {
             return back()->with('error', 'Expedient no trobat.');
         }
@@ -145,6 +150,7 @@ class ExpedienteController extends ModalController
     public function pdf($id)
     {
         $expediente = $this->expedients()->findOrFail($id);
+        $this->authorize('view', $expediente);
         $dades[] = $expediente;
         $vista = $expediente->TipoExpediente->vista;
 
@@ -204,8 +210,20 @@ class ExpedienteController extends ModalController
     public function show($id)
     {
         $elemento = $this->expedients()->findOrFail($id);
+        $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('expediente.show', compact('elemento', 'modelo'));
+    }
+
+    /**
+     * Elimina un expedient amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', $this->expedients()->findOrFail($id));
+        return parent::destroy($id);
     }
 
 
