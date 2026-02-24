@@ -2,6 +2,8 @@
 
 namespace Intranet\Providers;
 
+use Intranet\Entities\Empresa;
+use Intranet\Policies\EmpresaPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -14,6 +16,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         'Intranet\Model' => 'Intranet\Policies\ModelPolicy',
+        Empresa::class => EmpresaPolicy::class,
     ];
 
     /**
