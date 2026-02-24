@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
+use Intranet\Presentation\Crud\TutoriaGrupoCrudSchema;
 
 class TutoriaGrupo extends Model
 {
@@ -20,18 +21,8 @@ class TutoriaGrupo extends Model
         'fecha',
     ];
 
-    protected $rules = [
-        'idTutoria' => 'required',
-        'idGrupo' => 'required',
-        'fecha' => 'required|date',
-        'observaciones' => 'required',
-        ];
-    protected $inputTypes = [
-        'idTutoria' => ['disabled' => 'disabled'],
-        'idGrupo' => ['disabled' => 'disabled'],
-        'observaciones' => ['type' => 'textarea'],
-        'fecha' => ['type' => 'date'],
-    ];
+    protected $rules = TutoriaGrupoCrudSchema::RULES;
+    protected $inputTypes = TutoriaGrupoCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
@@ -42,11 +33,14 @@ class TutoriaGrupo extends Model
     
     public function getFechaAttribute($entrada)
     {
+        if (empty($entrada)) {
+            return '';
+        }
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
     public function getNombreAttribute(){
-        return $this->Grupo->nombre;
+        return $this->Grupo->nombre ?? '';
     }
     public function Grupo()
     {

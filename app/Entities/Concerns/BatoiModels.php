@@ -321,20 +321,6 @@ trait BatoiModels
         return isset($this->fichero) && file_exists(storage_path('app/'.$this->fichero));
     }
     /**
-     * Guarda dades bàsiques de contacte en el model.
-     *
-     * @param string|null $contacto
-     * @param string|null $email
-     * @return bool
-     */
-    public function saveContact($contacto, $email)
-    {
-        $this->contacto = $contacto;
-        $this->email = $email;
-        return $this->save();
-    }
-
-    /**
      * Retorna el model serialitzat per a pantalles de confirmació.
      *
      * @return array

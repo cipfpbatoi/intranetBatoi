@@ -2,16 +2,17 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Services\General\StateService;
+use Intranet\Services\School\ModuloGrupoService;
 use Styde\Html\Facades\Alert;
 
 class ProgramacionController extends IntranetController
@@ -23,20 +24,30 @@ class ProgramacionController extends IntranetController
     protected $gridFields = ['Xciclo','XModulo', 'situacion'];
     protected $modal = false;
     protected $items = 6;
+    private ?HorarioService $horarioService = null;
+
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
     
     
     protected function search()
     {
         return Programacion::misProgramaciones()
-            ->with('Ciclo')
-            ->with('Modulo')
+            ->with(['Ciclo', 'Modulo'])
+            ->orderBy('idModuloCiclo')
             ->get();
     }
     
     //inicializat a init (normalment 1)
     protected function init($id)
     {
-        $prg = Programacion::find($id);
+        $prg = Programacion::findOrFail($id);
         $staSrv = new StateService($prg);
         $staSrv->putEstado($this->init);
         $prg->Profesor = AuthUser()->dni;
@@ -55,10 +66,10 @@ class ProgramacionController extends IntranetController
     public function avisaFaltaEntrega($id)
     {
         $modulo = Modulo_grupo::find($id);
-        foreach ($modulo->profesores() as $profesor){
+        foreach (app(ModuloGrupoService::class)->profesorIds($modulo) as $profesorId) {
             $texto = "Et falta per omplir el seguiment de l'avaluacio '" .
                 "' del mòdul '$modulo->Xmodulo' del Grup '$modulo->Xgrupo'";
-            avisa($profesor['idProfesor'], $texto);
+            avisa($profesorId, $texto);
         }
         Alert::info('Aviss enviat');
         return back();
@@ -68,8 +79,7 @@ class ProgramacionController extends IntranetController
     {
         $elemento = Modulo_ciclo::findOrFail($id);
         if (isset($elemento->Modulo->codigo)){
-            $horario = Horario::where('modulo', $elemento->Modulo->codigo)
-                ->first();
+            $horario = $this->horarios()->firstByModulo((string) $elemento->Modulo->codigo);
             if ($horario) {
                 avisa($horario->idProfesor, 'Et falta entregar la programacio de '.$elemento->Modulo->vliteral);
                 Alert::danger("El professor ".$horario->Mestre->FullName." del mòdul ".$elemento->Modulo->vliteral." ha estat avisat.");

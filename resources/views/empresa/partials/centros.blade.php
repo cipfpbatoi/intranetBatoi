@@ -15,18 +15,14 @@
     <div class="accordion"  id="accordion{{$colaboracion->id}}" role="tablist" aria-multiselectable="true">
         <div class="panel">
             <ul class="nav navbar-right panel_toolbox">
-                @if ($misColaboraciones->contains($colaboracion->id))
+                @if ($misColaboracionesIds->contains($colaboracion->id))
                     <li>
                         <a href="/colaboracion/{!!$colaboracion->id!!}/delete">
                             <em class="fa fa-trash"></em>
                         </a>
                     </li>
                 @endif
-                @if ( $cicloEsDepartamento =
-                    \Intranet\Entities\Ciclo::where('departamento',authUser()->departamento)
-                        ->where('id',$colaboracion->idCiclo)
-                        ->count()
-                )
+                @if (in_array($colaboracion->idCiclo, $ciclosDepartamentoIds, true))
                     <li>
                         <a class='editar' id="{{$colaboracion->id}}" href="/colaboracion/{!!$colaboracion->id!!}/edit">
                             <em class="fa fa-edit"></em>
@@ -50,7 +46,7 @@
                aria-expanded="true"
                aria-controls="collapseOne"
             >
-                @if ($colaboracion->idCiclo == $ciclo)
+                @if ($colaboracion->idCiclo == $cicloTutoria)
                     <h4 class="panel-title">
                         {{ $colaboracion->ciclo->ciclo }}
                         <em class="fa fa-group user-profile-icon"></em> {{$colaboracion->puestos}}

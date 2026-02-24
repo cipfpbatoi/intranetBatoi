@@ -2,15 +2,16 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Http\Requests\ResultadoStoreRequest;
 use Intranet\Http\Requests\ResultadoUpdateRequest;
 use Intranet\Http\Traits\Core\Imprimir;
+use Intranet\Services\School\ModuloGrupoService;
 use Styde\Html\Facades\Alert;
 
 
@@ -22,6 +23,8 @@ class ResultadoController extends ModalController
 {
 
     use Imprimir;
+
+    private ?GrupoService $grupoService = null;
 
     /**
      * @var string
@@ -49,6 +52,21 @@ class ResultadoController extends ModalController
 
     }
 
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
     private function rellenaPropuestasMejora($idModulo){
         $programacion = Programacion::where('idModuloCiclo', $idModulo)->first()->id;
         return redirect("/programacion/$programacion/seguimiento");
@@ -57,12 +75,11 @@ class ResultadoController extends ModalController
     public function store(ResultadoStoreRequest $request)
     {
         if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
-            $newRes = new Resultado();
             // Assegurem professor informant abans de guardar
             if (!$request->filled('idProfesor')) {
                 $request->merge(['idProfesor' => AuthUser()->dni]);
             }
-            $newRes->fillAll($request);
+            $this->persist($request);
             return $this->redirect();
         }
         Alert::danger("Eixe mòdul no es dona en eixe grup");
@@ -71,7 +88,7 @@ class ResultadoController extends ModalController
 
     public function update(ResultadoUpdateRequest $request, $id)
     {
-        Resultado::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 
@@ -80,7 +97,8 @@ class ResultadoController extends ModalController
      */
     public function search()
     {
-        return Resultado::whereIn('idModuloGrupo', hazArray(Modulo_Grupo::MisModulos(), 'id', 'id'))->get();
+        $misModulos = app(ModuloGrupoService::class)->misModulos(AuthUser()->dni);
+        return Resultado::whereIn('idModuloGrupo', hazArray($misModulos, 'id', 'id'))->get();
     }
 
     /**
@@ -88,7 +106,7 @@ class ResultadoController extends ModalController
      */
     public function listado()
     {
-        if ($grupo = Grupo::select('codigo', 'nombre')->QTutor()->largestByAlumnes()->first()) {
+        if ($grupo = $this->grupos()->largestByTutor(AuthUser()->dni)) {
             $resultados = Resultado::QGrupo($grupo->codigo)->orderBy('idModuloGrupo')
                             ->orderBy('evaluacion')->get();
             $datosInforme = $grupo->nombre;

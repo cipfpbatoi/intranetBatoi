@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Presentation\Crud\TipoActividadCrudSchema;
 
 
 class TipoActividad extends Model
@@ -12,6 +13,7 @@ class TipoActividad extends Model
     protected $table = 'tipo_actividad';
 
     protected $fillable = ['id','cliteral','vliteral','departamento_id','justificacio'];
+    protected $inputTypes = TipoActividadCrudSchema::INPUT_TYPES;
 
 
 

@@ -3,6 +3,7 @@
 namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Intranet\Presentation\Crud\CursoCrudSchema;
 
 class CursoRequest extends FormRequest
 {
@@ -23,13 +24,6 @@ class CursoRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-                'titulo' => 'required',
-                'fecha_inicio' => 'required|date',
-                'fecha_fin' => 'required|date',
-                'horas' => 'required|integer|max:255',
-                'aforo' => 'numeric',
-                'comentarios' => 'required'
-        ];
+        return CursoCrudSchema::RULES;
     }
 }

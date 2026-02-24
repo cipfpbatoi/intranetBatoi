@@ -2,11 +2,10 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use DB;
 use Intranet\Entities\Signatura;
 use Intranet\Services\Signature\DigitalSignatureService;
 
-class SignaturaController extends ApiBaseController
+class SignaturaController extends ApiResourceController
 {
     protected $model = 'Signatura';
     
@@ -16,8 +15,9 @@ class SignaturaController extends ApiBaseController
      * @return array
      */
 
-    public function show($cadena, $send = true)
+    public function show($id)
     {
+        $cadena = (string) $id;
         $signatura = Signatura::findOrFail($cadena);
 
         $data = DigitalSignatureService::validateUserSign($signatura->routeFile);

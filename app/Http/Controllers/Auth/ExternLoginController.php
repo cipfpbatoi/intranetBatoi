@@ -3,9 +3,9 @@ namespace Intranet\Http\Controllers\Auth;
 
 
 use Illuminate\Http\Request;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Intranet\Entities\Profesor;
 
 class ExternLoginController extends Controller
 {
@@ -21,6 +21,7 @@ class ExternLoginController extends Controller
     */
 
     use AuthenticatesUsers;
+    private ?ProfesorService $profesorService = null;
 
     protected $redirectTo = '/home';
 
@@ -40,7 +41,10 @@ class ExternLoginController extends Controller
 
     public function showExternLoginForm($token)
     {
-        $professor = Profesor::where('api_token', $token)->first();
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+        $professor = $this->profesorService->findByApiToken((string) $token);
         if ($professor && $professor->changePassword) {
             return view('auth/profesor/externLogin', compact('professor'));
         } else {

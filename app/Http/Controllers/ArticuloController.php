@@ -41,14 +41,13 @@ class ArticuloController extends ModalController
 
     public function store(ArticuloRequest $request)
     {
-        $newArt = new Articulo();
-        $newArt->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(ArticuloRequest $request, $id)
     {
-        Articulo::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

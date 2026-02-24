@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\SettingRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Setting;
@@ -37,18 +37,16 @@ class SettingController extends ModalController
         $this->panel->setBotonera(['create'], ['edit','delete']);
     }
 
-    public function store(Request $request)
+    public function store(SettingRequest $request)
     {
-        $new = new Setting();
-        $new->fillAll($request);
-        $new->save();
+        $this->persist($request);
         Alert::info(system('php ./../artisan cache:clear'));
         return back();
     }
 
-    public function update(Request $request, $id)
+    public function update(SettingRequest $request, $id)
     {
-        Setting::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         Alert::info(system('php ./../artisan cache:clear'));
         return back();
     }

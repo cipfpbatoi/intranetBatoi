@@ -3,6 +3,7 @@
 namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Intranet\Presentation\Crud\ComisionCrudSchema;
 
 class ComisionRequest extends FormRequest
 {
@@ -23,18 +24,8 @@ class ComisionRequest extends FormRequest
      */
     public function rules()
     {
-        $dia = authUser()->dni == config('avisos.director')?'today':'tomorrow';
-        return [
-            'servicio' => 'required',
-            'kilometraje' => 'required|integer',
-            'desde' => "required|date|after:$dia",
-            'hasta' => 'required|date|after:desde',
-            'alojamiento' => 'required|numeric',
-            'comida' => 'required|numeric',
-            'gastos' => 'required|numeric',
-            'medio' => 'required|numeric',
-            'marca' => 'required_if:medio,0|required_if:medio,1|max:30',
-            'matricula' => 'required_if:medio,0|required_if:medio,1|max:10'
-        ];
+        $isDirector = authUser()->dni == config('avisos.director');
+
+        return ComisionCrudSchema::requestRules($isDirector);
     }
 }

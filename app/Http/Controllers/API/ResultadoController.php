@@ -6,7 +6,7 @@ use Intranet\Entities\Actividad;
 use Illuminate\Http\Request;
 use \DB;
 
-class ResultadoController extends ApiBaseController
+class ResultadoController extends ApiResourceController
 {
 
     protected $model = 'Resultado';

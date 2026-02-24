@@ -1,10 +1,10 @@
 <?php
 namespace Intranet\Services\Notifications;
 
-use Intranet\Entities\Grupo;
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Hora;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Profesor;
 use Intranet\Jobs\SendEmail;
 use Styde\Html\Facades\Alert;
 use Carbon\Carbon;
@@ -14,9 +14,15 @@ use function hora, nameDay;
 class AdviseTeacher
 {
     public function __construct(
-        private ?NotificationService $notificationService = null
+        private ?NotificationService $notificationService = null,
+        private ?ProfesorService $profesorService = null,
+        private ?HorarioService $horarioService = null,
+        private ?GrupoService $grupoService = null
     ) {
         $this->notificationService = $notificationService ?? app(NotificationService::class);
+        $this->profesorService = $profesorService ?? app(ProfesorService::class);
+        $this->horarioService = $horarioService ?? app(HorarioService::class);
+        $this->grupoService = $grupoService ?? app(GrupoService::class);
     }
 
     /**
@@ -29,7 +35,7 @@ class AdviseTeacher
         if (is_object($emisor) && isset($emisor->shortName)) {
             $emisor = $emisor->shortName;
         }
-        $emisor = $emisor ?? (Profesor::find($idEmisor)?->shortName ?? 'Sistema');
+        $emisor = $emisor ?? ($this->profesorService->find($idEmisor)?->shortName ?? 'Sistema');
 
         $grupos = $this->affectedGroups($elemento, $idEmisor);
         if ($grupos->isEmpty()) {
@@ -49,24 +55,14 @@ class AdviseTeacher
     public function affectedGroups(object $elemento, string $idProfesor): Collection
     {
         if (!Carbon::parse($elemento->desde)->isSameDay(Carbon::parse($elemento->hasta))) {
-            return Horario::distinct()
-                ->select('idGrupo')
-                ->Profesor($idProfesor)
-                ->whereNotNull('idGrupo')
-                ->get();
+            return $this->horarioService->gruposByProfesor($idProfesor);
         }
 
         $diaSemana = nameDay($elemento->desde);
         $horas = $this->hoursAffected($elemento);
 
         if ($horas->isNotEmpty()) {
-            return Horario::distinct()
-                ->select('idGrupo')
-                ->Profesor($idProfesor)
-                ->Dia($diaSemana)
-                ->whereNotNull('idGrupo')
-                ->whereIn('sesion_orden', $horas)
-                ->get();
+            return $this->horarioService->gruposByProfesorDiaAndSesiones($idProfesor, $diaSemana, $horas->all());
         }
 
         return collect();
@@ -76,7 +72,7 @@ class AdviseTeacher
     {
         $idEmisor = $elemento->idProfesor;
         foreach ($this->affectedGroups($elemento, $idEmisor) as $grupoItem) {
-            $grupo = Grupo::find($grupoItem->idGrupo);
+            $grupo = $this->grupoService?->find((string) $grupoItem->idGrupo);
 
             if ($grupo && $grupo->Tutor) {
                 $correoTutor = $grupo->Tutor->Sustituye?->email ?? $grupo->Tutor->email;
@@ -100,11 +96,7 @@ class AdviseTeacher
 
     private function teachersAffected(Collection $grupos, string  $emisor): Collection
     {
-        return Horario::distinct()
-            ->select('idProfesor')
-            ->whereIn('idGrupo', $grupos->pluck('idGrupo'))
-            ->where('idProfesor', '<>', $emisor)
-            ->get();
+        return $this->horarioService->profesoresByGruposExcept($grupos->pluck('idGrupo')->all(), $emisor);
     }
 
     private function hoursAffected(object $elemento): Collection

@@ -2,8 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
+use Intranet\Http\Requests\ModuloRequest;
 use Illuminate\Support\Facades\Auth;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
@@ -16,7 +17,7 @@ use Intranet\UI\Panels\Panel;
  * Class ModuloController
  * @package Intranet\Http\Controllers
  */
-class ModuloController extends IntranetController
+class ModuloController extends ModalController
 {
 
     /**
@@ -32,11 +33,6 @@ class ModuloController extends IntranetController
      */
     protected $gridFields = ['codigo', 'vliteral','cliteral'];
     /**
-     * @var bool
-     */
-    protected $modal = true;
-
-    /**
      *
      */
     protected function iniBotones()
@@ -44,12 +40,18 @@ class ModuloController extends IntranetController
         $this->panel->setBoton('grid', new BotonImg('modulo.edit', ['roles' => config('roles.rol.administrador')]));
     }
 
+    public function update(ModuloRequest $request, $id)
+    {
+        $this->persist($request, $id);
+        return $this->redirect();
+    }
+
 //    protected function asigna()
 //    {
 //        $todos = Modulo::all();
 //        foreach ($todos as $uno) {
 //            if ($uno->idCiclo == NULL){
-//                $grupo = Horario::select('idGrupo')
+//                $grupo = model de grup per horari
 //                        ->where('modulo', '=', $uno->codigo)
 //                        ->first();
 //                if ($grupo) {
@@ -74,7 +76,7 @@ class ModuloController extends IntranetController
 //                    case 'Inglés Técnico II-S / Horario reservado para la docencia en inglés':
 //                    case 'Inglés'   : $uno->departamento = 1; break;
 //                    default : 
-//                        $grupo = Horario::select('idGrupo')
+//                        $grupo = model de grup per horari
 //                            ->where('modulo', '=', $uno->codigo)
 //                            ->first();
 //                        if ($grupo) {

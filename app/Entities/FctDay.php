@@ -3,11 +3,6 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Entities\Poll\Vote;
-use Jenssegers\Date\Date;
-use Intranet\Events\ActivityReport;
-use Intranet\Events\FctCreated;
-use Illuminate\Support\Arr;
 
 
 class FctDay extends Model
@@ -25,16 +20,29 @@ class FctDay extends Model
         'descripcio',
     ];
 
-    /**
-     * Relació amb AlumnoFct (molts a un)
-     */
-    public function alumnoFct()
+    protected $casts = [
+        'colaboracion_id' => 'integer',
+        'hores_previstes' => 'float',
+        'hores_realitzades' => 'float',
+    ];
+
+    public function Colaboracion()
     {
-        return $this->belongsTo(AlumnoFct::class, 'alumno_fct_id');
+        return $this->belongsTo(Colaboracion::class, 'colaboracion_id', 'id');
     }
+
+    
     public function getHorariAttribute()
     {
-        return $this->alumnoFct->Fct->Colaboracion->Centro->horarios ?? null;
+        return $this->Colaboracion?->Centro?->horarios ?? null;
+    }
+
+    /**
+     * Normalitza valors buits perquè la BBDD no reba '' en una FK integer nullable.
+     */
+    public function setColaboracionIdAttribute($value): void
+    {
+        $this->attributes['colaboracion_id'] = ($value === '' || $value === null) ? null : (int) $value;
     }
 
 }

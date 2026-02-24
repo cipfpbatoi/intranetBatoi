@@ -6,9 +6,9 @@ use Intranet\Services\HR\PresenciaResumenService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use Intranet\Http\Controllers\API\ApiBaseController;
+use Intranet\Http\Controllers\API\ApiResourceController;
 
-class PresenciaResumenController extends ApiBaseController
+class PresenciaResumenController extends ApiResourceController
 {
     public function rango(Request $request, PresenciaResumenService $svc)
     {
@@ -17,7 +17,7 @@ class PresenciaResumenController extends ApiBaseController
         $dni   = $request->query('dni'); // <- filtre opcional per professor
 
         if (!$desde || !$hasta) {
-            return response()->json(['error' => 'Missing desde/hasta'], 422);
+            return $this->sendError('Missing desde/hasta', 422);
         }
 
         $desdeDate = Carbon::parse($desde)->startOfDay();

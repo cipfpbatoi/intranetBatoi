@@ -5,6 +5,7 @@ namespace Intranet\Entities;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Presentation\Crud\ComisionCrudSchema;
 
 class Comision extends Model
 {
@@ -43,14 +44,7 @@ class Comision extends Model
         'itinerario',
     ];
 
-    protected $inputTypes = [
-        'idProfesor' => ['type' => 'hidden'],
-        'medio' => ['type' => 'select'],
-        'desde' => ['type' => 'datetime'],
-        'hasta' => ['type' => 'datetime'],
-        'fct' => ['type' => 'checkbox'],
-        'servicio' => ['type' => 'textarea'],
-    ];
+    protected $inputTypes = ComisionCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,

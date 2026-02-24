@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -16,14 +16,11 @@ use Intranet\Entities\Curso;
 use Intranet\Entities\Alumno;
 use Intranet\Services\UI\FormBuilder;
 
-class CalendariFctController extends IntranetController
+class CalendariFctController extends ModalController
 {
     protected $perfil = 'profesor';
     protected $model = 'Alumno';
     protected $gridFields = ['fullName'  ];
-    protected $modal = true;
-
-
     public function search()
     {
         $this->titulo = ['quien' => $this->search];

@@ -5,7 +5,7 @@ namespace Intranet\Http\Controllers\API;
 use Intranet\Entities\Reunion;
 use Illuminate\Http\Request;
 
-class ReunionController extends ApiBaseController
+class ReunionController extends ApiResourceController
 {
 
     protected $model = 'Reunion';

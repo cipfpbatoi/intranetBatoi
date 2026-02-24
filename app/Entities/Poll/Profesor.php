@@ -2,9 +2,9 @@
 
 namespace Intranet\Entities\Poll;
 
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Modulo_grupo;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Departamento;
+use Intranet\Services\School\ModuloGrupoService;
 
 class Profesor extends ModelPoll
 {
@@ -14,9 +14,14 @@ class Profesor extends ModelPoll
             return null;
         }
         $modulos = collect();
+        $moduloGrupoService = app(ModuloGrupoService::class);
         foreach (authUser()->Grupo as $grupo) {
             foreach ($grupo->Modulos as $modulo) {
-                $modulos->push(['option1'=>$modulo,'option2'=>$modulo->Profesores()]);
+                $modulos->push([
+                    'option1' => $modulo,
+                    // Manté el format esperat pel wizard de polls (array de llistes de DNIs).
+                    'option2' => [$moduloGrupoService->profesorIds($modulo)->values()->all()],
+                ]);
             }
         }
         return $modulos;
@@ -25,7 +30,7 @@ class Profesor extends ModelPoll
     public static function loadVotes($id)
     {
         $myVotes = array();
-        foreach (Modulo_grupo::misModulos() as $modulo) {
+        foreach (app(ModuloGrupoService::class)->misModulos(AuthUser()->dni) as $modulo) {
             $myVotes[$modulo->ModuloCiclo->Modulo->literal][$modulo->Grupo->codigo]
                 = Vote::myVotes($id, $modulo->id)->get();
         }
@@ -34,8 +39,9 @@ class Profesor extends ModelPoll
 
     public static function loadGroupVotes($id)
     {
-        foreach (Grupo::misGrupos()->get() as $grup) {
-            $modulos = hazArray(Grupo::find($grup->codigo)->Modulos, 'id');
+        $myGroupsVotes = [];
+        foreach (app(GrupoService::class)->misGrupos() as $grup) {
+            $modulos = hazArray($grup->Modulos, 'id');
             $myGroupsVotes[$grup->codigo] = Vote::myGroupVotes($id, $modulos)->get();
         }
         return $myGroupsVotes;
@@ -59,7 +65,7 @@ class Profesor extends ModelPoll
      */
     private static function aggregateGrupo($option1, &$votes): void
     {
-        foreach (Grupo::all() as $grupo) {
+        foreach (app(GrupoService::class)->all() as $grupo) {
             foreach ($grupo->Modulos as $modulo) {
                 if (isset($option1[$modulo->id])) {
                     foreach ($option1[$modulo->id] as $key => $optionVotes) {

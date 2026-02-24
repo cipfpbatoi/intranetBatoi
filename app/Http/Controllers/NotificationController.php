@@ -2,13 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Notification\NotificationInboxService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
-use Intranet\Entities\Notification;
 use Intranet\UI\Botones\BotonImg;
-use Jenssegers\Date\Date;
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Alumno;
 use Styde\Html\Facades\Alert;
 
 /**
@@ -17,6 +14,7 @@ use Styde\Html\Facades\Alert;
  */
 class NotificationController extends IntranetController
 {
+    private ?NotificationInboxService $notificationInboxService = null;
 
     /**
      * @var string
@@ -26,25 +24,24 @@ class NotificationController extends IntranetController
      * @var array
      */
     protected $gridFields = ['fecha','emisor', 'motivo'];
-    /**
-     * @var
-     */
-    protected $key;
-    /**
-     * @var array
-     */
     // Use el layout de notificacions personalitzat per a la vista show
     protected $vista = ['show' => 'notification'];
+
+    private function inbox(): NotificationInboxService
+    {
+        if ($this->notificationInboxService === null) {
+            $this->notificationInboxService = app(NotificationInboxService::class);
+        }
+
+        return $this->notificationInboxService;
+    }
 
     /**
      * @return mixed
      */
     protected function search()
     {
-        $userKey = AuthUser()->primaryKey;
-        return Notification::where('notifiable_id', "=", AuthUser()->$userKey)
-                ->orderBy('created_at', 'desc')
-                ->get();
+        return $this->inbox()->listForUser(AuthUser());
     }
 
     /**
@@ -53,9 +50,7 @@ class NotificationController extends IntranetController
      */
     public function read($id)
     {
-        $notification = Notification::find($id);
-        $notification->read_at = new Date('now');
-        $notification->save();
+        $this->inbox()->markAsRead($id);
         return back();
     }
 
@@ -64,14 +59,7 @@ class NotificationController extends IntranetController
      */
     public function readAll()
     {
-        $userKey = AuthUser()->primaryKey;
-        if ($userKey == 'dni') {
-            $user = Profesor::find(AuthUser()->$userKey);
-        } else {
-            $user = Alumno::find(AuthUser()->$userKey);
-        }
-        $user->unreadNotifications->markAsRead();
-
+        $this->inbox()->markAllAsRead(AuthUser());
         return back();
     }
 
@@ -80,14 +68,7 @@ class NotificationController extends IntranetController
      */
     public function deleteAll()
     {
-        $userKey = AuthUser()->primaryKey;
-        if ($userKey == 'dni') {
-            $user = Profesor::find(AuthUser()->$userKey);
-        } else {
-            $user = Alumno::find(AuthUser()->$userKey);
-        }
-        $user->notifications()->delete();
-
+        $this->inbox()->deleteAll(AuthUser());
         return back();
     }
 
@@ -97,9 +78,7 @@ class NotificationController extends IntranetController
      */
     public function destroy($id)
     {
-        if ($borrar = Notification::find($id)) {
-            $borrar->delete();
-        }
+        $this->inbox()->deleteById($id);
         return back();
     }
 
@@ -118,29 +97,13 @@ class NotificationController extends IntranetController
      */
     public function show($id)
     {
-        try {
-            $modelo = $this->model;
-            $elemento = $this->extractData(Notification::findOrFail($id));
-        } catch (\Exception $exception) {
+        $modelo = $this->model;
+        $elemento = $this->inbox()->findForShow($id);
+        if (!$elemento) {
             Alert::danger('Notificació no trobada');
             return back();
         }
-        return view($this->chooseView('show'), compact('elemento', 'modelo'));
-    }
 
-    /**
-     * @param $notification
-     * @return mixed
-     */
-    private function extractData($notification)
-    {
-        foreach (explode(',', trim($notification->data, '{}')) as $trozo) {
-            if (strpos($trozo, '":"')) {
-                $ele = explode('":"', $trozo);
-                $ind = trim($ele[0], '"');
-                $notification->$ind=trim($ele[1], '"');
-            }
-        }
-        return $notification;
+        return view($this->chooseView('show'), compact('elemento', 'modelo'));
     }
 }

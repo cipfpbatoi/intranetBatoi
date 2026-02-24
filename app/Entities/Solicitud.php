@@ -3,6 +3,8 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
+use Intranet\Presentation\Crud\SolicitudCrudSchema;
 use Jenssegers\Date\Date;
 
 class Solicitud extends Model
@@ -21,41 +23,44 @@ class Solicitud extends Model
         'idOrientador',
         'fecha',
     ];
-    protected $inputTypes = [
-        'idAlumno' => ['type' => 'select'],
-        'idProfesor' => ['type' => 'hidden'],
-        'text1' => ['type' => 'textarea'],
-        'text2' => ['type' => 'textarea'],
-        'text3' => ['type' => 'textarea'],
-        'idOrientador' => ['type' => 'select'],
-        'fecha' => ['type' => 'date'],
-    ];
+    protected $inputTypes = SolicitudCrudSchema::INPUT_TYPES;
     
     public function getfechaAttribute($entrada)
     {
+        if (empty($entrada)) {
+            return '';
+        }
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
 
     public function getfechasolucionAttribute($salida)
     {
+        if (empty($salida)) {
+            return '';
+        }
         $fecha = new Date($salida);
         return $fecha->format('d-m-Y');
     }
 
     public function getIdOrientadorOptions()
     {
-        $orientador = [];
-        foreach (usersWithRol(config('roles.rol.orientador')) as $dni) {
-            $orientador[$dni] = Profesor::find($dni)->fullName;
+        $orientadorDnis = usersWithRol(config('roles.rol.orientador'));
+        if ($orientadorDnis === []) {
+            return [];
         }
-        return $orientador;
+
+        return Profesor::query()
+            ->whereIn('dni', $orientadorDnis)
+            ->get()
+            ->mapWithKeys(fn (Profesor $profesor) => [$profesor->dni => $profesor->fullName])
+            ->all();
     }
 
     public function getIdAlumnoOptions()
     {
         $misAlumnos = [];
-        $migrupos = Grupo::MisGrupos()->get();
+        $migrupos = app(GrupoService::class)->misGrupos();
         foreach ($migrupos as $migrupo) {
             if (isset($migrupo->codigo)) {
                 $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->codigo)->get();
@@ -85,7 +90,7 @@ class Solicitud extends Model
 
     public function getNomAlumAttribute()
     {
-        return $this->Alumno->FullName;
+        return $this->Alumno->FullName ?? '';
     }
     public function getSituacionAttribute()
     {
@@ -100,7 +105,7 @@ class Solicitud extends Model
 }
     public function getQuienAttribute()
     {
-        return $this->nomAlumn;
+        return $this->nomAlum;
     }
     public function scopeListos($query)
     {

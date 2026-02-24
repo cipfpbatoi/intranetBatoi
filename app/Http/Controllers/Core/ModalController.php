@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers\Core;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Http\Controllers\Controller;
@@ -195,7 +196,22 @@ abstract class ModalController extends Controller
         return redirect()->action($this->model . 'Controller@index');
     }
 
-
+    /**
+     * Persistix un model del controlador modal.
+     *
+     * Per defecte no valida res: la validació es delega a FormRequest
+     * o a la lògica específica del controlador fill.
+     *
+     * @param Request $request
+     * @param int|string|null $id
+     * @return mixed
+     */
+    protected function persist(Request $request, $id = null)
+    {
+        $modelClass = $this->resolveModelClass();
+        $elemento = $id ? $modelClass::findOrFail($id) : new $modelClass();
+        return $elemento->fillAll($request);
+    }
 
     /**
      * Crea una instància buida del model per al formulari modal.

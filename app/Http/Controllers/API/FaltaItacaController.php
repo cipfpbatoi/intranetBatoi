@@ -2,30 +2,45 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Horario\HorarioService;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\Falta_itaca;
-use Intranet\Entities\Horario;
-use Intranet\Entities\Falta_profesor;
 use Illuminate\Http\Request;
 use Intranet\Services\General\StateService;
+use Intranet\Services\HR\FitxatgeService;
 use Jenssegers\Date\Date;
-use function estaInstituto,sumarHoras;
+use function sumarHoras;
 
-class FaltaItacaController extends ApiBaseController
+class FaltaItacaController extends ApiResourceController
 {
 
     protected $model = 'Falta_itaca';
+    private ?HorarioService $horarioService = null;
+    private ?FitxatgeService $fitxatgeService = null;
+
+    private function horarios(): HorarioService
+    {
+        if ($this->horarioService === null) {
+            $this->horarioService = app(HorarioService::class);
+        }
+
+        return $this->horarioService;
+    }
+
+    private function fitxatge(): FitxatgeService
+    {
+        if ($this->fitxatgeService === null) {
+            $this->fitxatgeService = app(FitxatgeService::class);
+        }
+
+        return $this->fitxatgeService;
+    }
 
     public function potencial($dia, $idProfesor)
     {
 
-        if (!config('variables.controlDiario') || Falta_profesor::haFichado($dia, $idProfesor)->count()) {
-            $horas = Horario::Profesor($idProfesor)
-                    ->Dia(nameDay($dia))
-                    ->whereNotIn('modulo', config('constants.modulosNoLectivos'))
-                    ->whereNull('ocupacion')
-                    ->orderBy('sesion_orden')
-                    ->get();
+        if (!config('variables.controlDiario') || $this->fitxatge()->hasFichado($dia, (string) $idProfesor)) {
+            $horas = $this->horarios()->lectivasByProfesorAndDayOrdered((string) $idProfesor, nameDay($dia));
             $horasJ = [];
 
             foreach ($horas as $hora) {
@@ -49,7 +64,7 @@ class FaltaItacaController extends ApiBaseController
                     $horasT['checked'] = FALSE;
                     $horasT['estado'] = 0;
                     $horasT['justificacion'] = '';
-                    if (estaInstituto($idProfesor, $dia, sumarHoras($hora->desde, '00:30:00'))) {
+                    if ($this->fitxatge()->wasInsideAt((string) $idProfesor, (string) $dia, (string) sumarHoras($hora->desde, '00:30:00'))) {
                         $horasT['enCentro'] = TRUE;
                     }
                     else {

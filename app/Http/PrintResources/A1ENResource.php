@@ -2,7 +2,6 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Profesor;
 
 
 class A1ENResource extends PrintResource
@@ -23,7 +22,7 @@ class A1ENResource extends PrintResource
     public function toArray()
     {
         $empresa = $this->elements->Fct->Colaboracion->Centro->Empresa;
-        $director = Profesor::find(config('avisos.director'));
+        $director = cargo('director');
 
         return [
             'Text1' => config('contacto.codi'),

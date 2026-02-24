@@ -2,20 +2,16 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\OptionStoreRequest;
 use Intranet\Entities\Poll\Option;
-use Response;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
-use Intranet\UI\Botones\BotonImg;
 
 /**
  * Class OptionController
  * @package Intranet\Http\Controllers
  */
-class OptionController extends IntranetController
+class OptionController extends ModalController
 {
     /**
      * @var string
@@ -35,12 +31,12 @@ class OptionController extends IntranetController
     protected $gridFields = [ 'question','scala'];
 
     /**
-     * @param Request $request
+     * @param OptionStoreRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(OptionStoreRequest $request)
     {
-        parent::store($request);
+        $this->persist($request);
         return redirect()->action('PPollController@show', ['id' => $request->ppoll_id]);
     }
 

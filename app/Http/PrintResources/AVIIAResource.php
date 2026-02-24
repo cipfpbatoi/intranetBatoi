@@ -3,7 +3,6 @@
 namespace Intranet\Http\PrintResources;
 
 use Intranet\Entities\Grupo;
-use Intranet\Entities\Profesor;
 
 class AVIIAResource extends PrintResource
 {
@@ -22,8 +21,8 @@ class AVIIAResource extends PrintResource
      */
     public function toArray()
     {
-        $director = Profesor::find(config('avisos.director'))->fullName;
-        $secretario = Profesor::find(config('avisos.secretario'))->fullName;
+        $director = cargo('director')->fullName;
+        $secretario = cargo('secretario')->fullName;
         $dades_fct = [
             'SECRETARI' => $secretario,
             'DIRECTOR' => $director,

@@ -2,22 +2,18 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Entities\Comision;
-use Illuminate\Http\Request;
-use \DB;
-use Jenssegers\Date\Date;
-use Intranet\Entities\Notification;
+use Intranet\Application\Notification\NotificationInboxService;
 
-class NotificationController extends ApiBaseController
+class NotificationController extends ApiResourceController
 {
 
     protected $model = 'Notification';
 
     public function leer($id)
     {
-        $notification = Notification::find($id);
-        $notification->read_at = New Date('now');
-        $notification->save();
+        if (!app(NotificationInboxService::class)->markAsRead($id)) {
+            return $this->sendResponse(['updated' => false], 'Notificació no trobada');
+        }
         return $this->sendResponse(['updated' => true], 'OK');
     }
 

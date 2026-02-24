@@ -3,7 +3,7 @@
     @php
         use Carbon\Carbon;
 
-        $moduloGrupos = Intranet\Entities\Modulo_grupo::misModulos($elemento->dni);
+        $moduloGrupos = app(\Intranet\Services\School\ModuloGrupoService::class)->misModulos($elemento->dni);
         $today = Carbon::now();
         $startDate = Carbon::createFromDate($today->year, 9, 1); // 1 de setembre de l'any en curs
         $endDate = Carbon::createFromDate($today->year, 10, 14); // 14 d'octubre de l'any en curs

@@ -2,34 +2,39 @@
 
 namespace Intranet\Http\Controllers\API;
 
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Falta_profesor;
-use Intranet\Entities\Horario;
-use Illuminate\Http\Request;
+use Intranet\Application\Profesor\ProfesorService;
 
-class ProfesorController extends ApiBaseController
+class ProfesorController extends ApiResourceController
 {
 
     protected $model = 'Profesor';
+    private ?ProfesorService $profesorService = null;
+
+    private function profesores(): ProfesorService
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService;
+    }
 
     public function rol($dni)
     {
-        $data = Profesor::select('rol')
-                ->where('dni', $dni)
-                ->first();
+        $profesor = $this->profesores()->find((string) $dni);
+        $data = $profesor ? ['rol' => $profesor->rol] : null;
         return $this->sendResponse($data, 'OK');
     }
 
     public function getRol($rol)
     {
-        $all = Profesor::Activo()->get();
+        $all = $this->profesores()->activos();
         $data = [];
-        foreach ($all as $profesor){
-            if ($profesor->rol % $rol == 0){
-                $data[$profesor->dni]=$profesor->fullName;
+        foreach ($all as $profesor) {
+            if ($profesor->rol % $rol == 0) {
+                $data[$profesor->dni] = $profesor->fullName;
             }
         }
         return $this->sendResponse($data, 'OK');
     }
-    
 }

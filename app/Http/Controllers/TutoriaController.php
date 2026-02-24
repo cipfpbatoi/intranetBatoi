@@ -2,21 +2,38 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Response;
 use Intranet\Entities\Tutoria;
 use Intranet\Entities\TutoriaGrupo;
-use Intranet\Entities\Grupo;
+use Intranet\Presentation\Crud\TutoriaCrudSchema;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Facades\Session;
 
 class TutoriaController extends IntranetController
 {
+    private ?GrupoService $grupoService = null;
 
     protected $perfil = 'profesor';
     protected $model = 'Tutoria';
-    protected $gridFields = ['descripcion','tipos','hasta', 'Xobligatoria','Grupo','feedBack'];
+    protected $gridFields = TutoriaCrudSchema::GRID_FIELDS;
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
 
     public function index()
     {
@@ -25,7 +42,7 @@ class TutoriaController extends IntranetController
             return $this->indexTutoria();
         }
 
-        if ($grupo = Grupo::select('nombre')->QTutor()->get()->first()) {
+        if ($grupo = $this->grupos()->firstByTutor(AuthUser()->dni)) {
             $this->titulo = ['que' => $grupo->nombre];
             return parent::index();
         }
@@ -54,7 +71,11 @@ class TutoriaController extends IntranetController
 
     public function anexo($id)
     {
-        $grupo = Grupo::select('codigo')->QTutor()->get()->first()->codigo;
+        $grupo = $this->grupos()->firstByTutor(AuthUser()->dni)?->codigo;
+        if ($grupo === null) {
+            Alert::danger('No eres tutor de cap grup');
+            return back();
+        }
         $elemento = TutoriaGrupo::where('idTutoria', '=', $id)->where('idGrupo', '=', $grupo)->first();
         if (isset($elemento->idGrupo)) {
             return redirect()->route('tutoriagrupo.edit', ['id' => $elemento->id]);

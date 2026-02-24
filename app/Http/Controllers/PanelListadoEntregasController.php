@@ -2,6 +2,8 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 
 use Illuminate\Http\Request;
@@ -10,18 +12,17 @@ use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Ciclo;
-use Intranet\Entities\Horario;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Modulo_grupo;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Poll\Vote;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Programacion;
 use Intranet\Entities\Resultado;
 use Intranet\Entities\Reunion;
 use Intranet\Services\Document\TipoReunionService;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Services\General\GestorService;
+use Intranet\Services\School\ModuloGrupoService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 
@@ -41,7 +42,7 @@ class PanelListadoEntregasController extends BaseController
         $modulos = hazArray(
             Modulo_ciclo::whereIn(
                 'idModulo',
-                hazArray(Horario::distinct()->get(), 'modulo')
+                app(HorarioService::class)->distinctModulos()->filter()->values()->all()
             )->where(
                 'idDepartamento',
                 AuthUser()->departamento
@@ -197,10 +198,10 @@ class PanelListadoEntregasController extends BaseController
     public function avisaFaltaEntrega($id)
     {
         $modulo = Modulo_grupo::find($id);
-        foreach ($modulo->profesores() as $profesor) {
+        foreach (app(ModuloGrupoService::class)->profesorIds($modulo) as $profesorId) {
                 $texto = "Et falta per omplir el seguiment de l'avaluacio '" .
                         "' del mòdul '$modulo->Xmodulo' del Grup '$modulo->Xgrupo'";
-                avisa($profesor['idProfesor'], $texto);
+                avisa($profesorId, $texto);
         }
         Alert::info('Aviss enviat');
         return back();
@@ -232,7 +233,7 @@ class PanelListadoEntregasController extends BaseController
                 ->get();
         $todos = Resultado::Departamento($dep)->with('ModuloGrupo')->get();
         $profesores = hazArray(
-            Profesor::where('departamento', $dep)->get(),
+            app(ProfesorService::class)->byDepartamento($dep),
             'dni',
             'dni'
         );

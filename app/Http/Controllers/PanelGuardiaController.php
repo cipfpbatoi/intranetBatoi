@@ -2,15 +2,16 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Comision\ComisionService;
+use Intranet\Application\Horario\HorarioService;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 
-use Intranet\Entities\Profesor;
-use Intranet\Entities\Horario;
 use Intranet\Entities\Hora;
 use Intranet\Entities\Actividad;
-use Intranet\Entities\Comision;
 use Intranet\Entities\Falta;
 use Intranet\UI\Botones\BotonBasico;
+use Intranet\Services\HR\FitxatgeService;
 
 
 class PanelGuardiaController extends BaseController
@@ -20,6 +21,26 @@ class PanelGuardiaController extends BaseController
     protected $model = 'Horario';
     protected $gridFields = ['aula', 'Profesor', 'XGrupo', 'donde'];
     protected $titulo = ['quien' => 'Guardia'];
+
+    private function comisions(): ComisionService
+    {
+        return app(ComisionService::class);
+    }
+
+    private function profesores(): ProfesorService
+    {
+        return app(ProfesorService::class);
+    }
+
+    private function horarios(): HorarioService
+    {
+        return app(HorarioService::class);
+    }
+
+    private function fitxatge(): FitxatgeService
+    {
+        return app(FitxatgeService::class);
+    }
 
     protected function iniBotones()
     {
@@ -33,13 +54,7 @@ class PanelGuardiaController extends BaseController
 
 
         // Que s'hauria d'estar fent ara a l'institut
-        $ahora = Horario::distinct()
-                ->Dia($dia_semana)
-                ->where('sesion_orden', $sesion)
-                ->Lectivos()
-                ->whereNotNull('idGrupo')
-                ->whereNull('ocupacion')
-                ->get();
+        $ahora = $this->horarios()->lectivosByDayAndSesion($dia_semana, $sesion);
 
         // Quines activitats extraescolar estan programades ara al Centre
         $actividades = Actividad::Dia(Hoy())
@@ -64,16 +79,22 @@ class PanelGuardiaController extends BaseController
             }
         }
 
+        $comisionesHui = $this->comisions()->byDay(Hoy());
+
         // Mire si tot el món és al seu lloc
         foreach ($ahora as $horario)
             // si no està d'extraescolar
         {
             if (!isset($horario->donde)) {
-                $profesor = Profesor::find($horario->idProfesor);
-                if (estaDentro($profesor->dni))
+                $profesor = $this->profesores()->find((string) $horario->idProfesor);
+                if (!$profesor) {
+                    $horario->donde = 'No ha fitxat';
+                    continue;
+                }
+                if ($this->fitxatge()->isInside((string) $profesor->dni, false))
                     $horario->donde = 'Al centre';
                 else {
-                    $comision = Comision::Dia(Hoy())->where('idProfesor', $profesor->dni)->first();
+                    $comision = $comisionesHui->firstWhere('idProfesor', $profesor->dni);
                     if ($comision && $this->coincideHorario($comision, $sesion))
                         $horario->donde = 'En comisión de servicio';
                     else {

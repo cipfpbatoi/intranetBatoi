@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\PrintResources;
 
-use Intranet\Entities\Grupo;
+use Intranet\Application\Grupo\GrupoService;
 
 
 class AutorizacionGrupoResource extends PrintResource
@@ -29,7 +29,7 @@ class AutorizacionGrupoResource extends PrintResource
     {
         $nomTutor = AuthUser()->fullName;
         $dni = AuthUser()->dni;
-        $grupo = Grupo::where('tutor', '=', AuthUser()->dni)->largestByAlumnes()->first();
+        $grupo = app(GrupoService::class)->largestByTutor(AuthUser()->dni);
         $alumnes = '';
         $mes = mes(Hoy());
         $data_actual = new \DateTime();

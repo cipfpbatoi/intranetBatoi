@@ -3,6 +3,7 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Requests\AlumnoResultadoStoreRequest;
 
 use Illuminate\Http\Request;
 use Intranet\Entities\AlumnoResultado;
@@ -32,6 +33,7 @@ class PanelSeguimientoAlumnosController extends IntranetController
      */
     public function store(Request $request)
     {
+        $this->validate($request, (new AlumnoResultadoStoreRequest())->rules());
         $this->realStore($request);
         return back();
     }

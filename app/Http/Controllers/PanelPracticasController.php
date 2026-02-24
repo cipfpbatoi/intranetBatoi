@@ -2,14 +2,14 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\BaseController;
 
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\Grupo;
-use Intranet\Entities\Ciclo;
 
 class PanelPracticasController extends BaseController
 {
+    private ?GrupoService $grupoService = null;
 
     protected $perfil = 'profesor';
     protected $model = 'Grupo';
@@ -24,6 +24,21 @@ class PanelPracticasController extends BaseController
         'Calidad',
         'Xtutor'
     ];
+
+    public function __construct(?GrupoService $grupoService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
     
     protected function iniBotones()
     {
@@ -52,11 +67,11 @@ class PanelPracticasController extends BaseController
         
     }
     protected function search(){
-        return Grupo::whereHas('alumnos')->get();
+        return $this->grupos()->withStudents();
 
 
         /*$ciclos = hazArray(Ciclo::where('tipo',3)->get(),'id','id');
-        return Grupo::where('curso',2)
+        return $this->grupos()->byCurso(2)
             ->orWhereIn('idCiclo',$ciclos)
             ->get();*/
     }
@@ -64,7 +79,8 @@ class PanelPracticasController extends BaseController
 
     protected function show($id)
     {
-        $grupo = Grupo::find($id);
+        $grupo = $this->grupos()->find((string) $id);
+        abort_unless($grupo !== null, 404);
         return redirect()->route('fct.linkQuality',['dni'=>$grupo->tutor]);
     }
 

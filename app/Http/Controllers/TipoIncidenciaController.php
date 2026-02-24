@@ -9,6 +9,7 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\TipoIncidencia;
 use Intranet\Http\Requests\TipoIncidenciaRequest;
+use Intranet\Presentation\Crud\TipoIncidenciaCrudSchema;
 
 
 /**
@@ -22,14 +23,8 @@ class TipoIncidenciaController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'nombre', 'nom','profesor','tipo'];
-    protected $formFields = [
-        'id' => ['type' => 'text'],
-        'nombre' => ['type' => 'text'],
-        'nom' => ['type' => 'text'],
-        'idProfesor' => ['type' => 'select'],
-        'tipus' => ['type' => 'select']
-    ];
+    protected $gridFields = TipoIncidenciaCrudSchema::GRID_FIELDS;
+    protected $formFields = TipoIncidenciaCrudSchema::FORM_FIELDS;
     /**
      * @var string
      */
@@ -55,14 +50,13 @@ class TipoIncidenciaController extends ModalController
 
     public function store(TipoIncidenciaRequest $request)
     {
-        $new = new TipoIncidencia();
-        $new->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(TipoIncidenciaRequest $request, $id)
     {
-        TipoIncidencia::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

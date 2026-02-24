@@ -2,8 +2,6 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Entities\Empresa;
-use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
 
 
@@ -18,7 +16,7 @@ class PanelErasmusController extends PanelEmpresaSCController
      */
     public function search()
     {
-        return Empresa::where('europa', 1)->get();
+        return $this->empreses()->erasmusList();
     }
 
     /**

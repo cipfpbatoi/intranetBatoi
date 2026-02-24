@@ -9,6 +9,7 @@ use Intranet\Http\Requests\TipoActividadRequest;
 use Intranet\Http\Requests\TipoActividadUpdateRequest;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Entities\TipoActividad;
+use Intranet\Presentation\Crud\TipoActividadCrudSchema;
 
 
 /**
@@ -23,37 +24,27 @@ class TipoActividadController extends ModalController
      */
     protected $model = 'TipoActividad';
 
-    protected $formFields = [
-        'id' => ['type' => 'hidden'],
-        'cliteral' => ['type' => 'text'],
-        'vliteral' => ['type' => 'text'],
-        'justificacio' => ['type' => 'textarea'],
-    ];
+    protected $formFields = TipoActividadCrudSchema::FORM_FIELDS;
 
 
 
-    protected $gridFields = [ 'id','departamento' ,'vliteral'   ];
+    protected $gridFields = TipoActividadCrudSchema::GRID_FIELDS;
 
 
     public function store(TipoActividadRequest $request)
     {
-        $new = new TipoActividad();
-
-        $new->fillAll($request);
         if (esRol(authUser()->rol,config('roles.rol.jefe_dpto'))) {
-            $new->departamento_id = authUser()->departamento;
+            $request->merge(['departamento_id' => authUser()->departamento]);
         }
-        $new->save();
+        $this->persist($request);
 
         return $this->redirect();
     }
 
     public function update(TipoActividadUpdateRequest $request, $id)
     {
-        $new = TipoActividad::findOrFail($id);
-        $new->fillAll($request);
-        $new->departamento_id = authUser()->departamento;
-        $new->save();
+        $request->merge(['departamento_id' => authUser()->departamento]);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

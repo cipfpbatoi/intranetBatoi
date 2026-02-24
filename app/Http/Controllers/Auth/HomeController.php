@@ -32,7 +32,7 @@ abstract class HomeController extends Controller
                 return redirect('/fichar');
             }
 
-            if (!estaDentro() && !Session::get('userChange')) {
+            if (!$fitxatgeService->isInside($usuari->dni, true) && !Session::get('userChange')) {
                 $fitxatgeService->fitxar($usuari->dni);
             }
 

@@ -2,9 +2,10 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Comision\ComisionService;
 use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Presentation\Crud\ComisionCrudSchema;
 
-use DB;
 use Illuminate\Http\Request;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Support\Fct\DocumentoFctConfig;
@@ -36,37 +37,56 @@ class ComisionController extends ModalController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'descripcion', 'desde','total', 'situacion'];
+    protected $gridFields = ComisionCrudSchema::GRID_FIELDS;
+    protected $formFields = ComisionCrudSchema::FORM_FIELDS;
     /**
      * @var string
      */
     protected $model = 'Comision';
 
+    private ?ComisionService $comisionService = null;
+
+    public function __construct(?ComisionService $comisionService = null)
+    {
+        parent::__construct();
+        $this->comisionService = $comisionService;
+    }
+
+    private function comisionService(): ComisionService
+    {
+        if ($this->comisionService === null) {
+            $this->comisionService = app(ComisionService::class);
+        }
+
+        return $this->comisionService;
+    }
 
 
     public function store(ComisionRequest $request)
     {
-        $new = new Comision();
         $request->merge([
             'idProfesor' => $request->idProfesor ?? authUser()->dni,
         ]);
-         
-        $new->fillAll($request);
-        if ($new->fct) {
-            return $this->detalle($new->id);
+
+        $id = $this->persist($request);
+        $comision = $this->comisionService()->findOrFail((int) $id);
+
+        if ($comision->fct) {
+            return $this->detalle($comision->id);
         }
-        return $this->confirm($new->id);
+
+        return $this->confirm($comision->id);
     }
 
     public function update(ComisionRequest $request, $id)
     {
-        Comision::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 
     public function confirm($id)
     {
-        $comision = Comision::findOrFail($id);
+        $comision = $this->comisionService()->findOrFail((int) $id);
         if ($comision->estado == 0) {
             return ConfirmAndSend::render($this->model, $id, 'Enviar a direcció i correus confirmació');
         }
@@ -174,7 +194,10 @@ class ComisionController extends ModalController
 
     protected function init($id)
     {
-        $comision = Comision::find($id);
+        $comision = $this->comisionService()->find((int) $id);
+        if (!$comision) {
+            return $this->redirect();
+        }
         $this->enviarCorreos($comision);
         $stSrv = new StateService($comision);
         $stSrv->putEstado($this->init);
@@ -201,9 +224,7 @@ class ComisionController extends ModalController
      */
     public function paid($id)
     {
-        $elemento = Comision::findOrFail($id);
-        $elemento->estado = 5;
-        $elemento->save();
+        $this->setEstado($id, 5);
     }
 
     /**
@@ -212,9 +233,7 @@ class ComisionController extends ModalController
      */
     public function unpaid($id)
     {
-        $elemento = Comision::findOrFail($id);
-        $elemento->estado = 4;
-        $elemento->save();
+        $this->setEstado($id, 4);
         return back();
     }
 
@@ -223,13 +242,48 @@ class ComisionController extends ModalController
      */
     public function autorizar()
     {
-        StateService::makeAll(Comision::where('estado', '1')->get(), 2);
+        StateService::makeAll($this->comisionService()->pendingAuthorization(), 2);
         return back();
     }
 
     public function detalle($id)
     {
-        $comision = Comision::findOrFail($id);
+        $comision = $this->comisionService()->findOrFail((int) $id);
+        $allFcts = $this->buildFctOptions();
+
+        return view('comision.detalle', compact('comision', 'allFcts'));
+    }
+
+    public function createFct(Request $request, $comisionId)
+    {
+        $this->comisionService()->attachFct(
+            (int) $comisionId,
+            (int) $request->idFct,
+            (string) $request->hora_ini,
+            isset($request->aviso)
+        );
+        return $this->detalle($comisionId);
+    }
+
+    public function deleteFct($comisionId, $fctId)
+    {
+        $this->comisionService()->detachFct((int) $comisionId, (int) $fctId);
+        return $this->detalle($comisionId);
+    }
+
+    private function setEstado($id, int $estado): void
+    {
+        $this->comisionService()->setEstado((int) $id, $estado);
+    }
+
+    /**
+     * Retorna opcions de FCT per al selector de detall:
+     * una per centre (l'última per id), ordenades pel nom de centre.
+     *
+     * @return array<int, string>
+     */
+    private function buildFctOptions(): array
+    {
         $all = Fct::esFct()
             ->where(function ($query): void {
                 $query->misFcts()->orWhere('cotutor', authUser()->dni);
@@ -238,31 +292,12 @@ class ComisionController extends ModalController
             ->orderBy('id')
             ->get();
 
-        // Manté un únic FCT per centre (l'últim per id), i prepara el select ordenat per nom.
-        $allFcts = $all
+        return $all
             ->filter(fn (Fct $fct) => (bool) $fct->Colaboracion)
             ->keyBy(fn (Fct $fct) => (string) $fct->Colaboracion->idCentro)
             ->mapWithKeys(fn (Fct $fct) => [$fct->id => $fct->Centro])
             ->sort()
             ->all();
-
-        return view('comision.detalle', compact('comision', 'allFcts'));
-    }
-
-    public function createFct(Request $request, $comisionId)
-    {
-        $comision = Comision::find($comisionId);
-        $aviso = isset($request->aviso)?1:0;
-        $comision->fcts()
-            ->syncWithoutDetaching([$request->idFct => ['hora_ini' => $request->hora_ini ,'aviso' => $aviso]]);
-        return $this->detalle($comisionId);
-    }
-
-    public function deleteFct($comisionId, $fctId)
-    {
-        $comision = Comision::find($comisionId);
-        $comision->fcts()->detach($fctId);
-        return $this->detalle($comisionId);
     }
 
 }

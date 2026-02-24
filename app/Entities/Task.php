@@ -3,9 +3,9 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
+use Intranet\Presentation\Crud\TaskCrudSchema;
 use Jenssegers\Date\Date;
-use Styde\Html\Facades\Alert;
+use Intranet\Services\School\TaskFileService;
 
 
 class Task extends Model
@@ -21,11 +21,7 @@ class Task extends Model
         'action',
         'activa'
     ];
-    protected $inputTypes = [
-        'informativa' => ['type' => 'checkbox'],
-        'activa' => ['type' => 'checkbox'],
-        'vencimiento' => ['type' => 'date'],
-    ];
+    protected $inputTypes = TaskCrudSchema::INPUT_TYPES;
 
 
     public function Profesores()
@@ -43,6 +39,9 @@ class Task extends Model
     public function scopeMisTareas($query, $profesor=null)
     {
         $profesor = Profesor::find($profesor) ?? authUser();
+        if (!$profesor) {
+            return $query->whereRaw('1 = 0');
+        }
         $rolesProfesor = rolesUser($profesor->rol);
         return $query->whereIn('destinatario', $rolesProfesor)
             ->where('activa', 1);
@@ -50,7 +49,11 @@ class Task extends Model
 
     public function getmyDetailsAttribute()
     {
-        $teacher = $teacher?? authUser()->dni;
+        $teacher = authUser()->dni ?? null;
+        if (!$teacher) {
+            return null;
+        }
+
         return $this->profesores()->where('dni', $teacher)->first();
     }
 
@@ -73,6 +76,9 @@ class Task extends Model
 
     public function getVencimientoAttribute($entrada)
     {
+        if (empty($entrada)) {
+            return '';
+        }
         $fecha = new Date($entrada);
         return $fecha->format('d-m-Y');
     }
@@ -81,15 +87,17 @@ class Task extends Model
 
     public function getImageAttribute()
     {
-        if ($this->vencimiento <= hoy()) {
-            return 'warning.png';
-        } else {
-            if ($this->informativa) {
-                return 'informacion.jpeg';
-            } else {
-                return 'task.png';
-            }
+        $vencimiento = $this->getRawOriginal('vencimiento') ?: ($this->attributes['vencimiento'] ?? null);
+        if (empty($vencimiento)) {
+            return $this->informativa ? 'informacion.jpeg' : 'task.png';
         }
+
+        $vencimientoDate = (new Date($vencimiento))->format('Y-m-d');
+        if ($vencimientoDate <= date('Y-m-d')) {
+            return 'warning.png';
+        }
+
+        return $this->informativa ? 'informacion.jpeg' : 'task.png';
     }
 
     public function getDestinoAttribute()
@@ -113,22 +121,9 @@ class Task extends Model
         return $this->action ? (config('roles.actions')[$this->action] ?? '') : '';
     }
 
-    /**
-     * @param Request $request
-     */
     public function fillFile($file)
     {
-        if (!$file->isValid()) {
-            Alert::danger(trans('messages.generic.invalidFormat'));
-            return ;
-        }
-        $this->fichero = $file->storeAs(
-            'Eventos',
-            str_shuffle('abcdefgh123456').'.'.$file->getClientOriginalExtension(),
-            'public'
-        );
-        $this->save();
-
+        return app(TaskFileService::class)->store($file, $this);
     }
 
 

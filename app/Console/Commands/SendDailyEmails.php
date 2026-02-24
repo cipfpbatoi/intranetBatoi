@@ -3,13 +3,17 @@
 namespace Intranet\Console\Commands;
 
 use Illuminate\Console\Command;
-use Intranet\Entities\Profesor;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Notification;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\ResumenDiario;
 
 class SendDailyEmails extends Command
 {
+    public function __construct(private readonly ProfesorService $profesorService)
+    {
+        parent::__construct();
+    }
 
     /**
      * The name and signature of the console command.
@@ -33,7 +37,7 @@ class SendDailyEmails extends Command
      */
     public function handle()
     {
-        $todos = Profesor::all();
+        $todos = $this->profesorService->all();
         foreach ($todos as $profesor) {
             $notificaciones = Notification::where('notifiable_id', $profesor->dni)
                     ->whereDate('created_at', hoy())

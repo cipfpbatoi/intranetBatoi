@@ -2,11 +2,12 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
-use InfyOm\Generator\Utils\ResponseUtil;
-use Response;
-use Exception;
 use Intranet\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ApiResourceController extends Controller
 {
@@ -16,6 +17,7 @@ class ApiResourceController extends Controller
     protected $class;
     protected $resource;
     protected $guard='api';
+    private ?ProfesorService $profesorService = null;
 
     public function __construct()
     {
@@ -44,12 +46,14 @@ class ApiResourceController extends Controller
     {
         try {
             $class = $this->resolveClass();
-            $created = $class::create($request->all());
+            $payload = $this->validatedPayloadForStore($request);
+            $created = $class::create($payload);
 
             // Mantinc el teu format tradicional
             return $this->sendResponse(['created' => true, 'id' => $created->id], 'OK');
-        } catch (\Throwable $e) {
-            return $this->sendError($e->getMessage());
+        } catch (Throwable $e) {
+            report($e);
+            return $this->sendError('Internal server error', 500);
         }
     }
 
@@ -60,15 +64,17 @@ class ApiResourceController extends Controller
             $registro = $class::find($id);
 
             if (!$registro) {
-                return $this->sendError("Not found: {$class} #{$id}");
+                return $this->sendNotFound("Not found: {$class} #{$id}");
             }
 
-            $registro->update($request->all());
+            $payload = $this->validatedPayloadForUpdate($request);
+            $registro->update($payload);
             $registro->save();
 
             return $this->sendResponse(['updated' => true], 'OK');
-        } catch (\Throwable $e) {
-            return $this->sendError($e->getMessage());
+        } catch (Throwable $e) {
+            report($e);
+            return $this->sendError('Internal server error', 500);
         }
     }
 
@@ -78,7 +84,7 @@ class ApiResourceController extends Controller
         $item = $class::find($id);
 
         if (!$item) {
-            return $this->sendError("Not found: {$class} #{$id}");
+            return $this->sendNotFound("Not found: {$class} #{$id}");
         }
 
         return $this->hasResource()
@@ -92,7 +98,7 @@ class ApiResourceController extends Controller
         $item = $class::find($id);
 
         if (!$item) {
-            return $this->sendError("Not found: {$class} #{$id}");
+            return $this->sendNotFound("Not found: {$class} #{$id}");
         }
 
         return $this->sendResponse($item);
@@ -129,15 +135,144 @@ class ApiResourceController extends Controller
         return $this->resource && class_exists($this->resource);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
+    protected function validatedPayloadForStore(Request $request): array
+    {
+        $rules = $this->storeRules();
+        if (!empty($rules)) {
+            return $request->validate($rules);
+        }
+
+        return $this->filterMutationPayload($request);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function validatedPayloadForUpdate(Request $request): array
+    {
+        $rules = $this->updateRules();
+        if (!empty($rules)) {
+            return $request->validate($rules);
+        }
+
+        return $this->filterMutationPayload($request);
+    }
+
+    /**
+     * Sobrescriu en controladors concrets quan necessites validació en create.
+     *
+     * @return array<string, mixed>
+     */
+    protected function storeRules(): array
+    {
+        return [];
+    }
+
+    /**
+     * Sobrescriu en controladors concrets quan necessites validació en update.
+     *
+     * @return array<string, mixed>
+     */
+    protected function updateRules(): array
+    {
+        return [];
+    }
+
+    /**
+     * Permet limitar camps mutables per endpoint sense tocar el model.
+     * Retorna null per mantindre compatibilitat total.
+     *
+     * @return array<int, string>|null
+     */
+    protected function mutableFields(): ?array
+    {
+        return null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function filterMutationPayload(Request $request): array
+    {
+        $fields = $this->mutableFields();
+        if ($fields === null) {
+            return $request->all();
+        }
+
+        return $request->only($fields);
+    }
+
  
-    protected function sendResponse($result)
+    protected function sendResponse($result, $message = null)
     {
         return response()->json(['success'=>true,'data'=>$result]);
     }
 
-    protected function sendError($error, $code = 404)
+    protected function sendError($error, $code = 400)
     {
-        return response()->json(['success'=>false,'message'=>$error]);
+        return response()->json([
+            'success' => false,
+            'message' => is_string($error) ? $error : 'Request error',
+        ], $code);
+    }
+
+    protected function sendNotFound(string $error = 'Not found')
+    {
+        return $this->sendError($error, 404);
+    }
+
+    protected function sendFail($error, $code = 400)
+    {
+        if (is_array($error)) {
+            $success = (bool) ($error['success'] ?? false);
+            $message = (string) ($error['message'] ?? 'Request error');
+            $payload = ['success' => $success, 'message' => $message];
+            if (array_key_exists('errors', $error)) {
+                $payload['errors'] = $error['errors'];
+            }
+
+            return response()->json($payload, $code);
+        }
+
+        return $this->sendError((string) $error, $code);
+    }
+
+    public function ApiUser(Request $request)
+    {
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
+        }
+
+        return $this->profesorService->findByApiToken((string) $request->api_token);
+    }
+
+    /**
+     * Marca resposta d'endpoint legacy per facilitar deprecació controlada.
+     */
+    protected function markLegacyUsage(
+        JsonResponse $response,
+        string $legacyContract,
+        ?string $replacementHint = null
+    ): JsonResponse {
+        $response->headers->set('Deprecation', 'true');
+        $response->headers->set('Sunset', 'Wed, 31 Dec 2026 23:59:59 GMT');
+        if ($replacementHint !== null && $replacementHint !== '') {
+            $response->headers->set('X-API-Replacement', $replacementHint);
+        }
+
+        Log::info('API legacy contract consumed', [
+            'contract' => $legacyContract,
+            'path' => request()->path(),
+            'query' => request()->query(),
+            'user' => auth()->guard('api')->id(),
+            'ip' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
+
+        return $response;
     }
 
 }

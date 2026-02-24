@@ -2,18 +2,17 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
-
-use DB;
-use Illuminate\Http\Request;
-use Intranet\UI\Botones\BotonImg;
+use Intranet\Application\Falta\FaltaService;
 use Intranet\Entities\Falta;
+use Intranet\Http\Controllers\Core\ModalController;
+use Intranet\Http\Requests\FaltaRequest;
+use Illuminate\Http\Request;
+
+use Intranet\UI\Botones\BotonImg;
+use Intranet\Presentation\Crud\FaltaCrudSchema;
 use Intranet\Http\Traits\Autorizacion;
 use Intranet\Http\Traits\Core\Imprimir;
-use Intranet\Services\Notifications\AdviseTeacher;
 use Intranet\Services\Notifications\ConfirmAndSend;
-use Intranet\Services\General\StateService;
-use Intranet\Services\School\TeacherSubstitutionService;
 use Jenssegers\Date\Date;
 
 
@@ -21,8 +20,9 @@ use Jenssegers\Date\Date;
  * Class FaltaController
  * @package Intranet\Http\Controllers
  */
-class FaltaController extends IntranetController
+class FaltaController extends ModalController
 {
+    private ?FaltaService $faltaService = null;
 
     use Imprimir, Autorizacion;
 
@@ -37,11 +37,21 @@ class FaltaController extends IntranetController
     /**
      * @var array
      */
-    protected $gridFields = ['id', 'desde', 'hasta', 'motivo', 'situacion','observaciones'];
-    /**
-     * @var bool
-     */
-    protected $modal = true;
+    protected $gridFields = FaltaCrudSchema::GRID_FIELDS;
+    public function __construct(?FaltaService $faltaService = null)
+    {
+        parent::__construct();
+        $this->faltaService = $faltaService;
+    }
+
+    private function faltas(): FaltaService
+    {
+        if ($this->faltaService === null) {
+            $this->faltaService = app(FaltaService::class);
+        }
+
+        return $this->faltaService;
+    }
 
     /**
      *
@@ -62,34 +72,15 @@ class FaltaController extends IntranetController
      */
     public function store(Request $request)
     {
+        $this->validate($request, (new FaltaRequest())->rules());
+        $id = $this->faltas()->create($request);
 
-        $request->merge(['baja' => $request->boolean('baja') ? 1 : 0]);
-
-        if ($request->baja) {
-            DB::transaction(function () use ($request) {
-                $request->merge([
-                    'hora_ini' => null,
-                    'hora_fin' => null,
-                    'hasta' => '',
-                    'dia_completo' => 1,
-                    'estado' => 5,
-                ]);
-                app(TeacherSubstitutionService::class)->markLeave($request->idProfesor, $request->desde);
-                parent::realStore($request);
-            });
-        } else {
-            $diaCompleto = isset($request->dia_completo)  ? 1 : null;
-            $request->hora_ini = $diaCompleto ? null : $request->hora_ini;
-            $request->hora_fin = $diaCompleto ? null : $request->hora_fin;
-            $request->hasta = esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta;
-            $id = parent::realStore($request);
-            if (UserisAllow(config('roles.rol.direccion'))) {
-                $this->init($id);
-            } else {
-                // si es direcció autoritza
-                return ConfirmAndSend::render($this->model, $id);
-            }
+        if (!$request->boolean('baja') && UserisAllow(config('roles.rol.direccion'))) {
+            $this->faltas()->init($id);
+        } elseif (!$request->boolean('baja')) {
+            return ConfirmAndSend::render($this->model, $id);
         }
+
         return $this->redirect();
     }
 
@@ -102,22 +93,8 @@ class FaltaController extends IntranetController
      */
     public function update(Request $request, $id)
     {
-
-        $diaCompleto = $request->has('dia_completo') ? 1 : 0;
-
-        $request->merge([
-            'hora_ini' => $diaCompleto ? null : $request->hora_ini,
-            'hora_fin' => $diaCompleto ? null : $request->hora_fin,
-            'hasta' => esMayor($request->desde, $request->hasta) ? $request->desde : $request->hasta,
-        ]);
-
-        $elemento = Falta::find(parent::realStore($request, $id));
-
-        if ($elemento->estado == 1 && $elemento->fichero) {
-            $staSer = new StateService($elemento);
-            $staSer->putEstado(2);
-        }
-
+        $this->validate($request, (new FaltaRequest())->rules());
+        $this->faltas()->update($id, $request);
         return $this->redirect();
     }
 
@@ -133,16 +110,7 @@ class FaltaController extends IntranetController
      */
     public function init($id)
     {
-        $elemento = Falta::findOrFail($id);
-        if (esMayor($elemento->desde, Hoy('Y/m/d'))) {
-            app(AdviseTeacher::class)->sendTutorEmail($elemento);
-        }
-        $stSrv = new StateService($elemento);
-        if ($elemento->fichero) {
-            $stSrv->putEstado(2);
-        } else {
-            $stSrv->putEstado(1);
-        }
+        $this->faltas()->init($id);
         return $this->redirect();
     }
 
@@ -153,15 +121,7 @@ class FaltaController extends IntranetController
      */
     public function alta($id)
     {
-        $elemento = Falta::findOrFail($id);
-        DB::transaction(function () use ($elemento) {
-            $elemento->estado = 3;
-            $elemento->hasta = new Date();
-            $elemento->baja = 0;
-            $elemento->save();
-            // LLeva la baixa del professor.
-            app(TeacherSubstitutionService::class)->reactivate($elemento->idProfesor);
-        });
+        $elemento = $this->faltas()->alta($id);
         return back()->with('pestana', $elemento->estado);
     }
 }

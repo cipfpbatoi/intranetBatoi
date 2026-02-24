@@ -2,157 +2,138 @@
 
 namespace Intranet\Http\Controllers\API;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
-use InfyOm\Generator\Utils\ResponseUtil;
-use Intranet\Entities\Profesor;
-use Response;
-use Exception;
-use Intranet\Http\Controllers\Controller;
+use Illuminate\Support\Collection;
 
-class ApiBaseController extends Controller
+class ApiBaseController extends ApiResourceController
 {
-
-    protected $namespace = 'Intranet\\Entities\\';
-    protected $model;
-    protected $class;
     protected $rules;
-    protected $guard='api';
 
-    public function __construct()
-    {
-        $this->class = $this->namespace . $this->model;
-    }
-
-    public function index()
-    {
-        $data = $this->class::all();
-        return $this->sendResponse($data, 'OK');
-    }
-
-    public function destroy($id)
-    {
-        $this->class::destroy($id);
-        return $this->sendResponse(['deleted' => true], 'OK');
-    }
-
-    public function store(Request $request)
-    {
-        try {
-            $this->class::create($request->all());
-            return $this->sendResponse(['created' => true], 'OK');
-        } catch (Exception $e) {
-            return $this->sendError($e->getMessage());
-        }
-    }
+    private ?ProfesorService $profesorService = null;
 
     public function ApiUser(Request $request){
-        return Profesor::where('api_token',$request->api_token)->get()->first();
-    }
-
-    public function update(Request $request, $id)
-    {
-        try {
-            $registro = $this->class::find($id);
-            $registro->update($request->all());
-            $registro->save();
-            return $this->sendResponse(['updated' => true], 'OK');
-        } catch (Exception $e) {
-            return $this->sendError($e->getMessage());
-        }
-    }
-
-    public function edit($id)
-    {
-        return $this->sendResponse($this->class::find($id));
-    }
-
-    public function show($cadena, $send=true)
-    {
-        if (!strpos($cadena, '=') && !strpos($cadena, '>')&&!strpos($cadena, '<')&&!strpos($cadena, ']')&&!strpos($cadena, '[')) {
-            $data = $this->class::find($cadena);
-        }
-        else {
-            $filtros = explode('&', $cadena);
-            if (!strpos($cadena, 'ields=')) {
-                $data = $this->class::all();
-            }
-            else {
-                foreach ($filtros as $filtro) {
-                    $campos = explode('=', $filtro);
-                    $value = $campos[0];
-                    $key = $campos[1];
-                    if ($value == 'fields') {
-                        $data = $this->fields($key);
-                    }
-                }
-            }
-
-            foreach ($filtros as $filtro) {
-                foreach (['=','<','>',']','['] as $operacion){
-                    $campos = explode($operacion, $filtro);
-                    
-                    if (count($campos)==2){
-                        $value = $campos[0];
-                        $key = $campos[1];
-                        if ($value != 'fields') {
-                            $data = $data->filter(function ($filtro) use ($value, $key, $operacion) {
-                                switch ($operacion) {
-
-                                    case '=' :
-                                        return $filtro->$value == $key;
-                                        break;
-                                    case '>' :
-                                        return $filtro->$value > $key;
-                                        break;
-                                    case '<' :
-                                        return $filtro->$value < $key;
-                                        break;
-                                    case ']' :
-                                        return $filtro->$value >= $key;
-                                        break;
-                                    case '[' :
-                                        return $filtro->$value <= $key;
-                                        break;
-                                }
-                            });
-                        }
-                    }
-                }
-            }
+        if ($this->profesorService === null) {
+            $this->profesorService = app(ProfesorService::class);
         }
 
+        return $this->profesorService->findByApiToken((string) $request->api_token);
+    }
 
+    public function show($cadena, $send = true)
+    {
+        $cadena = (string) $cadena;
+
+        // Compatibilitat: si és un id "normal", usem el show robust del pare.
+        if (!$this->isLegacyFilterExpression($cadena)) {
+            if ($send) {
+                return parent::show($cadena);
+            }
+
+            $class = $this->resolveClass();
+            return $class::find($cadena);
+        }
+
+        $data = $this->queryLegacy($cadena);
         if ($send) {
             return $this->sendResponse($data, 'OK');
         }
-        else {
-            return $data;
-        }
-        
+
+        return $data;
     }
 
     protected function fields($fields)
     {
         $campos = explode(',', $fields);
+        $value = [];
         foreach ($campos as $campo) {
-            $value[] = $campo;
+            $campo = trim($campo);
+            if ($campo !== '') {
+                $value[] = $campo;
+            }
         }
-        return $this->class::all($value);
+
+        $class = $this->resolveClass();
+        return empty($value) ? $class::all() : $class::all($value);
     }
 
-    protected function sendResponse($result, $message=null)
+    protected function sendFail($error, $code = 400)
     {
-        return response()->json(['success'=>true,'data'=>$result]);
+        return parent::sendFail($error, $code);
     }
 
-    protected function sendError($error, $code = 404)
+    private function isLegacyFilterExpression(string $cadena): bool
     {
-        return response()->json(['success'=>false,'message'=>$error]);
+        foreach (['=', '>', '<', ']', '[', '!'] as $operator) {
+            if (strpos($cadena, $operator) !== false) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    protected function sendFail($error,$code = 400)
+    private function queryLegacy(string $cadena): Collection
     {
-        return response()->json($error,$code);
+        $class = $this->resolveClass();
+        $filters = explode('&', $cadena);
+        $query = $class::query();
+        $fields = null;
+
+        foreach ($filters as $filter) {
+            [$field, $value] = array_pad(explode('=', $filter, 2), 2, null);
+            if ($field === 'fields') {
+                $fields = $value;
+                continue;
+            }
+
+            $this->applyLegacyCondition($query, $filter);
+        }
+
+        if ($fields !== null) {
+            $selectedFields = array_values(array_filter(array_map('trim', explode(',', $fields))));
+            if (!empty($selectedFields)) {
+                $query->select($selectedFields);
+            }
+        }
+
+        return $query->get();
     }
 
+    private function applyLegacyCondition($query, string $filter): void
+    {
+        foreach (['=', '<', '>', ']', '[', '!'] as $operator) {
+            $parts = explode($operator, $filter, 2);
+            if (count($parts) !== 2) {
+                continue;
+            }
+
+            $field = trim($parts[0]);
+            $value = trim($parts[1]);
+            if ($field === '' || $field === 'fields') {
+                return;
+            }
+
+            if ($value === 'null') {
+                if ($operator === '=') {
+                    $query->whereNull($field);
+                    return;
+                }
+                if ($operator === '!') {
+                    $query->whereNotNull($field);
+                    return;
+                }
+            }
+
+            $sqlOperator = match ($operator) {
+                ']' => '>=',
+                '[' => '<=',
+                '!' => '!=',
+                default => $operator,
+            };
+
+            $query->where($field, $sqlOperator, $value);
+            return;
+        }
+    }
 }

@@ -4,10 +4,10 @@ namespace Intranet\Livewire\BustiaVioleta;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\BustiaVioleta;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use Intranet\Entities\Profesor;
 use Intranet\Entities\Alumno;   
 
 class AdminList extends Component
@@ -64,7 +64,7 @@ class AdminList extends Component
         ];
 
         if ($m->rol === 'profesor') {
-            $p = Profesor::where('dni', $m->dni)->first();
+            $p = app(ProfesorService::class)->find((string) $m->dni);
             if ($p) {
                 $this->contact['nom'] = $p->FullName ?? ($p->nombre ?? null);
                 $this->contact['email'] = $p->email ?? $p->emailItaca ?? null;

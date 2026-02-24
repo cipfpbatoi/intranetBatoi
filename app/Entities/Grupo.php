@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Events\ActivityReport;
 
 class Grupo extends Model
@@ -69,7 +70,7 @@ class Grupo extends Model
 
     public function getTodosOptions()
     {
-        return hazArray(Grupo::all(), 'codigo', 'nombre');
+        return hazArray(app(GrupoService::class)->all(), 'codigo', 'nombre');
     }
 
     public function getIdCicloOptions()
@@ -125,26 +126,32 @@ class Grupo extends Model
     
     public function scopeMiGrupoModulo($query,$dni,$modulo)
     {
-        $grupo = Horario::select('idGrupo')
+        $grupo = Horario::query()
                 ->Profesor($dni)
                 ->whereNotNull('idGrupo')
                 ->where('modulo',$modulo)
                 ->distinct()
-                ->get()
-                ->toarray();
+                ->pluck('idGrupo')
+                ->all();
         return $query->whereIn('codigo', $grupo);
     }
 
     public function scopeMatriculado($query, $alumno)
     {
-        $grupos = AlumnoGrupo::select('idGrupo')->where('idAlumno', $alumno)->get()->toarray();
+        $grupos = AlumnoGrupo::query()
+            ->where('idAlumno', $alumno)
+            ->pluck('idGrupo')
+            ->all();
         return $query->whereIn('codigo', $grupos);
     }
 
 
     public function scopeDepartamento($query, $dep)
     {
-        $ciclos = Ciclo::select('id')->where('departamento', $dep)->get()->toarray();
+        $ciclos = Ciclo::query()
+            ->where('departamento', $dep)
+            ->pluck('id')
+            ->all();
         return $query->whereIn('idCiclo', $ciclos);
     }
 
@@ -155,7 +162,11 @@ class Grupo extends Model
 
     public function getProyectoAttribute()
     {
-        return ($this->curso == 2 && $this->Ciclo->normativa == 'LOE' && $this->Ciclo->tipo == 2);
+        $ciclo = $this->Ciclo;
+
+        return ((int) $this->curso === 2
+            && $ciclo?->normativa === 'LOE'
+            && (int) ($ciclo?->tipo ?? 0) === 2);
     }
 
     public function getXcicloAttribute()
@@ -166,7 +177,9 @@ class Grupo extends Model
 
     public function getXtutorAttribute()
     {
-        return $this->Tutor->Sustituye->FullName ?? $this->Tutor->FullName ?? '';
+        $tutor = $this->Tutor;
+
+        return $tutor?->Sustituye?->FullName ?? $tutor?->FullName ?? '';
     }
 
     public function getActaAttribute()
@@ -318,8 +331,8 @@ class Grupo extends Model
             return $this->turno;
         }
         $turno = $this->Horario->where('dia_semana','L')->where('modulo','<>','TU01CF')->where('modulo','<>','TU02CF')->sortBy('sesion_orden',0)->first();
-        if ($turno) {
-            return ucfirst(substr($turno->Hora->turno,0,1));
+        if ($turno?->Hora?->turno) {
+            return ucfirst(substr((string) $turno->Hora->turno,0,1));
         }
         return '??';
     }

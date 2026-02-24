@@ -14,17 +14,28 @@ class MaterialBajaResource extends JsonResource
      */
     public function toArray($request)
     {
+        $material = $this->Material;
+        $procedencies = config('auxiliares.procedenciaMaterial');
+        $estats = config('auxiliares.estadoMaterial');
+
+        $procedencia = $material?->procedencia;
+        $estat = $material?->estado;
+
         return [
                 'id' => $this->idMaterial,
-                'numSèrie' => $this->Material->numSerie,
-                'descripció' => $this->Material->descripcion,
-                'marca' => $this->Material->marca,
-                'model' => $this->Material->modelo,
-                'procedència' => config('auxiliares.procedenciaMaterial')[$this->Material->procedencia],
-                'estat' => config('auxiliares.estadoMaterial')[$this->Material->estado],
-                'espai' => $this->Material->espacio,
-                'lot_article' => $this->Material->articulo_lote_id,
-                'registre' => $this->Material->LoteArticulo->lote_id,
+                'numSèrie' => $material?->numSerie ?? $material?->nserieprov ?? '',
+                'descripció' => $material?->descripcion ?? '',
+                'marca' => $material?->marca ?? '',
+                'model' => $material?->modelo ?? '',
+                'procedència' => is_numeric($procedencia) && array_key_exists((int) $procedencia, $procedencies)
+                    ? $procedencies[(int) $procedencia]
+                    : '',
+                'estat' => is_numeric($estat) && array_key_exists((int) $estat, $estats)
+                    ? $estats[(int) $estat]
+                    : '',
+                'espai' => $material?->espacio ?? '',
+                'lot_article' => $material?->articulo_lote_id ?? null,
+                'registre' => $material?->LoteArticulo?->lote_id ?? '',
         ];
     }
 
@@ -40,5 +51,4 @@ class MaterialBajaResource extends JsonResource
         return $descripcion;
     }
 }
-
 

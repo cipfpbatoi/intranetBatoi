@@ -6,7 +6,6 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Intranet\Services\Document\PdfService;
-use Intranet\Entities\Profesor;
 use Intranet\Http\Controllers\FctController;
 use Illuminate\Support\Facades\Log;
 use Intranet\Http\PrintResources\CertificatInstructorResource;
@@ -63,8 +62,8 @@ class CertificatInstructorFct extends Mailable
 
     public function certificatColaboradors()
     {
-        $secretario = Profesor::find(config('avisos.secretario'));
-        $director = Profesor::find(config('avisos.director'));
+        $secretario = cargo('secretario');
+        $director = cargo('director');
         $dades = ['date' => FechaString(hoy(), 'ca'),
             'fecha' => FechaString(hoy(), 'es'),
             'consideracion' => $secretario->sexo === 'H' ? 'En' : 'Na',

@@ -2,8 +2,8 @@
 
 namespace Intranet\Services\Notifications;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\Profesor;
 use Intranet\Notifications\mensajePanel;
 use Illuminate\Support\Facades\Schema;
 
@@ -24,8 +24,9 @@ class NotificationService
         ?callable $hasTable = null,
         ?callable $fechaProvider = null
     ) {
+        $profesorService = app(ProfesorService::class);
         $this->findAlumno = $findAlumno ?? static fn ($id) => Alumno::find($id);
-        $this->findProfesor = $findProfesor ?? static fn ($id) => Profesor::find($id);
+        $this->findProfesor = $findProfesor ?? static fn ($id) => $profesorService->find((string) $id);
         $this->hasTable = $hasTable ?? static fn (string $table) => Schema::hasTable($table);
         $this->fechaProvider = $fechaProvider ?? static fn () => fechaString();
     }

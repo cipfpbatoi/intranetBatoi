@@ -3,6 +3,7 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Events\ActivityReport;
 
 class Espacio extends Model
@@ -47,7 +48,7 @@ class Espacio extends Model
 
     public function getGMatiOptions()
     {
-        return hazArray(Grupo::all(), 'codigo', 'nombre');
+        return hazArray(app(GrupoService::class)->all(), 'codigo', 'nombre');
     }
 
     public function getGVespradaOptions()

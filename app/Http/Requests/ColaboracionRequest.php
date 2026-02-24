@@ -3,6 +3,7 @@
 namespace Intranet\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 
 class ColaboracionRequest extends FormRequest
 {
@@ -23,12 +24,24 @@ class ColaboracionRequest extends FormRequest
      */
     public function rules()
     {
+        return ColaboracionCrudSchema::UPDATE_RULES;
+    }
+
+    /**
+     * Missatges curts per al formulari d'edició de col·laboració.
+     *
+     * @return array<string, string>
+     */
+    public function messages()
+    {
         return [
-            'contacto' => 'required',
-            'telefono' => 'required',
-            'email' => "required|email",
-            'puestos' => 'required|numeric',
-            'estado' => 'required',
+            'contacto.required' => 'El contacte és obligatori.',
+            'telefono.required' => 'El telèfon és obligatori.',
+            'email.required' => 'L\'email és obligatori.',
+            'email.email' => 'L\'email no té un format vàlid.',
+            'puestos.required' => 'Els llocs són obligatoris.',
+            'puestos.numeric' => 'Els llocs han de ser numèrics.',
+            'estado.required' => 'L\'estat és obligatori.',
         ];
     }
 }

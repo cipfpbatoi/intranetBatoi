@@ -2,29 +2,60 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Empresa\EmpresaService;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Empresa;
-use Intranet\Entities\Centro;
-use Intranet\Entities\Colaboracion;
-use Intranet\Entities\Grupo;
 use Intranet\Http\PrintResources\A1Resource;
+use Intranet\Presentation\Crud\EmpresaCrudSchema;
 use Intranet\Services\Document\FDFPrepareService;
-use Response;
 use Intranet\UI\Botones\BotonBasico;
 use Styde\Html\Facades\Alert;
-use Illuminate\Support\Facades\Input;
 
 class EmpresaController extends IntranetController
 {
+    private const ROLES_ROL_TUTOR = 'roles.rol.tutor';
+
+    private ?GrupoService $grupoService = null;
+    private ?EmpresaService $empresaService = null;
 
     protected $perfil = 'profesor';
     protected $model = 'Empresa';
-    protected $gridFields = ['concierto', 'nombre', 'direccion', 'localidad', 'telefono', 'email', 'cif', 'actividad'];
+    protected $gridFields = EmpresaCrudSchema::GRID_FIELDS;
     protected $vista = ['show' => 'empresa','index'=>'vacia'];
+
+    public function __construct(?GrupoService $grupoService = null, ?EmpresaService $empresaService = null)
+    {
+        parent::__construct();
+        $this->grupoService = $grupoService;
+        $this->empresaService = $empresaService;
+        $this->formFields = EmpresaCrudSchema::FORM_FIELDS;
+    }
+
+    private function grupos(): GrupoService
+    {
+        if ($this->grupoService === null) {
+            $this->grupoService = app(GrupoService::class);
+        }
+
+        return $this->grupoService;
+    }
+
+    private function empreses(): EmpresaService
+    {
+        if ($this->empresaService === null) {
+            $this->empresaService = app(EmpresaService::class);
+        }
+
+        return $this->empresaService;
+    }
+
+    protected function search()
+    {
+        return $this->empreses()->listForGrid();
+    }
 
     
     public function create($default=[])
@@ -35,93 +66,49 @@ class EmpresaController extends IntranetController
     public function show($id)
     {
         $activa = Session::get('pestana') ? Session::get('pestana') : 2;
-        $elemento = Empresa::findOrFail($id);
+        $elemento = $this->empreses()->findForShow((int) $id);
         $modelo = 'Empresa';
-        $misColaboraciones = Grupo::find(AuthUser()->GrupoTutoria)->Ciclo->Colaboraciones??collect();
-        return view('empresa.show' , compact('elemento', 'modelo', 'activa', 'misColaboraciones'));
+
+        $cicloTutoria = $this->grupos()->find((string) AuthUser()->GrupoTutoria)?->idCiclo;
+        $misColaboracionesIds = $this->empreses()->colaboracionIdsForTutorCycle($cicloTutoria, $elemento);
+        $ciclosDepartamento = $this->empreses()->departmentCycles((string) authUser()->departamento);
+        $ciclosDepartamentoIds = $ciclosDepartamento->pluck('id')->all();
+
+        return view('empresa.show', compact(
+            'elemento',
+            'modelo',
+            'activa',
+            'misColaboracionesIds',
+            'cicloTutoria',
+            'ciclosDepartamento',
+            'ciclosDepartamentoIds'
+        ));
     }
     
     protected function iniBotones()
     {
-        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config('roles.rol.tutor')]));
+        $this->panel->setBoton('index', new BotonBasico("empresa.create", ['roles' => config(self::ROLES_ROL_TUTOR)]));
      }
 
     public function store(Request $request)
     {
-        $dades = $request->except('cif');
-        $dades['cif'] = strtoupper($request->cif);
-        if (Empresa::where('cif', strtoupper($request->cif))->count()) {
-            return back()->withInput($request->all())->withErrors('CIF duplicado');
-        }
+        $this->authorize('create', Empresa::class);
+        $id = $this->empreses()->saveFromRequest($request);
 
-        $id = $this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]));
-
-        $idCentro = $this->createCenter($id, $request);
-        if (isset(Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo)) {
-            $this->createColaboration($idCentro, $request);
+        $idCentro = $this->empreses()->createCenter($id, $request);
+        $idCicloTutoria = $this->grupos()->firstByTutor(AuthUser()->dni)?->idCiclo;
+        if ($idCicloTutoria) {
+            $this->empreses()->createColaboration($idCentro, $request, $idCicloTutoria, AuthUser()->FullName);
         }
 
         return redirect()->action('EmpresaController@show', ['empresa' => $id]);
     }
-
-
-
-    private function createCenter($id, $request)
-    {
-        $centro = new Centro();
-        $centro->idEmpresa = $id;
-        $centro->direccion = $request->direccion;
-        $centro->nombre = $request->nombre;
-        $centro->localidad = $request->localidad;
-        $centro->save();
-        return $centro->id;
-    }
-    private function createColaboration($id, $request)
-    {
-        $colaboracion = new Colaboracion();
-        $colaboracion->idCentro = $id;
-        $colaboracion->telefono = $request->telefono;
-        $colaboracion->email = $request->email;
-        $colaboracion->puestos = 1;
-        $colaboracion->tutor = AuthUser()->FullName;
-        $colaboracion->idCiclo = Grupo::select('idCiclo')->QTutor(AuthUser()->dni)->first()->idCiclo;
-        $colaboracion->save();
-        return $colaboracion->id;
-    }
-    
-    protected function realStore(Request $request, $id = null)
-    {
-        $elemento = $id ? Empresa::findOrFail($id) : new Empresa(); //busca si hi ha
-        if ($id) {
-            $elemento->setRule('concierto', $elemento->getRule('concierto').','.$id);
-        }
-        $this->validateAll($request, $elemento);    // valida les dades
-
-        return $elemento->fillAll($request);        // ompli i guarda
-    }
     
     public function update(Request $request, $id)
     {
-        $elemento = Empresa::find($this->realStore(subsRequest($request, ['cif'=>strtoupper($request->cif)]), $id));
-
-        $touched = false;
-        foreach ($elemento->centros as $centro) {
-            if ($centro->direccion == '') {
-                $centro->direccion = $elemento->direccion;
-                $touched = true;
-            }
-            if ($centro->localidad == '') {
-                $centro->localidad = $elemento->localidad;
-                $touched = true;
-            }
-            if ($centro->nombre == '') {
-                $centro->nombre = $elemento->nombre;
-                $touched = true;
-            }
-        }
-        if ($touched) {
-            $centro->save();
-        }
+        $this->authorize('update', Empresa::findOrFail((int) $id));
+        $elemento = Empresa::findOrFail($this->empreses()->saveFromRequest($request, $id));
+        $this->empreses()->fillMissingCenterData($elemento);
         return redirect()->action('EmpresaController@show', ['empresa' => $elemento->id]);
     }
 

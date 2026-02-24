@@ -6,7 +6,7 @@ use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
-use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Services\UI\AlertLogger;
 use Intranet\Services\Signature\DigitalSignatureService;
 
@@ -22,7 +22,7 @@ class Sync
 
     }
 
-    public function execute($driver, callable $queryCallback = null)
+    public function execute($driver, ?callable $queryCallback = null)
     {
         $this->queryCallback = $queryCallback;
         return $this->index($driver);
@@ -71,7 +71,7 @@ class Sync
             return call_user_func($this->queryCallback)->get();
         }
 
-        return AlumnoFctAval::realFcts()->haEmpezado()->activa()->get();
+        return AlumnoFct::realFcts()->haEmpezado()->activa()->get();
     }
 
     private function obtenirHoresFct($idSao): ?int

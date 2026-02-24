@@ -2,7 +2,14 @@
 
 namespace Intranet\Entities;
 
+use Intranet\Application\Grupo\GrupoService;
 
+/**
+ * @deprecated Model legacy de FP Dual.
+ *
+ * Mantingut temporalment per compatibilitat amb fluxos antics.
+ * No afegir noves funcionalitats ni nous punts d'entrada.
+ */
 class Dual extends Fct
 {
     
@@ -44,8 +51,10 @@ class Dual extends Fct
     
     public function getIdColaboracionOptions()
     {
-        $cicloC = Grupo::select('idCiclo')->QTutor(authUser()->dni, true)->get();
-        $ciclo = $cicloC->count()>0?$cicloC->first()->idCiclo:'';
+        $ciclo = app(GrupoService::class)->firstByTutor(authUser()->dni)?->idCiclo;
+        if (!$ciclo) {
+            return [];
+        }
         $colaboraciones = Colaboracion::where('idCiclo', $ciclo)->get();
         $todos = [];
         

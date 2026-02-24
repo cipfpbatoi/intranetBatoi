@@ -3,11 +3,12 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Events\ActivityReport;
 use Jenssegers\Date\Date;
 use Illuminate\Support\Facades\Auth;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Modulo;
+use Intranet\Presentation\Crud\ExpedienteCrudSchema;
 
 class Expediente extends Model
 {
@@ -26,15 +27,7 @@ class Expediente extends Model
         'fecha',
         'fechatramite'
     ];
-    protected $inputTypes = [
-        'tipo' => ['type' => 'select'],
-        'idModulo' => ['type'=>'select'],
-        'idAlumno' => ['type' => 'select'],
-        'idProfesor' => ['type' => 'hidden'],
-        'explicacion' => ['type' => 'textarea'],
-        'fecha' => ['type' => 'date'],
-        'fechatramite' => ['type' => 'date'],
-    ];
+    protected $inputTypes = ExpedienteCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'created' => ActivityReport::class,
         'deleted' => ActivityReport::class,
@@ -89,7 +82,7 @@ class Expediente extends Model
     public function getIdAlumnoOptions()
     {
         $misAlumnos = [];
-        $migrupos = Grupo::MisGrupos()->get();
+        $migrupos = app(GrupoService::class)->misGrupos();
         foreach ($migrupos as $migrupo) {
             if (isset($migrupo->codigo)) {
                 $alumnos = AlumnoGrupo::where('idGrupo', '=', $migrupo->codigo)->get();
@@ -153,7 +146,7 @@ class Expediente extends Model
     }
     public function getQuienAttribute()
     {
-        return $this->nomAlumn;
+        return $this->nomAlum;
     }
     public function scopeListos($query)
     {

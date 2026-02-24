@@ -151,6 +151,20 @@ abstract class IntranetController extends BaseController
     }
 
     /**
+     * Alias semàntic de persistència per compatibilitat amb flux modal.
+     *
+     * Manté la validació legacy d'IntranetController via `realStore`.
+     *
+     * @param Request $request
+     * @param int|string|null $id
+     * @return mixed
+     */
+    protected function persist(Request $request, $id = null)
+    {
+        return $this->realStore($request, $id);
+    }
+
+    /**
      * Actualitza un registre existent.
      *
      * @param Request $request

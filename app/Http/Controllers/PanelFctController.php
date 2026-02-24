@@ -2,14 +2,13 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Fct\FctService;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 
-use DB;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonIcon;
-use Intranet\Entities\Fct;
 use Intranet\Http\Traits\Core\Panel;
 
 
@@ -19,6 +18,7 @@ use Intranet\Http\Traits\Core\Panel;
  */
 class PanelFctController extends IntranetController
 {
+    private ?FctService $fctService = null;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
 
@@ -53,6 +53,21 @@ class PanelFctController extends IntranetController
     protected $modal = false;
 
     use Panel;
+
+    public function __construct(?FctService $fctService = null)
+    {
+        parent::__construct();
+        $this->fctService = $fctService;
+    }
+
+    private function fcts(): FctService
+    {
+        if ($this->fctService === null) {
+            $this->fctService = app(FctService::class);
+        }
+
+        return $this->fctService;
+    }
 
 
     /**
@@ -175,17 +190,7 @@ class PanelFctController extends IntranetController
      */
     public function search()
     {
-        $fcts = Fct::where(function($query) {
-            $query->esFct() // Suposem que aquest mètode filtra per FCT
-            ->orWhere->esDual(); // Suposem que aquest mètode filtra per Dual
-        })
-            ->where(function($query) {
-                $query->misFcts() // Suposem que aquest mètode filtra FCTs pertanyents a l'usuari autenticat
-                ->orWhere('cotutor', authUser()->dni); // O on l'usuari autenticat és cotutor
-            })
-            ->has('AlFct') // Suposem que això filtra FCTs que tenen almenys un AlFct associat
-            ->get();
-        return $fcts->sortBy('centro');
+        return $this->fcts()->panelListingByProfesor((string) authUser()->dni);
     }
 
 

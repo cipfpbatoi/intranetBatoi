@@ -26,7 +26,6 @@ class HelperServiceProvider extends ServiceProvider
     {
         require_once base_path() . '/app/Support/Helpers/MyHelpers.php';
         require_once base_path() . '/app/Support/Helpers/DateHelpers.php';
-        require_once base_path() . '/app/Support/Helpers/HoraryHelpers.php';
     }
 
 }

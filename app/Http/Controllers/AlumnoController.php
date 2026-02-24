@@ -2,7 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\Profesor\ProfesorService;
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\AlumnoUpdateRequest;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Colaboracion;
@@ -10,7 +12,6 @@ use Intranet\Http\Controllers\Auth\PerfilController;
 use Intranet\UI\Botones\BotonIcon;
 use Jenssegers\Date\Date;
 use Intranet\Entities\Alumno;
-use Intranet\Entities\Profesor;
 
 
 /**
@@ -35,6 +36,7 @@ class AlumnoController extends PerfilController
      */
     public function update(Request $request, $id)
     {
+        $this->validate($request, (new AlumnoUpdateRequest())->rules());
         $new = Alumno::find($id);
 
         parent::update($request, $new);
@@ -84,8 +86,7 @@ class AlumnoController extends PerfilController
         if (AuthUser()->Grupo) {
             $grupo = AuthUser()->Grupo->count() ? AuthUser()->Grupo->first()->codigo : '';
             $this->panel->setPestana('profile', true, 'profile.equipo', null, null, 1);
-            return $this->grid(Profesor::orderBy('apellido1', 'asc')->orderBy('apellido2', 'asc')
-                                    ->Grupo($grupo)->get());
+            return $this->grid(app(ProfesorService::class)->byGrupo((string) $grupo));
         }
         return back();
     }

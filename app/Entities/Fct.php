@@ -3,11 +3,13 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Poll\Vote;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\FctCreated;
 use Illuminate\Support\Arr;
+use Intranet\Presentation\Crud\FctCrudSchema;
 
 
 class Fct extends Model
@@ -24,22 +26,8 @@ class Fct extends Model
         ];
     protected $notFillable = ['desde','hasta','idAlumno','horas','autorizacion'];
 
-    protected $rules = [
-        'idAlumno' => 'sometimes|required',
-        'idColaboracion' => 'sometimes|required',
-        'idInstructor' => 'sometimes|required',
-        'desde' => 'sometimes|required|date',
-        'hasta' => 'sometimes|required|date',
-    ];
-    protected $inputTypes = [
-        'idAlumno' => ['type' => 'select'],
-        'idColaboracion' => ['type' => 'select'],
-        'idInstructor' => ['type' => 'select'],
-        'asociacion' => ['type' => 'hidden'],
-        'desde' => ['type' => 'date'],
-        'hasta' => ['type' => 'date'],
-        'autorizacion' => ['type'=>'checkbox']
-    ];
+    protected $rules = FctCrudSchema::RULES;
+    protected $inputTypes = FctCrudSchema::INPUT_TYPES;
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
         'created' => FctCreated::class,
@@ -231,8 +219,10 @@ class Fct extends Model
    
     public function getIdColaboracionOptions()
     {
-        $cicloC = Grupo::select('idCiclo')->QTutor(authUser()->dni)->get();
-        $ciclo = $cicloC->count()>0?$cicloC->first()->idCiclo:'';
+        $ciclo = app(GrupoService::class)->firstByTutor(authUser()->dni)?->idCiclo;
+        if (!$ciclo) {
+            return [];
+        }
         $colaboraciones = Colaboracion::where('idCiclo', $ciclo)->get();
         $todos = [];
         
@@ -348,12 +338,4 @@ class Fct extends Model
     }
 
 
-    public function saveContact($contacto, $email)
-    {
-        $instructor = $this->Instructor;
-        $instructor->email = $email;
-        $instructor->name = '';
-        $instructor->surnames = $contacto;
-        $instructor->save();
-    }
 }

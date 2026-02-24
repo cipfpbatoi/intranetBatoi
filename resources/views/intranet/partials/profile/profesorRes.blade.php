@@ -8,7 +8,7 @@
     >
         <li><em class="fa fa-envelope"></em> {{$elemento->email}}</li>
         <x-slot name="rattings">
-            @if (estaDentro($elemento->dni))
+            @if (($elemento->inside ?? false) || (!isset($elemento->inside) && (isset($insideByDni) ? $insideByDni((string) $elemento->dni) : false)))
                 {!! Html::image('img/clock-icon.png',
                         'reloj',array('class' => 'iconopequeno', 'id' => 'imgFitxar')) !!}
             @else

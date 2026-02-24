@@ -60,16 +60,16 @@ class Modulo_ciclo extends Model
     }
 
     public function getXmoduloAttribute(){
-        return $this->Modulo->literal;
+        return $this->Modulo->literal ?? '';
     }
     public function getXdepartamentoAttribute(){
-        return $this->Departamento->literal;
+        return $this->Departamento->literal ?? '';
     }
     public function getXcicloAttribute(){
-        return $this->Ciclo->literal;
+        return $this->Ciclo->literal ?? '';
     }
     public function getAcicloAttribute(){
-        return $this->Ciclo->ciclo;
+        return $this->Ciclo->ciclo ?? '';
     }
     public function getNombreAttribute(){
         return $this->Profesor->ShortName??'';
@@ -93,21 +93,7 @@ class Modulo_ciclo extends Model
     }
     public function getSituacionAttribute()
     {
-        return isblankTrans('models.Modulo.'.$this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Modelo.'.$this->estado);
+        return isblankTrans('models.Modulo.'.$this->estado) ? trans('messages.situations.' . $this->estado) : trans('models.Modulo.'.$this->estado);
     }
     
-    public function scopeMisModulos($query, $profesor = null)
-    {
-        $profesor = $profesor ? $profesor : authUser();
-        $modulos = Modulo_ciclo::select('id')
-                ->distinct()
-                ->misModulos($profesor)
-                ->get()->toArray();
-        $ciclos = Grupo::select('idCiclo')
-                ->distinct()
-                ->misGrupos($profesor)
-                ->get()->toArray();
-        
-        return $query->whereIn('idModulo', $modulos)->whereIn('idCiclo',$ciclos);
-    }
 }

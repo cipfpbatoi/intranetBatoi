@@ -5,7 +5,7 @@ namespace Intranet\Console\Commands;
 use ErrorException;
 use Exception;
 use Illuminate\Console\Command;
-use Intranet\Entities\AlumnoFctAval;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Mail\CertificatAlumneFct;
 use Intranet\Mail\CertificatInstructorFct;
 use Illuminate\Support\Facades\Mail;
@@ -41,7 +41,7 @@ class SendFctEmails extends Command
     public function handle()
     {
 
-            $alumnosPendientes = AlumnoFctAval::pendienteNotificar()->get();
+            $alumnosPendientes = AlumnoFct::pendienteNotificar()->get();
 
             foreach ($alumnosPendientes as $alumno) {
                 $fct = $alumno->Fct;

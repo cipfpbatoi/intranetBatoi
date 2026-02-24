@@ -3,9 +3,10 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\Poll\VoteAnt;
 use Intranet\Events\ActivityReport;
-use Intranet\Providers\AuthServiceProvider;
+use Intranet\Presentation\Crud\ColaboracionCrudSchema;
 
 
 class Colaboracion extends Model
@@ -22,20 +23,8 @@ class Colaboracion extends Model
         'email',
         'puestos',
         'tutor'];
-    protected $rules = [
-        'idCentro' => 'required|composite_unique:colaboraciones,idCentro,idCiclo',
-        'idCiclo' => 'required',
-        'email' => 'email',
-        'puestos' => 'required|numeric',
-        'telefono' => 'max:20'
-    ];
-    protected $inputTypes = [
-        'idCentro' => ['type' => 'hidden'],
-        'idCiclo' => ['type' => 'hidden'],
-        'telefono' => ['type'=>'number'],
-        'email' => ['type'=>'email'],
-        'tutor' => ['type'=>'hidden'],
-    ];
+    protected $rules = ColaboracionCrudSchema::RULES;
+    protected $inputTypes = ColaboracionCrudSchema::INPUT_TYPES;
 
     protected $dispatchesEvents = [
         'saved' => ActivityReport::class,
@@ -80,14 +69,22 @@ class Colaboracion extends Model
     }
     public function scopeEmpresa($query, $empresa)
     {
-        $centros = Centro::select('id')->Empresa($empresa)->get()->toarray();
+        $centros = Centro::query()
+            ->Empresa($empresa)
+            ->pluck('id')
+            ->all();
+
         return $query->whereIn('idCentro', $centros);
     }
     public function scopeMiColaboracion($query, $empresa=null, $dni=null)
     {
         $dni = $dni??authUser()->dni;
-        $cicloC = Grupo::select('idCiclo')->QTutor($dni)->get();
-        $ciclo = $cicloC->count()>0?hazArray($cicloC,'idCiclo') :[];
+        $ciclo = app(GrupoService::class)->qTutor((string) $dni)
+            ->pluck('idCiclo')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
         if ($empresa) {
             return $query->whereIn('idCiclo', $ciclo)->Empresa($empresa);
@@ -97,28 +94,30 @@ class Colaboracion extends Model
 
     public function getEmpresaAttribute()
     {
-        return $this->Centro->nombre;
+        return $this->Centro->nombre ?? '';
     }
     public function getShortAttribute()
     {
-        return substr($this->Centro->nombre, 0, 50);
+        return substr((string) ($this->Centro->nombre ?? ''), 0, 50);
     }
     public function getXCicloAttribute()
     {
-        return $this->Ciclo->ciclo;
+        return $this->Ciclo->ciclo ?? '';
     }
 
     public function getXEstadoAttribute()
     {
-        return config('auxiliares.estadoColaboracion')[$this->estado];
+        return config('auxiliares.estadoColaboracion')[$this->estado] ?? '';
     }
     public function getLocalidadAttribute()
     {
-        return $this->Centro->localidad?strtoupper($this->Centro->localidad):'Desconeguda';
+        $localidad = $this->Centro->localidad ?? null;
+
+        return $localidad ? strtoupper((string) $localidad) : 'Desconeguda';
     }
     public function getHorariAttribute()
     {
-        return $this->Centro->horarios;
+        return $this->Centro->horarios ?? '';
     }
 
     public function getEstadoOptions()
@@ -128,15 +127,12 @@ class Colaboracion extends Model
 
     public function getAnotacioAttribute()
     {
-        $contactos = '';
-        foreach  (Activity::modelo('Colaboracion')
+        return Activity::modelo('Colaboracion')
             ->id($this->id)
-            ->where('action','book')
+            ->where('action', 'book')
             ->orderBy('created_at')
-            ->get() as $contacto) {
-            $contactos  .= $contacto->comentari  ;
-        }
-        return $contactos;
+            ->pluck('comentari')
+            ->implode("\n");
     }
     public function getProfesorAttribute()
     {
@@ -145,13 +141,6 @@ class Colaboracion extends Model
     public function getUltimoAttribute()
     {
         return $this->updated_at;
-    }
-
-    private function dniTutor()
-    {
-        return isset(authUser()->nia)?
-            authUser()->tutor[0]->dni:
-            authUser()->dni;
     }
 
     public function getSituationAttribute()

@@ -36,12 +36,16 @@
 
 <script>
 import axios from 'axios'
-const ruta='/api/reserva/';
+const ruta='/api/reserva';
+const rutaLegacy='/api/reserva/';
 
-const token=document.getElementById('_token').innerHTML;
+const tokenNode = document.getElementById('_token');
+const token = tokenNode ? tokenNode.innerHTML : '';
 const rolDirecc=2;
-const esDirecc=((document.getElementById('rol').innerHTML%rolDirecc)==0);
-const idProfesor = document.getElementById('dni').innerHTML;
+const rolNode = document.getElementById('rol');
+const esDirecc=((Number(rolNode ? rolNode.innerHTML : 0)%rolDirecc)==0);
+const dniNode = document.getElementById('dni');
+const idProfesor = dniNode ? dniNode.innerHTML : '';
 
 const maxDiasReserva=30;
 
@@ -70,15 +74,36 @@ const maxDiasReserva=30;
           },
         },
         methods: {
-          getReservas() {
+          async getReservas() {
             console.log('pido '+(this.fechaIni=='' || this.espacio=='0'));
             if (this.fechaIni=='' || this.espacio=='0') {
               this.reservas=[];
               return;
             }
-            axios.get(ruta+'idEspacio='+this.espacio+'&dia='+this.fechaIni+'?api_token='+token)
-              .then(resp=>this.reservas=resp.data.data)
-              .catch(resp=>console.error(resp));
+            const params = {
+              idEspacio: this.espacio,
+              dia: this.fechaIni,
+            };
+            if (token) {
+              params.api_token = token;
+            }
+
+            try {
+              const resp = await axios.get(ruta, { params });
+              this.reservas = resp.data.data;
+            } catch (errorModern) {
+              try {
+                const legacyQueryToken = token ? ('?api_token=' + token) : '';
+                const respLegacy = await axios.get(
+                  rutaLegacy + 'idEspacio=' + this.espacio + '&dia=' + this.fechaIni + legacyQueryToken
+                );
+                this.reservas = respLegacy.data.data;
+              } catch (errorLegacy) {
+                console.error(errorModern);
+                console.error(errorLegacy);
+                this.reservas = [];
+              }
+            }
           },
           idTd(codigo) {
             return 'hora-'+codigo;

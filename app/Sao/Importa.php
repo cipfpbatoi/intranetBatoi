@@ -9,13 +9,13 @@ use Facebook\WebDriver\WebDriverSelect;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Facebook\WebDriver\WebDriverWait;
 use Illuminate\Http\Request;
+use Intranet\Application\Grupo\GrupoService;
 use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
-use Intranet\Entities\Grupo;
 use Intranet\Entities\Instructor;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
@@ -303,8 +303,8 @@ class Importa
 
     public static function index($driver)
     {
-        //$grupo = Grupo::where('tutor', AuthUser()->dni)->first();
-        $grupo = Grupo::QTutor()->first();
+        //$grupo = app(GrupoService::class)->firstByTutor(AuthUser()->dni);
+        $grupo = app(GrupoService::class)->firstByTutor(AuthUser()->dni);
         $ciclo = $grupo->idCiclo??null;
         $dades = array();
         if (AuthUser()->dni === config('avisos.director')) {

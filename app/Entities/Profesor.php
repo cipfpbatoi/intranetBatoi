@@ -2,6 +2,7 @@
 
 namespace Intranet\Entities;
 
+use Intranet\Application\Grupo\GrupoService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
@@ -34,7 +35,7 @@ class Profesor extends Authenticatable
     public $primaryKey = 'dni';
     protected $table = 'profesores';
     protected $keyType = 'string';
-    protected $hidden = ['password', 'api_token', 'rembember_token'];
+    protected $hidden = ['password', 'api_token', 'remember_token'];
     protected $visible = [
         'dni',
         'codigo',
@@ -158,7 +159,13 @@ class Profesor extends Authenticatable
 
     public function scopeActivo($query)
     {
-        return $query->where('fecha_baja', null)->where('activo', 1);
+        return $query
+            ->where('activo', 1)
+            ->where(function ($q) {
+                $q->whereNull('fecha_baja')
+                    ->orWhere('fecha_baja', '')
+                    ->orWhere('fecha_baja', '0000-00-00');
+            });
     }
 
 
@@ -181,7 +188,12 @@ class Profesor extends Authenticatable
 
     public function scopeTutoresFCT($query)
     {
-        $grupos = hazArray(Grupo::where('curso', 2)->get(), 'tutor', 'tutor');
+        $grupos = app(GrupoService::class)->byCurso(2)
+            ->pluck('tutor')
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
         return $query->Plantilla()->whereIn('dni', $grupos);
     }
 
@@ -196,11 +208,12 @@ class Profesor extends Authenticatable
     }
     public function scopeGrupoT($query, $grupoT)
     {
-        $profesores = Miembro::distinct()
-            ->select('idProfesor')
+        $profesores = Miembro::query()
             ->where('idGrupoTrabajo', '=', $grupoT)
-            ->get()
-            ->toArray();
+            ->pluck('idProfesor')
+            ->filter()
+            ->values()
+            ->all();
         return $query->whereIn('dni', $profesores)->Activo();
     }
 
@@ -269,11 +282,11 @@ class Profesor extends Authenticatable
 
     public function getEntradaAttribute()
     {
-        return Falta_profesor::Hoy($this->dni)->get()->last()->entrada??' ';
+        return optional(Falta_profesor::Hoy($this->dni)->get()->last())->entrada ?? ' ';
     }
     public function getSalidaAttribute()
     {
-        return Falta_profesor::Hoy($this->dni)->get()->last()->salida??' ';
+        return optional(Falta_profesor::Hoy($this->dni)->get()->last())->salida ?? ' ';
     }
     public function getHorarioAttribute()
     {
@@ -302,14 +315,18 @@ class Profesor extends Authenticatable
 
     public function getAhoraAttribute()
     {
-        $sesion = sesion(Hora(now()));
-        $dia = config("auxiliares.diaSemana." . now()->format('w'));
+        $sesion = (int) (sesion(Hora(now())) ?? 0);
+        $dia = (string) (nameDay(hoy()) ?? '');
+        if ($sesion <= 0 || $dia === '') {
+            return '';
+        }
+
         $horaActual = $this->Horari->where('dia_semana', $dia)->where('sesion_orden', $sesion)->first();
         if ($horaActual) {
-            if ($horaActual->ocupacion != null && isset($horaActual->Ocupacion->nombre)) {
+            if ($horaActual->ocupacion != null && isset($horaActual->Ocupacion?->nombre)) {
                 return $horaActual->Ocupacion->nombre;
             }
-            if ($horaActual->modulo != null && isset($horaActual->Modulo->cliteral) && $horaActual->Grupo->nombre) {
+            if ($horaActual->modulo != null && isset($horaActual->Modulo?->cliteral) && $horaActual->Grupo?->nombre) {
                 return $horaActual->Modulo->literal . ' (' . $horaActual->aula . ')';
             }
         }
@@ -342,18 +359,22 @@ class Profesor extends Authenticatable
 
     public function getGrupoTutoriaAttribute()
     {
-        $miGrupo = Grupo::where('tutor', '=', authUser()->dni)->orWhere('tutor', '=', authUser()->sustituye_a)->get();
-        if (isset($miGrupo->first()->codigo)) {
-            return $miGrupo->first()->codigo;
+        $miGrupo = app(GrupoService::class)->byTutorOrSubstitute((string) $this->dni, (string) ($this->sustituye_a ?? ''));
+        if (isset($miGrupo?->codigo)) {
+            return $miGrupo->codigo;
         }
-        $miGrupo = Grupo::where('tutorDual', '=', authUser()->dni)->get();
-        return isset($miGrupo->first()->codigo) ? $miGrupo->first()->codigo : '';
+        $miGrupoDual = app(GrupoService::class)->firstByTutorDual((string) $this->dni);
+        return $miGrupoDual->codigo ?? '';
      }
 
     public function getFileNameAttribute()
     {
-        $pos1 = strpos($this->foto, '.');
-        return substr($this->foto, 6, $pos1-6);
+        $foto = (string) ($this->foto ?? '');
+        $pos1 = strpos($foto, '.');
+        if ($foto === '' || $pos1 === false || $pos1 <= 6) {
+            return '';
+        }
+        return substr($foto, 6, $pos1 - 6);
 
     }
 
@@ -365,33 +386,32 @@ class Profesor extends Authenticatable
 
     public function getSustituidosAttribute()
     {
-        $sustituidos[] = $this->dni;
-        $profesor = $this;
-        while ($profesor) {
-            if (!empty($profesor->sustituye_a) && $profesor->sustituye_a != ' ') {
-                $sustituidos[] = $profesor->sustituye_a;
-                $profesor = Profesor::find($profesor->sustituye_a);
-            } else {
-                $profesor = null;
-            }
-        }
-
-        return $sustituidos;
+        return self::getSubstituts((string) $this->dni);
     }
 
 
     public static function getSubstituts($dni)
     {
-        $profesor = Profesor::find($dni);
-        $sustituidos[] = $dni;
-        while ($profesor) {
-            if (!empty($profesor->sustituye_a) && $profesor->sustituye_a != ' ') {
-                $sustituidos[] = $profesor->sustituye_a;
-                $profesor = Profesor::find($profesor->sustituye_a);
-            } else {
-                $profesor = null;
+        $actualDni = (string) $dni;
+        $sustituidos = [];
+        $visited = [];
+
+        while ($actualDni !== '' && !isset($visited[$actualDni])) {
+            $visited[$actualDni] = true;
+            $sustituidos[] = $actualDni;
+
+            $profesor = Profesor::find($actualDni);
+            if (!$profesor) {
+                break;
             }
+
+            $next = trim((string) ($profesor->sustituye_a ?? ''));
+            if ($next === '') {
+                break;
+            }
+            $actualDni = $next;
         }
+
         return $sustituidos;
     }
 
