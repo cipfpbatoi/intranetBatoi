@@ -62,14 +62,13 @@ class TaskController extends ModalController
 
     public function store(TaskRequest $request)
     {
-        $new = new Task();
-        $new->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(TaskRequest $request, $id)
     {
-        Task::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

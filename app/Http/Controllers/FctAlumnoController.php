@@ -3,12 +3,14 @@
 namespace Intranet\Http\Controllers;
 
 use Intranet\Application\AlumnoFct\AlumnoFctService;
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Presentation\Crud\AlumnoFctCrudSchema;
 
 
 use DB;
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\AlumnoFctUpdateRequest;
+use Intranet\Http\Requests\FctConvalidacionStoreRequest;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonBasico;
@@ -37,7 +39,7 @@ use Intranet\Services\UI\FormBuilder;
 use Styde\Html\Facades\Alert;
 
 
-class FctAlumnoController extends IntranetController
+class FctAlumnoController extends ModalController
 {
     use Imprimir,DropZone;
 
@@ -52,8 +54,6 @@ class FctAlumnoController extends IntranetController
     protected $profile = false;
     protected $titulo = [];
     protected $parametresVista = ['modal' => ['extended', 'saoPassword', 'loading','signatura']];
-    protected $modal = true;
-
     public function __construct(?AlumnoFctService $alumnoFctService = null)
     {
         parent::__construct();
@@ -280,7 +280,7 @@ class FctAlumnoController extends IntranetController
             ]
         );
         $modelo = $this->model;
-        return view($this->chooseView('create'), compact('formulario', 'modelo'));
+        return view('intranet.create', compact('formulario', 'modelo'));
     }
 
     public function unlink($id)
@@ -292,7 +292,7 @@ class FctAlumnoController extends IntranetController
         return redirect()->back();
     }
 
-    public function storeConvalidacion(Request $request)
+    public function storeConvalidacion(FctConvalidacionStoreRequest $request)
     {
         DB::transaction(function () use ($request) {
             $idAlumno = $request['idAlumno'];
@@ -302,7 +302,6 @@ class FctAlumnoController extends IntranetController
             $elemento = $elementos->first() ?? null;
             if (!$elemento) {
                 $elemento = new FctConvalidacion();
-                $this->validateAll($request, $elemento);
                 $elemento->fillAll($request);
             }
 
@@ -320,6 +319,12 @@ class FctAlumnoController extends IntranetController
             return $elemento->id;
         });
 
+        return $this->redirect();
+    }
+
+    public function update(AlumnoFctUpdateRequest $request, $id)
+    {
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

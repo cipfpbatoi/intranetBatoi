@@ -46,18 +46,16 @@ class ProjecteController extends ModalController
 
     public function store(ProyectoRequest $request)
     {
-        $new = new Projecte();
         $request->request->add(['idAlumne' => AuthUser()->nia]);
         $request->request->add(['estat' => 0]);
-        $new->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(ProyectoRequest $request, $id)
     {
         $request->request->add(['idAlumne' => AuthUser()->nia]);
-
-        Projecte::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

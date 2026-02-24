@@ -163,7 +163,7 @@ XML;
 XML;
 
         $file = UploadedFile::fake()->createWithContent('teacher_import.xml', $xml);
-        $request = Request::create('/teacherImport', 'POST', ['horari' => false, 'mode' => 'create_only'], [], ['fichero' => $file]);
+        $request = Request::create('/teacherImport', 'POST', ['idProfesor' => '021648508B', 'horari' => false, 'mode' => 'create_only'], [], ['fichero' => $file]);
 
         $view = $controller->store($request);
 

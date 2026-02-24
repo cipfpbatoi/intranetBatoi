@@ -2,7 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Services\Auth\JWTTokenService;
@@ -12,7 +12,7 @@ use Intranet\Services\School\ModuloGrupoService;
  * Class Modulo_cicloController
  * @package Intranet\Http\Controllers
  */
-class ModuloGrupoController extends IntranetController
+class ModuloGrupoController extends ModalController
 {
 
     /**
@@ -31,13 +31,6 @@ class ModuloGrupoController extends IntranetController
      * @var
      */
     protected $vista;
-    /**
-     * @var bool
-     */
-    protected $modal = true;
-
-
-    
     /**
      *
      */

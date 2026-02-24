@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Http\Controllers\Core\ModalController;
 
-use Illuminate\Http\Request;
+use Intranet\Http\Requests\IpGuardiaRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\IpGuardia;
 
@@ -43,17 +43,15 @@ class IpGuardiaController extends ModalController
         );
     }
 
-    public function store(Request $request)
+    public function store(IpGuardiaRequest $request)
     {
-        $new = new IpGuardia();
-        $new->fillAll($request);
-        $new->save();
+        $this->persist($request);
         return back();
     }
 
-    public function update(Request $request, $id)
+    public function update(IpGuardiaRequest $request, $id)
     {
-        IpGuardia::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return back();
     }
 

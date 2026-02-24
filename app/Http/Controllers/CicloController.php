@@ -37,14 +37,13 @@ class CicloController extends ModalController
 
     public function store(CicloRequest $request)
     {
-        $new = new Ciclo();
-        $new->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(CicloRequest $request, $id)
     {
-        Ciclo::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         if ($file = $request->file('competencies')) {
             $file->storeAs(
                 'public/Ciclos',

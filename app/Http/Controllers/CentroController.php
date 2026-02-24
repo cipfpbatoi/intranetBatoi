@@ -2,13 +2,13 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
 use Intranet\Entities\Centro;
 use Intranet\Entities\Colaboracion;
 use Intranet\Entities\Empresa;
+use Intranet\Http\Requests\CentroRequest;
 use Intranet\Http\Requests\EmpresaCentroRequest;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
@@ -17,7 +17,7 @@ use Styde\Html\Facades\Alert;
  * Class CentroController
  * @package Intranet\Http\Controllers
  */
-class CentroController extends IntranetController
+class CentroController extends ModalController
 {
 
 
@@ -36,9 +36,9 @@ class CentroController extends IntranetController
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(CentroRequest $request, $id)
     {
-        parent::update($request, $id);
+        $this->persist($request, $id);
         Session::put('pestana', 2);
         return $this->showEmpresa($request->idEmpresa);
     }
@@ -52,9 +52,9 @@ class CentroController extends IntranetController
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(CentroRequest $request)
     {
-        parent::store($request);
+        $this->persist($request);
         Session::put('pestana',2);
         return $this->showEmpresa($request->idEmpresa);
     }

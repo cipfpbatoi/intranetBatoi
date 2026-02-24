@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Entities\Profesor;
 use Intranet\Http\Requests\PerfilFilesRequest;
+use Intranet\Http\Requests\ProfesorPerfilUpdateRequest;
 use Intranet\Services\Signature\DigitalSignatureService;
 use Intranet\Services\UI\FormBuilder;
 use Intranet\Services\Media\ImageService;
@@ -172,6 +173,7 @@ class PerfilController extends Perfil
 
     public function update(Request $request, $id=null)
     {
+        $this->validate($request, (new ProfesorPerfilUpdateRequest())->rules());
         $new = $this->profesores()->find((string) Auth::user('profesor')->dni);
         if (!$new) {
             return redirect("/home");

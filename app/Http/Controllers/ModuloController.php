@@ -2,8 +2,9 @@
 
 namespace Intranet\Http\Controllers;
 
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
+use Intranet\Http\Requests\ModuloRequest;
 use Illuminate\Support\Facades\Auth;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
@@ -16,7 +17,7 @@ use Intranet\UI\Panels\Panel;
  * Class ModuloController
  * @package Intranet\Http\Controllers
  */
-class ModuloController extends IntranetController
+class ModuloController extends ModalController
 {
 
     /**
@@ -32,16 +33,17 @@ class ModuloController extends IntranetController
      */
     protected $gridFields = ['codigo', 'vliteral','cliteral'];
     /**
-     * @var bool
-     */
-    protected $modal = true;
-
-    /**
      *
      */
     protected function iniBotones()
     {
         $this->panel->setBoton('grid', new BotonImg('modulo.edit', ['roles' => config('roles.rol.administrador')]));
+    }
+
+    public function update(ModuloRequest $request, $id)
+    {
+        $this->persist($request, $id);
+        return $this->redirect();
     }
 
 //    protected function asigna()

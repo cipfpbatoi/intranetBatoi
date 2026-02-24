@@ -25,15 +25,14 @@ class CotxeController extends ModalController
 
     public function store(CotxeRequest $request)
     {
-        $new = new Cotxe();
-        $new->idProfesor = authUser()->dni;
-        $new->fillAll($request);
+        $request->merge(['idProfesor' => authUser()->dni]);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(CotxeRequest $request, $id)
     {
-        Cotxe::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
     protected function iniBotones()

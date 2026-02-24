@@ -75,12 +75,11 @@ class ResultadoController extends ModalController
     public function store(ResultadoStoreRequest $request)
     {
         if ($modulogrupo = Modulo_grupo::find($request->idModuloGrupo)) {
-            $newRes = new Resultado();
             // Assegurem professor informant abans de guardar
             if (!$request->filled('idProfesor')) {
                 $request->merge(['idProfesor' => AuthUser()->dni]);
             }
-            $newRes->fillAll($request);
+            $this->persist($request);
             return $this->redirect();
         }
         Alert::danger("Eixe mòdul no es dona en eixe grup");
@@ -89,7 +88,7 @@ class ResultadoController extends ModalController
 
     public function update(ResultadoUpdateRequest $request, $id)
     {
-        Resultado::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

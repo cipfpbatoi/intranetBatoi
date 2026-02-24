@@ -5,6 +5,7 @@ namespace Intranet\Http\Controllers\Auth;
 use Intranet\Http\Controllers\Core\IntranetController;
 
 use Illuminate\Http\Request;
+use Intranet\Http\Requests\AuthPerfilUpdateRequest;
 use Intranet\Services\Media\ImageService;
 use Styde\Html\Facades\Alert;
 
@@ -16,7 +17,7 @@ abstract class PerfilController extends IntranetController
 
     public function update(Request $request, $new)
     {
-        $this->validate($request, $new->getRules());
+        $this->validate($request, (new AuthPerfilUpdateRequest())->rules());
 
         if ($request->email) {
             $new->email = $request->email;

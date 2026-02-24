@@ -33,23 +33,18 @@ class TipoActividadController extends ModalController
 
     public function store(TipoActividadRequest $request)
     {
-        $new = new TipoActividad();
-
-        $new->fillAll($request);
         if (esRol(authUser()->rol,config('roles.rol.jefe_dpto'))) {
-            $new->departamento_id = authUser()->departamento;
+            $request->merge(['departamento_id' => authUser()->departamento]);
         }
-        $new->save();
+        $this->persist($request);
 
         return $this->redirect();
     }
 
     public function update(TipoActividadUpdateRequest $request, $id)
     {
-        $new = TipoActividad::findOrFail($id);
-        $new->fillAll($request);
-        $new->departamento_id = authUser()->departamento;
-        $new->save();
+        $request->merge(['departamento_id' => authUser()->departamento]);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

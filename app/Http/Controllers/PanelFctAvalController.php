@@ -2,6 +2,7 @@
 
 namespace Intranet\Http\Controllers;
 
+use Intranet\Application\AlumnoFct\AlumnoFctAvalService;
 use Intranet\Application\AlumnoFct\AlumnoFctService;
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\IntranetController;
@@ -30,6 +31,7 @@ class PanelFctAvalController extends IntranetController
 {
     use DropZone;
 
+    private ?AlumnoFctAvalService $alumnoFctAvalService = null;
     private ?GrupoService $grupoService = null;
     private ?AlumnoFctService $alumnoFctService = null;
 
@@ -80,20 +82,21 @@ class PanelFctAvalController extends IntranetController
         return $this->alumnoFctService;
     }
 
+    private function avals(): AlumnoFctAvalService
+    {
+        if ($this->alumnoFctAvalService === null) {
+            $this->alumnoFctAvalService = app(AlumnoFctAvalService::class);
+        }
+
+        return $this->alumnoFctAvalService;
+    }
+
     /**
      * @return \Illuminate\Support\Collection|mixed
      */
     public function search()
     {
-        $nombres = $this->alumnoFcts()->avalDistinctAlumnoIdsByProfesor(AuthUser()->dni);
-        $todas = collect();
-        foreach ($nombres as $nombre) {
-            $fct = $this->alumnoFcts()->latestAvalByAlumnoAndProfesor((string) $nombre, AuthUser()->dni);
-            if ($fct !== null) {
-                $todas->push($fct);
-            }
-        }
-        return $todas;
+        return $this->avals()->latestByProfesor(AuthUser()->dni);
         
     }
 
@@ -178,9 +181,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function apte($id)
     {
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
-        $fct->calificacion = 1;
-        $fct->save();
+        $this->avals()->apte((int) $id);
 
         return back();
     }
@@ -192,11 +193,7 @@ class PanelFctAvalController extends IntranetController
     protected function noApte($id)
     {
         $grupo = $this->grupos()->firstByTutor(AuthUser()->dni);
-
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
-        $fct->calificacion = 0;
-        $fct->calProyecto = $grupo?->proyecto ? 0 : null;
-        $fct->save();
+        $this->avals()->noApte((int) $id, (bool) ($grupo?->proyecto));
 
         return back();
     }
@@ -207,11 +204,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function noAval($id)
     {
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
-        $fct->calificacion = null;
-        $fct->calProyecto = null;
-        $fct->actas = 0;
-        $fct->save();
+        $this->avals()->noAval((int) $id);
 
         return back();
     }
@@ -222,9 +215,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function noProyecto($id)
     {
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
-        $fct->calProyecto = 0;
-        $fct->save();
+        $this->avals()->noProyecto((int) $id);
 
         return back();
     }
@@ -235,20 +226,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function nullProyecto($id)
     {
-        DB::transaction(function () use ($id) {
-            $fct = $this->alumnoFcts()->findOrFail((int) $id);
-            $fct->calProyecto = null;
-            $fct->save();
-
-            $doc = Documento::where('tipoDocumento', 'Proyecto')
-                ->where('curso', Curso())
-                ->whereNull('idDocumento')
-                ->where('propietario', $fct->fullName)
-                ->first();
-            if ($doc) {
-                $doc->deleteDoc();
-            }
-        });
+        $this->avals()->nullProyecto((int) $id);
 
 
         return back();
@@ -259,10 +237,7 @@ class PanelFctAvalController extends IntranetController
      */
     protected function nuevoProyecto($id)
     {
-        $fct = $this->alumnoFcts()->findOrFail((int) $id);
-        $fct->calProyecto = null;
-        $fct->actas = 1;
-        $fct->save();
+        $this->avals()->nuevoProyecto((int) $id);
 
         return back();
     }
@@ -273,9 +248,7 @@ class PanelFctAvalController extends IntranetController
      */
     public function empresa($id)
     {
-       $fct = $this->alumnoFcts()->findOrFail((int) $id);
-       $fct->insercion = $fct->insercion?0:1;
-       $fct->save();
+       $this->avals()->toggleInsercion((int) $id);
        return $this->redirect();
     }
 
@@ -290,29 +263,10 @@ class PanelFctAvalController extends IntranetController
             return back();
         }
 
-        $pendents = [];
-        $demanades = [];
-        $senseAlumnes = [];
-
-        foreach ($grupos as $grupo) {
-            if ($grupo->acta_pendiente) {
-                $pendents[] = $grupo->nombre;
-                continue;
-            }
-
-            if ($this->lookForStudents($grupo->proyecto, $grupo)) {
-                $grupo->acta_pendiente = 1;
-                $grupo->save();
-                avisa(
-                    config('avisos.jefeEstudios2'),
-                    "Acta pendent grup $grupo->nombre",
-                    config('contacto.host.web')."/direccion/$grupo->codigo/acta"
-                );
-                $demanades[] = $grupo->nombre;
-            } else {
-                $senseAlumnes[] = $grupo->nombre;
-            }
-        }
+        $result = $this->avals()->requestActaForTutor(AuthUser()->dni, $grupos);
+        $pendents = $result['pendents'];
+        $demanades = $result['demanades'];
+        $senseAlumnes = $result['senseAlumnes'];
 
         if ($demanades) {
             Alert::message('Acta demanada: '.implode(', ', $demanades), 'info');
@@ -326,32 +280,6 @@ class PanelFctAvalController extends IntranetController
 
         return back();
     }
-
-    /**
-     * @param $projectNeeded
-     * @return bool
-     */
-    private function lookForStudents($projectNeeded, $grupo = null)
-    {
-
-        $found = false;
-        foreach ($this->alumnoFcts()->avaluablesNoAval(AuthUser()->dni, $grupo) as $fct) {
-            if ($projectNeeded) {
-                if (isset($fct->calProyecto)) {
-                    $fct->actas = 3;
-                    $fct->save();
-                    $found = true;
-                }
-            } elseif (isset($fct->calificacion)) {
-                    $fct->actas = 3;
-                    $fct->save();
-                    $found = true;
-            }
-        }
-        return $found;
-    }
-
-
 
     /**
      *
@@ -588,25 +516,7 @@ class PanelFctAvalController extends IntranetController
     public function estadistiques()
     {
         $grupos = $this->grupos()->byCurso(2)->sortBy('idCiclo')->values();
-        $ciclos = [];
-        foreach ($grupos as $grupo) {
-            $ciclo = $grupo->idCiclo;
-            $ciclos[$ciclo]['matriculados'] =
-                isset($ciclos[$ciclo]['matriculados']) ?
-                $ciclos[$ciclo]['matriculados'] + $grupo->matriculados : $grupo->matriculados;
-            $ciclos[$ciclo]['resfct'] = isset($ciclos[$ciclo]['resfct']) ?
-                $ciclos[$ciclo]['resfct'] + $grupo->AprobFct : $grupo->AprobFct;
-            $ciclos[$ciclo]['exentos'] = isset($ciclos[$ciclo]['exentos']) ?
-                $ciclos[$ciclo]['exentos'] + $grupo->exentos : $grupo->exentos;
-            $ciclos[$ciclo]['respro'] = isset($ciclos[$ciclo]['respro']) ?
-                $ciclos[$ciclo]['respro'] + $grupo->AprobPro : $grupo->AprobPro;
-            $ciclos[$ciclo]['avalpro'] = isset($ciclos[$ciclo]['avalpro']) ?
-                $ciclos[$ciclo]['avalpro'] + $grupo->AvalPro : $grupo->AvalPro;
-            $ciclos[$ciclo]['resempresa'] = isset($ciclos[$ciclo]['resempresa']) ?
-                $ciclos[$ciclo]['resempresa'] + $grupo->colocados : $grupo->colocados;
-            $ciclos[$ciclo]['avalfct'] = isset($ciclos[$ciclo]['avalfct']) ?
-                $ciclos[$ciclo]['avalfct'] + $grupo->avalFct : $grupo->avalFct;
-        }
+        $ciclos = $this->avals()->estadistiques($grupos);
         return view('fct.estadisticas', compact('ciclos', 'grupos'));
     }
 

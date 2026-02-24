@@ -39,14 +39,13 @@ class CursoController extends ModalController
 
     public function store(CursoRequest $request)
     {
-        $new = new Curso();
-        $new->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(CursoRequest $request, $id)
     {
-        Curso::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
     /**

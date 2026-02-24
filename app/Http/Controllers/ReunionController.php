@@ -4,7 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Intranet\Application\Grupo\GrupoService;
 use Intranet\Application\Profesor\ProfesorService;
-use Intranet\Http\Controllers\Core\IntranetController;
+use Intranet\Http\Controllers\Core\ModalController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +16,8 @@ use Intranet\Entities\Reunion;
 use Intranet\Services\Document\TipoReunionService;
 use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Requests\OrdenReunionStoreRequest;
+use Intranet\Http\Requests\ReunionStoreRequest;
+use Intranet\Http\Requests\ReunionUpdateRequest;
 use Intranet\Http\Traits\Core\Imprimir;
 use Intranet\Jobs\SendEmail;
 use Intranet\Presentation\Crud\ReunionCrudSchema;
@@ -29,7 +31,7 @@ use Response;
 use Styde\Html\Facades\Alert;
 use function dispatch;
 
-class ReunionController extends IntranetController
+class ReunionController extends ModalController
 {
     private ?GrupoService $grupoService = null;
     private ?ReunionService $reunionService = null;
@@ -41,7 +43,6 @@ class ReunionController extends IntranetController
     protected $model = 'Reunion';
     protected $gridFields = ReunionCrudSchema::GRID_FIELDS;
     protected $formFields = ReunionCrudSchema::FORM_FIELDS;
-    protected $modal = true;
     protected $parametresVista = [  'modal' => ['password']];
 
     public function __construct(?GrupoService $grupoService = null, ?ReunionService $reunionService = null)
@@ -78,10 +79,11 @@ class ReunionController extends IntranetController
         return new Reunion(['idProfesor'=>AuthUser()->dni,'curso'=>Curso()]);
     }
 
-    public function store(Request $request)
+    public function store(ReunionStoreRequest $request)
     {
         $elemento = DB::transaction(function() use ($request) {
-            $elemento = Reunion::find($this->realStore($request));
+            $id = $this->persist($request);
+            $elemento = Reunion::findOrFail($id);
             $service = new MeetingOrderGenerateService($elemento);
             $service->exec();
             return $elemento;
@@ -98,7 +100,9 @@ class ReunionController extends IntranetController
     {
         $elemento = Reunion::findOrFail($id);
         if ($elemento->fichero != '') {
-            return parent::edit($id);
+            $formulario = new FormBuilder($elemento, $this->formFields);
+            $modelo = $this->model;
+            return view('intranet.edit', compact('formulario', 'modelo'));
         }
 
         $ordenes = OrdenReunion::where('idReunion', '=', $id)->get();
@@ -111,8 +115,8 @@ class ReunionController extends IntranetController
             ->get(['dni', 'apellido1', 'apellido2', 'nombre']);
         $formulario = new FormBuilder($elemento,[
             'idProfesor' => ['type' => 'hidden'],
-            'numero' => ['type' => 'select'],
             'tipo' => ['type' => 'hidden'],
+            'numero' => ['type' => 'select'],
             'grupo' => ['type' => 'hidden'],
             'curso' => ['disabled' => 'disabled'],
             'fecha' => ['type' => 'datetime'],
@@ -142,6 +146,12 @@ class ReunionController extends IntranetController
         }
         return view('reunion.asistencia', compact('formulario', 'modelo', 'tProfesores', 'sProfesores', 'ordenes'));
 
+    }
+
+    public function update(ReunionUpdateRequest $request, $id)
+    {
+        $this->persist($request, $id);
+        return $this->redirect();
     }
 
     private function tAlumnos($reunion,$sAlumnos){

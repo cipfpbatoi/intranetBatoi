@@ -52,14 +52,13 @@ class LoteController extends ModalController
 
     public function store(LoteRequest $request)
     {
-        $new = new Lote();
-        $new->fillAll($request);
+        $this->persist($request);
         return $this->redirect();
     }
 
     public function update(LoteRequest $request, $id)
     {
-        Lote::findOrFail($id)->fillAll($request);
+        $this->persist($request, $id);
         return $this->redirect();
     }
 

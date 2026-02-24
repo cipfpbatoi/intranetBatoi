@@ -5,8 +5,7 @@ namespace Intranet\Http\Controllers\Auth\Alumno;
 use Illuminate\Http\Request;
 use Intranet\Http\Controllers\Auth\PerfilController as Perfil;
 use Illuminate\Support\Facades\Auth;
-use Intranet\Services\Media\ImageService;
-use Styde\Html\Facades\Alert;
+use Intranet\Http\Requests\AlumnoPerfilUpdateRequest;
 
 class PerfilController extends Perfil
 {
@@ -22,22 +21,7 @@ class PerfilController extends Perfil
 
     public function update(Request $request, $id = null)
     {
-        $fotoRule = 'nullable|image|mimes:jpg,jpeg,png|max:10240';
-        $foto = $request->file('foto');
-        if ($foto) {
-            $ext = strtolower($foto->getClientOriginalExtension());
-            if (in_array($ext, ['heic', 'heif'], true)) {
-                $fotoRule = 'nullable|file|mimes:heic,heif|max:10240';
-            }
-        }
-
-        $request->validate(
-            ['foto' => $fotoRule,
-                'telef1' =>'max:14',
-                'telef2' =>'max:14',
-                'email' => 'email|max:45'
-            ]
-        );
+        $this->validate($request, (new AlumnoPerfilUpdateRequest())->rules());
         $nia = $id ?? auth('alumno')->user()->nia;
         $class = $this->modelClass();
         $new = $class::find($nia) ?? auth('alumno')->user();
