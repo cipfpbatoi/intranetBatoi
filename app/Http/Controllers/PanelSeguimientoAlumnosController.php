@@ -17,7 +17,8 @@ class PanelSeguimientoAlumnosController extends IntranetController
 
     public function indice($search)
     {
-        $resultado = Resultado::find($search);
+        $resultado = Resultado::findOrFail((int) $search);
+        $this->authorize('view', $resultado);
         $elemento = $resultado->moduloGrupo;
         $resultados = AlumnoResultado::where('idModuloGrupo',$resultado->idModuloGrupo)->get();
         $alumnes = $this->createWithDefaultValues(['idModuloGrupo'=>$resultado->idModuloGrupo])->getidAlumnoOptions();
@@ -34,12 +35,17 @@ class PanelSeguimientoAlumnosController extends IntranetController
     public function store(Request $request)
     {
         $this->validate($request, (new AlumnoResultadoStoreRequest())->rules());
+        $resultado = Resultado::where('idModuloGrupo', $request->idModuloGrupo)->firstOrFail();
+        $this->authorize('update', $resultado);
         $this->realStore($request);
         return back();
     }
 
     public function destroy($id){
-        $this->search = 1;
+        $alumnoResultado = AlumnoResultado::findOrFail((int) $id);
+        $resultado = Resultado::where('idModuloGrupo', $alumnoResultado->idModuloGrupo)->firstOrFail();
+        $this->authorize('update', $resultado);
+        $this->search = (int) $resultado->id;
         parent::destroy($id);
         return back();
     }

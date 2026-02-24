@@ -21,6 +21,7 @@ use Intranet\Entities\Cotxe;
 use Intranet\Entities\Expediente;
 use Intranet\Entities\Signatura;
 use Intranet\Entities\TutoriaGrupo;
+use Intranet\Entities\GrupoTrabajo;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\ImportRun;
 use Intranet\Entities\MaterialBaja;
@@ -59,6 +60,7 @@ use Intranet\Policies\CotxePolicy;
 use Intranet\Policies\ExpedientePolicy;
 use Intranet\Policies\SignaturaPolicy;
 use Intranet\Policies\TutoriaGrupoPolicy;
+use Intranet\Policies\GrupoTrabajoPolicy;
 use Intranet\Policies\ProfesorPolicy;
 use Intranet\Policies\ReunionPolicy;
 use Intranet\Policies\EspacioPolicy;
@@ -95,6 +97,7 @@ class AuthServiceProvider extends ServiceProvider
         Expediente::class => ExpedientePolicy::class,
         Signatura::class => SignaturaPolicy::class,
         TutoriaGrupo::class => TutoriaGrupoPolicy::class,
+        GrupoTrabajo::class => GrupoTrabajoPolicy::class,
         Menu::class => MenuPolicy::class,
         Modulo_ciclo::class => ModuloCicloPolicy::class,
         PPoll::class => PPollPolicy::class,
