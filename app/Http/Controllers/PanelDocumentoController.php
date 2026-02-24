@@ -9,6 +9,7 @@ use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Document\TipoDocumentoService;
 use Intranet\Entities\Documento;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
 
@@ -39,6 +40,7 @@ class PanelDocumentoController extends BaseController
      */
     public function index()
     {
+        Gate::authorize('viewAny', Documento::class);
         Session::put('redirect','PanelDocumentoController@index');
         $this->iniBotones();
         return $this->grid($this->search());
@@ -62,6 +64,7 @@ class PanelDocumentoController extends BaseController
      */
     public function search()
     {
+        Gate::authorize('viewAny', Documento::class);
         return Documento::
             whereIn('rol', RolesUser(AuthUser()->rol))->
             whereIn('tipoDocumento',TipoDocumentoService::allDocuments())->

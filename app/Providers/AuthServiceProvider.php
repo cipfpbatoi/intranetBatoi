@@ -36,7 +36,9 @@ use Intranet\Entities\Documento;
 use Intranet\Entities\Task;
 use Intranet\Entities\Setting;
 use Intranet\Entities\Colaboracion;
+use Intranet\Entities\Projecte;
 use Intranet\Policies\ColaboracionPolicy;
+use Intranet\Policies\ProjectePolicy;
 use Intranet\Policies\ActividadPolicy;
 use Intranet\Policies\CicloPolicy;
 use Intranet\Policies\ComisionPolicy;
@@ -103,6 +105,7 @@ class AuthServiceProvider extends ServiceProvider
         PPoll::class => PPollPolicy::class,
         Option::class => OptionPolicy::class,
         Colaboracion::class => ColaboracionPolicy::class,
+        Projecte::class => ProjectePolicy::class,
         ImportRun::class => ImportRunPolicy::class,
         Incidencia::class => IncidenciaPolicy::class,
         MaterialBaja::class => MaterialBajaPolicy::class,

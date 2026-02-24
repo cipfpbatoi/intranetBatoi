@@ -36,4 +36,15 @@ class ProfesorPolicy
 
         return $this->hasRole($user, 'roles.rol.jefe_practicas');
     }
+
+    /**
+     * Determina si l'usuari pot gestionar incidències de fitxatge/presència.
+     *
+     * @param mixed $user
+     */
+    public function manageAttendance($user): bool
+    {
+        return $this->hasRole($user, 'roles.rol.direccion')
+            || $this->hasRole($user, 'roles.rol.administrador');
+    }
 }

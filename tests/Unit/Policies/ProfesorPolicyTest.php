@@ -52,4 +52,21 @@ class ProfesorPolicyTest extends TestCase
         $this->assertFalse($policy->manageQualityFinal((object) ['rol' => (int) config('roles.rol.jefe_practicas')], $profesor));
         $this->assertFalse($policy->manageQualityFinal(null, $profesor));
     }
+
+    public function test_manage_attendance_permet_direccio_o_admin_i_denega_la_resta(): void
+    {
+        $policy = new ProfesorPolicy();
+
+        $this->assertTrue($policy->manageAttendance(
+            (object) ['dni' => 'DIR001', 'rol' => (int) config('roles.rol.direccion')]
+        ));
+        $this->assertTrue($policy->manageAttendance(
+            (object) ['dni' => 'ADM001', 'rol' => (int) config('roles.rol.administrador')]
+        ));
+        $this->assertFalse($policy->manageAttendance(
+            (object) ['dni' => 'PRF001', 'rol' => (int) config('roles.rol.profesor')]
+        ));
+        $this->assertFalse($policy->manageAttendance((object) []));
+        $this->assertFalse($policy->manageAttendance(null));
+    }
 }

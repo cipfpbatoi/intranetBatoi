@@ -7,6 +7,8 @@ use Intranet\Http\Controllers\Core\BaseController;
 
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonImg;
+use Intranet\Entities\Empresa;
+use Illuminate\Support\Facades\Gate;
 
 
 /**
@@ -56,6 +58,7 @@ class PanelEmpresaSCController extends BaseController
      */
     public function search()
     {
+        Gate::authorize('viewAny', Empresa::class);
         return $this->empreses()->socialConcertList();
     }
 

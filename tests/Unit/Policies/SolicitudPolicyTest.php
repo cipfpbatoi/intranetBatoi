@@ -34,4 +34,27 @@ class SolicitudPolicyTest extends TestCase
         $this->assertTrue($policy->delete((object) ['dni' => 'ADM001', 'rol' => (int) config('roles.rol.administrador')], $solicitud));
         $this->assertFalse($policy->update((object) ['dni' => 'PRF999', 'rol' => (int) config('roles.rol.profesor')], $solicitud));
     }
+
+    public function test_activate_i_resolve_només_per_a_orientador_assignat(): void
+    {
+        $policy = new SolicitudPolicy();
+        $solicitud = new Solicitud();
+        $solicitud->idProfesor = 'PRF001';
+        $solicitud->idOrientador = 'ORI001';
+
+        $orientadorAssignat = (object) ['dni' => 'ORI001', 'rol' => (int) config('roles.rol.orientador')];
+        $altreOrientador = (object) ['dni' => 'ORI999', 'rol' => (int) config('roles.rol.orientador')];
+        $propietari = (object) ['dni' => 'PRF001', 'rol' => (int) config('roles.rol.profesor')];
+        $direccio = (object) ['dni' => 'DIR001', 'rol' => (int) config('roles.rol.direccion')];
+
+        $this->assertTrue($policy->activate($orientadorAssignat, $solicitud));
+        $this->assertTrue($policy->resolve($orientadorAssignat, $solicitud));
+
+        $this->assertFalse($policy->activate($altreOrientador, $solicitud));
+        $this->assertFalse($policy->resolve($altreOrientador, $solicitud));
+        $this->assertFalse($policy->activate($propietari, $solicitud));
+        $this->assertFalse($policy->resolve($propietari, $solicitud));
+        $this->assertFalse($policy->activate($direccio, $solicitud));
+        $this->assertFalse($policy->resolve($direccio, $solicitud));
+    }
 }

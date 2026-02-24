@@ -7,12 +7,9 @@ use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\ModalController;
 
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Session;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
-use Intranet\Services\Notifications\NotificationService;
 use Intranet\Services\Document\PdfService;
 use Intranet\Entities\OrdenReunion;
 use Intranet\Entities\Projecte;
@@ -20,7 +17,7 @@ use Intranet\Entities\Reunion;
 use Intranet\Http\Requests\ProyectoRequest;
 
 /**
- * Class EspacioController
+ * Class PanelProjecteController
  * @package Intranet\Http\Controllers
  */
 class PanelProjecteController extends ModalController
@@ -74,8 +71,9 @@ class PanelProjecteController extends ModalController
         return $this->grupos()->byTutorOrSubstitute(AuthUser()->dni, AuthUser()->sustituye_a);
     }
 
-
-
+    /**
+     * Recupera els projectes del grup del tutor autenticat.
+     */
     public function search()
     {
         $miGrupo = $this->myTutorGroup();
@@ -88,6 +86,7 @@ class PanelProjecteController extends ModalController
 
     public function store(ProyectoRequest $request)
     {
+        $this->authorize('create', Projecte::class);
         $miGrupo = $this->myTutorGroup();
         if ($miGrupo === null) {
             return back()->withErrors('No tens grup assignat');
@@ -100,29 +99,48 @@ class PanelProjecteController extends ModalController
 
     public function update(ProyectoRequest $request, $id)
     {
-        $this->persist($request, $id);
+        $projecte = Projecte::findOrFail((int) $id);
+        $this->authorize('update', $projecte);
+        $this->persist($request, (int) $id);
         return back();
     }
 
+    /**
+     * Valida una proposta de projecte.
+     *
+     * @param int|string $id
+     */
     public function check($id)
     {
-        $projecte = Projecte::findOrFail($id);
+        $projecte = Projecte::findOrFail((int) $id);
+        $this->authorize('check', $projecte);
         $projecte->estat = 2;
         $projecte->save();
         return back();
     }
 
+    /**
+     * Elimina una proposta de projecte.
+     *
+     * @param int|string $id
+     */
     public function destroy($id)
     {
-        if ($elemento = Projecte::findOrFail($id)) {
+        $elemento = Projecte::findOrFail((int) $id);
+        $this->authorize('delete', $elemento);
+        if ($elemento) {
             $elemento->delete();
         }
         return back();
     }
 
 
+    /**
+     * Envia per correu les propostes del grup de tutoria.
+     */
     public function send()
     {
+        $this->authorize('send', Projecte::class);
         $miGrupo = $this->myTutorGroup();
         if ($miGrupo === null) {
             return back()->withErrors('No tens grup assignat');
@@ -156,8 +174,12 @@ class PanelProjecteController extends ModalController
     }
 
 
+    /**
+     * Genera l'acta de valoració de propostes del grup.
+     */
     public function acta()
     {
+        $this->authorize('createActa', Projecte::class);
         $miGrupo = $this->myTutorGroup();
         if ($miGrupo === null) {
             return back()->withErrors('No tens grup assignat');
@@ -184,8 +206,12 @@ class PanelProjecteController extends ModalController
 
     }
 
+    /**
+     * Genera l'acta d'assignació de data/hora de defenses.
+     */
     public function actaE()
     {
+        $this->authorize('createDefenseActa', Projecte::class);
         $miGrupo = $this->myTutorGroup();
         if ($miGrupo === null) {
             return back()->withErrors('No tens grup assignat');
@@ -216,7 +242,8 @@ class PanelProjecteController extends ModalController
 
     public function pdf($id)
     {
-        $elemento = Projecte::findOrFail($id);
+        $elemento = Projecte::findOrFail((int) $id);
+        $this->authorize('view', $elemento);
         $informe = 'pdf.propostaProjecte';
         $pdf = app(PdfService::class)->hazPdf($informe, $elemento, null);
         return $pdf->stream();

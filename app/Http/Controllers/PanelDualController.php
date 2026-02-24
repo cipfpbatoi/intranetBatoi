@@ -6,8 +6,8 @@ use Intranet\Application\Grupo\GrupoService;
 use Intranet\Http\Controllers\Core\BaseController;
 
 use Intranet\UI\Botones\BotonImg;
-use Intranet\Entities\AlumnoFct;
 use Intranet\Entities\Fct;
+use Illuminate\Support\Facades\Gate;
 
 class PanelDualController extends BaseController
 {
@@ -39,6 +39,7 @@ class PanelDualController extends BaseController
     
     protected function iniBotones()
     {
+        Gate::authorize('manageDualControl', Fct::class);
         $this->panel->setBoton('grid',new BotonImg(
                 'fctcap.dual',
                 [
@@ -56,7 +57,9 @@ class PanelDualController extends BaseController
 
         
     }
-    protected function search(){
+    protected function search()
+    {
+        Gate::authorize('manageDualControl', Fct::class);
         $duals = Fct::esDual()->get();
         $grups = [];
         foreach ($duals as $dual){
@@ -70,6 +73,7 @@ class PanelDualController extends BaseController
 
     protected function show($id)
     {
+        Gate::authorize('manageDualControl', Fct::class);
         $grupo = $this->grupos()->find((string) $id);
         abort_unless($grupo !== null, 404);
         return redirect()->route('fct.linkQuality',['dni'=>$grupo->tutor]);

@@ -115,9 +115,23 @@ class ExpedienteControllerTest extends TestCase
 
 class DummyExpedienteController extends ExpedienteController
 {
+    /**
+     * Constructor buit per evitar la inicialització de panell en proves unitàries.
+     */
     public function __construct()
     {
-        // Evitem inicialització de panell/UI en proves unitàries.
+        // Intencionalment buit.
+    }
+
+    /**
+     * Omet l'autorització en tests unitaris de comportament intern del controlador.
+     *
+     * @param mixed $ability
+     * @param mixed $arguments
+     * @return true
+     */
+    public function authorize($ability, $arguments = [])
+    {
+        return true;
     }
 }
-

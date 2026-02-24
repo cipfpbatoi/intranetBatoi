@@ -13,6 +13,15 @@ use Tests\TestCase;
  */
 class DocumentoPolicyTest extends TestCase
 {
+    public function test_view_any_requerix_identitat(): void
+    {
+        $policy = new DocumentoPolicy();
+
+        $this->assertTrue($policy->viewAny((object) ['dni' => 'PRF001']));
+        $this->assertFalse($policy->viewAny((object) []));
+        $this->assertFalse($policy->viewAny(null));
+    }
+
     public function test_create_permet_usuari_amb_dni(): void
     {
         $policy = new DocumentoPolicy();

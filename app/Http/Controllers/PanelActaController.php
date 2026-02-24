@@ -6,6 +6,7 @@ use Intranet\Application\Profesor\ProfesorService;
 use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\Entities\Documento;
 use Intranet\Services\Document\TipoDocumentoService;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 use Styde\Html\Facades\Alert;
 
@@ -42,6 +43,7 @@ class PanelActaController extends BaseController
      */
     public function index($grupo=null)
     {
+        Gate::authorize('viewAny', Documento::class);
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $this->iniBotones();
         if ($this->iniPestanas($grupo)){
@@ -58,6 +60,7 @@ class PanelActaController extends BaseController
      */
     public function search($grupo = null)
     {
+        Gate::authorize('viewAny', Documento::class);
         $roles = RolesUser(AuthUser()->rol);
         $profe = $this->profesores()->find((string) AuthUser()->dni);
         if (!$profe) {

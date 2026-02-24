@@ -10,8 +10,10 @@ use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Falta;
+use Intranet\Entities\Profesor;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Gate;
 use Intranet\Services\HR\FitxatgeService;
 use Jenssegers\Date\Date;
 use Carbon\Carbon;
@@ -41,6 +43,7 @@ class PanelPresenciaController extends BaseController
     
     public function indice($dia = null)
     {
+        Gate::authorize('manageAttendance', Profesor::class);
         Session::forget('redirect'); //buida variable de sessió redirect ja que sols se utiliza en cas de direccio
         $dia = $dia ? $dia : Hoy();
         $fdia = new Date($dia);
@@ -55,6 +58,7 @@ class PanelPresenciaController extends BaseController
 
     public function email($usuario, $dia)
     {
+        Gate::authorize('manageAttendance', Profesor::class);
         // Busca el/la professor/a pel DNI
         $profesor = self::profesores()->find((string) $usuario);
 
@@ -90,6 +94,7 @@ class PanelPresenciaController extends BaseController
 
     public function deleteDia($usuario, $dia, FitxatgeService $fitxatgeService)
     {
+        Gate::authorize('manageAttendance', Profesor::class);
         $fitxatgeService->fitxaDiaManual($usuario, $dia);
         return back();
     }

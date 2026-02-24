@@ -10,6 +10,17 @@ use Tests\TestCase;
 
 class FctPolicyTest extends TestCase
 {
+    public function test_view_any_aplica_regla_general_fct(): void
+    {
+        $policy = new FctPolicy();
+
+        $this->assertTrue($policy->viewAny((object) ['rol' => (int) config('roles.rol.tutor')]));
+        $this->assertTrue($policy->viewAny((object) ['rol' => (int) config('roles.rol.practicas')]));
+        $this->assertFalse($policy->viewAny((object) ['rol' => (int) config('roles.rol.alumno')]));
+        $this->assertFalse($policy->viewAny((object) []));
+        $this->assertFalse($policy->viewAny(null));
+    }
+
     public function test_create_permet_tutor_practiques_i_jefe_practiques(): void
     {
         $policy = new FctPolicy();
@@ -44,5 +55,56 @@ class FctPolicyTest extends TestCase
 
         $this->assertTrue($policy->delete((object) ['rol' => (int) config('roles.rol.jefe_practicas')], $fct));
         $this->assertFalse($policy->delete((object) ['rol' => (int) config('roles.rol.alumno')], $fct));
+    }
+
+    public function test_abilities_de_flux_aval_apliquen_la_mateixa_regla_de_permisos(): void
+    {
+        $policy = new FctPolicy();
+        $tutor = (object) ['rol' => (int) config('roles.rol.tutor')];
+        $alumne = (object) ['rol' => (int) config('roles.rol.alumno')];
+
+        $this->assertTrue($policy->manageAval($tutor));
+        $this->assertTrue($policy->requestActa($tutor));
+        $this->assertTrue($policy->sendA56($tutor));
+        $this->assertTrue($policy->viewStats($tutor));
+
+        $this->assertFalse($policy->manageAval($alumne));
+        $this->assertFalse($policy->requestActa($alumne));
+        $this->assertFalse($policy->sendA56($alumne));
+        $this->assertFalse($policy->viewStats($alumne));
+    }
+
+    public function test_manage_pending_acta_permet_direccio_admin_i_jefe_practiques(): void
+    {
+        $policy = new FctPolicy();
+
+        $direccio = (object) ['rol' => (int) config('roles.rol.direccion')];
+        $admin = (object) ['rol' => (int) config('roles.rol.administrador')];
+        $jefePractiques = (object) ['rol' => (int) config('roles.rol.jefe_practicas')];
+        $tutor = (object) ['rol' => (int) config('roles.rol.tutor')];
+
+        $this->assertTrue($policy->managePendingActa($direccio));
+        $this->assertTrue($policy->managePendingActa($admin));
+        $this->assertTrue($policy->managePendingActa($jefePractiques));
+        $this->assertFalse($policy->managePendingActa($tutor));
+        $this->assertFalse($policy->managePendingActa((object) []));
+        $this->assertFalse($policy->managePendingActa(null));
+    }
+
+    public function test_manage_dual_control_permet_jefe_practiques_direccio_i_admin(): void
+    {
+        $policy = new FctPolicy();
+
+        $direccio = (object) ['rol' => (int) config('roles.rol.direccion')];
+        $admin = (object) ['rol' => (int) config('roles.rol.administrador')];
+        $jefePractiques = (object) ['rol' => (int) config('roles.rol.jefe_practicas')];
+        $tutor = (object) ['rol' => (int) config('roles.rol.tutor')];
+
+        $this->assertTrue($policy->manageDualControl($direccio));
+        $this->assertTrue($policy->manageDualControl($admin));
+        $this->assertTrue($policy->manageDualControl($jefePractiques));
+        $this->assertFalse($policy->manageDualControl($tutor));
+        $this->assertFalse($policy->manageDualControl((object) []));
+        $this->assertFalse($policy->manageDualControl(null));
     }
 }

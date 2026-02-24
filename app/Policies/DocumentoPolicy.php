@@ -10,6 +10,16 @@ use Intranet\Entities\Documento;
 class DocumentoPolicy
 {
     /**
+     * Determina si l'usuari pot accedir als panells de llistat documental.
+     *
+     * @param mixed $user
+     */
+    public function viewAny($user): bool
+    {
+        return $this->hasIdentity($user);
+    }
+
+    /**
      * Determina si l'usuari pot crear documents.
      *
      * @param mixed $user

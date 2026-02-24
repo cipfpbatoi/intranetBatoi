@@ -8,6 +8,8 @@ use Intranet\Http\Controllers\Core\BaseController;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Entities\AlumnoFct;
+use Intranet\Entities\Fct;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 use Intranet\Mail\TitolAlumne;
 use Intranet\Services\Notifications\AdviseService;
@@ -59,6 +61,7 @@ class PanelActasController extends BaseController
      */
     protected function iniBotones()
     {
+        Gate::authorize('managePendingActa', Fct::class);
         $grupo = $this->grupos()->find((string) $this->search);
         abort_unless($grupo !== null, 404);
         if ($grupo->acta_pendiente) {
@@ -78,6 +81,7 @@ class PanelActasController extends BaseController
      */
     protected function search()
     {
+        Gate::authorize('managePendingActa', Fct::class);
         $grupo = $this->grupos()->find((string) $this->search);
         abort_unless($grupo !== null, 404);
         $this->titulo = ['quien' => $grupo->nombre ];
@@ -94,6 +98,7 @@ class PanelActasController extends BaseController
      */
     public function finActa($idGrupo)
     {
+        Gate::authorize('managePendingActa', Fct::class);
         $grupo = $this->grupos()->find((string) $idGrupo);
         abort_unless($grupo !== null, 404);
         $fcts = AlumnoFct::Grupo($grupo)->Pendiente()->get();
@@ -118,6 +123,7 @@ class PanelActasController extends BaseController
 
     public function rejectActa($idGrupo)
     {
+        Gate::authorize('managePendingActa', Fct::class);
         $grupo = $this->grupos()->find((string) $idGrupo);
         abort_unless($grupo !== null, 404);
         $fcts = AlumnoFct::Grupo($grupo)->Pendiente()->get();

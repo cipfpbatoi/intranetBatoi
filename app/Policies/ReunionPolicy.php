@@ -63,6 +63,16 @@ class ReunionPolicy
     }
 
     /**
+     * Determina si l'usuari pot gestionar l'informe trimestral de departament.
+     *
+     * @param mixed $user
+     */
+    public function manageDepartmentReport($user): bool
+    {
+        return $this->hasRole($user, 'roles.rol.jefe_dpto');
+    }
+
+    /**
      * @param mixed $user
      */
     /**

@@ -41,4 +41,17 @@ class ReunionPolicyTest extends TestCase
         $this->assertFalse($policy->manageOrder($other, $reunion));
         $this->assertFalse($policy->notify($other, $reunion));
     }
+
+    public function test_manage_department_report_requerix_rol_cap_de_departament(): void
+    {
+        $policy = new ReunionPolicy();
+
+        $capDepartament = (object) ['rol' => (int) config('roles.rol.jefe_dpto')];
+        $professor = (object) ['rol' => (int) config('roles.rol.profesor')];
+
+        $this->assertTrue($policy->manageDepartmentReport($capDepartament));
+        $this->assertFalse($policy->manageDepartmentReport($professor));
+        $this->assertFalse($policy->manageDepartmentReport((object) []));
+        $this->assertFalse($policy->manageDepartmentReport(null));
+    }
 }
