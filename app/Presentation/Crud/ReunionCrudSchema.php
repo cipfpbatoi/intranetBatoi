@@ -36,7 +36,7 @@ final class ReunionCrudSchema
         'grupo' => ['type' => 'select'],
         'curso' => ['disabled' => 'disabled'],
         'fecha' => ['type' => 'datetime'],
-        'objetivos' => ['type' => 'textarea'],
+        'descripcion' => ['type' => 'text'],
         'idEspacio' => ['type' => 'select'],
         'fichero' => ['type' => 'file'],
     ];
@@ -62,4 +62,3 @@ final class ReunionCrudSchema
         'idEspacio' => 'required',
     ];
 }
-
