@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Events\ActivityReport;
 use Intranet\Events\PreventAction;
+use Intranet\Entities\Profesor;
 use Tests\TestCase;
 
 class IncidenciaControllerFeatureTest extends TestCase
@@ -59,6 +60,7 @@ class IncidenciaControllerFeatureTest extends TestCase
         $this->insertProfesor('PINC001', config('roles.rol.profesor'));
         $this->insertProfesor('PINC002', config('roles.rol.profesor'));
         $this->insertProfesor('PINC003', config('roles.rol.profesor'));
+        $this->authenticateAsProfesor('PINC002');
         $this->insertTipoIncidencia(1, 'PINC003');
 
         $id = $this->insertIncidencia([
@@ -89,6 +91,7 @@ class IncidenciaControllerFeatureTest extends TestCase
         $this->insertProfesor('111A', config('roles.rol.profesor'));
         $this->insertProfesor('PINC011', config('roles.rol.profesor'));
         $this->insertProfesor('PINC012', config('roles.rol.profesor'));
+        $this->authenticateAsProfesor('111A');
         $this->insertTipoIncidencia(2, 'PINC012');
 
         $id = $this->insertIncidencia([
@@ -119,6 +122,7 @@ class IncidenciaControllerFeatureTest extends TestCase
         $this->insertProfesor('111A', config('roles.rol.profesor'));
         $this->insertProfesor('PINC021', config('roles.rol.profesor'));
         $this->insertProfesor('PINC022', config('roles.rol.profesor'));
+        $this->authenticateAsProfesor('111A');
         $this->insertTipoIncidencia(3, 'PINC022');
 
         $id = $this->insertIncidencia([
@@ -149,6 +153,7 @@ class IncidenciaControllerFeatureTest extends TestCase
         $this->insertProfesor('111A', config('roles.rol.profesor'));
         $this->insertProfesor('PINC031', config('roles.rol.profesor'));
         $this->insertProfesor('PINC032', config('roles.rol.profesor'));
+        $this->authenticateAsProfesor('111A');
         $this->insertTipoIncidencia(4, 'PINC032');
 
         $response = $this
@@ -176,6 +181,7 @@ class IncidenciaControllerFeatureTest extends TestCase
         $this->insertProfesor('PINC041', config('roles.rol.profesor'));
         $this->insertProfesor('PINC042', config('roles.rol.profesor'));
         $this->insertProfesor('PINC043', config('roles.rol.profesor'));
+        $this->authenticateAsProfesor('PINC042');
         $this->insertTipoIncidencia(5, 'PINC043');
 
         $id = $this->insertIncidencia([
@@ -297,6 +303,13 @@ class IncidenciaControllerFeatureTest extends TestCase
             'idProfesor' => $idProfesor,
             'tipus' => 0,
         ]);
+    }
+
+    private function authenticateAsProfesor(string $dni): void
+    {
+        /** @var Profesor $profesor */
+        $profesor = Profesor::on('sqlite')->findOrFail($dni);
+        $this->actingAs($profesor, 'profesor');
     }
 
     /**

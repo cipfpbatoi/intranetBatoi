@@ -20,6 +20,7 @@ use Intranet\Exceptions\IntranetException;
 use Intranet\Http\Traits\Core\DropZone;
 use Intranet\Services\Document\FDFPrepareService;
 use Intranet\Services\School\SecretariaService;
+use Illuminate\Support\Facades\Gate;
 use Styde\Html\Facades\Alert;
 
 
@@ -36,7 +37,6 @@ class PanelFctAvalController extends IntranetController
     private ?AlumnoFctService $alumnoFctService = null;
 
     const ROLES_ROL_TUTOR = 'roles.rol.tutor';
-    const ROLES_ROL_CAPAC = 'roles.rol.jefe_practicas';
 
     /**
      * @var string
@@ -441,7 +441,7 @@ class PanelFctAvalController extends IntranetController
         $botones = [
             'volver' => ['link' => back()->getTargetUrl()],
         ];
-        if ($ara >= $inici && $ara <= $fi && userIsAllow(config(self::ROLES_ROL_CAPAC)))  {
+        if ($ara >= $inici && $ara <= $fi && Gate::forUser(AuthUser())->allows('manageQualityFinal', $registre))  {
             $botones['final'] = [
                     'link' =>"/fct/$id/upload",
                     'message' => "Este procediment l'has de fer quan tingues tota
