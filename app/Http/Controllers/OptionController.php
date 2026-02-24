@@ -36,6 +36,7 @@ class OptionController extends ModalController
      */
     public function store(OptionStoreRequest $request)
     {
+        $this->authorize('create', Option::class);
         $this->persist($request);
         return redirect()->action('PPollController@show', ['id' => $request->ppoll_id]);
     }
@@ -46,7 +47,9 @@ class OptionController extends ModalController
      */
     public function destroy($id)
     {
-        $poll = Option::find($id)->ppoll_id;
+        $option = Option::findOrFail((int) $id);
+        $this->authorize('delete', $option);
+        $poll = $option->ppoll_id;
         parent::destroy($id);
         return redirect()->action('PPollController@show', ['id' => $poll]);
     }

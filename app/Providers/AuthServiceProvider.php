@@ -20,6 +20,8 @@ use Intranet\Entities\Reunion;
 use Intranet\Entities\Espacio;
 use Intranet\Entities\TipoActividad;
 use Intranet\Entities\TipoIncidencia;
+use Intranet\Entities\Poll\Option;
+use Intranet\Entities\Poll\PPoll;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Task;
 use Intranet\Entities\Setting;
@@ -46,6 +48,8 @@ use Intranet\Policies\TaskPolicy;
 use Intranet\Policies\SettingPolicy;
 use Intranet\Policies\TipoActividadPolicy;
 use Intranet\Policies\TipoIncidenciaPolicy;
+use Intranet\Policies\OptionPolicy;
+use Intranet\Policies\PPollPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -66,6 +70,8 @@ class AuthServiceProvider extends ServiceProvider
         Curso::class => CursoPolicy::class,
         Menu::class => MenuPolicy::class,
         Modulo_ciclo::class => ModuloCicloPolicy::class,
+        PPoll::class => PPollPolicy::class,
+        Option::class => OptionPolicy::class,
         Colaboracion::class => ColaboracionPolicy::class,
         ImportRun::class => ImportRunPolicy::class,
         Incidencia::class => IncidenciaPolicy::class,

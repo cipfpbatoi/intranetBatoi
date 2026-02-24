@@ -39,19 +39,33 @@ class PPollController extends ModalController
     public function show($id)
     {
         $elemento = PPoll::findOrFail($id);
+        $this->authorize('view', $elemento);
         $modelo = $this->model;
         return view('poll.masterslave', compact('elemento','modelo'));
     }
 
     public function store(PPollRequest $request)
     {
+        $this->authorize('create', PPoll::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(PPollRequest $request, $id)
     {
+        $this->authorize('update', PPoll::findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina una plantilla de poll amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', PPoll::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 }
