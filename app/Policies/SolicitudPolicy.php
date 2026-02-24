@@ -39,7 +39,12 @@ class SolicitudPolicy
      */
     public function update($user, Solicitud $solicitud): bool
     {
-        return $this->ownsOrIsDirectionOrAdmin($user, (string) $solicitud->idProfesor);
+        if ($this->ownsOrIsDirectionOrAdmin($user, (string) $solicitud->idProfesor)) {
+            return true;
+        }
+
+        return $this->hasProfesorIdentity($user)
+            && (string) $user->dni === (string) ($solicitud->idOrientador ?? '');
     }
 
     /**
