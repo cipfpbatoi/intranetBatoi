@@ -2,14 +2,13 @@
 
 namespace Intranet\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
+/**
+ * Event d'enviament de correu.
+ */
 class EmailSended
 {
 
@@ -18,36 +17,38 @@ class EmailSended
         SerializesModels;
 
     /**
-     * Create a new event instance.
-     *
-     * @return void
+     * @var mixed
      */
     public $elemento;
-    public $modelo;
-    public $correo;
-    
-    private function getmodel($elemento)
-    {
-        $entero = get_class($elemento);
-        $nspace = 'Intranet\Entities\\';
-        return substr($entero, strlen($nspace), strlen($entero));
-    }
 
-    public function __construct($elemento,$correo)
+    /**
+     * @var string
+     */
+    public $modelo;
+
+    /**
+     * @var string
+     */
+    public $correo;
+
+    /**
+     * @param mixed $elemento
+     * @return string
+     */
+    private function getModel($elemento)
     {
-        $this->elemento = $elemento;
-        $this->modelo = $this->getmodel($elemento);
-        $this->correo = $correo;
+        return class_basename($elemento);
     }
 
     /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return Channel|array
+     * @param mixed $elemento
+     * @param string $correo
      */
-    public function broadcastOn()
+    public function __construct($elemento, $correo)
     {
-        return new PrivateChannel('channel-name');
+        $this->elemento = $elemento;
+        $this->modelo = $this->getModel($elemento);
+        $this->correo = $correo;
     }
 
 }

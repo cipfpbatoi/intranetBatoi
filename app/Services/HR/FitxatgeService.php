@@ -8,7 +8,9 @@ use Intranet\Entities\Falta_profesor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 
-
+/**
+ * Servei de gestio de fitxatges.
+ */
 class FitxatgeService
 {
     public function __construct(private readonly FaltaProfesorRepositoryInterface $faltaProfesorRepository)

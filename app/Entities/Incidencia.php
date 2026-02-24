@@ -5,11 +5,13 @@ namespace Intranet\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Services\Notifications\AdviseService;
 use Jenssegers\Date\Date;
-use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
 use Intranet\Presentation\Crud\IncidenciaCrudSchema;
 use function authUser;
 
+/**
+ * Model d'incidencies.
+ */
 class Incidencia extends Model
 {
 
@@ -39,9 +41,10 @@ class Incidencia extends Model
     use \Intranet\Entities\Concerns\BatoiModels;
 
     protected $inputTypes = IncidenciaCrudSchema::INPUT_TYPES;
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
-        'saving' => PreventAction::class,
         'deleted' => ActivityReport::class,
         'created' => ActivityReport::class,
     ];
