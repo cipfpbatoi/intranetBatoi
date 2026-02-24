@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Intranet\Events\ActivityReport;
-use Intranet\Events\PreventAction;
 use Intranet\Entities\Profesor;
 use Tests\TestCase;
 
+/**
+ * Proves del controlador d'incidencies.
+ */
 class IncidenciaControllerFeatureTest extends TestCase
 {
     private string $sqlitePath;
@@ -35,7 +37,7 @@ class IncidenciaControllerFeatureTest extends TestCase
         DB::purge('sqlite');
         DB::reconnect('sqlite');
 
-        Event::fake([PreventAction::class, ActivityReport::class]);
+        Event::fake([ActivityReport::class]);
 
         $this->createSchema();
     }

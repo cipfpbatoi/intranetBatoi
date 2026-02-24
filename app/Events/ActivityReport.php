@@ -3,14 +3,13 @@
 namespace Intranet\Events;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
+/**
+ * Event de registre d'activitat.
+ */
 class ActivityReport
 {
 
@@ -18,8 +17,14 @@ class ActivityReport
         InteractsWithSockets,
         SerializesModels;
 
+    /**
+     * @var Model
+     */
     public $model;
 
+    /**
+     * @param Model $model
+     */
     public function __construct(Model $model)
     {
         $this->model = $model;

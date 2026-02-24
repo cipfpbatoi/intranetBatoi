@@ -4,18 +4,22 @@ namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Services\HR\FitxatgeService;
-use Intranet\Events\FichaCreated;
 
+/**
+ * Model de fitxatges de professorat.
+ */
 class Falta_profesor extends Model
 {
     protected $table = 'faltas_profesores';
+
+    /**
+     * @var array<int, string>
+     */
     protected $fillable = [
         'idProfesor',
         'dia',
         'entrada',
-        'salida'];
-    protected $dispatchesEvents = [
-        'created' => FichaCreated::class,
+        'salida',
     ];
 
     public function Profesor()

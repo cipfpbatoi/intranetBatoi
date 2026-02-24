@@ -3,11 +3,13 @@
 namespace Intranet\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Intranet\Events\PreventAction;
 use Intranet\Events\ActivityReport;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Services\School\ModuloGrupoService;
 
+/**
+ * Model de resultats.
+ */
 class Resultado extends Model
 {
 
@@ -35,9 +37,10 @@ class Resultado extends Model
         'idProfesor' => ['type' => 'text'],
         
     ];
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
-        'updating' => PreventAction::class,
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
         'created' => ActivityReport::class,

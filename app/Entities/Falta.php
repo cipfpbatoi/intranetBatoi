@@ -6,9 +6,11 @@ use Jenssegers\Date\Date;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Intranet\Events\ActivityReport;
-use Intranet\Events\PreventAction;
 use Intranet\Presentation\Crud\FaltaCrudSchema;
 
+/**
+ * Model de faltes.
+ */
 class Falta extends Model
 {
 
@@ -33,9 +35,10 @@ class Falta extends Model
     
     protected $rules = FaltaCrudSchema::RULES;
     protected $inputTypes = FaltaCrudSchema::INPUT_TYPES;
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
-        'updating' => PreventAction::class,
         'saved' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];
