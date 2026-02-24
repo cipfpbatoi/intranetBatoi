@@ -13,6 +13,15 @@ use Tests\TestCase;
  */
 class CursoPolicyTest extends TestCase
 {
+    public function test_view_any_requerix_identitat(): void
+    {
+        $policy = new CursoPolicy();
+
+        $this->assertTrue($policy->viewAny((object) ['dni' => 'PRF001']));
+        $this->assertFalse($policy->viewAny((object) ['rol' => (int) config('roles.rol.profesor')]));
+        $this->assertFalse($policy->viewAny(null));
+    }
+
     public function test_mutacions_per_usuari_amb_dni_i_denegacio_sense_identitat(): void
     {
         $policy = new CursoPolicy();

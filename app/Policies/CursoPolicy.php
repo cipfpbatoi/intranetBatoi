@@ -13,6 +13,16 @@ class CursoPolicy
     use InteractsWithProfesorOwnership;
 
     /**
+     * Determina si l'usuari pot accedir als llistats de cursos.
+     *
+     * @param mixed $user
+     */
+    public function viewAny($user): bool
+    {
+        return $this->hasProfesorIdentity($user);
+    }
+
+    /**
      * Determina si l'usuari pot crear cursos.
      *
      * @param mixed $user

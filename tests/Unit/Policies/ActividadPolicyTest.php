@@ -13,6 +13,15 @@ use Tests\TestCase;
  */
 class ActividadPolicyTest extends TestCase
 {
+    public function test_view_any_requerix_identitat(): void
+    {
+        $policy = new ActividadPolicy();
+
+        $this->assertTrue($policy->viewAny((object) ['dni' => 'PRF001']));
+        $this->assertFalse($policy->viewAny((object) []));
+        $this->assertFalse($policy->viewAny(null));
+    }
+
     public function test_create_permet_usuari_amb_dni_i_denega_invalid(): void
     {
         $policy = new ActividadPolicy();

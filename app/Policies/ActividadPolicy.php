@@ -15,6 +15,14 @@ class ActividadPolicy
     /**
      * @param mixed $user
      */
+    public function viewAny($user): bool
+    {
+        return $this->hasProfesorIdentity($user);
+    }
+
+    /**
+     * @param mixed $user
+     */
     public function create($user): bool
     {
         return $this->hasProfesorIdentity($user);
