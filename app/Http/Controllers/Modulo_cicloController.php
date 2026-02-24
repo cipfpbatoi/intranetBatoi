@@ -7,6 +7,7 @@ use Intranet\Http\Controllers\Core\ModalController;
 use Intranet\Http\Requests\ModuloCicloRequest;
 use Intranet\UI\Botones\BotonImg;
 use Intranet\UI\Botones\BotonBasico;
+use Intranet\Entities\Modulo_ciclo;
 
 /**
  * Class Modulo_cicloController
@@ -40,14 +41,27 @@ class Modulo_cicloController extends ModalController
 
     public function store(ModuloCicloRequest $request)
     {
+        $this->authorize('create', Modulo_ciclo::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(ModuloCicloRequest $request, $id)
     {
+        $this->authorize('update', Modulo_ciclo::findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un enllaç mòdul-cicle amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Modulo_ciclo::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 
 }

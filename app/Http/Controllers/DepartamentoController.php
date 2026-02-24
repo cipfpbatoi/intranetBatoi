@@ -47,14 +47,27 @@ class DepartamentoController extends ModalController
 
     public function store(DepartamentoRequest $request)
     {
+        $this->authorize('create', Departamento::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(DepartamentoRequest $request, $id)
     {
+        $this->authorize('update', Departamento::findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un departament amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Departamento::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 
     protected function search()
