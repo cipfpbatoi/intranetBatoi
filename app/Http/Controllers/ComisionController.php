@@ -64,6 +64,7 @@ class ComisionController extends ModalController
 
     public function store(ComisionRequest $request)
     {
+        $this->authorize('create', Comision::class);
         $request->merge([
             'idProfesor' => $request->idProfesor ?? authUser()->dni,
         ]);
@@ -80,6 +81,7 @@ class ComisionController extends ModalController
 
     public function update(ComisionRequest $request, $id)
     {
+        $this->authorize('update', $this->comisionService()->findOrFail((int) $id));
         $this->persist($request, $id);
         return $this->redirect();
     }
@@ -87,6 +89,7 @@ class ComisionController extends ModalController
     public function confirm($id)
     {
         $comision = $this->comisionService()->findOrFail((int) $id);
+        $this->authorize('update', $comision);
         if ($comision->estado == 0) {
             return ConfirmAndSend::render($this->model, $id, 'Enviar a direcció i correus confirmació');
         }
@@ -198,6 +201,7 @@ class ComisionController extends ModalController
         if (!$comision) {
             return $this->redirect();
         }
+        $this->authorize('update', $comision);
         $this->enviarCorreos($comision);
         $stSrv = new StateService($comision);
         $stSrv->putEstado($this->init);
@@ -224,6 +228,7 @@ class ComisionController extends ModalController
      */
     public function paid($id)
     {
+        $this->authorize('update', $this->comisionService()->findOrFail((int) $id));
         $this->setEstado($id, 5);
     }
 
@@ -233,6 +238,7 @@ class ComisionController extends ModalController
      */
     public function unpaid($id)
     {
+        $this->authorize('update', $this->comisionService()->findOrFail((int) $id));
         $this->setEstado($id, 4);
         return back();
     }
@@ -242,6 +248,7 @@ class ComisionController extends ModalController
      */
     public function autorizar()
     {
+        $this->authorize('create', Comision::class);
         StateService::makeAll($this->comisionService()->pendingAuthorization(), 2);
         return back();
     }
@@ -249,6 +256,7 @@ class ComisionController extends ModalController
     public function detalle($id)
     {
         $comision = $this->comisionService()->findOrFail((int) $id);
+        $this->authorize('view', $comision);
         $allFcts = $this->buildFctOptions();
 
         return view('comision.detalle', compact('comision', 'allFcts'));
@@ -256,6 +264,7 @@ class ComisionController extends ModalController
 
     public function createFct(Request $request, $comisionId)
     {
+        $this->authorize('manageFct', $this->comisionService()->findOrFail((int) $comisionId));
         $this->comisionService()->attachFct(
             (int) $comisionId,
             (int) $request->idFct,
@@ -267,6 +276,7 @@ class ComisionController extends ModalController
 
     public function deleteFct($comisionId, $fctId)
     {
+        $this->authorize('manageFct', $this->comisionService()->findOrFail((int) $comisionId));
         $this->comisionService()->detachFct((int) $comisionId, (int) $fctId);
         return $this->detalle($comisionId);
     }
