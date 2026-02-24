@@ -8,6 +8,7 @@ use Intranet\UI\Botones\BotonIcon;
 use Intranet\UI\Botones\BotonBasico;
 use Intranet\UI\Botones\BotonPost;
 use Intranet\Entities\Incidencia;
+use Illuminate\Support\Facades\Gate;
 
 class PanelOrdenTrabajoController extends BaseController
 {
@@ -19,11 +20,13 @@ class PanelOrdenTrabajoController extends BaseController
     
     public function search()
     {
+        Gate::authorize('viewAny', Incidencia::class);
         return Incidencia::where('orden',$this->search)->get(); 
     }
     
     public function iniBotones()
     {
+        Gate::authorize('viewAny', Incidencia::class);
         $this->panel->setBoton('index', new BotonBasico("$this->search.pdf", ['where'=>['estado','==',0]],"mantenimiento/ordentrabajo" ));
         $this->panel->setBoton('index', new BotonBasico("ordentrabajo.", ['text'=>trans('messages.buttons.verorden')],"mantenimiento" ));
         $this->panel->setBoton('profile', new BotonIcon("incidencia.remove", ['class' => 'btn-danger unauthorize','where'=>['estado','<',3]],'mantenimiento'));

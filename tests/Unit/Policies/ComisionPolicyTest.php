@@ -22,19 +22,32 @@ class ComisionPolicyTest extends TestCase
         $this->assertFalse($policy->create(null));
     }
 
-    public function test_view_update_managefct_requerixen_identitat(): void
+    public function test_view_i_managefct_només_permeten_propietari(): void
     {
         $policy = new ComisionPolicy();
         $comision = new Comision();
-        $valid = (object) ['dni' => 'PRF002'];
+        $comision->idProfesor = 'PRF001';
+        $owner = (object) ['dni' => 'PRF001'];
+        $other = (object) ['dni' => 'PRF002'];
         $invalid = (object) [];
 
-        $this->assertTrue($policy->view($valid, $comision));
-        $this->assertTrue($policy->update($valid, $comision));
-        $this->assertTrue($policy->manageFct($valid, $comision));
+        $this->assertTrue($policy->view($owner, $comision));
+        $this->assertTrue($policy->manageFct($owner, $comision));
+        $this->assertTrue($policy->update($owner, $comision));
 
+        $this->assertFalse($policy->view($other, $comision));
+        $this->assertFalse($policy->manageFct($other, $comision));
         $this->assertFalse($policy->view($invalid, $comision));
-        $this->assertFalse($policy->update($invalid, $comision));
         $this->assertFalse($policy->manageFct($invalid, $comision));
+    }
+
+    public function test_update_continua_requerint_identitat(): void
+    {
+        $policy = new ComisionPolicy();
+        $comision = new Comision();
+
+        $this->assertTrue($policy->update((object) ['dni' => 'PRF099'], $comision));
+        $this->assertFalse($policy->update((object) [], $comision));
+        $this->assertFalse($policy->update(null, $comision));
     }
 }

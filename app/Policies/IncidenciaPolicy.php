@@ -13,6 +13,16 @@ class IncidenciaPolicy
     use InteractsWithProfesorOwnership;
 
     /**
+     * Determina si l'usuari pot accedir als llistats d'incidències.
+     *
+     * @param mixed $user
+     */
+    public function viewAny($user): bool
+    {
+        return $this->hasProfesorIdentity($user);
+    }
+
+    /**
      * Determina si l'usuari pot crear incidències.
      *
      * @param mixed $user

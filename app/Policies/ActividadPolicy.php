@@ -33,7 +33,7 @@ class ActividadPolicy
      */
     public function update($user, Actividad $actividad): bool
     {
-        return $this->hasProfesorIdentity($user);
+        return $this->canManage($user, $actividad);
     }
 
     /**
@@ -41,7 +41,7 @@ class ActividadPolicy
      */
     public function manageParticipants($user, Actividad $actividad): bool
     {
-        return $this->hasProfesorIdentity($user);
+        return $this->canManage($user, $actividad);
     }
 
     /**
@@ -49,7 +49,25 @@ class ActividadPolicy
      */
     public function notify($user, Actividad $actividad): bool
     {
-        return $this->hasProfesorIdentity($user);
+        return $this->canManage($user, $actividad);
+    }
+
+    /**
+     * Regla de gestió: coordinador de l'activitat o rol elevat.
+     *
+     * @param mixed $user
+     */
+    private function canManage($user, Actividad $actividad): bool
+    {
+        if (!$this->hasProfesorIdentity($user)) {
+            return false;
+        }
+
+        if ($this->isDirectionOrAdmin($user)) {
+            return true;
+        }
+
+        return (string) $actividad->Creador() === (string) $user->dni;
     }
 
 }

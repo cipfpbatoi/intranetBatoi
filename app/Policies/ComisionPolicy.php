@@ -33,7 +33,7 @@ class ComisionPolicy
      */
     public function view($user, Comision $comision): bool
     {
-        return $this->hasProfesorIdentity($user);
+        return $this->isOwner($user, $comision);
     }
 
     /**
@@ -41,7 +41,18 @@ class ComisionPolicy
      */
     public function manageFct($user, Comision $comision): bool
     {
-        return $this->hasProfesorIdentity($user);
+        return $this->isOwner($user, $comision);
+    }
+
+    /**
+     * Regla de propietat de la comissió.
+     *
+     * @param mixed $user
+     */
+    private function isOwner($user, Comision $comision): bool
+    {
+        return $this->hasProfesorIdentity($user)
+            && (string) $comision->idProfesor === (string) $user->dni;
     }
 
 }

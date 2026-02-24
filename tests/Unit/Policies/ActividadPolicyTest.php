@@ -22,17 +22,36 @@ class ActividadPolicyTest extends TestCase
         $this->assertFalse($policy->create(null));
     }
 
-    public function test_view_update_manage_i_notify_requerixen_identitat(): void
+    public function test_view_requerix_identitat_pero_la_gestio_requerix_coordinador_o_rol_elevat(): void
     {
         $policy = new ActividadPolicy();
-        $actividad = new Actividad();
-        $valid = (object) ['dni' => 'PRF002'];
+        $actividad = new class extends Actividad {
+            public function Creador()
+            {
+                return 'COO001';
+            }
+        };
+
+        $coordinador = (object) ['dni' => 'COO001', 'rol' => (int) config('roles.rol.profesor')];
+        $direccio = (object) ['dni' => 'DIR001', 'rol' => (int) config('roles.rol.direccion')];
+        $admin = (object) ['dni' => 'ADM001', 'rol' => (int) config('roles.rol.administrador')];
+        $altreProfessor = (object) ['dni' => 'PRF002', 'rol' => (int) config('roles.rol.profesor')];
         $invalid = (object) [];
 
-        $this->assertTrue($policy->view($valid, $actividad));
-        $this->assertTrue($policy->update($valid, $actividad));
-        $this->assertTrue($policy->manageParticipants($valid, $actividad));
-        $this->assertTrue($policy->notify($valid, $actividad));
+        $this->assertTrue($policy->view($coordinador, $actividad));
+        $this->assertTrue($policy->view($altreProfessor, $actividad));
+
+        $this->assertTrue($policy->update($coordinador, $actividad));
+        $this->assertTrue($policy->manageParticipants($coordinador, $actividad));
+        $this->assertTrue($policy->notify($coordinador, $actividad));
+
+        $this->assertTrue($policy->update($direccio, $actividad));
+        $this->assertTrue($policy->manageParticipants($direccio, $actividad));
+        $this->assertTrue($policy->notify($admin, $actividad));
+
+        $this->assertFalse($policy->update($altreProfessor, $actividad));
+        $this->assertFalse($policy->manageParticipants($altreProfessor, $actividad));
+        $this->assertFalse($policy->notify($altreProfessor, $actividad));
 
         $this->assertFalse($policy->view($invalid, $actividad));
         $this->assertFalse($policy->update($invalid, $actividad));
