@@ -11,6 +11,7 @@ use Intranet\Entities\ImportRun;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Reunion;
 use Intranet\Entities\Documento;
+use Intranet\Entities\Task;
 use Intranet\Entities\Colaboracion;
 use Intranet\Policies\ColaboracionPolicy;
 use Intranet\Policies\ActividadPolicy;
@@ -22,6 +23,7 @@ use Intranet\Policies\IncidenciaPolicy;
 use Intranet\Policies\ImportRunPolicy;
 use Intranet\Policies\ProfesorPolicy;
 use Intranet\Policies\ReunionPolicy;
+use Intranet\Policies\TaskPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -44,6 +46,7 @@ class AuthServiceProvider extends ServiceProvider
         Documento::class => DocumentoPolicy::class,
         Actividad::class => ActividadPolicy::class,
         Comision::class => ComisionPolicy::class,
+        Task::class => TaskPolicy::class,
     ];
 
     /**
