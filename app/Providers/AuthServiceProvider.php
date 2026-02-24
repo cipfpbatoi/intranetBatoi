@@ -8,8 +8,10 @@ use Intranet\Entities\Incidencia;
 use Intranet\Entities\ImportRun;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Reunion;
+use Intranet\Entities\Documento;
 use Intranet\Entities\Colaboracion;
 use Intranet\Policies\ColaboracionPolicy;
+use Intranet\Policies\DocumentoPolicy;
 use Intranet\Policies\EmpresaPolicy;
 use Intranet\Policies\FctPolicy;
 use Intranet\Policies\IncidenciaPolicy;
@@ -35,6 +37,7 @@ class AuthServiceProvider extends ServiceProvider
         Incidencia::class => IncidenciaPolicy::class,
         Profesor::class => ProfesorPolicy::class,
         Reunion::class => ReunionPolicy::class,
+        Documento::class => DocumentoPolicy::class,
     ];
 
     /**
