@@ -135,6 +135,11 @@ class ActividadControllerFeatureTest extends TestCase
         $actividadId = $this->insertActividad();
         $this->insertProfesor('P650', 'Irene');
         $this->authenticateAsProfesor('P650');
+        DB::table('actividad_profesor')->insert([
+            'idActividad' => $actividadId,
+            'idProfesor' => 'P650',
+            'coordinador' => 1,
+        ]);
 
         DB::table('grupos')->insert([
             'codigo' => 'GX1',
@@ -188,10 +193,14 @@ class ActividadControllerFeatureTest extends TestCase
         $response->assertSessionHas('error', 'No estàs autoritzat.');
     }
 
-    public function test_ruta_notificar_amb_middleware_permet_rol_profesor(): void
+    public function test_ruta_notificar_amb_middleware_permet_direccio(): void
     {
         $actividadId = $this->insertActividad();
-        $this->insertProfesor('P702', 'Gina', config('roles.rol.profesor'));
+        $this->insertProfesor(
+            'P702',
+            'Gina',
+            (int) config('roles.rol.profesor') * (int) config('roles.rol.direccion')
+        );
 
         $usuario = Profesor::on('sqlite')->findOrFail('P702');
         $response = $this
