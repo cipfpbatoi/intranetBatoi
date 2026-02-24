@@ -10,6 +10,9 @@ use Intranet\Entities\Ciclo;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Departamento;
 use Intranet\Entities\Curso;
+use Intranet\Entities\Articulo;
+use Intranet\Entities\IpGuardia;
+use Intranet\Entities\Lote;
 use Intranet\Entities\Menu;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Incidencia;
@@ -31,6 +34,7 @@ use Intranet\Policies\ActividadPolicy;
 use Intranet\Policies\CicloPolicy;
 use Intranet\Policies\ComisionPolicy;
 use Intranet\Policies\CursoPolicy;
+use Intranet\Policies\ArticuloPolicy;
 use Intranet\Policies\DepartamentoPolicy;
 use Intranet\Policies\DocumentoPolicy;
 use Intranet\Policies\EmpresaPolicy;
@@ -39,6 +43,8 @@ use Intranet\Policies\FaltaPolicy;
 use Intranet\Policies\IncidenciaPolicy;
 use Intranet\Policies\ImportRunPolicy;
 use Intranet\Policies\MaterialBajaPolicy;
+use Intranet\Policies\IpGuardiaPolicy;
+use Intranet\Policies\LotePolicy;
 use Intranet\Policies\MenuPolicy;
 use Intranet\Policies\ModuloCicloPolicy;
 use Intranet\Policies\ProfesorPolicy;
@@ -68,6 +74,9 @@ class AuthServiceProvider extends ServiceProvider
         Ciclo::class => CicloPolicy::class,
         Departamento::class => DepartamentoPolicy::class,
         Curso::class => CursoPolicy::class,
+        Articulo::class => ArticuloPolicy::class,
+        IpGuardia::class => IpGuardiaPolicy::class,
+        Lote::class => LotePolicy::class,
         Menu::class => MenuPolicy::class,
         Modulo_ciclo::class => ModuloCicloPolicy::class,
         PPoll::class => PPollPolicy::class,

@@ -27,7 +27,7 @@ Objectiu: acabar la migració de validació a `FormRequest` i deixar controlador
 - [x] 2.3.a Neteja d'imports no usats en `FctController`
 - [x] 2.3.b Coherència de signatures en importació: patró híbrid (`Request` + regles de `FormRequest`) i autorització compatible amb execució en cua (`RunImportJob`)
 - [x] 2.3.c Coherència de nomenclatura i imports: `sacaCampos` en `TeacherImportController` i `use Illuminate\Support\Facades\DB` en `InstructorWorkflowService`
-- [x] 2.3.d Inici migració a `Policies`: `EmpresaPolicy`, `FctPolicy`, `ColaboracionPolicy`, `ImportRunPolicy`, `IncidenciaPolicy`, `ProfesorPolicy`, `ReunionPolicy`, `DocumentoPolicy`, `ActividadPolicy`, `ComisionPolicy`, `TaskPolicy`, `SettingPolicy`, `FaltaPolicy`, `TipoActividadPolicy`, `EspacioPolicy`, `MaterialBajaPolicy`, `CicloPolicy`, `DepartamentoPolicy`, `TipoIncidenciaPolicy`, `ModuloCicloPolicy`, `MenuPolicy`, `CursoPolicy`, `PPollPolicy` i `OptionPolicy` aplicades en controladors i registrades en `AuthServiceProvider` (+ tests unitaris de policy)
+- [x] 2.3.d Inici migració a `Policies`: `EmpresaPolicy`, `FctPolicy`, `ColaboracionPolicy`, `ImportRunPolicy`, `IncidenciaPolicy`, `ProfesorPolicy`, `ReunionPolicy`, `DocumentoPolicy`, `ActividadPolicy`, `ComisionPolicy`, `TaskPolicy`, `SettingPolicy`, `FaltaPolicy`, `TipoActividadPolicy`, `EspacioPolicy`, `MaterialBajaPolicy`, `CicloPolicy`, `DepartamentoPolicy`, `TipoIncidenciaPolicy`, `ModuloCicloPolicy`, `MenuPolicy`, `CursoPolicy`, `PPollPolicy`, `OptionPolicy`, `LotePolicy`, `ArticuloPolicy` i `IpGuardiaPolicy` aplicades en controladors i registrades en `AuthServiceProvider` (+ tests unitaris de policy)
 
 ---
 

@@ -45,14 +45,27 @@ class IpGuardiaController extends ModalController
 
     public function store(IpGuardiaRequest $request)
     {
+        $this->authorize('create', IpGuardia::class);
         $this->persist($request);
         return back();
     }
 
     public function update(IpGuardiaRequest $request, $id)
     {
+        $this->authorize('update', IpGuardia::findOrFail((int) $id));
         $this->persist($request, $id);
         return back();
+    }
+
+    /**
+     * Elimina una IP de guàrdia amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', IpGuardia::findOrFail((int) $id));
+        return parent::destroy($id);
     }
 
 
