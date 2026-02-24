@@ -15,6 +15,9 @@ use Intranet\Entities\IpGuardia;
 use Intranet\Entities\Lote;
 use Intranet\Entities\Menu;
 use Intranet\Entities\Modulo_ciclo;
+use Intranet\Entities\Resultado;
+use Intranet\Entities\Solicitud;
+use Intranet\Entities\Cotxe;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\ImportRun;
 use Intranet\Entities\MaterialBaja;
@@ -47,6 +50,9 @@ use Intranet\Policies\IpGuardiaPolicy;
 use Intranet\Policies\LotePolicy;
 use Intranet\Policies\MenuPolicy;
 use Intranet\Policies\ModuloCicloPolicy;
+use Intranet\Policies\ResultadoPolicy;
+use Intranet\Policies\SolicitudPolicy;
+use Intranet\Policies\CotxePolicy;
 use Intranet\Policies\ProfesorPolicy;
 use Intranet\Policies\ReunionPolicy;
 use Intranet\Policies\EspacioPolicy;
@@ -77,6 +83,9 @@ class AuthServiceProvider extends ServiceProvider
         Articulo::class => ArticuloPolicy::class,
         IpGuardia::class => IpGuardiaPolicy::class,
         Lote::class => LotePolicy::class,
+        Resultado::class => ResultadoPolicy::class,
+        Solicitud::class => SolicitudPolicy::class,
+        Cotxe::class => CotxePolicy::class,
         Menu::class => MenuPolicy::class,
         Modulo_ciclo::class => ModuloCicloPolicy::class,
         PPoll::class => PPollPolicy::class,
