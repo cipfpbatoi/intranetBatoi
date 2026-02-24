@@ -2,9 +2,7 @@
 
 namespace Intranet\Providers;
 
-use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Intranet\Entities\Activity;
 use Intranet\Events\EmailAnnexeIndividual;
 use Intranet\Listeners\ActualitzarBaseDeDadesDespresEmail;
 
@@ -42,9 +40,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         'Intranet\Events\ActivityReport' => [
             'Intranet\Listeners\RegisterActivity',
-        ],
-        'Intranet\Events\FichaCreated' => [
-            'Intranet\Listeners\VeepCreated',
         ],
         'Intranet\Events\EmailSended' => [
             'Intranet\Listeners\MarkSended',
