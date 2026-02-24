@@ -241,7 +241,7 @@ class SignaturaController extends ModalController
             ['subject'=>'Documents FCT de '.$signatura->Fct->Alumno->fullName],
             [$signatura->simpleRouteFile => 'application/pdf']);
             //per a marcar-lo com a enviat a l'instructor
-        session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
+        session()->flash('email_action', 'annexe_individual');
         return $mail->render('/signatura');
     }
     public function sendMultiple(Request $request,$tipus)
@@ -290,7 +290,7 @@ class SignaturaController extends ModalController
                     view($view),
                     ['subject'=>'Documents FCT de '.$signatura->Alumno->fullName],
                     $signatures);
-                session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
+                session()->flash('email_action', 'annexe_individual');
                 return $mail->render('/signatura');
             }
             foreach ($request->all() as $key => $value) {
@@ -316,7 +316,7 @@ class SignaturaController extends ModalController
                         $view,
                         ['subject'=>'Documents FCT de '.$alumnoFct->Alumno->fullName],
                         $signatures);
-                    session()->flash('email_action', 'Intranet\Events\EmailAnnexeIndividual');
+                    session()->flash('email_action', 'annexe_individual');
                     $mail->send();
                 }
             }

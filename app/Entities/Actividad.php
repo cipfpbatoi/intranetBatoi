@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Intranet\Presentation\Crud\ActividadCrudSchema;
 use Jenssegers\Date\Date;
-use Intranet\Events\ActividadCreated;
 use Intranet\Events\ActivityReport;
 
 
@@ -52,7 +51,6 @@ class Actividad extends Model
      */
     protected $dispatchesEvents = [
         'deleted' => ActivityReport::class,
-        'created' => ActividadCreated::class,
     ];
     public $descriptionField = 'name';
     protected $hidden = ['created_at', 'updated_at'];
