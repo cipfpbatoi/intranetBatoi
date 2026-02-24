@@ -14,9 +14,28 @@ class AlumnoGrupoController extends ModalController
 {
     protected $perfil = 'profesor';
     protected $model = 'AlumnoGrupo';
+    /**
+     * Filtre del grup actual per al llistat modal.
+     *
+     * @var string|null
+     */
+    protected $search = null;
     protected $gridFields = ['nombre', 'telef1',  'email','poblacion','drets',
         'extraescolars','DA','subGrupo','posicion','telef2'];
     const FOL = 12;
+
+    /**
+     * Punt d'entrada legacy per a rutes que passen el grup en URL.
+     *
+     * @param string $grupo
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function indice($grupo)
+    {
+        $this->search = $grupo;
+        return $this->index();
+    }
+
     public function search()
     {
         $this->titulo = ['quien' => $this->search];
