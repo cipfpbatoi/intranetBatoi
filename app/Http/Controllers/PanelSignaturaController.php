@@ -45,6 +45,16 @@ class PanelSignaturaController extends BaseController
      */
     protected $parametresVista = [ 'modal' => ['signaturaDirector']];
 
+    /**
+     * Mostra el panell de signatures de direcció amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('manageDirectionPanel', Signatura::class);
+        return parent::index();
+    }
 
     /**
      *

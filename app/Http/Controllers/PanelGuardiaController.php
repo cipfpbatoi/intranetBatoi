@@ -44,6 +44,17 @@ class PanelGuardiaController extends BaseController
         return app(FitxatgeService::class);
     }
 
+    /**
+     * Mostra el panell de guàrdies amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('manageAttendance', Profesor::class);
+        return parent::index();
+    }
+
     protected function iniBotones()
     {
         Gate::authorize('manageAttendance', Profesor::class);

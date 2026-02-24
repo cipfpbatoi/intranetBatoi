@@ -41,6 +41,17 @@ class PanelPracticasController extends BaseController
 
         return $this->grupoService;
     }
+
+    /**
+     * Mostra el panell de control FCT amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('manageFctControl', Fct::class);
+        return parent::index();
+    }
     
     protected function iniBotones()
     {

@@ -17,6 +17,18 @@ class PanelOrdenTrabajoController extends BaseController
     protected $model = 'Incidencia';
     protected $parametresVista = ['modal' => ['explicacion','aviso']];
     
+    /**
+     * Mostra el detall d'orde de treball amb autorització prèvia.
+     *
+     * @param mixed $search
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function indice($search)
+    {
+        Gate::authorize('viewAny', Incidencia::class);
+        return parent::indice($search);
+    }
+
     
     public function search()
     {

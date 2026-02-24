@@ -55,6 +55,18 @@ class PanelActasController extends BaseController
         return $this->grupoService;
     }
 
+    /**
+     * Mostra l'acta pendent del grup indicat amb autorització prèvia.
+     *
+     * @param mixed $search
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function indice($search)
+    {
+        Gate::authorize('managePendingActa', Fct::class);
+        return parent::indice($search);
+    }
+
 
     /**
      *

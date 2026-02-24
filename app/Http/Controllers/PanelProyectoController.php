@@ -18,6 +18,17 @@ class PanelProyectoController extends BaseController
     
     protected $model = 'Documento';
     protected $gridFields = ['curso', 'descripcion', 'tags', 'ciclo'];
+
+    /**
+     * Mostra el panell de projectes documentals amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('viewAny', Documento::class);
+        return parent::index();
+    }
     
     
     protected function iniPestanas($parametres = null)

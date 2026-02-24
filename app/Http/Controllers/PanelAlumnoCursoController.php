@@ -24,6 +24,16 @@ class PanelAlumnoCursoController extends BaseController
      */
     protected $gridFields = ['id', 'titulo', 'estado', 'fecha_inicio','NAlumnos'];
 
+    /**
+     * Mostra el llistat de cursos d'alumne amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('viewAny', Curso::class);
+        return parent::index();
+    }
 
     /**
      * @return mixed

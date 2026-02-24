@@ -41,6 +41,17 @@ class PanelActividadOrientacionController extends IntranetController
      */
     protected $modal = false;
 
+    /**
+     * Mostra el panell d'activitats d'orientació amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('viewAny', Actividad::class);
+        return parent::index();
+    }
+
 
     /**
      *

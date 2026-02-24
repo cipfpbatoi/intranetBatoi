@@ -37,6 +37,17 @@ class PanelListadoEntregasController extends BaseController
     protected $gridFields = ['literal','seguimiento','profesor'];
     protected $parametresVista = ['modal' => ['infDpto']];
 
+    /**
+     * Mostra el llistat d'entregues amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('manageDepartmentReport', Reunion::class);
+        return parent::index();
+    }
+
     public function search()
     {
         Gate::authorize('manageDepartmentReport', Reunion::class);

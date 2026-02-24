@@ -32,6 +32,18 @@ class PanelPG0301Controller extends BaseController
 
         return $this->grupoService;
     }
+
+    /**
+     * Mostra el llistat per grup amb autorització prèvia.
+     *
+     * @param mixed $search
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function indice($search)
+    {
+        Gate::authorize('manageFctControl', Fct::class);
+        return parent::indice($search);
+    }
     
     protected function iniBotones()
     {

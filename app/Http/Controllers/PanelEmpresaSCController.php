@@ -54,6 +54,17 @@ class PanelEmpresaSCController extends BaseController
     }
 
     /**
+     * Mostra el panell d'empreses amb autorització prèvia.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function index()
+    {
+        Gate::authorize('viewAny', Empresa::class);
+        return parent::index();
+    }
+
+    /**
      * @return mixed
      */
     public function search()
