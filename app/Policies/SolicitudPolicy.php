@@ -48,6 +48,27 @@ class SolicitudPolicy
     }
 
     /**
+     * Determina si l'usuari pot activar una sol·licitud d'orientació.
+     *
+     * @param mixed $user
+     */
+    public function activate($user, Solicitud $solicitud): bool
+    {
+        return $this->hasProfesorIdentity($user)
+            && (string) $user->dni === (string) ($solicitud->idOrientador ?? '');
+    }
+
+    /**
+     * Determina si l'usuari pot resoldre una sol·licitud d'orientació.
+     *
+     * @param mixed $user
+     */
+    public function resolve($user, Solicitud $solicitud): bool
+    {
+        return $this->activate($user, $solicitud);
+    }
+
+    /**
      * Determina si l'usuari pot eliminar sol·licituds.
      *
      * @param mixed $user
