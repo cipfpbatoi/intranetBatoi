@@ -34,7 +34,6 @@ Route::delete('/actividad/{actividad}/grupo/{grupo}', ['as' => 'actividad.grupo.
 Route::post('/actividad/{actividad}/nuevoProfesor', ['as' => 'actividad.profesor.store', 'uses' => 'ActividadController@altaProfesor']);
 Route::delete('/actividad/{actividad}/profesor/{profesor}', ['as' => 'actividad.profesor.destroy', 'uses' => 'ActividadController@borrarProfesor']);
 Route::post('/actividad/{actividad}/coordinador/{profesor}', ['as' => 'actividad.profesor.coordinador', 'uses' => 'ActividadController@Coordinador']);
-Route::get('actividad/campo/{campo}', 'ActividadController@includegrid');
 Route::get('/actividad/{actividad}/init', ['as' => 'actividad.init', 'uses' => 'ActividadController@init']);
 Route::get('/actividad/{actividad}/show', ['as' => 'actividad.show', 'uses' => 'ActividadController@show']);
 Route::get('/actividad/{actividad}/notification', ['as' => 'actividad.notificar', 'uses' => 'ActividadController@notify']);
