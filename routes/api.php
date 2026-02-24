@@ -32,7 +32,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('alumnofct/{grupo}/dual', 'AlumnoFctController@dual');
     Route::get('fct/{id}/alFct', 'FctController@llist');
     Route::post('fct/{id}/alFct', 'FctController@seguimiento');
-    Route::get('misAlumnosFct', 'AlumnoFctController@misAlumnos');
     Route::resource('actividad', 'ActividadController', ['except' => [ 'create']]);
     Route::resource('programacion', 'ProgramacionController', ['except' => [ 'create']]);
     Route::resource('reunion', 'ReunionController', ['except' => [ 'create']]);
@@ -43,8 +42,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('comision', 'ComisionController', ['except' => [ 'create']]);
     Route::put('/comision/{dni}/prePay', 'ComisionController@prePay');
     Route::resource('instructor', 'InstructorController', ['except' => [ 'create']]);
-    Route::resource('ipguardia', 'IpGuardiaController');
-    Route::resource('setting', 'SettingController');
+    Route::resource('ipguardia', 'IpGuardiaController', ['except' => [ 'create']]);
+    Route::resource('setting', 'SettingController', ['except' => [ 'create']]);
     Route::get('autorizar/comision', 'ComisionController@autorizar');
     Route::get('notification/{id}', 'NotificationController@leer');
     Route::resource('ppoll', 'PPollController', ['except' => [ 'create']]);
@@ -52,7 +51,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('profesor', 'ProfesorController', ['except' => [ 'create']]);
     Route::get('profesor/{dni}/rol', 'ProfesorController@rol');
     Route::get('profesor/rol/{rol}', 'ProfesorController@getRol');
-    Route::get('ficha', 'ProfesorController@ficha');
     Route::get('doficha', 'FicharController@fichar');
     Route::get('ipGuardias', 'IpGuardiaController@arrayIps');
     Route::get('verficha', 'FicharController@entrefechas');
@@ -76,9 +74,9 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     Route::resource('espacio', 'EspacioController', ['except' => [ 'create']]);
     Route::get('guardia/range', 'GuardiaController@range');
-    Route::resource('guardia', 'GuardiaController');
-    Route::resource('departamento', 'DepartamentoController');
-    Route::resource('reserva', 'ReservaController');
+    Route::resource('guardia', 'GuardiaController', ['except' => [ 'create']]);
+    Route::resource('departamento', 'DepartamentoController', ['except' => [ 'create']]);
+    Route::resource('reserva', 'ReservaController', ['except' => [ 'create']]);
     Route::resource('ordenreunion', 'OrdenReunionController', ['except' => [ 'create']]);
     Route::resource('colaboracion', 'ColaboracionController', ['except' => [ 'create']]);
     Route::resource('centro', 'CentroController', ['except' => [ 'create']]);
@@ -125,7 +123,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/signatura/a1', 'DocumentacionFCTController@signaturaA1');
     Route::get('/signatura/{id}','SignaturaController@show');
 
-    Route::resource('alumnoresultado', 'AlumnoResultadoContoller');
+    Route::resource('alumnoresultado', 'AlumnoResultadoContoller', ['except' => [ 'create']]);
     Route::get('/matricula/{token}', 'AlumnoReunionController@getDadesMatricula');
     Route::get('/test/matricula/{token}', 'AlumnoReunionController@getTestMatricula');
     Route::post('/alumno/{dni}/foto', 'AlumnoController@putImage');
@@ -135,12 +133,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::resource('lote', 'LoteController', ['except' => [ 'create']]);
     Route::get('lote/{id}/articulos', 'LoteController@getArticulos');
     Route::put('lote/{id}/articulos', 'LoteController@putArticulos');
-    Route::resource('articuloLote', 'ArticuloLoteController');
-    Route::resource('articulo', 'ArticuloController');
+    Route::resource('articuloLote', 'ArticuloLoteController', ['except' => [ 'create']]);
+    Route::resource('articulo', 'ArticuloController', ['except' => [ 'create']]);
     Route::get('articuloLote/{id}/materiales', 'ArticuloLoteController@getMateriales');
 
-    Route::resource('cotxe', 'CotxeController');
-    Route::resource('tipoactividad', 'TipoActividadController');
+    Route::resource('cotxe', 'CotxeController', ['except' => [ 'create']]);
+    Route::resource('tipoactividad', 'TipoActividadController', ['except' => [ 'create']]);
     Route::post('attachFile', 'DropZoneController@attachFile');
     Route::get('getAttached/{modelo}/{id}', 'DropZoneController@getAttached');
     Route::get('getNameAttached/{modelo}/{id}/{filename}', 'DropZoneController@getNameAttached');
