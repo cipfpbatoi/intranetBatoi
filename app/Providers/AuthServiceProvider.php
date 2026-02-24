@@ -9,6 +9,8 @@ use Intranet\Entities\Actividad;
 use Intranet\Entities\Ciclo;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Departamento;
+use Intranet\Entities\Curso;
+use Intranet\Entities\Menu;
 use Intranet\Entities\Modulo_ciclo;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\ImportRun;
@@ -26,6 +28,7 @@ use Intranet\Policies\ColaboracionPolicy;
 use Intranet\Policies\ActividadPolicy;
 use Intranet\Policies\CicloPolicy;
 use Intranet\Policies\ComisionPolicy;
+use Intranet\Policies\CursoPolicy;
 use Intranet\Policies\DepartamentoPolicy;
 use Intranet\Policies\DocumentoPolicy;
 use Intranet\Policies\EmpresaPolicy;
@@ -34,6 +37,7 @@ use Intranet\Policies\FaltaPolicy;
 use Intranet\Policies\IncidenciaPolicy;
 use Intranet\Policies\ImportRunPolicy;
 use Intranet\Policies\MaterialBajaPolicy;
+use Intranet\Policies\MenuPolicy;
 use Intranet\Policies\ModuloCicloPolicy;
 use Intranet\Policies\ProfesorPolicy;
 use Intranet\Policies\ReunionPolicy;
@@ -59,6 +63,8 @@ class AuthServiceProvider extends ServiceProvider
         Falta::class => FaltaPolicy::class,
         Ciclo::class => CicloPolicy::class,
         Departamento::class => DepartamentoPolicy::class,
+        Curso::class => CursoPolicy::class,
+        Menu::class => MenuPolicy::class,
         Modulo_ciclo::class => ModuloCicloPolicy::class,
         Colaboracion::class => ColaboracionPolicy::class,
         ImportRun::class => ImportRunPolicy::class,
