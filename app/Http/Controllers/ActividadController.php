@@ -27,7 +27,9 @@ use Intranet\Services\School\ActividadParticipantsService;
 use Jenssegers\Date\Date;
 use Styde\Html\Facades\Alert;
 
-
+/**
+ * Controlador d'activitats extraescolars i complementàries.
+ */
 class ActividadController extends ModalController
 {
     private ?GrupoService $grupoService = null;
@@ -53,11 +55,19 @@ class ActividadController extends ModalController
         return new Actividad(['extraescolar' => 1,'desde'=>$data,'hasta'=>$data,'poll' => 0,'recomanada'=>1,'complementaria'=>1,'fueraCentro'=>0,'transport'=>0]);
     }
 
+    /**
+     * Guarda una activitat i aplica els participants per defecte.
+     *
+     * @param ActividadRequest $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(ActividadRequest $request)
     {
         $this->authorize('create', Actividad::class);
         $id = $this->persist($request);
-        return $this->showDetalle(Actividad::findOrFail($id));
+        $actividad = Actividad::findOrFail($id);
+        $this->participantsService()->assignInitialParticipants($actividad, authUser()?->dni);
+        return $this->showDetalle($actividad->id);
     }
 
     public function update(ActividadRequest $request, $id)
