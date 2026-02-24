@@ -10,10 +10,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActivityReport;
 use \DB;
-use Intranet\Events\PreventAction;
 use Intranet\Notifications\MyResetPassword;
 
 
+/**
+ * Model de professor.
+ */
 class Profesor extends Authenticatable
 {
 
@@ -90,8 +92,10 @@ class Profesor extends Authenticatable
         'idioma' => ['type' => 'select'],
         'mostrar' => ['type' => 'checkbox'],
     ];
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
         'created' => ActivityReport::class,
         'deleted' => ActivityReport::class,
     ];

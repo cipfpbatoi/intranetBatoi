@@ -8,7 +8,6 @@ use Intranet\Presentation\Crud\ActividadCrudSchema;
 use Jenssegers\Date\Date;
 use Intranet\Events\ActividadCreated;
 use Intranet\Events\ActivityReport;
-use Intranet\Events\PreventAction;
 
 
 /**
@@ -48,9 +47,10 @@ class Actividad extends Model
         'hasta' => 'required|date|after:desde',
     ];
     protected $inputTypes = ActividadCrudSchema::INPUT_TYPES;
+    /**
+     * @var array<string, class-string>
+     */
     protected $dispatchesEvents = [
-        'deleting' => PreventAction::class,
-        'updating' => PreventAction::class,
         'deleted' => ActivityReport::class,
         'created' => ActividadCreated::class,
     ];
