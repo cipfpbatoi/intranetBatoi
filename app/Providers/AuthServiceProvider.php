@@ -4,6 +4,8 @@ namespace Intranet\Providers;
 
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Colaboracion;
+use Intranet\Policies\ColaboracionPolicy;
 use Intranet\Policies\EmpresaPolicy;
 use Intranet\Policies\FctPolicy;
 use Illuminate\Support\Facades\Gate;
@@ -20,6 +22,7 @@ class AuthServiceProvider extends ServiceProvider
         'Intranet\Model' => 'Intranet\Policies\ModelPolicy',
         Empresa::class => EmpresaPolicy::class,
         Fct::class => FctPolicy::class,
+        Colaboracion::class => ColaboracionPolicy::class,
     ];
 
     /**

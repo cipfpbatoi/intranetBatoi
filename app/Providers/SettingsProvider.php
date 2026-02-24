@@ -2,7 +2,6 @@
 
 namespace Intranet\Providers;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,9 +21,8 @@ class SettingsProvider extends ServiceProvider
                 }
             }
         } catch (\Throwable $e) {
-            Log::warning('No s\'ha pogut carregar la taula settings en arrencar', [
-                'message' => $e->getMessage(),
-            ]);
+            // En arrencada primerenca (tests/CI), no podem assumir logger ni DB disponibles.
+            return;
         }
     }
 
