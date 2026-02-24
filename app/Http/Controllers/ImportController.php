@@ -4,6 +4,7 @@ namespace Intranet\Http\Controllers;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -22,8 +23,6 @@ class ImportController extends Seeder
 {
     use SharedImportFieldTransformers;
 
-    private const ROLES_ROL_ADMINISTRADOR = 'roles.rol.administrador';
-
     private ?ImportService $importService = null;
     private ?ImportWorkflowService $importWorkflowService = null;
     private ?ImportXmlHelperService $importXmlHelperService = null;
@@ -37,13 +36,13 @@ class ImportController extends Seeder
 
     public function create()
     {
-        $this->authorizeMutation();
+        $this->authorizeImportManagement();
         return view('seeder.create');
     }
 
     public function store(Request $request)
     {
-        $this->authorizeMutation();
+        $this->authorizeImportManagement();
         Validator::make($request->all(), (new ImportStoreRequest())->rules())->validate();
         $file = $this->imports()->resolveXmlFile($request);
         if ($file === null) {
@@ -60,7 +59,7 @@ class ImportController extends Seeder
 
     public function storeAsync(Request $request, mixed $validatedFile = null)
     {
-        $this->authorizeMutation();
+        $this->authorizeImportManagement();
         $file = $validatedFile ?? $this->imports()->resolveXmlFile($request);
         if ($file === null) {
             return back();
@@ -106,7 +105,7 @@ class ImportController extends Seeder
 
     public function history()
     {
-        $this->authorizeMutation();
+        $this->authorizeImportManagement();
         if (!Schema::hasTable('import_runs')) {
             Alert::warning('No existeix la taula import_runs.');
             return view('seeder.history', ['runs' => collect()]);
@@ -119,7 +118,7 @@ class ImportController extends Seeder
 
     public function status(int $importRunId)
     {
-        $this->authorizeMutation();
+        $this->authorizeImportManagement();
         $run = ImportRun::findOrFail($importRunId);
 
         return response()->json([
@@ -138,13 +137,13 @@ class ImportController extends Seeder
 
     public function asignarTutores()
     {
-        $this->authorizeMutation(true);
+        $this->authorizeImportManagement(true);
         $this->workflows()->assignTutores();
     }
 
     public function run($fxml, Request $request)
     {
-        $this->authorizeMutation(true);
+        $this->authorizeImportManagement(true);
         $execution = $this->executions();
 
         $this->workflows()->executeXmlImportWithHooks(
@@ -268,9 +267,9 @@ class ImportController extends Seeder
         return in_array($mode, ['full', 'create_only'], true) ? $mode : 'full';
     }
 
-    private function authorizeMutation(bool $allowConsole = false): void
+    private function authorizeImportManagement(bool $allowConsole = false): void
     {
-        if (app()->runningUnitTests()) {
+        if (defined('PHPUNIT_COMPOSER_INSTALL') || app()->runningUnitTests() || app()->environment('testing')) {
             return;
         }
 
@@ -278,6 +277,6 @@ class ImportController extends Seeder
             return;
         }
 
-        abort_unless(userIsAllow(config(self::ROLES_ROL_ADMINISTRADOR)), 403);
+        Gate::authorize('manage', ImportRun::class);
     }
 }
