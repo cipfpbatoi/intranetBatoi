@@ -11,7 +11,12 @@ class Cotxe extends Model
 {
     use \Intranet\Entities\Concerns\BatoiModels;
 
-    protected $fillable = ['matricula', 'marca'    ];
+    /**
+     * Camps assignables en persistència massiva/controlada.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['matricula', 'marca', 'idProfesor'];
 
     public function professor(): BelongsTo
     {
