@@ -77,6 +77,7 @@ class MaterialBajaController extends ModalController
     public function delete($id)
     {
         $registro = MaterialBaja::findOrFail($id);
+        $this->authorize('delete', $registro);
         $material = Material::findOrFail($registro->idMaterial);
         $material->delete();
         $registro->delete();
@@ -86,6 +87,7 @@ class MaterialBajaController extends ModalController
     public function active($id)
     {
         $registro = MaterialBaja::findOrFail($id);
+        $this->authorize('update', $registro);
         $material = Material::findOrFail($registro->idMaterial);
         $material->estado = 3;
         $material->save();
@@ -97,6 +99,7 @@ class MaterialBajaController extends ModalController
     public function recover($id)
     {
         $registro = MaterialBaja::findOrFail($id);
+        $this->authorize('recover', $registro);
         $material = Material::findOrFail($registro->idMaterial);
         $material->fechaBaja = null;
         $material->estado = 1;

@@ -4,12 +4,16 @@ namespace Intranet\Providers;
 
 use Intranet\Entities\Empresa;
 use Intranet\Entities\Fct;
+use Intranet\Entities\Falta;
 use Intranet\Entities\Actividad;
 use Intranet\Entities\Comision;
 use Intranet\Entities\Incidencia;
 use Intranet\Entities\ImportRun;
+use Intranet\Entities\MaterialBaja;
 use Intranet\Entities\Profesor;
 use Intranet\Entities\Reunion;
+use Intranet\Entities\Espacio;
+use Intranet\Entities\TipoActividad;
 use Intranet\Entities\Documento;
 use Intranet\Entities\Task;
 use Intranet\Entities\Setting;
@@ -20,12 +24,16 @@ use Intranet\Policies\ComisionPolicy;
 use Intranet\Policies\DocumentoPolicy;
 use Intranet\Policies\EmpresaPolicy;
 use Intranet\Policies\FctPolicy;
+use Intranet\Policies\FaltaPolicy;
 use Intranet\Policies\IncidenciaPolicy;
 use Intranet\Policies\ImportRunPolicy;
+use Intranet\Policies\MaterialBajaPolicy;
 use Intranet\Policies\ProfesorPolicy;
 use Intranet\Policies\ReunionPolicy;
+use Intranet\Policies\EspacioPolicy;
 use Intranet\Policies\TaskPolicy;
 use Intranet\Policies\SettingPolicy;
+use Intranet\Policies\TipoActividadPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -40,12 +48,16 @@ class AuthServiceProvider extends ServiceProvider
         'Intranet\Model' => 'Intranet\Policies\ModelPolicy',
         Empresa::class => EmpresaPolicy::class,
         Fct::class => FctPolicy::class,
+        Falta::class => FaltaPolicy::class,
         Colaboracion::class => ColaboracionPolicy::class,
         ImportRun::class => ImportRunPolicy::class,
         Incidencia::class => IncidenciaPolicy::class,
+        MaterialBaja::class => MaterialBajaPolicy::class,
         Profesor::class => ProfesorPolicy::class,
         Reunion::class => ReunionPolicy::class,
+        Espacio::class => EspacioPolicy::class,
         Documento::class => DocumentoPolicy::class,
+        TipoActividad::class => TipoActividadPolicy::class,
         Actividad::class => ActividadPolicy::class,
         Comision::class => ComisionPolicy::class,
         Task::class => TaskPolicy::class,

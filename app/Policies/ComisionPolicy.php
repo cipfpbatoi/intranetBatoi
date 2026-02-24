@@ -3,12 +3,15 @@
 namespace Intranet\Policies;
 
 use Intranet\Entities\Comision;
+use Intranet\Policies\Concerns\InteractsWithProfesorOwnership;
 
 /**
  * Policy d'autorització per a comissions de servei.
  */
 class ComisionPolicy
 {
+    use InteractsWithProfesorOwnership;
+
     /**
      * @param mixed $user
      */
@@ -41,11 +44,4 @@ class ComisionPolicy
         return $this->hasProfesorIdentity($user);
     }
 
-    /**
-     * @param mixed $user
-     */
-    private function hasProfesorIdentity($user): bool
-    {
-        return is_object($user) && isset($user->dni) && (string) $user->dni !== '';
-    }
 }

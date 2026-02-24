@@ -67,6 +67,7 @@ class FaltaControllerTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        $this->actingAs(Profesor::on('sqlite')->findOrFail('P900'), 'profesor');
 
         $request = new Request([
             'idProfesor' => 'P900',
@@ -189,6 +190,7 @@ class FaltaControllerTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        $this->actingAs(Profesor::on('sqlite')->findOrFail('P903'), 'profesor');
 
         $request = new Request([
             'idProfesor' => 'P903',
@@ -214,6 +216,7 @@ class FaltaControllerTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        $this->actingAs(Profesor::on('sqlite')->findOrFail('P904'), 'profesor');
 
         $request = new Request([
             'idProfesor' => 'P904',
@@ -246,6 +249,7 @@ class FaltaControllerTest extends TestCase
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        $this->actingAs(Profesor::on('sqlite')->findOrFail('P905'), 'profesor');
 
         $faltaId = DB::table('faltas')->insertGetId([
             'idProfesor' => 'P905',

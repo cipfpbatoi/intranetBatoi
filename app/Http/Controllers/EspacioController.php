@@ -49,14 +49,27 @@ class EspacioController extends ModalController
 
     public function store(EspacioRequest $request)
     {
+        $this->authorize('create', Espacio::class);
         $this->persist($request);
         return $this->redirect();
     }
 
     public function update(EspacioRequest $request, $id)
     {
+        $this->authorize('update', Espacio::findOrFail((string) $id));
         $this->persist($request, $id);
         return $this->redirect();
+    }
+
+    /**
+     * Elimina un espai amb autorització explícita.
+     *
+     * @param int|string $id
+     */
+    public function destroy($id)
+    {
+        $this->authorize('delete', Espacio::findOrFail((string) $id));
+        return parent::destroy($id);
     }
 
     /**
@@ -90,6 +103,7 @@ class EspacioController extends ModalController
     public function barcode($id, $posicion=1)
     {
         $espacio = Espacio::findOrFail($id);
+        $this->authorize('printBarcode', $espacio);
         return $this->hazPdf(
             'pdf.inventario.lote',
             $espacio->Materiales,

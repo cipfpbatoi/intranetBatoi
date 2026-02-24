@@ -3,12 +3,15 @@
 namespace Intranet\Policies;
 
 use Intranet\Entities\Actividad;
+use Intranet\Policies\Concerns\InteractsWithProfesorOwnership;
 
 /**
  * Policy d'autorització per al flux d'activitats.
  */
 class ActividadPolicy
 {
+    use InteractsWithProfesorOwnership;
+
     /**
      * @param mixed $user
      */
@@ -49,11 +52,4 @@ class ActividadPolicy
         return $this->hasProfesorIdentity($user);
     }
 
-    /**
-     * @param mixed $user
-     */
-    private function hasProfesorIdentity($user): bool
-    {
-        return is_object($user) && isset($user->dni) && (string) $user->dni !== '';
-    }
 }

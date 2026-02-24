@@ -3,12 +3,15 @@
 namespace Intranet\Policies;
 
 use Intranet\Entities\Reunion;
+use Intranet\Policies\Concerns\InteractsWithProfesorOwnership;
 
 /**
  * Policy d'autorització per a la gestió de reunions.
  */
 class ReunionPolicy
 {
+    use InteractsWithProfesorOwnership;
+
     /**
      * Determina si l'usuari pot crear reunions.
      *
@@ -62,11 +65,6 @@ class ReunionPolicy
     /**
      * @param mixed $user
      */
-    private function hasProfesorIdentity($user): bool
-    {
-        return is_object($user) && isset($user->dni) && (string) $user->dni !== '';
-    }
-
     /**
      * @param mixed $user
      */

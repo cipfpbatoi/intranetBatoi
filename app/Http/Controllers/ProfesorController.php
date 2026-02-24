@@ -217,7 +217,8 @@ use Autorizacion,
     public function update(Request $request, $id)
     {
         $this->validate($request, (new ProfesorUpdateRequest())->rules());
-        $new = $this->profesores()->find((string) $id);
+        $new = $this->profesores()->findOrFail((string) $id);
+        $this->authorize('update', $new);
         parent::update($request, $new);
         return back();
     }
