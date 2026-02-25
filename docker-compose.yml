@@ -11,12 +11,12 @@ services:
             WWWUSER: "${WWWUSER:-${UID:-1000}}"
             WWWGROUP: "${WWWGROUP:-${GID:-1000}}"
             LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            XDEBUG_MODE: "debug,develop"
+            XDEBUG_CONFIG: "client_host=host.docker.internal client_port=9003 start_with_request=yes"
             IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
             - '.:/var/www/html'
-            - selenium-downloads:/srv/documentsFct
+            - selenium-downloads:/srv/documentsfct
         networks:
             - sail
         depends_on:
@@ -90,6 +90,7 @@ services:
             - sail
         volumes:
           - selenium-downloads:/home/seluser/Downloads
+        command: ["sh", "-lc", "chmod 0777 /home/seluser/Downloads && /opt/bin/entry_point.sh"]
 networks:
     sail:
         driver: bridge
