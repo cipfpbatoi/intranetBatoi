@@ -94,7 +94,7 @@ class SignaturaController extends ModalController
             )
         );
 
-        $this->panel->setBotonera(['create'],['delete','pdf','show']);
+        $this->panel->setBotonera(['create'],['delete','pdf']);
         $this->panel->setBoton(
             'grid',
             new BotonImg(
