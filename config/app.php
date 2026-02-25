@@ -153,7 +153,6 @@ return [
          * Package Service Providers...
          */
         //dates en local
-        Jenssegers\Date\DateServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         Laravel\Socialite\SocialiteServiceProvider::class,
         //GrahamCampbell\Markdown\MarkdownServiceProvider::class,
