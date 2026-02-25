@@ -3,7 +3,9 @@
 /storage
 /vendor
 /.idea
-/.vscode
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/launch.json
 /.vagrant
 Homestead.json
 Homestead.yaml
