@@ -57,7 +57,7 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Support/Legacy/JenssegersDateShim.php"
+            "bootstrap/legacy_jenssegers_date.php"
         ]
     },
     "autoload-dev": {
