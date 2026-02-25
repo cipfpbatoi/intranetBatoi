@@ -312,38 +312,45 @@ class Importa
         }
 
         try {
-            self::extractPage($driver, $dades,1);
-            $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
-            sleep(1);
-            self::extractPage($driver, $dades,2);
-        } catch (Exception $e) {
-            //No hi ha més pàgines
-        }
+            try {
+                self::extractPage($driver, $dades,1);
+                $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
+                sleep(1);
+                self::extractPage($driver, $dades,2);
+            } catch (Exception $e) {
+                // No hi ha més pàgines.
+            }
 
 
-        if (count($dades)) {
-            foreach ($dades as $index => $dada) {
-                try {
-                    $dades[$index] = self::extractFromEdit($dada, $driver);
-                    $empresa = Empresa::where('cif', $dades[$index]['cif'])->first();
+            if (count($dades)) {
+                foreach ($dades as $index => $dada) {
+                    try {
+                        $dades[$index] = self::extractFromEdit($dada, $driver);
+                        $empresa = Empresa::where('cif', $dades[$index]['cif'])->first();
 
-                    if ($empresa) { //Si hi ha empresa
-                        $dades[$index]['centre']['id'] = self::buscaCentro($dades[$index], $empresa);
-                        if ($empresa->data_signatura < $dades[$index]['data_conveni']) {
-                            $empresa->data_signatura = $dades[$index]['data_conveni'];
-                            $empresa->save();
+                        if ($empresa) { //Si hi ha empresa
+                            $dades[$index]['centre']['id'] = self::buscaCentro($dades[$index], $empresa);
+                            if ($empresa->data_signatura < $dades[$index]['data_conveni']) {
+                                $empresa->data_signatura = $dades[$index]['data_conveni'];
+                                $empresa->save();
+                            }
+                            if (!$empresa->concierto){
+                                $empresa->concierto = $dades[$index]['concierto'];
+                                $empresa->save();
+                            }
                         }
-                        if (!$empresa->concierto){
-                            $empresa->concierto = $dades[$index]['concierto'];
-                            $empresa->save();
-                        }
+                    } catch (Exception $e) {
+                        Alert::info($e->getMessage());
                     }
-                } catch (Exception $e) {
-                    Alert::info($e->getMessage());
                 }
             }
+        } finally {
+            try {
+                $driver->quit();
+            } catch (\Throwable $quitException) {
+                // Evitem trencar el flux si la sessió ja estava tancada.
+            }
         }
-        $driver->quit();
         session(compact('dades'));
         return view('sao.importa', compact('dades', 'ciclo'));
     }

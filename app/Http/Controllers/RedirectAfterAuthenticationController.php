@@ -7,6 +7,7 @@ use Intranet\Services\Signature\DigitalSignatureService;
 use Intranet\Services\Automation\SeleniumService;
 use Styde\Html\Facades\Alert;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 use ReflectionMethod;
 use Exception;
@@ -34,7 +35,13 @@ class RedirectAfterAuthenticationController extends Controller
             Alert::info($exception->getMessage());
         } finally {
             if ($driver) {
-                $driver->close();
+                try {
+                    $driver->quit();
+                } catch (Throwable $quitException) {
+                    Log::warning('No s\'ha pogut tancar la sessio Selenium en finally', [
+                        'error' => $quitException->getMessage(),
+                    ]);
+                }
             }
         }
         return back();

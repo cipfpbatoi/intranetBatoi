@@ -63,15 +63,23 @@ class Signatura
             return redirect(route('alumnofct.index'));
         }
 
-        $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
+        $driver = null;
         try {
+            $driver = SeleniumService::loginSAO(AuthUser()->dni, $password);
             $this->signa($driver);
             $driver->findElement(WebDriverBy::cssSelector("a.enlacePag"))->click();
             sleep(1);
             $this->signa($driver);
-            $driver->quit();
-        } catch (Exception $e) {
-            $driver->quit();
+        } catch (\Throwable $e) {
+            Alert::warning($e->getMessage());
+        } finally {
+            if ($driver) {
+                try {
+                    $driver->quit();
+                } catch (\Throwable $quitException) {
+                    // Evitem trencar la resposta per errors de tancament de sessió.
+                }
+            }
         }
         return redirect(route('alumnofct.index'));
     }

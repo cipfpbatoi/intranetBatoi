@@ -150,8 +150,13 @@ class Compara
             }
         } catch (Exception $e) {
             Alert::danger($e);
+        } finally {
+            try {
+                $driver->quit();
+            } catch (\Throwable $quitException) {
+                // Evitem trencar la resposta per errors de tancament.
+            }
         }
-        $driver->quit();
         if (count($dades)) {
             session(compact('dades'));
             return view('sao.compara', compact('dades'));

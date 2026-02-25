@@ -119,10 +119,15 @@ class A2
             if (file_exists($nomFitxer)) {
                 unlink($nomFitxer);
             }
-            $driver->quit();
+            return back();
+        } catch (\Throwable $exception) {
+            Log::error('Error en procés SAO A2', [
+                'error' => $exception->getMessage(),
+                'user' => authUser()->fullName,
+            ]);
+            Alert::warning('S\'ha produït un error inesperat en el procés SAO A2');
             return back();
         }
-        $driver->quit();
         return back();
     }
 
@@ -215,8 +220,7 @@ class A2
 
             return true;
         }
-
-        
+        return false;
     }
 
     /**
