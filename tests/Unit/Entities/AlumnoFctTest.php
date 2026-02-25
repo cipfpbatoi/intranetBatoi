@@ -4,6 +4,7 @@
 namespace Tests\Unit\Entities;
 
 use Illuminate\Support\Collection;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 use Intranet\Entities\AlumnoFct;
@@ -11,12 +12,9 @@ use Intranet\Entities\Alumno;
 use Intranet\Entities\Fct;
 use Intranet\Entities\Signatura;
 
-
-
 class AlumnoFctTest extends TestCase
 {
-
-    /** @test */
+    #[Test]
     public function get_email_attribute_retorna_email_correcte()
     {
         $mockAlumno = Mockery::mock(Alumno::class)->makePartial();
@@ -37,8 +35,7 @@ class AlumnoFctTest extends TestCase
         $this->assertEquals('test@example.com', $alumnoFct->email);
     }
 
-    /** @test */
-
+    #[Test]
     public function get_nombre_attribute_retorna_nom_correcte()
     {
         $mockAlumno = Mockery::mock(Alumno::class)->makePartial();
@@ -59,7 +56,7 @@ class AlumnoFctTest extends TestCase
         $this->assertEquals('Joan', $alumnoFct->nombre);
     }
 
-    /** @test */
+    #[Test]
     public function get_centro_attribute_trunca_el_text_correctament()
     {
         $mockFct = Mockery::mock(Fct::class)->makePartial();
@@ -78,7 +75,7 @@ class AlumnoFctTest extends TestCase
         $this->assertEquals('Institut de Tecnologia Avança', $alumnoFct->centro);
     }
 
-    /** @test */
+    #[Test]
     public function get_fin_practicas_attribute_retorna_setmanes_i_dies()
     {
         $alumnoFct = new AlumnoFct();
@@ -89,7 +86,7 @@ class AlumnoFctTest extends TestCase
         $this->assertEquals('2 Setmanes - 0 Dia', $alumnoFct->finPracticas);
     }
 
-    /** @test */
+    #[Test]
     public function get_qualificacio_attribute_retorna_text_correcte()
     {
         $alumnoFct = new AlumnoFct();
@@ -107,7 +104,7 @@ class AlumnoFctTest extends TestCase
         $this->assertEquals('No Avaluat', $alumnoFct->qualificacio);
     }
 
-    /** @test */
+    #[Test]
     public function get_projecte_attribute_retorna_correcte()
     {
         $alumnoFct = new AlumnoFct();
@@ -122,8 +119,7 @@ class AlumnoFctTest extends TestCase
         $this->assertEquals(9, $alumnoFct->projecte);
     }
 
-
-    /** @test */
+    #[Test]
     public function get_class_attribute_retorna_classe_correcta()
     {
 
@@ -143,8 +139,7 @@ class AlumnoFctTest extends TestCase
 
 
     }
-
-    /** @test */
+    #[Test]
     public function accessors_signatures_reutilitzen_relacio_carregada(): void
     {
         $sigA1 = new Signatura(['tipus' => 'A1', 'signed' => true]);

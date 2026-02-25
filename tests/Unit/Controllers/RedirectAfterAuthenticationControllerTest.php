@@ -50,6 +50,12 @@ namespace Tests\Unit\Controllers {
      */
     class RedirectAfterAuthenticationControllerTest extends TestCase
     {
+        protected function tearDown(): void
+        {
+            Mockery::close();
+            parent::tearDown();
+        }
+
         /**
          * Verifica que en flux correcte es retorna la resposta de l'acció i es tanca el driver.
          */
@@ -103,4 +109,3 @@ namespace Tests\Unit\Controllers {
         }
     }
 }
-
