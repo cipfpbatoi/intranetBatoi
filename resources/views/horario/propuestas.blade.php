@@ -4,10 +4,10 @@
     <h2>Propostes de canvi d'horari</h2>
 
     <div class="mb-3">
-        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Pendiente') btn-primary @endif" href="/direccion/horario/propuestas?estado=Pendiente">Pendents</a>
-        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Aceptado') btn-primary @endif" href="/direccion/horario/propuestas?estado=Aceptado">Acceptades</a>
-        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Rebutjat') btn-primary @endif" href="/direccion/horario/propuestas?estado=Rebutjat">Rebutjades</a>
-        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Todos') btn-primary @endif" href="/direccion/horario/propuestas?estado=Todos">Totes</a>
+        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Pendiente') btn-primary @endif" href="{{ route('horario.propuestas', ['estado' => 'Pendiente']) }}">Pendents</a>
+        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Aceptado') btn-primary @endif" href="{{ route('horario.propuestas', ['estado' => 'Aceptado']) }}">Acceptades</a>
+        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Rebutjat') btn-primary @endif" href="{{ route('horario.propuestas', ['estado' => 'Rebutjat']) }}">Rebutjades</a>
+        <a class="btn btn-default @if(($estado ?? 'Pendiente') === 'Todos') btn-primary @endif" href="{{ route('horario.propuestas', ['estado' => 'Todos']) }}">Totes</a>
     </div>
 
     <table class="table table-bordered">
@@ -42,18 +42,18 @@
                         @endif
                     </td>
                     <td>
-                        <a class="btn btn-default" href="/profesor/{{ $proposta['dni'] }}/horario-cambiar?proposta={{ $proposta['id'] }}" title="Veure" aria-label="Veure">
+                        <a class="btn btn-default" href="{{ route('horario.profesor.change', ['profesor' => $proposta['dni'], 'proposta' => $proposta['id']]) }}" title="Veure" aria-label="Veure">
                             <i class="fa fa-eye" aria-hidden="true"></i>
                         </a>
                         @if (($proposta['estado'] ?? 'Pendiente') === 'Pendiente')
-                            <a class="btn btn-primary" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/aceptar" onclick="return confirm('Acceptar aquesta proposta?')" title="Acceptar" aria-label="Acceptar">
+                            <a class="btn btn-primary" href="{{ route('horario.propuesta.aceptar', ['dni' => $proposta['dni'], 'id' => $proposta['id']]) }}" onclick="return confirm('Acceptar aquesta proposta?')" title="Acceptar" aria-label="Acceptar">
                                 <i class="fa fa-check" aria-hidden="true"></i>
                             </a>
-                            <a class="btn btn-danger" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/rebutjar" onclick="return rebutjarProposta('{{ $proposta['dni'] }}','{{ $proposta['id'] }}')" title="Rebutjar" aria-label="Rebutjar">
+                            <a class="btn btn-danger" href="{{ route('horario.propuesta.rebutjar', ['dni' => $proposta['dni'], 'id' => $proposta['id']]) }}" onclick="return rebutjarProposta('{{ $proposta['dni'] }}','{{ $proposta['id'] }}')" title="Rebutjar" aria-label="Rebutjar">
                                 <i class="fa fa-times" aria-hidden="true"></i>
                             </a>
                         @endif
-                        <a class="btn btn-danger" href="/direccion/horario/propuesta/{{ $proposta['dni'] }}/{{ $proposta['id'] }}/esborrar" onclick="return confirm('Esborrar aquesta proposta?')" title="Esborrar" aria-label="Esborrar">
+                        <a class="btn btn-danger" href="{{ route('horario.propuesta.esborrar', ['dni' => $proposta['dni'], 'id' => $proposta['id']]) }}" onclick="return confirm('Esborrar aquesta proposta?')" title="Esborrar" aria-label="Esborrar">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </a>
                     </td>
@@ -76,7 +76,11 @@
         function rebutjarProposta(dni, id) {
             var motiu = prompt('Motiu del rebuig?');
             if (!motiu) return false;
-            var url = '/direccion/horario/propuesta/' + dni + '/' + id + '/rebutjar?motiu=' + encodeURIComponent(motiu);
+            var urlTemplate = @json(route('horario.propuesta.rebutjar', ['dni' => '__DNI__', 'id' => '__ID__']));
+            var url = urlTemplate
+                .replace('__DNI__', encodeURIComponent(dni))
+                .replace('__ID__', encodeURIComponent(id))
+                + '?motiu=' + encodeURIComponent(motiu);
             window.location.href = url;
             return false;
         }
