@@ -7,27 +7,67 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Intranet\Exceptions\CertException;
 use Intranet\Exceptions\IntranetException;
-use LSNepomuceno\LaravelA1PdfSign\Sign\ManageCert;
-use LSNepomuceno\LaravelA1PdfSign\Sign\ValidatePdfSignature;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use setasign\Fpdi\Fpdi;
-use Intranet\Services\Signature\SignImage;
-use LSNepomuceno\LaravelA1PdfSign\Sign\SealImage;
 use Symfony\Component\Process\Process;
 use Throwable;
 
 class DigitalSignatureService
 {
-    public static function readCertificat($certificat, $password): ManageCert
+    /**
+     * Llig i valida un certificat PKCS#12 amb OpenSSL.
+     *
+     * @param string $certificat Ruta al fitxer .p12/.pfx
+     * @param string $password Contrasenya del certificat
+     * @return array<string, mixed>
+     * @throws CertException
+     */
+    public static function readCertificat($certificat, $password): array
     {
         return (new self())->readCertificate($certificat, $password);
     }
 
-    public function readCertificate($certificat, $password): ManageCert
+    /**
+     * Llig i valida un certificat PKCS#12 amb OpenSSL.
+     *
+     * @param string $certificat Ruta al fitxer .p12/.pfx
+     * @param string $password Contrasenya del certificat
+     * @return array<string, mixed>
+     * @throws CertException
+     */
+    public function readCertificate($certificat, $password): array
     {
         try {
-            return (new ManageCert())->setPreservePfx()->fromPfx($certificat, $password);
+            if (!is_string($certificat) || $certificat === '' || !file_exists($certificat)) {
+                throw new CertException("No s'ha trobat el fitxer del certificat.");
+            }
+
+            $raw = file_get_contents($certificat);
+            if ($raw === false) {
+                throw new CertException("No s'ha pogut llegir el fitxer del certificat.");
+            }
+
+            $certificateStore = [];
+            if (!openssl_pkcs12_read($raw, $certificateStore, (string) $password)) {
+                throw new CertException("Password del certificat incorrecte.");
+            }
+
+            $x509 = $certificateStore['cert'] ?? null;
+            if (!is_string($x509) || trim($x509) === '') {
+                throw new CertException("No s'ha pogut extreure el certificat X509.");
+            }
+
+            $parsed = openssl_x509_parse($x509, false);
+            if (!is_array($parsed)) {
+                throw new CertException("No s'ha pogut interpretar el certificat.");
+            }
+
+            return [
+                'cert' => $x509,
+                'parsed' => $parsed,
+                'subject' => is_array($parsed['subject'] ?? null) ? $parsed['subject'] : [],
+            ];
         } catch (Throwable $th) {
             throw new CertException("Password del certificat incorrecte: ".$th->getMessage());
         }
@@ -98,18 +138,8 @@ class DigitalSignatureService
 
     public static function validateUserSign($file)
     {
-         try {
-            $signatura = ValidatePdfSignature::from($file);
-            return $signatura->data; // Tot OK: retornem info de la signatura
-        } catch (\Throwable $e) {
-            if (str_contains($e->getMessage(), 'The file is unsigned or the signature is not compatible with the PKCS7 type')) {
-                // Cas normal: el PDF no està signat o no és un PKCS7 que entenem
-                return null;
-            }
-
-            // Altres errors: sí que interessa saber-los
-            throw $e;
-        }
+        // Flux legacy eliminat (laravel-a1-pdf-sign). Deixem retorn nul controlat.
+        return null;
     }
 
     public function validateUserSignature($file, $dni = null): bool
@@ -125,7 +155,10 @@ class DigitalSignatureService
         $dni = strtoupper(trim($dni));
 
         // 2) Llig la signatura
-        $sig = ValidatePdfSignature::from($file);
+        $sig = self::validateUserSign($file);
+        if (!is_array($sig)) {
+            return false;
+        }
 
         // 3) Busca el DNI en diversos camps del subjecte
         $fieldsToCheck = [
@@ -133,8 +166,8 @@ class DigitalSignatureService
         ];
 
         foreach ($fieldsToCheck as $key) {
-            if (!empty($sig->data[$key])) {
-                $val = is_array($sig->data[$key]) ? implode(' ', $sig->data[$key]) : $sig->data[$key];
+            if (!empty($sig[$key])) {
+                $val = is_array($sig[$key]) ? implode(' ', $sig[$key]) : $sig[$key];
                 if (str_contains(strtoupper($val), $dni)) {
                     return true;
                 }
@@ -142,8 +175,8 @@ class DigitalSignatureService
         }
 
         // 4) Busca també dins del DN complet si el parser l’exposa
-        if (!empty($sig->data['DN'])) {
-            if (str_contains(strtoupper($sig->data['DN']), $dni)) {
+        if (!empty($sig['DN'])) {
+            if (str_contains(strtoupper((string) $sig['DN']), $dni)) {
                 return true;
             }
         }
@@ -156,71 +189,6 @@ class DigitalSignatureService
     {
         (new self())->signDocument($file, $newFile, $coordx, $coordy, $certPath, $certPassword);
     }
-
-    /*
-
-    public function signDocument($file, $newFile, $coordx, $coordy, $cert): void
-    {
-        try {
-            $user = $cert->getCert()->data['subject']['commonName'];
-            $imagePath = storage_path('tmp/' . Str::orderedUuid() . '.png');
-
-            File::put($imagePath, (new SignImage())->generateFromCert($cert, SealImage::FONT_SIZE_LARGE, false, 'd/m/Y'));
-
-            // 1) Escriu en temporal, no in place
-            $info = pathinfo($newFile);
-            $tmp = $info['dirname'].'/'.$info['filename'].'_tmp.'.$info['extension'];
-
-            $pdf = new SignaturePdf($file, $cert, SignaturePdf::MODE_RESOURCE);
-            $coordx = (float) ($coordx ?? 50);
-            $coordy = (float) ($coordy ?? 50);
-            $signed = $pdf->setImage($imagePath, $coordx, $coordy)->signature();
-
-            if (!$signed || strlen($signed) < 1000) {
-                throw new IntranetException("La llibreria no ha generat una signatura vàlida.");
-            }
-
-            file_put_contents($tmp, $signed);
-
-            // 2) Valida amb try/catch per traure el missatge original
-            
-            
-            try {
-                if (!$this->validateUserSignature($tmp)) {
-                    throw new IntranetException("Persona que signa diferent al certificat");
-                }
-            } catch (\Throwable $e) {
-                // Ací veuràs “The file is unsigned or the signature is not compatible with the PKCS7 type”
-                Log::channel('certificate')->error('Validació de signatura fallida', [
-                    'error' => $e->getMessage(),
-                    'pdfPath' => $tmp,
-                ]);
-                throw $e instanceof IntranetException ? $e : new IntranetException($e->getMessage());
-            }
-               
-
-            // 3) Si tot bé, substitueix l’original
-            rename($tmp, $newFile);
-
-            Log::channel('certificate')->info("S'ha signat el document amb el certificat.", [
-                'signUser' => $user,
-                'intranetUser' => authUser()->fullName,
-                'pdfPath' => $file,
-                'signedPdfPath' => $newFile,
-                'imagePath' => $imagePath,
-                'coordx' => $coordx,
-                'coordy' => $coordy,
-            ]);
-        } catch (Throwable $th) {
-            Log::channel('certificate')->alert("Error al signar el document.", [
-                'intranetUser' => authUser()->fullName,
-                'pdfPath' => $file,
-                'error' => $th->getMessage(),
-            ]);
-            throw new IntranetException("Error al signar el document.: " . $th->getMessage());
-        }
-    }
-        */
 
     public function signDocument($file, $newFile, $coordx, $coordy, $certPath, $certPassword): void
     {
@@ -634,9 +602,8 @@ class DigitalSignatureService
         $signer = null;
         try {
             $cert = $this->readCertificate($certPath, $certPassword);
-            $data = $cert->getCert()->data ?? [];
-            $subject = $data['subject'] ?? [];
-            $signer = $subject['commonName'] ?? null;
+            $subject = is_array($cert['subject'] ?? null) ? $cert['subject'] : [];
+            $signer = $subject['CN'] ?? $subject['commonName'] ?? null;
         } catch (Throwable $th) {
             Log::channel('certificate')->warning("No s'ha pogut obtindre el nom del certificat.", [
                 'pdfCert' => $certPath,

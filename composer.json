@@ -26,7 +26,6 @@
         "laravel/ui": "^4.0",
         "lcobucci/jwt": "^5.3",
         "livewire/livewire": "3.7.3",
-        "lsnepomuceno/laravel-a1-pdf-sign": "1.1.2",
         "maatwebsite/excel": "*",
         "mikehaertl/php-pdftk": "^0.8.1",
         "php-webdriver/webdriver": "^1.13",
