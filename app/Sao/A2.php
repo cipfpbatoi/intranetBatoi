@@ -6,15 +6,15 @@ use Facebook\WebDriver\Firefox\FirefoxOptions;
 use Facebook\WebDriver\Firefox\FirefoxProfile;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Facebook\WebDriver\WebDriverBy;
-use Illuminate\Support\Facades\Log;
 use Intranet\Services\Notifications\NotificationService;
 use Intranet\Exceptions\CertException;
+use Intranet\Sao\Documents\A1DocumentService;
+use Intranet\Sao\Documents\A2DocumentService;
+use Intranet\Sao\Documents\A5DocumentService;
 use Intranet\Services\Signature\DigitalSignatureService;
 use Intranet\Entities\AlumnoFct;
-use setasign\Fpdi\Fpdi;
 use Styde\Html\Facades\Alert;
-use Intranet\Entities\Signatura as Firma;
+use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -23,13 +23,22 @@ use Intranet\Entities\Signatura as Firma;
  */
 class A2
 {
-
-    const HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0 = 'https://foremp.edu.gva.es/index.php?op=2&subop=0';
     private DigitalSignatureService $digitalSignatureService;
+    private A1DocumentService $a1DocumentService;
+    private A2DocumentService $a2DocumentService;
+    private A5DocumentService $a5DocumentService;
 
-    public function __construct(DigitalSignatureService $digitalSignatureService)
+    public function __construct(
+        DigitalSignatureService $digitalSignatureService,
+        ?A1DocumentService $a1DocumentService = null,
+        ?A2DocumentService $a2DocumentService = null,
+        ?A5DocumentService $a5DocumentService = null
+    )
     {
         $this->digitalSignatureService = $digitalSignatureService;
+        $this->a1DocumentService = $a1DocumentService ?? new A1DocumentService();
+        $this->a2DocumentService = $a2DocumentService ?? new A2DocumentService($digitalSignatureService);
+        $this->a5DocumentService = $a5DocumentService ?? new A5DocumentService($digitalSignatureService);
     }
 
     
@@ -39,8 +48,10 @@ class A2
         $profile = new FirefoxProfile();
         
         $profile->setPreference('browser.download.folderList', 2);
-        //$profile->setPreference('browser.download.dir','/home/seluser/Downloads');
-        $profile->setPreference('browser.download.dir','/Users/igomis/code/intranetBatoi/storage/tmp');
+        $profile->setPreference(
+            'browser.download.dir',
+            config('sao.download.directory', storage_path('tmp'))
+        );
         $profile->setPreference('browser.helperApps.neverAsk.saveToDisk', 'application/pdf');
         $profile->setPreference('browser.download.useDownloadDir', true);
         $profile->setPreference('browser.download.manager.showWhenStarting', false);
@@ -64,19 +75,6 @@ class A2
         $caps->setCapability('firefox_profile', $profile);
         return $caps;
     }
-
-    private static function waitForFile($filePath, $timeout)
-    {
-        $startTime = time();
-        while (!file_exists($filePath)) {
-            if (time() - $startTime > $timeout) {
-                throw new \Exception("Timeout waiting for file: $filePath");
-            }
-            sleep(1);
-        }
-    }
-
-
 
     public function index($driver, $request, $file = null)
     {
@@ -159,18 +157,18 @@ class A2
                 // Anexe 1
                 if ($fA1 || ($a1 && ($fctAl->Fct->Colaboracion->Centro->Empresa->ConveniCaducat
                     || $fctAl->Fct->Colaboracion->Centro->Empresa->RenovatConveni))) {
-                    $signat = $this->annexe1($fctAl, $driver);
+                    $signat = $this->a1DocumentService->download($fctAl, $driver);
                 }
                 // Anexe 2
-                if ($a2 && $this->annexe23($fctAl, $driver, $certPath, $certPassword, 2)) {
+                if ($a2 && $this->a2DocumentService->download($fctAl, $driver, $certPath, $certPassword, 2)) {
                     $signat = true;
                 }
                 // Anexe 3
                 if ($a3 && $certPath){
-                    $this->annexe23($fctAl, $driver, $certPath, $certPassword, 3);
+                    $this->a2DocumentService->download($fctAl, $driver, $certPath, $certPassword, 3);
                 }
                 if ($a5) {
-                    $this->annexe5($fctAl, $driver, $certPath, $certPassword);
+                    $this->a5DocumentService->download($fctAl, $driver, $certPath, $certPassword);
                 }
             }
         }
@@ -181,191 +179,6 @@ class A2
                 '/direccion/signatures'
             );
         }
-    }
-
-    /**
-     * @param $fctAl
-     * @param  RemoteWebDriver  $driver
-     * @param  mixed  $tmpDirectory
-     * @param  bool  $signat
-     * @return array
-     * https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=230861#
-     */
-    public function annexe1(AlumnoFct $fctAl, RemoteWebDriver $driver): bool
-    {
-        $tmpDirectory = config('variables.shareDirectory') ?? storage_path('tmp/');
-        $doc = $fctAl->Fct->dual ? '201' : '101';
-        $annexe = $fctAl->Fct->dual ? 'A1DUAL' : 'A1';
-        $idSao = $fctAl->Fct->Colaboracion->Centro->idSao;
-        $tmpFile = "$tmpDirectory$annexe.pdf";
-        $saveFile = $fctAl->routeFile($annexe);
-
-        try {
-            $driver->get("https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=$doc&centro=59&ct=$idSao");
-             
-        } catch (\Throwable $exception) {
-             if (file_exists($tmpFile)) {
-                copy($tmpFile, $saveFile);
-                Firma::saveIfNotExists($annexe, $fctAl->idSao);
-                unlink($tmpFile);
-            } else {
-                Log::error('Error en la generació del PDF per A1: ' . $exception->getMessage() . ' ' .
-                    "https://foremp.edu.gva.es/inc/ajax/generar_pdf.php?doc=$doc&centro=59&ct=$idSao");
-                Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe I
-                  $fctAl->idSao de $tmpFile: $doc de ".$fctAl->Alumno->FullName);
-            }
-
-            $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
-            sleep(1);
-
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param $fctAl
-     * @param  RemoteWebDriver  $driver
-     * @param  mixed  $tmpDirectory
-     * @param  mixed  $certPath
-     * @param  mixed  $certPassword
-     * @param  bool  $signat
-     * @return array
-     * @throws \Intranet\Exceptions\IntranetException
-     */
-    private function annexe23(
-        $fctAl,
-        RemoteWebDriver $driver,
-        mixed $certPath,
-        mixed $certPassword,
-        $anexeNum
-    ): bool {
-        $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
-        $annexe = $fctAl->Fct->asociacion >= 3 ? 'A'.$anexeNum.'DUAL' : 'A'.$anexeNum;
-        $tmpFile = $tmpDirectory.$annexe.".pdf";
-        $saveFile = $fctAl->routeFile($annexe);
-        $x = config("signatures.files.".$annexe.".owner.x");
-        $y = config("signatures.files.".$annexe.".owner.y");
-        $ad = "https://foremp.edu.gva.es/inc/ajax/generar_pdf.php".
-            "?doc=".$anexeNum."&centro=59&idFct=$fctAl->idSao";
-        try {
-            $driver->get($ad);
-        } catch (\Throwable $exception) {
-            Log::info('TMP dir', ['tmpDirectory' => $tmpDirectory, 'tmpFile' => $tmpFile]);
-            Log::info('TMP listing', ['files' => glob($tmpDirectory.'*.pdf')]);
-            if (file_exists($tmpFile)) {
-                if ($certPath) {
-                    $this->digitalSignatureService->signDocument(
-                        $tmpFile,
-                        $saveFile,
-                        $x,
-                        $y,
-                        $certPath,
-                        $certPassword
-                    );
-                    Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
-                } else {
-                    copy($tmpFile, $saveFile);
-                    Firma::saveIfNotExists($annexe, $fctAl->idSao);
-                }
-                unlink($tmpFile);
-                return true;
-            }
-
-            Alert::warning("No s'ha pogut descarregar el fitxer de la FCT Anexe II
-                  $fctAl->idSao de $tmpFile: $anexeNum de ".$fctAl->Alumno->FullName);
-            $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
-            sleep(1);
-        }
-        return false;
-    }
-
-    private  function annexe5($fctAl, RemoteWebDriver $driver, $certPath, $certPassword): bool
-    {
-        $tmpDirectory = config('variables.shareDirectory')??storage_path('tmp/');
-        $annexe = $fctAl->Fct->asociacion >= 3 ? 'A5DUAL' : 'A5' ;
-        $idSao = $fctAl->idSao;
-        $tmpFile = $tmpDirectory.$annexe.".pdf";
-        $tmp1File = $tmpDirectory.$annexe."(1).pdf";
-        $saveFile = $fctAl->routeFile($annexe);
-        $x = config("signatures.files.".$annexe.".owner.x");
-        $y = config("signatures.files.".$annexe.".owner.y");
-        $error = false;
-        try {
-            $driver->get("https://foremp.edu.gva.es/index.php?accion=7&idFct=$idSao");
-            sleep(1);
-            $enlace = $driver->findElement(WebDriverBy::xpath("//a[contains(@class, 'enlDocFCT') and contains(., 'Informe de Consecución de Competencias (Autorrellenable)')]"));
-            $enlace->click();
-            sleep(1);
-            $printButton = $driver->findElement(WebDriverBy::xpath("//button[contains(.,'Imprimir documento')]"));
-            $printButton->click();
-            sleep(1);
-            self::waitForFile($tmpFile, 10);
-
-            $pdf = new FPDI();
-            $pageCount = $pdf->setSourceFile($tmpFile);
-            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-
-                $tplIdx = $pdf->importPage($pageNo);
-                $size = $pdf->getTemplateSize($tplIdx);
-                $pdf->addPage($size['orientation'], [$size['width'], $size['height']]);
-
-                $pdf->useTemplate($tplIdx);
-                $contacto = $fctAl->valoracio;
-                if ($pageNo == $pageCount && $contacto) {
-                    // Estableix la font i el tamany
-                    $pdf->SetFont('Helvetica', '', 9);
-
-                    // Defineix la posició on afegir el text (x, y)
-                    $x1 = 10;
-                    $y1 = 175;
-
-                    $valoracioText = str_replace("'", "&#39;", $fctAl->valoracio);
-                    $valoracioText = mb_convert_encoding($valoracioText, 'ISO-8859-1', 'UTF-8');
-                    $valoracioText = str_replace("&#39;", "'", $valoracioText);
-
-                    // Afegeix el text a la posició especificada amb MultiCell per gestionar el canvi de línia
-                    $pdf->SetXY($x1, $y1);
-
-                    // Defineix l'amplada de la cel·la i la interlínia (height)
-                    $cellWidth = 190; // Amplada de la cel·la (ajusta segons les teves necessitats)
-                    $lineHeight = 5; // Alçada de la línia
-
-                    // Afegeix el text a la posició especificada
-                    $pdf->MultiCell($cellWidth, $lineHeight, $valoracioText, 0, 'L');
-                }
-            }
-            $pdf->Output($tmp1File, 'F');
-            // Copia el fitxer descarregat al destí
-        } catch (\Throwable $exception) {
-            Alert::danger($exception->getMessage().' en Annex 5 de '.$fctAl->Alumno->FullName );
-            $error = true;
-
-        } finally {
-
-            if (!$error) {
-                if ($certPath) {
-                    $this->digitalSignatureService->signDocument(
-                        $tmp1File,
-                        $saveFile,
-                        $x,
-                        $y,
-                        $certPath,
-                        $certPassword
-                    );
-                    Firma::saveIfNotExists($annexe, $fctAl->idSao, 2);
-                } else {
-                    copy($tmp1File, $saveFile);
-                    Firma::saveIfNotExists($annexe, $fctAl->idSao);
-                }
-            }
-            if (file_exists($tmpFile)) {
-                unlink($tmpFile);
-            }
-            $driver->get(self::HTTPS_FOREMP_EDU_GVA_ES_INDEX_PHP_OP_2_SUBOP_0);
-            sleep(1);
-        }
-        return true;
     }
 
 }
