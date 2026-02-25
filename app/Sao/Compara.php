@@ -49,6 +49,7 @@ class Compara
     public static function index($driver)
     {
         $dades = array();
+        $baseUrl = (string) config('sao.urls.base', 'https://foremp.edu.gva.es');
         try {
             foreach (AlumnoFct::misFcts()->whereNotNull('idSao')->get() as $fctAl) {
                 try {
@@ -56,7 +57,7 @@ class Compara
                     $centro = $fct->Colaboracion->Centro;
                     $empresa = $centro->Empresa;
                     if (!isset($dades[$fct->id]['empresa']['idEmpresa'])) {
-                        $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=10&idFct=$fctAl->idSao");
+                        $driver->navigate()->to("$baseUrl/index.php?accion=10&idFct=$fctAl->idSao");
                         sleep(1);
                         $dades[$fct->id]['nameEmpresa'] = $empresa->nombre;
                         $dades[$fct->id]['nameCentro'] = $centro->nombre;
@@ -128,7 +129,7 @@ class Compara
                         $driver->findElement(
                             WebDriverBy::cssSelector("button.botonRegistro[value='Registrarse']")
                         )->click();
-                        $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=34&idCT=$centro->idSao");
+                        $driver->navigate()->to("$baseUrl/index.php?accion=34&idCT=$centro->idSao");
                         sleep(1);
                         $dades[$fct->id]['centro']['direccion'] = self::igual(
                             $centro->direccion,

@@ -81,7 +81,8 @@ class Annexes
         AlertLogger::info("Intentant descarregar annexes per a {$fct->Alumno->fullName}");
 
         // Navegar a la pàgina
-        $url = "https://foremp.edu.gva.es/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2";
+        $baseUrl = (string) config('sao.urls.base', 'https://foremp.edu.gva.es');
+        $url = "$baseUrl/inc/fcts/documentos_fct.php?id={$fct->idSao}&documento=2";
         $this->driver->navigate()->to($url);
         sleep(2);
 
@@ -109,7 +110,7 @@ class Annexes
             throw new Exception("No s'ha pogut extraure l'enllaç de descàrrega per a {$fct->Alumno->fullName}");
         }
 
-        $downloadLink = "https://foremp.edu.gva.es/" . $cut[1];
+        $downloadLink = rtrim($baseUrl, '/') . '/' . ltrim($cut[1], '/');
         $this->saveAnnex($name, $downloadLink, $fct);
         $this->deleteSignatures($fct);
         $this->closePopup( );

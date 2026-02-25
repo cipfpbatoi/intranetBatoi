@@ -77,7 +77,8 @@ class Sync
     private function obtenirHoresFct($idSao): ?int
     {
         try {
-            $this->driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=11&idFct=$idSao");
+            $baseUrl = (string) config('sao.urls.base', 'https://foremp.edu.gva.es');
+            $this->driver->navigate()->to("$baseUrl/index.php?accion=11&idFct=$idSao");
 
             $this->driver->wait(10)->until(
                 WebDriverExpectedCondition::presenceOfElementLocated(WebDriverBy::cssSelector("table.tablaDetallesFCT tbody"))

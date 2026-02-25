@@ -176,6 +176,7 @@ class Importa
     private static function extractFromEdit($dada, RemoteWebDriver $driver)
     {
         static $empresesVisitades = [];
+        $baseUrl = (string) config('sao.urls.base', 'https://foremp.edu.gva.es');
 
         $idEmpresa = $dada['idEmpresa'];
 
@@ -186,7 +187,7 @@ class Importa
         }
 
         // Si no està a la memòria cau, navegar i obtenir dades
-        $driver->navigate()->to("https://foremp.edu.gva.es/index.php?accion=19&idEmpresa=$idEmpresa");
+        $driver->navigate()->to("$baseUrl/index.php?accion=19&idEmpresa=$idEmpresa");
         sleep(1);
 
         // Recollir dades bàsiques
