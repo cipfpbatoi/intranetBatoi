@@ -201,7 +201,7 @@ class FctController extends IntranetController
             $empresa = $this->fcts()->empresaIdByFct($id);
             $this->fcts()->deleteFct($id);
             Session::put('pestana', 3);
-            return redirect()->action('EmpresaController@show', ['empresa' => $empresa]);
+            return redirect()->route('empresa.detalle', ['empresa' => $empresa]);
         }
 
         return parent::destroy($id);

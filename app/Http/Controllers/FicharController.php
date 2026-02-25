@@ -48,7 +48,7 @@ class FicharController extends IntranetController
         $fitxatgeService->fitxar(); // usa l’usuari autenticat per defecte
 
         if (!$fitxatgeService->isInside(null, true)) {
-            return redirect('/logout');
+            return redirect()->route('logout');
         }
 
         return back();

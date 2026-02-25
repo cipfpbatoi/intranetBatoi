@@ -210,7 +210,7 @@ class DocumentoController extends IntranetController
                 Adjunto::destroy($adjunto);
                 unlink($file);
             }
-            return redirect('/alumnofct');
+            return redirect()->route('alumnofct.index');
         }
         $elemento->delete();
         return back();

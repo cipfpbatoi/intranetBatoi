@@ -48,7 +48,7 @@ class MenuController extends IntranetController
     public function realStore(Request $request, $id = null)
     {
         $elemento = $this->menus()->saveFromRequest($request, $id);
-        return redirect("/menu/$elemento->id/edit");
+        return redirect()->route('menu.edit', ['menu' => $elemento->id]);
     }
 
     /**
@@ -59,7 +59,7 @@ class MenuController extends IntranetController
     {
         $this->authorize('update', Menu::findOrFail((int) $id));
         $copia = $this->menus()->copy($id);
-        return redirect("/menu/$copia->id/edit");
+        return redirect()->route('menu.edit', ['menu' => $copia->id]);
     }
 
     /**
@@ -70,7 +70,7 @@ class MenuController extends IntranetController
     {
         $this->authorize('update', Menu::findOrFail((int) $id));
         $this->menus()->moveUp($id);
-        return redirect('/menu');
+        return redirect()->route('menu.index');
     }
 
     /**
@@ -81,7 +81,7 @@ class MenuController extends IntranetController
     {
         $this->authorize('update', Menu::findOrFail((int) $id));
         $this->menus()->moveDown($id);
-        return redirect('/menu');
+        return redirect()->route('menu.index');
     }
 
     /**

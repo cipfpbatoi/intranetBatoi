@@ -60,7 +60,7 @@ class AlumnoGrupoController extends ModalController
     protected function redirect()
     {
         $grupoTutoria = AuthUser()->grupoTutoria;
-        return redirect()->action('AlumnoGrupoController@indice',['grupo'=>$grupoTutoria]);
+        return redirect()->route('alumnogrupo.index', ['grupo' => $grupoTutoria]);
     }
 
     public function updateModal(AlumnoGrupoUpdateRequest $request, $grupo, $alumno)

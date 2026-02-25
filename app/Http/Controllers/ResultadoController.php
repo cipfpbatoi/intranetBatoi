@@ -69,7 +69,7 @@ class ResultadoController extends ModalController
 
     private function rellenaPropuestasMejora($idModulo){
         $programacion = Programacion::where('idModuloCiclo', $idModulo)->first()->id;
-        return redirect("/programacion/$programacion/seguimiento");
+        return redirect()->route('programacion.seguimiento', ['programacion' => $programacion]);
     }
 
     public function store(ResultadoStoreRequest $request)

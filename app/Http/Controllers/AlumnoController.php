@@ -41,7 +41,7 @@ class AlumnoController extends PerfilController
 
         parent::update($request, $new);
 
-        return redirect("/alumno_grupo/" . $new->Grupo()->first()->codigo . "/show");
+        return redirect()->route('alumnogrupo.index', ['grupo' => $new->Grupo()->first()->codigo]);
     }
 
     /**

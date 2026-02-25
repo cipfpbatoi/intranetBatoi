@@ -355,7 +355,7 @@ use Autorizacion,
 
         Session::put('userChange', AuthUser()->dni);
         Auth::login($profesor);
-        return redirect('/');
+        return redirect()->route('home.profesor');
     }
     protected function backChange()
     {
@@ -364,12 +364,12 @@ use Autorizacion,
         if (!$profesor) {
             Session::forget('userChange');
             Alert::danger('No s\'ha pogut restaurar la sessió original');
-            return redirect('/');
+            return redirect()->route('home.profesor');
         }
 
         Auth::login($profesor);
         Session::forget('userChange');
-        return redirect('/');
+        return redirect()->route('home.profesor');
     }
 
 }

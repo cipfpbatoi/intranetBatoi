@@ -32,14 +32,14 @@ class SessionTimeout {
             $this->session->forget('lastActivityTime');
             $cookie = cookie('intend', $isLoggedIn ? url()->current() : 'dashboard');
             $usuario = authUser();
-            if ($usuario == null) return redirect('/login');
+            if ($usuario == null) return redirect()->route('login');
             if (isset(authUser()->codigo)){
                 Auth::guard('profesor')->logout();
             }
             else {
                 Auth::guard('alumno')->logout();
             }
-            return redirect('/login');
+            return redirect()->route('login');
         }
         $isLoggedIn ? $this->session->put('lastActivityTime', time()) : $this->session->forget('lastActivityTime');
         //dd(session('lastActivityTime'));

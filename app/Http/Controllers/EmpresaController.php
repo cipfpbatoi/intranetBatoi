@@ -101,7 +101,7 @@ class EmpresaController extends IntranetController
             $this->empreses()->createColaboration($idCentro, $request, $idCicloTutoria, AuthUser()->FullName);
         }
 
-        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+        return redirect()->route('empresa.detalle', ['empresa' => $id]);
     }
     
     public function update(Request $request, $id)
@@ -109,7 +109,7 @@ class EmpresaController extends IntranetController
         $this->authorize('update', Empresa::findOrFail((int) $id));
         $elemento = Empresa::findOrFail($this->empreses()->saveFromRequest($request, $id));
         $this->empreses()->fillMissingCenterData($elemento);
-        return redirect()->action('EmpresaController@show', ['empresa' => $elemento->id]);
+        return redirect()->route('empresa.detalle', ['empresa' => $elemento->id]);
     }
 
     /*

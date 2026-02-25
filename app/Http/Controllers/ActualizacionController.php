@@ -45,7 +45,7 @@ class ActualizacionController extends Controller
         } else {
             Alert::info('Ja tens la darrera versió');
         }
-        return redirect('/');
+        return redirect()->route('home');
     }
 
     private function runShell(string $command, string $label): void

@@ -248,7 +248,7 @@ class PanelColaboracionController extends IntranetController
 
     private function showEmpresa($id)
     {
-        return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+        return redirect()->route('empresa.detalle', ['empresa' => $id]);
     }
 
     /**

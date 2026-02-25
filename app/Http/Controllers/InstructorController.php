@@ -134,10 +134,10 @@ class InstructorController extends IntranetController
         $colaboracion = Session::get('colaboracion')??null;
         if ($colaboracion) {
             Session::put('pestana', 4);
-            return redirect()->action('ColaboracionController@show', ['colaboracion'=> $colaboracion]);
+            return redirect()->route('colaboracion.show', ['colaboracion' => $colaboracion]);
         } else {
             Session::put('pestana', 2);
-            return redirect()->action('EmpresaController@show', ['empresa' => $id]);
+            return redirect()->route('empresa.detalle', ['empresa' => $id]);
         }
     }
 
@@ -215,7 +215,7 @@ class InstructorController extends IntranetController
 
         if ($instructor->surnames == '') {
             Alert::danger("Completa les dades de l'instructor");
-            return redirect("/instructor");
+            return redirect()->route('instructor.index');
         }
 
         // 🔒 Assegura Collection (mai null) i evita N+1 per a Colaboracion
@@ -223,7 +223,7 @@ class InstructorController extends IntranetController
 
         if ($fcts->isEmpty()) {
             Alert::danger("Aquest instructor no té cap FCT associada.");
-            return redirect("/instructor");
+            return redirect()->route('instructor.index');
         }
 
         // 🔒 Calcula la data posterior de forma segura
