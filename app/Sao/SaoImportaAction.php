@@ -22,10 +22,9 @@ use Styde\Html\Facades\Alert;
 
 
 /**
- * Class AdministracionController
- * @package Intranet\Http\Controllers
+ * Acció SAO per importar dades de FCT des de la plataforma externa.
  */
-class Importa
+class SaoImportaAction
 {
     const TD_NTH_CHILD_2 = "td:nth-child(2)";
     const TR_NTH_CHILD_2 = "tr:nth-child(2)";

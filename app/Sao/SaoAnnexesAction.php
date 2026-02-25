@@ -10,7 +10,10 @@ use Intranet\Services\UI\AlertLogger;
 use Intranet\Services\Document\AttachedFileService;
 use Intranet\Entities\Signatura;
 
-class Annexes
+/**
+ * Acció SAO per descarregar i enllaçar annexos.
+ */
+class SaoAnnexesAction
 {
     private RemoteWebDriver $driver;
 

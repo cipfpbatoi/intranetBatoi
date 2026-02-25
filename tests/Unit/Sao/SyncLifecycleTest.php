@@ -7,7 +7,7 @@ namespace Tests\Unit\Sao;
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Illuminate\Http\RedirectResponse;
-use Intranet\Sao\Sync;
+use Intranet\Sao\SaoSyncAction;
 use Mockery;
 use Tests\TestCase;
 
@@ -34,7 +34,7 @@ class SyncLifecycleTest extends TestCase
             }
         };
 
-        $response = (new Sync())->execute($driver, $callback);
+        $response = (new SaoSyncAction())->execute($driver, $callback);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
     }
@@ -58,9 +58,8 @@ class SyncLifecycleTest extends TestCase
             }
         };
 
-        $response = (new Sync())->execute($driver, $callback);
+        $response = (new SaoSyncAction())->execute($driver, $callback);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
     }
 }
-

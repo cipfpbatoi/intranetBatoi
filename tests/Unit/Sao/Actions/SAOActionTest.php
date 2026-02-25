@@ -32,13 +32,13 @@ namespace Tests\Unit\Sao\Actions {
     class SAOActionTest extends TestCase
     {
         /**
-         * Verifica que l'accio "importa" delega en Importa::index.
+         * Verifica que l'accio "importa" delega en SaoImportaAction::index.
          */
         public function test_index_dispatches_importa_action(): void
         {
             $driver = Mockery::mock(RemoteWebDriver::class);
 
-            $importaAlias = Mockery::mock('alias:Intranet\Sao\Importa');
+            $importaAlias = Mockery::mock('alias:Intranet\Sao\SaoImportaAction');
             $importaAlias->shouldReceive('index')
                 ->once()
                 ->with($driver)
@@ -75,4 +75,3 @@ namespace Tests\Unit\Sao\Actions {
         }
     }
 }
-

@@ -12,10 +12,9 @@ use Styde\Html\Facades\Alert;
 
 
 /**
- * Class AdministracionController
- * @package Intranet\Http\Controllers
+ * Acció SAO per comparar dades Intranet vs SAO.
  */
-class Compara
+class SaoComparaAction
 {
     const TD_NTH_CHILD_2 = "td:nth-child(2)";
     const TR_NTH_CHILD_2 = "tr:nth-child(2)";

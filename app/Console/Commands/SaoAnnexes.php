@@ -6,7 +6,7 @@ namespace Intranet\Console\Commands;
 use Exception;
 use Illuminate\Console\Command;
 use Intranet\Entities\AlumnoFct;
-use Intranet\Sao\Annexes;
+use Intranet\Sao\SaoAnnexesAction;
 use Intranet\Services\Automation\SeleniumService;
 
 
@@ -43,7 +43,7 @@ class SaoAnnexes extends Command
                 config('services.selenium.SAO_USER'),
                 config('services.selenium.SAO_PASS')
             );
-             (new Annexes())->execute($driver,function ( ) {
+             (new SaoAnnexesAction())->execute($driver,function ( ) {
                 return AlumnoFct::whereNotNull('idSao')->noHaAcabado()->where('beca',0)->where('pg0301', 0)->activa();
             });
             return Command::SUCCESS;

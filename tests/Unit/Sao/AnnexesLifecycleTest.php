@@ -7,7 +7,7 @@ namespace Tests\Unit\Sao;
 use Exception;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Illuminate\Http\RedirectResponse;
-use Intranet\Sao\Annexes;
+use Intranet\Sao\SaoAnnexesAction;
 use Mockery;
 use Tests\TestCase;
 
@@ -34,7 +34,7 @@ class AnnexesLifecycleTest extends TestCase
             }
         };
 
-        $response = (new Annexes())->execute($driver, $callback);
+        $response = (new SaoAnnexesAction())->execute($driver, $callback);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
     }
@@ -58,9 +58,8 @@ class AnnexesLifecycleTest extends TestCase
             }
         };
 
-        $response = (new Annexes())->execute($driver, $callback);
+        $response = (new SaoAnnexesAction())->execute($driver, $callback);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
     }
 }
-

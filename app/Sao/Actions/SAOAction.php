@@ -5,11 +5,11 @@ namespace Intranet\Sao\Actions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
-use Intranet\Sao\A2;
-use Intranet\Sao\Annexes;
-use Intranet\Sao\Compara;
-use Intranet\Sao\Importa;
-use Intranet\Sao\Sync;
+use Intranet\Sao\SaoAnnexesAction;
+use Intranet\Sao\SaoComparaAction;
+use Intranet\Sao\SaoDocumentsAction;
+use Intranet\Sao\SaoImportaAction;
+use Intranet\Sao\SaoSyncAction;
 use Intranet\Services\Signature\DigitalSignatureService;
 use RuntimeException;
 
@@ -28,13 +28,13 @@ class SAOAction implements SaoActionInterface
     /**
      * Retorna les capacitats Firefox necessàries per a descàrregues SAO.
      *
-     * Manté compatibilitat amb el flux antic delegant en la configuració d'A2.
+     * Manté compatibilitat amb el flux antic delegant en la configuració de SaoDocumentsAction.
      *
      * @return mixed
      */
     public static function setFireFoxCapabilities(): mixed
     {
-        return A2::setFireFoxCapabilities();
+        return SaoDocumentsAction::setFireFoxCapabilities();
     }
 
     /**
@@ -45,11 +45,11 @@ class SAOAction implements SaoActionInterface
         $action = strtolower((string) ($requestData['accion'] ?? ''));
 
         return match ($action) {
-            'a2' => (new A2($this->digitalSignatureService))->index($driver, $requestData, $file),
-            'importa' => Importa::index($driver),
-            'compara' => Compara::index($driver),
-            'sync' => (new Sync())->index($driver),
-            'annexes' => (new Annexes())->index($driver),
+            'a2' => (new SaoDocumentsAction($this->digitalSignatureService))->index($driver, $requestData, $file),
+            'importa' => SaoImportaAction::index($driver),
+            'compara' => SaoComparaAction::index($driver),
+            'sync' => (new SaoSyncAction())->index($driver),
+            'annexes' => (new SaoAnnexesAction())->index($driver),
             default => $this->executeLegacyAction($action, $driver, $requestData, $file),
         };
     }

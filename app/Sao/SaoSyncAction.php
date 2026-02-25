@@ -10,7 +10,10 @@ use Intranet\Entities\AlumnoFct;
 use Intranet\Services\UI\AlertLogger;
 use Intranet\Services\Signature\DigitalSignatureService;
 
-class Sync
+/**
+ * Acció SAO per sincronitzar dades d'alumnat FCT.
+ */
+class SaoSyncAction
 {
     private RemoteWebDriver $driver;
     private $queryCallback = null;

@@ -7,7 +7,7 @@ namespace Tests\Unit\Sao;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Http\RedirectResponse;
-use Intranet\Sao\A2;
+use Intranet\Sao\SaoDocumentsAction;
 use Intranet\Services\Signature\DigitalSignatureService;
 use Mockery;
 use Tests\TestCase;
@@ -34,7 +34,7 @@ class A2LifecycleTest extends TestCase
         $driver = $this->mockDriverWithTimeoutChain();
 
         $digitalSignatureService = Mockery::mock(DigitalSignatureService::class);
-        $a2 = Mockery::mock(A2::class, [$digitalSignatureService])->makePartial();
+        $a2 = Mockery::mock(SaoDocumentsAction::class, [$digitalSignatureService])->makePartial();
         $a2->shouldReceive('downloadFilesFromFcts')->once();
 
         $response = $a2->index($driver, ['A2' => 'on']);
@@ -59,7 +59,7 @@ class A2LifecycleTest extends TestCase
         $driver = $this->mockDriverWithTimeoutChain();
 
         $digitalSignatureService = Mockery::mock(DigitalSignatureService::class);
-        $a2 = Mockery::mock(A2::class, [$digitalSignatureService])->makePartial();
+        $a2 = Mockery::mock(SaoDocumentsAction::class, [$digitalSignatureService])->makePartial();
         $a2->shouldReceive('downloadFilesFromFcts')
             ->once()
             ->andThrow(new \RuntimeException('Error simulat'));
@@ -86,4 +86,3 @@ class A2LifecycleTest extends TestCase
         return $driver;
     }
 }
-

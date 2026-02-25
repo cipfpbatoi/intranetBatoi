@@ -18,10 +18,9 @@ use Illuminate\Support\Facades\Log;
 
 
 /**
- * Class AdministracionController
- * @package Intranet\Http\Controllers
+ * Gestió de documents SAO (A1, A2 i A5).
  */
-class A2
+class SaoDocumentsAction
 {
     private DigitalSignatureService $digitalSignatureService;
     private A1DocumentService $a1DocumentService;

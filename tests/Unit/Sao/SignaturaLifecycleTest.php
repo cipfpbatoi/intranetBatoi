@@ -7,7 +7,7 @@ namespace Tests\Unit\Sao;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Http\RedirectResponse;
-use Intranet\Sao\Signatura;
+use Intranet\Sao\SaoSignaturaAction;
 use Mockery;
 use Tests\TestCase;
 
@@ -39,7 +39,7 @@ class SignaturaLifecycleTest extends TestCase
         $seleniumAlias = Mockery::mock('alias:Intranet\Services\Automation\SeleniumService');
         $seleniumAlias->shouldReceive('loginSAO')->once()->andReturn($driver);
 
-        $response = (new Signatura())->index('secret');
+        $response = (new SaoSignaturaAction())->index('secret');
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame(url(route('alumnofct.index', [], false)), $response->getTargetUrl());
@@ -65,10 +65,9 @@ class SignaturaLifecycleTest extends TestCase
         $seleniumAlias = Mockery::mock('alias:Intranet\Services\Automation\SeleniumService');
         $seleniumAlias->shouldReceive('loginSAO')->once()->andReturn($driver);
 
-        $response = (new Signatura())->index('secret');
+        $response = (new SaoSignaturaAction())->index('secret');
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame(url(route('alumnofct.index', [], false)), $response->getTargetUrl());
     }
 }
-

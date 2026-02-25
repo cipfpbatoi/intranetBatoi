@@ -11,15 +11,15 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 
 use Intranet\Services\Automation\SeleniumService;
+use Intranet\Entities\AlumnoFct;
 use Intranet\Services\Signature\SignaturaService;
 use Styde\Html\Facades\Alert;
 
 
 /**
- * Class AdministracionController
- * @package Intranet\Http\Controllers
+ * Acció SAO per descarregar i processar signatura de documents.
  */
-class Signatura
+class SaoSignaturaAction
 {
 
     private function closeWindows(RemoteWebDriver $driver, $window)
