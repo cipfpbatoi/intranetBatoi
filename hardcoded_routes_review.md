@@ -60,6 +60,32 @@ Fer-ho **directament, pero en fases curtes** (no tot d'una):
 2. Fase B (mitja): canviar Blade de fitxers amb mes carrega (`horario/propuestas`, `empresa/show`).
 3. Fase C (controlada): revisar URLs en JS i crear constants/helper d'endpoints.
 
+## Estat actual (2026-02-25)
+
+- `redirect('/...')`: **3**
+- `redirect()->action(...)`: **8**
+- `href="/..."` o `href='/...'` en Blade: **3**
+- JS amb URL directa (`axios/fetch/location`): **4**
+
+### Pendents reals i excepcions
+
+`redirect('/...')`:
+- `app/Http/Controllers/Deprecated/DualController.php` (codi deprecated)
+- `app/Http/Controllers/DocumentoController.php` (redireccio a fitxer en `storage`)
+- `app/Http/Controllers/Core/IntranetController.php` (redireccio dinamica a model/document)
+
+`redirect()->action(...)`:
+- `app/Http/Controllers/Core/IntranetController.php`
+- `app/Http/Controllers/Core/ModalController.php`
+- `app/Http/Controllers/DocumentoController.php`
+
+Nota: en estos casos la redireccio es dinamica (`$this->model`, `Session::get('redirect')`) i no es pot migrar netament a `route(...)` sense refactor d'arquitectura.
+
+`href="/..."` Blade:
+- `resources/views/reunion/control.blade.php`: pendent per conflicte de nom de ruta `reunion.pdf` (duplicada).
+- `resources/views/auth/profesor/login.blade.php`: enllac historic de reset (`/password/reset`) sense nom de ruta en esta instal.lacio.
+- `resources/views/intranet/editdelete.blade.php`: ruta totalment dinamica per model (`/{{strtolower($modelo)}}/{{$id}}/delete`).
+
 ## Criteri de validacio
 
 - Cada canvi ha d'apuntar a una ruta amb `name`.
@@ -67,4 +93,3 @@ Fer-ho **directament, pero en fases curtes** (no tot d'una):
 - Provar minim:
   - navegacio bàsica dels mòduls tocats
   - tests feature relacionats si existixen
-

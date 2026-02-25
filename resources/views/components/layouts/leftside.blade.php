@@ -51,14 +51,14 @@
                 <a data-toggle="tooltip" data-placement="top" title="Enviar codigo fichaje" href='myApiToken'>
                     <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span>
                 </a>
-                <a data-toggle="tooltip" data-placement="top" title="Logout" href="/logout">
+                <a data-toggle="tooltip" data-placement="top" title="Logout" href="{{ route('logout') }}">
                     <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
                 </a>
             @else
                 <a data-toggle="tooltip" data-placement="top" title="Lock">
                     <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
                 </a>
-                <a data-toggle="tooltip" data-placement="top" title="Logout" href="/alumno/logout">
+                <a data-toggle="tooltip" data-placement="top" title="Logout" href="{{ route('logout.alumno') }}">
                     <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
                 </a>
             @endif

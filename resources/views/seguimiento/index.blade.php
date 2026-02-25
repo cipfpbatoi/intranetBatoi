@@ -10,13 +10,13 @@
                         <td><span class='textarea' name='observaciones'>{{ $orden->observaciones }}</td>
                         <td><span class='botones'>
                         <a href="#" class="editGrupo">{!! Html::image('img/edit.png',trans("messages.buttons.edit"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.edit"))) !!}</a>
-                        <a href="/alumnoresultado/{!! $orden->id !!}/delete" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a>
+                        <a href="{{ route('seguimiento.alumnos.delete', ['seguimiento' => $orden->id]) }}" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a>
                     </span>
                         </td>
                     </tr>
                 @endforeach
                 <div id='error' style='display: block' class="alert alert-danger"><span></span></div>
-                <form method="POST" class="agua" action="/alumnoresultado/{!!$elemento->id!!}/create">
+                <form method="POST" class="agua" action="{{ route('seguimiento.alumno.store', ['moduloGrupo' => $elemento->id]) }}">
                     {{ csrf_field() }}
                     <input type='hidden' name='idModuloGrupo' value="{!!$elemento->id!!}">
                     <tr>
@@ -44,7 +44,7 @@
             </table>
         </div>
     </div>
-     <a href="/resultado" class="btn btn-success">@lang("messages.buttons.atras") </a>
+     <a href="{{ route('resultado.index') }}" class="btn btn-success">@lang("messages.buttons.atras") </a>
 @push('scripts')
     <script src="/js/tabledit.js"></script>
     <script src="/js/Seguimiento/index.js"></script>

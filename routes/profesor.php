@@ -53,12 +53,21 @@ Route::resource('/reunion', 'ReunionController', ['except' => ['destroy', 'updat
 Route::get('/reunion/{reunion}/delete', ['as' => 'reunion.destroy', 'uses' => 'ReunionController@destroy']);
 Route::post('/reunion/create', ['as' => 'reunion.store', 'uses' => 'ReunionController@store']);
 Route::put('/reunion/{reunion}/edit', ['as' => 'reunion.update', 'uses' => 'ReunionController@update']);
-Route::post('/reunion/{reunion}/nuevoOrden', 'ReunionController@altaOrden');
-Route::get('/reunion/{reunion}/borrarOrden/{orden}', 'ReunionController@borrarOrden');
-Route::post('/reunion/{reunion}/nuevoProfesor', 'ReunionController@altaProfesor');
-Route::post('/reunion/{reunion}/nuevoAlumno', 'ReunionController@altaAlumno');
-Route::get('/reunion/{reunion}/borrarProfesor/{profesor}', 'ReunionController@borrarProfesor');
-Route::get('/reunion/{reunion}/borrarAlumno/{alumno}', 'ReunionController@borrarAlumno');
+Route::post('/reunion/{reunion}/nuevoOrden', ['as' => 'reunion.orden.store', 'uses' => 'ReunionController@altaOrden']);
+Route::get(
+    '/reunion/{reunion}/borrarOrden/{orden}',
+    ['as' => 'reunion.orden.destroy', 'uses' => 'ReunionController@borrarOrden']
+);
+Route::post('/reunion/{reunion}/nuevoProfesor', ['as' => 'reunion.profesor.store', 'uses' => 'ReunionController@altaProfesor']);
+Route::post('/reunion/{reunion}/nuevoAlumno', ['as' => 'reunion.alumno.store', 'uses' => 'ReunionController@altaAlumno']);
+Route::get(
+    '/reunion/{reunion}/borrarProfesor/{profesor}',
+    ['as' => 'reunion.profesor.destroy', 'uses' => 'ReunionController@borrarProfesor']
+);
+Route::get(
+    '/reunion/{reunion}/borrarAlumno/{alumno}',
+    ['as' => 'reunion.alumno.destroy', 'uses' => 'ReunionController@borrarAlumno']
+);
 Route::get('/reunion/{reunion}/email', ['as' => 'reunion.email', 'uses' => 'ReunionController@email']);
 Route::get('/reunion/{reunion}/pdf', ['as' => 'reunion.pdf', 'uses' => 'ReunionController@pdf']);
 Route::get('/reunion/{reunion}/notification', ['as' => 'reunion.notificar', 'uses' => 'ReunionController@notify']);
@@ -76,9 +85,18 @@ Route::post('/grupotrabajo/create', ['as' => 'grupotrabajo.store', 'uses' => 'Gr
 Route::get('/grupotrabajo/{grupotrabajo}/edit', ['as' => 'grupotrabajo.edit', 'uses' => 'GrupoTrabajoController@edit'])->middleware('owner:GrupoTrabajo');
 Route::put('/grupotrabajo/{grupotrabajo}/edit', ['as' => 'grupotrabajo.update', 'uses' => 'GrupoTrabajoController@update'])->middleware('owner:GrupoTrabajo');
 Route::get('/grupotrabajo/{grupotrabajo}/detalle', ['as' => 'grupotrabajo.detalle', 'uses' => 'GrupoTrabajoController@detalle']);
-Route::post('/grupotrabajo/{grupotrabajo}/nuevoProfesor', 'GrupoTrabajoController@altaProfesor');
-Route::get('/grupotrabajo/{grupotrabajo}/borrarProfesor/{profesor}', 'GrupoTrabajoController@borrarProfesor');
-Route::get('/grupotrabajo/{grupotrabajo}/coordinador/{profesor}', 'GrupoTrabajoController@Coordinador');
+Route::post(
+    '/grupotrabajo/{grupotrabajo}/nuevoProfesor',
+    ['as' => 'grupotrabajo.profesor.store', 'uses' => 'GrupoTrabajoController@altaProfesor']
+);
+Route::get(
+    '/grupotrabajo/{grupotrabajo}/borrarProfesor/{profesor}',
+    ['as' => 'grupotrabajo.profesor.destroy', 'uses' => 'GrupoTrabajoController@borrarProfesor']
+);
+Route::get(
+    '/grupotrabajo/{grupotrabajo}/coordinador/{profesor}',
+    ['as' => 'grupotrabajo.profesor.coordinador', 'uses' => 'GrupoTrabajoController@Coordinador']
+);
 
 Route::resource('/curso', 'CursoController', ['except' => ['destroy', 'update', 'show']]);
 Route::get('/curso/{curso}/delete', ['as' => 'curso.destroy', 'uses' => 'CursoController@destroy']);

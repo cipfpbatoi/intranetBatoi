@@ -15,13 +15,13 @@
                     @else
                     <td><input type="checkbox" name="{{$profesor->dni}}" class="checkbox" ></td>
                     @endif
-                    <td><a href="/reunion/{!!$formulario->getElemento()->id!!}/borrarProfesor/{!! $profesor->dni !!}" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a></td>
+                    <td><a href="{{ route('reunion.profesor.destroy', ['reunion' => $formulario->getElemento()->id, 'profesor' => $profesor->dni]) }}" class="delGrupo">{!! Html::image('img/delete.png',trans("messages.buttons.delete"),array('class' => 'iconopequeno','title'=>trans("messages.buttons.delete"))) !!}</a></td>
                 </tr>
                 @endforeach
             </table>
         </div>
         <div class="gruposContainer col-lg-8 col-md-6 col-sm-10 col-xs-10 col-lg-offset-2 col-md-offset-2 col-sm-offset-1">
-            <form method="POST" class="agua" action="/reunion/{!!$formulario->getElemento()->id!!}/nuevoProfesor">
+            <form method="POST" class="agua" action="{{ route('reunion.profesor.store', ['reunion' => $formulario->getElemento()->id]) }}">
                 {{ csrf_field() }}
                 <input type='hidden' name='idReunion' value="{!!$formulario->getElemento()->id!!}">
                 {{ Form::select('idProfesor',$tProfesores,0,['id'=>'idProfesor']) }}

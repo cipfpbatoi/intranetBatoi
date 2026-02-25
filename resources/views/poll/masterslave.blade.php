@@ -38,7 +38,7 @@
                         <tr>
                             <td>{{$option->question}}</td>
                             <td>{{$option->scala}}</td>
-                            <td><a href="/option/{!!$option->id!!}/delete" class="delGrupo"><i class="fa fa-trash"></i></a></td>
+                            <td><a href="{{ route('option.destroy', ['id' => $option->id]) }}" class="delGrupo"><i class="fa fa-trash"></i></a></td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -66,4 +66,3 @@
 @section('scripts')
 
 @endsection
-

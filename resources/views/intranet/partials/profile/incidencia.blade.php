@@ -48,7 +48,7 @@
                 <p class="ratings">
                     {{$elemento->fecha}}<br/>
                     @if (isset($elemento->orden))
-                    <a href="/mantenimiento/ordentrabajo/{{$elemento->orden}}/anexo" class="btn btn-primary btn-xs">
+                    <a href="{{ route('orden.anexo', ['orden' => $elemento->orden]) }}" class="btn btn-primary btn-xs">
                         @lang("validation.attributes.orden") {{$elemento->orden}}
                     </a>
                     @endif

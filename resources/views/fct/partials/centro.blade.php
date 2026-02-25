@@ -8,7 +8,7 @@
                 <em class="fa fa-eye user-profile-icon"></em> {!! $fct->Colaboracion->Centro->observaciones!!}<br/><br/>
             @endisset
             @if (count($fct->Colaboracion->votes))
-                <a href="/votes/{{$fct->Colaboracion->id}}/show"> <i class="fa fa-bar-chart"></i> Poll</a><br/><br/>
+                <a href="{{ route('votes.colaboracion', ['colaboracion' => $fct->Colaboracion->id]) }}"> <i class="fa fa-bar-chart"></i> Poll</a><br/><br/>
             @endif
             <em class="fa fa-group user-profile-icon"></em> Instructors:
             <ul>
@@ -23,7 +23,7 @@
             </ul>
         </h5>
     </div>
-    <a href="/instructor/{{$fct->Colaboracion->Centro->id}}/create">
+    <a href="{{ route('instructor.create', ['centro' => $fct->Colaboracion->Centro->id]) }}">
         <em class="fa fa-plus"></em> @lang("messages.generic.anadir") @lang("models.modelos.Instructor")
     </a>
 </ul>

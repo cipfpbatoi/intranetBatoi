@@ -32,7 +32,7 @@
                         <td><span class='textarea' name='resumen'>{!! $orden->resumen !!}</span></td>
                         <td><span class='botones'>
                                 @if ($formulario->getElemento()->modificable)
-                                    <a href="/reunion/{!!$formulario->getElemento()->id!!}/borrarOrden/{!! $orden->id !!}"
+                                    <a href="{{ route('reunion.orden.destroy', ['reunion' => $formulario->getElemento()->id, 'orden' => $orden->id]) }}"
                                        class="delGrupo"
                                     >
                                         {!! Html::image(
@@ -59,7 +59,7 @@
                     </tr>
                 @endforeach
                 @if ($formulario->getElemento()->modificable)
-                    <form method="POST" class="agua" action="/reunion/{!!$formulario->getElemento()->id!!}/nuevoOrden">
+                    <form method="POST" class="agua" action="{{ route('reunion.orden.store', ['reunion' => $formulario->getElemento()->id]) }}">
                         {{ csrf_field() }}
                         <input type='hidden' name='idReunion' value="{!!$formulario->getElemento()->id!!}">
                         <tr>
@@ -80,4 +80,3 @@
         </div>
     </div>
 </div>
-
